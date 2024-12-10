@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-30 AT 15:40 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-23 AT 15:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_ARC_test_deck
    USE GALAHAD_USERDATA_precision
@@ -357,7 +357,7 @@
    CONTAINS
      SUBROUTINE WHICH_sls( control )
      TYPE ( ARC_control_type ) :: control
-#include "galahad_sls_defaults.h"
+#include "galahad_sls_defaults_ls.h"
      control%RQS_control%symmetric_linear_solver = symmetric_linear_solver
      control%RQS_control%definite_linear_solver = definite_linear_solver
      control%PSLS_control%definite_linear_solver = definite_linear_solver

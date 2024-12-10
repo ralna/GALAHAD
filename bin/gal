@@ -4,7 +4,7 @@
 #      executable after use.
 #  * version for Bourne/bash shell
 
-# Use: gal architecture package [-e] [-h] [-r] [-s] [-k] [-m] [-p]
+# Use: gal architecture package [-e] [-h] [-r] [-s] [-q] [-k] [-m] [-p]
 #                               [-u] [-o i] [-l secs]
 
 # where: options -e : use the load module architecture.package if it exists
@@ -12,6 +12,8 @@
 #                -h : print this help and stop execution
 #                -r : do not recompile the problem fucoltions
 #                -s : run the single precision version
+#                     (Default: run the double precision version)
+#                -q : run the quadruple precision version (if available)
 #                     (Default: run the double precision version)
 #                -k : keep the load module after use
 #                     (Default: delete the load module)
@@ -30,7 +32,7 @@
 #  History -
 #   originally released pre GALAHAD Version 1.0. August 20th, 1999 (for csh)
 #   update released with GALAHAD Version 2.0. May 11th 2006 (for sh)
-#   this version 2024-10-28
+#   this version 2024-11-12
 
 if [[ -z $GALAHAD ]]; then
   echo ' You have not set the GALAHAD environment variable. '
@@ -49,7 +51,7 @@ elif [[ "`echo $1 | grep -e '^-'`" != "" || "`echo $2 | grep -e '^-'`" != ""  ]]
 fi
 
 if [[ "$stop_early" == "true" ]]; then
-    echo " Use: gal architecture package [-e] [-h] [-r] [-s] [-k] [-m] [-p] [-u] [-o i] [-l secs]"
+    echo " Use: gal architecture package [-e] [-h] [-r] [-s] [-q] [-k] [-m] [-p] [-u] [-o i] [-l secs]"
     exit 1
 fi
 
@@ -65,11 +67,13 @@ TMP=/tmp
 
 #  variables for each option
 
-# PRECISION = 0 (single precision), = 1 (double precision)
+# PRECISION = 0 (single precision), = 1 (double precision), 
+#           = 2 (quadruple precision)
 
 PRECISION=1
 
 # PSUFFIX = _s (single precision), = (double precision)
+#         = _q (quadruple precision)
 
 PSUFFIX=""
 
@@ -139,14 +143,19 @@ do
   elif [[ "$opt" == '-s' ]]; then
     PRECISION=0
     PSUFFIX="_s"
+  elif [[ "$opt" == '-q' ]]; then
+    PRECISION=2
+    PSUFFIX="_q"
   elif [[ "$opt" == '-h' || "$opt" == '--help' ]]; then
-    echo " Use: gal architecture package [-e] [-h] [-r] [-s] [-k] [-m] [-p] [-u] [-o i] [-l secs]"
+    echo " Use: gal architecture package [-e] [-h] [-r] [-s] [-q] [-k] [-m] [-p] [-u] [-o i] [-l secs]"
     echo ' '
     echo " where: options -e : use the load module $galmin if it exists"
     echo '                     (Default: create a new load module)'
     echo '                -h : print this help and stop execution'
     echo '                -r : recompile the problem functions'
     echo '                -s : run the single precision version'
+    echo '                     (Default: run the double precision version)'
+    echo '                -q : run the quadruple precision version  (if available)'
     echo '                     (Default: run the double precision version)'
     echo '                -k : keep the load module after use '
     echo '                     (Default: delete the load module)'
@@ -173,7 +182,7 @@ do
     (( i++ ))
     LIMIT=${!i}
   else
-    echo " Use: gal architecture package [-e] [-h] [-r] [-s] [-k] [-m] [-p] [-u] [-o i] [-l secs]"
+    echo " Use: gal architecture package [-e] [-h] [-r] [-s] [-q] [-k] [-m] [-p] [-u] [-o i] [-l secs]"
     exit 1
   fi
   (( i++ ))
@@ -184,6 +193,9 @@ done
 if [[ $PRECISION == "0" ]]; then
    PRECIS=single
    DOUBLE="s"
+elif [[ $PRECISION == "2" ]]; then
+   PRECIS=quadruple
+   DOUBLE="q"
 else
    PRECIS=double
    DOUBLE="d"
@@ -299,6 +311,8 @@ GALOBJ=$GALAHAD/objects/$1/$PRECIS
 
 if [[ $PRECISION == "0" ]]; then
    CUTESTLIB="-L$CUTEST/objects/$CUTESTVERSION/single -lcutest"
+elif [[ $PRECISION == "2" ]]; then
+   CUTESTLIB="-L$CUTEST/objects/$CUTESTVERSION/quadruple -lcutest"
 else
    CUTESTLIB="-L$CUTEST/objects/$CUTESTVERSION/double -lcutest"
 fi

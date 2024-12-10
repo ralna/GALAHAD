@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 15:00 GMT
 
 #include "galahad_modules.h"
 #include "hsl_subset.h"
@@ -31,6 +31,7 @@
 
      USE GALAHAD_SMT_precision
      USE GALAHAD_SYMBOLS
+     USE GALAHAD_HSL_inter_precision, ONLY: MA33A, MA33C, MC20A
 
      IMPLICIT NONE
 
@@ -315,110 +316,6 @@
        TYPE ( GLS_sinfo ) :: GLS_sinfo
        TYPE ( SMT_type ) :: matrix
      END TYPE GLS_full_data_type
-
-!--------------------------------
-!   I n t e r f a c e  B l o c k
-!--------------------------------
-
-     INTERFACE MA33A
-       SUBROUTINE MA33A( n, ICN, A, licn, LENR, LENRL, IDISP, IP, IQ, IRN,     &
-                         lirn, LENC, IFIRST, LASTR, NEXTR, LASTC, NEXTC,       &
-                         IPTR, IPC, u, iflag, ICNTL, CNTL, INFO, RINFO )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, licn, lirn
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: iflag
-       REAL ( KIND = sp_ ), INTENT( INOUT ) :: u
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( licn ) ::  ICN
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) ::  LENR
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) ::  LENRL
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 2 ) ::  IDISP
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) ::  IP, IQ
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lirn ) :: IRN
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) ::  IPC, IPTR
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) ::  LENC, IFIRST
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) ::  LASTR, NEXTR
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) ::  LASTC, NEXTC
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 10 ) :: INFO
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 10 ) :: ICNTL
-       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( licn ) :: A
-       REAL ( KIND = sp_ ), INTENT( OUT ), DIMENSION( 5 ) :: RINFO
-       REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
-       END SUBROUTINE MA33A
-
-       SUBROUTINE MA33AD( n, ICN, A, licn, LENR, LENRL, IDISP, IP, IQ, IRN,    &
-                          lirn, LENC, IFIRST, LASTR, NEXTR, LASTC, NEXTC,      &
-                          IPTR, IPC, u, iflag, ICNTL, CNTL, INFO, RINFO )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, licn, lirn
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: iflag
-       REAL ( KIND = dp_ ), INTENT( INOUT ) :: u
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( licn ) ::  ICN
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) ::  LENR
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) ::  LENRL
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 2 ) ::  IDISP
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) ::  IP, IQ
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lirn ) :: IRN
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) ::  IPC, IPTR
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) ::  LENC, IFIRST
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) ::  LASTR, NEXTR
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) ::  LASTC, NEXTC
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 10 ) :: INFO
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 10 ) :: ICNTL
-       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( licn ) :: A
-       REAL ( KIND = dp_ ), INTENT( OUT ), DIMENSION( 5 ) :: RINFO
-       REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
-       END SUBROUTINE MA33AD
-     END INTERFACE MA33A
-
-     INTERFACE MA33C
-       SUBROUTINE MA33C( n, ICN, A, licn, LENR, LENRL, LENOFF, IDISP,          &
-                         IP, IQ, X, W, mtype, RINFO )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, licn, mtype
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( licn ) :: ICN
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: LENR, LENRL
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: LENOFF
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 2 ) :: IDISP
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: IP, IQ
-       REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( licn ) :: A
-       REAL ( KIND = sp_ ), INTENT( OUT ), DIMENSION( n ) :: W
-       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
-       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( 5 ) :: RINFO
-       END SUBROUTINE MA33C
-
-       SUBROUTINE MA33CD( n, ICN, A, licn, LENR, LENRL, LENOFF, IDISP,         &
-                          IP, IQ, X, W, mtype, RINFO )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, licn, mtype
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( licn ) :: ICN
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: LENR, LENRL
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: LENOFF
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 2 ) :: IDISP
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: IP, IQ
-       REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( licn ) :: A
-       REAL ( KIND = dp_ ), INTENT( OUT ), DIMENSION( n ) :: W
-       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
-       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( 5 ) :: RINFO
-       END SUBROUTINE MA33CD
-     END INTERFACE MA33C
-
-     INTERFACE MC20A
-       SUBROUTINE MC20A( nc, maxa, A, INUM, JPTR, JNUM, jdisp )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: nc, maxa, jdisp
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( maxa ) :: INUM, JNUM
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nc ) :: JPTR
-       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( maxa ) :: A
-       END SUBROUTINE MC20A
-
-       SUBROUTINE MC20AD( nc, maxa, A, INUM, JPTR, JNUM, jdisp )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: nc, maxa, jdisp
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( maxa ) :: INUM, JNUM
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nc ) :: JPTR
-       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( maxa ) :: A
-       END SUBROUTINE MC20AD
-     END INTERFACE MC20A
 
    CONTAINS
 

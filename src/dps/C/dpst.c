@@ -7,6 +7,9 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_dps.h"
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 int main(void) {
 
@@ -75,8 +78,13 @@ int main(void) {
         }
 
       dps_information( &data, &inform, &status );
-      printf("format %c: DPS_solve_problem exit status   = %1" i_ipc_ ", f = %.2f\n",
-             st, inform.status, inform.obj );
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_dps.h
+#include "galahad_pquad_dps.h"
+#else
+      printf("format %c: DPS_solve_problem exit status   = %1" i_ipc_ 
+             ", f = %.2f\n", st, inform.status, inform.obj );
+#endif
 
       switch(storage_type){
         case 1: // sparse co-ordinate storage
@@ -98,8 +106,13 @@ int main(void) {
         }
 
       dps_information( &data, &inform, &status );
-      printf("format %c: DPS_resolve_problem exit status = %1" i_ipc_ ", f = %.2f\n",
-             st, inform.status, inform.obj );
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_dpsr.h
+#include "galahad_pquad_dpsr.h"
+#else
+      printf("format %c: DPS_resolve_problem exit status = %1" i_ipc_ 
+             ", f = %.2f\n", st, inform.status, inform.obj );
+#endif
       //printf("x: ");
       //for( ipc_ i = 0; i < n+m; i++) printf("%f ", x[i]);
 

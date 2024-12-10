@@ -46,6 +46,7 @@ if build_ciface
                            'galahad_psls.h',
                            'galahad_qpa.h',
                            'galahad_qpb.h',
+                           'galahad_quadruple.h',
                            'galahad_roots.h',
                            'galahad_rpd.h',
                            'galahad_rqs.h',

@@ -7,6 +7,9 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_trs.h"
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 int main(void) {
 
@@ -221,9 +224,13 @@ int main(void) {
               }
 
           trs_information( &data, &inform, &status );
-
-          printf("format %c%s: TRS_solve_problem exit status = %1" i_ipc_ ", f = %.2f\n",
-                 st, ma, inform.status, inform.obj );
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_trs.h
+#include "galahad_pquad_trs.h"
+#else
+          printf("format %c%s: TRS_solve_problem exit status = %1" i_ipc_ 
+                 ", f = %.2f\n", st, ma, inform.status, inform.obj );
+#endif
           //printf("x: ");
           //for( ipc_ i = 0; i < n+m; i++) printf("%f ", x[i]);
 

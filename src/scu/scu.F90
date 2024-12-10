@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-05 AT 14:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -30,7 +30,7 @@
 !      |                                         |
 !      -------------------------------------------
 
-    USE GALAHAD_BLAS_interface, ONLY : ROT, ROTG
+    USE GALAHAD_BLAS_inter_precision, ONLY : ROT, ROTG
 
     IMPLICIT NONE
 

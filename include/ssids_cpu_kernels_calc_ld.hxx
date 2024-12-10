@@ -47,7 +47,13 @@ void calcLD(ipc_ m, ipc_ n, T const* l, ipc_ ldl, T const* d, T* ld,
    typedef SimdVec<T> SimdVecT;
 
    for(ipc_ col=0; col<n; ) {
+
+
+#ifdef REAL_128
+      if(col+1==n || std::isfinite(static_cast<double>(d[2*col+2]))) {
+#else
       if(col+1==n || std::isfinite(d[2*col+2])) {
+#endif
          // 1x1 pivot
          T d11 = d[2*col];
          if(d11 != 0.0) d11 = 1/d11; // Zero pivots just cause zeroes

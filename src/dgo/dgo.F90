@@ -1617,7 +1617,6 @@
 !  initialiize the hash table
 
      data%length = data%control%dictionary_size
-write(6,*) 'HASH_control%out = ',  data%control%HASH_control%out
      CALL HASH_initialize( data%nchar, data%length, data%HASH_data,            &
                            data%control%HASH_control, inform%HASH_inform )
      IF ( inform%HASH_inform%status /= GALAHAD_ok ) THEN

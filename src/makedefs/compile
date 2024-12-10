@@ -1,7 +1,7 @@
 #  standard GALAHAD package compilation
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2023-05-11
+#  This version: 2023-11-13
 
 #  package compilation
 
@@ -10,6 +10,7 @@ $(package).o: $(LG)($(package)_$(PRECIS).o)
 $(LG)($(package)_$(PRECIS).o): ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
 	$(CP) ../$(package)/$(package).F90 $(OBJ)/$(package).F90
+#	cd $(OBJ); $(FORTRAN) $(FFLAGSOMP) -E -dD $(package).F90
 	cd $(OBJ); $(FORTRAN) -o $(package)_$(PRECIS).o \
                      $(FFLAGSOMP) $(package).F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \

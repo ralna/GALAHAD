@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:20 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-10 AT 10:30 GMT
 
 #include "galahad_modules.h"
 
@@ -29,6 +29,15 @@ MODULE GALAHAD_KINDS
   INTEGER, PARAMETER :: c4_ = KIND( ( 1.0_r4_, 1.0_r4_ ) )
   INTEGER, PARAMETER :: c8_ = KIND( ( 1.0_r8_, 1.0_r8_ ) )
 
+!  if 128 bit reals are supported, use them
+
+#ifdef REAL_128
+  INTEGER, PARAMETER :: r16_ = REAL128
+  INTEGER, PARAMETER :: c16_ = KIND( ( 1.0_r16_, 1.0_r16_ ) )
+  INTEGER, PARAMETER :: qp_ = r16_
+  INTEGER, PARAMETER :: qpc_ = C_FLOAT128
+#endif
+
 !  common aliases
 
   INTEGER, PARAMETER :: sp_ = r4_
@@ -51,38 +60,32 @@ MODULE GALAHAD_KINDS
 
 END MODULE GALAHAD_KINDS
 
-!-*-*-*-*-  G A L A H A D _  K I N D S _ S I N G L E  M O D U L E   -*-*-*-*-*-
+!-*-*-*-*-  G A L A H A D _  K I N D S _ R E A L   M O D U L E   -*-*-*-*-*-
 
-MODULE GALAHAD_KINDS_single
+MODULE GALAHAD_KINDS_precision
   USE GALAHAD_KINDS
   IMPLICIT NONE
   PUBLIC
 
-!--------------------------------------------------------
-!  R e a l  k i n d s  ( s i n g l e  p r e c i s i o n )
-!--------------------------------------------------------
+!---------------------
+!  R e a l  k i n d s
+!---------------------
 
+#ifdef REAL_32
   INTEGER, PARAMETER :: real_bytes_ = 4
   INTEGER, PARAMETER :: rp_ = r4_
   INTEGER, PARAMETER :: cp_ = c4_
   INTEGER, PARAMETER :: rpc_ = spc_
-
-END MODULE GALAHAD_KINDS_single
-
-!-*-*-*-*-  G A L A H A D _  K I N D S _ D O U B L E  M O D U L E   -*-*-*-*-*-
-
-MODULE GALAHAD_KINDS_double
-  USE GALAHAD_KINDS
-  IMPLICIT NONE
-  PUBLIC
-
-!--------------------------------------------------------
-!  R e a l  k i n d s  ( d o u b l e  p r e c i s i o n )
-!--------------------------------------------------------
-
+#elif REAL_128
+  INTEGER, PARAMETER :: real_bytes_ = 16
+  INTEGER, PARAMETER :: rp_ = r16_
+  INTEGER, PARAMETER :: cp_ = c16_
+  INTEGER, PARAMETER :: rpc_ = qpc_
+#else
   INTEGER, PARAMETER :: real_bytes_ = 8
   INTEGER, PARAMETER :: rp_ = r8_
   INTEGER, PARAMETER :: cp_ = c8_
   INTEGER, PARAMETER :: rpc_ = dpc_
+#endif
 
-END MODULE GALAHAD_KINDS_double
+END MODULE GALAHAD_KINDS_precision

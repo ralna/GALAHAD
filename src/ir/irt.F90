@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-23 AT 15:50 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_IR_TEST  !  further work needed!!
    USE GALAHAD_KINDS_precision
@@ -16,7 +16,7 @@
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5
    INTEGER ( KIND = ip_ ), PARAMETER :: ne = 7
    REAL ( KIND = rp_ ) :: B( n ), X( n )
-   INTEGER ( KIND = ip_ ) :: i, s
+   INTEGER ( KIND = ip_ ) :: s
 ! Read matrix order and number of entries
    matrix%n = n
    matrix%ne = ne

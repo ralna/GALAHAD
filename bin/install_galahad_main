@@ -6,7 +6,7 @@
 # syntax: install_galahad_main
 
 # N. Gould, D. Orban & Ph. Toint
-# ( Last modified on 20 June 2024 at 09:30 GMT )
+# ( Last modified on 15 November 2024 at 13:40 GMT )
 
 #  function to create missing symblic links
 
@@ -464,36 +464,50 @@ echo "$MACHINE ($OPSYS) $COMPUSED" > $GALAHAD/versions/$VERSION
 if [[ ! -e $OBJDIR ]]; then
     $MKDIR $OBJDIR
     $MKDIR $OBJDIR/double $OBJDIR/single $OBJDIR/double_64 $OBJDIR/single_64
+    $MKDIR $OBJDIR/quadruple $OBJDIR/quadruple_64
 else
+    if [[ ! -e $OBJDIR/single ]]; then
+    $MKDIR -p $OBJDIR/single
+    fi
     if [[ ! -e $OBJDIR/double ]]; then
     $MKDIR -p $OBJDIR/double
     fi
-    if [[ ! -e $OBJDIR/single ]]; then
-    $MKDIR -p $OBJDIR/single
+    if [[ ! -e $OBJDIR/quadruple ]]; then
+    $MKDIR -p $OBJDIR/quadruple
+    fi
+    if [[ ! -e $OBJDIR/single_64 ]]; then
+    $MKDIR -p $OBJDIR/single_64
     fi
     if [[ ! -e $OBJDIR/double_64 ]]; then
     $MKDIR -p $OBJDIR/double_64
     fi
-    if [[ ! -e $OBJDIR/single_64 ]]; then
-    $MKDIR -p $OBJDIR/single_64
+    if [[ ! -e $OBJDIR/quadruple_64 ]]; then
+    $MKDIR -p $OBJDIR/quadruple_64
     fi
 fi
 
 if [[ ! -e $MODDIR ]]; then
     $MKDIR $MODDIR
     $MKDIR $MODDIR/double $MODDIR/single $MODDIR/double_64 $MODDIR/single_64
+    $MKDIR $MODDIR/quadruple $MODDIR/quadruple_64
 else
+    if [[ ! -e $MODDIR/single ]]; then
+    $MKDIR -p $MODDIR/single
+    fi
     if [[ ! -e $MODDIR/double ]]; then
     $MKDIR -p $MODDIR/double
     fi
-    if [[ ! -e $MODDIR/single ]]; then
-    $MKDIR -p $MODDIR/single
+    if [[ ! -e $MODDIR/quadruple ]]; then
+    $MKDIR -p $MODDIR/quadruple
+    fi
+    if [[ ! -e $MODDIR/single_64 ]]; then
+    $MKDIR -p $MODDIR/single_64
     fi
     if [[ ! -e $MODDIR/double_64 ]]; then
     $MKDIR -p $MODDIR/double_64
     fi
-    if [[ ! -e $MODDIR/single_64 ]]; then
-    $MKDIR -p $MODDIR/single_64
+    if [[ ! -e $MODDIR/quadruple_64 ]]; then
+    $MKDIR -p $MODDIR/quadruple_64
     fi
 fi
 
@@ -538,6 +552,13 @@ fi
 if [[ "$UMFPACK" == "" ]]; then
   UMFPACK="-lgalahad_umfpack"
 fi
+
+if [[ $QUADREAL == "yes" ]] ; then
+  QUADFLAG="-Dquad_reals_exist"
+else
+  QUADFLAG=""
+fi
+
 
 #  write out the galahad/bin/sys file for this architecture
 
@@ -801,8 +822,16 @@ if [[ $? != 0 ]]; then
   OPTIONS="-s -f $GALAHAD/makefiles/$VERSION"
 
   if [[ $GALAHAD_REQPREC == "" ]] ; then
-    echo -e '\n GALAHAD may be compiled in (S)ingle or (D)ouble precision or (B)oth.'
-    read -p ' Which precision do you require for the installed subset (D/s/b) ? ' -r -n 1 GALAHAD_REQPREC;
+    if [[ $QUADREAL == "yes" ]] ; then
+      echo -e -n '\n GALAHAD may be compiled in (S)ingle, (D)ouble '
+      echo -e 'or (Q)uadruple precision,' 
+      echo -e ' (A)ll or any combination (e.g DQ or QS).'
+      read -p ' Which precisions do you require for the installed subset (D/s/q/a) ? ' -r -n 3 GALAHAD_REQPREC;
+    else
+      echo -e -n '\n GALAHAD may be compiled in (S)ingle or (D)ouble precision'
+      echo -e ' or (B)oth.'
+      read -p ' Which precisions do you require for the installed subset (D/s/b/a) ? ' -r -n 1 GALAHAD_REQPREC;
+    fi
     if [[ $GALAHAD_REQPREC == "" ]] ; then
       GALAHAD_REQPREC="D"
     fi
@@ -825,43 +854,17 @@ if [[ $? != 0 ]]; then
     shared="0"
   fi
 
-  if [[ $GALAHAD_REQPREC == [Ss] ]] ; then
-    if [[ $GALAHAD_REQINT == [Ll] ]] ; then
-      PREC='single_64'
-    else
-      PREC='single'
-    fi
-  else
-    if [[ $GALAHAD_REQINT == [Ll] ]] ; then
-      PREC='double_64'
-    else
-      PREC='double'
-    fi
-  fi
-  galahad_compile
+#  build the single precision libraries if required
 
-  if [[ $shared == "1" ]]; then
-    MACROS="PRECIS=$PREC PWD=$GALAHAD/src GALAHAD=$GALAHAD"
-    if (( $DRYRUN )) ; then
-      echo " $MAKE $OPTIONS go_pyiface $MACROS"
-    else
-      echo " creating $PREC precision shared libraries with the command"
-      echo " $MAKE $OPTIONS create_shared"
-      $MAKE $OPTIONS create_shared $MACROS
-      [[ $? != 0 ]] && exit 2
-    fi
-  fi
-
-#  optionally compile the selected packages in the other precision
-
-  if [[ $GALAHAD_REQPREC == [Bb] ]] ; then
+  if [[ $GALAHAD_REQPREC =~ "s" || $GALAHAD_REQPREC =~ "S" ||
+        $GALAHAD_REQPREC =~ "a" || $GALAHAD_REQPREC =~ "A" ||
+        $GALAHAD_REQPREC =~ "b" || $GALAHAD_REQPREC =~ "B" ]]; then
     if [[ $GALAHAD_REQINT == [Ll] ]] ; then
       PREC='single_64'
     else
       PREC='single'
     fi
     galahad_compile
-
     if [[ $shared == "1" ]]; then
       MACROS="PRECIS=$PREC PWD=$GALAHAD/src GALAHAD=$GALAHAD"
       if (( $DRYRUN )) ; then
@@ -874,6 +877,54 @@ if [[ $? != 0 ]]; then
       fi
     fi
   fi
+
+#  build the double precision libraries if required
+
+  if [[ $GALAHAD_REQPREC =~ "d" || $GALAHAD_REQPREC =~ "D" ||
+        $GALAHAD_REQPREC =~ "a" || $GALAHAD_REQPREC =~ "A" ||
+        $GALAHAD_REQPREC =~ "b" || $GALAHAD_REQPREC =~ "B" ]]; then
+    if [[ $GALAHAD_REQINT == [Ll] ]] ; then
+      PREC='double_64'
+    else
+      PREC='double'
+    fi
+    galahad_compile
+    if [[ $shared == "1" ]]; then
+      MACROS="PRECIS=$PREC PWD=$GALAHAD/src GALAHAD=$GALAHAD"
+      if (( $DRYRUN )) ; then
+        echo " $MAKE $OPTIONS go_pyiface $MACROS"
+      else
+        echo " creating $PREC precision shared libraries with the command"
+        echo " $MAKE $OPTIONS create_shared"
+        $MAKE $OPTIONS create_shared $MACROS
+        [[ $? != 0 ]] && exit 2
+      fi
+    fi
+  fi
+
+#  build the quadruple precision libraries if required
+  if [[ ( $GALAHAD_REQPREC =~ "q" || $GALAHAD_REQPREC =~ "Q" ||
+        $GALAHAD_REQPREC =~ "a" || $GALAHAD_REQPREC =~ "A" ) &&
+        $QUADREAL == "yes" ]]; then
+    if [[ $GALAHAD_REQINT == [Ll] ]] ; then
+      PREC='quadruple_64'
+    else
+      PREC='quadruple'
+    fi
+    galahad_compile
+    if [[ $shared == "1" ]]; then
+      MACROS="PRECIS=$PREC PWD=$GALAHAD/src GALAHAD=$GALAHAD"
+      if (( $DRYRUN )) ; then
+        echo " $MAKE $OPTIONS go_pyiface $MACROS"
+      else
+        echo " creating $PREC precision shared libraries with the command"
+        echo " $MAKE $OPTIONS create_shared"
+        $MAKE $OPTIONS create_shared $MACROS
+        [[ $? != 0 ]] && exit 2
+      fi
+    fi
+  fi
+
   success 'GALAHAD successfully installed'
 fi
 

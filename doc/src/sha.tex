@@ -55,18 +55,7 @@ accelerate the iteration using the Hessian approximation.
 
 \galhowto
 
-The package is available using both single and double precision reals,
-and either 32-bit or 64-bit integers. Access to the 32-bit integer,
-single precision version requires the {\tt USE} statement
-\medskip
-
-\hspace{8mm} {\tt USE \fullpackagename\_single}
-
-\medskip
-\noindent
-with the obvious substitution {\tt \fullpackagename\_double},
-{\tt \fullpackagename\_single\_64} and
-{\tt \fullpackagename\_double\_64} for the other variants.
+\input{versions}
 
 \noindent
 If it is required to use more than one of the modules at the same time,
@@ -172,19 +161,19 @@ The default is {\tt extra\_differences = 1}.
 
 \itt{sparse\_row} is a scalar variable of type \integer,
 that is used to specify the maximum sparse degree if a composite
-parallel algorithm ({\tt \%approximation\_algorithm = 3} is employed.
+parallel algorithm ({\tt \%approximation\_algorithm = 3}) is employed.
 The default is {\tt sparse\_row = 100}.
 
 \itt{recursion\_max} is a scalar variable of type \integer, that puts a limit
 on the number of levels of recursion that will be allowed if the
-composite block-parallel algorithm ({\tt \%approximation\_algorithm = 4} is
+composite block-parallel algorithm ({\tt \%approximation\_algorithm = 4}) is
 used.
 The default is {\tt recursion\_max  = 25}.
 
 \itt{recursion\_entries\_required} is a scalar variable of type \integer,
 that imposes the minimum number of entries in a reduced row that are required
 if a further level of recuresion is allowed in the composite block-parallel
-algorithm ({\tt \%approximation\_algorithm = 4}.
+algorithm ({\tt \%approximation\_algorithm = 4}).
 The default is {\tt  = recursion\_entries\_required = 10}.
 
 \itt{average\_off\_diagonals} is a scalar variable of type default \logical,

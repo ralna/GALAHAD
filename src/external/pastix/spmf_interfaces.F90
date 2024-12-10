@@ -24,18 +24,20 @@
 #ifdef REAL_32
 #ifdef INTEGER_64
 #define spmf_interfaces_precision spmf_interfaces_single_64
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_single_64
 #else
 #define spmf_interfaces_precision spmf_interfaces_single
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_single
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define spmf_interfaces_precision spmf_interfaces_quadruple_64
+#else
+#define spmf_interfaces_precision spmf_interfaces_quadruple
 #endif
 #else
 #ifdef INTEGER_64
 #define spmf_interfaces_precision spmf_interfaces_double_64
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_double_64
 #else
 #define spmf_interfaces_precision spmf_interfaces_double
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_double
 #endif
 #endif
 
@@ -79,10 +81,18 @@
    END INTERFACE spmCheckAndCorrect
 
    INTERFACE spmGetArray
+#ifdef REAL_128
+     SUBROUTINE spmGetArray_f08( spm, colptr, rowptr, zvalues, cvalues,        &
+                                 dvalues, svalues, dofs, loc2glob, glob2loc,   &
+                                 xvalues, qvalues )
+       USE iso_c_binding, ONLY : c_double_complex, c_float_complex, c_double,  &
+                                 c_float, c_float128_complex, c_float128
+#else
      SUBROUTINE spmGetArray_f08( spm, colptr, rowptr, zvalues, cvalues,        &
                                  dvalues, svalues, dofs, loc2glob, glob2loc )
        USE iso_c_binding, ONLY : c_double_complex, c_float_complex, c_double,  &
                                  c_float
+#endif
        USE spmf_enums, ONLY : spmatrix_t, spm_int_t
        IMPLICIT NONE
        TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm
@@ -98,6 +108,12 @@
                           POINTER :: dvalues
        REAL ( c_float ), DIMENSION( : ), INTENT( OUT ), OPTIONAL,              &
                          POINTER :: svalues
+#ifdef REAL_128
+       COMPLEX ( c_float128_complex ), DIMENSION( : ), INTENT( OUT ),          &
+                                    OPTIONAL, POINTER :: xvalues
+       REAL ( c_float128 ), DIMENSION( : ), INTENT( OUT ),                     &
+                         OPTIONAL, POINTER :: qvalues
+#endif
        INTEGER ( spm_int_t ), DIMENSION( : ), INTENT( OUT ), OPTIONAL,         &
                               POINTER :: dofs
        INTEGER ( spm_int_t ), DIMENSION( : ), INTENT( OUT ), OPTIONAL,         &

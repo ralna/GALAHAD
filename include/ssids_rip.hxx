@@ -2,7 +2,7 @@
  *  \copyright 2024 GALAHAD productions
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Nick Gould
- *  \version   GALAHAD 5.0 - 2024-06-22 AT 08:30 GMT
+ *  \version   GALAHAD 5.1 - 2024-11-21 AT 10:30 GMT
  */
 
 #include <stdint.h>
@@ -15,6 +15,8 @@
 
 #ifdef REAL_32
 typedef float rpc_;
+#elif REAL_128
+typedef __float128 rpc_;
 #else
 typedef double rpc_;
 #endif

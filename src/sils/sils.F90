@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 15:00 GMT
 
 #include "galahad_modules.h"
 
@@ -30,6 +30,7 @@
 !     ---------------------------------------------
 
      USE GALAHAD_SMT_precision
+     USE GALAHAD_HSL_inter_precision, ONLY: MA27I, MA27A, MA27B, MA27C, MA27Q
 
      IMPLICIT NONE
 
@@ -298,140 +299,6 @@
                         SILS_solve_refine, SILS_solve_refine_multiple
      END INTERFACE SILS_solve
 
-     INTERFACE MA27I
-       SUBROUTINE MA27I( ICNTL, CNTL )
-       USE GALAHAD_KINDS
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
-       REAL ( KIND = sp_ ), INTENT( OUT ) :: CNTL( 5 )
-       END SUBROUTINE MA27I
-
-       SUBROUTINE MA27ID( ICNTL, CNTL )
-       USE GALAHAD_KINDS
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
-       REAL ( KIND = dp_ ), INTENT( OUT ) :: CNTL( 5 )
-       END SUBROUTINE MA27ID
-     END INTERFACE MA27I
-
-     INTERFACE MA27A
-       SUBROUTINE MA27A( n, nz, IRN, ICN, IW, liw, IKEEP, IW2, nsteps,         &
-                         iflag, ICNTL, CNTL, INFO, ops )
-       USE GALAHAD_KINDS
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, liw
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nsteps
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iflag
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n, 3 ) :: IKEEP
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n, 2 ) :: IW2
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
-       REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
-       REAL ( KIND = sp_ ), INTENT( OUT ) :: ops
-       END SUBROUTINE MA27A
-
-       SUBROUTINE MA27AD( n, nz, IRN, ICN, IW, liw, IKEEP, IW2, nsteps,        &
-                          iflag, ICNTL, CNTL, INFO, ops )
-       USE GALAHAD_KINDS
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, liw
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nsteps
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iflag
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n, 3 ) :: IKEEP
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n, 2 ) :: IW2
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
-       REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
-       REAL ( KIND = dp_ ), INTENT( OUT ) :: ops
-       END SUBROUTINE MA27AD
-     END INTERFACE MA27A
-
-     INTERFACE MA27B
-       SUBROUTINE MA27B( n, nz, IRN, ICN, A, la, IW, liw, IKEEP, nsteps,       &
-                         maxfrt, IW1, ICNTL, CNTL, INFO )
-       USE GALAHAD_KINDS
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, la, liw, nsteps
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: maxfrt
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n, 3 ) :: IKEEP
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IW1
-       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( la ) :: A
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
-       REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
-       END SUBROUTINE MA27B
-
-       SUBROUTINE MA27BD( n, nz, IRN, ICN, A, la, IW, liw, IKEEP, nsteps,      &
-                          maxfrt, IW1, ICNTL, CNTL, INFO )
-       USE GALAHAD_KINDS
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, la, liw, nsteps
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: maxfrt
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n, 3 ) :: IKEEP
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IW1
-       REAL( KIND = dp_ ), INTENT( INOUT ), DIMENSION( la ) :: A
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
-       REAL( KIND = dp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
-       END SUBROUTINE MA27BD
-     END INTERFACE MA27B
-
-     INTERFACE MA27C
-       SUBROUTINE MA27C( n, A, la, IW, liw, W, maxfrt, RHS, IW1, nsteps,       &
-                         ICNTL, INFO )
-       USE GALAHAD_KINDS
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfrt, nsteps
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( liw ) :: IW
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nsteps ) :: IW1
-       REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( la ) :: A
-       REAL ( KIND = sp_ ), INTENT( OUT ), DIMENSION( maxfrt ) :: W
-       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: RHS
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
-       END SUBROUTINE MA27C
-
-       SUBROUTINE MA27CD( n, A, la, IW, liw, W, maxfrt, RHS, IW1, nsteps,      &
-                          ICNTL, INFO )
-       USE GALAHAD_KINDS
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfrt, nsteps
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( liw ) :: IW
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nsteps ) :: IW1
-       REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( la ) :: A
-       REAL ( KIND = dp_ ), INTENT( OUT ), DIMENSION( maxfrt ) :: W
-       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: RHS
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
-       END SUBROUTINE MA27CD
-     END INTERFACE MA27C
-
-     INTERFACE MA27Q
-       SUBROUTINE MA27Q( n, A, la, IW, liw, W, maxfnt, RHS, IW2, nblk,         &
-                         latop, ICNTL )
-       USE GALAHAD_KINDS
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfnt, nblk, latop
-       REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( la ) :: A
-       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: RHS
-       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( maxfnt ) :: W
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( liw ) :: IW
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nblk ) :: IW2
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-       END SUBROUTINE MA27Q
-
-       SUBROUTINE MA27QD( n, A, la, IW, liw, W, maxfnt, RHS, IW2, nblk,        &
-                          latop, ICNTL )
-       USE GALAHAD_KINDS
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfnt, nblk, latop
-       REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( la ) :: A
-       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: RHS
-       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( maxfnt ) :: W
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( liw ) :: IW
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nblk ) :: IW2
-       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-       END SUBROUTINE MA27QD
-     END INTERFACE MA27Q
-
    CONTAINS
 
 !-*-*-*-*-*-   S I L S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
@@ -452,7 +319,7 @@
        FACTORS%n = 0
      END IF
 
-     IF ( present( CONTROL ) ) THEN
+     IF ( PRESENT( CONTROL ) ) THEN
        CALL MA27I( CONTROL%ICNTL, CONTROL%CNTL )
        CONTROL%multiplier = 2.0_rp_
        CONTROL%reduce = 2.0_rp_

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the WSMP stub
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2024-01-12
+#  This version: 2024-11-14
 
 #  include standard GALAHAD makefile definitions
 
@@ -14,18 +14,22 @@ PLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
 
-BASICZ = blas lapack symbols dummy blas_interface lapack_interface
+BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
 WSMPS = $(BASICSZ) $(WLGS)(wsmp.o)
 WSMPD = $(BASICSZ) $(WLGD)(wsmp.o)
+WSMPQ = $(BASICSZ) $(WLGQ)(wsmp.o)
 WSMPS64 = $(BASICSZ) $(WLGS64)(wsmp.o)
 WSMPD64 = $(BASICSZ) $(WLGD64)(wsmp.o)
+WSMPQ64 = $(BASICSZ) $(WLGQ64)(wsmp.o)
 
-WSMPDT = $(WSMPD) $(OBJ)/wsmpt.o
 WSMPST = $(WSMPS) $(OBJ)/wsmpt.o
+WSMPDT = $(WSMPD) $(OBJ)/wsmpt.o
+WSMPQT = $(WSMPQ) $(OBJ)/wsmpt.o
 
-RWSMPDT = $(OBJ)/wsmpt.o -L$(OBJ) $(LIBS)
 RWSMPST = $(OBJ)/wsmpt.o -L$(OBJ) $(LIBS)
+RWSMPDT = $(OBJ)/wsmpt.o -L$(OBJ) $(LIBS)
+RWSMPQT = $(OBJ)/wsmpt.o -L$(OBJ) $(LIBS)
 
 #  wsmp
 
@@ -36,21 +40,16 @@ wsmp_single: $(WSMPS)
 	$(RANLIB) $(WLGS)
 wsmp_double: $(WSMPD)
 	$(RANLIB) $(WLGD)
+wsmp_quadruple: $(WSMPQ)
+	$(RANLIB) $(WLGQ)
 wsmp_single_64: $(WSMPS64)
 	$(RANLIB) $(WLGS64)
 wsmp_double_64: $(WSMPD64)
 	$(RANLIB) $(WLGD64)
+wsmp_quadruple_64: $(WSMPQ64)
+	$(RANLIB) $(WLGQ64)
 
 #  tests
-
-wsmpdt: $(WSMPDT)
-	echo " Exhaustive test of subroutine interface to wsmp"
-	cd ../wsmp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_wsmp \
-                         $(RWSMPDT)
-#	- ../wsmp/run_wsmp > ../wsmp/wsmpdt.output 2>&1
-#	cat ../wsmp/wsmpdt.output
-	- ../wsmp/run_wsmp
-	rm ../wsmp/run_wsmp
 
 wsmpst: $(WSMPST)
 	echo " Exhaustive test of subroutine interface to wsmp"
@@ -58,6 +57,23 @@ wsmpst: $(WSMPST)
                          $(RWSMPST)
 	- ../wsmp/run_wsmp > ../wsmp/wsmpt.output 2>&1
 	cat ../wsmp/wsmpt.output
+	rm ../wsmp/run_wsmp
+
+wsmpdt: $(WSMPDT)
+	echo " Exhaustive test of subroutine interface to wsmp"
+	cd ../wsmp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_wsmp \
+                         $(RWSMPDT)
+	- ../wsmp/run_wsmp > ../wsmp/wsmpdt.output 2>&1
+	cat ../wsmp/wsmpdt.output
+#	- ../wsmp/run_wsmp
+	rm ../wsmp/run_wsmp
+
+wsmpqt: $(WSMPQT)
+	echo " Exhaustive test of subroutine interface to wsmp"
+	cd ../wsmp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_wsmp \
+                         $(RWSMPQT)
+	- ../wsmp/run_wsmp > ../wsmp/wsmpqt.output 2>&1
+	cat ../wsmp/wsmpqt.output
 	rm ../wsmp/run_wsmp
 
 #  blas and lapack generic packages and interfaces
@@ -78,13 +94,13 @@ dummy:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
-blas_interface:
+blas_inter:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
-lapack_interface:
+lapack_inter:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            lapack_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 #  individual compilations
 

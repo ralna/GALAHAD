@@ -7,6 +7,9 @@
 #include <math.h>
 #include "galahad_precision.h"
 #include "galahad_bnls.h"
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 // Define imax
 ipc_ imax(ipc_ a, ipc_ b) {

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-18 AT 17:10 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 15:00 GMT
 
 #include "galahad_modules.h"
 
@@ -27,16 +27,17 @@
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_precision
       USE GALAHAD_SMT_precision
-      USE GALAHAD_QPT_precision, ONLY : QPT_keyword_H
+      USE GALAHAD_QPT_precision, ONLY: QPT_keyword_H
       USE GALAHAD_SLS_precision
-      USE GALAHAD_SCU_precision, ONLY : SCU_matrix_type, SCU_data_type,        &
+      USE GALAHAD_SCU_precision, ONLY: SCU_matrix_type, SCU_data_type,         &
         SCU_inform_type, SCU_factorize, SCU_solve, SCU_append, SCU_terminate
-      USE GALAHAD_SORT_precision, ONLY : SORT_reorder_by_cols
-      USE GALAHAD_EXTEND_precision, ONLY : EXTEND_arrays
+      USE GALAHAD_SORT_precision, ONLY: SORT_reorder_by_cols
+      USE GALAHAD_EXTEND_precision, ONLY: EXTEND_arrays
       USE GALAHAD_BAND_precision
       USE GALAHAD_SPECFILE_precision
-      USE GALAHAD_NORMS_precision, ONLY : TWO_NORM
-      USE GALAHAD_ICFS_precision, ONLY : DICFS, DSTRSOL
+      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
+      USE GALAHAD_ICFS_precision, ONLY: DICFS, DSTRSOL
+      USE GALAHAD_HSL_inter_precision, ONLY: MC61A
       USE hsl_mi28_precision
 
       IMPLICIT NONE
@@ -436,42 +437,6 @@
         INTEGER ( KIND = ip_ ) :: INFO_iccg( 10 )
         REAL ( KIND = rp_ ) :: CNTL_iccg( 3 )
       END TYPE PSLS_save_type
-
-!--------------------------------
-!   I n t e r f a c e  B l o c k
-!--------------------------------
-
-      INTERFACE MC61A
-        SUBROUTINE MC61A( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,          &
-                          ICNTL, CNTL, INFO, RINFO )
-        USE GALAHAD_KINDS_precision
-        INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
-        INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
-        INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
-        INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: PERM
-        INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( OUT ) :: IW
-        REAL ( KIND = sp_ ), DIMENSION( n ), INTENT( OUT ) :: W
-        INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( IN ) :: ICNTL
-        REAL ( KIND = sp_ ), DIMENSION( 5 ), INTENT( IN ) :: CNTL
-        INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
-        REAL ( KIND = sp_ ), DIMENSION( 15 ), INTENT( OUT ) :: RINFO
-        END SUBROUTINE MC61A
-
-        SUBROUTINE MC61AD( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,         &
-                           ICNTL, CNTL, INFO, RINFO )
-        USE GALAHAD_KINDS_precision
-        INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
-        INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
-        INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
-        INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: PERM
-        INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( OUT ) :: IW
-        REAL ( KIND = dp_ ), DIMENSION( n ), INTENT( OUT ) :: W
-        INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( IN ) :: ICNTL
-        REAL ( KIND = dp_ ), DIMENSION( 5 ), INTENT( IN ) :: CNTL
-        INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
-        REAL ( KIND = dp_ ), DIMENSION( 15 ), INTENT( OUT ) :: RINFO
-        END SUBROUTINE MC61AD
-      END INTERFACE MC61A
 
    CONTAINS
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-12-13 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 16:00 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_factors MA57_factors
@@ -2596,7 +2596,7 @@
      SUBROUTINE MDCHL_iccgc( n, nz, D, A, INI, INJ, iai, iaj, IK, IP, IW, W,   &
                              iflag, c, phase2, ICNTL, CNTL, KEEP )
 
-     USE LANCELOT_HSL_routines, ONLY: MA61_compress
+     USE LANCELOT_HSL_inter_precision, ONLY: MA61_compress
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s

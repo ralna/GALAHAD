@@ -1,4 +1,4 @@
-libgalahad_src += files('blas_interface.F90', 'lapack_interface.F90')
+libgalahad_src += files('blas_inter.F90', 'lapack_inter.F90')
 
 if not libblas.found()
   warning('building our own BLAS v3.9.1; consider providing an optimized BLAS library')

@@ -34,6 +34,7 @@
 
       USE GALAHAD_KINDS, ONLY : ip_
       IMPLICIT NONE
+      PRIVATE :: ip_
       PUBLIC :: SYMBOLS_status
 
 !-------------------------------------------------------------------------------

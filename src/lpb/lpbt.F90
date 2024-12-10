@@ -11,7 +11,7 @@
    TYPE ( LPB_control_type ) :: control
    TYPE ( LPB_inform_type ) :: info
    INTEGER ( KIND = ip_ ) :: n, m, a_ne, tests, smt_stat
-   INTEGER ( KIND = ip_ ) :: data_storage_type, i, status, scratch_out = 56
+   INTEGER ( KIND = ip_ ) :: data_storage_type, i, status
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
 

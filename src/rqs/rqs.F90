@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -44,7 +44,7 @@
       USE GALAHAD_SLS_precision
       USE GALAHAD_IR_precision
       USE GALAHAD_MOP_precision, ONLY: mop_AX
-      USE GALAHAD_LAPACK_interface, ONLY : LAENV, SYEV, SYGV
+      USE GALAHAD_LAPACK_inter_precision, ONLY : LAENV, SYEV, SYGV
 
       IMPLICIT NONE
 

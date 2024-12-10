@@ -7,6 +7,9 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_sbls.h"
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 int main(void) {
 
@@ -157,10 +160,22 @@ int main(void) {
         sbls_information( &data, &inform, &status );
 
         if(inform.status == 0){
+#ifdef REAL_128
+            char buff[128];
+            int nf = quadmath_snprintf(buff, sizeof buff,
+                "%*.1Qe", inform.norm_residual);
+            if ((size_t) nf < sizeof buff) 
+              printf("%c: residual = %s status = %1" i_ipc_ "\n",
+                      st, buff, inform.status);
+//          printf("%c: residual = %9.1Qe status = %1" i_ipc_ "\n",
+//                 st, inform.norm_residual, inform.status);
+#else
             printf("%c: residual = %9.1e status = %1" i_ipc_ "\n",
                    st, inform.norm_residual, inform.status);
+#endif
         }else{
-            printf("%c: SBLS_solve exit status = %1" i_ipc_ "\n", st, inform.status);
+            printf("%c: SBLS_solve exit status = %1" i_ipc_ "\n", 
+                   st, inform.status);
         }
         //printf("sol: ");
         //for( ipc_ i = 0; i < n+m; i++) printf("%f ", x[i]);
