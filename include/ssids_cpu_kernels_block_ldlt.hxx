@@ -357,13 +357,41 @@ void block_ldlt(ipc_ from, ipc_ *perm, T *a, ipc_ lda, T *d, T *ldwork,
 #endif
          a11 = a[m2*lda+m2];
 #ifdef INTEGER_64
+#ifdef REAL_128
+        char buf1[128];
+        int n1 = quadmath_snprintf(buf1, sizeof buf1,
+            "%+-#*.20Qe", a[m2*lda+m2]);
+        if ((size_t) n1 < sizeof buf1)
+           printf("[%ld] = %s\n", m2*BLOCK_SIZE+m2, buf1);
+//         printf("[%ld] = %q\n", m2*BLOCK_SIZE+m2, a[m2*lda+m2]);
+#else
          printf("[%ld] = %e\n", m2*BLOCK_SIZE+m2, a[m2*lda+m2]);
+#endif
+#else
+#ifdef REAL_128
+//         printf("[%d] = %q\n", m2*BLOCK_SIZE+m2, a[m2*lda+m2]);
 #else
          printf("[%d] = %e\n", m2*BLOCK_SIZE+m2, a[m2*lda+m2]);
 #endif
+#endif
          a22 = a[t2*lda+t2];
          a21 = a[m2*lda+t2];
+#ifdef REAL_128
+         char buf11[128], buf21[128], buf22[128];
+         int n11 = quadmath_snprintf(buf11, sizeof buf11, 
+                                     "%+-#*.20Qe", a11);
+         int n21 = quadmath_snprintf(buf21, sizeof buf21, 
+                                     "%+-#*.20Qe", a21);
+         int n22 = quadmath_snprintf(buf22, sizeof buf22, 
+                                     "%+-#*.20Qe", a22);
+         if ((size_t) n11 < sizeof buf11 && 
+             (size_t) n21 < sizeof buf21 &&
+             (size_t) n22 < sizeof buf22)
+           printf("a11 = %s a21 = %s a22 = %s\n", buf11, buf21, buf22);
+//         printf("a11 = %Qe a21 = %Qe a22 = %Qe\n", a11, a21, a22);
+#else
          printf("a11 = %e a21 = %e a22 = %e\n", a11, a21, a22);
+#endif
          exit(1);
       }
       if(pivsiz == 1) {
@@ -411,7 +439,11 @@ void block_ldlt(ipc_ from, ipc_ *perm, T *a, ipc_ lda, T *d, T *ldwork,
          /* Store d */
          d[2*p  ] = d11;
          d[2*p+1] = d21;
+#ifdef REAL_128
+         d[2*p+2] = 1.0/0.0;
+#else
          d[2*p+2] = std::numeric_limits<T>::infinity();
+#endif
          d[2*p+3] = d22;
          /* Set diagonal to I */
          a[p*(lda+1)] = 1.0;

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-05-29 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -35,7 +35,7 @@
 
    USE GALAHAD_KINDS_precision
    USE GALAHAD_SMT_precision
-   USE GALAHAD_BLAS_interface, ONLY: SCAL
+   USE GALAHAD_BLAS_inter_precision, ONLY: SCAL
 
    IMPLICIT NONE
 

@@ -49,7 +49,7 @@
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )
 
-!  End of dummy subroutine MA27AD
+!  End of dummy subroutine MA27AR
 
       END SUBROUTINE MA27AR
 

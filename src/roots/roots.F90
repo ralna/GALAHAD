@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-27 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -27,7 +27,7 @@
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_precision
       USE GALAHAD_SORT_precision, ONLY : SORT_quicksort
-      USE GALAHAD_LAPACK_interface, ONLY : HSEQR, GELS
+      USE GALAHAD_LAPACK_inter_precision, ONLY : HSEQR, GELS
       USE GALAHAD_SPECFILE_precision
 
       IMPLICIT NONE

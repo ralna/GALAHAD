@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.0 - 2024-06-11 AT 09:00 GMT
+ *  \version   GALAHAD 5.1 - 2024-11-21 AT 11:00 GMT
  */
 #pragma once
 
@@ -37,6 +37,10 @@
 #define cholesky_factor cholesky_factor_sgl
 #define ldlt_app_factor ldlt_app_factor_sgl
 #define ldlt_tpp_factor ldlt_tpp_factor_sgl
+#elif REAL_128
+#define cholesky_factor cholesky_factor_qul
+#define ldlt_app_factor ldlt_app_factor_qul
+#define ldlt_tpp_factor ldlt_tpp_factor_qul
 #else
 #define cholesky_factor cholesky_factor_dbl
 #define ldlt_app_factor ldlt_app_factor_dbl

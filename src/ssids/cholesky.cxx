@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.0 - 2024-06-11 AT 09:45 GMT
+ *  \version   GALAHAD 5.0 - 2024-11-21 AT 10:20 GMT
  */
 
 #include "ssids_cpu_kernels_cholesky.hxx"
@@ -18,6 +18,10 @@
 #define cholesky_factor cholesky_factor_sgl
 #define cholesky_solve_fwd cholesky_solve_fwd_sgl
 #define cholesky_solve_bwd cholesky_solve_bwd_sgl
+#elif REAL_128
+#define cholesky_factor cholesky_factor_qul
+#define cholesky_solve_fwd cholesky_solve_fwd_qul
+#define cholesky_solve_bwd cholesky_solve_bwd_qul
 #else
 #define cholesky_factor cholesky_factor_dbl
 #define cholesky_solve_fwd cholesky_solve_fwd_dbl

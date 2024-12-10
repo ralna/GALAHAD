@@ -1,6 +1,6 @@
 /** \file \copyright 2016 The Science and Technology Facilities Council
  *  (STFC) \licence BSD licence, see LICENCE file for details \author
- *  Jonathan Hogg \version GALAHAD 5.0 - 2024-06-11 AT 09:50 GMT
+ *  Jonathan Hogg \version GALAHAD 5.1 - 2024-11-21 AT 10:20 GMT
  */
 #include "ssids_cpu_kernels_ldlt_app.hxx"
 
@@ -35,6 +35,10 @@
 #ifdef REAL_32
 #define ldlt_app_internal ldlt_app_internal_sgl
 #define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_sgl
+#elif REAL_128
+#include <quadmath.h>
+#define ldlt_app_internal ldlt_app_internal_qul
+#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_qul
 #else
 #define ldlt_app_internal ldlt_app_internal_dbl
 #define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_dbl
@@ -137,7 +141,11 @@ public:
       if(npass_>0) {
          T d11 = d[2*(npass_-1)+0];
          T d21 = d[2*(npass_-1)+1];
+#ifdef REAL_128
+         if(std::isfinite(static_cast<double>(d11)) && // not second half of 2x2
+#else
          if(std::isfinite(d11) && // not second half of 2x2
+#endif
                d21 != 0.0)        // not a 1x1 or zero pivot
             npass_--;              // so must be first half 2x2
       }
@@ -146,7 +154,6 @@ public:
       next_elim += npass_;
       nelim = npass_;
    }
-
    /** \brief Move entries of permutation for eliminated entries backwards to
     *         close up space from failed columns, whilst extracting failed
     *         entries.
@@ -362,7 +369,11 @@ void apply_pivot(ipc_ m, ipc_ n, ipc_ from, const T *diag, const T *d,
             m, n, one_val, diag, lda, aval, lda);
       // Perform solve L_21 D^-1
       for(ipc_ i=0; i<n; ) {
+#ifdef REAL_128
+         if(i+1==n || std::isfinite(static_cast<double>(d[2*i+2]))) {
+#else
          if(i+1==n || std::isfinite(d[2*i+2])) {
+#endif
             // 1x1 pivot
             T d11 = d[2*i];
             if(d11 == 0.0) {
@@ -371,7 +382,11 @@ void apply_pivot(ipc_ m, ipc_ n, ipc_ from, const T *diag, const T *d,
                   T v = aval[i*lda+j];
                   aval[i*lda+j] =
                      (fabs(v)<small) ? 0.0
+#ifdef REAL_128
+                                     : v/0.0;
+#else
                                      : std::numeric_limits<T>::infinity()*v;
+#endif
                   // NB: *v above handles NaNs correctly
                }
             } else {
@@ -400,7 +415,11 @@ void apply_pivot(ipc_ m, ipc_ n, ipc_ from, const T *diag, const T *d,
             m, n-from, one_val, diag, lda, &aval[from*lda], lda);
       // Perform solve D^-T L_21^T
       for(ipc_ i=0; i<m; ) {
+#ifdef REAL_128
+         if(i+1==m || std::isfinite(static_cast<double>(d[2*i+2]))) {
+#else
          if(i+1==m || std::isfinite(d[2*i+2])) {
+#endif
             // 1x1 pivot
             T d11 = d[2*i];
             if(d11 == 0.0) {
@@ -409,7 +428,11 @@ void apply_pivot(ipc_ m, ipc_ n, ipc_ from, const T *diag, const T *d,
                   T v = aval[j*lda+i];
                   aval[j*lda+i] =
                      (fabs(v)<small) ? 0.0 // *v handles NaNs
+#ifdef REAL_128
+                                     : v/0.0;
+#else
                                      : std::numeric_limits<T>::infinity()*v;
+#endif
                   // NB: *v above handles NaNs correctly
                }
             } else {
@@ -1227,7 +1250,11 @@ public:
             printf("%d, %d is nan\n", i, j);
             return true;
          }
+#ifdef REAL_128
+         if(!std::isfinite(static_cast<double>(aval_[j*lda_+i]))) {
+#else
          if(!std::isfinite(aval_[j*lda_+i])) {
+#endif
             printf("%d, %d is inf\n", i, j);
             return true;
          }
@@ -2301,8 +2328,18 @@ private:
             printf("%" d_ipc_ "%s:", perm[row], eliminated[row]?"X":" ");
          else
             printf("%" d_ipc_ "%s:", row, "U");
-         for(ipc_ col=0; col<std::min(n,row+1); col++)
+         for(ipc_ col=0; col<std::min(n,row+1); col++) {
+#ifdef REAL_128
+           char buf1[128];
+           int n1 = quadmath_snprintf(buf1, sizeof buf1,
+               "%+-#*.20Qe", a[col*lda+row]);
+           if ((size_t) n1 < sizeof buf1)
+             printf( "%s", buf1);
+//            printf(" %10.4Qe", a[col*lda+row]);
+#else
             printf(" %10.4f", a[col*lda+row]);
+#endif
+         }
          printf("\n");
       }
    }
@@ -2615,7 +2652,11 @@ template void ldlt_app_solve_fwd<rpc_>(ipc_, ipc_, rpc_ const*,
 template <typename T>
 void ldlt_app_solve_diag(ipc_ n, T const* d, ipc_ nrhs, T* x, ipc_ ldx) {
    for(ipc_ i=0; i<n; ) {
+#ifdef REAL_128
+      if(i+1==n || std::isfinite(static_cast<double>(d[2*i+2]))) {
+#else
       if(i+1==n || std::isfinite(d[2*i+2])) {
+#endif
          // 1x1 pivot
          T d11 = d[2*i];
          for(ipc_ r=0; r<nrhs; ++r)

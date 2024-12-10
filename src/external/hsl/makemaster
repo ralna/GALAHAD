@@ -16,7 +16,7 @@
 #  as part of the distributed software.
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2024-03-27
+#  This version: 2024-11-17
 
 #  include standard HSL subset makefile definitions
 
@@ -38,8 +38,10 @@ hsl: hsl_$(PRECIS)
 hsl_silent: hsl_$(PRECIS)
 hsl_single: hsl_galahad_single
 hsl_double: hsl_galahad_double
+hsl_quadruple: hsl_galahad_quadruple
 hsl_single_64: hsl_galahad_single_64
 hsl_double_64: hsl_galahad_double_64
+hsl_quadruple_64: hsl_galahad_quadruple_64
 
 #  HSL packages for LANCELOT
 
@@ -56,6 +58,11 @@ hsl_lancelot_double: kinds $(LHD)(ma27d.o) metis_silent \
                      $(LHD)(mc21d.o) $(LHD)(mc34d.o) $(LHD)(mc47d.o) \
                      $(LHD)(mc59d.o) $(LHD)(mc64d.o) $(LHD)(hsl_ma57d.o) \
                      $(LHD)(ma61d.o) $(LHD)(hsl_ad02d.o)
+hsl_lancelot_quadruple: kinds $(LHQ)(ma27q.o) metis_silent \
+                     $(LHQ)(hsl_zd11q.o) $(LHQ)(mc71q.o) $(LHQ)(ma57q.o) \
+                     $(LHQ)(mc21q.o) $(LHQ)(mc34q.o) $(LHQ)(mc47q.o) \
+                     $(LHQ)(mc59q.o) $(LHQ)(mc64q.o) $(LHQ)(hsl_ma57q.o) \
+                     $(LHQ)(ma61q.o) $(LHQ)(hsl_ad02q.o)
 hsl_lancelot_single_64: kinds $(LHS64)(ma27s_64.o) metis_silent \
                         $(LHS64)(hsl_zd11s_64.o) \
                         $(LHS64)(mc71s_64.o) $(LHS64)(ma57s_64.o) \
@@ -70,6 +77,13 @@ hsl_lancelot_double_64: kinds $(LHD64)(ma27d_64.o) metis_silent \
                         $(LHD64)(mc47d_64.o) $(LHD64)(mc59d_64.o) \
                         $(LHD64)(mc64d_64.o) $(LHD64)(hsl_ma57d_64.o) \
                         $(LHD64)(ma61d_64.o) $(LHD64)(hsl_ad02d_64.o)
+hsl_lancelot_quadruple_64: kinds $(LHQ64)(ma27q_64.o) metis_silent \
+                        $(LHQ64)(hsl_zd11q_64.o) \
+                        $(LHQ64)(mc71q_64.o) $(LHQ64)(ma57q_64.o) \
+                        $(LHQ64)(mc21q_64.o) $(LHQ64)(mc34q_64.o) \
+                        $(LHQ64)(mc47q_64.o) $(LHQ64)(mc59q_64.o) \
+                        $(LHQ64)(mc64q_64.o) $(LHQ64)(hsl_ma57q_64.o) \
+                        $(LHQ64)(ma61q_64.o) $(LHQ64)(hsl_ad02q_64.o)
 
 #  HSL packages for GALAHAD
 
@@ -97,7 +111,6 @@ hsl_galahad_single: hsl_lancelot_single \
                     $(LHS)(hsl_ma97s.o) $(LHS)(hsl_mi32s.o) \
                     $(LHS)(hsl_mi20s.o) $(LHS)(hsl_mi28s.o) \
                     $(LHS)(hsl_mi35s.o)
-
 hsl_galahad_double: hsl_lancelot_double \
                     $(LHD)(fa14d.o) $(LHD)(fd15d.o) $(LHD)(kb07i.o) \
                     $(LHD)(kb07d.o) $(LHD)(mc13d.o) $(LHD)(mc19d.o) \
@@ -119,6 +132,27 @@ hsl_galahad_double: hsl_lancelot_double \
                     $(LHD)(hsl_ma97d.o) $(LHD)(hsl_mi32d.o) \
                     $(LHD)(hsl_mi20d.o) $(LHD)(hsl_mi28d.o) \
                     $(LHD)(hsl_mi35d.o)
+hsl_galahad_quadruple: hsl_lancelot_quadruple \
+                    $(LHQ)(fa14q.o) $(LHQ)(fd15q.o) $(LHQ)(kb07i.o) \
+                    $(LHQ)(kb07q.o) $(LHQ)(mc13q.o) $(LHQ)(mc19q.o) \
+                    $(LHQ)(mc20q.o) $(LHQ)(mc22q.o) $(LHQ)(mc23q.o) \
+                    $(LHQ)(mc24q.o) $(LHQ)(mc29q.o) $(LHQ)(mc30q.o) \
+                    $(LHQ)(mc60q.o) $(LHQ)(mc61q.o) $(LHQ)(mc77q.o) \
+                    $(LHQ)(la15q.o) $(LHQ)(la04q.o) $(LHQ)(ma27q.o) \
+                    $(LHQ)(ma28q.o) $(LHQ)(ma30q.o) $(LHQ)(ma33q.o) \
+                    $(LHQ)(mi21q.o) $(LHQ)(mi24q.o) $(LHQ)(mi26q.o) \
+                    $(LHQ)(hsl_zb01i.o) $(LHQ)(hsl_of01i.o) \
+                    $(LHQ)(hsl_zb01q.o) $(LHQ)(hsl_kb22l.o) \
+                    $(LHQ)(hsl_mc34q.o) $(LHQ)(hsl_of01q.o) \
+                    $(LHQ)(hsl_mc65q.o) $(LHQ)(hsl_mc68i.o) \
+                    $(LHQ)(hsl_mc69q.o) $(LHQ)(hsl_mc64q.o) \
+                    $(LHQ)(hsl_mc78i.o) $(LHQ)(hsl_mc80q.o) \
+                    $(LHQ)(hsl_ma48q.o) $(LHQ)(hsl_ma54q.o) \
+                    $(LHQ)(hsl_ma64q.o) $(LHQ)(hsl_ma77q.o) \
+                    $(LHQ)(hsl_ma86q.o) $(LHQ)(hsl_ma87q.o) \
+                    $(LHQ)(hsl_ma97q.o) $(LHQ)(hsl_mi32q.o) \
+                    $(LHQ)(hsl_mi20q.o) $(LHQ)(hsl_mi28q.o) \
+                    $(LHQ)(hsl_mi35q.o)
 hsl_galahad_single_64: hsl_lancelot_single_64 \
                        $(LHS64)(fa14s_64.o) $(LHS64)(fd15s_64.o) \
                        $(LHS64)(kb07i_64.o) $(LHS64)(kb07s_64.o) \
@@ -169,6 +203,31 @@ hsl_galahad_double_64: hsl_lancelot_double_64 \
                        $(LHD64)(hsl_ma97d_64.o) $(LHD64)(hsl_mi32d_64.o) \
                        $(LHD64)(hsl_mi20d_64.o) $(LHD64)(hsl_mi28d_64.o) \
                        $(LHD64)(hsl_mi35d_64.o)
+hsl_galahad_quadruple_64: hsl_lancelot_quadruple_64 \
+                       $(LHQ64)(fa14q_64.o) $(LHQ64)(fd15q_64.o) \
+                       $(LHQ64)(kb07i_64.o) $(LHQ64)(kb07q_64.o) \
+                       $(LHQ64)(mc13q_64.o) $(LHQ64)(mc19q_64.o) \
+                       $(LHQ64)(mc20q_64.o) $(LHQ64)(mc22q_64.o) \
+                       $(LHQ64)(mc23q_64.o) $(LHQ64)(mc24q_64.o) \
+                       $(LHQ64)(mc29q_64.o) $(LHQ64)(mc30q_64.o) \
+                       $(LHQ64)(mc60q_64.o) $(LHQ64)(mc61q_64.o) \
+                       $(LHQ64)(mc77q_64.o) $(LHQ64)(la15q_64.o) \
+                       $(LHQ64)(la04q_64.o) $(LHQ64)(ma27q_64.o) \
+                       $(LHQ64)(ma28q_64.o) $(LHQ64)(ma30q_64.o) \
+                       $(LHQ64)(ma33q_64.o) $(LHQ64)(mi21q_64.o) \
+                       $(LHQ64)(mi24q_64.o) $(LHQ64)(mi26q_64.o) \
+                       $(LHQ64)(hsl_zb01i_64.o) $(LHQ64)(hsl_of01i_64.o) \
+                       $(LHQ64)(hsl_zb01q_64.o) $(LHQ64)(hsl_kb22l_64.o) \
+                       $(LHQ64)(hsl_mc34q_64.o) $(LHQ64)(hsl_of01q_64.o) \
+                       $(LHQ64)(hsl_mc65q_64.o) $(LHQ64)(hsl_mc68i_64.o) \
+                       $(LHQ64)(hsl_mc69q_64.o) $(LHQ64)(hsl_mc64q_64.o) \
+                       $(LHQ64)(hsl_mc78i_64.o) $(LHQ64)(hsl_mc80q_64.o) \
+                       $(LHQ64)(hsl_ma48q_64.o) $(LHQ64)(hsl_ma54q_64.o) \
+                       $(LHQ64)(hsl_ma64q_64.o) $(LHQ64)(hsl_ma77q_64.o) \
+                       $(LHQ64)(hsl_ma86q_64.o) $(LHQ64)(hsl_ma87q_64.o) \
+                       $(LHQ64)(hsl_ma97q_64.o) $(LHQ64)(hsl_mi32q_64.o) \
+                       $(LHQ64)(hsl_mi20q_64.o) $(LHQ64)(hsl_mi28q_64.o) \
+                       $(LHQ64)(hsl_mi35q_64.o)
 
 #  HSL C interfaces
 
@@ -195,6 +254,16 @@ hsl_ciface_double: $(LHCD)(hsl_ma48d_ciface.o) \
                    $(LHCD)(hsl_mc68i_ciface.o) \
                    $(LHCD)(hsl_mi20d_ciface.o) \
                    $(LHCD)(hsl_mi28d_ciface.o)
+hsl_ciface_quadruple: $(LHCQ)(hsl_ma48q_ciface.o) \
+                   $(LHCQ)(hsl_ma57q_ciface.o) \
+                   $(LHCQ)(hsl_ma77q_ciface.o) \
+                   $(LHCQ)(hsl_ma86q_ciface.o) \
+                   $(LHCQ)(hsl_ma87q_ciface.o) \
+                   $(LHCQ)(hsl_ma97q_ciface.o) \
+                   $(LHCQ)(hsl_mc64q_ciface.o) \
+                   $(LHCQ)(hsl_mc68i_ciface.o) \
+                   $(LHCQ)(hsl_mi20q_ciface.o) \
+                   $(LHCQ)(hsl_mi28q_ciface.o)
 hsl_ciface_single_64: $(LHCS64)(hsl_ma48s_64_ciface.o) \
                       $(LHCS64)(hsl_ma57s_64_ciface.o) \
                       $(LHCS64)(hsl_ma77s_64_ciface.o) \
@@ -215,6 +284,16 @@ hsl_ciface_double_64: $(LHCD64)(hsl_ma48d_64_ciface.o) \
                       $(LHCD64)(hsl_mc68i_64_ciface.o) \
                       $(LHCD64)(hsl_mi20d_64_ciface.o) \
                       $(LHCD64)(hsl_mi28d_64_ciface.o)
+hsl_ciface_quadruple_64: $(LHCQ64)(hsl_ma48q_64_ciface.o) \
+                      $(LHCQ64)(hsl_ma57q_64_ciface.o) \
+                      $(LHCQ64)(hsl_ma77q_64_ciface.o) \
+                      $(LHCQ64)(hsl_ma86q_64_ciface.o) \
+                      $(LHCQ64)(hsl_ma87q_64_ciface.o) \
+                      $(LHCQ64)(hsl_ma97q_64_ciface.o) \
+                      $(LHCQ64)(hsl_mc64q_64_ciface.o) \
+                      $(LHCQ64)(hsl_mc68i_64_ciface.o) \
+                      $(LHCQ64)(hsl_mi20q_64_ciface.o) \
+                      $(LHCQ64)(hsl_mi28q_64_ciface.o)
 
 #  specific main packages
 
@@ -225,8 +304,10 @@ hsl_ad02: hsl_ad02_$(PRECIS)
 hsl_ad02_silent: hsl_ad02_$(PRECIS)
 hsl_ad02_single: kinds $(LHS)(hsl_ad02s.o)
 hsl_ad02_double: kinds $(LHD)(hsl_ad02d.o)
+hsl_ad02_quadruple: kinds $(LHQ)(hsl_ad02q.o)
 hsl_ad02_single_64: kinds $(LHS64)(hsl_ad02s_64.o)
 hsl_ad02_double_64: kinds $(LHD64)(hsl_ad02d_64.o)
+hsl_ad02_quadruple_64: kinds $(LHQ64)(hsl_ad02q_64.o)
 
 #  la04
 
@@ -237,12 +318,17 @@ la04_single: kinds $(LHS)(fa14s.o) $(LHS)(fd15s.o) $(LHS)(mc29s.o) \
              $(LHS)(mc59s.o) $(LHS)(la15s.o) $(LHS)(la04s.o)
 la04_double: kinds $(LHD)(fa14d.o) $(LHD)(fd15d.o) $(LHD)(mc29d.o) \
              $(LHD)(mc59d.o) $(LHD)(la15d.o) $(LHD)(la04d.o)
+la04_quadruple: kinds $(LHQ)(fa14q.o) $(LHQ)(fd15q.o) $(LHQ)(mc29q.o) \
+             $(LHQ)(mc59q.o) $(LHQ)(la15q.o) $(LHQ)(la04q.o)
 la04_single_64: kinds $(LHS64)(fa14s_64.o) $(LHS64)(fd15s_64.o) \
                 $(LHS64)(mc29s_64.o) $(LHS64)(mc59s_64.o) \
                 $(LHS64)(la15s_64.o) $(LHS64)(la04s_64.o)
 la04_double_64: kinds $(LHD64)(fa14d_64.o) $(LHD64)(fd15d_64.o) \
                 $(LHD64)(mc29d_64.o) $(LHD64)(mc59d_64.o) \
                 $(LHD64)(la15d_64.o) $(LHD64)(la04d_64.o)
+la04_quadruple_64: kinds $(LHQ64)(fa14q_64.o) $(LHQ64)(fd15q_64.o) \
+                $(LHQ64)(mc29q_64.o) $(LHQ64)(mc59q_64.o) \
+                $(LHQ64)(la15q_64.o) $(LHQ64)(la04q_64.o)
 
 #  ma27
 
@@ -251,8 +337,10 @@ ma27: ma27_$(PRECIS)
 ma27_silent: ma27_$(PRECIS)
 ma27_single: kinds $(LHS)(ma27s.o)
 ma27_double: kinds $(LHD)(ma27d.o)
+ma27_quadruple: kinds $(LHQ)(ma27q.o)
 ma27_single_64: kinds $(LHS64)(ma27s_64.o)
 ma27_double_64: kinds $(LHD64)(ma27d_64.o)
+ma27_quadruple_64: kinds $(LHQ64)(ma27q_64.o)
 
 #  ma28
 
@@ -265,10 +353,16 @@ ma28_single: kinds $(LHS)(mc13s.o) $(LHS)(mc20s.o) $(LHS)(mc21s.o) \
 ma28_double: kinds $(LHD)(mc13d.o) $(LHD)(mc20d.o) $(LHD)(mc21d.o) \
              $(LHD)(mc22d.o) $(LHD)(mc23d.o) $(LHD)(mc24d.o) \
              $(LHD)(ma30d.o) $(LHD)(ma28d.o)
+ma28_quadruple: kinds $(LHQ)(mc13q.o) $(LHQ)(mc20q.o) $(LHQ)(mc21q.o) \
+             $(LHQ)(mc22q.o) $(LHQ)(mc23q.o) $(LHQ)(mc24q.o) \
+             $(LHQ)(ma30q.o) $(LHQ)(ma28q.o)
 ma28_single_64: kinds $(LHS64)(mc13s_64.o) $(LHS64)(mc20s_64.o) \
                 $(LHS64)(mc21s_64.o) $(LHS64)(ma28s_64.o)
 ma28_double_64: kinds $(LHD64)(mc13d_64.o) $(LHD64)(mc20d_64.o) \
                 $(LHD64)(mc21d_64.o) $(LHD64)(ma28d_64.o)
+ma28_quadruple_64: kinds $(LHQ64)(mc13q_64.o) $(LHQ64)(mc20q_64.o) \
+                $(LHQ64)(mc21q_64.o) $(LHQ64)(ma28q_64.o)
+
 #  ma33
 
 ma33: ma33_$(PRECIS)
@@ -278,10 +372,14 @@ ma33_single: kinds $(LHS)(mc13s.o) $(LHS)(mc20s.o) $(LHS)(mc21s.o) \
              $(LHS)(ma33s.o)
 ma33_double: kinds $(LHD)(mc13d.o) $(LHD)(mc20d.o) $(LHD)(mc21d.o) \
              $(LHD)(ma33d.o)
+ma33_quadruple: kinds $(LHQ)(mc13q.o) $(LHQ)(mc20q.o) $(LHQ)(mc21q.o) \
+             $(LHQ)(ma33q.o)
 ma33_single_64: kinds $(LHS64)(mc13s_64.o) $(LHS64)(mc20s_64.o) \
                 $(LHS64)(mc21s_64.o) $(LHS64)(ma33s_64.o)
 ma33_double_64: kinds $(LHD64)(mc13d_64.o) $(LHD64)(mc20d_64.o) \
                 $(LHD64)(mc21d_64.o) $(LHD64)(ma33d_64.o)
+ma33_quadruple_64: kinds $(LHQ64)(mc13q_64.o) $(LHQ64)(mc20q_64.o) \
+                $(LHQ64)(mc21q_64.o) $(LHQ64)(ma33q_64.o)
 
 #  hsl_ma48
 
@@ -292,20 +390,29 @@ hsl_ma48_single: kinds $(LHS)(hsl_zd11s.o) $(LHS)(mc71s.o) $(LHS)(hsl_zb01s.o) \
                  $(LHS)(hsl_zb01i.o) $(LHS)(hsl_mc34s.o) $(LHS)(hsl_ma48s.o)
 hsl_ma48_double: kinds $(LHD)(hsl_zd11d.o) $(LHD)(mc71d.o) $(LHD)(hsl_zb01d.o) \
                  $(LHD)(hsl_zb01i.o) $(LHD)(hsl_mc34d.o) $(LHD)(hsl_ma48d.o)
+hsl_ma48_quadruple: kinds $(LHQ)(hsl_zd11q.o) $(LHQ)(mc71q.o) \
+                 $(LHQ)(hsl_zb01q.o) \
+                 $(LHQ)(hsl_zb01i.o) $(LHQ)(hsl_mc34q.o) $(LHQ)(hsl_ma48q.o)
 hsl_ma48_single_64: kinds $(LHS64)(hsl_zd11s_64.o) $(LHS64)(mc71s_64.o) \
                     $(LHS64)(hsl_zb01s_64.o) $(LHS64)(hsl_zb01i_64.o) \
                     $(LHS64)(hsl_mc34s_64.o) $(LHS64)(hsl_ma48s_64.o)
 hsl_ma48_double_64: kinds $(LHD64)(hsl_zd11d_64.o) $(LHD64)(mc71d_64.o) \
                     $(LHD64)(hsl_zb01d_64.o) $(LHD64)(hsl_zb01i_64.o) \
                     $(LHD64)(hsl_mc34d_64.o) $(LHD64)(hsl_ma48d_64.o)
+hsl_ma48_quadruple_64: kinds $(LHQ64)(hsl_zd11q_64.o) $(LHQ64)(mc71q_64.o) \
+                    $(LHQ64)(hsl_zb01q_64.o) $(LHQ64)(hsl_zb01i_64.o) \
+                    $(LHQ64)(hsl_mc34q_64.o) $(LHQ64)(hsl_ma48q_64.o)
 
 hsl_ma48_ciface: hsl_ma48_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA48 C routines ($(PRECIS) $(SUCC)"
 hsl_ma48_ciface_silent: hsl_ma48_ciface_$(PRECIS)
 hsl_ma48_ciface_single: hsl_ma48_single $(LHCS)(hsl_ma48s_ciface.o)
 hsl_ma48_ciface_double: hsl_ma48_double $(LHCD)(hsl_ma48d_ciface.o)
+hsl_ma48_ciface_quadruple: hsl_ma48_quadruple $(LHCQ)(hsl_ma48q_ciface.o)
 hsl_ma48_ciface_single_64: hsl_ma48_single_64 $(LHCS64)(hsl_ma48s_64_ciface.o)
 hsl_ma48_ciface_double_64: hsl_ma48_double_64 $(LHCD64)(hsl_ma48d_64_ciface.o)
+hsl_ma48_ciface_quadruple_64: hsl_ma48_quadruple_64 \
+                              $(LHCQ64)(hsl_ma48q_64_ciface.o)
 
 #  hsl_ma57
 
@@ -320,6 +427,10 @@ hsl_ma57_double: ma27_silent metis_silent $(LHD)(hsl_zd11d.o) \
                  $(LHD)(mc71d.o) $(LHD)(ma57d.o) \
                  $(LHD)(mc21d.o) $(LHD)(mc34d.o) $(LHD)(mc47d.o) \
                  $(LHD)(mc59d.o) $(LHD)(mc64d.o) $(LHD)(hsl_ma57d.o)
+hsl_ma57_quadruple: ma27_silent metis_silent $(LHQ)(hsl_zd11q.o) \
+                 $(LHQ)(mc71q.o) $(LHQ)(ma57q.o) \
+                 $(LHQ)(mc21q.o) $(LHQ)(mc34q.o) $(LHQ)(mc47q.o) \
+                 $(LHQ)(mc59q.o) $(LHQ)(mc64q.o) $(LHQ)(hsl_ma57q.o)
 hsl_ma57_single_64: ma27_silent metis_silent $(LHS64)(hsl_zd11s_64.o) \
                     $(LHS64)(mc71s_64.o) $(LHS64)(ma57s_64.o) \
                     $(LHS64)(mc21s_64.o) $(LHS64)(mc34s_64.o) \
@@ -330,14 +441,22 @@ hsl_ma57_double_64: ma27_silent metis_silent $(LHD64)(hsl_zd11d_64.o) \
                     $(LHD64)(mc21d_64.o) $(LHD64)(mc34d_64.o) \
                     $(LHD64)(mc47d_64.o) $(LHD64)(mc59d_64.o) \
                     $(LHD64)(mc64d_64.o) $(LHD64)(hsl_ma57d_64.o)
+hsl_ma57_quadruple_64: ma27_silent metis_silent $(LHQ64)(hsl_zd11q_64.o) \
+                    $(LHQ64)(mc71q_64.o) $(LHQ64)(ma57q_64.o) \
+                    $(LHQ64)(mc21q_64.o) $(LHQ64)(mc34q_64.o) \
+                    $(LHQ64)(mc47q_64.o) $(LHQ64)(mc59q_64.o) \
+                    $(LHQ64)(mc64q_64.o) $(LHQ64)(hsl_ma57q_64.o)
 
 hsl_ma57_ciface: hsl_ma57_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA57 C routines ($(PRECIS) $(SUCC)"
 hsl_ma57_ciface_silent: hsl_ma57_ciface_$(PRECIS)
 hsl_ma57_ciface_single: hsl_ma57_single $(LHCS)(hsl_ma57s_ciface.o)
 hsl_ma57_ciface_double: hsl_ma57_double $(LHCD)(hsl_ma57d_ciface.o)
+hsl_ma57_ciface_quadruple: hsl_ma57_quadruple $(LHCQ)(hsl_ma57q_ciface.o)
 hsl_ma57_ciface_single_64: hsl_ma57_single_64 $(LHCS64)(hsl_ma57s_64_ciface.o)
 hsl_ma57_ciface_double_64: hsl_ma57_double_64 $(LHCD64)(hsl_ma57d_64_ciface.o)
+hsl_ma57_ciface_quadruple_64: hsl_ma57_quadruple_64 \
+                              $(LHCQ64)(hsl_ma57q_64_ciface.o)
 
 #  ma61
 
@@ -346,8 +465,10 @@ ma61: ma61_$(PRECIS)
 ma61_silent: ma61_$(PRECIS)
 ma61_single: kinds $(LHS)(ma61s.o)
 ma61_double: kinds $(LHD)(ma61d.o)
+ma61_quadruple: kinds $(LHQ)(ma61q.o)
 ma61_single_64: kinds $(LHS64)(ma61s_64.o)
 ma61_double_64: kinds $(LHD64)(ma61d_64.o)
+ma61_quadruple_64: kinds $(LHQ64)(ma61q_64.o)
 
 #  hsl_ma77
 
@@ -362,6 +483,10 @@ hsl_ma77_double: kinds $(LHD)(kb07i.o) $(LHD)(hsl_kb22l.o) \
                  $(LHD)(hsl_ma54d.o) $(LHD)(hsl_ma64d.o) \
                  $(LHD)(hsl_of01i.o) $(LHD)(hsl_of01d.o) \
                  $(LHD)(hsl_ma77d.o)
+hsl_ma77_quadruple: kinds $(LHQ)(kb07i.o) $(LHQ)(hsl_kb22l.o) \
+                 $(LHQ)(hsl_ma54q.o) $(LHQ)(hsl_ma64q.o) \
+                 $(LHQ)(hsl_of01i.o) $(LHQ)(hsl_of01q.o) \
+                 $(LHQ)(hsl_ma77q.o)
 hsl_ma77_single_64: kinds $(LHS64)(kb07i_64.o) $(LHS64)(hsl_kb22l_64.o) \
                     $(LHS64)(hsl_ma54s_64.o) $(LHS64)(hsl_ma64s_64.o) \
                     $(LHS64)(hsl_of01i_64.o) $(LHS64)(hsl_of01s_64.o) \
@@ -370,14 +495,21 @@ hsl_ma77_double_64: kinds $(LHD64)(kb07i_64.o) $(LHD64)(hsl_kb22l_64.o) \
                     $(LHD64)(hsl_ma54d_64.o) $(LHD64)(hsl_ma64d_64.o) \
                     $(LHD64)(hsl_of01i_64.o) $(LHD64)(hsl_of01d_64.o) \
                     $(LHD64)(hsl_ma77d_64.o)
+hsl_ma77_quadruple_64: kinds $(LHQ64)(kb07i_64.o) $(LHQ64)(hsl_kb22l_64.o) \
+                    $(LHQ64)(hsl_ma54q_64.o) $(LHQ64)(hsl_ma64q_64.o) \
+                    $(LHQ64)(hsl_of01i_64.o) $(LHQ64)(hsl_of01q_64.o) \
+                    $(LHQ64)(hsl_ma77q_64.o)
 
 hsl_ma77_ciface: hsl_ma77_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA77 C routines ($(PRECIS) $(SUCC)"
 hsl_ma77_ciface_silent: hsl_ma77_ciface_$(PRECIS)
 hsl_ma77_ciface_single: hsl_ma77_single $(LHCS)(hsl_ma77s_ciface.o)
 hsl_ma77_ciface_double: hsl_ma77_double $(LHCD)(hsl_ma77d_ciface.o)
+hsl_ma77_ciface_quadruple: hsl_ma77_quadruple $(LHCQ)(hsl_ma77q_ciface.o)
 hsl_ma77_ciface_single_64: hsl_ma77_single_64 $(LHCS64)(hsl_ma77s_64_ciface.o)
 hsl_ma77_ciface_double_64: hsl_ma77_double_64 $(LHCD64)(hsl_ma77d_64_ciface.o)
+hsl_ma77_ciface_quadruple_64: hsl_ma77_quadruple_64 \
+                              $(LHCQ64)(hsl_ma77q_64_ciface.o)
 
 #  hsl_ma86
 
@@ -390,6 +522,9 @@ hsl_ma86_single: kinds $(LHS)(hsl_zd11s.o) $(LHS)(mc21s.o) $(LHS)(mc64s.o) \
 hsl_ma86_double: kinds $(LHD)(hsl_zd11d.o) $(LHD)(mc64d.o) $(LHD)(mc21d.o) \
                  $(LHD)(hsl_mc34d.o) $(LHD)(hsl_mc78i.o) $(LHD)(mc77d.o) \
                  $(LHD)(hsl_ma86d.o)
+hsl_ma86_quadruple: kinds $(LHQ)(hsl_zd11q.o) $(LHQ)(mc64q.o) $(LHQ)(mc21q.o) \
+                 $(LHQ)(hsl_mc34q.o) $(LHQ)(hsl_mc78i.o) $(LHQ)(mc77q.o) \
+                 $(LHQ)(hsl_ma86q.o)
 hsl_ma86_single_64: kinds $(LHS64)(hsl_zd11s_64.o) \
                     $(LHS64)(mc21s_64.o) $(LHS64)(mc64s_64.o) \
                     $(LHS64)(hsl_mc34s_64.o) $(LHS64)(hsl_mc78i_64.o) \
@@ -398,14 +533,21 @@ hsl_ma86_double_64: kinds $(LHD64)(hsl_zd11d_64.o) \
                     $(LHD64)(mc64d_64.o) $(LHD64)(mc21d_64.o) \
                     $(LHD64)(hsl_mc34d_64.o) $(LHD64)(hsl_mc78i_64.o) \
                     $(LHD64)(mc77d_64.o) $(LHD64)(hsl_ma86d_64.o)
+hsl_ma86_quadruple_64: kinds $(LHQ64)(hsl_zd11q_64.o) \
+                    $(LHQ64)(mc64q_64.o) $(LHQ64)(mc21q_64.o) \
+                    $(LHQ64)(hsl_mc34q_64.o) $(LHQ64)(hsl_mc78i_64.o) \
+                    $(LHQ64)(mc77q_64.o) $(LHQ64)(hsl_ma86q_64.o)
 
 hsl_ma86_ciface: hsl_ma86_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA86 C routines ($(PRECIS) $(SUCC)"
 hsl_ma86_ciface_silent: hsl_ma86_ciface_$(PRECIS)
 hsl_ma86_ciface_single: hsl_ma86_single $(LHCS)(hsl_ma86s_ciface.o)
 hsl_ma86_ciface_double: hsl_ma86_double $(LHCD)(hsl_ma86d_ciface.o)
+hsl_ma86_ciface_quadruple: hsl_ma86_quadruple $(LHCQ)(hsl_ma86q_ciface.o)
 hsl_ma86_ciface_single_64: hsl_ma86_single_64 $(LHCS64)(hsl_ma86s_64_ciface.o)
 hsl_ma86_ciface_double_64: hsl_ma86_double_64 $(LHCD64)(hsl_ma86d_64_ciface.o)
+hsl_ma86_ciface_quadruple_64: hsl_ma86_quadruple_64 \
+                              $(LHCQ64)(hsl_ma86q_64_ciface.o)
 
 #  hsl_ma87
 
@@ -416,18 +558,25 @@ hsl_ma87_single: kinds $(LHS)(hsl_zd11s.o) $(LHS)(hsl_mc34s.o) \
                  $(LHS)(hsl_mc78i.o) $(LHS)(hsl_ma87s.o)
 hsl_ma87_double: kinds $(LHD)(hsl_zd11d.o) $(LHD)(hsl_mc34d.o) \
                  $(LHD)(hsl_mc78i.o) $(LHD)(hsl_ma87d.o)
+hsl_ma87_quadruple: kinds $(LHQ)(hsl_zd11q.o) $(LHQ)(hsl_mc34q.o) \
+                 $(LHQ)(hsl_mc78i.o) $(LHQ)(hsl_ma87q.o)
 hsl_ma87_single_64: kinds $(LHS64)(hsl_zd11s_64.o) $(LHS64)(hsl_mc34s_64.o) \
                     $(LHS64)(hsl_mc78i_64.o) $(LHS64)(hsl_ma87s_64.o)
 hsl_ma87_double_64: kinds $(LHD64)(hsl_zd11d_64.o) $(LHD64)(hsl_mc34d_64.o) \
                     $(LHD64)(hsl_mc78i_64.o) $(LHD64)(hsl_ma87d_64.o)
+hsl_ma87_quadruple_64: kinds $(LHQ64)(hsl_zd11q_64.o) $(LHQ64)(hsl_mc34q_64.o) \
+                    $(LHQ64)(hsl_mc78i_64.o) $(LHQ64)(hsl_ma87q_64.o)
 
 hsl_ma87_ciface: hsl_ma87_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA87 C routines ($(PRECIS) $(SUCC)"
 hsl_ma87_ciface_silent: hsl_ma87_ciface_$(PRECIS)
 hsl_ma87_ciface_single: hsl_ma87_single $(LHCS)(hsl_ma87s_ciface.o)
 hsl_ma87_ciface_double: hsl_ma87_double $(LHCD)(hsl_ma87d_ciface.o)
+hsl_ma87_ciface_quadruple: hsl_ma87_quadruple $(LHCQ)(hsl_ma87q_ciface.o)
 hsl_ma87_ciface_single_64: hsl_ma87_single_64 $(LHCS64)(hsl_ma87s_64_ciface.o)
 hsl_ma87_ciface_double_64: hsl_ma87_double_64 $(LHCD64)(hsl_ma87d_64_ciface.o)
+hsl_ma87_ciface_quadruple_64: hsl_ma87_quadruple_64 \
+                              $(LHCQ64)(hsl_ma87q_64_ciface.o)
 
 #  hsl_ma97
 
@@ -442,6 +591,10 @@ hsl_ma97_double: metis_silent $(LHD)(hsl_mc34d.o) $(LHD)(hsl_zb01i.o) \
                  $(LHD)(hsl_mc68i.o) $(LHD)(hsl_mc69d.o) $(LHD)(mc64d.o) \
                  $(LHD)(hsl_mc64d.o) $(LHD)(mc30d.o) $(LHD)(mc77d.o)     \
                  $(LHD)(hsl_mc78i.o) $(LHD)(hsl_mc80d.o) $(LHD)(hsl_ma97d.o)
+hsl_ma97_quadruple: metis_silent $(LHQ)(hsl_mc34q.o) $(LHQ)(hsl_zb01i.o) \
+                 $(LHQ)(hsl_mc68i.o) $(LHQ)(hsl_mc69q.o) $(LHQ)(mc64q.o) \
+                 $(LHQ)(hsl_mc64q.o) $(LHQ)(mc30q.o) $(LHQ)(mc77q.o)     \
+                 $(LHQ)(hsl_mc78i.o) $(LHQ)(hsl_mc80q.o) $(LHQ)(hsl_ma97q.o)
 hsl_ma97_single_64: metis_silent $(LHS64)(hsl_mc34s_64.o) \
                     $(LHS64)(hsl_zb01i_64.o) $(LHS64)(hsl_mc68i_64.o) \
                     $(LHS64)(hsl_mc69s_64.o) $(LHS64)(mc64s_64.o) \
@@ -454,14 +607,23 @@ hsl_ma97_double_64: metis_silent $(LHD64)(hsl_mc34d_64.o) \
                     $(LHD64)(hsl_mc64d_64.o) $(LHD64)(mc30d_64.o) \
                     $(LHD64)(mc77d_64.o) $(LHD64)(hsl_mc78i_64.o) \
                     $(LHD64)(hsl_mc80d_64.o) $(LHD64)(hsl_ma97d_64.o)
+hsl_ma97_quadruple_64: metis_silent $(LHQ64)(hsl_mc34q_64.o) \
+                    $(LHQ64)(hsl_zb01i_64.o) $(LHQ64)(hsl_mc68i_64.o) \
+                    $(LHQ64)(hsl_mc69q_64.o) $(LHQ64)(mc64q_64.o) \
+                    $(LHQ64)(hsl_mc64q_64.o) $(LHQ64)(mc30q_64.o) \
+                    $(LHQ64)(mc77q_64.o) $(LHQ64)(hsl_mc78i_64.o) \
+                    $(LHQ64)(hsl_mc80q_64.o) $(LHQ64)(hsl_ma97q_64.o)
 
 hsl_ma97_ciface: hsl_ma97_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA97 C routines ($(PRECIS) $(SUCC)"
 hsl_ma97_ciface_silent: hsl_ma97_ciface_$(PRECIS)
 hsl_ma97_ciface_single: hsl_ma97_single $(LHCS)(hsl_ma97s_ciface.o)
 hsl_ma97_ciface_double: hsl_ma97_double $(LHCD)(hsl_ma97d_ciface.o)
+hsl_ma97_ciface_quadruple: hsl_ma97_quadruple $(LHCQ)(hsl_ma97q_ciface.o)
 hsl_ma97_ciface_single_64: hsl_ma97_single_64 $(LHCS64)(hsl_ma97s_64_ciface.o)
 hsl_ma97_ciface_double_64: hsl_ma97_double_64 $(LHCD64)(hsl_ma97d_64_ciface.o)
+hsl_ma97_ciface_quadruple_64: hsl_ma97_quadruple_64 \
+                              $(LHCQ64)(hsl_ma97q_64_ciface.o)
 
 #  mc19
 
@@ -470,8 +632,10 @@ mc19: mc19_$(PRECIS)
 mc19_silent: mc19_$(PRECIS)
 mc19_single: kinds $(LHS)(mc19s.o)
 mc19_double: kinds $(LHD)(mc19d.o)
+mc19_quadruple: kinds $(LHQ)(mc19q.o)
 mc19_single_64: kinds $(LHS64)(mc19s_64.o)
 mc19_double_64: kinds $(LHD64)(mc19d_64.o)
+mc19_quadruple_64: kinds $(LHQ64)(mc19q_64.o)
 
 #  hsl_mc64
 
@@ -484,20 +648,29 @@ hsl_mc64_single: kinds $(LHS)(hsl_zd11s.o) $(LHS)(fd15s.o) \
 hsl_mc64_double: kinds $(LHD)(hsl_zd11d.o) $(LHD)(fd15d.o) \
                  $(LHD)(mc21d.o) $(LHD)(hsl_mc34d.o) \
                  $(LHD)(hsl_mc69d.o) $(LHD)(hsl_mc64d.o)
+hsl_mc64_quadruple: kinds $(LHQ)(hsl_zd11q.o) $(LHQ)(fd15q.o) \
+                 $(LHQ)(mc21q.o) $(LHQ)(hsl_mc34q.o) \
+                 $(LHQ)(hsl_mc69q.o) $(LHQ)(hsl_mc64q.o)
 hsl_mc64_single_64: kinds $(LHS64)(hsl_zd11s_64.o) $(LHS64)(fd15s_64.o) \
                     $(LHS64)(mc21s_64.o) $(LHS64)(hsl_mc34s_64.o) \
                     $(LHS64)(hsl_mc69s_64.o) $(LHS64)(hsl_mc64s_64.o)
 hsl_mc64_double_64: kinds $(LHD64)(hsl_zd11d_64.o) $(LHD64)(fd15d_64.o) \
                     $(LHD64)(mc21d_64.o) $(LHD64)(hsl_mc34d_64.o) \
                     $(LHD64)(hsl_mc69d_64.o) $(LHD64)(hsl_mc64d_64.o)
+hsl_mc64_quadruple_64: kinds $(LHQ64)(hsl_zd11q_64.o) $(LHQ64)(fd15q_64.o) \
+                    $(LHQ64)(mc21q_64.o) $(LHQ64)(hsl_mc34q_64.o) \
+                    $(LHQ64)(hsl_mc69q_64.o) $(LHQ64)(hsl_mc64q_64.o)
 
 hsl_mc64_ciface: hsl_mc64_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MC64 C routines ($(PRECIS) $(SUCC)"
 hsl_mc64_ciface_silent: hsl_mc64_ciface_$(PRECIS)
 hsl_mc64_ciface_single: hsl_mc64_single $(LHCS)(hsl_mc64s_ciface.o)
 hsl_mc64_ciface_double: hsl_mc64_double $(LHCD)(hsl_mc64d_ciface.o)
+hsl_mc64_ciface_quadruple: hsl_mc64_quadruple $(LHCQ)(hsl_mc64q_ciface.o)
 hsl_mc64_ciface_single_64: hsl_mc64_single_64 $(LHCS64)(hsl_mc64s_64_ciface.o)
 hsl_mc64_ciface_double_64: hsl_mc64_double_64 $(LHCD64)(hsl_mc64d_64_ciface.o)
+hsl_mc64_ciface_quadruple_64: hsl_mc64_quadruple_64 \
+                              $(LHCQ64)(hsl_mc64q_64_ciface.o)
 
 #  hsl_mc68
 
@@ -506,18 +679,24 @@ hsl_mc68: hsl_mc68_$(PRECIS)
 hsl_mc68_silent: hsl_mc68_$(PRECIS)
 hsl_mc68_single: metis_silent $(LHS)(hsl_zb01i.o) $(LHS)(hsl_mc68i.o)
 hsl_mc68_double: metis_silent $(LHD)(hsl_zb01i.o) $(LHD)(hsl_mc68i.o)
+hsl_mc68_quadruple: metis_silent $(LHQ)(hsl_zb01i.o) $(LHQ)(hsl_mc68i.o)
 hsl_mc68_single_64: metis_silent $(LHS64)(hsl_zb01i_64.o) \
                     $(LHS64)(hsl_mc68i_64.o)
 hsl_mc68_double_64: metis_silent $(LHD64)(hsl_zb01i_64.o) \
                     $(LHD64)(hsl_mc68i_64.o)
+hsl_mc68_quadruple_64: metis_silent $(LHQ64)(hsl_zb01i_64.o) \
+                    $(LHQ64)(hsl_mc68i_64.o)
 
 hsl_mc68_ciface: hsl_mc68_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MC68 C routines ($(PRECIS) $(SUCC)"
 hsl_mc68_ciface_silent: hsl_mc68_ciface_$(PRECIS)
 hsl_mc68_ciface_single: hsl_mc68_single $(LHCS)(hsl_mc68i_ciface.o)
 hsl_mc68_ciface_double: hsl_mc68_double $(LHCD)(hsl_mc68i_ciface.o)
+hsl_mc68_ciface_quadruple: hsl_mc68_quadruple $(LHCQ)(hsl_mc68i_ciface.o)
 hsl_mc68_ciface_single_64: hsl_mc68_single_64 $(LHCS64)(hsl_mc68i_64_ciface.o)
 hsl_mc68_ciface_double_64: hsl_mc68_double_64 $(LHCD64)(hsl_mc68i_64_ciface.o)
+hsl_mc68_ciface_quadruple_64: hsl_mc68_quadruple_64 \
+                              $(LHCQ64)(hsl_mc68i_64_ciface.o)
 
 #  hsl_mi20
 
@@ -530,6 +709,9 @@ hsl_mi20_single: hsl_ma48_silent $(LHS)(hsl_mc65s.o) $(LHS)(fd15s.o) \
 hsl_mi20_double: hsl_ma48_silent $(LHD)(hsl_mc65d.o) $(LHD)(fd15d.o) \
                  $(LHD)(mi21d.o) $(LHD)(mi24d.o) $(LHD)(mi26d.o) \
                  $(LHD)(hsl_mi32d.o) $(LHD)(hsl_mi20d.o)
+hsl_mi20_quadruple: hsl_ma48_silent $(LHQ)(hsl_mc65q.o) $(LHQ)(fd15q.o) \
+                 $(LHQ)(mi21q.o) $(LHQ)(mi24q.o) $(LHQ)(mi26q.o) \
+                 $(LHQ)(hsl_mi32q.o) $(LHQ)(hsl_mi20q.o)
 hsl_mi20_single_64: hsl_ma48_silent $(LHS64)(hsl_mc65s_64.o) \
                     $(LHS64)(fd15s_64.o) $(LHS64)(mi21s_64.o) \
                     $(LHS64)(mi24s_64.o) $(LHS64)(mi26s_64.o) \
@@ -538,14 +720,21 @@ hsl_mi20_double_64: hsl_ma48_silent $(LHD64)(hsl_mc65d_64.o) \
                     $(LHD64)(fd15d_64.o) $(LHD64)(mi21d_64.o) \
                     $(LHD64)(mi24d_64.o) $(LHD64)(mi26d_64.o) \
                     $(LHD64)(hsl_mi32d_64.o) $(LHD64)(hsl_mi20d_64.o)
+hsl_mi20_quadruple_64: hsl_ma48_silent $(LHQ64)(hsl_mc65q_64.o) \
+                    $(LHQ64)(fd15q_64.o) $(LHQ64)(mi21q_64.o) \
+                    $(LHQ64)(mi24q_64.o) $(LHQ64)(mi26q_64.o) \
+                    $(LHQ64)(hsl_mi32q_64.o) $(LHQ64)(hsl_mi20q_64.o)
 
 hsl_mi20_ciface: hsl_mi20_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MI20 C routines ($(PRECIS) $(SUCC)"
 hsl_mi20_ciface_silent: hsl_mi20_ciface_$(PRECIS)
 hsl_mi20_ciface_single: hsl_mi20_single $(LHCS)(hsl_mi20s_ciface.o)
 hsl_mi20_ciface_double: hsl_mi20_double $(LHCD)(hsl_mi20d_ciface.o)
+hsl_mi20_ciface_quadruple: hsl_mi20_quadruple $(LHCQ)(hsl_mi20q_ciface.o)
 hsl_mi20_ciface_single_64: hsl_mi20_single_64 $(LHCS64)(hsl_mi20s_64_ciface.o)
 hsl_mi20_ciface_double_64: hsl_mi20_double_64 $(LHCD64)(hsl_mi20d_64_ciface.o)
+hsl_mi20_ciface_quadruple_64: hsl_mi20_quadruple_64 \
+                              $(LHCQ64)(hsl_mi20q_64_ciface.o)
 
 #  hsl_mi28
 
@@ -562,6 +751,11 @@ hsl_mi28_double: metis_silent $(LHD)(kb07i.o) $(LHD)(mc60d.o) \
              $(LHD)(hsl_mc68i.o) $(LHD)(hsl_mc69d.o) \
              $(LHD)(hsl_zd11d.o) $(LHD)(hsl_mc34d.o) \
              $(LHD)(mc64d.o) $(LHD)(hsl_mc64d.o) $(LHD)(hsl_mi28d.o)
+hsl_mi28_quadruple: metis_silent $(LHQ)(kb07i.o) $(LHQ)(mc60q.o) \
+             $(LHQ)(mc61q.o) $(LHQ)(mc77q.o) $(LHQ)(hsl_zb01i.o) \
+             $(LHQ)(hsl_mc68i.o) $(LHQ)(hsl_mc69q.o) \
+             $(LHQ)(hsl_zd11q.o) $(LHQ)(hsl_mc34q.o) \
+             $(LHQ)(mc64q.o) $(LHQ)(hsl_mc64q.o) $(LHQ)(hsl_mi28q.o)
 hsl_mi28_single_64: metis_silent $(LHS64)(kb07i_64.o) \
                 $(LHS64)(mc60s_64.o) $(LHS64)(mc61s_64.o) \
                 $(LHS64)(mc77s_64.o) $(LHS64)(hsl_zb01i_64.o) \
@@ -576,14 +770,24 @@ hsl_mi28_double_64: metis_silent $(LHD64)(kb07i_64.o) \
                 $(LHD64)(hsl_zd11d_64.o) $(LHD64)(hsl_mc34d_64.o) \
                 $(LHD64)(mc64d_64.o) $(LHD64)(hsl_mc64d_64.o) \
                 $(LHD64)(hsl_mi28d_64.o)
+hsl_mi28_quadruple_64: metis_silent $(LHQ64)(kb07i_64.o) \
+                $(LHQ64)(mc60q_64.o) $(LHQ64)(mc61q_64.o) \
+                $(LHQ64)(mc77q_64.o) $(LHQ64)(hsl_zb01i_64.o) \
+                $(LHQ64)(hsl_mc68i_64.o) $(LHQ64)(hsl_mc69q_64.o) \
+                $(LHQ64)(hsl_zd11q_64.o) $(LHQ64)(hsl_mc34q_64.o) \
+                $(LHQ64)(mc64q_64.o) $(LHQ64)(hsl_mc64q_64.o) \
+                $(LHQ64)(hsl_mi28q_64.o)
 
 hsl_mi28_ciface: hsl_mi28_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MI28 C routines ($(PRECIS) $(SUCC)"
 hsl_mi28_ciface_silent: hsl_mi28_ciface_$(PRECIS)
 hsl_mi28_ciface_single: hsl_mi28_single $(LHCS)(hsl_mi28s_ciface.o)
 hsl_mi28_ciface_double: hsl_mi28_double $(LHCD)(hsl_mi28d_ciface.o)
+hsl_mi28_ciface_quadruple: hsl_mi28_quadruple $(LHCQ)(hsl_mi28q_ciface.o)
 hsl_mi28_ciface_single_64: hsl_mi28_single_64 $(LHCS64)(hsl_mi28s_64_ciface.o)
 hsl_mi28_ciface_double_64: hsl_mi28_double_64 $(LHCD64)(hsl_mi28d_64_ciface.o)
+hsl_mi28_ciface_quadruple_64: hsl_mi28_quadruple_64 \
+                              $(LHCQ64)(hsl_mi28q_64_ciface.o)
 
 #  hsl_mi35
 
@@ -596,6 +800,9 @@ hsl_mi35_single: kinds $(LHS)(hsl_mc34s.o) $(LHS)(hsl_zb01i.o) \
 hsl_mi35_double: kinds $(LHD)(hsl_mc34d.o) $(LHD)(hsl_zb01i.o) \
                  $(LHD)(hsl_mc68i.o) $(LHD)(hsl_mc69d.o) $(LHD)(mc64d.o) \
                  $(LHD)(hsl_mc64d.o) $(LHD)(hsl_mi35d.o)
+hsl_mi35_quadruple: kinds $(LHQ)(hsl_mc34q.o) $(LHQ)(hsl_zb01i.o) \
+                 $(LHQ)(hsl_mc68i.o) $(LHQ)(hsl_mc69q.o) $(LHQ)(mc64q.o) \
+                 $(LHQ)(hsl_mc64q.o) $(LHQ)(hsl_mi35q.o)
 hsl_mi35_single_64: kinds $(LHS64)(hsl_mc34s_64.o) \
                     $(LHS64)(hsl_zb01i_64.o) $(LHS64)(hsl_mc68i_64.o) \
                     $(LHS64)(hsl_mc69s_64.o) $(LHS64)(mc64s_64.o) \
@@ -604,6 +811,10 @@ hsl_mi35_double_64: kinds $(LHD64)(hsl_mc34d_64.o) \
                     $(LHD64)(hsl_zb01i_64.o) $(LHD64)(hsl_mc68i_64.o) \
                     $(LHD64)(hsl_mc69d_64.o) $(LHD64)(mc64d_64.o) \
                     $(LHD64)(hsl_mc64d_64.o) $(LHD64)(hsl_mi35d_64.o)
+hsl_mi35_quadruple_64: kinds $(LHQ64)(hsl_mc34q_64.o) \
+                    $(LHQ64)(hsl_zb01i_64.o) $(LHQ64)(hsl_mc68i_64.o) \
+                    $(LHQ64)(hsl_mc69q_64.o) $(LHQ64)(mc64q_64.o) \
+                    $(LHQ64)(hsl_mc64q_64.o) $(LHQ64)(hsl_mi35q_64.o)
 
 #  hsl_zd11
 
@@ -612,8 +823,16 @@ hsl_zd11: hsl_zd11_$(PRECIS)
 hsl_zd11_silent: hsl_zd11_$(PRECIS)
 hsl_zd11_single: kinds $(LHS)(hsl_zd11s.o)
 hsl_zd11_double: kinds $(LHD)(hsl_zd11d.o)
+hsl_zd11_quadruple: kinds $(LHQ)(hsl_zd11q.o)
 hsl_zd11_single_64: kinds $(LHS64)(hsl_zd11s_64.o)
 hsl_zd11_double_64: kinds $(LHD64)(hsl_zd11d_64.o)
+hsl_zd11_quadruple_64: kinds $(LHQ64)(hsl_zd11q_64.o)
+
+#  hsl_inter package
+
+hsl_inter: $(LG)(hsl_inter_$(PRECIS).o)
+	@printf ' %-21s\n' "GALAHAD: HSL_inter compiled successfully"
+hsl_inter_silent: $(LG)(hsl_inter_$(PRECIS).o)
 
 #  metis
 
@@ -639,10 +858,13 @@ metis: metis_silent
 metis_silent: metis_$(PRECIS)
 metis_single: kinds $(LHS)(hsl_metis.o) $(LHS)(hsl_metis5_adapter.o)
 metis_double: kinds $(LHD)(hsl_metis.o) $(LHD)(hsl_metis5_adapter.o)
+metis_quadruple: kinds $(LHQ)(hsl_metis.o) $(LHQ)(hsl_metis5_adapter.o)
 metis_single_64: kinds $(LHS64)(hsl_metis_64.o) \
                  $(LHS64)(hsl_metis5_adapter_64.o)
 metis_double_64: kinds $(LHD64)(hsl_metis_64.o) \
                  $(LHD64)(hsl_metis5_adapter_64.o)
+metis_quadruple_64: kinds $(LHQ64)(hsl_metis_64.o) \
+                 $(LHQ64)(hsl_metis5_adapter_64.o)
 metis_nodend:
 	( cd ./metis ; \
           $(MAKE) -f $(HSLSUBSET)/makefiles/$(VERSION) all PWD=$(PWD)/metis )
@@ -1943,6 +2165,24 @@ $(LH)(hsl_zd11$(HSL_PRECIS).o): $(HSLSRC)/hsl_zd11/hsl_zd11r.f90
 	$(HRMARFILE) hsl_ma48$(HSL_PRECIS).o
 	$(MVMODS)
 	$(RANLIB) $(LH)
+	@printf '[ OK ]\n'
+
+#  hsl_inter
+
+hsl_inter.o: ma27 ma33 mc20.o mc61.o mc77.o $(LG)(hsl_inter_$(PRECIS).o)
+
+$(LG)(hsl_inter_$(PRECIS).o): ../hsl/hsl_inter/hsl_inter.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_inter"
+	$(CP) ../hsl/hsl_inter/hsl_inter.F90 $(OBJ)/hsl_inter.F90
+	cd $(OBJ); $(FORTRAN) -o hsl_inter_$(PRECIS).o $(FFLAGSS) \
+           hsl_inter.F90 || \
+         ( printf ' %-26s' "=> Disabling optimization " ; \
+            $(FORTRAN) -o hsl_inter_$(PRECIS).o $(FFLAGSN) \
+              hsl_inter.F90 )
+	cd $(OBJ); $(ARR) hsl_inter_$(PRECIS).o ; \
+          $(RM) hsl_inter.F90 hsl_inter_$(PRECIS).o
+	$(RANLIB) $(LG)
+	$(RMARFILES) gls lpa sils sls psls uls
 	@printf '[ OK ]\n'
 
 #  ===========================

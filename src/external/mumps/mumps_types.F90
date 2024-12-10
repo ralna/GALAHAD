@@ -12,7 +12,11 @@
 
    MODULE GALAHAD_MUMPS_TYPES_precision
 
+#ifdef REAL_128
+     USE GALAHAD_KINDS, ONLY : ip_, long_, r16_
+#else
      USE GALAHAD_KINDS, ONLY : ip_, long_
+#endif
      IMPLICIT NONE
      PUBLIC
      INTEGER ( KIND = ip_ ), PARAMETER :: MPI_COMM_WORLD = 0
@@ -21,6 +25,8 @@
 
 #ifdef REAL_32
      INCLUDE 'smumps_struc.h'
+#elif REAL_128
+     INCLUDE 'qmumps_struc.h'
 #else
      INCLUDE 'dmumps_struc.h'
 #endif

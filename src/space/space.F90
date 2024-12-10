@@ -4626,7 +4626,8 @@
          bad_alloc = array_name
      END IF
 
-     CALL SPACE_dealloc_array( array%val, status_comp, alloc_status_comp,      &
+!    CALL SPACE_dealloc_array( array%val, status_comp, alloc_status_comp,      &
+     CALL SPACE_dealloc_real_array( array%val, status_comp, alloc_status_comp,      &
                                array_name, bad_alloc, out )
      IF ( alloc_status_comp /= 0 ) THEN
        status = GALAHAD_error_deallocate

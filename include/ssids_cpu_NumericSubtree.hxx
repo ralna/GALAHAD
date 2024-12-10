@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.0 - 2024-06-11 AT 08:40 GMT
+ *  \version   GALAHAD 5.1 - 2024-11-12 AT 10:40 GMT
  */
 
 #pragma once
@@ -23,6 +23,13 @@
 #define ldlt_app_solve_fwd ldlt_app_solve_fwd_sgl
 #define ldlt_app_solve_diag ldlt_app_solve_diag_sgl
 #define ldlt_app_solve_bwd ldlt_app_solve_bwd_sgl
+#elif REAL_128
+#include <quadmath.h>
+#define cholesky_solve_fwd cholesky_solve_fwd_qul
+#define cholesky_solve_bwd cholesky_solve_bwd_qul
+#define ldlt_app_solve_fwd ldlt_app_solve_fwd_qul
+#define ldlt_app_solve_diag ldlt_app_solve_diag_qul
+#define ldlt_app_solve_bwd ldlt_app_solve_bwd_qul
 #else
 #define cholesky_solve_fwd cholesky_solve_fwd_dbl
 #define cholesky_solve_bwd cholesky_solve_bwd_dbl
@@ -271,7 +278,12 @@ public:
             for(ipc_ i=0; i<nodes_[ni].nelim; ) {
                T a11 = d[2*i];
                T a21 = d[2*i+1];
-               if(i+1==nodes_[ni].nelim || std::isfinite(d[2*i+2])) {
+               if(i+1==nodes_[ni].nelim || 
+#ifdef REAL_128
+                  std::isfinite(static_cast<double>(d[2*i+2]))) {
+#else
+                  std::isfinite(d[2*i+2])) {
+#endif
                   // 1x1 pivot (or zero)
                   if(a11 == 0.0) {
                      // NB: If we reach this stage, options.action must be true.
@@ -463,7 +475,12 @@ public:
 //             bool a=i+1==nelim ;
 //             bool b=(std::isfinite(dptr[2*i+2]));
 //             printf(" i = %d a = %d b = %d\n", i, a, b );
-               if(i+1==nelim || std::isfinite(dptr[2*i+2])) {
+               if(i+1==nelim || 
+#ifdef REAL_128
+                  std::isfinite(static_cast<double>(dptr[2*i+2]))) {
+#else
+                  std::isfinite(dptr[2*i+2])) {
+#endif
                   /* 1x1 pivot */
                   if(piv_order) {
                      piv_order[nodes_[ni].perm[i]-1] = (piv++);
@@ -509,7 +526,11 @@ public:
 //         T dum;
 
          for(ipc_ i=0; i<nelim; ) {
+#ifdef REAL_128
+            if(i+1==nelim || std::isfinite(static_cast<double>(dptr[2*i+2]))) {
+#else
             if(i+1==nelim || std::isfinite(dptr[2*i+2])) {
+#endif
                /* 1x1 pivot */
                dptr[2*i+0] = *(d++);
 //               dum = *(d++);
@@ -552,14 +573,39 @@ public:
                                                (i<nelim)?"X":"D");
 				else    printf("%d:", rlist[i-n]);
 #endif
+#ifdef REAL_128
+				for(ipc_ j=0; j<n; j++) {
+                                  char buf1[128];
+                                  int n1 = quadmath_snprintf(buf1, sizeof buf1,
+                                      "%+-#*.20Qe", nodes_[node].lcol[j*ldl+i]);
+                                  if ((size_t) n1 < sizeof buf1)
+                                     printf( "%s", buf1);
+//                                   printf(" %10.2Qe", 
+//                                     nodes_[node].lcol[j*ldl+i]);
+                                 }
+#else
 				for(ipc_ j=0; j<n; j++) printf(" %10.2e", 
                                    nodes_[node].lcol[j*ldl+i]);
+#endif
             T const* d = &nodes_[node].lcol[n*ldl];
-				if(!posdef && i<nelim)
+            if(!posdef && i<nelim){
+#ifdef REAL_128
+               char buf1[128], buf2[128];
+               int n1 = quadmath_snprintf(buf1, sizeof buf1, 
+                                           "%+-#*.20Qe", d[2*i+0]);
+               int n2 = quadmath_snprintf(buf2, sizeof buf2, 
+                                           "%+-#*.20Qe", d[2*i+1]);
+               if ((size_t) n1 < sizeof buf1 && 
+                   (size_t) n2 < sizeof buf2)
+                  printf( "  d: %s %s", buf1, buf2);
+//               printf("  d: %10.2Qe %10.2Qe", d[2*i+0], d[2*i+1]);
+#else
                printf("  d: %10.2e %10.2e", d[2*i+0], d[2*i+1]);
-		      printf("\n");
-			}
-		}
+#endif
+            }
+	    printf("\n");
+	  }
+	 }
 	}
 
    /** Return contribution block from subtree (if not a real root) */

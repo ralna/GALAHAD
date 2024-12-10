@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.0 - 2024-06-11 AT 08:50 GMT
+ *  \version   GALAHAD 5.1 - 2024-11-21 AT 10:50 GMT
  */
 #pragma once
 
@@ -22,6 +22,11 @@
 #define spral_ssids_contrib_free spral_ssids_contrib_free_sgl
 #define FAPrecisionTraits FASingleTraits
 #define factor_alloc_precision factor_alloc_single
+#elif REAL_128
+#define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_quadruple
+#define spral_ssids_contrib_free spral_ssids_contrib_free_qul
+#define FAPrecisionTraits FAQuadrupleTraits
+#define factor_alloc_precision factor_alloc_quadruple
 #else
 #define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_double
 #define spral_ssids_contrib_free spral_ssids_contrib_free_dbl

@@ -2,10 +2,10 @@
 
  basic tests of qp storage formats
 
-C:     1 cg iterations. Optimal objective value =  0.44 status = 0
-R:     1 cg iterations. Optimal objective value =  0.44 status = 0
-D:     1 cg iterations. Optimal objective value =  0.44 status = 0
-L:     1 cg iterations. Optimal objective value =  0.44 status = 0
-S:     1 cg iterations. Optimal objective value =  0.44 status = 0
-I:     1 cg iterations. Optimal objective value =  0.44 status = 0
-W:     1 cg iterations. Optimal objective value =  0.44 status = 0
+C:     1 cg iterations. Optimal objective value = 0.44 status = 0
+R:     1 cg iterations. Optimal objective value = 0.44 status = 0
+D:     1 cg iterations. Optimal objective value = 0.44 status = 0
+L:     1 cg iterations. Optimal objective value = 0.44 status = 0
+S:     1 cg iterations. Optimal objective value = 0.44 status = 0
+I:     1 cg iterations. Optimal objective value = 0.44 status = 0
+W:     1 cg iterations. Optimal objective value = 0.44 status = 0

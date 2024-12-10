@@ -2,7 +2,7 @@
  * Copyright (c) 2013 NVIDIA
  * Authors: Evgueni Ovtchinnikov (STFC)
  *          Jeremy Appleyard (NVIDIA)
- * This version: GALAHAD 5.0 - 2024-06-11 AT 09:40 GMT
+ * This version: GALAHAD 5.1 - 2024-11-21 AT 09:40 GMT
  */
 
 #include <cuda_runtime.h>
@@ -23,6 +23,16 @@
 #define spral_ssids_dsyrk spral_ssids_dsyrk_single
 #define spral_ssids_multidsyrk spral_ssids_multidsyrk_single
 #define spral_ssids_multidsyrk_low_col spral_ssids_multidsyrk_low_col_single
+#elif REAL_128
+#define loadDevToSmem_generic loadDevToSmem_generic_quadruple
+#define multisyrk_type multisyrk_type_quadruple
+#define multielm_data multielm_data_quadruple
+#define cu_multisyrk_lc_r4x4 cu_multisyrk_lc_r4x4_quadruple
+#define cu_multisyrk_r4x4 cu_multisyrk_r4x4_quadruple
+#define cu_syrk_r4x4 cu_syrk_r4x4_quadruple
+#define spral_ssids_dsyrk spral_ssids_dsyrk_quadruple
+#define spral_ssids_multidsyrk spral_ssids_multidsyrk_quadruple
+#define spral_ssids_multidsyrk_low_col spral_ssids_multidsyrk_low_col_quadruple
 #else
 #define loadDevToSmem_generic loadDevToSmem_generic_double
 #define multisyrk_type multisyrk_type_double

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for all the GALAHAD RQ packages
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2024-01-26
+#  This version: 2024-11-19
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -127,20 +127,26 @@ test_pyiface: all_pyiface $(TEST_PYIFACE)
 $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $(DEPENDENCIES)
 $(package)_silent_double: $(DEPENDENCIES)
+$(package)_silent_quadruple: $(DEPENDENCIES)
 $(package)_silent_single_64: $(DEPENDENCIES)
 $(package)_silent_double_64: $(DEPENDENCIES)
+$(package)_silent_quadruple_64: $(DEPENDENCIES)
 
 $(package)_ciface_silent: $(package)_ciface_silent_$(PRECIS)
 $(package)_ciface_silent_single: $(CDEPENDENCIES)
 $(package)_ciface_silent_double: $(CDEPENDENCIES)
+$(package)_ciface_silent_quadruple: $(CDEPENDENCIES)
 $(package)_ciface_silent_single_64: $(CDEPENDENCIES)
 $(package)_ciface_silent_double_64: $(CDEPENDENCIES)
+$(package)_ciface_silent_quadruple_64: $(CDEPENDENCIES)
 
 $(package)_pyiface_silent: $(package)_pyiface_silent_$(PRECIS)
 $(package)_pyiface_silent_single: $(PYDEPENDENCIES)
 $(package)_pyiface_silent_double: $(PYDEPENDENCIES)
+$(package)_pyiface_silent_quadruple: $(PYDEPENDENCIES)
 $(package)_pyiface_silent_single_64: $(PYDEPENDENCIES)
 $(package)_pyiface_silent_double_64: $(PYDEPENDENCIES)
+$(package)_pyiface_silent_quadruple_64: $(PYDEPENDENCIES)
 
 #  packages
 
@@ -150,10 +156,14 @@ $(package)_single: $(DEPENDENCIES)
 	$(RANLIB) $(LGS)
 $(package)_double: $(DEPENDENCIES)
 	$(RANLIB) $(LGD)
+$(package)_quadruple: $(DEPENDENCIES)
+	$(RANLIB) $(LGQ)
 $(package)_single_64: $(DEPENDENCIES)
 	$(RANLIB) $(LGS64)
 $(package)_double_64: $(DEPENDENCIES)
 	$(RANLIB) $(LGD64)
+$(package)_quadruple_64: $(DEPENDENCIES)
+	$(RANLIB) $(LGQ64)
 
 $(package)_ciface: $(package)_ciface_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_C)"
@@ -161,10 +171,14 @@ $(package)_ciface_single: $(CDEPENDENCIES)
 	$(RANLIB) $(CLGS)
 $(package)_ciface_double: $(CDEPENDENCIES)
 	$(RANLIB) $(CLGD)
+$(package)_ciface_quadruple: $(CDEPENDENCIES)
+	$(RANLIB) $(CLGQ)
 $(package)_ciface_single_64: $(CDEPENDENCIES)
 	$(RANLIB) $(CLGS64)
 $(package)_ciface_double_64: $(CDEPENDENCIES)
 	$(RANLIB) $(CLGD64)
+$(package)_ciface_quadruple_64: $(CDEPENDENCIES)
+	$(RANLIB) $(CLGQ64)
 
 $(package)_pyiface: $(package)_pyiface_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_PY)"
@@ -172,18 +186,24 @@ $(package)_pyiface_single: $(PYDEPENDENCIES)
 	$(RANLIB) $(PYLGS)
 $(package)_pyiface_double: $(PYDEPENDENCIES)
 	$(RANLIB) $(PYLGD)
+$(package)_pyiface_quadruple: $(PYDEPENDENCIES)
+	$(RANLIB) $(PYLGQ)
 $(package)_pyiface_single_64: $(PYDEPENDENCIES)
 	$(RANLIB) $(PYLGS64)
 $(package)_pyiface_double_64: $(PYDEPENDENCIES)
 	$(RANLIB) $(PYLGD64)
+$(package)_pyiface_quadruple_64: $(PYDEPENDENCIES)
+	$(RANLIB) $(PYLGQ64)
 
 #  silent CUTEst packages
 
 $(package)_cutest_silent: $(package)_silent_$(PRECIS)
 $(package)_cutest_silent_single: $(DEPENDENCIES) $(CUTESTDEPS)
 $(package)_cutest_silent_double: $(DEPENDENCIES) $(CUTESTDEPS)
+$(package)_cutest_silent_quadruple: $(DEPENDENCIES) $(CUTESTDEPS)
 $(package)_cutest_silent_single_64: $(DEPENDENCIES) $(CUTESTDEPS)
 $(package)_cutest_silent_double_64: $(DEPENDENCIES) $(CUTESTDEPS)
+$(package)_cutest_silent_quadruple_64: $(DEPENDENCIES) $(CUTESTDEPS)
 
 #  CUTEst packages
 
@@ -193,10 +213,14 @@ $(package)_cutest_single: $(DEPENDENCIES) $(CUTESTDEPS)
 	$(RANLIB) $(LGS)
 $(package)_cutest_double: $(DEPENDENCIES) $(CUTESTDEPS)
 	$(RANLIB) $(LGD)
+$(package)_cutest_quadruple: $(DEPENDENCIES) $(CUTESTDEPS)
+	$(RANLIB) $(LGQ)
 $(package)_cutest_single_64: $(DEPENDENCIES) $(CUTESTDEPS)
 	$(RANLIB) $(LGS64)
 $(package)_cutest_double_64: $(DEPENDENCIES) $(CUTESTDEPS)
 	$(RANLIB) $(LGD64)
+$(package)_cutest_quadruple_64: $(DEPENDENCIES) $(CUTESTDEPS)
+	$(RANLIB) $(LGQ64)
 
 #  book keeping
 

@@ -2,6 +2,6 @@
 
  basic tests of qp storage formats
 
-C:     7 iterations. Optimal objective value =  3.11 status = 0
-R:     7 iterations. Optimal objective value =  3.11 status = 0
-D:     7 iterations. Optimal objective value =  3.11 status = 0
+C:     7 iterations. Optimal objective value = 3.11 status = 0
+R:     7 iterations. Optimal objective value = 3.11 status = 0
+D:     7 iterations. Optimal objective value = 3.11 status = 0

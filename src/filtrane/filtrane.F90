@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:50 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-10 AT 11:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -356,22 +356,14 @@
 !-------------------------------------------------------------------------------
 
       USE GALAHAD_BAND_precision     ! band factorization and solve
-
       USE GALAHAD_NLPT_precision     ! the problem type
-
       USE GALAHAD_SPECFILE_precision ! specfile manipulations
-
       USE GALAHAD_NORMS_precision    ! norm functions
-
       USE GALAHAD_SORT_precision     ! the sorting procedures
-
       USE GALAHAD_GLTR_precision     ! the GLTR truncated CG procedure
-
-      USE GALAHAD_COPYRIGHT       ! copyright statement
-
-      USE GALAHAD_TOOLS           ! the GALAHAD toolbox
-
-      USE GALAHAD_BLAS_interface, ONLY: SWAP ! interfaces to the blas
+      USE GALAHAD_COPYRIGHT          ! copyright statement
+      USE GALAHAD_TOOLS              ! the GALAHAD toolbox
+      USE GALAHAD_BLAS_inter_precision, ONLY: SWAP ! interfaces to the blas
 
 !     Print levels
 
@@ -429,13 +421,14 @@
           FULL                        => GALAHAD_FULL
 
 !     Variable status
+!    (RANGE changed to RRANGE to avoid nvfortran bug!)
 
       USE GALAHAD_SYMBOLS,                                                     &
           FIXED                       => GALAHAD_FIXED,                        &
           FREE                        => GALAHAD_FREE,                         &
           LOWER                       => GALAHAD_LOWER,                        &
           UPPER                       => GALAHAD_UPPER,                        &
-          RANGE                       => GALAHAD_RANGE
+          RRANGE                      => GALAHAD_RANGE
 
 !     Model types
 
@@ -466,7 +459,7 @@
                  MAX_ITERATIONS_REACHED, PROGRESS_IMPOSSIBLE,                  &
                  NOT_INITIALIZED, NEVER, INITIAL, ALWAYS, NEWTON, GAUSS_NEWTON,&
                  ADAPTIVE, FULL, COULD_NOT_WRITE,                              &
-                 WRONG_N, WRONG_M, LOWER, UPPER, FREE, RANGE, CURRENT,         &
+                 WRONG_N, WRONG_M, LOWER, UPPER, FREE, RRANGE, CURRENT,        &
                  SMALLEST, BEST_FIT, BEST_REDUCTION, FILE_NOT_OPENED
 
 
@@ -2697,7 +2690,7 @@
                ELSE
                   IF ( problem%x_u( j ) < problem%infinity ) THEN
                      n_range = n_range + 1
-                     problem%x_status( j ) = RANGE
+                     problem%x_status( j ) = RRANGE
                   ELSE
                      n_lower = n_lower + 1
                      problem%x_status( j ) = LOWER
@@ -2899,7 +2892,7 @@
          nxt  = problem%m
          DO j = 1, problem%n
             SELECT CASE ( problem%x_status( j ) )
-            CASE ( LOWER, UPPER, RANGE )
+            CASE ( LOWER, UPPER, RRANGE )
                nxt = nxt + 1
                k   = control%group( nxt )
                IF ( k <= 0 .OR. k > control%nbr_groups ) THEN
@@ -3162,7 +3155,7 @@
                nxt = problem%m
                DO j = 1, problem%n
                   SELECT CASE ( problem%x_status( j ) )
-                  CASE ( LOWER, UPPER, RANGE )
+                  CASE ( LOWER, UPPER, RRANGE )
                      nxt = nxt + 1
                      s%v( nxt ) = ABS( FILTRANE_x_violation( j ) )
                   END SELECT
@@ -3193,7 +3186,7 @@
                nxt = problem%m
                DO j = 1, problem%n
                   SELECT CASE ( problem%x_status( j ) )
-                  CASE ( LOWER, UPPER, RANGE )
+                  CASE ( LOWER, UPPER, RRANGE )
                      nxt = nxt + 1
                      k = MOD( nxt, s%p )
                      IF ( k == 0 ) k = s%p
@@ -3214,7 +3207,7 @@
                nxt = problem%m
                DO j = 1, problem%n
                   SELECT CASE ( problem%x_status( j ) )
-                  CASE ( LOWER, UPPER, RANGE )
+                  CASE ( LOWER, UPPER, RRANGE )
                      nxt = nxt + 1
                      k = MOD( nxt, s%p )
                      IF ( k == 0 ) k = s%p
@@ -3304,7 +3297,7 @@
             nxt = problem%m
             DO j = 1, problem%n
                SELECT CASE ( problem%x_status( j ) )
-               CASE ( LOWER, UPPER, RANGE )
+               CASE ( LOWER, UPPER, RRANGE )
                   nxt = nxt + 1
                   SELECT CASE ( control%grouping )
                   CASE ( NONE )
@@ -4161,7 +4154,7 @@
                     DO j = 1, problem%n
 
                        SELECT CASE ( problem%x_status( j ) )
-                       CASE ( LOWER, UPPER, RANGE )
+                       CASE ( LOWER, UPPER, RRANGE )
                           violation = FILTRANE_x_violation( j )
                           SELECT CASE ( control%inequality_penalty_type )
                           CASE ( 1 )
@@ -7746,7 +7739,7 @@ fpt11:         DO k = 1, s%filter_size
          nxt = problem%m
          DO j = 1, problem%n
             SELECT CASE ( problem%x_status( j ) )
-            CASE ( LOWER, UPPER, RANGE )
+            CASE ( LOWER, UPPER, RRANGE )
                nxt = nxt + 1
 
                SELECT CASE ( control%grouping )
@@ -7849,7 +7842,7 @@ fpt11:         DO k = 1, s%filter_size
          nxt = problem%m
          DO j = 1, problem%n
             SELECT CASE ( problem%x_status( j ) )
-            CASE ( LOWER, UPPER, RANGE )
+            CASE ( LOWER, UPPER, RRANGE )
                nxt = nxt + 1
 
                SELECT CASE ( control%inequality_penalty_type )
@@ -8075,7 +8068,7 @@ fpt11:         DO k = 1, s%filter_size
 
          DO j = 1, problem%n
             SELECT CASE ( problem%x_status( j ) )
-            CASE ( LOWER, UPPER, RANGE )
+            CASE ( LOWER, UPPER, RRANGE )
 
                violation = FILTRANE_x_violation( j )
 
