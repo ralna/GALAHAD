@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 15:00 GMT
 
 #include "galahad_modules.h"
 
@@ -44,6 +44,7 @@
       USE GALAHAD_RPD_precision, ONLY: RPD_inform_type,                        &
                                        RPD_write_qp_problem_data
       USE GALAHAD_QPD_precision, ONLY: QPD_SIF
+      USE GALAHAD_HSL_inter_precision, ONLY: LA04A
 
       IMPLICIT NONE
 
@@ -64,52 +65,6 @@
       INTERFACE LPA_terminate
         MODULE PROCEDURE LPA_terminate, LPA_full_terminate
       END INTERFACE LPA_terminate
-
-      INTERFACE LA04A
-        SUBROUTINE LA04A( A, la, IRN, IP, m, n, B, C, BND, kb, lb, job, CNTL,  &
-                          IX, JX, X, Z, G, RINFO, WS, lws, IWS, liws )
-        USE GALAHAD_KINDS
-        INTEGER ( KIND = ip_ ), INTENT( IN ) :: la, m, n, kb, lb, lws, liws
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: job
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n + 1 ) :: IP
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( la ) :: IRN
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: IX
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( kb ) :: JX
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( liws ) :: IWS
-        REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( la ) :: A
-        REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( m ) :: B
-        REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( 2, kb ) :: BND
-        REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: C
-        REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( 15 ) :: CNTL
-        REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( 40 ) :: RINFO
-        REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n + m ) :: X
-        REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z
-        REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: G
-        REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( lws ) :: WS
-        END SUBROUTINE LA04A
-
-        SUBROUTINE LA04AD( A, la, IRN, IP, m, n, B, C, BND, kb, lb, job, CNTL, &
-                           IX, JX, X, Z, G, RINFO, WS, lws, IWS, liws )
-        USE GALAHAD_KINDS
-        INTEGER ( KIND = ip_ ), INTENT( IN ) :: la, m, n, kb, lb, lws, liws
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: job
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n + 1 ) :: IP
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( la ) :: IRN
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: IX
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( kb ) :: JX
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( liws ) :: IWS
-        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( la ) :: A
-        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( m ) :: B
-        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( 2, kb ) :: BND
-        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: C
-        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( 15 ) :: CNTL
-        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( 40 ) :: RINFO
-        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n + m ) :: X
-        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z
-        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: G
-        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( lws ) :: WS
-        END SUBROUTINE LA04AD
-      END INTERFACE LA04A
 
 !----------------------
 !   P a r a m e t e r s

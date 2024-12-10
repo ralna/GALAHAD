@@ -6,6 +6,9 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_lstr.h"
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 int main(void) {
 
@@ -64,8 +67,13 @@ int main(void) {
         }
       }
       lstr_information( &data, &inform, &status );
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_lstr.h
+#include "galahad_pquad_lstr.h"
+#else
       printf("%1" i_ipc_ " lstr_solve_problem exit status = %" i_ipc_
              ", f = %.2f\n", new_radius, inform.status, inform.r_norm );
+#endif
     }
    // Delete internal workspace
    lstr_terminate( &data, &control, &inform );

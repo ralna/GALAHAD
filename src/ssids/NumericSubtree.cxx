@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.0 - 2024-06-11 AT 09:45 GMT
+ *  \version   GALAHAD 5.1 - 2024-11-26 AT 12:45 GMT
  */
 
 #include "ssids_cpu_NumericSubtree.hxx"
@@ -36,6 +36,27 @@
         spral_ssids_cpu_subtree_get_contrib_sgl
 #define spral_ssids_cpu_subtree_free_contrib \
         spral_ssids_cpu_subtree_free_contrib_sgl
+#elif REAL_128
+#define spral_ssids_cpu_create_num_subtree \
+        spral_ssids_cpu_create_num_subtree_qul
+#define spral_ssids_cpu_destroy_num_subtree \
+        spral_ssids_cpu_destroy_num_subtree_qul
+#define spral_ssids_cpu_subtree_solve_fwd \
+        spral_ssids_cpu_subtree_solve_fwd_qul
+#define spral_ssids_cpu_subtree_solve_diag \
+        spral_ssids_cpu_subtree_solve_diag_qul
+#define spral_ssids_cpu_subtree_solve_diag_bwd \
+        spral_ssids_cpu_subtree_solve_diag_bwd_qul
+#define spral_ssids_cpu_subtree_solve_bwd \
+        spral_ssids_cpu_subtree_solve_bwd_qul
+#define spral_ssids_cpu_subtree_enquire \
+        spral_ssids_cpu_subtree_enquire_qul
+#define spral_ssids_cpu_subtree_alter \
+        spral_ssids_cpu_subtree_alter_qul
+#define spral_ssids_cpu_subtree_get_contrib \
+        spral_ssids_cpu_subtree_get_contrib_qul
+#define spral_ssids_cpu_subtree_free_contrib \
+        spral_ssids_cpu_subtree_free_contrib_qul
 #else
 #define spral_ssids_cpu_create_num_subtree \
         spral_ssids_cpu_create_num_subtree_dbl
@@ -67,6 +88,8 @@ namespace {
 
 #ifdef REAL_32
 typedef float T;
+#elif REAL_128
+typedef __float128 T;
 #else
 typedef double T;
 #endif

@@ -7,6 +7,9 @@
 #include "galahad_cfunctions.h"
 #include "galahad_ugo.h"
 #include <string.h>
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 // Test problem objective
 rpc_ objf(rpc_ x){
@@ -39,7 +42,7 @@ int main(void) {
     ugo_initialize( &data, &control, &status );
 
     // Set user-defined control options
-    control.print_level = 1;
+    //control.print_level = 1;
     //control.maxit = 100;
     //control.lipschitz_estimate_used = 3;
     strcpy(control.prefix, "'ugo: '");
@@ -84,8 +87,13 @@ int main(void) {
     ugo_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf("%" i_ipc_ "evaluations. Optimal objective value = %5.2f"
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_ef.h
+#include "galahad_pquad_ef.h"
+#else
+        printf("%" i_ipc_ " evaluations. Optimal objective value = %.2f"
           " status = %1" i_ipc_ "\n", inform.f_eval, f, inform.status);
+#endif
     }else{
         printf("UGO_solve exit status = %1" i_ipc_ "\n", inform.status);
     }

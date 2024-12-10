@@ -1,4 +1,4 @@
-! THIS VERSION: HSL SUBSET 1.0 - 2024-02-14 AT 16:30 GMT
+! THIS VERSION: HSL SUBSET 1.1 - 2024-11-23 AT 15:20 GMT
 
 #include "hsl_subset.h"
 
@@ -28,6 +28,15 @@ MODULE HSL_KINDS
   INTEGER, PARAMETER :: r8_ = REAL64
   INTEGER, PARAMETER :: c4_ = KIND( ( 1.0_r4_, 1.0_r4_ ) )
   INTEGER, PARAMETER :: c8_ = KIND( ( 1.0_r8_, 1.0_r8_ ) )
+
+!  if 128 bit reals are supported, use them
+
+#ifdef REAL_128
+  INTEGER, PARAMETER :: r16_ = REAL128
+  INTEGER, PARAMETER :: c16_ = KIND( ( 1.0_r16_, 1.0_r16_ ) )
+  INTEGER, PARAMETER :: qp_ = r16_
+  INTEGER, PARAMETER :: qpc_ = C_FLOAT128
+#endif
 
 !  common aliases
 
@@ -86,3 +95,23 @@ MODULE HSL_KINDS_double
   INTEGER, PARAMETER :: rpc_ = dpc_
 
 END MODULE HSL_KINDS_double
+
+#ifdef REAL_128
+!-*-  H S L _ S U B S E T _  K I N D S _ Q U A D R U P L E  M O D U L E   -*-
+
+MODULE HSL_KINDS_quadruple
+  USE HSL_KINDS
+  IMPLICIT NONE
+  PUBLIC
+
+!--------------------------------------------------------------
+!  R e a l  k i n d s  ( q u a d r u p l e  p r e c i s i o n )
+!--------------------------------------------------------------
+
+  INTEGER, PARAMETER :: real_bytes_ = 16
+  INTEGER, PARAMETER :: rp_ = r16_
+  INTEGER, PARAMETER :: cp_ = c16_
+  INTEGER, PARAMETER :: rpc_ = qpc_
+
+END MODULE HSL_KINDS_quadruple
+#endif

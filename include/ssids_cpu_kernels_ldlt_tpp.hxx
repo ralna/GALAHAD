@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.0 - 2024-06-11 AT 08:40 GMT
+ *  \version   GALAHAD 5.1 - 2024-11-12 AT 11:40 GMT
  */
 
 #pragma once
@@ -14,6 +14,11 @@
 #define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_sgl
 #define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_sgl
 #define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_sgl
+#elif REAL_128
+#define ldlt_tpp_factor ldlt_tpp_factor_qul
+#define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_qul
+#define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_qul
+#define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_qul
 #else
 #define ldlt_tpp_factor ldlt_tpp_factor_dbl
 #define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_dbl

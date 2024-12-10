@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MUMPS stub
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2024-01-26
+#  This version: 2024-11-14
 
 #  include standard GALAHAD makefile definitions
 
@@ -14,18 +14,22 @@ PLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
 
-BASICZ = blas lapack symbols dummy blas_interface lapack_interface
+BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
 MUMPSS = $(BASICSZ) $(MULGS)(mumps_types.o) $(MULGS)(mumps.o)
 MUMPSD = $(BASICSZ) $(MULGD)(mumps_types.o) $(MULGD)(mumps.o)
+MUMPSQ = $(BASICSZ) $(MULGQ)(mumps_types.o) $(MULGQ)(mumps.o)
 MUMPSS64 = $(BASICSZ) $(MULGS64)(mumps_types.o) $(MULGS64)(mumps.o)
 MUMPSD64 = $(BASICSZ) $(MULGD64)(mumps_types.o) $(MULGD64)(mumps.o)
+MUMPSQ64 = $(BASICSZ) $(MULGQ64)(mumps_types.o) $(MULGQ64)(mumps.o)
 
 MUMPSST = $(MUMPSS) $(OBJ)/mumpst.o
 MUMPSDT = $(MUMPSD) $(OBJ)/mumpst.o
+MUMPSDQ = $(MUMPSD) $(OBJ)/mumpst.o
 
 RMUMPSDT = $(OBJ)/mumpst.o -L$(OBJ) $(LIBS)
 RMUMPSST = $(OBJ)/mumpst.o -L$(OBJ) $(LIBS)
+RMUMPSQT = $(OBJ)/mumpst.o -L$(OBJ) $(LIBS)
 
 #  mumps
 
@@ -36,12 +40,24 @@ mumps_single: $(MUMPSS)
 	$(RANLIB) $(MULGS)
 mumps_double: $(MUMPSD)
 	$(RANLIB) $(MULGD)
+mumps_quadruple: $(MUMPSQ)
+	$(RANLIB) $(MULGQ)
 mumps_single_64: $(MUMPSS64)
 	$(RANLIB) $(MULGS64)
 mumps_double_64: $(MUMPSD64)
 	$(RANLIB) $(MULGD64)
+mumps_quadruple_64: $(MUMPSQ64)
+	$(RANLIB) $(MULGQ64)
 
 #  tests
+
+mumpsst: $(MUMPSST)
+	echo " Exhaustive test of subroutine interface to mumps"
+	cd ../mumps ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_mumps \
+                         $(RMUMPSST)
+	- ../mumps/run_mumps > ../mumps/mumpst.output 2>&1
+	cat ../mumps/mumpst.output
+	rm ../mumps/run_mumps
 
 mumpsdt: $(MUMPSDT)
 	echo " Exhaustive test of subroutine interface to mumps"
@@ -51,12 +67,12 @@ mumpsdt: $(MUMPSDT)
 	cat ../mumps/mumpsdt.output
 	rm ../mumps/run_mumps
 
-mumpsst: $(MUMPSST)
+mumpsqt: $(MUMPSQT)
 	echo " Exhaustive test of subroutine interface to mumps"
 	cd ../mumps ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_mumps \
-                         $(RMUMPSST)
-	- ../mumps/run_mumps > ../mumps/mumpst.output 2>&1
-	cat ../mumps/mumpst.output
+                         $(RMUMPSQT)
+	- ../mumps/run_mumps > ../mumps/mumpsqt.output 2>&1
+	cat ../mumps/mumpsqt.output
 	rm ../mumps/run_mumps
 
 #  blas and lapack generic packages and interfaces
@@ -77,13 +93,13 @@ dummy:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
-blas_interface:
+blas_inter:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
-lapack_interface:
+lapack_inter:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            lapack_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 #  individual compilations
 

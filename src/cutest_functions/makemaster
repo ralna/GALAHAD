@@ -2,7 +2,7 @@
 #  package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2021-05-28
+#  This version: 2024-11-13
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -46,8 +46,10 @@ include $(GALAHAD)/src/makedefs/definitions
 
 $(PACKAGE)OBJECTSS = $(DEPENDENCIES) $(CULGS)($(package).o)
 $(PACKAGE)OBJECTSD = $(DEPENDENCIES) $(CULGD)($(package).o)
+$(PACKAGE)OBJECTSQ = $(DEPENDENCIES) $(CULGQ)($(package).o)
 $(PACKAGE)OBJECTSS64 = $(DEPENDENCIES) $(CULGS64)($(package).o)
 $(PACKAGE)OBJECTSD64 = $(DEPENDENCIES) $(CULGD64)($(package).o)
+$(PACKAGE)OBJECTSQ64 = $(DEPENDENCIES) $(CULQD64)($(package).o)
 
 #  =========================================================================
 #  ========================== makefile stanza ==============================
@@ -58,8 +60,10 @@ $(PACKAGE)OBJECTSD64 = $(DEPENDENCIES) $(CULGD64)($(package).o)
 $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $($(PACKAGE)OBJECTSS)
 $(package)_silent_double: $($(PACKAGE)OBJECTSD)
+$(package)_silent_quadruple: $($(PACKAGE)OBJECTSQ)
 $(package)_silent_single_64: $($(PACKAGE)OBJECTSS64)
 $(package)_silent_double_64: $($(PACKAGE)OBJECTSD64)
+$(package)_silent_quadruple_64: $($(PACKAGE)OBJECTSQ64)
 
 #  package
 
@@ -69,10 +73,14 @@ $(package)_single: $($(PACKAGE)OBJECTSS)
 	$(RANLIB) $(CULGS)
 $(package)_double: $($(PACKAGE)OBJECTSD)
 	$(RANLIB) $(CULGD)
+$(package)_quadruple: $($(PACKAGE)OBJECTSQ)
+	$(RANLIB) $(CULGQ)
 $(package)_single_64: $($(PACKAGE)OBJECTSS64)
 	$(RANLIB) $(CULGS64)
 $(package)_double_64: $($(PACKAGE)OBJECTSD64)
 	$(RANLIB) $(CULGD64)
+$(package)_quadruple_64: $($(PACKAGE)OBJECTS!64)
+	$(RANLIB) $(CULGQ64)
 
 #  non-standard package compilation instructions
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 16:00 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_initialize MA57_initialize
@@ -74,7 +74,7 @@
 !                                      SCU_terminate
 !    USE LANCELOT_ASMBL_precision, ONLY : ASMBL_save_type
 !    USE GALAHAD_EXTEND_precision, ONLY : EXTEND_save_type
-     USE LANCELOT_HSL_routines, ONLY : MA61_initialize
+     USE LANCELOT_HSL_inter_precision, ONLY : MA61_initialize
 
      IMPLICIT NONE
 

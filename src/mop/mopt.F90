@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-31 AT 08:10 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -48,7 +48,7 @@ PROGRAM test_mop
   USE GALAHAD_KINDS_precision
   USE GALAHAD_SMT_precision
   USE GALAHAD_MOP_precision
-  USE GALAHAD_BLAS_interface, ONLY: IAMAX
+  USE GALAHAD_BLAS_inter_precision, ONLY: IAMAX
 
   IMPLICIT NONE
 

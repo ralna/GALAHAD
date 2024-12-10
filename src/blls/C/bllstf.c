@@ -7,6 +7,9 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_blls.h"
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 // Define imax
 ipc_ imax(ipc_ a, ipc_ b) {
@@ -208,11 +211,17 @@ int main(void) {
         blls_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%s:%6" i_ipc_ " iterations. Optimal objective value = %5.2f"
-                   " status = %1" i_ipc_ "\n",
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
+#include "galahad_pquad_sf.h"
+#else
+            printf("%s:%6" i_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" i_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
+#endif
         }else{
-            printf("%s: BLLS_solve exit status = %1" i_ipc_ "\n", st, inform.status);
+            printf("%s: BLLS_solve exit status = %1" i_ipc_ "\n", 
+                   st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -302,7 +311,8 @@ int main(void) {
         }else if(status == 7){ // evaluate p = P^{-}v
           for( ipc_ i = 0; i < n; i++) p[i] = userdata.scale * v[i];
         }else{
-            printf(" the value %1" i_ipc_ " of status should not occur\n", status);
+            printf(" the value %1" i_ipc_ " of status should not occur\n", 
+                   status);
             break;
         }
         eval_status = 0;
@@ -313,11 +323,17 @@ int main(void) {
 
     // Print solution details
     if(inform.status == 0){
-        printf("%s:%6" i_ipc_ " iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
-               st, inform.iter, inform.obj, inform.status);
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
+#include "galahad_pquad_sf.h"
+#else
+            printf("%s:%6" i_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" i_ipc_ "\n",
+                   st, inform.iter, inform.obj, inform.status);
+#endif
     }else{
-        printf("%s: BLLS_solve exit status = %1" i_ipc_ "\n", st, inform.status);
+        printf("%s: BLLS_solve exit status = %1" i_ipc_ "\n", 
+               st, inform.status);
     }
     //printf("x: ");
     //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

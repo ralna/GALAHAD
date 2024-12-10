@@ -1,6 +1,6 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-21 AT 09:40 GMT.
 
-#include "galahad_lapack.h"
+#include "galahad_blas.h"
 #include "spral_procedures.h"
 
 #ifdef GALAHAD_BLAS
@@ -15,6 +15,18 @@
 #define trsv galahad_strsv
 #define gemm galahad_sgemm
 #define gemv galahad_sgemv
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define trsm galahad_qtrsm_64
+#define trsv galahad_qtrsv_64
+#define gemm galahad_qgemm_64
+#define gemv galahad_qgemv_64
+#else
+#define trsm galahad_qtrsm
+#define trsv galahad_qtrsv
+#define gemm galahad_qgemm
+#define gemv galahad_qgemv
 #endif
 #else
 #ifdef INTEGER_64
@@ -41,6 +53,18 @@
 #define trsv strsv
 #define gemm sgemm
 #define gemv sgemv
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define trsm qtrsm_64
+#define trsv qtrsv_64
+#define gemm qgemm_64
+#define gemv qgemv_64
+#else
+#define trsm qtrsm
+#define trsv qtrsv
+#define gemm qgemm
+#define gemv qgemv
 #endif
 #else
 #ifdef INTEGER_64

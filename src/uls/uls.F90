@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 15:00 GMT
 
 #include "galahad_modules.h"
 
@@ -39,7 +39,8 @@
      USE GALAHAD_SMT_precision
      USE GALAHAD_STRING, ONLY: STRING_put, STRING_get, STRING_lower_word
      USE GALAHAD_GLS_precision
-     USE GALAHAD_LAPACK_interface, ONLY : GETRF, GETRS
+     USE GALAHAD_LAPACK_inter_precision, ONLY: GETRF, GETRS
+     USE GALAHAD_HSL_inter_precision, ONLY: MA33I
      USE hsl_zd11_precision
      USE hsl_ma48_precision
 
@@ -378,20 +379,6 @@
 !!$        REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n , nrhs ) :: X
 !!$        END SUBROUTINE pardiso
 !!$      END INTERFACE
-
-     INTERFACE MA33I
-       SUBROUTINE MA33I( ICNTL, CNTL )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 10 ) :: ICNTL
-       REAL ( KIND = sp_ ), INTENT( OUT ), DIMENSION( 5 ) :: CNTL
-       END SUBROUTINE MA33I
-
-       SUBROUTINE MA33ID( ICNTL, CNTL )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 10 ) :: ICNTL
-       REAL ( KIND = dp_ ), INTENT( OUT ), DIMENSION( 5 ) :: CNTL
-       END SUBROUTINE MA33ID
-     END INTERFACE MA33I
 
    CONTAINS
 

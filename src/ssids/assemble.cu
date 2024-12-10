@@ -34,6 +34,21 @@
 #define spral_ssids_load_nodes spral_ssids_load_nodes_single
 #define spral_ssids_load_nodes_sc spral_ssids_load_nodes_sc_single
 #define spral_ssids_max_abs spral_ssids_max_abs_single
+#elif REAL_128
+#define load_nodes_type load_nodes_type_quadruple
+#define assemble_cp_type assemble_cp_type_quadruple
+#define assemble_blk_type assemble_blk_type_quadruple
+#define assemble_delay_type assemble_delay_type_quadruple
+#define assemble assemble_quadruple
+#define add_delays add_delays_quadruple
+#define cu_load_nodes cu_load_nodes_quadruple
+#define cu_load_nodes_sc cu_load_nodes_sc_quadruple
+#define cu_max_abs cu_max_abs_quadruple
+#define spral_ssids_add_delays spral_ssids_add_delays_quadruple
+#define spral_ssids_assemble spral_ssids_assemble_quadruple
+#define spral_ssids_load_nodes spral_ssids_load_nodes_quadruple
+#define spral_ssids_load_nodes_sc spral_ssids_load_nodes_sc_quadruple
+#define spral_ssids_max_abs spral_ssids_max_abs_quadruple
 #else
 #define load_nodes_type load_nodes_type_single
 #define assemble_cp_type assemble_cp_type_double

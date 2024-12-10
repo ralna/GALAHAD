@@ -81,7 +81,8 @@ typedefs
 	typedef double rpc_
 
 ``rpc_`` is the real working precision used, but may be changed to ``float`` by
-defining the  preprocessor variable ``SINGLE``.
+defining the  preprocessor variable ``REAL_32`` or (if supported) to
+``__real128`` using the variable ``REAL_128``.
 
 .. index:: pair: typedef; ipc_
 .. _doxid-galahad__ipc_8h_:

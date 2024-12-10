@@ -14,18 +14,22 @@ PLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
 
-BASICZ = blas lapack symbols dummy blas_interface lapack_interface
+BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
 UMFPACKS = $(BASICSZ) $(ULGS)(umfpack.o)
 UMFPACKD = $(BASICSZ) $(ULGD)(umfpack.o)
+UMFPACKQ = $(BASICSZ) $(ULGQ)(umfpack.o)
 UMFPACKS64 = $(BASICSZ) $(ULGS64)(umfpack.o)
 UMFPACKD64 = $(BASICSZ) $(ULGD64)(umfpack.o)
+UMFPACKQ64 = $(BASICSZ) $(ULGQ64)(umfpack.o)
 
 UMFPACKST = $(UMFPACKS) $(OBJS)/umfpackt.o
 UMFPACKDT = $(UMFPACKD) $(OBJD)/umfpackt.o
+UMFPACKQT = $(UMFPACKQ) $(OBJD)/umfpackt.o
 
-RUMFPACKDT = $(OBJD)/umfpackt.o -L$(OBJD) $(LIBS)
 RUMFPACKST = $(OBJS)/umfpackt.o -L$(OBJS) $(LIBS)
+RUMFPACKDT = $(OBJD)/umfpackt.o -L$(OBJD) $(LIBS)
+RUMFPACKQT = $(OBJD)/umfpackt.o -L$(OBJQ) $(LIBS)
 
 #  umfpack
 
@@ -36,21 +40,16 @@ umfpack_single: $(UMFPACKS)
 	$(RANLIB) $(ULGS)
 umfpack_double: $(UMFPACKD)
 	$(RANLIB) $(ULGD)
+umfpack_quadruple: $(UMFPACKQ)
+	$(RANLIB) $(ULGQ)
 umfpack_single_64: $(UMFPACKS64)
 	$(RANLIB) $(ULGS64)
 umfpack_double_64: $(UMFPACKD64)
 	$(RANLIB) $(ULGD64)
+umfpack_quadruple_64: $(UMFPACKQ64)
+	$(RANLIB) $(ULGQ64)
 
 #  tests
-
-umfpackdt: $(UMFPACKDT)
-	echo " Exhaustive test of subroutine interface to umfpack"
-	cd ../umfpack ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_umfpack \
-                         $(RUMFPACKDT)
-#	- ../umfpack/run_umfpack > ../umfpack/umfpackdt.output 2>&1
-#	cat ../umfpack/umfpackdt.output
-	- ../umfpack/run_umfpack
-	rm ../umfpack/run_umfpack
 
 umfpackst: $(UMFPACKST)
 	echo " Exhaustive test of subroutine interface to umfpack"
@@ -58,6 +57,24 @@ umfpackst: $(UMFPACKST)
                          $(RUMFPACKST)
 	- ../umfpack/run_umfpack > ../umfpack/umfpackt.output 2>&1
 	cat ../umfpack/umfpackt.output
+	rm ../umfpack/run_umfpack
+
+umfpackdt: $(UMFPACKDT)
+	echo " Exhaustive test of subroutine interface to umfpack"
+	cd ../umfpack ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_umfpack \
+                         $(RUMFPACKDT)
+	- ../umfpack/run_umfpack > ../umfpack/umfpackdt.output 2>&1
+	cat ../umfpack/umfpackdt.output
+#	- ../umfpack/run_umfpack
+	rm ../umfpack/run_umfpack
+
+umfpackdq: $(UMFPACKQT)
+	echo " Exhaustive test of subroutine interface to umfpack"
+	cd ../umfpack ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_umfpack \
+                         $(RUMFPACKQT)
+	- ../umfpack/run_umfpack > ../umfpack/umfpackqt.output 2>&1
+	cat ../umfpack/umfpackqt.output
+#	- ../umfpack/run_umfpack
 	rm ../umfpack/run_umfpack
 
 #  blas and lapack generic packages and interfaces
@@ -78,13 +95,13 @@ dummy:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
-blas_interface:
+blas_inter:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
-lapack_interface:
+lapack_inter:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            lapack_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 #  individual compilations
 
