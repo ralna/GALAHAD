@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 15:00 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -54,9 +54,10 @@
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_SMT_precision
      USE GALAHAD_SILS_precision
-     USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV, GEMV, GER, SWAP, SCAL
-     USE GALAHAD_LAPACK_interface, ONLY : LAENV, POTRF, POTRS, SYTRF,          &
-                                          SYTRS, PBTRF, PBTRS ! , SYEV
+     USE GALAHAD_BLAS_inter_precision, ONLY : TRSV, TBSV, GEMV, GER, SWAP, SCAL
+     USE GALAHAD_LAPACK_inter_precision, ONLY : LAENV, POTRF, POTRS, SYTRF,    &
+                                                SYTRS, PBTRF, PBTRS ! , SYEV
+     USE GALAHAD_HSL_inter_precision, ONLY: MA27I, MC61A, MC77A
      USE hsl_zd11_precision
      USE hsl_ma57_precision
      USE hsl_ma77_precision
@@ -879,84 +880,6 @@
        END SUBROUTINE MUMPS_precision
      END INTERFACE
 
-     INTERFACE MA27I
-       SUBROUTINE MA27I( ICNTL, CNTL )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
-       REAL ( KIND = sp_ ), INTENT( OUT ) :: CNTL( 5 )
-       END SUBROUTINE MA27I
-
-       SUBROUTINE MA27ID( ICNTL, CNTL )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
-       REAL ( KIND = dp_ ), INTENT( OUT ) :: CNTL( 5 )
-       END SUBROUTINE MA27ID
-     END INTERFACE MA27I
-
-     INTERFACE MC61A
-       SUBROUTINE MC61A( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,           &
-                         ICNTL, CNTL, INFO, RINFO )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
-       INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
-       INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
-       INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: PERM
-       INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( OUT ) :: IW
-       REAL ( KIND = sp_ ), DIMENSION( n ), INTENT( OUT ) :: W
-       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( IN ) :: ICNTL
-       REAL ( KIND = sp_ ), DIMENSION( 5 ), INTENT( IN ) :: CNTL
-       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
-       REAL ( KIND = sp_ ), DIMENSION( 15 ), INTENT( OUT ) :: RINFO
-       END SUBROUTINE MC61A
-
-       SUBROUTINE MC61AD( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,          &
-                          ICNTL, CNTL, INFO, RINFO )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, n, liw, lirn
-       INTEGER ( KIND = ip_ ), DIMENSION( lirn ), INTENT( INOUT ) :: IRN
-       INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( INOUT ) :: ICPTR
-       INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: PERM
-       INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( OUT ) :: IW
-       REAL ( KIND = dp_ ), DIMENSION( n ), INTENT( OUT ) :: W
-       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( IN ) :: ICNTL
-       REAL ( KIND = dp_ ), DIMENSION( 5 ), INTENT( IN ) :: CNTL
-       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
-       REAL ( KIND = dp_ ), DIMENSION( 15 ), INTENT( OUT ) :: RINFO
-       END SUBROUTINE MC61AD
-     END INTERFACE MC61A
-
-     INTERFACE MC77A
-       SUBROUTINE MC77A( job, m, n, nnz, JCST, IRN, A, IW, liw, DW, ldw,       &
-                         ICNTL, CNTL, INFO, RINFO )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, m, n, nnz, liw, ldw
-       INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( IN ) :: JCST
-       INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: IRN
-       INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( OUT ) :: IW
-       REAL ( KIND = sp_ ), DIMENSION( nnz ), INTENT( IN ) :: A
-       REAL ( KIND = sp_ ), DIMENSION( ldw ), INTENT( OUT ) :: DW
-       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( IN ) :: ICNTL
-       REAL ( KIND = sp_ ), DIMENSION( 10 ), INTENT( IN ) :: CNTL
-       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
-       REAL ( KIND = sp_ ), DIMENSION( 10 ), INTENT( OUT ) :: RINFO
-       END SUBROUTINE MC77A
-
-       SUBROUTINE MC77AD( job, m, n, nnz, JCST, IRN, A, IW, liw, DW, ldw,      &
-                          ICNTL, CNTL, INFO, RINFO )
-       USE GALAHAD_KINDS_precision
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: job, m, n, nnz, liw, ldw
-       INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( IN ) :: JCST
-       INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: IRN
-       INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( OUT ) :: IW
-       REAL ( KIND = dp_ ), DIMENSION( nnz ), INTENT( IN ) :: A
-       REAL ( KIND = dp_ ), DIMENSION( ldw ), INTENT( OUT ) :: DW
-       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( IN ) :: ICNTL
-       REAL ( KIND = dp_ ), DIMENSION( 10 ), INTENT( IN ) :: CNTL
-       INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
-       REAL ( KIND = dp_ ), DIMENSION( 10 ), INTENT( OUT ) :: RINFO
-       END SUBROUTINE MC77AD
-     END INTERFACE MC77A
-
    CONTAINS
 
      SUBROUTINE SLS_initialize( solver, data, control, inform, check )
@@ -1257,8 +1180,10 @@
 
 !$   SELECT CASE( data%solver( 1 : data%len_solver ) )
 !$   CASE ( 'ssids', 'mumps' )
+!!!!$     write(6,*) 'omp', OMP_GET_CANCELLATION( ), OMP_GET_PROC_BIND( )
 !$     IF ( .NOT. OMP_GET_CANCELLATION( ) .OR.                                 &
-!$          OMP_GET_PROC_BIND( ) /= 1 ) THEN
+!$          OMP_GET_PROC_BIND( ) == 0 ) THEN
+!!!!$          OMP_GET_PROC_BIND( ) /= 1 ) THEN
 !$       IF ( error > 0 ) WRITE( error,                                        &
 !$         "( ' WARNING: To use the requested linear solver ', A,              &
 !$      &     ', the environment variables', /,  '          OMP_CANCELLATION', &
@@ -3999,6 +3924,8 @@
          data%spm%mtxtype = SpmSymmetric
 #ifdef REAL_32
          data%spm%flttype = SpmFloat
+#elif REAL_128
+         data%spm%flttype = SpmDouble  !!! this is undoubtedly wrong!
 #else
          data%spm%flttype = SpmDouble
 #endif
@@ -4011,6 +3938,9 @@
 #ifdef REAL_32
          CALL spmGetArray( data%spm, colptr = data%PTR,                        &
                            rowptr = data%ROW, svalues = data%VAL )
+#elif REAL_128
+         CALL spmGetArray( data%spm, colptr = data%PTR,                        &
+                           rowptr = data%ROW, qvalues = data%VAL )
 #else
          CALL spmGetArray( data%spm, colptr = data%PTR,                        &
                            rowptr = data%ROW, dvalues = data%VAL )

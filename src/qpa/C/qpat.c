@@ -7,6 +7,9 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_qpa.h"
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 int main(void) {
 
@@ -139,10 +142,17 @@ int main(void) {
         qpa_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6" i_ipc_ " iterations. Optimal objective value = %5.2f status = %1" i_ipc_ "\n",
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_f.h
+#include "galahad_pquad_f.h"
+#else
+            printf("%c:%6" i_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" i_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
+#endif
         }else{
-            printf("%c: QPA_solve exit status = %1" i_ipc_ "\n", st, inform.status);
+            printf("%c: QPA_solve exit status = %1" i_ipc_ "\n", 
+                    st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -179,8 +189,14 @@ int main(void) {
     qpa_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf("%s %6" i_ipc_ " iterations. Optimal objective value = %5.2f status = %1" i_ipc_ "\n",
-               "l1qp  ", inform.iter, inform.obj, inform.status);
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_f.h
+#include "galahad_pquad_f.h"
+#else
+        printf("%c:%6" i_ipc_ " iterations. Optimal objective " 
+               "value = %.2f status = %1" i_ipc_ "\n",
+               st, inform.iter, inform.obj, inform.status);
+#endif
     }else{
         printf("%c: QPA_solve exit status = %1" i_ipc_ "\n", st, inform.status);
     }
@@ -200,8 +216,14 @@ int main(void) {
     qpa_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf("%s %6" i_ipc_ " iterations. Optimal objective value = %5.2f status = %1" i_ipc_ "\n",
-               "bcl1qp", inform.iter, inform.obj, inform.status);
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_f.h
+#include "galahad_pquad_f.h"
+#else
+        printf("%c:%6" i_ipc_ " iterations. Optimal objective " 
+               "value = %.2f status = %1" i_ipc_ "\n",
+               st, inform.iter, inform.obj, inform.status);
+#endif
     }else{
         printf("%c: QPA_solve exit status = %1" i_ipc_ "\n", st, inform.status);
     }

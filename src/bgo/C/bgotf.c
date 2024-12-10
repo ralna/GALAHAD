@@ -7,6 +7,9 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_bgo.h"
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 // Custom userdata struct
 struct userdata_type {
@@ -132,10 +135,17 @@ int main(void) {
         bgo_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6" i_ipc_ " evaluations. Optimal objective value = %5.2f"
-              " status = %1" i_ipc_ "\n", st, inform.f_eval, inform.obj, inform.status);
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_of.h
+#include "galahad_pquad_of.h"
+#else
+            printf("%c:%6" i_ipc_ " evaluations. Optimal objective "
+                   "value = %.2f status = %1" i_ipc_ "\n", 
+                   st, inform.f_eval, inform.obj, inform.status);
+#endif
         }else{
-            printf("%c: BGO_solve exit status = %1" i_ipc_ "\n", st, inform.status);
+            printf("%c: BGO_solve exit status = %1" i_ipc_ "\n", 
+                   st, inform.status);
         }
         //printf("x: ");
         //for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -398,10 +408,17 @@ int main(void) {
         bgo_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6" i_ipc_ " evaluations. Optimal objective value = %5.2f"
-              " status = %1" i_ipc_ "\n", st, inform.f_eval, inform.obj, inform.status);
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_of.h
+#include "galahad_pquad_of.h"
+#else
+            printf("%c:%6" i_ipc_ " evaluations. Optimal objective "
+                   "value = %.2f status = %1" i_ipc_ "\n", 
+                   st, inform.f_eval, inform.obj, inform.status);
+#endif
         }else{
-            printf("%c: BGO_solve exit status = %1" i_ipc_ "\n", st, inform.status);
+            printf("%c: BGO_solve exit status = %1" i_ipc_ "\n", 
+                   st, inform.status);
         }
         //printf("x: ");
         //for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

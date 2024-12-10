@@ -6,6 +6,9 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_gltr.h"
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 int main(void) {
 
@@ -72,9 +75,14 @@ int main(void) {
           }
         }
         gltr_information( &data, &inform, &status );
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_gltr.h
+#include "galahad_pquad_gltr.h"
+#else
         printf("MR = %1" i_ipc_ "%1" i_ipc_ 
                " gltr_solve_problem exit status = %" i_ipc_ ", f = %.2f\n", 
                unit_m, new_radius, inform.status, inform.obj );
+#endif
       }
     }
    // Delete internal workspace

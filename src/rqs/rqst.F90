@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-23 AT 15:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_RQS_test_deck
    USE GALAHAD_KINDS_precision
@@ -300,7 +300,7 @@
    CONTAINS
      SUBROUTINE WHICH_sls( control )
      TYPE ( RQS_control_type ) :: control
-#include "galahad_sls_defaults.h"
+#include "galahad_sls_defaults_ls.h"
      control%symmetric_linear_solver = symmetric_linear_solver
      control%definite_linear_solver = definite_linear_solver
      END SUBROUTINE WHICH_sls

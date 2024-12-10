@@ -3,18 +3,28 @@
 #  available under a BSD licence as part of GALAHAD
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-06-11
+#  This version: 2024-11-24
 
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single_64"
   DPREC = -DREAL_32 -DINTEGER_64
+  METIS_64 = _64
+else ifeq "$(PRECIS)" "quadruple_64"
+  DPREC = -DREAL_128 -DINTEGER_64
+  METIS_64 = _64
 else ifeq "$(PRECIS)" "double_64"
   DPREC = -DINTEGER_64
+  METIS_64 = _64
 else ifeq "$(PRECIS)" "single"
   DPREC = -DREAL_32
+  METIS_64 =
+else ifeq "$(PRECIS)" "quadruple"
+  DPREC = -DREAL_128
+  METIS_64 =
 else
   DPREC =
+  METIS_64 =
 endif
 
 ifeq "$(HWLOC)" "un"
@@ -29,39 +39,41 @@ else
  DGETCPU = -DSPRAL_HAVE_SCHED_GETCPU
 endif
 
+GALINCLUDE = $(GALAHAD)/include
+
 #  compiler flags
 
 FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-              $(DPREC) -I $(GALAHAD)/include
+              $(DPREC) -I $(GALINCLUDE)
 FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
-              $(DPREC) -I $(GALAHAD)/include
+              $(DPREC) -I $(GALINCLUDE)
 FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
-              $(DPREC) -I $(GALAHAD)/include
+              $(DPREC) -I $(GALINCLUDE)
 FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
-              $(DPREC) -I $(GALAHAD)/include
+              $(DPREC) -I $(GALINCLUDE)
 FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
-              $(DPREC) -I $(GALAHAD)/include
+              $(DPREC) -I $(GALINCLUDE)
 FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-            $(SOMP) $(DPREC) -I $(GALAHAD)/include
+            $(SOMP) $(DPREC) -I $(GALINCLUDE)
 FFLAGSNOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
-            $(SOMP) $(DPREC) -I $(GALAHAD)/include
+            $(SOMP) $(DPREC) -I $(GALINCLUDE)
 
 #  C++ compiler flags
 
 CXXFLAGSOMP   = $(CXXBASIC) $(OPTIMIZATION) $(CXXDEBUG) $(SOMP) \
-                 $(DPREC) $(DHWLOC) $(DGETCPU) -I $(GALAHAD)/include
+                 $(DPREC) $(DHWLOC) $(DGETCPU) -I $(GALINCLUDE)
 CXXFLAGSNOMP  = $(CXXBASIC) $(NOOPTIMIZATION) $(CXXDEBUG) $(SOMP) \
-                 $(DPREC) $(DHWLOC) $(DGETCPU) -I $(GALAHAD)/include
+                 $(DPREC) $(DHWLOC) $(DGETCPU) -I $(GALINCLUDE)
 
 #  CUDA compiler flags
 
 #CUDAFLAGS   = -arch=$(CUDAARCH) -code=$(CUDACODE) $(CUDABASIC) \
-#                $(OPTIMIZATION) -I $(GALAHAD)/include
+#                $(OPTIMIZATION) -I $(GALINCLUDE)
 #CUDAFLAGSN  = -arch=$(CUDAARCH) -code=$(CUDACODE) $(CUDABASIC) \
-#               $(NOOPTIMIZATION)  -I$(GALAHAD)/include
+#               $(NOOPTIMIZATION)  -I$(GALINCLUDE)
 
-CUDAFLAGS = $(CUDABASIC) $(CUDAOPTIMIZATION) -I$(GALAHAD)/include
-CUDAFLAGSN = $(CUDABASIC) $(CUDANOOPTIMIZATION) -I$(GALAHAD)/include
+CUDAFLAGS = $(CUDABASIC) $(CUDAOPTIMIZATION) -I$(GALINCLUDE)
+CUDAFLAGSN = $(CUDABASIC) $(CUDANOOPTIMIZATION) -I$(GALINCLUDE)
 
 #  linking and run flags
 
@@ -74,24 +86,35 @@ RUNFFLAGSOMP  = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(SOMP)
 LG  = $(OBJ)/libgalahad.a
 LGS = $(OBJS)/libgalahad.a
 LGD = $(OBJD)/libgalahad.a
+LGQ = $(OBJQ)/libgalahad.a
 LGS64 = $(OBJS64)/libgalahad.a
 LGD64 = $(OBJD64)/libgalahad.a
+LGQ64 = $(OBJQ64)/libgalahad.a
 
 CLG  = $(OBJ)/libgalahad_c.a
 CLGS = $(OBJS)/libgalahad_c.a
 CLGD = $(OBJD)/libgalahad_c.a
+CLGQ = $(OBJQ)/libgalahad_c.a
 CLGS64 = $(OBJS64)/libgalahad_c.a
 CLGD64 = $(OBJD64)/libgalahad_c.a
+CLGQ64 = $(OBJQ64)/libgalahad_c.a
 
 RLG  = $(OBJ)/libgalahad_spral.a
 RLGS = $(OBJS)/libgalahad_spral.a
 RLGD = $(OBJD)/libgalahad_spral.a
+RLGQ = $(OBJQ)/libgalahad_spral.a
 RLGS64 = $(OBJS64)/libgalahad_spral.a
 RLGD64 = $(OBJD64)/libgalahad_spral.a
+RLGQ64 = $(OBJQ64)/libgalahad_spral.a
 
 #  Libraries used
 
-LIBS = $(METIS) $(LAPACK) $(BLAS)
+ifeq "$(METIS_64)" "_64"
+  LIBS = -L$(OBJ) $(METIS64) $(LAPACK64) $(BLAS64) -lgalahad $(METIS64)
+else
+  LIBS = -L$(OBJ) $(METIS) $(LAPACK) $(BLAS) -lgalahad $(METIS)
+endif
+
 PLIBS = $(LIBS) -lgalahad_problem
 
 #  Archive manipulation strings
@@ -116,43 +139,61 @@ SUCC = precision version) compiled successfully
 #  compilation agenda
 
 SSIDSSS = $(SSIDSS) $(OBJS)/ssidss_single.o
-SSIDSST = $(SSIDSS) $(OBJS)/ssidst_single.o
 SSIDSDS = $(SSIDSD) $(OBJD)/ssidss_double.o
+SSIDSQS = $(SSIDSQ) $(OBJQ)/ssidss_quadruple.o
+SSIDSST = $(SSIDSS) $(OBJS)/ssidst_single.o
 SSIDSDT = $(SSIDSD) $(OBJD)/ssidst_double.o
+SSIDSQT = $(SSIDSQ) $(OBJQ)/ssidst_quadruple.o
 
 SSIDSSS64 = $(SSIDSS64) $(OBJS64)/ssidss_single_64.o
-SSIDSST64 = $(SSIDSS64) $(OBJS64)/ssidst_single_64.o
 SSIDSDS64 = $(SSIDSD64) $(OBJD64)/ssidss_double_64.o
+SSIDSQS64 = $(SSIDSQ64) $(OBJQ64)/ssidss_quadruple_64.o
+SSIDSST64 = $(SSIDSS64) $(OBJS64)/ssidst_single_64.o
 SSIDSDT64 = $(SSIDSD64) $(OBJD64)/ssidst_double_64.o
+SSIDSQT64 = $(SSIDSQ64) $(OBJQ64)/ssidst_quadruple_64.o
 
 RSSIDSSS = $(OBJS)/ssidss_single.o -L$(OBJS) $(SPRAL) $(LIBS)
-RSSIDSST = $(OBJS)/ssidst_single.o -L$(OBJS) $(SPRAL) $(LIBS)
 RSSIDSDS = $(OBJD)/ssidss_double.o -L$(OBJD) $(SPRAL) $(LIBS)
+RSSIDSQS = $(OBJQ)/ssidss_quadruple.o -L$(OBJQ) $(SPRAL) $(LIBS)
+RSSIDSST = $(OBJS)/ssidst_single.o -L$(OBJS) $(SPRAL) $(LIBS)
 RSSIDSDT = $(OBJD)/ssidst_double.o -L$(OBJD) $(SPRAL) $(LIBS)
+RSSIDSQT = $(OBJQ)/ssidst_quadruple.o -L$(OBJQ) $(SPRAL) $(LIBS)
 
 RSSIDSSS64 = $(OBJS64)/ssidss_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
-RSSIDSST64 = $(OBJS64)/ssidst_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
 RSSIDSDS64 = $(OBJD64)/ssidss_double_64.o -L$(OBJD64) $(SPRAL) $(LIBS)
+RSSIDSQS64 = $(OBJQ64)/ssidss_quadruple_64.o -L$(OBJQ64) $(SPRAL) $(LIBS)
+RSSIDSST64 = $(OBJS64)/ssidst_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
 RSSIDSDT64 = $(OBJD64)/ssidst_double_64.o -L$(OBJD64) $(SPRAL) $(LIBS)
+RSSIDSQT64 = $(OBJQ64)/ssidst_quadruple_64.o -L$(OBJQ64) $(SPRAL) $(LIBS)
 
 CUDAS = $(RLGS)(cuda_nocuda_single.o)
 CUDAD = $(RLGD)(cuda_nocuda_double.o)
+CUDAQ = $(RLGQ)(cuda_nocuda_quadruple.o)
 CUDAS64 = $(RLGS64)(cuda_nocuda_single_64.o)
 CUDAD64 = $(RLGD64)(cuda_nocuda_double_64.o)
+CUDAQ64 = $(RLGQ64)(cuda_nocuda_quadruple_64.o)
 
 CUDAScuda = $(RLGS)(api_wrappers_single.o) $(RLGS)(cuda_single.o)
 CUDADcuda = $(RLGD)(api_wrappers_double.o) $(RLGD)(cuda_double.o)
+CUDAQcuda = $(RLGQ)(api_wrappers_quadruple.o) $(RLGQ)(cuda_quadruple.o)
 CUDAS64cuda = $(RLGS64)(api_wrappers_single_64.o) $(RLGS64)(cuda_single_64.o)
-CUDAD64cuda = $(RLGD64)(api_wrappers_double_64.o) $(RLGD64)(cuda_double_64.o)
+CUDAD64cuda = $(RLGD64)(api_wrappers_quadruple_64.o) \
+              $(RLGD64)(cuda_quadruple_64.o)
+CUDAQ64cuda = $(RLGQ64)(api_wrappers_quadruple_64.o) \
+              $(RLGQ64)(cuda_quadruple_64.o)
 
 CUDASUSE = $(CUDAS$(CUDA))
 CUDADUSE = $(CUDAD$(CUDA))
+CUDAQUSE = $(CUDAQ$(CUDA))
 GPUSUSE = $(GPUS$(CUDA))
 GPUDUSE = $(GPUD$(CUDA))
+GPUQUSE = $(GPUQ$(CUDA))
 CUDASUSE64 = $(CUDAS64$(CUDA))
 CUDADUSE64 = $(CUDAD64$(CUDA))
+CUDAQUSE64 = $(CUDAQ64$(CUDA))
 GPUSUSE64 = $(GPUS64$(CUDA))
 GPUDUSE64 = $(GPUD64$(CUDA))
+GPUQUSE64 = $(GPUQ64$(CUDA))
 
 GPUS = $(RLGS)(gpu_subtree_no_cuda_single.o)
 GPUScuda = $(RLGS)(gpu_alloc_single.o) $(RLGS)(cpu_solve_single.o) \
@@ -170,6 +211,16 @@ GPUDcuda = $(RLGD)(gpu_alloc_double.o) $(RLGD)(cpu_solve_double.o) \
            $(RLGD)(gpu_subtree_double.o) $(RLGD)(assemble_double.o) \
            $(RLGD)(dense_factor_double.o) $(RLGD)(reorder_double.o) \
            $(RLGD)(solve_double.o) $(RLGD)(syrk_double.o)
+GPUQ = $(RLGQ)(gpu_subtree_no_cuda_quadruple.o)
+GPUQcuda = $(RLGQ)(gpu_alloc_quadruple.o) $(RLGQ)(cpu_solve_quadruple.o) \
+           $(RLGQ)(gpu_datatypes_quadruple.o) \
+           $(RLGQ)(gpu_interfaces_quadruple.o) \
+           $(RLGQ)(gpu_dense_factor_quadruple.o) \
+           $(RLGQ)(gpu_solve_quadruple.o) \
+           $(RLGQ)(gpu_smalloc_quadruple.o) $(RLGQ)(gpu_factor_quadruple.o) \
+           $(RLGQ)(gpu_subtree_quadruple.o) $(RLGQ)(assemble_quadruple.o) \
+           $(RLGQ)(dense_factor_quadruple.o) $(RLGQ)(reorder_quadruple.o) \
+           $(RLGQ)(solve_quadruple.o) $(RLGQ)(syrk_quadruple.o)
 GPUS64 = $(RLGS64)(gpu_subtree_no_cuda_single_64.o)
 GPUS64cuda = $(RLGS64)(gpu_alloc_single_64.o) $(RLGS64)(cpu_solve_single_64.o) \
            $(RLGS64)(gpu_datatypes_single_64.o) \
@@ -192,17 +243,36 @@ GPUD64cuda = $(RLGD64)(gpu_alloc_double_64.o) $(RLGD64)(cpu_solve_double_64.o) \
            $(RLGD64)(gpu_subtree_double_64.o) $(RLGD64)(assemble_double_64.o) \
            $(RLGD64)(dense_factor_double_64.o) $(RLGD64)(reorder_double_64.o) \
            $(RLGD64)(solve_double_64.o) $(RLGD64)(syrk_double_64.o)
+GPUQ64 = $(RLGQ64)(gpu_subtree_no_cuda_quadruple_64.o)
+GPUQ64cuda = $(RLGQ64)(gpu_alloc_quadruple_64.o) \
+           $(RLGQ64)(cpu_solve_quadruple_64.o) \
+           $(RLGQ64)(gpu_datatypes_quadruple_64.o) \
+           $(RLGQ64)(gpu_interfaces_quadruple_64.o) \
+           $(RLGQ64)(gpu_dense_factor_quadruple_64.o) \
+           $(RLGQ64)(gpu_solve_quadruple_64.o) \
+           $(RLGQ64)(gpu_smalloc_quadruple_64.o) \
+           $(RLGQ64)(gpu_factor_quadruple_64.o) \
+           $(RLGQ64)(gpu_subtree_quadruple_64.o) \
+           $(RLGQ64)(assemble_quadruple_64.o) \
+           $(RLGQ64)(dense_factor_quadruple_64.o) \
+           $(RLGQ64)(reorder_quadruple_64.o) \
+           $(RLGQ64)(solve_quadruple_64.o) $(RLGQ64)(syrk_quadruple_64.o)
 
 SPRALRBS = $(RLGS)(spral_kinds.o) $(RLGS)(matrix_util_single.o) \
            $(RLGS)(random_single.o) $(RLGS)(rutherford_boeing_single.o)
 SPRALRBD = $(RLGD)(spral_kinds.o) $(RLGD)(matrix_util_double.o) \
            $(RLGD)(random_double.o) $(RLGD)(rutherford_boeing_double.o)
+SPRALRBQ = $(RLGQ)(spral_kinds.o) $(RLGQ)(matrix_util_quadruple.o) \
+           $(RLGQ)(random_quadruple.o) $(RLGQ)(rutherford_boeing_quadruple.o)
 SPRALRBS64 = $(RLGS64)(spral_kinds.o) $(RLGS64)(matrix_util_single_64.o) \
              $(RLGS64)(random_single_64.o) \
              $(RLGS64)(rutherford_boeing_single_64.o)
 SPRALRBD64 = $(RLGD64)(spral_kinds.o) $(RLGD64)(matrix_util_double_64.o) \
              $(RLGD64)(random_double_64.o) \
              $(RLGD64)(rutherford_boeing_double_64.o)
+SPRALRBQ64 = $(RLGQ64)(spral_kinds.o) $(RLGQ64)(matrix_util_quadruple_64.o) \
+             $(RLGQ64)(random_quadruple_64.o) \
+             $(RLGQ64)(rutherford_boeing_quadruple_64.o)
 
 SSIDSS = extend basics $(SPRALRBS) $(CUDASUSE) \
          $(RLGS)(compat.o) $(RLGS)(guess_topology.o) \
@@ -242,6 +312,25 @@ SSIDSD = extend basics $(SPRALRBD) $(CUDADUSE) \
          $(RLGD)(profile_iface.o) $(GPUDUSE) \
          $(RLGD)(anal_double.o) $(RLGD)(fkeep_double.o) \
          $(RLGD)(contrib_free_double.o) $(RLGD)(ssids_double.o)
+SSIDSQ = extend basics $(SPRALRBQ) $(CUDAQUSE) \
+         $(RLGQ)(compat.o) $(RLGQ)(guess_topology.o) \
+         $(RLGQ)(omp.o) $(RLGQ)(profile.o) $(RLGQ)(SymbolicSubtree.o) \
+         $(RLGQ)(NumericSubtree_quadruple.o) \
+         $(RLGQ)(cholesky_quadruple.o) $(RLGQ)(ldlt_app_quadruple.o) \
+         $(RLGQ)(ldlt_nopiv_quadruple.o) $(RLGQ)(ldlt_tpp_quadruple.o) \
+         $(RLGQ)(wrappers_quadruple.o) \
+         $(RLGQ)(ThreadStats.o) $(RLGQ)(hw_topology.o) \
+         $(RLGQ)(metis4_wrapper.o) \
+         $(RLGQ)(spral_scaling_quadruple.o) \
+         $(RLGQ)(match_order_quadruple.o) $(RLGQ)(datatypes_quadruple.o) \
+         $(RLGQ)(core_analyse.o) $(RLGQ)(pgm.o) \
+         $(RLGQ)(inform_quadruple.o) $(RLGQ)(contrib_quadruple.o) \
+         $(RLGQ)(subtree_quadruple.o) $(RLGQ)(akeep_quadruple.o) \
+         $(RLGQ)(blas_iface.o) $(RLGQ)(lapack_iface.o) \
+         $(RLGQ)(cpu_iface_quadruple.o) $(RLGQ)(cpu_subtree_quadruple.o) \
+         $(RLGQ)(profile_iface.o) $(GPUQUSE) \
+         $(RLGQ)(anal_quadruple.o) $(RLGQ)(fkeep_quadruple.o) \
+         $(RLGQ)(contrib_free_quadruple.o) $(RLGQ)(ssids_quadruple.o)
 SSIDSS64 = extend basics $(SPRALRBS64) $(CUDASUSE64) \
          $(RLGS64)(compat.o) $(RLGS64)(guess_topology.o) \
          $(RLGS64)(omp.o) $(RLGS64)(profile.o) \
@@ -278,11 +367,34 @@ SSIDSD64 = extend basics $(SPRALRBD64) $(CUDADUSE64) \
          $(RLGD64)(profile_iface.o) $(GPUDUSE64) \
          $(RLGD64)(anal_double_64.o) $(RLGD64)(fkeep_double_64.o) \
          $(RLGD64)(contrib_free_double_64.o) $(RLGD64)(ssids_double_64.o)
+SSIDSQ64 = extend basics $(SPRALRBQ64) $(CUDAQUSE64) \
+         $(RLGQ64)(compat.o) $(RLGQ64)(guess_topology.o) \
+         $(RLGQ64)(omp.o) $(RLGQ64)(profile.o) \
+         $(RLGQ64)(SymbolicSubtree.o) $(RLGQ64)(NumericSubtree_quadruple_64.o) \
+         $(RLGQ64)(cholesky_quadruple_64.o) $(RLGQ64)(ldlt_app_quadruple_64.o) \
+         $(RLGQ64)(ldlt_nopiv_quadruple_64.o) \
+         $(RLGQ64)(ldlt_tpp_quadruple_64.o) \
+         $(RLGQ64)(wrappers_quadruple_64.o) $(RLGQ64)(ThreadStats.o) \
+         $(RLGQ64)(hw_topology.o) $(RLGQ64)(metis4_wrapper.o) \
+         $(RLGQ64)(spral_scaling_quadruple_64.o) \
+         $(RLGQ64)(match_order_quadruple_64.o) \
+         $(RLGQ64)(datatypes_quadruple_64.o) \
+         $(RLGQ64)(core_analyse.o) $(RLGQ64)(pgm.o) \
+         $(RLGQ64)(inform_quadruple_64.o) $(RLGQ64)(contrib_quadruple_64.o) \
+         $(RLGQ64)(subtree_quadruple_64.o) $(RLGQ64)(akeep_quadruple_64.o) \
+         $(RLGQ64)(blas_iface.o) $(RLGQ64)(lapack_iface.o) \
+         $(RLGQ64)(cpu_iface_quadruple_64.o) \
+         $(RLGQ64)(cpu_subtree_quadruple_64.o) \
+         $(RLGQ64)(profile_iface.o) $(GPUQUSE64) \
+         $(RLGQ64)(anal_quadruple_64.o) $(RLGQ64)(fkeep_quadruple_64.o) \
+         $(RLGQ64)(contrib_free_quadruple_64.o) $(RLGQ64)(ssids_quadruple_64.o)
 
 SSIDSCS = $(SSIDSS) $(CLGS)(ssids_ciface_single.o)
 SSIDSCD = $(SSIDSD) $(CLGD)(ssids_ciface_double.o)
+SSIDSCQ = $(SSIDSQ) $(CLGQ)(ssids_ciface_quadruple.o)
 SSIDSCS64 = $(SSIDSS64) $(CLGS64)(ssids_ciface_single_64.o)
 SSIDSCD64 = $(SSIDSD64) $(CLGD64)(ssids_ciface_double_64.o)
+SSIDSCQ64 = $(SSIDSQ64) $(CLGQ64)(ssids_ciface_quadruple_64.o)
 
 #  main compilations and runs
 
@@ -295,10 +407,14 @@ ssids_silent_single: $(SSIDSS)
 	$(RANLIB) $(RLGS)
 ssids_silent_double: $(SSIDSD)
 	$(RANLIB) $(RLGD)
+ssids_silent_quadruple: $(SSIDSQ)
+	$(RANLIB) $(RLGQ)
 ssids_silent_single_64: $(SSIDSS64)
 	$(RANLIB) $(RLGS64)
 ssids_silent_double_64: $(SSIDSD64)
 	$(RANLIB) $(RLGD64)
+ssids_silent_quadruple_64: $(SSIDSQ64)
+	$(RANLIB) $(RLGQ64)
 
 ssids: ssids_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: SSIDS ($(PRECIS) $(SUCC)"
@@ -306,18 +422,24 @@ ssids_single: $(SSIDSS)
 	$(RANLIB) $(RLGS)
 ssids_double: $(SSIDSD)
 	$(RANLIB) $(RLGD)
+ssids_quadruple: $(SSIDSQ)
+	$(RANLIB) $(RLGQ)
 ssids_single_64: $(SSIDSS64)
 	$(RANLIB) $(RLGS64)
 ssids_double_64: $(SSIDSD64)
 	$(RANLIB) $(RLGD64)
+ssids_quadruple_64: $(SSIDSQ64)
+	$(RANLIB) $(RLGQ64)
 
 ssids_ciface: ssids_ciface_$(PRECIS)
 	@printf ' %-21s\n' "SSIDS C routines ($(PRECIS) $(SUCC)"
 ssids_ciface_silent: ssids_ciface_$(PRECIS)
 ssids_ciface_single: $(SSIDSCS)
 ssids_ciface_double: $(SSIDSCD)
+ssids_ciface_quadruple: $(SSIDSCQ)
 ssids_ciface_single_64: $(SSIDSCS64)
 ssids_ciface_double_64: $(SSIDSCD64)
+ssids_ciface_quadruple_64: $(SSIDSCQ64)
 
 # spralrb
 
@@ -326,10 +448,14 @@ spralrb_silent_single: $(SPRALRBS)
 	$(RANLIB) $(RLGS)
 spralrb_silent_double: $(SPRALRBD)
 	$(RANLIB) $(RLGD)
+spralrb_silent_quadruple: $(SPRALRBQ)
+	$(RANLIB) $(RLGQ)
 spralrb_silent_single_64: $(SPRALRBS64)
 	$(RANLIB) $(RLGS64)
 spralrb_silent_double_64: $(SPRALRBD64)
 	$(RANLIB) $(RLGD64)
+spralrb_silent_quadruple_64: $(SPRALRBQ64)
+	$(RANLIB) $(RLGQ64)
 
 spralrb: spralrb_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: SPRALRB ($(PRECIS) $(SUCC)"
@@ -337,10 +463,14 @@ spralrb_single: $(SPRALRBS)
 	$(RANLIB) $(RLGS)
 spralrb_double: $(SPRALRBD)
 	$(RANLIB) $(RLGD)
+spralrb_quadruple: $(SPRALRBQ)
+	$(RANLIB) $(RLGQ)
 spralrb_single_64: $(SPRALRBS64)
 	$(RANLIB) $(RLGS64)
 spralrb_double_64: $(SPRALRBD64)
 	$(RANLIB) $(RLGD64)
+spralrb_quadruple_64: $(SPRALRBQ64)
+	$(RANLIB) $(RLGQ64)
 
 # run spec-sheet example tests
 
@@ -356,6 +486,15 @@ ssidsss: $(SSIDSSS)
 ssidsds: $(SSIDSDS)
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_ssids $(RSSIDSDS)
+#	- ../ssids/run_ssids < ../ssids/ssidss.data
+	- ../ssids/run_ssids < ../ssids/ssidss.data \
+                             > ../ssids/ssidsds.output 2>&1
+	cat ../ssids/ssidsds.output
+	rm ../ssids/run_ssids
+
+ssidsqs: $(SSIDSQS)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSQS)
 #	- ../ssids/run_ssids < ../ssids/ssidss.data
 	- ../ssids/run_ssids < ../ssids/ssidss.data \
                              > ../ssids/ssidsds.output 2>&1
@@ -403,6 +542,14 @@ ssidsds_64: $(SSIDSDS64)
 	cat ../ssids/ssidsds_64.output
 	rm ../ssids/run_ssids
 
+ssidsqs_64: $(SSIDSDQ64)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDQ64)
+	- ../ssids/run_ssids < ../ssids/ssidss.data \
+                             > ../ssids/ssidsds_64.output 2>&1
+	cat ../ssids/ssidsds_64.output
+	rm ../ssids/run_ssids
+
 ssidsds_64_cuda: $(SSIDSDS64)
 	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
                       $(RSSIDSDS64) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
@@ -441,6 +588,15 @@ ssidsdt: $(SSIDSDT)
 	echo " Exhaustive test of subroutine interface to ssids"
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_ssids $(RSSIDSDT)
+#	- ../ssids/run_ssids
+	- ../ssids/run_ssids  > ../ssids/ssidsdt.output 2>&1
+	cat ../ssids/ssidsdt.output
+	rm ../ssids/run_ssids
+
+ssidsqt: $(SSIDSQT)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSQT)
 #	- ../ssids/run_ssids
 	- ../ssids/run_ssids  > ../ssids/ssidsdt.output 2>&1
 	cat ../ssids/ssidsdt.output
@@ -491,6 +647,15 @@ ssidsdt_64: $(SSIDSDT64)
 	echo " Exhaustive test of subroutine interface to ssids"
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_ssids $(RSSIDSDT64)
+	- ../ssids/run_ssids
+#	- ../ssids/run_ssids  > ../ssids/ssidsdt_64.output 2>&1
+#	cat ../ssids/ssidsdt_64.output
+	rm ../ssids/run_ssids
+
+ssidsqt_64: $(SSIDSQT64)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSQT64)
 	- ../ssids/run_ssids
 #	- ../ssids/run_ssids  > ../ssids/ssidsdt_64.output 2>&1
 #	cat ../ssids/ssidsdt_64.output
@@ -549,8 +714,10 @@ $(RLG)(spral_kinds.o): ../spral/spral_kinds.F90
 	cd $(OBJ) ; $(RARR) spral_kinds.o ; $(RM) spral_kinds.F90 spral_kinds.o
 	$(RRMARFILE) cuda_single.o
 	$(RRMARFILE) cuda_double.o
+	$(RRMARFILE) cuda_quadruple.o
 	$(RRMARFILE) cuda_nocuda_single.o
 	$(RRMARFILE) cuda_nocuda_double.o
+	$(RRMARFILE) cuda_nocuda_qadruple.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -631,9 +798,10 @@ $(RLG)(cuda_nocuda_$(PRECIS).o): ../spral/cuda_nocuda.F90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-compat.o: $(RLG)(compat.o)
+compat.o: $(RLG)(compat.o) 
 
-$(RLG)(compat.o): ../spral/compat.cxx
+$(RLG)(compat.o): ../spral/compat.cxx \
+                  $(GALINCLUDE)/spral_compat.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "compat  "
 	$(CP) ../spral/compat.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o compat.o $(CXXFLAGSOMP) compat.cxx \
@@ -644,7 +812,8 @@ $(RLG)(compat.o): ../spral/compat.cxx
 
 guess_topology.o: $(RLG)(guess_topology.o)
 
-$(RLG)(guess_topology.o): ../spral/guess_topology.cxx
+$(RLG)(guess_topology.o): ../spral/guess_topology.cxx \
+                  $(GALINCLUDE)/spral_guess_topology.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "guess_topology  "
 	$(CP) ../spral/guess_topology.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o guess_topology.o $(CXXFLAGSOMP) \
@@ -658,7 +827,7 @@ $(RLG)(guess_topology.o): ../spral/guess_topology.cxx
 
 omp.o: $(RLG)(omp.o)
 
-$(RLG)(omp.o): ../spral/omp.cxx
+$(RLG)(omp.o): ../spral/omp.cxx $(GALINCLUDE)/spral_omp.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "omp  "
 	$(CP) ../spral/omp.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o omp.o $(CXXFLAGSOMP) \
@@ -670,7 +839,8 @@ $(RLG)(omp.o): ../spral/omp.cxx
 
 profile.o: $(RLG)(profile.o)
 
-$(RLG)(profile.o): ../ssids/profile.cxx
+$(RLG)(profile.o): ../ssids/profile.cxx \
+                   $(GALINCLUDE)/ssids_profile.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "profile  "
 	$(CP) ../ssids/profile.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o profile.o $(CXXFLAGSOMP) \
@@ -682,7 +852,8 @@ $(RLG)(profile.o): ../ssids/profile.cxx
 
 SymbolicSubtree.o: $(RLG)(SymbolicSubtree.o)
 
-$(RLG)(SymbolicSubtree.o): ../ssids/SymbolicSubtree.cxx
+$(RLG)(SymbolicSubtree.o): ../ssids/SymbolicSubtree.cxx \
+                           $(GALINCLUDE)/ssids_cpu_SymbolicSubtree.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "SymbolicSubtree  "
 	$(CP) ../ssids/SymbolicSubtree.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o SymbolicSubtree.o $(CXXFLAGSOMP) \
@@ -696,7 +867,8 @@ $(RLG)(SymbolicSubtree.o): ../ssids/SymbolicSubtree.cxx
 
 NumericSubtree.o: $(RLG)(NumericSubtree_$(PRECIS).o)
 
-$(RLG)(NumericSubtree_$(PRECIS).o): ../ssids/NumericSubtree.cxx
+$(RLG)(NumericSubtree_$(PRECIS).o): ../ssids/NumericSubtree.cxx \
+                                    $(GALINCLUDE)/ssids_cpu_NumericSubtree.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "NumericSubtree  "
 	$(CP) ../ssids/NumericSubtree.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o NumericSubtree_$(PRECIS).o $(CXXFLAGSOMP) \
@@ -710,7 +882,8 @@ $(RLG)(NumericSubtree_$(PRECIS).o): ../ssids/NumericSubtree.cxx
 
 cholesky.o: $(RLG)(cholesky_$(PRECIS).o)
 
-$(RLG)(cholesky_$(PRECIS).o): ../ssids/cholesky.cxx
+$(RLG)(cholesky_$(PRECIS).o): ../ssids/cholesky.cxx \
+                              $(GALINCLUDE)/ssids_cpu_kernels_cholesky.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "cholesky  "
 	$(CP) ../ssids/cholesky.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o cholesky_$(PRECIS).o $(CXXFLAGSOMP) \
@@ -724,7 +897,8 @@ $(RLG)(cholesky_$(PRECIS).o): ../ssids/cholesky.cxx
 
 ldlt_app.o: $(RLG)(ldlt_app_$(PRECIS).o)
 
-$(RLG)(ldlt_app_$(PRECIS).o): ../ssids/ldlt_app.cxx
+$(RLG)(ldlt_app_$(PRECIS).o): ../ssids/ldlt_app.cxx \
+                              $(GALINCLUDE)/ssids_cpu_kernels_block_ldlt.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "ldlt_app  "
 	$(CP) ../ssids/ldlt_app.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o ldlt_app_$(PRECIS).o $(CXXFLAGSOMP) \
@@ -738,7 +912,8 @@ $(RLG)(ldlt_app_$(PRECIS).o): ../ssids/ldlt_app.cxx
 
 ldlt_nopiv.o: $(RLG)(ldlt_nopiv_$(PRECIS).o)
 
-$(RLG)(ldlt_nopiv_$(PRECIS).o): ../ssids/ldlt_nopiv.cxx
+$(RLG)(ldlt_nopiv_$(PRECIS).o): ../ssids/ldlt_nopiv.cxx \
+                              $(GALINCLUDE)/ssids_cpu_kernels_ldlt_nopiv.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "ldlt_nopiv  "
 	$(CP) ../ssids/ldlt_nopiv.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o ldlt_nopiv_$(PRECIS).o $(CXXFLAGSOMP) \
@@ -752,7 +927,8 @@ $(RLG)(ldlt_nopiv_$(PRECIS).o): ../ssids/ldlt_nopiv.cxx
 
 ldlt_tpp.o: $(RLG)(ldlt_tpp_$(PRECIS).o)
 
-$(RLG)(ldlt_tpp_$(PRECIS).o): ../ssids/ldlt_tpp.cxx
+$(RLG)(ldlt_tpp_$(PRECIS).o): ../ssids/ldlt_tpp.cxx \
+                              $(GALINCLUDE)/ssids_cpu_kernels_ldlt_tpp.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "ldlt_tpp  "
 	$(CP) ../ssids/ldlt_tpp.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o ldlt_tpp_$(PRECIS).o $(CXXFLAGSOMP) \
@@ -766,7 +942,8 @@ $(RLG)(ldlt_tpp_$(PRECIS).o): ../ssids/ldlt_tpp.cxx
 
 wrappers.o: $(RLG)(wrappers_$(PRECIS).o)
 
-$(RLG)(wrappers_$(PRECIS).o): ../ssids/wrappers.cxx
+$(RLG)(wrappers_$(PRECIS).o): ../ssids/wrappers.cxx \
+                              $(GALINCLUDE)/ssids_cpu_kernels_wrappers.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "wrappers  "
 	$(CP) ../ssids/wrappers.cxx $(OBJ)/wrappers.cxx
 	cd $(OBJ) ; $(CXX) -I. -o wrappers_$(PRECIS).o $(CXXFLAGSOMP) \
@@ -780,7 +957,8 @@ $(RLG)(wrappers_$(PRECIS).o): ../ssids/wrappers.cxx
 
 ThreadStats.o: $(RLG)(ThreadStats.o)
 
-$(RLG)(ThreadStats.o): ../ssids/ThreadStats.cxx
+$(RLG)(ThreadStats.o): ../ssids/ThreadStats.cxx \
+                       $(GALINCLUDE)/ssids_cpu_ThreadStats.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "ThreadStats  "
 	$(CP) ../ssids/ThreadStats.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o ThreadStats.o $(CXXFLAGSOMP) \
@@ -914,7 +1092,8 @@ $(RLG)(inform_$(PRECIS).o): ../ssids/inform.F90
 
 contrib.o: $(RLG)(contrib_$(PRECIS).o)
 
-$(RLG)(contrib_$(PRECIS).o): ../ssids/contrib.F90
+$(RLG)(contrib_$(PRECIS).o): ../ssids/contrib.F90 \
+                             $(GALINCLUDE)/ssids_contrib.h
 	@printf ' %-9s %-15s\t\t' "Compiling" "contrib  "
 	$(CP) ../ssids/contrib.F90 $(OBJ)/contrib.F90
 	cd $(OBJ) ; $(FORTRAN) -o contrib_$(PRECIS).o \

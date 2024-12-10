@@ -1,6 +1,6 @@
 /* Copyright (c) 2013 Science and Technology Facilities Council (STFC)
  * Authors: Evgueni Ovtchinnikov and Jonathan Hogg
- * This version: GALAHAD 5.0 - 2024-06-11 AT 09:50 GMT
+ * This version: GALAHAD 5.1 - 2024-11-12 AT 10:30 GMT
  *
  * This file contains CUDA kernels for partial LL^T and LDL^T factorization
  * of dense submatrices.
@@ -40,6 +40,26 @@
 #define spral_ssids_multiblock_llt spral_ssids_multiblock_llt_single
 #define spral_ssids_multiblock_llt_setup spral_ssids_multiblock_llt_setup_single
 #define spral_ssids_square_ldlt spral_ssids_square_ldlt_single
+#elif REAL_128
+#define multinode_chol_type multinode_chol_type_quadruple
+#define multiblock_fact_type multiblock_fact_type_quadruple
+#define cstat_data_type cstat_data_type_quadruple
+#define cu_block_ldlt_init cu_block_ldlt_init_quadruple
+#define cu_block_chol cu_block_chol_quadruple
+#define cu_multiblock_fact_setup cu_multiblock_fact_setup_quadruple
+#define cu_block_ldlt cu_block_ldlt_quadruple
+#define cu_multiblock_ldlt cu_multiblock_ldlt_quadruple
+#define cu_square_ldlt cu_square_ldlt_quadruple
+#define cu_multiblock_chol cu_multiblock_chol_quadruple
+#define cu_collect_stats cu_collect_stats_quadruple
+#define spral_ssids_block_ldlt spral_ssids_block_ldlt_quadruple
+#define spral_ssids_block_llt spral_ssids_block_llt_quadruple
+#define spral_ssids_cuda_collect_stats spral_ssids_cuda_collect_stats_quadruple
+#define spral_ssids_multiblock_ldlt spral_ssids_multiblock_ldlt_quadruple
+#define spral_ssids_multiblock_ldlt_setup spral_ssids_multiblock_ldlt_setup_quadruple
+#define spral_ssids_multiblock_llt spral_ssids_multiblock_llt_quadruple
+#define spral_ssids_multiblock_llt_setup spral_ssids_multiblock_llt_setup_quadruple
+#define spral_ssids_square_ldlt spral_ssids_square_ldlt_quadruple
 #else
 #define multinode_chol_type multinode_chol_type_double
 #define multiblock_fact_type multiblock_fact_type_double

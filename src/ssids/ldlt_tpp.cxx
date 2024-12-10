@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.0 - 2024-06-11 AT 09:50 GMT
+ *  \version   GALAHAD 5.1 - 2024-11-26 AT 11:40 GMT
  */
 
 #include "ssids_cpu_kernels_ldlt_tpp.hxx"
@@ -33,6 +33,11 @@ rpc_ fabs_(rpc_ x) {
      float fabss;
      fabss = fabsd;
      return fabss;
+#elif REAL_128
+     double fabsd = fabs(double(x));
+     __float128 fabsq;
+     fabsq = fabsd;
+     return fabsq;
 #else
      return fabs(x);
 #endif
@@ -133,7 +138,11 @@ bool test_2x2(ipc_ t, ipc_ p, rpc_ maxt, rpc_ maxp, rpc_ const* a, ipc_ lda, rpc
    // Finally apply threshold pivot check
    d[0] = (a22*detscale)/detpiv;
    d[1] = (-a21*detscale)/detpiv;
+#ifdef REAL_128
+   d[2] = 1.0/0.0;
+#else
    d[2] = std::numeric_limits<rpc_>::infinity();
+#endif
    d[3] = (a11*detscale)/detpiv;
    //printf("t2 %e < %e?\n", std::max(maxp, maxt), small);
    if(std::max(maxp, maxt) < small) return true; // Rest of col small
@@ -318,7 +327,11 @@ void ldlt_tpp_solve_fwd(ipc_ m, ipc_ n, rpc_ const* l, ipc_ ldl, ipc_ nrhs,
 
 void ldlt_tpp_solve_diag(ipc_ n, rpc_ const* d, rpc_* x) {
    for(ipc_ i=0; i<n; ) {
+#ifdef REAL_128
+      if(i+1<n && std::isinf(static_cast<double>(d[2*i+2]))) {
+#else
       if(i+1<n && std::isinf(d[2*i+2])) {
+#endif
          // 2x2 pivot
          rpc_ d11 = d[2*i];
          rpc_ d21 = d[2*i+1];

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 08:50 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-23 AT 15:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -19,7 +19,11 @@
 !   | Provides the system clock time |
 !   ----------------------------------
 
-     USE GALAHAD_KINDS, ONLY : long_, sp_, dp_
+#ifdef REAL_128
+     USE GALAHAD_KINDS, ONLY : long_, r4_, r8_, r16_
+#else
+     USE GALAHAD_KINDS, ONLY : long_, r4_, r8_
+#endif
 
      IMPLICIT NONE
 
@@ -31,7 +35,12 @@
 !-------------------------------
 
      INTERFACE CLOCK_time
+#ifdef REAL_128
+       MODULE PROCEDURE CLOCK_time_single, CLOCK_time_double,                  &
+                        CLOCK_time_quadruple
+#else
        MODULE PROCEDURE CLOCK_time_single, CLOCK_time_double
+#endif
      END INTERFACE CLOCK_time
 
    CONTAINS
@@ -46,7 +55,7 @@
 
 !  Dummy arguments
 
-     REAL ( KIND = sp_ ), INTENT( out ) :: time
+     REAL ( KIND = r4_ ), INTENT( out ) :: time
 
 !  local variables
 
@@ -55,7 +64,7 @@
 !  compute the time in seconds
 
      CALL SYSTEM_CLOCK( count = count, count_rate = count_rate )
-     time = REAL( count, KIND = sp_ ) / REAL( count_rate, KIND = sp_ )
+     time = REAL( count, KIND = r4_ ) / REAL( count_rate, KIND = r4_ )
      RETURN
 
 !  End of subroutine CLOCK_time_single
@@ -72,7 +81,7 @@
 
 !  Dummy arguments
 
-     REAL ( KIND = dp_ ), INTENT( out ) :: time
+     REAL ( KIND = r8_ ), INTENT( out ) :: time
 
 !  local variables
 
@@ -81,12 +90,40 @@
 !  compute the time in seconds
 
      CALL SYSTEM_CLOCK( count = count, count_rate = count_rate )
-     time = REAL( count, KIND = dp_ ) / REAL( count_rate, KIND = dp_ )
+     time = REAL( count, KIND = r8_ ) / REAL( count_rate, KIND = r8_ )
      RETURN
 
 !  End of subroutine CLOCK_time_double
 
      END SUBROUTINE CLOCK_time_double
+
+#ifdef REAL_128
+     SUBROUTINE CLOCK_time_quadruple( time )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+!   Provides the current processor clock time in (quadruple-precision) seconds
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+!  Dummy arguments
+
+     REAL ( KIND = r16_ ), INTENT( out ) :: time
+
+!  local variables
+
+     INTEGER ( KIND = long_ ) :: count, count_rate
+
+!  compute the time in seconds
+
+     CALL SYSTEM_CLOCK( count = count, count_rate = count_rate )
+     time = REAL( count, KIND = r16_ ) / REAL( count_rate, KIND = r16_ )
+     RETURN
+
+!  End of subroutine CLOCK_time_quadruple
+
+     END SUBROUTINE CLOCK_time_quadruple
+#endif
 
 !  End of module GALAHAD_CLOCK
 

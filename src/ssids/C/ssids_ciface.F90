@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-21 AT 10:25 GMT.
 
 #ifdef REAL_32
 #ifdef INTEGER_64
@@ -11,6 +11,18 @@
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
 #define SPRAL_SSIDS_types_precision spral_ssids_types_single
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_single
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define SPRAL_KINDS_precision SPRAL_KINDS_quadruple_64
+#define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_quadruple_ciface_64
+#define SPRAL_SSIDS_types_precision spral_ssids_types_quadruple_64
+#define SPRAL_SSIDS_inform_precision spral_ssids_inform_quadruple_64
+#else
+#define SPRAL_KINDS_precision SPRAL_KINDS_quadruple
+#define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_quadruple_ciface
+#define SPRAL_SSIDS_types_precision spral_ssids_types_quadruple
+#define SPRAL_SSIDS_inform_precision spral_ssids_inform_quadruple
 #endif
 #else
 #ifdef INTEGER_64
