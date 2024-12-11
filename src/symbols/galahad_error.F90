@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-10 AT 11:15 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-11 AT 08:15 GMT.
 
 #include "galahad_modules.h"
 
@@ -14,6 +14,8 @@
 
    PROGRAM GALAHAD_error
    USE GALAHAD_SYMBOLS
+   USE GALAHAD_KINDS, ONLY : ip_
+
    INTEGER ( KIND = ip_ ), PARAMETER :: in = 5
    INTEGER ( KIND = ip_ ), PARAMETER :: out = 6
    INTEGER ( KIND = ip_ ) :: status
