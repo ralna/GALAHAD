@@ -13,17 +13,20 @@ function exported_modules(path::String)
   return modules
 end
 
-modules_single_int32 = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int32", "libgalahad_single.so.p"))
-modules_double_int32 = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int32", "libgalahad_double.so.p"))
-modules_single_int64 = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_single_64.so.p"))
-modules_double_int64 = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_double_64.so.p"))
+modules_single_int32    = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int32", "libgalahad_single.so.p"))
+modules_double_int32    = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int32", "libgalahad_double.so.p"))
+modules_quadruple_int32 = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int32", "libgalahad_quadruple.so.p"))
+modules_single_int64    = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_single_64.so.p"))
+modules_double_int64    = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_double_64.so.p"))
+modules_quadruple_int64 = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_quadruple_64.so.p"))
 
 modules_combinations = [(modules_single_int32, modules_double_int32, 32, 32, "libgalahad_single.so and libgalahad_double.so"),
                         (modules_single_int32, modules_single_int64, 32, 64, "libgalahad_single.so and libgalahad_single_64.so"),
                         (modules_single_int32, modules_double_int64, 32, 64, "libgalahad_single.so and libgalahad_double_64.so"),
                         (modules_double_int32, modules_single_int64, 32, 64, "libgalahad_double.so and libgalahad_single_64.so"),
                         (modules_double_int32, modules_double_int64, 32, 64, "libgalahad_double.so and libgalahad_double_64.so"),
-                        (modules_single_int64, modules_double_int64, 64, 64, "libgalahad_single_64.so and libgalahad_double_64.so")]
+                        (modules_quadruple_int32, modules_double_int32, 32, 32, "libgalahad_quadruple.so and libgalahad_double.so"),
+                        (modules_quadruple_int64, modules_quadruple_int64, 64, 64, "libgalahad_quadruple_64.so and libgalahad_double_64.so")]
 
 single_double_modules = ["galahad_blas_interface",
                          "galahad_lapack_interface",
@@ -44,9 +47,11 @@ single_double_modules = ["galahad_blas_interface",
                          "gal_hsl_kinds",
                          "gal_hsl_kinds_single",
                          "gal_hsl_kinds_double",
+                         "gal_hsl_kinds_quadruple",
                          "gal_hsl_kinds_64",
                          "gal_hsl_kinds_single_64",
                          "gal_hsl_kinds_double_64",
+                         "gal_hsl_kinds_quadruple_64",
                          "gal_hsl_kb22_long_integer",
                          "gal_hsl_mc68_integer",
                          "gal_hsl_mc78_integer",
@@ -57,12 +62,15 @@ single_double_modules = ["galahad_blas_interface",
                          "galahad_kinds",
                          "galahad_kinds_single",
                          "galahad_kinds_double",
+                         "galahad_kinds_quadruple",
                          "galahad_kinds_64",
                          "galahad_kinds_single_64",
                          "galahad_kinds_double_64",
+                         "galahad_kinds_quadruple_64",
                          "spral_kinds",
                          "spral_kinds_single",
                          "spral_kinds_double",
+                         "spral_kinds_quadruple",
                          "mkl_pardiso",
                          "mkl_pardiso_private",
                          "lancelot_hsl_routines",
