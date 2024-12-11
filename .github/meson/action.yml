@@ -121,7 +121,7 @@ runs:
         meson setup builddir --buildtype=debug \
                              --prefix=$CUTEST \
                              -Ddefault_library=shared \
-                             -Dquadruple=false \
+                             -Dquadruple=true \
                              -Dint64=${INT64}
         meson compile -C builddir
         meson install -C builddir
@@ -187,6 +187,7 @@ runs:
         CSTD="c99"
         CPPSTD="c++11"
         INT64="false"
+        QUADRUPLE="true"
         SSIDS="true"
         BLAS=""
         LAPACK=""
@@ -216,6 +217,7 @@ runs:
           INT64="true"
           CUTEST_SINGLE="cutest_single_64"
           CUTEST_DOUBLE="cutest_double_64"
+          CUTEST_QUADRUPLE="cutest_quadruple_64"
           MUMPS_SINGLE="smumps64"
           MUMPS_DOUBLE="dmumps64"
           HSL="hsl_subset_64"
@@ -233,6 +235,9 @@ runs:
         if [[ "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
           SSIDS="false"
         fi
+        if [[ "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || "${{ inputs.compiler }}" == "intel" ]]; then
+          QUADRUPLE="false"
+        fi
 
         meson setup builddir -Ddefault_library=${SHARED_STATIC} \
                              --buildtype=debug \
@@ -244,6 +249,7 @@ runs:
                              -Dssids=${SSIDS} \
                              -Dpythoniface=${PYTHON_INTERFACE} \
                              -Dint64=${INT64} \
+                             -Dquadruple=${QUADRUPLE} \
                              -Dlibblas_path=${BLAS_PATH} \
                              -Dliblapack_path=${LAPACK_PATH} \
                              -Dlibblas=${BLAS} \
@@ -255,10 +261,13 @@ runs:
                              -Dlibmumps_path=$DEPS/deps/${LIBDIR} \
                              -Dlibcutest_single=${CUTEST_SINGLE} \
                              -Dlibcutest_double=${CUTEST_DOUBLE} \
+                             -Dlibcutest_quadruple=${CUTEST_QUADRUPLE} \
                              -Dlibcutest_single_path=$CUTEST/${LIBDIR} \
                              -Dlibcutest_double_path=$CUTEST/${LIBDIR} \
+                             -Dlibcutest_quadruple_path=$CUTEST/${LIBDIR} \
                              -Dlibcutest_single_modules=../CUTEst/modules \
                              -Dlibcutest_double_modules=../CUTEst/modules \
+                             -Dlibcutest_quadruple_modules=../CUTEst/modules \
                              -Dlibhsl=${HSL} \
                              -Dlibhsl_path=${HSL_PATH} \
                              -Dlibhsl_modules=../deps/modules
