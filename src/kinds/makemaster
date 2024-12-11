@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD KINDS package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2024-11-12
+#  This version: 2024-12-11
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -43,12 +43,18 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  non-standard compilation agenda for package
 
-$(PACKAGE)OBJECTSS = $(DEPENDENCIES) $(LGS)($(package).o)
-$(PACKAGE)OBJECTSD = $(DEPENDENCIES) $(LGD)($(package).o)
-$(PACKAGE)OBJECTSQ = $(DEPENDENCIES) $(LGQ)($(package).o)
-$(PACKAGE)OBJECTSS64 = $(DEPENDENCIES) $(LGS64)($(package).o)
-$(PACKAGE)OBJECTSD64 = $(DEPENDENCIES) $(LGD64)($(package).o)
-$(PACKAGE)OBJECTSQ64 = $(DEPENDENCIES) $(LGQ64)($(package).o)
+$(PACKAGE)OBJECTSS = $(DEPENDENCIES) \
+                     $(LGS)($(package).o) $(LGS)($(package)_$(PRECIS).o)
+$(PACKAGE)OBJECTSD = $(DEPENDENCIES) \
+                     $(LGD)($(package).o) $(LGD)($(package)_$(PRECIS).o)
+$(PACKAGE)OBJECTSQ = $(DEPENDENCIES) \
+                     $(LGQ)($(package).o) $(LGQ)($(package)_$(PRECIS).o)
+$(PACKAGE)OBJECTSS64 = $(DEPENDENCIES) \
+                       $(LGS64)($(package).o) $(LGS64)($(package)_$(PRECIS).o)
+$(PACKAGE)OBJECTSD64 = $(DEPENDENCIES) \
+                       $(LGD64)($(package).o) $(LGD64)($(package)_$(PRECIS).o)
+$(PACKAGE)OBJECTSQ64 = $(DEPENDENCIES) \
+                       $(LGQ64)($(package).o) $(LGQ64)($(package)_$(PRECIS).o)
 
 #  process package
 
@@ -88,6 +94,22 @@ $(LG)($(package).o): ../$(package)/$(package).F90
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).F90 )
 	cd $(OBJ); $(ARR) $(package).o; $(RM) $(package).F90 $(package).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+$(package)_real.o: $(LG)($(package)_$(PRECIS).o)
+
+$(LG)($(package)_$(PRECIS).o): ../$(package)/$(package)_real.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_real"
+	$(CP) ../$(package)/$(package)_real.F90 \
+              $(OBJ)/$(package)_$(PRECIS).F90
+	cd $(OBJ); $(FORTRAN) -o $(package)_$(PRECIS).o \
+                   $(FFLAGS) $(package)_$(PRECIS).F90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o $(package)_$(PRECIS).o $(FFLAGSN) \
+                   $(package)_$(PRECIS).F90 )
+	cd $(OBJ); $(ARR) $(package)_$(PRECIS).o; \
+                   $(RM) $(package)_$(PRECIS).F90 $(package)_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

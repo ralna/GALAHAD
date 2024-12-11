@@ -172,6 +172,13 @@
 #define hsl_mc78_integer gal_hsl_mc78_integer_64
 #define hsl_of01_integer gal_hsl_of01_integer_64
 #define hsl_zb01_integer gal_hsl_zb01_integer_64
+#else
+#define hsl_kb22_long_integer gal_hsl_kb22_long_integer
+#define hsl_mc68_integer_ciface gal_hsl_mc68_integer_ciface
+#define hsl_mc68_integer gal_hsl_mc68_integer
+#define hsl_mc78_integer gal_hsl_mc78_integer
+#define hsl_of01_integer gal_hsl_of01_integer
+#define hsl_zb01_integer gal_hsl_zb01_integer
 #endif
 #ifdef REAL_32
 #ifdef INTEGER_64 
@@ -378,8 +385,8 @@
 #define hsl_zd11_precision gal_hsl_zd11_double
 #endif
 #endif
-
 #else
+
 #ifdef INTEGER_64
 #define hsl_kb22_long_integer hsl_kb22_long_integer_64
 #define hsl_mc68_integer_ciface hsl_mc68_integer_64_ciface

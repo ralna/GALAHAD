@@ -379,7 +379,7 @@ make_pdqp:
 
 make_kinds:
 	( cd $(GALAHAD)/src/kinds ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) kinds.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) kinds.o kinds_real.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/kinds )
 
 make_presolve:
