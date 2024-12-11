@@ -130,7 +130,7 @@ runs:
       if: inputs.os != 'windows-latest'
       shell: bash
       run: |
-        VERSION_LIBHSL="4.0.1"
+        VERSION_LIBHSL="4.0.2"
         cd ..
         if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
           wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.zip
@@ -142,6 +142,7 @@ runs:
         cd libHSL-${VERSION_LIBHSL}/hsl_subset
         meson setup builddir --buildtype=debug \
                              --prefix=$DEPS/deps \
+                             -Dquadruple=false \
                              -Ddefault_library=shared
         meson compile -C builddir
         meson install -C builddir
