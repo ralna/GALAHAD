@@ -2,9 +2,7 @@ using Test
 
 global n = 0
 
-excluded_files = ["blas_original.f", "blas_original.f90",
-                  "lapack_original.f", "lapack_original.f90",
-                  "ieeeck_original.f", "noieeeck_original.f"]
+excluded_files = String[]
 
 # Function to easily get the extension of a file
 function file_extension(file::String)
