@@ -1,51 +1,20 @@
+ C sparse matrix indexing
 
- ==== error exits ===== 
+ basic tests of storage formats
 
- pass   -3: RQS_solve exit status =     -3
- pass   -3: RQS_solve exit status =     -3
- pass   -3: RQS_solve exit status =     -3
- pass  -15: RQS_solve exit status =    -15
- pass  -16: RQS_solve exit status =      0
- pass  -18: RQS_solve exit status =    -18
-
- ==== basic tests of storage formats ===== 
-
- format CD2  : RQS_solve exit status =    0
- format CD1  : RQS_solve exit status =    0
- format CD0  : RQS_solve exit status =    0
- format CS2M : RQS_solve exit status =    0
- format CS1M : RQS_solve exit status =    0
- format CS0M : RQS_solve exit status =    0
- format CD2M : RQS_solve exit status =    0
- format CD1M : RQS_solve exit status =    0
- format CD0M : RQS_solve exit status =    0
- format CS2A : RQS_solve exit status =    0
- format CS1A : RQS_solve exit status =    0
- format CS0A : RQS_solve exit status =    0
- format CD2A : RQS_solve exit status =    0
- format CD1A : RQS_solve exit status =    0
- format CD0A : RQS_solve exit status =    0
- format CS2MA: RQS_solve exit status =    0
- format CS1MA: RQS_solve exit status =    0
- format CS0MA: RQS_solve exit status =    0
- format CD2MA: RQS_solve exit status =    0
- format CD1MA: RQS_solve exit status =    0
- format CD0MA: RQS_solve exit status =    0
-
- ==== normal exits ===== 
-
- pass    1: RQS_solve exit status =      0
- pass    2: RQS_solve exit status =      0
- pass    3: RQS_solve exit status =      0
- pass    4: RQS_solve exit status =      0
- pass    5: RQS_solve exit status =      0
- pass    6: RQS_solve exit status =      0
- pass    7: RQS_solve exit status =    -16
- pass    8: RQS_solve exit status =      0
- pass    9: RQS_solve exit status =      0
- pass   10: RQS_solve exit status =      0
- pass   11: RQS_solve exit status =      0
- pass   12: RQS_solve exit status =      0
- pass   13: RQS_solve exit status =      0
-
- tests completed
+format C  : RQS_solve_problem exit status = 0, f = -1.12
+format R  : RQS_solve_problem exit status = 0, f = -1.12
+format D  : RQS_solve_problem exit status = 0, f = -1.12
+format L  : RQS_solve_problem exit status = 0, f = -0.93
+format CM : RQS_solve_problem exit status = 0, f = -0.96
+format RM : RQS_solve_problem exit status = 0, f = -0.96
+format DM : RQS_solve_problem exit status = 0, f = -0.96
+format LM : RQS_solve_problem exit status = 0, f = -0.16
+format CA : RQS_solve_problem exit status = 0, f = -1.10
+format RA : RQS_solve_problem exit status = 0, f = -1.10
+format DA : RQS_solve_problem exit status = 0, f = -1.10
+format LA : RQS_solve_problem exit status = 0, f = -0.11
+format CMA: RQS_solve_problem exit status = 0, f = -0.95
+format RMA: RQS_solve_problem exit status = 0, f = -0.95
+format DMA: RQS_solve_problem exit status = 0, f = -0.95
+format LMA: RQS_solve_problem exit status = 0, f = 0.17

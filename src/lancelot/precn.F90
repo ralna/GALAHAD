@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-12-13 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 16:00 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_control MA57_control
@@ -47,7 +47,7 @@
                                        SCU_inform_type, SCU_restart_m_eq_0,    &
                                        SCU_solve, SCU_append
      USE GALAHAD_ICFS_precision, ONLY : DICFS, DSTRSOL
-     USE LANCELOT_HSL_routines, ONLY : MA61_initialize
+     USE LANCELOT_HSL_inter_precision, ONLY : MA61_initialize
      USE LANCELOT_ASMBL_precision
      USE LANCELOT_MDCHL_precision
      IMPLICIT NONE

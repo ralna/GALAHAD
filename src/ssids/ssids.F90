@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-26 AT 13:00 GMT.
 ! (consistent with SPRAL up to issue #150)
 
 #include "spral_procedures.h"
@@ -1056,8 +1056,10 @@ contains
 
     ! Call main factorization routine
     if (akeep%check) then
+!write(6,*) 'val2 = ', val2(:nz)
        call fkeep%inner_factor(akeep, val2, options, inform)
     else
+!write(6,*) 'val = ', val(:ptr(n+1)-1)
        call fkeep%inner_factor(akeep, val, options, inform)
     end if
     if (inform%flag .lt. 0) then

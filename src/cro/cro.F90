@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -49,7 +49,7 @@
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_ies
       USE GALAHAD_LMS_precision, ONLY: LMS_data_type, LMS_apply_lbfgs
       USE GALAHAD_MOP_precision
-      USE GALAHAD_BLAS_interface, ONLY : ROT, ROTG
+      USE GALAHAD_BLAS_inter_precision, ONLY : ROT, ROTG
 
       IMPLICIT NONE
 

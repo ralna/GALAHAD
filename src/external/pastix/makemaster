@@ -14,7 +14,7 @@ PLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
 
-BASICZ = blas lapack symbols dummy blas_interface lapack_interface
+BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
 PASTIXS = $(BASICSZ) $(PXLGS)(spmf_enums_single.o) \
           $(PXLGS)(spmf_interfaces_single.o) \
@@ -24,6 +24,10 @@ PASTIXD = $(BASICSZ) $(PXLGD)(spmf_enums_double.o) \
           $(PXLGD)(spmf_interfaces_double.o) \
           $(PXLGD)(spmf_double.o) $(PXLGD)(pastixf_enums_double.o) \
           $(PXLGD)(pastixf_interfaces_double.o) $(PXLGD)(pastixf_double.o)
+PASTIXQ = $(BASICSZ) $(PXLGQ)(spmf_enums_quadruple.o) \
+          $(PXLGQ)(spmf_interfaces_quadruple.o) \
+          $(PXLGQ)(spmf_quadruple.o) $(PXLGQ)(pastixf_enums_quadruple.o) \
+          $(PXLGQ)(pastixf_interfaces_quadruple.o) $(PXLGQ)(pastixf_quadruple.o)
 PASTIXS64 = $(BASICSZ) $(PXLGS64)(spmf_enums_single_64.o) \
           $(PXLGS64)(spmf_interfaces_single_64.o) \
           $(PXLGS64)(spmf_single_64.o) $(PXLGS64)(pastixf_enums_single_64.o) \
@@ -34,12 +38,20 @@ PASTIXD64 = $(BASICSZ) $(PXLGD64)(spmf_enums_double_64.o) \
           $(PXLGD64)(spmf_double_64.o) $(PXLGD64)(pastixf_enums_double_64.o) \
           $(PXLGD64)(pastixf_interfaces_double_64.o) \
           $(PXLGD64)(pastixf_double_64.o)
+PASTIXQ64 = $(BASICSZ) $(PXLGQ64)(spmf_enums_quadruple_64.o) \
+          $(PXLGQ64)(spmf_interfaces_quadruple_64.o) \
+          $(PXLGQ64)(spmf_quadruple_64.o) \
+          $(PXLGQ64)(pastixf_enums_quadruple_64.o) \
+          $(PXLGQ64)(pastixf_interfaces_quadruple_64.o) \
+          $(PXLGQ64)(pastixf_quadruple_64.o)
 
 PASTIXST = $(PASTIXS) $(OBJ)/pastixt_single.o
 PASTIXDT = $(PASTIXD) $(OBJ)/pastixt_double.o
+PASTIXQT = $(PASTIXQ) $(OBJ)/pastixt_quadruple.o
 
 RPASTIXST = $(OBJ)/pastixt_single.o -L$(OBJ) $(LIBS)
 RPASTIXDT = $(OBJ)/pastixt_double.o -L$(OBJ) $(LIBS)
+RPASTIXQT = $(OBJ)/pastixt_quadruple.o -L$(OBJ) $(LIBS)
 
 SUCC = precision version) compiled successfully
 
@@ -52,10 +64,14 @@ pastix_single: $(PASTIXS)
 	$(RANLIB) $(PXLGS)
 pastix_double: $(PASTIXD)
 	$(RANLIB) $(PXLGD)
+pastix_quadruple: $(PASTIXQ)
+	$(RANLIB) $(PXLGQ)
 pastix_single_64: $(PASTIXS64)
 	$(RANLIB) $(PXLGS64)
 pastix_double_64: $(PASTIXD64)
 	$(RANLIB) $(PXLGD64)
+pastix_quadruple_64: $(PASTIXQ64)
+	$(RANLIB) $(PXLGQ64)
 
 #  tests
 
@@ -63,9 +79,9 @@ pastixdt: $(PASTIXDT)
 	echo " Exhaustive test of subroutine interface to pastix"
 	cd ../pastix ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pastix \
                          $(RPASTIXDT)
-#	- ../pastix/run_pastix > ../pastix/pastixdt.output 2>&1
-#	cat ../pastix/pastixdt.output
-	- ../pastix/run_pastix
+	- ../pastix/run_pastix > ../pastix/pastixdt.output 2>&1
+	cat ../pastix/pastixdt.output
+#	- ../pastix/run_pastix
 	rm ../pastix/run_pastix
 
 pastixst: $(PASTIXST)
@@ -74,6 +90,14 @@ pastixst: $(PASTIXST)
                          $(RPASTIXST)
 	- ../pastix/run_pastix > ../pastix/pastixt.output 2>&1
 	cat ../pastix/pastixt.output
+	rm ../pastix/run_pastix
+
+pastixqt: $(PASTIXQT)
+	echo " Exhaustive test of subroutine interface to pastix"
+	cd ../pastix ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pastix \
+                         $(RPASTIXQT)
+	- ../pastix/run_pastix > ../pastix/pastixqt.output 2>&1
+	cat ../pastix/pastixqt.output
 	rm ../pastix/run_pastix
 
 #  blas and lapack generic packages and interfaces
@@ -94,13 +118,13 @@ dummy:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
-blas_interface:
+blas_inter:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
-lapack_interface:
+lapack_inter:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            lapack_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 #  individual compilations
 

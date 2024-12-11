@@ -18,7 +18,7 @@ PACKAGE = SHA
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_dummy make_specfile make_zd11 make_smt make_space
+DEPENDENCIES = make_dummy make_specfile make_zd11 make_smt make_space make_svt
 
 #  other packages that depend on package
 

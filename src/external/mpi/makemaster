@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MPi stub
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2024-01-12
+#  This version: 2024-11-14
 
 #  include standard GALAHAD makefile definitions
 
@@ -20,8 +20,10 @@ MPIARR = $(AR) $(ARREPFLAGS) $(MPILG)
 
 MPIS = $(MPILGS)(mpi_single.o)
 MPID = $(MPILGD)(mpi_double.o)
+MPIQ = $(MPILGQ)(mpi_quadruple.o)
 MPIS64 = $(MPILGS64)(mpi_single_64.o)
 MPID64 = $(MPILGD64)(mpi_double_64.o)
+MPIQ64 = $(MPILGQ64)(mpi_quadruple_64.o)
 
 #  mpi
 
@@ -32,10 +34,14 @@ mpi_single: $(MPIS)
 	$(RANLIB) $(MPILGS)
 mpi_double: $(MPID)
 	$(RANLIB) $(MPILGD)
+mpi_quadruple: $(MPIQ)
+	$(RANLIB) $(MPILGQ)
 mpi_single_64: $(MPIS64)
 	$(RANLIB) $(MPILGS64)
 mpi_double_64: $(MPID64)
 	$(RANLIB) $(MPILGD64)
+mpi_quadruple_64: $(MPIQ64)
+	$(RANLIB) $(MPILGQ64)
 
 #  individual compilations
 

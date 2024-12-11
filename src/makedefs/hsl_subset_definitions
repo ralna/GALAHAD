@@ -1,7 +1,7 @@
 #  Standard HSL subset makefile definitions
 
 #  Nick Gould, STFC-RAL
-#  This version: 2024-06-11
+#  This version: 2024-11-17
 
 SHELL = /bin/$(BINSHELL)
 
@@ -9,6 +9,12 @@ ifeq "$(PRECIS)" "single_64"
   DPREC = -DREAL_32 -DINTEGER_64
   HSL_64 = _64
   HSL_PRECIS = s_64
+  HSL_IPRECIS = i_64
+  HSL_LPRECIS = l_64
+else ifeq "$(PRECIS)" "quadruple_64"
+  DPREC = -DREAL_128 -DINTEGER_64 $(QUADREAL)
+  HSL_64 = _64
+  HSL_PRECIS = q_64
   HSL_IPRECIS = i_64
   HSL_LPRECIS = l_64
 else ifeq "$(PRECIS)" "double_64"
@@ -21,6 +27,12 @@ else ifeq "$(PRECIS)" "single"
   DPREC = -DREAL_32
   HSL_64 =
   HSL_PRECIS = s
+  HSL_IPRECIS = i
+  HSL_LPRECIS = l
+else ifeq "$(PRECIS)" "quadruple"
+  DPREC = -DREAL_128 $(QUADREAL)
+  HSL_64 =
+  HSL_PRECIS = q
   HSL_IPRECIS = i
   HSL_LPRECIS = l
 else
@@ -104,26 +116,34 @@ RUNFFLAGSOMP = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
 LH  = $(OBJ)/libhsl.a
 LHS = $(OBJS)/libhsl.a
 LHD = $(OBJD)/libhsl.a
+LHQ = $(OBJQ)/libhsl.a
 LHS64 = $(OBJS64)/libhsl.a
 LHD64 = $(OBJD64)/libhsl.a
+LHQ64 = $(OBJQ64)/libhsl.a
 
 LHC  = $(OBJ)/libhsl_c.a
 LHCS = $(OBJS)/libhsl_c.a
 LHCD = $(OBJD)/libhsl_c.a
+LHCQ = $(OBJQ)/libhsl_c.a
 LHCS64 = $(OBJS64)/libhsl_c.a
 LHCD64 = $(OBJD64)/libhsl_c.a
+LHCQ64 = $(OBJQ64)/libhsl_c.a
 
 LG  = $(OBJ)/libgalahad.a
 LGS = $(OBJS)/libgalahad.a
 LGD = $(OBJD)/libgalahad.a
+LGQ = $(OBJQ)/libgalahad.a
 LGS64 = $(OBJS64)/libgalahad.a
 LGD64 = $(OBJD64)/libgalahad.a
+LGQ64 = $(OBJQ64)/libgalahad.a
 
 CLG  = $(OBJ)/libgalahad_c.a
 CLGS = $(OBJS)/libgalahad_c.a
 CLGD = $(OBJD)/libgalahad_c.a
+CLGQ = $(OBJQ)/libgalahad_c.a
 CLGS64 = $(OBJS64)/libgalahad_c.a
 CLGD64 = $(OBJD64)/libgalahad_c.a
+CLGQ64 = $(OBJQ64)/libgalahad_c.a
 
 MSTATIC = libmetis_nodend.a
 MSTATIC64 = libmetis64_nodend.a
@@ -131,8 +151,10 @@ LM  = $(OBJ)/$(MSTATIC)
 LM64 = $(OBJ)/$(MSTATIC64)
 LMS = $(OBJS)/$(MSTATIC)
 LMD = $(OBJD)/$(MSTATIC)
+LMQ = $(OBJQ)/$(MSTATIC)
 LMS64 = $(OBJS64)/$(MSTATIC64)
 LMD64 = $(OBJD64)/$(MSTATIC64)
+LMQ64 = $(OBJQ64)/$(MSTATIC64)
 
 #  Archive manipulation strings
 

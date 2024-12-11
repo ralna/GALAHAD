@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 16:50 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-23 AT 15:50 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_BGO_TEST  !! far from complete
    USE GALAHAD_USERDATA_precision
@@ -62,7 +62,7 @@ CONTAINS
 
    SUBROUTINE WHICH_sls( control )
    TYPE ( BGO_control_type ) :: control
-#include "galahad_sls_defaults.h"
+#include "galahad_sls_defaults_ls.h"
    control%TRB_control%TRS_control%symmetric_linear_solver                     &
      = symmetric_linear_solver
    control%TRB_control%TRS_control%definite_linear_solver                      &

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD KINDS package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2024-01-12
+#  This version: 2024-11-12
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -45,8 +45,10 @@ include $(GALAHAD)/src/makedefs/definitions
 
 $(PACKAGE)OBJECTSS = $(DEPENDENCIES) $(LGS)($(package).o)
 $(PACKAGE)OBJECTSD = $(DEPENDENCIES) $(LGD)($(package).o)
+$(PACKAGE)OBJECTSQ = $(DEPENDENCIES) $(LGQ)($(package).o)
 $(PACKAGE)OBJECTSS64 = $(DEPENDENCIES) $(LGS64)($(package).o)
 $(PACKAGE)OBJECTSD64 = $(DEPENDENCIES) $(LGD64)($(package).o)
+$(PACKAGE)OBJECTSQ64 = $(DEPENDENCIES) $(LGQ64)($(package).o)
 
 #  process package
 
@@ -56,18 +58,24 @@ $(package)_single: $($(PACKAGE)OBJECTSS)
 	$(RANLIB) $(LGS)
 $(package)_double: $($(PACKAGE)OBJECTSD)
 	$(RANLIB) $(LGD)
+$(package)_quadruple: $($(PACKAGE)OBJECTSQ)
+	$(RANLIB) $(LGQ)
 $(package)_single_64: $($(PACKAGE)OBJECTSS64)
 	$(RANLIB) $(LGS64)
 $(package)_double_64: $($(PACKAGE)OBJECTSD64)
 	$(RANLIB) $(LGD64)
+$(package)_quadruple_64: $($(PACKAGE)OBJECTSQ64)
+	$(RANLIB) $(LGQ64)
 
 #  process package silently
 
 $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $($(PACKAGE)OBJECTSS)
 $(package)_silent_double: $($(PACKAGE)OBJECTSD)
+$(package)_silent_quadruple: $($(PACKAGE)OBJECTSQ)
 $(package)_silent_single_64: $($(PACKAGE)OBJECTSS64)
 $(package)_silent_double_64: $($(PACKAGE)OBJECTSD64)
+$(package)_silent_quadruple_64: $($(PACKAGE)OBJECTSQ64)
 
 #  non-standard package compilation
 

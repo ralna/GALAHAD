@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the Pardiso stub
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2024-01-26
+#  This version: 2024-11-14
 
 #  include standard GALAHAD makefile definitions
 
@@ -14,18 +14,22 @@ PLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
 
-BASICZ = blas lapack symbols dummy blas_interface lapack_interface
+BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
 PARDISOS = $(BASICSZ) $(PLGS)(pardiso.o)
 PARDISOD = $(BASICSZ) $(PLGD)(pardiso.o)
+PARDISOQ = $(BASICSZ) $(PLGQ)(pardiso.o)
 PARDISOS64 = $(BASICSZ) $(PLGS64)(pardiso.o)
 PARDISOD64 = $(BASICSZ) $(PLGD64)(pardiso.o)
+PARDISOQ64 = $(BASICSZ) $(PLGQ64)(pardiso.o)
 
 PARDISOST = $(PARDISOS) $(OBJ)/pardisot.o
 PARDISODT = $(PARDISOD) $(OBJ)/pardisot.o
+PARDISOQT = $(PARDISOD) $(OBJ)/pardisoq.o
 
 RPARDISOST = $(OBJ)/pardisot.o -L$(OBJ) $(LIBS)
 RPARDISODT = $(OBJ)/pardisot.o -L$(OBJ) $(LIBS)
+RPARDISODQ = $(OBJ)/pardisoq.o -L$(OBJ) $(LIBS)
 
 #  pardiso
 
@@ -36,10 +40,14 @@ pardiso_single: $(PARDISOS)
 	$(RANLIB) $(PLGS)
 pardiso_double: $(PARDISOD)
 	$(RANLIB) $(PLGD)
+pardiso_quadruple: $(PARDISOQ)
+	$(RANLIB) $(PLGQ)
 pardiso_single_64: $(PARDISOS64)
 	$(RANLIB) $(PLGS64)
 pardiso_double_64: $(PARDISOD64)
 	$(RANLIB) $(PLGD64)
+pardiso_quadruple_64: $(PARDISOQ64)
+	$(RANLIB) $(PLGQ64)
 
 #  tests
 
@@ -56,8 +64,16 @@ pardisost: $(PARDISOST)
 	echo " Exhaustive test of subroutine interface to pardiso"
 	cd ../pardiso ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pardiso \
                          $(RPARDISOST)
-	- ../pardiso/run_pardiso > ../pardiso/pardisot.output 2>&1
-	cat ../pardiso/pardisot.output
+	- ../pardiso/run_pardiso > ../pardiso/pardisost.output 2>&1
+	cat ../pardiso/pardisost.output
+	rm ../pardiso/run_pardiso
+
+pardisosq: $(PARDISOQT)
+	echo " Exhaustive test of subroutine interface to pardiso"
+	cd ../pardiso ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pardiso \
+                         $(RPARDISOQT)
+	- ../pardiso/run_pardiso > ../pardiso/pardisoqt.output 2>&1
+	cat ../pardiso/pardisoqt.output
 	rm ../pardiso/run_pardiso
 
 #  blas and lapack generic packages and interfaces
@@ -78,13 +94,13 @@ dummy:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
-blas_interface:
+blas_inter:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
-lapack_interface:
+lapack_inter:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            lapack_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 #  individual compilations
 

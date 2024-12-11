@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-23 AT 13:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -54,6 +54,33 @@
   ERROR = GALAHAD_unavailable_option
   END SUBROUTINE PARDISO_D
 
+#ifdef REAL_128
+  SUBROUTINE PARDISO_Q( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA, JA,          &
+                        PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
+  USE MKL_PARDISO_PRIVATE
+  USE GALAHAD_KINDS, ONLY: r16_, ip_
+  USE GALAHAD_SYMBOLS
+  TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MAXFCT
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MNUM
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MTYPE
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: PHASE
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: N
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: IA(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: JA(*)
+  INTEGER ( KIND = ip_ ), INTENT(INOUT) :: PERM(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: NRHS
+  INTEGER ( KIND = ip_ ), INTENT(INOUT) :: IPARM(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MSGLVL
+  INTEGER ( KIND = ip_ ), INTENT(OUT)   :: ERROR
+
+  REAL ( KIND = r16_ ), INTENT(IN)    :: A(*)
+  REAL ( KIND = r16_ ), INTENT(INOUT) :: B(*)
+  REAL ( KIND = r16_ ), INTENT(OUT)   :: X(*)
+  ERROR = GALAHAD_unavailable_option
+  END SUBROUTINE PARDISO_Q
+#endif
+
   SUBROUTINE PARDISO_SC( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA, JA,         &
                          PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
   USE MKL_PARDISO_PRIVATE
@@ -103,6 +130,32 @@
   ERROR = GALAHAD_unavailable_option
   END SUBROUTINE PARDISO_DC
 
+#ifdef REAL_128
+  SUBROUTINE PARDISO_QC( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA, JA,         &
+                         PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
+  USE MKL_PARDISO_PRIVATE
+  USE GALAHAD_KINDS, ONLY: r16_, ip_
+  USE GALAHAD_SYMBOLS
+  TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MAXFCT
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MNUM
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MTYPE
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: PHASE
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: N
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: IA(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: JA(*)
+  INTEGER ( KIND = ip_ ), INTENT(INOUT) :: PERM(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: NRHS
+  INTEGER ( KIND = ip_ ), INTENT(INOUT) :: IPARM(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MSGLVL
+  INTEGER ( KIND = ip_ ), INTENT(OUT)   :: ERROR
+  COMPLEX ( KIND = r16_ ), INTENT(IN)    :: A(*)
+  COMPLEX ( KIND = r16_ ), INTENT(INOUT) :: B(*)
+  COMPLEX ( KIND = r16_ ), INTENT(OUT)   :: X(*)
+  ERROR = GALAHAD_unavailable_option
+  END SUBROUTINE PARDISO_QC
+#endif
+
   SUBROUTINE PARDISO_S_2D( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA, JA,       &
                            PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
   USE MKL_PARDISO_PRIVATE
@@ -150,6 +203,32 @@
   REAL ( KIND = dp_ ), INTENT(OUT)   :: X(N,*)
   ERROR = GALAHAD_unavailable_option
   END SUBROUTINE PARDISO_D_2D
+
+#ifdef REAL_128
+  SUBROUTINE PARDISO_Q_2D( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA, JA,       &
+                           PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
+  USE MKL_PARDISO_PRIVATE
+  USE GALAHAD_KINDS, ONLY: r16_, ip_
+  USE GALAHAD_SYMBOLS
+  TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MAXFCT
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MNUM
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MTYPE
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: PHASE
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: N
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: IA(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: JA(*)
+  INTEGER ( KIND = ip_ ), INTENT(INOUT) :: PERM(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: NRHS
+  INTEGER ( KIND = ip_ ), INTENT(INOUT) :: IPARM(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MSGLVL
+  INTEGER ( KIND = ip_ ), INTENT(OUT)   :: ERROR
+  REAL ( KIND = r16_ ), INTENT(IN)    :: A(*)
+  REAL ( KIND = r16_ ), INTENT(INOUT) :: B(N,*)
+  REAL ( KIND = r16_ ), INTENT(OUT)   :: X(N,*)
+  ERROR = GALAHAD_unavailable_option
+  END SUBROUTINE PARDISO_Q_2D
+#endif
 
   SUBROUTINE PARDISO_SC_2D( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA,          &
                             JA, PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
@@ -199,6 +278,32 @@
   ERROR = GALAHAD_unavailable_option
   END SUBROUTINE PARDISO_DC_2D
 
+#ifdef REAL_128
+  SUBROUTINE PARDISO_QC_2D( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA,          &
+                            JA, PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
+  USE MKL_PARDISO_PRIVATE
+  USE GALAHAD_KINDS, ONLY: r16_, ip_
+  USE GALAHAD_SYMBOLS
+  TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MAXFCT
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MNUM
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MTYPE
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: PHASE
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: N
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: IA(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: JA(*)
+  INTEGER ( KIND = ip_ ), INTENT(INOUT) :: PERM(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: NRHS
+  INTEGER ( KIND = ip_ ), INTENT(INOUT) :: IPARM(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: MSGLVL
+  INTEGER ( KIND = ip_ ), INTENT(OUT)   :: ERROR
+  COMPLEX ( KIND = r16_ ), INTENT(IN)    :: A(*)
+  COMPLEX ( KIND = r16_ ), INTENT(INOUT) :: B(N,*)
+  COMPLEX ( KIND = r16_ ), INTENT(OUT)   :: X(N,*)
+  ERROR = GALAHAD_unavailable_option
+  END SUBROUTINE PARDISO_QC_2D
+#endif
+
   SUBROUTINE PARDISO_S_64( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA,           &
                            JA, PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
   USE MKL_PARDISO_PRIVATE
@@ -246,6 +351,32 @@
   REAL ( KIND = dp_ ), INTENT(OUT)   :: X(*)
   ERROR = INT( GALAHAD_unavailable_option, KIND = long_ )
   END SUBROUTINE PARDISO_D_64
+
+#ifdef REAL_128
+  SUBROUTINE PARDISO_Q_64( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA,           &
+                           JA, PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
+  USE MKL_PARDISO_PRIVATE
+  USE GALAHAD_KINDS, ONLY: r16_, ip_, long_
+  USE GALAHAD_SYMBOLS
+  TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MAXFCT
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MNUM
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MTYPE
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: PHASE
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: N
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: IA(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: JA(*)
+  INTEGER ( KIND = long_ ), INTENT(INOUT) :: PERM(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: NRHS
+  INTEGER ( KIND = long_ ), INTENT(INOUT) :: IPARM(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MSGLVL
+  INTEGER ( KIND = long_ ), INTENT(OUT)   :: ERROR
+  REAL ( KIND = r16_ ), INTENT(IN)    :: A(*)
+  REAL ( KIND = r16_ ), INTENT(INOUT) :: B(*)
+  REAL ( KIND = r16_ ), INTENT(OUT)   :: X(*)
+  ERROR = INT( GALAHAD_unavailable_option, KIND = long_ )
+  END SUBROUTINE PARDISO_Q_64
+#endif
 
   SUBROUTINE PARDISO_SC_64( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA,          &
                             JA, PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
@@ -295,6 +426,32 @@
   ERROR = INT( GALAHAD_unavailable_option, KIND = long_ )
   END SUBROUTINE PARDISO_DC_64
 
+#ifdef REAL_128
+  SUBROUTINE PARDISO_QC_64( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA,          &
+                            JA, PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
+  USE MKL_PARDISO_PRIVATE
+  USE GALAHAD_KINDS, ONLY: r16_, ip_, long_
+  USE GALAHAD_SYMBOLS
+  TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MAXFCT
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MNUM
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MTYPE
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: PHASE
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: N
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: IA(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: JA(*)
+  INTEGER ( KIND = long_ ), INTENT(INOUT) :: PERM(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: NRHS
+  INTEGER ( KIND = long_ ), INTENT(INOUT) :: IPARM(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MSGLVL
+  INTEGER ( KIND = long_ ), INTENT(OUT)   :: ERROR
+  COMPLEX ( KIND = r16_ ), INTENT(IN)    :: A(*)
+  COMPLEX ( KIND = r16_ ), INTENT(INOUT) :: B(*)
+  COMPLEX ( KIND = r16_ ), INTENT(OUT)   :: X(*)
+  ERROR = INT( GALAHAD_unavailable_option, KIND = long_ )
+  END SUBROUTINE PARDISO_QC_64
+#endif
+
   SUBROUTINE PARDISO_S_64_2D( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA,        &
                               JA, PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
   USE MKL_PARDISO_PRIVATE
@@ -342,6 +499,32 @@
   REAL ( KIND = dp_ ), INTENT(OUT)   :: X(N,*)
   ERROR = INT( GALAHAD_unavailable_option, KIND = long_ )
   END SUBROUTINE PARDISO_D_64_2D
+
+#ifdef REAL_128
+  SUBROUTINE PARDISO_Q_64_2D( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA,        &
+                              JA, PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
+  USE MKL_PARDISO_PRIVATE
+  USE GALAHAD_KINDS, ONLY: r16_, ip_, long_
+  USE GALAHAD_SYMBOLS
+  TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MAXFCT
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MNUM
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MTYPE
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: PHASE
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: N
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: IA(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: JA(*)
+  INTEGER ( KIND = long_ ), INTENT(INOUT) :: PERM(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: NRHS
+  INTEGER ( KIND = long_ ), INTENT(INOUT) :: IPARM(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MSGLVL
+  INTEGER ( KIND = long_ ), INTENT(OUT)   :: ERROR
+  REAL ( KIND = r16_ ), INTENT(IN)    :: A(*)
+  REAL ( KIND = r16_ ), INTENT(INOUT) :: B(N,*)
+  REAL ( KIND = r16_ ), INTENT(OUT)   :: X(N,*)
+  ERROR = INT( GALAHAD_unavailable_option, KIND = long_ )
+  END SUBROUTINE PARDISO_Q_64_2D
+#endif
 
   SUBROUTINE PARDISO_SC_64_2D( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA,       &
                                JA, PERM, NRHS, IPARM, MSGLVL, B, X, ERROR)
@@ -391,6 +574,32 @@
   ERROR = INT( GALAHAD_unavailable_option, KIND = long_ )
   END SUBROUTINE PARDISO_DC_64_2D
 
+#ifdef REAL_128
+  SUBROUTINE PARDISO_QC_64_2D( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA,       &
+                               JA, PERM, NRHS, IPARM, MSGLVL, B, X, ERROR)
+  USE MKL_PARDISO_PRIVATE
+  USE GALAHAD_KINDS, ONLY: r16_, ip_, long_
+  USE GALAHAD_SYMBOLS
+  TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MAXFCT
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MNUM
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MTYPE
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: PHASE
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: N
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: IA(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: JA(*)
+  INTEGER ( KIND = long_ ), INTENT(INOUT) :: PERM(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: NRHS
+  INTEGER ( KIND = long_ ), INTENT(INOUT) :: IPARM(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MSGLVL
+  INTEGER ( KIND = long_ ), INTENT(OUT)   :: ERROR
+  COMPLEX ( KIND = r16_ ), INTENT(IN)    :: A(*)
+  COMPLEX ( KIND = r16_ ), INTENT(INOUT) :: B(N,*)
+  COMPLEX ( KIND = r16_ ), INTENT(OUT)   :: X(N,*)
+  ERROR = INT( GALAHAD_unavailable_option, KIND = long_ )
+  END SUBROUTINE PARDISO_QC_64_2D
+#endif
+
   SUBROUTINE PARDISO_GETDIAG_D(PT,DIAG_FACT,DIAG_A,MNUM,ERROR)
   USE MKL_PARDISO_PRIVATE
   USE GALAHAD_KINDS, ONLY: dp_, ip_
@@ -413,6 +622,19 @@
   ERROR = GALAHAD_unavailable_option
   END
 
+  SUBROUTINE PARDISO_EXPORT_S(PT,VALUES,IA,JA,STEP,IPARM,ERROR)
+  USE MKL_PARDISO_PRIVATE
+  USE GALAHAD_KINDS, ONLY: sp_, ip_
+  USE GALAHAD_SYMBOLS
+  TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
+  REAL ( KIND = sp_ ), INTENT(INOUT) :: VALUES(*)
+  INTEGER ( KIND = ip_ ), INTENT(INOUT) :: IA(*), JA(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: STEP
+  INTEGER ( KIND = ip_ ), INTENT(INOUT) :: IPARM(*)
+  INTEGER ( KIND = ip_ ), INTENT(OUT)   :: ERROR
+  ERROR = GALAHAD_unavailable_option
+  END
+
   SUBROUTINE PARDISO_EXPORT_D(PT,VALUES,IA,JA,STEP,IPARM,ERROR)
   USE MKL_PARDISO_PRIVATE
   USE GALAHAD_KINDS, ONLY: dp_, ip_
@@ -426,18 +648,20 @@
   ERROR = GALAHAD_unavailable_option
   END
 
-  SUBROUTINE PARDISO_EXPORT_S(PT,VALUES,IA,JA,STEP,IPARM,ERROR)
+#ifdef REAL_128
+  SUBROUTINE PARDISO_EXPORT_Q(PT,VALUES,IA,JA,STEP,IPARM,ERROR)
   USE MKL_PARDISO_PRIVATE
-  USE GALAHAD_KINDS, ONLY: sp_, ip_
+  USE GALAHAD_KINDS, ONLY: r16_, ip_
   USE GALAHAD_SYMBOLS
   TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
-  REAL ( KIND = sp_ ), INTENT(INOUT) :: VALUES(*)
+  REAL ( KIND = r16_ ), INTENT(INOUT) :: VALUES(*)
   INTEGER ( KIND = ip_ ), INTENT(INOUT) :: IA(*), JA(*)
   INTEGER ( KIND = ip_ ), INTENT(IN)    :: STEP
   INTEGER ( KIND = ip_ ), INTENT(INOUT) :: IPARM(*)
   INTEGER ( KIND = ip_ ), INTENT(OUT)   :: ERROR
   ERROR = GALAHAD_unavailable_option
   END
+#endif
 
   SUBROUTINE PARDISO_EXPORT_C(PT,VALUES,IA,JA,STEP,IPARM,ERROR)
   USE MKL_PARDISO_PRIVATE
@@ -464,6 +688,21 @@
   INTEGER ( KIND = ip_ ), INTENT(OUT)   :: ERROR
   ERROR = GALAHAD_unavailable_option
   END
+
+#ifdef REAL_128
+  SUBROUTINE PARDISO_EXPORT_X(PT,VALUES,IA,JA,STEP,IPARM,ERROR)
+  USE MKL_PARDISO_PRIVATE
+  USE GALAHAD_KINDS, ONLY: c16_, ip_
+  USE GALAHAD_SYMBOLS
+  TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
+  COMPLEX( KIND = c16_ ), INTENT(INOUT) :: VALUES(*)
+  INTEGER ( KIND = ip_ ), INTENT(INOUT) :: IA(*), JA(*)
+  INTEGER ( KIND = ip_ ), INTENT(IN)    :: STEP
+  INTEGER ( KIND = ip_ ), INTENT(INOUT) :: IPARM(*)
+  INTEGER ( KIND = ip_ ), INTENT(OUT)   :: ERROR
+  ERROR = GALAHAD_unavailable_option
+  END
+#endif
 
   SUBROUTINE PARDISO_HANDLE_STORE( PT, STORE_NAME, ERROR )
   USE MKL_PARDISO_PRIVATE

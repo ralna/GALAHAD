@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-01-27 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -34,8 +34,8 @@
       USE GALAHAD_SPACE_precision
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
-      USE GALAHAD_BLAS_interface, ONLY : ROTG
-      USE GALAHAD_LSTR_precision, ONLY :                                       &
+      USE GALAHAD_BLAS_inter_precision, ONLY: ROTG
+      USE GALAHAD_LSTR_precision, ONLY:                                        &
         L2RT_transform_bidiagonal => LSTR_transform_bidiagonal,                &
         L2RT_backsolve_bidiagonal => LSTR_backsolve_bidiagonal
 

@@ -3,14 +3,16 @@
 # sdgal: generic script to decode an SIF file and then run package
 #        on architecture on the output
 #  * version for Bourne/bash shell
-#  This version July 13th, 2024
+#  This version November 12th, 2024
 
-# Use: sdgal architecture package [-s] [-h] [-k] [-f] [-b] [-st j]
+# Use: sdgal architecture package [-s] [-q] [-h] [-k] [-f] [-b] [-st j]
 #                          [-c] [-m] [-p] [-u] [-o j] [-l secs] 
 #                          [-param name=value[,name=value...]]
 #                          [-force] probname[.SIF]
 #
 # where: options -s : run the single precision version
+#                     (Default: run the double precision version)
+#                -q : run the quadruple precision version (if available)
 #                     (Default: run the double precision version)
 #                -h : print this help and stop execution
 #                -k : keep the load module after use
@@ -65,8 +67,8 @@ elif [[ "`echo $1 | grep -e '^-'`" != "" || "`echo $2 | grep -e '^-'`" != ""  ]]
 fi
 
 if [[ "$stop_early" == "true" ]]; then
-    echo ' Use: sdgal architecture package [-s] [-h] [-k] [-f] [-b] [-st j]'
-    echo '                 [-c] [-m] [-p] [-u] [-o j] [-l secs]'
+    echo ' Use: sdgal architecture package [-s] [-q] [-h] [-k] [-f] [-b]' 
+    echo '                 [-st j] [-c] [-m] [-p] [-u] [-o j] [-l secs]'
     echo '                 [-param name=value[,name=value...]]'
     echo '                 [-force] probname[.SIF]'
     exit 1
@@ -89,7 +91,8 @@ TMP=/tmp
 LIMIT=99999999
 #LIMIT=1800
 
-# PRECISION = 0 (single precision), = 1 (double precision)
+# PRECISION = 0 (single precision), = 1 (double precision), 
+#           = 2 (quadruple precision)
 
 PRECISION=1
 
@@ -130,11 +133,13 @@ do
   opt=${!i}
 #  echo " opt = $opt"
   if [[ "$opt" == '-h' || "$opt" == '--help' ]]; then
-    echo ' Use: sdgal architecture package [-s] [-h|--help] [-k] [-f] [-b]'
+    echo ' Use: sdgal architecture package [-s] [-q] [-h|--help] [-k] [-f] [-b]'
     echo '          [-st start] [-m] [-p] [-u] [-o j] [-l secs]'
     echo '          [-param name=value[,name=value...]] [-force] probname[.SIF]'
     echo ' '
     echo ' where: options -s : run the single precision version'
+    echo '                     (Default: run the double precision version)'
+    echo '                -q : run the quadruple precision version (if available)'
     echo '                     (Default: run the double precision version)'
     echo '                -h : print this help and stop execution'
     echo '                -k : keep the load module after use '
@@ -169,6 +174,9 @@ do
   elif [[ "$opt" == '-s' ]]; then
     PRECISION=0
     METHARG="$METHARG -sp"
+  elif [[ "$opt" == '-q' ]]; then
+    PRECISION=2
+    METHARG="$METHARG -qp"
   elif [[ "$opt" == '-u' ]]; then
     UPDATE=1
   elif [[ "$opt" == '-c' ]]; then
@@ -217,6 +225,10 @@ if [[ $PRECISION == "1" ]]; then
  p=""
  up="d"
  PRECIS=double
+elif [[ $PRECISION == "2" ]]; then
+ p="-q"
+ up="q"
+ PRECIS=quadruple
 else
  p="-s"
  up="s"

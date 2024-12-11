@@ -1,7 +1,7 @@
 #  GALAHAD makefile intermediaries
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-01-26
+#  This version: 2024-11-19
 
 ########################
 #  basic packages alone
@@ -27,9 +27,9 @@ make_bgo:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
 
-make_blas_interface:
+make_blas_inter:
 	( cd $(GALAHAD)/src/general ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_interface.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_inter.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_blas:
@@ -254,9 +254,9 @@ make_lapack:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
-make_lapack_interface:
+make_lapack_inter:
 	( cd $(GALAHAD)/src/general ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_interface.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_inter.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_lhs:
@@ -513,8 +513,12 @@ make_sls_deps_single: make_dummy make_specfile make_sort make_zd11 \
 make_sls_deps_double: make_dummy make_specfile make_sort make_zd11 \
                make_smt make_svt make_space make_sils make_hsl \
                make_copyright make_spralrb make_amd make_$(SSIDS)
+make_sls_deps_quadruple: make_dummy make_specfile make_sort make_zd11 \
+               make_smt make_svt make_space make_sils make_hsl \
+               make_copyright make_spralrb make_amd make_$(SSIDS)
 make_sls_deps_single_64: make_sls_deps_single
 make_sls_deps_double_64: make_sls_deps_double
+make_sls_deps_quadruple_64: make_sls_deps_quadruple
 
 make_sls:
 	( cd $(GALAHAD)/src/sls ; \
@@ -752,9 +756,9 @@ make_all_bgo:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
 
-make_all_blas_interface:
+make_all_blas_inter:
 	( cd $(GALAHAD)/src/general ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_interface_silent \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_inter_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_all_bls:
@@ -949,9 +953,9 @@ make_all_l2rt:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l2rt_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
 
-make_all_lapack_interface:
+make_all_lapack_inter:
 	( cd $(GALAHAD)/src/general ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_interface_silent \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_inter_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_all_linearsolver:
@@ -1316,9 +1320,9 @@ make_ciface_bgo:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
 
-make_ciface_blas_interface:
+make_ciface_blas_inter:
 	( cd $(GALAHAD)/src/general ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_interface_ciface.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_inter_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_ciface_blas:
@@ -1542,9 +1546,9 @@ make_ciface_lapack:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
-make_ciface_lapack_interface:
+make_ciface_lapack_inter:
 	( cd $(GALAHAD)/src/general ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_interface_ciface.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_inter_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_ciface_linearsolver:
@@ -1791,8 +1795,11 @@ make_ciface_sls_deps_single: make_ciface_sils make_ciface_$(SSIDS) \
                       make_ciface_hsl
 make_ciface_sls_deps_double: make_ciface_sils make_ciface_$(SSIDS) \
                       make_ciface_hsl
+make_ciface_sls_deps_quadruple: make_ciface_sils make_ciface_$(SSIDS) \
+                      make_ciface_hsl
 make_ciface_sls_deps_single_64: make_ciface_sls_deps_single
 make_ciface_sls_deps_double_64: make_ciface_sls_deps_double
+make_ciface_sls_deps_quadruple_64: make_ciface_sls_deps_quadruple
 
 make_ciface_sls:
 	( cd $(GALAHAD)/src/sls ; \
@@ -1987,9 +1994,9 @@ make_pyiface_bgo:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
 
-make_pyiface_blas_interface:
+make_pyiface_blas_inter:
 	( cd $(GALAHAD)/src/general ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_interface_pyiface.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_inter_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_pyiface_blas:
@@ -2215,10 +2222,10 @@ make_pyiface_lapack:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
-make_pyiface_lapack_interface:
+make_pyiface_lapack_inter:
 	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-          lapack_interface_pyiface.o \
+          lapack_inter_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_pyiface_linearsolver:

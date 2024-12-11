@@ -1,3 +1,5 @@
+libgalahad_src += files('hsl_inter/hsl_inter.F90')
+
 if not libhsl.found()
     libgalahad_src += files('hsl_kinds/hsl_kinds.f90',
                             'hsl_ad02/hsl_ad02r.f90',

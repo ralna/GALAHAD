@@ -7,7 +7,7 @@
 MODULE SPRAL_SSIDS_precision
 !$ use omp_lib
    USE GALAHAD_SYMBOLS
-   USE GALAHAD_KINDS_precision
+   USE SPRAL_KINDS_precision, ONLY: ip_, ipc_, rp_, long_
    USE, intrinsic :: iso_c_binding
    IMPLICIT NONE
 

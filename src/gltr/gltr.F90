@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -36,7 +36,7 @@
       USE GALAHAD_ROOTS_precision, ONLY: ROOTS_quadratic
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
-      USE GALAHAD_LAPACK_interface, ONLY : PTTRF, STERF
+      USE GALAHAD_LAPACK_inter_precision, ONLY : PTTRF, STERF
 
       IMPLICIT NONE
 
