@@ -33,6 +33,11 @@ option('double',
        value : true,
        description : 'whether to generate the double precision library, tests and examples')
 
+option('quadruple',
+       type : 'boolean',
+       value : false,
+       description : 'whether to generate the quadruple precision library, tests and examples')
+
 option('ssids',
        type : 'boolean',
        value : true,
@@ -62,6 +67,11 @@ option('libcutest_double',
        type : 'string',
        value : 'cutest_double',
        description : 'CUTEST library in double precision against which to link')
+
+option('libcutest_quadruple',
+       type : 'string',
+       value : 'cutest_double',
+       description : 'CUTEST library in quadruple precision against which to link')
 
 option('libwsmp',
        type : 'string',
@@ -128,6 +138,11 @@ option('libcutest_double_path',
        value : [],
        description : 'Additional directories to search for the CUTEST library in double precision')
 
+option('libcutest_quadruple_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the CUTEST library in quadruple precision')
+
 option('libwsmp_path',
        type : 'array',
        value : [],
@@ -182,6 +197,11 @@ option('libcutest_double_modules',
        type : 'array',
        value : [],
        description : 'Additional directories to search for the CUTEST modules in double precision')
+
+option('libcutest_quadruple_modules',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the CUTEST modules in quadruple precision')
 
 option('int64',
        type : 'boolean',
