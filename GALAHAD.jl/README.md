@@ -13,6 +13,15 @@ pkg> test GALAHAD
 If you launch Julia from within the folder `GALAHAD.jl`, you can
 directly run `pkg> dev .`.
 
+## libHSL
+
+We highly recommend to download [libHSL](https://licences.stfc.ac.uk/products/Software/HSL/LibHSL) and install the official version of `HSL_jll.jl`.
+This optional dependency gives you access to more reliable and powerful linear solvers.
+
+## Documentation
+
+Documentation is available online from [https://ralna.github.io/galahad_docs/html/Julia](https://ralna.github.io/galahad_docs/html/Julia).
+
 ## Custom shared libraries
 
 GALAHAD is already precompiled with [Yggdrasil](https://github.com/JuliaPackaging/Yggdrasil) for all platforms.
@@ -38,6 +47,3 @@ The `JULIA_GALAHAD_LIBRARY_PATH` environment variable may be set
 permanently in the shell's startup file, or in
 `$HOME/.julia/config/startup.jl`.
 
-## Documentation
-
-Documentation is available online from [https://ralna.github.io/galahad_docs/html/Julia](https://ralna.github.io/galahad_docs/html/Julia).
