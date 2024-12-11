@@ -1,4 +1,4 @@
-! THIS VERSION: HSL SUBSET 1.1 - 2024-11-23 AT 15:20 GMT
+! THIS VERSION: HSL SUBSET 1.1 - 2024-12-09 AT 15:50 GMT
 
 #include "hsl_subset.h"
 
@@ -59,59 +59,3 @@ MODULE HSL_KINDS
 #endif
 
 END MODULE HSL_KINDS
-
-!-*-*-*-  H S L _ S U B S E T _  K I N D S _ S I N G L E  M O D U L E   -*-*-*-
-
-MODULE HSL_KINDS_single
-  USE HSL_KINDS
-  IMPLICIT NONE
-  PUBLIC
-
-!--------------------------------------------------------
-!  R e a l  k i n d s  ( s i n g l e  p r e c i s i o n )
-!--------------------------------------------------------
-
-  INTEGER, PARAMETER :: real_bytes_ = 4
-  INTEGER, PARAMETER :: rp_ = r4_
-  INTEGER, PARAMETER :: cp_ = c4_
-  INTEGER, PARAMETER :: rpc_ = spc_
-
-END MODULE HSL_KINDS_single
-
-!-*-*-*-  H S L _ S U B S E T _  K I N D S _ D O U B L E  M O D U L E   -*-*-*-
-
-MODULE HSL_KINDS_double
-  USE HSL_KINDS
-  IMPLICIT NONE
-  PUBLIC
-
-!--------------------------------------------------------
-!  R e a l  k i n d s  ( d o u b l e  p r e c i s i o n )
-!--------------------------------------------------------
-
-  INTEGER, PARAMETER :: real_bytes_ = 8
-  INTEGER, PARAMETER :: rp_ = r8_
-  INTEGER, PARAMETER :: cp_ = c8_
-  INTEGER, PARAMETER :: rpc_ = dpc_
-
-END MODULE HSL_KINDS_double
-
-#ifdef REAL_128
-!-*-  H S L _ S U B S E T _  K I N D S _ Q U A D R U P L E  M O D U L E   -*-
-
-MODULE HSL_KINDS_quadruple
-  USE HSL_KINDS
-  IMPLICIT NONE
-  PUBLIC
-
-!--------------------------------------------------------------
-!  R e a l  k i n d s  ( q u a d r u p l e  p r e c i s i o n )
-!--------------------------------------------------------------
-
-  INTEGER, PARAMETER :: real_bytes_ = 16
-  INTEGER, PARAMETER :: rp_ = r16_
-  INTEGER, PARAMETER :: cp_ = c16_
-  INTEGER, PARAMETER :: rpc_ = qpc_
-
-END MODULE HSL_KINDS_quadruple
-#endif
