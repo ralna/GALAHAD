@@ -1,5 +1,9 @@
 ! THIS VERSION: GALAHAD 5.1 - 2024-12-12 AT 11:20 GMT
 
+#ifdef INTEGER_64
+#define SPRAL_KINDS SPRAL_KINDS_64
+#endif
+
 !-*-*-*-*-*-*-*-*-*-  S P R A L _ K I N D S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, GALAHAD productions
