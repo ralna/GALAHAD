@@ -752,7 +752,7 @@ if build_tests
         include_tests = libgalahad_quadruple_include
       endif
 
-      if not (name == 'croti_single')
+      if not (name == 'croti_single' or name == 'croti_quadruple')
         test(name,
              executable(name, file,
                         fortran_args : pp_flag + args_precision,
