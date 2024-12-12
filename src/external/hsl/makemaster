@@ -38,8 +38,10 @@ hsl: hsl_$(PRECIS)
 hsl_silent: hsl_$(PRECIS)
 hsl_single: hsl_galahad_single
 hsl_double: hsl_galahad_double
+hsl_quadruple: hsl_galahad_quadruple
 hsl_single_64: hsl_galahad_single_64
 hsl_double_64: hsl_galahad_double_64
+hsl_quadruple_64: hsl_galahad_quadruple_64
 
 #  kinds
 

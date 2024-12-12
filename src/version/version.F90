@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-08-16 AT 14:45 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-12 AT 09:25 GMT.
 
 #include "galahad_modules.h"
 
@@ -22,8 +22,8 @@
       PUBLIC :: VERSION_galahad
 
       INTEGER ( KIND = ip_ ), PARAMETER :: major = 5
-      INTEGER ( KIND = ip_ ), PARAMETER :: minor = 0
-      INTEGER ( KIND = ip_ ), PARAMETER :: patch = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: minor = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: patch = 0
 
     CONTAINS
 
