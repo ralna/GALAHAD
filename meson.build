@@ -182,11 +182,20 @@ elif cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm-cl'
   add_global_arguments('/Qopenmp', language : 'cpp')
 endif
 
-libgalahad_single_deps = [libsmumps, libcutest_single]
-libgalahad_double_deps = [libdmumps, libcutest_double]
-libgalahad_quadruple_deps = [libcutest_quadruple]
-libgalahad_deps = [libblas, liblapack, libhsl, libwsmp, libpardiso,
-                   libspmf, libpastixf, libampl, libmpi, libhwloc]
+libgalahad_single_deps = [libsmumps, libcutest_single, libblas, liblapack,
+                          libhsl, libwsmp, libpardiso, libspmf, libpastixf,
+                          libampl, libmpi, libhwloc]
+
+libgalahad_double_deps = [libdmumps, libcutest_double, libblas, liblapack,
+                          libhsl, libwsmp, libpardiso, libspmf, libpastixf,
+                          libampl, libmpi, libhwloc]
+
+libgalahad_quadruple_deps = [libcutest_quadruple, libhsl, libwsmp, libpardiso, libspmf,
+                             libpastixf, libampl, libmpi, libhwloc]
+
+# BLAS and LAPACK
+libblas_src = []
+liblapack_src = []
 
 # Fortran files *.F90 or *.f90
 libgalahad_src = []
@@ -275,17 +284,15 @@ endif
 
 extra_args_single = ['-DREAL_32']
 extra_args_double = []
-extra_args_quadruple = ['-DREAL_128']
+extra_args_quadruple = ['-DREAL_128', '-DGALAHAD_BLAS', '-DGALAHAD_LAPACK']
 
 if not libblas.found()
   extra_args_single += '-DGALAHAD_BLAS'
   extra_args_double += '-DGALAHAD_BLAS'
-  extra_args_quadruple += '-DGALAHAD_BLAS'
 endif
 if not liblapack.found()
   extra_args_single += '-DGALAHAD_LAPACK'
   extra_args_double += '-DGALAHAD_LAPACK'
-  extra_args_quadruple += '-DGALAHAD_LAPACK'
 endif
 if not libsmumps.found()
   extra_args_single += '-DDUMMY_SMUMPS'
@@ -501,7 +508,7 @@ if build_single
 
   libgalahad_single = library(libgalahad_single_name,
                               sources : sources_single,
-                              dependencies : libgalahad_single_deps + libgalahad_deps,
+                              dependencies : libgalahad_single_deps,
                               fortran_args : extra_args_single,
                               c_args : extra_args_single,
                               cpp_args : extra_args_single,
@@ -554,7 +561,7 @@ if build_double
 
   libgalahad_double = library(libgalahad_double_name,
                               sources : sources_double,
-                              dependencies : libgalahad_double_deps + libgalahad_deps,
+                              dependencies : libgalahad_double_deps,
                               fortran_args : extra_args_double,
                               c_args : extra_args_double,
                               cpp_args : extra_args_double,
@@ -607,7 +614,7 @@ if build_quadruple
 
   libgalahad_quadruple = library(libgalahad_quadruple_name,
                               sources : sources_quadruple,
-                              dependencies : libgalahad_quadruple_deps + libgalahad_deps,
+                              dependencies : libgalahad_quadruple_deps,
                               fortran_args : extra_args_quadruple,
                               c_args : extra_args_quadruple,
                               cpp_args : extra_args_quadruple,
@@ -661,7 +668,7 @@ if build_single
     binname = binary[0]
     binfile = binary[1]
     executable(binname+'_single', binfile,
-               dependencies : libgalahad_single_deps + libgalahad_deps,
+               dependencies : libgalahad_single_deps,
                fortran_args : pp_flag + extra_args_single,
                link_with : libgalahad_single,
                link_language : 'fortran',
@@ -675,7 +682,7 @@ if build_double
     binname = binary[0]
     binfile = binary[1]
     executable(binname+'_double', binfile,
-               dependencies : libgalahad_double_deps + libgalahad_deps,
+               dependencies : libgalahad_double_deps,
                fortran_args : pp_flag + extra_args_double,
                link_with : libgalahad_double,
                link_language : 'fortran',
@@ -689,7 +696,7 @@ if build_quadruple
     binname = binary[0]
     binfile = binary[1]
     executable(binname+'_quadruple', binfile,
-               dependencies : libgalahad_quadruple_deps + libgalahad_deps,
+               dependencies : libgalahad_quadruple_deps,
                fortran_args : pp_flag + extra_args_quadruple,
                link_with : libgalahad_quadruple,
                link_language : 'fortran',
@@ -732,17 +739,16 @@ if build_tests
       name = test[1] + '_' + precision
       file = test[2]
 
-      deps_tests = libgalahad_deps
       if precision == 'single'
-        deps_tests += libgalahad_single_deps
+        deps_tests = libgalahad_single_deps
         include_tests = libgalahad_single_include
       endif
       if precision == 'double'
-        deps_tests += libgalahad_double_deps
+        deps_tests = libgalahad_double_deps
         include_tests = libgalahad_double_include
       endif
       if precision == 'quadruple'
-        deps_tests += libgalahad_quadruple_deps
+        deps_tests = libgalahad_quadruple_deps
         include_tests = libgalahad_quadruple_include
       endif
 
@@ -820,7 +826,7 @@ if build_examples and build_double and (not int64)
   foreach example: galahad_examples
     name = example[0]
     file = example[1]
-    executable(name, file, link_with : libgalahad_double, dependencies : libgalahad_deps + libgalahad_double_deps, link_language : 'fortran',
+    executable(name, file, link_with : libgalahad_double, dependencies : libgalahad_double_deps, link_language : 'fortran',
                            include_directories : libgalahad_double_include, install : true, install_dir : fortran_examples_folder)
   endforeach
 endif
