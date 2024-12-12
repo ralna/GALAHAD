@@ -134,6 +134,7 @@ libdmumps = fc.find_library(libdmumps_name, dirs : libmumps_path, required : fal
 libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
 libhwloc = fc.find_library(libhwloc_name, dirs : libhwloc_path, required : false)
 lm = cc.find_library('m', required : false)
+libquadmath = cc.find_library('quadmath', required : false)
 libmpi = dependency('mpi', language : 'fortran', required : false)
 has_hwloch = cc.has_header('hwloc.h', include_directories : libhwloc_include)
 
@@ -794,8 +795,9 @@ if build_tests and build_ciface
       endif
 
       test(name,
-           executable(name, file, c_args : args_precision, link_with : libgalahad_precision, dependencies : lm, link_language : 'c',
-                                  include_directories : include_tests, install : true, install_dir : c_tests_folder),
+           executable(name, file, c_args : args_precision, link_with : libgalahad_precision, dependencies : [lm, libquadmath],
+                      link_language : 'c', include_directories : include_tests, install : true,
+                      install_dir : c_tests_folder),
            suite : [package, precision, 'C'],
            is_parallel : false)
     endforeach
