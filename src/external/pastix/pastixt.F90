@@ -28,11 +28,13 @@ PROGRAM test_pastix
   INTEGER ( kind = pastix_int_t ), DIMENSION( : ), POINTER :: permtab
   TYPE ( pastix_order_t ), POINTER :: order => NULL( )
 #ifdef REAL_32
-  REAL ( kind = dp_ ) :: eps = 0.001_rp_
+  REAL ( kind = dp_ ) :: eps = 0.001_dp_
+#elif REAL_128
+  REAL ( kind = dp_ ) :: eps = 0.000000000001_dp_
 #else
-  REAL ( kind = dp_ ) :: eps = 0.000000000001_rp_
+  REAL ( kind = dp_ ) :: eps = 0.000000000001_dp_
 #endif
-write(6,*) ' eps ', eps
+
   DO store = 1, 3
 
 ! Initialize the parameters and the solver
@@ -76,6 +78,8 @@ write(6,*) ' eps ', eps
 #ifdef REAL_32
 write(6,"('single')")
       CALL spmGetArray( spm, colptr = COL, rowptr = ROW, svalues = VAL )
+#elif REAL_128
+      CALL spmGetArray( spm, colptr = COL, rowptr = ROW, qvalues = VAL )
 #else
 write(6,"('double')")
       CALL spmGetArray( spm, colptr = COL, rowptr = ROW, dvalues = VAL )
@@ -116,6 +120,8 @@ write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
       CALL spmAlloc( spm )
 #ifdef REAL_32
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, svalues = VAL )
+#elif REAL_128
+      CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, qvalues = VAL )
 #else
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, dvalues = VAL )
 #endif
@@ -156,6 +162,8 @@ write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
       CALL spmAlloc( spm )
 #ifdef REAL_32
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, svalues = VAL )
+#elif REAL_128
+      CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, qvalues = VAL )
 #else
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, dvalues = VAL )
 #endif
