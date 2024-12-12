@@ -142,7 +142,7 @@ runs:
         cd libHSL-${VERSION_LIBHSL}/hsl_subset
         meson setup builddir --buildtype=debug \
                              --prefix=$DEPS/deps \
-                             -Dquadruple=false \
+                             -Dquadruple=true \
                              -Ddefault_library=shared
         meson compile -C builddir
         meson install -C builddir
