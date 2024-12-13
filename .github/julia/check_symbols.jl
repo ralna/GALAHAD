@@ -25,7 +25,14 @@ symbols_combinations = [(symbols_single_int32, symbols_double_int32, 32, 32, "li
                         (symbols_double_int32, symbols_single_int64, 32, 64, "libgalahad_double.so and libgalahad_single_64.so"),
                         (symbols_double_int32, symbols_double_int64, 32, 64, "libgalahad_double.so and libgalahad_double_64.so"),
                         (symbols_single_int64, symbols_double_int64, 64, 64, "libgalahad_single_64.so and libgalahad_double_64.so"),
+                        (symbols_quadruple_int32, symbols_single_int32, 32, 32, "libgalahad_quadruple.so and libgalahad_single.so"),
+                        (symbols_quadruple_int32, symbols_single_int64, 32, 64, "libgalahad_quadruple.so and libgalahad_single_64.so"),
                         (symbols_quadruple_int32, symbols_double_int32, 32, 32, "libgalahad_quadruple.so and libgalahad_double.so"),
+                        (symbols_quadruple_int32, symbols_double_int64, 32, 64, "libgalahad_quadruple.so and libgalahad_double_64.so"),
+                        (symbols_quadruple_int32, symbols_quadruple_int64, 32, 64, "libgalahad_quadruple.so and libgalahad_quadruple_64.so"),
+                        (symbols_quadruple_int64, symbols_single_int32, 64, 32, "libgalahad_quadruple_64.so and libgalahad_single.so"),
+                        (symbols_quadruple_int64, symbols_single_int64, 64, 64, "libgalahad_quadruple_64.so and libgalahad_single_64.so"),
+                        (symbols_quadruple_int64, symbols_double_int32, 64, 32, "libgalahad_quadruple_64.so and libgalahad_double.so"),
                         (symbols_quadruple_int64, symbols_double_int64, 64, 64, "libgalahad_quadruple_64.so and libgalahad_double_64.so")]
 
 single_double_modules = ["hash_MOD", "string_MOD", "clock_MOD", "copyright_MOD", "symbols_MOD", "tools_MOD",
