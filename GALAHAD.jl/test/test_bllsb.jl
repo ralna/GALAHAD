@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_bllsb(::Type{T}) where T
   # Derived types
@@ -149,4 +150,5 @@ end
 @testset "BLLSB" begin
   @test test_bllsb(Float32) == 0
   @test test_bllsb(Float64) == 0
+  @test test_bllsb(Float128) == 0
 end

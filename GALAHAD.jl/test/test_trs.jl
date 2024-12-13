@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_trs(::Type{T}) where T
   # Derived types
@@ -238,4 +239,5 @@ end
 @testset "TRS" begin
   @test test_trs(Float32) == 0
   @test test_trs(Float64) == 0
+  @test test_trs(Float128) == 0
 end

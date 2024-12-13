@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_eqp(::Type{T}) where T
   # Derived types
@@ -224,4 +225,5 @@ end
 @testset "EQP" begin
   @test test_eqp(Float32) == 0
   @test test_eqp(Float64) == 0
+  @test test_eqp(Float128) == 0
 end

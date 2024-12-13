@@ -199,6 +199,12 @@ function bnls_initialize(::Type{Float64}, data, control, inform)
                                            inform::Ptr{bnls_inform_type{Float64}})::Cvoid
 end
 
+function bnls_initialize(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.bnls_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                                control::Ptr{bnls_control_type{Float128}},
+                                                inform::Ptr{bnls_inform_type{Float128}})::Cvoid
+end
+
 export bnls_read_specfile
 
 function bnls_read_specfile(::Type{Float32}, control, specfile)
@@ -209,6 +215,11 @@ end
 function bnls_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.bnls_read_specfile(control::Ptr{bnls_control_type{Float64}},
                                               specfile::Ptr{Cchar})::Cvoid
+end
+
+function bnls_read_specfile(::Type{Float128}, control, specfile)
+  @ccall libgalahad_quadruple.bnls_read_specfile_q(control::Ptr{bnls_control_type{Float128}},
+                                                   specfile::Ptr{Cchar})::Cvoid
 end
 
 export bnls_import
@@ -243,6 +254,21 @@ function bnls_import(::Type{Float64}, control, data, status, n, m, x_l, x_u, J_t
                                        w::Ptr{Float64})::Cvoid
 end
 
+function bnls_import(::Type{Float128}, control, data, status, n, m, x_l, x_u, J_type, J_ne,
+                     J_row, J_col, J_ptr, H_type, H_ne, H_row, H_col, H_ptr, P_type, P_ne,
+                     P_row, P_col, P_ptr, w)
+  @ccall libgalahad_quadruple.bnls_import_q(control::Ptr{bnls_control_type{Float128}},
+                                            data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                            n::Cint, m::Cint, x_l::Ptr{Float128},
+                                            x_u::Ptr{Float128}, J_type::Ptr{Cchar},
+                                            J_ne::Cint, J_row::Ptr{Cint}, J_col::Ptr{Cint},
+                                            J_ptr::Ptr{Cint}, H_type::Ptr{Cchar},
+                                            H_ne::Cint, H_row::Ptr{Cint}, H_col::Ptr{Cint},
+                                            H_ptr::Ptr{Cint}, P_type::Ptr{Cchar},
+                                            P_ne::Cint, P_row::Ptr{Cint}, P_col::Ptr{Cint},
+                                            P_ptr::Ptr{Cint}, w::Ptr{Float128})::Cvoid
+end
+
 export bnls_reset_control
 
 function bnls_reset_control(::Type{Float32}, control, data, status)
@@ -255,6 +281,12 @@ function bnls_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.bnls_reset_control(control::Ptr{bnls_control_type{Float64}},
                                               data::Ptr{Ptr{Cvoid}},
                                               status::Ptr{Cint})::Cvoid
+end
+
+function bnls_reset_control(::Type{Float128}, control, data, status)
+  @ccall libgalahad_quadruple.bnls_reset_control_q(control::Ptr{bnls_control_type{Float128}},
+                                                   data::Ptr{Ptr{Cvoid}},
+                                                   status::Ptr{Cint})::Cvoid
 end
 
 export bnls_solve_with_mat
@@ -282,6 +314,18 @@ function bnls_solve_with_mat(::Type{Float64}, data, userdata, status, n, m, x, c
                                                eval_hprods::Ptr{Cvoid})::Cvoid
 end
 
+function bnls_solve_with_mat(::Type{Float128}, data, userdata, status, n, m, x, c, g,
+                             eval_c, j_ne, eval_j, h_ne, eval_h, p_ne, eval_hprods)
+  @ccall libgalahad_quadruple.bnls_solve_with_mat_q(data::Ptr{Ptr{Cvoid}},
+                                                    userdata::Ptr{Cvoid}, status::Ptr{Cint},
+                                                    n::Cint, m::Cint, x::Ptr{Float128},
+                                                    c::Ptr{Float128}, g::Ptr{Float128},
+                                                    eval_c::Ptr{Cvoid}, j_ne::Cint,
+                                                    eval_j::Ptr{Cvoid}, h_ne::Cint,
+                                                    eval_h::Ptr{Cvoid}, p_ne::Cint,
+                                                    eval_hprods::Ptr{Cvoid})::Cvoid
+end
+
 export bnls_solve_without_mat
 
 function bnls_solve_without_mat(::Type{Float32}, data, userdata, status, n, m, x, c, g,
@@ -306,6 +350,18 @@ function bnls_solve_without_mat(::Type{Float64}, data, userdata, status, n, m, x
                                                   eval_jprod::Ptr{Cvoid},
                                                   eval_hprod::Ptr{Cvoid}, p_ne::Cint,
                                                   eval_hprods::Ptr{Cvoid})::Cvoid
+end
+
+function bnls_solve_without_mat(::Type{Float128}, data, userdata, status, n, m, x, c, g,
+                                eval_c, eval_jprod, eval_hprod, p_ne, eval_hprods)
+  @ccall libgalahad_quadruple.bnls_solve_without_mat_q(data::Ptr{Ptr{Cvoid}},
+                                                       userdata::Ptr{Cvoid},
+                                                       status::Ptr{Cint}, n::Cint, m::Cint,
+                                                       x::Ptr{Float128}, c::Ptr{Float128},
+                                                       g::Ptr{Float128}, eval_c::Ptr{Cvoid},
+                                                       eval_jprod::Ptr{Cvoid},
+                                                       eval_hprod::Ptr{Cvoid}, p_ne::Cint,
+                                                       eval_hprods::Ptr{Cvoid})::Cvoid
 end
 
 export bnls_solve_reverse_with_mat
@@ -338,6 +394,21 @@ function bnls_solve_reverse_with_mat(::Type{Float64}, data, status, eval_status,
                                                        P_val::Ptr{Float64})::Cvoid
 end
 
+function bnls_solve_reverse_with_mat(::Type{Float128}, data, status, eval_status, n, m, x,
+                                     c, g, j_ne, J_val, y, h_ne, H_val, v, p_ne, P_val)
+  @ccall libgalahad_quadruple.bnls_solve_reverse_with_mat_q(data::Ptr{Ptr{Cvoid}},
+                                                            status::Ptr{Cint},
+                                                            eval_status::Ptr{Cint}, n::Cint,
+                                                            m::Cint, x::Ptr{Float128},
+                                                            c::Ptr{Float128},
+                                                            g::Ptr{Float128}, j_ne::Cint,
+                                                            J_val::Ptr{Float128},
+                                                            y::Ptr{Float128}, h_ne::Cint,
+                                                            H_val::Ptr{Float128},
+                                                            v::Ptr{Float128}, p_ne::Cint,
+                                                            P_val::Ptr{Float128})::Cvoid
+end
+
 export bnls_solve_reverse_without_mat
 
 function bnls_solve_reverse_without_mat(::Type{Float32}, data, status, eval_status, n, m, x,
@@ -368,6 +439,22 @@ function bnls_solve_reverse_without_mat(::Type{Float64}, data, status, eval_stat
                                                           P_val::Ptr{Float64})::Cvoid
 end
 
+function bnls_solve_reverse_without_mat(::Type{Float128}, data, status, eval_status, n, m,
+                                        x, c, g, transpose, u, v, y, p_ne, P_val)
+  @ccall libgalahad_quadruple.bnls_solve_reverse_without_mat_q(data::Ptr{Ptr{Cvoid}},
+                                                               status::Ptr{Cint},
+                                                               eval_status::Ptr{Cint},
+                                                               n::Cint, m::Cint,
+                                                               x::Ptr{Float128},
+                                                               c::Ptr{Float128},
+                                                               g::Ptr{Float128},
+                                                               transpose::Ptr{Bool},
+                                                               u::Ptr{Float128},
+                                                               v::Ptr{Float128},
+                                                               y::Ptr{Float128}, p_ne::Cint,
+                                                               P_val::Ptr{Float128})::Cvoid
+end
+
 export bnls_information
 
 function bnls_information(::Type{Float32}, data, inform, status)
@@ -382,6 +469,12 @@ function bnls_information(::Type{Float64}, data, inform, status)
                                             status::Ptr{Cint})::Cvoid
 end
 
+function bnls_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.bnls_information_q(data::Ptr{Ptr{Cvoid}},
+                                                 inform::Ptr{bnls_inform_type{Float128}},
+                                                 status::Ptr{Cint})::Cvoid
+end
+
 export bnls_terminate
 
 function bnls_terminate(::Type{Float32}, data, control, inform)
@@ -394,4 +487,10 @@ function bnls_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.bnls_terminate(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{bnls_control_type{Float64}},
                                           inform::Ptr{bnls_inform_type{Float64}})::Cvoid
+end
+
+function bnls_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.bnls_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{bnls_control_type{Float128}},
+                                               inform::Ptr{bnls_inform_type{Float128}})::Cvoid
 end

@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Quadmath
 
 function test_bsc(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
@@ -20,4 +21,5 @@ end
 @testset "BSC" begin
   @test test_bsc(Float32) == 0
   @test test_bsc(Float64) == 0
+  @test test_bsc(Float128) == 0
 end

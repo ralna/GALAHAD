@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_qpa(::Type{T}) where T
   # Derived types
@@ -234,4 +235,5 @@ end
 @testset "QPA" begin
   @test test_qpa(Float32) == 0
   @test test_qpa(Float64) == 0
+  @test test_qpa(Float128) == 0
 end

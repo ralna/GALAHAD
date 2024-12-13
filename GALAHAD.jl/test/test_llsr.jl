@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_llsr(::Type{T}) where T
   # Derived types
@@ -211,4 +212,5 @@ end
 @testset "LLSR" begin
   @test test_llsr(Float32) == 0
   @test test_llsr(Float64) == 0
+  @test test_llsr(Float128) == 0
 end

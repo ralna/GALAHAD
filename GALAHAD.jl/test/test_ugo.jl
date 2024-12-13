@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_ugo(::Type{T}) where T
   # Test problem objective
@@ -96,4 +97,5 @@ end
 @testset "UGO" begin
   @test test_ugo(Float32) == 0
   @test test_ugo(Float64) == 0
+  @test test_ugo(Float128) == 0
 end

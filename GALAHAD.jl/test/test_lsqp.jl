@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_lsqp(::Type{T}) where T
   # Derived types
@@ -114,4 +115,5 @@ end
 @testset "LSQP" begin
   @test test_lsqp(Float32) == 0
   @test test_lsqp(Float64) == 0
+  @test test_lsqp(Float128) == 0
 end

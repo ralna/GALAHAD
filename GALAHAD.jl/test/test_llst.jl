@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_llst(::Type{T}) where T
   # Derived types
@@ -209,4 +210,5 @@ end
 @testset "LLST" begin
   @test test_llst(Float32) == 0
   @test test_llst(Float64) == 0
+  @test test_llst(Float128) == 0
 end
