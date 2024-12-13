@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_sls(::Type{T}) where T
   maxabsarray(a) = abs.(a) |> maximum
@@ -160,4 +161,5 @@ end
 @testset "SLS" begin
   @test test_sls(Float32) == 0
   @test test_sls(Float64) == 0
+  @test test_sls(Float128) == 0
 end

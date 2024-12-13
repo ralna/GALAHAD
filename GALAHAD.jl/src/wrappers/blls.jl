@@ -83,6 +83,12 @@ function blls_initialize(::Type{Float64}, data, control, status)
                                            status::Ptr{Cint})::Cvoid
 end
 
+function blls_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.blls_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                                control::Ptr{blls_control_type{Float128}},
+                                                status::Ptr{Cint})::Cvoid
+end
+
 export blls_read_specfile
 
 function blls_read_specfile(::Type{Float32}, control, specfile)
@@ -93,6 +99,11 @@ end
 function blls_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.blls_read_specfile(control::Ptr{blls_control_type{Float64}},
                                               specfile::Ptr{Cchar})::Cvoid
+end
+
+function blls_read_specfile(::Type{Float128}, control, specfile)
+  @ccall libgalahad_quadruple.blls_read_specfile_q(control::Ptr{blls_control_type{Float128}},
+                                                   specfile::Ptr{Cchar})::Cvoid
 end
 
 export blls_import
@@ -115,6 +126,16 @@ function blls_import(::Type{Float64}, control, data, status, n, o, Ao_type, Ao_n
                                        Ao_ptr_ne::Cint, Ao_ptr::Ptr{Cint})::Cvoid
 end
 
+function blls_import(::Type{Float128}, control, data, status, n, o, Ao_type, Ao_ne, Ao_row,
+                     Ao_col, Ao_ptr_ne, Ao_ptr)
+  @ccall libgalahad_quadruple.blls_import_q(control::Ptr{blls_control_type{Float128}},
+                                            data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                            n::Cint, o::Cint, Ao_type::Ptr{Cchar},
+                                            Ao_ne::Cint, Ao_row::Ptr{Cint},
+                                            Ao_col::Ptr{Cint}, Ao_ptr_ne::Cint,
+                                            Ao_ptr::Ptr{Cint})::Cvoid
+end
+
 export blls_import_without_a
 
 function blls_import_without_a(::Type{Float32}, control, data, status, n, o)
@@ -129,6 +150,13 @@ function blls_import_without_a(::Type{Float64}, control, data, status, n, o)
                                                  n::Cint, o::Cint)::Cvoid
 end
 
+function blls_import_without_a(::Type{Float128}, control, data, status, n, o)
+  @ccall libgalahad_quadruple.blls_import_without_a_q(control::Ptr{blls_control_type{Float128}},
+                                                      data::Ptr{Ptr{Cvoid}},
+                                                      status::Ptr{Cint}, n::Cint,
+                                                      o::Cint)::Cvoid
+end
+
 export blls_reset_control
 
 function blls_reset_control(::Type{Float32}, control, data, status)
@@ -141,6 +169,12 @@ function blls_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.blls_reset_control(control::Ptr{blls_control_type{Float64}},
                                               data::Ptr{Ptr{Cvoid}},
                                               status::Ptr{Cint})::Cvoid
+end
+
+function blls_reset_control(::Type{Float128}, control, data, status)
+  @ccall libgalahad_quadruple.blls_reset_control_q(control::Ptr{blls_control_type{Float128}},
+                                                   data::Ptr{Ptr{Cvoid}},
+                                                   status::Ptr{Cint})::Cvoid
 end
 
 export blls_solve_given_a
@@ -168,6 +202,19 @@ function blls_solve_given_a(::Type{Float64}, data, userdata, status, n, o, Ao_ne
                                               z::Ptr{Float64}, r::Ptr{Float64},
                                               g::Ptr{Float64}, x_stat::Ptr{Cint},
                                               w::Ptr{Float64}, eval_prec::Ptr{Cvoid})::Cvoid
+end
+
+function blls_solve_given_a(::Type{Float128}, data, userdata, status, n, o, Ao_ne, Ao_val,
+                            b, x_l, x_u, x, z, r, g, x_stat, w, eval_prec)
+  @ccall libgalahad_quadruple.blls_solve_given_a_q(data::Ptr{Ptr{Cvoid}},
+                                                   userdata::Ptr{Cvoid}, status::Ptr{Cint},
+                                                   n::Cint, o::Cint, Ao_ne::Cint,
+                                                   Ao_val::Ptr{Float128}, b::Ptr{Float128},
+                                                   x_l::Ptr{Float128}, x_u::Ptr{Float128},
+                                                   x::Ptr{Float128}, z::Ptr{Float128},
+                                                   r::Ptr{Float128}, g::Ptr{Float128},
+                                                   x_stat::Ptr{Cint}, w::Ptr{Float128},
+                                                   eval_prec::Ptr{Cvoid})::Cvoid
 end
 
 export blls_solve_reverse_a_prod
@@ -207,6 +254,28 @@ function blls_solve_reverse_a_prod(::Type{Float64}, data, status, eval_status, n
                                                      nz_p_end::Cint, w::Ptr{Float64})::Cvoid
 end
 
+function blls_solve_reverse_a_prod(::Type{Float128}, data, status, eval_status, n, o, b,
+                                   x_l, x_u, x, z, r, g, x_stat, v, p, nz_v, nz_v_start,
+                                   nz_v_end, nz_p, nz_p_end, w)
+  @ccall libgalahad_quadruple.blls_solve_reverse_a_prod_q(data::Ptr{Ptr{Cvoid}},
+                                                          status::Ptr{Cint},
+                                                          eval_status::Ptr{Cint}, n::Cint,
+                                                          o::Cint, b::Ptr{Float128},
+                                                          x_l::Ptr{Float128},
+                                                          x_u::Ptr{Float128},
+                                                          x::Ptr{Float128},
+                                                          z::Ptr{Float128},
+                                                          r::Ptr{Float128},
+                                                          g::Ptr{Float128},
+                                                          x_stat::Ptr{Cint},
+                                                          v::Ptr{Float128},
+                                                          p::Ptr{Float128}, nz_v::Ptr{Cint},
+                                                          nz_v_start::Ptr{Cint},
+                                                          nz_v_end::Ptr{Cint},
+                                                          nz_p::Ptr{Cint}, nz_p_end::Cint,
+                                                          w::Ptr{Float128})::Cvoid
+end
+
 export blls_information
 
 function blls_information(::Type{Float32}, data, inform, status)
@@ -221,6 +290,12 @@ function blls_information(::Type{Float64}, data, inform, status)
                                             status::Ptr{Cint})::Cvoid
 end
 
+function blls_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.blls_information_q(data::Ptr{Ptr{Cvoid}},
+                                                 inform::Ptr{blls_inform_type{Float128}},
+                                                 status::Ptr{Cint})::Cvoid
+end
+
 export blls_terminate
 
 function blls_terminate(::Type{Float32}, data, control, inform)
@@ -233,4 +308,10 @@ function blls_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.blls_terminate(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{blls_control_type{Float64}},
                                           inform::Ptr{blls_inform_type{Float64}})::Cvoid
+end
+
+function blls_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.blls_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{blls_control_type{Float128}},
+                                               inform::Ptr{blls_inform_type{Float128}})::Cvoid
 end

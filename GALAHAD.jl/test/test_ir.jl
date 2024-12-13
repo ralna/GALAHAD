@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Quadmath
 
 function test_ir(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
@@ -20,4 +21,5 @@ end
 @testset "IR" begin
   @test test_ir(Float32) == 0
   @test test_ir(Float64) == 0
+  @test test_ir(Float128) == 0
 end

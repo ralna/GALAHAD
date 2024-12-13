@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 # Custom userdata struct
 struct userdata_trb{T}
@@ -395,4 +396,5 @@ end
 @testset "TRB" begin
   @test test_trb(Float32) == 0
   @test test_trb(Float64) == 0
+  @test test_trb(Float128) == 0
 end

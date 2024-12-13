@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Quadmath
 
 function test_convert(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
@@ -20,4 +21,5 @@ end
 @testset "CONVERT" begin
   @test test_convert(Float32) == 0
   @test test_convert(Float64) == 0
+  @test test_convert(Float128) == 0
 end

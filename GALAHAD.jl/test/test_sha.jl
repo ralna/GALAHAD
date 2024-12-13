@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Quadmath
 
 function test_sha(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
@@ -20,4 +21,5 @@ end
 @testset "SHA" begin
   @test test_sha(Float32) == 0
   @test test_sha(Float64) == 0
+  @test test_sha(Float128) == 0
 end

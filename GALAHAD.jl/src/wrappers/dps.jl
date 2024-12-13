@@ -67,6 +67,12 @@ function dps_initialize(::Type{Float64}, data, control, status)
                                           status::Ptr{Cint})::Cvoid
 end
 
+function dps_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.dps_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{dps_control_type{Float128}},
+                                               status::Ptr{Cint})::Cvoid
+end
+
 export dps_read_specfile
 
 function dps_read_specfile(::Type{Float32}, control, specfile)
@@ -77,6 +83,11 @@ end
 function dps_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.dps_read_specfile(control::Ptr{dps_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
+end
+
+function dps_read_specfile(::Type{Float128}, control, specfile)
+  @ccall libgalahad_quadruple.dps_read_specfile_q(control::Ptr{dps_control_type{Float128}},
+                                                  specfile::Ptr{Cchar})::Cvoid
 end
 
 export dps_import
@@ -97,6 +108,15 @@ function dps_import(::Type{Float64}, control, data, status, n, H_type, ne, H_row
                                       H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
 end
 
+function dps_import(::Type{Float128}, control, data, status, n, H_type, ne, H_row, H_col,
+                    H_ptr)
+  @ccall libgalahad_quadruple.dps_import_q(control::Ptr{dps_control_type{Float128}},
+                                           data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                           n::Cint, H_type::Ptr{Cchar}, ne::Cint,
+                                           H_row::Ptr{Cint}, H_col::Ptr{Cint},
+                                           H_ptr::Ptr{Cint})::Cvoid
+end
+
 export dps_reset_control
 
 function dps_reset_control(::Type{Float32}, control, data, status)
@@ -109,6 +129,12 @@ function dps_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.dps_reset_control(control::Ptr{dps_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
+end
+
+function dps_reset_control(::Type{Float128}, control, data, status)
+  @ccall libgalahad_quadruple.dps_reset_control_q(control::Ptr{dps_control_type{Float128}},
+                                                  data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Cint})::Cvoid
 end
 
 export dps_solve_tr_problem
@@ -125,6 +151,14 @@ function dps_solve_tr_problem(::Type{Float64}, data, status, n, ne, H_val, c, f,
                                                 n::Cint, ne::Cint, H_val::Ptr{Float64},
                                                 c::Ptr{Float64}, f::Float64,
                                                 radius::Float64, x::Ptr{Float64})::Cvoid
+end
+
+function dps_solve_tr_problem(::Type{Float128}, data, status, n, ne, H_val, c, f, radius, x)
+  @ccall libgalahad_quadruple.dps_solve_tr_problem_q(data::Ptr{Ptr{Cvoid}},
+                                                     status::Ptr{Cint}, n::Cint, ne::Cint,
+                                                     H_val::Ptr{Float128}, c::Ptr{Float128},
+                                                     f::Float128, radius::Float128,
+                                                     x::Ptr{Float128})::Cvoid
 end
 
 export dps_solve_rq_problem
@@ -146,6 +180,16 @@ function dps_solve_rq_problem(::Type{Float64}, data, status, n, ne, H_val, c, f,
                                                 weight::Float64, x::Ptr{Float64})::Cvoid
 end
 
+function dps_solve_rq_problem(::Type{Float128}, data, status, n, ne, H_val, c, f, power,
+                              weight, x)
+  @ccall libgalahad_quadruple.dps_solve_rq_problem_q(data::Ptr{Ptr{Cvoid}},
+                                                     status::Ptr{Cint}, n::Cint, ne::Cint,
+                                                     H_val::Ptr{Float128}, c::Ptr{Float128},
+                                                     f::Float128, power::Float128,
+                                                     weight::Float128,
+                                                     x::Ptr{Float128})::Cvoid
+end
+
 export dps_resolve_tr_problem
 
 function dps_resolve_tr_problem(::Type{Float32}, data, status, n, c, f, radius, x)
@@ -159,6 +203,14 @@ function dps_resolve_tr_problem(::Type{Float64}, data, status, n, c, f, radius, 
   @ccall libgalahad_double.dps_resolve_tr_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                   n::Cint, c::Ptr{Float64}, f::Float64,
                                                   radius::Float64, x::Ptr{Float64})::Cvoid
+end
+
+function dps_resolve_tr_problem(::Type{Float128}, data, status, n, c, f, radius, x)
+  @ccall libgalahad_quadruple.dps_resolve_tr_problem_q(data::Ptr{Ptr{Cvoid}},
+                                                       status::Ptr{Cint}, n::Cint,
+                                                       c::Ptr{Float128}, f::Float128,
+                                                       radius::Float128,
+                                                       x::Ptr{Float128})::Cvoid
 end
 
 export dps_resolve_rq_problem
@@ -178,6 +230,14 @@ function dps_resolve_rq_problem(::Type{Float64}, data, status, n, c, f, power, w
                                                   x::Ptr{Float64})::Cvoid
 end
 
+function dps_resolve_rq_problem(::Type{Float128}, data, status, n, c, f, power, weight, x)
+  @ccall libgalahad_quadruple.dps_resolve_rq_problem_q(data::Ptr{Ptr{Cvoid}},
+                                                       status::Ptr{Cint}, n::Cint,
+                                                       c::Ptr{Float128}, f::Float128,
+                                                       power::Float128, weight::Float128,
+                                                       x::Ptr{Float128})::Cvoid
+end
+
 export dps_information
 
 function dps_information(::Type{Float32}, data, inform, status)
@@ -192,6 +252,12 @@ function dps_information(::Type{Float64}, data, inform, status)
                                            status::Ptr{Cint})::Cvoid
 end
 
+function dps_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.dps_information_q(data::Ptr{Ptr{Cvoid}},
+                                                inform::Ptr{dps_inform_type{Float128}},
+                                                status::Ptr{Cint})::Cvoid
+end
+
 export dps_terminate
 
 function dps_terminate(::Type{Float32}, data, control, inform)
@@ -204,4 +270,10 @@ function dps_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.dps_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{dps_control_type{Float64}},
                                          inform::Ptr{dps_inform_type{Float64}})::Cvoid
+end
+
+function dps_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.dps_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{dps_control_type{Float128}},
+                                              inform::Ptr{dps_inform_type{Float128}})::Cvoid
 end

@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_rqs(::Type{T}) where T
   # Derived types
@@ -229,4 +230,5 @@ end
 @testset "RQS" begin
   @test test_rqs(Float32) == 0
   @test test_rqs(Float64) == 0
+  @test test_rqs(Float128) == 0
 end

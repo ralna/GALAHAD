@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_presolve(::Type{T}) where T
   # Derived types
@@ -208,4 +209,5 @@ end
 @testset "PRESOLVE" begin
   @test test_presolve(Float32) == 0
   @test test_presolve(Float64) == 0
+  @test test_presolve(Float128) == 0
 end

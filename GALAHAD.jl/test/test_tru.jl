@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 # Custom userdata struct
 mutable struct userdata_tru{T}
@@ -315,4 +316,5 @@ end
 @testset "TRU" begin
   @test test_tru(Float32) == 0
   @test test_tru(Float64) == 0
+  @test test_tru(Float128) == 0
 end

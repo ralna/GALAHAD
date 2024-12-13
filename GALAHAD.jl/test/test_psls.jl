@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_psls(::Type{T}) where T
   # Derived types
@@ -98,4 +99,5 @@ end
 @testset "PSLS" begin
   @test test_psls(Float32) == 0
   @test test_psls(Float64) == 0
+  @test test_psls(Float128) == 0
 end

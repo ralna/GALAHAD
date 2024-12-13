@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_lpb(::Type{T}) where T
   # Derived types
@@ -115,4 +116,5 @@ end
 @testset "LPB" begin
   @test test_lpb(Float32) == 0
   @test test_lpb(Float64) == 0
+  @test test_lpb(Float128) == 0
 end

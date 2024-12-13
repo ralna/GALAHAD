@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Quadmath
 
 function test_roots(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
@@ -20,4 +21,5 @@ end
 @testset "ROOTS" begin
   @test test_roots(Float32) == 0
   @test test_roots(Float64) == 0
+  @test test_roots(Float128) == 0
 end

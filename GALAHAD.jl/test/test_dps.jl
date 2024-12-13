@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_dps(::Type{T}) where T
   # Derived types
@@ -121,4 +122,5 @@ end
 @testset "DPS" begin
   @test test_dps(Float32) == 0
   @test test_dps(Float64) == 0
+  @test test_dps(Float128) == 0
 end

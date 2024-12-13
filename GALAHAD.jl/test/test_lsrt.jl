@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_lsrt(::Type{T}) where T
   # Derived types
@@ -73,4 +74,5 @@ end
 @testset "LSRT" begin
   @test test_lsrt(Float32) == 0
   @test test_lsrt(Float64) == 0
+  @test test_lsrt(Float128) == 0
 end

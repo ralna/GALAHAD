@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_gltr(::Type{T}) where T
   # Derived types
@@ -94,4 +95,5 @@ end
 @testset "GLTR" begin
   @test test_gltr(Float32) == 0
   @test test_gltr(Float64) == 0
+  @test test_gltr(Float128) == 0
 end

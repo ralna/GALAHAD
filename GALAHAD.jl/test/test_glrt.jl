@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_glrt(::Type{T}) where T
   # Derived types
@@ -96,4 +97,5 @@ end
 @testset "GLRT" begin
   @test test_glrt(Float32) == 0
   @test test_glrt(Float64) == 0
+  @test test_glrt(Float128) == 0
 end

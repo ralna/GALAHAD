@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Quadmath
 
 function test_hash(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
@@ -22,4 +23,5 @@ end
 @testset "HASH" begin
   @test test_hash(Float32) == 0
   @test test_hash(Float64) == 0
+  @test test_hash(Float128) == 0
 end

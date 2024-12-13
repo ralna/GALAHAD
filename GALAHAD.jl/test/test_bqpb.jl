@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_bqpb(::Type{T}) where T
   # Derived types
@@ -198,4 +199,5 @@ end
 @testset "BQPB" begin
   @test test_bqpb(Float32) == 0
   @test test_bqpb(Float64) == 0
+  @test test_bqpb(Float128) == 0
 end

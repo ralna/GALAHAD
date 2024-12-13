@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_fdc(::Type{T}) where T
   # Derived types
@@ -60,4 +61,5 @@ end
 @testset "FDC" begin
   @test test_fdc(Float32) == 0
   @test test_fdc(Float64) == 0
+  @test test_fdc(Float128) == 0
 end

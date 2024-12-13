@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Quadmath
 
 function test_sec(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
@@ -20,4 +21,5 @@ end
 @testset "SEC" begin
   @test test_sec(Float32) == 0
   @test test_sec(Float64) == 0
+  @test test_sec(Float128) == 0
 end

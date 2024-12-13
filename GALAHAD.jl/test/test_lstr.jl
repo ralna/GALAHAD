@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_lstr(::Type{T}) where T
   # Derived types
@@ -83,4 +84,5 @@ end
 @testset "LSTR" begin
   @test test_lstr(Float32) == 0
   @test test_lstr(Float64) == 0
+  @test test_lstr(Float128) == 0
 end

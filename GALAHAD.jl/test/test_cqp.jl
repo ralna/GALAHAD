@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_cqp(::Type{T}) where T
   # Derived types
@@ -226,4 +227,5 @@ end
 @testset "CQP" begin
   @test test_cqp(Float32) == 0
   @test test_cqp(Float64) == 0
+  @test test_cqp(Float128) == 0
 end
