@@ -122,7 +122,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
     isfile("../test/test_structures.jl") || write("../test/test_structures.jl", "using GALAHAD\nusing Quadmath\n\n")
     test = read("../test/test_structures.jl", String)
     structures = structures * "\n"
-    structures = replace(structures, "Ref{wcp_inform_type{Float64}}()\n" => "Ref{wcp_inform_type{Float64}}()")
+    structures = replace(structures, "Ref{wcp_inform_type{Float128}}()\n" => "Ref{wcp_inform_type{Float128}}()")
     write("../test/test_structures.jl", test * structures)
   end
 

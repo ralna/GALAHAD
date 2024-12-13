@@ -615,5 +615,5 @@ Ref{wcp_time_type{Float32}}()
 Ref{wcp_time_type{Float64}}()
 Ref{wcp_time_type{Float128}}()
 Ref{wcp_inform_type{Float32}}()
-Ref{wcp_inform_type{Float64}}()Ref{wcp_inform_type{Float128}}()
-
+Ref{wcp_inform_type{Float64}}()
+Ref{wcp_inform_type{Float128}}()
