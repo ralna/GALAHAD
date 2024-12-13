@@ -71,6 +71,12 @@ function uls_initialize(::Type{Float64}, solver, data, control, status)
                                           status::Ptr{Cint})::Cvoid
 end
 
+function uls_initialize(::Type{Float128}, solver, data, control, status)
+  @ccall libgalahad_quadruple.uls_initialize_q(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{uls_control_type{Float128}},
+                                               status::Ptr{Cint})::Cvoid
+end
+
 export uls_read_specfile
 
 function uls_read_specfile(::Type{Float32}, control, specfile)
@@ -81,6 +87,11 @@ end
 function uls_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.uls_read_specfile(control::Ptr{uls_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
+end
+
+function uls_read_specfile(::Type{Float128}, control, specfile)
+  @ccall libgalahad_quadruple.uls_read_specfile_q(control::Ptr{uls_control_type{Float128}},
+                                                  specfile::Ptr{Cchar})::Cvoid
 end
 
 export uls_factorize_matrix
@@ -104,6 +115,16 @@ function uls_factorize_matrix(::Type{Float64}, control, data, status, m, n, type
                                                 col::Ptr{Cint}, ptr::Ptr{Cint})::Cvoid
 end
 
+function uls_factorize_matrix(::Type{Float128}, control, data, status, m, n, type, ne, val,
+                              row, col, ptr)
+  @ccall libgalahad_quadruple.uls_factorize_matrix_q(control::Ptr{uls_control_type{Float128}},
+                                                     data::Ptr{Ptr{Cvoid}},
+                                                     status::Ptr{Cint}, m::Cint, n::Cint,
+                                                     type::Ptr{Cchar}, ne::Cint,
+                                                     val::Ptr{Float128}, row::Ptr{Cint},
+                                                     col::Ptr{Cint}, ptr::Ptr{Cint})::Cvoid
+end
+
 export uls_reset_control
 
 function uls_reset_control(::Type{Float32}, control, data, status)
@@ -116,6 +137,12 @@ function uls_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.uls_reset_control(control::Ptr{uls_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
+end
+
+function uls_reset_control(::Type{Float128}, control, data, status)
+  @ccall libgalahad_quadruple.uls_reset_control_q(control::Ptr{uls_control_type{Float128}},
+                                                  data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Cint})::Cvoid
 end
 
 export uls_solve_system
@@ -132,6 +159,12 @@ function uls_solve_system(::Type{Float64}, data, status, m, n, sol, trans)
                                             trans::Bool)::Cvoid
 end
 
+function uls_solve_system(::Type{Float128}, data, status, m, n, sol, trans)
+  @ccall libgalahad_quadruple.uls_solve_system_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                                 m::Cint, n::Cint, sol::Ptr{Float128},
+                                                 trans::Bool)::Cvoid
+end
+
 export uls_information
 
 function uls_information(::Type{Float32}, data, inform, status)
@@ -146,6 +179,12 @@ function uls_information(::Type{Float64}, data, inform, status)
                                            status::Ptr{Cint})::Cvoid
 end
 
+function uls_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.uls_information_q(data::Ptr{Ptr{Cvoid}},
+                                                inform::Ptr{uls_inform_type{Float128}},
+                                                status::Ptr{Cint})::Cvoid
+end
+
 export uls_terminate
 
 function uls_terminate(::Type{Float32}, data, control, inform)
@@ -158,4 +197,10 @@ function uls_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.uls_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{uls_control_type{Float64}},
                                          inform::Ptr{uls_inform_type{Float64}})::Cvoid
+end
+
+function uls_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.uls_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{uls_control_type{Float128}},
+                                              inform::Ptr{uls_inform_type{Float128}})::Cvoid
 end

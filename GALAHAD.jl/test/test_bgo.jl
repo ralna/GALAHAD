@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 # Custom userdata struct
 struct userdata_bgo{T}
@@ -513,4 +514,5 @@ end
 @testset "BGO" begin
   @test test_bgo(Float32) == 0
   @test test_bgo(Float64) == 0
+  @test test_bgo(Float128) == 0
 end

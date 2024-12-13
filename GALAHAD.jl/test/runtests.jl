@@ -1,4 +1,5 @@
 using GALAHAD
+using Quadmath
 
 @info("GALAHAD_INSTALLATION : $(GALAHAD.GALAHAD_INSTALLATION)")
 # @info("GALAHAD_VERSION : $(version_galahad())")

@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 # Custom userdata struct
 struct userdata_arc{T}
@@ -316,4 +317,5 @@ end
 @testset "ARC" begin
   @test test_arc(Float32) == 0
   @test test_arc(Float64) == 0
+  @test test_arc(Float128) == 0
 end

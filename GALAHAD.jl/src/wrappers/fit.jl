@@ -32,6 +32,12 @@ function fit_initialize(::Type{Float64}, data, control, status)
                                           status::Ptr{Cint})::Cvoid
 end
 
+function fit_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.fit_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{fit_control_type},
+                                               status::Ptr{Cint})::Cvoid
+end
+
 export fit_information
 
 function fit_information(::Type{Float32}, data, inform, status)
@@ -46,6 +52,12 @@ function fit_information(::Type{Float64}, data, inform, status)
                                            status::Ptr{Cint})::Cvoid
 end
 
+function fit_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.fit_information_q(data::Ptr{Ptr{Cvoid}},
+                                                inform::Ptr{fit_inform_type},
+                                                status::Ptr{Cint})::Cvoid
+end
+
 export fit_terminate
 
 function fit_terminate(::Type{Float32}, data, control, inform)
@@ -58,4 +70,10 @@ function fit_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.fit_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{fit_control_type},
                                          inform::Ptr{fit_inform_type})::Cvoid
+end
+
+function fit_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.fit_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{fit_control_type},
+                                              inform::Ptr{fit_inform_type})::Cvoid
 end

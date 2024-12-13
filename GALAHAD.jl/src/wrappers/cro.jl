@@ -64,6 +64,12 @@ function cro_initialize(::Type{Float64}, data, control, status)
                                           status::Ptr{Cint})::Cvoid
 end
 
+function cro_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.cro_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{cro_control_type{Float128}},
+                                               status::Ptr{Cint})::Cvoid
+end
+
 export cro_read_specfile
 
 function cro_read_specfile(::Type{Float32}, control, specfile)
@@ -74,6 +80,11 @@ end
 function cro_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.cro_read_specfile(control::Ptr{cro_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
+end
+
+function cro_read_specfile(::Type{Float128}, control, specfile)
+  @ccall libgalahad_quadruple.cro_read_specfile_q(control::Ptr{cro_control_type{Float128}},
+                                                  specfile::Ptr{Cchar})::Cvoid
 end
 
 export cro_crossover_solution
@@ -116,6 +127,26 @@ function cro_crossover_solution(::Type{Float64}, data, control, inform, n, m, m_
                                                   c_stat::Ptr{Cint})::Cvoid
 end
 
+function cro_crossover_solution(::Type{Float128}, data, control, inform, n, m, m_equal,
+                                h_ne, H_val, H_col, H_ptr, a_ne, A_val, A_col, A_ptr, g,
+                                c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
+  @ccall libgalahad_quadruple.cro_crossover_solution_q(data::Ptr{Ptr{Cvoid}},
+                                                       control::Ptr{cro_control_type{Float128}},
+                                                       inform::Ptr{cro_inform_type{Float128}},
+                                                       n::Cint, m::Cint, m_equal::Cint,
+                                                       h_ne::Cint, H_val::Ptr{Float128},
+                                                       H_col::Ptr{Cint}, H_ptr::Ptr{Cint},
+                                                       a_ne::Cint, A_val::Ptr{Float128},
+                                                       A_col::Ptr{Cint}, A_ptr::Ptr{Cint},
+                                                       g::Ptr{Float128}, c_l::Ptr{Float128},
+                                                       c_u::Ptr{Float128},
+                                                       x_l::Ptr{Float128},
+                                                       x_u::Ptr{Float128}, x::Ptr{Float128},
+                                                       c::Ptr{Float128}, y::Ptr{Float128},
+                                                       z::Ptr{Float128}, x_stat::Ptr{Cint},
+                                                       c_stat::Ptr{Cint})::Cvoid
+end
+
 export cro_terminate
 
 function cro_terminate(::Type{Float32}, data, control, inform)
@@ -128,4 +159,10 @@ function cro_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.cro_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{cro_control_type{Float64}},
                                          inform::Ptr{cro_inform_type{Float64}})::Cvoid
+end
+
+function cro_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.cro_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{cro_control_type{Float128}},
+                                              inform::Ptr{cro_inform_type{Float128}})::Cvoid
 end

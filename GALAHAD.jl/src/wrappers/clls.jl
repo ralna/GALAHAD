@@ -126,6 +126,12 @@ function clls_initialize(::Type{Float64}, data, control, status)
                                            status::Ptr{Cint})::Cvoid
 end
 
+function clls_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.clls_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                                control::Ptr{clls_control_type{Float128}},
+                                                status::Ptr{Cint})::Cvoid
+end
+
 export clls_read_specfile
 
 function clls_read_specfile(::Type{Float32}, control, specfile)
@@ -136,6 +142,11 @@ end
 function clls_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.clls_read_specfile(control::Ptr{clls_control_type{Float64}},
                                               specfile::Ptr{Cchar})::Cvoid
+end
+
+function clls_read_specfile(::Type{Float128}, control, specfile)
+  @ccall libgalahad_quadruple.clls_read_specfile_q(control::Ptr{clls_control_type{Float128}},
+                                                   specfile::Ptr{Cchar})::Cvoid
 end
 
 export clls_import
@@ -166,6 +177,19 @@ function clls_import(::Type{Float64}, control, data, status, n, o, m, Ao_type, A
                                        A_ptr::Ptr{Cint})::Cvoid
 end
 
+function clls_import(::Type{Float128}, control, data, status, n, o, m, Ao_type, Ao_ne,
+                     Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr, A_type, A_ne, A_row, A_col,
+                     A_ptr_ne, A_ptr)
+  @ccall libgalahad_quadruple.clls_import_q(control::Ptr{clls_control_type{Float128}},
+                                            data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                            n::Cint, o::Cint, m::Cint, Ao_type::Ptr{Cchar},
+                                            Ao_ne::Cint, Ao_row::Ptr{Cint},
+                                            Ao_col::Ptr{Cint}, Ao_ptr_ne::Cint,
+                                            Ao_ptr::Ptr{Cint}, A_type::Ptr{Cchar},
+                                            A_ne::Cint, A_row::Ptr{Cint}, A_col::Ptr{Cint},
+                                            A_ptr_ne::Cint, A_ptr::Ptr{Cint})::Cvoid
+end
+
 export clls_reset_control
 
 function clls_reset_control(::Type{Float32}, control, data, status)
@@ -178,6 +202,12 @@ function clls_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.clls_reset_control(control::Ptr{clls_control_type{Float64}},
                                               data::Ptr{Ptr{Cvoid}},
                                               status::Ptr{Cint})::Cvoid
+end
+
+function clls_reset_control(::Type{Float128}, control, data, status)
+  @ccall libgalahad_quadruple.clls_reset_control_q(control::Ptr{clls_control_type{Float128}},
+                                                   data::Ptr{Ptr{Cvoid}},
+                                                   status::Ptr{Cint})::Cvoid
 end
 
 export clls_solve_clls
@@ -214,6 +244,22 @@ function clls_solve_clls(::Type{Float64}, data, status, n, o, m, Ao_ne, Ao_val, 
                                            w::Ptr{Float64})::Cvoid
 end
 
+function clls_solve_clls(::Type{Float128}, data, status, n, o, m, Ao_ne, Ao_val, b,
+                         regularization_weight, A_ne, A_val, c_l, c_u, x_l, x_u, x, r, c, y,
+                         z, x_stat, c_stat, w)
+  @ccall libgalahad_quadruple.clls_solve_clls_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                                n::Cint, o::Cint, m::Cint, Ao_ne::Cint,
+                                                Ao_val::Ptr{Float128}, b::Ptr{Float128},
+                                                regularization_weight::Float128, A_ne::Cint,
+                                                A_val::Ptr{Float128}, c_l::Ptr{Float128},
+                                                c_u::Ptr{Float128}, x_l::Ptr{Float128},
+                                                x_u::Ptr{Float128}, x::Ptr{Float128},
+                                                r::Ptr{Float128}, c::Ptr{Float128},
+                                                y::Ptr{Float128}, z::Ptr{Float128},
+                                                x_stat::Ptr{Cint}, c_stat::Ptr{Cint},
+                                                w::Ptr{Float128})::Cvoid
+end
+
 export clls_information
 
 function clls_information(::Type{Float32}, data, inform, status)
@@ -228,6 +274,12 @@ function clls_information(::Type{Float64}, data, inform, status)
                                             status::Ptr{Cint})::Cvoid
 end
 
+function clls_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.clls_information_q(data::Ptr{Ptr{Cvoid}},
+                                                 inform::Ptr{clls_inform_type{Float128}},
+                                                 status::Ptr{Cint})::Cvoid
+end
+
 export clls_terminate
 
 function clls_terminate(::Type{Float32}, data, control, inform)
@@ -240,4 +292,10 @@ function clls_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.clls_terminate(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{clls_control_type{Float64}},
                                           inform::Ptr{clls_inform_type{Float64}})::Cvoid
+end
+
+function clls_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.clls_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{clls_control_type{Float128}},
+                                               inform::Ptr{clls_inform_type{Float128}})::Cvoid
 end

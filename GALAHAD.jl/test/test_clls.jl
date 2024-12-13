@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_clls(::Type{T}) where T
   # Derived types
@@ -185,4 +186,5 @@ end
 @testset "CLLS" begin
   @test test_clls(Float32) == 0
   @test test_clls(Float64) == 0
+  @test test_clls(Float128) == 0
 end

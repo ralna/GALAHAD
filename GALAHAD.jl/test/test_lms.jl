@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Quadmath
 
 function test_lms(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
@@ -20,4 +21,5 @@ end
 @testset "LMS" begin
   @test test_lms(Float32) == 0
   @test test_lms(Float64) == 0
+  @test test_lms(Float128) == 0
 end

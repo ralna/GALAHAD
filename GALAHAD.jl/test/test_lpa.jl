@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_lpa(::Type{T}) where T
   # Derived types
@@ -114,4 +115,5 @@ end
 @testset "LPA" begin
   @test test_lpa(Float32) == 0
   @test test_lpa(Float64) == 0
+  @test test_lpa(Float128) == 0
 end

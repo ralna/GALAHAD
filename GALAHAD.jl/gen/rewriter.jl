@@ -63,32 +63,39 @@ function rewrite!(path::String, name::String, optimized::Bool)
         fname = split(split(code, "function ")[2], "(")[1]
         routine_single = code * "end\n"
         routine_double = code * "end\n"
+        routine_quadruple = code * "end\n"
 
         routine_single = replace(routine_single, "function $fname(" => "function $fname(::Type{Float32}, ")
         routine_double = replace(routine_double, "function $fname(" => "function $fname(::Type{Float64}, ")
+        routine_quadruple = replace(routine_quadruple, "function $fname(" => "function $fname(::Type{Float128}, ")
 
         routine_single = replace(routine_single, "libgalahad_double.$fname(" => "libgalahad_single.$(fname)_s(")
+        routine_quadruple = replace(routine_quadruple, "libgalahad_double.$fname(" => "libgalahad_quadruple.$(fname)_q(")
 
         routine_single = replace(routine_single, "rpc_" => "Float32")
         routine_double = replace(routine_double, "rpc_" => "Float64")
+        routine_quadruple = replace(routine_quadruple, "rpc_" => "Float128")
 
         routine_single = replace(routine_single, "spral_ssids_options" => "spral_ssids_options{Float32}")
         routine_double = replace(routine_double, "spral_ssids_options" => "spral_ssids_options{Float64}")
+        routine_quadruple = replace(routine_quadruple, "spral_ssids_options" => "spral_ssids_options{Float128}")
 
         for type in types
           for package in packages
             if "$(package)_$(type)_type" ∉ nonparametric_structures
               routine_single = replace(routine_single, "$(package)_$(type)_type" => "$(package)_$(type)_type{Float32}")
               routine_double = replace(routine_double, "$(package)_$(type)_type" => "$(package)_$(type)_type{Float64}")
+              routine_quadruple = replace(routine_quadruple, "$(package)_$(type)_type" => "$(package)_$(type)_type{Float128}")
 
               routine_single = replace(routine_single, "{Float32}{Float32}" => "{Float32}")
               routine_double = replace(routine_double, "{Float64}{Float64}" => "{Float64}")
+              routine_quadruple = replace(routine_quadruple, "{Float128}{Float128}" => "{Float128}")
             end
           end
         end
 
         if (name ≠ "hsl") && (name ≠ "ssids")
-          text = text * "\n" * "export " * fname * "\n" * routine_single * "\n" * routine_double
+          text = text * "\n" * "export " * fname * "\n" * routine_single * "\n" * routine_double * "\n" * routine_quadruple
         end
       elseif contains(code, "struct ")
         structure = code * "end\n"
@@ -98,6 +105,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
           structure = replace(structure, structure_name => structure_name * "{T}")
           structures = structures * "Ref{$(structure_name){Float32}}()\n"
           structures = structures * "Ref{$(structure_name){Float64}}()\n"
+          structures = structures * "Ref{$(structure_name){Float128}}()\n"
         else
           structures = structures * "Ref{$(structure_name)}()\n"
         end
@@ -111,7 +119,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
       end
     end
 
-    isfile("../test/test_structures.jl") || write("../test/test_structures.jl", "using GALAHAD\n\n")
+    isfile("../test/test_structures.jl") || write("../test/test_structures.jl", "using GALAHAD\nusing Quadmath\n\n")
     test = read("../test/test_structures.jl", String)
     structures = structures * "\n"
     structures = replace(structures, "Ref{wcp_inform_type{Float64}}()\n" => "Ref{wcp_inform_type{Float64}}()")

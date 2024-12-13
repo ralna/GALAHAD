@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_wcp(::Type{T}) where T
   # Derived types
@@ -116,4 +117,5 @@ end
 @testset "WCP" begin
   @test test_wcp(Float32) == 0
   @test test_wcp(Float64) == 0
+  @test test_wcp(Float128) == 0
 end

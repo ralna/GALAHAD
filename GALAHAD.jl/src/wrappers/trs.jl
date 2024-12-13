@@ -92,6 +92,12 @@ function trs_initialize(::Type{Float64}, data, control, status)
                                           status::Ptr{Cint})::Cvoid
 end
 
+function trs_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.trs_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{trs_control_type{Float128}},
+                                               status::Ptr{Cint})::Cvoid
+end
+
 export trs_read_specfile
 
 function trs_read_specfile(::Type{Float32}, control, specfile)
@@ -102,6 +108,11 @@ end
 function trs_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.trs_read_specfile(control::Ptr{trs_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
+end
+
+function trs_read_specfile(::Type{Float128}, control, specfile)
+  @ccall libgalahad_quadruple.trs_read_specfile_q(control::Ptr{trs_control_type{Float128}},
+                                                  specfile::Ptr{Cchar})::Cvoid
 end
 
 export trs_import
@@ -122,6 +133,15 @@ function trs_import(::Type{Float64}, control, data, status, n, H_type, H_ne, H_r
                                       H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
 end
 
+function trs_import(::Type{Float128}, control, data, status, n, H_type, H_ne, H_row, H_col,
+                    H_ptr)
+  @ccall libgalahad_quadruple.trs_import_q(control::Ptr{trs_control_type{Float128}},
+                                           data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                           n::Cint, H_type::Ptr{Cchar}, H_ne::Cint,
+                                           H_row::Ptr{Cint}, H_col::Ptr{Cint},
+                                           H_ptr::Ptr{Cint})::Cvoid
+end
+
 export trs_import_m
 
 function trs_import_m(::Type{Float32}, data, status, n, M_type, M_ne, M_row, M_col, M_ptr)
@@ -134,6 +154,13 @@ function trs_import_m(::Type{Float64}, data, status, n, M_type, M_ne, M_row, M_c
   @ccall libgalahad_double.trs_import_m(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         M_type::Ptr{Cchar}, M_ne::Cint, M_row::Ptr{Cint},
                                         M_col::Ptr{Cint}, M_ptr::Ptr{Cint})::Cvoid
+end
+
+function trs_import_m(::Type{Float128}, data, status, n, M_type, M_ne, M_row, M_col, M_ptr)
+  @ccall libgalahad_quadruple.trs_import_m_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                             n::Cint, M_type::Ptr{Cchar}, M_ne::Cint,
+                                             M_row::Ptr{Cint}, M_col::Ptr{Cint},
+                                             M_ptr::Ptr{Cint})::Cvoid
 end
 
 export trs_import_a
@@ -150,6 +177,13 @@ function trs_import_a(::Type{Float64}, data, status, m, A_type, A_ne, A_row, A_c
                                         A_col::Ptr{Cint}, A_ptr::Ptr{Cint})::Cvoid
 end
 
+function trs_import_a(::Type{Float128}, data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
+  @ccall libgalahad_quadruple.trs_import_a_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                             m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
+                                             A_row::Ptr{Cint}, A_col::Ptr{Cint},
+                                             A_ptr::Ptr{Cint})::Cvoid
+end
+
 export trs_reset_control
 
 function trs_reset_control(::Type{Float32}, control, data, status)
@@ -162,6 +196,12 @@ function trs_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.trs_reset_control(control::Ptr{trs_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
+end
+
+function trs_reset_control(::Type{Float128}, control, data, status)
+  @ccall libgalahad_quadruple.trs_reset_control_q(control::Ptr{trs_control_type{Float128}},
+                                                  data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Cint})::Cvoid
 end
 
 export trs_solve_problem
@@ -188,6 +228,17 @@ function trs_solve_problem(::Type{Float64}, data, status, n, radius, f, c, H_ne,
                                              y::Ptr{Float64})::Cvoid
 end
 
+function trs_solve_problem(::Type{Float128}, data, status, n, radius, f, c, H_ne, H_val, x,
+                           M_ne, M_val, m, A_ne, A_val, y)
+  @ccall libgalahad_quadruple.trs_solve_problem_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                                  n::Cint, radius::Float128, f::Float128,
+                                                  c::Ptr{Float128}, H_ne::Cint,
+                                                  H_val::Ptr{Float128}, x::Ptr{Float128},
+                                                  M_ne::Cint, M_val::Ptr{Float128}, m::Cint,
+                                                  A_ne::Cint, A_val::Ptr{Float128},
+                                                  y::Ptr{Float128})::Cvoid
+end
+
 export trs_information
 
 function trs_information(::Type{Float32}, data, inform, status)
@@ -202,6 +253,12 @@ function trs_information(::Type{Float64}, data, inform, status)
                                            status::Ptr{Cint})::Cvoid
 end
 
+function trs_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.trs_information_q(data::Ptr{Ptr{Cvoid}},
+                                                inform::Ptr{trs_inform_type{Float128}},
+                                                status::Ptr{Cint})::Cvoid
+end
+
 export trs_terminate
 
 function trs_terminate(::Type{Float32}, data, control, inform)
@@ -214,4 +271,10 @@ function trs_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.trs_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{trs_control_type{Float64}},
                                          inform::Ptr{trs_inform_type{Float64}})::Cvoid
+end
+
+function trs_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.trs_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{trs_control_type{Float128}},
+                                              inform::Ptr{trs_inform_type{Float128}})::Cvoid
 end

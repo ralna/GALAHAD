@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_rpd(::Type{T}) where T
   # Derived types
@@ -125,6 +126,7 @@ end
 @testset "RPD" begin
   if haskey(ENV, "GALAHAD")
     @test test_rpd(Float32) == 0
-  @test test_rpd(Float64) == 0
+    @test test_rpd(Float64) == 0
+    @test test_rpd(Float128) == 0
   end
 end

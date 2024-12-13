@@ -112,6 +112,12 @@ function tru_initialize(::Type{Float64}, data, control, status)
                                           status::Ptr{Cint})::Cvoid
 end
 
+function tru_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.tru_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{tru_control_type{Float128}},
+                                               status::Ptr{Cint})::Cvoid
+end
+
 export tru_read_specfile
 
 function tru_read_specfile(::Type{Float32}, control, specfile)
@@ -122,6 +128,11 @@ end
 function tru_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.tru_read_specfile(control::Ptr{tru_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
+end
+
+function tru_read_specfile(::Type{Float128}, control, specfile)
+  @ccall libgalahad_quadruple.tru_read_specfile_q(control::Ptr{tru_control_type{Float128}},
+                                                  specfile::Ptr{Cchar})::Cvoid
 end
 
 export tru_import
@@ -142,6 +153,15 @@ function tru_import(::Type{Float64}, control, data, status, n, H_type, ne, H_row
                                       H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
 end
 
+function tru_import(::Type{Float128}, control, data, status, n, H_type, ne, H_row, H_col,
+                    H_ptr)
+  @ccall libgalahad_quadruple.tru_import_q(control::Ptr{tru_control_type{Float128}},
+                                           data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                           n::Cint, H_type::Ptr{Cchar}, ne::Cint,
+                                           H_row::Ptr{Cint}, H_col::Ptr{Cint},
+                                           H_ptr::Ptr{Cint})::Cvoid
+end
+
 export tru_reset_control
 
 function tru_reset_control(::Type{Float32}, control, data, status)
@@ -154,6 +174,12 @@ function tru_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.tru_reset_control(control::Ptr{tru_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
+end
+
+function tru_reset_control(::Type{Float128}, control, data, status)
+  @ccall libgalahad_quadruple.tru_reset_control_q(control::Ptr{tru_control_type{Float128}},
+                                                  data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Cint})::Cvoid
 end
 
 export tru_solve_with_mat
@@ -177,6 +203,17 @@ function tru_solve_with_mat(::Type{Float64}, data, userdata, status, n, x, g, ne
                                               eval_prec::Ptr{Cvoid})::Cvoid
 end
 
+function tru_solve_with_mat(::Type{Float128}, data, userdata, status, n, x, g, ne, eval_f,
+                            eval_g, eval_h, eval_prec)
+  @ccall libgalahad_quadruple.tru_solve_with_mat_q(data::Ptr{Ptr{Cvoid}},
+                                                   userdata::Ptr{Cvoid}, status::Ptr{Cint},
+                                                   n::Cint, x::Ptr{Float128},
+                                                   g::Ptr{Float128}, ne::Cint,
+                                                   eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
+                                                   eval_h::Ptr{Cvoid},
+                                                   eval_prec::Ptr{Cvoid})::Cvoid
+end
+
 export tru_solve_without_mat
 
 function tru_solve_without_mat(::Type{Float32}, data, userdata, status, n, x, g, eval_f,
@@ -198,6 +235,18 @@ function tru_solve_without_mat(::Type{Float64}, data, userdata, status, n, x, g,
                                                  eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                                  eval_hprod::Ptr{Cvoid},
                                                  eval_prec::Ptr{Cvoid})::Cvoid
+end
+
+function tru_solve_without_mat(::Type{Float128}, data, userdata, status, n, x, g, eval_f,
+                               eval_g, eval_hprod, eval_prec)
+  @ccall libgalahad_quadruple.tru_solve_without_mat_q(data::Ptr{Ptr{Cvoid}},
+                                                      userdata::Ptr{Cvoid},
+                                                      status::Ptr{Cint}, n::Cint,
+                                                      x::Ptr{Float128}, g::Ptr{Float128},
+                                                      eval_f::Ptr{Cvoid},
+                                                      eval_g::Ptr{Cvoid},
+                                                      eval_hprod::Ptr{Cvoid},
+                                                      eval_prec::Ptr{Cvoid})::Cvoid
 end
 
 export tru_solve_reverse_with_mat
@@ -225,6 +274,18 @@ function tru_solve_reverse_with_mat(::Type{Float64}, data, status, eval_status, 
                                                       v::Ptr{Float64})::Cvoid
 end
 
+function tru_solve_reverse_with_mat(::Type{Float128}, data, status, eval_status, n, x, f, g,
+                                    ne, H_val, u, v)
+  @ccall libgalahad_quadruple.tru_solve_reverse_with_mat_q(data::Ptr{Ptr{Cvoid}},
+                                                           status::Ptr{Cint},
+                                                           eval_status::Ptr{Cint}, n::Cint,
+                                                           x::Ptr{Float128}, f::Float128,
+                                                           g::Ptr{Float128}, ne::Cint,
+                                                           H_val::Ptr{Float128},
+                                                           u::Ptr{Float128},
+                                                           v::Ptr{Float128})::Cvoid
+end
+
 export tru_solve_reverse_without_mat
 
 function tru_solve_reverse_without_mat(::Type{Float32}, data, status, eval_status, n, x, f,
@@ -247,6 +308,17 @@ function tru_solve_reverse_without_mat(::Type{Float64}, data, status, eval_statu
                                                          v::Ptr{Float64})::Cvoid
 end
 
+function tru_solve_reverse_without_mat(::Type{Float128}, data, status, eval_status, n, x, f,
+                                       g, u, v)
+  @ccall libgalahad_quadruple.tru_solve_reverse_without_mat_q(data::Ptr{Ptr{Cvoid}},
+                                                              status::Ptr{Cint},
+                                                              eval_status::Ptr{Cint},
+                                                              n::Cint, x::Ptr{Float128},
+                                                              f::Float128, g::Ptr{Float128},
+                                                              u::Ptr{Float128},
+                                                              v::Ptr{Float128})::Cvoid
+end
+
 export tru_information
 
 function tru_information(::Type{Float32}, data, inform, status)
@@ -261,6 +333,12 @@ function tru_information(::Type{Float64}, data, inform, status)
                                            status::Ptr{Cint})::Cvoid
 end
 
+function tru_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.tru_information_q(data::Ptr{Ptr{Cvoid}},
+                                                inform::Ptr{tru_inform_type{Float128}},
+                                                status::Ptr{Cint})::Cvoid
+end
+
 export tru_terminate
 
 function tru_terminate(::Type{Float32}, data, control, inform)
@@ -273,4 +351,10 @@ function tru_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.tru_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{tru_control_type{Float64}},
                                          inform::Ptr{tru_inform_type{Float64}})::Cvoid
+end
+
+function tru_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.tru_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{tru_control_type{Float128}},
+                                              inform::Ptr{tru_inform_type{Float128}})::Cvoid
 end
