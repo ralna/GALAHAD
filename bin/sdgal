@@ -217,7 +217,7 @@ do
   (( i++ ))
 done
 
-echo $METHARG
+#echo $METHARG
 
 # call with two argument allows user to choose minimization method
 
