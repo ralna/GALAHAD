@@ -35,7 +35,7 @@ append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_blas.h
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_lapack.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "cutest_routines_quadruple.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "hsl_subset.h"))
-append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "hsl_subset_quadruples.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "hsl_subset_quadruple.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "hsl_subset_ciface.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "hsl_subset_ciface_quadruple.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_cfunctions.h"))
