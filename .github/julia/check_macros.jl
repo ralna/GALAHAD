@@ -2,8 +2,6 @@ using Test
 
 global n = 0
 
-excluded_files = String[]
-
 # Function to easily get the extension of a file
 function file_extension(file::String)
   pos_dot = findfirst(==('.'), file)
@@ -32,11 +30,14 @@ function append_macros!(macros::Dict{String, String}, path::String)
 end
 
 macros = Dict{String, String}()
-append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_modules.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_modules_quadruple.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_blas.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_lapack.h"))
-# append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "cutest_routines_single.h"))
-# append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "cutest_routines_double.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "cutest_routines_quadruple.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "hsl_subset.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "hsl_subset_quadruples.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "hsl_subset_ciface.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "hsl_subset_ciface_quadruple.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_cfunctions.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_kinds.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "spral_procedures.h"))
@@ -45,7 +46,6 @@ append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "spral_procedur
 for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "src"))
   for file in files
     file_extension(file) ∈ ("f", "f90", "F90") || continue
-    (file ∈ excluded_files) && continue
     path = joinpath(root, file)
     code = read(path, String)
     lines = split(code, '\n')

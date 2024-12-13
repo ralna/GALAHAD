@@ -134,9 +134,15 @@ libdmumps = fc.find_library(libdmumps_name, dirs : libmumps_path, required : fal
 libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
 libhwloc = fc.find_library(libhwloc_name, dirs : libhwloc_path, required : false)
 lm = cc.find_library('m', required : false)
-libquadmath = cc.find_library('quadmath', required : false)
 libmpi = dependency('mpi', language : 'fortran', required : false)
 has_hwloch = cc.has_header('hwloc.h', include_directories : libhwloc_include)
+
+# Quadmath
+if build_quadruple
+  libquadmath = fc.find_library('quadmath', required : true)
+else
+  libquadmath = fc.find_library('quadmath', required : false)
+endif
 
 # METIS
 if host_machine.system() == 'windows'
