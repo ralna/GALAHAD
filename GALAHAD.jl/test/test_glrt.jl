@@ -18,7 +18,7 @@ function test_glrt(::Type{T}) where T
 
   status = Ref{Cint}()
   weight = Ref{T}()
-  power = 3.0
+  power = T(3.0)
   x = zeros(T, n)
   r = zeros(T, n)
   vector = zeros(T, n)
