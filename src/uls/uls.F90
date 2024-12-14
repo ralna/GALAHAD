@@ -28,7 +28,7 @@
 !     |                                     |
 !     |          MA28/GLS                   |
 !     |          MA48                       |
-!     |          GETRF from LAPACK          |
+!     |          GETR from LAPACK           |
 !     |                                     |
 !     ---------------------------------------
 
