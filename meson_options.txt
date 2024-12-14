@@ -70,7 +70,7 @@ option('libcutest_double',
 
 option('libcutest_quadruple',
        type : 'string',
-       value : 'libcutest_quadruple',
+       value : 'cutest_quadruple',
        description : 'CUTEST library in quadruple precision against which to link')
 
 option('libwsmp',
