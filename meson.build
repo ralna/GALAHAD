@@ -801,8 +801,10 @@ if build_tests and build_ciface
       endif
 
       test(name,
-           executable(name, file, c_args : args_precision, link_with : libgalahad_precision, dependencies : [lm, libquadmath],
-                      link_language : 'c', include_directories : include_tests, install : true,
+           executable(name, file,
+                      c_args : args_precision, link_with : libgalahad_precision,
+                      dependencies : [lm, libquadmath], link_language : 'c',
+                      include_directories : include_tests, install : true,
                       install_dir : c_tests_folder),
            suite : [package, precision, 'C'],
            is_parallel : false)

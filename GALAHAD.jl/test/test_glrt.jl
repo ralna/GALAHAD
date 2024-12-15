@@ -82,9 +82,8 @@ function test_glrt(::Type{T}) where T
       end
 
       glrt_information(T, data, inform, status)
-      @printf("MR = %1i%1i glrt_solve_problem exit status = %i, f = %.2f\n", unit_m,
-              new_weight, inform[].status,
-              inform[].obj_regularized)
+      # @printf("MR = %1i%1i glrt_solve_problem exit status = %i, f = %.2f\n", unit_m,
+      #         new_weight, inform[].status, inform[].obj_regularized)
     end
   end
 
