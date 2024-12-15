@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-14 AT 08:15 GMT.
 
 #include "galahad_modules.h"
 
@@ -2635,7 +2635,7 @@
       DO
         e = est - perturb
         D_fact = D - e
-        OFFD_fact = OFFD
+        IF ( n > 1 ) OFFD_fact = OFFD
 
 !  Attempt the Cholesky factorization of T
 
