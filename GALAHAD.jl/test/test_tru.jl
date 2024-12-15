@@ -15,14 +15,14 @@ end
 function test_tru(::Type{T}) where T
 
   # Objective function
-  function fun(n::Int, x::Vector{T}, f::Ref{T}, userdata::userdata_tru)
+  function fun(n::Int, x::Vector{T}, f::Ref{T}, userdata::userdata_tru{T})
     p = userdata.p
     f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + cos(x[1])
     return 0
   end
 
   # Gradient of the objective
-  function grad(n::Int, x::Vector{T}, g::Vector{T}, userdata::userdata_tru)
+  function grad(n::Int, x::Vector{T}, g::Vector{T}, userdata::userdata_tru{T})
     p = userdata.p
     g[1] = 2.0 * (x[1] + x[3] + p) - sin(x[1])
     g[2] = 2.0 * (x[2] + x[3])
@@ -43,7 +43,7 @@ function test_tru(::Type{T}) where T
 
   # Dense Hessian
   function hess_dense(n::Int, ne::Int, x::Vector{T}, hval::Vector{T},
-                      userdata::userdata_tru)
+                      userdata::userdata_tru{T})
     hval[1] = 2.0 - cos(x[1])
     hval[2] = 0.0
     hval[3] = 2.0
@@ -55,7 +55,7 @@ function test_tru(::Type{T}) where T
 
   # Hessian-vector product
   function hessprod(n::Int, x::Vector{T}, u::Vector{T}, v::Vector{T},
-                    got_h::Bool, userdata::userdata_tru)
+                    got_h::Bool, userdata::userdata_tru{T})
     u[1] = u[1] + 2.0 * (v[1] + v[3]) - cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * (v[2] + v[3])
     u[3] = u[3] + 2.0 * (v[1] + v[2] + 2.0 * v[3])
@@ -64,7 +64,7 @@ function test_tru(::Type{T}) where T
 
   # Apply preconditioner
   function prec(n::Int, x::Vector{T}, u::Vector{T}, v::Vector{T},
-                userdata::userdata_tru)
+                userdata::userdata_tru{T})
     u[1] = 0.5 * v[1]
     u[2] = 0.5 * v[2]
     u[3] = 0.25 * v[3]
@@ -72,14 +72,14 @@ function test_tru(::Type{T}) where T
   end
 
   # Objective function
-  function fun_diag(n::Int, x::Vector{T}, f::Ref{T}, userdata::userdata_tru)
+  function fun_diag(n::Int, x::Vector{T}, f::Ref{T}, userdata::userdata_tru{T})
     p = userdata.p
     f[] = (x[3] + p)^2 + x[2]^2 + cos(x[1])
     return 0
   end
 
   # Gradient of the objective
-  function grad_diag(n::Int, x::Vector{T}, g::Vector{T}, userdata::userdata_tru)
+  function grad_diag(n::Int, x::Vector{T}, g::Vector{T}, userdata::userdata_tru{T})
     p = userdata.p
     g[1] = -sin(x[1])
     g[2] = 2.0 * x[2]
@@ -89,7 +89,7 @@ function test_tru(::Type{T}) where T
 
   # Hessian of the objective
   function hess_diag(n::Int, ne::Int, x::Vector{T}, hval::Vector{T},
-                     userdata::userdata_tru)
+                     userdata::userdata_tru{T})
     hval[1] = -cos(x[1])
     hval[2] = 2.0
     hval[3] = 2.0
@@ -98,7 +98,7 @@ function test_tru(::Type{T}) where T
 
   # Hessian-vector product
   function hessprod_diag(n::Int, x::Vector{T}, u::Vector{T}, v::Vector{T},
-                         got_h::Bool, userdata::userdata_tru)
+                         got_h::Bool, userdata::userdata_tru{T})
     u[1] = u[1] + -cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * v[2]
     u[3] = u[3] + 2.0 * v[3]
@@ -111,7 +111,7 @@ function test_tru(::Type{T}) where T
   inform = Ref{tru_inform_type{T}}()
 
   # Set user data
-  userdata = userdata_tru(4.0)
+  userdata = userdata_tru(4.0 |> T)
 
   # Set problem data
   n = 3 # dimension

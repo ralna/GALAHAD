@@ -71,8 +71,8 @@ function test_lstr(::Type{T}) where T
     end
 
     lstr_information(T, data, inform, status)
-    @printf("%1i lstr_solve_problem exit status = %i, f = %.2f\n", new_radius,
-            inform[].status, inform[].r_norm)
+    # @printf("%1i lstr_solve_problem exit status = %i, f = %.2f\n", new_radius,
+    #         inform[].status, inform[].r_norm)
   end
 
   # Delete internal workspace
