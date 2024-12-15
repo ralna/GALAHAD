@@ -16,7 +16,7 @@ jobs:
         os: ['windows-latest']
         arch: ['x64']
         compiler: ['gcc']
-        version: ['11']
+        version: ['11', '12', '13', '14']
         int: ['32', '64']
     steps:
       - name: Checkout repository
@@ -38,7 +38,7 @@ jobs:
         os: ['ubuntu-latest', 'macos-13']
         arch: ['x64']
         compiler: ['gcc']
-        version: ['13']
+        version: ['11', '12', '13', '14']
         int: ['32', '64']
     steps:
       - name: Checkout repository
@@ -60,7 +60,7 @@ jobs:
         os: ['macos-latest']
         arch: ['arm64']
         compiler: ['gcc']
-        version: ['13']
+        version: ['12', '13', '14']
         int: ['32', '64']
     steps:
       - name: Checkout repository
