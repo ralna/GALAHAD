@@ -639,6 +639,7 @@
         data%branch = 400
       END IF
 
+write(6,*) ' status, branch ', inform%status, data%branch
       SELECT CASE ( data%branch )
       CASE ( 100 )
         GO TO 100

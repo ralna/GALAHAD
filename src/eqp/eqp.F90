@@ -1461,6 +1461,8 @@
         IF ( prob%m > 0 ) WRITE( control%out, "( A,                            &
        &  ' Y = ', 3ES24.16, /, ( 5X, 3ES24.16 ) )" ) prefix, prob%Y( : prob%m )
       END IF
+      IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
+        WRITE( control%out, "( A, ' -- return from EQP_solve ' )" ) prefix
       RETURN
 
 !  End of EQP_solve
