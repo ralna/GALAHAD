@@ -48,6 +48,7 @@ int main(void) {
            weight = 10.0;
            status = 6;
         }
+        printf("MR = %1" i_ipc_ "%1" i_ipc_ "\n", unit_m, new_weight );
         for( ipc_ i = 0; i < n; i++) r[i] = 1.0;
 
         // iteration loop to find the minimizer
