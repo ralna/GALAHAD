@@ -1565,6 +1565,7 @@
 !  =======================================
 
   400 CONTINUE
+write(6,*) ' f_0 ', control%f_0
       X = zero ; inform%obj = control%f_0 ; data%U = zero
       inform%obj_regularized = control%f_0 +                                   &
         ( sigma / p ) * ( data%o_mnorm_2_p_eps ** ( p / two ) )
