@@ -75,11 +75,14 @@ int main(void) {
                 break;
             case 2: // sparse by rows
                 st = 'R';
+            printf(" before import R\n");
                 eqp_import( &control, &data, &status, n, m,
                             "sparse_by_rows", H_ne, NULL, H_col, H_ptr,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
+            printf(" before solve R\n");
                 eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
+            printf(" after solve R\n");
                 break;
             case 3: // dense
                 st = 'D';
@@ -126,16 +129,17 @@ int main(void) {
                 eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
                 break;
-
-
-
             }
+            printf(" before info\n");
         eqp_information( &data, &inform, &status );
+            printf(" after info\n");
 
         if(inform.status == 0){
 #ifdef REAL_128
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_if.h
+            printf(" before replace \n");
 #include "galahad_pquad_if.h"
+            printf(" after replace \n");
 #else
             printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
                    "value = %.2f status = %1" i_ipc_ "\n",
@@ -152,7 +156,9 @@ int main(void) {
         //printf("\n");
 
         // Delete internal workspace
+            printf(" before terminate \n");
         eqp_terminate( &data, &control, &inform );
+            printf(" afer terminate \n");
     }
 
     // test shifted least-distance interface
