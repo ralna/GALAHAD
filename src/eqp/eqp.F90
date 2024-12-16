@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-16 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -2311,7 +2311,7 @@
               l = 0
               DO i = 1, m
                 data%RES( i ) = data%RES( i )                                  &
-                  + DOT_PRODUCT( A%val( l + 1 : l + n ), data%VECTOR )
+                  + DOT_PRODUCT( A%val( l + 1 : l + n ), data%VECTOR( : n ) )
                 l = l + n
               END DO
             CASE ( 'SPARSE_BY_ROWS' )

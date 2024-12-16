@@ -55,6 +55,8 @@ int main(void) {
         strcpy(control.sbls_control.symmetric_linear_solver, "sytr ") ;
         strcpy(control.sbls_control.definite_linear_solver, "sytr ") ;
 
+        control.print_level = 5;
+
         // Start from 0
         rpc_ x[] = {0.0,0.0,0.0};
         rpc_ y[] = {0.0,0.0};

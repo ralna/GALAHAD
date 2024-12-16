@@ -41,6 +41,8 @@
                SILS_reset_control, SILS_information,                           &
                SMT_type
 
+!    LOGICAL, PUBLIC, PARAMETER :: sils_available = .TRUE.
+
 !----------------------
 !   I n t e r f a c e s
 !----------------------
