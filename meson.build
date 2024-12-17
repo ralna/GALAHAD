@@ -803,7 +803,7 @@ if build_tests and build_ciface
       test(name,
            executable(name, file,
                       c_args : args_precision, link_with : libgalahad_precision,
-                      dependencies : lm, link_language : 'fortran',
+                      dependencies : [lm, libquadmath], link_language : 'c',
                       include_directories : include_tests, install : true,
                       install_dir : c_tests_folder),
            suite : [package, precision, 'C'],
