@@ -2703,6 +2703,7 @@ write(6,*) ' f_0 ', control%f_0
 !  copy control to internal data
 
      data%glrt_control = control
+data%glrt_control%print_level = 1 !!! remove
 
      status = GALAHAD_ready_to_solve
      RETURN
