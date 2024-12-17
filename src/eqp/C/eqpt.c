@@ -55,8 +55,6 @@ int main(void) {
         strcpy(control.sbls_control.symmetric_linear_solver, "sytr ") ;
         strcpy(control.sbls_control.definite_linear_solver, "sytr ") ;
 
-        control.print_level = 5;
-
         // Start from 0
         rpc_ x[] = {0.0,0.0,0.0};
         rpc_ y[] = {0.0,0.0};
@@ -64,26 +62,20 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
-            printf(" before import\n");
                 eqp_import( &control, &data, &status, n, m,
                            "coordinate", H_ne, H_row, H_col, NULL,
                            "coordinate", A_ne, A_row, A_col, NULL );
-            printf(" before solve\n");
                 eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
-            printf(" after solve\n");
             // return 1;
                 break;
             case 2: // sparse by rows
                 st = 'R';
-            printf(" before import R\n");
                 eqp_import( &control, &data, &status, n, m,
                             "sparse_by_rows", H_ne, NULL, H_col, H_ptr,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-            printf(" before solve R\n");
                 eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
-            printf(" after solve R\n");
                 break;
             case 3: // dense
                 st = 'D';
@@ -131,22 +123,12 @@ int main(void) {
                               A_ne, A_val, c, x, y );
                 break;
             }
-            printf(" before info\n");
         eqp_information( &data, &inform, &status );
-            printf(" after info\n");
 
         if(inform.status == 0){
 #ifdef REAL_128
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_if.h
-            printf(" before replace \n");
-//#include "galahad_pquad_if.h"
-            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
-                   "value = %.2Qf status = %1" i_ipc_ "\n",
-                   st, inform.cg_iter, inform.obj, inform.status);
-            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
-                   st, inform.cg_iter, (double)inform.obj, inform.status);
-            printf(" after replace \n");
+#include "galahad_pquad_if.h"
 #else
             printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
                    "value = %.2f status = %1" i_ipc_ "\n",
@@ -163,10 +145,7 @@ int main(void) {
         //printf("\n");
 
         // Delete internal workspace
-            printf(" before terminate \n");
         eqp_terminate( &data, &control, &inform );
-            printf(" afer terminate \n");
-            return 0;
     }
 
     // test shifted least-distance interface
