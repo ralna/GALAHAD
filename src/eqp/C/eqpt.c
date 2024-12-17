@@ -134,7 +134,7 @@ int main(void) {
             printf(" before info\n");
         eqp_information( &data, &inform, &status );
             printf(" after info\n");
-            return 1;
+            return 0;
 
         if(inform.status == 0){
 #ifdef REAL_128
