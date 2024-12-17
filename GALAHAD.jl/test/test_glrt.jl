@@ -34,6 +34,7 @@ function test_glrt(::Type{T}) where T
     else
       @reset control[].unitm = true
     end
+    @reset control[].print_level = 1
 
     glrt_import_control(T, control, data, status)
 
