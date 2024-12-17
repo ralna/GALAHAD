@@ -608,8 +608,8 @@
 
   CALL f_eqp_solve_qp( fdata, status, hval, g, f, aval, c, x, y )
 write(6,*) ' out of  eqp_solve_qp, status', status
-write(6,*) ' x ', x
-write(6,*) ' y ', y
+!write(6,*) ' x ', x
+!write(6,*) ' y ', y
   RETURN
 
   END SUBROUTINE eqp_solve_qp
