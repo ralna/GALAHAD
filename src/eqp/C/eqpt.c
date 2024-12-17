@@ -72,6 +72,7 @@ int main(void) {
                 eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
             printf(" after solve\n");
+            return 1;
                 break;
             case 2: // sparse by rows
                 st = 'R';
