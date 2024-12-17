@@ -138,10 +138,16 @@ libmpi = dependency('mpi', language : 'fortran', required : false)
 has_hwloch = cc.has_header('hwloc.h', include_directories : libhwloc_include)
 
 # Quadmath
-if build_quadruple
-  libquadmath = fc.find_library('quadmath', required : true)
+if host_machine.system() == 'windows'
+  libquadmath_name = 'quadmath-0'
 else
-  libquadmath = fc.find_library('quadmath', required : false)
+  libquadmath_name = 'quadmath'
+endif
+
+if build_quadruple
+  libquadmath = fc.find_library(libquadmath_name, required : true)
+else
+  libquadmath = fc.find_library(libquadmath_name, required : false)
 endif
 
 # METIS
