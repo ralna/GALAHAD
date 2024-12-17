@@ -607,6 +607,7 @@
 !  solve the qp
 
   CALL f_eqp_solve_qp( fdata, status, hval, g, f, aval, c, x, y )
+write(6,*) ' out of  eqp_solve_qp'
   RETURN
 
   END SUBROUTINE eqp_solve_qp

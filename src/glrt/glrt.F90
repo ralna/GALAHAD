@@ -2792,7 +2792,7 @@ write(6,*) ' f_0 ', control%f_0
 
      CALL GLRT_solve( n, power, weight, X, R, VECTOR,                          &
                       data%glrt_data, data%glrt_control, data%glrt_inform )
-
+write(6,*) ' exit GLRT_solve status ', data%glrt_inform%status
 !  collect data for reverse communication
 
      status = data%glrt_inform%status
