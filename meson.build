@@ -138,16 +138,10 @@ libmpi = dependency('mpi', language : 'fortran', required : false)
 has_hwloch = cc.has_header('hwloc.h', include_directories : libhwloc_include)
 
 # Quadmath
-if host_machine.system() == 'windows'
-  libquadmath_name = 'quadmath-0'
-else
-  libquadmath_name = 'quadmath'
-endif
-
 if build_quadruple
-  libquadmath = cc.find_library(libquadmath_name, required : true)
+  libquadmath = cc.find_library('quadmath', required : true)
 else
-  libquadmath = cc.find_library(libquadmath_name, required : false)
+  libquadmath = cc.find_library('quadmath', required : false)
 endif
 
 # METIS
@@ -809,7 +803,7 @@ if build_tests and build_ciface
       test(name,
            executable(name, file,
                       c_args : args_precision, link_with : libgalahad_precision,
-                      dependencies : [lm, libquadmath], link_language : 'c',
+                      dependencies : lm, link_language : 'fortran',
                       include_directories : include_tests, install : true,
                       install_dir : c_tests_folder),
            suite : [package, precision, 'C'],
