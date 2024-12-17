@@ -145,9 +145,9 @@ else
 endif
 
 if build_quadruple
-  libquadmath = fc.find_library(libquadmath_name, required : true)
+  libquadmath = cc.find_library(libquadmath_name, required : true)
 else
-  libquadmath = fc.find_library(libquadmath_name, required : false)
+  libquadmath = cc.find_library(libquadmath_name, required : false)
 endif
 
 # METIS
