@@ -864,7 +864,7 @@ if build_examples and build_ciface
         include_examples = libgalahad_quadruple_include
       endif
 
-      executable(name, file, c_args : args_precision, link_with : libgalahad_precision, dependencies : lm, link_language : 'c',
+      executable(name, file, c_args : args_precision, link_with : libgalahad_precision, dependencies : [lm, libquadmath], link_language : 'c',
                              include_directories : include_examples, install : true, install_dir : c_examples_folder)
     endforeach
   endforeach
