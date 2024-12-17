@@ -2791,6 +2791,7 @@ data%glrt_control%print_level = 1 !!! remove
 
 !  call the solver
 
+write(6,*) ' power, weight = ', power, weight
      CALL GLRT_solve( n, power, weight, X, R, VECTOR,                          &
                       data%glrt_data, data%glrt_control, data%glrt_inform )
 write(6,*) ' exit GLRT_solve status ', data%glrt_inform%status

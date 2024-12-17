@@ -134,7 +134,6 @@ int main(void) {
             printf(" before info\n");
         eqp_information( &data, &inform, &status );
             printf(" after info\n");
-            return 0;
 
         if(inform.status == 0){
 #ifdef REAL_128
@@ -164,6 +163,7 @@ int main(void) {
             printf(" before terminate \n");
         eqp_terminate( &data, &control, &inform );
             printf(" afer terminate \n");
+            return 0;
     }
 
     // test shifted least-distance interface
