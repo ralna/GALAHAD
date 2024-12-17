@@ -141,9 +141,9 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_if.h
             printf(" before replace \n");
 //#include "galahad_pquad_if.h"
-            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
-                   "status = %1" i_ipc_ "\n",
-                   st, inform.cg_iter, inform.status);
+//            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
+//                   "status = %1" i_ipc_ "\n",
+//                   st, inform.cg_iter, inform.status);
             printf(" after replace \n");
 #else
             printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
