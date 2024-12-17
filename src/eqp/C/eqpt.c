@@ -143,6 +143,9 @@ int main(void) {
             printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
                    "value = %.2Qf status = %1" i_ipc_ "\n",
                    st, inform.cg_iter, inform.obj, inform.status);
+            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
+                   "value = %.2f status = %1" i_ipc_ "\n",
+                   st, inform.cg_iter, (double)inform.obj, inform.status);
             printf(" after replace \n");
 #else
             printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
