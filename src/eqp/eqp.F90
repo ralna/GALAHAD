@@ -3440,6 +3440,7 @@
 
      CALL EQP_solve( data%prob, data%eqp_data, data%eqp_control,               &
                      data%eqp_inform )
+write(6,*) ' out of eqp_solve'
 
 !  recover the optimal primal and dual variables, Lagrange multipliers and
 !  constraint values
@@ -3448,6 +3449,7 @@
      Y( : m ) = data%prob%Y( : m )
 
      status = data%eqp_inform%status
+write(6,*) ' return from  eqp_solve_qp'
      RETURN
 
 !  error returns
