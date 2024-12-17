@@ -78,9 +78,9 @@ runs:
           echo "DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/intel/oneapi/compiler/2023.2.0/mac/compiler/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
         fi
         if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
-          echo "$GITHUB_WORKSPACE/../deps/bin" >> $GITHUB_PATH
-          echo "$GITHUB_WORKSPACE/../CUTEst/bin" >> $GITHUB_PATH
-          echo "$GITHUB_WORKSPACE/galahad/bin" >> $GITHUB_PATH
+          echo "$GITHUB_WORKSPACE/../deps/bin" >> "$GITHUB_PATH"
+          echo "$GITHUB_WORKSPACE/../CUTEst/bin" >> "$GITHUB_PATH"
+          echo "$GITHUB_WORKSPACE/galahad/bin" >> "$GITHUB_PATH"
         fi
 
     - name: Set environment variables for OpenMP
@@ -296,9 +296,9 @@ runs:
         path: builddir/meson-logs/install-log.txt
 
     # Uncomment this section to obtain ssh access to VM
-    # - name: Setup tmate session
-    #   if: inputs.os == 'macos-13'
-    #   uses: mxschmitt/action-tmate@v3
+    - name: Setup tmate session
+      if: inputs.os == 'windows-latest'
+      uses: mxschmitt/action-tmate@v3
 
     - name: Test GALAHAD
       shell: bash
