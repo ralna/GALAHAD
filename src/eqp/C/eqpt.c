@@ -72,7 +72,7 @@ int main(void) {
                 eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
             printf(" after solve\n");
-            return 1;
+            // return 1;
                 break;
             case 2: // sparse by rows
                 st = 'R';
@@ -134,6 +134,7 @@ int main(void) {
             printf(" before info\n");
         eqp_information( &data, &inform, &status );
             printf(" after info\n");
+            return 1;
 
         if(inform.status == 0){
 #ifdef REAL_128
