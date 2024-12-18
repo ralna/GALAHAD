@@ -230,7 +230,7 @@ function bllsb_solve_blls(::Type{Float128}, data, status, n, o, Ao_ne, Ao_val, b
   @ccall libgalahad_quadruple.bllsb_solve_blls_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                  n::Cint, o::Cint, Ao_ne::Cint,
                                                  Ao_val::Ptr{Float128}, b::Ptr{Float128},
-                                                 regularization_weight::Float128,
+                                                 regularization_weight::Cfloat128,
                                                  x_l::Ptr{Float128}, x_u::Ptr{Float128},
                                                  x::Ptr{Float128}, r::Ptr{Float128},
                                                  z::Ptr{Float128}, x_stat::Ptr{Cint},

@@ -227,7 +227,7 @@ function lpb_solve_lp(::Type{Float128}, data, status, n, m, g, f, a_ne, A_val, c
                       x_l, x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_quadruple.lpb_solve_lp_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                              n::Cint, m::Cint, g::Ptr{Float128},
-                                             f::Float128, a_ne::Cint, A_val::Ptr{Float128},
+                                             f::Cfloat128, a_ne::Cint, A_val::Ptr{Float128},
                                              c_l::Ptr{Float128}, c_u::Ptr{Float128},
                                              x_l::Ptr{Float128}, x_u::Ptr{Float128},
                                              x::Ptr{Float128}, c::Ptr{Float128},

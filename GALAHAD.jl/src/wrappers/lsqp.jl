@@ -215,12 +215,13 @@ function lsqp_solve_qp(::Type{Float128}, data, status, n, m, w, x0, g, f, a_ne, 
   @ccall libgalahad_quadruple.lsqp_solve_qp_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                               n::Cint, m::Cint, w::Ptr{Float128},
                                               x0::Ptr{Float128}, g::Ptr{Float128},
-                                              f::Float128, a_ne::Cint, A_val::Ptr{Float128},
-                                              c_l::Ptr{Float128}, c_u::Ptr{Float128},
-                                              x_l::Ptr{Float128}, x_u::Ptr{Float128},
-                                              x::Ptr{Float128}, c::Ptr{Float128},
-                                              y::Ptr{Float128}, z::Ptr{Float128},
-                                              x_stat::Ptr{Cint}, c_stat::Ptr{Cint})::Cvoid
+                                              f::Cfloat128, a_ne::Cint,
+                                              A_val::Ptr{Float128}, c_l::Ptr{Float128},
+                                              c_u::Ptr{Float128}, x_l::Ptr{Float128},
+                                              x_u::Ptr{Float128}, x::Ptr{Float128},
+                                              c::Ptr{Float128}, y::Ptr{Float128},
+                                              z::Ptr{Float128}, x_stat::Ptr{Cint},
+                                              c_stat::Ptr{Cint})::Cvoid
 end
 
 export lsqp_information

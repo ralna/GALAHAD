@@ -187,7 +187,7 @@ function eqp_solve_qp(::Type{Float128}, data, status, n, m, h_ne, H_val, g, f, a
   @ccall libgalahad_quadruple.eqp_solve_qp_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                              n::Cint, m::Cint, h_ne::Cint,
                                              H_val::Ptr{Float128}, g::Ptr{Float128},
-                                             f::Float128, a_ne::Cint, A_val::Ptr{Float128},
+                                             f::Cfloat128, a_ne::Cint, A_val::Ptr{Float128},
                                              c::Ptr{Float128}, x::Ptr{Float128},
                                              y::Ptr{Float128})::Cvoid
 end
@@ -218,7 +218,7 @@ function eqp_solve_sldqp(::Type{Float128}, data, status, n, m, w, x0, g, f, a_ne
   @ccall libgalahad_quadruple.eqp_solve_sldqp_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                 n::Cint, m::Cint, w::Ptr{Float128},
                                                 x0::Ptr{Float128}, g::Ptr{Float128},
-                                                f::Float128, a_ne::Cint,
+                                                f::Cfloat128, a_ne::Cint,
                                                 A_val::Ptr{Float128}, c::Ptr{Float128},
                                                 x::Ptr{Float128}, y::Ptr{Float128})::Cvoid
 end
@@ -242,7 +242,7 @@ end
 function eqp_resolve_qp(::Type{Float128}, data, status, n, m, g, f, c, x, y)
   @ccall libgalahad_quadruple.eqp_resolve_qp_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                n::Cint, m::Cint, g::Ptr{Float128},
-                                               f::Float128, c::Ptr{Float128},
+                                               f::Cfloat128, c::Ptr{Float128},
                                                x::Ptr{Float128}, y::Ptr{Float128})::Cvoid
 end
 

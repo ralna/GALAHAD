@@ -3,6 +3,7 @@ module GALAHAD
 using Libdl
 using LinearAlgebra
 using Quadmath
+import Quadmath.Cfloat128
 
 if haskey(ENV, "JULIA_GALAHAD_LIBRARY_PATH")
   const libgalahad_single = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_single.$dlext")

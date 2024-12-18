@@ -281,7 +281,7 @@ function arc_solve_reverse_with_mat(::Type{Float128}, data, status, eval_status,
   @ccall libgalahad_quadruple.arc_solve_reverse_with_mat_q(data::Ptr{Ptr{Cvoid}},
                                                            status::Ptr{Cint},
                                                            eval_status::Ptr{Cint}, n::Cint,
-                                                           x::Ptr{Float128}, f::Float128,
+                                                           x::Ptr{Float128}, f::Cfloat128,
                                                            g::Ptr{Float128}, ne::Cint,
                                                            H_val::Ptr{Float128},
                                                            u::Ptr{Float128},
@@ -316,7 +316,8 @@ function arc_solve_reverse_without_mat(::Type{Float128}, data, status, eval_stat
                                                               status::Ptr{Cint},
                                                               eval_status::Ptr{Cint},
                                                               n::Cint, x::Ptr{Float128},
-                                                              f::Float128, g::Ptr{Float128},
+                                                              f::Cfloat128,
+                                                              g::Ptr{Float128},
                                                               u::Ptr{Float128},
                                                               v::Ptr{Float128})::Cvoid
 end

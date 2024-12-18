@@ -116,7 +116,7 @@ end
 
 function lstr_solve_problem(::Type{Float128}, data, status, m, n, radius, x, u, v)
   @ccall libgalahad_quadruple.lstr_solve_problem_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                                   m::Cint, n::Cint, radius::Float128,
+                                                   m::Cint, n::Cint, radius::Cfloat128,
                                                    x::Ptr{Float128}, u::Ptr{Float128},
                                                    v::Ptr{Float128})::Cvoid
 end
