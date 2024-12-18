@@ -80,6 +80,9 @@ function rewrite!(path::String, name::String, optimized::Bool)
         routine_double = replace(routine_double, "spral_ssids_options" => "spral_ssids_options{Float64}")
         routine_quadruple = replace(routine_quadruple, "spral_ssids_options" => "spral_ssids_options{Float128}")
 
+        # Float128 should be passed by value as a Cfloat128
+        routine_quadruple = replace(routine_quadruple, "::Float128" => "::Cfloat128")
+
         for type in types
           for package in packages
             if "$(package)_$(type)_type" ∉ nonparametric_structures

@@ -250,14 +250,14 @@ function clls_solve_clls(::Type{Float128}, data, status, n, o, m, Ao_ne, Ao_val,
   @ccall libgalahad_quadruple.clls_solve_clls_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                 n::Cint, o::Cint, m::Cint, Ao_ne::Cint,
                                                 Ao_val::Ptr{Float128}, b::Ptr{Float128},
-                                                regularization_weight::Float128, A_ne::Cint,
-                                                A_val::Ptr{Float128}, c_l::Ptr{Float128},
-                                                c_u::Ptr{Float128}, x_l::Ptr{Float128},
-                                                x_u::Ptr{Float128}, x::Ptr{Float128},
-                                                r::Ptr{Float128}, c::Ptr{Float128},
-                                                y::Ptr{Float128}, z::Ptr{Float128},
-                                                x_stat::Ptr{Cint}, c_stat::Ptr{Cint},
-                                                w::Ptr{Float128})::Cvoid
+                                                regularization_weight::Cfloat128,
+                                                A_ne::Cint, A_val::Ptr{Float128},
+                                                c_l::Ptr{Float128}, c_u::Ptr{Float128},
+                                                x_l::Ptr{Float128}, x_u::Ptr{Float128},
+                                                x::Ptr{Float128}, r::Ptr{Float128},
+                                                c::Ptr{Float128}, y::Ptr{Float128},
+                                                z::Ptr{Float128}, x_stat::Ptr{Cint},
+                                                c_stat::Ptr{Cint}, w::Ptr{Float128})::Cvoid
 end
 
 export clls_information

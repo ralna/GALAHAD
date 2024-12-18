@@ -241,7 +241,7 @@ function qpb_solve_qp(::Type{Float128}, data, status, n, m, h_ne, H_val, g, f, a
   @ccall libgalahad_quadruple.qpb_solve_qp_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                              n::Cint, m::Cint, h_ne::Cint,
                                              H_val::Ptr{Float128}, g::Ptr{Float128},
-                                             f::Float128, a_ne::Cint, A_val::Ptr{Float128},
+                                             f::Cfloat128, a_ne::Cint, A_val::Ptr{Float128},
                                              c_l::Ptr{Float128}, c_u::Ptr{Float128},
                                              x_l::Ptr{Float128}, x_u::Ptr{Float128},
                                              x::Ptr{Float128}, c::Ptr{Float128},

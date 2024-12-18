@@ -116,8 +116,8 @@ end
 
 function glrt_solve_problem(::Type{Float128}, data, status, n, power, weight, x, r, vector)
   @ccall libgalahad_quadruple.glrt_solve_problem_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                                   n::Cint, power::Float128,
-                                                   weight::Float128, x::Ptr{Float128},
+                                                   n::Cint, power::Cfloat128,
+                                                   weight::Cfloat128, x::Ptr{Float128},
                                                    r::Ptr{Float128},
                                                    vector::Ptr{Float128})::Cvoid
 end

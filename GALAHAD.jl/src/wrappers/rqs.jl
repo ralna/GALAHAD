@@ -229,8 +229,8 @@ end
 function rqs_solve_problem(::Type{Float128}, data, status, n, power, weight, f, c, H_ne,
                            H_val, x, M_ne, M_val, m, A_ne, A_val, y)
   @ccall libgalahad_quadruple.rqs_solve_problem_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                                  n::Cint, power::Float128,
-                                                  weight::Float128, f::Float128,
+                                                  n::Cint, power::Cfloat128,
+                                                  weight::Cfloat128, f::Cfloat128,
                                                   c::Ptr{Float128}, H_ne::Cint,
                                                   H_val::Ptr{Float128}, x::Ptr{Float128},
                                                   M_ne::Cint, M_val::Ptr{Float128}, m::Cint,

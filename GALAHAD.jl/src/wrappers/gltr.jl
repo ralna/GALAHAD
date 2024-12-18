@@ -119,7 +119,7 @@ end
 
 function gltr_solve_problem(::Type{Float128}, data, status, n, radius, x, r, vector)
   @ccall libgalahad_quadruple.gltr_solve_problem_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                                   n::Cint, radius::Float128,
+                                                   n::Cint, radius::Cfloat128,
                                                    x::Ptr{Float128}, r::Ptr{Float128},
                                                    vector::Ptr{Float128})::Cvoid
 end

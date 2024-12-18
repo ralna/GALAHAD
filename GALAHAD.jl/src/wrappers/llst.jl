@@ -204,7 +204,7 @@ end
 function llst_solve_problem(::Type{Float128}, data, status, m, n, radius, A_ne, A_val, b, x,
                             S_ne, S_val)
   @ccall libgalahad_quadruple.llst_solve_problem_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                                   m::Cint, n::Cint, radius::Float128,
+                                                   m::Cint, n::Cint, radius::Cfloat128,
                                                    A_ne::Cint, A_val::Ptr{Float128},
                                                    b::Ptr{Float128}, x::Ptr{Float128},
                                                    S_ne::Cint, S_val::Ptr{Float128})::Cvoid

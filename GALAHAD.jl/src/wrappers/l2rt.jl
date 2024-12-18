@@ -122,8 +122,8 @@ end
 function l2rt_solve_problem(::Type{Float128}, data, status, m, n, power, weight, shift, x,
                             u, v)
   @ccall libgalahad_quadruple.l2rt_solve_problem_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                                   m::Cint, n::Cint, power::Float128,
-                                                   weight::Float128, shift::Float128,
+                                                   m::Cint, n::Cint, power::Cfloat128,
+                                                   weight::Cfloat128, shift::Cfloat128,
                                                    x::Ptr{Float128}, u::Ptr{Float128},
                                                    v::Ptr{Float128})::Cvoid
 end

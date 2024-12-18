@@ -157,7 +157,7 @@ function dps_solve_tr_problem(::Type{Float128}, data, status, n, ne, H_val, c, f
   @ccall libgalahad_quadruple.dps_solve_tr_problem_q(data::Ptr{Ptr{Cvoid}},
                                                      status::Ptr{Cint}, n::Cint, ne::Cint,
                                                      H_val::Ptr{Float128}, c::Ptr{Float128},
-                                                     f::Float128, radius::Float128,
+                                                     f::Cfloat128, radius::Cfloat128,
                                                      x::Ptr{Float128})::Cvoid
 end
 
@@ -185,8 +185,8 @@ function dps_solve_rq_problem(::Type{Float128}, data, status, n, ne, H_val, c, f
   @ccall libgalahad_quadruple.dps_solve_rq_problem_q(data::Ptr{Ptr{Cvoid}},
                                                      status::Ptr{Cint}, n::Cint, ne::Cint,
                                                      H_val::Ptr{Float128}, c::Ptr{Float128},
-                                                     f::Float128, power::Float128,
-                                                     weight::Float128,
+                                                     f::Cfloat128, power::Cfloat128,
+                                                     weight::Cfloat128,
                                                      x::Ptr{Float128})::Cvoid
 end
 
@@ -208,8 +208,8 @@ end
 function dps_resolve_tr_problem(::Type{Float128}, data, status, n, c, f, radius, x)
   @ccall libgalahad_quadruple.dps_resolve_tr_problem_q(data::Ptr{Ptr{Cvoid}},
                                                        status::Ptr{Cint}, n::Cint,
-                                                       c::Ptr{Float128}, f::Float128,
-                                                       radius::Float128,
+                                                       c::Ptr{Float128}, f::Cfloat128,
+                                                       radius::Cfloat128,
                                                        x::Ptr{Float128})::Cvoid
 end
 
@@ -233,8 +233,8 @@ end
 function dps_resolve_rq_problem(::Type{Float128}, data, status, n, c, f, power, weight, x)
   @ccall libgalahad_quadruple.dps_resolve_rq_problem_q(data::Ptr{Ptr{Cvoid}},
                                                        status::Ptr{Cint}, n::Cint,
-                                                       c::Ptr{Float128}, f::Float128,
-                                                       power::Float128, weight::Float128,
+                                                       c::Ptr{Float128}, f::Cfloat128,
+                                                       power::Cfloat128, weight::Cfloat128,
                                                        x::Ptr{Float128})::Cvoid
 end
 

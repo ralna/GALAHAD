@@ -223,7 +223,7 @@ function bqpb_solve_qp(::Type{Float128}, data, status, n, h_ne, H_val, g, f, x_l
                        x_stat)
   @ccall libgalahad_quadruple.bqpb_solve_qp_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                               n::Cint, h_ne::Cint, H_val::Ptr{Float128},
-                                              g::Ptr{Float128}, f::Float128,
+                                              g::Ptr{Float128}, f::Cfloat128,
                                               x_l::Ptr{Float128}, x_u::Ptr{Float128},
                                               x::Ptr{Float128}, z::Ptr{Float128},
                                               x_stat::Ptr{Cint})::Cvoid
@@ -255,7 +255,7 @@ function bqpb_solve_sldqp(::Type{Float128}, data, status, n, w, x0, g, f, x_l, x
   @ccall libgalahad_quadruple.bqpb_solve_sldqp_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                  n::Cint, w::Ptr{Float128},
                                                  x0::Ptr{Float128}, g::Ptr{Float128},
-                                                 f::Float128, x_l::Ptr{Float128},
+                                                 f::Cfloat128, x_l::Ptr{Float128},
                                                  x_u::Ptr{Float128}, x::Ptr{Float128},
                                                  z::Ptr{Float128}, x_stat::Ptr{Cint})::Cvoid
 end
