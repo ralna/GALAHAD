@@ -39,6 +39,7 @@ function FORTRAN_structures()
               for syntax in ("TYPE", "REAL", "INTEGER", "CHARACTER", "=")
                 type = split(type, syntax)[end]
               end
+              type = replace(type,  "DIMENSION( 3, 81 )" => "[3][81]")
               type = replace(type, "longc_" => "int64_t")
               type = replace(type, "C_CHAR" => "char")
               type = replace(type, "C_BOOL" => "bool")
@@ -75,7 +76,9 @@ function C_structures()
   for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "include"))
     for file in files
       path = joinpath(root, file) |> normpath
-      if endswith(file, ".h") && (file != "ssids_gpu_kernels_datatypes.h")
+      if endswith(file, ".h")
+        (file == "ssids_gpu_kernels_datatypes.h") && continue
+        (file == "galahad_icfs.h") && continue
         code = read(path, String)
         lines = split(code, '\n')
         for (i, line) in enumerate(lines)
@@ -100,8 +103,16 @@ function C_structures()
               type = split(line)[end-1]
               field = split(line)[end][1:end-1]  # remove ";" at the end
               if contains(field, "[") && contains(field, "]")
-                dimension = split(field, "[")[2]
-                type = type * "[$dimension"
+                split_field = split(field, "[")
+                if length(split_field) == 2
+                  dimension = split(field, "[")[2]
+                  type = type * "[$dimension"
+                else
+                  @assert length(split_field) == 3
+                  dimension1 = split(field, "[")[2]
+                  dimension2 = split(field, "[")[3]
+                  type = type * "[$dimension1[$dimension2"
+                end
                 field = split(field, "[")[1]
               end
               type = replace(type, "real_sp_" => "spc_")

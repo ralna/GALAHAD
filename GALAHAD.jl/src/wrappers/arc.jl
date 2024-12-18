@@ -81,8 +81,8 @@ struct arc_inform_type{T}
   f_eval::Cint
   g_eval::Cint
   h_eval::Cint
-  factorization_status::Cint
   factorization_max::Cint
+  factorization_status::Cint
   max_entries_factors::Int64
   factorization_integer::Int64
   factorization_real::Int64

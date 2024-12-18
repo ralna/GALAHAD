@@ -16,7 +16,6 @@ struct bnls_subproblem_control_type{T}
   norm::Cint
   non_monotone::Cint
   weight_update_strategy::Cint
-  infinity::T
   stop_c_absolute::T
   stop_c_relative::T
   stop_g_absolute::T
