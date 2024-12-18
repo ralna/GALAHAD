@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-14 AT 08:15 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-18 AT 11:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -277,7 +277,7 @@
       END TYPE
 
       TYPE, PUBLIC :: GLRT_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( GLRT_data_type ) :: GLRT_data
         TYPE ( GLRT_control_type ) :: GLRT_control
         TYPE ( GLRT_inform_type ) :: GLRT_inform
