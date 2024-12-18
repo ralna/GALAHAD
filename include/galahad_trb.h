@@ -611,12 +611,12 @@ struct trb_inform_type {
     ipc_ n_free;
 
     /// \brief
-    /// the maximum number of factorizations in a sub-problem solve
-    ipc_ factorization_max;
-
-    /// \brief
     /// the return status from the factorization
     ipc_ factorization_status;
+
+    /// \brief
+    /// the maximum number of factorizations in a sub-problem solve
+    ipc_ factorization_max;
 
     /// \brief
     /// the maximum number of entries in the factors

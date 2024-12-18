@@ -283,11 +283,6 @@ struct rpd_inform_type {
     ipc_ alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation or deallocation
-    /// error occurred
-    char bad_alloc[81];
-
-    /// \brief
     /// status from last read attempt
     ipc_ io_status;
 
@@ -298,6 +293,11 @@ struct rpd_inform_type {
     /// \brief
     /// problem type
     char p_type[4];
+
+    /// \brief
+    /// the name of the array for which an allocation or deallocation
+    /// error occurred
+    char bad_alloc[81];
 };
 
 // *-*-*-*-*-*-*-*-*-*-    R P D  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

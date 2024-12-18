@@ -84,8 +84,8 @@ struct trb_inform_type{T}
   g_eval::Cint
   h_eval::Cint
   n_free::Cint
-  factorization_max::Cint
   factorization_status::Cint
+  factorization_max::Cint
   max_entries_factors::Int64
   factorization_integer::Int64
   factorization_real::Int64
