@@ -27,6 +27,9 @@ function test_lsrt(::Type{T}) where T
   # Initialize lsrt
   lsrt_initialize(T, data, control, status)
 
+  # Set user-defined control options
+  @reset control[].f_indexing = true # Fortran sparse matrix indexing
+
   status[] = 1
   @reset control[].print_level = Cint(0)
   lsrt_import_control(T, control, data, status)
