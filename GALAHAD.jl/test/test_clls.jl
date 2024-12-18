@@ -17,7 +17,7 @@ function test_clls(::Type{T}) where T
   n = 3 # dimension
   o = 4 # number of observations
   m = 2 # number of general constraints
-  sigma = 1.0 # regularization weight
+  sigma = one(T) # regularization weight
   b = T[2.0, 2.0, 3.0, 1.0]  # observations
   c_l = T[1.0, 2.0]  # constraint lower bound
   c_u = T[2.0, 2.0]  # constraint upper bound

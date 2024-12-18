@@ -23,9 +23,9 @@ function test_dps(::Type{T}) where T
   H_ptr = Cint[1, 2, 3, 5]
   H_val = T[1.0, 2.0, 3.0, 4.0]
   H_dense = T[1.0, 0.0, 2.0, 4.0, 0.0, 3.0]
-  f = 0.96
-  radius = 1.0
-  half_radius = 0.5
+  f = T(0.96)
+  radius = one(T)
+  half_radius = T(0.5)
   c = T[0.0, 2.0, 0.0]
 
   st = ' '

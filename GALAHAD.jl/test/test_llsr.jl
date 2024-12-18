@@ -84,8 +84,8 @@ function test_llsr(::Type{T}) where T
   b = ones(T, m) # observations
 
   # cubic regularization, weight is one
-  power = 3.0
-  weight = 1.0
+  power = T(3.0)
+  weight = one(T)
 
   # Set output storage
   x = zeros(T, n) # solution

@@ -22,7 +22,7 @@ function test_presolve(::Type{T}) where T
   H_ptr = Cint[1, 2, 2, 2, 2, 2, 2]  # row pointers
   H_val = T[1.0]  # values
   g = T[1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # linear term in the objective
-  f = 1.0  # constant term in the objective
+  f = one(T)  # constant term in the objective
   A_ne = 8 # Jacobian elements
   A_row = Cint[3, 3, 3, 4, 4, 5, 5, 5]  # row indices
   A_col = Cint[3, 4, 5, 3, 6, 4, 5, 6]  # column indices

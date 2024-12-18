@@ -37,9 +37,9 @@ function test_rqs(::Type{T}) where T
   M_dense = T[1.0, 0.0, 2.0, 0.0, 0.0, 1.0]
   H_diag = T[1.0, 0.0, 2.0]
   M_diag = T[1.0, 2.0, 1.0]
-  f = 0.96
-  power = 3.0
-  weight = 1.0
+  f = T(0.96)
+  power = T(3.0)
+  weight = one(T)
   c = T[0.0, 2.0, 0.0]
 
   st = ' '
