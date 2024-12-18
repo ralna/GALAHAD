@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-18 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -266,7 +266,7 @@
       END TYPE
 
       TYPE, PUBLIC :: LSTR_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( LSTR_data_type ) :: LSTR_data
         TYPE ( LSTR_control_type ) :: LSTR_control
         TYPE ( LSTR_inform_type ) :: LSTR_inform
