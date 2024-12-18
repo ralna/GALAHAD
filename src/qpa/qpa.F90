@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-18 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -12855,11 +12855,11 @@ main: DO
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
-       data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
-       data%prob%gradient_kind = 1
-     ELSE
+!     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
+!       data%prob%gradient_kind = 0
+!     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
+!       data%prob%gradient_kind = 1
+!     ELSE
        data%prob%gradient_kind = 2
        array_name = 'qpa: data%prob%G'
        CALL SPACE_resize_array( n, data%prob%G,                                &
@@ -12872,7 +12872,7 @@ main: DO
               out = data%qpa_control%error )
        IF ( data%qpa_inform%status /= 0 ) GO TO 900
        data%prob%G( : n ) = G( : n )
-     END IF
+!     END IF
 
 !  save the lower and upper simple bounds
 
@@ -13071,11 +13071,11 @@ main: DO
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
-       data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
-       data%prob%gradient_kind = 1
-     ELSE
+!     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
+!       data%prob%gradient_kind = 0
+!     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
+!       data%prob%gradient_kind = 1
+!     ELSE
        data%prob%gradient_kind = 2
        array_name = 'qpa: data%prob%G'
        CALL SPACE_resize_array( n, data%prob%G,                                &
@@ -13088,7 +13088,7 @@ main: DO
               out = data%qpa_control%error )
        IF ( data%qpa_inform%status /= 0 ) GO TO 900
        data%prob%G( : n ) = G( : n )
-     END IF
+!     END IF
 
 !  save the lower and upper simple bounds
 
@@ -13274,11 +13274,11 @@ main: DO
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
-       data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
-       data%prob%gradient_kind = 1
-     ELSE
+!     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
+!       data%prob%gradient_kind = 0
+!     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
+!       data%prob%gradient_kind = 1
+!     ELSE
        data%prob%gradient_kind = 2
        array_name = 'qpa: data%prob%G'
        CALL SPACE_resize_array( n, data%prob%G,                                &
@@ -13291,7 +13291,7 @@ main: DO
               out = data%qpa_control%error )
        IF ( data%qpa_inform%status /= 0 ) GO TO 900
        data%prob%G( : n ) = G( : n )
-     END IF
+!     END IF
 
 !  save the lower and upper simple bounds
 
