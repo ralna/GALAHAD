@@ -545,7 +545,7 @@ struct tru_inform_type {
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    ipc_ alloc_status ;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
