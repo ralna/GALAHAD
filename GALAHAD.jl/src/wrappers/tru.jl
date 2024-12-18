@@ -20,10 +20,10 @@ struct tru_control_type{T}
   icfs_vectors::Cint
   mi28_lsize::Cint
   mi28_rsize::Cint
+  advanced_start::Cint
   stop_g_absolute::T
   stop_g_relative::T
   stop_s::T
-  advanced_start::Cint
   initial_radius::T
   maximum_radius::T
   eta_successful::T
