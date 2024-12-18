@@ -23,8 +23,10 @@ int main(void) {
     char qplib_file[BUFSIZE];
     char *galahad = "GALAHAD";
     ipc_ qplib_file_len;
-    char buf0[128], buf1[128], buf2[128], buf3[128], buf4[128];
-    int n0, n1, n2, n3, n4;
+#ifdef REAL_128
+//    char buf0[128], buf1[128], buf2[128], buf3[128], buf4[128];
+//    int n0, n1, n2, n3, n4;
+#endif
 
     // make sure the GALAHAD environment variable actually exists
     if(!getenv(galahad)){
@@ -77,17 +79,19 @@ int main(void) {
     rpc_ g[n];
     rpd_get_g( &data, &status, n, g );
 #ifdef REAL_128
-    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", g[0]);
-    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", g[1]);
-    n2 = quadmath_snprintf(buf2, sizeof buf2, "%*.1Qf", g[2]);
-    n3 = quadmath_snprintf(buf3, sizeof buf3, "%*.1Qf", g[3]);
-    n4 = quadmath_snprintf(buf4, sizeof buf4, "%*.1Qf", g[4]);
-    if ((size_t) n0 < sizeof buf0 &&
-        (size_t) n1 < sizeof buf1 &&
-        (size_t) n2 < sizeof buf2 &&
-        (size_t) n3 < sizeof buf3 &&
-        (size_t) n4 < sizeof buf4)
-      printf( " g = %s %s %s %s %s\n", buf0, buf1, buf2, buf3, buf4);
+//    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", g[0]);
+//    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", g[1]);
+//    n2 = quadmath_snprintf(buf2, sizeof buf2, "%*.1Qf", g[2]);
+//    n3 = quadmath_snprintf(buf3, sizeof buf3, "%*.1Qf", g[3]);
+//    n4 = quadmath_snprintf(buf4, sizeof buf4, "%*.1Qf", g[4]);
+//    if ((size_t) n0 < sizeof buf0 &&
+//        (size_t) n1 < sizeof buf1 &&
+//        (size_t) n2 < sizeof buf2 &&
+//        (size_t) n3 < sizeof buf3 &&
+//        (size_t) n4 < sizeof buf4)
+ //     printf( " g = %s %s %s %s %s\n", buf0, buf1, buf2, buf3, buf4);
+    printf( " g = %.1f %.1f %.1f %.1f %.1f\n",(double)g[0], (double)g[1], 
+            (double)g[2], (double)g[3], (double)g[4]);
 #else
     printf( " g = %.1f %.1f %.1f %.1f %.1f\n",g[0], g[1], g[2], g[3], g[4]);
 #endif
@@ -96,9 +100,10 @@ int main(void) {
     rpc_ f;
     rpd_get_f( &data, &status, &f );
 #ifdef REAL_128
-    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", f);
-    if ((size_t) n0 < sizeof buf0)
-      printf( " f = %s\n", buf0 );
+//    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", f);
+//    if ((size_t) n0 < sizeof buf0)
+//      printf( " f = %s\n", buf0 );
+    printf( " f = %.1f\n", (double)f );
 #else
     printf( " f = %.1f\n", f );
 #endif
@@ -108,28 +113,34 @@ int main(void) {
     rpc_ x_u[n];
     rpd_get_xlu( &data, &status, n, x_l, x_u );
 #ifdef REAL_128
-    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", x_l[0]);
-    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", x_l[1]);
-    n2 = quadmath_snprintf(buf2, sizeof buf2, "%*.1Qf", x_l[2]);
-    n3 = quadmath_snprintf(buf3, sizeof buf3, "%*.1Qf", x_l[3]);
-    n4 = quadmath_snprintf(buf4, sizeof buf4, "%*.1Qf", x_l[4]);
-    if ((size_t) n0 < sizeof buf0 &&
-        (size_t) n1 < sizeof buf1 &&
-        (size_t) n2 < sizeof buf2 &&
-        (size_t) n3 < sizeof buf3 &&
-        (size_t) n4 < sizeof buf4)
-      printf( " x_l = %s %s %s %s %s\n", buf0, buf1, buf2, buf3, buf4);
-    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", x_u[0]);
-    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", x_u[1]);
-    n2 = quadmath_snprintf(buf2, sizeof buf2, "%*.1Qf", x_u[2]);
-    n3 = quadmath_snprintf(buf3, sizeof buf3, "%*.1Qf", x_u[3]);
-    n4 = quadmath_snprintf(buf4, sizeof buf4, "%*.1Qf", x_u[4]);
-    if ((size_t) n0 < sizeof buf0 &&
-        (size_t) n1 < sizeof buf1 &&
-        (size_t) n2 < sizeof buf2 &&
-        (size_t) n3 < sizeof buf3 &&
-        (size_t) n4 < sizeof buf4)
-      printf( " x_u = %s %s %s %s %s\n", buf0, buf1, buf2, buf3, buf4);
+//    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", x_l[0]);
+//    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", x_l[1]);
+//    n2 = quadmath_snprintf(buf2, sizeof buf2, "%*.1Qf", x_l[2]);
+//    n3 = quadmath_snprintf(buf3, sizeof buf3, "%*.1Qf", x_l[3]);
+//    n4 = quadmath_snprintf(buf4, sizeof buf4, "%*.1Qf", x_l[4]);
+//    if ((size_t) n0 < sizeof buf0 &&
+//        (size_t) n1 < sizeof buf1 &&
+//        (size_t) n2 < sizeof buf2 &&
+//        (size_t) n3 < sizeof buf3 &&
+//        (size_t) n4 < sizeof buf4)
+//      printf( " x_l = %s %s %s %s %s\n", buf0, buf1, buf2, buf3, buf4);
+//    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", x_u[0]);
+//    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", x_u[1]);
+//    n2 = quadmath_snprintf(buf2, sizeof buf2, "%*.1Qf", x_u[2]);
+//    n3 = quadmath_snprintf(buf3, sizeof buf3, "%*.1Qf", x_u[3]);
+//    n4 = quadmath_snprintf(buf4, sizeof buf4, "%*.1Qf", x_u[4]);
+//    if ((size_t) n0 < sizeof buf0 &&
+//        (size_t) n1 < sizeof buf1 &&
+//        (size_t) n2 < sizeof buf2 &&
+//        (size_t) n3 < sizeof buf3 &&
+//        (size_t) n4 < sizeof buf4)
+//      printf( " x_u = %s %s %s %s %s\n", buf0, buf1, buf2, buf3, buf4);
+    printf( " x_l = %.1f %.1f %.1f %.1f %.1f\n", (double)x_l[0], 
+             (double)x_l[1], (double)x_l[2],
+             (double)x_l[3], (double)x_l[4]);
+    printf( " x_u = %.1f %.1f %.1f %.1f %.1f\n", (double)x_u[0], 
+             (double)x_u[1], (double)x_u[2],
+             (double)x_u[3], (double)x_u[4]);
 #else
     printf( " x_l = %.1f %.1f %.1f %.1f %.1f\n", x_l[0], x_l[1], x_l[2],
              x_l[3], x_l[4]);
@@ -142,16 +153,18 @@ int main(void) {
     rpc_ c_u[m];
     rpd_get_clu( &data, &status, m, c_l, c_u );
 #ifdef REAL_128
-    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", c_l[0]);
-    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", c_l[1]);
-    if ((size_t) n0 < sizeof buf0 &&
-        (size_t) n1 < sizeof buf1)
-      printf( " c_l = %s %s\n", buf0, buf1);
-    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", c_u[0]);
-    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", c_u[1]);
-    if ((size_t) n0 < sizeof buf0 &&
-        (size_t) n1 < sizeof buf1)
-      printf( " c_u = %s %s\n", buf0, buf1);
+//    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", c_l[0]);
+//    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", c_l[1]);
+//    if ((size_t) n0 < sizeof buf0 &&
+//        (size_t) n1 < sizeof buf1)
+//      printf( " c_l = %s %s\n", buf0, buf1);
+//    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", c_u[0]);
+//    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", c_u[1]);
+//   if ((size_t) n0 < sizeof buf0 &&
+//       (size_t) n1 < sizeof buf1)
+//     printf( " c_u = %s %s\n", buf0, buf1);
+    printf( " c_l = %.1f %.1f\n", (double)c_l[0], (double)c_l[1] );
+    printf( " c_u = %.1e %.1e\n", (double)c_u[0], (double)c_u[1] );
 #else
     printf( " c_l = %.1f %.1f\n", c_l[0], c_l[1] );
     printf( " c_u = %.1f %.1f\n", c_u[0], c_u[1] );
@@ -165,9 +178,11 @@ int main(void) {
     printf( " h_row, h_col, h_val =\n");
     for( ipc_ i = 0; i < h_ne; i++) {
 #ifdef REAL_128
-    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf",  h_val[i]);
-    if ((size_t) n0 < sizeof buf0)
-      printf("   %" i_ipc_ " %" i_ipc_ " %s\n", h_row[i], h_col[i], buf0);
+//    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf",  h_val[i]);
+//    if ((size_t) n0 < sizeof buf0)
+//      printf("   %" i_ipc_ " %" i_ipc_ " %s\n", h_row[i], h_col[i], buf0);
+      printf("   %" i_ipc_ " %" i_ipc_ " %.1f\n", h_row[i], h_col[i], 
+             (double)h_val[i]);
 #else
       printf("   %" i_ipc_ " %" i_ipc_ " %.1f\n", h_row[i], h_col[i], h_val[i]);
 #endif
@@ -181,9 +196,11 @@ int main(void) {
     printf( " a_row, a_col, a_val =\n");
     for( ipc_ i = 0; i < a_ne; i++) {
 #ifdef REAL_128
-    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf",  a_val[i]);
-    if ((size_t) n0 < sizeof buf0)
-      printf("   %" i_ipc_ " %" i_ipc_ " %s\n", a_row[i], a_col[i], buf0);
+//    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf",  a_val[i]);
+//    if ((size_t) n0 < sizeof buf0)
+//      printf("   %" i_ipc_ " %" i_ipc_ " %s\n", a_row[i], a_col[i], buf0);
+      printf("   %" i_ipc_ " %" i_ipc_ " %.1f\n", a_row[i], a_col[i], 
+             (double)a_val[i]);
 #else
       printf("   %" i_ipc_ " %" i_ipc_ " %.1f\n", a_row[i], a_col[i], a_val[i]);
 #endif
@@ -198,9 +215,11 @@ int main(void) {
     printf( " h_c_row, h_c_col, h_c_val =\n");
     for( ipc_ i = 0; i < h_c_ne; i++) {
 #ifdef REAL_128
-    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf",  h_c_val[i]);
-    if ((size_t) n0 < sizeof buf0)
-      printf("   %" i_ipc_ " %" i_ipc_ " %s\n", h_c_row[i], h_c_col[i], buf0);
+//    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf",  h_c_val[i]);
+//    if ((size_t) n0 < sizeof buf0)
+//      printf("   %" i_ipc_ " %" i_ipc_ " %s\n", h_c_row[i], h_c_col[i], buf0);
+      printf("   %" i_ipc_ " %" i_ipc_ " %" i_ipc_ " %.1f\n", 
+             h_c_ptr[i], h_c_row[i], h_c_col[i], (double)h_c_val[i]);
 #else
       printf("   %" i_ipc_ " %" i_ipc_ " %" i_ipc_ " %.1f\n", 
              h_c_ptr[i], h_c_row[i], h_c_col[i], h_c_val[i]);
@@ -217,17 +236,19 @@ int main(void) {
     rpc_ x[n];
     rpd_get_x( &data, &status, n, x );
 #ifdef REAL_128
-    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", x[0]);
-    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", x[1]);
-    n2 = quadmath_snprintf(buf2, sizeof buf2, "%*.1Qf", x[2]);
-    n3 = quadmath_snprintf(buf3, sizeof buf3, "%*.1Qf", x[3]);
-    n4 = quadmath_snprintf(buf4, sizeof buf4, "%*.1Qf", x[4]);
-    if ((size_t) n0 < sizeof buf0 &&
-        (size_t) n1 < sizeof buf1 &&
-        (size_t) n2 < sizeof buf2 &&
-        (size_t) n3 < sizeof buf3 &&
-        (size_t) n4 < sizeof buf4)
-      printf( " x = %s %s %s %s %s\n", buf0, buf1, buf2, buf3, buf4);
+//    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", x[0]);
+//    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", x[1]);
+//    n2 = quadmath_snprintf(buf2, sizeof buf2, "%*.1Qf", x[2]);
+//    n3 = quadmath_snprintf(buf3, sizeof buf3, "%*.1Qf", x[3]);
+//    n4 = quadmath_snprintf(buf4, sizeof buf4, "%*.1Qf", x[4]);
+//    if ((size_t) n0 < sizeof buf0 &&
+//        (size_t) n1 < sizeof buf1 &&
+//        (size_t) n2 < sizeof buf2 &&
+//        (size_t) n3 < sizeof buf3 &&
+//        (size_t) n4 < sizeof buf4)
+//      printf( " x = %s %s %s %s %s\n", buf0, buf1, buf2, buf3, buf4);
+    printf( " x = %.1f %.1f %.1f %.1f %.1f\n",(double)x[0], (double)x[1], 
+            (double)x[2], (double)x[3], (double)x[4]);
 #else
     printf( " x = %.1f %.1f %.1f %.1f %.1f\n",x[0], x[1], x[2], x[3], x[4]);
 #endif
@@ -236,11 +257,12 @@ int main(void) {
     rpc_ y[m];
     rpd_get_y( &data, &status, m, y );
 #ifdef REAL_128
-    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", y[0]);
-    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", y[1]);
-    if ((size_t) n0 < sizeof buf0 &&
-        (size_t) n1 < sizeof buf1)
-      printf( " y = %s %s\n", buf0, buf1);
+//    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", y[0]);
+//    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", y[1]);
+//    if ((size_t) n0 < sizeof buf0 &&
+//        (size_t) n1 < sizeof buf1)
+//      printf( " y = %s %s\n", buf0, buf1);
+    printf( " y = %.1f %.1f\n",(double)y[0], (double)y[1]);
 #else
     printf( " y = %.1f %.1f\n",y[0], y[1]);
 #endif
@@ -249,17 +271,19 @@ int main(void) {
     rpc_ z[n];
     rpd_get_z( &data, &status, n, z );
 #ifdef REAL_128
-    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", z[0]);
-    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", z[1]);
-    n2 = quadmath_snprintf(buf2, sizeof buf2, "%*.1Qf", z[2]);
-    n3 = quadmath_snprintf(buf3, sizeof buf3, "%*.1Qf", z[3]);
-    n4 = quadmath_snprintf(buf4, sizeof buf4, "%*.1Qf", z[4]);
-    if ((size_t) n0 < sizeof buf0 &&
-        (size_t) n1 < sizeof buf1 &&
-        (size_t) n2 < sizeof buf2 &&
-        (size_t) n3 < sizeof buf3 &&
-        (size_t) n4 < sizeof buf4)
-      printf( " z = %s %s %s %s %s\n", buf0, buf1, buf2, buf3, buf4);
+//    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf", z[0]);
+//    n1 = quadmath_snprintf(buf1, sizeof buf1, "%*.1Qf", z[1]);
+//    n2 = quadmath_snprintf(buf2, sizeof buf2, "%*.1Qf", z[2]);
+//    n3 = quadmath_snprintf(buf3, sizeof buf3, "%*.1Qf", z[3]);
+//    n4 = quadmath_snprintf(buf4, sizeof buf4, "%*.1Qf", z[4]);
+//    if ((size_t) n0 < sizeof buf0 &&
+//        (size_t) n1 < sizeof buf1 &&
+//        (size_t) n2 < sizeof buf2 &&
+//        (size_t) n3 < sizeof buf3 &&
+//        (size_t) n4 < sizeof buf4)
+//      printf( " z = %s %s %s %s %s\n", buf0, buf1, buf2, buf3, buf4);
+    printf( " z = %.1f %.1f %.1f %.1f %.1f\n",(double)z[0], (double)z[1], 
+           (double)z[2], (double)z[3], (double)z[4]);
 #else
     printf( " z = %.1f %.1f %.1f %.1f %.1f\n",z[0], z[1], z[2], z[3], z[4]);
 #endif

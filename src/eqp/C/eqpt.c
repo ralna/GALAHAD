@@ -67,7 +67,6 @@ int main(void) {
                            "coordinate", A_ne, A_row, A_col, NULL );
                 eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
-            // return 1;
                 break;
             case 2: // sparse by rows
                 st = 'R';
@@ -135,7 +134,8 @@ int main(void) {
                    st, inform.cg_iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("%c: EQP_solve exit status = %1" i_ipc_ "\n", st, inform.status);
+            printf("%c: EQP_solve exit status = %1" i_ipc_ "\n", 
+                   st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
