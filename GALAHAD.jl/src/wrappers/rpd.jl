@@ -15,10 +15,10 @@ export rpd_inform_type
 struct rpd_inform_type
   status::Cint
   alloc_status::Cint
-  bad_alloc::NTuple{81,Cchar}
   io_status::Cint
   line::Cint
   p_type::NTuple{4,Cchar}
+  bad_alloc::NTuple{81,Cchar}
 end
 
 export rpd_initialize

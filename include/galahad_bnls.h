@@ -530,7 +530,7 @@ struct bnls_subproblem_control_type {
 
     /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
-    rpc_ infinity;
+    /// ---> rpc_ infinity; <---
 
     /// \brief
     /// overall convergence tolerances. The iteration will terminate when
