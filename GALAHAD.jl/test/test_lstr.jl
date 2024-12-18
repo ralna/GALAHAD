@@ -26,9 +26,6 @@ function test_lstr(::Type{T}) where T
   # Initialize lstr
   lstr_initialize(T, data, control, status)
 
-  # Set user-defined control options
-  @reset control[].f_indexing = true # Fortran sparse matrix indexing
-
   # resolve with a smaller radius ?
   for new_radius in 0:1
     if new_radius == 0 # original radius

@@ -145,7 +145,7 @@ function test_tru(::Type{T}) where T
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
-    @reset control[].print_level = Cint(1)
+    # @reset control[].print_level = Cint(1)
     # @reset control[].maxit = Cint(1)
 
     # Start from 1.5

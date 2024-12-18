@@ -60,7 +60,7 @@ jobs:
         os: ['macos-latest']
         arch: ['arm64']
         compiler: ['gcc']
-        version: [13']
+        version: ['13']
         int: ['32', '64']
     steps:
       - name: Checkout repository

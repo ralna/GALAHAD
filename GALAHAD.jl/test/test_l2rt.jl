@@ -28,9 +28,6 @@ function test_l2rt(::Type{T}) where T
   # Initialize l2rt
   l2rt_initialize(T, data, control, status)
 
-  # Set user-defined control options
-  @reset control[].f_indexing = true # Fortran sparse matrix indexing
-
   status[] = 1
   @reset control[].print_level = Cint(0)
   l2rt_import_control(T, control, data, status)
