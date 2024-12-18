@@ -27,6 +27,9 @@ function test_glrt(::Type{T}) where T
   # Initialize glrt
   glrt_initialize(T, data, control, status)
 
+  # Set user-defined control options
+  @reset control[].f_indexing = true # Fortran sparse matrix indexing
+
   # use a unit M ?
   for unit_m in 0:1
     if unit_m == 0
