@@ -83,7 +83,7 @@ function test_llst(::Type{T}) where T
   b = ones(T, m) # observations
 
   # trust-region radius is one
-  radius = 1.0
+  radius = one(T)
 
   # Set output storage
   x = zeros(T, n) # solution

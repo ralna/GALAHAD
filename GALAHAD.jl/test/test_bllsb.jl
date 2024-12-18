@@ -16,7 +16,7 @@ function test_bllsb(::Type{T}) where T
   # Set problem data
   n = 3 # dimension
   o = 4 # number of observations
-  sigma = 1.0 # regularization weight
+  sigma = one(T) # regularization weight
   b = T[2.0, 2.0, 3.0, 1.0]  # observations
   x_l = T[-1.0, -Inf, -Inf]  # variable lower bound
   x_u = T[1.0, Inf, 2.0]  # variable upper bound

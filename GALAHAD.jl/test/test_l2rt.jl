@@ -18,9 +18,9 @@ function test_l2rt(::Type{T}) where T
   m = 2 * n
 
   status = Ref{Cint}()
-  power = 3.0
-  weight = 1.0
-  shift = 1.0
+  power = T(3.0)
+  weight = one(T)
+  shift = one(T)
   x = zeros(T, n)
   u = zeros(T, m)
   v = zeros(T, n)
