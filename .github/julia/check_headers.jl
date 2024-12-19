@@ -79,6 +79,7 @@ function C_structures()
       path = joinpath(root, file) |> normpath
       if endswith(file, ".h")
         (file == "ssids_gpu_kernels_datatypes.h") && continue
+        (file == "ssids_gpu_kernels_dtrsv.h") && continue
         (file == "galahad_icfs.h") && continue
         code = read(path, String)
         lines = split(code, '\n')
