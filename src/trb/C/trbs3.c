@@ -34,7 +34,7 @@ int main(void) {
 
     // Reverse-communication input/output
     ipc_ eval_status;
-    rpc_ f;
+    rpc_ f = 0.0;
     rpc_ g[n];
     rpc_ u[n], v[n];
     rpc_ H_val[ne];
@@ -86,14 +86,19 @@ int main(void) {
     if(inform.status == 0){ // successful return
         printf("iter: %" d_ipc_ " \n", inform.iter);
         printf("x: ");
+#ifdef REAL_128
+        for(ipc_ i = 0; i < n; i++) printf("%f ", (double)x[i]);
+        printf("\nobjective: %f \ngradient: ", (double)inform.obj);
+        for(ipc_ i = 0; i < n; i++) printf("%f ", (double)g[i]);
+        printf("\nf_eval: %" d_ipc_ " \n", inform.f_eval);
+        printf("time: %f \n", (double)inform.time.clock_total);
+#else
         for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
-        printf("\n");
-        printf("objective: %f \n", inform.obj);
-        printf("gradient: ");
+        printf("\nobjective: %f \ngradient: ", inform.obj);
         for(ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
-        printf("\n");
-        printf("f_eval: %" d_ipc_ " \n", inform.f_eval);
+        printf("\nf_eval: %" d_ipc_ " \n", inform.f_eval);
         printf("time: %f \n", inform.time.clock_total);
+#endif
         printf("status: %" d_ipc_ " \n", inform.status);
      }else{ // error returns
         printf("TRB error in solve\n");

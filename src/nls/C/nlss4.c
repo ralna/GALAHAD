@@ -24,16 +24,15 @@ struct userdata_type {
 // Function prototypes
 
 ipc_ res( ipc_ n, ipc_ m, const rpc_ x[], rpc_ c[], const void * );
-ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[],
-         const void * );
+ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[]);
 ipc_ hess( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
-          rpc_ hval[], const void * );
+          rpc_ hval[]);
 ipc_ jacprod( ipc_ n, ipc_ m, const rpc_ x[], const bool transpose,
-             rpc_ u[], const rpc_ v[], bool got_j, const void * );
+             rpc_ u[], const rpc_ v[], bool got_j);
 ipc_ hessprod( ipc_ n, ipc_ m, const rpc_ x[], const rpc_ y[],
-              rpc_ u[], const rpc_ v[], bool got_h, const void * );
+              rpc_ u[], const rpc_ v[], bool got_h);
 ipc_ rhessprods( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[], const rpc_ v[],
-                rpc_ pval[], bool got_h, const void * );
+                rpc_ pval[], bool got_h);
 ipc_ scale( ipc_ n, ipc_ m, const rpc_ x[], rpc_ u[],
            const rpc_ v[], const void * );
 ipc_ jac_dense( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[],
@@ -61,14 +60,6 @@ int main(void) {
     ipc_ j_ne = 5; // Jacobian elements
     ipc_ h_ne = 2; // Hesssian elements
     ipc_ p_ne = 2; // residual-Hessians-vector products elements
-    ipc_ J_row[] = {0, 1, 1, 2, 2}; // Jacobian J
-    ipc_ J_col[] = {0, 0, 1, 0, 1}; //
-    ipc_ J_ptr[] = {0, 1, 3, 5};    // row pointers
-    ipc_ H_row[] = {0, 1};          // Hessian H
-    ipc_ H_col[] = {0, 1};          // NB lower triangle
-    ipc_ H_ptr[] = {0, 1, 2};       // row pointers
-    ipc_ P_row[] = {0, 1};          // residual-Hessians-vector product matrix
-    ipc_ P_ptr[] = {0, 1, 2, 2};    // column pointers
 
     // Set storage
     ipc_ status;
@@ -79,9 +70,7 @@ int main(void) {
     rpc_ y[m]; // multipliers
     rpc_ W[] = {1.0, 1.0, 1.0}; // weights
     rpc_ u[imax(m,n)], v[imax(m,n)];
-    rpc_ J_val[j_ne], J_dense[m*n];
-    rpc_ H_val[h_ne], H_dense[n*(n+1)/2], H_diag[n];
-    rpc_ P_val[p_ne], P_dense[m*n];
+    rpc_ P_val[p_ne];
     bool transpose;
     bool got_j = false;
     bool got_h = false;
@@ -118,8 +107,7 @@ int main(void) {
       }else if(status == 2){ // evaluate c
           eval_status = res( n, m, x, c, &userdata );
       }else if(status == 5){ // evaluate u + J v or u + J'v
-          eval_status = jacprod( n, m, x, transpose, u, v, got_j,
-                                 &userdata );
+          eval_status = jacprod( n, m, x, transpose, u, v, got_j );
       }else{
           printf(" the value %1" i_ipc_ " of status should not occur\n",
             status);
@@ -130,9 +118,15 @@ int main(void) {
     nls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %" i_ipc_ " Gauss-Newton iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
+#ifdef REAL_128
+        printf(" %" i_ipc_ " Gauss-Newton iterations. Optimal objective"
+               " value = %5.2f status = %1" i_ipc_ "\n",
+               inform.iter, (double)inform.obj, inform.status);
+#else
+        printf(" %" i_ipc_ " Gauss-Newton iterations. Optimal objective"
+               " value = %5.2f status = %1" i_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
+#endif
     }else{
         printf(" NLS_solve exit status = %1" i_ipc_ "\n", inform.status);
     }
@@ -167,11 +161,9 @@ int main(void) {
       }else if(status == 2){ // evaluate c
           eval_status = res( n, m, x, c, &userdata );
       }else if(status == 5){ // evaluate u + J v or u + J'v
-          eval_status = jacprod( n, m, x, transpose, u, v, got_j,
-                                 &userdata );
+          eval_status = jacprod( n, m, x, transpose, u, v, got_j );
       }else if(status == 6){ // evaluate u + H v
-          eval_status = hessprod( n, m, x, y, u, v, got_h,
-                                  &userdata );
+          eval_status = hessprod( n, m, x, y, u, v, got_h );
       }else{
           printf(" the value %1" i_ipc_ " of status should not occur\n",
             status);
@@ -182,9 +174,15 @@ int main(void) {
     nls_information( &data, &inform, &status );
 
     if(inform.status == 0){
+#ifdef REAL_128
+        printf(" %" i_ipc_ " Newton iterations. Optimal objective value = %5.2f"
+               " status = %1" i_ipc_ "\n",
+               inform.iter, (double)inform.obj, inform.status);
+#else
         printf(" %" i_ipc_ " Newton iterations. Optimal objective value = %5.2f"
                " status = %1" i_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
+#endif
     }else{
         printf(" NLS_solve exit status = %1" i_ipc_ "\n", inform.status);
     }
@@ -219,14 +217,11 @@ int main(void) {
       }else if(status == 2){ // evaluate c
           eval_status = res( n, m, x, c, &userdata );
       }else if(status == 5){ // evaluate u + J v or u + J'v
-          eval_status = jacprod( n, m, x, transpose, u, v, got_j,
-                                 &userdata );
+          eval_status = jacprod( n, m, x, transpose, u, v, got_j );
       }else if(status == 6){ // evaluate u + H v
-          eval_status = hessprod( n, m, x, y, u, v, got_h,
-                                  &userdata );
+          eval_status = hessprod( n, m, x, y, u, v, got_h );
       }else if(status == 7){ // evaluate P
-          eval_status = rhessprods( n, m, p_ne, x, v, P_val,
-                                    got_h, &userdata );
+          eval_status = rhessprods( n, m, p_ne, x, v, P_val, got_h );
       }else{
           printf(" the value %1" i_ipc_ " of status should not occur\n",
             status);
@@ -237,9 +232,15 @@ int main(void) {
     nls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %" i_ipc_ " tensor-Newton iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
+#ifdef REAL_128
+        printf(" %" i_ipc_ " tensor-Newton iterations. Optimal objective" 
+               " value = %5.2f status = %1" i_ipc_ "\n",
+               inform.iter, (double)inform.obj, inform.status);
+#else
+        printf(" %" i_ipc_ " tensor-Newton iterations. Optimal objective" 
+               " value = %5.2f status = %1" i_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
+#endif
     }else{
         printf(" NLS_solve exit status = %1" i_ipc_ "\n", inform.status);
     }
@@ -258,9 +259,7 @@ ipc_ res( ipc_ n, ipc_ m, const rpc_ x[], rpc_ c[], const void *userdata ){
 }
 
 // compute the Jacobian
-ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[],
-         const void *userdata ){
-    struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
+ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[]){
     jval[0] = 2.0 * x[0];
     jval[1] = 1.0;
     jval[2] = 2.0 * x[1];
@@ -271,8 +270,7 @@ ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[],
 
 // compute the Hessian
 ipc_ hess( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
-           rpc_ hval[], const void *userdata ){
-    struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
+           rpc_ hval[]){
     hval[0] = 2.0 * y[0];
     hval[1] = 2.0 * y[1];
     return 0;
@@ -280,9 +278,7 @@ ipc_ hess( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
 
 // compute Jacobian-vector products
 ipc_ jacprod( ipc_ n, ipc_ m, const rpc_ x[], const bool transpose,
-             rpc_ u[], const rpc_ v[], bool got_j,
-             const void *userdata ){
-    struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
+             rpc_ u[], const rpc_ v[], bool got_j ){
     if (transpose) {
       u[0] = u[0] + 2.0 * x[0] * v[0] + v[1] + v[2];
       u[1] = u[1] + 2.0 * x[1] * v[1] - v[2];
@@ -296,9 +292,7 @@ ipc_ jacprod( ipc_ n, ipc_ m, const rpc_ x[], const bool transpose,
 
 // compute Hessian-vector products
 ipc_ hessprod( ipc_ n, ipc_ m, const rpc_ x[], const rpc_ y[],
-              rpc_ u[], const rpc_ v[], bool got_h,
-              const void *userdata ){
-    struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
+              rpc_ u[], const rpc_ v[], bool got_h ){
     u[0] = u[0] + 2.0 * y[0] * v[0];
     u[1] = u[1] + 2.0 * y[1] * v[1];
     return 0;
@@ -306,8 +300,7 @@ ipc_ hessprod( ipc_ n, ipc_ m, const rpc_ x[], const rpc_ y[],
 
 // compute residual-Hessians-vector products
 ipc_ rhessprods( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[], const rpc_ v[],
-                rpc_ pval[], bool got_h, const void *userdata ){
-    struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
+                rpc_ pval[], bool got_h ){
     pval[0] = 2.0 * v[0];
     pval[1] = 2.0 * v[1];
     return 0;

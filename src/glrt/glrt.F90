@@ -639,7 +639,6 @@
         data%branch = 400
       END IF
 
-write(6,*) ' status, branch ', inform%status, data%branch
       SELECT CASE ( data%branch )
       CASE ( 100 )
         GO TO 100
@@ -1566,7 +1565,6 @@ write(6,*) ' status, branch ', inform%status, data%branch
 !  =======================================
 
   400 CONTINUE
-write(6,*) ' f_0 ', control%f_0
       X = zero ; 
       inform%obj = control%f_0 ; 
       IF ( ALLOCATED( data%U ) ) THEN
@@ -2791,10 +2789,9 @@ data%glrt_control%print_level = 1 !!! remove
 
 !  call the solver
 
-write(6,*) ' power, weight = ', power, weight
      CALL GLRT_solve( n, power, weight, X, R, VECTOR,                          &
                       data%glrt_data, data%glrt_control, data%glrt_inform )
-write(6,*) ' exit GLRT_solve status ', data%glrt_inform%status
+
 !  collect data for reverse communication
 
      status = data%glrt_inform%status
