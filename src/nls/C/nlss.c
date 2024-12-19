@@ -56,10 +56,8 @@ int main(void) {
     ipc_ j_ne = 5; // Jacobian elements
     ipc_ h_ne = 2; // Hesssian elements
     ipc_ p_ne = 2; // residual-Hessians-vector products elements
-    ipc_ J_row[] = {0, 1, 1, 2, 2}; // Jacobian J
     ipc_ J_col[] = {0, 0, 1, 0, 1}; //
     ipc_ J_ptr[] = {0, 1, 3, 5};    // row pointers
-    ipc_ H_row[] = {0, 1};          // Hessian H
     ipc_ H_col[] = {0, 1};          // NB lower triangle
     ipc_ H_ptr[] = {0, 1, 2};       // row pointers
     ipc_ P_row[] = {0, 1};          // residual-Hessians-vector product matrix
@@ -69,9 +67,7 @@ int main(void) {
     rpc_ x[n]; // variables
     rpc_ g[n]; // gradient
     rpc_ c[m]; // residual
-    rpc_ y[m]; // multipliers
     rpc_ W[] = {1.0, 1.0, 1.0}; // weights
-    char st = ' ';
     ipc_ status;
 
     printf(" C sparse matrix indexing\n");
@@ -102,9 +98,15 @@ int main(void) {
     nls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %" i_ipc_ " Gauss-Newton iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
+#ifdef REAL_128
+        printf(" %" i_ipc_ " Gauss-Newton iterations. Optimal objective"
+               " value = %5.2f status = %1" i_ipc_ "\n",
+               inform.iter, (double)inform.obj, inform.status);
+#else
+        printf(" %" i_ipc_ " Gauss-Newton iterations. Optimal objective"
+               " value = %5.2f status = %1" i_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
+#endif
     }else{
         printf(" NLS_solve exit status = %1" i_ipc_ "\n", inform.status);
     }
@@ -135,9 +137,15 @@ int main(void) {
     nls_information( &data, &inform, &status );
 
     if(inform.status == 0){
+#ifdef REAL_128
+        printf(" %" i_ipc_ " Newton iterations. Optimal objective value = %5.2f"
+               " status = %1" i_ipc_ "\n",
+               inform.iter, (double)inform.obj, inform.status);
+#else
         printf(" %" i_ipc_ " Newton iterations. Optimal objective value = %5.2f"
                " status = %1" i_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
+#endif
     }else{
         printf(" NLS_solve exit status = %1" i_ipc_ "\n", inform.status);
     }
@@ -168,9 +176,15 @@ int main(void) {
     nls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %" i_ipc_ " tensor-Newton iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
+#ifdef REAL_128
+        printf(" %" i_ipc_ " tensor-Newton iterations. Optimal objective" 
+               " value = %5.2f status = %1" i_ipc_ "\n",
+               inform.iter, (double)inform.obj, inform.status);
+#else
+        printf(" %" i_ipc_ " tensor-Newton iterations. Optimal objective" 
+               " value = %5.2f status = %1" i_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
+#endif
     }else{
         printf(" NLS_solve exit status = %1" i_ipc_ "\n", inform.status);
     }

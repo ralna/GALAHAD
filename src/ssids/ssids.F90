@@ -45,6 +45,8 @@ module spral_ssids_precision
             ssids_enquire_indef,   & ! Pivot information in indef case
             ssids_alter              ! Alter diagonal
 
+   LOGICAL, PUBLIC, PARAMETER :: ssids_available = .TRUE.
+
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> \brief Caches user OpenMP ICV values for later restoration

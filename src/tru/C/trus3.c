@@ -25,14 +25,13 @@ int main(void) {
     ipc_ n = 3; // dimension
     ipc_ ne = 5; // Hesssian elements
     rpc_ x[] = {1.,1.,1.}; // start from one
-    rpc_ infty = 1e20; // infinity
     char H_type[] = "coordinate"; // specify co-ordinate storage
     ipc_ H_row[] = {0, 2, 1, 2, 2}; // Hessian H
     ipc_ H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
 
     // Reverse-communication input/output
     ipc_ eval_status;
-    rpc_ f;
+    rpc_ f = 0.0;
     rpc_ g[n];
     rpc_ u[n], v[n];
     rpc_ H_val[ne];
@@ -82,14 +81,19 @@ int main(void) {
     // Print solution details
     printf("iter: %" d_ipc_ " \n", inform.iter);
     printf("x: ");
+#ifdef REAL_128
+    for(ipc_ i = 0; i < n; i++) printf("%f ", (double)x[i]);
+    printf("\nobjective: %f \ngradient: ", (double)inform.obj);
+    for(ipc_ i = 0; i < n; i++) printf("%f ", (double)g[i]);
+    printf("\nf_eval: %" d_ipc_ " \n", inform.f_eval);
+    printf("time: %f \n", (double)inform.time.clock_total);
+#else
     for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
-    printf("\n");
-    printf("objective: %f \n", inform.obj);
-    printf("gradient: ");
+    printf("\nobjective: %f \ngradient: ", inform.obj);
     for(ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
-    printf("\n");
-    printf("f_eval: %" d_ipc_ " \n", inform.f_eval);
+    printf("\nf_eval: %" d_ipc_ " \n", inform.f_eval);
     printf("time: %f \n", inform.time.clock_total);
+#endif
     printf("status: %" d_ipc_ " \n", inform.status);
 
     // Delete internal workspace
