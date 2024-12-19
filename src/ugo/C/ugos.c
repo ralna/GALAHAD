@@ -6,6 +6,9 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_ugo.h"
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 struct userdata_type {
    rpc_ a;
@@ -64,8 +67,15 @@ int main(void) {
     ugo_information( &data, &inform, &status );
 
     if(inform.status == 0){
+#ifdef REAL_128
         printf("%" i_ipc_ " evaluations. Optimal objective value = %5.2f"
-          " at x = %5.2f, status = %1" i_ipc_ "\n", inform.f_eval, f, x, inform.status);
+               " at x = %5.2f, status = %1" i_ipc_ "\n", 
+               inform.f_eval, (double)f, (double)x, inform.status);
+#else
+        printf("%" i_ipc_ " evaluations. Optimal objective value = %5.2f"
+               " at x = %5.2f, status = %1" i_ipc_ "\n", 
+               inform.f_eval, f, x, inform.status);
+#endif
     }else{
         printf("UGO_solve exit status = %1" i_ipc_ "\n", inform.status);
     }

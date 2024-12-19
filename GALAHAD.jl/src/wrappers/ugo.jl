@@ -66,6 +66,12 @@ function ugo_initialize(::Type{Float64}, data, control, status)
                                           status::Ptr{Cint})::Cvoid
 end
 
+function ugo_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.ugo_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{ugo_control_type{Float128}},
+                                               status::Ptr{Cint})::Cvoid
+end
+
 export ugo_read_specfile
 
 function ugo_read_specfile(::Type{Float32}, control, specfile)
@@ -76,6 +82,11 @@ end
 function ugo_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.ugo_read_specfile(control::Ptr{ugo_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
+end
+
+function ugo_read_specfile(::Type{Float128}, control, specfile)
+  @ccall libgalahad_quadruple.ugo_read_specfile_q(control::Ptr{ugo_control_type{Float128}},
+                                                  specfile::Ptr{Cchar})::Cvoid
 end
 
 export ugo_import
@@ -92,6 +103,12 @@ function ugo_import(::Type{Float64}, control, data, status, x_l, x_u)
                                       x_l::Ptr{Float64}, x_u::Ptr{Float64})::Cvoid
 end
 
+function ugo_import(::Type{Float128}, control, data, status, x_l, x_u)
+  @ccall libgalahad_quadruple.ugo_import_q(control::Ptr{ugo_control_type{Float128}},
+                                           data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                           x_l::Ptr{Float128}, x_u::Ptr{Float128})::Cvoid
+end
+
 export ugo_reset_control
 
 function ugo_reset_control(::Type{Float32}, control, data, status)
@@ -104,6 +121,12 @@ function ugo_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.ugo_reset_control(control::Ptr{ugo_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
+end
+
+function ugo_reset_control(::Type{Float128}, control, data, status)
+  @ccall libgalahad_quadruple.ugo_reset_control_q(control::Ptr{ugo_control_type{Float128}},
+                                                  data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Cint})::Cvoid
 end
 
 export ugo_solve_direct
@@ -122,6 +145,14 @@ function ugo_solve_direct(::Type{Float64}, data, userdata, status, x, f, g, h, e
                                             h::Ptr{Float64}, eval_fgh::Ptr{Cvoid})::Cvoid
 end
 
+function ugo_solve_direct(::Type{Float128}, data, userdata, status, x, f, g, h, eval_fgh)
+  @ccall libgalahad_quadruple.ugo_solve_direct_q(data::Ptr{Ptr{Cvoid}},
+                                                 userdata::Ptr{Cvoid}, status::Ptr{Cint},
+                                                 x::Ptr{Float128}, f::Ptr{Float128},
+                                                 g::Ptr{Float128}, h::Ptr{Float128},
+                                                 eval_fgh::Ptr{Cvoid})::Cvoid
+end
+
 export ugo_solve_reverse
 
 function ugo_solve_reverse(::Type{Float32}, data, status, eval_status, x, f, g, h)
@@ -138,6 +169,13 @@ function ugo_solve_reverse(::Type{Float64}, data, status, eval_status, x, f, g, 
                                              h::Ptr{Float64})::Cvoid
 end
 
+function ugo_solve_reverse(::Type{Float128}, data, status, eval_status, x, f, g, h)
+  @ccall libgalahad_quadruple.ugo_solve_reverse_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                                  eval_status::Ptr{Cint}, x::Ptr{Float128},
+                                                  f::Ptr{Float128}, g::Ptr{Float128},
+                                                  h::Ptr{Float128})::Cvoid
+end
+
 export ugo_information
 
 function ugo_information(::Type{Float32}, data, inform, status)
@@ -152,6 +190,12 @@ function ugo_information(::Type{Float64}, data, inform, status)
                                            status::Ptr{Cint})::Cvoid
 end
 
+function ugo_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.ugo_information_q(data::Ptr{Ptr{Cvoid}},
+                                                inform::Ptr{ugo_inform_type{Float128}},
+                                                status::Ptr{Cint})::Cvoid
+end
+
 export ugo_terminate
 
 function ugo_terminate(::Type{Float32}, data, control, inform)
@@ -164,4 +208,10 @@ function ugo_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.ugo_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{ugo_control_type{Float64}},
                                          inform::Ptr{ugo_inform_type{Float64}})::Cvoid
+end
+
+function ugo_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.ugo_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{ugo_control_type{Float128}},
+                                              inform::Ptr{ugo_inform_type{Float128}})::Cvoid
 end

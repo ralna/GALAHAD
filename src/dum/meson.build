@@ -30,6 +30,9 @@ if not libdmumps.found()
   galahad_headers += files('include/dmumps_struc.h')
 endif
 
+libgalahad_quadruple_src += files('mumps.F90')
+galahad_headers += files('include/qmumps_struc.h')
+
 if not (libblas_name == 'mkl_rt' or liblapack_name == 'mkl_rt')
   libgalahad_src += files('mkl_pardiso.F90')
 endif
@@ -41,5 +44,6 @@ endif
 if not build_ssids
   libgalahad_single_src += files('ssidss.F90')
   libgalahad_double_src += files('ssidsd.F90')
+  libgalahad_quadruple_src += files('ssidsq.F90')
   libgalahad_c_src += files('C/ssids_ciface.F90')
 endif

@@ -74,6 +74,7 @@ Currently supported options with their default value:
 * `-Dtests=false`: generate the tests;
 * `-Dsingle=true`: generate the single precision library, tests and examples;
 * `-Ddouble=true`: generate the double precision library, tests and examples;
+* `-Dquadruple=true`: generate the quadruple precision library, tests and examples;
 * `-Dssids=true`: build ssids;
 * `-Dlibblas=openblas`: BLAS library against which to link;
 * `-Dliblapack=openblas`: LAPACK library against which to link;

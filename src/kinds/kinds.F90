@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:20 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-11 AT 14:40 GMT
 
 #include "galahad_modules.h"
 
@@ -29,6 +29,15 @@ MODULE GALAHAD_KINDS
   INTEGER, PARAMETER :: c4_ = KIND( ( 1.0_r4_, 1.0_r4_ ) )
   INTEGER, PARAMETER :: c8_ = KIND( ( 1.0_r8_, 1.0_r8_ ) )
 
+!  if 128 bit reals are supported, use them
+
+#ifdef REAL_128
+  INTEGER, PARAMETER :: r16_ = REAL128
+  INTEGER, PARAMETER :: c16_ = KIND( ( 1.0_r16_, 1.0_r16_ ) )
+  INTEGER, PARAMETER :: qp_ = r16_
+  INTEGER, PARAMETER :: qpc_ = C_FLOAT128
+#endif
+
 !  common aliases
 
   INTEGER, PARAMETER :: sp_ = r4_
@@ -50,39 +59,3 @@ MODULE GALAHAD_KINDS
 #endif
 
 END MODULE GALAHAD_KINDS
-
-!-*-*-*-*-  G A L A H A D _  K I N D S _ S I N G L E  M O D U L E   -*-*-*-*-*-
-
-MODULE GALAHAD_KINDS_single
-  USE GALAHAD_KINDS
-  IMPLICIT NONE
-  PUBLIC
-
-!--------------------------------------------------------
-!  R e a l  k i n d s  ( s i n g l e  p r e c i s i o n )
-!--------------------------------------------------------
-
-  INTEGER, PARAMETER :: real_bytes_ = 4
-  INTEGER, PARAMETER :: rp_ = r4_
-  INTEGER, PARAMETER :: cp_ = c4_
-  INTEGER, PARAMETER :: rpc_ = spc_
-
-END MODULE GALAHAD_KINDS_single
-
-!-*-*-*-*-  G A L A H A D _  K I N D S _ D O U B L E  M O D U L E   -*-*-*-*-*-
-
-MODULE GALAHAD_KINDS_double
-  USE GALAHAD_KINDS
-  IMPLICIT NONE
-  PUBLIC
-
-!--------------------------------------------------------
-!  R e a l  k i n d s  ( d o u b l e  p r e c i s i o n )
-!--------------------------------------------------------
-
-  INTEGER, PARAMETER :: real_bytes_ = 8
-  INTEGER, PARAMETER :: rp_ = r8_
-  INTEGER, PARAMETER :: cp_ = c8_
-  INTEGER, PARAMETER :: rpc_ = dpc_
-
-END MODULE GALAHAD_KINDS_double

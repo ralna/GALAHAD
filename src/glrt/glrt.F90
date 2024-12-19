@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-18 AT 11:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -31,11 +31,11 @@
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_precision
       USE GALAHAD_RAND_precision
-      USE GALAHAD_ROOTS_precision, ONLY : ROOTS_quadratic
+      USE GALAHAD_ROOTS_precision, ONLY: ROOTS_quadratic
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
-      USE GALAHAD_LAPACK_interface, ONLY : PTTRF, STERF
-      USE GALAHAD_GLTR_precision, ONLY :                                       &
+      USE GALAHAD_LAPACK_inter_precision, ONLY: PTTRF, STERF
+      USE GALAHAD_GLTR_precision, ONLY:                                        &
         GLRT_leftmost_eigenvalue => GLTR_leftmost_eigenvalue,                  &
         GLRT_leftmost_eigenvector => GLTR_leftmost_eigenvector,                &
         GLRT_tridiagonal_solve => GLTR_tridiagonal_solve
@@ -277,7 +277,7 @@
       END TYPE
 
       TYPE, PUBLIC :: GLRT_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( GLRT_data_type ) :: GLRT_data
         TYPE ( GLRT_control_type ) :: GLRT_control
         TYPE ( GLRT_inform_type ) :: GLRT_inform
@@ -1565,7 +1565,14 @@
 !  =======================================
 
   400 CONTINUE
-      X = zero ; inform%obj = control%f_0 ; data%U = zero
+      X = zero ; 
+      inform%obj = control%f_0 ; 
+      IF ( ALLOCATED( data%U ) ) THEN
+        write(6,*) ' allocated U, size = ', SIZE( data%U )
+      ELSE
+        write(6,*) ' not allocated U '
+      END IF
+      data%U = zero
       inform%obj_regularized = control%f_0 +                                   &
         ( sigma / p ) * ( data%o_mnorm_2_p_eps ** ( p / two ) )
       inform%iter = 0 ; inform%iter_pass2 = 0
@@ -2237,7 +2244,7 @@
 
 !  Compute T + lambda*I
 
-        OFFD_fact = OFFD
+        IF ( n > 1 ) OFFD_fact = OFFD
         D_fact = D + lambda
 
 !  Find the Cholesky factors of T
@@ -2694,6 +2701,7 @@
 !  copy control to internal data
 
      data%glrt_control = control
+data%glrt_control%print_level = 1 !!! remove
 
      status = GALAHAD_ready_to_solve
      RETURN

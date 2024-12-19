@@ -2,10 +2,13 @@ module GALAHAD
 
 using Libdl
 using LinearAlgebra
+using Quadmath
+import Quadmath.Cfloat128
 
 if haskey(ENV, "JULIA_GALAHAD_LIBRARY_PATH")
   const libgalahad_single = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_single.$dlext")
   const libgalahad_double = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_double.$dlext")
+  const libgalahad_quadruple = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_quadruple.$dlext")
   const GALAHAD_INSTALLATION = "CUSTOM"
 else
   using OpenBLAS32_jll

@@ -40,6 +40,12 @@ function bsc_initialize(::Type{Float64}, data, control, status)
                                           status::Ptr{Cint})::Cvoid
 end
 
+function bsc_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.bsc_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{bsc_control_type},
+                                               status::Ptr{Cint})::Cvoid
+end
+
 export bsc_information
 
 function bsc_information(::Type{Float32}, data, inform, status)
@@ -54,6 +60,12 @@ function bsc_information(::Type{Float64}, data, inform, status)
                                            status::Ptr{Cint})::Cvoid
 end
 
+function bsc_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.bsc_information_q(data::Ptr{Ptr{Cvoid}},
+                                                inform::Ptr{bsc_inform_type{Float128}},
+                                                status::Ptr{Cint})::Cvoid
+end
+
 export bsc_terminate
 
 function bsc_terminate(::Type{Float32}, data, control, inform)
@@ -66,4 +78,10 @@ function bsc_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.bsc_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{bsc_control_type},
                                          inform::Ptr{bsc_inform_type{Float64}})::Cvoid
+end
+
+function bsc_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.bsc_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{bsc_control_type},
+                                              inform::Ptr{bsc_inform_type{Float128}})::Cvoid
 end

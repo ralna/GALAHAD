@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Quadmath
 
 function test_sils(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
@@ -22,4 +23,5 @@ end
 @testset "SILS" begin
   @test test_sils(Float32) == 0
   @test test_sils(Float64) == 0
+  @test test_sils(Float128) == 0
 end

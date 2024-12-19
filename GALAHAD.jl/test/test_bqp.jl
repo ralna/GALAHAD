@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_bqp(::Type{T}) where T
   # Derived types
@@ -23,7 +24,7 @@ function test_bqp(::Type{T}) where T
   H_dense = zeros(T, H_dense_ne) # dense values
   H_diag = zeros(T, n)   # diagonal values
   g = zeros(T, n)  # linear term in the objective
-  f = 1.0  # constant term in the objective
+  f = one(T)  # constant term in the objective
   x_l = zeros(T, n) # variable lower bound
   x_u = zeros(T, n) # variable upper bound
   x = zeros(T, n) # variables
@@ -293,4 +294,5 @@ end
 @testset "BQP" begin
   @test test_bqp(Float32) == 0
   @test test_bqp(Float64) == 0
+  @test test_bqp(Float128) == 0
 end

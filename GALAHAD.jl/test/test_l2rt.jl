@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_l2rt(::Type{T}) where T
   # Derived types
@@ -17,9 +18,9 @@ function test_l2rt(::Type{T}) where T
   m = 2 * n
 
   status = Ref{Cint}()
-  power = 3.0
-  weight = 1.0
-  shift = 1.0
+  power = T(3.0)
+  weight = one(T)
+  shift = one(T)
   x = zeros(T, n)
   u = zeros(T, m)
   v = zeros(T, n)
@@ -74,4 +75,5 @@ end
 @testset "L2RT" begin
   @test test_l2rt(Float32) == 0
   @test test_l2rt(Float64) == 0
+  @test test_l2rt(Float128) == 0
 end

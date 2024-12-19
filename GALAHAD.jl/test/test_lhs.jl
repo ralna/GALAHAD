@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_lhs(::Type{T}) where T
   # Derived types
@@ -49,4 +50,5 @@ end
 @testset "LHS" begin
   @test test_lhs(Float32) == 0
   @test test_lhs(Float64) == 0
+  @test test_lhs(Float128) == 0
 end

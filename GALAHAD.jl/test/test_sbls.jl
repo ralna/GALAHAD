@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_sbls(::Type{T}) where T
   # Derived types
@@ -188,4 +189,5 @@ end
 @testset "SBLS" begin
   @test test_sbls(Float32) == 0
   @test test_sbls(Float64) == 0
+  @test test_sbls(Float128) == 0
 end

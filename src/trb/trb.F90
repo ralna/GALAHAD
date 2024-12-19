@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 10:20 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -41,8 +41,8 @@
      USE GALAHAD_MOP_precision, ONLY: mop_Ax
      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM, INFINITY_NORM
      USE GALAHAD_STRING, ONLY: STRING_integer_6
-     USE GALAHAD_BLAS_interface, ONLY: SWAP
-     USE GALAHAD_LAPACK_interface, ONLY : GESVD
+     USE GALAHAD_BLAS_inter_precision, ONLY: SWAP
+     USE GALAHAD_LAPACK_inter_precision, ONLY : GESVD
 !    USE SPDSOL
 !    USE HSL_MI13
 

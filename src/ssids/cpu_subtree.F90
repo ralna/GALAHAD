@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:50 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-26 AT 12:50 GMT.
 
 #include "spral_procedures.h"
 
@@ -184,6 +184,124 @@ module spral_ssids_cpu_subtree_precision
 
      subroutine c_free_contrib(posdef, subtree) &
           bind(C, name="spral_ssids_cpu_subtree_free_contrib_sgl")
+       use spral_kinds
+       implicit none
+       logical(C_BOOL), value :: posdef
+       type(C_PTR), value :: subtree
+     end subroutine c_free_contrib
+  end interface
+
+#elif REAL_128
+  interface
+     type(C_PTR) function c_create_numeric_subtree(posdef, symbolic_subtree, &
+          aval, scaling, child_contrib, options, stats) &
+          bind(C, name="spral_ssids_cpu_create_num_subtree_qul")
+       use spral_kinds_precision
+       import :: cpu_factor_options, cpu_factor_stats
+       implicit none
+       logical(C_BOOL), value :: posdef
+       type(C_PTR), value :: symbolic_subtree
+       real(C_RP_), dimension(*), intent(in) :: aval
+       type(C_PTR), value :: scaling
+       type(C_PTR), dimension(*), intent(inout) :: child_contrib
+       type(cpu_factor_options), intent(in) :: options
+       type(cpu_factor_stats), intent(out) :: stats
+     end function c_create_numeric_subtree
+
+     subroutine c_destroy_numeric_subtree(posdef, subtree) &
+          bind(C, name="spral_ssids_cpu_destroy_num_subtree_qul")
+       use spral_kinds
+       implicit none
+       logical(C_BOOL), value :: posdef
+       type(C_PTR), value :: subtree
+     end subroutine c_destroy_numeric_subtree
+
+     integer(C_IP_) function c_subtree_solve_fwd(posdef, subtree, nrhs, x, &
+          ldx) &
+          bind(C, name="spral_ssids_cpu_subtree_solve_fwd_qul")
+       use spral_kinds_precision
+       implicit none
+       logical(C_BOOL), value :: posdef
+       type(C_PTR), value :: subtree
+       integer(C_IP_), value :: nrhs
+       real(C_RP_), dimension(*), intent(inout) :: x
+       integer(C_IP_), value :: ldx
+     end function c_subtree_solve_fwd
+
+     integer(C_IP_) function c_subtree_solve_diag(posdef, subtree, nrhs, x, &
+          ldx) &
+          bind(C, name="spral_ssids_cpu_subtree_solve_diag_qul")
+       use spral_kinds_precision
+       implicit none
+       logical(C_BOOL), value :: posdef
+       type(C_PTR), value :: subtree
+       integer(C_IP_), value :: nrhs
+       real(C_RP_), dimension(*), intent(inout) :: x
+       integer(C_IP_), value :: ldx
+     end function c_subtree_solve_diag
+
+     integer(C_IP_) function c_subtree_solve_diag_bwd(posdef, subtree, nrhs, &
+          x, ldx) &
+          bind(C, name="spral_ssids_cpu_subtree_solve_diag_bwd_qul")
+       use spral_kinds_precision
+       implicit none
+       logical(C_BOOL), value :: posdef
+       type(C_PTR), value :: subtree
+       integer(C_IP_), value :: nrhs
+       real(C_RP_), dimension(*), intent(inout) :: x
+       integer(C_IP_), value :: ldx
+     end function c_subtree_solve_diag_bwd
+
+     integer(C_IP_) function c_subtree_solve_bwd(posdef, subtree, nrhs, x, &
+          ldx) &
+          bind(C, name="spral_ssids_cpu_subtree_solve_bwd_qul")
+       use spral_kinds_precision
+       implicit none
+       logical(C_BOOL), value :: posdef
+       type(C_PTR), value :: subtree
+       integer(C_IP_), value :: nrhs
+       real(C_RP_), dimension(*), intent(inout) :: x
+       integer(C_IP_), value :: ldx
+     end function c_subtree_solve_bwd
+
+     subroutine c_subtree_enquire(posdef, subtree, piv_order, d) &
+          bind(C, name="spral_ssids_cpu_subtree_enquire_qul")
+       use spral_kinds_precision
+       implicit none
+       logical(C_BOOL), value :: posdef
+       type(C_PTR), value :: subtree
+       type(C_PTR), value :: piv_order
+       type(C_PTR), value :: d
+     end subroutine c_subtree_enquire
+
+     subroutine c_subtree_alter(posdef, subtree, d) &
+          bind(C, name="spral_ssids_cpu_subtree_alter_qul")
+       use spral_kinds_precision
+       implicit none
+       logical(C_BOOL), value :: posdef
+       type(C_PTR), value :: subtree
+       real(C_RP_), dimension(*), intent(in) :: d
+     end subroutine c_subtree_alter
+
+     subroutine c_get_contrib(posdef, subtree, n, val, ldval, rlist, ndelay, &
+          delay_perm, delay_val, lddelay) &
+          bind(C, name="spral_ssids_cpu_subtree_get_contrib_qul")
+       use spral_kinds_precision
+       implicit none
+       logical(C_BOOL), value :: posdef
+       type(C_PTR), value :: subtree
+       integer(C_IP_) :: n
+       type(C_PTR) :: val
+       integer(C_IP_) :: ldval
+       type(C_PTR) :: rlist
+       integer(C_IP_) :: ndelay
+       type(C_PTR) :: delay_perm
+       type(C_PTR) :: delay_val
+       integer(C_IP_) :: lddelay
+     end subroutine c_get_contrib
+
+     subroutine c_free_contrib(posdef, subtree) &
+          bind(C, name="spral_ssids_cpu_subtree_free_contrib_qul")
        use spral_kinds
        implicit none
        logical(C_BOOL), value :: posdef

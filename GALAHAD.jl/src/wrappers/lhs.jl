@@ -32,6 +32,12 @@ function lhs_initialize(::Type{Float64}, data, control, inform)
                                           inform::Ptr{lhs_inform_type})::Cvoid
 end
 
+function lhs_initialize(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.lhs_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{lhs_control_type},
+                                               inform::Ptr{lhs_inform_type})::Cvoid
+end
+
 export lhs_read_specfile
 
 function lhs_read_specfile(::Type{Float32}, control, specfile)
@@ -42,6 +48,11 @@ end
 function lhs_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.lhs_read_specfile(control::Ptr{lhs_control_type},
                                              specfile::Ptr{Cchar})::Cvoid
+end
+
+function lhs_read_specfile(::Type{Float128}, control, specfile)
+  @ccall libgalahad_quadruple.lhs_read_specfile_q(control::Ptr{lhs_control_type},
+                                                  specfile::Ptr{Cchar})::Cvoid
 end
 
 export lhs_ihs
@@ -60,6 +71,13 @@ function lhs_ihs(::Type{Float64}, n_dimen, n_points, seed, X, control, inform, d
                                    data::Ptr{Ptr{Cvoid}})::Cvoid
 end
 
+function lhs_ihs(::Type{Float128}, n_dimen, n_points, seed, X, control, inform, data)
+  @ccall libgalahad_quadruple.lhs_ihs_q(n_dimen::Cint, n_points::Cint, seed::Ptr{Cint},
+                                        X::Ptr{Ptr{Cint}}, control::Ptr{lhs_control_type},
+                                        inform::Ptr{lhs_inform_type},
+                                        data::Ptr{Ptr{Cvoid}})::Cvoid
+end
+
 export lhs_get_seed
 
 function lhs_get_seed(::Type{Float32}, seed)
@@ -68,6 +86,10 @@ end
 
 function lhs_get_seed(::Type{Float64}, seed)
   @ccall libgalahad_double.lhs_get_seed(seed::Ptr{Cint})::Cvoid
+end
+
+function lhs_get_seed(::Type{Float128}, seed)
+  @ccall libgalahad_quadruple.lhs_get_seed_q(seed::Ptr{Cint})::Cvoid
 end
 
 export lhs_information
@@ -84,6 +106,12 @@ function lhs_information(::Type{Float64}, data, inform, status)
                                            status::Ptr{Cint})::Cvoid
 end
 
+function lhs_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.lhs_information_q(data::Ptr{Ptr{Cvoid}},
+                                                inform::Ptr{lhs_inform_type},
+                                                status::Ptr{Cint})::Cvoid
+end
+
 export lhs_terminate
 
 function lhs_terminate(::Type{Float32}, data, control, inform)
@@ -96,4 +124,10 @@ function lhs_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.lhs_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{lhs_control_type},
                                          inform::Ptr{lhs_inform_type})::Cvoid
+end
+
+function lhs_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.lhs_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{lhs_control_type},
+                                              inform::Ptr{lhs_inform_type})::Cvoid
 end

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-10 AT 11:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -300,13 +300,14 @@
           COORDINATE            => GALAHAD_COORDINATE,                         &
           ABSENT                => GALAHAD_ZERO
 
-!     Variable and constraints status
+!     Variable and constraints status 
+!    (RANGE changed to RRANGE to avoid nvfortran bug!)
 
       USE GALAHAD_SYMBOLS,                                                     &
           INACTIVE              => GALAHAD_INACTIVE,                           &
           ELIMINATED            => GALAHAD_ELIMINATED,                         &
           ACTIVE                => GALAHAD_ACTIVE,                             &
-          RANGE                 => GALAHAD_RANGE,                              &
+          RRANGE                => GALAHAD_RANGE,                              &
           UPPER                 => GALAHAD_UPPER,                              &
           LOWER                 => GALAHAD_LOWER,                              &
           FREE                  => GALAHAD_FREE
@@ -387,8 +388,8 @@
 
 !     Ensure the PRIVATE nature of the imported symbols
 
-      PRIVATE :: DENSE, SPARSE, COORDINATE, INACTIVE, ELIMINATED,              &
-                 ACTIVE, RANGE, UPPER, LOWER, FREE, REDUCED_SIZE,FULL_PRESOLVE,&
+      PRIVATE :: DENSE, SPARSE, COORDINATE, INACTIVE, ELIMINATED, ACTIVE,      &
+                 RRANGE, UPPER, LOWER, FREE, REDUCED_SIZE,FULL_PRESOLVE,       &
                  SILENT, TRACE, ACTION, DETAILS, DEBUG, CRAZY, OK, MEMORY_FULL,&
                  FILE_NOT_OPENED, COULD_NOT_WRITE, TOO_FEW_BITS_PER_BYTE,      &
                  FORCE_TO_ZERO, LEAVE_AS_IS, TIGHTEST, NON_DEGENERATE, LOOSEST,&
@@ -5405,7 +5406,7 @@ lic:           DO
 !                 Readjust the value of z(j).
 
                   SELECT CASE ( prob%X_status( j ) )
-                  CASE ( RANGE )
+                  CASE ( RRANGE )
                      IF ( xst == LOWER .OR. xst == FREE ) THEN
                         CALL PRESOLVE_bound_z( j, LOWER, SET, - s%INFINITY )
                         IF ( inform%status /= OK ) RETURN
@@ -7866,7 +7867,7 @@ rlit:    DO it = 1, prob%m
                   '    because the bounds on x(', j, ') are incompatible'
                   RETURN
                ELSE
-                  IF ( first_pass ) prob%X_status( j ) = RANGE
+                  IF ( first_pass ) prob%X_status( j ) = RRANGE
                END IF
             ELSE                               ! non-negativity or lower bounded
                CALL PRESOLVE_bound_z( j, LOWER, TIGHTEN,  ZERO )
@@ -10263,11 +10264,11 @@ rlit:    DO it = 1, prob%m
             CASE ( FREE )
                prob%X_status( j ) = UPPER
             CASE ( LOWER )
-               prob%X_status( j ) = RANGE
+               prob%X_status( j ) = RRANGE
             END SELECT
          ELSE
             SELECT CASE ( prob%X_status( j ) )
-            CASE ( RANGE )
+            CASE ( RRANGE )
                prob%X_status( j ) = LOWER
             CASE ( UPPER )
                prob%X_status( j ) = FREE
@@ -10282,7 +10283,7 @@ rlit:    DO it = 1, prob%m
                WRITE( s%out, * ) '    x(',j,') now has implied status LOWER'
             CASE ( UPPER )
                WRITE( s%out, * ) '    x(',j,') now has implied status UPPER'
-            CASE ( RANGE )
+            CASE ( RRANGE )
                WRITE( s%out, * ) '    x(',j,') now has implied status RANGE'
             END SELECT
          END IF
@@ -10342,11 +10343,11 @@ rlit:    DO it = 1, prob%m
             CASE ( FREE )
                prob%X_status( j ) = LOWER
             CASE ( UPPER )
-               prob%X_status( j ) = RANGE
+               prob%X_status( j ) = RRANGE
             END SELECT
          ELSE
             SELECT CASE ( prob%X_status( j ) )
-            CASE ( RANGE )
+            CASE ( RRANGE )
                prob%X_status( j ) = UPPER
             CASE ( LOWER )
                prob%X_status( j ) = FREE
@@ -10361,7 +10362,7 @@ rlit:    DO it = 1, prob%m
                WRITE( s%out, * ) '    x(',j,') now has implied status LOWER'
             CASE ( UPPER )
                WRITE( s%out, * ) '    x(',j,') now has implied status UPPER'
-            CASE ( RANGE )
+            CASE ( RRANGE )
                WRITE( s%out, * ) '    x(',j,') now has implied status RANGE'
             END SELECT
          END IF
@@ -10468,7 +10469,7 @@ rlit:    DO it = 1, prob%m
              RETURN
           ELSE
              SELECT CASE ( prob%X_status( j ) )
-             CASE ( RANGE )
+             CASE ( RRANGE )
                 prob%X_status( j ) = LOWER
              CASE ( UPPER )
                 prob%X_status( j ) = FREE
@@ -10504,7 +10505,7 @@ rlit:    DO it = 1, prob%m
                    WRITE( s%out, * )'    x(',j,') now has implied status LOWER'
                 CASE ( UPPER )
                    WRITE( s%out, * )'    x(',j,') now has implied status UPPER'
-                CASE ( RANGE )
+                CASE ( RRANGE )
                    WRITE( s%out, * )'    x(',j,') now has implied status RANGE'
                 END SELECT
              END IF
@@ -10547,7 +10548,7 @@ rlit:    DO it = 1, prob%m
              RETURN
           ELSE
              SELECT CASE ( prob%X_status( j ) )
-             CASE ( RANGE )
+             CASE ( RRANGE )
                 prob%X_status( j ) = UPPER
              CASE ( LOWER )
                 prob%X_status( j ) = FREE
@@ -10583,7 +10584,7 @@ rlit:    DO it = 1, prob%m
                    WRITE( s%out, * )'    x(',j,') now has implied status LOWER'
                 CASE ( UPPER )
                    WRITE( s%out, * )'    x(',j,') now has implied status UPPER'
-                CASE ( RANGE )
+                CASE ( RRANGE )
                    WRITE( s%out, * )'    x(',j,') now has implied status RANGE'
                 END SELECT
              END IF
@@ -10701,7 +10702,7 @@ rlit:    DO it = 1, prob%m
              RETURN
           ELSE
              SELECT CASE ( prob%X_status( j ) )
-             CASE ( RANGE )
+             CASE ( RRANGE )
                 prob%X_status( j ) = LOWER
              CASE ( UPPER )
                 prob%X_status( j ) = FREE
@@ -10737,7 +10738,7 @@ rlit:    DO it = 1, prob%m
                    WRITE( s%out, * )'    x(',j,') now has implied status LOWER'
                 CASE ( UPPER )
                    WRITE( s%out, * )'    x(',j,') now has implied status UPPER'
-                CASE ( RANGE )
+                CASE ( RRANGE )
                    WRITE( s%out, * )'    x(',j,') now has implied status RANGE'
                 END SELECT
              END IF
@@ -10777,7 +10778,7 @@ rlit:    DO it = 1, prob%m
              RETURN
           ELSE
              SELECT CASE ( prob%X_status( j ) )
-             CASE ( RANGE )
+             CASE ( RRANGE )
                 prob%X_status( j ) = UPPER
              CASE ( LOWER )
                 prob%X_status( j ) = FREE
@@ -10813,7 +10814,7 @@ rlit:    DO it = 1, prob%m
                    WRITE( s%out, * )'    x(',j,') now has implied status LOWER'
                 CASE ( UPPER )
                    WRITE( s%out, * )'    x(',j,') now has implied status UPPER'
-                CASE ( RANGE )
+                CASE ( RRANGE )
                    WRITE( s%out, * )'    x(',j,') now has implied status RANGE'
                 END SELECT
              END IF
@@ -13691,10 +13692,10 @@ lic:  DO
                   CALL PRESOLVE_bound_z( k, UPPER, SET,   s%INFINITY )
                   IF ( inform%status /= OK ) RETURN
                CASE ( UPPER )
-                  prob%X_status( k ) = RANGE
+                  prob%X_status( k ) = RRANGE
                   CALL PRESOLVE_bound_z( k, UPPER, SET,   s%INFINITY )
                   IF ( inform%status /= OK ) RETURN
-               CASE ( RANGE )
+               CASE ( RRANGE )
                   CALL PRESOLVE_bound_z( k, LOWER, SET, - s%INFINITY )
                   IF ( inform%status /= OK ) RETURN
                   CALL PRESOLVE_bound_z( k, UPPER, SET,   s%INFINITY )
@@ -13771,10 +13772,10 @@ lic:  DO
                   CALL PRESOLVE_bound_z( k, LOWER, SET, - s%INFINITY )
                   IF ( inform%status /= OK ) RETURN
                CASE ( LOWER )
-                  prob%X_status( k )  = RANGE
+                  prob%X_status( k )  = RRANGE
                   CALL PRESOLVE_bound_z( k, LOWER, SET, - s%INFINITY )
                   IF ( inform%status /= OK ) RETURN
-               CASE ( RANGE )
+               CASE ( RRANGE )
                   CALL PRESOLVE_bound_z( k, LOWER, SET, - s%INFINITY )
                   IF ( inform%status /= OK ) RETURN
                   CALL PRESOLVE_bound_z( k, UPPER, SET,   s%INFINITY )
@@ -13805,7 +13806,7 @@ lic:  DO
                WRITE( s%out, * ) '    x(',k,') now has implied status LOWER'
             CASE ( UPPER )
                WRITE( s%out, * ) '    x(',k,') now has implied status UPPER'
-            CASE ( RANGE )
+            CASE ( RRANGE )
                WRITE( s%out, * ) '    x(',k,') now has implied status RANGE'
             END SELECT
          END IF

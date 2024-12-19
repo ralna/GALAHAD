@@ -18,7 +18,7 @@ PACKAGE = VERSION
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES =
+DEPENDENCIES = make_kinds
 
 #  other packages that depend on package
 

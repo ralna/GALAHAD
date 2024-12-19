@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:50 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-21 AT 10:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -26,6 +26,8 @@
 
 #ifdef REAL_32
    WRITE( 6, "( '  ssids single precision tests', / )" )
+#elif REAL_128
+   WRITE( 6, "( '  ssids quadruple precision tests', / )" )
 #else
    WRITE( 6, "( '  ssids double precision tests', / )" )
 #endif
@@ -78,7 +80,6 @@
 !write(6,*) ' solve 1 RHS'
      X = RHS
      CALL ssids_solve( X, akeep, fkeep, options, inform )
-
 !write(6,"( ' X = ', 5ES10.2 )" ) X( 1 : n )
 !write(6,*) ' status - ', inform%flag
 

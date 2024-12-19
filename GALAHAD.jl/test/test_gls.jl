@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Quadmath
 
 function test_gls(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
@@ -22,4 +23,5 @@ end
 @testset "GLS" begin
   @test test_gls(Float32) == 0
   @test test_gls(Float64) == 0
+  @test test_gls(Float128) == 0
 end

@@ -7,6 +7,9 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_llsr.h"
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 int main(void) {
 
@@ -186,13 +189,19 @@ int main(void) {
            llsr_information( &data, &inform, &status );
 
            if(inform.status == 0){
-               printf("storage type %c%1" i_ipc_ ":  status = %1" i_ipc_ ", ||r|| = %5.2f\n",
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_lf.h
+#include "galahad_pquad_lf.h"
+#else
+               printf("storage type %c%1" i_ipc_ ":  status = %1" i_ipc_ 
+                      ", ||r|| = %5.2f\n",
                       st, use_s, inform.status, inform.r_norm );
+#endif
            }else{
-               printf("storage type %c%1" i_ipc_ ": LLSR_solve exit status = %1" i_ipc_ "\n",
+               printf("storage type %c%1" i_ipc_ 
+                      ": LLSR_solve exit status = %1" i_ipc_ "\n",
                       st, use_s, inform.status);
            }
-           printf("control.out end loop= %1" i_ipc_ "\n", control.out);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

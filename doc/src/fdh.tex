@@ -44,18 +44,7 @@ and Ph. L. Toint, The University of Namur, Belgium.
 
 \galhowto
 
-The package is available using both single and double precision reals, 
-and either 32-bit or 64-bit integers. Access to the 32-bit integer,
-single precision version requires the {\tt USE} statement
-\medskip
-
-\hspace{8mm} {\tt USE \fullpackagename\_single}
-
-\medskip
-\noindent
-with the obvious substitution {\tt \fullpackagename\_double},
-{\tt \fullpackagename\_single\_64} and 
-{\tt \fullpackagename\_double\_64} for the other variants.
+\input{versions}
 
 The user is {\bf strongly advised} to use the double
 precision version unless single precision corresponds to 8-byte arithmetic.
@@ -177,7 +166,7 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}. 
 
-\ittf{bad\_row} is a scalar variable of type \integer, that holds the 
+\itt{bad\_row} is a scalar variable of type \integer, that holds the 
 index of the first row in which inconsistent data occurred (or 0 if the data is 
 consistent).
 

@@ -696,7 +696,7 @@
 
   SUBROUTINE blls_solve_reverse_a_prod( cdata, status, eval_status, n, o, b,   &
                                         xl, xu, x, z, r, g, xstat, v, p,       &
-                                        nz_v, nz_v_start, nz_v_end,         &
+                                        nz_v, nz_v_start, nz_v_end,            &
                                         nz_p, nz_p_end, w ) BIND( C )
   USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE

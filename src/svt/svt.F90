@@ -1,8 +1,8 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-10-28 AT 11:45 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-12 AT 14:00 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*  G A L A H A D _ S M T   M O D U L E  *-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*  G A L A H A D _ S V T   M O D U L E  *-*-*-*-*-*-*-*-*
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
@@ -18,7 +18,7 @@
      USE GALAHAD_KINDS_precision
 
 !  ==========================
-!  Sparse matrix derived type
+!  Sparse vector derived type
 !  ==========================
 
      TYPE, PUBLIC :: SVT_type

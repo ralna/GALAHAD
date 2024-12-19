@@ -1,18 +1,28 @@
 #  Main body of the LANCELOT B installation makefile under GALAHAD
 
 #  N. Gould and Ph. L. Toint.
-#  This version: 2024-06-11
+#  This version: 2024-11-23
 
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single_64"
   DPREC = -DREAL_32 -DINTEGER_64
+  HSL_64 = _64
+else ifeq "$(PRECIS)" "quadruple_64"
+  DPREC = -DREAL_128 -DINTEGER_64
+  HSL_64 = _64
 else ifeq "$(PRECIS)" "double_64"
   DPREC = -DINTEGER_64
+  HSL_64 = _64
 else ifeq "$(PRECIS)" "single"
   DPREC = -DREAL_32
+  HSL_64 =
+else ifeq "$(PRECIS)" "quadruple"
+  DPREC = -DREAL_128
+  HSL_64 =
 else
   DPREC =
+  HSL_64 =
 endif
 
 ifeq "$(LINEARSOLVER)" "ma57"
@@ -40,18 +50,26 @@ RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
 LG  = $(OBJ)/libgalahad.a
 LGS = $(OBJS)/libgalahad.a
 LGD = $(OBJD)/libgalahad.a
+LGQ = $(OBJQ)/libgalahad.a
 LGS64 = $(OBJS64)/libgalahad.a
 LGD64 = $(OBJD64)/libgalahad.a
+LGQ64 = $(OBJQ64)/libgalahad.a
 
 CULG  = $(OBJ)/libgalahad_cutest.a
 CULGS = $(OBJS)/libgalahad_cutest.a
 CULGD = $(OBJD)/libgalahad_cutest.a
+CULGQ = $(OBJQ)/libgalahad_cutest.a
 CULGS64 = $(OBJS64)/libgalahad_cutest.a
 CULGD64 = $(OBJD64)/libgalahad_cutest.a
+CULGQ64 = $(OBJQ64)/libgalahad_cutest.a
 
 #  Libraries used
 
-LIBS = -lgalahad $(HSL) $(METIS) $(LAPACK) $(BLAS)
+ifeq "$(HSL_64)" "_64"
+  LIBS = -lgalahad $(HSL) $(METIS64) $(LAPACK) $(BLAS)
+else
+  LIBS = -lgalahad $(HSL) $(METIS) $(LAPACK) $(BLAS)
+endif
 
 #  Archive manipulation strings
 
@@ -69,9 +87,9 @@ OBJECTSBASICS = extend basics scu band \
          $(LGS)(others_single.o) icfs hsl_lancelot linearsolver sils \
          $(LGS)(cauchy_single.o) $(LGS)(cg_single.o) \
          $(LGS)(hslint_single.o) $(LGS)(asmbl_single.o) \
-         $(LGS)(hsprd_single.o) $(LGS)(initw_single.o) \
-         $(LGS)(mdchl_single.o) $(LGS)(precn_single.o) \
-         $(LGS)(frntl_single.o) $(LGS)(strutr_single.o) \
+         $(LGS)(hsprd_single.o)  $(LGS)(initw_single.o) \
+         $(LGS)(mdchl_single.o)  $(LGS)(precn_single.o) \
+         $(LGS)(frntl_single.o)  $(LGS)(strutr_single.o) \
          $(LGS)(lancelot_types_single.o)
 OBJECTSS = $(OBJECTSBASICS) $(LGS)(lancelot_single.o) \
          $(LGS)(lancelot_simple_single.o)
@@ -90,7 +108,7 @@ OBJECTSBASICD = extend basics scu band \
           $(LGD)(others_double.o) icfs hsl_lancelot linearsolver sils \
           $(LGD)(cauchy_double.o) $(LGD)(cg_double.o) \
           $(LGD)(hslint_double.o) $(LGD)(asmbl_double.o) \
-          $(LGD)(hsprd_double.o) $(LGD)(initw_double.o) \
+          $(LGD)(hsprd_double.o)  $(LGD)(initw_double.o) \
           $(LGD)(mdchl_double.o)  $(LGD)(precn_double.o) \
           $(LGD)(frntl_double.o)  $(LGD)(strutr_double.o) \
           $(LGD)(lancelot_types_double.o)
@@ -107,13 +125,34 @@ USEOBJECTSSTEERINGD = $(OBJECTSSTEERINGD) $(LGD)(scaln_double.o) \
            $(LGD)(drchg_double.o) $(LGD)(drche_double.o) rand \
            copyright $(CULGD)(uselancelot_steering_double.o)
 
+OBJECTSBASICQ = extend basics scu band \
+          $(LGQ)(others_quadruple.o) icfs hsl_lancelot linearsolver sils \
+          $(LGQ)(cauchy_quadruple.o) $(LGQ)(cg_quadruple.o) \
+          $(LGQ)(hslint_quadruple.o) $(LGQ)(asmbl_quadruple.o) \
+          $(LGQ)(hsprd_quadruple.o)  $(LGQ)(initw_quadruple.o) \
+          $(LGQ)(mdchl_quadruple.o)  $(LGQ)(precn_quadruple.o) \
+          $(LGQ)(frntl_quadruple.o)  $(LGQ)(strutr_quadruple.o) \
+          $(LGQ)(lancelot_types_quadruple.o)
+OBJECTSQ = $(OBJECTSBASICQ) $(LGQ)(lancelot_quadruple.o) \
+           $(LGQ)(lancelot_simple_quadruple.o)
+OBJECTSSTEERINGQ = $(OBJECTSBASIQD) $(LGQ)(lancelot_steering_quadruple.o)
+OBJECTSFILTRANEQ = extend band
+OBJECTSPSLSQ = $(OBJECTSFILTRANEQ) ma61 $(LGQ)(hslint_quadruple.o) \
+           $(LGQ)(mdchl_quadruple.o)
+USEOBJECTSQ = $(OBJECTSQ) $(LGQ)(scaln_quadruple.o) $(LGQ)(drchg_quadruple.o) \
+           $(LGQ)(drche_quadruple.o) rand copyright \
+           $(CULGQ)(uselancelot_quadruple.o)
+USEOBJECTSSTEERINGQ = $(OBJECTSSTEERINGQ) $(LGQ)(scaln_quadruple.o) \
+           $(LGQ)(drchg_quadruple.o) $(LGQ)(drche_quadruple.o) rand \
+           copyright $(CULGQ)(uselancelot_steering_quadruple.o)
+
 OBJECTSBASICS64 = extend basics scu band \
          $(LGS64)(others_single_64.o) icfs hsl_lancelot linearsolver sils \
          $(LGS64)(cauchy_single_64.o) $(LGS64)(cg_single_64.o) \
          $(LGS64)(hslint_single_64.o) $(LGS64)(asmbl_single_64.o) \
-         $(LGS64)(hsprd_single_64.o) $(LGS64)(initw_single_64.o) \
-         $(LGS64)(mdchl_single_64.o) $(LGS64)(precn_single_64.o) \
-         $(LGS64)(frntl_single_64.o) $(LGS64)(strutr_single_64.o) \
+         $(LGS64)(hsprd_single_64.o)  $(LGS64)(initw_single_64.o) \
+         $(LGS64)(mdchl_single_64.o)  $(LGS64)(precn_single_64.o) \
+         $(LGS64)(frntl_single_64.o)  $(LGS64)(strutr_single_64.o) \
          $(LGS64)(lancelot_types_single_64.o)
 OBJECTSS64 = $(OBJECTSBASICS64) $(LGS64)(lancelot_single_64.o) \
          $(LGS64)(lancelot_simple_single_64.o)
@@ -132,7 +171,7 @@ OBJECTSBASICD64 = extend basics scu band \
           $(LGD64)(others_double_64.o) icfs hsl_lancelot linearsolver sils \
           $(LGD64)(cauchy_double_64.o) $(LGD64)(cg_double_64.o) \
           $(LGD64)(hslint_double_64.o) $(LGD64)(asmbl_double_64.o) \
-          $(LGD64)(hsprd_double_64.o) $(LGD64)(initw_double_64.o) \
+          $(LGD64)(hsprd_double_64.o)  $(LGD64)(initw_double_64.o) \
           $(LGD64)(mdchl_double_64.o)  $(LGD64)(precn_double_64.o) \
           $(LGD64)(frntl_double_64.o)  $(LGD64)(strutr_double_64.o) \
           $(LGD64)(lancelot_types_double_64.o)
@@ -148,6 +187,28 @@ USEOBJECTSD64 = $(OBJECTSD64) $(LGD64)(scaln_double_64.o) \
 USEOBJECTSSTEERINGD64 = $(OBJECTSSTEERINGD64) $(LGD64)(scaln_double_64.o) \
            $(LGD64)(drchg_double_64.o) $(LGD64)(drche_double_64.o) rand \
            copyright $(CULGD64)(uselancelot_steering_double_64.o)
+
+OBJECTSBASICQ64 = extend basics scu band \
+          $(LGQ64)(others_quadruple_64.o) icfs hsl_lancelot linearsolver sils \
+          $(LGQ64)(cauchy_quadruple_64.o) $(LGQ64)(cg_quadruple_64.o) \
+          $(LGQ64)(hslint_quadruple_64.o) $(LGQ64)(asmbl_quadruple_64.o) \
+          $(LGQ64)(hsprd_quadruple_64.o)  $(LGQ64)(initw_quadruple_64.o) \
+          $(LGQ64)(mdchl_quadruple_64.o)  $(LGQ64)(precn_quadruple_64.o) \
+          $(LGQ64)(frntl_quadruple_64.o)  $(LGQ64)(strutr_quadruple_64.o) \
+          $(LGQ64)(lancelot_types_quadruple_64.o)
+OBJECTSQ64 = $(OBJECTSBASICQ64) $(LGQ64)(lancelot_quadruple_64.o) \
+           $(LGQ64)(lancelot_simple_quadruple_64.o)
+OBJECTSSTEERINGQ64 = $(OBJECTSBASICQ64) \
+                     $(LGQ64)(lancelot_steering_quadruple_64.o)
+OBJECTSFILTRANEQ64 = extend band
+OBJECTSPSLSQ64 = $(OBJECTSFILTRANEQ64) ma61 $(LGQ64)(hslint_quadruple_64.o) \
+           $(LGQ64)(mdchl_quadruple_64.o)
+USEOBJECTSQ64 = $(OBJECTSQ64) $(LGQ64)(scaln_quadruple_64.o) \
+           $(LGQ64)(drchg_quadruple_64.o) $(LGQ64)(drche_quadruple_64.o) \
+           rand copyright $(CULGQ64)(uselancelot_quadruple_64.o)
+USEOBJECTSSTEERINGQ64 = $(OBJECTSSTEERINGQ64) $(LGQ64)(scaln_quadruple_64.o) \
+           $(LGQ64)(drchg_quadruple_64.o) $(LGQ64)(drche_quadruple_64.o) rand \
+           copyright $(CULGQ64)(uselancelot_steering_quadruple_64.o)
 
 SUCC = precision version) compiled successfully
 SUCC_SIF = precision version) for SIF compiled successfully
@@ -168,16 +229,23 @@ lancelotb_sif_single: $(USEOBJECTSS) $(OBJS)/runlancelot_sif_single.o
 	$(RANLIB) $(LGS)
 lancelotb_sif_double: $(USEOBJECTSD) $(OBJD)/runlancelot_sif_double.o
 	$(RANLIB) $(LGD)
+lancelotb_sif_quadruple: $(USEOBJECTSQ) $(OBJQ)/runlancelot_sif_quadruple.o
+	$(RANLIB) $(LGQ)
 lancelotb_sif_single_64: $(USEOBJECTSS64) $(OBJS64)/runlancelot_sif_single_64.o
 	$(RANLIB) $(LGS64)
 lancelotb_sif_double_64: $(USEOBJECTSD64) $(OBJD64)/runlancelot_sif_double_64.o
 	$(RANLIB) $(LGD64)
+lancelotb_sif_quadruple_64: $(USEOBJECTSQ64) \
+                            $(OBJQ64)/runlancelot_sif_quadruple_64.o
+	$(RANLIB) $(LGQ64)
 
 lancelotb_silent: lancelotb_silent_$(PRECIS)
 lancelotb_silent_single: $(OBJECTSS)
 lancelotb_silent_double: $(OBJECTSD)
+lancelotb_silent_quadruple: $(OBJECTSQ)
 lancelotb_silent_single_64: $(OBJECTSS64)
 lancelotb_silent_double_64: $(OBJECTSD64)
+lancelotb_silent_quadruple_64: $(OBJECTSQ64)
 
 lancelotb: lancelotb_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: LANCELOT B ($(PRECIS) $(SUCC)"
@@ -185,10 +253,14 @@ lancelotb_single: $(OBJECTSS)
 	$(RANLIB) $(LGS)
 lancelotb_double: $(OBJECTSD)
 	$(RANLIB) $(LGD)
+lancelotb_quadruple: $(OBJECTSQ)
+	$(RANLIB) $(LGQ)
 lancelotb_single_64: $(OBJECTSS64)
 	$(RANLIB) $(LGS64)
 lancelotb_double_64: $(OBJECTSD64)
 	$(RANLIB) $(LGD64)
+lancelotb_quadruple_64: $(OBJECTSQ64)
+	$(RANLIB) $(LGQ64)
 
 use_lancelotb_silent: use_lancelotb_$(PRECIS)
 use_lancelotb: use_lancelotb_$(PRECIS)
@@ -197,13 +269,16 @@ use_lancelotb_single: $(USEOBJECTSS)
 	$(RANLIB) $(LGS)
 use_lancelotb_double: $(USEOBJECTSD)
 	$(RANLIB) $(LGD)
+use_lancelotb_quadruple: $(USEOBJECTSQ)
+	$(RANLIB) $(LGQ)
 use_lancelotb_single_64: $(USEOBJECTSS64)
 	$(RANLIB) $(LGS64)
 use_lancelotb_double_64: $(USEOBJECTSD64)
 	$(RANLIB) $(LGD64)
+use_lancelotb_quadruple_64: $(USEOBJECTSQ64)
+	$(RANLIB) $(LGQ64)
 
 all_steering: lancelotb_steering_sif
-
 lancelotb_steering_sif: lancelotb_steering_sif_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: LANCELOT B STEERING ($(PRECIS) $(SUCC_SIF)"
 lancelotb_steering_sif_single: $(USEOBJECTSSTEERINGS) \
@@ -212,18 +287,26 @@ lancelotb_steering_sif_single: $(USEOBJECTSSTEERINGS) \
 lancelotb_steering_sif_double: $(USEOBJECTSSTEERINGD) \
            $(OBJD)/runlancelot_steering_sif_double.o
 	$(RANLIB) $(LGD)
+lancelotb_steering_sif_quadruple: $(USEOBJECTSSTEERINGQ) \
+           $(OBJQ)/runlancelot_steering_sif_quadruple.o
+	$(RANLIB) $(LGQ)
 lancelotb_steering_sif_single_64: $(USEOBJECTSSTEERINGS64) \
            $(OBJS64)/runlancelot_steering_sif_single_64.o
 	$(RANLIB) $(LGS64)
 lancelotb_steering_sif_double_64: $(USEOBJECTSSTEERINGD) \
            $(OBJD64)/runlancelot_steering_sif_double_64.o
 	$(RANLIB) $(LGD64)
+lancelotb_steering_sif_quadruple_64: $(USEOBJECTSSTEERINGQ) \
+           $(OBJQ64)/runlancelot_steering_sif_quadruple_64.o
+	$(RANLIB) $(LGQ64)
 
 lancelotb_steering_silent: lancelotb_steering_silent_$(PRECIS)
 lancelotb_steering_silent_single: $(OBJECTSS)
 lancelotb_steering_silent_double: $(OBJECTSD)
+lancelotb_steering_silent_quadruple: $(OBJECTSQ)
 lancelotb_steering_silent_single_64: $(OBJECTSS64)
 lancelotb_steering_silent_double_64: $(OBJECTSD64)
+lancelotb_steering_silent_quadruple_64: $(OBJECTSQ64)
 
 lancelotb_steering: lancelotb_steering_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: LANCELOT B ($(PRECIS) $(SUCC)"
@@ -231,10 +314,14 @@ lancelotb_steering_single: $(OBJECTSS)
 	$(RANLIB) $(LGS)
 lancelotb_steering_double: $(OBJECTSD)
 	$(RANLIB) $(LGD)
+lancelotb_steering_quadruple: $(OBJECTSQ)
+	$(RANLIB) $(LGQ)
 lancelotb_steering_single_64: $(OBJECTSS64)
 	$(RANLIB) $(LGS64)
 lancelotb_steering_double_64: $(OBJECTSD64)
 	$(RANLIB) $(LGD64)
+lancelotb_steering_quadruple_64: $(OBJECTSQ64)
+	$(RANLIB) $(LGQ64)
 
 use_lancelotb_steering_silent: use_lancelotb_steering_$(PRECIS)
 use_lancelotb_steering: use_lancelotb_steering_$(PRECIS)
@@ -243,16 +330,22 @@ use_lancelotb_steering_single: $(USEOBJECTSS)
 	$(RANLIB) $(LGS)
 use_lancelotb_steering_double: $(USEOBJECTSD)
 	$(RANLIB) $(LGD)
+use_lancelotb_steering_quadruple: $(USEOBJECTSQ)
+	$(RANLIB) $(LGQ)
 use_lancelotb_steering_single_64: $(USEOBJECTSS64)
 	$(RANLIB) $(LGS64)
 use_lancelotb_steering_double_64: $(USEOBJECTSD64)
 	$(RANLIB) $(LGD64)
+use_lancelotb_steering_quadruple_64: $(USEOBJECTSQ64)
+	$(RANLIB) $(LGQ64)
 
 lancelotb_psls_silent: lancelotb_silent_psls_$(PRECIS)
 lancelotb_silent_psls_single: $(OBJECTSPSLSS)
 lancelotb_silent_psls_double: $(OBJECTSPSLSD)
+lancelotb_silent_psls_quadruple: $(OBJECTSPSLSQ)
 lancelotb_silent_psls_single_64: $(OBJECTSPSLSS64)
 lancelotb_silent_psls_double_64: $(OBJECTSPSLSD64)
+lancelotb_silent_psls_quadruple_64: $(OBJECTSPSLSQ64)
 
 lancelotb_psls: lancelotb_psls_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: LANCELOT B ($(PRECIS) $(SUCC)"
@@ -260,16 +353,22 @@ lancelotb_psls_single: $(OBJECTSPSLSS)
 	$(RANLIB) $(LGS)
 lancelotb_psls_double: $(OBJECTSPSLSD)
 	$(RANLIB) $(LGD)
+lancelotb_psls_quadruple: $(OBJECTSPSLSQ)
+	$(RANLIB) $(LGQ)
 lancelotb_psls_single_64: $(OBJECTSPSLSS64)
 	$(RANLIB) $(LGS64)
 lancelotb_psls_double_64: $(OBJECTSPSLSD64)
 	$(RANLIB) $(LGD64)
+lancelotb_psls_quadruple_64: $(OBJECTSPSLSQ64)
+	$(RANLIB) $(LGQ64)
 
 lancelotb_filtrane_silent: lancelotb_silent_filtrane_$(PRECIS)
 lancelotb_silent_filtrane_single: $(OBJECTSFILTRANES)
 lancelotb_silent_filtrane_double: $(OBJECTSFILTRANED)
+lancelotb_silent_filtrane_quadruple: $(OBJECTSFILTRANEQ)
 lancelotb_silent_filtrane_single_64: $(OBJECTSFILTRANES64)
 lancelotb_silent_filtrane_double_64: $(OBJECTSFILTRANED64)
+lancelotb_silent_filtrane_quadruple_64: $(OBJECTSFILTRANEQ64)
 
 lancelotb_filtrane: lancelotb_filtrane_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: LANCELOT B ($(PRECIS) $(SUCC)"
@@ -277,10 +376,14 @@ lancelotb_filtrane_single: $(OBJECTSFILTRANES)
 	$(RANLIB) $(LGS)
 lancelotb_filtrane_double: $(OBJECTSFILTRANED)
 	$(RANLIB) $(LGD)
+lancelotb_filtrane_quadruple: $(OBJECTSFILTRANEQ)
+	$(RANLIB) $(LGQ)
 lancelotb_filtrane_single_64: $(OBJECTSFILTRANES64)
 	$(RANLIB) $(LGS64)
 lancelotb_filtrane_double_64: $(OBJECTSFILTRANED64)
 	$(RANLIB) $(LGD64)
+lancelotb_filtrane_quadruple_64: $(OBJECTSFILTRANEQ64)
+	$(RANLIB) $(LGQ64)
 
 tests: test test_cutest
 
@@ -298,9 +401,13 @@ test_single: lancelotst
 	echo " Tests for LANCELOT B complete"
 test_double: lancelotdt
 	echo " Tests for LANCELOT B complete"
+test_quadruple: lancelotqt
+	echo " Tests for LANCELOT B complete"
 test_single_64: lancelotst_64
 	echo " Tests for LANCELOT B complete"
 test_double_64: lancelotdt_64
+	echo " Tests for LANCELOT B complete"
+test_quadruple_64: lancelotqt_64
 	echo " Tests for LANCELOT B complete"
 
 test_sif: test_cutest
@@ -317,6 +424,12 @@ test_cutest_double: $(USEOBJECTSD) $(OBJD)/runlancelot_sif_double.o
 	cd $(GALAHAD)/examples ; sdgal $(VERSION) lancelot ALLINITC
 	echo ""
 	echo " Tests for LANCELOT B complete"
+test_cutest_quadruple: $(USEOBJECTSQ) $(OBJQ)/runlancelot_sif_quadruple.o
+	echo ""
+	echo " Testing SIF interface to LANCELOT B"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) lancelot -q ALLINITC
+	echo ""
+	echo " Tests for LANCELOT B complete"
 test_cutest_single_64: $(USEOBJECTSS64) $(OBJS64)/runlancelot_sif_single_64.o
 	echo ""
 	echo " Testing SIF interface to LANCELOT B"
@@ -329,6 +442,13 @@ test_cutest_double_64: $(USEOBJECTSD64) $(OBJD64)/runlancelot_sif_double_64.o
 	cd $(GALAHAD)/examples ; sdgal $(VERSION) lancelot ALLINITC
 	echo ""
 	echo " Tests for LANCELOT B complete"
+test_cutest_quadruple_64: $(USEOBJECTSQ64) \
+                          $(OBJQ64)/runlancelot_sif_quadruple_64.o
+	echo ""
+	echo " Testing SIF interface to LANCELOT B"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) lancelot -q ALLINITC
+	echo ""
+	echo " Tests for LANCELOT B complete"
 
 test_full: test_full_$(PRECIS)
 test_full_single: lancelotst
@@ -337,10 +457,16 @@ test_full_single: lancelotst
 test_full_double: lancelotdt
 	echo ""
 	echo " Tests for LANCELOT B complete"
+test_full_quadruple: lancelotqt
+	echo ""
+	echo " Tests for LANCELOT B complete"
 test_full_single_64: lancelotst_64
 	echo ""
 	echo " Tests for LANCELOT B complete"
 test_full_double_64: lancelotdt_64
+	echo ""
+	echo " Tests for LANCELOT B complete"
+test_full_quadruple_64: lancelotqt_64
 	echo ""
 	echo " Tests for LANCELOT B complete"
 
@@ -351,10 +477,16 @@ test_spec_single: lancelotss
 test_spec_double: lancelotds
 	echo ""
 	echo " Tests for LANCELOT B complete"
+test_spec_quadruple: lancelotqs
+	echo ""
+	echo " Tests for LANCELOT B complete"
 test_spec_single_64: lancelotss_64
 	echo ""
 	echo " Tests for LANCELOT B complete"
 test_spec_double_64: lancelotds_64
+	echo ""
+	echo " Tests for LANCELOT B complete"
+test_spec_quadruple_64: lancelotqs_64
 	echo ""
 	echo " Tests for LANCELOT B complete"
 
@@ -475,6 +607,75 @@ lancelot_simpledt: $(OBJECTSD) $(OBJD)/lancelot_simplet_double.o
 	cat lancelot_simpledt.output
 	rm ./run_lancelot_simple
 
+lancelotqs: $(OBJECTSq) $(OBJQ)/lancelots_quadruple.o
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot \
+            $(OBJQ)/lancelots_quadruple.o -L$(OBJQ) $(LIBS)
+	- ./run_lancelot > lancelotqs.output 2>&1
+	cat lancelotqs.output
+	rm ./run_lancelot
+
+lancelotqt: $(OBJECTSq) $(OBJQ)/lancelott_quadruple.o
+	echo ""
+	echo " Exhaustive test of subroutine interface to LANCELOT B"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot \
+           $(OBJQ)/lancelott_quadruple.o -L$(OBJQ) $(LIBS)
+	- ./run_lancelot > lancelotqt.output 2>&1
+	cat lancelotqt.output
+	rm ./run_lancelot
+
+lancelotqt_valgrind: $(OBJECTSq) $(OBJQ)/lancelott_quadruple.o
+	echo ""
+	echo " Exhaustive test of subroutine interface to LANCELOT B"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot \
+            $(OBJQ)/lancelott_quadruple.o -L$(OBJQ) $(LIBS)
+	- valgrind $(VALGRIND) ./run_lancelot > \
+           lancelotqt_valgrind.output 2>&1
+	cat lancelotqt_valgrind.output
+	rm ./run_lancelot
+
+lancelot_steeringqs: $(OBJECTSSTEERINGq) $(OBJQ)/lancelot_steerings.o
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_steering \
+          $(OBJQ)/lancelot_steerings.o -L$(OBJQ) $(LIBS)
+	- ./run_lancelot_steering > lancelot_steeringqs.output 2>&1
+	cat lancelot_steeringqs.output
+	rm ./run_lancelot_steering
+
+lancelot_steeringqt: $(OBJECTSSTEERINGq) $(OBJQ)/lancelot_steeringt_quadruple.o
+	echo ""
+	echo " Exhaustive test of subroutine interface to LANCELOT B"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_steering \
+          $(OBJQ)/lancelot_steering_quadruple.o -L$(OBJQ) $(LIBS)
+	- ./run_lancelot_steering > lancelot_steeringqt.output 2>&1
+	cat lancelot_steeringqt.output
+	rm ./run_lancelot_steering
+
+lancelot_steeringqt_valgrind: $(OBJECTSSTEERINGQ) \
+          $(OBJQ)/lancelot_steeringt_quadruple.o
+	echo ""
+	echo " Exhaustive test of subroutine interface to LANCELOT B"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_steering \
+          $(OBJQ)/lancelot_steeringt_quadruple.o -L$(OBJQ) $(LIBS)
+	- valgrind $(VALGRIND) run_lancelot_steering \
+           > lancelot_steeringqt_valgrind.output 2>&1
+	cat lancelot_steeringqt_valgrind.output
+	rm ./run_lancelot_steering
+
+lancelot_simpleqs: $(OBJECTSQ) $(OBJQ)/lancelot_simples.o
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_simple \
+           $(OBJQ)/lancelot_simples.o -L$(OBJQ) $(LIBS)
+	- ./run_lancelot_simple > lancelot_simpleqs.output 2>&1
+	cat lancelot_simpleqs.output
+	rm ./run_lancelot_simple
+
+lancelot_simpleqt: $(OBJECTSQ) $(OBJQ)/lancelot_simplet_quadruple.o
+	echo ""
+	echo " Exhaustive test of subroutine interface to LANCELOT B"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_simple \
+            $(OBJQ)/lancelot_simplet_quadruple.o -L$(OBJQ) $(LIBS)
+	- ./run_lancelot_simple > lancelot_simpleqt.output 2>&1
+	cat lancelot_simpleqt.output
+	rm ./run_lancelot_simple
+
 lancelotss_64: $(OBJECTSS64) $(OBJS64)/lancelots_single_64.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot \
            $(OBJS64)/lancelots_single_64.o -L$(OBJS64) $(LIBS)
@@ -581,6 +782,65 @@ lancelot_simpledt_64: $(OBJECTSD64) $(OBJD64)/lancelot_simplet_double_64.o
             $(OBJD64)/lancelot_simplet_double_64.o -L$(OBJD64) $(LIBS)
 	- ./run_lancelot_simple > lancelot_simpledt_64.output 2>&1
 	cat lancelot_simpledt_64.output
+	rm ./run_lancelot_simple
+
+lancelotqs_64: $(OBJECTSQ64) $(OBJQ64)/lancelots_quadruple_64.o
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot \
+            $(OBJQ64)/lancelots_quadruple_64.o -L$(OBJQ64) $(LIBS)
+	- ./run_lancelot > lancelotqs_64.output 2>&1
+	cat lancelotqs_64.output
+	rm ./run_lancelot
+
+lancelotqt_64: $(OBJECTSQ64) $(OBJQ64)/lancelott_quadruple_64.o
+	echo ""
+	echo " Exhaustive test of subroutine interface to LANCELOT B"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot \
+           $(OBJQ64)/lancelott_quadruple_64.o -L$(OBJQ64) $(LIBS)
+	- ./run_lancelot > lancelotqt_64.output 2>&1
+	cat lancelotqt_64.output
+	rm ./run_lancelot
+
+lancelotqt_valgrind_64: $(OBJECTSQ64) $(OBJQ64)/lancelott_quadruple_64.o
+	echo ""
+	echo " Exhaustive test of subroutine interface to LANCELOT B"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot \
+            $(OBJQ64)/lancelott_quadruple_64.o -L$(OBJQ64) $(LIBS)
+	- valgrind $(VALGRIND) ./run_lancelot > \
+           lancelotqt_valgrind.output 2>&1
+	cat lancelotqt_valgrind.output
+	rm ./run_lancelot
+
+lancelot_steeringqs_64: $(OBJECTSSTEERINGQ64) $(OBJQ64)/lancelot_steerings.o
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_steering \
+          $(OBJQ64)/lancelot_steerings.o -L$(OBJQ64) $(LIBS)
+	- ./run_lancelot_steering > lancelot_steeringqs_64.output 2>&1
+	cat lancelot_steeringqs_64.output
+	rm ./run_lancelot_steering
+
+lancelot_steeringqt_64: $(OBJECTSSTEERINGQ64) \
+                       $(OBJQ64)/lancelot_steeringt_quadruple_64.o
+	echo ""
+	echo " Exhaustive test of subroutine interface to LANCELOT B"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_steering \
+          $(OBJQ64)/lancelot_steeringt_quadruple_64.o -L$(OBJQ64) $(LIBS)
+	- ./run_lancelot_steering > lancelot_steeringqt_64.output 2>&1
+	cat lancelot_steeringqt_64.output
+	rm ./run_lancelot_steering
+
+lancelot_simpleqs_64: $(OBJECTSQ64) $(OBJQ64)/lancelot_simples.o
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_simple \
+           $(OBJQ64)/lancelot_simples.o -L$(OBJQ64) $(LIBS)
+	- ./run_lancelot_simple > lancelot_simpleqs_64.output 2>&1
+	cat lancelot_simpleqs_64.output
+	rm ./run_lancelot_simple
+
+lancelot_simpleqt_64: $(OBJECTSQ64) $(OBJQ64)/lancelot_simplet_quadruple_64.o
+	echo ""
+	echo " Exhaustive test of subroutine interface to LANCELOT B"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_simple \
+            $(OBJQ64)/lancelot_simplet_quadruple_64.o -L$(OBJQ64) $(LIBS)
+	- ./run_lancelot_simple > lancelot_simpleqt_64.output 2>&1
+	cat lancelot_simpleqt_64.output
 	rm ./run_lancelot_simple
 
 #  basic packages
@@ -1021,11 +1281,13 @@ $(OBJ)/lancelot_simplet_$(PRECIS).o: ../lancelot_simple/lancelot_simplet.F90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(LGS) $(LGD) $(LGS64) $(LGD64) \
+	$(RM) $(LGS) $(LGD) $(LGQ) $(LGS64) $(LGD64) $(LGQ64) \
                             $(OBJS)/runlancelot_sif_$(PRECIS).o \
                             $(OBJD)/runlancelot_sif_$(PRECIS).o \
+                            $(OBJQ)/runlancelot_sif_$(PRECIS).o \
                             $(OBJS64)/runlancelot_sif_$(PRECIS).o \
-                            $(OBJD64)/runlancelot_sif_$(PRECIS).o
+                            $(OBJD64)/runlancelot_sif_$(PRECIS).o \
+                            $(OBJQ64)/runlancelot_sif_$(PRECIS).o
 	@printf '[ OK ]\n'
 
 cleanall:

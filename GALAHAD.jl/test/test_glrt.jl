@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_glrt(::Type{T}) where T
   # Derived types
@@ -17,7 +18,7 @@ function test_glrt(::Type{T}) where T
 
   status = Ref{Cint}()
   weight = Ref{T}()
-  power = 3.0
+  power = T(3.0)
   x = zeros(T, n)
   r = zeros(T, n)
   vector = zeros(T, n)
@@ -81,9 +82,8 @@ function test_glrt(::Type{T}) where T
       end
 
       glrt_information(T, data, inform, status)
-      @printf("MR = %1i%1i glrt_solve_problem exit status = %i, f = %.2f\n", unit_m,
-              new_weight, inform[].status,
-              inform[].obj_regularized)
+      # @printf("MR = %1i%1i glrt_solve_problem exit status = %i, f = %.2f\n", unit_m,
+      #         new_weight, inform[].status, inform[].obj_regularized)
     end
   end
 
@@ -96,4 +96,5 @@ end
 @testset "GLRT" begin
   @test test_glrt(Float32) == 0
   @test test_glrt(Float64) == 0
+  @test test_glrt(Float128) == 0
 end

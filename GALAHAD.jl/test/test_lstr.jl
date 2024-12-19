@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_lstr(::Type{T}) where T
   # Derived types
@@ -70,8 +71,8 @@ function test_lstr(::Type{T}) where T
     end
 
     lstr_information(T, data, inform, status)
-    @printf("%1i lstr_solve_problem exit status = %i, f = %.2f\n", new_radius,
-            inform[].status, inform[].r_norm)
+    # @printf("%1i lstr_solve_problem exit status = %i, f = %.2f\n", new_radius,
+    #         inform[].status, inform[].r_norm)
   end
 
   # Delete internal workspace
@@ -83,4 +84,5 @@ end
 @testset "LSTR" begin
   @test test_lstr(Float32) == 0
   @test test_lstr(Float64) == 0
+  @test test_lstr(Float128) == 0
 end

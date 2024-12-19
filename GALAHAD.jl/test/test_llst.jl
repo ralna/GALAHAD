@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_llst(::Type{T}) where T
   # Derived types
@@ -82,7 +83,7 @@ function test_llst(::Type{T}) where T
   b = ones(T, m) # observations
 
   # trust-region radius is one
-  radius = 1.0
+  radius = one(T)
 
   # Set output storage
   x = zeros(T, n) # solution
@@ -209,4 +210,5 @@ end
 @testset "LLST" begin
   @test test_llst(Float32) == 0
   @test test_llst(Float64) == 0
+  @test test_llst(Float128) == 0
 end

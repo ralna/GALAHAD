@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_ccqp(::Type{T}) where T
   # Derived types
@@ -21,7 +22,7 @@ function test_ccqp(::Type{T}) where T
   H_ptr = Cint[1, 2, 3, 4]  # row pointers
   H_val = T[1.0, 1.0, 1.0]  # values
   g = T[0.0, 2.0, 0.0]  # linear term in the objective
-  f = 1.0  # constant term in the objective
+  f = one(T)  # constant term in the objective
   A_ne = 4 # Jacobian elements
   A_row = Cint[1, 1, 2, 2]  # row indices
   A_col = Cint[1, 2, 2, 3]  # column indices
@@ -228,4 +229,5 @@ end
 @testset "CCQP" begin
   @test test_ccqp(Float32) == 0
   @test test_ccqp(Float64) == 0
+  @test test_ccqp(Float128) == 0
 end

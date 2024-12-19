@@ -29,7 +29,7 @@
 ! problem data complete
    CALL BLLS_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = infinity                   ! Set infinity
-   control%print_level = 3                       ! print one line/iteration
+   control%print_level = 1                       ! print one line/iteration
    control%exact_arc_search = .FALSE.
 !  control%CONVERT_control%print_level = 3
    control%SBLS_control%symmetric_linear_solver = 'sytr' ! non-default solver

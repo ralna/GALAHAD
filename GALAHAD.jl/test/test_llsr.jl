@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_llsr(::Type{T}) where T
   # Derived types
@@ -83,8 +84,8 @@ function test_llsr(::Type{T}) where T
   b = ones(T, m) # observations
 
   # cubic regularization, weight is one
-  power = 3.0
-  weight = 1.0
+  power = T(3.0)
+  weight = one(T)
 
   # Set output storage
   x = zeros(T, n) # solution
@@ -211,4 +212,5 @@ end
 @testset "LLSR" begin
   @test test_llsr(Float32) == 0
   @test test_llsr(Float64) == 0
+  @test test_llsr(Float128) == 0
 end

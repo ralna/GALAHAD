@@ -40,7 +40,6 @@ int main(void) {
     ipc_ n = 3; // dimension
     ipc_ ne = 5; // Hesssian elements
     rpc_ x[] = {1.,1.,1.}; // start from one
-    rpc_ infty = 1e20; // infinity
     char H_type[] = "absent"; // specify Hessian-vector products
 
     // Set storage
@@ -60,14 +59,19 @@ int main(void) {
         printf("TRU successful solve\n");
         printf("iter: %" d_ipc_ " \n", inform.iter);
         printf("x: ");
+#ifdef REAL_128
+        for(ipc_ i = 0; i < n; i++) printf("%f ", (double)x[i]);
+        printf("\nobjective: %f \ngradient: ", (double)inform.obj);
+        for(ipc_ i = 0; i < n; i++) printf("%f ", (double)g[i]);
+        printf("\nf_eval: %" d_ipc_ " \n", inform.f_eval);
+        printf("time: %f \n", (double)inform.time.clock_total);
+#else
         for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
-        printf("\n");
-        printf("objective: %f \n", inform.obj);
-        printf("gradient: ");
+        printf("\nobjective: %f \ngradient: ", inform.obj);
         for(ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
-        printf("\n");
-        printf("f_eval: %" d_ipc_ " \n", inform.f_eval);
+        printf("\nf_eval: %" d_ipc_ " \n", inform.f_eval);
         printf("time: %f \n", inform.time.clock_total);
+#endif
         printf("status: %" d_ipc_ " \n", inform.status);
     }else{ // error returns
         printf("TRU error in solve\n");

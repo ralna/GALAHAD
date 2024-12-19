@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Quadmath
 
 function test_scu(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
@@ -20,4 +21,5 @@ end
 @testset "SCU" begin
   @test test_scu(Float32) == 0
   @test test_scu(Float64) == 0
+  @test test_scu(Float128) == 0
 end

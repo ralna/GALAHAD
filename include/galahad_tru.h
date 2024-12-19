@@ -361,6 +361,12 @@ struct tru_control_type {
     ipc_ mi28_rsize;
 
     /// \brief
+    /// try to pick a good initial trust-region radius using
+    /// .advanced_start iterates of a variant on the strategy of
+    /// Sartenaer SISC 18(6) 1990:1788-1803
+    ipc_ advanced_start;
+
+    /// \brief
     /// overall convergence tolerances. The iteration will terminate when the
     /// norm of the gradient of the objective function is smaller than
     /// MAX( .stop_g_absolute, .stop_g_relative * norm of the initial gradient )
@@ -370,12 +376,6 @@ struct tru_control_type {
     rpc_ stop_g_relative;
     /// see stop_g_absolute
     rpc_ stop_s;
-
-    /// \brief
-    /// try to pick a good initial trust-region radius using
-    /// .advanced_start iterates of a variant on the strategy of
-    /// Sartenaer SISC 18(6) 1990:1788-1803
-    ipc_ advanced_start;
 
     /// \brief
     /// initial value for the trust-region radius

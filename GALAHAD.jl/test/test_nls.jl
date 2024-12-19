@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 # Custom userdata struct
 struct userdata_nls{T}
@@ -459,4 +460,5 @@ end
 @testset "NLS" begin
   @test test_nls(Float32) == 0
   @test test_nls(Float64) == 0
+  @test test_nls(Float128) == 0
 end

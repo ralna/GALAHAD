@@ -6,7 +6,7 @@
  * Jeremey Appleyard    NVIDIA
  *
  * This code has not yet been publically released under any licence.
- * This version: GALAHAD 5.0 - 2024-06-11 AT 09:50 GMT
+ * This version: GALAHAD 5.1 - 2024-11-21 AT 09:50 GMT
  */
 
 #include <cublas_v2.h>
@@ -39,6 +39,32 @@
 #define spral_ssids_run_d_solve_kernel spral_ssids_run_d_solve_kernel_single
 #define spral_ssids_run_fwd_solve_kernels spral_ssids_run_fwd_solve_kernels_single
 #define spral_ssids_run_slv_contrib_fwd spral_ssids_run_slv_contrib_fwd_single
+#elif REAL_128
+#define gather gather_quadruple
+#define gemv_transpose_lookup gemv_transpose_lookup_quadruple
+#define gemv_transpose_sps_rhs gemv_transpose_sps_rhs_quadruple
+#define reducing_d_solve_lookup reducing_d_solve_lookup_quadruple
+#define reducing_d_solve reducing_d_solve_quadruple
+#define d_solve d_solve_quadruple
+#define scatter_lookup scatter_lookup_quadruple
+#define scatter scatter_quadruple
+#define scatter_sum scatter_sum_quadruple
+#define lookups_gpu_bwd lookups_gpu_bwd_quadruple
+#define simple_gemv simple_gemv_quadruple
+#define gemv_notrans_lookup gemv_notrans_lookup_quadruple
+#define reduce_notrans_lookup reduce_notrans_lookup_quadruple
+#define gemv_reduce_lookup gemv_reduce_lookup_quadruple
+#define assemble_blk_type assemble_blk_type_quadruple
+#define assemble_lookup2 assemble_lookup2_quadruple
+#define wait_for_sync wait_for_sync_quadruple
+#define assemble_lvl assemble_lvl_quadruple
+#define grabx grabx_quadruple
+#define lookups_gpu_fwd lookups_gpu_fwd_quadruple
+#define lookup_contrib_fwd lookup_contrib_fwd_quadruple
+#define spral_ssids_run_bwd_solve_kernels spral_ssids_run_bwd_solve_kernels_quadruple
+#define spral_ssids_run_d_solve_kernel spral_ssids_run_d_solve_kernel_quadruple
+#define spral_ssids_run_fwd_solve_kernels spral_ssids_run_fwd_solve_kernels_quadruple
+#define spral_ssids_run_slv_contrib_fwd spral_ssids_run_slv_contrib_fwd_quadruple
 #else
 #define gather gather_double
 #define gemv_transpose_lookup gemv_transpose_lookup_double

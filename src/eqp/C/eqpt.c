@@ -7,6 +7,9 @@
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_eqp.h"
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 int main(void) {
 
@@ -65,7 +68,6 @@ int main(void) {
                 eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
                 break;
-            printf(" case %1" i_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 eqp_import( &control, &data, &status, n, m,
@@ -119,17 +121,21 @@ int main(void) {
                 eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
                 break;
-
-
-
             }
         eqp_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective value = %5.2f status = %1" i_ipc_ "\n",
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_if.h
+#include "galahad_pquad_if.h"
+#else
+            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
+                   "value = %.2f status = %1" i_ipc_ "\n",
                    st, inform.cg_iter, inform.obj, inform.status);
+#endif
         }else{
-            printf("%c: EQP_solve exit status = %1" i_ipc_ "\n", st, inform.status);
+            printf("%c: EQP_solve exit status = %1" i_ipc_ "\n", 
+                   st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -178,10 +184,17 @@ int main(void) {
         eqp_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective value = %5.2f status = %1" i_ipc_ "\n",
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_if.h
+#include "galahad_pquad_if.h"
+#else
+            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
+                   "value = %.2f status = %1" i_ipc_ "\n",
                    st, inform.cg_iter, inform.obj, inform.status);
+#endif
         }else{
-            printf("%c: EQP_solve exit status = %1" i_ipc_ "\n", st, inform.status);
+            printf("%c: EQP_solve exit status = %1" i_ipc_ "\n", 
+                   st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

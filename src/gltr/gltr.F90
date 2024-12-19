@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-18 AT 11:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -36,7 +36,7 @@
       USE GALAHAD_ROOTS_precision, ONLY: ROOTS_quadratic
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
-      USE GALAHAD_LAPACK_interface, ONLY : PTTRF, STERF
+      USE GALAHAD_LAPACK_inter_precision, ONLY : PTTRF, STERF
 
       IMPLICIT NONE
 
@@ -303,7 +303,7 @@
       END TYPE GLTR_data_type
 
       TYPE, PUBLIC :: GLTR_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( GLTR_data_type ) :: GLTR_data
         TYPE ( GLTR_control_type ) :: GLTR_control
         TYPE ( GLTR_inform_type ) :: GLTR_inform
@@ -2635,7 +2635,7 @@
       DO
         e = est - perturb
         D_fact = D - e
-        OFFD_fact = OFFD
+        IF ( n > 1 ) OFFD_fact = OFFD
 
 !  Attempt the Cholesky factorization of T
 

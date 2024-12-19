@@ -35,6 +35,12 @@ function roots_initialize(::Type{Float64}, data, control, status)
                                             status::Ptr{Cint})::Cvoid
 end
 
+function roots_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.roots_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                                 control::Ptr{roots_control_type{Float128}},
+                                                 status::Ptr{Cint})::Cvoid
+end
+
 export roots_information
 
 function roots_information(::Type{Float32}, data, inform, status)
@@ -49,6 +55,12 @@ function roots_information(::Type{Float64}, data, inform, status)
                                              status::Ptr{Cint})::Cvoid
 end
 
+function roots_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.roots_information_q(data::Ptr{Ptr{Cvoid}},
+                                                  inform::Ptr{roots_inform_type},
+                                                  status::Ptr{Cint})::Cvoid
+end
+
 export roots_terminate
 
 function roots_terminate(::Type{Float32}, data, control, inform)
@@ -61,4 +73,10 @@ function roots_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.roots_terminate(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{roots_control_type{Float64}},
                                            inform::Ptr{roots_inform_type})::Cvoid
+end
+
+function roots_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.roots_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                                control::Ptr{roots_control_type{Float128}},
+                                                inform::Ptr{roots_inform_type})::Cvoid
 end

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-16 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -1461,6 +1461,8 @@
         IF ( prob%m > 0 ) WRITE( control%out, "( A,                            &
        &  ' Y = ', 3ES24.16, /, ( 5X, 3ES24.16 ) )" ) prefix, prob%Y( : prob%m )
       END IF
+      IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
+        WRITE( control%out, "( A, ' -- return from EQP_solve ' )" ) prefix
       RETURN
 
 !  End of EQP_solve
@@ -2311,7 +2313,7 @@
               l = 0
               DO i = 1, m
                 data%RES( i ) = data%RES( i )                                  &
-                  + DOT_PRODUCT( A%val( l + 1 : l + n ), data%VECTOR )
+                  + DOT_PRODUCT( A%val( l + 1 : l + n ), data%VECTOR( : n ) )
                 l = l + n
               END DO
             CASE ( 'SPARSE_BY_ROWS' )

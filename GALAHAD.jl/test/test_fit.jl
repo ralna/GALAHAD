@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Quadmath
 
 function test_fit(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
@@ -20,4 +21,5 @@ end
 @testset "FIT" begin
   @test test_fit(Float32) == 0
   @test test_fit(Float64) == 0
+  @test test_fit(Float128) == 0
 end

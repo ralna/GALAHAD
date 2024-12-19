@@ -44,6 +44,12 @@ function convert_initialize(::Type{Float64}, data, control, status)
                                               status::Ptr{Cint})::Cvoid
 end
 
+function convert_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.convert_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                                   control::Ptr{convert_control_type},
+                                                   status::Ptr{Cint})::Cvoid
+end
+
 export convert_information
 
 function convert_information(::Type{Float32}, data, inform, status)
@@ -58,6 +64,12 @@ function convert_information(::Type{Float64}, data, inform, status)
                                                status::Ptr{Cint})::Cvoid
 end
 
+function convert_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.convert_information_q(data::Ptr{Ptr{Cvoid}},
+                                                    inform::Ptr{convert_inform_type{Float128}},
+                                                    status::Ptr{Cint})::Cvoid
+end
+
 export convert_terminate
 
 function convert_terminate(::Type{Float32}, data, control, inform)
@@ -70,4 +82,10 @@ function convert_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.convert_terminate(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{convert_control_type},
                                              inform::Ptr{convert_inform_type{Float64}})::Cvoid
+end
+
+function convert_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.convert_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                                  control::Ptr{convert_control_type},
+                                                  inform::Ptr{convert_inform_type{Float128}})::Cvoid
 end

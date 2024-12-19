@@ -39,6 +39,12 @@ function ir_initialize(::Type{Float64}, data, control, status)
                                          status::Ptr{Cint})::Cvoid
 end
 
+function ir_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.ir_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{ir_control_type{Float128}},
+                                              status::Ptr{Cint})::Cvoid
+end
+
 export ir_information
 
 function ir_information(::Type{Float32}, data, inform, status)
@@ -53,6 +59,12 @@ function ir_information(::Type{Float64}, data, inform, status)
                                           status::Ptr{Cint})::Cvoid
 end
 
+function ir_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.ir_information_q(data::Ptr{Ptr{Cvoid}},
+                                               inform::Ptr{ir_inform_type{Float128}},
+                                               status::Ptr{Cint})::Cvoid
+end
+
 export ir_terminate
 
 function ir_terminate(::Type{Float32}, data, control, inform)
@@ -65,4 +77,10 @@ function ir_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.ir_terminate(data::Ptr{Ptr{Cvoid}},
                                         control::Ptr{ir_control_type{Float64}},
                                         inform::Ptr{ir_inform_type{Float64}})::Cvoid
+end
+
+function ir_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.ir_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{ir_control_type{Float128}},
+                                             inform::Ptr{ir_inform_type{Float128}})::Cvoid
 end

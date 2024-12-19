@@ -13,15 +13,16 @@
 
 %%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
 
-\galsummary
-This package uses finite difference approximations to {\bf check the gradient of an objective
-  function $f(\bmx)$, the Jacobian matrix of a constraint function $\bmc(\bmx)$, and the
-  second derivative Hessian matrix of the Lagrangian function $L(\bmx,\bmy) = f(\bmx) -
-  \bmc(\bmx)^T \bmy$}.  These quantities are typically associated with a nonlinear
-optimization problem
+\galsummary This package uses finite difference approximations to {\bf
+check the gradient of an objective function $f(\bmx)$, the Jacobian
+matrix of a constraint function $\bmc(\bmx)$, and the second
+derivative Hessian matrix of the Lagrangian function $L(\bmx,\bmy) =
+f(\bmx) - \bmc(\bmx)^T \bmy$}.  These quantities are typically
+associated with a nonlinear optimization problem
 \disp{\mbox{minimize}\;\; f(\bmx)}
 subject to the general linear constraints
-\disp{a_{i}^{l}  \leq  \bma_{i}^{T}\bmx  \leq  a_{i}^{u}, \;\;\; i = 1, \ldots , m_a,}
+\disp{a_{i}^{l}  \leq  \bma_{i}^{T}\bmx  \leq  a_{i}^{u}, \;\;\; 
+ i = 1, \ldots , m_a,}
 general nonlinear constraints
 \disp{c_{i}^{l}  \leq  c_{i}(\bmx)  \leq  c_{i}^{u}, \;\;\; i = 1, \ldots , m,}
 and simple bound constraints
@@ -56,18 +57,7 @@ N. I. M. Gould, Rutherford Appleton Laboratory.
 
 %\subsection{Calling sequences}
 
-The package is available using both single and double precision reals, 
-and either 32-bit or 64-bit integers. Access to the 32-bit integer,
-single precision version requires the {\tt USE} statement
-\medskip
-
-\hspace{8mm} {\tt USE \fullpackagename\_single}
-
-\medskip
-\noindent
-with the obvious substitution {\tt \fullpackagename\_double},
-{\tt \fullpackagename\_single\_64} and 
-{\tt \fullpackagename\_double\_64} for the other variants.
+\input{versions}
 
 \noindent
 If it is required to use more than one of the modules at the same time, 

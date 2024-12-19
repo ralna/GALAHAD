@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-05 AT 14:50 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -27,7 +27,8 @@
      USE GALAHAD_SYMBOLS
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_SPACE_precision
-     USE GALAHAD_LAPACK_interface, ONLY : GETRF, GETRS, GELSS, GELSD, GELSY
+     USE GALAHAD_LAPACK_inter_precision, ONLY : GETRF, GETRS, GELSS,           &
+                                                GELSD, GELSY
 
      IMPLICIT NONE
 

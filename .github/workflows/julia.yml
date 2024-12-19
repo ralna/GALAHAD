@@ -20,10 +20,6 @@ jobs:
             arch: 'arm64'
             version: '1'
             allow_failure: false
-          - os: macos-latest
-            arch: 'arm64'
-            version: '1'
-            allow_failure: false
     steps:
       - uses: actions/checkout@v4
 

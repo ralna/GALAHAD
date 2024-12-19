@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 07:15 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-15 AT 15:00 GMT.
 
 #include "spral_procedures.h"
 
@@ -7,7 +7,7 @@
 MODULE SPRAL_SSIDS_precision
 !$ use omp_lib
    USE GALAHAD_SYMBOLS
-   USE GALAHAD_KINDS_precision
+   USE SPRAL_KINDS_precision, ONLY: ip_, ipc_, rp_, long_
    USE, intrinsic :: iso_c_binding
    IMPLICIT NONE
 
@@ -17,6 +17,8 @@ MODULE SPRAL_SSIDS_precision
    PUBLIC :: SSIDS_analyse, SSIDS_analyse_coord, SSIDS_factor,                 &
              SSIDS_solve, SSIDS_free, SSIDS_enquire_posdef,                    &
              SSIDS_enquire_indef, SSIDS_alter
+
+   LOGICAL, PUBLIC, PARAMETER :: ssids_available = .FALSE.
 
  ! Parameters
 

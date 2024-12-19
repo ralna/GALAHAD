@@ -26,18 +26,20 @@
 #ifdef REAL_32
 #ifdef INTEGER_64
 #define pastixf_interfaces_precision pastixf_interfaces_single_64
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_single_64
 #else
 #define pastixf_interfaces_precision pastixf_interfaces_single
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_single
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define pastix_interfaces_precision pastix_interfaces_quadruple_64
+#else
+#define pastix_interfaces_precision pastix_interfaces_quadruple
 #endif
 #else
 #ifdef INTEGER_64
 #define pastixf_interfaces_precision pastixf_interfaces_double_64
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_double_64
 #else
 #define pastixf_interfaces_precision pastixf_interfaces_double
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_double
 #endif
 #endif
 

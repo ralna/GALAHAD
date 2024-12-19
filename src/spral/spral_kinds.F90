@@ -1,9 +1,7 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-12 AT 11:20 GMT
 
 #ifdef INTEGER_64
-#define SPRAL_KINDS spral_kinds_64
-#define SPRAL_KINDS_double spral_kinds_double_64
-#define SPRAL_KINDS_single spral_kinds_single_64
+#define SPRAL_KINDS SPRAL_KINDS_64
 #endif
 
 !-*-*-*-*-*-*-*-*-*-  S P R A L _ K I N D S   M O D U L E  -*-*-*-*-*-*-*-*-*-
@@ -33,6 +31,14 @@ MODULE SPRAL_KINDS
   INTEGER, PARAMETER :: c4_ = KIND( ( 1.0_r4_, 1.0_r4_ ) )
   INTEGER, PARAMETER :: c8_ = KIND( ( 1.0_r8_, 1.0_r8_ ) )
 
+!  if 128 bit reals are supported, use them
+
+#ifdef REAL_128
+  INTEGER, PARAMETER :: r16_ = REAL128
+  INTEGER, PARAMETER :: c16_ = KIND( ( 1.0_r16_, 1.0_r16_ ) )
+  INTEGER, PARAMETER :: qpc_ = C_FLOAT128
+#endif
+
 !  common aliases
 
   INTEGER, PARAMETER :: sp_ = r4_
@@ -57,41 +63,3 @@ MODULE SPRAL_KINDS
   INTEGER, PARAMETER :: CLONG_ = longc_
 
 END MODULE SPRAL_KINDS
-
-!-*-*-*-*-  S P R A L _  K I N D S _ S I N G L E  M O D U L E   -*-*-*-*-*-
-
-MODULE SPRAL_KINDS_single
-  USE SPRAL_KINDS
-  IMPLICIT NONE
-  PUBLIC
-
-!--------------------------------------------------------
-!  R e a l  k i n d s  ( s i n g l e  p r e c i s i o n )
-!--------------------------------------------------------
-
-  INTEGER, PARAMETER :: real_bytes_ = 4
-  INTEGER, PARAMETER :: rp_ = r4_
-  INTEGER, PARAMETER :: cp_ = c4_
-  INTEGER, PARAMETER :: rpc_ = spc_
-  INTEGER, PARAMETER :: C_RP_ = rpc_
-
-END MODULE SPRAL_KINDS_single
-
-!-*-*-*-*-  S P R A L _  K I N D S _ D O U B L E  M O D U L E   -*-*-*-*-*-
-
-MODULE SPRAL_KINDS_double
-  USE SPRAL_KINDS
-  IMPLICIT NONE
-  PUBLIC
-
-!--------------------------------------------------------
-!  R e a l  k i n d s  ( d o u b l e  p r e c i s i o n )
-!--------------------------------------------------------
-
-  INTEGER, PARAMETER :: real_bytes_ = 8
-  INTEGER, PARAMETER :: rp_ = r8_
-  INTEGER, PARAMETER :: cp_ = c8_
-  INTEGER, PARAMETER :: rpc_ = dpc_
-  INTEGER, PARAMETER :: C_RP_ = rpc_
-
-END MODULE SPRAL_KINDS_double

@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_uls(::Type{T}) where T
   maxabsarray(a) = maximum(abs.(a))
@@ -182,4 +183,5 @@ end
 @testset "ULS" begin
   @test test_uls(Float32) == 0
   @test test_uls(Float64) == 0
+  @test test_uls(Float128) == 0
 end

@@ -45,6 +45,12 @@ function sha_initialize(::Type{Float64}, data, control, status)
                                           status::Ptr{Cint})::Cvoid
 end
 
+function sha_initialize(::Type{Float128}, data, control, status)
+  @ccall libgalahad_quadruple.sha_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{sha_control_type},
+                                               status::Ptr{Cint})::Cvoid
+end
+
 export sha_reset_control
 
 function sha_reset_control(::Type{Float32}, control, data, status)
@@ -57,6 +63,12 @@ function sha_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.sha_reset_control(control::Ptr{sha_control_type},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
+end
+
+function sha_reset_control(::Type{Float128}, control, data, status)
+  @ccall libgalahad_quadruple.sha_reset_control_q(control::Ptr{sha_control_type},
+                                                  data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Cint})::Cvoid
 end
 
 export sha_analyse_matrix
@@ -73,6 +85,13 @@ function sha_analyse_matrix(::Type{Float64}, control, data, status, n, ne, row, 
                                               data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                               n::Cint, ne::Cint, row::Ptr{Cint},
                                               col::Ptr{Cint}, m::Ptr{Cint})::Cvoid
+end
+
+function sha_analyse_matrix(::Type{Float128}, control, data, status, n, ne, row, col, m)
+  @ccall libgalahad_quadruple.sha_analyse_matrix_q(control::Ptr{sha_control_type},
+                                                   data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                                   n::Cint, ne::Cint, row::Ptr{Cint},
+                                                   col::Ptr{Cint}, m::Ptr{Cint})::Cvoid
 end
 
 export sha_recover_matrix
@@ -97,6 +116,16 @@ function sha_recover_matrix(::Type{Float64}, data, status, ne, m, ls1, ls2, stra
                                               precedence::Ptr{Cint})::Cvoid
 end
 
+function sha_recover_matrix(::Type{Float128}, data, status, ne, m, ls1, ls2, strans, ly1,
+                            ly2, ytrans, val, precedence)
+  @ccall libgalahad_quadruple.sha_recover_matrix_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                                   ne::Cint, m::Cint, ls1::Cint, ls2::Cint,
+                                                   strans::Ptr{Ptr{Float128}}, ly1::Cint,
+                                                   ly2::Cint, ytrans::Ptr{Ptr{Float128}},
+                                                   val::Ptr{Float128},
+                                                   precedence::Ptr{Cint})::Cvoid
+end
+
 export sha_information
 
 function sha_information(::Type{Float32}, data, inform, status)
@@ -111,6 +140,12 @@ function sha_information(::Type{Float64}, data, inform, status)
                                            status::Ptr{Cint})::Cvoid
 end
 
+function sha_information(::Type{Float128}, data, inform, status)
+  @ccall libgalahad_quadruple.sha_information_q(data::Ptr{Ptr{Cvoid}},
+                                                inform::Ptr{sha_inform_type{Float128}},
+                                                status::Ptr{Cint})::Cvoid
+end
+
 export sha_terminate
 
 function sha_terminate(::Type{Float32}, data, control, inform)
@@ -123,4 +158,10 @@ function sha_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.sha_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{sha_control_type},
                                          inform::Ptr{sha_inform_type{Float64}})::Cvoid
+end
+
+function sha_terminate(::Type{Float128}, data, control, inform)
+  @ccall libgalahad_quadruple.sha_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{sha_control_type},
+                                              inform::Ptr{sha_inform_type{Float128}})::Cvoid
 end

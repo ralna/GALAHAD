@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_bqpb(::Type{T}) where T
   # Derived types
@@ -20,7 +21,7 @@ function test_bqpb(::Type{T}) where T
   H_ptr = Cint[1, 2, 3, 4]  # row pointers
   H_val = T[1.0, 1.0, 1.0]  # values
   g = T[2.0, 0.0, 0.0]  # linear term in the objective
-  f = 1.0  # constant term in the objective
+  f = one(T)  # constant term in the objective
   x_l = T[-1.0, -Inf, -Inf]  # variable lower bound
   x_u = T[1.0, Inf, 2.0]  # variable upper bound
 
@@ -198,4 +199,5 @@ end
 @testset "BQPB" begin
   @test test_bqpb(Float32) == 0
   @test test_bqpb(Float64) == 0
+  @test test_bqpb(Float128) == 0
 end

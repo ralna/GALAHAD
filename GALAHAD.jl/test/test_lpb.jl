@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_lpb(::Type{T}) where T
   # Derived types
@@ -16,7 +17,7 @@ function test_lpb(::Type{T}) where T
   n = 3 # dimension
   m = 2 # number of general constraints
   g = T[0.0, 2.0, 0.0]  # linear term in the objective
-  f = 1.0  # constant term in the objective
+  f = one(T)  # constant term in the objective
   A_ne = 4 # Jacobian elements
   A_row = Cint[1, 1, 2, 2]  # row indices
   A_col = Cint[1, 2, 2, 3]  # column indices
@@ -115,4 +116,5 @@ end
 @testset "LPB" begin
   @test test_lpb(Float32) == 0
   @test test_lpb(Float64) == 0
+  @test test_lpb(Float128) == 0
 end

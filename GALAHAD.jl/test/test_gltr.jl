@@ -5,6 +5,7 @@ using GALAHAD
 using Test
 using Printf
 using Accessors
+using Quadmath
 
 function test_gltr(::Type{T}) where T
   # Derived types
@@ -80,8 +81,8 @@ function test_gltr(::Type{T}) where T
       end
 
       gltr_information(T, data, inform, status)
-      @printf("MR = %1i%1i gltr_solve_problem exit status = %i, f = %.2f\n", unit_m,
-              new_radius, inform[].status, inform[].obj)
+      # @printf("MR = %1i%1i gltr_solve_problem exit status = %i, f = %.2f\n", unit_m,
+      #         new_radius, inform[].status, inform[].obj)
     end
   end
 
@@ -94,4 +95,5 @@ end
 @testset "GLTR" begin
   @test test_gltr(Float32) == 0
   @test test_gltr(Float64) == 0
+  @test test_gltr(Float128) == 0
 end

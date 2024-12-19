@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-06-11 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -17,7 +17,7 @@
 
 !     --------------------------------------------------------
 !    |                                                        |
-!    | GSM, a first-order (steepest-descent) suspace          |
+!    | GSM, a first-order (steepest-descent) subspace         |
 !    |  trust-region algorithm for unconstrained optimization |
 !    |                                                        |
 !    |   Aim: find a (local) minimizer of the objective f(x)  |
@@ -34,7 +34,7 @@
      USE GALAHAD_SPACE_precision
      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
      USE GALAHAD_STRING, ONLY: STRING_integer_6
-     USE GALAHAD_BLAS_interface, ONLY: SWAP
+     USE GALAHAD_BLAS_inter_precision, ONLY: SWAP
 !    USE SPDSOL
 !    USE HSL_MI13
 !    USE IEEE_ARITHMETIC
