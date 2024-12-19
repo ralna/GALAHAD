@@ -204,12 +204,12 @@ struct sha_control_type {
     ipc_ dense_linear_solver;
 
     /// \brief
-    /// rows with no more that sparse_row entries are considered sparse
-    ipc_ sparse_row;
-
-    /// \brief
     /// if available use an addition extra_differences differences
     ipc_ extra_differences;
+
+    /// \brief
+    /// rows with no more that sparse_row entries are considered sparse
+    ipc_ sparse_row;
 
     /// \brief
     /// if a recursive algorithm is used (Alg 2.4), limit on the maximum number 

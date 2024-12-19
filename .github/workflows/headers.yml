@@ -1,0 +1,21 @@
+name: Headers
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    name: GALAHAD -- Check macros
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GALAHAD
+        uses: actions/checkout@v4
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: 1
+          arch: x64
+      - name: Check the C headers
+        run: julia --color=yes .github/julia/check_headers.jl
