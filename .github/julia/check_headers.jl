@@ -27,6 +27,7 @@ function FORTRAN_structures()
             if contains(line |> uppercase, "END TYPE")
               f_struct = ""
             else
+              endswith(line, "&") && continue
               if endswith(lines[i-1], "&")
                 type = split(lines[i-1], "::")[1] |> strip
                 field = strip(line)
