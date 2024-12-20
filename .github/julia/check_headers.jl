@@ -35,7 +35,6 @@ function FORTRAN_structures()
                 type = split(line, "::")[1] |> strip
                 field = split(line, "::")[2] |> strip
               end
-              field = split(field, "/")[1]
 
               field = split(field, "!")[1] |> strip
               for syntax in ("TYPE", "REAL", "INTEGER", "CHARACTER", "=")
@@ -103,6 +102,7 @@ function C_structures()
             if startswith(line, "};")
               c_struct = ""
             else
+              line = split(line, '/')[1]
               type = split(line)[end-1]
               field = split(line)[end][1:end-1]  # remove ";" at the end
               if contains(field, "[") && contains(field, "]")
