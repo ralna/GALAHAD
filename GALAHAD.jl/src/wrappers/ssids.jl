@@ -12,8 +12,8 @@ struct spral_ssids_options{T}
   use_gpu::Bool
   gpu_only::Bool
   min_gpu_work::Int64
-  max_load_inbalance::Cfloat
-  gpu_perf_coeff::Cfloat
+  max_load_inbalance::Float32
+  gpu_perf_coeff::Float32
   scaling::Cint
   small_subtree_threshold::Int64
   cpu_block_size::Cint
@@ -23,7 +23,7 @@ struct spral_ssids_options{T}
   u::T
   nstream::Cint
   multiplier::T
-  min_loadbalance::Cfloat
+  min_loadbalance::Float32
   failed_pivot_method::Cint
 end
 
