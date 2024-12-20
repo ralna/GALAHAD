@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-20 AT 11:00 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -34,7 +34,8 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-    TYPE, BIND( C ) :: sils_control
+!   TYPE, BIND( C, name = 'SILS_control_type' ) :: sils_control
+    TYPE, BIND( C ) :: sils_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
       INTEGER ( KIND = ipc_ ) :: ICNTL( 30 )
       INTEGER ( KIND = ipc_ ) :: lp
@@ -61,9 +62,10 @@
       REAL ( KIND = rpc_ ) :: static_level
       REAL ( KIND = rpc_ ) :: tolerance
       REAL ( KIND = rpc_ ) :: convergence
-    END TYPE sils_control
+    END TYPE sils_control_type
 
-    TYPE, BIND( C ) :: SILS_ainfo
+!   TYPE, BIND( C, name = 'SILS_ainfo_type' ) :: SILS_ainfo
+    TYPE, BIND( C ) :: SILS_ainfo_type
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: more
       INTEGER ( KIND = ipc_ ) :: nsteps
@@ -81,9 +83,10 @@
       INTEGER ( KIND = ipc_ ) :: faulty
       REAL ( KIND = rpc_ ) :: opsa
       REAL ( KIND = rpc_ ) :: opse
-    END TYPE SILS_ainfo
+    END TYPE SILS_ainfo_type
 
-    TYPE, BIND( C ) :: SILS_finfo
+!   TYPE, BIND( C, name = 'SILS_finfo_type' ) :: SILS_finfo
+    TYPE, BIND( C ) :: SILS_finfo_type
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: more
       INTEGER ( KIND = ipc_ ) :: maxfrt
@@ -112,9 +115,10 @@
       REAL ( KIND = rpc_ ) :: maxchange
       REAL ( KIND = rpc_ ) :: smin
       REAL ( KIND = rpc_ ) :: smax
-    END TYPE SILS_finfo
+    END TYPE SILS_finfo_type
 
-    TYPE, BIND( C ) :: SILS_sinfo
+!   TYPE, BIND( C, name = 'SILS_sinfo_type' ) :: SILS_sinfo
+    TYPE, BIND( C ) :: SILS_sinfo_type
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: stat
       REAL ( KIND = rpc_ ) :: cond
@@ -122,7 +126,7 @@
       REAL ( KIND = rpc_ ) :: berr
       REAL ( KIND = rpc_ ) :: berr2
       REAL ( KIND = rpc_ ) :: error
-    END TYPE SILS_sinfo
+    END TYPE SILS_sinfo_type
 
 !----------------------
 !   P r o c e d u r e s
@@ -133,7 +137,7 @@
 !  copy C control parameters to fortran
 
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
-    TYPE ( sils_control ), INTENT( IN ) :: ccontrol
+    TYPE ( sils_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_sils_control ), INTENT( OUT ) :: fcontrol
     LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
 
@@ -176,7 +180,7 @@
 
     SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_sils_control ), INTENT( IN ) :: fcontrol
-    TYPE ( sils_control ), INTENT( OUT ) :: ccontrol
+    TYPE ( sils_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
 
     ! C or Fortran sparse matrix indexing
@@ -217,7 +221,7 @@
 !  copy C ainfo parameters to fortran
 
     SUBROUTINE copy_ainfo_in( cainfo, fainfo )
-    TYPE ( sils_ainfo ), INTENT( IN ) :: cainfo
+    TYPE ( sils_ainfo_type ), INTENT( IN ) :: cainfo
     TYPE ( f_sils_ainfo ), INTENT( OUT ) :: fainfo
 
     ! Integers
@@ -248,7 +252,7 @@
 
     SUBROUTINE copy_ainfo_out( fainfo, cainfo )
     TYPE ( f_sils_ainfo ), INTENT( IN ) :: fainfo
-    TYPE ( sils_ainfo ), INTENT( OUT ) :: cainfo
+    TYPE ( sils_ainfo_type ), INTENT( OUT ) :: cainfo
 
     ! Integers
     cainfo%flag = fainfo%flag
@@ -277,7 +281,7 @@
 !  copy C finfo parameters to fortran
 
     SUBROUTINE copy_finfo_in( cfinfo, ffinfo )
-    TYPE ( sils_finfo ), INTENT( IN ) :: cfinfo
+    TYPE ( sils_finfo_type ), INTENT( IN ) :: cfinfo
     TYPE ( f_sils_finfo ), INTENT( OUT ) :: ffinfo
 
     ! Integers
@@ -319,7 +323,7 @@
 
     SUBROUTINE copy_finfo_out( ffinfo, cfinfo )
     TYPE ( f_sils_finfo ), INTENT( IN ) :: ffinfo
-    TYPE ( sils_finfo ), INTENT( OUT ) :: cfinfo
+    TYPE ( sils_finfo_type ), INTENT( OUT ) :: cfinfo
 
     ! Integers
     cfinfo%flag = ffinfo%flag
@@ -359,7 +363,7 @@
 !  copy C sinfo parameters to fortran
 
     SUBROUTINE copy_sinfo_in( csinfo, fsinfo )
-    TYPE ( sils_sinfo ), INTENT( IN ) :: csinfo
+    TYPE ( sils_sinfo_type ), INTENT( IN ) :: csinfo
     TYPE ( f_sils_sinfo ), INTENT( OUT ) :: fsinfo
 
     ! Integers
@@ -380,7 +384,7 @@
 
     SUBROUTINE copy_sinfo_out( fsinfo, csinfo )
     TYPE ( f_sils_sinfo ), INTENT( IN ) :: fsinfo
-    TYPE ( sils_sinfo ), INTENT( OUT ) :: csinfo
+    TYPE ( sils_sinfo_type ), INTENT( OUT ) :: csinfo
 
     ! Integers
     csinfo%flag = fsinfo%flag
@@ -409,7 +413,7 @@
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
-  TYPE ( sils_control ), INTENT( OUT ) :: ccontrol
+  TYPE ( sils_control_type ), INTENT( OUT ) :: ccontrol
 
 !  local variables
 
@@ -448,7 +452,7 @@
 !  dummy arguments
 
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-  TYPE ( sils_control ), INTENT( INOUT ) :: ccontrol
+  TYPE ( sils_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -487,9 +491,9 @@
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  TYPE ( sils_ainfo ), INTENT( INOUT ) :: cainfo
-  TYPE ( sils_finfo ), INTENT( INOUT ) :: cfinfo
-  TYPE ( sils_sinfo ), INTENT( INOUT ) :: csinfo
+  TYPE ( sils_ainfo_type ), INTENT( INOUT ) :: cainfo
+  TYPE ( sils_finfo_type ), INTENT( INOUT ) :: cfinfo
+  TYPE ( sils_sinfo_type ), INTENT( INOUT ) :: csinfo
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
@@ -527,7 +531,7 @@
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  TYPE ( sils_control ), INTENT( IN ) :: ccontrol
+  TYPE ( sils_control_type ), INTENT( IN ) :: ccontrol
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
