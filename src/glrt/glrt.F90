@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-20 AT 12:20 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-20 AT 13:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -2694,7 +2694,6 @@
 !  copy control to internal data
 
      data%glrt_control = control
-data%glrt_control%print_level = 1 !!! remove
 
      status = GALAHAD_ready_to_solve
      RETURN
