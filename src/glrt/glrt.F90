@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-18 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-20 AT 12:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -1565,14 +1565,7 @@
 !  =======================================
 
   400 CONTINUE
-      X = zero ; 
-      inform%obj = control%f_0 ; 
-      IF ( ALLOCATED( data%U ) ) THEN
-        write(6,*) ' allocated U, size = ', SIZE( data%U )
-      ELSE
-        write(6,*) ' not allocated U '
-      END IF
-      data%U = zero
+      X = zero ; inform%obj = control%f_0 ; data%U = zero
       inform%obj_regularized = control%f_0 +                                   &
         ( sigma / p ) * ( data%o_mnorm_2_p_eps ** ( p / two ) )
       inform%iter = 0 ; inform%iter_pass2 = 0
