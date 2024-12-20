@@ -33,11 +33,11 @@ struct spral_ssids_options {
    bool ignore_numa;
    bool use_gpu;
    bool gpu_only;
-   longc_ min_gpu_work;
-   float max_load_inbalance;
-   float gpu_perf_coeff;
+   int64_t min_gpu_work;
+   real_sp_ max_load_inbalance;
+   real_sp_ gpu_perf_coeff;
    ipc_ scaling;
-   longc_ small_subtree_threshold;
+   int64_t small_subtree_threshold;
    ipc_ cpu_block_size;
    bool action;
    ipc_ pivot_method;
@@ -45,7 +45,7 @@ struct spral_ssids_options {
    rpc_ u;
    ipc_ nstream;
    rpc_ multiplier;
-   float min_loadbalance;
+   real_sp_ min_loadbalance;
    ipc_ failed_pivot_method;
    // char unused[80]; // Allow for future expansion
 };
@@ -60,8 +60,8 @@ struct spral_ssids_inform {
    ipc_ maxfront;
    ipc_ maxsupernode;
    ipc_ num_delay;
-   longc_ num_factor;
-   longc_ num_flops;
+   int64_t num_factor;
+   int64_t num_flops;
    ipc_ num_neg;
    ipc_ num_sup;
    ipc_ num_two;
@@ -71,8 +71,8 @@ struct spral_ssids_inform {
    ipc_ not_first_pass;
    ipc_ not_second_pass;
    ipc_ nparts;
-   longc_ cpu_flops;
-   longc_ gpu_flops;
+   int64_t cpu_flops;
+   int64_t gpu_flops;
    // char unused[76]; // Allow for future expansion
 };
 
@@ -83,7 +83,7 @@ struct spral_ssids_inform {
 /* Initialize options to defaults */
 void spral_ssids_default_options(struct spral_ssids_options *options);
 /* Perform analysis phase for CSC data */
-void spral_ssids_analyse(bool check, ipc_ n, ipc_ *order, const longc_ *ptr,
+void spral_ssids_analyse(bool check, ipc_ n, ipc_ *order, const int64_t *ptr,
       const ipc_ *row, const rpc_ *val, void **akeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
@@ -92,12 +92,12 @@ void spral_ssids_analyse_ptr32(bool check, ipc_ n, ipc_ *order, const ipc_ *ptr,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
 /* Perform analysis phase for coordinate data */
-void spral_ssids_analyse_coord(ipc_ n, ipc_ *order, longc_ ne, const ipc_ *row,
+void spral_ssids_analyse_coord(ipc_ n, ipc_ *order, int64_t ne, const ipc_ *row,
       const ipc_ *col, const rpc_ *val, void **akeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
 /* Perform numerical factorization */
-void spral_ssids_factor(bool posdef, const longc_ *ptr, const ipc_ *row,
+void spral_ssids_factor(bool posdef, const int64_t *ptr, const ipc_ *row,
       const rpc_ *val, rpc_ *scale, void *akeep, void **fkeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
