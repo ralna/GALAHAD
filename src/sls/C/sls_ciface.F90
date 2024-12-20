@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-20 AT 11:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -33,10 +33,10 @@
         f_sls_terminate => SLS_terminate
 
     USE GALAHAD_SILS_precision_ciface, ONLY:                                   &
-        sils_control,                                                          &
-        sils_ainfo,                                                            &
-        sils_finfo,                                                            &
-        sils_sinfo,                                                            &
+        sils_control_type,                                                     &
+        sils_ainfo_type,                                                       &
+        sils_finfo_type,                                                       &
+        sils_sinfo_type,                                                       &
         copy_sils_ainfo_in => copy_ainfo_in,                                   &
         copy_sils_finfo_in => copy_finfo_in,                                   &
         copy_sils_sinfo_in => copy_sinfo_in,                                   &
@@ -78,8 +78,8 @@
         copy_ma97_control_in => copy_control_in
 
     USE SPRAL_SSIDS_precision_ciface, ONLY:                                    &
-        ssids_inform,                                                          &
-        ssids_options,                                                         &
+        spral_ssids_inform,                                                    &
+        spral_ssids_options,                                                   &
         copy_ssids_inform_out => copy_inform_out,                              &
         copy_ssids_options_in => copy_options_in
 
@@ -225,9 +225,9 @@
       LOGICAL ( KIND = C_BOOL ) :: alternative
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 21 ) :: solver
       TYPE ( sls_time_type ) :: time
-      TYPE ( sils_ainfo ) :: sils_ainfo
-      TYPE ( sils_finfo ) :: sils_finfo
-      TYPE ( sils_sinfo ) :: sils_sinfo
+      TYPE ( sils_ainfo_type ) :: sils_ainfo
+      TYPE ( sils_finfo_type ) :: sils_finfo
+      TYPE ( sils_sinfo_type ) :: sils_sinfo
       TYPE ( ma57_ainfo ) :: ma57_ainfo
       TYPE ( ma57_finfo ) :: ma57_finfo
       TYPE ( ma57_sinfo ) :: ma57_sinfo
@@ -235,7 +235,7 @@
       TYPE ( ma86_info ) :: ma86_info
       TYPE ( ma87_info ) :: ma87_info
       TYPE ( ma97_info ) :: ma97_info
-      TYPE ( ssids_inform ) :: ssids_inform
+      TYPE ( spral_ssids_inform ) :: ssids_inform
       INTEGER ( KIND = ipc_ ), DIMENSION( 10 ) :: mc61_info
       REAL ( KIND = rpc_ ), DIMENSION( 15 ) :: mc61_rinfo
       TYPE ( mc64_info ) :: mc64_info
