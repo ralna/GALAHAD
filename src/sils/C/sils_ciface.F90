@@ -34,10 +34,13 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
+<<<<<<< HEAD
 !   TYPE, BIND( C, name = 'SILS_control_type' ) :: sils_control
+=======
+>>>>>>> f3623444 (Fix more headers)
     TYPE, BIND( C ) :: sils_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = ipc_ ) :: ICNTL( 30 )
+      INTEGER ( KIND = ipc_ ), DIMENSION( 30 ) :: ICNTL
       INTEGER ( KIND = ipc_ ) :: lp
       INTEGER ( KIND = ipc_ ) :: wp
       INTEGER ( KIND = ipc_ ) :: mp
@@ -54,7 +57,7 @@
       INTEGER ( KIND = ipc_ ) :: thresh
       INTEGER ( KIND = ipc_ ) :: ordering
       INTEGER ( KIND = ipc_ ) :: scaling
-      REAL ( KIND = rpc_ ) :: CNTL( 5 )
+      REAL ( KIND = rpc_ ), DIMENSION( 5 ) :: CNTL
       REAL ( KIND = rpc_ ) :: multiplier
       REAL ( KIND = rpc_ ) :: reduce
       REAL ( KIND = rpc_ ) :: u
@@ -64,7 +67,10 @@
       REAL ( KIND = rpc_ ) :: convergence
     END TYPE sils_control_type
 
+<<<<<<< HEAD
 !   TYPE, BIND( C, name = 'SILS_ainfo_type' ) :: SILS_ainfo
+=======
+>>>>>>> f3623444 (Fix more headers)
     TYPE, BIND( C ) :: SILS_ainfo_type
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: more
@@ -85,7 +91,10 @@
       REAL ( KIND = rpc_ ) :: opse
     END TYPE SILS_ainfo_type
 
+<<<<<<< HEAD
 !   TYPE, BIND( C, name = 'SILS_finfo_type' ) :: SILS_finfo
+=======
+>>>>>>> f3623444 (Fix more headers)
     TYPE, BIND( C ) :: SILS_finfo_type
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: more
@@ -103,7 +112,7 @@
       INTEGER ( KIND = ipc_ ) :: neig
       INTEGER ( KIND = ipc_ ) :: delay
       INTEGER ( KIND = ipc_ ) :: signc
-      INTEGER ( KIND = ipc_ ) :: static
+      INTEGER ( KIND = ipc_ ) :: nstatic
       INTEGER ( KIND = ipc_ ) :: modstep
       INTEGER ( KIND = ipc_ ) :: rank
       INTEGER ( KIND = ipc_ ) :: stat
@@ -117,7 +126,10 @@
       REAL ( KIND = rpc_ ) :: smax
     END TYPE SILS_finfo_type
 
+<<<<<<< HEAD
 !   TYPE, BIND( C, name = 'SILS_sinfo_type' ) :: SILS_sinfo
+=======
+>>>>>>> f3623444 (Fix more headers)
     TYPE, BIND( C ) :: SILS_sinfo_type
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: stat
@@ -301,7 +313,7 @@
     ffinfo%neig = cfinfo%neig
     ffinfo%delay = cfinfo%delay
     ffinfo%signc = cfinfo%signc
-    ffinfo%static = cfinfo%static
+    ffinfo%static = cfinfo%nstatic
     ffinfo%modstep = cfinfo%modstep
     ffinfo%rank = cfinfo%rank
     ffinfo%stat = cfinfo%stat
@@ -342,7 +354,7 @@
     cfinfo%neig = ffinfo%neig
     cfinfo%delay = ffinfo%delay
     cfinfo%signc = ffinfo%signc
-    cfinfo%static = ffinfo%static
+    cfinfo%nstatic = ffinfo%static
     cfinfo%modstep = ffinfo%modstep
     cfinfo%rank = ffinfo%rank
     cfinfo%stat = ffinfo%stat
