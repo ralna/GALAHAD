@@ -34,10 +34,6 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-<<<<<<< HEAD
-!   TYPE, BIND( C, name = 'SILS_control_type' ) :: sils_control
-=======
->>>>>>> f3623444 (Fix more headers)
     TYPE, BIND( C ) :: sils_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
       INTEGER ( KIND = ipc_ ), DIMENSION( 30 ) :: ICNTL
@@ -67,10 +63,6 @@
       REAL ( KIND = rpc_ ) :: convergence
     END TYPE sils_control_type
 
-<<<<<<< HEAD
-!   TYPE, BIND( C, name = 'SILS_ainfo_type' ) :: SILS_ainfo
-=======
->>>>>>> f3623444 (Fix more headers)
     TYPE, BIND( C ) :: SILS_ainfo_type
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: more
@@ -91,10 +83,6 @@
       REAL ( KIND = rpc_ ) :: opse
     END TYPE SILS_ainfo_type
 
-<<<<<<< HEAD
-!   TYPE, BIND( C, name = 'SILS_finfo_type' ) :: SILS_finfo
-=======
->>>>>>> f3623444 (Fix more headers)
     TYPE, BIND( C ) :: SILS_finfo_type
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: more
@@ -126,10 +114,6 @@
       REAL ( KIND = rpc_ ) :: smax
     END TYPE SILS_finfo_type
 
-<<<<<<< HEAD
-!   TYPE, BIND( C, name = 'SILS_sinfo_type' ) :: SILS_sinfo
-=======
->>>>>>> f3623444 (Fix more headers)
     TYPE, BIND( C ) :: SILS_sinfo_type
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: stat
