@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-12-20 AT 12:00 GMT.
 
 #include "spral_procedures.h"
 
