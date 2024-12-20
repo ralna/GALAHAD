@@ -26,7 +26,7 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-    TYPE, BIND( C ) :: ssids_options
+    TYPE, BIND( C ) :: spral_ssids_options
        INTEGER ( KIND = ipc_ ) :: print_level
        INTEGER ( KIND = ipc_ ) :: unit_diagnostics
        INTEGER ( KIND = ipc_ ) :: unit_error
@@ -52,9 +52,9 @@
        REAL ( KIND = rpc_ ) :: min_loadbalance
 !    character(len=:), allocatable :: rb_dump
        INTEGER ( KIND = ipc_ ) :: failed_pivot_method
-    END TYPE ssids_options
+    END TYPE spral_ssids_options
 
-    TYPE, BIND( C ) :: ssids_inform
+    TYPE, BIND( C ) :: spral_ssids_inform
        INTEGER ( KIND = ipc_ ) :: flag
        INTEGER ( KIND = ipc_ ) :: matrix_dup
        INTEGER ( KIND = ipc_ ) :: matrix_missing_diag
@@ -77,7 +77,7 @@
        INTEGER ( KIND = ipc_ ) :: nparts
        INTEGER ( KIND = longc_ ) :: cpu_flops
        INTEGER ( KIND = longc_ ) :: gpu_flops
-    END TYPE ssids_inform
+    END TYPE spral_ssids_inform
 
 !----------------------
 !   P r o c e d u r e s
@@ -88,7 +88,7 @@
 !  copy C options parameters to fortran
 
     SUBROUTINE copy_options_in( coptions, foptions )
-    TYPE ( ssids_options ), INTENT( IN ) :: coptions
+    TYPE ( spral_ssids_options ), INTENT( IN ) :: coptions
     TYPE ( f_ssids_options ), INTENT( OUT ) :: foptions
 
     foptions%print_level = coptions%print_level
@@ -122,7 +122,7 @@
 
     SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_ssids_inform ), INTENT( IN ) :: finform
-    TYPE ( ssids_inform ), INTENT( OUT ) :: cinform
+    TYPE ( spral_ssids_inform ), INTENT( OUT ) :: cinform
 
     cinform%flag = finform%flag
     cinform%matrix_dup = finform%matrix_dup

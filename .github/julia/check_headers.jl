@@ -35,6 +35,7 @@ function FORTRAN_structures()
                 type = split(line, "::")[1] |> strip
                 field = split(line, "::")[2] |> strip
               end
+              field = split(field, "/")[1]
 
               field = split(field, "!")[1] |> strip
               for syntax in ("TYPE", "REAL", "INTEGER", "CHARACTER", "=")
@@ -155,7 +156,7 @@ println("-----------------Check errors in structures------------------")
 println("-------------------------------------------------------------")
 for structure in f_list
   if !(structure in c_list)
-    println("The structure $structure can't be find in an header file.")
+    println("The structure $structure can't be find in a header file.")
     global n += 1
   else
     f_nfields = length(f_structures[structure])
