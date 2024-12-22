@@ -128,20 +128,10 @@ option('libhsl_path',
        value : [],
        description : 'Additional directories to search for the HSL library')
 
-option('libcutest_single_path',
+option('libcutest_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search for the CUTEST library in single precision')
-
-option('libcutest_double_path',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the CUTEST library in double precision')
-
-option('libcutest_quadruple_path',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the CUTEST library in quadruple precision')
+       description : 'Additional directories to search for the CUTEST libraries')
 
 option('libwsmp_path',
        type : 'array',
@@ -188,20 +178,10 @@ option('libhsl_modules',
        value : [],
        description : 'Additional directories to search for the HSL modules')
 
-option('libcutest_single_modules',
+option('libcutest_modules',
        type : 'array',
        value : [],
-       description : 'Additional directories to search for the CUTEST modules in single precision')
-
-option('libcutest_double_modules',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the CUTEST modules in double precision')
-
-option('libcutest_quadruple_modules',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the CUTEST modules in quadruple precision')
+       description : 'Additional directories to search for the CUTEST modules')
 
 option('int64',
        type : 'boolean',

@@ -262,12 +262,8 @@ runs:
                              -Dlibcutest_single=${CUTEST_SINGLE} \
                              -Dlibcutest_double=${CUTEST_DOUBLE} \
                              -Dlibcutest_quadruple=${CUTEST_QUADRUPLE} \
-                             -Dlibcutest_single_path=$CUTEST/${LIBDIR} \
-                             -Dlibcutest_double_path=$CUTEST/${LIBDIR} \
-                             -Dlibcutest_quadruple_path=$CUTEST/${LIBDIR} \
-                             -Dlibcutest_single_modules=../CUTEst/modules \
-                             -Dlibcutest_double_modules=../CUTEst/modules \
-                             -Dlibcutest_quadruple_modules=../CUTEst/modules \
+                             -Dlibcutest_path=$CUTEST/${LIBDIR} \
+                             -Dlibcutest_modules=../CUTEst/modules \
                              -Dlibhsl=${HSL} \
                              -Dlibhsl_path=${HSL_PATH} \
                              -Dlibhsl_modules=../deps/modules
