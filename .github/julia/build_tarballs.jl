@@ -47,6 +47,7 @@ meson setup builddir --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
                      -Dlibhwloc=$HWLOC \
                      -Dlibblas=openblas \
                      -Dliblapack=openblas \
+                     -Dquadruple=true \
                      -Dlibhsl_modules=$prefix/modules
 
 meson compile -C builddir
@@ -61,7 +62,8 @@ platforms = expand_gfortran_versions(platforms)
 # The products that we will ensure are always built
 products = [
     LibraryProduct("libgalahad_single", :libgalahad_single),
-    LibraryProduct("libgalahad_double", :libgalahad_double)
+    LibraryProduct("libgalahad_double", :libgalahad_double),
+    LibraryProduct("libgalahad_quadruple", :libgalahad_quadruple)
 ]
 
 # Dependencies that must be installed before this package can be built

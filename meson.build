@@ -107,24 +107,20 @@ libpardiso_path = get_option('libpardiso_path')
 libspmf_path = get_option('libspmf_path')
 libpastixf_path = get_option('libpastixf_path')
 libampl_path = get_option('libampl_path')
-libcutest_single_path = get_option('libcutest_single_path')
-libcutest_double_path = get_option('libcutest_double_path')
-libcutest_quadruple_path = get_option('libcutest_quadruple_path')
+libcutest_path = get_option('libcutest_path')
 libhwloc_path = get_option('libhwloc_path')
 
 libhwloc_include = include_directories(get_option('libhwloc_include'))
-libcutest_single_modules = include_directories(get_option('libcutest_single_modules'))
-libcutest_double_modules = include_directories(get_option('libcutest_double_modules'))
-libcutest_quadruple_modules = include_directories(get_option('libcutest_quadruple_modules'))
 libhsl_modules = include_directories(get_option('libhsl_modules'))
+libcutest_modules = include_directories(get_option('libcutest_modules'))
 
 # Dependencies
 libblas = fc.find_library(libblas_name, dirs : libblas_path, required : false)
 liblapack = fc.find_library(liblapack_name, dirs : liblapack_path, required : false)
 libhsl = fc.find_library(libhsl_name, dirs : libhsl_path, required : false)
-libcutest_single = fc.find_library(libcutest_single_name, dirs : libcutest_single_path, required : false)
-libcutest_double = fc.find_library(libcutest_double_name, dirs : libcutest_double_path, required : false)
-libcutest_quadruple = fc.find_library(libcutest_quadruple_name, dirs : libcutest_quadruple_path, required : false)
+libcutest_single = fc.find_library(libcutest_single_name, dirs : libcutest_path, required : false)
+libcutest_double = fc.find_library(libcutest_double_name, dirs : libcutest_path, required : false)
+libcutest_quadruple = fc.find_library(libcutest_quadruple_name, dirs : libcutest_path, required : false)
 libwsmp = fc.find_library(libwsmp_name, dirs : libwsmp_path, required : false)
 libpardiso = fc.find_library(libpardiso_name, dirs : libpardiso_path, required : false)
 libspmf = fc.find_library(libspmf_name, dirs : libspmf_path, required : false)
@@ -251,11 +247,7 @@ galahad_python_tests = []
 libgalahad_include = [include_directories('include'),
                       include_directories('src/dum/include'),
                       include_directories('src/metis/include'),
-                      include_directories('src/ampl')] + libhsl_modules + libhwloc_include
-
-libgalahad_single_include = libgalahad_include + libcutest_single_modules
-libgalahad_double_include = libgalahad_include + libcutest_double_modules
-libgalahad_quadruple_include = libgalahad_include + libcutest_quadruple_modules
+                      include_directories('src/ampl')] + libhsl_modules + libcutest_modules + libhwloc_include
 
 if host_machine.system() == 'linux'
   add_global_arguments('-DSPRAL_HAVE_SCHED_GETCPU', language : 'cpp')
@@ -521,7 +513,7 @@ if build_single
                               cpp_args : extra_args_single,
                               link_language : 'fortran',
                               link_args : lstdcpp,
-                              include_directories: libgalahad_single_include,
+                              include_directories: libgalahad_include,
                               install : true)
 endif
 
@@ -574,7 +566,7 @@ if build_double
                               cpp_args : extra_args_double,
                               link_language : 'fortran',
                               link_args : lstdcpp,
-                              include_directories: libgalahad_double_include,
+                              include_directories: libgalahad_include,
                               install : true)
 endif
 
@@ -627,7 +619,7 @@ if build_quadruple
                               cpp_args : extra_args_quadruple,
                               link_language : 'fortran',
                               link_args : lstdcpp,
-                              include_directories: libgalahad_quadruple_include,
+                              include_directories: libgalahad_include,
                               install : true)
 endif
 
@@ -650,7 +642,7 @@ if build_pythoniface and build_ciface and build_double
                         sources : file,
                         link_with : libgalahad_double,
                         link_language : 'c',
-                        include_directories : libgalahad_double_include + incdir_numpy,
+                        include_directories : libgalahad_include + incdir_numpy,
                         subdir : 'galahad',
                         install : true)
   endforeach
@@ -679,7 +671,7 @@ if build_single
                fortran_args : pp_flag + extra_args_single,
                link_with : libgalahad_single,
                link_language : 'fortran',
-               include_directories: libgalahad_single_include,
+               include_directories: libgalahad_include,
                install : true)
   endforeach
 endif
@@ -693,7 +685,7 @@ if build_double
                fortran_args : pp_flag + extra_args_double,
                link_with : libgalahad_double,
                link_language : 'fortran',
-               include_directories: libgalahad_double_include,
+               include_directories: libgalahad_include,
                install : true)
   endforeach
 endif
@@ -707,7 +699,7 @@ if build_quadruple
                fortran_args : pp_flag + extra_args_quadruple,
                link_with : libgalahad_quadruple,
                link_language : 'fortran',
-               include_directories: libgalahad_quadruple_include,
+               include_directories: libgalahad_include,
                install : true)
   endforeach
 endif
@@ -748,15 +740,12 @@ if build_tests
 
       if precision == 'single'
         deps_tests = libgalahad_single_deps
-        include_tests = libgalahad_single_include
       endif
       if precision == 'double'
         deps_tests = libgalahad_double_deps
-        include_tests = libgalahad_double_include
       endif
       if precision == 'quadruple'
         deps_tests = libgalahad_quadruple_deps
-        include_tests = libgalahad_quadruple_include
       endif
 
       if not (name == 'croti_single' or name == 'croti_quadruple')
@@ -766,7 +755,7 @@ if build_tests
                         link_with : libgalahad_precision,
                         dependencies : deps_tests,
                         link_language : 'fortran',
-                        include_directories: include_tests,
+                        include_directories: libgalahad_include,
                         install : true,
                         install_dir : fortran_tests_folder),
              suite : [package, precision, 'fortran'],
@@ -789,22 +778,11 @@ if build_tests and build_ciface
       package = test[0]
       name = test[1] + '_' + precision
       file = test[2]
-
-      if precision == 'single'
-        include_tests = libgalahad_single_include
-      endif
-      if precision == 'double'
-        include_tests = libgalahad_double_include
-      endif
-      if precision == 'quadruple'
-        include_tests = libgalahad_quadruple_include
-      endif
-
       test(name,
            executable(name, file,
                       c_args : args_precision, link_with : libgalahad_precision,
                       dependencies : [lm, libquadmath], link_language : 'c',
-                      include_directories : include_tests, install : true,
+                      include_directories : libgalahad_include, install : true,
                       install_dir : c_tests_folder),
            suite : [package, precision, 'C'],
            is_parallel : false)
@@ -836,8 +814,10 @@ if build_examples and build_double and (not int64)
   foreach example: galahad_examples
     name = example[0]
     file = example[1]
-    executable(name, file, link_with : libgalahad_double, dependencies : libgalahad_double_deps, link_language : 'fortran',
-                           include_directories : libgalahad_double_include, install : true, install_dir : fortran_examples_folder)
+    executable(name, file, link_with : libgalahad_double,
+               dependencies : libgalahad_double_deps, link_language : 'fortran',
+               include_directories : libgalahad_include,
+               install : true, install_dir : fortran_examples_folder)
   endforeach
 endif
 
@@ -853,19 +833,10 @@ if build_examples and build_ciface
       libgalahad_precision = val[2]
       name = example[0] + '_' + precision
       file = example[1]
-
-      if precision == 'single'
-        include_examples = libgalahad_single_include
-      endif
-      if precision == 'double'
-        include_examples = libgalahad_double_include
-      endif
-      if precision == 'quadruple'
-        include_examples = libgalahad_quadruple_include
-      endif
-
-      executable(name, file, c_args : args_precision, link_with : libgalahad_precision, dependencies : [lm, libquadmath], link_language : 'c',
-                             include_directories : include_examples, install : true, install_dir : c_examples_folder)
+      executable(name, file, c_args : args_precision, link_with : libgalahad_precision,
+                 dependencies : [lm, libquadmath], link_language : 'c',
+                 include_directories : libgalahad_include,
+                 install : true, install_dir : c_examples_folder)
     endforeach
   endforeach
 endif
