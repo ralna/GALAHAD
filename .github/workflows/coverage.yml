@@ -53,14 +53,15 @@ jobs:
 
     - name: Generate coverage report
       run: |
-        gcovr -r . --html --html-details -o builddir/coverage.html
-        gcovr -r . --xml -o builddir/coverage.xml
+        EXCLUDE_FILES=$(paste -sd "|" .github/coverage/exclude_files.txt)
+        gcovr -r . --xml -o builddir/coverage.xml --exclude "$EXCLUDE_FILES"
+        # gcovr -r . --html --html-details -o builddir/coverage.html --exclude "$EXCLUDE_FILES"
 
-    - name: Upload coverage report to GitHub
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report
-        path: builddir/coverage.html
+    # - name: Upload coverage report to GitHub
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: coverage-report
+    #     path: builddir/coverage.html
 
     - name: Upload coverage report to Codecov
       uses: codecov/codecov-action@v5
