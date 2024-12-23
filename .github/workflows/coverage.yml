@@ -1,0 +1,70 @@
+name: Coverage
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y ninja-build gcc gfortran lcov libhwloc-dev
+        pip install meson gcovr
+
+    - name: Set the environment variables
+      shell: bash
+      run: |
+        echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
+    - name: Set environment variables for OpenMP
+      shell: bash
+      run: |
+        echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
+        echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
+
+    - name: Setup
+      run: |
+        meson setup builddir --buildtype=debug \
+                             -Db_coverage=true \
+                             -Dsingle=true \
+                             -Ddouble=true \
+                             -Dquadruple=true \
+                             -Dtests=true
+
+    - name: Compilation
+      run: |
+        meson compile -C builddir
+
+    - name: Tests
+      run: meson test -C builddir --timeout-multiplier 8
+
+    - name: Generate coverage report
+      run: |
+        EXCLUDE_FILES=$(paste -sd "|" .github/coverage/exclude_files.txt)
+        gcovr -r . --xml -o builddir/coverage.xml --exclude "$EXCLUDE_FILES"
+        # gcovr -r . --html --html-details -o builddir/coverage.html --exclude "$EXCLUDE_FILES"
+
+    # - name: Upload coverage report to GitHub
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: coverage-report
+    #     path: builddir/coverage.html
+
+    - name: Upload coverage report to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        files: builddir/coverage.xml
+        token: ${{ secrets.CODECOV_TOKEN }}
