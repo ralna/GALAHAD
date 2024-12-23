@@ -1,4 +1,4 @@
-# GALAHAD [![][license-shield]][license] [![][joss-shield]][joss]
+# GALAHAD [![][license-shield]][license] [![][joss-shield]][joss] [![codecov][codecov-img]][codecov-url]
 GALAHAD is a library of modern Fortran packages for nonlinear optimization with C, Python, Julia and MATLAB interfaces. It contains packages for general constrained and unconstrained optimization, linear and quadratic programming, nonlinear least-squares fitting and global optimization, as well as those for solving a large variety of basic optimization subproblems.
 
 ## Documentation
@@ -104,3 +104,5 @@ To use this variant, follow the instructions in the GALAHAD
 [license]: https://opensource.org/licenses/BSD-3-Clause
 [joss-shield]: https://joss.theoj.org/papers/10.21105/joss.04882/status.svg
 [joss]: https://doi.org/10.21105/joss.04882
+[codecov-img]: https://codecov.io/gh/ralna/GALAHAD/branch/master/graph/badge.svg
+[codecov-url]: https://app.codecov.io/gh/ralna/GALAHAD
