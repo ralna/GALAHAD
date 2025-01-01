@@ -7,11 +7,11 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_llst(::Type{T}) where T
+function test_llst(::Type{T}, ::Type{INT}) where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{llst_control_type{T}}()
-  inform = Ref{llst_inform_type{T}}()
+  control = Ref{llst_control_type{T,INT}}()
+  inform = Ref{llst_inform_type{T,INT}}()
 
   # Set problem data
   # set dimensions
@@ -19,9 +19,9 @@ function test_llst(::Type{T}) where T
   n = 2 * m + 1
   # A = (I : Diag(1:n) : e)
   A_ne = 3 * m
-  A_row = zeros(Cint, A_ne)
-  A_col = zeros(Cint, A_ne)
-  A_ptr = zeros(Cint, m + 1)
+  A_row = zeros(INT, A_ne)
+  A_col = zeros(INT, A_ne)
+  A_ptr = zeros(INT, m + 1)
   A_val = zeros(T, A_ne)
 
   # store A in sparse formats
@@ -56,9 +56,9 @@ function test_llst(::Type{T}) where T
 
   # S = diag(1:n)**2
   S_ne = n
-  S_row = zeros(Cint, S_ne)
-  S_col = zeros(Cint, S_ne)
-  S_ptr = zeros(Cint, n + 1)
+  S_row = zeros(INT, S_ne)
+  S_col = zeros(INT, S_ne)
+  S_ptr = zeros(INT, n + 1)
   S_val = zeros(T, S_ne)
 
   # store S in sparse formats
@@ -88,7 +88,7 @@ function test_llst(::Type{T}) where T
   # Set output storage
   x = zeros(T, n) # solution
   st = ' '
-  status = Ref{Cint}()
+  status = Ref{INT}()
 
   @printf(" Fortran sparse matrix indexing\n\n")
   @printf(" basic tests of problem storage formats\n\n")
@@ -97,11 +97,11 @@ function test_llst(::Type{T}) where T
   for d in 1:4
 
     # Initialize LLST
-    llst_initialize(T, data, control, status)
+    llst_initialize(T, INT, data, control, status)
     @reset control[].definite_linear_solver = galahad_linear_solver("potr")
     @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
     @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("potr")
-    # @reset control[].print_level = Cint(1)
+    # @reset control[].print_level = INT(1)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -111,18 +111,18 @@ function test_llst(::Type{T}) where T
       # sparse co-ordinate storage
       if d == 1
         st = 'C'
-        llst_import(T, control, data, status, m, n,
+        llst_import(T, INT, control, data, status, m, n,
                     "coordinate", A_ne, A_row, A_col, C_NULL)
 
         if use_s == 0
-          llst_solve_problem(T, data, status, m, n, radius,
+          llst_solve_problem(T, INT, data, status, m, n, radius,
                              A_ne, A_val, b, x, 0, C_NULL)
         else
-          llst_import_scaling(T, control, data, status, n,
+          llst_import_scaling(T, INT, control, data, status, n,
                               "coordinate", S_ne, S_row,
                               S_col, C_NULL)
 
-          llst_solve_problem(T, data, status, m, n, radius,
+          llst_solve_problem(T, INT, data, status, m, n, radius,
                              A_ne, A_val, b, x, S_ne, S_val)
         end
       end
@@ -130,17 +130,17 @@ function test_llst(::Type{T}) where T
       # sparse by rows
       if d == 2
         st = 'R'
-        llst_import(T, control, data, status, m, n,
+        llst_import(T, INT, control, data, status, m, n,
                     "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
         if use_s == 0
-          llst_solve_problem(T, data, status, m, n, radius,
+          llst_solve_problem(T, INT, data, status, m, n, radius,
                              A_ne, A_val, b, x, 0, C_NULL)
         else
-          llst_import_scaling(T, control, data, status, n,
+          llst_import_scaling(T, INT, control, data, status, n,
                               "sparse_by_rows", S_ne, C_NULL,
                               S_col, S_ptr)
 
-          llst_solve_problem(T, data, status, m, n, radius,
+          llst_solve_problem(T, INT, data, status, m, n, radius,
                              A_ne, A_val, b, x, S_ne, S_val)
         end
       end
@@ -148,19 +148,19 @@ function test_llst(::Type{T}) where T
       # dense
       if d == 3
         st = 'D'
-        llst_import(T, control, data, status, m, n,
+        llst_import(T, INT, control, data, status, m, n,
                     "dense", A_dense_ne, C_NULL, C_NULL, C_NULL)
 
         if use_s == 0
-          llst_solve_problem(T, data, status, m, n, radius,
+          llst_solve_problem(T, INT, data, status, m, n, radius,
                              A_dense_ne, A_dense_val, b, x,
                              0, C_NULL)
         else
-          llst_import_scaling(T, control, data, status, n,
+          llst_import_scaling(T, INT, control, data, status, n,
                               "dense", S_dense_ne,
                               C_NULL, C_NULL, C_NULL)
 
-          llst_solve_problem(T, data, status, m, n, radius,
+          llst_solve_problem(T, INT, data, status, m, n, radius,
                              A_dense_ne, A_dense_val, b, x,
                              S_dense_ne, S_dense_val)
         end
@@ -169,21 +169,21 @@ function test_llst(::Type{T}) where T
       # diagonal
       if d == 4
         st = 'I'
-        llst_import(T, control, data, status, m, n,
+        llst_import(T, INT, control, data, status, m, n,
                     "coordinate", A_ne, A_row, A_col, C_NULL)
         if use_s == 0
-          llst_solve_problem(T, data, status, m, n, radius,
+          llst_solve_problem(T, INT, data, status, m, n, radius,
                              A_ne, A_val, b, x, 0, C_NULL)
         else
-          llst_import_scaling(T, control, data, status, n,
+          llst_import_scaling(T, INT, control, data, status, n,
                               "diagonal", S_ne, C_NULL, C_NULL, C_NULL)
 
-          llst_solve_problem(T, data, status, m, n, radius,
+          llst_solve_problem(T, INT, data, status, m, n, radius,
                              A_ne, A_val, b, x, S_ne, S_val)
         end
       end
 
-      llst_information(T, data, inform, status)
+      llst_information(T, INT, data, inform, status)
 
       if inform[].status == 0
         @printf("storage type %c%1i:  status = %1i, ||r|| = %5.2f\n", st, use_s,
@@ -201,14 +201,14 @@ function test_llst(::Type{T}) where T
     # @printf("\n")
 
     # Delete internal workspace
-    llst_terminate(T, data, control, inform)
+    llst_terminate(T, INT, data, control, inform)
   end
 
   return 0
 end
 
 @testset "LLST" begin
-  @test test_llst(Float32) == 0
-  @test test_llst(Float64) == 0
-  @test test_llst(Float128) == 0
+  @test test_llst(Float32, Int32) == 0
+  @test test_llst(Float64, Int32) == 0
+  @test test_llst(Float128, Int32) == 0
 end

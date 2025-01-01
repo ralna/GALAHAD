@@ -1,21 +1,21 @@
 export bllsb_control_type
 
-struct bllsb_control_type{T}
+struct bllsb_control_type{T,INT}
   f_indexing::Bool
-  error::Cint
-  out::Cint
-  print_level::Cint
-  start_print::Cint
-  stop_print::Cint
-  maxit::Cint
-  infeas_max::Cint
-  muzero_fixed::Cint
-  restore_problem::Cint
-  indicator_type::Cint
-  arc::Cint
-  series_order::Cint
-  sif_file_device::Cint
-  qplib_file_device::Cint
+  error::INT
+  out::INT
+  print_level::INT
+  start_print::INT
+  stop_print::INT
+  maxit::INT
+  infeas_max::INT
+  muzero_fixed::INT
+  restore_problem::INT
+  indicator_type::INT
+  arc::INT
+  series_order::INT
+  sif_file_device::INT
+  qplib_file_device::INT
   infinity::T
   stop_abs_p::T
   stop_rel_p::T
@@ -56,12 +56,12 @@ struct bllsb_control_type{T}
   sif_file_name::NTuple{31,Cchar}
   qplib_file_name::NTuple{31,Cchar}
   prefix::NTuple{31,Cchar}
-  fdc_control::fdc_control_type{T}
-  sls_control::sls_control_type{T}
-  sls_pounce_control::sls_control_type{T}
-  fit_control::fit_control_type
-  roots_control::roots_control_type{T}
-  cro_control::cro_control_type{T}
+  fdc_control::fdc_control_type{T,INT}
+  sls_control::sls_control_type{T,INT}
+  sls_pounce_control::sls_control_type{T,INT}
+  fit_control::fit_control_type{INT}
+  roots_control::roots_control_type{T,INT}
+  cro_control::cro_control_type{T,INT}
 end
 
 export bllsb_time_type
@@ -83,196 +83,209 @@ end
 
 export bllsb_inform_type
 
-struct bllsb_inform_type{T}
-  status::Cint
-  alloc_status::Cint
+struct bllsb_inform_type{T,INT}
+  status::INT
+  alloc_status::INT
   bad_alloc::NTuple{81,Cchar}
-  iter::Cint
-  factorization_status::Cint
+  iter::INT
+  factorization_status::INT
   factorization_integer::Int64
   factorization_real::Int64
-  nfacts::Cint
-  nbacts::Cint
-  threads::Cint
+  nfacts::INT
+  nbacts::INT
+  threads::INT
   obj::T
   primal_infeasibility::T
   dual_infeasibility::T
   complementary_slackness::T
   non_negligible_pivot::T
   feasible::Bool
-  checkpointsIter::NTuple{16,Cint}
+  checkpointsIter::NTuple{16,INT}
   checkpointsTime::NTuple{16,T}
   time::bllsb_time_type{T}
-  fdc_inform::fdc_inform_type{T}
-  sls_inform::sls_inform_type{T}
-  sls_pounce_inform::sls_inform_type{T}
-  fit_inform::fit_inform_type
-  roots_inform::roots_inform_type
-  cro_inform::cro_inform_type{T}
-  rpd_inform::rpd_inform_type
+  fdc_inform::fdc_inform_type{T,INT}
+  sls_inform::sls_inform_type{T,INT}
+  sls_pounce_inform::sls_inform_type{T,INT}
+  fit_inform::fit_inform_type{INT}
+  roots_inform::roots_inform_type{INT}
+  cro_inform::cro_inform_type{T,INT}
+  rpd_inform::rpd_inform_type{INT}
 end
 
 export bllsb_initialize
 
-function bllsb_initialize(::Type{Float32}, data, control, status)
+function bllsb_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.bllsb_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{bllsb_control_type{Float32}},
-                                              status::Ptr{Cint})::Cvoid
+                                              control::Ptr{bllsb_control_type{Float32,
+                                                                              Int32}},
+                                              status::Ptr{Int32})::Cvoid
 end
 
-function bllsb_initialize(::Type{Float64}, data, control, status)
+function bllsb_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.bllsb_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{bllsb_control_type{Float64}},
-                                            status::Ptr{Cint})::Cvoid
+                                            control::Ptr{bllsb_control_type{Float64,Int32}},
+                                            status::Ptr{Int32})::Cvoid
 end
 
-function bllsb_initialize(::Type{Float128}, data, control, status)
+function bllsb_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_quadruple.bllsb_initialize_q(data::Ptr{Ptr{Cvoid}},
-                                                 control::Ptr{bllsb_control_type{Float128}},
-                                                 status::Ptr{Cint})::Cvoid
+                                                 control::Ptr{bllsb_control_type{Float128,
+                                                                                 Int32}},
+                                                 status::Ptr{Int32})::Cvoid
 end
 
 export bllsb_read_specfile
 
-function bllsb_read_specfile(::Type{Float32}, control, specfile)
-  @ccall libgalahad_single.bllsb_read_specfile_s(control::Ptr{bllsb_control_type{Float32}},
+function bllsb_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
+  @ccall libgalahad_single.bllsb_read_specfile_s(control::Ptr{bllsb_control_type{Float32,
+                                                                                 Int32}},
                                                  specfile::Ptr{Cchar})::Cvoid
 end
 
-function bllsb_read_specfile(::Type{Float64}, control, specfile)
-  @ccall libgalahad_double.bllsb_read_specfile(control::Ptr{bllsb_control_type{Float64}},
+function bllsb_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
+  @ccall libgalahad_double.bllsb_read_specfile(control::Ptr{bllsb_control_type{Float64,
+                                                                               Int32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
-function bllsb_read_specfile(::Type{Float128}, control, specfile)
-  @ccall libgalahad_quadruple.bllsb_read_specfile_q(control::Ptr{bllsb_control_type{Float128}},
+function bllsb_read_specfile(::Type{Float128}, ::Type{Int32}, control, specfile)
+  @ccall libgalahad_quadruple.bllsb_read_specfile_q(control::Ptr{bllsb_control_type{Float128,
+                                                                                    Int32}},
                                                     specfile::Ptr{Cchar})::Cvoid
 end
 
 export bllsb_import
 
-function bllsb_import(::Type{Float32}, control, data, status, n, o, Ao_type, Ao_ne, Ao_row,
-                      Ao_col, Ao_ptr_ne, Ao_ptr)
-  @ccall libgalahad_single.bllsb_import_s(control::Ptr{bllsb_control_type{Float32}},
-                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
-                                          o::Cint, Ao_type::Ptr{Cchar}, Ao_ne::Cint,
-                                          Ao_row::Ptr{Cint}, Ao_col::Ptr{Cint},
-                                          Ao_ptr_ne::Cint, Ao_ptr::Ptr{Cint})::Cvoid
+function bllsb_import(::Type{Float32}, ::Type{Int32}, control, data, status, n, o, Ao_type,
+                      Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr)
+  @ccall libgalahad_single.bllsb_import_s(control::Ptr{bllsb_control_type{Float32,Int32}},
+                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                          n::Int32, o::Int32, Ao_type::Ptr{Cchar},
+                                          Ao_ne::Int32, Ao_row::Ptr{Int32},
+                                          Ao_col::Ptr{Int32}, Ao_ptr_ne::Int32,
+                                          Ao_ptr::Ptr{Int32})::Cvoid
 end
 
-function bllsb_import(::Type{Float64}, control, data, status, n, o, Ao_type, Ao_ne, Ao_row,
-                      Ao_col, Ao_ptr_ne, Ao_ptr)
-  @ccall libgalahad_double.bllsb_import(control::Ptr{bllsb_control_type{Float64}},
-                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
-                                        o::Cint, Ao_type::Ptr{Cchar}, Ao_ne::Cint,
-                                        Ao_row::Ptr{Cint}, Ao_col::Ptr{Cint},
-                                        Ao_ptr_ne::Cint, Ao_ptr::Ptr{Cint})::Cvoid
+function bllsb_import(::Type{Float64}, ::Type{Int32}, control, data, status, n, o, Ao_type,
+                      Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr)
+  @ccall libgalahad_double.bllsb_import(control::Ptr{bllsb_control_type{Float64,Int32}},
+                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
+                                        o::Int32, Ao_type::Ptr{Cchar}, Ao_ne::Int32,
+                                        Ao_row::Ptr{Int32}, Ao_col::Ptr{Int32},
+                                        Ao_ptr_ne::Int32, Ao_ptr::Ptr{Int32})::Cvoid
 end
 
-function bllsb_import(::Type{Float128}, control, data, status, n, o, Ao_type, Ao_ne, Ao_row,
-                      Ao_col, Ao_ptr_ne, Ao_ptr)
-  @ccall libgalahad_quadruple.bllsb_import_q(control::Ptr{bllsb_control_type{Float128}},
-                                             data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                             n::Cint, o::Cint, Ao_type::Ptr{Cchar},
-                                             Ao_ne::Cint, Ao_row::Ptr{Cint},
-                                             Ao_col::Ptr{Cint}, Ao_ptr_ne::Cint,
-                                             Ao_ptr::Ptr{Cint})::Cvoid
+function bllsb_import(::Type{Float128}, ::Type{Int32}, control, data, status, n, o, Ao_type,
+                      Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr)
+  @ccall libgalahad_quadruple.bllsb_import_q(control::Ptr{bllsb_control_type{Float128,
+                                                                             Int32}},
+                                             data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                             n::Int32, o::Int32, Ao_type::Ptr{Cchar},
+                                             Ao_ne::Int32, Ao_row::Ptr{Int32},
+                                             Ao_col::Ptr{Int32}, Ao_ptr_ne::Int32,
+                                             Ao_ptr::Ptr{Int32})::Cvoid
 end
 
 export bllsb_reset_control
 
-function bllsb_reset_control(::Type{Float32}, control, data, status)
-  @ccall libgalahad_single.bllsb_reset_control_s(control::Ptr{bllsb_control_type{Float32}},
+function bllsb_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status)
+  @ccall libgalahad_single.bllsb_reset_control_s(control::Ptr{bllsb_control_type{Float32,
+                                                                                 Int32}},
                                                  data::Ptr{Ptr{Cvoid}},
-                                                 status::Ptr{Cint})::Cvoid
+                                                 status::Ptr{Int32})::Cvoid
 end
 
-function bllsb_reset_control(::Type{Float64}, control, data, status)
-  @ccall libgalahad_double.bllsb_reset_control(control::Ptr{bllsb_control_type{Float64}},
+function bllsb_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
+  @ccall libgalahad_double.bllsb_reset_control(control::Ptr{bllsb_control_type{Float64,
+                                                                               Int32}},
                                                data::Ptr{Ptr{Cvoid}},
-                                               status::Ptr{Cint})::Cvoid
+                                               status::Ptr{Int32})::Cvoid
 end
 
-function bllsb_reset_control(::Type{Float128}, control, data, status)
-  @ccall libgalahad_quadruple.bllsb_reset_control_q(control::Ptr{bllsb_control_type{Float128}},
+function bllsb_reset_control(::Type{Float128}, ::Type{Int32}, control, data, status)
+  @ccall libgalahad_quadruple.bllsb_reset_control_q(control::Ptr{bllsb_control_type{Float128,
+                                                                                    Int32}},
                                                     data::Ptr{Ptr{Cvoid}},
-                                                    status::Ptr{Cint})::Cvoid
+                                                    status::Ptr{Int32})::Cvoid
 end
 
 export bllsb_solve_blls
 
-function bllsb_solve_blls(::Type{Float32}, data, status, n, o, Ao_ne, Ao_val, b,
-                          regularization_weight, x_l, x_u, x, r, z, x_stat, w)
-  @ccall libgalahad_single.bllsb_solve_blls_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                              n::Cint, o::Cint, Ao_ne::Cint,
+function bllsb_solve_blls(::Type{Float32}, ::Type{Int32}, data, status, n, o, Ao_ne, Ao_val,
+                          b, regularization_weight, x_l, x_u, x, r, z, x_stat, w)
+  @ccall libgalahad_single.bllsb_solve_blls_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                              n::Int32, o::Int32, Ao_ne::Int32,
                                               Ao_val::Ptr{Float32}, b::Ptr{Float32},
                                               regularization_weight::Float32,
                                               x_l::Ptr{Float32}, x_u::Ptr{Float32},
                                               x::Ptr{Float32}, r::Ptr{Float32},
-                                              z::Ptr{Float32}, x_stat::Ptr{Cint},
+                                              z::Ptr{Float32}, x_stat::Ptr{Int32},
                                               w::Ptr{Float32})::Cvoid
 end
 
-function bllsb_solve_blls(::Type{Float64}, data, status, n, o, Ao_ne, Ao_val, b,
-                          regularization_weight, x_l, x_u, x, r, z, x_stat, w)
-  @ccall libgalahad_double.bllsb_solve_blls(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                            n::Cint, o::Cint, Ao_ne::Cint,
+function bllsb_solve_blls(::Type{Float64}, ::Type{Int32}, data, status, n, o, Ao_ne, Ao_val,
+                          b, regularization_weight, x_l, x_u, x, r, z, x_stat, w)
+  @ccall libgalahad_double.bllsb_solve_blls(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                            n::Int32, o::Int32, Ao_ne::Int32,
                                             Ao_val::Ptr{Float64}, b::Ptr{Float64},
                                             regularization_weight::Float64,
                                             x_l::Ptr{Float64}, x_u::Ptr{Float64},
                                             x::Ptr{Float64}, r::Ptr{Float64},
-                                            z::Ptr{Float64}, x_stat::Ptr{Cint},
+                                            z::Ptr{Float64}, x_stat::Ptr{Int32},
                                             w::Ptr{Float64})::Cvoid
 end
 
-function bllsb_solve_blls(::Type{Float128}, data, status, n, o, Ao_ne, Ao_val, b,
-                          regularization_weight, x_l, x_u, x, r, z, x_stat, w)
-  @ccall libgalahad_quadruple.bllsb_solve_blls_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                                 n::Cint, o::Cint, Ao_ne::Cint,
+function bllsb_solve_blls(::Type{Float128}, ::Type{Int32}, data, status, n, o, Ao_ne,
+                          Ao_val, b, regularization_weight, x_l, x_u, x, r, z, x_stat, w)
+  @ccall libgalahad_quadruple.bllsb_solve_blls_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                                 n::Int32, o::Int32, Ao_ne::Int32,
                                                  Ao_val::Ptr{Float128}, b::Ptr{Float128},
                                                  regularization_weight::Cfloat128,
                                                  x_l::Ptr{Float128}, x_u::Ptr{Float128},
                                                  x::Ptr{Float128}, r::Ptr{Float128},
-                                                 z::Ptr{Float128}, x_stat::Ptr{Cint},
+                                                 z::Ptr{Float128}, x_stat::Ptr{Int32},
                                                  w::Ptr{Float128})::Cvoid
 end
 
 export bllsb_information
 
-function bllsb_information(::Type{Float32}, data, inform, status)
+function bllsb_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_single.bllsb_information_s(data::Ptr{Ptr{Cvoid}},
-                                               inform::Ptr{bllsb_inform_type{Float32}},
-                                               status::Ptr{Cint})::Cvoid
+                                               inform::Ptr{bllsb_inform_type{Float32,Int32}},
+                                               status::Ptr{Int32})::Cvoid
 end
 
-function bllsb_information(::Type{Float64}, data, inform, status)
+function bllsb_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_double.bllsb_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{bllsb_inform_type{Float64}},
-                                             status::Ptr{Cint})::Cvoid
+                                             inform::Ptr{bllsb_inform_type{Float64,Int32}},
+                                             status::Ptr{Int32})::Cvoid
 end
 
-function bllsb_information(::Type{Float128}, data, inform, status)
+function bllsb_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_quadruple.bllsb_information_q(data::Ptr{Ptr{Cvoid}},
-                                                  inform::Ptr{bllsb_inform_type{Float128}},
-                                                  status::Ptr{Cint})::Cvoid
+                                                  inform::Ptr{bllsb_inform_type{Float128,
+                                                                                Int32}},
+                                                  status::Ptr{Int32})::Cvoid
 end
 
 export bllsb_terminate
 
-function bllsb_terminate(::Type{Float32}, data, control, inform)
+function bllsb_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_single.bllsb_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{bllsb_control_type{Float32}},
-                                             inform::Ptr{bllsb_inform_type{Float32}})::Cvoid
+                                             control::Ptr{bllsb_control_type{Float32,Int32}},
+                                             inform::Ptr{bllsb_inform_type{Float32,Int32}})::Cvoid
 end
 
-function bllsb_terminate(::Type{Float64}, data, control, inform)
+function bllsb_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.bllsb_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{bllsb_control_type{Float64}},
-                                           inform::Ptr{bllsb_inform_type{Float64}})::Cvoid
+                                           control::Ptr{bllsb_control_type{Float64,Int32}},
+                                           inform::Ptr{bllsb_inform_type{Float64,Int32}})::Cvoid
 end
 
-function bllsb_terminate(::Type{Float128}, data, control, inform)
+function bllsb_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_quadruple.bllsb_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                                control::Ptr{bllsb_control_type{Float128}},
-                                                inform::Ptr{bllsb_inform_type{Float128}})::Cvoid
+                                                control::Ptr{bllsb_control_type{Float128,
+                                                                                Int32}},
+                                                inform::Ptr{bllsb_inform_type{Float128,
+                                                                              Int32}})::Cvoid
 end

@@ -7,26 +7,26 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_lhs(::Type{T}) where T
+function test_lhs(::Type{T}, ::Type{INT}) where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{lhs_control_type}()
-  inform = Ref{lhs_inform_type}()
+  control = Ref{lhs_control_type{INT}}()
+  inform = Ref{lhs_inform_type{INT}}()
 
   # Initialize LHS
-  lhs_initialize(T, data, control, inform)
+  lhs_initialize(T, INT, data, control, inform)
 
   # Parameters
-  n_dimen = Cint(7) # dimension
-  n_points = Cint(2) # points required
-  X = [zeros(Cint, n_points) for i in 1:n_dimen]  # points
-  seed = Ref{Cint}()
+  n_dimen = INT(7)  # dimension
+  n_points = INT(2)  # points required
+  X = [zeros(INT, n_points) for i in 1:n_dimen]  # points
+  seed = Ref{INT}()
 
   # Set a random seed
-  lhs_get_seed(T, seed)
+  lhs_get_seed(T, INT, seed)
 
   # Generate points
-  lhs_ihs(T, n_dimen, n_points, seed, X, control, inform, data)
+  lhs_ihs(T, INT, n_dimen, n_points, seed, X, control, inform, data)
 
   if inform[].status == 0 # successful return
     @printf("LHS successful\n")
@@ -42,13 +42,13 @@ function test_lhs(::Type{T}) where T
   end
 
   # Delete internal workspace
-  lhs_terminate(T, data, control, inform)
+  lhs_terminate(T, INT, data, control, inform)
 
   return 0
 end
 
 @testset "LHS" begin
-  @test test_lhs(Float32) == 0
-  @test test_lhs(Float64) == 0
-  @test test_lhs(Float128) == 0
+  @test test_lhs(Float32, Int32) == 0
+  @test test_lhs(Float64, Int32) == 0
+  @test test_lhs(Float128, Int32) == 0
 end

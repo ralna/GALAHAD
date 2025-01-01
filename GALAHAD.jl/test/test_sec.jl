@@ -5,21 +5,21 @@ using GALAHAD
 using Test
 using Quadmath
 
-function test_sec(::Type{T}) where T
+function test_sec(::Type{T}, ::Type{INT}) where {T,INT}
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{sec_control_type{T}}()
-  inform = Ref{sec_inform_type}()
+  control = Ref{sec_control_type{T,INT}}()
+  inform = Ref{sec_inform_type{INT}}()
 
-  status = Ref{Cint}()
-  sec_initialize(T, control, status)
-  sec_information(T, data, inform, status)
-  sec_terminate(T, data, control, inform)
+  status = Ref{INT}()
+  sec_initialize(T, INT, control, status)
+  sec_information(T, INT, data, inform, status)
+  sec_terminate(T, INT, data, control, inform)
 
   return 0
 end
 
 @testset "SEC" begin
-  @test test_sec(Float32) == 0
-  @test test_sec(Float64) == 0
-  @test test_sec(Float128) == 0
+  @test test_sec(Float32, Int32) == 0
+  @test test_sec(Float64, Int32) == 0
+  @test test_sec(Float128, Int32) == 0
 end

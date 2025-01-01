@@ -1,9 +1,9 @@
 export hash_control_type
 
-struct hash_control_type
-  error::Cint
-  out::Cint
-  print_level::Cint
+struct hash_control_type{INT}
+  error::INT
+  out::INT
+  print_level::INT
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
@@ -11,70 +11,74 @@ end
 
 export hash_inform_type
 
-struct hash_inform_type
-  status::Cint
-  alloc_status::Cint
+struct hash_inform_type{INT}
+  status::INT
+  alloc_status::INT
   bad_alloc::NTuple{81,Cchar}
 end
 
 export hash_initialize
 
-function hash_initialize(::Type{Float32}, nchar, length, data, control, inform)
-  @ccall libgalahad_single.hash_initialize_s(nchar::Cint, length::Cint,
+function hash_initialize(::Type{Float32}, ::Type{Int32}, nchar, length, data, control,
+                         inform)
+  @ccall libgalahad_single.hash_initialize_s(nchar::Int32, length::Int32,
                                              data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{hash_control_type},
-                                             inform::Ptr{hash_inform_type})::Cvoid
+                                             control::Ptr{hash_control_type{Int32}},
+                                             inform::Ptr{hash_inform_type{Int32}})::Cvoid
 end
 
-function hash_initialize(::Type{Float64}, nchar, length, data, control, inform)
-  @ccall libgalahad_double.hash_initialize(nchar::Cint, length::Cint, data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{hash_control_type},
-                                           inform::Ptr{hash_inform_type})::Cvoid
+function hash_initialize(::Type{Float64}, ::Type{Int32}, nchar, length, data, control,
+                         inform)
+  @ccall libgalahad_double.hash_initialize(nchar::Int32, length::Int32,
+                                           data::Ptr{Ptr{Cvoid}},
+                                           control::Ptr{hash_control_type{Int32}},
+                                           inform::Ptr{hash_inform_type{Int32}})::Cvoid
 end
 
-function hash_initialize(::Type{Float128}, nchar, length, data, control, inform)
-  @ccall libgalahad_quadruple.hash_initialize_q(nchar::Cint, length::Cint,
+function hash_initialize(::Type{Float128}, ::Type{Int32}, nchar, length, data, control,
+                         inform)
+  @ccall libgalahad_quadruple.hash_initialize_q(nchar::Int32, length::Int32,
                                                 data::Ptr{Ptr{Cvoid}},
-                                                control::Ptr{hash_control_type},
-                                                inform::Ptr{hash_inform_type})::Cvoid
+                                                control::Ptr{hash_control_type{Int32}},
+                                                inform::Ptr{hash_inform_type{Int32}})::Cvoid
 end
 
 export hash_information
 
-function hash_information(::Type{Float32}, data, inform, status)
+function hash_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_single.hash_information_s(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{hash_inform_type},
-                                              status::Ptr{Cint})::Cvoid
+                                              inform::Ptr{hash_inform_type{Int32}},
+                                              status::Ptr{Int32})::Cvoid
 end
 
-function hash_information(::Type{Float64}, data, inform, status)
+function hash_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_double.hash_information(data::Ptr{Ptr{Cvoid}},
-                                            inform::Ptr{hash_inform_type},
-                                            status::Ptr{Cint})::Cvoid
+                                            inform::Ptr{hash_inform_type{Int32}},
+                                            status::Ptr{Int32})::Cvoid
 end
 
-function hash_information(::Type{Float128}, data, inform, status)
+function hash_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_quadruple.hash_information_q(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{hash_inform_type},
-                                                 status::Ptr{Cint})::Cvoid
+                                                 inform::Ptr{hash_inform_type{Int32}},
+                                                 status::Ptr{Int32})::Cvoid
 end
 
 export hash_terminate
 
-function hash_terminate(::Type{Float32}, data, control, inform)
+function hash_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_single.hash_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{hash_control_type},
-                                            inform::Ptr{hash_inform_type})::Cvoid
+                                            control::Ptr{hash_control_type{Int32}},
+                                            inform::Ptr{hash_inform_type{Int32}})::Cvoid
 end
 
-function hash_terminate(::Type{Float64}, data, control, inform)
+function hash_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.hash_terminate(data::Ptr{Ptr{Cvoid}},
-                                          control::Ptr{hash_control_type},
-                                          inform::Ptr{hash_inform_type})::Cvoid
+                                          control::Ptr{hash_control_type{Int32}},
+                                          inform::Ptr{hash_inform_type{Int32}})::Cvoid
 end
 
-function hash_terminate(::Type{Float128}, data, control, inform)
+function hash_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_quadruple.hash_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{hash_control_type},
-                                               inform::Ptr{hash_inform_type})::Cvoid
+                                               control::Ptr{hash_control_type{Int32}},
+                                               inform::Ptr{hash_inform_type{Int32}})::Cvoid
 end

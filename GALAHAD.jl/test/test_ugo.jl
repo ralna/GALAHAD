@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_ugo(::Type{T}) where T
+function test_ugo(::Type{T}, ::Type{INT}) where {T,INT}
   # Test problem objective
   function objf(x::T)
     a = 10.0
@@ -31,16 +31,16 @@ function test_ugo(::Type{T}) where T
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{ugo_control_type{T}}()
-  inform = Ref{ugo_inform_type{T}}()
+  control = Ref{ugo_control_type{T,INT}}()
+  inform = Ref{ugo_inform_type{T,INT}}()
 
   # Initialize UGO
-  status = Ref{Cint}()
-  eval_status = Ref{Cint}()
-  ugo_initialize(T, data, control, status)
+  status = Ref{INT}()
+  eval_status = Ref{INT}()
+  ugo_initialize(T, INT, data, control, status)
 
   # Set user-defined control options
-  @reset control[].print_level = Cint(1)
+  @reset control[].print_level = INT(1)
 
   # Test problem bounds
   x_l = Ref{T}(-1.0)
@@ -53,7 +53,7 @@ function test_ugo(::Type{T}) where T
   h = Ref{T}(hessf(x[]))
 
   # import problem data
-  ugo_import(T, control, data, status, x_l, x_u)
+  ugo_import(T, INT, control, data, status, x_l, x_u)
 
   # Set for initial entry
   status[] = 1
@@ -62,7 +62,7 @@ function test_ugo(::Type{T}) where T
   terminated = false
   while !terminated
     # Call UGO_solve
-    ugo_solve_reverse(T, data, status, eval_status, x, f, g, h)
+    ugo_solve_reverse(T, INT, data, status, eval_status, x, f, g, h)
 
     # Evaluate f(x) and its derivatives as required
     if (status[] ≥ 2)  # need objective
@@ -79,7 +79,7 @@ function test_ugo(::Type{T}) where T
   end
 
   # Record solution information
-  ugo_information(T, data, inform, status)
+  ugo_information(T, INT, data, inform, status)
 
   if inform[].status == 0
     @printf("%i evaluations. Optimal objective value = %5.2f status = %1i\n",
@@ -89,13 +89,13 @@ function test_ugo(::Type{T}) where T
   end
 
   # Delete internal workspace
-  ugo_terminate(T, data, control, inform)
+  ugo_terminate(T, INT, data, control, inform)
 
   return 0
 end
 
 @testset "UGO" begin
-  @test test_ugo(Float32) == 0
-  @test test_ugo(Float64) == 0
-  @test test_ugo(Float128) == 0
+  @test test_ugo(Float32, Int32) == 0
+  @test test_ugo(Float64, Int32) == 0
+  @test test_ugo(Float128, Int32) == 0
 end

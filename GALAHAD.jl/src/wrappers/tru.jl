@@ -1,26 +1,26 @@
 export tru_control_type
 
-struct tru_control_type{T}
+struct tru_control_type{T,INT}
   f_indexing::Bool
-  error::Cint
-  out::Cint
-  print_level::Cint
-  start_print::Cint
-  stop_print::Cint
-  print_gap::Cint
-  maxit::Cint
-  alive_unit::Cint
+  error::INT
+  out::INT
+  print_level::INT
+  start_print::INT
+  stop_print::INT
+  print_gap::INT
+  maxit::INT
+  alive_unit::INT
   alive_file::NTuple{31,Cchar}
-  non_monotone::Cint
-  model::Cint
-  norm::Cint
-  semi_bandwidth::Cint
-  lbfgs_vectors::Cint
-  max_dxg::Cint
-  icfs_vectors::Cint
-  mi28_lsize::Cint
-  mi28_rsize::Cint
-  advanced_start::Cint
+  non_monotone::INT
+  model::INT
+  norm::INT
+  semi_bandwidth::INT
+  lbfgs_vectors::INT
+  max_dxg::INT
+  icfs_vectors::INT
+  mi28_lsize::INT
+  mi28_rsize::INT
+  advanced_start::INT
   stop_g_absolute::T
   stop_g_relative::T
   stop_s::T
@@ -42,14 +42,14 @@ struct tru_control_type{T}
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
-  trs_control::trs_control_type{T}
-  gltr_control::gltr_control_type{T}
-  dps_control::dps_control_type{T}
-  psls_control::psls_control_type{T}
-  lms_control::lms_control_type
-  lms_control_prec::lms_control_type
-  sec_control::sec_control_type{T}
-  sha_control::sha_control_type
+  trs_control::trs_control_type{T,INT}
+  gltr_control::gltr_control_type{T,INT}
+  dps_control::dps_control_type{T,INT}
+  psls_control::psls_control_type{T,INT}
+  lms_control::lms_control_type{INT}
+  lms_control_prec::lms_control_type{INT}
+  sec_control::sec_control_type{T,INT}
+  sha_control::sha_control_type{INT}
 end
 
 export tru_time_type
@@ -69,17 +69,17 @@ end
 
 export tru_inform_type
 
-struct tru_inform_type{T}
-  status::Cint
-  alloc_status::Cint
+struct tru_inform_type{T,INT}
+  status::INT
+  alloc_status::INT
   bad_alloc::NTuple{81,Cchar}
-  iter::Cint
-  cg_iter::Cint
-  f_eval::Cint
-  g_eval::Cint
-  h_eval::Cint
-  factorization_max::Cint
-  factorization_status::Cint
+  iter::INT
+  cg_iter::INT
+  f_eval::INT
+  g_eval::INT
+  h_eval::INT
+  factorization_max::INT
+  factorization_status::INT
   max_entries_factors::Int64
   factorization_integer::Int64
   factorization_real::Int64
@@ -88,127 +88,131 @@ struct tru_inform_type{T}
   norm_g::T
   radius::T
   time::tru_time_type{T}
-  trs_inform::trs_inform_type{T}
-  gltr_inform::gltr_inform_type{T}
-  dps_inform::dps_inform_type{T}
-  psls_inform::psls_inform_type{T}
-  lms_inform::lms_inform_type{T}
-  lms_inform_prec::lms_inform_type{T}
-  sec_inform::sec_inform_type
-  sha_inform::sha_inform_type{T}
+  trs_inform::trs_inform_type{T,INT}
+  gltr_inform::gltr_inform_type{T,INT}
+  dps_inform::dps_inform_type{T,INT}
+  psls_inform::psls_inform_type{T,INT}
+  lms_inform::lms_inform_type{T,INT}
+  lms_inform_prec::lms_inform_type{T,INT}
+  sec_inform::sec_inform_type{INT}
+  sha_inform::sha_inform_type{T,INT}
 end
 
 export tru_initialize
 
-function tru_initialize(::Type{Float32}, data, control, status)
+function tru_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.tru_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{tru_control_type{Float32}},
-                                            status::Ptr{Cint})::Cvoid
+                                            control::Ptr{tru_control_type{Float32,Int32}},
+                                            status::Ptr{Int32})::Cvoid
 end
 
-function tru_initialize(::Type{Float64}, data, control, status)
+function tru_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.tru_initialize(data::Ptr{Ptr{Cvoid}},
-                                          control::Ptr{tru_control_type{Float64}},
-                                          status::Ptr{Cint})::Cvoid
+                                          control::Ptr{tru_control_type{Float64,Int32}},
+                                          status::Ptr{Int32})::Cvoid
 end
 
-function tru_initialize(::Type{Float128}, data, control, status)
+function tru_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_quadruple.tru_initialize_q(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{tru_control_type{Float128}},
-                                               status::Ptr{Cint})::Cvoid
+                                               control::Ptr{tru_control_type{Float128,
+                                                                             Int32}},
+                                               status::Ptr{Int32})::Cvoid
 end
 
 export tru_read_specfile
 
-function tru_read_specfile(::Type{Float32}, control, specfile)
-  @ccall libgalahad_single.tru_read_specfile_s(control::Ptr{tru_control_type{Float32}},
+function tru_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
+  @ccall libgalahad_single.tru_read_specfile_s(control::Ptr{tru_control_type{Float32,Int32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
-function tru_read_specfile(::Type{Float64}, control, specfile)
-  @ccall libgalahad_double.tru_read_specfile(control::Ptr{tru_control_type{Float64}},
+function tru_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
+  @ccall libgalahad_double.tru_read_specfile(control::Ptr{tru_control_type{Float64,Int32}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
-function tru_read_specfile(::Type{Float128}, control, specfile)
-  @ccall libgalahad_quadruple.tru_read_specfile_q(control::Ptr{tru_control_type{Float128}},
+function tru_read_specfile(::Type{Float128}, ::Type{Int32}, control, specfile)
+  @ccall libgalahad_quadruple.tru_read_specfile_q(control::Ptr{tru_control_type{Float128,
+                                                                                Int32}},
                                                   specfile::Ptr{Cchar})::Cvoid
 end
 
 export tru_import
 
-function tru_import(::Type{Float32}, control, data, status, n, H_type, ne, H_row, H_col,
-                    H_ptr)
-  @ccall libgalahad_single.tru_import_s(control::Ptr{tru_control_type{Float32}},
-                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
-                                        H_type::Ptr{Cchar}, ne::Cint, H_row::Ptr{Cint},
-                                        H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
+function tru_import(::Type{Float32}, ::Type{Int32}, control, data, status, n, H_type, ne,
+                    H_row, H_col, H_ptr)
+  @ccall libgalahad_single.tru_import_s(control::Ptr{tru_control_type{Float32,Int32}},
+                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
+                                        H_type::Ptr{Cchar}, ne::Int32, H_row::Ptr{Int32},
+                                        H_col::Ptr{Int32}, H_ptr::Ptr{Int32})::Cvoid
 end
 
-function tru_import(::Type{Float64}, control, data, status, n, H_type, ne, H_row, H_col,
-                    H_ptr)
-  @ccall libgalahad_double.tru_import(control::Ptr{tru_control_type{Float64}},
-                                      data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
-                                      H_type::Ptr{Cchar}, ne::Cint, H_row::Ptr{Cint},
-                                      H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
+function tru_import(::Type{Float64}, ::Type{Int32}, control, data, status, n, H_type, ne,
+                    H_row, H_col, H_ptr)
+  @ccall libgalahad_double.tru_import(control::Ptr{tru_control_type{Float64,Int32}},
+                                      data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
+                                      H_type::Ptr{Cchar}, ne::Int32, H_row::Ptr{Int32},
+                                      H_col::Ptr{Int32}, H_ptr::Ptr{Int32})::Cvoid
 end
 
-function tru_import(::Type{Float128}, control, data, status, n, H_type, ne, H_row, H_col,
-                    H_ptr)
-  @ccall libgalahad_quadruple.tru_import_q(control::Ptr{tru_control_type{Float128}},
-                                           data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                           n::Cint, H_type::Ptr{Cchar}, ne::Cint,
-                                           H_row::Ptr{Cint}, H_col::Ptr{Cint},
-                                           H_ptr::Ptr{Cint})::Cvoid
+function tru_import(::Type{Float128}, ::Type{Int32}, control, data, status, n, H_type, ne,
+                    H_row, H_col, H_ptr)
+  @ccall libgalahad_quadruple.tru_import_q(control::Ptr{tru_control_type{Float128,Int32}},
+                                           data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                           n::Int32, H_type::Ptr{Cchar}, ne::Int32,
+                                           H_row::Ptr{Int32}, H_col::Ptr{Int32},
+                                           H_ptr::Ptr{Int32})::Cvoid
 end
 
 export tru_reset_control
 
-function tru_reset_control(::Type{Float32}, control, data, status)
-  @ccall libgalahad_single.tru_reset_control_s(control::Ptr{tru_control_type{Float32}},
+function tru_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status)
+  @ccall libgalahad_single.tru_reset_control_s(control::Ptr{tru_control_type{Float32,Int32}},
                                                data::Ptr{Ptr{Cvoid}},
-                                               status::Ptr{Cint})::Cvoid
+                                               status::Ptr{Int32})::Cvoid
 end
 
-function tru_reset_control(::Type{Float64}, control, data, status)
-  @ccall libgalahad_double.tru_reset_control(control::Ptr{tru_control_type{Float64}},
+function tru_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
+  @ccall libgalahad_double.tru_reset_control(control::Ptr{tru_control_type{Float64,Int32}},
                                              data::Ptr{Ptr{Cvoid}},
-                                             status::Ptr{Cint})::Cvoid
+                                             status::Ptr{Int32})::Cvoid
 end
 
-function tru_reset_control(::Type{Float128}, control, data, status)
-  @ccall libgalahad_quadruple.tru_reset_control_q(control::Ptr{tru_control_type{Float128}},
+function tru_reset_control(::Type{Float128}, ::Type{Int32}, control, data, status)
+  @ccall libgalahad_quadruple.tru_reset_control_q(control::Ptr{tru_control_type{Float128,
+                                                                                Int32}},
                                                   data::Ptr{Ptr{Cvoid}},
-                                                  status::Ptr{Cint})::Cvoid
+                                                  status::Ptr{Int32})::Cvoid
 end
 
 export tru_solve_with_mat
 
-function tru_solve_with_mat(::Type{Float32}, data, userdata, status, n, x, g, ne, eval_f,
-                            eval_g, eval_h, eval_prec)
+function tru_solve_with_mat(::Type{Float32}, ::Type{Int32}, data, userdata, status, n, x, g,
+                            ne, eval_f, eval_g, eval_h, eval_prec)
   @ccall libgalahad_single.tru_solve_with_mat_s(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
-                                                status::Ptr{Cint}, n::Cint, x::Ptr{Float32},
-                                                g::Ptr{Float32}, ne::Cint,
+                                                status::Ptr{Int32}, n::Int32,
+                                                x::Ptr{Float32}, g::Ptr{Float32}, ne::Int32,
                                                 eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                                 eval_h::Ptr{Cvoid},
                                                 eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function tru_solve_with_mat(::Type{Float64}, data, userdata, status, n, x, g, ne, eval_f,
-                            eval_g, eval_h, eval_prec)
+function tru_solve_with_mat(::Type{Float64}, ::Type{Int32}, data, userdata, status, n, x, g,
+                            ne, eval_f, eval_g, eval_h, eval_prec)
   @ccall libgalahad_double.tru_solve_with_mat(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
-                                              status::Ptr{Cint}, n::Cint, x::Ptr{Float64},
-                                              g::Ptr{Float64}, ne::Cint, eval_f::Ptr{Cvoid},
-                                              eval_g::Ptr{Cvoid}, eval_h::Ptr{Cvoid},
+                                              status::Ptr{Int32}, n::Int32, x::Ptr{Float64},
+                                              g::Ptr{Float64}, ne::Int32,
+                                              eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
+                                              eval_h::Ptr{Cvoid},
                                               eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function tru_solve_with_mat(::Type{Float128}, data, userdata, status, n, x, g, ne, eval_f,
-                            eval_g, eval_h, eval_prec)
+function tru_solve_with_mat(::Type{Float128}, ::Type{Int32}, data, userdata, status, n, x,
+                            g, ne, eval_f, eval_g, eval_h, eval_prec)
   @ccall libgalahad_quadruple.tru_solve_with_mat_q(data::Ptr{Ptr{Cvoid}},
-                                                   userdata::Ptr{Cvoid}, status::Ptr{Cint},
-                                                   n::Cint, x::Ptr{Float128},
-                                                   g::Ptr{Float128}, ne::Cint,
+                                                   userdata::Ptr{Cvoid}, status::Ptr{Int32},
+                                                   n::Int32, x::Ptr{Float128},
+                                                   g::Ptr{Float128}, ne::Int32,
                                                    eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                                    eval_h::Ptr{Cvoid},
                                                    eval_prec::Ptr{Cvoid})::Cvoid
@@ -216,32 +220,32 @@ end
 
 export tru_solve_without_mat
 
-function tru_solve_without_mat(::Type{Float32}, data, userdata, status, n, x, g, eval_f,
-                               eval_g, eval_hprod, eval_prec)
+function tru_solve_without_mat(::Type{Float32}, ::Type{Int32}, data, userdata, status, n, x,
+                               g, eval_f, eval_g, eval_hprod, eval_prec)
   @ccall libgalahad_single.tru_solve_without_mat_s(data::Ptr{Ptr{Cvoid}},
-                                                   userdata::Ptr{Cvoid}, status::Ptr{Cint},
-                                                   n::Cint, x::Ptr{Float32},
+                                                   userdata::Ptr{Cvoid}, status::Ptr{Int32},
+                                                   n::Int32, x::Ptr{Float32},
                                                    g::Ptr{Float32}, eval_f::Ptr{Cvoid},
                                                    eval_g::Ptr{Cvoid},
                                                    eval_hprod::Ptr{Cvoid},
                                                    eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function tru_solve_without_mat(::Type{Float64}, data, userdata, status, n, x, g, eval_f,
-                               eval_g, eval_hprod, eval_prec)
+function tru_solve_without_mat(::Type{Float64}, ::Type{Int32}, data, userdata, status, n, x,
+                               g, eval_f, eval_g, eval_hprod, eval_prec)
   @ccall libgalahad_double.tru_solve_without_mat(data::Ptr{Ptr{Cvoid}},
-                                                 userdata::Ptr{Cvoid}, status::Ptr{Cint},
-                                                 n::Cint, x::Ptr{Float64}, g::Ptr{Float64},
+                                                 userdata::Ptr{Cvoid}, status::Ptr{Int32},
+                                                 n::Int32, x::Ptr{Float64}, g::Ptr{Float64},
                                                  eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                                  eval_hprod::Ptr{Cvoid},
                                                  eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function tru_solve_without_mat(::Type{Float128}, data, userdata, status, n, x, g, eval_f,
-                               eval_g, eval_hprod, eval_prec)
+function tru_solve_without_mat(::Type{Float128}, ::Type{Int32}, data, userdata, status, n,
+                               x, g, eval_f, eval_g, eval_hprod, eval_prec)
   @ccall libgalahad_quadruple.tru_solve_without_mat_q(data::Ptr{Ptr{Cvoid}},
                                                       userdata::Ptr{Cvoid},
-                                                      status::Ptr{Cint}, n::Cint,
+                                                      status::Ptr{Int32}, n::Int32,
                                                       x::Ptr{Float128}, g::Ptr{Float128},
                                                       eval_f::Ptr{Cvoid},
                                                       eval_g::Ptr{Cvoid},
@@ -251,69 +255,70 @@ end
 
 export tru_solve_reverse_with_mat
 
-function tru_solve_reverse_with_mat(::Type{Float32}, data, status, eval_status, n, x, f, g,
-                                    ne, H_val, u, v)
+function tru_solve_reverse_with_mat(::Type{Float32}, ::Type{Int32}, data, status,
+                                    eval_status, n, x, f, g, ne, H_val, u, v)
   @ccall libgalahad_single.tru_solve_reverse_with_mat_s(data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Cint},
-                                                        eval_status::Ptr{Cint}, n::Cint,
+                                                        status::Ptr{Int32},
+                                                        eval_status::Ptr{Int32}, n::Int32,
                                                         x::Ptr{Float32}, f::Float32,
-                                                        g::Ptr{Float32}, ne::Cint,
+                                                        g::Ptr{Float32}, ne::Int32,
                                                         H_val::Ptr{Float32},
                                                         u::Ptr{Float32},
                                                         v::Ptr{Float32})::Cvoid
 end
 
-function tru_solve_reverse_with_mat(::Type{Float64}, data, status, eval_status, n, x, f, g,
-                                    ne, H_val, u, v)
+function tru_solve_reverse_with_mat(::Type{Float64}, ::Type{Int32}, data, status,
+                                    eval_status, n, x, f, g, ne, H_val, u, v)
   @ccall libgalahad_double.tru_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
-                                                      status::Ptr{Cint},
-                                                      eval_status::Ptr{Cint}, n::Cint,
+                                                      status::Ptr{Int32},
+                                                      eval_status::Ptr{Int32}, n::Int32,
                                                       x::Ptr{Float64}, f::Float64,
-                                                      g::Ptr{Float64}, ne::Cint,
+                                                      g::Ptr{Float64}, ne::Int32,
                                                       H_val::Ptr{Float64}, u::Ptr{Float64},
                                                       v::Ptr{Float64})::Cvoid
 end
 
-function tru_solve_reverse_with_mat(::Type{Float128}, data, status, eval_status, n, x, f, g,
-                                    ne, H_val, u, v)
+function tru_solve_reverse_with_mat(::Type{Float128}, ::Type{Int32}, data, status,
+                                    eval_status, n, x, f, g, ne, H_val, u, v)
   @ccall libgalahad_quadruple.tru_solve_reverse_with_mat_q(data::Ptr{Ptr{Cvoid}},
-                                                           status::Ptr{Cint},
-                                                           eval_status::Ptr{Cint}, n::Cint,
-                                                           x::Ptr{Float128}, f::Cfloat128,
-                                                           g::Ptr{Float128}, ne::Cint,
-                                                           H_val::Ptr{Float128},
+                                                           status::Ptr{Int32},
+                                                           eval_status::Ptr{Int32},
+                                                           n::Int32, x::Ptr{Float128},
+                                                           f::Cfloat128, g::Ptr{Float128},
+                                                           ne::Int32, H_val::Ptr{Float128},
                                                            u::Ptr{Float128},
                                                            v::Ptr{Float128})::Cvoid
 end
 
 export tru_solve_reverse_without_mat
 
-function tru_solve_reverse_without_mat(::Type{Float32}, data, status, eval_status, n, x, f,
-                                       g, u, v)
+function tru_solve_reverse_without_mat(::Type{Float32}, ::Type{Int32}, data, status,
+                                       eval_status, n, x, f, g, u, v)
   @ccall libgalahad_single.tru_solve_reverse_without_mat_s(data::Ptr{Ptr{Cvoid}},
-                                                           status::Ptr{Cint},
-                                                           eval_status::Ptr{Cint}, n::Cint,
-                                                           x::Ptr{Float32}, f::Float32,
-                                                           g::Ptr{Float32}, u::Ptr{Float32},
+                                                           status::Ptr{Int32},
+                                                           eval_status::Ptr{Int32},
+                                                           n::Int32, x::Ptr{Float32},
+                                                           f::Float32, g::Ptr{Float32},
+                                                           u::Ptr{Float32},
                                                            v::Ptr{Float32})::Cvoid
 end
 
-function tru_solve_reverse_without_mat(::Type{Float64}, data, status, eval_status, n, x, f,
-                                       g, u, v)
+function tru_solve_reverse_without_mat(::Type{Float64}, ::Type{Int32}, data, status,
+                                       eval_status, n, x, f, g, u, v)
   @ccall libgalahad_double.tru_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
-                                                         status::Ptr{Cint},
-                                                         eval_status::Ptr{Cint}, n::Cint,
+                                                         status::Ptr{Int32},
+                                                         eval_status::Ptr{Int32}, n::Int32,
                                                          x::Ptr{Float64}, f::Float64,
                                                          g::Ptr{Float64}, u::Ptr{Float64},
                                                          v::Ptr{Float64})::Cvoid
 end
 
-function tru_solve_reverse_without_mat(::Type{Float128}, data, status, eval_status, n, x, f,
-                                       g, u, v)
+function tru_solve_reverse_without_mat(::Type{Float128}, ::Type{Int32}, data, status,
+                                       eval_status, n, x, f, g, u, v)
   @ccall libgalahad_quadruple.tru_solve_reverse_without_mat_q(data::Ptr{Ptr{Cvoid}},
-                                                              status::Ptr{Cint},
-                                                              eval_status::Ptr{Cint},
-                                                              n::Cint, x::Ptr{Float128},
+                                                              status::Ptr{Int32},
+                                                              eval_status::Ptr{Int32},
+                                                              n::Int32, x::Ptr{Float128},
                                                               f::Cfloat128,
                                                               g::Ptr{Float128},
                                                               u::Ptr{Float128},
@@ -322,40 +327,40 @@ end
 
 export tru_information
 
-function tru_information(::Type{Float32}, data, inform, status)
+function tru_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_single.tru_information_s(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{tru_inform_type{Float32}},
-                                             status::Ptr{Cint})::Cvoid
+                                             inform::Ptr{tru_inform_type{Float32,Int32}},
+                                             status::Ptr{Int32})::Cvoid
 end
 
-function tru_information(::Type{Float64}, data, inform, status)
+function tru_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_double.tru_information(data::Ptr{Ptr{Cvoid}},
-                                           inform::Ptr{tru_inform_type{Float64}},
-                                           status::Ptr{Cint})::Cvoid
+                                           inform::Ptr{tru_inform_type{Float64,Int32}},
+                                           status::Ptr{Int32})::Cvoid
 end
 
-function tru_information(::Type{Float128}, data, inform, status)
+function tru_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_quadruple.tru_information_q(data::Ptr{Ptr{Cvoid}},
-                                                inform::Ptr{tru_inform_type{Float128}},
-                                                status::Ptr{Cint})::Cvoid
+                                                inform::Ptr{tru_inform_type{Float128,Int32}},
+                                                status::Ptr{Int32})::Cvoid
 end
 
 export tru_terminate
 
-function tru_terminate(::Type{Float32}, data, control, inform)
+function tru_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_single.tru_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{tru_control_type{Float32}},
-                                           inform::Ptr{tru_inform_type{Float32}})::Cvoid
+                                           control::Ptr{tru_control_type{Float32,Int32}},
+                                           inform::Ptr{tru_inform_type{Float32,Int32}})::Cvoid
 end
 
-function tru_terminate(::Type{Float64}, data, control, inform)
+function tru_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.tru_terminate(data::Ptr{Ptr{Cvoid}},
-                                         control::Ptr{tru_control_type{Float64}},
-                                         inform::Ptr{tru_inform_type{Float64}})::Cvoid
+                                         control::Ptr{tru_control_type{Float64,Int32}},
+                                         inform::Ptr{tru_inform_type{Float64,Int32}})::Cvoid
 end
 
-function tru_terminate(::Type{Float128}, data, control, inform)
+function tru_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_quadruple.tru_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{tru_control_type{Float128}},
-                                              inform::Ptr{tru_inform_type{Float128}})::Cvoid
+                                              control::Ptr{tru_control_type{Float128,Int32}},
+                                              inform::Ptr{tru_inform_type{Float128,Int32}})::Cvoid
 end

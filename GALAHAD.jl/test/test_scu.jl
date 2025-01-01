@@ -5,21 +5,21 @@ using GALAHAD
 using Test
 using Quadmath
 
-function test_scu(::Type{T}) where T
+function test_scu(::Type{T}, ::Type{INT}) where {T,INT}
   data = Ref{Ptr{Cvoid}}()
   control = Ref{scu_control_type}()
-  inform = Ref{scu_inform_type}()
+  inform = Ref{scu_inform_type{INT}}()
 
-  status = Ref{Cint}()
-  scu_initialize(T, data, control, status)
-  scu_information(T, data, inform, status)
-  scu_terminate(T, data, control, inform)
+  status = Ref{INT}()
+  scu_initialize(T, INT, data, control, status)
+  scu_information(T, INT, data, inform, status)
+  scu_terminate(T, INT, data, control, inform)
 
   return 0
 end
 
 @testset "SCU" begin
-  @test test_scu(Float32) == 0
-  @test test_scu(Float64) == 0
-  @test test_scu(Float128) == 0
+  @test test_scu(Float32, Int32) == 0
+  @test test_scu(Float64, Int32) == 0
+  @test test_scu(Float128, Int32) == 0
 end

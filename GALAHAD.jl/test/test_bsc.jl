@@ -5,21 +5,21 @@ using GALAHAD
 using Test
 using Quadmath
 
-function test_bsc(::Type{T}) where T
+function test_bsc(::Type{T}, ::Type{INT}) where {T,INT}
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{bsc_control_type}()
-  inform = Ref{bsc_inform_type{T}}()
+  control = Ref{bsc_control_type{INT}}()
+  inform = Ref{bsc_inform_type{T,INT}}()
 
-  status = Ref{Cint}()
-  bsc_initialize(T, data, control, status)
-  bsc_information(T, data, inform, status)
-  bsc_terminate(T, data, control, inform)
+  status = Ref{INT}()
+  bsc_initialize(T, INT, data, control, status)
+  bsc_information(T, INT, data, inform, status)
+  bsc_terminate(T, INT, data, control, inform)
 
   return 0
 end
 
 @testset "BSC" begin
-  @test test_bsc(Float32) == 0
-  @test test_bsc(Float64) == 0
-  @test test_bsc(Float128) == 0
+  @test test_bsc(Float32, Int32) == 0
+  @test test_bsc(Float64, Int32) == 0
+  @test test_bsc(Float128, Int32) == 0
 end

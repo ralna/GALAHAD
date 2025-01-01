@@ -7,24 +7,24 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_lstr(::Type{T}) where T
+function test_lstr(::Type{T}, ::Type{INT}) where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{lstr_control_type{T}}()
-  inform = Ref{lstr_inform_type{T}}()
+  control = Ref{lstr_control_type{T,INT}}()
+  inform = Ref{lstr_inform_type{T,INT}}()
 
   # Set problem data
-  n = 50 # dimensions
+  n = INT(50)  # dimensions
   m = 2 * n
 
-  status = Ref{Cint}()
+  status = Ref{INT}()
   radius = Ref{T}()
   x = zeros(T, n)
   u = zeros(T, m)
   v = zeros(T, n)
 
   # Initialize lstr
-  lstr_initialize(T, data, control, status)
+  lstr_initialize(T, INT, data, control, status)
 
   # resolve with a smaller radius ?
   for new_radius in 0:1
@@ -36,8 +36,8 @@ function test_lstr(::Type{T}) where T
       status[] = 5
     end
 
-    @reset control[].print_level = Cint(0)
-    lstr_import_control(T, control, data, status)
+    @reset control[].print_level = INT(0)
+    lstr_import_control(T, INT, control, data, status)
 
     for i in 1:m
       u[i] = 1.0 # b = 1
@@ -46,7 +46,7 @@ function test_lstr(::Type{T}) where T
     # iteration loop to find the minimizer with A^T = (I:diag(1:n))
     terminated = false
     while !terminated # reverse-communication loop
-      lstr_solve_problem(T, data, status, m, n, radius[], x, u, v)
+      lstr_solve_problem(T, INT, data, status, m, n, radius[], x, u, v)
       if status[] == 0 # successful termination
         terminated = true
       elseif status[] < 0 # error exit
@@ -70,19 +70,19 @@ function test_lstr(::Type{T}) where T
       end
     end
 
-    lstr_information(T, data, inform, status)
+    lstr_information(T, INT, data, inform, status)
     # @printf("%1i lstr_solve_problem exit status = %i, f = %.2f\n", new_radius,
     #         inform[].status, inform[].r_norm)
   end
 
   # Delete internal workspace
-  lstr_terminate(T, data, control, inform)
+  lstr_terminate(T, INT, data, control, inform)
 
   return 0
 end
 
 @testset "LSTR" begin
-  @test test_lstr(Float32) == 0
-  @test test_lstr(Float64) == 0
-  @test test_lstr(Float128) == 0
+  @test test_lstr(Float32, Int32) == 0
+  @test test_lstr(Float64, Int32) == 0
+  @test test_lstr(Float128, Int32) == 0
 end

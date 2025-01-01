@@ -1,10 +1,10 @@
 export convert_control_type
 
-struct convert_control_type
+struct convert_control_type{INT}
   f_indexing::Bool
-  error::Cint
-  out::Cint
-  print_level::Cint
+  error::INT
+  out::INT
+  print_level::INT
   transpose::Bool
   sum_duplicates::Bool
   order::Bool
@@ -22,70 +22,75 @@ end
 
 export convert_inform_type
 
-struct convert_inform_type{T}
-  status::Cint
-  alloc_status::Cint
-  duplicates::Cint
+struct convert_inform_type{T,INT}
+  status::INT
+  alloc_status::INT
+  duplicates::INT
   bad_alloc::NTuple{81,Cchar}
   time::convert_time_type{T}
 end
 
 export convert_initialize
 
-function convert_initialize(::Type{Float32}, data, control, status)
+function convert_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.convert_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                                control::Ptr{convert_control_type},
-                                                status::Ptr{Cint})::Cvoid
+                                                control::Ptr{convert_control_type{Int32}},
+                                                status::Ptr{Int32})::Cvoid
 end
 
-function convert_initialize(::Type{Float64}, data, control, status)
+function convert_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.convert_initialize(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{convert_control_type},
-                                              status::Ptr{Cint})::Cvoid
+                                              control::Ptr{convert_control_type{Int32}},
+                                              status::Ptr{Int32})::Cvoid
 end
 
-function convert_initialize(::Type{Float128}, data, control, status)
+function convert_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_quadruple.convert_initialize_q(data::Ptr{Ptr{Cvoid}},
-                                                   control::Ptr{convert_control_type},
-                                                   status::Ptr{Cint})::Cvoid
+                                                   control::Ptr{convert_control_type{Int32}},
+                                                   status::Ptr{Int32})::Cvoid
 end
 
 export convert_information
 
-function convert_information(::Type{Float32}, data, inform, status)
+function convert_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_single.convert_information_s(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{convert_inform_type{Float32}},
-                                                 status::Ptr{Cint})::Cvoid
+                                                 inform::Ptr{convert_inform_type{Float32,
+                                                                                 Int32}},
+                                                 status::Ptr{Int32})::Cvoid
 end
 
-function convert_information(::Type{Float64}, data, inform, status)
+function convert_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_double.convert_information(data::Ptr{Ptr{Cvoid}},
-                                               inform::Ptr{convert_inform_type{Float64}},
-                                               status::Ptr{Cint})::Cvoid
+                                               inform::Ptr{convert_inform_type{Float64,
+                                                                               Int32}},
+                                               status::Ptr{Int32})::Cvoid
 end
 
-function convert_information(::Type{Float128}, data, inform, status)
+function convert_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_quadruple.convert_information_q(data::Ptr{Ptr{Cvoid}},
-                                                    inform::Ptr{convert_inform_type{Float128}},
-                                                    status::Ptr{Cint})::Cvoid
+                                                    inform::Ptr{convert_inform_type{Float128,
+                                                                                    Int32}},
+                                                    status::Ptr{Int32})::Cvoid
 end
 
 export convert_terminate
 
-function convert_terminate(::Type{Float32}, data, control, inform)
+function convert_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_single.convert_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{convert_control_type},
-                                               inform::Ptr{convert_inform_type{Float32}})::Cvoid
+                                               control::Ptr{convert_control_type{Int32}},
+                                               inform::Ptr{convert_inform_type{Float32,
+                                                                               Int32}})::Cvoid
 end
 
-function convert_terminate(::Type{Float64}, data, control, inform)
+function convert_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.convert_terminate(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{convert_control_type},
-                                             inform::Ptr{convert_inform_type{Float64}})::Cvoid
+                                             control::Ptr{convert_control_type{Int32}},
+                                             inform::Ptr{convert_inform_type{Float64,Int32}})::Cvoid
 end
 
-function convert_terminate(::Type{Float128}, data, control, inform)
+function convert_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_quadruple.convert_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                                  control::Ptr{convert_control_type},
-                                                  inform::Ptr{convert_inform_type{Float128}})::Cvoid
+                                                  control::Ptr{convert_control_type{Int32}},
+                                                  inform::Ptr{convert_inform_type{Float128,
+                                                                                  Int32}})::Cvoid
 end
