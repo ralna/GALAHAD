@@ -19,19 +19,19 @@
 #include "galahad_gls.h"
 
 /* Module global variables */
-static void *data;                  // private internal data
-static struct gls_control control;  // control struct
-static struct gls_ainfo ainfo;      // ainfo struct
-static struct gls_finfo finfo;      // ainfo struct
-static struct gls_sinfo sinfo;      // ainfo struct
-static bool init_called = false;    // record if initialise was called
-static int status = 0;              // exit status
+static void *data;                       // private internal data
+static struct gls_control_type control;  // control struct
+static struct gls_ainfo_type ainfo;      // ainfo struct
+static struct gls_finfo_type finfo;      // ainfo struct
+static struct gls_sinfo_type sinfo;      // ainfo struct
+static bool init_called = false;         // record if initialise was called
+static int status = 0;                   // exit status
 
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
 // NB not static as it is used for nested control within SBLS Python interface
-bool gls_update_control(struct gls_control *control,
+bool gls_update_control(struct gls_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -194,7 +194,7 @@ bool gls_update_control(struct gls_control *control,
 
 /* Take the control struct from C and turn it into a python options dict */
 // NB not static as it is used for nested inform within SBLS Python interface
-PyObject* gls_make_options_dict(const struct gls_control *control){
+PyObject* gls_make_options_dict(const struct gls_control_type *control){
     PyObject *py_options = PyDict_New();
 
     PyDict_SetItemString(py_options, "lp",
@@ -259,7 +259,7 @@ PyObject* gls_make_options_dict(const struct gls_control *control){
 
 /* Take the ainfo struct from C and turn it into a python dictionary */
 // NB not static as it is used for nested control within SLS Python interface
-PyObject* gls_make_ainfo_dict(const struct gls_ainfo *ainfo){
+PyObject* gls_make_ainfo_dict(const struct gls_ainfo_type *ainfo){
     PyObject *py_ainfo = PyDict_New();
 
     PyDict_SetItemString(py_ainfo, "flag",
@@ -300,7 +300,7 @@ PyObject* gls_make_ainfo_dict(const struct gls_ainfo *ainfo){
 
 /* Take the finfo struct from C and turn it into a python dictionary */
 // NB not static as it is used for nested control within SLS Python interface
-PyObject* gls_make_finfo_dict(const struct gls_finfo *finfo){
+PyObject* gls_make_finfo_dict(const struct gls_finfo_type *finfo){
     PyObject *py_finfo = PyDict_New();
 
     PyDict_SetItemString(py_finfo, "flag",
@@ -327,7 +327,7 @@ PyObject* gls_make_finfo_dict(const struct gls_finfo *finfo){
 
 /* Take the sinfo struct from C and turn it into a python dictionary */
 // NB not static as it is used for nested control within SLS Python interface
-PyObject* gls_make_sinfo_dict(const struct gls_sinfo *sinfo){
+PyObject* gls_make_sinfo_dict(const struct gls_sinfo_type *sinfo){
     PyObject *py_sinfo = PyDict_New();
 
     PyDict_SetItemString(py_sinfo, "flag",

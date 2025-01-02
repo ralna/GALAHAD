@@ -34,7 +34,7 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-    TYPE, BIND( C ) :: gls_control
+    TYPE, BIND( C ) :: gls_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
       INTEGER ( KIND = ipc_ ) :: lp
       INTEGER ( KIND = ipc_ ) :: wp
@@ -58,9 +58,9 @@
       REAL ( KIND = rpc_ ) :: cgce
       LOGICAL ( KIND = C_BOOL ) :: diagonal_pivoting
       LOGICAL ( KIND = C_BOOL ) :: struct_abort
-    END TYPE gls_control
+    END TYPE gls_control_type
 
-    TYPE, BIND( C ) :: GLS_ainfo
+    TYPE, BIND( C ) :: GLS_ainfo_type
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: more
       INTEGER ( KIND = ipc_ ) :: len_analyse
@@ -76,9 +76,9 @@
       INTEGER ( KIND = ipc_ ) :: sblock
       INTEGER ( KIND = ipc_ ) :: tblock
       REAL ( KIND = rpc_ ) :: ops
-    END TYPE GLS_ainfo
+    END TYPE GLS_ainfo_type
 
-    TYPE, BIND( C ) :: GLS_finfo
+    TYPE, BIND( C ) :: GLS_finfo_type
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: more
       INTEGER ( KIND = ipc_ ) :: size_factor
@@ -87,13 +87,13 @@
       INTEGER ( KIND = ipc_ ) :: rank
       INTEGER ( KIND = ipc_ ) :: stat
       REAL ( KIND = rpc_ ) :: ops
-    END TYPE GLS_finfo
+    END TYPE GLS_finfo_type
 
-    TYPE, BIND( C ) :: GLS_sinfo
+    TYPE, BIND( C ) :: GLS_sinfo_type
       INTEGER ( KIND = ipc_ ) :: flag
       INTEGER ( KIND = ipc_ ) :: more
       INTEGER ( KIND = ipc_ ) :: stat
-    END TYPE GLS_sinfo
+    END TYPE GLS_sinfo_type
 
 !----------------------
 !   P r o c e d u r e s
@@ -104,7 +104,7 @@
 !  copy C control parameters to fortran
 
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
-    TYPE ( gls_control ), INTENT( IN ) :: ccontrol
+    TYPE ( gls_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_gls_control ), INTENT( OUT ) :: fcontrol
     LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
 
@@ -146,7 +146,7 @@
 
     SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_gls_control ), INTENT( IN ) :: fcontrol
-    TYPE ( gls_control ), INTENT( OUT ) :: ccontrol
+    TYPE ( gls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
 
     ! C or Fortran sparse matrix indexing
@@ -186,7 +186,7 @@
 !  copy C ainfo parameters to fortran
 
     SUBROUTINE copy_ainfo_in( cainfo, fainfo )
-    TYPE ( gls_ainfo ), INTENT( IN ) :: cainfo
+    TYPE ( gls_ainfo_type ), INTENT( IN ) :: cainfo
     TYPE ( f_gls_ainfo ), INTENT( OUT ) :: fainfo
 
     ! Integers
@@ -216,7 +216,7 @@
 
     SUBROUTINE copy_ainfo_out( fainfo, cainfo )
     TYPE ( f_gls_ainfo ), INTENT( IN ) :: fainfo
-    TYPE ( gls_ainfo ), INTENT( OUT ) :: cainfo
+    TYPE ( gls_ainfo_type ), INTENT( OUT ) :: cainfo
 
     ! Integers
     cainfo%flag = fainfo%flag
@@ -244,7 +244,7 @@
 !  copy C finfo parameters to fortran
 
     SUBROUTINE copy_finfo_in( cfinfo, ffinfo )
-    TYPE ( gls_finfo ), INTENT( IN ) :: cfinfo
+    TYPE ( gls_finfo_type ), INTENT( IN ) :: cfinfo
     TYPE ( f_gls_finfo ), INTENT( OUT ) :: ffinfo
 
     ! Integers
@@ -267,7 +267,7 @@
 
     SUBROUTINE copy_finfo_out( ffinfo, cfinfo )
     TYPE ( f_gls_finfo ), INTENT( IN ) :: ffinfo
-    TYPE ( gls_finfo ), INTENT( OUT ) :: cfinfo
+    TYPE ( gls_finfo_type ), INTENT( OUT ) :: cfinfo
 
     ! Integers
     cfinfo%flag = ffinfo%flag
@@ -288,7 +288,7 @@
 !  copy C sinfo parameters to fortran
 
     SUBROUTINE copy_sinfo_in( csinfo, fsinfo )
-    TYPE ( gls_sinfo ), INTENT( IN ) :: csinfo
+    TYPE ( gls_sinfo_type ), INTENT( IN ) :: csinfo
     TYPE ( f_gls_sinfo ), INTENT( OUT ) :: fsinfo
 
     ! Integers
@@ -304,7 +304,7 @@
 
     SUBROUTINE copy_sinfo_out( fsinfo, csinfo )
     TYPE ( f_gls_sinfo ), INTENT( IN ) :: fsinfo
-    TYPE ( gls_sinfo ), INTENT( OUT ) :: csinfo
+    TYPE ( gls_sinfo_type ), INTENT( OUT ) :: csinfo
 
     ! Integers
     csinfo%flag = fsinfo%flag
@@ -328,7 +328,7 @@
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
-  TYPE ( gls_control ), INTENT( OUT ) :: ccontrol
+  TYPE ( gls_control_type ), INTENT( OUT ) :: ccontrol
 
 !  local variables
 
@@ -367,7 +367,7 @@
 !  dummy arguments
 
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-  TYPE ( gls_control ), INTENT( INOUT ) :: ccontrol
+  TYPE ( gls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -406,9 +406,9 @@
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  TYPE ( gls_ainfo ), INTENT( INOUT ) :: cainfo
-  TYPE ( gls_finfo ), INTENT( INOUT ) :: cfinfo
-  TYPE ( gls_sinfo ), INTENT( INOUT ) :: csinfo
+  TYPE ( gls_ainfo_type ), INTENT( INOUT ) :: cainfo
+  TYPE ( gls_finfo_type ), INTENT( INOUT ) :: cfinfo
+  TYPE ( gls_sinfo_type ), INTENT( INOUT ) :: csinfo
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
@@ -446,7 +446,7 @@
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  TYPE ( gls_control ), INTENT( IN ) :: ccontrol
+  TYPE ( gls_control_type ), INTENT( IN ) :: ccontrol
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables

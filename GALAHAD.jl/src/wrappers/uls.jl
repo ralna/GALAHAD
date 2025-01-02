@@ -48,9 +48,9 @@ struct uls_inform_type{T}
   iterative_refinements::Cint
   alternative::Bool
   solver::NTuple{21,Cchar}
-  gls_ainfo_type::gls_ainfo_type{T}
-  gls_finfo_type::gls_finfo_type{T}
-  gls_sinfo_type::gls_sinfo_type
+  gls_ainfo::gls_ainfo_type{T}
+  gls_finfo::gls_finfo_type{T}
+  gls_sinfo::gls_sinfo_type
   ma48_ainfo::ma48_ainfo{T}
   ma48_finfo::ma48_finfo{T}
   ma48_sinfo::ma48_sinfo

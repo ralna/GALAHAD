@@ -30,10 +30,10 @@
         f_uls_terminate => ULS_terminate
 
     USE GALAHAD_GLS_precision_ciface, ONLY:                                    &
-        gls_control,                                                           &
-        gls_ainfo,                                                             &
-        gls_finfo,                                                             &
-        gls_sinfo,                                                             &
+        gls_control_type,                                                      &
+        gls_ainfo_type,                                                        &
+        gls_finfo_type,                                                        &
+        gls_sinfo_type,                                                        &
         copy_gls_ainfo_in => copy_ainfo_in,                                    &
         copy_gls_finfo_in => copy_finfo_in,                                    &
         copy_gls_sinfo_in => copy_sinfo_in,                                    &
@@ -102,9 +102,9 @@
       INTEGER ( KIND = ipc_ ) :: iterative_refinements
       LOGICAL ( KIND = C_BOOL ) :: alternative
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 21 ) :: solver
-      TYPE ( gls_ainfo ) :: gls_ainfo
-      TYPE ( gls_finfo ) :: gls_finfo
-      TYPE ( gls_sinfo ) :: gls_sinfo
+      TYPE ( gls_ainfo_type ) :: gls_ainfo
+      TYPE ( gls_finfo_type ) :: gls_finfo
+      TYPE ( gls_sinfo_type ) :: gls_sinfo
       TYPE ( ma48_ainfo ) :: ma48_ainfo
       TYPE ( ma48_finfo ) :: ma48_finfo
       TYPE ( ma48_sinfo ) :: ma48_sinfo
