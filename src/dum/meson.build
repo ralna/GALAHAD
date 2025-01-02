@@ -1,3 +1,4 @@
+libgalahad_src += files('mpi.F90')
 libgalahad_cutest_dummy_src = files('cutest_dummy.F90')
 
 if not libwsmp.found()
@@ -35,10 +36,6 @@ galahad_headers += files('include/qmumps_struc.h')
 
 if not (libblas_name == 'mkl_rt' or liblapack_name == 'mkl_rt')
   libgalahad_src += files('mkl_pardiso.F90')
-endif
-
-if not libmpi.found()
-  libgalahad_src += files('mpi.F90')
 endif
 
 if not build_ssids
