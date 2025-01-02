@@ -283,7 +283,7 @@ endif
 
 extra_args_single = ['-DREAL_32']
 extra_args_double = []
-extra_args_quadruple = ['-DREAL_128', '-DGALAHAD_BLAS', '-DGALAHAD_LAPACK']
+extra_args_quadruple = ['-DREAL_128', '-DGALAHAD_BLAS', '-DGALAHAD_LAPACK', '-DDUMMY_QMUMPS']
 
 if not libblas.found()
   extra_args_single += '-DGALAHAD_BLAS'
@@ -624,7 +624,7 @@ if build_quadruple
 endif
 
 # Python interface
-if build_pythoniface and build_ciface and build_double
+if build_pythoniface and build_ciface and build_double and (not int64)
   incdir_numpy = run_command(py,
     ['-c', 'import numpy; print(numpy.get_include())'],
     check : true

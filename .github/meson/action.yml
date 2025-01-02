@@ -215,6 +215,7 @@ runs:
         fi
         if [[ "${{ inputs.int }}" == "64" ]]; then
           INT64="true"
+          PYTHON_INTERFACE="false"
           CUTEST_SINGLE="cutest_single_64"
           CUTEST_DOUBLE="cutest_double_64"
           CUTEST_QUADRUPLE="cutest_quadruple_64"

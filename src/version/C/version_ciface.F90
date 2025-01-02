@@ -16,7 +16,7 @@
 
   MODULE GALAHAD_VERSION_ciface
     USE GALAHAD_KINDS
-    USE GALAHAD_VERSION, ONLY: f_version_galahad => version_galahad
+    USE GALAHAD_VERSION, ONLY: f_VERSION_galahad => VERSION_galahad
 
   CONTAINS
 
