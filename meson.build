@@ -130,7 +130,6 @@ libdmumps = fc.find_library(libdmumps_name, dirs : libmumps_path, required : fal
 libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
 libhwloc = fc.find_library(libhwloc_name, dirs : libhwloc_path, required : false)
 lm = cc.find_library('m', required : false)
-libmpi = dependency('mpi', language : 'fortran', required : false)
 has_hwloch = cc.has_header('hwloc.h', include_directories : libhwloc_include)
 
 # Quadmath
@@ -187,14 +186,14 @@ endif
 
 libgalahad_single_deps = [libsmumps, libcutest_single, libblas, liblapack,
                           libhsl, libwsmp, libpardiso, libspmf, libpastixf,
-                          libampl, libmpi, libhwloc]
+                          libampl, libhwloc]
 
 libgalahad_double_deps = [libdmumps, libcutest_double, libblas, liblapack,
                           libhsl, libwsmp, libpardiso, libspmf, libpastixf,
-                          libampl, libmpi, libhwloc]
+                          libampl, libhwloc]
 
 libgalahad_quadruple_deps = [libcutest_quadruple, libhsl, libwsmp, libpardiso, libspmf,
-                             libpastixf, libampl, libmpi, libhwloc]
+                             libpastixf, libampl, libhwloc]
 
 # BLAS and LAPACK
 libblas_src = []
@@ -324,16 +323,16 @@ if not libwsmp.found()
   extra_args_double += '-DDUMMY_WSMP'
   extra_args_quadruple += '-DDUMMY_WSMP'
 endif
-if not libmpi.found()
-  extra_args_single += '-DDUMMY_MPI'
-  extra_args_double += '-DDUMMY_MPI'
-  extra_args_quadruple += '-DDUMMY_MPI'
-endif
 if not libhsl.found()
   extra_args_single += '-DDUMMY_HSL'
   extra_args_double += '-DDUMMY_HSL'
   extra_args_quadruple += '-DDUMMY_HSL'
 endif
+
+# MPI
+extra_args_single += '-DDUMMY_MPI'
+extra_args_double += '-DDUMMY_MPI'
+extra_args_quadruple += '-DDUMMY_MPI'
 
 # Compile GALAHAD with 64-bit integer
 if int64
