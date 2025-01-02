@@ -247,6 +247,7 @@ runs:
                              -Dcpp_std=$CPPSTD \
                              -Dexamples=true \
                              -Dtests=true \
+                             -Dbinaries=true \
                              -Dssids=${SSIDS} \
                              -Dpythoniface=${PYTHON_INTERFACE} \
                              -Dint64=${INT64} \
