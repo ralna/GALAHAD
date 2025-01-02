@@ -112,8 +112,15 @@ function test_lpa(::Type{T}, ::Type{INT}) where {T,INT}
   return 0
 end
 
-@testset "LPA" begin
-  @test test_lpa(Float32, Int32) == 0
-  @test test_lpa(Float64, Int32) == 0
-  @test test_lpa(Float128, Int32) == 0
+for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
+                             (Float32 , Int64, GALAHAD.libgalahad_single_64   ),
+                             (Float64 , Int32, GALAHAD.libgalahad_double      ),
+                             (Float64 , Int64, GALAHAD.libgalahad_double_64   ),
+                             (Float128, Int32, GALAHAD.libgalahad_quadruple   ),
+                             (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
+  if isfile(libgalahad)
+    @testset "LPA -- $T -- $INT" begin
+      @test test_lpa(T, INT) == 0
+    end
+  end
 end
