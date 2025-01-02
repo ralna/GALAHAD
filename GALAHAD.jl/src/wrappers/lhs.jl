@@ -27,9 +27,9 @@ function lhs_initialize(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function lhs_initialize(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64.lhs_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{lhs_control_type{Int64}},
-                                               inform::Ptr{lhs_inform_type{Int64}})::Cvoid
+  @ccall libgalahad_single_64.lhs_initialize_s_64(data::Ptr{Ptr{Cvoid}},
+                                                  control::Ptr{lhs_control_type{Int64}},
+                                                  inform::Ptr{lhs_inform_type{Int64}})::Cvoid
 end
 
 function lhs_initialize(::Type{Float64}, ::Type{Int32}, data, control, inform)
@@ -39,9 +39,9 @@ function lhs_initialize(::Type{Float64}, ::Type{Int32}, data, control, inform)
 end
 
 function lhs_initialize(::Type{Float64}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_double_64.lhs_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{lhs_control_type{Int64}},
-                                             inform::Ptr{lhs_inform_type{Int64}})::Cvoid
+  @ccall libgalahad_double_64.lhs_initialize_64(data::Ptr{Ptr{Cvoid}},
+                                                control::Ptr{lhs_control_type{Int64}},
+                                                inform::Ptr{lhs_inform_type{Int64}})::Cvoid
 end
 
 function lhs_initialize(::Type{Float128}, ::Type{Int32}, data, control, inform)
@@ -51,9 +51,9 @@ function lhs_initialize(::Type{Float128}, ::Type{Int32}, data, control, inform)
 end
 
 function lhs_initialize(::Type{Float128}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_quadruple_64.lhs_initialize_q(data::Ptr{Ptr{Cvoid}},
-                                                  control::Ptr{lhs_control_type{Int64}},
-                                                  inform::Ptr{lhs_inform_type{Int64}})::Cvoid
+  @ccall libgalahad_quadruple_64.lhs_initialize_q_64(data::Ptr{Ptr{Cvoid}},
+                                                     control::Ptr{lhs_control_type{Int64}},
+                                                     inform::Ptr{lhs_inform_type{Int64}})::Cvoid
 end
 
 export lhs_read_specfile
@@ -64,8 +64,8 @@ function lhs_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
 end
 
 function lhs_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_single_64.lhs_read_specfile_s(control::Ptr{lhs_control_type{Int64}},
-                                                  specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single_64.lhs_read_specfile_s_64(control::Ptr{lhs_control_type{Int64}},
+                                                     specfile::Ptr{Cchar})::Cvoid
 end
 
 function lhs_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
@@ -74,8 +74,8 @@ function lhs_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
 end
 
 function lhs_read_specfile(::Type{Float64}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_double_64.lhs_read_specfile(control::Ptr{lhs_control_type{Int64}},
-                                                specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_double_64.lhs_read_specfile_64(control::Ptr{lhs_control_type{Int64}},
+                                                   specfile::Ptr{Cchar})::Cvoid
 end
 
 function lhs_read_specfile(::Type{Float128}, ::Type{Int32}, control, specfile)
@@ -84,8 +84,8 @@ function lhs_read_specfile(::Type{Float128}, ::Type{Int32}, control, specfile)
 end
 
 function lhs_read_specfile(::Type{Float128}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_quadruple_64.lhs_read_specfile_q(control::Ptr{lhs_control_type{Int64}},
-                                                     specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_quadruple_64.lhs_read_specfile_q_64(control::Ptr{lhs_control_type{Int64}},
+                                                        specfile::Ptr{Cchar})::Cvoid
 end
 
 export lhs_ihs
@@ -100,11 +100,11 @@ end
 
 function lhs_ihs(::Type{Float32}, ::Type{Int64}, n_dimen, n_points, seed, X, control,
                  inform, data)
-  @ccall libgalahad_single_64.lhs_ihs_s(n_dimen::Int64, n_points::Int64, seed::Ptr{Int64},
-                                        X::Ptr{Int64},
-                                        control::Ptr{lhs_control_type{Int64}},
-                                        inform::Ptr{lhs_inform_type{Int64}},
-                                        data::Ptr{Ptr{Cvoid}})::Cvoid
+  @ccall libgalahad_single_64.lhs_ihs_s_64(n_dimen::Int64, n_points::Int64,
+                                           seed::Ptr{Int64}, X::Ptr{Int64},
+                                           control::Ptr{lhs_control_type{Int64}},
+                                           inform::Ptr{lhs_inform_type{Int64}},
+                                           data::Ptr{Ptr{Cvoid}})::Cvoid
 end
 
 function lhs_ihs(::Type{Float64}, ::Type{Int32}, n_dimen, n_points, seed, X, control,
@@ -117,10 +117,11 @@ end
 
 function lhs_ihs(::Type{Float64}, ::Type{Int64}, n_dimen, n_points, seed, X, control,
                  inform, data)
-  @ccall libgalahad_double_64.lhs_ihs(n_dimen::Int64, n_points::Int64, seed::Ptr{Int64},
-                                      X::Ptr{Int64}, control::Ptr{lhs_control_type{Int64}},
-                                      inform::Ptr{lhs_inform_type{Int64}},
-                                      data::Ptr{Ptr{Cvoid}})::Cvoid
+  @ccall libgalahad_double_64.lhs_ihs_64(n_dimen::Int64, n_points::Int64, seed::Ptr{Int64},
+                                         X::Ptr{Int64},
+                                         control::Ptr{lhs_control_type{Int64}},
+                                         inform::Ptr{lhs_inform_type{Int64}},
+                                         data::Ptr{Ptr{Cvoid}})::Cvoid
 end
 
 function lhs_ihs(::Type{Float128}, ::Type{Int32}, n_dimen, n_points, seed, X, control,
@@ -134,11 +135,11 @@ end
 
 function lhs_ihs(::Type{Float128}, ::Type{Int64}, n_dimen, n_points, seed, X, control,
                  inform, data)
-  @ccall libgalahad_quadruple_64.lhs_ihs_q(n_dimen::Int64, n_points::Int64,
-                                           seed::Ptr{Int64}, X::Ptr{Int64},
-                                           control::Ptr{lhs_control_type{Int64}},
-                                           inform::Ptr{lhs_inform_type{Int64}},
-                                           data::Ptr{Ptr{Cvoid}})::Cvoid
+  @ccall libgalahad_quadruple_64.lhs_ihs_q_64(n_dimen::Int64, n_points::Int64,
+                                              seed::Ptr{Int64}, X::Ptr{Int64},
+                                              control::Ptr{lhs_control_type{Int64}},
+                                              inform::Ptr{lhs_inform_type{Int64}},
+                                              data::Ptr{Ptr{Cvoid}})::Cvoid
 end
 
 export lhs_get_seed
@@ -148,7 +149,7 @@ function lhs_get_seed(::Type{Float32}, ::Type{Int32}, seed)
 end
 
 function lhs_get_seed(::Type{Float32}, ::Type{Int64}, seed)
-  @ccall libgalahad_single_64.lhs_get_seed_s(seed::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.lhs_get_seed_s_64(seed::Ptr{Int64})::Cvoid
 end
 
 function lhs_get_seed(::Type{Float64}, ::Type{Int32}, seed)
@@ -156,7 +157,7 @@ function lhs_get_seed(::Type{Float64}, ::Type{Int32}, seed)
 end
 
 function lhs_get_seed(::Type{Float64}, ::Type{Int64}, seed)
-  @ccall libgalahad_double_64.lhs_get_seed(seed::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.lhs_get_seed_64(seed::Ptr{Int64})::Cvoid
 end
 
 function lhs_get_seed(::Type{Float128}, ::Type{Int32}, seed)
@@ -164,7 +165,7 @@ function lhs_get_seed(::Type{Float128}, ::Type{Int32}, seed)
 end
 
 function lhs_get_seed(::Type{Float128}, ::Type{Int64}, seed)
-  @ccall libgalahad_quadruple_64.lhs_get_seed_q(seed::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.lhs_get_seed_q_64(seed::Ptr{Int64})::Cvoid
 end
 
 export lhs_information
@@ -176,9 +177,9 @@ function lhs_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
 end
 
 function lhs_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64.lhs_information_s(data::Ptr{Ptr{Cvoid}},
-                                                inform::Ptr{lhs_inform_type{Int64}},
-                                                status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.lhs_information_s_64(data::Ptr{Ptr{Cvoid}},
+                                                   inform::Ptr{lhs_inform_type{Int64}},
+                                                   status::Ptr{Int64})::Cvoid
 end
 
 function lhs_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -188,9 +189,9 @@ function lhs_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
 end
 
 function lhs_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_double_64.lhs_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{lhs_inform_type{Int64}},
-                                              status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.lhs_information_64(data::Ptr{Ptr{Cvoid}},
+                                                 inform::Ptr{lhs_inform_type{Int64}},
+                                                 status::Ptr{Int64})::Cvoid
 end
 
 function lhs_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
@@ -200,9 +201,9 @@ function lhs_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
 end
 
 function lhs_information(::Type{Float128}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_quadruple_64.lhs_information_q(data::Ptr{Ptr{Cvoid}},
-                                                   inform::Ptr{lhs_inform_type{Int64}},
-                                                   status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.lhs_information_q_64(data::Ptr{Ptr{Cvoid}},
+                                                      inform::Ptr{lhs_inform_type{Int64}},
+                                                      status::Ptr{Int64})::Cvoid
 end
 
 export lhs_terminate
@@ -214,9 +215,9 @@ function lhs_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function lhs_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64.lhs_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{lhs_control_type{Int64}},
-                                              inform::Ptr{lhs_inform_type{Int64}})::Cvoid
+  @ccall libgalahad_single_64.lhs_terminate_s_64(data::Ptr{Ptr{Cvoid}},
+                                                 control::Ptr{lhs_control_type{Int64}},
+                                                 inform::Ptr{lhs_inform_type{Int64}})::Cvoid
 end
 
 function lhs_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
@@ -226,9 +227,9 @@ function lhs_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
 end
 
 function lhs_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_double_64.lhs_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{lhs_control_type{Int64}},
-                                            inform::Ptr{lhs_inform_type{Int64}})::Cvoid
+  @ccall libgalahad_double_64.lhs_terminate_64(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{lhs_control_type{Int64}},
+                                               inform::Ptr{lhs_inform_type{Int64}})::Cvoid
 end
 
 function lhs_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
@@ -238,7 +239,7 @@ function lhs_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
 end
 
 function lhs_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_quadruple_64.lhs_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                                 control::Ptr{lhs_control_type{Int64}},
-                                                 inform::Ptr{lhs_inform_type{Int64}})::Cvoid
+  @ccall libgalahad_quadruple_64.lhs_terminate_q_64(data::Ptr{Ptr{Cvoid}},
+                                                    control::Ptr{lhs_control_type{Int64}},
+                                                    inform::Ptr{lhs_inform_type{Int64}})::Cvoid
 end

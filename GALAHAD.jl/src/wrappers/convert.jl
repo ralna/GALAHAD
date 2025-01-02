@@ -39,9 +39,9 @@ function convert_initialize(::Type{Float32}, ::Type{Int32}, data, control, statu
 end
 
 function convert_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64.convert_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                                   control::Ptr{convert_control_type{Int64}},
-                                                   status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.convert_initialize_s_64(data::Ptr{Ptr{Cvoid}},
+                                                      control::Ptr{convert_control_type{Int64}},
+                                                      status::Ptr{Int64})::Cvoid
 end
 
 function convert_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -51,9 +51,9 @@ function convert_initialize(::Type{Float64}, ::Type{Int32}, data, control, statu
 end
 
 function convert_initialize(::Type{Float64}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_double_64.convert_initialize(data::Ptr{Ptr{Cvoid}},
-                                                 control::Ptr{convert_control_type{Int64}},
-                                                 status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.convert_initialize_64(data::Ptr{Ptr{Cvoid}},
+                                                    control::Ptr{convert_control_type{Int64}},
+                                                    status::Ptr{Int64})::Cvoid
 end
 
 function convert_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
@@ -63,9 +63,9 @@ function convert_initialize(::Type{Float128}, ::Type{Int32}, data, control, stat
 end
 
 function convert_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_quadruple_64.convert_initialize_q(data::Ptr{Ptr{Cvoid}},
-                                                      control::Ptr{convert_control_type{Int64}},
-                                                      status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.convert_initialize_q_64(data::Ptr{Ptr{Cvoid}},
+                                                         control::Ptr{convert_control_type{Int64}},
+                                                         status::Ptr{Int64})::Cvoid
 end
 
 export convert_information
@@ -78,10 +78,10 @@ function convert_information(::Type{Float32}, ::Type{Int32}, data, inform, statu
 end
 
 function convert_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64.convert_information_s(data::Ptr{Ptr{Cvoid}},
-                                                    inform::Ptr{convert_inform_type{Float32,
-                                                                                    Int64}},
-                                                    status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.convert_information_s_64(data::Ptr{Ptr{Cvoid}},
+                                                       inform::Ptr{convert_inform_type{Float32,
+                                                                                       Int64}},
+                                                       status::Ptr{Int64})::Cvoid
 end
 
 function convert_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -92,10 +92,10 @@ function convert_information(::Type{Float64}, ::Type{Int32}, data, inform, statu
 end
 
 function convert_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_double_64.convert_information(data::Ptr{Ptr{Cvoid}},
-                                                  inform::Ptr{convert_inform_type{Float64,
-                                                                                  Int64}},
-                                                  status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.convert_information_64(data::Ptr{Ptr{Cvoid}},
+                                                     inform::Ptr{convert_inform_type{Float64,
+                                                                                     Int64}},
+                                                     status::Ptr{Int64})::Cvoid
 end
 
 function convert_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
@@ -106,10 +106,10 @@ function convert_information(::Type{Float128}, ::Type{Int32}, data, inform, stat
 end
 
 function convert_information(::Type{Float128}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_quadruple_64.convert_information_q(data::Ptr{Ptr{Cvoid}},
-                                                       inform::Ptr{convert_inform_type{Float128,
-                                                                                       Int64}},
-                                                       status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.convert_information_q_64(data::Ptr{Ptr{Cvoid}},
+                                                          inform::Ptr{convert_inform_type{Float128,
+                                                                                          Int64}},
+                                                          status::Ptr{Int64})::Cvoid
 end
 
 export convert_terminate
@@ -122,10 +122,10 @@ function convert_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform
 end
 
 function convert_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64.convert_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                                  control::Ptr{convert_control_type{Int64}},
-                                                  inform::Ptr{convert_inform_type{Float32,
-                                                                                  Int64}})::Cvoid
+  @ccall libgalahad_single_64.convert_terminate_s_64(data::Ptr{Ptr{Cvoid}},
+                                                     control::Ptr{convert_control_type{Int64}},
+                                                     inform::Ptr{convert_inform_type{Float32,
+                                                                                     Int64}})::Cvoid
 end
 
 function convert_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
@@ -135,10 +135,10 @@ function convert_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform
 end
 
 function convert_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_double_64.convert_terminate(data::Ptr{Ptr{Cvoid}},
-                                                control::Ptr{convert_control_type{Int64}},
-                                                inform::Ptr{convert_inform_type{Float64,
-                                                                                Int64}})::Cvoid
+  @ccall libgalahad_double_64.convert_terminate_64(data::Ptr{Ptr{Cvoid}},
+                                                   control::Ptr{convert_control_type{Int64}},
+                                                   inform::Ptr{convert_inform_type{Float64,
+                                                                                   Int64}})::Cvoid
 end
 
 function convert_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
@@ -149,8 +149,8 @@ function convert_terminate(::Type{Float128}, ::Type{Int32}, data, control, infor
 end
 
 function convert_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_quadruple_64.convert_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                                     control::Ptr{convert_control_type{Int64}},
-                                                     inform::Ptr{convert_inform_type{Float128,
-                                                                                     Int64}})::Cvoid
+  @ccall libgalahad_quadruple_64.convert_terminate_q_64(data::Ptr{Ptr{Cvoid}},
+                                                        control::Ptr{convert_control_type{Int64}},
+                                                        inform::Ptr{convert_inform_type{Float128,
+                                                                                        Int64}})::Cvoid
 end

@@ -152,9 +152,9 @@ function rewrite!(path::String, name::String, optimized::Bool)
         routine_double_int64 = routine_double_int32
         routine_quadruple_int64 = routine_quadruple_int32
 
-        routine_single_int64 = replace(routine_single_int64, "libgalahad_single" => "libgalahad_single_64")
-        routine_double_int64 = replace(routine_double_int64, "libgalahad_double" => "libgalahad_double_64")
-        routine_quadruple_int64 = replace(routine_quadruple_int64, "libgalahad_quadruple" => "libgalahad_quadruple_64")
+        routine_single_int64 = replace(routine_single_int64, "libgalahad_single.$(fname)_s(" => "libgalahad_single_64.$(fname)_s_64(")
+        routine_double_int64 = replace(routine_double_int64, "libgalahad_double.$(fname)(" => "libgalahad_double_64.$(fname)_64(")
+        routine_quadruple_int64 = replace(routine_quadruple_int64, "libgalahad_quadruple.$(fname)_q(" => "libgalahad_quadruple_64.$(fname)_q_64(")
 
         routine_single_int64 = replace(routine_single_int64, "Int32" => "Int64")
         routine_double_int64 = replace(routine_double_int64, "Int32" => "Int64")
