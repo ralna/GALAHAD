@@ -1,4 +1,5 @@
 #ifdef INTEGER_64
+#define version_galahad version_galahad_64
 #ifdef REAL_32
 #define arc_initialize arc_initialize_s_64
 #define arc_read_specfile arc_read_specfile_s_64
