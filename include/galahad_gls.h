@@ -124,7 +124,7 @@ extern "C" {
 /**
  * control derived type as a C struct
  */
-struct gls_control {
+struct gls_control_type {
 
     /// \brief
     /// use C or Fortran sparse matrix indexing
@@ -225,7 +225,7 @@ struct gls_control {
 /**
  * ainfo derived type as a C struct
  */
-struct gls_ainfo {
+struct gls_ainfo_type {
 
     /// \brief
     /// Flags success or failure case
@@ -291,7 +291,7 @@ struct gls_ainfo {
 /**
  * finfo derived type as a C struct
  */
-struct gls_finfo {
+struct gls_finfo_type {
 
     /// \brief
     /// Flags success or failure case
@@ -329,7 +329,7 @@ struct gls_finfo {
 /**
  * sinfo derived type as a C struct
  */
-struct gls_sinfo {
+struct gls_sinfo_type {
 
     /// \brief
     /// Flags success or failure case
@@ -348,7 +348,7 @@ struct gls_sinfo {
 // *-*-*-*-*-*-*-*-*-*-    G L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
 void gls_initialize( void **data,
-                     struct gls_control *control );
+                     struct gls_control_type *control );
 
 /*!<
  Set default control values and initialize private data
@@ -356,12 +356,12 @@ void gls_initialize( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] control  is a struct containing control information
-              (see gls_control)
+              (see gls_control_type)
 */
 
 // *-*-*-*-*-*-*-*-*-    G L S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void gls_read_specfile( struct gls_control *control,
+void gls_read_specfile( struct gls_control_type *control,
                         const char specfile[] );
 
 /*!<
@@ -373,7 +373,7 @@ void gls_read_specfile( struct gls_control *control,
   $GALAHAD/doc/gls.pdf for a list of keywords that may be set.
 
   @param[in,out]  control  is a struct containing control information
-              (see gls_control)
+              (see gls_control_type)
 
   @param[in]  specfile  is a character string containing the name of
               the specification file
@@ -381,7 +381,7 @@ void gls_read_specfile( struct gls_control *control,
 
 // *-*-*-*-*-*-*-*-*-*-*-*-    G L S  _ I M P O R T   -*-*-*-*-*-*-*-*-*-*
 
-void gls_import( struct gls_control *control,
+void gls_import( struct gls_control_type *control,
                  void **data,
                  ipc_ *status );
 
@@ -389,7 +389,7 @@ void gls_import( struct gls_control *control,
  Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
-  paramters for the remaining prcedures (see gls_control)
+  paramters for the remaining prcedures (see gls_control_type)
 
  @param[in,out] data holds private internal data
 
@@ -413,7 +413,7 @@ void gls_import( struct gls_control *control,
 
 // *-*-*-*-*-*-*-    G L S  _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*
 
-void gls_reset_control( struct gls_control *control,
+void gls_reset_control( struct gls_control_type *control,
                         void **data,
                         ipc_ *status );
 
@@ -421,7 +421,7 @@ void gls_reset_control( struct gls_control *control,
  Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
-  paramters for the remaining prcedures (see gls_control)
+  paramters for the remaining prcedures (see gls_control_type)
 
  @param[in,out] data holds private internal data
 
@@ -433,9 +433,9 @@ void gls_reset_control( struct gls_control *control,
 // *-*-*-*-*-*-*-*-*-*-    G L S  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
 void gls_information( void **data,
-                      struct gls_ainfo *ainfo,
-                      struct gls_finfo *finfo,
-                      struct gls_sinfo *sinfo,
+                      struct gls_ainfo_type *ainfo,
+                      struct gls_finfo_type *finfo,
+                      struct gls_sinfo_type *sinfo,
                       ipc_ *status );
 
 /*!<
@@ -444,13 +444,13 @@ void gls_information( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] ainfo   is a struct containing analysis output information
-              (see gls_ainfo)
+              (see gls_ainfo_type)
 
   @param[out] finfo   is a struct containing factorization output information
-              (see gls_finfo)
+              (see gls_finfo_type)
 
   @param[out] sinfo   is a struct containing solver output information
-              (see gls_sinfo)
+              (see gls_sinfo_type)
 
   @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
@@ -461,7 +461,7 @@ void gls_information( void **data,
 // *-*-*-*-*-*-*-*-*-*-    G L S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
 void gls_finalize( void **data,
-                   struct gls_control *control,
+                   struct gls_control_type *control,
                    ipc_ *status );
 
 /*!<
@@ -470,7 +470,7 @@ void gls_finalize( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] control  is a struct containing control information
-              (see gls_control)
+              (see gls_control_type)
 
   @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.

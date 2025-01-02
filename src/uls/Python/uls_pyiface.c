@@ -19,9 +19,9 @@
 #include "galahad_uls.h"
 
 /* Nested HSL info/inform prototypes */
-PyObject* gls_make_ainfo_dict(const struct gls_ainfo *ainfo);
-PyObject* gls_make_finfo_dict(const struct gls_finfo *finfo);
-PyObject* gls_make_sinfo_dict(const struct gls_sinfo *sinfo);
+PyObject* gls_make_ainfo_dict(const struct gls_ainfo_type *ainfo);
+PyObject* gls_make_finfo_dict(const struct gls_finfo_type *finfo);
+PyObject* gls_make_sinfo_dict(const struct gls_sinfo_type *sinfo);
 //PyObject* ma48_make_ainfo_dict(const struct ma48_ainfo_type *ainfo);
 //PyObject* ma48_make_finfo_dict(const struct ma48_finfo_type *finfo);
 //PyObject* ma48_make_sinfo_dict(const struct ma48_sinfo_type *sinfo);

@@ -395,11 +395,11 @@ struct uls_inform_type {
 
     /// \brief
     /// the output arrays from GLS
-    struct gls_ainfo gls_ainfo;
+    struct gls_ainfo_type gls_ainfo;
     /// see gls_ainfo
-    struct gls_finfo gls_finfo;
+    struct gls_finfo_type gls_finfo;
     /// see gls_ainfo
-    struct gls_sinfo gls_sinfo;
+    struct gls_sinfo_type gls_sinfo;
 
     /// \brief
     /// the output arrays from MA48

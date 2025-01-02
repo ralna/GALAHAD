@@ -27,12 +27,6 @@ function rewrite!(path::String, name::String, optimized::Bool)
     text = replace(text, "real_sp_" => "Float32")
     text = replace(text, "\n    " => "\n  ")
 
-    # Special case for gls
-    text = replace(text, "gls_control" => "gls_control_type")
-    text = replace(text, "gls_ainfo" => "gls_ainfo_type")
-    text = replace(text, "gls_sinfo" => "gls_sinfo_type")
-    text = replace(text, "gls_finfo" => "gls_finfo_type")
-
     for type in types
       for package in packages
         if "$(package)_$(type)_type" ∉ nonparametric_structures
