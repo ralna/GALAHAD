@@ -86,6 +86,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
     for (index, code) in enumerate(blocks)
       if contains(code, "function")
         fname = split(split(code, "function ")[2], "(")[1]
+
         # Int32
         routine_single_int32 = code * "end\n"
         routine_double_int32 = code * "end\n"
@@ -147,65 +148,17 @@ function rewrite!(path::String, name::String, optimized::Bool)
         end
 
         # Int64
-        routine_single_int64 = code * "end\n"
-        routine_double_int64 = code * "end\n"
-        routine_quadruple_int64 = code * "end\n"
+        routine_single_int64 = routine_single_int32
+        routine_double_int64 = routine_double_int32
+        routine_quadruple_int64 = routine_quadruple_int32
 
-        routine_single_int64 = replace(routine_single_int64, "function $fname(" => "function $fname(::Type{Float32}, ::Type{Int64}, ")
-        routine_double_int64 = replace(routine_double_int64, "function $fname(" => "function $fname(::Type{Float64}, ::Type{Int64}, ")
-        routine_quadruple_int64 = replace(routine_quadruple_int64, "function $fname(" => "function $fname(::Type{Float128}, ::Type{Int64}, ")
+        routine_single_int64 = replace(routine_single_int64, "libgalahad_single" => "libgalahad_single_64")
+        routine_double_int64 = replace(routine_double_int64, "libgalahad_double" => "libgalahad_double_64")
+        routine_quadruple_int64 = replace(routine_quadruple_int64, "libgalahad_quadruple" => "libgalahad_quadruple_64")
 
-        routine_single_int64 = replace(routine_single_int64, "libgalahad_double.$fname(" => "libgalahad_single_64.$(fname)_s(")
-        routine_double_int64 = replace(routine_double_int64, "libgalahad_double." => "libgalahad_double_64.")
-        routine_quadruple_int64 = replace(routine_quadruple_int64, "libgalahad_double.$fname(" => "libgalahad_quadruple_64.$(fname)_q(")
-
-        routine_single_int64 = replace(routine_single_int64, "ipc_" => "Int64")
-        routine_double_int64 = replace(routine_double_int64, "ipc_" => "Int64")
-        routine_quadruple_int64 = replace(routine_quadruple_int64, "ipc_" => "Int64")
-
-        routine_single_int64 = replace(routine_single_int64, "rpc_" => "Float32")
-        routine_double_int64 = replace(routine_double_int64, "rpc_" => "Float64")
-        routine_quadruple_int64 = replace(routine_quadruple_int64, "rpc_" => "Float128")
-
-        routine_single_int64 = replace(routine_single_int64, "spral_ssids_options" => "spral_ssids_options{Float32}")
-        routine_double_int64 = replace(routine_double_int64, "spral_ssids_options" => "spral_ssids_options{Float64}")
-        routine_quadruple_int64 = replace(routine_quadruple_int64, "spral_ssids_options" => "spral_ssids_options{Float128}")
-
-        # Float128 should be passed by value as a Cfloat128
-        routine_quadruple_int64 = replace(routine_quadruple_int64, "::Float128" => "::Cfloat128")
-
-        for type in types
-          for package in packages
-            type_name = "$(package)_$(type)_type"
-            if (type_name ∉ nonparametric_structures_float) && (type_name ∈ nonparametric_structures_int)
-              routine_single_int64 = replace(routine_single_int64, type_name => "$(type_name){Float32}")
-              routine_double_int64 = replace(routine_double_int64, type_name => "$(type_name){Float64}")
-              routine_quadruple_int64 = replace(routine_quadruple_int64, type_name => "$(type_name){Float128}")
-
-              routine_single_int64 = replace(routine_single_int64, "{Float32}{Float32}" => "{Float32}")
-              routine_double_int64 = replace(routine_double_int64, "{Float64}{Float64}" => "{Float64}")
-              routine_quadruple_int64 = replace(routine_quadruple_int64, "{Float128}{Float128}" => "{Float128}")
-            end
-            if (type_name ∈ nonparametric_structures_float) && (type_name ∉ nonparametric_structures_int)
-              routine_single_int64 = replace(routine_single_int64, type_name => "$(type_name){Int64}")
-              routine_double_int64 = replace(routine_double_int64, type_name => "$(type_name){Int64}")
-              routine_quadruple_int64 = replace(routine_quadruple_int64, type_name => "$(type_name){Int64}")
-
-              routine_single_int64 = replace(routine_single_int64, "{Int64}{Int64}" => "{Int64}")
-              routine_double_int64 = replace(routine_double_int64, "{Int64}{Int64}" => "{Int64}")
-              routine_quadruple_int64 = replace(routine_quadruple_int64, "{Int64}{Int64}" => "{Int64}")
-            end
-            if (type_name ∉ nonparametric_structures_float) && (type_name ∉ nonparametric_structures_int)
-              routine_single_int64 = replace(routine_single_int64, type_name => "$(type_name){Float32,Int64}")
-              routine_double_int64 = replace(routine_double_int64, type_name => "$(type_name){Float64,Int64}")
-              routine_quadruple_int64 = replace(routine_quadruple_int64, type_name => "$(type_name){Float128,Int64}")
-
-              routine_single_int64 = replace(routine_single_int64, "{Float32,Int64}{Float32,Int64}" => "{Float32,Int64}")
-              routine_double_int64 = replace(routine_double_int64, "{Float64,Int64}{Float64,Int64}" => "{Float64,Int64}")
-              routine_quadruple_int64 = replace(routine_quadruple_int64, "{Float128,Int64}{Float128,Int64}" => "{Float128,Int64}")
-            end
-          end
-        end
+        routine_single_int64 = replace(routine_single_int64, "Int32" => "Int64")
+        routine_double_int64 = replace(routine_double_int64, "Int32" => "Int64")
+        routine_quadruple_int64 = replace(routine_quadruple_int64, "Int32" => "Int64")
 
         if (name ≠ "hsl") && (name ≠ "ssids")
           text = text * "\n" * "export " * fname * "\n" * routine_single_int32 * "\n" * routine_single_int64 * "\n" *
