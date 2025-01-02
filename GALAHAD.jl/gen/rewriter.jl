@@ -208,9 +208,9 @@ function rewrite!(path::String, name::String, optimized::Bool)
         end
 
         if (name ≠ "hsl") && (name ≠ "ssids")
-          text = text * "\n" * "export " * fname * "\n" * routine_single_int32 * "\n" * # routine_single_int64 * "\n" *
-                                                          routine_double_int32 * "\n" * # routine_double_int64 * "\n" *
-                                                          routine_quadruple_int32 # * "\n" * routine_quadruple_int64
+          text = text * "\n" * "export " * fname * "\n" * routine_single_int32 * "\n" * routine_single_int64 * "\n" *
+                                                          routine_double_int32 * "\n" * routine_double_int64 * "\n" *
+                                                          routine_quadruple_int32 * "\n" * routine_quadruple_int64
         end
       elseif contains(code, "struct ")
         structure = code * "end\n"

@@ -74,15 +74,31 @@ function gls_initialize(::Type{Float32}, ::Type{Int32}, data, control)
                                             control::Ptr{gls_control_type{Float32,Int32}})::Cvoid
 end
 
+function gls_initialize(::Type{Float32}, ::Type{Int64}, data, control)
+  @ccall libgalahad_single_64.gls_initialize_s(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{gls_control_type{Float32,Int64}})::Cvoid
+end
+
 function gls_initialize(::Type{Float64}, ::Type{Int32}, data, control)
   @ccall libgalahad_double.gls_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{gls_control_type{Float64,Int32}})::Cvoid
+end
+
+function gls_initialize(::Type{Float64}, ::Type{Int64}, data, control)
+  @ccall libgalahad_double_64.gls_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{gls_control_type{Float64,Int64}})::Cvoid
 end
 
 function gls_initialize(::Type{Float128}, ::Type{Int32}, data, control)
   @ccall libgalahad_quadruple.gls_initialize_q(data::Ptr{Ptr{Cvoid}},
                                                control::Ptr{gls_control_type{Float128,
                                                                              Int32}})::Cvoid
+end
+
+function gls_initialize(::Type{Float128}, ::Type{Int64}, data, control)
+  @ccall libgalahad_quadruple_64.gls_initialize_q(data::Ptr{Ptr{Cvoid}},
+                                                  control::Ptr{gls_control_type{Float128,
+                                                                                Int64}})::Cvoid
 end
 
 export gls_read_specfile
@@ -92,15 +108,33 @@ function gls_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
+function gls_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
+  @ccall libgalahad_single_64.gls_read_specfile_s(control::Ptr{gls_control_type{Float32,
+                                                                                Int64}},
+                                                  specfile::Ptr{Cchar})::Cvoid
+end
+
 function gls_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
   @ccall libgalahad_double.gls_read_specfile(control::Ptr{gls_control_type{Float64,Int32}},
                                              specfile::Ptr{Cchar})::Cvoid
+end
+
+function gls_read_specfile(::Type{Float64}, ::Type{Int64}, control, specfile)
+  @ccall libgalahad_double_64.gls_read_specfile(control::Ptr{gls_control_type{Float64,
+                                                                              Int64}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function gls_read_specfile(::Type{Float128}, ::Type{Int32}, control, specfile)
   @ccall libgalahad_quadruple.gls_read_specfile_q(control::Ptr{gls_control_type{Float128,
                                                                                 Int32}},
                                                   specfile::Ptr{Cchar})::Cvoid
+end
+
+function gls_read_specfile(::Type{Float128}, ::Type{Int64}, control, specfile)
+  @ccall libgalahad_quadruple_64.gls_read_specfile_q(control::Ptr{gls_control_type{Float128,
+                                                                                   Int64}},
+                                                     specfile::Ptr{Cchar})::Cvoid
 end
 
 export gls_import
@@ -110,14 +144,30 @@ function gls_import(::Type{Float32}, ::Type{Int32}, control, data, status)
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32})::Cvoid
 end
 
+function gls_import(::Type{Float32}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_single_64.gls_import_s(control::Ptr{gls_control_type{Float32,Int64}},
+                                           data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64})::Cvoid
+end
+
 function gls_import(::Type{Float64}, ::Type{Int32}, control, data, status)
   @ccall libgalahad_double.gls_import(control::Ptr{gls_control_type{Float64,Int32}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32})::Cvoid
 end
 
+function gls_import(::Type{Float64}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_double_64.gls_import(control::Ptr{gls_control_type{Float64,Int64}},
+                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64})::Cvoid
+end
+
 function gls_import(::Type{Float128}, ::Type{Int32}, control, data, status)
   @ccall libgalahad_quadruple.gls_import_q(control::Ptr{gls_control_type{Float128,Int32}},
                                            data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32})::Cvoid
+end
+
+function gls_import(::Type{Float128}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_quadruple_64.gls_import_q(control::Ptr{gls_control_type{Float128,Int64}},
+                                              data::Ptr{Ptr{Cvoid}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 export gls_reset_control
@@ -128,10 +178,24 @@ function gls_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status
                                                status::Ptr{Int32})::Cvoid
 end
 
+function gls_reset_control(::Type{Float32}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_single_64.gls_reset_control_s(control::Ptr{gls_control_type{Float32,
+                                                                                Int64}},
+                                                  data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Int64})::Cvoid
+end
+
 function gls_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
   @ccall libgalahad_double.gls_reset_control(control::Ptr{gls_control_type{Float64,Int32}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Int32})::Cvoid
+end
+
+function gls_reset_control(::Type{Float64}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_double_64.gls_reset_control(control::Ptr{gls_control_type{Float64,
+                                                                              Int64}},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int64})::Cvoid
 end
 
 function gls_reset_control(::Type{Float128}, ::Type{Int32}, control, data, status)
@@ -139,6 +203,13 @@ function gls_reset_control(::Type{Float128}, ::Type{Int32}, control, data, statu
                                                                                 Int32}},
                                                   data::Ptr{Ptr{Cvoid}},
                                                   status::Ptr{Int32})::Cvoid
+end
+
+function gls_reset_control(::Type{Float128}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_quadruple_64.gls_reset_control_q(control::Ptr{gls_control_type{Float128,
+                                                                                   Int64}},
+                                                     data::Ptr{Ptr{Cvoid}},
+                                                     status::Ptr{Int64})::Cvoid
 end
 
 export gls_information
@@ -151,12 +222,28 @@ function gls_information(::Type{Float32}, ::Type{Int32}, data, ainfo, finfo, sin
                                              status::Ptr{Int32})::Cvoid
 end
 
+function gls_information(::Type{Float32}, ::Type{Int64}, data, ainfo, finfo, sinfo, status)
+  @ccall libgalahad_single_64.gls_information_s(data::Ptr{Ptr{Cvoid}},
+                                                ainfo::Ptr{gls_ainfo_type{Float32,Int64}},
+                                                finfo::Ptr{gls_finfo_type{Float32,Int64}},
+                                                sinfo::Ptr{gls_sinfo_type{Int64}},
+                                                status::Ptr{Int64})::Cvoid
+end
+
 function gls_information(::Type{Float64}, ::Type{Int32}, data, ainfo, finfo, sinfo, status)
   @ccall libgalahad_double.gls_information(data::Ptr{Ptr{Cvoid}},
                                            ainfo::Ptr{gls_ainfo_type{Float64,Int32}},
                                            finfo::Ptr{gls_finfo_type{Float64,Int32}},
                                            sinfo::Ptr{gls_sinfo_type{Int32}},
                                            status::Ptr{Int32})::Cvoid
+end
+
+function gls_information(::Type{Float64}, ::Type{Int64}, data, ainfo, finfo, sinfo, status)
+  @ccall libgalahad_double_64.gls_information(data::Ptr{Ptr{Cvoid}},
+                                              ainfo::Ptr{gls_ainfo_type{Float64,Int64}},
+                                              finfo::Ptr{gls_finfo_type{Float64,Int64}},
+                                              sinfo::Ptr{gls_sinfo_type{Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function gls_information(::Type{Float128}, ::Type{Int32}, data, ainfo, finfo, sinfo, status)
@@ -167,6 +254,16 @@ function gls_information(::Type{Float128}, ::Type{Int32}, data, ainfo, finfo, si
                                                 status::Ptr{Int32})::Cvoid
 end
 
+function gls_information(::Type{Float128}, ::Type{Int64}, data, ainfo, finfo, sinfo, status)
+  @ccall libgalahad_quadruple_64.gls_information_q(data::Ptr{Ptr{Cvoid}},
+                                                   ainfo::Ptr{gls_ainfo_type{Float128,
+                                                                             Int64}},
+                                                   finfo::Ptr{gls_finfo_type{Float128,
+                                                                             Int64}},
+                                                   sinfo::Ptr{gls_sinfo_type{Int64}},
+                                                   status::Ptr{Int64})::Cvoid
+end
+
 export gls_finalize
 
 function gls_finalize(::Type{Float32}, ::Type{Int32}, data, control, status)
@@ -175,14 +272,33 @@ function gls_finalize(::Type{Float32}, ::Type{Int32}, data, control, status)
                                           status::Ptr{Int32})::Cvoid
 end
 
+function gls_finalize(::Type{Float32}, ::Type{Int64}, data, control, status)
+  @ccall libgalahad_single_64.gls_finalize_s(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{gls_control_type{Float32,Int64}},
+                                             status::Ptr{Int64})::Cvoid
+end
+
 function gls_finalize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.gls_finalize(data::Ptr{Ptr{Cvoid}},
                                         control::Ptr{gls_control_type{Float64,Int32}},
                                         status::Ptr{Int32})::Cvoid
 end
 
+function gls_finalize(::Type{Float64}, ::Type{Int64}, data, control, status)
+  @ccall libgalahad_double_64.gls_finalize(data::Ptr{Ptr{Cvoid}},
+                                           control::Ptr{gls_control_type{Float64,Int64}},
+                                           status::Ptr{Int64})::Cvoid
+end
+
 function gls_finalize(::Type{Float128}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_quadruple.gls_finalize_q(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{gls_control_type{Float128,Int32}},
                                              status::Ptr{Int32})::Cvoid
+end
+
+function gls_finalize(::Type{Float128}, ::Type{Int64}, data, control, status)
+  @ccall libgalahad_quadruple_64.gls_finalize_q(data::Ptr{Ptr{Cvoid}},
+                                                control::Ptr{gls_control_type{Float128,
+                                                                              Int64}},
+                                                status::Ptr{Int64})::Cvoid
 end

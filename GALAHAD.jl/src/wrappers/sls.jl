@@ -165,10 +165,22 @@ function sls_initialize(::Type{Float32}, ::Type{Int32}, solver, data, control, s
                                             status::Ptr{Int32})::Cvoid
 end
 
+function sls_initialize(::Type{Float32}, ::Type{Int64}, solver, data, control, status)
+  @ccall libgalahad_single_64.sls_initialize_s(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{sls_control_type{Float32,Int64}},
+                                               status::Ptr{Int64})::Cvoid
+end
+
 function sls_initialize(::Type{Float64}, ::Type{Int32}, solver, data, control, status)
   @ccall libgalahad_double.sls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{sls_control_type{Float64,Int32}},
                                           status::Ptr{Int32})::Cvoid
+end
+
+function sls_initialize(::Type{Float64}, ::Type{Int64}, solver, data, control, status)
+  @ccall libgalahad_double_64.sls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{sls_control_type{Float64,Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function sls_initialize(::Type{Float128}, ::Type{Int32}, solver, data, control, status)
@@ -178,6 +190,13 @@ function sls_initialize(::Type{Float128}, ::Type{Int32}, solver, data, control, 
                                                status::Ptr{Int32})::Cvoid
 end
 
+function sls_initialize(::Type{Float128}, ::Type{Int64}, solver, data, control, status)
+  @ccall libgalahad_quadruple_64.sls_initialize_q(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
+                                                  control::Ptr{sls_control_type{Float128,
+                                                                                Int64}},
+                                                  status::Ptr{Int64})::Cvoid
+end
+
 export sls_read_specfile
 
 function sls_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
@@ -185,15 +204,33 @@ function sls_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
+function sls_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
+  @ccall libgalahad_single_64.sls_read_specfile_s(control::Ptr{sls_control_type{Float32,
+                                                                                Int64}},
+                                                  specfile::Ptr{Cchar})::Cvoid
+end
+
 function sls_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
   @ccall libgalahad_double.sls_read_specfile(control::Ptr{sls_control_type{Float64,Int32}},
                                              specfile::Ptr{Cchar})::Cvoid
+end
+
+function sls_read_specfile(::Type{Float64}, ::Type{Int64}, control, specfile)
+  @ccall libgalahad_double_64.sls_read_specfile(control::Ptr{sls_control_type{Float64,
+                                                                              Int64}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function sls_read_specfile(::Type{Float128}, ::Type{Int32}, control, specfile)
   @ccall libgalahad_quadruple.sls_read_specfile_q(control::Ptr{sls_control_type{Float128,
                                                                                 Int32}},
                                                   specfile::Ptr{Cchar})::Cvoid
+end
+
+function sls_read_specfile(::Type{Float128}, ::Type{Int64}, control, specfile)
+  @ccall libgalahad_quadruple_64.sls_read_specfile_q(control::Ptr{sls_control_type{Float128,
+                                                                                   Int64}},
+                                                     specfile::Ptr{Cchar})::Cvoid
 end
 
 export sls_analyse_matrix
@@ -208,6 +245,17 @@ function sls_analyse_matrix(::Type{Float32}, ::Type{Int32}, control, data, statu
                                                 ptr::Ptr{Int32})::Cvoid
 end
 
+function sls_analyse_matrix(::Type{Float32}, ::Type{Int64}, control, data, status, n, type,
+                            ne, row, col, ptr)
+  @ccall libgalahad_single_64.sls_analyse_matrix_s(control::Ptr{sls_control_type{Float32,
+                                                                                 Int64}},
+                                                   data::Ptr{Ptr{Cvoid}},
+                                                   status::Ptr{Int64}, n::Int64,
+                                                   type::Ptr{Cchar}, ne::Int64,
+                                                   row::Ptr{Int64}, col::Ptr{Int64},
+                                                   ptr::Ptr{Int64})::Cvoid
+end
+
 function sls_analyse_matrix(::Type{Float64}, ::Type{Int32}, control, data, status, n, type,
                             ne, row, col, ptr)
   @ccall libgalahad_double.sls_analyse_matrix(control::Ptr{sls_control_type{Float64,Int32}},
@@ -215,6 +263,16 @@ function sls_analyse_matrix(::Type{Float64}, ::Type{Int32}, control, data, statu
                                               n::Int32, type::Ptr{Cchar}, ne::Int32,
                                               row::Ptr{Int32}, col::Ptr{Int32},
                                               ptr::Ptr{Int32})::Cvoid
+end
+
+function sls_analyse_matrix(::Type{Float64}, ::Type{Int64}, control, data, status, n, type,
+                            ne, row, col, ptr)
+  @ccall libgalahad_double_64.sls_analyse_matrix(control::Ptr{sls_control_type{Float64,
+                                                                               Int64}},
+                                                 data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                                 n::Int64, type::Ptr{Cchar}, ne::Int64,
+                                                 row::Ptr{Int64}, col::Ptr{Int64},
+                                                 ptr::Ptr{Int64})::Cvoid
 end
 
 function sls_analyse_matrix(::Type{Float128}, ::Type{Int32}, control, data, status, n, type,
@@ -228,6 +286,17 @@ function sls_analyse_matrix(::Type{Float128}, ::Type{Int32}, control, data, stat
                                                    ptr::Ptr{Int32})::Cvoid
 end
 
+function sls_analyse_matrix(::Type{Float128}, ::Type{Int64}, control, data, status, n, type,
+                            ne, row, col, ptr)
+  @ccall libgalahad_quadruple_64.sls_analyse_matrix_q(control::Ptr{sls_control_type{Float128,
+                                                                                    Int64}},
+                                                      data::Ptr{Ptr{Cvoid}},
+                                                      status::Ptr{Int64}, n::Int64,
+                                                      type::Ptr{Cchar}, ne::Int64,
+                                                      row::Ptr{Int64}, col::Ptr{Int64},
+                                                      ptr::Ptr{Int64})::Cvoid
+end
+
 export sls_reset_control
 
 function sls_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status)
@@ -236,10 +305,24 @@ function sls_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status
                                                status::Ptr{Int32})::Cvoid
 end
 
+function sls_reset_control(::Type{Float32}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_single_64.sls_reset_control_s(control::Ptr{sls_control_type{Float32,
+                                                                                Int64}},
+                                                  data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Int64})::Cvoid
+end
+
 function sls_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
   @ccall libgalahad_double.sls_reset_control(control::Ptr{sls_control_type{Float64,Int32}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Int32})::Cvoid
+end
+
+function sls_reset_control(::Type{Float64}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_double_64.sls_reset_control(control::Ptr{sls_control_type{Float64,
+                                                                              Int64}},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int64})::Cvoid
 end
 
 function sls_reset_control(::Type{Float128}, ::Type{Int32}, control, data, status)
@@ -249,6 +332,13 @@ function sls_reset_control(::Type{Float128}, ::Type{Int32}, control, data, statu
                                                   status::Ptr{Int32})::Cvoid
 end
 
+function sls_reset_control(::Type{Float128}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_quadruple_64.sls_reset_control_q(control::Ptr{sls_control_type{Float128,
+                                                                                   Int64}},
+                                                     data::Ptr{Ptr{Cvoid}},
+                                                     status::Ptr{Int64})::Cvoid
+end
+
 export sls_factorize_matrix
 
 function sls_factorize_matrix(::Type{Float32}, ::Type{Int32}, data, status, ne, val)
@@ -256,15 +346,33 @@ function sls_factorize_matrix(::Type{Float32}, ::Type{Int32}, data, status, ne, 
                                                   ne::Int32, val::Ptr{Float32})::Cvoid
 end
 
+function sls_factorize_matrix(::Type{Float32}, ::Type{Int64}, data, status, ne, val)
+  @ccall libgalahad_single_64.sls_factorize_matrix_s(data::Ptr{Ptr{Cvoid}},
+                                                     status::Ptr{Int64}, ne::Int64,
+                                                     val::Ptr{Float32})::Cvoid
+end
+
 function sls_factorize_matrix(::Type{Float64}, ::Type{Int32}, data, status, ne, val)
   @ccall libgalahad_double.sls_factorize_matrix(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
                                                 ne::Int32, val::Ptr{Float64})::Cvoid
+end
+
+function sls_factorize_matrix(::Type{Float64}, ::Type{Int64}, data, status, ne, val)
+  @ccall libgalahad_double_64.sls_factorize_matrix(data::Ptr{Ptr{Cvoid}},
+                                                   status::Ptr{Int64}, ne::Int64,
+                                                   val::Ptr{Float64})::Cvoid
 end
 
 function sls_factorize_matrix(::Type{Float128}, ::Type{Int32}, data, status, ne, val)
   @ccall libgalahad_quadruple.sls_factorize_matrix_q(data::Ptr{Ptr{Cvoid}},
                                                      status::Ptr{Int32}, ne::Int32,
                                                      val::Ptr{Float128})::Cvoid
+end
+
+function sls_factorize_matrix(::Type{Float128}, ::Type{Int64}, data, status, ne, val)
+  @ccall libgalahad_quadruple_64.sls_factorize_matrix_q(data::Ptr{Ptr{Cvoid}},
+                                                        status::Ptr{Int64}, ne::Int64,
+                                                        val::Ptr{Float128})::Cvoid
 end
 
 export sls_solve_system
@@ -274,14 +382,30 @@ function sls_solve_system(::Type{Float32}, ::Type{Int32}, data, status, n, sol)
                                               n::Int32, sol::Ptr{Float32})::Cvoid
 end
 
+function sls_solve_system(::Type{Float32}, ::Type{Int64}, data, status, n, sol)
+  @ccall libgalahad_single_64.sls_solve_system_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                                 n::Int64, sol::Ptr{Float32})::Cvoid
+end
+
 function sls_solve_system(::Type{Float64}, ::Type{Int32}, data, status, n, sol)
   @ccall libgalahad_double.sls_solve_system(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
                                             n::Int32, sol::Ptr{Float64})::Cvoid
 end
 
+function sls_solve_system(::Type{Float64}, ::Type{Int64}, data, status, n, sol)
+  @ccall libgalahad_double_64.sls_solve_system(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                               n::Int64, sol::Ptr{Float64})::Cvoid
+end
+
 function sls_solve_system(::Type{Float128}, ::Type{Int32}, data, status, n, sol)
   @ccall libgalahad_quadruple.sls_solve_system_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
                                                  n::Int32, sol::Ptr{Float128})::Cvoid
+end
+
+function sls_solve_system(::Type{Float128}, ::Type{Int64}, data, status, n, sol)
+  @ccall libgalahad_quadruple_64.sls_solve_system_q(data::Ptr{Ptr{Cvoid}},
+                                                    status::Ptr{Int64}, n::Int64,
+                                                    sol::Ptr{Float128})::Cvoid
 end
 
 export sls_partial_solve_system
@@ -294,11 +418,27 @@ function sls_partial_solve_system(::Type{Float32}, ::Type{Int32}, part, data, st
                                                       sol::Ptr{Float32})::Cvoid
 end
 
+function sls_partial_solve_system(::Type{Float32}, ::Type{Int64}, part, data, status, n,
+                                  sol)
+  @ccall libgalahad_single_64.sls_partial_solve_system_s(part::Ptr{Cchar},
+                                                         data::Ptr{Ptr{Cvoid}},
+                                                         status::Ptr{Int64}, n::Int64,
+                                                         sol::Ptr{Float32})::Cvoid
+end
+
 function sls_partial_solve_system(::Type{Float64}, ::Type{Int32}, part, data, status, n,
                                   sol)
   @ccall libgalahad_double.sls_partial_solve_system(part::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
                                                     status::Ptr{Int32}, n::Int32,
                                                     sol::Ptr{Float64})::Cvoid
+end
+
+function sls_partial_solve_system(::Type{Float64}, ::Type{Int64}, part, data, status, n,
+                                  sol)
+  @ccall libgalahad_double_64.sls_partial_solve_system(part::Ptr{Cchar},
+                                                       data::Ptr{Ptr{Cvoid}},
+                                                       status::Ptr{Int64}, n::Int64,
+                                                       sol::Ptr{Float64})::Cvoid
 end
 
 function sls_partial_solve_system(::Type{Float128}, ::Type{Int32}, part, data, status, n,
@@ -309,6 +449,14 @@ function sls_partial_solve_system(::Type{Float128}, ::Type{Int32}, part, data, s
                                                          sol::Ptr{Float128})::Cvoid
 end
 
+function sls_partial_solve_system(::Type{Float128}, ::Type{Int64}, part, data, status, n,
+                                  sol)
+  @ccall libgalahad_quadruple_64.sls_partial_solve_system_q(part::Ptr{Cchar},
+                                                            data::Ptr{Ptr{Cvoid}},
+                                                            status::Ptr{Int64}, n::Int64,
+                                                            sol::Ptr{Float128})::Cvoid
+end
+
 export sls_information
 
 function sls_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
@@ -317,16 +465,35 @@ function sls_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
                                              status::Ptr{Int32})::Cvoid
 end
 
+function sls_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
+  @ccall libgalahad_single_64.sls_information_s(data::Ptr{Ptr{Cvoid}},
+                                                inform::Ptr{sls_inform_type{Float32,Int64}},
+                                                status::Ptr{Int64})::Cvoid
+end
+
 function sls_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_double.sls_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{sls_inform_type{Float64,Int32}},
                                            status::Ptr{Int32})::Cvoid
 end
 
+function sls_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
+  @ccall libgalahad_double_64.sls_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{sls_inform_type{Float64,Int64}},
+                                              status::Ptr{Int64})::Cvoid
+end
+
 function sls_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_quadruple.sls_information_q(data::Ptr{Ptr{Cvoid}},
                                                 inform::Ptr{sls_inform_type{Float128,Int32}},
                                                 status::Ptr{Int32})::Cvoid
+end
+
+function sls_information(::Type{Float128}, ::Type{Int64}, data, inform, status)
+  @ccall libgalahad_quadruple_64.sls_information_q(data::Ptr{Ptr{Cvoid}},
+                                                   inform::Ptr{sls_inform_type{Float128,
+                                                                               Int64}},
+                                                   status::Ptr{Int64})::Cvoid
 end
 
 export sls_terminate
@@ -337,14 +504,34 @@ function sls_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
                                            inform::Ptr{sls_inform_type{Float32,Int32}})::Cvoid
 end
 
+function sls_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
+  @ccall libgalahad_single_64.sls_terminate_s(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{sls_control_type{Float32,Int64}},
+                                              inform::Ptr{sls_inform_type{Float32,Int64}})::Cvoid
+end
+
 function sls_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.sls_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{sls_control_type{Float64,Int32}},
                                          inform::Ptr{sls_inform_type{Float64,Int32}})::Cvoid
 end
 
+function sls_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
+  @ccall libgalahad_double_64.sls_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{sls_control_type{Float64,Int64}},
+                                            inform::Ptr{sls_inform_type{Float64,Int64}})::Cvoid
+end
+
 function sls_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_quadruple.sls_terminate_q(data::Ptr{Ptr{Cvoid}},
                                               control::Ptr{sls_control_type{Float128,Int32}},
                                               inform::Ptr{sls_inform_type{Float128,Int32}})::Cvoid
+end
+
+function sls_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
+  @ccall libgalahad_quadruple_64.sls_terminate_q(data::Ptr{Ptr{Cvoid}},
+                                                 control::Ptr{sls_control_type{Float128,
+                                                                               Int64}},
+                                                 inform::Ptr{sls_inform_type{Float128,
+                                                                             Int64}})::Cvoid
 end
