@@ -19,7 +19,7 @@ function test_lhs(::Type{T}, ::Type{INT}) where {T,INT}
   # Parameters
   n_dimen = INT(7)  # dimension
   n_points = INT(2)  # points required
-  X = [zeros(INT, n_points) for i in 1:n_dimen]  # points
+  X = zeros(INT, n_points, n_dimen)  # points
   seed = Ref{INT}()
 
   # Set a random seed
@@ -30,12 +30,12 @@ function test_lhs(::Type{T}, ::Type{INT}) where {T,INT}
 
   if inform[].status == 0 # successful return
     @printf("LHS successful\n")
-    for j in 1:n_points
-      @printf("Point %d = ", j)
-      for i in 1:n_dimen
-        @printf("%d ", X[i][j])
-        @printf("\n")
+    for i in 1:n_points
+      @printf("Point %d = [", i)
+      for j in 1:n_dimen
+        @printf("%d ", X[i,j])
       end
+      @printf("]\n")
     end
   else # error returns
     @printf("LHS exit status = %d \n", inform[].status)
