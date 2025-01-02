@@ -72,6 +72,7 @@ Currently supported options with their default value:
 * `-Dpythoniface=false`: build the Python interfaces in double precision;
 * `-Dexamples=false`: generate the examples;
 * `-Dtests=false`: generate the tests;
+* `-Dbinaries=false`: generate the binaries;
 * `-Dsingle=true`: generate the single precision library, tests and examples;
 * `-Ddouble=true`: generate the double precision library, tests and examples;
 * `-Dquadruple=false`: generate the quadruple precision library, tests and examples;
