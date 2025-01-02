@@ -23,6 +23,11 @@ option('tests',
        value : false,
        description : 'whether to generate the tests')
 
+option('binaries',
+       type : 'boolean',
+       value : false,
+       description : 'whether to generate the binaries')
+
 option('single',
        type : 'boolean',
        value : true,

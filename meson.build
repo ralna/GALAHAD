@@ -81,6 +81,7 @@ build_double = get_option('double')
 build_quadruple = get_option('quadruple')
 build_tests = get_option('tests')
 build_examples = get_option('examples')
+build_binaries = get_option('binaries')
 build_ssids = get_option('ssids')
 
 libblas_name = get_option('libblas')
@@ -649,59 +650,61 @@ if build_pythoniface and build_ciface and build_double and (not int64)
 endif
 
 # Binaries
-galahad_binaries_single = galahad_binaries
-galahad_binaries_double = galahad_binaries
-galahad_binaries_quadruple = galahad_binaries
-if libcutest_single.found()
-  galahad_binaries_single += galahad_cutest_binaries
-endif
-if libcutest_double.found()
-  galahad_binaries_double += galahad_cutest_binaries
-endif
-if libcutest_quadruple.found()
-  galahad_binaries_quadruple += galahad_cutest_binaries
-endif
+if build_binaries
+  galahad_binaries_single = galahad_binaries
+  galahad_binaries_double = galahad_binaries
+  galahad_binaries_quadruple = galahad_binaries
+  if libcutest_single.found()
+    galahad_binaries_single += galahad_cutest_binaries
+  endif
+  if libcutest_double.found()
+    galahad_binaries_double += galahad_cutest_binaries
+  endif
+  if libcutest_quadruple.found()
+    galahad_binaries_quadruple += galahad_cutest_binaries
+  endif
 
-if build_single
-  foreach binary: galahad_binaries_single
-    binname = binary[0]
-    binfile = binary[1]
-    executable(binname+'_single', binfile,
-               dependencies : libgalahad_single_deps,
-               fortran_args : pp_flag + extra_args_single,
-               link_with : libgalahad_single,
-               link_language : 'fortran',
-               include_directories: libgalahad_include,
-               install : true)
-  endforeach
-endif
+  if build_single
+    foreach binary: galahad_binaries_single
+      binname = binary[0]
+      binfile = binary[1]
+      executable(binname+'_single', binfile,
+                 dependencies : libgalahad_single_deps,
+                 fortran_args : pp_flag + extra_args_single,
+                 link_with : libgalahad_single,
+                 link_language : 'fortran',
+                 include_directories: libgalahad_include,
+                 install : true)
+    endforeach
+  endif
 
-if build_double
-  foreach binary: galahad_binaries_double
-    binname = binary[0]
-    binfile = binary[1]
-    executable(binname+'_double', binfile,
-               dependencies : libgalahad_double_deps,
-               fortran_args : pp_flag + extra_args_double,
-               link_with : libgalahad_double,
-               link_language : 'fortran',
-               include_directories: libgalahad_include,
-               install : true)
-  endforeach
-endif
+  if build_double
+    foreach binary: galahad_binaries_double
+      binname = binary[0]
+      binfile = binary[1]
+      executable(binname+'_double', binfile,
+                 dependencies : libgalahad_double_deps,
+                 fortran_args : pp_flag + extra_args_double,
+                 link_with : libgalahad_double,
+                 link_language : 'fortran',
+                 include_directories: libgalahad_include,
+                 install : true)
+    endforeach
+  endif
 
-if build_quadruple
-  foreach binary: galahad_binaries_quadruple
-    binname = binary[0]
-    binfile = binary[1]
-    executable(binname+'_quadruple', binfile,
-               dependencies : libgalahad_quadruple_deps,
-               fortran_args : pp_flag + extra_args_quadruple,
-               link_with : libgalahad_quadruple,
-               link_language : 'fortran',
-               include_directories: libgalahad_include,
-               install : true)
-  endforeach
+  if build_quadruple
+    foreach binary: galahad_binaries_quadruple
+      binname = binary[0]
+      binfile = binary[1]
+      executable(binname+'_quadruple', binfile,
+                 dependencies : libgalahad_quadruple_deps,
+                 fortran_args : pp_flag + extra_args_quadruple,
+                 link_with : libgalahad_quadruple,
+                 link_language : 'fortran',
+                 include_directories: libgalahad_include,
+                 install : true)
+    endforeach
+  endif
 endif
 
 # Headers
