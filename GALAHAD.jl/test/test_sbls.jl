@@ -56,6 +56,9 @@ function test_sbls(::Type{T}, ::Type{INT}) where {T,INT}
     @reset control[].factorization = INT(2)
     @reset control[].get_norm_residual = true
 
+    # debug
+    @reset control[].print_level = INT(1)
+
     # Set user-defined control options
     @reset control[].f_indexing = true # fortran sparse matrix indexing
 
