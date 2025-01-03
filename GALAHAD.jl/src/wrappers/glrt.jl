@@ -1,15 +1,15 @@
 export glrt_control_type
 
-struct glrt_control_type{T}
+struct glrt_control_type{T,INT}
   f_indexing::Bool
-  error::Cint
-  out::Cint
-  print_level::Cint
-  itmax::Cint
-  stopping_rule::Cint
-  freq::Cint
-  extra_vectors::Cint
-  ritz_printout_device::Cint
+  error::INT
+  out::INT
+  print_level::INT
+  itmax::INT
+  stopping_rule::INT
+  freq::INT
+  extra_vectors::INT
+  ritz_printout_device::INT
   stop_relative::T
   stop_absolute::T
   fraction_opt::T
@@ -26,12 +26,12 @@ end
 
 export glrt_inform_type
 
-struct glrt_inform_type{T}
-  status::Cint
-  alloc_status::Cint
+struct glrt_inform_type{T,INT}
+  status::INT
+  alloc_status::INT
   bad_alloc::NTuple{81,Cchar}
-  iter::Cint
-  iter_pass2::Cint
+  iter::INT
+  iter_pass2::INT
   obj::T
   obj_regularized::T
   multiplier::T
@@ -43,121 +43,264 @@ end
 
 export glrt_initialize
 
-function glrt_initialize(::Type{Float32}, data, control, status)
+function glrt_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.glrt_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{glrt_control_type{Float32}},
-                                             status::Ptr{Cint})::Cvoid
+                                             control::Ptr{glrt_control_type{Float32,Int32}},
+                                             status::Ptr{Int32})::Cvoid
 end
 
-function glrt_initialize(::Type{Float64}, data, control, status)
+function glrt_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
+  @ccall libgalahad_single_64.glrt_initialize_s_64(data::Ptr{Ptr{Cvoid}},
+                                                   control::Ptr{glrt_control_type{Float32,
+                                                                                  Int64}},
+                                                   status::Ptr{Int64})::Cvoid
+end
+
+function glrt_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.glrt_initialize(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{glrt_control_type{Float64}},
-                                           status::Ptr{Cint})::Cvoid
+                                           control::Ptr{glrt_control_type{Float64,Int32}},
+                                           status::Ptr{Int32})::Cvoid
 end
 
-function glrt_initialize(::Type{Float128}, data, control, status)
+function glrt_initialize(::Type{Float64}, ::Type{Int64}, data, control, status)
+  @ccall libgalahad_double_64.glrt_initialize_64(data::Ptr{Ptr{Cvoid}},
+                                                 control::Ptr{glrt_control_type{Float64,
+                                                                                Int64}},
+                                                 status::Ptr{Int64})::Cvoid
+end
+
+function glrt_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_quadruple.glrt_initialize_q(data::Ptr{Ptr{Cvoid}},
-                                                control::Ptr{glrt_control_type{Float128}},
-                                                status::Ptr{Cint})::Cvoid
+                                                control::Ptr{glrt_control_type{Float128,
+                                                                               Int32}},
+                                                status::Ptr{Int32})::Cvoid
+end
+
+function glrt_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
+  @ccall libgalahad_quadruple_64.glrt_initialize_q_64(data::Ptr{Ptr{Cvoid}},
+                                                      control::Ptr{glrt_control_type{Float128,
+                                                                                     Int64}},
+                                                      status::Ptr{Int64})::Cvoid
 end
 
 export glrt_read_specfile
 
-function glrt_read_specfile(::Type{Float32}, control, specfile)
-  @ccall libgalahad_single.glrt_read_specfile_s(control::Ptr{glrt_control_type{Float32}},
+function glrt_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
+  @ccall libgalahad_single.glrt_read_specfile_s(control::Ptr{glrt_control_type{Float32,
+                                                                               Int32}},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
-function glrt_read_specfile(::Type{Float64}, control, specfile)
-  @ccall libgalahad_double.glrt_read_specfile(control::Ptr{glrt_control_type{Float64}},
+function glrt_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
+  @ccall libgalahad_single_64.glrt_read_specfile_s_64(control::Ptr{glrt_control_type{Float32,
+                                                                                     Int64}},
+                                                      specfile::Ptr{Cchar})::Cvoid
+end
+
+function glrt_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
+  @ccall libgalahad_double.glrt_read_specfile(control::Ptr{glrt_control_type{Float64,Int32}},
                                               specfile::Ptr{Cchar})::Cvoid
 end
 
-function glrt_read_specfile(::Type{Float128}, control, specfile)
-  @ccall libgalahad_quadruple.glrt_read_specfile_q(control::Ptr{glrt_control_type{Float128}},
+function glrt_read_specfile(::Type{Float64}, ::Type{Int64}, control, specfile)
+  @ccall libgalahad_double_64.glrt_read_specfile_64(control::Ptr{glrt_control_type{Float64,
+                                                                                   Int64}},
+                                                    specfile::Ptr{Cchar})::Cvoid
+end
+
+function glrt_read_specfile(::Type{Float128}, ::Type{Int32}, control, specfile)
+  @ccall libgalahad_quadruple.glrt_read_specfile_q(control::Ptr{glrt_control_type{Float128,
+                                                                                  Int32}},
                                                    specfile::Ptr{Cchar})::Cvoid
+end
+
+function glrt_read_specfile(::Type{Float128}, ::Type{Int64}, control, specfile)
+  @ccall libgalahad_quadruple_64.glrt_read_specfile_q_64(control::Ptr{glrt_control_type{Float128,
+                                                                                        Int64}},
+                                                         specfile::Ptr{Cchar})::Cvoid
 end
 
 export glrt_import_control
 
-function glrt_import_control(::Type{Float32}, control, data, status)
-  @ccall libgalahad_single.glrt_import_control_s(control::Ptr{glrt_control_type{Float32}},
+function glrt_import_control(::Type{Float32}, ::Type{Int32}, control, data, status)
+  @ccall libgalahad_single.glrt_import_control_s(control::Ptr{glrt_control_type{Float32,
+                                                                                Int32}},
                                                  data::Ptr{Ptr{Cvoid}},
-                                                 status::Ptr{Cint})::Cvoid
+                                                 status::Ptr{Int32})::Cvoid
 end
 
-function glrt_import_control(::Type{Float64}, control, data, status)
-  @ccall libgalahad_double.glrt_import_control(control::Ptr{glrt_control_type{Float64}},
+function glrt_import_control(::Type{Float32}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_single_64.glrt_import_control_s_64(control::Ptr{glrt_control_type{Float32,
+                                                                                      Int64}},
+                                                       data::Ptr{Ptr{Cvoid}},
+                                                       status::Ptr{Int64})::Cvoid
+end
+
+function glrt_import_control(::Type{Float64}, ::Type{Int32}, control, data, status)
+  @ccall libgalahad_double.glrt_import_control(control::Ptr{glrt_control_type{Float64,
+                                                                              Int32}},
                                                data::Ptr{Ptr{Cvoid}},
-                                               status::Ptr{Cint})::Cvoid
+                                               status::Ptr{Int32})::Cvoid
 end
 
-function glrt_import_control(::Type{Float128}, control, data, status)
-  @ccall libgalahad_quadruple.glrt_import_control_q(control::Ptr{glrt_control_type{Float128}},
+function glrt_import_control(::Type{Float64}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_double_64.glrt_import_control_64(control::Ptr{glrt_control_type{Float64,
+                                                                                    Int64}},
+                                                     data::Ptr{Ptr{Cvoid}},
+                                                     status::Ptr{Int64})::Cvoid
+end
+
+function glrt_import_control(::Type{Float128}, ::Type{Int32}, control, data, status)
+  @ccall libgalahad_quadruple.glrt_import_control_q(control::Ptr{glrt_control_type{Float128,
+                                                                                   Int32}},
                                                     data::Ptr{Ptr{Cvoid}},
-                                                    status::Ptr{Cint})::Cvoid
+                                                    status::Ptr{Int32})::Cvoid
+end
+
+function glrt_import_control(::Type{Float128}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_quadruple_64.glrt_import_control_q_64(control::Ptr{glrt_control_type{Float128,
+                                                                                         Int64}},
+                                                          data::Ptr{Ptr{Cvoid}},
+                                                          status::Ptr{Int64})::Cvoid
 end
 
 export glrt_solve_problem
 
-function glrt_solve_problem(::Type{Float32}, data, status, n, power, weight, x, r, vector)
-  @ccall libgalahad_single.glrt_solve_problem_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                                n::Cint, power::Float32, weight::Float32,
+function glrt_solve_problem(::Type{Float32}, ::Type{Int32}, data, status, n, power, weight,
+                            x, r, vector)
+  @ccall libgalahad_single.glrt_solve_problem_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                                n::Int32, power::Float32, weight::Float32,
                                                 x::Ptr{Float32}, r::Ptr{Float32},
                                                 vector::Ptr{Float32})::Cvoid
 end
 
-function glrt_solve_problem(::Type{Float64}, data, status, n, power, weight, x, r, vector)
-  @ccall libgalahad_double.glrt_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                              n::Cint, power::Float64, weight::Float64,
+function glrt_solve_problem(::Type{Float32}, ::Type{Int64}, data, status, n, power, weight,
+                            x, r, vector)
+  @ccall libgalahad_single_64.glrt_solve_problem_s_64(data::Ptr{Ptr{Cvoid}},
+                                                      status::Ptr{Int64}, n::Int64,
+                                                      power::Float32, weight::Float32,
+                                                      x::Ptr{Float32}, r::Ptr{Float32},
+                                                      vector::Ptr{Float32})::Cvoid
+end
+
+function glrt_solve_problem(::Type{Float64}, ::Type{Int32}, data, status, n, power, weight,
+                            x, r, vector)
+  @ccall libgalahad_double.glrt_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                              n::Int32, power::Float64, weight::Float64,
                                               x::Ptr{Float64}, r::Ptr{Float64},
                                               vector::Ptr{Float64})::Cvoid
 end
 
-function glrt_solve_problem(::Type{Float128}, data, status, n, power, weight, x, r, vector)
-  @ccall libgalahad_quadruple.glrt_solve_problem_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                                   n::Cint, power::Cfloat128,
-                                                   weight::Cfloat128, x::Ptr{Float128},
-                                                   r::Ptr{Float128},
+function glrt_solve_problem(::Type{Float64}, ::Type{Int64}, data, status, n, power, weight,
+                            x, r, vector)
+  @ccall libgalahad_double_64.glrt_solve_problem_64(data::Ptr{Ptr{Cvoid}},
+                                                    status::Ptr{Int64}, n::Int64,
+                                                    power::Float64, weight::Float64,
+                                                    x::Ptr{Float64}, r::Ptr{Float64},
+                                                    vector::Ptr{Float64})::Cvoid
+end
+
+function glrt_solve_problem(::Type{Float128}, ::Type{Int32}, data, status, n, power, weight,
+                            x, r, vector)
+  @ccall libgalahad_quadruple.glrt_solve_problem_q(data::Ptr{Ptr{Cvoid}},
+                                                   status::Ptr{Int32}, n::Int32,
+                                                   power::Cfloat128, weight::Cfloat128,
+                                                   x::Ptr{Float128}, r::Ptr{Float128},
                                                    vector::Ptr{Float128})::Cvoid
+end
+
+function glrt_solve_problem(::Type{Float128}, ::Type{Int64}, data, status, n, power, weight,
+                            x, r, vector)
+  @ccall libgalahad_quadruple_64.glrt_solve_problem_q_64(data::Ptr{Ptr{Cvoid}},
+                                                         status::Ptr{Int64}, n::Int64,
+                                                         power::Cfloat128,
+                                                         weight::Cfloat128,
+                                                         x::Ptr{Float128}, r::Ptr{Float128},
+                                                         vector::Ptr{Float128})::Cvoid
 end
 
 export glrt_information
 
-function glrt_information(::Type{Float32}, data, inform, status)
+function glrt_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_single.glrt_information_s(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{glrt_inform_type{Float32}},
-                                              status::Ptr{Cint})::Cvoid
+                                              inform::Ptr{glrt_inform_type{Float32,Int32}},
+                                              status::Ptr{Int32})::Cvoid
 end
 
-function glrt_information(::Type{Float64}, data, inform, status)
+function glrt_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
+  @ccall libgalahad_single_64.glrt_information_s_64(data::Ptr{Ptr{Cvoid}},
+                                                    inform::Ptr{glrt_inform_type{Float32,
+                                                                                 Int64}},
+                                                    status::Ptr{Int64})::Cvoid
+end
+
+function glrt_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_double.glrt_information(data::Ptr{Ptr{Cvoid}},
-                                            inform::Ptr{glrt_inform_type{Float64}},
-                                            status::Ptr{Cint})::Cvoid
+                                            inform::Ptr{glrt_inform_type{Float64,Int32}},
+                                            status::Ptr{Int32})::Cvoid
 end
 
-function glrt_information(::Type{Float128}, data, inform, status)
+function glrt_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
+  @ccall libgalahad_double_64.glrt_information_64(data::Ptr{Ptr{Cvoid}},
+                                                  inform::Ptr{glrt_inform_type{Float64,
+                                                                               Int64}},
+                                                  status::Ptr{Int64})::Cvoid
+end
+
+function glrt_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_quadruple.glrt_information_q(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{glrt_inform_type{Float128}},
-                                                 status::Ptr{Cint})::Cvoid
+                                                 inform::Ptr{glrt_inform_type{Float128,
+                                                                              Int32}},
+                                                 status::Ptr{Int32})::Cvoid
+end
+
+function glrt_information(::Type{Float128}, ::Type{Int64}, data, inform, status)
+  @ccall libgalahad_quadruple_64.glrt_information_q_64(data::Ptr{Ptr{Cvoid}},
+                                                       inform::Ptr{glrt_inform_type{Float128,
+                                                                                    Int64}},
+                                                       status::Ptr{Int64})::Cvoid
 end
 
 export glrt_terminate
 
-function glrt_terminate(::Type{Float32}, data, control, inform)
+function glrt_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_single.glrt_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{glrt_control_type{Float32}},
-                                            inform::Ptr{glrt_inform_type{Float32}})::Cvoid
+                                            control::Ptr{glrt_control_type{Float32,Int32}},
+                                            inform::Ptr{glrt_inform_type{Float32,Int32}})::Cvoid
 end
 
-function glrt_terminate(::Type{Float64}, data, control, inform)
+function glrt_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
+  @ccall libgalahad_single_64.glrt_terminate_s_64(data::Ptr{Ptr{Cvoid}},
+                                                  control::Ptr{glrt_control_type{Float32,
+                                                                                 Int64}},
+                                                  inform::Ptr{glrt_inform_type{Float32,
+                                                                               Int64}})::Cvoid
+end
+
+function glrt_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.glrt_terminate(data::Ptr{Ptr{Cvoid}},
-                                          control::Ptr{glrt_control_type{Float64}},
-                                          inform::Ptr{glrt_inform_type{Float64}})::Cvoid
+                                          control::Ptr{glrt_control_type{Float64,Int32}},
+                                          inform::Ptr{glrt_inform_type{Float64,Int32}})::Cvoid
 end
 
-function glrt_terminate(::Type{Float128}, data, control, inform)
+function glrt_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
+  @ccall libgalahad_double_64.glrt_terminate_64(data::Ptr{Ptr{Cvoid}},
+                                                control::Ptr{glrt_control_type{Float64,
+                                                                               Int64}},
+                                                inform::Ptr{glrt_inform_type{Float64,Int64}})::Cvoid
+end
+
+function glrt_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_quadruple.glrt_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{glrt_control_type{Float128}},
-                                               inform::Ptr{glrt_inform_type{Float128}})::Cvoid
+                                               control::Ptr{glrt_control_type{Float128,
+                                                                              Int32}},
+                                               inform::Ptr{glrt_inform_type{Float128,Int32}})::Cvoid
+end
+
+function glrt_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
+  @ccall libgalahad_quadruple_64.glrt_terminate_q_64(data::Ptr{Ptr{Cvoid}},
+                                                     control::Ptr{glrt_control_type{Float128,
+                                                                                    Int64}},
+                                                     inform::Ptr{glrt_inform_type{Float128,
+                                                                                  Int64}})::Cvoid
 end

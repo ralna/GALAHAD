@@ -1,12 +1,12 @@
 export fdc_control_type
 
-struct fdc_control_type{T}
+struct fdc_control_type{T,INT}
   f_indexing::Bool
-  error::Cint
-  out::Cint
-  print_level::Cint
-  indmin::Cint
-  valmin::Cint
+  error::INT
+  out::INT
+  print_level::INT
+  indmin::INT
+  valmin::INT
   pivot_tol::T
   zero_pivot::T
   max_infeas::T
@@ -17,8 +17,8 @@ struct fdc_control_type{T}
   symmetric_linear_solver::NTuple{31,Cchar}
   unsymmetric_linear_solver::NTuple{31,Cchar}
   prefix::NTuple{31,Cchar}
-  sls_control::sls_control_type{T}
-  uls_control::uls_control_type{T}
+  sls_control::sls_control_type{T,INT}
+  uls_control::uls_control_type{T,INT}
 end
 
 export fdc_time_type
@@ -34,112 +34,232 @@ end
 
 export fdc_inform_type
 
-struct fdc_inform_type{T}
-  status::Cint
-  alloc_status::Cint
+struct fdc_inform_type{T,INT}
+  status::INT
+  alloc_status::INT
   bad_alloc::NTuple{81,Cchar}
-  factorization_status::Cint
+  factorization_status::INT
   factorization_integer::Int64
   factorization_real::Int64
   non_negligible_pivot::T
   time::fdc_time_type{T}
-  sls_inform::sls_inform_type{T}
-  uls_inform::uls_inform_type{T}
+  sls_inform::sls_inform_type{T,INT}
+  uls_inform::uls_inform_type{T,INT}
 end
 
 export fdc_initialize
 
-function fdc_initialize(::Type{Float32}, data, control, status)
+function fdc_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.fdc_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{fdc_control_type{Float32}},
-                                            status::Ptr{Cint})::Cvoid
+                                            control::Ptr{fdc_control_type{Float32,Int32}},
+                                            status::Ptr{Int32})::Cvoid
 end
 
-function fdc_initialize(::Type{Float64}, data, control, status)
+function fdc_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
+  @ccall libgalahad_single_64.fdc_initialize_s_64(data::Ptr{Ptr{Cvoid}},
+                                                  control::Ptr{fdc_control_type{Float32,
+                                                                                Int64}},
+                                                  status::Ptr{Int64})::Cvoid
+end
+
+function fdc_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.fdc_initialize(data::Ptr{Ptr{Cvoid}},
-                                          control::Ptr{fdc_control_type{Float64}},
-                                          status::Ptr{Cint})::Cvoid
+                                          control::Ptr{fdc_control_type{Float64,Int32}},
+                                          status::Ptr{Int32})::Cvoid
 end
 
-function fdc_initialize(::Type{Float128}, data, control, status)
+function fdc_initialize(::Type{Float64}, ::Type{Int64}, data, control, status)
+  @ccall libgalahad_double_64.fdc_initialize_64(data::Ptr{Ptr{Cvoid}},
+                                                control::Ptr{fdc_control_type{Float64,
+                                                                              Int64}},
+                                                status::Ptr{Int64})::Cvoid
+end
+
+function fdc_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_quadruple.fdc_initialize_q(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{fdc_control_type{Float128}},
-                                               status::Ptr{Cint})::Cvoid
+                                               control::Ptr{fdc_control_type{Float128,
+                                                                             Int32}},
+                                               status::Ptr{Int32})::Cvoid
+end
+
+function fdc_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
+  @ccall libgalahad_quadruple_64.fdc_initialize_q_64(data::Ptr{Ptr{Cvoid}},
+                                                     control::Ptr{fdc_control_type{Float128,
+                                                                                   Int64}},
+                                                     status::Ptr{Int64})::Cvoid
 end
 
 export fdc_read_specfile
 
-function fdc_read_specfile(::Type{Float32}, control, specfile)
-  @ccall libgalahad_single.fdc_read_specfile_s(control::Ptr{fdc_control_type{Float32}},
+function fdc_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
+  @ccall libgalahad_single.fdc_read_specfile_s(control::Ptr{fdc_control_type{Float32,Int32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
-function fdc_read_specfile(::Type{Float64}, control, specfile)
-  @ccall libgalahad_double.fdc_read_specfile(control::Ptr{fdc_control_type{Float64}},
+function fdc_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
+  @ccall libgalahad_single_64.fdc_read_specfile_s_64(control::Ptr{fdc_control_type{Float32,
+                                                                                   Int64}},
+                                                     specfile::Ptr{Cchar})::Cvoid
+end
+
+function fdc_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
+  @ccall libgalahad_double.fdc_read_specfile(control::Ptr{fdc_control_type{Float64,Int32}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
-function fdc_read_specfile(::Type{Float128}, control, specfile)
-  @ccall libgalahad_quadruple.fdc_read_specfile_q(control::Ptr{fdc_control_type{Float128}},
+function fdc_read_specfile(::Type{Float64}, ::Type{Int64}, control, specfile)
+  @ccall libgalahad_double_64.fdc_read_specfile_64(control::Ptr{fdc_control_type{Float64,
+                                                                                 Int64}},
+                                                   specfile::Ptr{Cchar})::Cvoid
+end
+
+function fdc_read_specfile(::Type{Float128}, ::Type{Int32}, control, specfile)
+  @ccall libgalahad_quadruple.fdc_read_specfile_q(control::Ptr{fdc_control_type{Float128,
+                                                                                Int32}},
                                                   specfile::Ptr{Cchar})::Cvoid
+end
+
+function fdc_read_specfile(::Type{Float128}, ::Type{Int64}, control, specfile)
+  @ccall libgalahad_quadruple_64.fdc_read_specfile_q_64(control::Ptr{fdc_control_type{Float128,
+                                                                                      Int64}},
+                                                        specfile::Ptr{Cchar})::Cvoid
 end
 
 export fdc_find_dependent_rows
 
-function fdc_find_dependent_rows(::Type{Float32}, control, data, inform, status, m, n, A_ne,
-                                 A_col, A_ptr, A_val, b, n_depen, depen)
-  @ccall libgalahad_single.fdc_find_dependent_rows_s(control::Ptr{fdc_control_type{Float32}},
+function fdc_find_dependent_rows(::Type{Float32}, ::Type{Int32}, control, data, inform,
+                                 status, m, n, A_ne, A_col, A_ptr, A_val, b, n_depen, depen)
+  @ccall libgalahad_single.fdc_find_dependent_rows_s(control::Ptr{fdc_control_type{Float32,
+                                                                                   Int32}},
                                                      data::Ptr{Ptr{Cvoid}},
-                                                     inform::Ptr{fdc_inform_type{Float32}},
-                                                     status::Ptr{Cint}, m::Cint, n::Cint,
-                                                     A_ne::Cint, A_col::Ptr{Cint},
-                                                     A_ptr::Ptr{Cint}, A_val::Ptr{Float32},
-                                                     b::Ptr{Float32}, n_depen::Ptr{Cint},
-                                                     depen::Ptr{Cint})::Cvoid
+                                                     inform::Ptr{fdc_inform_type{Float32,
+                                                                                 Int32}},
+                                                     status::Ptr{Int32}, m::Int32, n::Int32,
+                                                     A_ne::Int32, A_col::Ptr{Int32},
+                                                     A_ptr::Ptr{Int32}, A_val::Ptr{Float32},
+                                                     b::Ptr{Float32}, n_depen::Ptr{Int32},
+                                                     depen::Ptr{Int32})::Cvoid
 end
 
-function fdc_find_dependent_rows(::Type{Float64}, control, data, inform, status, m, n, A_ne,
-                                 A_col, A_ptr, A_val, b, n_depen, depen)
-  @ccall libgalahad_double.fdc_find_dependent_rows(control::Ptr{fdc_control_type{Float64}},
+function fdc_find_dependent_rows(::Type{Float32}, ::Type{Int64}, control, data, inform,
+                                 status, m, n, A_ne, A_col, A_ptr, A_val, b, n_depen, depen)
+  @ccall libgalahad_single_64.fdc_find_dependent_rows_s_64(control::Ptr{fdc_control_type{Float32,
+                                                                                         Int64}},
+                                                           data::Ptr{Ptr{Cvoid}},
+                                                           inform::Ptr{fdc_inform_type{Float32,
+                                                                                       Int64}},
+                                                           status::Ptr{Int64}, m::Int64,
+                                                           n::Int64, A_ne::Int64,
+                                                           A_col::Ptr{Int64},
+                                                           A_ptr::Ptr{Int64},
+                                                           A_val::Ptr{Float32},
+                                                           b::Ptr{Float32},
+                                                           n_depen::Ptr{Int64},
+                                                           depen::Ptr{Int64})::Cvoid
+end
+
+function fdc_find_dependent_rows(::Type{Float64}, ::Type{Int32}, control, data, inform,
+                                 status, m, n, A_ne, A_col, A_ptr, A_val, b, n_depen, depen)
+  @ccall libgalahad_double.fdc_find_dependent_rows(control::Ptr{fdc_control_type{Float64,
+                                                                                 Int32}},
                                                    data::Ptr{Ptr{Cvoid}},
-                                                   inform::Ptr{fdc_inform_type{Float64}},
-                                                   status::Ptr{Cint}, m::Cint, n::Cint,
-                                                   A_ne::Cint, A_col::Ptr{Cint},
-                                                   A_ptr::Ptr{Cint}, A_val::Ptr{Float64},
-                                                   b::Ptr{Float64}, n_depen::Ptr{Cint},
-                                                   depen::Ptr{Cint})::Cvoid
+                                                   inform::Ptr{fdc_inform_type{Float64,
+                                                                               Int32}},
+                                                   status::Ptr{Int32}, m::Int32, n::Int32,
+                                                   A_ne::Int32, A_col::Ptr{Int32},
+                                                   A_ptr::Ptr{Int32}, A_val::Ptr{Float64},
+                                                   b::Ptr{Float64}, n_depen::Ptr{Int32},
+                                                   depen::Ptr{Int32})::Cvoid
 end
 
-function fdc_find_dependent_rows(::Type{Float128}, control, data, inform, status, m, n,
-                                 A_ne, A_col, A_ptr, A_val, b, n_depen, depen)
-  @ccall libgalahad_quadruple.fdc_find_dependent_rows_q(control::Ptr{fdc_control_type{Float128}},
+function fdc_find_dependent_rows(::Type{Float64}, ::Type{Int64}, control, data, inform,
+                                 status, m, n, A_ne, A_col, A_ptr, A_val, b, n_depen, depen)
+  @ccall libgalahad_double_64.fdc_find_dependent_rows_64(control::Ptr{fdc_control_type{Float64,
+                                                                                       Int64}},
+                                                         data::Ptr{Ptr{Cvoid}},
+                                                         inform::Ptr{fdc_inform_type{Float64,
+                                                                                     Int64}},
+                                                         status::Ptr{Int64}, m::Int64,
+                                                         n::Int64, A_ne::Int64,
+                                                         A_col::Ptr{Int64},
+                                                         A_ptr::Ptr{Int64},
+                                                         A_val::Ptr{Float64},
+                                                         b::Ptr{Float64},
+                                                         n_depen::Ptr{Int64},
+                                                         depen::Ptr{Int64})::Cvoid
+end
+
+function fdc_find_dependent_rows(::Type{Float128}, ::Type{Int32}, control, data, inform,
+                                 status, m, n, A_ne, A_col, A_ptr, A_val, b, n_depen, depen)
+  @ccall libgalahad_quadruple.fdc_find_dependent_rows_q(control::Ptr{fdc_control_type{Float128,
+                                                                                      Int32}},
                                                         data::Ptr{Ptr{Cvoid}},
-                                                        inform::Ptr{fdc_inform_type{Float128}},
-                                                        status::Ptr{Cint}, m::Cint, n::Cint,
-                                                        A_ne::Cint, A_col::Ptr{Cint},
-                                                        A_ptr::Ptr{Cint},
+                                                        inform::Ptr{fdc_inform_type{Float128,
+                                                                                    Int32}},
+                                                        status::Ptr{Int32}, m::Int32,
+                                                        n::Int32, A_ne::Int32,
+                                                        A_col::Ptr{Int32},
+                                                        A_ptr::Ptr{Int32},
                                                         A_val::Ptr{Float128},
                                                         b::Ptr{Float128},
-                                                        n_depen::Ptr{Cint},
-                                                        depen::Ptr{Cint})::Cvoid
+                                                        n_depen::Ptr{Int32},
+                                                        depen::Ptr{Int32})::Cvoid
+end
+
+function fdc_find_dependent_rows(::Type{Float128}, ::Type{Int64}, control, data, inform,
+                                 status, m, n, A_ne, A_col, A_ptr, A_val, b, n_depen, depen)
+  @ccall libgalahad_quadruple_64.fdc_find_dependent_rows_q_64(control::Ptr{fdc_control_type{Float128,
+                                                                                            Int64}},
+                                                              data::Ptr{Ptr{Cvoid}},
+                                                              inform::Ptr{fdc_inform_type{Float128,
+                                                                                          Int64}},
+                                                              status::Ptr{Int64}, m::Int64,
+                                                              n::Int64, A_ne::Int64,
+                                                              A_col::Ptr{Int64},
+                                                              A_ptr::Ptr{Int64},
+                                                              A_val::Ptr{Float128},
+                                                              b::Ptr{Float128},
+                                                              n_depen::Ptr{Int64},
+                                                              depen::Ptr{Int64})::Cvoid
 end
 
 export fdc_terminate
 
-function fdc_terminate(::Type{Float32}, data, control, inform)
+function fdc_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_single.fdc_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{fdc_control_type{Float32}},
-                                           inform::Ptr{fdc_inform_type{Float32}})::Cvoid
+                                           control::Ptr{fdc_control_type{Float32,Int32}},
+                                           inform::Ptr{fdc_inform_type{Float32,Int32}})::Cvoid
 end
 
-function fdc_terminate(::Type{Float64}, data, control, inform)
+function fdc_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
+  @ccall libgalahad_single_64.fdc_terminate_s_64(data::Ptr{Ptr{Cvoid}},
+                                                 control::Ptr{fdc_control_type{Float32,
+                                                                               Int64}},
+                                                 inform::Ptr{fdc_inform_type{Float32,Int64}})::Cvoid
+end
+
+function fdc_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.fdc_terminate(data::Ptr{Ptr{Cvoid}},
-                                         control::Ptr{fdc_control_type{Float64}},
-                                         inform::Ptr{fdc_inform_type{Float64}})::Cvoid
+                                         control::Ptr{fdc_control_type{Float64,Int32}},
+                                         inform::Ptr{fdc_inform_type{Float64,Int32}})::Cvoid
 end
 
-function fdc_terminate(::Type{Float128}, data, control, inform)
+function fdc_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
+  @ccall libgalahad_double_64.fdc_terminate_64(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{fdc_control_type{Float64,Int64}},
+                                               inform::Ptr{fdc_inform_type{Float64,Int64}})::Cvoid
+end
+
+function fdc_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_quadruple.fdc_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{fdc_control_type{Float128}},
-                                              inform::Ptr{fdc_inform_type{Float128}})::Cvoid
+                                              control::Ptr{fdc_control_type{Float128,Int32}},
+                                              inform::Ptr{fdc_inform_type{Float128,Int32}})::Cvoid
+end
+
+function fdc_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
+  @ccall libgalahad_quadruple_64.fdc_terminate_q_64(data::Ptr{Ptr{Cvoid}},
+                                                    control::Ptr{fdc_control_type{Float128,
+                                                                                  Int64}},
+                                                    inform::Ptr{fdc_inform_type{Float128,
+                                                                                Int64}})::Cvoid
 end

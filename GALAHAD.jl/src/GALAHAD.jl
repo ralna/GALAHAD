@@ -9,11 +9,20 @@ if haskey(ENV, "JULIA_GALAHAD_LIBRARY_PATH")
   const libgalahad_single = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_single.$dlext")
   const libgalahad_double = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_double.$dlext")
   const libgalahad_quadruple = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_quadruple.$dlext")
+  const libgalahad_single_64 = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_single_64.$dlext")
+  const libgalahad_double_64 = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_double_64.$dlext")
+  const libgalahad_quadruple_64 = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_quadruple_64.$dlext")
   const GALAHAD_INSTALLATION = "CUSTOM"
 else
-  using OpenBLAS32_jll
-  using GALAHAD_jll
+  import OpenBLAS32_jll
+  import GALAHAD_jll
   const GALAHAD_INSTALLATION = "YGGDRASIL"
+  const libgalahad_single = GALAHAD_jll.libgalahad_single
+  const libgalahad_double = GALAHAD_jll.libgalahad_double
+  const libgalahad_quadruple = ""
+  const libgalahad_single_64 = GALAHAD_jll.libgalahad_single_64
+  const libgalahad_double_64 = GALAHAD_jll.libgalahad_double_64
+  const libgalahad_quadruple_64 = ""
 end
 
 function __init__()
