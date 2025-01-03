@@ -56,6 +56,10 @@ function test_sbls(::Type{T}, ::Type{INT}) where {T,INT}
     @reset control[].factorization = INT(2)
     @reset control[].get_norm_residual = true
 
+    # Set a different linear solver
+    @reset control[].symmetric_linear_solver = galahad_linear_solver("sytr")
+    @reset control[].definite_linear_solver = galahad_linear_solver("sytr")
+
     # Set user-defined control options
     @reset control[].f_indexing = true # fortran sparse matrix indexing
 
