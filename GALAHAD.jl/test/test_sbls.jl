@@ -160,6 +160,13 @@ function test_sbls(::Type{T}, ::Type{INT}) where {T,INT}
                             0, C_NULL, C_NULL)
     end
 
+    # check that the factorization succeeded
+    if status[] != 0
+      sbls_information(T, INT, data, inform, status)
+      @printf("%c: SBLS_solve factorization exit status = %1i\n", st, inform[].status)
+      return 1
+    end
+
     # Set right-hand side (a, b)
     sol = T[3.0, 2.0, 4.0, 2.0, 0.0]  # values
 
