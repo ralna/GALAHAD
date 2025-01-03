@@ -158,7 +158,7 @@ int main(void) {
             sbls_information( &data, &inform, &status );
             printf("%c: SBLS_solve factorization exit status = %1" i_ipc_ "\n", 
                    st, inform.status);
-            continue;
+            return 1;
         } 
 
         // Set right-hand side ( a, b )
