@@ -152,6 +152,14 @@ int main(void) {
                 break;
             }
 
+        // check that the factorization succeeded
+        if(status != 0){
+            sbls_information( &data, &inform, &status );
+            printf("%c: SBLS_solve factorization exit status = %1" i_ipc_ "\n", 
+                   st, inform.status);
+            continue;
+        } 
+
         // Set right-hand side ( a, b )
         rpc_ sol[] = {3.0, 2.0, 4.0, 2.0, 0.0};   // values
 

@@ -31,9 +31,9 @@ uls_inform_type structure
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iterative_refinements<doxid-structuls__inform__type_1a22c83a8ec8964a169bdd9d0cdf196cf1>`;
 		bool :ref:`alternative<doxid-structuls__inform__type_1a48c07c7da1803ed8af25ca949f4854b5>`;
 		char :ref:`solver<doxid-structuls__inform__type_1af335c33211ea78f2d5b7314d7b1c210d>`[21];
-		struct gls_ainfo :ref:`gls_ainfo<doxid-structuls__inform__type_1a8fb46433ac34c44f07902189c1c9d028>`;
-		struct gls_finfo :ref:`gls_finfo<doxid-structuls__inform__type_1a8da479a8d3bd8e6b4070e73dc8a3d52a>`;
-		struct gls_sinfo :ref:`gls_sinfo<doxid-structuls__inform__type_1acbf9c9748ab5d9c111befc05c395059a>`;
+		struct gls_ainfo_type :ref:`gls_ainfo<doxid-structuls__inform__type_1a8fb46433ac34c44f07902189c1c9d028>`;
+		struct gls_finfo_type :ref:`gls_finfo<doxid-structuls__inform__type_1a8da479a8d3bd8e6b4070e73dc8a3d52a>`;
+		struct gls_sinfo_type :ref:`gls_sinfo<doxid-structuls__inform__type_1acbf9c9748ab5d9c111befc05c395059a>`;
 		struct ma48_ainfo :ref:`ma48_ainfo<doxid-structuls__inform__type_1a9487553043c4ec110826e99e071ce9bc>`;
 		struct ma48_finfo :ref:`ma48_finfo<doxid-structuls__inform__type_1ac28e039b045cad8dec788fdca9823348>`;
 		struct ma48_sinfo :ref:`ma48_sinfo<doxid-structuls__inform__type_1a78e9faeec60579cc0fa6c34e0aaeecc3>`;
@@ -275,7 +275,7 @@ name of external solver used to factorize and solve
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct :ref:`gls_ainfo<doxid-structgls__ainfo>` gls_ainfo
+	struct :ref:`gls_ainfo_type<doxid-structgls__ainfo>` gls_ainfo
 
 the output arrays from GLS
 
@@ -285,7 +285,7 @@ the output arrays from GLS
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct :ref:`gls_finfo<doxid-structgls__finfo>` gls_finfo
+	struct :ref:`gls_finfo_type<doxid-structgls__finfo>` gls_finfo
 
 see gls_ainfo
 
@@ -295,7 +295,7 @@ see gls_ainfo
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct :ref:`gls_sinfo<doxid-structgls__sinfo>` gls_sinfo
+	struct :ref:`gls_sinfo_type<doxid-structgls__sinfo>` gls_sinfo
 
 see gls_ainfo
 

@@ -58,6 +58,7 @@ int main(void) {
 
         // Initialize SBLS
         sbls_initialize( &data, &control, &status );
+        //control.print_level = 1;
         control.preconditioner = 2;
         control.factorization = 2;
         control.get_norm_residual = true;
@@ -152,12 +153,19 @@ int main(void) {
                 break;
             }
 
+        // check that the factorization succeeded
+        if(status != 0){
+            sbls_information( &data, &inform, &status );
+            printf("%c: SBLS_solve factorization exit status = %1" i_ipc_ "\n", 
+                   st, inform.status);
+            continue;
+        } 
+
         // Set right-hand side ( a, b )
         rpc_ sol[] = {3.0, 2.0, 4.0, 2.0, 0.0};   // values
 
         sbls_solve_system( &data, &status, n, m, sol );
 
-        sbls_information( &data, &inform, &status );
 
         if(inform.status == 0){
 #ifdef REAL_128

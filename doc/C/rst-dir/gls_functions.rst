@@ -6,10 +6,10 @@ overview of functions provided
 .. toctree::
 	:hidden:
 
-	struct_gls_control.rst
-	struct_gls_ainfo.rst
-	struct_gls_finfo.rst
-	struct_gls_sinfo.rst
+	struct_gls_control_type.rst
+	struct_gls_ainfo_type.rst
+	struct_gls_finfo_type.rst
+	struct_gls_sinfo_type.rst
 
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
@@ -22,27 +22,27 @@ overview of functions provided
 
 	// structs
 
-	struct :ref:`gls_ainfo<doxid-structgls__ainfo>`;
-	struct :ref:`gls_control<doxid-structgls__control>`;
-	struct :ref:`gls_finfo<doxid-structgls__finfo>`;
-	struct :ref:`gls_sinfo<doxid-structgls__sinfo>`;
+	struct :ref:`gls_ainfo_type<doxid-structgls__ainfo>`;
+	struct :ref:`gls_control_type<doxid-structgls__control>`;
+	struct :ref:`gls_finfo_type<doxid-structgls__finfo>`;
+	struct :ref:`gls_sinfo_type<doxid-structgls__sinfo>`;
 
 	// global functions
 
-	void :ref:`gls_initialize<doxid-galahad__gls_8h_1ab7827883517db347ee1229eda004ede5>`(void **data, struct :ref:`gls_control<doxid-structgls__control>`* control);
-	void :ref:`gls_read_specfile<doxid-galahad__gls_8h_1a428c3dcc1d0de87f6108d396eec6e176>`(struct :ref:`gls_control<doxid-structgls__control>`* control, const char specfile[]);
-	void :ref:`gls_import<doxid-galahad__gls_8h_1a1b34338e803f603af4161082a25f4e58>`(struct :ref:`gls_control<doxid-structgls__control>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
-	void :ref:`gls_reset_control<doxid-galahad__gls_8h_1a8b84f081ccc0b05b733adc2f0a829c07>`(struct :ref:`gls_control<doxid-structgls__control>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
+	void :ref:`gls_initialize<doxid-galahad__gls_8h_1ab7827883517db347ee1229eda004ede5>`(void **data, struct :ref:`gls_control_type<doxid-structgls__control>`* control);
+	void :ref:`gls_read_specfile<doxid-galahad__gls_8h_1a428c3dcc1d0de87f6108d396eec6e176>`(struct :ref:`gls_control_type<doxid-structgls__control>`* control, const char specfile[]);
+	void :ref:`gls_import<doxid-galahad__gls_8h_1a1b34338e803f603af4161082a25f4e58>`(struct :ref:`gls_control_type<doxid-structgls__control>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
+	void :ref:`gls_reset_control<doxid-galahad__gls_8h_1a8b84f081ccc0b05b733adc2f0a829c07>`(struct :ref:`gls_control_type<doxid-structgls__control>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`gls_information<doxid-galahad__gls_8h_1a620dc0f7a9ef6049a7bafdc02913da47>`(
 		void **data,
-		struct :ref:`gls_ainfo<doxid-structgls__ainfo>`* ainfo,
-		struct :ref:`gls_finfo<doxid-structgls__finfo>`* finfo,
-		struct :ref:`gls_sinfo<doxid-structgls__sinfo>`* sinfo,
+		struct :ref:`gls_ainfo_type<doxid-structgls__ainfo>`* ainfo,
+		struct :ref:`gls_finfo_type<doxid-structgls__finfo>`* finfo,
+		struct :ref:`gls_sinfo_type<doxid-structgls__sinfo>`* sinfo,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
-	void :ref:`gls_finalize<doxid-galahad__gls_8h_1a4758f1fc9cad110a33c1778254b51390>`(void **data, struct :ref:`gls_control<doxid-structgls__control>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
+	void :ref:`gls_finalize<doxid-galahad__gls_8h_1a4758f1fc9cad110a33c1778254b51390>`(void **data, struct :ref:`gls_contro_typel<doxid-structgls__control>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 .. _details-global:
 
@@ -91,7 +91,7 @@ function calls
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void gls_initialize(void **data, struct :ref:`gls_control<doxid-structgls__control>`* control)
+	void gls_initialize(void **data, struct :ref:`gls_control_type<doxid-structgls__control>`* control)
 
 Set default control values and initialize private data
 
@@ -110,7 +110,7 @@ Set default control values and initialize private data
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`gls_control <doxid-structgls__control>`)
+		- is a struct containing control information (see :ref:`gls_control_type <doxid-structgls__control>`)
 
 .. index:: pair: function; gls_read_specfile
 .. _doxid-galahad__gls_8h_1a428c3dcc1d0de87f6108d396eec6e176:
@@ -118,7 +118,7 @@ Set default control values and initialize private data
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void gls_read_specfile(struct :ref:`gls_control<doxid-structgls__control>`* control, const char specfile[])
+	void gls_read_specfile(struct :ref:`gls_control_type<doxid-structgls__control>`* control, const char specfile[])
 
 Read the content of a specification file, and assign values
 associated with given keywords to the corresponding control
@@ -137,7 +137,7 @@ relate to the components of the control structure.
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`gls_control <doxid-structgls__control>`)
+		- is a struct containing control information (see :ref:`gls_control_type <doxid-structgls__control>`)
 
 	*
 		- specfile
@@ -150,7 +150,7 @@ relate to the components of the control structure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void gls_import(struct :ref:`gls_control<doxid-structgls__control>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
+	void gls_import(struct :ref:`gls_control_type<doxid-structgls__control>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Import problem data into internal storage prior to solution.
 
@@ -164,7 +164,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`gls_control <doxid-structgls__control>`)
+		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`gls_control_type <doxid-structgls__control>`)
 
 	*
 		- data
@@ -209,7 +209,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void gls_reset_control(struct :ref:`gls_control<doxid-structgls__control>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
+	void gls_reset_control(struct :ref:`gls_control_type<doxid-structgls__control>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Reset control parameters after import if required.
 
@@ -223,7 +223,7 @@ Reset control parameters after import if required.
 	*
 		- control
 
-		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`gls_control <doxid-structgls__control>`)
+		- is a struct whose members provide control paramters for the remaining prcedures (see :ref:`gls_control_type <doxid-structgls__control>`)
 
 	*
 		- data
@@ -247,9 +247,9 @@ Reset control parameters after import if required.
 
 	void gls_information(
 		void **data,
-		struct :ref:`gls_ainfo<doxid-structgls__ainfo>`* ainfo,
-		struct :ref:`gls_finfo<doxid-structgls__finfo>`* finfo,
-		struct :ref:`gls_sinfo<doxid-structgls__sinfo>`* sinfo,
+		struct :ref:`gls_ainfo_type<doxid-structgls__ainfo>`* ainfo,
+		struct :ref:`gls_finfo_type<doxid-structgls__finfo>`* finfo,
+		struct :ref:`gls_sinfo_type<doxid-structgls__sinfo>`* sinfo,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
@@ -270,17 +270,17 @@ Provides output information
 	*
 		- ainfo
 
-		- is a struct containing analysis output information (see :ref:`gls_ainfo <doxid-structgls__ainfo>`)
+		- is a struct containing analysis output information (see :ref:`gls_ainfo_type <doxid-structgls__ainfo>`)
 
 	*
 		- finfo
 
-		- is a struct containing factorization output information (see :ref:`gls_finfo <doxid-structgls__finfo>`)
+		- is a struct containing factorization output information (see :ref:`gls_finfo_type <doxid-structgls__finfo>`)
 
 	*
 		- sinfo
 
-		- is a struct containing solver output information (see :ref:`gls_sinfo <doxid-structgls__sinfo>`)
+		- is a struct containing solver output information (see :ref:`gls_sinfo_type <doxid-structgls__sinfo>`)
 
 	*
 		- status
@@ -296,7 +296,7 @@ Provides output information
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void gls_finalize(void **data, struct :ref:`gls_control<doxid-structgls__control>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
+	void gls_finalize(void **data, struct :ref:`gls_control_type<doxid-structgls__control>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Deallocate all internal private storage
 
@@ -315,7 +315,7 @@ Deallocate all internal private storage
 	*
 		- control
 
-		- is a struct containing control information (see :ref:`gls_control <doxid-structgls__control>`)
+		- is a struct containing control information (see :ref:`gls_control_type <doxid-structgls__control>`)
 
 	*
 		- status

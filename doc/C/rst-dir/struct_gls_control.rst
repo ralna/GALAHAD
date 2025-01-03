@@ -1,8 +1,8 @@
-.. index:: pair: struct; gls_control
+.. index:: pair: struct; gls_control_type
 .. _doxid-structgls__control:
 
-struct gls_control
-------------------
+struct gls_control_type
+-----------------------
 
 .. toctree::
 	:hidden:
@@ -12,7 +12,7 @@ struct gls_control
 
 	#include <galahad_gls.h>
 	
-	struct gls_control {
+	struct gls_control_type {
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structgls__control_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
