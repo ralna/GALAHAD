@@ -106,6 +106,7 @@
 #define GALAHAD_SCALE_precision GALAHAD_SCALE_quadruple_64
 #define GALAHAD_SCALING_precision GALAHAD_SCALING_quadruple_64
 #define GALAHAD_SCU_precision GALAHAD_SCU_quadruple_64
+#define GALAHAD_SOLVER_precision GALAHAD_SOLVER_quadruple_64
 #define GALAHAD_TR1_precision GALAHAD_TR1_quadruple_64
 #define GALAHAD_SEC_precision GALAHAD_SEC_quadruple_64
 #define GALAHAD_SHA_precision GALAHAD_SHA_quadruple_64
@@ -272,6 +273,7 @@
 #define GALAHAD_SBLS_precision_ciface GALAHAD_SBLS_quadruple_ciface_64
 #define GALAHAD_SSLS_precision_ciface GALAHAD_SSLS_quadruple_ciface_64
 #define GALAHAD_SCU_precision_ciface GALAHAD_SCU_quadruple_ciface_64
+#define GALAHAD_SOLVER_precision_ciface GALAHAD_SOLVER_quadruple_ciface_64
 #define GALAHAD_TR1_precision_ciface GALAHAD_TR1_quadruple_ciface_64
 #define GALAHAD_SEC_precision_ciface GALAHAD_SEC_quadruple_ciface_64
 #define GALAHAD_SHA_precision_ciface GALAHAD_SHA_quadruple_ciface_64
@@ -499,6 +501,7 @@
 #define GALAHAD_SCALE_precision GALAHAD_SCALE_quadruple
 #define GALAHAD_SCALING_precision GALAHAD_SCALING_quadruple
 #define GALAHAD_SCU_precision GALAHAD_SCU_quadruple
+#define GALAHAD_SOLVER_precision GALAHAD_SOLVER_quadruple
 #define GALAHAD_TR1_precision GALAHAD_TR1_quadruple
 #define GALAHAD_SEC_precision GALAHAD_SEC_quadruple
 #define GALAHAD_SHA_precision GALAHAD_SHA_quadruple
@@ -665,6 +668,7 @@
 #define GALAHAD_SBLS_precision_ciface GALAHAD_SBLS_quadruple_ciface
 #define GALAHAD_SSLS_precision_ciface GALAHAD_SSLS_quadruple_ciface
 #define GALAHAD_SCU_precision_ciface GALAHAD_SCU_quadruple_ciface
+#define GALAHAD_SOLVER_precision_ciface GALAHAD_SOLVER_quadruple_ciface
 #define GALAHAD_TR1_precision_ciface GALAHAD_TR1_quadruple_ciface
 #define GALAHAD_SEC_precision_ciface GALAHAD_SEC_quadruple_ciface
 #define GALAHAD_SHA_precision_ciface GALAHAD_SHA_quadruple_ciface
