@@ -58,6 +58,7 @@ function test_sbls(::Type{T}, ::Type{INT}) where {T,INT}
 
     # debug
     @reset control[].print_level = INT(1)
+    @reset control[].sls_control.print_level = INT(1)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # fortran sparse matrix indexing
