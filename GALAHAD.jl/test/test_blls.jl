@@ -12,10 +12,10 @@ mutable struct userdata_blls{T}
   scale::T
 end
 
-function test_blls(::Type{T}) where T
+function test_blls(::Type{T}, ::Type{INT}) where {T,INT}
 
   # Apply preconditioner
-  function prec(n::Int, x::Vector{T}, p::Vector{T}, userdata::userdata_blls)
+  function prec(n::INT, x::Vector{T}, p::Vector{T}, userdata::userdata_blls)
     scale = userdata.scale
     for i in 1:n
       p[i] = scale * x[i]
@@ -25,28 +25,28 @@ function test_blls(::Type{T}) where T
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{blls_control_type{T}}()
-  inform = Ref{blls_inform_type{T}}()
+  control = Ref{blls_control_type{T,INT}}()
+  inform = Ref{blls_inform_type{T,INT}}()
 
   # Set user data
   userdata = userdata_blls(1.0)
 
   # Set problem data
-  n = 10 # dimension
-  o = n + 1 # number of residuals
+  n = INT(10)  # dimension
+  o = n + INT(1)  # number of residuals
   Ao_ne = 2 * n # sparse Jacobian elements
   Ao_dense_ne = o * n # dense Jacobian elements
   # row-wise storage
-  Ao_row = zeros(Cint, Ao_ne) # row indices,
-  Ao_col = zeros(Cint, Ao_ne) # column indices
-  Ao_ptr_ne = o + 1 # number of row pointers
-  Ao_ptr = zeros(Cint, Ao_ptr_ne)  # row pointers
+  Ao_row = zeros(INT, Ao_ne) # row indices,
+  Ao_col = zeros(INT, Ao_ne) # column indices
+  Ao_ptr_ne = o + INT(1)  # number of row pointers
+  Ao_ptr = zeros(INT, Ao_ptr_ne)  # row pointers
   Ao_val = zeros(T, Ao_ne) # values
   Ao_dense = zeros(T, Ao_dense_ne) # dense values
   # column-wise storage
-  Ao_by_col_row = zeros(Cint, Ao_ne) # row indices,
-  Ao_by_col_ptr_ne = n + 1 # number of column pointers
-  Ao_by_col_ptr = zeros(Cint, Ao_by_col_ptr_ne)  # column pointers
+  Ao_by_col_row = zeros(INT, Ao_ne) # row indices,
+  Ao_by_col_ptr_ne = n + INT(1)  # number of column pointers
+  Ao_by_col_ptr = zeros(INT, Ao_by_col_ptr_ne)  # column pointers
   Ao_by_col_val = zeros(T, Ao_ne) # values
   Ao_by_col_dense = zeros(T, Ao_dense_ne) # dense values
   b = zeros(T, o)  # linear term in the objective
@@ -59,9 +59,9 @@ function test_blls(::Type{T}) where T
   w = zeros(T, o) # weights
 
   # Set output storage
-  x_stat = zeros(Cint, n) # variable status
+  x_stat = zeros(INT, n) # variable status
   st = ' '
-  status = Ref{Cint}()
+  status = Ref{INT}()
 
   x_l[1] = -1.0
   for i in 2:n
@@ -148,18 +148,18 @@ function test_blls(::Type{T}) where T
 
   # reverse-communication input/output
   on = max(o, n)
-  eval_status = Ref{Cint}()
-  nz_v_start = Ref{Cint}()
-  nz_v_end = Ref{Cint}()
-  nz_v = zeros(Cint, on)
-  nz_p = zeros(Cint, o)
-  mask = zeros(Cint, o)
+  eval_status = Ref{INT}()
+  nz_v_start = Ref{INT}()
+  nz_v_end = Ref{INT}()
+  nz_v = zeros(INT, on)
+  nz_p = zeros(INT, o)
+  mask = zeros(INT, o)
   v = zeros(T, on)
   p = zeros(T, on)
   nz_p_end = 1
 
   # Initialize BLLS
-  blls_initialize(T, data, control, status)
+  blls_initialize(T, INT, data, control, status)
 
   # Set user-defined control options
   @reset control[].f_indexing = true # fortran sparse matrix indexing
@@ -174,11 +174,11 @@ function test_blls(::Type{T}) where T
   for i in 1:o
     mask[i] = 0
   end
-  blls_import_without_a(T, control, data, status, n, o)
+  blls_import_without_a(T, INT, control, data, status, n, o)
 
   terminated = false
   while !terminated # reverse-communication loop
-    blls_solve_reverse_a_prod(T, data, status, eval_status, n, o, b,
+    blls_solve_reverse_a_prod(T, INT, data, status, eval_status, n, o, b,
                               x_l, x_u, x, z, r, g, x_stat, v, p,
                               nz_v, nz_v_start, nz_v_end,
                               nz_p, nz_p_end, w)
@@ -241,7 +241,7 @@ function test_blls(::Type{T}) where T
   end
 
   # Record solution information
-  blls_information(T, data, inform, status)
+  blls_information(T, INT, data, inform, status)
 
   # Print solution details
   if inform[].status == 0
@@ -261,13 +261,20 @@ function test_blls(::Type{T}) where T
   # @printf("\n")
 
   # Delete internal workspace
-  blls_terminate(T, data, control, inform)
+  blls_terminate(T, INT, data, control, inform)
 
   return 0
 end
 
-@testset "BLLS" begin
-  @test test_blls(Float32) == 0
-  @test test_blls(Float64) == 0
-  @test test_blls(Float128) == 0
+for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
+                             (Float32 , Int64, GALAHAD.libgalahad_single_64   ),
+                             (Float64 , Int32, GALAHAD.libgalahad_double      ),
+                             (Float64 , Int64, GALAHAD.libgalahad_double_64   ),
+                             (Float128, Int32, GALAHAD.libgalahad_quadruple   ),
+                             (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
+  if isfile(libgalahad)
+    @testset "BLLS -- $T -- $INT" begin
+      @test test_blls(T, INT) == 0
+    end
+  end
 end

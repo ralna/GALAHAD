@@ -99,9 +99,10 @@ package is named `abcd`, insert the following line in `wrapper.jl`:
 (name == "all" || name == "abcd") && wrapper("abcd", ["$galahad/galahad_abcd.h"], optimized)
 ```
 
-Please also check the variable `nonparametric_structures` in `rewriter.jl`
-to specify if a structure should be parameterized or not to work in single
-and double precision (`Float32` and `Float64`).
+Please also check the variables `nonparametric_structures_float` and
+`nonparametric_structures_int` in `rewriter.jl` to specify whether a structure should be
+parameterized to support various precisions (`Float32` / `Float64` / `Float128`)
+or integer types (`Int32`, `Int64`).
 
 The final step involves updating `GALAHAD.jl/src/GALAHAD.jl` by
 appending the following two lines at the end of the file:

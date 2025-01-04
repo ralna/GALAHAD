@@ -7,19 +7,19 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_bqp(::Type{T}) where T
+function test_bqp(::Type{T}, ::Type{INT}) where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{bqp_control_type{T}}()
-  inform = Ref{bqp_inform_type{T}}()
+  control = Ref{bqp_control_type{T,INT}}()
+  inform = Ref{bqp_inform_type{T,INT}}()
 
   # Set problem data
-  n = 10 # dimension
+  n = INT(10)  # dimension
   H_ne = 2 * n - 1 # Hesssian elements, NB lower triangle
   H_dense_ne = div(n * (n + 1), 2) # dense Hessian elements
-  H_row = zeros(Cint, H_ne) # row indices,
-  H_col = zeros(Cint, H_ne) # column indices
-  H_ptr = zeros(Cint, n + 1)  # row pointers
+  H_row = zeros(INT, H_ne) # row indices,
+  H_col = zeros(INT, H_ne) # column indices
+  H_ptr = zeros(INT, n + 1)  # row pointers
   H_val = zeros(T, H_ne) # values
   H_dense = zeros(T, H_dense_ne) # dense values
   H_diag = zeros(T, n)   # diagonal values
@@ -31,9 +31,9 @@ function test_bqp(::Type{T}) where T
   z = zeros(T, n) # dual variables
 
   # Set output storage
-  x_stat = zeros(Cint, n) # variable status
+  x_stat = zeros(INT, n) # variable status
   st = ' '
-  status = Ref{Cint}()
+  status = Ref{INT}()
 
   g[1] = 2.0
   for i in 2:n
@@ -89,7 +89,7 @@ function test_bqp(::Type{T}) where T
   for d in 1:4
 
     # Initialize BQP
-    bqp_initialize(T, data, control, status)
+    bqp_initialize(T, INT, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # fortran sparse matrix indexing
@@ -103,44 +103,44 @@ function test_bqp(::Type{T}) where T
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      bqp_import(T, control, data, status, n,
+      bqp_import(T, INT, control, data, status, n,
                  "coordinate", H_ne, H_row, H_col, C_NULL)
 
-      bqp_solve_given_h(T, data, status, n, H_ne, H_val, g, f,
+      bqp_solve_given_h(T, INT, data, status, n, H_ne, H_val, g, f,
                         x_l, x_u, x, z, x_stat)
     end
 
     # sparse by rows
     if d == 2
       st = 'R'
-      bqp_import(T, control, data, status, n,
+      bqp_import(T, INT, control, data, status, n,
                  "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr)
 
-      bqp_solve_given_h(T, data, status, n, H_ne, H_val, g, f,
+      bqp_solve_given_h(T, INT, data, status, n, H_ne, H_val, g, f,
                         x_l, x_u, x, z, x_stat)
     end
 
     # dense
     if d == 3
       st = 'D'
-      bqp_import(T, control, data, status, n,
+      bqp_import(T, INT, control, data, status, n,
                  "dense", H_dense_ne, C_NULL, C_NULL, C_NULL)
 
-      bqp_solve_given_h(T, data, status, n, H_dense_ne, H_dense,
+      bqp_solve_given_h(T, INT, data, status, n, H_dense_ne, H_dense,
                         g, f, x_l, x_u, x, z, x_stat)
     end
 
     # diagonal
     if d == 4
       st = 'L'
-      bqp_import(T, control, data, status, n,
+      bqp_import(T, INT, control, data, status, n,
                  "diagonal", H_ne, C_NULL, C_NULL, C_NULL)
 
-      bqp_solve_given_h(T, data, status, n, n, H_diag, g, f,
+      bqp_solve_given_h(T, INT, data, status, n, n, H_diag, g, f,
                         x_l, x_u, x, z, x_stat)
     end
 
-    bqp_information(T, data, inform, status)
+    bqp_information(T, INT, data, inform, status)
 
     if inform[].status == 0
       @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
@@ -161,24 +161,24 @@ function test_bqp(::Type{T}) where T
     # @printf("\n")
 
     # Delete internal workspace
-    bqp_terminate(T, data, control, inform)
+    bqp_terminate(T, INT, data, control, inform)
   end
 
   @printf("\n tests reverse-communication options\n\n")
 
   # reverse-communication input/output
-  nz_v_start = Ref{Cint}()
-  nz_v_end = Ref{Cint}()
-  nz_v = zeros(Cint, n)
-  nz_prod = zeros(Cint, n)
-  mask = zeros(Cint, n)
+  nz_v_start = Ref{INT}()
+  nz_v_end = Ref{INT}()
+  nz_v = zeros(INT, n)
+  nz_prod = zeros(INT, n)
+  mask = zeros(INT, n)
   v = zeros(T, n)
   prod = zeros(T, n)
 
   nz_prod_end = 1
 
   # Initialize BQP
-  bqp_initialize(T, data, control, status)
+  bqp_initialize(T, INT, data, control, status)
   # @reset control[].print_level = 1
 
   # Set user-defined control options
@@ -194,11 +194,11 @@ function test_bqp(::Type{T}) where T
   for i in 1:n
     mask[i] = 0
   end
-  bqp_import_without_h(T, control, data, status, n)
+  bqp_import_without_h(T, INT, control, data, status, n)
 
   terminated = false
   while !terminated # reverse-communication loop
-    bqp_solve_reverse_h_prod(T, data, status, n, g, f, x_l, x_u, x, z, x_stat, v, prod, nz_v,
+    bqp_solve_reverse_h_prod(T, INT, data, status, n, g, f, x_l, x_u, x, z, x_stat, v, prod, nz_v,
                              nz_v_start, nz_v_end, nz_prod, nz_prod_end)
 
     if status[] == 0 # successful termination
@@ -265,7 +265,7 @@ function test_bqp(::Type{T}) where T
   end
 
   # Record solution information
-  bqp_information(T, data, inform, status)
+  bqp_information(T, INT, data, inform, status)
 
   # Print solution details
   if inform[].status == 0
@@ -287,12 +287,19 @@ function test_bqp(::Type{T}) where T
   # @printf("\n")
 
   # Delete internal workspace
-  bqp_terminate(T, data, control, inform)
+  bqp_terminate(T, INT, data, control, inform)
   return 0
 end
 
-@testset "BQP" begin
-  @test test_bqp(Float32) == 0
-  @test test_bqp(Float64) == 0
-  @test test_bqp(Float128) == 0
+for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
+                             (Float32 , Int64, GALAHAD.libgalahad_single_64   ),
+                             (Float64 , Int32, GALAHAD.libgalahad_double      ),
+                             (Float64 , Int64, GALAHAD.libgalahad_double_64   ),
+                             (Float128, Int32, GALAHAD.libgalahad_quadruple   ),
+                             (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
+  if isfile(libgalahad)
+    @testset "BQP -- $T -- $INT" begin
+      @test test_bqp(T, INT) == 0
+    end
+  end
 end

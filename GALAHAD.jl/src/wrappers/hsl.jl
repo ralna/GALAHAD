@@ -1,77 +1,77 @@
 
 export ma48_control
 
-struct ma48_control{T}
-  f_arrays::Cint
+struct ma48_control{T,INT}
+  f_arrays::INT
   multiplier::T
   u::T
   switch_::T
   drop::T
   tolerance::T
   cgce::T
-  lp::Cint
-  wp::Cint
-  mp::Cint
-  ldiag::Cint
-  btf::Cint
-  struct_::Cint
-  maxit::Cint
-  factor_blocking::Cint
-  solve_blas::Cint
-  pivoting::Cint
-  diagonal_pivoting::Cint
-  fill_in::Cint
-  switch_mode::Cint
+  lp::INT
+  wp::INT
+  mp::INT
+  ldiag::INT
+  btf::INT
+  struct_::INT
+  maxit::INT
+  factor_blocking::INT
+  solve_blas::INT
+  pivoting::INT
+  diagonal_pivoting::INT
+  fill_in::INT
+  switch_mode::INT
 end
 
 export ma48_ainfo
 
-struct ma48_ainfo{T}
+struct ma48_ainfo{T,INT}
   ops::T
-  flag::Cint
-  more::Cint
+  flag::INT
+  more::INT
   lena_analyse::Int64
   lenj_analyse::Int64
   lena_factorize::Int64
   leni_factorize::Int64
-  ncmpa::Cint
-  rank::Cint
+  ncmpa::INT
+  rank::INT
   drop::Int64
-  struc_rank::Cint
+  struc_rank::INT
   oor::Int64
   dup::Int64
-  stat::Cint
-  lblock::Cint
-  sblock::Cint
+  stat::INT
+  lblock::INT
+  sblock::INT
   tblock::Int64
 end
 
 export ma48_finfo
 
-struct ma48_finfo{T}
+struct ma48_finfo{T,INT}
   ops::T
-  flag::Cint
-  more::Cint
+  flag::INT
+  more::INT
   size_factor::Int64
   lena_factorize::Int64
   leni_factorize::Int64
   drop::Int64
-  rank::Cint
-  stat::Cint
+  rank::INT
+  stat::INT
 end
 
 export ma48_sinfo
 
-struct ma48_sinfo
-  flag::Cint
-  more::Cint
-  stat::Cint
+struct ma48_sinfo{INT}
+  flag::INT
+  more::INT
+  stat::INT
 end
 
 export ma57_control
 
-struct ma57_control{T}
-  f_arrays::Cint
+struct ma57_control{T,INT}
+  f_arrays::INT
   multiplier::T
   reduce::T
   u::T
@@ -80,223 +80,223 @@ struct ma57_control{T}
   tolerance::T
   convergence::T
   consist::T
-  lp::Cint
-  wp::Cint
-  mp::Cint
-  sp::Cint
-  ldiag::Cint
-  nemin::Cint
-  factorblocking::Cint
-  solveblocking::Cint
-  la::Cint
-  liw::Cint
-  maxla::Cint
-  maxliw::Cint
-  pivoting::Cint
-  thresh::Cint
-  ordering::Cint
-  scaling::Cint
-  rank_deficient::Cint
-  ispare::NTuple{5,Cint}
+  lp::INT
+  wp::INT
+  mp::INT
+  sp::INT
+  ldiag::INT
+  nemin::INT
+  factorblocking::INT
+  solveblocking::INT
+  la::INT
+  liw::INT
+  maxla::INT
+  maxliw::INT
+  pivoting::INT
+  thresh::INT
+  ordering::INT
+  scaling::INT
+  rank_deficient::INT
+  ispare::NTuple{5,INT}
   rspare::NTuple{10,T}
 end
 
 export ma57_ainfo
 
-struct ma57_ainfo{T}
+struct ma57_ainfo{T,INT}
   opsa::T
   opse::T
-  flag::Cint
-  more::Cint
-  nsteps::Cint
-  nrltot::Cint
-  nirtot::Cint
-  nrlnec::Cint
-  nirnec::Cint
-  nrladu::Cint
-  niradu::Cint
-  ncmpa::Cint
-  ordering::Cint
-  oor::Cint
-  dup::Cint
-  maxfrt::Cint
-  stat::Cint
-  ispare::NTuple{5,Cint}
+  flag::INT
+  more::INT
+  nsteps::INT
+  nrltot::INT
+  nirtot::INT
+  nrlnec::INT
+  nirnec::INT
+  nrladu::INT
+  niradu::INT
+  ncmpa::INT
+  ordering::INT
+  oor::INT
+  dup::INT
+  maxfrt::INT
+  stat::INT
+  ispare::NTuple{5,INT}
   rspare::NTuple{10,T}
 end
 
 export ma57_finfo
 
-struct ma57_finfo{T}
+struct ma57_finfo{T,INT}
   opsa::T
   opse::T
   opsb::T
   maxchange::T
   smin::T
   smax::T
-  flag::Cint
-  more::Cint
-  maxfrt::Cint
-  nebdu::Cint
-  nrlbdu::Cint
-  nirbdu::Cint
-  nrltot::Cint
-  nirtot::Cint
-  nrlnec::Cint
-  nirnec::Cint
-  ncmpbr::Cint
-  ncmpbi::Cint
-  ntwo::Cint
-  neig::Cint
-  delay::Cint
-  signc::Cint
-  static_::Cint
-  modstep::Cint
-  rank::Cint
-  stat::Cint
-  ispare::NTuple{5,Cint}
+  flag::INT
+  more::INT
+  maxfrt::INT
+  nebdu::INT
+  nrlbdu::INT
+  nirbdu::INT
+  nrltot::INT
+  nirtot::INT
+  nrlnec::INT
+  nirnec::INT
+  ncmpbr::INT
+  ncmpbi::INT
+  ntwo::INT
+  neig::INT
+  delay::INT
+  signc::INT
+  static_::INT
+  modstep::INT
+  rank::INT
+  stat::INT
+  ispare::NTuple{5,INT}
   rspare::NTuple{10,T}
 end
 
 export ma57_sinfo
 
-struct ma57_sinfo{T}
+struct ma57_sinfo{T,INT}
   cond::T
   cond2::T
   berr::T
   berr2::T
   error::T
-  flag::Cint
-  stat::Cint
-  ispare::NTuple{5,Cint}
+  flag::INT
+  stat::INT
+  ispare::NTuple{5,INT}
   rspare::NTuple{10,T}
 end
 
 export ma77_control
 
-struct ma77_control{T}
-  f_arrays::Cint
-  print_level::Cint
-  unit_diagnostics::Cint
-  unit_error::Cint
-  unit_warning::Cint
-  bits::Cint
-  buffer_lpage::NTuple{2,Cint}
-  buffer_npage::NTuple{2,Cint}
+struct ma77_control{T,INT}
+  f_arrays::INT
+  print_level::INT
+  unit_diagnostics::INT
+  unit_error::INT
+  unit_warning::INT
+  bits::INT
+  buffer_lpage::NTuple{2,INT}
+  buffer_npage::NTuple{2,INT}
   file_size::Int64
   maxstore::Int64
   storage::NTuple{3,Int64}
-  nemin::Cint
-  maxit::Cint
-  infnorm::Cint
+  nemin::INT
+  maxit::INT
+  infnorm::INT
   thresh::T
-  nb54::Cint
-  action::Cint
+  nb54::INT
+  action::INT
   multiplier::T
-  nb64::Cint
-  nbi::Cint
+  nb64::INT
+  nbi::INT
   small::T
   static_::T
   storage_indef::Int64
   u::T
   umin::T
   consist_tol::T
-  ispare::NTuple{5,Cint}
+  ispare::NTuple{5,INT}
   lspare::NTuple{5,Int64}
   rspare::NTuple{5,T}
 end
 
 export ma77_info
 
-struct ma77_info{T}
+struct ma77_info{T,INT}
   detlog::T
-  detsign::Cint
-  flag::Cint
-  iostat::Cint
-  matrix_dup::Cint
-  matrix_rank::Cint
-  matrix_outrange::Cint
-  maxdepth::Cint
-  maxfront::Cint
+  detsign::INT
+  flag::INT
+  iostat::INT
+  matrix_dup::INT
+  matrix_rank::INT
+  matrix_outrange::INT
+  maxdepth::INT
+  maxfront::INT
   minstore::Int64
-  ndelay::Cint
+  ndelay::INT
   nfactor::Int64
   nflops::Int64
-  niter::Cint
-  nsup::Cint
-  num_neg::Cint
-  num_nothresh::Cint
-  num_perturbed::Cint
-  ntwo::Cint
-  stat::Cint
-  index::NTuple{4,Cint}
+  niter::INT
+  nsup::INT
+  num_neg::INT
+  num_nothresh::INT
+  num_perturbed::INT
+  ntwo::INT
+  stat::INT
+  index::NTuple{4,INT}
   nio_read::NTuple{2,Int64}
   nio_write::NTuple{2,Int64}
   nwd_read::NTuple{2,Int64}
   nwd_write::NTuple{2,Int64}
-  num_file::NTuple{4,Cint}
+  num_file::NTuple{4,INT}
   storage::NTuple{4,Int64}
-  tree_nodes::Cint
-  unit_restart::Cint
-  unused::Cint
+  tree_nodes::INT
+  unit_restart::INT
+  unused::INT
   usmall::T
-  ispare::NTuple{5,Cint}
+  ispare::NTuple{5,INT}
   lspare::NTuple{5,Int64}
   rspare::NTuple{5,T}
 end
 
 export ma86_control
 
-struct ma86_control{T}
-  f_arrays::Cint
-  diagnostics_level::Cint
-  unit_diagnostics::Cint
-  unit_error::Cint
-  unit_warning::Cint
-  nemin::Cint
-  nb::Cint
-  action::Cint
-  nbi::Cint
-  pool_size::Cint
+struct ma86_control{T,INT}
+  f_arrays::INT
+  diagnostics_level::INT
+  unit_diagnostics::INT
+  unit_error::INT
+  unit_warning::INT
+  nemin::INT
+  nb::INT
+  action::INT
+  nbi::INT
+  pool_size::INT
   small_::T
   static_::T
   u::T
   umin::T
-  scaling::Cint
+  scaling::INT
 end
 
 export ma86_info
 
-struct ma86_info{T}
+struct ma86_info{T,INT}
   detlog::T
-  detsign::Cint
-  flag::Cint
-  matrix_rank::Cint
-  maxdepth::Cint
-  num_delay::Cint
+  detsign::INT
+  flag::INT
+  matrix_rank::INT
+  maxdepth::INT
+  num_delay::INT
   num_factor::Int64
   num_flops::Int64
-  num_neg::Cint
-  num_nodes::Cint
-  num_nothresh::Cint
-  num_perturbed::Cint
-  num_two::Cint
-  pool_size::Cint
-  stat::Cint
+  num_neg::INT
+  num_nodes::INT
+  num_nothresh::INT
+  num_perturbed::INT
+  num_two::INT
+  pool_size::INT
+  stat::INT
   usmall::T
 end
 
 export ma87_control
 
-struct ma87_control{T}
-  f_arrays::Cint
-  diagnostics_level::Cint
-  unit_diagnostics::Cint
-  unit_error::Cint
-  unit_warning::Cint
-  nemin::Cint
-  nb::Cint
-  pool_size::Cint
+struct ma87_control{T,INT}
+  f_arrays::INT
+  diagnostics_level::INT
+  unit_diagnostics::INT
+  unit_error::INT
+  unit_warning::INT
+  nemin::INT
+  nb::INT
+  pool_size::INT
   diag_zero_minus::T
   diag_zero_plus::T
   unused::NTuple{40,Cchar}
@@ -304,209 +304,209 @@ end
 
 export ma87_info
 
-struct ma87_info{T}
+struct ma87_info{T,INT}
   detlog::T
-  flag::Cint
-  maxdepth::Cint
+  flag::INT
+  maxdepth::INT
   num_factor::Int64
   num_flops::Int64
-  num_nodes::Cint
-  pool_size::Cint
-  stat::Cint
-  num_zero::Cint
+  num_nodes::INT
+  pool_size::INT
+  stat::INT
+  num_zero::INT
   unused::NTuple{40,Cchar}
 end
 
 export ma97_control
 
-struct ma97_control{T}
-  f_arrays::Cint
-  action::Cint
-  nemin::Cint
+struct ma97_control{T,INT}
+  f_arrays::INT
+  action::INT
+  nemin::INT
   multiplier::T
-  ordering::Cint
-  print_level::Cint
-  scaling::Cint
+  ordering::INT
+  print_level::INT
+  scaling::INT
   small::T
   u::T
-  unit_diagnostics::Cint
-  unit_error::Cint
-  unit_warning::Cint
+  unit_diagnostics::INT
+  unit_error::INT
+  unit_warning::INT
   factor_min::Int64
-  solve_blas3::Cint
+  solve_blas3::INT
   solve_min::Int64
-  solve_mf::Cint
+  solve_mf::INT
   consist_tol::T
-  ispare::NTuple{5,Cint}
+  ispare::NTuple{5,INT}
   rspare::NTuple{10,T}
 end
 
 export ma97_info
 
-struct ma97_info{T}
-  flag::Cint
-  flag68::Cint
-  flag77::Cint
-  matrix_dup::Cint
-  matrix_rank::Cint
-  matrix_outrange::Cint
-  matrix_missing_diag::Cint
-  maxdepth::Cint
-  maxfront::Cint
-  num_delay::Cint
+struct ma97_info{T,INT}
+  flag::INT
+  flag68::INT
+  flag77::INT
+  matrix_dup::INT
+  matrix_rank::INT
+  matrix_outrange::INT
+  matrix_missing_diag::INT
+  maxdepth::INT
+  maxfront::INT
+  num_delay::INT
   num_factor::Int64
   num_flops::Int64
-  num_neg::Cint
-  num_sup::Cint
-  num_two::Cint
-  ordering::Cint
-  stat::Cint
-  maxsupernode::Cint
-  ispare::NTuple{4,Cint}
+  num_neg::INT
+  num_sup::INT
+  num_two::INT
+  ordering::INT
+  stat::INT
+  maxsupernode::INT
+  ispare::NTuple{4,INT}
   rspare::NTuple{10,T}
 end
 
 export mc64_control
 
-struct mc64_control
-  f_arrays::Cint
-  lp::Cint
-  wp::Cint
-  sp::Cint
-  ldiag::Cint
-  checking::Cint
+struct mc64_control{INT}
+  f_arrays::INT
+  lp::INT
+  wp::INT
+  sp::INT
+  ldiag::INT
+  checking::INT
 end
 
 export mc64_info
 
-struct mc64_info
-  flag::Cint
-  more::Cint
-  strucrank::Cint
-  stat::Cint
+struct mc64_info{INT}
+  flag::INT
+  more::INT
+  strucrank::INT
+  stat::INT
 end
 
 export mc68_control
 
-struct mc68_control
-  f_array_in::Cint
-  f_array_out::Cint
-  min_l_workspace::Cint
-  lp::Cint
-  wp::Cint
-  mp::Cint
-  nemin::Cint
-  print_level::Cint
-  row_full_thresh::Cint
-  row_search::Cint
+struct mc68_control{INT}
+  f_array_in::INT
+  f_array_out::INT
+  min_l_workspace::INT
+  lp::INT
+  wp::INT
+  mp::INT
+  nemin::INT
+  print_level::INT
+  row_full_thresh::INT
+  row_search::INT
 end
 
 export mc68_info
 
-struct mc68_info
-  flag::Cint
-  iostat::Cint
-  stat::Cint
-  out_range::Cint
-  duplicate::Cint
-  n_compressions::Cint
-  n_zero_eigs::Cint
+struct mc68_info{INT}
+  flag::INT
+  iostat::INT
+  stat::INT
+  out_range::INT
+  duplicate::INT
+  n_compressions::INT
+  n_zero_eigs::INT
   l_workspace::Int64
-  zb01_info::Cint
-  n_dense_rows::Cint
+  zb01_info::INT
+  n_dense_rows::INT
 end
 
 export mi20_control
 
-struct mi20_control{T}
-  f_arrays::Cint
-  aggressive::Cint
-  c_fail::Cint
-  max_levels::Cint
-  max_points::Cint
+struct mi20_control{T,INT}
+  f_arrays::INT
+  aggressive::INT
+  c_fail::INT
+  max_levels::INT
+  max_points::INT
   reduction::T
-  st_method::Cint
+  st_method::INT
   st_parameter::T
-  testing::Cint
+  testing::INT
   trunc_parameter::T
-  coarse_solver::Cint
-  coarse_solver_its::Cint
+  coarse_solver::INT
+  coarse_solver_its::INT
   damping::T
   err_tol::T
-  levels::Cint
-  pre_smoothing::Cint
-  smoother::Cint
-  post_smoothing::Cint
-  v_iterations::Cint
-  print_level::Cint
-  print::Cint
-  error::Cint
-  one_pass_coarsen::Cint
+  levels::INT
+  pre_smoothing::INT
+  smoother::INT
+  post_smoothing::INT
+  v_iterations::INT
+  print_level::INT
+  print::INT
+  error::INT
+  one_pass_coarsen::INT
 end
 
 export mi20_solve_control
 
-struct mi20_solve_control{T}
+struct mi20_solve_control{T,INT}
   abs_tol::T
   breakdown_tol::T
-  gmres_restart::Cint
+  gmres_restart::INT
   init_guess::Bool
-  krylov_solver::Cint
-  max_its::Cint
-  preconditioner_side::Cint
+  krylov_solver::INT
+  max_its::INT
+  preconditioner_side::INT
   rel_tol::T
 end
 
 export mi20_info
 
-struct mi20_info{T}
-  flag::Cint
-  clevels::Cint
-  cpoints::Cint
-  cnnz::Cint
-  stat::Cint
-  getrf_info::Cint
-  iterations::Cint
+struct mi20_info{T,INT}
+  flag::INT
+  clevels::INT
+  cpoints::INT
+  cnnz::INT
+  stat::INT
+  getrf_info::INT
+  iterations::INT
   residual::T
 end
 
 export mi28_control
 
-struct mi28_control{T}
-  f_arrays::Cint
+struct mi28_control{T,INT}
+  f_arrays::INT
   alpha::T
   check::Bool
-  iorder::Cint
-  iscale::Cint
+  iorder::INT
+  iscale::INT
   lowalpha::T
-  maxshift::Cint
+  maxshift::INT
   rrt::Bool
   shift_factor::T
   shift_factor2::T
   small::T
   tau1::T
   tau2::T
-  unit_error::Cint
-  unit_warning::Cint
+  unit_error::INT
+  unit_warning::INT
 end
 
 export mi28_info
 
-struct mi28_info{T}
-  band_after::Cint
-  band_before::Cint
-  dup::Cint
-  flag::Cint
-  flag61::Cint
-  flag64::Cint
-  flag68::Cint
-  flag77::Cint
-  nrestart::Cint
-  nshift::Cint
-  oor::Cint
+struct mi28_info{T,INT}
+  band_after::INT
+  band_before::INT
+  dup::INT
+  flag::INT
+  flag61::INT
+  flag64::INT
+  flag68::INT
+  flag77::INT
+  nrestart::INT
+  nshift::INT
+  oor::INT
   profile_before::T
   profile_after::T
   size_r::Int64
-  stat::Cint
+  stat::INT
   alpha::T
 end

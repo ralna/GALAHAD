@@ -7,16 +7,16 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_glrt(::Type{T}) where T
+function test_glrt(::Type{T}, ::Type{INT}) where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{glrt_control_type{T}}()
-  inform = Ref{glrt_inform_type{T}}()
+  control = Ref{glrt_control_type{T,INT}}()
+  inform = Ref{glrt_inform_type{T,INT}}()
 
   # Set problem data
-  n = 100 # dimension
+  n = INT(100)  # dimension
 
-  status = Ref{Cint}()
+  status = Ref{INT}()
   weight = Ref{T}()
   power = T(3.0)
   x = zeros(T, n)
@@ -25,7 +25,7 @@ function test_glrt(::Type{T}) where T
   h_vector = zeros(T, n)
 
   # Initialize glrt
-  glrt_initialize(T, data, control, status)
+  glrt_initialize(T, INT, data, control, status)
 
   # use a unit M ?
   for unit_m in 0:1
@@ -35,7 +35,7 @@ function test_glrt(::Type{T}) where T
       @reset control[].unitm = true
     end
 
-    glrt_import_control(T, control, data, status)
+    glrt_import_control(T, INT, control, data, status)
 
     # resolve with a larger weight ?
     for new_weight in 0:1
@@ -54,7 +54,7 @@ function test_glrt(::Type{T}) where T
       # iteration loop to find the minimizer
       terminated = false
       while !terminated # reverse-communication loop
-        glrt_solve_problem(T, data, status, n, power, weight[], x, r, vector)
+        glrt_solve_problem(T, INT, data, status, n, power, weight[], x, r, vector)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -81,20 +81,27 @@ function test_glrt(::Type{T}) where T
         end
       end
 
-      glrt_information(T, data, inform, status)
+      glrt_information(T, INT, data, inform, status)
       # @printf("MR = %1i%1i glrt_solve_problem exit status = %i, f = %.2f\n", unit_m,
       #         new_weight, inform[].status, inform[].obj_regularized)
     end
   end
 
   # Delete internal workspace
-  glrt_terminate(T, data, control, inform)
+  glrt_terminate(T, INT, data, control, inform)
 
   return 0
 end
 
-@testset "GLRT" begin
-  @test test_glrt(Float32) == 0
-  @test test_glrt(Float64) == 0
-  @test test_glrt(Float128) == 0
+for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
+                             (Float32 , Int64, GALAHAD.libgalahad_single_64   ),
+                             (Float64 , Int32, GALAHAD.libgalahad_double      ),
+                             (Float64 , Int64, GALAHAD.libgalahad_double_64   ),
+                             (Float128, Int32, GALAHAD.libgalahad_quadruple   ),
+                             (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
+  if isfile(libgalahad)
+    @testset "GLRT -- $T -- $INT" begin
+      @test test_glrt(T, INT) == 0
+    end
+  end
 end

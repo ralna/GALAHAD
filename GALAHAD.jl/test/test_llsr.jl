@@ -7,22 +7,22 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_llsr(::Type{T}) where T
+function test_llsr(::Type{T}, ::Type{INT}) where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{llsr_control_type{T}}()
-  inform = Ref{llsr_inform_type{T}}()
+  control = Ref{llsr_control_type{T,INT}}()
+  inform = Ref{llsr_inform_type{T,INT}}()
 
   # Set problem data
   # set dimensions
-  m = 100
+  m = INT(100)
   n = 2 * m + 1
 
   # # A = (I : Diag(1:n) : e)
   A_ne = 3 * m
-  A_row = zeros(Cint, A_ne)
-  A_col = zeros(Cint, A_ne)
-  A_ptr = zeros(Cint, m + 1)
+  A_row = zeros(INT, A_ne)
+  A_col = zeros(INT, A_ne)
+  A_ptr = zeros(INT, m + 1)
   A_val = zeros(T, A_ne)
 
   # store A in sparse formats
@@ -57,9 +57,9 @@ function test_llsr(::Type{T}) where T
 
   # S = diag(1:n)**2
   S_ne = n
-  S_row = zeros(Cint, S_ne)
-  S_col = zeros(Cint, S_ne)
-  S_ptr = zeros(Cint, n + 1)
+  S_row = zeros(INT, S_ne)
+  S_col = zeros(INT, S_ne)
+  S_ptr = zeros(INT, n + 1)
   S_val = zeros(T, S_ne)
 
   # store S in sparse formats
@@ -90,7 +90,7 @@ function test_llsr(::Type{T}) where T
   # Set output storage
   x = zeros(T, n) # solution
   st = ' '
-  status = Ref{Cint}()
+  status = Ref{INT}()
 
   @printf(" Fortran sparse matrix indexing\n\n")
   @printf(" basic tests of problem storage formats\n\n")
@@ -99,7 +99,7 @@ function test_llsr(::Type{T}) where T
   for d in 1:4
 
     # Initialize LLSR
-    llsr_initialize(T, data, control, status)
+    llsr_initialize(T, INT, data, control, status)
     @reset control[].definite_linear_solver = galahad_linear_solver("potr")
     @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
     @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("potr")
@@ -114,18 +114,18 @@ function test_llsr(::Type{T}) where T
       # sparse co-ordinate storage
       if d == 1
         st = 'C'
-        llsr_import(T, control, data, status, m, n,
+        llsr_import(T, INT, control, data, status, m, n,
                     "coordinate", A_ne, A_row, A_col, C_NULL)
 
         if use_s == 0
-          llsr_solve_problem(T, data, status, m, n, power, weight,
+          llsr_solve_problem(T, INT, data, status, m, n, power, weight,
                              A_ne, A_val, b, x, 0, C_NULL)
         else
-          llsr_import_scaling(T, control, data, status, n,
+          llsr_import_scaling(T, INT, control, data, status, n,
                               "coordinate", S_ne, S_row,
                               S_col, C_NULL)
 
-          llsr_solve_problem(T, data, status, m, n, power, weight,
+          llsr_solve_problem(T, INT, data, status, m, n, power, weight,
                              A_ne, A_val, b, x, S_ne, S_val)
         end
       end
@@ -133,18 +133,18 @@ function test_llsr(::Type{T}) where T
       # sparse by rows
       if d == 2
         st = 'R'
-        llsr_import(T, control, data, status, m, n,
+        llsr_import(T, INT, control, data, status, m, n,
                     "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
         if use_s == 0
-          llsr_solve_problem(T, data, status, m, n, power, weight,
+          llsr_solve_problem(T, INT, data, status, m, n, power, weight,
                              A_ne, A_val, b, x, 0, C_NULL)
         else
-          llsr_import_scaling(T, control, data, status, n,
+          llsr_import_scaling(T, INT, control, data, status, n,
                               "sparse_by_rows", S_ne, C_NULL,
                               S_col, S_ptr)
 
-          llsr_solve_problem(T, data, status, m, n, power, weight,
+          llsr_solve_problem(T, INT, data, status, m, n, power, weight,
                              A_ne, A_val, b, x, S_ne, S_val)
         end
       end
@@ -152,18 +152,18 @@ function test_llsr(::Type{T}) where T
       # dense
       if d == 3
         st = 'D'
-        llsr_import(T, control, data, status, m, n,
+        llsr_import(T, INT, control, data, status, m, n,
                     "dense", A_dense_ne, C_NULL, C_NULL, C_NULL)
         if use_s == 0
-          llsr_solve_problem(T, data, status, m, n, power, weight,
+          llsr_solve_problem(T, INT, data, status, m, n, power, weight,
                              A_dense_ne, A_dense_val, b, x,
                              0, C_NULL)
         else
-          llsr_import_scaling(T, control, data, status, n,
+          llsr_import_scaling(T, INT, control, data, status, n,
                               "dense", S_dense_ne,
                               C_NULL, C_NULL, C_NULL)
 
-          llsr_solve_problem(T, data, status, m, n, power, weight,
+          llsr_solve_problem(T, INT, data, status, m, n, power, weight,
                              A_dense_ne, A_dense_val, b, x,
                              S_dense_ne, S_dense_val)
         end
@@ -172,21 +172,21 @@ function test_llsr(::Type{T}) where T
       # diagonal
       if d == 4
         st = 'I'
-        llsr_import(T, control, data, status, m, n,
+        llsr_import(T, INT, control, data, status, m, n,
                     "coordinate", A_ne, A_row, A_col, C_NULL)
         if use_s == 0
-          llsr_solve_problem(T, data, status, m, n, power, weight,
+          llsr_solve_problem(T, INT, data, status, m, n, power, weight,
                              A_ne, A_val, b, x, 0, C_NULL)
         else
-          llsr_import_scaling(T, control, data, status, n,
+          llsr_import_scaling(T, INT, control, data, status, n,
                               "diagonal", S_ne, C_NULL, C_NULL, C_NULL)
 
-          llsr_solve_problem(T, data, status, m, n, power, weight,
+          llsr_solve_problem(T, INT, data, status, m, n, power, weight,
                              A_ne, A_val, b, x, S_ne, S_val)
         end
       end
 
-      llsr_information(T, data, inform, status)
+      llsr_information(T, INT, data, inform, status)
 
       if inform[].status == 0
         @printf("storage type %c%1i:  status = %1i, ||r|| = %5.2f\n", st, use_s,
@@ -204,13 +204,20 @@ function test_llsr(::Type{T}) where T
     # @printf("\n")
 
     # Delete internal workspace
-    llsr_terminate(T, data, control, inform)
+    llsr_terminate(T, INT, data, control, inform)
   end
   return 0
 end
 
-@testset "LLSR" begin
-  @test test_llsr(Float32) == 0
-  @test test_llsr(Float64) == 0
-  @test test_llsr(Float128) == 0
+for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
+                             (Float32 , Int64, GALAHAD.libgalahad_single_64   ),
+                             (Float64 , Int32, GALAHAD.libgalahad_double      ),
+                             (Float64 , Int64, GALAHAD.libgalahad_double_64   ),
+                             (Float128, Int32, GALAHAD.libgalahad_quadruple   ),
+                             (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
+  if isfile(libgalahad)
+    @testset "LLSR -- $T -- $INT" begin
+      @test test_llsr(T, INT) == 0
+    end
+  end
 end
