@@ -1,5 +1,5 @@
 .. index:: pair: struct; gls_control_type
-.. _doxid-structgls__control:
+.. _doxid-structgls__control__type:
 
 struct gls_control_type
 -----------------------

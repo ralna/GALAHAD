@@ -5,7 +5,7 @@
 GALAHAD Julia Interfaces
 ========================
 
-**Release:** 0.3.0
+**Release:** 0.4.0
 
 **Date:** |today|
 
