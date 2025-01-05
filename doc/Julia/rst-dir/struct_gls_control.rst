@@ -10,21 +10,21 @@ struct gls_control
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct gls_control_type{T}
+        struct gls_control_type{T,INT}
           f_indexing::Bool
-          lp::Int32
-          wp::Int32
-          mp::Int32
-          ldiag::Int32
-          btf::Int32
-          maxit::Int32
-          factor_blocking::Int32
-          solve_blas::Int32
-          la::Int32
-          la_int::Int32
-          maxla::Int32
-          pivoting::Int32
-          fill_in::Int32
+          lp::INT
+          wp::INT
+          mp::INT
+          ldiag::INT
+          btf::INT
+          maxit::INT
+          factor_blocking::INT
+          solve_blas::INT
+          la::INT
+          la_int::INT
+          maxla::INT
+          pivoting::INT
+          fill_in::INT
           multiplier::T
           reduce::T
           u::T
@@ -61,7 +61,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 lp
+	INT lp
 
 Unit for error messages.
 
@@ -71,7 +71,7 @@ Unit for error messages.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 wp
+	INT wp
 
 Unit for warning messages.
 
@@ -81,7 +81,7 @@ Unit for warning messages.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mp
+	INT mp
 
 Unit for monitor output.
 
@@ -91,7 +91,7 @@ Unit for monitor output.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ldiag
+	INT ldiag
 
 Controls level of diagnostic output.
 
@@ -101,7 +101,7 @@ Controls level of diagnostic output.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 btf
+	INT btf
 
 Minimum block size for block-triangular form (BTF). Set to $n$ to avoid.
 
@@ -111,7 +111,7 @@ Minimum block size for block-triangular form (BTF). Set to $n$ to avoid.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit
+	INT maxit
 
 Maximum number of iterations.
 
@@ -121,7 +121,7 @@ Maximum number of iterations.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factor_blocking
+	INT factor_blocking
 
 Level 3 blocking in factorize.
 
@@ -131,7 +131,7 @@ Level 3 blocking in factorize.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 solve_blas
+	INT solve_blas
 
 Switch for using Level 1 or 2 BLAS in solve.
 
@@ -141,7 +141,7 @@ Switch for using Level 1 or 2 BLAS in solve.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 la
+	INT la
 
 Initial size for real array for the factors.
 
@@ -151,7 +151,7 @@ Initial size for real array for the factors.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 la_int
+	INT la_int
 
 Initial size for integer array for the factors.
 
@@ -161,7 +161,7 @@ Initial size for integer array for the factors.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxla
+	INT maxla
 
 Maximum size for real array for the factors.
 
@@ -171,7 +171,7 @@ Maximum size for real array for the factors.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 pivoting
+	INT pivoting
 
 Controls pivoting: Number of columns searched. Zero for Markowitz.
 
@@ -181,7 +181,7 @@ Controls pivoting: Number of columns searched. Zero for Markowitz.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 fill_in
+	INT fill_in
 
 Initially fill_in \* ne space allocated for factors.
 

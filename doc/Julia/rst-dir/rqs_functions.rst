@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_initialize(T, data, control, status)
+        function rqs_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -29,7 +29,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_read_specfile(T, control, specfile)
+        function rqs_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_import(T, control, data, status, n, 
+        function rqs_import(T, INT, control, data, status, n, 
                             H_type, H_ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -97,7 +97,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -128,7 +128,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of rows (and columns) of H.
+		- is a scalar variable of type INT that holds the number of rows (and columns) of H.
 
 	*
 		- H_type
@@ -138,22 +138,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- H_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size H_ne and type INT that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size H_ne and type INT that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; rqs_import_m
 .. _doxid-galahad__rqs_8h_1af0351d4956431c86e229f905041c222b:
@@ -161,7 +161,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_import_m(T, data, status, n, M_type, M_ne, M_row, M_col, M_ptr)
+        function rqs_import_m(T, INT, data, status, n, M_type, M_ne, M_row, M_col, M_ptr)
 
 Import data for the scaling matrix M into internal storage prior to solution.
 
@@ -178,7 +178,7 @@ Import data for the scaling matrix M into internal storage prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -209,7 +209,7 @@ Import data for the scaling matrix M into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of rows (and columns) of M.
+		- is a scalar variable of type INT that holds the number of rows (and columns) of M.
 
 	*
 		- M_type
@@ -219,22 +219,22 @@ Import data for the scaling matrix M into internal storage prior to solution.
 	*
 		- M_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $M$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $M$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- M_row
 
-		- is a one-dimensional array of size M_ne and type Int32 that holds the row indices of the lower triangular part of $M$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size M_ne and type INT that holds the row indices of the lower triangular part of $M$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- M_col
 
-		- is a one-dimensional array of size M_ne and type Int32 that holds the column indices of the lower triangular part of $M$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or identity storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size M_ne and type INT that holds the column indices of the lower triangular part of $M$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or identity storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- M_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $M$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of $M$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; rqs_import_a
 .. _doxid-galahad__rqs_8h_1a3d1116ac5c18fe085e902c77ec2776b5:
@@ -242,7 +242,7 @@ Import data for the scaling matrix M into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_import_a(T, data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
+        function rqs_import_a(T, INT, data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
 
 Import data for the constraint matrix A into internal storage prior to solution.
 
@@ -259,7 +259,7 @@ Import data for the constraint matrix A into internal storage prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -289,7 +289,7 @@ Import data for the constraint matrix A into internal storage prior to solution.
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints, i.e., the number of rows of A, if any. m must be non-negative.
+		- is a scalar variable of type INT that holds the number of general linear constraints, i.e., the number of rows of A, if any. m must be non-negative.
 
 	*
 		- A_type
@@ -299,22 +299,22 @@ Import data for the constraint matrix A into internal storage prior to solution.
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in $A$, if used, in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in $A$, if used, in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; rqs_reset_control
 .. _doxid-galahad__rqs_8h_1a86e1c32d2d07facbe602222e199a075f:
@@ -322,7 +322,7 @@ Import data for the constraint matrix A into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_reset_control(T, control, data, status)
+        function rqs_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -344,7 +344,7 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -356,7 +356,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_solve_problem(T, data, status, n, power, weight, f, c, 
+        function rqs_solve_problem(T, INT, data, status, n, power, weight, f, c, 
                                   H_ne, H_val, x, M_ne, M_val, m, A_ne, A_val, y)
 
 Solve the regularised quadratic problem.
@@ -374,7 +374,7 @@ Solve the regularised quadratic problem.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  On initial entry, status **must** be set to 1.
@@ -429,7 +429,7 @@ Solve the regularised quadratic problem.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- power
@@ -454,7 +454,7 @@ Solve the regularised quadratic problem.
 	*
 		- H_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
@@ -469,7 +469,7 @@ Solve the regularised quadratic problem.
 	*
 		- M_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the scaling matrix $M$ if it not the identity matrix.
+		- is a scalar variable of type INT that holds the number of entries in the scaling matrix $M$ if it not the identity matrix.
 
 	*
 		- M_val
@@ -479,12 +479,12 @@ Solve the regularised quadratic problem.
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints, if any. m must be non-negative.
+		- is a scalar variable of type INT that holds the number of general linear constraints, if any. m must be non-negative.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$ if used. A_ne must be non-negative.
+		- is a scalar variable of type INT that holds the number of entries in the constraint Jacobian matrix $A$ if used. A_ne must be non-negative.
 
 	*
 		- A_val
@@ -502,7 +502,7 @@ Solve the regularised quadratic problem.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_information(T, data, inform, status)
+        function rqs_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -524,7 +524,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -537,7 +537,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_terminate(T, data, control, inform)
+        function rqs_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

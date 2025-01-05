@@ -13,41 +13,41 @@ control derived type as a Julia structureure :ref:`More...<details-structpresolv
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct presolve_control_type{T}
+        struct presolve_control_type{T,INT}
           f_indexing::Bool
-          termination::Int32
-          max_nbr_transforms::Int32
-          max_nbr_passes::Int32
+          termination::INT
+          max_nbr_transforms::INT
+          max_nbr_passes::INT
           c_accuracy::T
           z_accuracy::T
           infinity::T
-          out::Int32
-          errout::Int32
-          print_level::Int32
+          out::INT
+          errout::INT
+          print_level::INT
           dual_transformations::Bool
           redundant_xc::Bool
-          primal_constraints_freq::Int32
-          dual_constraints_freq::Int32
-          singleton_columns_freq::Int32
-          doubleton_columns_freq::Int32
-          unc_variables_freq::Int32
-          dependent_variables_freq::Int32
-          sparsify_rows_freq::Int32
-          max_fill::Int32
-          transf_file_nbr::Int32
-          transf_buffer_size::Int32
-          transf_file_status::Int32
+          primal_constraints_freq::INT
+          dual_constraints_freq::INT
+          singleton_columns_freq::INT
+          doubleton_columns_freq::INT
+          unc_variables_freq::INT
+          dependent_variables_freq::INT
+          sparsify_rows_freq::INT
+          max_fill::INT
+          transf_file_nbr::INT
+          transf_buffer_size::INT
+          transf_file_status::INT
           transf_file_name::NTuple{31,Cchar}
-          y_sign::Int32
-          inactive_y::Int32
-          z_sign::Int32
-          inactive_z::Int32
-          final_x_bounds::Int32
-          final_z_bounds::Int32
-          final_c_bounds::Int32
-          final_y_bounds::Int32
-          check_primal_feasibility::Int32
-          check_dual_feasibility::Int32
+          y_sign::INT
+          inactive_y::INT
+          z_sign::INT
+          inactive_z::INT
+          final_x_bounds::INT
+          final_z_bounds::INT
+          final_c_bounds::INT
+          final_y_bounds::INT
+          check_primal_feasibility::INT
+          check_dual_feasibility::INT
           pivot_tol::T
           min_rel_improve::T
           max_growth_factor::T
@@ -78,7 +78,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 termination
+	INT termination
 
 Determines the strategy for terminating the presolve analysis. Possible values are:
 
@@ -92,7 +92,7 @@ Determines the strategy for terminating the presolve analysis. Possible values a
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_nbr_transforms
+	INT max_nbr_transforms
 
 The maximum number of problem transformations, cumulated over all calls to ``presolve``.
 
@@ -102,7 +102,7 @@ The maximum number of problem transformations, cumulated over all calls to ``pre
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_nbr_passes
+	INT max_nbr_passes
 
 The maximum number of analysis passes for problem analysis during a single call of ``presolve_transform_problem``.
 
@@ -142,7 +142,7 @@ The value beyond which a number is deemed equal to plus infinity (minus infinity
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 The unit number associated with the device used for printout.
 
@@ -152,7 +152,7 @@ The unit number associated with the device used for printout.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 errout
+	INT errout
 
 The unit number associated with the device used for error ouput.
 
@@ -162,7 +162,7 @@ The unit number associated with the device used for error ouput.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 The level of printout requested by the user. Can take the values:
 
@@ -204,7 +204,7 @@ true if the redundant variables and constraints (i.e. variables that do not appe
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 primal_constraints_freq
+	INT primal_constraints_freq
 
 The frequency of primal constraints analysis in terms of presolving passes. A value of j = 2 indicates that primal constraints are analyzed every 2 presolving passes. A zero value indicates that they are never analyzed.
 
@@ -214,7 +214,7 @@ The frequency of primal constraints analysis in terms of presolving passes. A va
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 dual_constraints_freq
+	INT dual_constraints_freq
 
 The frequency of dual constraints analysis in terms of presolving passes. A value of j = 2 indicates that dual constraints are analyzed every 2 presolving passes. A zero value indicates that they are never analyzed.
 
@@ -224,7 +224,7 @@ The frequency of dual constraints analysis in terms of presolving passes. A valu
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 singleton_columns_freq
+	INT singleton_columns_freq
 
 The frequency of singleton column analysis in terms of presolving passes. A value of j = 2 indicates that singleton columns are analyzed every 2 presolving passes. A zero value indicates that they are never analyzed.
 
@@ -234,7 +234,7 @@ The frequency of singleton column analysis in terms of presolving passes. A valu
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 doubleton_columns_freq
+	INT doubleton_columns_freq
 
 The frequency of doubleton column analysis in terms of presolving passes. A value of j indicates that doubleton columns are analyzed every 2 presolving passes. A zero value indicates that they are never analyzed.
 
@@ -244,7 +244,7 @@ The frequency of doubleton column analysis in terms of presolving passes. A valu
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 unc_variables_freq
+	INT unc_variables_freq
 
 The frequency of the attempts to fix linearly unconstrained variables, expressed in terms of presolving passes. A value of j = 2 indicates that attempts are made every 2 presolving passes. A zero value indicates that no attempt is ever made.
 
@@ -254,7 +254,7 @@ The frequency of the attempts to fix linearly unconstrained variables, expressed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 dependent_variables_freq
+	INT dependent_variables_freq
 
 The frequency of search for dependent variables in terms of presolving passes. A value of j = 2 indicates that dependent variables are searched for every 2 presolving passes. A zero value indicates that they are never searched for.
 
@@ -264,7 +264,7 @@ The frequency of search for dependent variables in terms of presolving passes. A
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sparsify_rows_freq
+	INT sparsify_rows_freq
 
 The frequency of the attempts to make A sparser in terms of presolving passes. A value of j = 2 indicates that attempts are made every 2 presolving passes. A zero value indicates that no attempt is ever made.
 
@@ -274,7 +274,7 @@ The frequency of the attempts to make A sparser in terms of presolving passes. A
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_fill
+	INT max_fill
 
 The maximum percentage of fill in each row of A. Note that this is a row-wise measure: globally fill never exceeds the storage initially used for A, no matter how large control.max_fill is chosen. If max_fill is negative, no limit is put on row fill.
 
@@ -284,7 +284,7 @@ The maximum percentage of fill in each row of A. Note that this is a row-wise me
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 transf_file_nbr
+	INT transf_file_nbr
 
 The unit number to be associated with the file(s) used for saving problem transformations on a disk file.
 
@@ -294,7 +294,7 @@ The unit number to be associated with the file(s) used for saving problem transf
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 transf_buffer_size
+	INT transf_buffer_size
 
 The number of transformations that can be kept in memory at once (that is without being saved on a disk file).
 
@@ -304,7 +304,7 @@ The number of transformations that can be kept in memory at once (that is withou
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 transf_file_status
+	INT transf_file_status
 
 The exit status of the file where problem transformations are saved:
 
@@ -328,7 +328,7 @@ The name of the file (to be) used for storing problem transformation on disk. NO
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 y_sign
+	INT y_sign
 
 Determines the convention of sign used for the multipliers associated with the general linear constraints.
 
@@ -342,7 +342,7 @@ Determines the convention of sign used for the multipliers associated with the g
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 inactive_y
+	INT inactive_y
 
 Determines whether or not the multipliers corresponding to constraints that are inactive at the unreduced point corresponding to the reduced point on input to ``presolve_restore_solution`` must be set to zero. Possible values are: associated with the general linear constraints.
 
@@ -356,7 +356,7 @@ Determines whether or not the multipliers corresponding to constraints that are 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 z_sign
+	INT z_sign
 
 Determines the convention of sign used for the dual variables associated with the bound constraints.
 
@@ -370,7 +370,7 @@ Determines the convention of sign used for the dual variables associated with th
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 inactive_z
+	INT inactive_z
 
 Determines whether or not the dual variables corresponding to bounds that are inactive at the unreduced point corresponding to the reduced point on input to ``presolve_restore_solution`` must be set to zero. Possible values are: associated with the general linear constraints.
 
@@ -384,7 +384,7 @@ Determines whether or not the dual variables corresponding to bounds that are in
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 final_x_bounds
+	INT final_x_bounds
 
 The type of final bounds on the variables returned by the package. This parameter can take the values:
 
@@ -402,7 +402,7 @@ NOTE: this parameter must be identical for all calls to presolve (except presolv
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 final_z_bounds
+	INT final_z_bounds
 
 The type of final bounds on the dual variables returned by the package. This parameter can take the values:
 
@@ -420,7 +420,7 @@ NOTE: this parameter must be identical for all calls to presolve (except presolv
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 final_c_bounds
+	INT final_c_bounds
 
 The type of final bounds on the constraints returned by the package. This parameter can take the values:
 
@@ -438,7 +438,7 @@ NOTES: 1) This parameter must be identical for all calls to presolve (except pre
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 final_y_bounds
+	INT final_y_bounds
 
 The type of final bounds on the multipliers returned by the package. This parameter can take the values:
 
@@ -456,7 +456,7 @@ NOTE: this parameter must be identical for all calls to presolve (except presolv
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 check_primal_feasibility
+	INT check_primal_feasibility
 
 The level of feasibility check (on the values of x) at the start of the restoration phase. This parameter can take the values:
 
@@ -472,7 +472,7 @@ The level of feasibility check (on the values of x) at the start of the restorat
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 check_dual_feasibility
+	INT check_dual_feasibility
 
 The level of dual feasibility check (on the values of x, y and z) at the start of the restoration phase. This parameter can take the values:
 

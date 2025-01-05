@@ -13,18 +13,18 @@ sls_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct sls_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct sls_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          more_info::Int32
-          entries::Int32
-          out_of_range::Int32
-          duplicates::Int32
-          upper::Int32
-          missing_diagonals::Int32
-          max_depth_assembly_tree::Int32
-          nodes_assembly_tree::Int32
+          more_info::INT
+          entries::INT
+          out_of_range::INT
+          duplicates::INT
+          upper::INT
+          missing_diagonals::INT
+          max_depth_assembly_tree::INT
+          nodes_assembly_tree::INT
           real_size_desirable::Int64
           integer_size_desirable::Int64
           real_size_necessary::Int64
@@ -32,20 +32,20 @@ sls_inform_type structure
           real_size_factors::Int64
           integer_size_factors::Int64
           entries_in_factors::Int64
-          max_task_pool_size::Int32
-          max_front_size::Int32
-          compresses_real::Int32
-          compresses_integer::Int32
-          two_by_two_pivots::Int32
-          semi_bandwidth::Int32
-          delayed_pivots::Int32
-          pivot_sign_changes::Int32
-          static_pivots::Int32
-          first_modified_pivot::Int32
-          rank::Int32
-          negative_eigenvalues::Int32
-          num_zero::Int32
-          iterative_refinements::Int32
+          max_task_pool_size::INT
+          max_front_size::INT
+          compresses_real::INT
+          compresses_integer::INT
+          two_by_two_pivots::INT
+          semi_bandwidth::INT
+          delayed_pivots::INT
+          pivot_sign_changes::INT
+          static_pivots::INT
+          first_modified_pivot::INT
+          rank::INT
+          negative_eigenvalues::INT
+          num_zero::INT
+          iterative_refinements::INT
           flops_assembly::Int64
           flops_elimination::Int64
           flops_blas::Int64
@@ -60,37 +60,37 @@ sls_inform_type structure
           alternative::Bool
           solver::NTuple{21,Cchar}
           time::sls_time_type{T}
-          sils_ainfo::sils_ainfo_type{T}
-          sils_finfo::sils_finfo_type{T}
-          sils_sinfo::sils_sinfo_type{T}
-          ma57_ainfo::ma57_ainfo{T}
-          ma57_finfo::ma57_finfo{T}
-          ma57_sinfo::ma57_sinfo{T}
-          ma77_info::ma77_info{T}
-          ma86_info::ma86_info{T}
-          ma87_info::ma87_info{T}
-          ma97_info::ma97_info{T}
-          ssids_inform::spral_ssids_inform
-          mc61_info::NTuple{10,Cint}
+          sils_ainfo::sils_ainfo_type{T,INT}
+          sils_finfo::sils_finfo_type{T,INT}
+          sils_sinfo::sils_sinfo_type{T,INT}
+          ma57_ainfo::ma57_ainfo{T,INT}
+          ma57_finfo::ma57_finfo{T,INT}
+          ma57_sinfo::ma57_sinfo{T,INT}
+          ma77_info::ma77_info{T,INT}
+          ma86_info::ma86_info{T,INT}
+          ma87_info::ma87_info{T,INT}
+          ma97_info::ma97_info{T,INT}
+          ssids_inform::spral_ssids_inform{INT}
+          mc61_info::NTuple{10,INT}
           mc61_rinfo::NTuple{15,T}
-          mc64_info::mc64_info
-          mc68_info::mc68_info
-          mc77_info::NTuple{10,Cint}
+          mc64_info::mc64_info{INT}
+          mc68_info::mc68_info{INT}
+          mc77_info::NTuple{10,INT}
           mc77_rinfo::NTuple{10,T}
-          mumps_error::Int32
-          mumps_info::NTuple{80,Cint}
+          mumps_error::INT
+          mumps_info::NTuple{80,INT}
           mumps_rinfo::NTuple{40,T}
-          pardiso_error::Int32
-          pardiso_IPARM::NTuple{64,Cint}
+          pardiso_error::INT
+          pardiso_IPARM::NTuple{64,INT}
           pardiso_DPARM::NTuple{64,T}
-          mkl_pardiso_error::Int32
-          mkl_pardiso_IPARM::NTuple{64,Cint}
-          pastix_info::Int32
-          wsmp_error::Int32
-          wsmp_iparm::NTuple{64,Cint}
+          mkl_pardiso_error::INT
+          mkl_pardiso_IPARM::NTuple{64,INT}
+          pastix_info::INT
+          wsmp_error::INT
+          wsmp_iparm::NTuple{64,INT}
           wsmp_dparm::NTuple{64,T}
-          mpi_ierr::Int32
-          lapack_error::Int32
+          mpi_ierr::INT
+          lapack_error::INT
 
 .. _details-structsls__inform__type:
 
@@ -108,7 +108,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 reported return status. Possible values are:
 
@@ -178,7 +178,7 @@ reported return status. Possible values are:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 STAT value after allocate failure.
 
@@ -198,7 +198,7 @@ name of array which provoked an allocate failure
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 more_info
+	INT more_info
 
 further information on failure
 
@@ -208,7 +208,7 @@ further information on failure
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 entries
+	INT entries
 
 number of entries
 
@@ -218,7 +218,7 @@ number of entries
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out_of_range
+	INT out_of_range
 
 number of indices out-of-range
 
@@ -228,7 +228,7 @@ number of indices out-of-range
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 duplicates
+	INT duplicates
 
 number of duplicates
 
@@ -238,7 +238,7 @@ number of duplicates
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 upper
+	INT upper
 
 number of entries from the strict upper triangle
 
@@ -248,7 +248,7 @@ number of entries from the strict upper triangle
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 missing_diagonals
+	INT missing_diagonals
 
 number of missing diagonal entries for an allegedly-definite matrix
 
@@ -258,7 +258,7 @@ number of missing diagonal entries for an allegedly-definite matrix
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_depth_assembly_tree
+	INT max_depth_assembly_tree
 
 maximum depth of the assembly tree
 
@@ -268,7 +268,7 @@ maximum depth of the assembly tree
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nodes_assembly_tree
+	INT nodes_assembly_tree
 
 nodes in the assembly tree (= number of elimination steps)
 
@@ -348,7 +348,7 @@ number of entries in factors
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_task_pool_size
+	INT max_task_pool_size
 
 maximum number of tasks in the factorization task pool
 
@@ -358,7 +358,7 @@ maximum number of tasks in the factorization task pool
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_front_size
+	INT max_front_size
 
 forecast or actual size of largest front
 
@@ -368,7 +368,7 @@ forecast or actual size of largest front
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 compresses_real
+	INT compresses_real
 
 number of compresses of real data
 
@@ -378,7 +378,7 @@ number of compresses of real data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 compresses_integer
+	INT compresses_integer
 
 number of compresses of integer data
 
@@ -388,7 +388,7 @@ number of compresses of integer data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 two_by_two_pivots
+	INT two_by_two_pivots
 
 number of 2x2 pivots
 
@@ -398,7 +398,7 @@ number of 2x2 pivots
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 semi_bandwidth
+	INT semi_bandwidth
 
 semi-bandwidth of matrix following bandwidth reduction
 
@@ -408,7 +408,7 @@ semi-bandwidth of matrix following bandwidth reduction
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 delayed_pivots
+	INT delayed_pivots
 
 number of delayed pivots (total)
 
@@ -418,7 +418,7 @@ number of delayed pivots (total)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 pivot_sign_changes
+	INT pivot_sign_changes
 
 number of pivot sign changes if no pivoting is used successfully
 
@@ -428,7 +428,7 @@ number of pivot sign changes if no pivoting is used successfully
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 static_pivots
+	INT static_pivots
 
 number of static pivots chosen
 
@@ -438,7 +438,7 @@ number of static pivots chosen
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 first_modified_pivot
+	INT first_modified_pivot
 
 first pivot modification when static pivoting
 
@@ -448,7 +448,7 @@ first pivot modification when static pivoting
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 rank
+	INT rank
 
 estimated rank of the matrix
 
@@ -458,7 +458,7 @@ estimated rank of the matrix
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 negative_eigenvalues
+	INT negative_eigenvalues
 
 number of negative eigenvalues
 
@@ -468,7 +468,7 @@ number of negative eigenvalues
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 num_zero
+	INT num_zero
 
 number of pivots that are considered zero (and ignored)
 
@@ -478,7 +478,7 @@ number of pivots that are considered zero (and ignored)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iterative_refinements
+	INT iterative_refinements
 
 number of iterative refinements performed
 
@@ -739,7 +739,7 @@ the output structure from ssids
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mc61_info[10]
+	INT mc61_info[10]
 
 the real output array from mc61 from HSL
 
@@ -779,7 +779,7 @@ the output structure from hsl_mc68
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mc77_info[10]
+	INT mc77_info[10]
 
 the integer output array from mc77
 
@@ -799,7 +799,7 @@ the real output array from mc77 from HSL
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mumps_error
+	INT mumps_error
 
 the output scalars and arrays from mumps
 
@@ -809,7 +809,7 @@ the output scalars and arrays from mumps
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mumps_info[80]
+	INT mumps_info[80]
 
 see mumps_error
 
@@ -829,7 +829,7 @@ see mumps_error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 pardiso_error
+	INT pardiso_error
 
 the output scalars and arrays from pardiso
 
@@ -839,7 +839,7 @@ the output scalars and arrays from pardiso
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 pardiso_IPARM[64]
+	INT pardiso_IPARM[64]
 
 see pardiso_error
 
@@ -859,7 +859,7 @@ see pardiso_error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mkl_pardiso_error
+	INT mkl_pardiso_error
 
 the output scalars and arrays from mkl_pardiso
 
@@ -869,7 +869,7 @@ the output scalars and arrays from mkl_pardiso
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mkl_pardiso_IPARM[64]
+	INT mkl_pardiso_IPARM[64]
 
 see mkl_pardiso_error
 
@@ -879,7 +879,7 @@ see mkl_pardiso_error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 pastix_info
+	INT pastix_info
 
 the output flag from pastix
 
@@ -889,7 +889,7 @@ the output flag from pastix
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 wsmp_error
+	INT wsmp_error
 
 the output scalars and arrays from wsmp
 
@@ -899,7 +899,7 @@ the output scalars and arrays from wsmp
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 wsmp_iparm[64]
+	INT wsmp_iparm[64]
 
 see wsmp_error
 
@@ -919,7 +919,7 @@ see wsmp_error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mpi_ierr
+	INT mpi_ierr
 
 the output flag from MPI routines
 
@@ -929,7 +929,7 @@ the output flag from MPI routines
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 lapack_error
+	INT lapack_error
 
 the output flag from LAPACK routines
 

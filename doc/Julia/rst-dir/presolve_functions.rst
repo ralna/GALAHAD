@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_initialize(T, data, control, status)
+        function presolve_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -31,7 +31,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_read_specfile(T, control, specfile)
+        function presolve_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_import_problem(T, control, data, status, n, m, 
+        function presolve_import_problem(T, INT, control, data, status, n, m, 
                                          H_type, H_ne, H_row, H_col, H_ptr, 
                                          H_val,  g, f, A_type, A_ne, A_row, 
                                          A_col, A_ptr, A_val, c_l, c_u, 
@@ -104,7 +104,7 @@ crucial characteristics of the transformed variant
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -139,12 +139,12 @@ crucial characteristics of the transformed variant
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints.
+		- is a scalar variable of type INT that holds the number of general linear constraints.
 
 	*
 		- H_type
@@ -154,22 +154,22 @@ crucial characteristics of the transformed variant
 	*
 		- H_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size H_ne and type INT that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size H_ne and type INT that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- H_val
@@ -194,22 +194,22 @@ crucial characteristics of the transformed variant
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_val
@@ -239,22 +239,22 @@ crucial characteristics of the transformed variant
 	*
 		- n_out
 
-		- is a scalar variable of type Int32 that holds the number of variables in the transformed problem.
+		- is a scalar variable of type INT that holds the number of variables in the transformed problem.
 
 	*
 		- m_out
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints in the transformed problem.
+		- is a scalar variable of type INT that holds the number of general linear constraints in the transformed problem.
 
 	*
 		- H_ne_out
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H$ in the transformed problem.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $H$ in the transformed problem.
 
 	*
 		- A_ne_out
 
-		- is a scalar variable of type Int32 that holds the number of entries in $A$ in the transformed problem.
+		- is a scalar variable of type INT that holds the number of entries in $A$ in the transformed problem.
 
 .. index:: pair: function; presolve_transform_problem
 .. _doxid-galahad__presolve_8h_1af6da8ac04a1d4fdfd1b91cd8868791a1:
@@ -262,7 +262,7 @@ crucial characteristics of the transformed variant
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_transform_problem(T, data, status, n, m, H_ne, H_col, 
+        function presolve_transform_problem(T, INT, data, status, n, m, H_ne, H_col, 
                                             H_ptr, H_val, g, f, A_ne, A_col, 
                                             A_ptr, A_val, c_l, c_u, x_l, x_u,
                                             y_l, y_u, z_l, z_u)
@@ -283,7 +283,7 @@ the transformed variant
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -313,27 +313,27 @@ the transformed variant
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables in the transformed problem. This must match the value n_out from the last call to presolve_import_problem.
+		- is a scalar variable of type INT that holds the number of variables in the transformed problem. This must match the value n_out from the last call to presolve_import_problem.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints. This must match the value m_out from the last call to presolve_import_problem.
+		- is a scalar variable of type INT that holds the number of general linear constraints. This must match the value m_out from the last call to presolve_import_problem.
 
 	*
 		- H_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the transformed $H$. This must match the value H_ne_out from the last call to presolve_import_problem.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the transformed $H$. This must match the value H_ne_out from the last call to presolve_import_problem.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of the transformed $H$ in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size H_ne and type INT that holds the column indices of the lower triangular part of the transformed $H$ in the sparse row-wise storage scheme.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of the transformed $H$ in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of the transformed $H$ in the sparse row-wise storage scheme.
 
 	*
 		- H_val
@@ -353,17 +353,17 @@ the transformed variant
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the transformed $A$. This must match the value A_ne_out from the last call to presolve_import_problem.
+		- is a scalar variable of type INT that holds the number of entries in the transformed $A$. This must match the value A_ne_out from the last call to presolve_import_problem.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of the transformed $A$ in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size A_ne and type INT that holds the column indices of the transformed $A$ in the sparse row-wise storage scheme.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the transformed $A$, as well as the total number of entries, in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the transformed $A$, as well as the total number of entries, in the sparse row-wise storage scheme.
 
 	*
 		- A_val
@@ -416,7 +416,7 @@ the transformed variant
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_restore_solution(T, data, status, n_in, m_in, x_in, 
+        function presolve_restore_solution(T, INT, data, status, n_in, m_in, x_in, 
                                             c_in, y_in, z_in, n, m, x, c, y, z)
 
 Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to recover the solution (x,c,y,z) to the original
@@ -434,7 +434,7 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -464,12 +464,12 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 	*
 		- n_in
 
-		- is a scalar variable of type Int32 that holds the number of variables in the transformed problem. This must match the value n_out from the last call to presolve_import_problem.
+		- is a scalar variable of type INT that holds the number of variables in the transformed problem. This must match the value n_out from the last call to presolve_import_problem.
 
 	*
 		- m_in
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints. This must match the value m_out from the last call to presolve_import_problem.
+		- is a scalar variable of type INT that holds the number of general linear constraints. This must match the value m_out from the last call to presolve_import_problem.
 
 	*
 		- x_in
@@ -494,12 +494,12 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables in the transformed problem. This must match the value n as input to presolve_import_problem.
+		- is a scalar variable of type INT that holds the number of variables in the transformed problem. This must match the value n as input to presolve_import_problem.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints. This must match the value m as input to presolve_import_problem.
+		- is a scalar variable of type INT that holds the number of general linear constraints. This must match the value m as input to presolve_import_problem.
 
 	*
 		- x
@@ -527,7 +527,7 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_information(T, data, inform, status)
+        function presolve_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -549,7 +549,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -562,7 +562,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_terminate(T, data, control, inform)
+        function presolve_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

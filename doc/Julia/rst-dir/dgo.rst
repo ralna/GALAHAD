@@ -45,12 +45,7 @@ called in the following order:
 See the :ref:`examples <doxid-index_dgo_examples>` section for
 illustrations of use.
 
-parametric real type T
-----------------------
-
-Below, the symbol T refers to a parametric real type that may be Float32
-(single precision), Float64 (double precision) or, if supported, Float128
-(quadruple precision).
+.. include:: irt.rst
 
 .. include:: dgo_functions.rst
 

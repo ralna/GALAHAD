@@ -10,18 +10,18 @@ dgo_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct dgo_control_type{T}
+        struct dgo_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          start_print::Int32
-          stop_print::Int32
-          print_gap::Int32
-          maxit::Int32
-          max_evals::Int32
-          dictionary_size::Int32
-          alive_unit::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          start_print::INT
+          stop_print::INT
+          print_gap::INT
+          maxit::INT
+          max_evals::INT
+          dictionary_size::INT
+          alive_unit::INT
           alive_file::NTuple{31,Cchar}
           infinity::T
           lipschitz_lower_bound::T
@@ -38,9 +38,9 @@ dgo_control_type structure
           space_critical::Bool
           deallocate_error_fatal::Bool
           prefix::NTuple{31,Cchar}
-          hash_control::hash_control_type
-          ugo_control::ugo_control_type{T}
-          trb_control::trb_control_type{T}
+          hash_control::hash_control_type{INT}
+          ugo_control::ugo_control_type{T,INT}
+          trb_control::trb_control_type{T,INT}
 
 .. _details-structdgo__control__type:
 
@@ -68,7 +68,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -78,7 +78,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -88,7 +88,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required. Possible values are:
 
@@ -106,7 +106,7 @@ the level of output required. Possible values are:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 start_print
+	INT start_print
 
 any printing will start on this iteration
 
@@ -116,7 +116,7 @@ any printing will start on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stop_print
+	INT stop_print
 
 any printing will stop on this iteration
 
@@ -126,7 +126,7 @@ any printing will stop on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_gap
+	INT print_gap
 
 the number of iterations between printing
 
@@ -136,7 +136,7 @@ the number of iterations between printing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit
+	INT maxit
 
 the maximum number of iterations performed
 
@@ -146,7 +146,7 @@ the maximum number of iterations performed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_evals
+	INT max_evals
 
 the maximum number of function evaluations made
 
@@ -156,7 +156,7 @@ the maximum number of function evaluations made
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 dictionary_size
+	INT dictionary_size
 
 the size of the initial hash dictionary
 
@@ -166,7 +166,7 @@ the size of the initial hash dictionary
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alive_unit
+	INT alive_unit
 
 removal of the file alive_file from unit alive_unit terminates execution
 

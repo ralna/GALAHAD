@@ -10,19 +10,19 @@ rqs_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct rqs_control_type{T}
+        struct rqs_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          problem::Int32
-          print_level::Int32
-          dense_factorization::Int32
-          new_h::Int32
-          new_m::Int32
-          new_a::Int32
-          max_factorizations::Int32
-          inverse_itmax::Int32
-          taylor_max_degree::Int32
+          error::INT
+          out::INT
+          problem::INT
+          print_level::INT
+          dense_factorization::INT
+          new_h::INT
+          new_m::INT
+          new_a::INT
+          max_factorizations::INT
+          inverse_itmax::INT
+          taylor_max_degree::INT
           initial_multiplier::T
           lower::T
           upper::T
@@ -38,8 +38,8 @@ rqs_control_type structure
           symmetric_linear_solver::NTuple{31,Cchar}
           definite_linear_solver::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
-          sls_control::sls_control_type{T}
-          ir_control::ir_control_type{T}
+          sls_control::sls_control_type{T,INT}
+          ir_control::ir_control_type{T,INT}
 
 .. _details-structrqs__control__type:
 
@@ -67,7 +67,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 unit for error messages
 
@@ -77,7 +77,7 @@ unit for error messages
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 unit for monitor output
 
@@ -87,7 +87,7 @@ unit for monitor output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 problem
+	INT problem
 
 unit to write problem data into file problem_file
 
@@ -97,7 +97,7 @@ unit to write problem data into file problem_file
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 controls level of diagnostic output
 
@@ -107,7 +107,7 @@ controls level of diagnostic output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 dense_factorization
+	INT dense_factorization
 
 should the problem be solved by dense factorization? Possible values are
 
@@ -123,7 +123,7 @@ should the problem be solved by dense factorization? Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 new_h
+	INT new_h
 
 how much of $H$ has changed since the previous call. Possible values are
 
@@ -139,7 +139,7 @@ how much of $H$ has changed since the previous call. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 new_m
+	INT new_m
 
 how much of $M$ has changed since the previous call. Possible values are
 
@@ -155,7 +155,7 @@ how much of $M$ has changed since the previous call. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 new_a
+	INT new_a
 
 how much of $A$ has changed since the previous call. Possible values are 0 unchanged 1 values but not indices have changed 2 values and indices have changed
 
@@ -165,7 +165,7 @@ how much of $A$ has changed since the previous call. Possible values are 0 uncha
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_factorizations
+	INT max_factorizations
 
 the maximum number of factorizations (=iterations) allowed. -ve implies no limit
 
@@ -175,7 +175,7 @@ the maximum number of factorizations (=iterations) allowed. -ve implies no limit
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 inverse_itmax
+	INT inverse_itmax
 
 the number of inverse iterations performed in the "maybe hard" case
 
@@ -185,7 +185,7 @@ the number of inverse iterations performed in the "maybe hard" case
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 taylor_max_degree
+	INT taylor_max_degree
 
 maximum degree of Taylor approximant allowed
 

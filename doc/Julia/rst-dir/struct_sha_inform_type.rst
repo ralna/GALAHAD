@@ -10,14 +10,15 @@ sha_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct sha_inform_type
-          status::Int32
-          alloc_status::Int32
-          max_degree::Int32
-          differences_needed::Int32
-          max_reduced_degree::Int32
-          approximation_algorith_used::Int32
-          bad_row::Int32
+        struct sha_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
+          max_degree::INT
+          differences_needed::INT
+          max_reduced_degree::INT
+          approximation_algorith_used::INT
+          bad_row::INT
+          max_off_diagonal_difference::T
           bad_alloc::NTuple{81,Cchar}
 
 .. _details-structsha__inform__type:
@@ -36,7 +37,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See SHA_solve for details
 
@@ -46,7 +47,7 @@ return status. See SHA_solve for details
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation.
 
@@ -56,7 +57,7 @@ the status of the last attempted allocation/deallocation.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_degree
+	INT max_degree
 
 the maximum degree in the adgacency graph.
 
@@ -66,7 +67,7 @@ the maximum degree in the adgacency graph.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 differences_needed
+	INT differences_needed
 
 the number of differences that will be needed.
 
@@ -76,7 +77,7 @@ the number of differences that will be needed.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_reduced_degree
+	INT max_reduced_degree
 
 the maximum reduced degree in the adgacency graph.
 
@@ -86,7 +87,7 @@ the maximum reduced degree in the adgacency graph.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 approximation_algorithm_used
+	INT approximation_algorithm_used
 
 the approximation algorithm actually used
 
@@ -96,9 +97,22 @@ the approximation algorithm actually used
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 bad_row
+	INT bad_row
 
 a failure occured when forming the bad_row-th row (0 = no failure).
+
+
+.. index:: pair: variable; max_off_diagonal_difference
+.. _doxid-structsha__inform__type_1ab9c826769c483d92749a2bad8b0b972c:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	T max_off_diagonal_difference
+
+the maximum difference between estimated Hessian off-diagonal 
+pairs if approximation algorithm 1, 3 or 4 has been employed and
+control.average_off_diagonals is true. It will be zero otherwise.
 
 .. index:: pair: variable; bad_alloc
 .. _doxid-structsha__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:

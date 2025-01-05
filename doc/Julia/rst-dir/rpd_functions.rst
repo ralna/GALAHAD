@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_initialize(T, data, control, status)
+        function rpd_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -29,7 +29,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_stats(T, qplib_file, qplib_file_len, control, data, 
+        function rpd_get_stats(T, INT, qplib_file, qplib_file_len, control, data, 
                                status, p_type, n, m, h_ne, a_ne, h_c_ne)
 
 Read the data from a specified QPLIB file into internal storage, and report the type of problem encoded, along with problem-specific dimensions.
@@ -60,7 +60,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 	*
 		- qplib_file_len
 
-		- is a scalar variable of type Int32 that gives the number of characters in the name encoded in qplib_file.
+		- is a scalar variable of type INT that gives the number of characters in the name encoded in qplib_file.
 
 	*
 		- control
@@ -75,7 +75,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -162,27 +162,27 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general constraints.
+		- is a scalar variable of type INT that holds the number of general constraints.
 
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H$ stored in the sparse symmetric co-ordinate storage scheme.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $H$ stored in the sparse symmetric co-ordinate storage scheme.
 
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in $A$ stored in the sparse co-ordinate storage scheme.
+		- is a scalar variable of type INT that holds the number of entries in $A$ stored in the sparse co-ordinate storage scheme.
 
 	*
 		- h_c_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H_c$ stored in the joint sparse co-ordinate storage scheme.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $H_c$ stored in the joint sparse co-ordinate storage scheme.
 
 .. index:: pair: function; rpd_get_g
 .. _doxid-galahad__rpd_8h_1aa5be687c00e4a7980c5ea7c258717d3a:
@@ -190,7 +190,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_g(T, data, status, n, g)
+        function rpd_get_g(T, INT, data, status, n, g)
 
 Recover the linear term $g$ from in objective function
 
@@ -207,7 +207,7 @@ Recover the linear term $g$ from in objective function
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -219,7 +219,7 @@ Recover the linear term $g$ from in objective function
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- g
@@ -232,7 +232,7 @@ Recover the linear term $g$ from in objective function
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_f(T, data, status, f)
+        function rpd_get_f(T, INT, data, status, f)
 
 Recover the constant term $f$ in the objective function.
 
@@ -249,7 +249,7 @@ Recover the constant term $f$ in the objective function.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -269,7 +269,7 @@ Recover the constant term $f$ in the objective function.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_xlu(T, data, status, n, x_l, x_u)
+        function rpd_get_xlu(T, INT, data, status, n, x_l, x_u)
 
 Recover the variable lower and upper bounds $x_l$ and $x_u$.
 
@@ -286,7 +286,7 @@ Recover the variable lower and upper bounds $x_l$ and $x_u$.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -298,7 +298,7 @@ Recover the variable lower and upper bounds $x_l$ and $x_u$.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- x_l
@@ -316,7 +316,7 @@ Recover the variable lower and upper bounds $x_l$ and $x_u$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_clu(T, data, status, m, c_l, c_u)
+        function rpd_get_clu(T, INT, data, status, m, c_l, c_u)
 
 Recover the constraint lower and upper bounds $c_l$ and $c_u$.
 
@@ -333,7 +333,7 @@ Recover the constraint lower and upper bounds $c_l$ and $c_u$.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -345,7 +345,7 @@ Recover the constraint lower and upper bounds $c_l$ and $c_u$.
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general constraints.
+		- is a scalar variable of type INT that holds the number of general constraints.
 
 	*
 		- c_l
@@ -363,7 +363,7 @@ Recover the constraint lower and upper bounds $c_l$ and $c_u$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_h(T, data, status, h_ne, h_row, h_col, h_val)
+        function rpd_get_h(T, INT, data, status, h_ne, h_row, h_col, h_val)
 
 Recover the Hessian term $H$ in the objective function.
 
@@ -380,7 +380,7 @@ Recover the Hessian term $H$ in the objective function.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -392,17 +392,17 @@ Recover the Hessian term $H$ in the objective function.
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- h_row
 
-		- is a one-dimensional array of size h_ne and type Int32 that gives the row indices of the lower triangular part of $H$ in the :ref:`sparse co-ordinate storage scheme<details-rpd_storage>`.
+		- is a one-dimensional array of size h_ne and type INT that gives the row indices of the lower triangular part of $H$ in the :ref:`sparse co-ordinate storage scheme<details-rpd_storage>`.
 
 	*
 		- h_col
 
-		- is a one-dimensional array of size h_ne and type Int32 that gives the column indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_ne and type INT that gives the column indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme.
 
 	*
 		- h_val
@@ -415,7 +415,7 @@ Recover the Hessian term $H$ in the objective function.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_a(T, data, status, a_ne, a_row, a_col, a_val)
+        function rpd_get_a(T, INT, data, status, a_ne, a_row, a_col, a_val)
 
 Recover the Jacobian term $A$ in the constraints.
 
@@ -432,7 +432,7 @@ Recover the Jacobian term $A$ in the constraints.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -444,17 +444,17 @@ Recover the Jacobian term $A$ in the constraints.
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$.
+		- is a scalar variable of type INT that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- a_row
 
-		- is a one-dimensional array of size a_ne and type Int32 that gives the row indices of $A$ in the :ref:`sparse co-ordinate storage scheme<details-rpd_storage>`.
+		- is a one-dimensional array of size a_ne and type INT that gives the row indices of $A$ in the :ref:`sparse co-ordinate storage scheme<details-rpd_storage>`.
 
 	*
 		- a_col
 
-		- is a one-dimensional array of size a_ne and type Int32 that gives the column indices of $A$ in the sparse co-ordinate, storage scheme.
+		- is a one-dimensional array of size a_ne and type INT that gives the column indices of $A$ in the sparse co-ordinate, storage scheme.
 
 	*
 		- a_val
@@ -467,7 +467,7 @@ Recover the Jacobian term $A$ in the constraints.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_h_c(T, data, status, h_c_ne, 
+        function rpd_get_h_c(T, INT, data, status, h_c_ne, 
                              h_c_ptr, h_c_row, h_c_col, h_c_val)
 
 Recover the Hessian terms $H_c$ in the constraints.
@@ -485,7 +485,7 @@ Recover the Hessian terms $H_c$ in the constraints.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -497,22 +497,22 @@ Recover the Hessian terms $H_c$ in the constraints.
 	*
 		- h_c_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- h_c_ptr
 
-		- is a one-dimensional array of size h_c_ne and type Int32 that gives the constraint indices of the lower triangular part of $H_c$ in the :ref:`joint sparse co-ordinate storage scheme <details-rpd_storage>`.
+		- is a one-dimensional array of size h_c_ne and type INT that gives the constraint indices of the lower triangular part of $H_c$ in the :ref:`joint sparse co-ordinate storage scheme <details-rpd_storage>`.
 
 	*
 		- h_c_row
 
-		- is a one-dimensional array of size h_c_ne and type Int32 that gives the row indices of the lower triangular part of $H_c$ in the joint sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_c_ne and type INT that gives the row indices of the lower triangular part of $H_c$ in the joint sparse co-ordinate storage scheme.
 
 	*
 		- h_c_col
 
-		- is a one-dimensional array of size h_c_ne and type Int32 that gives the column indices of the lower triangular part of $H_c$ in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_c_ne and type INT that gives the column indices of the lower triangular part of $H_c$ in the sparse co-ordinate storage scheme.
 
 	*
 		- h_c_val
@@ -525,7 +525,7 @@ Recover the Hessian terms $H_c$ in the constraints.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_x_type(T, data, status, n, x_type)
+        function rpd_get_x_type(T, INT, data, status, n, x_type)
 
 Recover the types of the variables $x$.
 
@@ -542,7 +542,7 @@ Recover the types of the variables $x$.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -554,13 +554,13 @@ Recover the types of the variables $x$.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- x_type
 
 		-
-		  is a one-dimensional array of size n and type Int32 that specifies the type of each variable $x$. Specifically, for j = 1, ... , n, x(j) =
+		  is a one-dimensional array of size n and type INT that specifies the type of each variable $x$. Specifically, for j = 1, ... , n, x(j) =
 
 		  * 0 if variable $x_j$ is continuous,
 
@@ -574,7 +574,7 @@ Recover the types of the variables $x$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_x(T, data, status, n,
+        function rpd_get_x(T, INT, data, status, n,
 
 Recover the initial values of the variables $x$.
 
@@ -591,7 +591,7 @@ Recover the initial values of the variables $x$.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -603,7 +603,7 @@ Recover the initial values of the variables $x$.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- x
@@ -616,7 +616,7 @@ Recover the initial values of the variables $x$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_y(T, data, status, m, y)
+        function rpd_get_y(T, INT, data, status, m, y)
 
 Recover the initial values of the Lagrange multipliers $y$.
 
@@ -633,7 +633,7 @@ Recover the initial values of the Lagrange multipliers $y$.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -645,7 +645,7 @@ Recover the initial values of the Lagrange multipliers $y$.
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general constraints.
+		- is a scalar variable of type INT that holds the number of general constraints.
 
 	*
 		- y
@@ -658,7 +658,7 @@ Recover the initial values of the Lagrange multipliers $y$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_z(T, data, status, n, z)
+        function rpd_get_z(T, INT, data, status, n, z)
 
 Recover the initial values of the dual variables $z$.
 
@@ -675,7 +675,7 @@ Recover the initial values of the dual variables $z$.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -687,7 +687,7 @@ Recover the initial values of the dual variables $z$.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- z
@@ -700,7 +700,7 @@ Recover the initial values of the dual variables $z$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_information(T, data, inform, status)
+        function rpd_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -722,7 +722,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -735,7 +735,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_terminate(T, data, control, inform)
+        function rpd_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

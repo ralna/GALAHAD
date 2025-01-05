@@ -10,17 +10,17 @@ sha_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct sha_control_type
+        struct sha_control_type{INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          approximation_algorithm::Int32
-          dense_linear_solver::Int32
-          extra_differences::Int32
-          sparse_row::Int32
-          recursion_max::Int32
-          recursion_entries_required::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          approximation_algorithm::INT
+          dense_linear_solver::INT
+          extra_differences::INT
+          sparse_row::INT
+          recursion_max::INT
+          recursion_entries_required::INT
           space_critical::Bool
           deallocate_error_fatal::Bool
           prefix::NTuple{31,Cchar}
@@ -51,7 +51,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -61,7 +61,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -71,7 +71,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required. <= 0 gives no output, = 1 gives a one-line summary for every iteration, = 2 gives a summary of the inner iteration for each iteration, >= 3 gives increasingly verbose (debugging) output
 
@@ -81,7 +81,7 @@ the level of output required. <= 0 gives no output, = 1 gives a one-line summary
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 approximation_algorithm
+	INT approximation_algorithm
 
 which approximation algorithm should be used?
 
@@ -99,7 +99,7 @@ which approximation algorithm should be used?
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 dense_linear_solver
+	INT dense_linear_solver
 
 which dense linear equation solver should be used?
 
@@ -117,7 +117,7 @@ which dense linear equation solver should be used?
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 extra_differences
+	INT extra_differences
 
 if available use an addition extra_differences differences
 
@@ -127,7 +127,7 @@ if available use an addition extra_differences differences
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sparse_row
+	INT sparse_row
 
 a row is considered sparse if it has no more than .sparse_row entries
 

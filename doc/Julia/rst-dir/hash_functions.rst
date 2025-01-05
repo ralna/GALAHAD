@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function hash_initialize(T, nchar, length, data, control, inform)
+        function hash_initialize(T, INT, nchar, length, data, control, inform)
 
 Set default control values and initialize private data
 
@@ -21,12 +21,12 @@ Set default control values and initialize private data
 	*
 		- nchar
 
-		- is a scalar variable of type Int32 that holds the number of characters permitted in each word in the hash table
+		- is a scalar variable of type INT that holds the number of characters permitted in each word in the hash table
 
 	*
 		- length
 
-		- is a scalar variable of type Int32 that holds the maximum number of words that can be held in the dictionary
+		- is a scalar variable of type INT that holds the maximum number of words that can be held in the dictionary
 
 	*
 		- data
@@ -49,7 +49,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function hash_information(T, data, inform, status)
+        function hash_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -73,7 +73,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -86,7 +86,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function hash_terminate(T, data, control, inform)
+        function hash_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

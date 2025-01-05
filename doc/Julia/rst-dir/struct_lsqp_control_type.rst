@@ -10,28 +10,28 @@ lsqp_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct lsqp_control_type{T}
+        struct lsqp_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          start_print::Int32
-          stop_print::Int32
-          maxit::Int32
-          factor::Int32
-          max_col::Int32
-          indmin::Int32
-          valmin::Int32
-          itref_max::Int32
-          infeas_max::Int32
-          muzero_fixed::Int32
-          restore_problem::Int32
-          indicator_type::Int32
-          extrapolate::Int32
-          path_history::Int32
-          path_derivatives::Int32
-          fit_order::Int32
-          sif_file_device::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          start_print::INT
+          stop_print::INT
+          maxit::INT
+          factor::INT
+          max_col::INT
+          indmin::INT
+          valmin::INT
+          itref_max::INT
+          infeas_max::INT
+          muzero_fixed::INT
+          restore_problem::INT
+          indicator_type::INT
+          extrapolate::INT
+          path_history::INT
+          path_derivatives::INT
+          fit_order::INT
+          sif_file_device::INT
           infinity::T
           stop_p::T
           stop_d::T
@@ -65,8 +65,8 @@ lsqp_control_type structure
           generate_sif_file::Bool
           sif_file_name::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
-          fdc_control::fdc_control_type{T}
-          sbls_control::sbls_control_type{T}
+          fdc_control::fdc_control_type{T,INT}
+          sbls_control::sbls_control_type{T,INT}
 
 .. _details-structlsqp__control__type:
 
@@ -94,7 +94,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -104,7 +104,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -114,7 +114,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required is specified by print_level
 
@@ -124,7 +124,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 start_print
+	INT start_print
 
 any printing will start on this iteration
 
@@ -134,7 +134,7 @@ any printing will start on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stop_print
+	INT stop_print
 
 any printing will stop on this iteration
 
@@ -144,7 +144,7 @@ any printing will stop on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit
+	INT maxit
 
 at most maxit inner iterations are allowed
 
@@ -154,7 +154,7 @@ at most maxit inner iterations are allowed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factor
+	INT factor
 
 the factorization to be used. Possible values are
 
@@ -170,7 +170,7 @@ the factorization to be used. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_col
+	INT max_col
 
 the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization
 
@@ -180,7 +180,7 @@ the maximum number of nonzeros in a column of A which is permitted with the Schu
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 indmin
+	INT indmin
 
 an initial guess as to the integer workspace required by SBLS
 
@@ -190,7 +190,7 @@ an initial guess as to the integer workspace required by SBLS
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 valmin
+	INT valmin
 
 an initial guess as to the real workspace required by SBLS
 
@@ -200,7 +200,7 @@ an initial guess as to the real workspace required by SBLS
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 itref_max
+	INT itref_max
 
 the maximum number of iterative refinements allowed
 
@@ -210,7 +210,7 @@ the maximum number of iterative refinements allowed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 infeas_max
+	INT infeas_max
 
 the number of iterations for which the overall infeasibility of the problem is not reduced by at least a factor .reduce_infeas before the problem is flagged as infeasible (see reduce_infeas)
 
@@ -220,7 +220,7 @@ the number of iterations for which the overall infeasibility of the problem is n
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 muzero_fixed
+	INT muzero_fixed
 
 the initial value of the barrier parameter will not be changed for the first muzero_fixed iterations
 
@@ -230,7 +230,7 @@ the initial value of the barrier parameter will not be changed for the first muz
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 restore_problem
+	INT restore_problem
 
 indicate whether and how much of the input problem should be restored on output. Possible values are
 
@@ -246,7 +246,7 @@ indicate whether and how much of the input problem should be restored on output.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 indicator_type
+	INT indicator_type
 
 specifies the type of indicator function used. Possible values are
 
@@ -262,7 +262,7 @@ specifies the type of indicator function used. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 extrapolate
+	INT extrapolate
 
 should extrapolation be used to track the central path? Possible values
 
@@ -278,7 +278,7 @@ should extrapolation be used to track the central path? Possible values
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 path_history
+	INT path_history
 
 the maximum number of previous path points to use when fitting the data (unused at present)
 
@@ -288,7 +288,7 @@ the maximum number of previous path points to use when fitting the data (unused 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 path_derivatives
+	INT path_derivatives
 
 the maximum order of path derivative to use (unused at present)
 
@@ -298,7 +298,7 @@ the maximum order of path derivative to use (unused at present)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 fit_order
+	INT fit_order
 
 the order of (Puiseux) series to fit to the path data: $
 
@@ -314,7 +314,7 @@ to fit all data (unused at present)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sif_file_device
+	INT sif_file_device
 
 specifies the unit number to write generated SIF file describing the current problem
 

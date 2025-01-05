@@ -10,11 +10,11 @@ lhs_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct lhs_control_type
-          error::Int32
-          out::Int32
-          print_level::Int32
-          duplication::Int32
+        struct lhs_control_type{INT}
+          error::INT
+          out::INT
+          print_level::INT
+          duplication::INT
           space_critical::Bool
           deallocate_error_fatal::Bool
           prefix::NTuple{31,Cchar}
@@ -35,7 +35,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error.
 
@@ -45,7 +45,7 @@ error and warning diagnostics occur on stream error.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out.
 
@@ -55,7 +55,7 @@ general output occurs on stream out.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required. Possible values are:
 
@@ -69,7 +69,7 @@ the level of output required. Possible values are:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 duplication
+	INT duplication
 
 the duplication factor. This must be at least 1, a value of 5 is reasonable.
 

@@ -10,11 +10,11 @@ sec_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct sec_control_type{T}
+        struct sec_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
+          error::INT
+          out::INT
+          print_level::INT
           h_initial::T
           update_skip_tol::T
           prefix::NTuple{31,Cchar}
@@ -45,7 +45,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -55,7 +55,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -65,7 +65,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required. <= 0 gives no output, >= 1 warning message
 

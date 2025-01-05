@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_initialize(T, data, control, status)
+        function arc_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -29,7 +29,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type INT that gives the exit status from the package. Possible values are (currently):
 
 		  * **0**
                     The initialization was successful.
@@ -40,7 +40,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_read_specfile(T, control, specfile)
+        function arc_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -72,7 +72,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_import(T, control, data, status, n, H_type, ne, H_row, H_col, H_ptr)
+        function arc_import(T, INT, control, data, status, n, H_type, ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -96,7 +96,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type INT that gives the exit status from the package. Possible values are:
 
 		  * **1**
                     The import was successful, and the package is ready
@@ -127,7 +127,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- H_type
@@ -137,22 +137,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL
+		- is a one-dimensional array of size ne and type INT that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL
+		- is a one-dimensional array of size ne and type INT that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL
 
 .. index:: pair: function; arc_reset_control
 .. _doxid-galahad__arc_8h_1aee92716b81a84655569637e028bc53c8:
@@ -160,7 +160,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_reset_control(T, control, data, status)
+        function arc_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -184,7 +184,7 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		- is a scalar variable of type INT that gives the exit status from the package. Possible values are:
 
 		  * **1**
                     The import was successful, and the package is ready
@@ -196,7 +196,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_solve_with_mat(T, data, userdata, status, n, x, g, ne,
+        function arc_solve_with_mat(T, INT, data, userdata, status, n, x, g, ne,
                                     eval_f, eval_g, eval_h, eval_prec)
 
 Find a local minimizer of a given function using a regularization
@@ -226,7 +226,7 @@ function calls.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the entry and exit status from the package.
+		- is a scalar variable of type INT that gives the entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
@@ -299,7 +299,7 @@ function calls.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- x
@@ -314,7 +314,7 @@ function calls.
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- eval_f
@@ -394,7 +394,7 @@ function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_solve_without_mat(T, data, userdata, status, n, x, g,
+        function arc_solve_without_mat(T, INT, data, userdata, status, n, x, g,
                                        eval_f, eval_g, eval_hprod, eval_prec)
 
 Find a local minimizer of a given function using a regularization
@@ -422,7 +422,7 @@ information is available by function calls.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
@@ -496,7 +496,7 @@ information is available by function calls.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- x
@@ -587,7 +587,7 @@ information is available by function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_solve_reverse_with_mat(T, data, status, eval_status,
+        function arc_solve_reverse_with_mat(T, INT, data, status, eval_status,
                                             n, x, f, g, ne, H_val, u, v)
 
 Find a local minimizer of a given function using a regularization
@@ -612,7 +612,7 @@ returning to the calling procedure
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
@@ -733,12 +733,12 @@ returning to the calling procedure
 	*
 		- eval_status
 
-		- is a scalar variable of type Int32 that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+		- is a scalar variable of type INT that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- x
@@ -758,7 +758,7 @@ returning to the calling procedure
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
@@ -781,7 +781,7 @@ returning to the calling procedure
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_solve_reverse_without_mat(T, data, status, eval_status,
+        function arc_solve_reverse_without_mat(T, INT, data, status, eval_status,
                                                n, x, f, g, u, v)
 
 Find a local minimizer of a given function using a regularization
@@ -806,7 +806,7 @@ is only available by returning to the calling procedure.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
@@ -928,12 +928,12 @@ is only available by returning to the calling procedure.
 	*
 		- eval_status
 
-		- is a scalar variable of type Int32 that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+		- is a scalar variable of type INT that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- x
@@ -966,7 +966,7 @@ is only available by returning to the calling procedure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_information(T, data, inform, status)
+        function arc_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -988,7 +988,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		- is a scalar variable of type INT that gives the exit status from the package. Possible values are (currently):
 
 		  * **0**
                     The values were recorded successfully
@@ -999,7 +999,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_terminate(T, data, control, inform)
+        function arc_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

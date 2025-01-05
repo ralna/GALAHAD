@@ -10,11 +10,11 @@ dps_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct dps_inform_type{T}
-          status::Int32
-          alloc_status::Int32
-          mod_1by1::Int32
-          mod_2by2::Int32
+        struct dps_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
+          mod_1by1::INT
+          mod_2by2::INT
           obj::T
           obj_regularized::T
           x_norm::T
@@ -23,7 +23,7 @@ dps_inform_type structure
           hard_case::Bool
           bad_alloc::NTuple{81,Cchar}
           time::dps_time_type{T}
-          sls_inform::sls_inform_type{T}
+          sls_inform::sls_inform_type{T,INT}
 	
 .. _details-structdps__inform__type:
 
@@ -41,7 +41,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See DPS_solve for details
 
@@ -51,7 +51,7 @@ return status. See DPS_solve for details
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 STAT value after allocate failure.
 
@@ -61,7 +61,7 @@ STAT value after allocate failure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mod_1by1
+	INT mod_1by1
 
 the number of 1 by 1 blocks from the factorization of H that were modified when constructing $M$
 
@@ -71,7 +71,7 @@ the number of 1 by 1 blocks from the factorization of H that were modified when 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mod_2by2
+	INT mod_2by2
 
 the number of 2 by 2 blocks from the factorization of H that were modified when constructing $M$
 

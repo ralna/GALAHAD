@@ -10,22 +10,22 @@ cqp_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct cqp_control_type{T}
+        struct cqp_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          start_print::Int32
-          stop_print::Int32
-          maxit::Int32
-          infeas_max::Int32
-          muzero_fixed::Int32
-          restore_problem::Int32
-          indicator_type::Int32
-          arc::Int32
-          series_order::Int32
-          sif_file_device::Int32
-          qplib_file_device::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          start_print::INT
+          stop_print::INT
+          maxit::INT
+          infeas_max::INT
+          muzero_fixed::INT
+          restore_problem::INT
+          indicator_type::INT
+          arc::INT
+          series_order::INT
+          sif_file_device::INT
+          qplib_file_device::INT
           infinity::T
           stop_abs_p::T
           stop_rel_p::T
@@ -67,11 +67,11 @@ cqp_control_type structure
           sif_file_name::NTuple{31,Cchar}
           qplib_file_name::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
-          fdc_control::fdc_control_type{T}
-          sbls_control::sbls_control_type{T}
-          fit_control::fit_control_type
-          roots_control::roots_control_type{T}
-          cro_control::cro_control_type{T}
+          fdc_control::fdc_control_type{T,INT}
+          sbls_control::sbls_control_type{T,INT}
+          fit_control::fit_control_type{INT}
+          roots_control::roots_control_type{T,INT}
+          cro_control::cro_control_type{T,INT}
 
 .. _details-structcqp__control__type:
 
@@ -99,7 +99,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -109,7 +109,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -119,7 +119,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required is specified by print_level
 
@@ -137,7 +137,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 start_print
+	INT start_print
 
 any printing will start on this iteration
 
@@ -147,7 +147,7 @@ any printing will start on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stop_print
+	INT stop_print
 
 any printing will stop on this iteration
 
@@ -157,7 +157,7 @@ any printing will stop on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit
+	INT maxit
 
 at most maxit inner iterations are allowed
 
@@ -167,7 +167,7 @@ at most maxit inner iterations are allowed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 infeas_max
+	INT infeas_max
 
 the number of iterations for which the overall infeasibility of the problem is not reduced by at least a factor .reduce_infeas before the problem is flagged as infeasible (see reduce_infeas)
 
@@ -177,7 +177,7 @@ the number of iterations for which the overall infeasibility of the problem is n
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 muzero_fixed
+	INT muzero_fixed
 
 the initial value of the barrier parameter will not be changed for the first muzero_fixed iterations
 
@@ -187,7 +187,7 @@ the initial value of the barrier parameter will not be changed for the first muz
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 restore_problem
+	INT restore_problem
 
 indicate whether and how much of the input problem should be restored on output. Possible values are
 
@@ -203,7 +203,7 @@ indicate whether and how much of the input problem should be restored on output.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 indicator_type
+	INT indicator_type
 
 specifies the type of indicator function used. Possible values are
 
@@ -219,7 +219,7 @@ specifies the type of indicator function used. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 arc
+	INT arc
 
 which residual trajectory should be used to aim from the current iterate to the solution. Possible values are
 
@@ -239,7 +239,7 @@ which residual trajectory should be used to aim from the current iterate to the 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 series_order
+	INT series_order
 
 the order of (Taylor/Puiseux) series to fit to the path data
 
@@ -249,7 +249,7 @@ the order of (Taylor/Puiseux) series to fit to the path data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sif_file_device
+	INT sif_file_device
 
 specifies the unit number to write generated SIF file describing the current problem
 
@@ -259,7 +259,7 @@ specifies the unit number to write generated SIF file describing the current pro
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 qplib_file_device
+	INT qplib_file_device
 
 specifies the unit number to write generated QPLIB file describing the current problem
 

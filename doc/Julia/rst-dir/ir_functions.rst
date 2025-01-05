@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ir_initialize(T, data, control, status)
+        function ir_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -29,7 +29,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ir_information(T, data, inform, status)
+        function ir_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -66,7 +66,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -79,7 +79,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ir_terminate(T, data, control, inform)
+        function ir_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

@@ -87,9 +87,9 @@ Thus, for example if package a uses package b, and a has a control structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct a_control_type{T}
+        struct a_control_type{T,INT}
           ( components of structure a )
-          b_control::b_control_type{T}
+          b_control::b_control_type{T,INT}
 
 a suitable spec file would be
 

@@ -11,21 +11,21 @@ ugo_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ugo_control_type{T}
-          error::Int32
-          out::Int32
-          print_level::Int32
-          start_print::Int32
-          stop_print::Int32
-          print_gap::Int32
-          maxit::Int32
-          initial_points::Int32
-          storage_increment::Int32
-          buffer::Int32
-          lipschitz_estimate_used::Int32
-          next_interval_selection::Int32
-          refine_with_newton::Int32
-          alive_unit::Int32
+        struct ugo_control_type{T,INT}
+          error::INT
+          out::INT
+          print_level::INT
+          start_print::INT
+          stop_print::INT
+          print_gap::INT
+          maxit::INT
+          initial_points::INT
+          storage_increment::INT
+          buffer::INT
+          lipschitz_estimate_used::INT
+          next_interval_selection::INT
+          refine_with_newton::INT
+          alive_unit::INT
           alive_file::NTuple{31,Cchar}
           stop_length::T
           small_g_for_newton::T
@@ -57,7 +57,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -67,7 +67,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -77,7 +77,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required. Possible values are:
 
@@ -95,7 +95,7 @@ the level of output required. Possible values are:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 start_print
+	INT start_print
 
 any printing will start on this iteration
 
@@ -105,7 +105,7 @@ any printing will start on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stop_print
+	INT stop_print
 
 any printing will stop on this iteration
 
@@ -115,7 +115,7 @@ any printing will stop on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_gap
+	INT print_gap
 
 the number of iterations between printing
 
@@ -125,7 +125,7 @@ the number of iterations between printing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit
+	INT maxit
 
 the maximum number of iterations allowed
 
@@ -135,7 +135,7 @@ the maximum number of iterations allowed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 initial_points
+	INT initial_points
 
 the number of initial (uniformly-spaced) evaluation points (<2 reset to 2)
 
@@ -145,7 +145,7 @@ the number of initial (uniformly-spaced) evaluation points (<2 reset to 2)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 storage_increment
+	INT storage_increment
 
 incremenets of storage allocated (less that 1000 will be reset to 1000)
 
@@ -155,7 +155,7 @@ incremenets of storage allocated (less that 1000 will be reset to 1000)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 buffer
+	INT buffer
 
 unit for any out-of-core writing when expanding arrays
 
@@ -165,7 +165,7 @@ unit for any out-of-core writing when expanding arrays
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 lipschitz_estimate_used
+	INT lipschitz_estimate_used
 
 what sort of Lipschitz constant estimate will be used:
 
@@ -181,7 +181,7 @@ what sort of Lipschitz constant estimate will be used:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 next_interval_selection
+	INT next_interval_selection
 
 how is the next interval for examination chosen:
 
@@ -195,7 +195,7 @@ how is the next interval for examination chosen:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 refine_with_newton
+	INT refine_with_newton
 
 try refine_with_newton Newton steps from the vacinity of the global minimizer to try to improve the estimate
 
@@ -205,7 +205,7 @@ try refine_with_newton Newton steps from the vacinity of the global minimizer to
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alive_unit
+	INT alive_unit
 
 removal of the file alive_file from unit alive_unit terminates execution
 

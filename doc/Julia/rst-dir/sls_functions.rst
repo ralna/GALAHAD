@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_initialize(T, solver, data, control, status)
+        function sls_initialize(T, INT, solver, data, control, status)
 
 Select solver, set default control values and initialize private data
 
@@ -34,7 +34,7 @@ Select solver, set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -49,7 +49,7 @@ Select solver, set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_read_specfile(T, control, specfile)
+        function sls_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -81,7 +81,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_analyse_matrix(T, control, data, status, n, type, ne, row, col, ptr)
+        function sls_analyse_matrix(T, INT, control, data, status, n, type, ne, row, col, ptr)
 
 Import structural matrix data into internal storage prior to solution
 
@@ -103,7 +103,7 @@ Import structural matrix data into internal storage prior to solution
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -185,7 +185,7 @@ Import structural matrix data into internal storage prior to solution
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix $A$.
+		- is a scalar variable of type INT that holds the number of rows in the symmetric matrix $A$.
 
 	*
 		- type
@@ -195,22 +195,22 @@ Import structural matrix data into internal storage prior to solution
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size ne and type INT that holds the row indices of the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be C_NULL.
+		- is a one-dimensional array of size ne and type INT that holds the column indices of the lower triangular part of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be C_NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; sls_reset_control
 .. _doxid-galahad__sls_8h_1aacc344b8cdf0b1c27965f191382372e4:
@@ -218,7 +218,7 @@ Import structural matrix data into internal storage prior to solution
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_reset_control(T, control, data, status)
+        function sls_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -241,7 +241,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type INT that gives the exit status from the package. Possible values are:
 
 		  * 0. The import was successful.
 
@@ -251,7 +251,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_factorize_matrix(T, data, status, ne, val)
+        function sls_factorize_matrix(T, INT, data, status, ne, val)
 
 Form and factorize the symmetric matrix $A$.
 
@@ -268,7 +268,7 @@ Form and factorize the symmetric matrix $A$.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -350,7 +350,7 @@ Form and factorize the symmetric matrix $A$.
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
 
 	*
 		- val
@@ -363,7 +363,7 @@ Form and factorize the symmetric matrix $A$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_solve_system(T, data, status, n, sol)
+        function sls_solve_system(T, INT, data, status, n, sol)
 
 Solve the linear system $Ax=b$.
 
@@ -380,7 +380,7 @@ Solve the linear system $Ax=b$.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -419,7 +419,7 @@ Solve the linear system $Ax=b$.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of entries in the vectors $b$ and $x$.
+		- is a scalar variable of type INT that holds the number of entries in the vectors $b$ and $x$.
 
 	*
 		- sol
@@ -432,7 +432,7 @@ Solve the linear system $Ax=b$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_partial_solve_system(T, part, data, status, n, sol)
+        function sls_partial_solve_system(T, INT, part, data, status, n, sol)
 
 Given the factorization $A = L D U$ with $U = L^T$, solve the linear
 system $$Mx=b,$$ where $M$ is one of $L$, $D$, $U$ or $S = L \sqrt{D}$.
@@ -455,7 +455,7 @@ system $$Mx=b,$$ where $M$ is one of $L$, $D$, $U$ or $S = L \sqrt{D}$.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
@@ -496,7 +496,7 @@ system $$Mx=b,$$ where $M$ is one of $L$, $D$, $U$ or $S = L \sqrt{D}$.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of entries in the vectors $b$ and $x$.
+		- is a scalar variable of type INT that holds the number of entries in the vectors $b$ and $x$.
 
 	*
 		- sol
@@ -509,7 +509,7 @@ system $$Mx=b,$$ where $M$ is one of $L$, $D$, $U$ or $S = L \sqrt{D}$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_information(T, data, inform, status)
+        function sls_information(T, INT, data, inform, status)
 
 Provide output information
 
@@ -533,7 +533,7 @@ Provide output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -546,7 +546,7 @@ Provide output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_terminate(T, data, control, inform)
+        function sls_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

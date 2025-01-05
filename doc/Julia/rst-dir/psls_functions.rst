@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_initialize(T, data, control, status)
+        function psls_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -31,7 +31,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_read_specfile(T, control, specfile)
+        function psls_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_import(T, control, data, status, n, type, ne, row, col, ptr)
+        function psls_import(T, INT, control, data, status, n, type, ne, row, col, ptr)
 
 Import structural matrix data into internal storage prior to solution.
 
@@ -100,7 +100,7 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **1**
@@ -131,7 +131,7 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix $A$.
+		- is a scalar variable of type INT that holds the number of rows in the symmetric matrix $A$.
 
 	*
 		- type
@@ -141,22 +141,22 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size ne and type INT that holds the row indices of the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be C_NULL.
+		- is a one-dimensional array of size ne and type INT that holds the column indices of the lower triangular part of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be C_NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; psls_reset_control
 .. _doxid-galahad__psls_8h_1a90493b62c689237c97fe4aea665cd0ab:
@@ -164,7 +164,7 @@ Import structural matrix data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_reset_control(T, control, data, status)
+        function psls_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -188,7 +188,7 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **1**
@@ -201,7 +201,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_form_preconditioner(T, data, status, ne, val)
+        function psls_form_preconditioner(T, INT, data, status, ne, val)
 
 Form and factorize a preconditioner $P$ of the matrix $A$.
 
@@ -220,7 +220,7 @@ Form and factorize a preconditioner $P$ of the matrix $A$.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -253,7 +253,7 @@ Form and factorize a preconditioner $P$ of the matrix $A$.
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
 
 	*
 		- val
@@ -266,7 +266,7 @@ Form and factorize a preconditioner $P$ of the matrix $A$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_form_subset_preconditioner(T, data, status, ne, val, n_sub, sub)
+        function psls_form_subset_preconditioner(T, INT, data, status, ne, val, n_sub, sub)
 
 Form and factorize a $P$ preconditioner of a symmetric submatrix of the matrix $A$.
 
@@ -285,7 +285,7 @@ Form and factorize a $P$ preconditioner of a symmetric submatrix of the matrix $
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -318,7 +318,7 @@ Form and factorize a $P$ preconditioner of a symmetric submatrix of the matrix $
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
 
 	*
 		- val
@@ -328,12 +328,12 @@ Form and factorize a $P$ preconditioner of a symmetric submatrix of the matrix $
 	*
 		- n_sub
 
-		- is a scalar variable of type Int32 that holds the number of rows (and columns) of the required submatrix of $A$.
+		- is a scalar variable of type INT that holds the number of rows (and columns) of the required submatrix of $A$.
 
 	*
 		- sub
 
-		- is a one-dimensional array of size n_sub and type Int32 that holds the indices of the rows of required submatrix.
+		- is a one-dimensional array of size n_sub and type INT that holds the indices of the rows of required submatrix.
 
 .. index:: pair: function; psls_update_preconditioner
 .. _doxid-galahad__psls_8h_1a42a8097e64b527cff18ab66c07a32d1d:
@@ -341,7 +341,7 @@ Form and factorize a $P$ preconditioner of a symmetric submatrix of the matrix $
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_update_preconditioner(T, data, status, ne, val, n_del, del)
+        function psls_update_preconditioner(T, INT, data, status, ne, val, n_del, del)
 
 Update the preconditioner $P$ when rows (amd columns) are removed.
 
@@ -360,7 +360,7 @@ Update the preconditioner $P$ when rows (amd columns) are removed.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -393,7 +393,7 @@ Update the preconditioner $P$ when rows (amd columns) are removed.
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
 
 	*
 		- val
@@ -403,12 +403,12 @@ Update the preconditioner $P$ when rows (amd columns) are removed.
 	*
 		- n_del
 
-		- is a scalar variable of type Int32 that holds the number of rows (and columns) of (sub) matrix that are to be deleted.
+		- is a scalar variable of type INT that holds the number of rows (and columns) of (sub) matrix that are to be deleted.
 
 	*
 		- del
 
-		- is a one-dimensional array of size n_fix and type Int32 that holds the indices of the rows that are to be deleted.
+		- is a one-dimensional array of size n_fix and type INT that holds the indices of the rows that are to be deleted.
 
 .. index:: pair: function; psls_apply_preconditioner
 .. _doxid-galahad__psls_8h_1a1bae97d4a0e63bce7380422ed83306e8:
@@ -416,7 +416,7 @@ Update the preconditioner $P$ when rows (amd columns) are removed.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_apply_preconditioner(T, data, status, n, sol)
+        function psls_apply_preconditioner(T, INT, data, status, n, sol)
 
 Solve the linear system $Px=b$.
 
@@ -433,7 +433,7 @@ Solve the linear system $Px=b$.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -460,7 +460,7 @@ Solve the linear system $Px=b$.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of entries in the vectors $b$ and $x$.
+		- is a scalar variable of type INT that holds the number of entries in the vectors $b$ and $x$.
 
 	*
 		- sol
@@ -473,7 +473,7 @@ Solve the linear system $Px=b$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_information(T, data, inform, status)
+        function psls_information(T, INT, data, inform, status)
 
 Provide output information
 
@@ -495,7 +495,7 @@ Provide output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -508,7 +508,7 @@ Provide output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_terminate(T, data, control, inform)
+        function psls_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

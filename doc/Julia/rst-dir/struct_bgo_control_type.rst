@@ -11,16 +11,16 @@ bgo_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct bgo_control_type{T}
+        struct bgo_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          attempts_max::Int32
-          max_evals::Int32
-          sampling_strategy::Int32
-          hypercube_discretization::Int32
-          alive_unit::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          attempts_max::INT
+          max_evals::INT
+          sampling_strategy::INT
+          hypercube_discretization::INT
+          alive_unit::INT
           alive_file::NTuple{31,Cchar}
           infinity::T
           obj_unbounded::T
@@ -31,9 +31,9 @@ bgo_control_type structure
           space_critical::Bool
           deallocate_error_fatal::Bool
           prefix::NTuple{31,Cchar}
-          ugo_control::ugo_control_type{T}
-          lhs_control::lhs_control_type
-          trb_control::trb_control_type{T}
+          ugo_control::ugo_control_type{T,INT}
+          lhs_control::lhs_control_type{INT}
+          trb_control::trb_control_type{T,INT}
 
 .. _details-structbgo__control__type:
 
@@ -61,7 +61,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -71,7 +71,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -81,7 +81,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required. Possible values are:
 
@@ -99,7 +99,7 @@ the level of output required. Possible values are:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 attempts_max
+	INT attempts_max
 
 the maximum number of random searches from the best point found so far
 
@@ -109,7 +109,7 @@ the maximum number of random searches from the best point found so far
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_evals
+	INT max_evals
 
 the maximum number of function evaluations made
 
@@ -119,7 +119,7 @@ the maximum number of function evaluations made
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sampling_strategy
+	INT sampling_strategy
 
 sampling strategy used. Possible values are
 
@@ -135,7 +135,7 @@ sampling strategy used. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 hypercube_discretization
+	INT hypercube_discretization
 
 hyper-cube discretization (for sampling stategies 2 and 3)
 
@@ -145,7 +145,7 @@ hyper-cube discretization (for sampling stategies 2 and 3)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alive_unit
+	INT alive_unit
 
 removal of the file alive_file from unit alive_unit terminates execution
 

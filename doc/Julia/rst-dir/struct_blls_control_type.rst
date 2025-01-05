@@ -10,22 +10,22 @@ blls_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct blls_control_type{T}
+        struct blls_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          start_print::Int32
-          stop_print::Int32
-          print_gap::Int32
-          maxit::Int32
-          cold_start::Int32
-          preconditioner::Int32
-          ratio_cg_vs_sd::Int32
-          change_max::Int32
-          cg_maxit::Int32
-          arcsearch_max_steps::Int32
-          sif_file_device::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          start_print::INT
+          stop_print::INT
+          print_gap::INT
+          maxit::INT
+          cold_start::INT
+          preconditioner::INT
+          ratio_cg_vs_sd::INT
+          change_max::INT
+          cg_maxit::INT
+          arcsearch_max_steps::INT
+          sif_file_device::INT
           weight::T
           infinity::T
           stop_d::T
@@ -46,8 +46,8 @@ blls_control_type structure
           generate_sif_file::Bool
           sif_file_name::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
-          sbls_control::sbls_control_type{T}
-          convert_control::convert_control_type
+          sbls_control::sbls_control_type{T,INT}
+          convert_control::convert_control_type{INT}
 
 .. _details-structblls__control__type:
 
@@ -75,7 +75,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 unit number for error and warning diagnostics
 
@@ -85,7 +85,7 @@ unit number for error and warning diagnostics
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output unit number
 
@@ -95,7 +95,7 @@ general output unit number
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required
 
@@ -105,7 +105,7 @@ the level of output required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 start_print
+	INT start_print
 
 on which iteration to start printing
 
@@ -115,7 +115,7 @@ on which iteration to start printing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stop_print
+	INT stop_print
 
 on which iteration to stop printing
 
@@ -125,7 +125,7 @@ on which iteration to stop printing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_gap
+	INT print_gap
 
 how many iterations between printing
 
@@ -135,7 +135,7 @@ how many iterations between printing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit
+	INT maxit
 
 how many iterations to perform (-ve reverts to HUGE(1)-1)
 
@@ -145,7 +145,7 @@ how many iterations to perform (-ve reverts to HUGE(1)-1)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 cold_start
+	INT cold_start
 
 cold_start should be set to 0 if a warm start is required (with variable assigned according to X_stat, see below), and to any other value if the values given in prob.X suffice
 
@@ -155,7 +155,7 @@ cold_start should be set to 0 if a warm start is required (with variable assigne
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 preconditioner
+	INT preconditioner
 
 the preconditioner (scaling) used. Possible values are: /li 0. no preconditioner. /li 1. a diagonal preconditioner that normalizes the rows of $A$. /li anything else. a preconditioner supplied by the user either via a subroutine call of eval_prec} or via reverse communication.
 
@@ -165,7 +165,7 @@ the preconditioner (scaling) used. Possible values are: /li 0. no preconditioner
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ratio_cg_vs_sd
+	INT ratio_cg_vs_sd
 
 the ratio of how many iterations use CGLS rather than steepest descent
 
@@ -175,7 +175,7 @@ the ratio of how many iterations use CGLS rather than steepest descent
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 change_max
+	INT change_max
 
 the maximum number of per-iteration changes in the working set permitted when allowing CGLS rather than steepest descent
 
@@ -185,7 +185,7 @@ the maximum number of per-iteration changes in the working set permitted when al
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 cg_maxit
+	INT cg_maxit
 
 how many CG iterations to perform per BLLS iteration (-ve reverts to n+1)
 
@@ -195,7 +195,7 @@ how many CG iterations to perform per BLLS iteration (-ve reverts to n+1)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 arcsearch_max_steps
+	INT arcsearch_max_steps
 
 the maximum number of steps allowed in a piecewise arcsearch (-ve=infini
 
@@ -205,7 +205,7 @@ the maximum number of steps allowed in a piecewise arcsearch (-ve=infini
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sif_file_device
+	INT sif_file_device
 
 the unit number to write generated SIF file describing the current probl
 

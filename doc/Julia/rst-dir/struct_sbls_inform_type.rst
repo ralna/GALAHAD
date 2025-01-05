@@ -10,25 +10,25 @@ sbls_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct sbls_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct sbls_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          sort_status::Int32
+          sort_status::INT
           factorization_integer::Int64
           factorization_real::Int64
-          preconditioner::Int32
-          factorization::Int32
-          d_plus::Int32
-          rank::Int32
+          preconditioner::INT
+          factorization::INT
+          d_plus::INT
+          rank::INT
           rank_def::Bool
           perturbed::Bool
-          iter_pcg::Int32
+          iter_pcg::INT
           norm_residual::T
           alternative::Bool
           time::sbls_time_type{T}
-          sls_inform::sls_inform_type{T}
-          uls_inform::uls_inform_type{T}
+          sls_inform::sls_inform_type{T,INT}
+          uls_inform::uls_inform_type{T,INT}
 
 .. _details-structsbls__inform__type:
 
@@ -46,7 +46,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See SBLS_form_and_factorize for details
 
@@ -56,7 +56,7 @@ return status. See SBLS_form_and_factorize for details
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -76,7 +76,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sort_status
+	INT sort_status
 
 the return status from the sorting routines
 
@@ -106,7 +106,7 @@ the total real workspace required for the factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 preconditioner
+	INT preconditioner
 
 the preconditioner used
 
@@ -116,7 +116,7 @@ the preconditioner used
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorization
+	INT factorization
 
 the factorization used
 
@@ -126,7 +126,7 @@ the factorization used
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 d_plus
+	INT d_plus
 
 how many of the diagonals in the factorization are positive
 
@@ -136,7 +136,7 @@ how many of the diagonals in the factorization are positive
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 rank
+	INT rank
 
 the computed rank of $A$
 
@@ -166,7 +166,7 @@ has the used preconditioner been perturbed to guarantee correct inertia?
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter_pcg
+	INT iter_pcg
 
 the total number of projected CG iterations required
 

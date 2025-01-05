@@ -10,21 +10,21 @@ gls_ainfo structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct gls_ainfo_type{T}
-          flag::Int32
-          more::Int32
-          len_analyse::Int32
-          len_factorize::Int32
-          ncmpa::Int32
-          rank::Int32
-          drop::Int32
-          struc_rank::Int32
-          oor::Int32
-          dup::Int32
-          stat::Int32
-          lblock::Int32
-          sblock::Int32
-          tblock::Int32
+        struct gls_ainfo_type{T,INT}
+          flag::INT
+          more::INT
+          len_analyse::INT
+          len_factorize::INT
+          ncmpa::INT
+          rank::INT
+          drop::INT
+          struc_rank::INT
+          oor::INT
+          dup::INT
+          stat::INT
+          lblock::INT
+          sblock::INT
+          tblock::INT
           ops::T
 
 .. _details-structgls__ainfo:
@@ -43,7 +43,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 flag
+	INT flag
 
 Flags success or failure case.
 
@@ -53,7 +53,7 @@ Flags success or failure case.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 more
+	INT more
 
 More information on failure.
 
@@ -63,7 +63,7 @@ More information on failure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 len_analyse
+	INT len_analyse
 
 Size for analysis.
 
@@ -73,7 +73,7 @@ Size for analysis.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 len_factorize
+	INT len_factorize
 
 Size for factorize.
 
@@ -83,7 +83,7 @@ Size for factorize.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ncmpa
+	INT ncmpa
 
 Number of compresses.
 
@@ -93,7 +93,7 @@ Number of compresses.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 rank
+	INT rank
 
 Estimated rank.
 
@@ -103,7 +103,7 @@ Estimated rank.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 drop
+	INT drop
 
 Number of entries dropped.
 
@@ -113,7 +113,7 @@ Number of entries dropped.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 struc_rank
+	INT struc_rank
 
 Structural rank of matrix.
 
@@ -123,7 +123,7 @@ Structural rank of matrix.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 oor
+	INT oor
 
 Number of indices out-of-range.
 
@@ -133,7 +133,7 @@ Number of indices out-of-range.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 dup
+	INT dup
 
 Number of duplicates.
 
@@ -143,7 +143,7 @@ Number of duplicates.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stat
+	INT stat
 
 STAT value after allocate failure.
 
@@ -153,7 +153,7 @@ STAT value after allocate failure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 lblock
+	INT lblock
 
 Size largest non-triangular block.
 
@@ -163,7 +163,7 @@ Size largest non-triangular block.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sblock
+	INT sblock
 
 Sum of orders of non-triangular blocks.
 
@@ -173,7 +173,7 @@ Sum of orders of non-triangular blocks.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 tblock
+	INT tblock
 
 Total entries in all non-tringular blocks.
 

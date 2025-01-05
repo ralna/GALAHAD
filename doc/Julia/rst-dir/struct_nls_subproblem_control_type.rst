@@ -11,22 +11,22 @@ nls_subproblem_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct nls_subproblem_control_type{T}
-          error::Int32
-          out::Int32
-          print_level::Int32
-          start_print::Int32
-          stop_print::Int32
-          print_gap::Int32
-          maxit::Int32
-          alive_unit::Int32
+        struct nls_subproblem_control_type{T,INT}
+          error::INT
+          out::INT
+          print_level::INT
+          start_print::INT
+          stop_print::INT
+          print_gap::INT
+          maxit::INT
+          alive_unit::INT
           alive_file::NTuple{31,Cchar}
-          jacobian_available::Int32
-          hessian_available::Int32
-          model::Int32
-          norm::Int32
-          non_monotone::Int32
-          weight_update_strategy::Int32
+          jacobian_available::INT
+          hessian_available::INT
+          model::INT
+          norm::INT
+          non_monotone::INT
+          weight_update_strategy::INT
           stop_c_absolute::T
           stop_c_relative::T
           stop_g_absolute::T
@@ -56,11 +56,11 @@ nls_subproblem_control_type structure
           space_critical::Bool
           deallocate_error_fatal::Bool
           prefix::NTuple{31,Cchar}
-          rqs_control::rqs_control_type{T}
-          glrt_control::glrt_control_type{T}
-          psls_control::psls_control_type{T}
+          rqs_control::rqs_control_type{T,INT}
+          glrt_control::glrt_control_type{T,INT}
+          psls_control::psls_control_type{T,INT}
           bsc_control::bsc_control_type
-          roots_control::roots_control_type{T}
+          roots_control::roots_control_type{T,INT}
 
 .. _details-structnls__subproblem__control__type:
 
@@ -78,7 +78,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -88,7 +88,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -98,7 +98,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required.
 
@@ -116,7 +116,7 @@ the level of output required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 start_print
+	INT start_print
 
 any printing will start on this iteration
 
@@ -126,7 +126,7 @@ any printing will start on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stop_print
+	INT stop_print
 
 any printing will stop on this iteration
 
@@ -136,7 +136,7 @@ any printing will stop on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_gap
+	INT print_gap
 
 the number of iterations between printing
 
@@ -146,7 +146,7 @@ the number of iterations between printing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit
+	INT maxit
 
 the maximum number of iterations performed
 
@@ -156,7 +156,7 @@ the maximum number of iterations performed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alive_unit
+	INT alive_unit
 
 removal of the file alive_file from unit alive_unit terminates execution
 
@@ -176,7 +176,7 @@ see alive_unit
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 jacobian_available
+	INT jacobian_available
 
 is the Jacobian matrix of first derivatives available ($\geq$ 2), is access only via matrix-vector products (=1) or is it not available ($\leq$ 0) ?
 
@@ -186,7 +186,7 @@ is the Jacobian matrix of first derivatives available ($\geq$ 2), is access only
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 hessian_available
+	INT hessian_available
 
 is the Hessian matrix of second derivatives available ($\geq$ 2), is access only via matrix-vector products (=1) or is it not available ($\leq$ 0) ?
 
@@ -196,7 +196,7 @@ is the Hessian matrix of second derivatives available ($\geq$ 2), is access only
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 model
+	INT model
 
 the model used.
 
@@ -226,7 +226,7 @@ Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 norm
+	INT norm
 
 the regularization norm used.
 
@@ -266,7 +266,7 @@ The norm is defined via $\|v\|^2 = v^T S v$, and will define the preconditioner 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 non_monotone
+	INT non_monotone
 
 non-monotone $\leq$ 0 monotone strategy used, anything else non-monotone strategy with this history length used
 
@@ -276,7 +276,7 @@ non-monotone $\leq$ 0 monotone strategy used, anything else non-monotone strateg
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 weight_update_strategy
+	INT weight_update_strategy
 
 define the weight-update strategy: 1 (basic), 2 (reset to zero when very
 successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT)

@@ -10,12 +10,12 @@ trs_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct trs_inform_type{T}
-          status::Int32
-          alloc_status::Int32
-          factorizations::Int32
+        struct trs_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
+          factorizations::INT
           max_entries_factors::Int64
-          len_history::Int32
+          len_history::INT
           obj::T
           x_norm::T
           multiplier::T
@@ -25,8 +25,8 @@ trs_inform_type structure
           bad_alloc::NTuple{81,Cchar}
           time::trs_time_type{T}
           history::NTuple{100,trs_history_type{T}}
-          sls_inform::sls_inform_type{T}
-          ir_inform::ir_inform_type{T}
+          sls_inform::sls_inform_type{T,INT}
+          ir_inform::ir_inform_type{T,INT}
 
 .. _details-structtrs__inform__type:
 
@@ -44,7 +44,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 reported return status:
 
@@ -86,7 +86,7 @@ reported return status:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 STAT value after allocate failure.
 
@@ -96,7 +96,7 @@ STAT value after allocate failure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorizations
+	INT factorizations
 
 the number of factorizations performed
 
@@ -116,7 +116,7 @@ the maximum number of entries in the factors
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 len_history
+	INT len_history
 
 the number of $(||x||_M,\lambda)$ pairs in the history
 

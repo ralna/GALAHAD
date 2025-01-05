@@ -10,15 +10,15 @@ gltr_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct gltr_control_type{T}
+        struct gltr_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          itmax::Int32
-          Lanczos_itmax::Int32
-          extra_vectors::Int32
-          ritz_printout_device::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          itmax::INT
+          Lanczos_itmax::INT
+          extra_vectors::INT
+          ritz_printout_device::INT
           stop_relative::T
           stop_absolute::T
           fraction_opt::T
@@ -61,7 +61,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -71,7 +71,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -81,7 +81,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required is specified by print_level
 
@@ -91,7 +91,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 itmax
+	INT itmax
 
 the maximum number of iterations allowed (-ve = no bound)
 
@@ -101,7 +101,7 @@ the maximum number of iterations allowed (-ve = no bound)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 Lanczos_itmax
+	INT Lanczos_itmax
 
 the maximum number of iterations allowed once the boundary has been encountered (-ve = no bound)
 
@@ -111,7 +111,7 @@ the maximum number of iterations allowed once the boundary has been encountered 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 extra_vectors
+	INT extra_vectors
 
 the number of extra work vectors of length n used
 
@@ -121,7 +121,7 @@ the number of extra work vectors of length n used
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ritz_printout_device
+	INT ritz_printout_device
 
 the unit number for writing debug Ritz values
 

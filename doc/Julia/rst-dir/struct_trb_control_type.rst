@@ -11,28 +11,28 @@ trb_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct trb_control_type{T}
+        struct trb_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          start_print::Int32
-          stop_print::Int32
-          print_gap::Int32
-          maxit::Int32
-          alive_unit::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          start_print::INT
+          stop_print::INT
+          print_gap::INT
+          maxit::INT
+          alive_unit::INT
           alive_file::NTuple{31,Cchar}
-          more_toraldo::Int32
-          non_monotone::Int32
-          model::Int32
-          norm::Int32
-          semi_bandwidth::Int32
-          lbfgs_vectors::Int32
-          max_dxg::Int32
-          icfs_vectors::Int32
-          mi28_lsize::Int32
-          mi28_rsize::Int32
-          advanced_start::Int32
+          more_toraldo::INT
+          non_monotone::INT
+          model::INT
+          norm::INT
+          semi_bandwidth::INT
+          lbfgs_vectors::INT
+          max_dxg::INT
+          icfs_vectors::INT
+          mi28_lsize::INT
+          mi28_rsize::INT
+          advanced_start::INT
           infinity::T
           stop_pg_absolute::T
           stop_pg_relative::T
@@ -59,12 +59,12 @@ trb_control_type structure
           space_critical::Bool
           deallocate_error_fatal::Bool
           prefix::NTuple{31,Cchar}
-          trs_control::trs_control_type{T}
-          gltr_control::gltr_control_type{T}
-          psls_control::psls_control_type{T}
-          lms_control::lms_control_type{T}
-          lms_control_prec::lms_control_type{T}
-          sha_control::sha_control_type
+          trs_control::trs_control_type{T,INT}
+          gltr_control::gltr_control_type{T,INT}
+          psls_control::psls_control_type{T,INT}
+          lms_control::lms_control_type{INT}
+          lms_control_prec::lms_control_type{INT}
+          sha_control::sha_control_type{INT}
 
 .. _details-structtrb__control__type:
 
@@ -92,7 +92,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -102,7 +102,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -112,7 +112,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required.
 
@@ -130,7 +130,7 @@ the level of output required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 start_print
+	INT start_print
 
 any printing will start on this iteration
 
@@ -140,7 +140,7 @@ any printing will start on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stop_print
+	INT stop_print
 
 any printing will stop on this iteration
 
@@ -150,7 +150,7 @@ any printing will stop on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_gap
+	INT print_gap
 
 the number of iterations between printing
 
@@ -160,7 +160,7 @@ the number of iterations between printing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit
+	INT maxit
 
 the maximum number of iterations performed
 
@@ -170,7 +170,7 @@ the maximum number of iterations performed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alive_unit
+	INT alive_unit
 
 removal of the file alive_file from unit alive_unit terminates execution
 
@@ -190,7 +190,7 @@ see alive_unit
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 more_toraldo
+	INT more_toraldo
 
 more_toraldo >= 1 gives the number of More'-Toraldo projected searches to be used to improve upon the Cauchy point, anything else is for the standard add-one-at-a-time CG search
 
@@ -200,7 +200,7 @@ more_toraldo >= 1 gives the number of More'-Toraldo projected searches to be use
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 non_monotone
+	INT non_monotone
 
 non-monotone <= 0 monotone strategy used, anything else non-monotone strategy with this history length used
 
@@ -210,7 +210,7 @@ non-monotone <= 0 monotone strategy used, anything else non-monotone strategy wi
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 model
+	INT model
 
 the model used.
 
@@ -236,7 +236,7 @@ Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 norm
+	INT norm
 
 The norm is defined via $\|v\|^2 = v^T P v$, and will define the preconditioner used for iterative methods. Possible values for $P$ are.
 
@@ -272,7 +272,7 @@ The norm is defined via $\|v\|^2 = v^T P v$, and will define the preconditioner 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 semi_bandwidth
+	INT semi_bandwidth
 
 specify the semi-bandwidth of the band matrix P if required
 
@@ -282,7 +282,7 @@ specify the semi-bandwidth of the band matrix P if required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 lbfgs_vectors
+	INT lbfgs_vectors
 
 number of vectors used by the L-BFGS matrix P if required
 
@@ -292,7 +292,7 @@ number of vectors used by the L-BFGS matrix P if required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_dxg
+	INT max_dxg
 
 number of vectors used by the sparsity-based secant Hessian if required
 
@@ -302,7 +302,7 @@ number of vectors used by the sparsity-based secant Hessian if required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 icfs_vectors
+	INT icfs_vectors
 
 number of vectors used by the Lin-More' incomplete factorization matrix P if required
 
@@ -312,7 +312,7 @@ number of vectors used by the Lin-More' incomplete factorization matrix P if req
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mi28_lsize
+	INT mi28_lsize
 
 the maximum number of fill entries within each column of the incomplete factor L computed by HSL_MI28. In general, increasing .mi28_lsize improve the quality of the preconditioner but increases the time to compute and then apply the preconditioner. Values less than 0 are treated as 0
 
@@ -322,7 +322,7 @@ the maximum number of fill entries within each column of the incomplete factor L
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mi28_rsize
+	INT mi28_rsize
 
 the maximum number of entries within each column of the strictly lower triangular matrix $R$ used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold $R$. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize >= .mi28_lsize is generally recommended
 
@@ -332,7 +332,7 @@ the maximum number of entries within each column of the strictly lower triangula
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 advanced_start
+	INT advanced_start
 
 iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1803
 

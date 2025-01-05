@@ -10,15 +10,15 @@ lstr_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct lstr_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct lstr_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          iter::Int32
-          iter_pass2::Int32
-          biters::Int32
-          biter_min::Int32
-          biter_max::Int32
+          iter::INT
+          iter_pass2::INT
+          biters::INT
+          biter_min::INT
+          biter_max::INT
           multiplier::T
           x_norm::T
           r_norm::T
@@ -41,7 +41,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See :ref:`lstr_solve_problem <doxid-galahad__lstr_8h_1af3355e5a8df63a9c7173eb974a1e7562>` for details
 
@@ -51,7 +51,7 @@ return status. See :ref:`lstr_solve_problem <doxid-galahad__lstr_8h_1af3355e5a8d
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -71,7 +71,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter
+	INT iter
 
 the total number of iterations required
 
@@ -81,7 +81,7 @@ the total number of iterations required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter_pass2
+	INT iter_pass2
 
 the total number of pass-2 iterations required if the solution lies on the trust-region boundary
 
@@ -91,7 +91,7 @@ the total number of pass-2 iterations required if the solution lies on the trust
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 biters
+	INT biters
 
 the total number of inner iterations performed
 
@@ -101,7 +101,7 @@ the total number of inner iterations performed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 biter_min
+	INT biter_min
 
 the smallest number of inner iterations performed during an outer iteration
 
@@ -111,7 +111,7 @@ the smallest number of inner iterations performed during an outer iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 biter_max
+	INT biter_max
 
 the largestt number of inner iterations performed during an outer iteration
 

@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sha_initialize(T, data, control, status)
+        function sha_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -31,7 +31,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -82,7 +82,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sha_analyse_matrix(T, control, data, status, n, ne, row, col, m)
+        function sha_analyse_matrix(T, INT, control, data, status, n, ne, row, col, m)
 
 Analsyse the sparsity structure of $H$ to generate information that will be
 used when estimating its values.
@@ -108,7 +108,7 @@ used when estimating its values.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -145,21 +145,21 @@ used when estimating its values.
 		- n
 
 		-
-		  is a scalar variable of type Int32, that holds the
+		  is a scalar variable of type INT, that holds the
 		  number of variables
 
 	*
 		- ne
 
 		-
-		  is a scalar variable of type Int32, that holds the
+		  is a scalar variable of type INT, that holds the
 		  number of entries in the upper triangular part of $H$.
 
 	*
 		- row
 
 		-
-		  is a one-dimensional array of size ne and type Int32,
+		  is a one-dimensional array of size ne and type INT,
 		  that holds the row indices of the upper triangular
 		  part of $H$.
 
@@ -167,7 +167,7 @@ used when estimating its values.
 		- col
 
 		-
-		  is a one-dimensional array of size ne and type Int32,
+		  is a one-dimensional array of size ne and type INT,
 		  that holds the column indices of the upper triangular
 		  part of $H$.
 
@@ -175,7 +175,7 @@ used when estimating its values.
 		- m
 
 		-
-		  is a scalar variable of type Int32, that gives the
+		  is a scalar variable of type INT, that gives the
 		  minimum number of $(s^{(k)},y^{(k)})$ pairs that will
 		  be needed to recover a good Hessian approximation.
 
@@ -185,7 +185,7 @@ used when estimating its values.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sha_recover_matrix(T, data, status, ne, m, ls1, ls2, strans,
+        function sha_recover_matrix(T, INT, data, status, ne, m, ls1, ls2, strans,
                                     ly1, ly2, ytrans, val, order)
 
 Estimate the nonzero entries of the Hessian $H$ by component-wise secant
@@ -204,7 +204,7 @@ approximation.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -235,7 +235,7 @@ approximation.
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the symmetric matrix $A$.
 
 	*
 		- val
@@ -247,14 +247,14 @@ approximation.
 		- ne
 
 		-
-                  is a scalar variable of type Int32, that holds the number
+                  is a scalar variable of type INT, that holds the number
                   of entries in the upper triangular part of $H$.
 
 	*
 		- m_available
 
 		-
-                  is a scalar variable of type Int32, that holds the
+                  is a scalar variable of type INT, that holds the
                   number of differences provided. Ideally this will be
                   as large as m as reported by sha_analyse_matrix, but
                   better still there should be a further
@@ -265,14 +265,14 @@ approximation.
 		- ls1
 
 		-
-                  is a scalar variable of type Int32, that holds the
+                  is a scalar variable of type INT, that holds the
                   leading (first) dimension of the array strans.
 
 	*
 		- ls2
 
 		-
-                  is a scalar variable of type Int32, that holds the
+                  is a scalar variable of type INT, that holds the
                   trailing (second) dimension of the array strans.
 
 	*
@@ -287,14 +287,14 @@ approximation.
 		- ly1
 
 		-
-                  is a scalar variable of type Int32, that holds the
+                  is a scalar variable of type INT, that holds the
                   leading (first) dimension of the array ytrans.
 
 	*
 		- ly2
 
 		-
-                  is a scalar variable of type Int32, that holds the
+                  is a scalar variable of type INT, that holds the
                   trailing (second) dimension of the array ytrans.
 
 	*
@@ -318,7 +318,7 @@ approximation.
 		- order
 
 		-
-                  is a one-dimensional array of size m and type Int32,
+                  is a one-dimensional array of size m and type INT,
                   that holds the preferred order of access for the pairs
                   $\{(s^{(k)},y^{(k)})\}$. The $k$-th component of
                   order specifies the row number of strans and
@@ -333,7 +333,7 @@ approximation.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sha_information(T, data, inform, status)
+        function sha_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -358,7 +358,7 @@ Provides output information
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit
+		  is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -371,7 +371,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sha_terminate(T, data, control, inform)
+        function sha_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

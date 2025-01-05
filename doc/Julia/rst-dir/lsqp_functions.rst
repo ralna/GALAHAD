@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lsqp_initialize(T, data, control, status)
+        function lsqp_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -29,7 +29,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lsqp_read_specfile(T, control, specfile)
+        function lsqp_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lsqp_import(T, control, data, status, n, m, 
+        function lsqp_import(T, INT, control, data, status, n, m, 
                              A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -97,7 +97,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -129,12 +129,12 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints.
+		- is a scalar variable of type INT that holds the number of general linear constraints.
 
 	*
 		- A_type
@@ -144,22 +144,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; lsqp_reset_control
 .. _doxid-galahad__lsqp_8h_1a3dc0d9ed7fad6f3ea575e1a53c06c35e:
@@ -167,7 +167,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lsqp_reset_control(T, control, data, status)
+        function lsqp_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -190,7 +190,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type INT that gives the exit status from the package. Possible values are:
 
 		  * **0**
                     The import was successful.
@@ -201,7 +201,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lsqp_solve_qp(T, data, status, n, m, w, x0, g, f, a_ne, A_val, 
+        function lsqp_solve_qp(T, INT, data, status, n, m, w, x0, g, f, a_ne, A_val, 
                                c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
 
 Solve the separable convex quadratic program.
@@ -219,7 +219,7 @@ Solve the separable convex quadratic program.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  Possible exit values are:
@@ -292,12 +292,12 @@ Solve the separable convex quadratic program.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints.
+		- is a scalar variable of type INT that holds the number of general linear constraints.
 
 	*
 		- w
@@ -322,7 +322,7 @@ Solve the separable convex quadratic program.
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$.
+		- is a scalar variable of type INT that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- A_val
@@ -372,12 +372,12 @@ Solve the separable convex quadratic program.
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type INT that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 	*
 		- c_stat
 
-		- is a one-dimensional array of size m and type Int32 that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value $a_i^T x$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size m and type INT that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value $a_i^T x$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 .. index:: pair: function; lsqp_information
 .. _doxid-galahad__lsqp_8h_1aa86d9f9bfe75370d90a0be244a9a23ce:
@@ -385,7 +385,7 @@ Solve the separable convex quadratic program.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lsqp_information(T, data, inform, status)
+        function lsqp_information(T, INT, data, inform, status)
 
 Provides output information.
 
@@ -407,7 +407,7 @@ Provides output information.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -420,7 +420,7 @@ Provides output information.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lsqp_terminate(T, data, control, inform)
+        function lsqp_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage.
 

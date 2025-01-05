@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lstr_initialize(T, data, control, status)
+        function lstr_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -29,7 +29,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lstr_read_specfile(T, control, specfile)
+        function lstr_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lstr_import_control(T, control, data, status)
+        function lstr_import_control(T, INT, control, data, status)
 
 Import control parameters prior to solution.
 
@@ -96,7 +96,7 @@ Import control parameters prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -110,7 +110,7 @@ Import control parameters prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lstr_solve_problem(T, data, status, m, n, radius, x, u, v)
+        function lstr_solve_problem(T, INT, data, status, m, n, radius, x, u, v)
 
 Solve the trust-region least-squares problem using reverse communication.
 
@@ -127,7 +127,7 @@ Solve the trust-region least-squares problem using reverse communication.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  This must be set to
@@ -186,12 +186,12 @@ Solve the trust-region least-squares problem using reverse communication.
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of equations (i.e., rows of $A$), $m > 0$
+		- is a scalar variable of type INT that holds the number of equations (i.e., rows of $A$), $m > 0$
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables (i.e., columns of $A$), $n > 0$
+		- is a scalar variable of type INT that holds the number of variables (i.e., columns of $A$), $n > 0$
 
 	*
 		- radius
@@ -219,7 +219,7 @@ Solve the trust-region least-squares problem using reverse communication.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lstr_information(T, data, inform, status)
+        function lstr_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -241,7 +241,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -254,7 +254,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lstr_terminate(T, data, control, inform)
+        function lstr_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

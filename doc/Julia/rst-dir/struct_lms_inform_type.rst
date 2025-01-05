@@ -10,10 +10,10 @@ lms_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct lms_inform_type{T}
-          status::Int32
-          alloc_status::Int32
-          length::Int32
+        struct lms_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
+          length::INT
           updates_skipped::Bool
           bad_alloc::NTuple{81,Cchar}
           time::lms_time_type{T}
@@ -34,7 +34,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 the return status. Possible values are:
 
@@ -80,7 +80,7 @@ the return status. Possible values are:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -90,7 +90,7 @@ the status of the last attempted allocation/deallocation
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 length
+	INT length
 
 the number of pairs $(s_k,y_k)$ currently used to represent the limited-memory matrix.
 

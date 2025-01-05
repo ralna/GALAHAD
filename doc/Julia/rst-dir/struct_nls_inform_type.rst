@@ -11,18 +11,18 @@ nls_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct nls_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct nls_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
           bad_eval::NTuple{13,Cchar}
-          iter::Int32
-          cg_iter::Int32
-          c_eval::Int32
-          j_eval::Int32
-          h_eval::Int32
-          factorization_max::Int32
-          factorization_status::Int32
+          iter::INT
+          cg_iter::INT
+          c_eval::INT
+          j_eval::INT
+          h_eval::INT
+          factorization_max::INT
+          factorization_status::INT
           max_entries_factors::Int64
           factorization_integer::Int64
           factorization_real::Int64
@@ -32,12 +32,12 @@ nls_inform_type structure
           norm_g::T
           weight::T
           time::nls_time_type{T}
-          rqs_inform::rqs_inform_type{T}
-          glrt_inform::glrt_inform_type{T}
-          psls_inform::psls_inform_type{T}
-          bsc_inform::bsc_inform_type{T}
-          roots_inform::roots_inform_type
-          subproblem_inform::nls_subproblem_inform_type{T}
+          rqs_inform::rqs_inform_type{T,INT}
+          glrt_inform::glrt_inform_type{T,INT}
+          psls_inform::psls_inform_type{T,INT}
+          bsc_inform::bsc_inform_type{T,INT}
+          roots_inform::roots_inform_type{INT}
+          subproblem_inform::nls_subproblem_inform_type{T,INT}
 
 .. _details-structnls__inform__type:
 
@@ -55,7 +55,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See NLS_solve for details
 
@@ -65,7 +65,7 @@ return status. See NLS_solve for details
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -95,7 +95,7 @@ the name of the user-supplied evaluation routine for which an error occurred
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter
+	INT iter
 
 the total number of iterations performed
 
@@ -105,7 +105,7 @@ the total number of iterations performed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 cg_iter
+	INT cg_iter
 
 the total number of CG iterations performed
 
@@ -115,7 +115,7 @@ the total number of CG iterations performed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 c_eval
+	INT c_eval
 
 the total number of evaluations of the residual function c(x)
 
@@ -125,7 +125,7 @@ the total number of evaluations of the residual function c(x)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 j_eval
+	INT j_eval
 
 the total number of evaluations of the Jacobian J(x) of c(x)
 
@@ -135,7 +135,7 @@ the total number of evaluations of the Jacobian J(x) of c(x)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 h_eval
+	INT h_eval
 
 the total number of evaluations of the scaled Hessian H(x,y) of c(x)
 
@@ -145,7 +145,7 @@ the total number of evaluations of the scaled Hessian H(x,y) of c(x)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorization_max
+	INT factorization_max
 
 the maximum number of factorizations in a sub-problem solve
 
@@ -155,7 +155,7 @@ the maximum number of factorizations in a sub-problem solve
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorization_status
+	INT factorization_status
 
 the return status from the factorization
 

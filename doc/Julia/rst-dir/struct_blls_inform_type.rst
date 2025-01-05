@@ -10,18 +10,18 @@ blls_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct blls_inform_type{T}
-          status::Int32
-          alloc_status::Int32
-          factorization_status::Int32
-          iter::Int32
-          cg_iter::Int32
+        struct blls_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
+          factorization_status::INT
+          iter::INT
+          cg_iter::INT
           obj::T
           norm_pg::T
           bad_alloc::NTuple{81,Cchar}
           time::blls_time_type{T}
-          sbls_inform::sbls_inform_type{T}
-          convert_inform::convert_inform_type{T}
+          sbls_inform::sbls_inform_type{T,INT}
+          convert_inform::convert_inform_type{T,INT}
 	
 .. _details-structblls__inform__type:
 
@@ -39,7 +39,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 reported return status.
 
@@ -49,7 +49,7 @@ reported return status.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 Fortran STAT value after allocate failure.
 
@@ -59,7 +59,7 @@ Fortran STAT value after allocate failure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorization_status
+	INT factorization_status
 
 status return from factorization
 
@@ -69,7 +69,7 @@ status return from factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter
+	INT iter
 
 number of iterations required
 
@@ -79,7 +79,7 @@ number of iterations required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 cg_iter
+	INT cg_iter
 
 number of CG iterations required
 

@@ -11,18 +11,18 @@ cro_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct cro_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct cro_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          dependent::Int32
+          dependent::INT
           time::cro_time_type{T}
-          sls_inform::sls_inform_type{T}
-          sbls_inform::sbls_inform_type{T}
-          uls_inform::uls_inform_type{T}
-          scu_status::Int32
+          sls_inform::sls_inform_type{T,INT}
+          sbls_inform::sbls_inform_type{T,INT}
+          uls_inform::uls_inform_type{T,INT}
+          scu_status::INT
           scu_inform::scu_inform_type
-          ir_inform::ir_inform_type{T}
+          ir_inform::ir_inform_type{T,INT}
 
 .. _details-structcro__inform__type:
 
@@ -40,7 +40,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See CRO_solve for details
 
@@ -50,7 +50,7 @@ return status. See CRO_solve for details
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -70,7 +70,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 dependent
+	INT dependent
 
 the number of dependent active constraints
 
@@ -120,7 +120,7 @@ information from ULS
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 scu_status
+	INT scu_status
 
 information from SCU
 

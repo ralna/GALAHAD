@@ -10,34 +10,34 @@ sls_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct sls_control_type{T}
+        struct sls_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          warning::Int32
-          out::Int32
-          statistics::Int32
-          print_level::Int32
-          print_level_solver::Int32
-          bits::Int32
-          block_size_kernel::Int32
-          block_size_elimination::Int32
-          blas_block_size_factorize::Int32
-          blas_block_size_solve::Int32
-          node_amalgamation::Int32
-          initial_pool_size::Int32
-          min_real_factor_size::Int32
-          min_integer_factor_size::Int32
+          error::INT
+          warning::INT
+          out::INT
+          statistics::INT
+          print_level::INT
+          print_level_solver::INT
+          bits::INT
+          block_size_kernel::INT
+          block_size_elimination::INT
+          blas_block_size_factorize::INT
+          blas_block_size_solve::INT
+          node_amalgamation::INT
+          initial_pool_size::INT
+          min_real_factor_size::INT
+          min_integer_factor_size::INT
           max_real_factor_size::Int64
           max_integer_factor_size::Int64
           max_in_core_store::Int64
           array_increase_factor::T
           array_decrease_factor::T
-          pivot_control::Int32
-          ordering::Int32
-          full_row_threshold::Int32
-          row_search_indefinite::Int32
-          scaling::Int32
-          scale_maxit::Int32
+          pivot_control::INT
+          ordering::INT
+          full_row_threshold::INT
+          row_search_indefinite::INT
+          scaling::INT
+          scale_maxit::INT
           scale_thresh::T
           relative_pivot_tolerance::T
           minimum_pivot_tolerance::T
@@ -48,12 +48,12 @@ sls_control_type structure
           static_pivot_tolerance::T
           static_level_switch::T
           consistency_tolerance::T
-          max_iterative_refinements::Int32
+          max_iterative_refinements::INT
           acceptable_residual_relative::T
           acceptable_residual_absolute::T
           multiple_rhs::Bool
           generate_matrix_file::Bool
-          matrix_file_device::Int32
+          matrix_file_device::INT
           matrix_file_name::NTuple{31,Cchar}
           out_of_core_directory::NTuple{401,Cchar}
           out_of_core_integer_factor_file::NTuple{401,Cchar}
@@ -89,7 +89,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 unit for error messages
 
@@ -99,7 +99,7 @@ unit for error messages
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 warning
+	INT warning
 
 unit for warning messages
 
@@ -109,7 +109,7 @@ unit for warning messages
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 unit for monitor output
 
@@ -119,7 +119,7 @@ unit for monitor output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 statistics
+	INT statistics
 
 unit for statistical output
 
@@ -129,7 +129,7 @@ unit for statistical output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 controls level of diagnostic output
 
@@ -139,7 +139,7 @@ controls level of diagnostic output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level_solver
+	INT print_level_solver
 
 controls level of diagnostic output from external solver
 
@@ -149,7 +149,7 @@ controls level of diagnostic output from external solver
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 bits
+	INT bits
 
 number of bits used in architecture
 
@@ -159,7 +159,7 @@ number of bits used in architecture
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 block_size_kernel
+	INT block_size_kernel
 
 the target blocksize for kernel factorization
 
@@ -169,7 +169,7 @@ the target blocksize for kernel factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 block_size_elimination
+	INT block_size_elimination
 
 the target blocksize for parallel elimination
 
@@ -179,7 +179,7 @@ the target blocksize for parallel elimination
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 blas_block_size_factorize
+	INT blas_block_size_factorize
 
 level 3 blocking in factorize
 
@@ -189,7 +189,7 @@ level 3 blocking in factorize
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 blas_block_size_solve
+	INT blas_block_size_solve
 
 level 2 and 3 blocking in solve
 
@@ -199,7 +199,7 @@ level 2 and 3 blocking in solve
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 node_amalgamation
+	INT node_amalgamation
 
 a child node is merged with its parent if they both involve fewer than node_amalgamation eliminations
 
@@ -209,7 +209,7 @@ a child node is merged with its parent if they both involve fewer than node_amal
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 initial_pool_size
+	INT initial_pool_size
 
 initial size of task-pool arrays for parallel elimination
 
@@ -219,7 +219,7 @@ initial size of task-pool arrays for parallel elimination
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 min_real_factor_size
+	INT min_real_factor_size
 
 initial size for real array for the factors and other data
 
@@ -229,7 +229,7 @@ initial size for real array for the factors and other data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 min_integer_factor_size
+	INT min_integer_factor_size
 
 initial size for integer array for the factors and other data
 
@@ -289,7 +289,7 @@ if previously allocated internal workspace arrays are greater than array_decreas
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 pivot_control
+	INT pivot_control
 
 pivot control:
 
@@ -307,7 +307,7 @@ pivot control:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ordering
+	INT ordering
 
 controls ordering (ignored if explicit PERM argument present)
 
@@ -335,7 +335,7 @@ controls ordering (ignored if explicit PERM argument present)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 full_row_threshold
+	INT full_row_threshold
 
 controls threshold for detecting full rows in analyse, registered as percentage of matrix order. If 100, only fully dense rows detected (defa
 
@@ -345,7 +345,7 @@ controls threshold for detecting full rows in analyse, registered as percentage 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 row_search_indefinite
+	INT row_search_indefinite
 
 number of rows searched for pivot when using indefinite ordering
 
@@ -355,7 +355,7 @@ number of rows searched for pivot when using indefinite ordering
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 scaling
+	INT scaling
 
 controls scaling (ignored if explicit SCALE argument present)
 
@@ -375,7 +375,7 @@ controls scaling (ignored if explicit SCALE argument present)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 scale_maxit
+	INT scale_maxit
 
 the number of scaling iterations performed (default 10 used if .scale_maxit < 0)
 
@@ -485,7 +485,7 @@ used to determine whether a system is consistent when seeking a Fredholm alterna
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_iterative_refinements
+	INT max_iterative_refinements
 
 maximum number of iterative refinements allowed
 
@@ -535,7 +535,7 @@ if .generate_matrix_file is .true. if a file describing the current matrix is to
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 matrix_file_device
+	INT matrix_file_device
 
 specifies the unit number to write the input matrix (in co-ordinate form
 

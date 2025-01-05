@@ -10,9 +10,9 @@ sils_sinfo_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct sils_sinfo_type{T}
-          flag::Int32
-          stat::Int32
+        struct sils_sinfo_type{T,INT}
+          flag::INT
+          stat::INT
           cond::T
           cond2::T
           berr::T
@@ -35,7 +35,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 flag
+	INT flag
 
 Flags success or failure case.
 
@@ -45,7 +45,7 @@ Flags success or failure case.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stat
+	INT stat
 
 STAT value after allocate failure.
 

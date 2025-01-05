@@ -10,12 +10,12 @@ rpd_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct rpd_control_type
+        struct rpd_control_type{INT}
           f_indexing::Bool
-          qplib::Int32
-          error::Int32
-          out::Int32
-          print_level::Int32
+          qplib::INT
+          error::INT
+          out::INT
+          print_level::INT
           space_critical::Bool
           deallocate_error_fatal::Bool
 
@@ -45,7 +45,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 qplib
+	INT qplib
 
 QPLIB file input stream number.
 
@@ -55,7 +55,7 @@ QPLIB file input stream number.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -65,7 +65,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -75,7 +75,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required is specified by print_level
 

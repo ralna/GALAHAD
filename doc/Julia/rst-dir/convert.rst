@@ -12,12 +12,7 @@ GALAHAD CONVERT package
 
 	convert_functions.rst
 
-parametric real type T
-----------------------
-
-Below, the symbol T refers to a parametric real type that may be Float32
-(single precision), Float64 (double precision) or, if supported, Float128
-(quadruple precision).
+.. include:: irt.rst
 
 .. include:: convert_functions.rst
 

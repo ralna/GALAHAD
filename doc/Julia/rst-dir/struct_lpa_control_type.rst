@@ -11,20 +11,20 @@ lpa_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct lpa_control_type{T}
+        struct lpa_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          start_print::Int32
-          stop_print::Int32
-          maxit::Int32
-          max_iterative_refinements::Int32
-          min_real_factor_size::Int32
-          min_integer_factor_size::Int32
-          random_number_seed::Int32
-          sif_file_device::Int32
-          qplib_file_device::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          start_print::INT
+          stop_print::INT
+          maxit::INT
+          max_iterative_refinements::INT
+          min_real_factor_size::INT
+          min_integer_factor_size::INT
+          random_number_seed::INT
+          sif_file_device::INT
+          qplib_file_device::INT
           infinity::T
           tol_data::T
           feas_tol::T
@@ -73,7 +73,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -83,7 +83,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -93,7 +93,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required is specified by print_level (>= 2 turns on LA04 output)
 
@@ -103,7 +103,7 @@ the level of output required is specified by print_level (>= 2 turns on LA04 out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 start_print
+	INT start_print
 
 any printing will start on this iteration
 
@@ -113,7 +113,7 @@ any printing will start on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stop_print
+	INT stop_print
 
 any printing will stop on this iteration
 
@@ -123,7 +123,7 @@ any printing will stop on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit
+	INT maxit
 
 at most maxit inner iterations are allowed
 
@@ -133,7 +133,7 @@ at most maxit inner iterations are allowed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_iterative_refinements
+	INT max_iterative_refinements
 
 maximum number of iterative refinements allowed
 
@@ -143,7 +143,7 @@ maximum number of iterative refinements allowed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 min_real_factor_size
+	INT min_real_factor_size
 
 initial size for real array for the factors and other data
 
@@ -153,7 +153,7 @@ initial size for real array for the factors and other data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 min_integer_factor_size
+	INT min_integer_factor_size
 
 initial size for integer array for the factors and other data
 
@@ -163,7 +163,7 @@ initial size for integer array for the factors and other data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 random_number_seed
+	INT random_number_seed
 
 the initial seed used when generating random numbers
 
@@ -173,7 +173,7 @@ the initial seed used when generating random numbers
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sif_file_device
+	INT sif_file_device
 
 specifies the unit number to write generated SIF file describing the current problem
 
@@ -183,7 +183,7 @@ specifies the unit number to write generated SIF file describing the current pro
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 qplib_file_device
+	INT qplib_file_device
 
 specifies the unit number to write generated QPLIB file describing the current problem
 

@@ -10,12 +10,12 @@ ir_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ir_control_type{T}
+        struct ir_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          itref_max::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          itref_max::INT
           acceptable_residual_relative::T
           acceptable_residual_absolute::T
           required_residual_relative::T
@@ -50,7 +50,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 unit for error messages
 
@@ -60,7 +60,7 @@ unit for error messages
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 unit for monitor output
 
@@ -70,7 +70,7 @@ unit for monitor output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 controls level of diagnostic output
 
@@ -80,7 +80,7 @@ controls level of diagnostic output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 itref_max
+	INT itref_max
 
 maximum number of iterative refinements allowed
 

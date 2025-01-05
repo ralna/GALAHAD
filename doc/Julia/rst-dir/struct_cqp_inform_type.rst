@@ -11,17 +11,17 @@ cqp_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct cqp_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct cqp_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          iter::Int32
-          factorization_status::Int32
+          iter::INT
+          factorization_status::INT
           factorization_integer::Int64
           factorization_real::Int64
-          nfacts::Int32
-          nbacts::Int32
-          threads::Int32
+          nfacts::INT
+          nbacts::INT
+          threads::INT
           obj::T
           primal_infeasibility::T
           dual_infeasibility::T
@@ -32,15 +32,15 @@ cqp_inform_type structure
           potential::T
           non_negligible_pivot::T
           feasible::Bool
-          checkpointsIter::NTuple{16,Int32}
+          checkpointsIter::NTuple{16,INT}
           checkpointsTime::NTuple{16,T}
           time::cqp_time_type{T}
-          fdc_inform::fdc_inform_type{T}
-          sbls_inform::sbls_inform_type{T}
-          fit_inform::fit_inform_type
-          roots_inform::roots_inform_type
-          cro_inform::cro_inform_type{T}
-          rpd_inform::rpd_inform_type
+          fdc_inform::fdc_inform_type{T,INT}
+          sbls_inform::sbls_inform_type{T,INT}
+          fit_inform::fit_inform_type{INT}
+          roots_inform::roots_inform_type{INT}
+          cro_inform::cro_inform_type{T,INT}
+          rpd_inform::rpd_inform_type{INT}
 
 .. _details-structcqp__inform__type:
 
@@ -58,7 +58,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See CQP_solve for details.
 
@@ -68,7 +68,7 @@ return status. See CQP_solve for details.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation.
 
@@ -88,7 +88,7 @@ the name of the array for which an allocation/deallocation error occurred.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter
+	INT iter
 
 the total number of iterations required
 
@@ -98,7 +98,7 @@ the total number of iterations required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorization_status
+	INT factorization_status
 
 the return status from the factorization
 
@@ -128,7 +128,7 @@ the total real workspace required for the factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nfacts
+	INT nfacts
 
 the total number of factorizations performed
 
@@ -138,7 +138,7 @@ the total number of factorizations performed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nbacts
+	INT nbacts
 
 the total number of "wasted" function evaluations during the linesearch
 
@@ -148,7 +148,7 @@ the total number of "wasted" function evaluations during the linesearch
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 threads
+	INT threads
 
 the number of threads used
 
@@ -258,7 +258,7 @@ is the returned "solution" feasible?
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 checkpointsIter[16]
+	INT checkpointsIter[16]
 
 checkpoints(i) records the iteration at which the criticality measures first fall below $10^{-i-1}$, i = 0, ..., 15 (-1 means not achieved)
 

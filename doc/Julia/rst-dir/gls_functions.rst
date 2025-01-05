@@ -8,7 +8,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function gls_initialize(T, data, control)
+        function gls_initialize(T, INT, data, control)
 
 Set default control values and initialize private data
 
@@ -33,7 +33,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function gls_read_specfile(T, control, specfile)
+        function gls_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -65,7 +65,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function gls_import(T, control, data, status)
+        function gls_import(T, INT, control, data, status)
 
 Import problem data into internal storage prior to solution.
 
@@ -87,7 +87,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **1**
@@ -122,7 +122,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function gls_reset_control(T, control, data, status)
+        function gls_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -144,7 +144,7 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **1**
@@ -157,7 +157,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function gls_information(T, data, ainfo, finfo, sinfo, status)
+        function gls_information(T, INT, data, ainfo, finfo, sinfo, status)
 
 Provides output information
 
@@ -189,7 +189,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -202,7 +202,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function gls_finalize(T, data, control, status)
+        function gls_finalize(T, INT, data, control, status)
 
 Deallocate all internal private storage
 
@@ -224,7 +224,7 @@ Deallocate all internal private storage
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 

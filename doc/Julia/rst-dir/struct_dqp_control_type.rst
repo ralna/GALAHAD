@@ -10,24 +10,24 @@ dqp_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct dqp_control_type{T}
+        struct dqp_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          start_print::Int32
-          stop_print::Int32
-          print_gap::Int32
-          dual_starting_point::Int32
-          maxit::Int32
-          max_sc::Int32
-          cauchy_only::Int32
-          arc_search_maxit::Int32
-          cg_maxit::Int32
-          explore_optimal_subspace::Int32
-          restore_problem::Int32
-          sif_file_device::Int32
-          qplib_file_device::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          start_print::INT
+          stop_print::INT
+          print_gap::INT
+          dual_starting_point::INT
+          maxit::INT
+          max_sc::INT
+          cauchy_only::INT
+          arc_search_maxit::INT
+          cg_maxit::INT
+          explore_optimal_subspace::INT
+          restore_problem::INT
+          sif_file_device::INT
+          qplib_file_device::INT
           rho::T
           infinity::T
           stop_abs_p::T
@@ -63,10 +63,10 @@ dqp_control_type structure
           sif_file_name::NTuple{31,Cchar}
           qplib_file_name::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
-          fdc_control::fdc_control_type{T}
-          sls_control::sls_control_type{T}
-          sbls_control::sbls_control_type{T}
-          gltr_control::gltr_control_type{T}
+          fdc_control::fdc_control_type{T,INT}
+          sls_control::sls_control_type{T,INT}
+          sbls_control::sbls_control_type{T,INT}
+          gltr_control::gltr_control_type{T,INT}
 
 .. _details-structdqp__control__type:
 
@@ -94,7 +94,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -104,7 +104,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -114,7 +114,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required is specified by print_level
 
@@ -124,7 +124,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 start_print
+	INT start_print
 
 any printing will start on this iteration
 
@@ -134,7 +134,7 @@ any printing will start on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stop_print
+	INT stop_print
 
 any printing will stop on this iteration
 
@@ -144,7 +144,7 @@ any printing will stop on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_gap
+	INT print_gap
 
 printing will only occur every print_gap iterations
 
@@ -154,7 +154,7 @@ printing will only occur every print_gap iterations
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 dual_starting_point
+	INT dual_starting_point
 
 which starting point should be used for the dual problem
 
@@ -176,7 +176,7 @@ which starting point should be used for the dual problem
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit
+	INT maxit
 
 at most maxit inner iterations are allowed
 
@@ -186,7 +186,7 @@ at most maxit inner iterations are allowed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_sc
+	INT max_sc
 
 the maximum permitted size of the Schur complement before a refactorization is performed (used in the case where there is no Fredholm Alternative, 0 = refactor every iteration)
 
@@ -196,7 +196,7 @@ the maximum permitted size of the Schur complement before a refactorization is p
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 cauchy_only
+	INT cauchy_only
 
 a subspace step will only be taken when the current Cauchy step has changed no more than than cauchy_only active constraints; the subspace step will always be taken if cauchy_only < 0
 
@@ -206,7 +206,7 @@ a subspace step will only be taken when the current Cauchy step has changed no m
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 arc_search_maxit
+	INT arc_search_maxit
 
 how many iterations are allowed per arc search (-ve = as many as require
 
@@ -216,7 +216,7 @@ how many iterations are allowed per arc search (-ve = as many as require
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 cg_maxit
+	INT cg_maxit
 
 how many CG iterations to perform per DQP iteration (-ve reverts to n+1)
 
@@ -226,7 +226,7 @@ how many CG iterations to perform per DQP iteration (-ve reverts to n+1)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 explore_optimal_subspace
+	INT explore_optimal_subspace
 
 once a potentially optimal subspace has been found, investigate it
 
@@ -242,7 +242,7 @@ once a potentially optimal subspace has been found, investigate it
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 restore_problem
+	INT restore_problem
 
 indicate whether and how much of the input problem should be restored on output. Possible values are
 
@@ -258,7 +258,7 @@ indicate whether and how much of the input problem should be restored on output.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sif_file_device
+	INT sif_file_device
 
 specifies the unit number to write generated SIF file describing the current problem
 
@@ -268,7 +268,7 @@ specifies the unit number to write generated SIF file describing the current pro
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 qplib_file_device
+	INT qplib_file_device
 
 specifies the unit number to write generated QPLIB file describing the current problem
 

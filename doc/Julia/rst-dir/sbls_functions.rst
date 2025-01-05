@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_initialize(T, data, control, status)
+        function sbls_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -29,7 +29,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_read_specfile(T, control, specfile)
+        function sbls_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_import(T, control, data, status, n, m, 
+        function sbls_import(T, INT, control, data, status, n, m, 
                              H_type, H_ne, H_row, H_col, H_ptr, 
                              A_type, A_ne, A_row, A_col, A_ptr, 
                              C_type, C_ne, C_row, C_col, C_ptr)
@@ -101,7 +101,7 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -133,12 +133,12 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix $H$.
+		- is a scalar variable of type INT that holds the number of rows in the symmetric matrix $H$.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix $C$.
+		- is a scalar variable of type INT that holds the number of rows in the symmetric matrix $C$.
 
 	*
 		- H_type
@@ -148,22 +148,22 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- H_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size H_ne and type INT that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size H_ne and type INT that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_type
@@ -173,22 +173,22 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- C_type
@@ -198,22 +198,22 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- C_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $C$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $C$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- C_row
 
-		- is a one-dimensional array of size C_ne and type Int32 that holds the row indices of the lower triangular part of $C$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size C_ne and type INT that holds the row indices of the lower triangular part of $C$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- C_col
 
-		- is a one-dimensional array of size C_ne and type Int32 that holds the column indices of the lower triangular part of $C$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size C_ne and type INT that holds the column indices of the lower triangular part of $C$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- C_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $C$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of $C$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; sbls_reset_control
 .. _doxid-galahad__sbls_8h_1afdfe80ab659c2936d23802b6a6103eb8:
@@ -221,7 +221,7 @@ Import structural matrix data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_reset_control(T, control, data, status)
+        function sbls_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -243,7 +243,7 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -255,7 +255,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_factorize_matrix(T, data, status, n, h_ne, H_val, 
+        function sbls_factorize_matrix(T, INT, data, status, n, h_ne, H_val, 
 	                               a_ne, A_val, c_ne, C_val, D)
 
 Form and factorize the block matrix
@@ -275,7 +275,7 @@ for some appropriate matrix $G$.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -342,12 +342,12 @@ for some appropriate matrix $G$.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix $H$.
+		- is a scalar variable of type INT that holds the number of rows in the symmetric matrix $H$.
 
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix $H$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the symmetric matrix $H$.
 
 	*
 		- H_val
@@ -357,7 +357,7 @@ for some appropriate matrix $G$.
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the unsymmetric matrix $A$.
+		- is a scalar variable of type INT that holds the number of entries in the unsymmetric matrix $A$.
 
 	*
 		- A_val
@@ -367,7 +367,7 @@ for some appropriate matrix $G$.
 	*
 		- c_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the symmetric matrix $C$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the symmetric matrix $C$.
 
 	*
 		- C_val
@@ -385,7 +385,7 @@ for some appropriate matrix $G$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_solve_system(T, data, status, n, m, sol)
+        function sbls_solve_system(T, INT, data, status, n, m, sol)
 
 Solve the block linear system
 $$\begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix} 
@@ -405,7 +405,7 @@ $$\begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix}
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -444,12 +444,12 @@ $$\begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix}
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of entries in the vector $a$.
+		- is a scalar variable of type INT that holds the number of entries in the vector $a$.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of entries in the vector $b$.
+		- is a scalar variable of type INT that holds the number of entries in the vector $b$.
 
 	*
 		- sol
@@ -462,7 +462,7 @@ $$\begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix}
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_information(T, data, inform, status)
+        function sbls_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -486,7 +486,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -499,7 +499,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_terminate(T, data, control, inform)
+        function sbls_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

@@ -10,9 +10,9 @@ roots_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct roots_inform_type
-          status::Int32
-          alloc_status::Int32
+        struct roots_inform_type{INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
 
 .. _details-structroots__inform__type:
@@ -31,7 +31,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. Possible values are:
 
@@ -65,7 +65,7 @@ return status. Possible values are:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 

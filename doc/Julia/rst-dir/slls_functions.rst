@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_initialize(T, data, control, status)
+        function slls_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -29,7 +29,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_read_specfile(T, control, specfile)
+        function slls_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_import(T, control, data, status, n, o, 
+        function slls_import(T, INT, control, data, status, n, o, 
                              Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -98,7 +98,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type INT that gives the exit status from the package. Possible values are:
 
 		  * **1**
                     The import was successful, and the package is ready
@@ -130,12 +130,12 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- o
 
-		- is a scalar variable of type Int32 that holds the number of residuals.
+		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
 		- Ao_type
@@ -145,27 +145,27 @@ Import problem data into internal storage prior to solution.
 	*
 		- Ao_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in $A_o$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in $A_o$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- Ao_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A_o$ in the sparse co-ordinate or sparse column-wise storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the row indices of $A_o$ in the sparse co-ordinate or sparse column-wise storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- Ao_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A_o$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the column indices of $A_o$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- Ao_ptr_ne
 
-		- is a scalar variable of type Int32, that holds the length of the pointer array if sparse row or column storage scheme is used for $A_o$. For the sparse row scheme, Ao_ptr_ne should be at least o+1, while for the sparse column scheme, it should be at least n+1, It need not be set when the other schemes are used.
+		- is a scalar variable of type INT, that holds the length of the pointer array if sparse row or column storage scheme is used for $A_o$. For the sparse row scheme, Ao_ptr_ne should be at least o+1, while for the sparse column scheme, it should be at least n+1, It need not be set when the other schemes are used.
 
 	*
 		- Ao_ptr
 
-		- is a one-dimensional array of size Ao_ptr_ne and type Int32, that holds the starting position of each row of $A_o$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it holds the starting position of each column of $A_o$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size Ao_ptr_ne and type INT, that holds the starting position of each row of $A_o$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it holds the starting position of each column of $A_o$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; slls_import_without_a
 .. _doxid-galahad__slls_8h_1a419f9b0769b4389beffbbc5f7d0fd58c:
@@ -173,7 +173,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_import_without_a(T, control, data, status, n, o)
+        function slls_import_without_a(T, INT, control, data, status, n, o)
 
 Import problem data into internal storage prior to solution when $A_o$ is
 not explicitly available.
@@ -196,7 +196,7 @@ not explicitly available.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **1**
@@ -225,12 +225,12 @@ not explicitly available.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- o
 
-		- is a scalar variable of type Int32 that holds the number of residuals.
+		- is a scalar variable of type INT that holds the number of residuals.
 
 .. index:: pair: function; slls_reset_control
 .. _doxid-galahad__slls_8h_1a96981ac9a0e3f44b2b38362fc3ab9991:
@@ -238,7 +238,7 @@ not explicitly available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_reset_control(T, control, data, status)
+        function slls_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -261,7 +261,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type INT that gives the exit status from the package. Possible values are:
 
 		  * **1**
                     The import was successful, and the package is ready
@@ -273,7 +273,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_solve_given_a(T, data, userdata, status, n, o, 
+        function slls_solve_given_a(T, INT, data, userdata, status, n, o, 
                                     Ao_ne, Ao_val, b, x, z, r, g, 
                                     x_stat, eval_prec)
 
@@ -300,7 +300,7 @@ Jacobian $A$ is available.
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the entry and exit status from the package.
+		  is a scalar variable of type INT that gives the entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
 
@@ -358,17 +358,17 @@ Jacobian $A$ is available.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- o
 
-		- is a scalar variable of type Int32 that holds the number of residuals.
+		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
 		- Ao_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the design matrix $A_o$.
+		- is a scalar variable of type INT that holds the number of entries in the design matrix $A_o$.
 
 	*
 		- Ao_val
@@ -403,7 +403,7 @@ Jacobian $A$ is available.
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type INT that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 	*
 		- eval_prec
@@ -430,7 +430,7 @@ Jacobian $A$ is available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_solve_reverse_a_prod(T, data, status, eval_status, n, o, b,
+        function slls_solve_reverse_a_prod(T, INT, data, status, eval_status, n, o, b,
                                            x_l, x_u, x, z, r, g, x_stat, v, p,
                                            nz_v, nz_v_start, nz_v_end, nz_p, 
                                            nz_p_end, w)
@@ -452,7 +452,7 @@ may be computed by the calling program.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  Possible exit values are:
@@ -599,17 +599,17 @@ may be computed by the calling program.
 	*
 		- eval_status
 
-		- is a scalar variable of type Int32 that is used to indicate if the matrix products can be provided (see ``status`` above)
+		- is a scalar variable of type INT that is used to indicate if the matrix products can be provided (see ``status`` above)
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- o
 
-		- is a scalar variable of type Int32 that holds the number of residuals.
+		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
 		- b
@@ -649,7 +649,7 @@ may be computed by the calling program.
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type INT that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 	*
 		- v
@@ -664,27 +664,27 @@ may be computed by the calling program.
 	*
 		- nz_v
 
-		- is a one-dimensional array of size n and type Int32 that is used for reverse communication (see status=3-4 above for details).
+		- is a one-dimensional array of size n and type INT that is used for reverse communication (see status=3-4 above for details).
 
 	*
 		- nz_v_start
 
-		- is a scalar of type Int32 that is used for reverse communication (see status=3-4 above for details).
+		- is a scalar of type INT that is used for reverse communication (see status=3-4 above for details).
 
 	*
 		- nz_v_end
 
-		- is a scalar of type Int32 that is used for reverse communication (see status=3-4 above for details).
+		- is a scalar of type INT that is used for reverse communication (see status=3-4 above for details).
 
 	*
 		- nz_p
 
-		- is a one-dimensional array of size n and type Int32 that is used for reverse communication (see status=4 above for details).
+		- is a one-dimensional array of size n and type INT that is used for reverse communication (see status=4 above for details).
 
 	*
 		- nz_p_end
 
-		- is a scalar of type Int32 that is used for reverse communication (see status=4 above for details).
+		- is a scalar of type INT that is used for reverse communication (see status=4 above for details).
 
 	*
 		- w
@@ -697,7 +697,7 @@ may be computed by the calling program.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_information(T, data, inform, status)
+        function slls_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -720,7 +720,7 @@ Provides output information
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type INT that gives the exit status from the package. Possible values are (currently):
 
 		  * **0**
                     The values were recorded successfully
@@ -731,7 +731,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_terminate(T, data, control, inform)
+        function slls_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

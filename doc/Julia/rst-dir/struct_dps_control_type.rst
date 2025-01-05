@@ -10,14 +10,14 @@ dps_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct dps_control_type{T}
+        struct dps_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          problem::Int32
-          print_level::Int32
-          new_h::Int32
-          taylor_max_degree::Int32
+          error::INT
+          out::INT
+          problem::INT
+          print_level::INT
+          new_h::INT
+          taylor_max_degree::INT
           eigen_min::T
           lower::T
           upper::T
@@ -29,7 +29,7 @@ dps_control_type structure
           problem_file::NTuple{31,Cchar}
           symmetric_linear_solver::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
-          sls_control::sls_control_type{T}
+          sls_control::sls_control_type{T,INT}
 	
 .. _details-structdps__control__type:
 
@@ -57,7 +57,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 unit for error messages
 
@@ -67,7 +67,7 @@ unit for error messages
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 unit for monitor output
 
@@ -77,7 +77,7 @@ unit for monitor output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 problem
+	INT problem
 
 unit to write problem data into file problem_file
 
@@ -87,7 +87,7 @@ unit to write problem data into file problem_file
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 controls level of diagnostic output
 
@@ -97,7 +97,7 @@ controls level of diagnostic output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 new_h
+	INT new_h
 
 how much of $H$ has changed since the previous call. Possible values are
 
@@ -113,7 +113,7 @@ how much of $H$ has changed since the previous call. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 taylor_max_degree
+	INT taylor_max_degree
 
 maximum degree of Taylor approximant allowed
 

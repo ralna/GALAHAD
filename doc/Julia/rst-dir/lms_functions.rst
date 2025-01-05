@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lms_initialize(T, data, control, status)
+        function lms_initialize(T, INT, data, control, status)
 
 .. rubric:: Parameters:
 
@@ -27,7 +27,7 @@ callable functions
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -40,7 +40,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lms_information(T, data, inform, status)
+        function lms_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -62,7 +62,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -75,7 +75,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lms_terminate(T, data, control, inform)
+        function lms_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

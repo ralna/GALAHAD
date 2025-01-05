@@ -11,23 +11,23 @@ wcp_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct wcp_control_type{T}
+        struct wcp_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          start_print::Int32
-          stop_print::Int32
-          maxit::Int32
-          initial_point::Int32
-          factor::Int32
-          max_col::Int32
-          indmin::Int32
-          valmin::Int32
-          itref_max::Int32
-          infeas_max::Int32
-          perturbation_strategy::Int32
-          restore_problem::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          start_print::INT
+          stop_print::INT
+          maxit::INT
+          initial_point::INT
+          factor::INT
+          max_col::INT
+          indmin::INT
+          valmin::INT
+          itref_max::INT
+          infeas_max::INT
+          perturbation_strategy::INT
+          restore_problem::INT
           infinity::T
           stop_p::T
           stop_d::T
@@ -61,8 +61,8 @@ wcp_control_type structure
           record_x_status::Bool
           record_c_status::Bool
           prefix::NTuple{31,Cchar}
-          fdc_control::fdc_control_type{T}
-          sbls_control::sbls_control_type{T}
+          fdc_control::fdc_control_type{T,INT}
+          sbls_control::sbls_control_type{T,INT}
 
 
 .. _details-structwcp__control__type:
@@ -91,7 +91,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -101,7 +101,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -111,7 +111,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required is specified by print_level
 
@@ -121,7 +121,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 start_print
+	INT start_print
 
 any printing will start on this iteration
 
@@ -131,7 +131,7 @@ any printing will start on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stop_print
+	INT stop_print
 
 any printing will stop on this iteration
 
@@ -141,7 +141,7 @@ any printing will stop on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit
+	INT maxit
 
 at most maxit inner iterations are allowed
 
@@ -151,7 +151,7 @@ at most maxit inner iterations are allowed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 initial_point
+	INT initial_point
 
 how to choose the initial point. Possible values are
 
@@ -165,7 +165,7 @@ how to choose the initial point. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factor
+	INT factor
 
 the factorization to be used. Possible values are
 
@@ -181,7 +181,7 @@ the factorization to be used. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_col
+	INT max_col
 
 the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization
 
@@ -191,7 +191,7 @@ the maximum number of nonzeros in a column of A which is permitted with the Schu
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 indmin
+	INT indmin
 
 an initial guess as to the integer workspace required by SBLS
 
@@ -201,7 +201,7 @@ an initial guess as to the integer workspace required by SBLS
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 valmin
+	INT valmin
 
 an initial guess as to the real workspace required by SBLS
 
@@ -211,7 +211,7 @@ an initial guess as to the real workspace required by SBLS
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 itref_max
+	INT itref_max
 
 the maximum number of iterative refinements allowed
 
@@ -221,7 +221,7 @@ the maximum number of iterative refinements allowed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 infeas_max
+	INT infeas_max
 
 the number of iterations for which the overall infeasibility of the problem is not reduced by at least a factor .required_infeas_reduction before the problem is flagged as infeasible (see required_infeas_reducti
 
@@ -231,7 +231,7 @@ the number of iterations for which the overall infeasibility of the problem is n
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 perturbation_strategy
+	INT perturbation_strategy
 
 the strategy used to reduce relaxed constraint bounds. Possible values are
 
@@ -251,7 +251,7 @@ the strategy used to reduce relaxed constraint bounds. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 restore_problem
+	INT restore_problem
 
 indicate whether and how much of the input problem should be restored on output. Possible values are
 
@@ -605,7 +605,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	fdc_control_type{T} :ref:`fdc_control_type<doxid-structfdc__control__type>` fdc_control
+	fdc_control_type{T,INT} :ref:`fdc_control_type<doxid-structfdc__control__type>` fdc_control
 
 control parameters for FDC
 
@@ -615,6 +615,6 @@ control parameters for FDC
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	sbls_control_type{T} :ref:`sbls_control_type<doxid-structsbls__control__type>` sbls_control
+	sbls_control_type{T,INT} :ref:`sbls_control_type<doxid-structsbls__control__type>` sbls_control
 
 control parameters for SBLS

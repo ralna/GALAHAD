@@ -10,17 +10,17 @@ fdc_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct fdc_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct fdc_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          factorization_status::Int32
+          factorization_status::INT
           factorization_integer::Int64
           factorization_real::Int64
           non_negligible_pivot::T
           time::fdc_time_type{T}
-          sls_inform::sls_inform_type{T}
-          uls_inform::uls_inform_type{T}
+          sls_inform::sls_inform_type{T,INT}
+          uls_inform::uls_inform_type{T,INT}
 	
 .. _details-structfdc__inform__type:
 
@@ -38,7 +38,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See FDC_find_dependent for details
 
@@ -48,7 +48,7 @@ return status. See FDC_find_dependent for details
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -68,7 +68,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorization_status
+	INT factorization_status
 
 the return status from the factorization
 

@@ -9,7 +9,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_initialize(T, data, control, inform)
+        function nls_initialize(T, INT, data, control, inform)
 
 Set default control values and initialize private data
 
@@ -39,7 +39,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_read_specfile(T, control, specfile)
+        function nls_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -71,7 +71,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_import(T, control, data, status, n, m,
+        function nls_import(T, INT, control, data, status, n, m,
                             J_type, J_ne, J_row, J_col, J_ptr,
                             H_type, H_ne, H_row, H_col, H_ptr,
                             P_type, P_ne, P_row, P_col, P_ptr, w)
@@ -96,7 +96,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **1**
@@ -129,12 +129,12 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of residuals.
+		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
 		- J_type
@@ -144,22 +144,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- J_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in $J$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in $J$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- J_row
 
-		- is a one-dimensional array of size J_ne and type Int32 that holds the row indices of $J$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size J_ne and type INT that holds the row indices of $J$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- J_col
 
-		- is a one-dimensional array of size J_ne and type Int32 that holds the column indices of $J$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size J_ne and type INT that holds the column indices of $J$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- J_ptr
 
-		- is a one-dimensional array of size m+1 and type Int32 that holds the starting position of each row of $J$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size m+1 and type INT that holds the starting position of each row of $J$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- H_type
@@ -169,22 +169,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- H_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size H_ne and type INT that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size H_ne and type INT that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- P_type
@@ -194,22 +194,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- P_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in $P$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in $P$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- P_row
 
-		- is a one-dimensional array of size P_ne and type Int32 that holds the row indices of $P$ in either the sparse co-ordinate, or the sparse column-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be C_NULL.
+		- is a one-dimensional array of size P_ne and type INT that holds the row indices of $P$ in either the sparse co-ordinate, or the sparse column-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be C_NULL.
 
 	*
 		- P_col
 
-		- is a one-dimensional array of size P_ne and type Int32 that holds the row indices of $P$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size P_ne and type INT that holds the row indices of $P$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- P_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $P$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of $P$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- w
@@ -222,7 +222,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_reset_control(T, control, data, status)
+        function nls_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -244,7 +244,7 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **1**
@@ -257,7 +257,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_solve_with_mat(T, data, userdata, status, n, m, x, c, g,
+        function nls_solve_with_mat(T, INT, data, userdata, status, n, m, x, c, g,
                                     eval_c, j_ne, eval_j, h_ne, eval_h,
                                     p_ne, eval_hprods)
 
@@ -285,7 +285,7 @@ function calls.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
@@ -358,12 +358,12 @@ function calls.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of residuals.
+		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
 		- x
@@ -400,7 +400,7 @@ function calls.
 	*
 		- j_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the Jacobian matrix $J$.
+		- is a scalar variable of type INT that holds the number of entries in the Jacobian matrix $J$.
 
 	*
 		- eval_j
@@ -422,7 +422,7 @@ function calls.
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$ if it is used.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the Hessian matrix $H$ if it is used.
 
 	*
 		- eval_h
@@ -446,7 +446,7 @@ function calls.
 	*
 		- p_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the residual-Hessians-vector product matrix $P$ if it is used.
+		- is a scalar variable of type INT that holds the number of entries in the residual-Hessians-vector product matrix $P$ if it is used.
 
 	*
 		- eval_hprods
@@ -474,7 +474,7 @@ function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_solve_without_mat(T, data, userdata, status, n, m, x, c, g,
+        function nls_solve_without_mat(T, INT, data, userdata, status, n, m, x, c, g,
                                        eval_c, eval_jprod, eval_hprod,
                                        p_ne, eval_hprods)
 
@@ -504,7 +504,7 @@ information is available by function calls.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
@@ -577,12 +577,12 @@ information is available by function calls.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of residuals.
+		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
 		- x
@@ -660,7 +660,7 @@ information is available by function calls.
 	*
 		- p_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the residual-Hessians-vector product matrix $P$ if it is used.
+		- is a scalar variable of type INT that holds the number of entries in the residual-Hessians-vector product matrix $P$ if it is used.
 
 	*
 		- eval_hprods
@@ -688,7 +688,7 @@ information is available by function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_solve_reverse_with_mat(T, data, status, eval_status,
+        function nls_solve_reverse_with_mat(T, INT, data, status, eval_status,
                                             n, m, x, c, g, j_ne, J_val,
                                             y, h_ne, H_val, v, p_ne, P_val)
 
@@ -711,7 +711,7 @@ returning to the calling procedure
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
@@ -842,17 +842,17 @@ returning to the calling procedure
 	*
 		- eval_status
 
-		- is a scalar variable of type Int32 that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+		- is a scalar variable of type INT that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of residuals.
+		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
 		- x
@@ -872,7 +872,7 @@ returning to the calling procedure
 	*
 		- j_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the Jacobian matrix $J$.
+		- is a scalar variable of type INT that holds the number of entries in the Jacobian matrix $J$.
 
 	*
 		- J_val
@@ -887,7 +887,7 @@ returning to the calling procedure
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
@@ -902,7 +902,7 @@ returning to the calling procedure
 	*
 		- p_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the residual-Hessians-vector product matrix, $P$.
+		- is a scalar variable of type INT that holds the number of entries in the residual-Hessians-vector product matrix, $P$.
 
 	*
 		- P_val
@@ -915,7 +915,7 @@ returning to the calling procedure
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_solve_reverse_without_mat(T, data, status, eval_status,
+        function nls_solve_reverse_without_mat(T, INT, data, status, eval_status,
                                                n, m, x, c, g, transpose,
                                                u, v, y, p_ne, P_val)
 
@@ -938,7 +938,7 @@ is only available by returning to the calling procedure.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  On initial entry, status must be set to 1.
@@ -1065,17 +1065,17 @@ is only available by returning to the calling procedure.
 	*
 		- eval_status
 
-		- is a scalar variable of type Int32 that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+		- is a scalar variable of type INT that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of residuals.
+		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
 		- x
@@ -1115,7 +1115,7 @@ is only available by returning to the calling procedure.
 	*
 		- p_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the residual-Hessians-vector product matrix, $P$.
+		- is a scalar variable of type INT that holds the number of entries in the residual-Hessians-vector product matrix, $P$.
 
 	*
 		- P_val
@@ -1128,7 +1128,7 @@ is only available by returning to the calling procedure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_information(T, data, inform, status)
+        function nls_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -1150,7 +1150,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -1163,7 +1163,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_terminate(T, data, control, inform)
+        function nls_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

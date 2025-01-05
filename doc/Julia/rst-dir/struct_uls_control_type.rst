@@ -10,23 +10,23 @@ uls_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct uls_control_type{T}
+        struct uls_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          warning::Int32
-          out::Int32
-          print_level::Int32
-          print_level_solver::Int32
-          initial_fill_in_factor::Int32
-          min_real_factor_size::Int32
-          min_integer_factor_size::Int32
+          error::INT
+          warning::INT
+          out::INT
+          print_level::INT
+          print_level_solver::INT
+          initial_fill_in_factor::INT
+          min_real_factor_size::INT
+          min_integer_factor_size::INT
           max_factor_size::Int64
-          blas_block_size_factorize::Int32
-          blas_block_size_solve::Int32
-          pivot_control::Int32
-          pivot_search_limit::Int32
-          minimum_size_for_btf::Int32
-          max_iterative_refinements::Int32
+          blas_block_size_factorize::INT
+          blas_block_size_solve::INT
+          pivot_control::INT
+          pivot_search_limit::INT
+          minimum_size_for_btf::INT
+          max_iterative_refinements::INT
           stop_if_singular::Bool
           array_increase_factor::T
           switch_to_full_code_density::T
@@ -64,7 +64,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 unit for error messages
 
@@ -74,7 +74,7 @@ unit for error messages
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 warning
+	INT warning
 
 unit for warning messages
 
@@ -84,7 +84,7 @@ unit for warning messages
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 unit for monitor output
 
@@ -94,7 +94,7 @@ unit for monitor output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 controls level of diagnostic output
 
@@ -104,7 +104,7 @@ controls level of diagnostic output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level_solver
+	INT print_level_solver
 
 controls level of diagnostic output from external solver
 
@@ -114,7 +114,7 @@ controls level of diagnostic output from external solver
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 initial_fill_in_factor
+	INT initial_fill_in_factor
 
 prediction of factor by which the fill-in will exceed the initial number of nonzeros in $A$
 
@@ -124,7 +124,7 @@ prediction of factor by which the fill-in will exceed the initial number of nonz
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 min_real_factor_size
+	INT min_real_factor_size
 
 initial size for real array for the factors and other data
 
@@ -134,7 +134,7 @@ initial size for real array for the factors and other data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 min_integer_factor_size
+	INT min_integer_factor_size
 
 initial size for integer array for the factors and other data
 
@@ -154,7 +154,7 @@ maximum size for real array for the factors and other data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 blas_block_size_factorize
+	INT blas_block_size_factorize
 
 level 3 blocking in factorize
 
@@ -164,7 +164,7 @@ level 3 blocking in factorize
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 blas_block_size_solve
+	INT blas_block_size_solve
 
 level 2 and 3 blocking in solve
 
@@ -174,7 +174,7 @@ level 2 and 3 blocking in solve
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 pivot_control
+	INT pivot_control
 
 pivot control:
 
@@ -194,7 +194,7 @@ pivot control:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 pivot_search_limit
+	INT pivot_search_limit
 
 number of rows/columns pivot selection restricted to (0 = no restriction)
 
@@ -204,7 +204,7 @@ number of rows/columns pivot selection restricted to (0 = no restriction)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 minimum_size_for_btf
+	INT minimum_size_for_btf
 
 the minimum permitted size of blocks within the block-triangular form
 
@@ -214,7 +214,7 @@ the minimum permitted size of blocks within the block-triangular form
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_iterative_refinements
+	INT max_iterative_refinements
 
 maximum number of iterative refinements allowed
 

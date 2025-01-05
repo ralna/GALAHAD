@@ -10,23 +10,23 @@ eqp_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct eqp_control_type{T}
+        struct eqp_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          factorization::Int32
-          max_col::Int32
-          indmin::Int32
-          valmin::Int32
-          len_ulsmin::Int32
-          itref_max::Int32
-          cg_maxit::Int32
-          preconditioner::Int32
-          semi_bandwidth::Int32
-          new_a::Int32
-          new_h::Int32
-          sif_file_device::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          factorization::INT
+          max_col::INT
+          indmin::INT
+          valmin::INT
+          len_ulsmin::INT
+          itref_max::INT
+          cg_maxit::INT
+          preconditioner::INT
+          semi_bandwidth::INT
+          new_a::INT
+          new_h::INT
+          sif_file_device::INT
           pivot_tol::T
           pivot_tol_for_basis::T
           zero_pivot::T
@@ -45,9 +45,9 @@ eqp_control_type structure
           generate_sif_file::Bool
           sif_file_name::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
-          fdc_control::fdc_control_type{T}
-          sbls_control::sbls_control_type{T}
-          gltr_control::gltr_control_type{T}
+          fdc_control::fdc_control_type{T,INT}
+          sbls_control::sbls_control_type{T,INT}
+          gltr_control::gltr_control_type{T,INT}
 	
 .. _details-structeqp__control__type:
 
@@ -75,7 +75,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -85,7 +85,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -95,7 +95,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required is specified by print_level
 
@@ -105,7 +105,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorization
+	INT factorization
 
 the factorization to be used. Possible values are /li 0 automatic /li 1 Schur-complement factorization /li 2 augmented-system factorization (OBSOLETE)
 
@@ -115,7 +115,7 @@ the factorization to be used. Possible values are /li 0 automatic /li 1 Schur-co
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_col
+	INT max_col
 
 the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization (OBSOLETE)
 
@@ -125,7 +125,7 @@ the maximum number of nonzeros in a column of A which is permitted with the Schu
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 indmin
+	INT indmin
 
 an initial guess as to the integer workspace required by SBLS (OBSOLETE)
 
@@ -135,7 +135,7 @@ an initial guess as to the integer workspace required by SBLS (OBSOLETE)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 valmin
+	INT valmin
 
 an initial guess as to the real workspace required by SBLS (OBSOLETE)
 
@@ -145,7 +145,7 @@ an initial guess as to the real workspace required by SBLS (OBSOLETE)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 len_ulsmin
+	INT len_ulsmin
 
 an initial guess as to the workspace required by ULS (OBSOLETE)
 
@@ -155,7 +155,7 @@ an initial guess as to the workspace required by ULS (OBSOLETE)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 itref_max
+	INT itref_max
 
 the maximum number of iterative refinements allowed (OBSOLETE)
 
@@ -165,7 +165,7 @@ the maximum number of iterative refinements allowed (OBSOLETE)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 cg_maxit
+	INT cg_maxit
 
 the maximum number of CG iterations allowed. If cg_maxit < 0, this number will be reset to the dimension of the system + 1
 
@@ -175,7 +175,7 @@ the maximum number of CG iterations allowed. If cg_maxit < 0, this number will b
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 preconditioner
+	INT preconditioner
 
 the preconditioner to be used for the CG. Possible values are
 
@@ -197,7 +197,7 @@ the preconditioner to be used for the CG. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 semi_bandwidth
+	INT semi_bandwidth
 
 the semi-bandwidth of a band preconditioner, if appropriate (OBSOLETE)
 
@@ -207,7 +207,7 @@ the semi-bandwidth of a band preconditioner, if appropriate (OBSOLETE)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 new_a
+	INT new_a
 
 how much has A changed since last problem solved: 0 = not changed, 1 = values changed, 2 = structure changed
 
@@ -217,7 +217,7 @@ how much has A changed since last problem solved: 0 = not changed, 1 = values ch
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 new_h
+	INT new_h
 
 how much has H changed since last problem solved: 0 = not changed, 1 = values changed, 2 = structure changed
 
@@ -227,7 +227,7 @@ how much has H changed since last problem solved: 0 = not changed, 1 = values ch
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sif_file_device
+	INT sif_file_device
 
 specifies the unit number to write generated SIF file describing the current problem
 

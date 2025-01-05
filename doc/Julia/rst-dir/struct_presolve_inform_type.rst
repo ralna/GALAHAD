@@ -10,11 +10,11 @@ presolve_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct presolve_inform_type
-          status::Int32
-          status_continue::Int32
-          status_continued::Int32
-          nbr_transforms::Int32
+        struct presolve_inform_type{INT}
+          status::INT
+          status_continue::INT
+          status_continued::INT
+          nbr_transforms::INT
           message::NTuple{3,NTuple{81,Cchar}}
 
 .. _details-structpresolve__inform__type:
@@ -33,7 +33,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 The presolve exit condition. It can take the following values (symbol in parentheses is the related Fortran code):
 
@@ -324,7 +324,7 @@ The presolve exit condition. It can take the following values (symbol in parenth
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nbr_transforms
+	INT nbr_transforms
 
 The final number of problem transformations, as reported to the user at exit.
 

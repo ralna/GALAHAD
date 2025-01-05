@@ -12,30 +12,30 @@ uls_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct uls_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct uls_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          more_info::Int32
+          more_info::INT
           out_of_range::Int64
           duplicates::Int64
           entries_dropped::Int64
           workspace_factors::Int64
-          compresses::Int32
+          compresses::INT
           entries_in_factors::Int64
-          rank::Int32
-          structural_rank::Int32
-          pivot_control::Int32
-          iterative_refinements::Int32
+          rank::INT
+          structural_rank::INT
+          pivot_control::INT
+          iterative_refinements::INT
           alternative::Bool
           solver::NTuple{21,Cchar}
-          gls_ainfo_type::gls_ainfo_type{T}
-          gls_finfo_type::gls_finfo_type{T}
-          gls_sinfo_type::gls_sinfo_type
-          ma48_ainfo::ma48_ainfo{T}
-          ma48_finfo::ma48_finfo{T}
-          ma48_sinfo::ma48_sinfo
-          lapack_error::Int32
+          gls_ainfo_type::gls_ainfo_type{T,INT}
+          gls_finfo_type::gls_finfo_type{T,INT}
+          gls_sinfo_type::gls_sinfo_type{INT}
+          ma48_ainfo::ma48_ainfo{T,INT}
+          ma48_finfo::ma48_finfo{T,INT}
+          ma48_sinfo::ma48_sinfo{INT}
+          lapack_error::INT
 
 .. _details-structuls__inform__type:
 
@@ -53,7 +53,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 reported return status:
 
@@ -103,7 +103,7 @@ reported return status:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 STAT value after allocate failure.
 
@@ -123,7 +123,7 @@ name of array which provoked an allocate failure
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 more_info
+	INT more_info
 
 further information on failure
 
@@ -173,7 +173,7 @@ predicted or actual number of reals and integers to hold factors
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 compresses
+	INT compresses
 
 number of compresses of data required
 
@@ -193,7 +193,7 @@ number of entries in factors
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 rank
+	INT rank
 
 estimated rank of the matrix
 
@@ -203,7 +203,7 @@ estimated rank of the matrix
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 structural_rank
+	INT structural_rank
 
 structural rank of the matrix
 
@@ -213,7 +213,7 @@ structural rank of the matrix
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 pivot_control
+	INT pivot_control
 
 pivot control:
 
@@ -243,7 +243,7 @@ pivot control:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iterative_refinements
+	INT iterative_refinements
 
 number of iterative refinements performed
 
@@ -333,7 +333,7 @@ the solve output structure from hsl_ma48
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 lapack_error
+	INT lapack_error
 
 the LAPACK error return code
 

@@ -12,12 +12,12 @@ bsc_control_type structure
 
         struct bsc_control_type
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          max_col::Int32
-          new_a::Int32
-          extra_space_s::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          max_col::INT
+          new_a::INT
+          extra_space_s::INT
           s_also_by_column::Bool
           space_critical::Bool
           deallocate_error_fatal::Bool
@@ -49,7 +49,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -59,7 +59,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -69,7 +69,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required is specified by print_level
 
@@ -79,7 +79,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_col
+	INT max_col
 
 maximum permitted number of nonzeros in a column of $A$; -ve means unlimit
 
@@ -89,7 +89,7 @@ maximum permitted number of nonzeros in a column of $A$; -ve means unlimit
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 new_a
+	INT new_a
 
 how much has $A$ changed since it was last accessed:
 
@@ -107,7 +107,7 @@ how much has $A$ changed since it was last accessed:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 extra_space_s
+	INT extra_space_s
 
 how much extra space is to be allocated in $S$ above that needed to hold the Schur complement
 

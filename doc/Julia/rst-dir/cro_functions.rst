@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function cro_initialize(T, data, control, status)
+        function cro_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -32,7 +32,7 @@ Set default control values and initialize private data
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type INT that gives the exit status from the package. Possible values are (currently):
 
 		  * **0**
                     The initialization was successful.
@@ -43,7 +43,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function cro_read_specfile(T, control, specfile)
+        function cro_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -75,7 +75,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function cro_crossover_solution(T, data, control, inform, n, m, m_equal, 
+        function cro_crossover_solution(T, INT, data, control, inform, n, m, m_equal, 
                                         h_ne, H_val, H_col, H_ptr, 
                                         a_ne, A_val, A_col, A_ptr, 
                                         g, c_l, c_u, x_l, x_u,
@@ -155,22 +155,22 @@ Crosover the solution from a primal-dual to a basic one.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints.
+		- is a scalar variable of type INT that holds the number of general linear constraints.
 
 	*
 		- m_equal
 
-		- is a scalar variable of type Int32 that holds the number of general linear equality constraints. Such constraints must occur first in $A$.
+		- is a scalar variable of type INT that holds the number of general linear equality constraints. Such constraints must occur first in $A$.
 
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the **lower triangular** part of the Hessian matrix $H$.
+		- is a scalar variable of type INT that holds the number of entries in the **lower triangular** part of the Hessian matrix $H$.
 
 	*
 		- H_val
@@ -180,17 +180,17 @@ Crosover the solution from a primal-dual to a basic one.
 	*
 		- H_col
 
-		- is a one-dimensional array of type Int32 that holds the column indices of the lower triangular part of $H$, in the same order as those in H_val.
+		- is a one-dimensional array of type INT that holds the column indices of the lower triangular part of $H$, in the same order as those in H_val.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$. The n+1-st component holds the total number of entries (plus one if fortran indexing is used).
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of $H$. The n+1-st component holds the total number of entries (plus one if fortran indexing is used).
 
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$.
+		- is a scalar variable of type INT that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- A_val
@@ -200,12 +200,12 @@ Crosover the solution from a primal-dual to a basic one.
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in the same order as those in A_val.
+		- is a one-dimensional array of size A_ne and type INT that holds the column indices of $A$ in the same order as those in A_val.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size m+1 and type Int32 that holds the starting position of each row of $A$. The m+1-st component holds the total number of entries (plus one if fortran indexing is used).
+		- is a one-dimensional array of size m+1 and type INT that holds the starting position of each row of $A$. The m+1-st component holds the total number of entries (plus one if fortran indexing is used).
 
 	*
 		- g
@@ -255,12 +255,12 @@ Crosover the solution from a primal-dual to a basic one.
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type Int32 that must be set on entry to give the status of the problem variables. If x_stat(j) is negative, the variable $x_j$ is active on its lower bound, if it is positive, it is active and lies on its upper bound, and if it is zero, it is inactiive and lies between its bounds. On exit, the $j$ -th component of x_stat is -1 if the variable is basic and active on its lower bound, -2 it is non-basic but active on its lower bound, 1 if it is basic and active on its upper bound, 2 it is non-basic but active on its upper bound, and 0 if it is inactive.
+		- is a one-dimensional array of size n and type INT that must be set on entry to give the status of the problem variables. If x_stat(j) is negative, the variable $x_j$ is active on its lower bound, if it is positive, it is active and lies on its upper bound, and if it is zero, it is inactiive and lies between its bounds. On exit, the $j$ -th component of x_stat is -1 if the variable is basic and active on its lower bound, -2 it is non-basic but active on its lower bound, 1 if it is basic and active on its upper bound, 2 it is non-basic but active on its upper bound, and 0 if it is inactive.
 
 	*
 		- c_stat
 
-		- is a one-dimensional array of size m and type Int32 that must be set on entry to give the status of the general linear constraints. If c_stat(i) is negative, the constraint value $a_i^Tx$ is active on its lower bound, if it is positive, it is active and lies on its upper bound, and if it is zero, it is inactiive and lies between its bounds. On exit, the $i$ -th component of x_stat is -1 if the constraint is basic and active on its lower bound, -2 it is non-basic but active on its lower bound, 1 if it is basic and active on its upper bound, 2 it is non-basic but active on its upper bound, and 0 if it is inactive.
+		- is a one-dimensional array of size m and type INT that must be set on entry to give the status of the general linear constraints. If c_stat(i) is negative, the constraint value $a_i^Tx$ is active on its lower bound, if it is positive, it is active and lies on its upper bound, and if it is zero, it is inactiive and lies between its bounds. On exit, the $i$ -th component of x_stat is -1 if the constraint is basic and active on its lower bound, -2 it is non-basic but active on its lower bound, 1 if it is basic and active on its upper bound, 2 it is non-basic but active on its upper bound, and 0 if it is inactive.
 
 .. index:: pair: function; cro_terminate
 .. _doxid-galahad__cro_8h_1ae0692951f03b0999f73a8f68b7d62212:
@@ -268,7 +268,7 @@ Crosover the solution from a primal-dual to a basic one.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function cro_terminate(T, data, control, inform)
+        function cro_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

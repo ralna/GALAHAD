@@ -10,33 +10,33 @@ psls_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct psls_inform_type{T}
-          status::Int32
-          alloc_status::Int32
-          analyse_status::Int32
-          factorize_status::Int32
-          solve_status::Int32
+        struct psls_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
+          analyse_status::INT
+          factorize_status::INT
+          solve_status::INT
           factorization_integer::Int64
           factorization_real::Int64
-          preconditioner::Int32
-          semi_bandwidth::Int32
-          reordered_semi_bandwidth::Int32
-          out_of_range::Int32
-          duplicates::Int32
-          upper::Int32
-          missing_diagonals::Int32
-          semi_bandwidth_used::Int32
-          neg1::Int32
-          neg2::Int32
+          preconditioner::INT
+          semi_bandwidth::INT
+          reordered_semi_bandwidth::INT
+          out_of_range::INT
+          duplicates::INT
+          upper::INT
+          missing_diagonals::INT
+          semi_bandwidth_used::INT
+          neg1::INT
+          neg2::INT
           perturbed::Bool
           fill_in_ratio::T
           norm_residual::T
           bad_alloc::NTuple{81,Cchar}
-          mc61_info::NTuple{10,Cint}
+          mc61_info::NTuple{10,INT}
           mc61_rinfo::NTuple{15,T}
           time::psls_time_type{T}
-          sls_inform::sls_inform_type{T}
-          mi28_info::mi28_info{T}
+          sls_inform::sls_inform_type{T,INT}
+          mi28_info::mi28_info{T,INT}
 
 .. _details-structpsls__inform__type:
 
@@ -54,7 +54,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 reported return status:
 
@@ -80,7 +80,7 @@ reported return status:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 STAT value after allocate failure.
 
@@ -90,7 +90,7 @@ STAT value after allocate failure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 analyse_status
+	INT analyse_status
 
 status return from factorization
 
@@ -100,7 +100,7 @@ status return from factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorize_status
+	INT factorize_status
 
 status return from factorization
 
@@ -110,7 +110,7 @@ status return from factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 solve_status
+	INT solve_status
 
 status return from solution phase
 
@@ -140,7 +140,7 @@ number of real words to hold factors
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 preconditioner
+	INT preconditioner
 
 code for the actual preconditioner used (see control.preconditioner)
 
@@ -150,7 +150,7 @@ code for the actual preconditioner used (see control.preconditioner)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 semi_bandwidth
+	INT semi_bandwidth
 
 the actual semi-bandwidth
 
@@ -160,7 +160,7 @@ the actual semi-bandwidth
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 reordered_semi_bandwidth
+	INT reordered_semi_bandwidth
 
 the semi-bandwidth following reordering (if any)
 
@@ -170,7 +170,7 @@ the semi-bandwidth following reordering (if any)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out_of_range
+	INT out_of_range
 
 number of indices out-of-range
 
@@ -180,7 +180,7 @@ number of indices out-of-range
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 duplicates
+	INT duplicates
 
 number of duplicates
 
@@ -190,7 +190,7 @@ number of duplicates
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 upper
+	INT upper
 
 number of entries from the strict upper triangle
 
@@ -200,7 +200,7 @@ number of entries from the strict upper triangle
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 missing_diagonals
+	INT missing_diagonals
 
 number of missing diagonal entries for an allegedly-definite matrix
 
@@ -210,7 +210,7 @@ number of missing diagonal entries for an allegedly-definite matrix
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 semi_bandwidth_used
+	INT semi_bandwidth_used
 
 the semi-bandwidth used
 
@@ -220,7 +220,7 @@ the semi-bandwidth used
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 neg1
+	INT neg1
 
 number of 1 by 1 pivots in the factorization
 
@@ -230,7 +230,7 @@ number of 1 by 1 pivots in the factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 neg2
+	INT neg2
 
 number of 2 by 2 pivots in the factorization
 
@@ -280,7 +280,7 @@ name of array which provoked an allocate failure
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mc61_info[10]
+	INT mc61_info[10]
 
 the integer and real output arrays from mc61
 

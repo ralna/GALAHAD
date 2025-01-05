@@ -10,15 +10,15 @@ llsr_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct llsr_control_type{T}
+        struct llsr_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          new_a::Int32
-          new_s::Int32
-          max_factorizations::Int32
-          taylor_max_degree::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          new_a::INT
+          new_s::INT
+          max_factorizations::INT
+          taylor_max_degree::INT
           initial_multiplier::T
           lower::T
           upper::T
@@ -28,9 +28,9 @@ llsr_control_type structure
           deallocate_error_fatal::Bool
           definite_linear_solver::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
-          sbls_control::sbls_control_type{T}
-          sls_control::sls_control_type{T}
-          ir_control::ir_control_type{T}
+          sbls_control::sbls_control_type{T,INT}
+          sls_control::sls_control_type{T,INT}
+          ir_control::ir_control_type{T,INT}
 
 .. _details-structllsr__control__type:
 
@@ -58,7 +58,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 unit for error messages
 
@@ -68,7 +68,7 @@ unit for error messages
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 unit for monitor output
 
@@ -78,7 +78,7 @@ unit for monitor output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 controls level of diagnostic output
 
@@ -88,7 +88,7 @@ controls level of diagnostic output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 new_a
+	INT new_a
 
 how much of $A$ has changed since the previous call. Possible values are
 
@@ -104,7 +104,7 @@ how much of $A$ has changed since the previous call. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 new_s
+	INT new_s
 
 how much of $S$ has changed since the previous call. Possible values are
 
@@ -120,7 +120,7 @@ how much of $S$ has changed since the previous call. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_factorizations
+	INT max_factorizations
 
 the maximum number of factorizations (=iterations) allowed. -ve implies no limit
 
@@ -130,7 +130,7 @@ the maximum number of factorizations (=iterations) allowed. -ve implies no limit
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 taylor_max_degree
+	INT taylor_max_degree
 
 maximum degree of Taylor approximant allowed (<= 3)
 

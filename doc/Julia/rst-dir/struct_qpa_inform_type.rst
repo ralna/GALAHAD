@@ -11,26 +11,26 @@ qpa_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct qpa_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct qpa_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          major_iter::Int32
-          iter::Int32
-          cg_iter::Int32
-          factorization_status::Int32
+          major_iter::INT
+          iter::INT
+          cg_iter::INT
+          factorization_status::INT
           factorization_integer::Int64
           factorization_real::Int64
-          nfacts::Int32
-          nmods::Int32
-          num_g_infeas::Int32
-          num_b_infeas::Int32
+          nfacts::INT
+          nmods::INT
+          num_g_infeas::INT
+          num_b_infeas::INT
           obj::T
           infeas_g::T
           infeas_b::T
           merit::T
           time::qpa_time_type{T}
-          sls_inform::sls_inform_type{T}
+          sls_inform::sls_inform_type{T,INT}
 
 .. _details-structqpa__inform__type:
 
@@ -48,7 +48,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See QPA_solve for details
 
@@ -58,7 +58,7 @@ return status. See QPA_solve for details
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -78,7 +78,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 major_iter
+	INT major_iter
 
 the total number of major iterations required
 
@@ -88,7 +88,7 @@ the total number of major iterations required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter
+	INT iter
 
 the total number of iterations required
 
@@ -98,7 +98,7 @@ the total number of iterations required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 cg_iter
+	INT cg_iter
 
 the total number of conjugate gradient iterations required
 
@@ -108,7 +108,7 @@ the total number of conjugate gradient iterations required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorization_status
+	INT factorization_status
 
 the return status from the factorization
 
@@ -138,7 +138,7 @@ the total real workspace required for the factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nfacts
+	INT nfacts
 
 the total number of factorizations performed
 
@@ -148,7 +148,7 @@ the total number of factorizations performed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nmods
+	INT nmods
 
 the total number of factorizations which were modified to ensure that th matrix was an appropriate preconditioner
 
@@ -158,7 +158,7 @@ the total number of factorizations which were modified to ensure that th matrix 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 num_g_infeas
+	INT num_g_infeas
 
 the number of infeasible general constraints
 
@@ -168,7 +168,7 @@ the number of infeasible general constraints
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 num_b_infeas
+	INT num_b_infeas
 
 the number of infeasible simple-bound constraints
 

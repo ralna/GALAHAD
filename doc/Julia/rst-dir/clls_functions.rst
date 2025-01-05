@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function clls_initialize(T, data, control, status)
+        function clls_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -29,7 +29,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function clls_read_specfile(T, control, specfile)
+        function clls_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.
@@ -74,7 +74,7 @@ components of the control structure.
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function clls_import(T, control, data, status, n, o, m, 
+        function clls_import(T, INT, control, data, status, n, o, m, 
                              Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr, 
                              A_type, A_ne, A_row, A_col, A_ptr_ne, A_ptr)
 
@@ -99,7 +99,7 @@ Import problem data into internal storage prior to solution.
         *
                 - status
 
-                - is a scalar variable of type Int32 that gives the exit
+                - is a scalar variable of type INT that gives the exit
                   status from the package. Possible values are:
 
                   * **0**
@@ -131,17 +131,17 @@ Import problem data into internal storage prior to solution.
         *
                 - n
 
-                - is a scalar variable of type Int32 that holds the number of variables.
+                - is a scalar variable of type INT that holds the number of variables.
 
         *
                 - o
 
-                - is a scalar variable of type Int32 that holds the number of residuals.
+                - is a scalar variable of type INT that holds the number of residuals.
 
         *
                 - m
 
-                - is a scalar variable of type Int32 that holds the number of general linear constraints.
+                - is a scalar variable of type INT that holds the number of general linear constraints.
 
         *
                 - Ao_type
@@ -151,27 +151,27 @@ Import problem data into internal storage prior to solution.
         *
                 - Ao_ne
 
-                - is a scalar variable of type Int32 that holds the number of entries in $A_o$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+                - is a scalar variable of type INT that holds the number of entries in $A_o$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
         *
                 - Ao_row
 
-                - is a one-dimensional array of size Ao_ne and type Int32 that holds the row indices of $A_o$ in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.
+                - is a one-dimensional array of size Ao_ne and type INT that holds the row indices of $A_o$ in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
         *
                 - Ao_col
 
-                - is a one-dimensional array of size Ao_ne and type Int32 that holds the column indices of $A_o$ in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.
+                - is a one-dimensional array of size Ao_ne and type INT that holds the column indices of $A_o$ in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
         *
                 - Ao_ptr_ne
 
-                - is a scalar variable of type Int32 that holds the length of the pointer array if sparse row or column storage scheme is used for $A_o$. For the sparse row scheme,  Ao_ptr_ne should be at least o+1, while for the sparse column scheme,  it should be at least n+1, It need not be set when the other schemes are used.
+                - is a scalar variable of type INT that holds the length of the pointer array if sparse row or column storage scheme is used for $A_o$. For the sparse row scheme,  Ao_ptr_ne should be at least o+1, while for the sparse column scheme,  it should be at least n+1, It need not be set when the other schemes are used.
 
         *
                 - Ao_ptr
 
-                - is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A_o$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each column of $A_o$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+                - is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of $A_o$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type INT that holds the starting position of each column of $A_o$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
         *
                 - A_type
@@ -181,28 +181,28 @@ Import problem data into internal storage prior to solution.
         *
                 - A_ne
 
-                - is a scalar variable of type Int32 that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+                - is a scalar variable of type INT that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
         *
                 - A_row
 
-                - is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.
+                - is a one-dimensional array of size A_ne and type INT that holds the row indices of $A$ in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
         *
                 - A_col
 
-                - is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.
+                - is a one-dimensional array of size A_ne and type INT that holds the column indices of $A$ in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
         *
                 - A_ptr_ne
 
-                - is a scalar variable of type Int32 that holds the length of the pointer array if sparse row or column storage scheme is used for $A$. For the sparse row scheme,  A_ptr_ne should be at least o+1, while for the sparse column scheme,  it should be at least n+1, It need not be set when the other schemes are used.
+                - is a scalar variable of type INT that holds the length of the pointer array if sparse row or column storage scheme is used for $A$. For the sparse row scheme,  A_ptr_ne should be at least o+1, while for the sparse column scheme,  it should be at least n+1, It need not be set when the other schemes are used.
 
         *
                 - A_ptr
 
-                - is a one-dimensional array of size n+1 and type Int32 
-that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each column of $A$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+                - is a one-dimensional array of size n+1 and type INT 
+that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type INT that holds the starting position of each column of $A$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 
 
@@ -213,7 +213,7 @@ that holds the starting position of each row of $A$, as well as the total number
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function clls_reset_control(T, control, data, status)
+        function clls_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -235,7 +235,7 @@ Reset control parameters after import if required.
         *
                 - status
 
-                - is a scalar variable of type Int32 that gives the exit
+                - is a scalar variable of type INT that gives the exit
                   status from the package. Possible values are:
 
                   * **0**
@@ -247,7 +247,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function clls_solve_clls(T, data, status, n, o, m, 
+        function clls_solve_clls(T, INT, data, status, n, o, m, 
                                  Ao_ne, Ao_val, b, sigma, a_ne, A_val, 
                                  c_l, c_u, x_l, x_u, x, r, c, y, z, 
                                  x_stat, c_stat, w)
@@ -267,7 +267,7 @@ Solve the linearly-constrained regularized linear least-squares problem.
         *
                 - status
 
-                - is a scalar variable of type Int32 that gives the
+                - is a scalar variable of type INT that gives the
                   entry and exit status from the package.
 
                   Possible exit values are:
@@ -340,22 +340,22 @@ Solve the linearly-constrained regularized linear least-squares problem.
         *
                 - n
 
-                - is a scalar variable of type Int32 that holds the number of variables
+                - is a scalar variable of type INT that holds the number of variables
 
         *
                 - o
 
-                - is a scalar variable of type Int32 that holds the number of residulas.
+                - is a scalar variable of type INT that holds the number of residulas.
 
         *
                 - m
 
-                - is a scalar variable of type Int32 that holds the number of general linear constraints.
+                - is a scalar variable of type INT that holds the number of general linear constraints.
 
         *
                 - Ao_ne
 
-                - is a scalar variable of type Int32 that holds the number of entries in the objectve design matrix $A_o$.
+                - is a scalar variable of type INT that holds the number of entries in the objectve design matrix $A_o$.
 
         *
                 - Ao_val
@@ -375,7 +375,7 @@ Solve the linearly-constrained regularized linear least-squares problem.
         *
                 - a_ne
 
-                - is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$.
+                - is a scalar variable of type INT that holds the number of entries in the constraint Jacobian matrix $A$.
 
         *
                 - A_val
@@ -430,12 +430,12 @@ Solve the linearly-constrained regularized linear least-squares problem.
         *
                 - x_stat
 
-                - is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+                - is a one-dimensional array of size n and type INT that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
         *
                 - c_stat
 
-                - is a one-dimensional array of size m and type Int32 that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value $a_i^Tx$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+                - is a one-dimensional array of size m and type INT that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value $a_i^Tx$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
         *
                 - w
@@ -449,7 +449,7 @@ Solve the linearly-constrained regularized linear least-squares problem.
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function clls_information(T, data, inform, status)
+        function clls_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -471,7 +471,7 @@ Provides output information
         *
                 - status
 
-                - is a scalar variable of type Int32 that gives the exit
+                - is a scalar variable of type INT that gives the exit
                   status from the package. Possible values are
                   (currently):
 
@@ -484,7 +484,7 @@ Provides output information
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function clls_terminate(T, data, control, inform)
+        function clls_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

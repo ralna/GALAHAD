@@ -10,14 +10,14 @@ gls_finfo structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct gls_finfo_type{T}
-          flag::Int32
-          more::Int32
-          size_factor::Int32
-          len_factorize::Int32
-          drop::Int32
-          rank::Int32
-          stat::Int32
+        struct gls_finfo_type{T,INT}
+          flag::INT
+          more::INT
+          size_factor::INT
+          len_factorize::INT
+          drop::INT
+          rank::INT
+          stat::INT
           ops::T
 	
 .. _details-structgls__finfo:
@@ -36,7 +36,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 flag
+	INT flag
 
 Flags success or failure case.
 
@@ -46,7 +46,7 @@ Flags success or failure case.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 more
+	INT more
 
 More information on failure.
 
@@ -56,7 +56,7 @@ More information on failure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 size_factor
+	INT size_factor
 
 Number of words to hold factors.
 
@@ -66,7 +66,7 @@ Number of words to hold factors.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 len_factorize
+	INT len_factorize
 
 Size for subsequent factorization.
 
@@ -76,7 +76,7 @@ Size for subsequent factorization.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 drop
+	INT drop
 
 Number of entries dropped.
 
@@ -86,7 +86,7 @@ Number of entries dropped.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 rank
+	INT rank
 
 Estimated rank.
 
@@ -96,7 +96,7 @@ Estimated rank.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stat
+	INT stat
 
 Status value after allocate failure.
 

@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_initialize(T, data, control, status)
+        function eqp_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -31,7 +31,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_read_specfile(T, control, specfile)
+        function eqp_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_import(T, control, data, status, n, m, 
+        function eqp_import(T, INT, control, data, status, n, m, 
                             H_type, H_ne, H_row, H_col, H_ptr, 
                             A_type, A_ne, A_row, A_col, A_ptr)
 
@@ -102,7 +102,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -138,12 +138,12 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables.
+		- is a scalar variable of type INT that holds the number of variables.
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints.
+		- is a scalar variable of type INT that holds the number of general linear constraints.
 
 	*
 		- H_type
@@ -153,22 +153,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- H_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size H_ne and type INT that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size H_ne and type INT that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_type
@@ -178,22 +178,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; eqp_reset_control
 .. _doxid-galahad__eqp_8h_1a1b8074313bdc2176203d0c0e9ea87c24:
@@ -201,7 +201,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_reset_control(T, control, data, status)
+        function eqp_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -226,7 +226,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type INT that gives the exit status from the package. Possible values are:
 
 		  * **0**
                     The import was successful.
@@ -237,7 +237,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_solve_qp(T, data, status, n, m, h_ne, H_val, g, f, 
+        function eqp_solve_qp(T, INT, data, status, n, m, h_ne, H_val, g, f, 
                               a_ne, A_val, c, x, y)
 
 Solve the quadratic program when the Hessian $H$ is available.
@@ -257,7 +257,7 @@ Solve the quadratic program when the Hessian $H$ is available.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  Possible exit values are:
@@ -331,17 +331,17 @@ Solve the quadratic program when the Hessian $H$ is available.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints.
+		- is a scalar variable of type INT that holds the number of general linear constraints.
 
 	*
 		- h_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
@@ -361,7 +361,7 @@ Solve the quadratic program when the Hessian $H$ is available.
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$.
+		- is a scalar variable of type INT that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- A_val
@@ -389,7 +389,7 @@ Solve the quadratic program when the Hessian $H$ is available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_solve_sldqp(T, data, status, n, m, w, x0, g, f, 
+        function eqp_solve_sldqp(T, INT, data, status, n, m, w, x0, g, f, 
                                  a_ne, A_val, c, x, y)
 
 Solve the shifted least-distance quadratic program
@@ -407,7 +407,7 @@ Solve the shifted least-distance quadratic program
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  Possible exit values are:
@@ -481,12 +481,12 @@ Solve the shifted least-distance quadratic program
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints.
+		- is a scalar variable of type INT that holds the number of general linear constraints.
 
 	*
 		- w
@@ -511,7 +511,7 @@ Solve the shifted least-distance quadratic program
 	*
 		- a_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix $A$.
+		- is a scalar variable of type INT that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- A_val
@@ -539,7 +539,7 @@ Solve the shifted least-distance quadratic program
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_resolve_qp(T, data, status, n, m, g, f, c, x, y)
+        function eqp_resolve_qp(T, INT, data, status, n, m, g, f, c, x, y)
 
 Resolve the quadratic program or shifted least-distance quadratic program when some or all of the data $g$, $f$ and $c$ has changed
 
@@ -558,7 +558,7 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  Possible exit values are:
@@ -622,12 +622,12 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of general linear constraints.
+		- is a scalar variable of type INT that holds the number of general linear constraints.
 
 	*
 		- g
@@ -660,7 +660,7 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_information(T, data, inform, status)
+        function eqp_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -684,7 +684,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -697,7 +697,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_terminate(T, data, control, inform)
+        function eqp_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

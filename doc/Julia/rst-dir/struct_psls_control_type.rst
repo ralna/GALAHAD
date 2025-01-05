@@ -10,19 +10,19 @@ psls_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct psls_control_type{T}
+        struct psls_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          preconditioner::Int32
-          semi_bandwidth::Int32
-          scaling::Int32
-          ordering::Int32
-          max_col::Int32
-          icfs_vectors::Int32
-          mi28_lsize::Int32
-          mi28_rsize::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          preconditioner::INT
+          semi_bandwidth::INT
+          scaling::INT
+          ordering::INT
+          max_col::INT
+          icfs_vectors::INT
+          mi28_lsize::INT
+          mi28_rsize::INT
           min_diagonal::T
           new_structure::Bool
           get_semi_bandwidth::Bool
@@ -31,8 +31,8 @@ psls_control_type structure
           deallocate_error_fatal::Bool
           definite_linear_solver::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
-          sls_control::sls_control_type{T}
-          mi28_control::mi28_control{T}
+          sls_control::sls_control_type{T,INT}
+          mi28_control::mi28_control{T,INT}
 
 .. _details-structpsls__control__type:
 
@@ -60,7 +60,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 unit for error messages
 
@@ -70,7 +70,7 @@ unit for error messages
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 unit for monitor output
 
@@ -80,7 +80,7 @@ unit for monitor output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 controls level of diagnostic output
 
@@ -90,7 +90,7 @@ controls level of diagnostic output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 preconditioner
+	INT preconditioner
 
 which preconditioner to use:
 
@@ -124,7 +124,7 @@ which preconditioner to use:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 semi_bandwidth
+	INT semi_bandwidth
 
 the semi-bandwidth for band(H) when .preconditioner = 2,3
 
@@ -134,7 +134,7 @@ the semi-bandwidth for band(H) when .preconditioner = 2,3
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 scaling
+	INT scaling
 
 not used at present
 
@@ -144,7 +144,7 @@ not used at present
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ordering
+	INT ordering
 
 see scaling
 
@@ -154,7 +154,7 @@ see scaling
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_col
+	INT max_col
 
 maximum number of nonzeros in a column of $A$ for Schur-complement factorization to accommodate newly deleted rpws and columns
 
@@ -164,7 +164,7 @@ maximum number of nonzeros in a column of $A$ for Schur-complement factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 icfs_vectors
+	INT icfs_vectors
 
 number of extra vectors of length n required by the Lin-More' incomplete Cholesky preconditioner when .preconditioner = 6
 
@@ -174,7 +174,7 @@ number of extra vectors of length n required by the Lin-More' incomplete Cholesk
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mi28_lsize
+	INT mi28_lsize
 
 the maximum number of fill entries within each column of the incomplete factor L computed by HSL_MI28 when .preconditioner = 7. In general, increasing mi28_lsize improve the quality of the preconditioner but increases the time to compute and then apply the preconditioner. Values less than 0 are treated as 0
 
@@ -184,7 +184,7 @@ the maximum number of fill entries within each column of the incomplete factor L
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mi28_rsize
+	INT mi28_rsize
 
 the maximum number of entries within each column of the strictly lower triangular matrix $R$ used in the computation of the preconditioner by HSL_MI28 when .preconditioner = 7. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold $R$. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on mi28_rsize. Setting mi28_rsize > 0 generally leads to a higher quality preconditioner than using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally recommended
 

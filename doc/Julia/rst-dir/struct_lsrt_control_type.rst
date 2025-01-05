@@ -10,20 +10,20 @@ lsrt_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct lsrt_control_type{T}
+        struct lsrt_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          start_print::Int32
-          stop_print::Int32
-          print_gap::Int32
-          itmin::Int32
-          itmax::Int32
-          bitmax::Int32
-          extra_vectors::Int32
-          stopping_rule::Int32
-          freq::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          start_print::INT
+          stop_print::INT
+          print_gap::INT
+          itmin::INT
+          itmax::INT
+          bitmax::INT
+          extra_vectors::INT
+          stopping_rule::INT
+          freq::INT
           stop_relative::T
           stop_absolute::T
           fraction_opt::T
@@ -58,7 +58,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -68,7 +68,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -78,7 +78,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required is specified by print_level
 
@@ -88,7 +88,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 start_print
+	INT start_print
 
 any printing will start on this iteration
 
@@ -98,7 +98,7 @@ any printing will start on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stop_print
+	INT stop_print
 
 any printing will stop on this iteration
 
@@ -108,7 +108,7 @@ any printing will stop on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_gap
+	INT print_gap
 
 the number of iterations between printing
 
@@ -118,7 +118,7 @@ the number of iterations between printing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 itmin
+	INT itmin
 
 the minimum number of iterations allowed (-ve = no bound)
 
@@ -128,7 +128,7 @@ the minimum number of iterations allowed (-ve = no bound)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 itmax
+	INT itmax
 
 the maximum number of iterations allowed (-ve = no bound)
 
@@ -138,7 +138,7 @@ the maximum number of iterations allowed (-ve = no bound)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 bitmax
+	INT bitmax
 
 the maximum number of Newton inner iterations per outer iteration allowed (-ve = no bound)
 
@@ -148,7 +148,7 @@ the maximum number of Newton inner iterations per outer iteration allowed (-ve =
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 extra_vectors
+	INT extra_vectors
 
 the number of extra work vectors of length n used
 
@@ -158,7 +158,7 @@ the number of extra work vectors of length n used
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stopping_rule
+	INT stopping_rule
 
 the stopping rule used: 0=1.0, 1=norm step, 2=norm step/sigma (NOT USED)
 
@@ -168,7 +168,7 @@ the stopping rule used: 0=1.0, 1=norm step, 2=norm step/sigma (NOT USED)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 freq
+	INT freq
 
 frequency for solving the reduced tri-diagonal problem (NOT USED)
 

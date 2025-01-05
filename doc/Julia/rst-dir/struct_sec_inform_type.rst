@@ -10,8 +10,8 @@ sec_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct sec_inform_type
-          status::Int32
+        struct sec_inform_type{INT}
+          status::INT
 
 .. _details-structsec__inform__type:
 
@@ -29,7 +29,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. Possible values are:
 

@@ -10,10 +10,10 @@ scu_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct scu_inform_type
-          status::Int32
-          alloc_status::Int32
-          inertia::NTuple{3,Cint}
+        struct scu_inform_type{INT}
+          status::INT
+          alloc_status::INT
+          inertia::NTuple{3,INT}
 
 .. _details-structscu__inform__type:
 
@@ -31,7 +31,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. A non-zero value indicates an error or a request for further information. See SCU_solve for details.
 
@@ -41,7 +41,7 @@ return status. A non-zero value indicates an error or a request for further info
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the return status from the last attempted internal workspace array allocation or deallocation. A non-zero value indicates that the allocation or deallocation was unsuccessful, and corresponds to the fortran STAT= value on the user’s system.
 
@@ -51,7 +51,7 @@ the return status from the last attempted internal workspace array allocation or
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 inertia[3]
+	INT inertia[3]
 
 the inertia of $S$ when the extended matrix is symmetric. Specifically, inertia(i), i=0,1,2 give the number of positive, negative and zero eigenvalues of $S$ respectively.
 

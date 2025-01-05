@@ -13,27 +13,27 @@ ma48_control structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma48_control{T}
-          f_arrays::Int32
+        struct ma48_control{T,INT}
+          f_arrays::INT
           multiplier::T
           u::T
           switch_::T
           drop::T
           tolerance::T
           cgce::T
-          lp::Int32
-          wp::Int32
-          mp::Int32
-          ldiag::Int32
-          btf::Int32
-          struct_::Int32
-          maxit::Int32
-          factor_blocking::Int32
-          solve_blas::Int32
-          pivoting::Int32
-          diagonal_pivoting::Int32
-          fill_in::Int32
-          switch_mode::Int32
+          lp::INT
+          wp::INT
+          mp::INT
+          ldiag::INT
+          btf::INT
+          struct_::INT
+          maxit::INT
+          factor_blocking::INT
+          solve_blas::INT
+          pivoting::INT
+          diagonal_pivoting::INT
+          fill_in::INT
+          switch_mode::INT
 
 .. _details-structma48__ainfo:
 
@@ -46,23 +46,23 @@ ma48_ainfo structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma48_ainfo{T}
+        struct ma48_ainfo{T,INT}
           ops::T
-          flag::Int32
-          more::Int32
+          flag::INT
+          more::INT
           lena_analyse::Clong
           lenj_analyse::Clong
           lena_factorize::Clong
           leni_factorize::Clong
-          ncmpa::Int32
-          rank::Int32
+          ncmpa::INT
+          rank::INT
           drop::Clong
-          struc_rank::Int32
+          struc_rank::INT
           oor::Clong
           dup::Clong
-          stat::Int32
-          lblock::Int32
-          sblock::Int32
+          stat::INT
+          lblock::INT
+          sblock::INT
           tblock::Clong
 
 .. _details-structma48__finfo:
@@ -76,16 +76,16 @@ ma48_finfo structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma48_finfo{T}
+        struct ma48_finfo{T,INT}
           ops::T
-          flag::Int32
-          more::Int32
+          flag::INT
+          more::INT
           size_factor::Clong
           lena_factorize::Clong
           leni_factorize::Clong
           drop::Clong
-          rank::Int32
-          stat::Int32
+          rank::INT
+          stat::INT
 
 .. _details-structma48__sinfo:
 
@@ -98,10 +98,10 @@ ma48_sinfo structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma48_sinfo
-          flag::Int32
-          more::Int32
-          stat::Int32
+        struct ma48_sinfo{INT}
+          flag::INT
+          more::INT
+          stat::INT
 
 .. _details-structma57__control:
 
@@ -114,8 +114,8 @@ ma57_control structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma57_control{T}
-          f_arrays::Int32
+        struct ma57_control{T,INT}
+          f_arrays::INT
           multiplier::T
           reduce::T
           u::T
@@ -124,24 +124,24 @@ ma57_control structure
           tolerance::T
           convergence::T
           consist::T
-          lp::Int32
-          wp::Int32
-          mp::Int32
-          sp::Int32
-          ldiag::Int32
-          nemin::Int32
-          factorblocking::Int32
-          solveblocking::Int32
-          la::Int32
-          liw::Int32
-          maxla::Int32
-          maxliw::Int32
-          pivoting::Int32
-          thresh::Int32
-          ordering::Int32
-          scaling::Int32
-          rank_deficient::Int32
-          ispare::NTuple{5,Cint}
+          lp::INT
+          wp::INT
+          mp::INT
+          sp::INT
+          ldiag::INT
+          nemin::INT
+          factorblocking::INT
+          solveblocking::INT
+          la::INT
+          liw::INT
+          maxla::INT
+          maxliw::INT
+          pivoting::INT
+          thresh::INT
+          ordering::INT
+          scaling::INT
+          rank_deficient::INT
+          ispare::NTuple{5,INT}
           rspare::NTuple{10,T}
 
 .. _details-structma57__ainfo:
@@ -155,25 +155,25 @@ ma57_ainfo structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma57_ainfo{T}
+        struct ma57_ainfo{T,INT}
           opsa::T
           opse::T
-          flag::Int32
-          more::Int32
-          nsteps::Int32
-          nrltot::Int32
-          nirtot::Int32
-          nrlnec::Int32
-          nirnec::Int32
-          nrladu::Int32
-          niradu::Int32
-          ncmpa::Int32
-          ordering::Int32
-          oor::Int32
-          dup::Int32
-          maxfrt::Int32
-          stat::Int32
-          ispare::NTuple{5,Cint}
+          flag::INT
+          more::INT
+          nsteps::INT
+          nrltot::INT
+          nirtot::INT
+          nrlnec::INT
+          nirnec::INT
+          nrladu::INT
+          niradu::INT
+          ncmpa::INT
+          ordering::INT
+          oor::INT
+          dup::INT
+          maxfrt::INT
+          stat::INT
+          ispare::NTuple{5,INT}
           rspare::NTuple{10,T}
 
 .. _details-structma57__finfo:
@@ -187,34 +187,34 @@ ma57_finfo structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma57_finfo{T}
+        struct ma57_finfo{T,INT}
           opsa::T
           opse::T
           opsb::T
           maxchange::T
           smin::T
           smax::T
-          flag::Int32
-          more::Int32
-          maxfrt::Int32
-          nebdu::Int32
-          nrlbdu::Int32
-          nirbdu::Int32
-          nrltot::Int32
-          nirtot::Int32
-          nrlnec::Int32
-          nirnec::Int32
-          ncmpbr::Int32
-          ncmpbi::Int32
-          ntwo::Int32
-          neig::Int32
-          delay::Int32
-          signc::Int32
-          static_::Int32
-          modstep::Int32
-          rank::Int32
-          stat::Int32
-          ispare::NTuple{5,Cint}
+          flag::INT
+          more::INT
+          maxfrt::INT
+          nebdu::INT
+          nrlbdu::INT
+          nirbdu::INT
+          nrltot::INT
+          nirtot::INT
+          nrlnec::INT
+          nirnec::INT
+          ncmpbr::INT
+          ncmpbi::INT
+          ntwo::INT
+          neig::INT
+          delay::INT
+          signc::INT
+          static_::INT
+          modstep::INT
+          rank::INT
+          stat::INT
+          ispare::NTuple{5,INT}
           rspare::NTuple{10,T}
 
 .. _details-structma57__sinfo:
@@ -228,15 +228,15 @@ ma57_sinfo structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma57_sinfo{T}
+        struct ma57_sinfo{T,INT}
           cond::T
           cond2::T
           berr::T
           berr2::T
           error::T
-          flag::Int32
-          stat::Int32
-          ispare::NTuple{5,Cint}
+          flag::INT
+          stat::INT
+          ispare::NTuple{5,INT}
           rspare::NTuple{10,T}
 
 .. _details-structma77__control:
@@ -250,34 +250,34 @@ ma77_control structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma77_control{T}
-          f_arrays::Int32
-          print_level::Int32
-          unit_diagnostics::Int32
-          unit_error::Int32
-          unit_warning::Int32
-          bits::Int32
-          buffer_lpage::NTuple{2,Cint}
-          buffer_npage::NTuple{2,Cint}
+        struct ma77_control{T,INT}
+          f_arrays::INT
+          print_level::INT
+          unit_diagnostics::INT
+          unit_error::INT
+          unit_warning::INT
+          bits::INT
+          buffer_lpage::NTuple{2,INT}
+          buffer_npage::NTuple{2,INT}
           file_size::Clong
           maxstore::Clong
           storage::NTuple{3,Clong}
-          nemin::Int32
-          maxit::Int32
-          infnorm::Int32
+          nemin::INT
+          maxit::INT
+          infnorm::INT
           thresh::T
-          nb54::Int32
-          action::Int32
+          nb54::INT
+          action::INT
           multiplier::T
-          nb64::Int32
-          nbi::Int32
+          nb64::INT
+          nbi::INT
           small::T
           static_::T
           storage_indef::Clong
           u::T
           umin::T
           consist_tol::T
-          ispare::NTuple{5,Cint}
+          ispare::NTuple{5,INT}
           lspare::NTuple{5,Clong}
           rspare::NTuple{5,T}
 
@@ -292,39 +292,39 @@ ma77_info structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma77_info{T}
+        struct ma77_info{T,INT}
           detlog::T
-          detsign::Int32
-          flag::Int32
-          iostat::Int32
-          matrix_dup::Int32
-          matrix_rank::Int32
-          matrix_outrange::Int32
-          maxdepth::Int32
-          maxfront::Int32
+          detsign::INT
+          flag::INT
+          iostat::INT
+          matrix_dup::INT
+          matrix_rank::INT
+          matrix_outrange::INT
+          maxdepth::INT
+          maxfront::INT
           minstore::Clong
-          ndelay::Int32
+          ndelay::INT
           nfactor::Clong
           nflops::Clong
-          niter::Int32
-          nsup::Int32
-          num_neg::Int32
-          num_nothresh::Int32
-          num_perturbed::Int32
-          ntwo::Int32
-          stat::Int32
-          index::NTuple{4,Cint}
+          niter::INT
+          nsup::INT
+          num_neg::INT
+          num_nothresh::INT
+          num_perturbed::INT
+          ntwo::INT
+          stat::INT
+          index::NTuple{4,INT}
           nio_read::NTuple{2,Clong}
           nio_write::NTuple{2,Clong}
           nwd_read::NTuple{2,Clong}
           nwd_write::NTuple{2,Clong}
-          num_file::NTuple{4,Cint}
+          num_file::NTuple{4,INT}
           storage::NTuple{4,Clong}
-          tree_nodes::Int32
-          unit_restart::Int32
-          unused::Int32
+          tree_nodes::INT
+          unit_restart::INT
+          unused::INT
           usmall::T
-          ispare::NTuple{5,Cint}
+          ispare::NTuple{5,INT}
           lspare::NTuple{5,Clong}
           rspare::NTuple{5,T}
 
@@ -339,22 +339,22 @@ ma86_control structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma86_control{T}
-          f_arrays::Int32
-          diagnostics_level::Int32
-          unit_diagnostics::Int32
-          unit_error::Int32
-          unit_warning::Int32
-          nemin::Int32
-          nb::Int32
-          action::Int32
-          nbi::Int32
-          pool_size::Int32
+        struct ma86_control{T,INT}
+          f_arrays::INT
+          diagnostics_level::INT
+          unit_diagnostics::INT
+          unit_error::INT
+          unit_warning::INT
+          nemin::INT
+          nb::INT
+          action::INT
+          nbi::INT
+          pool_size::INT
           small_::T
           static_::T
           u::T
           umin::T
-          scaling::Int32
+          scaling::INT
 
 .. _details-structma86__info:
 
@@ -367,22 +367,22 @@ ma86_info structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma86_info{T}
+        struct ma86_info{T,INT}
           detlog::T
-          detsign::Int32
-          flag::Int32
-          matrix_rank::Int32
-          maxdepth::Int32
-          num_delay::Int32
+          detsign::INT
+          flag::INT
+          matrix_rank::INT
+          maxdepth::INT
+          num_delay::INT
           num_factor::Clong
           num_flops::Clong
-          num_neg::Int32
-          num_nodes::Int32
-          num_nothresh::Int32
-          num_perturbed::Int32
-          num_two::Int32
-          pool_size::Int32
-          stat::Int32
+          num_neg::INT
+          num_nodes::INT
+          num_nothresh::INT
+          num_perturbed::INT
+          num_two::INT
+          pool_size::INT
+          stat::INT
           usmall::T
 
 .. _details-structma87__control:
@@ -396,15 +396,15 @@ ma87_control structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma87_control{T}
-          f_arrays::Int32
-          diagnostics_level::Int32
-          unit_diagnostics::Int32
-          unit_error::Int32
-          unit_warning::Int32
-          nemin::Int32
-          nb::Int32
-          pool_size::Int32
+        struct ma87_control{T,INT}
+          f_arrays::INT
+          diagnostics_level::INT
+          unit_diagnostics::INT
+          unit_error::INT
+          unit_warning::INT
+          nemin::INT
+          nb::INT
+          pool_size::INT
           diag_zero_minus::T
           diag_zero_plus::T
           unused::NTuple{40,Cchar}
@@ -420,16 +420,16 @@ ma87_info structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma87_info{T}
+        struct ma87_info{T,INT}
           detlog::T
-          flag::Int32
-          maxdepth::Int32
+          flag::INT
+          maxdepth::INT
           num_factor::Clong
           num_flops::Clong
-          num_nodes::Int32
-          pool_size::Int32
-          stat::Int32
-          num_zero::Int32
+          num_nodes::INT
+          pool_size::INT
+          stat::INT
+          num_zero::INT
           unused::NTuple{40,Cchar}
 
 .. _details-structma97__control:
@@ -443,25 +443,25 @@ ma97_control structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma97_control{T}
-          f_arrays::Int32
-          action::Int32
-          nemin::Int32
+        struct ma97_control{T,INT}
+          f_arrays::INT
+          action::INT
+          nemin::INT
           multiplier::T
-          ordering::Int32
-          print_level::Int32
-          scaling::Int32
+          ordering::INT
+          print_level::INT
+          scaling::INT
           small::T
           u::T
-          unit_diagnostics::Int32
-          unit_error::Int32
-          unit_warning::Int32
+          unit_diagnostics::INT
+          unit_error::INT
+          unit_warning::INT
           factor_min::Clong
-          solve_blas3::Int32
+          solve_blas3::INT
           solve_min::Clong
-          solve_mf::Int32
+          solve_mf::INT
           consist_tol::T
-          ispare::NTuple{5,Cint}
+          ispare::NTuple{5,INT}
           rspare::NTuple{10,T}
 
 .. _details-structma97__info:
@@ -475,25 +475,25 @@ ma97_info structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ma97_info{T}
-          flag::Int32
-          flag68::Int32
-          flag77::Int32
-          matrix_dup::Int32
-          matrix_rank::Int32
-          matrix_outrange::Int32
-          matrix_missing_diag::Int32
-          maxdepth::Int32
-          maxfront::Int32
-          num_delay::Int32
+        struct ma97_info{T,INT}
+          flag::INT
+          flag68::INT
+          flag77::INT
+          matrix_dup::INT
+          matrix_rank::INT
+          matrix_outrange::INT
+          matrix_missing_diag::INT
+          maxdepth::INT
+          maxfront::INT
+          num_delay::INT
           num_factor::Clong
           num_flops::Clong
-          num_neg::Int32
-          num_sup::Int32
-          num_two::Int32
-          ordering::Int32
-          stat::Int32
-          ispare::NTuple{5,Cint}
+          num_neg::INT
+          num_sup::INT
+          num_two::INT
+          ordering::INT
+          stat::INT
+          ispare::NTuple{5,INT}
           rspare::NTuple{10,T}
 
 .. _details-structmc64__control:
@@ -507,13 +507,13 @@ mc64_control structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct mc64_control
-          f_arrays::Int32
-          lp::Int32
-          wp::Int32
-          sp::Int32
-          ldiag::Int32
-          checking::Int32
+        struct mc64_control{INT}
+          f_arrays::INT
+          lp::INT
+          wp::INT
+          sp::INT
+          ldiag::INT
+          checking::INT
 
 .. _details-structmc64__info:
 
@@ -526,11 +526,11 @@ mc64_info structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct mc64_info
-          flag::Int32
-          more::Int32
-          strucrank::Int32
-          stat::Int32
+        struct mc64_info{INT}
+          flag::INT
+          more::INT
+          strucrank::INT
+          stat::INT
 
 .. _details-structmc68__control:
 
@@ -543,17 +543,17 @@ mc68_control structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct mc68_control
-          f_array_in::Int32
-          f_array_out::Int32
-          min_l_workspace::Int32
-          lp::Int32
-          wp::Int32
-          mp::Int32
-          nemin::Int32
-          print_level::Int32
-          row_full_thresh::Int32
-          row_search::Int32
+        struct mc68_control{INT}
+          f_array_in::INT
+          f_array_out::INT
+          min_l_workspace::INT
+          lp::INT
+          wp::INT
+          mp::INT
+          nemin::INT
+          print_level::INT
+          row_full_thresh::INT
+          row_search::INT
 
 .. _details-structmc68__info:
 
@@ -566,17 +566,17 @@ mc68_info structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct mc68_info
-          flag::Int32
-          iostat::Int32
-          stat::Int32
-          out_range::Int32
-          duplicate::Int32
-          n_compressions::Int32
-          n_zero_eigs::Int32
+        struct mc68_info{INT}
+          flag::INT
+          iostat::INT
+          stat::INT
+          out_range::INT
+          duplicate::INT
+          n_compressions::INT
+          n_zero_eigs::INT
           l_workspace::Clong
-          zb01_info::Int32
-          n_dense_rows::Int32
+          zb01_info::INT
+          n_dense_rows::INT
 
 .. _details-structmi20__control:
 
@@ -589,30 +589,30 @@ mi20_control structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct mi20_control{T}
-          f_arrays::Int32
-          aggressive::Int32
-          c_fail::Int32
-          max_levels::Int32
-          max_points::Int32
+        struct mi20_control{T,INT}
+          f_arrays::INT
+          aggressive::INT
+          c_fail::INT
+          max_levels::INT
+          max_points::INT
           reduction::T
-          st_method::Int32
+          st_method::INT
           st_parameter::T
-          testing::Int32
+          testing::INT
           trunc_parameter::T
-          coarse_solver::Int32
-          coarse_solver_its::Int32
+          coarse_solver::INT
+          coarse_solver_its::INT
           damping::T
           err_tol::T
-          levels::Int32
-          pre_smoothing::Int32
-          smoother::Int32
-          post_smoothing::Int32
-          v_iterations::Int32
-          print_level::Int32
-          print::Int32
-          error::Int32
-          one_pass_coarsen::Int32
+          levels::INT
+          pre_smoothing::INT
+          smoother::INT
+          post_smoothing::INT
+          v_iterations::INT
+          print_level::INT
+          print::INT
+          error::INT
+          one_pass_coarsen::INT
 
 .. _details-structmi20__solve__control:
 
@@ -625,14 +625,14 @@ mi20_solve__control structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct mi20_solve_control{T}
+        struct mi20_solve_control{T,INT}
           abs_tol::T
           breakdown_tol::T
-          gmres_restart::Int32
+          gmres_restart::INT
           init_guess::Bool
-          krylov_solver::Int32
-          max_its::Int32
-          preconditioner_side::Int32
+          krylov_solver::INT
+          max_its::INT
+          preconditioner_side::INT
           rel_tol::T
 
 .. _details-structmi20__info:
@@ -646,14 +646,14 @@ mi20_info structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct mi20_info{T}
-          flag::Int32
-          clevels::Int32
-          cpoints::Int32
-          cnnz::Int32
-          stat::Int32
-          getrf_info::Int32
-          iterations::Int32
+        struct mi20_info{T,INT}
+          flag::INT
+          clevels::INT
+          cpoints::INT
+          cnnz::INT
+          stat::INT
+          getrf_info::INT
+          iterations::INT
           residual::T
 
 .. _details-structmi28__control:
@@ -667,22 +667,22 @@ mi28_control structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct mi28_control{T}
-          f_arrays::Int32
+        struct mi28_control{T,INT}
+          f_arrays::INT
           alpha::T
           check::Bool
-          iorder::Int32
-          iscale::Int32
+          iorder::INT
+          iscale::INT
           lowalpha::T
-          maxshift::Int32
+          maxshift::INT
           rrt::Bool
           shift_factor::T
           shift_factor2::T
           small::T
           tau1::T
           tau2::T
-          unit_error::Int32
-          unit_warning::Int32
+          unit_error::INT
+          unit_warning::INT
 
 .. _details-structmi28__info:
 
@@ -695,22 +695,22 @@ mi28_info structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct mi28_info{T}
-          band_after::Int32
-          band_before::Int32
-          dup::Int32
-          flag::Int32
-          flag61::Int32
-          flag64::Int32
-          flag68::Int32
-          flag77::Int32
-          nrestart::Int32
-          nshift::Int32
-          oor::Int32
+        struct mi28_info{T,INT}
+          band_after::INT
+          band_before::INT
+          dup::INT
+          flag::INT
+          flag61::INT
+          flag64::INT
+          flag68::INT
+          flag77::INT
+          nrestart::INT
+          nshift::INT
+          oor::INT
           profile_before::T
           profile_after::T
           size_r::Clong
-          stat::Int32
+          stat::INT
           alpha::T
 
 

@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_initialize(T, data, control, status)
+        function llsr_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -31,7 +31,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_read_specfile(T, control, specfile)
+        function llsr_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_import(T, control, data, status, m, n, 
+        function llsr_import(T, INT, control, data, status, m, n, 
                              A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -101,7 +101,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **1**
@@ -133,12 +133,12 @@ Import problem data into internal storage prior to solution.
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of residuals, i.e., the number of rows of $A$. m must be positive.
+		- is a scalar variable of type INT that holds the number of residuals, i.e., the number of rows of $A$. m must be positive.
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables, i.e., the number of columns of $A$. n must be positive.
+		- is a scalar variable of type INT that holds the number of variables, i.e., the number of columns of $A$. n must be positive.
 
 	*
 		- A_type
@@ -148,22 +148,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in $A$, if used, in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in $A$, if used, in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size A_ne and type INT that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; llsr_import_scaling
 .. _doxid-galahad__llsr_8h_1a75f3108d65fc8100776af18f6adf4c2c:
@@ -171,7 +171,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_import_scaling(T, control, data, status, n, 
+        function llsr_import_scaling(T, INT, control, data, status, n, 
                                      S_type, S_ne, S_row, S_col, S_ptr)
 
 Import the scaling matrix $S$ into internal storage prior to solution. Thus must have been preceeded by a call to llsr_import.
@@ -196,7 +196,7 @@ Import the scaling matrix $S$ into internal storage prior to solution. Thus must
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **1**
@@ -227,7 +227,7 @@ Import the scaling matrix $S$ into internal storage prior to solution. Thus must
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables, i.e., the number of rows and columns of $S$. n must be positive.
+		- is a scalar variable of type INT that holds the number of variables, i.e., the number of rows and columns of $S$. n must be positive.
 
 	*
 		- S_type
@@ -237,22 +237,22 @@ Import the scaling matrix $S$ into internal storage prior to solution. Thus must
 	*
 		- S_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of $S$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of $S$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- S_row
 
-		- is a one-dimensional array of size S_ne and type Int32 that holds the row indices of the lower triangular part of $S$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size S_ne and type INT that holds the row indices of the lower triangular part of $S$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- S_col
 
-		- is a one-dimensional array of size S_ne and type Int32 that holds the column indices of the lower triangular part of $S$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size S_ne and type INT that holds the column indices of the lower triangular part of $S$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- S_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $S$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of $S$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; llsr_reset_control
 .. _doxid-galahad__llsr_8h_1a9a9e3ae8ce66a5b7933b06061208c50c:
@@ -260,7 +260,7 @@ Import the scaling matrix $S$ into internal storage prior to solution. Thus must
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_reset_control(T, control, data, status)
+        function llsr_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -283,7 +283,7 @@ Reset control parameters after import if required.
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type INT that gives the exit status from the package. Possible values are:
 
 		  * 1. The import was successful, and the package is ready for the solve phase
 
@@ -293,7 +293,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_solve_problem(T, data, status, m, n, power, weight, 
+        function llsr_solve_problem(T, INT, data, status, m, n, power, weight, 
                                     A_ne, A_val, b, x, S_ne, S_val)
 
 Solve the regularization-region problem.
@@ -311,7 +311,7 @@ Solve the regularization-region problem.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  Possible exit values are:
@@ -371,12 +371,12 @@ Solve the regularization-region problem.
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of residuals
+		- is a scalar variable of type INT that holds the number of residuals
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- power
@@ -391,7 +391,7 @@ Solve the regularization-region problem.
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the observation matrix $A$.
+		- is a scalar variable of type INT that holds the number of entries in the observation matrix $A$.
 
 	*
 		- A_val
@@ -411,7 +411,7 @@ Solve the regularization-region problem.
 	*
 		- S_ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the scaling matrix $S$ if it not the identity matrix.
+		- is a scalar variable of type INT that holds the number of entries in the scaling matrix $S$ if it not the identity matrix.
 
 	*
 		- S_val
@@ -424,7 +424,7 @@ Solve the regularization-region problem.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_information(T, data, inform, status)
+        function llsr_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -447,7 +447,7 @@ Provides output information
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type INT that gives the exit status from the package. Possible values are (currently):
 
 		  * **0**
                     The values were recorded successfully
@@ -458,7 +458,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_terminate(T, data, control, inform)
+        function llsr_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

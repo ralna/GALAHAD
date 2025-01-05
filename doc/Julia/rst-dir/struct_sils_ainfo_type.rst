@@ -10,22 +10,22 @@ sils_ainfo_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct sils_ainfo_type{T}
-          flag::Int32
-          more::Int32
-          nsteps::Int32
-          nrltot::Int32
-          nirtot::Int32
-          nrlnec::Int32
-          nirnec::Int32
-          nrladu::Int32
-          niradu::Int32
-          ncmpa::Int32
-          oor::Int32
-          dup::Int32
-          maxfrt::Int32
-          stat::Int32
-          faulty::Int32
+        struct sils_ainfo_type{T,INT}
+          flag::INT
+          more::INT
+          nsteps::INT
+          nrltot::INT
+          nirtot::INT
+          nrlnec::INT
+          nirnec::INT
+          nrladu::INT
+          niradu::INT
+          ncmpa::INT
+          oor::INT
+          dup::INT
+          maxfrt::INT
+          stat::INT
+          faulty::INT
           opsa::T
           opse::T
 
@@ -45,7 +45,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 flag
+	INT flag
 
 Flags success or failure case.
 
@@ -55,7 +55,7 @@ Flags success or failure case.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 more
+	INT more
 
 More information on failure.
 
@@ -65,7 +65,7 @@ More information on failure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nsteps
+	INT nsteps
 
 Number of elimination steps.
 
@@ -75,7 +75,7 @@ Number of elimination steps.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nrltot
+	INT nrltot
 
 Size for a without compression.
 
@@ -85,7 +85,7 @@ Size for a without compression.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nirtot
+	INT nirtot
 
 Size for iw without compression.
 
@@ -95,7 +95,7 @@ Size for iw without compression.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nrlnec
+	INT nrlnec
 
 Size for a with compression.
 
@@ -105,7 +105,7 @@ Size for a with compression.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nirnec
+	INT nirnec
 
 Size for iw with compression.
 
@@ -115,7 +115,7 @@ Size for iw with compression.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nrladu
+	INT nrladu
 
 Number of reals to hold factors.
 
@@ -125,7 +125,7 @@ Number of reals to hold factors.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 niradu
+	INT niradu
 
 Number of integers to hold factors.
 
@@ -135,7 +135,7 @@ Number of integers to hold factors.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ncmpa
+	INT ncmpa
 
 Number of compresses.
 
@@ -145,7 +145,7 @@ Number of compresses.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 oor
+	INT oor
 
 Number of indices out-of-range.
 
@@ -155,7 +155,7 @@ Number of indices out-of-range.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 dup
+	INT dup
 
 Number of duplicates.
 
@@ -165,7 +165,7 @@ Number of duplicates.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxfrt
+	INT maxfrt
 
 Forecast maximum front size.
 
@@ -175,7 +175,7 @@ Forecast maximum front size.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stat
+	INT stat
 
 STAT value after allocate failure.
 
@@ -185,7 +185,7 @@ STAT value after allocate failure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 faulty
+	INT faulty
 
 legacy component, now not used
 

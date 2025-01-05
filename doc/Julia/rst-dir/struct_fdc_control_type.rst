@@ -10,13 +10,13 @@ fdc_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct fdc_control_type{T}
+        struct fdc_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          indmin::Int32
-          valmin::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          indmin::INT
+          valmin::INT
           pivot_tol::T
           zero_pivot::T
           max_infeas::T
@@ -27,8 +27,8 @@ fdc_control_type structure
           symmetric_linear_solver::NTuple{31,Cchar}
           unsymmetric_linear_solver::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
-          sls_control::sls_control_type{T}
-          uls_control::uls_control_type{T}
+          sls_control::sls_control_type{T,INT}
+          uls_control::uls_control_type{T,INT}
 	
 .. _details-structfdc__control__type:
 
@@ -56,7 +56,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 unit for error messages
 
@@ -66,7 +66,7 @@ unit for error messages
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 unit for monitor output
 
@@ -76,7 +76,7 @@ unit for monitor output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 controls level of diagnostic output
 
@@ -86,7 +86,7 @@ controls level of diagnostic output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 indmin
+	INT indmin
 
 initial estimate of integer workspace for sls (obsolete)
 
@@ -96,7 +96,7 @@ initial estimate of integer workspace for sls (obsolete)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 valmin
+	INT valmin
 
 initial estimate of real workspace for sls (obsolete)
 

@@ -10,25 +10,25 @@ sbls_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct sbls_control_type{T}
+        struct sbls_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          indmin::Int32
-          valmin::Int32
-          len_ulsmin::Int32
-          itref_max::Int32
-          maxit_pcg::Int32
-          new_a::Int32
-          new_h::Int32
-          new_c::Int32
-          preconditioner::Int32
-          semi_bandwidth::Int32
-          factorization::Int32
-          max_col::Int32
-          scaling::Int32
-          ordering::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          indmin::INT
+          valmin::INT
+          len_ulsmin::INT
+          itref_max::INT
+          maxit_pcg::INT
+          new_a::INT
+          new_h::INT
+          new_c::INT
+          preconditioner::INT
+          semi_bandwidth::INT
+          factorization::INT
+          max_col::INT
+          scaling::INT
+          ordering::INT
           pivot_tol::T
           pivot_tol_for_basis::T
           zero_pivot::T
@@ -50,8 +50,8 @@ sbls_control_type structure
           definite_linear_solver::NTuple{31,Cchar}
           unsymmetric_linear_solver::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
-          sls_control::sls_control_type{T}
-          uls_control::uls_control_type{T}
+          sls_control::sls_control_type{T,INT}
+          uls_control::uls_control_type{T,INT}
 	
 .. _details-structsbls__control__type:
 
@@ -79,7 +79,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 unit for error messages
 
@@ -89,7 +89,7 @@ unit for error messages
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 unit for monitor output
 
@@ -99,7 +99,7 @@ unit for monitor output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 controls level of diagnostic output
 
@@ -109,7 +109,7 @@ controls level of diagnostic output
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 indmin
+	INT indmin
 
 initial estimate of integer workspace for SLS (obsolete)
 
@@ -119,7 +119,7 @@ initial estimate of integer workspace for SLS (obsolete)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 valmin
+	INT valmin
 
 initial estimate of real workspace for SLS (obsolete)
 
@@ -129,7 +129,7 @@ initial estimate of real workspace for SLS (obsolete)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 len_ulsmin
+	INT len_ulsmin
 
 initial estimate of workspace for ULS (obsolete)
 
@@ -139,7 +139,7 @@ initial estimate of workspace for ULS (obsolete)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 itref_max
+	INT itref_max
 
 maximum number of iterative refinements with preconditioner allowed
 
@@ -149,7 +149,7 @@ maximum number of iterative refinements with preconditioner allowed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit_pcg
+	INT maxit_pcg
 
 maximum number of projected CG iterations allowed
 
@@ -159,7 +159,7 @@ maximum number of projected CG iterations allowed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 new_a
+	INT new_a
 
 how much has $A$ changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
 
@@ -169,7 +169,7 @@ how much has $A$ changed since last factorization: 0 = not changed, 1 = values c
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 new_h
+	INT new_h
 
 how much has $H$ changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
 
@@ -179,7 +179,7 @@ how much has $H$ changed since last factorization: 0 = not changed, 1 = values c
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 new_c
+	INT new_c
 
 how much has $C$ changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
 
@@ -189,7 +189,7 @@ how much has $C$ changed since last factorization: 0 = not changed, 1 = values c
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 preconditioner
+	INT preconditioner
 
 which preconditioner to use:
 
@@ -219,7 +219,7 @@ which preconditioner to use:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 semi_bandwidth
+	INT semi_bandwidth
 
 the semi-bandwidth for band(H)
 
@@ -229,7 +229,7 @@ the semi-bandwidth for band(H)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorization
+	INT factorization
 
 the explicit factorization used:
 
@@ -251,7 +251,7 @@ the explicit factorization used:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_col
+	INT max_col
 
 maximum number of nonzeros in a column of $A$ for Schur-complement factorization
 
@@ -261,7 +261,7 @@ maximum number of nonzeros in a column of $A$ for Schur-complement factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 scaling
+	INT scaling
 
 not used at present
 
@@ -271,7 +271,7 @@ not used at present
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ordering
+	INT ordering
 
 see scaling
 

@@ -10,12 +10,12 @@ rpd_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct rpd_inform_type
-          status::Int32
-          alloc_status::Int32
+        struct rpd_inform_type{INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          io_status::Int32
-          line::Int32
+          io_status::INT
+          line::INT
           p_type::NTuple{4,Cchar}
 
 .. _details-structrpd__inform__type:
@@ -34,7 +34,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. Possible values are:
 
@@ -74,7 +74,7 @@ return status. Possible values are:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation or deallocation
 
@@ -94,7 +94,7 @@ the name of the array for which an allocation or deallocation error occurred
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 io_status
+	INT io_status
 
 status from last read attempt
 
@@ -104,7 +104,7 @@ status from last read attempt
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 line
+	INT line
 
 number of last line read from i/o file
 

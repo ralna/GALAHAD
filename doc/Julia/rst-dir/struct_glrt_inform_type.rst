@@ -10,12 +10,12 @@ glrt_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 	
-        struct glrt_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct glrt_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          iter::Int32
-          iter_pass2::Int32
+          iter::INT
+          iter_pass2::INT
           obj::T
           obj_regularized::T
           multiplier::T
@@ -40,7 +40,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See :ref:`glrt_solve_problem <doxid-galahad__glrt_8h_1aa5e9905bd3a79584bc5133b7f7a6816f>` for details
 
@@ -50,7 +50,7 @@ return status. See :ref:`glrt_solve_problem <doxid-galahad__glrt_8h_1aa5e9905bd3
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -70,7 +70,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter
+	INT iter
 
 the total number of iterations required
 
@@ -80,7 +80,7 @@ the total number of iterations required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter_pass2
+	INT iter_pass2
 
 the total number of pass-2 iterations required
 

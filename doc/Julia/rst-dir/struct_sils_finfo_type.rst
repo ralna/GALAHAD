@@ -10,29 +10,29 @@ sils_finfo_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct sils_finfo_type{T}
-          flag::Int32
-          more::Int32
-          maxfrt::Int32
-          nebdu::Int32
-          nrlbdu::Int32
-          nirbdu::Int32
-          nrltot::Int32
-          nirtot::Int32
-          nrlnec::Int32
-          nirnec::Int32
-          ncmpbr::Int32
-          ncmpbi::Int32
-          ntwo::Int32
-          neig::Int32
-          delay::Int32
-          signc::Int32
-          nstatic::Int32
-          modstep::Int32
-          rank::Int32
-          stat::Int32
-          faulty::Int32
-          step::Int32
+        struct sils_finfo_type{T,INT}
+          flag::INT
+          more::INT
+          maxfrt::INT
+          nebdu::INT
+          nrlbdu::INT
+          nirbdu::INT
+          nrltot::INT
+          nirtot::INT
+          nrlnec::INT
+          nirnec::INT
+          ncmpbr::INT
+          ncmpbi::INT
+          ntwo::INT
+          neig::INT
+          delay::INT
+          signc::INT
+          nstatic::INT
+          modstep::INT
+          rank::INT
+          stat::INT
+          faulty::INT
+          step::INT
           opsa::T
           opse::T
           opsb::T
@@ -56,7 +56,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 flag
+	INT flag
 
 Flags success or failure case.
 
@@ -66,7 +66,7 @@ Flags success or failure case.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 more
+	INT more
 
 More information on failure.
 
@@ -76,7 +76,7 @@ More information on failure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxfrt
+	INT maxfrt
 
 Largest front size.
 
@@ -86,7 +86,7 @@ Largest front size.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nebdu
+	INT nebdu
 
 Number of entries in factors.
 
@@ -96,7 +96,7 @@ Number of entries in factors.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nrlbdu
+	INT nrlbdu
 
 Number of reals that hold factors.
 
@@ -106,7 +106,7 @@ Number of reals that hold factors.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nirbdu
+	INT nirbdu
 
 Number of integers that hold factors.
 
@@ -116,7 +116,7 @@ Number of integers that hold factors.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nrltot
+	INT nrltot
 
 Size for a without compression.
 
@@ -126,7 +126,7 @@ Size for a without compression.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nirtot
+	INT nirtot
 
 Size for iw without compression.
 
@@ -136,7 +136,7 @@ Size for iw without compression.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nrlnec
+	INT nrlnec
 
 Size for a with compression.
 
@@ -146,7 +146,7 @@ Size for a with compression.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nirnec
+	INT nirnec
 
 Size for iw with compression.
 
@@ -156,7 +156,7 @@ Size for iw with compression.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ncmpbr
+	INT ncmpbr
 
 Number of compresses of real data.
 
@@ -166,7 +166,7 @@ Number of compresses of real data.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ncmpbi
+	INT ncmpbi
 
 Number of compresses of integer data.
 
@@ -176,7 +176,7 @@ Number of compresses of integer data.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ntwo
+	INT ntwo
 
 Number of 2x2 pivots.
 
@@ -186,7 +186,7 @@ Number of 2x2 pivots.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 neig
+	INT neig
 
 Number of negative eigenvalues.
 
@@ -196,7 +196,7 @@ Number of negative eigenvalues.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 delay
+	INT delay
 
 Number of delayed pivots (total)
 
@@ -206,7 +206,7 @@ Number of delayed pivots (total)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 signc
+	INT signc
 
 Number of pivot sign changes when control.pivoting=3.
 
@@ -216,7 +216,7 @@ Number of pivot sign changes when control.pivoting=3.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nstatic
+	INT nstatic
 
 Number of static pivots chosen.
 
@@ -226,7 +226,7 @@ Number of static pivots chosen.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 modstep
+	INT modstep
 
 First pivot modification when control.pivoting=4.
 
@@ -236,7 +236,7 @@ First pivot modification when control.pivoting=4.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 rank
+	INT rank
 
 Rank of original factorization.
 
@@ -246,7 +246,7 @@ Rank of original factorization.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stat
+	INT stat
 
 STAT value after allocate failure.
 
@@ -256,7 +256,7 @@ STAT value after allocate failure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 faulty
+	INT faulty
 
 legacy component, now not used
 
@@ -266,7 +266,7 @@ legacy component, now not used
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 step
+	INT step
 
 legacy component, now not used
 

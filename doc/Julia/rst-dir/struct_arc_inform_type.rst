@@ -11,17 +11,17 @@ arc_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct arc_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct arc_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          iter::Int32
-          cg_iter::Int32
-          f_eval::Int32
-          g_eval::Int32
-          h_eval::Int32
-          factorization_status::Int32
-          factorization_max::Int32
+          iter::INT
+          cg_iter::INT
+          f_eval::INT
+          g_eval::INT
+          h_eval::INT
+          factorization_status::INT
+          factorization_max::INT
           max_entries_factors::Int64
           factorization_integer::Int64
           factorization_real::Int64
@@ -30,13 +30,13 @@ arc_inform_type structure
           norm_g::T
           weight::T
           time::arc_time_type{T}
-          rqs_inform::rqs_inform_type{T}
-          glrt_inform::glrt_inform_type{T}
-          dps_inform::dps_inform_type{T}
-          psls_inform::psls_inform_type{T}
-          lms_inform::lms_inform_type{T}
-          lms_inform_prec::lms_inform_type{T}
-          sha_inform::sha_inform_type
+          rqs_inform::rqs_inform_type{T,INT}
+          glrt_inform::glrt_inform_type{T,INT}
+          dps_inform::dps_inform_type{T,INT}
+          psls_inform::psls_inform_type{T,INT}
+          lms_inform::lms_inform_type{T,INT}
+          lms_inform_prec::lms_inform_type{T,INT}
+          sha_inform::sha_inform_type{T,INT}
 	
 .. _details-structarc__inform__type:
 
@@ -54,7 +54,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See ARC_solve for details
 
@@ -64,7 +64,7 @@ return status. See ARC_solve for details
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -84,7 +84,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter
+	INT iter
 
 the total number of iterations performed
 
@@ -94,7 +94,7 @@ the total number of iterations performed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 cg_iter
+	INT cg_iter
 
 the total number of CG iterations performed
 
@@ -104,7 +104,7 @@ the total number of CG iterations performed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 f_eval
+	INT f_eval
 
 the total number of evaluations of the objective function
 
@@ -114,7 +114,7 @@ the total number of evaluations of the objective function
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 g_eval
+	INT g_eval
 
 the total number of evaluations of the gradient of the objective functio
 
@@ -124,7 +124,7 @@ the total number of evaluations of the gradient of the objective functio
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 h_eval
+	INT h_eval
 
 the total number of evaluations of the Hessian of the objective function
 
@@ -134,7 +134,7 @@ the total number of evaluations of the Hessian of the objective function
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorization_status
+	INT factorization_status
 
 the return status from the factorization
 
@@ -144,7 +144,7 @@ the return status from the factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorization_max
+	INT factorization_max
 
 the maximum number of factorizations in a sub-problem solve
 

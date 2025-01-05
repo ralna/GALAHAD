@@ -10,26 +10,26 @@ wcp_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct wcp_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct wcp_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          iter::Int32
-          factorization_status::Int32
+          iter::INT
+          factorization_status::INT
           factorization_integer::Int64
           factorization_real::Int64
-          nfacts::Int32
-          c_implicit::Int32
-          x_implicit::Int32
-          y_implicit::Int32
-          z_implicit::Int32
+          nfacts::INT
+          c_implicit::INT
+          x_implicit::INT
+          y_implicit::INT
+          z_implicit::INT
           obj::T
           mu_final_target_max::T
           non_negligible_pivot::T
           feasible::Bool
           time::wcp_time_type{T}
-          fdc_inform::fdc_inform_type{T}
-          sbls_inform::sbls_inform_type{T}
+          fdc_inform::fdc_inform_type{T,INT}
+          sbls_inform::sbls_inform_type{T,INT}
 
 .. _details-structwcp__inform__type:
 
@@ -47,7 +47,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See WCP_solve for details
 
@@ -57,7 +57,7 @@ return status. See WCP_solve for details
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -77,7 +77,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter
+	INT iter
 
 the total number of iterations required
 
@@ -87,7 +87,7 @@ the total number of iterations required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorization_status
+	INT factorization_status
 
 the return status from the factorization
 
@@ -117,7 +117,7 @@ the total real workspace required for the factorization
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nfacts
+	INT nfacts
 
 the total number of factorizations performed
 
@@ -127,7 +127,7 @@ the total number of factorizations performed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 c_implicit
+	INT c_implicit
 
 the number of general constraints that lie on (one) of their bounds for feasible solutions
 
@@ -137,7 +137,7 @@ the number of general constraints that lie on (one) of their bounds for feasible
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 x_implicit
+	INT x_implicit
 
 the number of variables that lie on (one) of their bounds for all feasible solutions
 
@@ -147,7 +147,7 @@ the number of variables that lie on (one) of their bounds for all feasible solut
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 y_implicit
+	INT y_implicit
 
 the number of Lagrange multipliers for general constraints that lie on (one) of their bounds for all feasible solutions
 
@@ -157,7 +157,7 @@ the number of Lagrange multipliers for general constraints that lie on (one) of 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 z_implicit
+	INT z_implicit
 
 the number of dual variables that lie on (one) of their bounds for all feasible solutions
 
@@ -217,7 +217,7 @@ timings (see above)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	fdc_inform_type{T} :ref:`fdc_inform_type<doxid-structfdc__inform__type>` fdc_inform
+	fdc_inform_type{T,INT} :ref:`fdc_inform_type<doxid-structfdc__inform__type>` fdc_inform
 
 inform parameters for FDC
 
@@ -227,6 +227,6 @@ inform parameters for FDC
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	sbls_inform_type{T} :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_inform
+	sbls_inform_type{T,INT} :ref:`sbls_inform_type<doxid-structsbls__inform__type>` sbls_inform
 
 inform parameters for SBLS

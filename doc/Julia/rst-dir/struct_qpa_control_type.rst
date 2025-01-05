@@ -11,30 +11,30 @@ qpa_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct qpa_control_type{T}
+        struct qpa_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          start_print::Int32
-          stop_print::Int32
-          maxit::Int32
-          factor::Int32
-          max_col::Int32
-          max_sc::Int32
-          indmin::Int32
-          valmin::Int32
-          itref_max::Int32
-          infeas_check_interval::Int32
-          cg_maxit::Int32
-          precon::Int32
-          nsemib::Int32
-          full_max_fill::Int32
-          deletion_strategy::Int32
-          restore_problem::Int32
-          monitor_residuals::Int32
-          cold_start::Int32
-          sif_file_device::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          start_print::INT
+          stop_print::INT
+          maxit::INT
+          factor::INT
+          max_col::INT
+          max_sc::INT
+          indmin::INT
+          valmin::INT
+          itref_max::INT
+          infeas_check_interval::INT
+          cg_maxit::INT
+          precon::INT
+          nsemib::INT
+          full_max_fill::INT
+          deletion_strategy::INT
+          restore_problem::INT
+          monitor_residuals::INT
+          cold_start::INT
+          sif_file_device::INT
           infinity::T
           feas_tol::T
           obj_unbounded::T
@@ -62,7 +62,7 @@ qpa_control_type structure
           sif_file_name::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
           each_interval::Bool
-          sls_control::sls_control_type{T}
+          sls_control::sls_control_type{T,INT}
 
 .. _details-structqpa__control__type:
 
@@ -90,7 +90,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -100,7 +100,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -110,7 +110,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required is specified by print_level
 
@@ -120,7 +120,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 start_print
+	INT start_print
 
 any printing will start on this iteration
 
@@ -130,7 +130,7 @@ any printing will start on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stop_print
+	INT stop_print
 
 any printing will stop on this iteration
 
@@ -140,7 +140,7 @@ any printing will stop on this iteration
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxit
+	INT maxit
 
 at most maxit inner iterations are allowed
 
@@ -150,7 +150,7 @@ at most maxit inner iterations are allowed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factor
+	INT factor
 
 the factorization to be used. Possible values are 0 automatic 1 Schur-complement factorization 2 augmented-system factorization
 
@@ -160,7 +160,7 @@ the factorization to be used. Possible values are 0 automatic 1 Schur-complement
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_col
+	INT max_col
 
 the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization
 
@@ -170,7 +170,7 @@ the maximum number of nonzeros in a column of A which is permitted with the Schu
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_sc
+	INT max_sc
 
 the maximum permitted size of the Schur complement before a refactorization is performed
 
@@ -180,7 +180,7 @@ the maximum permitted size of the Schur complement before a refactorization is p
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 indmin
+	INT indmin
 
 an initial guess as to the integer workspace required by SLS (OBSOLETE)
 
@@ -190,7 +190,7 @@ an initial guess as to the integer workspace required by SLS (OBSOLETE)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 valmin
+	INT valmin
 
 an initial guess as to the real workspace required by SLS (OBSOLETE)
 
@@ -200,7 +200,7 @@ an initial guess as to the real workspace required by SLS (OBSOLETE)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 itref_max
+	INT itref_max
 
 the maximum number of iterative refinements allowed (OBSOLETE)
 
@@ -210,7 +210,7 @@ the maximum number of iterative refinements allowed (OBSOLETE)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 infeas_check_interval
+	INT infeas_check_interval
 
 the infeasibility will be checked for improvement every infeas_check_interval iterations (see infeas_g_improved_by_factor and infeas_b_improved_by_factor below)
 
@@ -220,7 +220,7 @@ the infeasibility will be checked for improvement every infeas_check_interval it
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 cg_maxit
+	INT cg_maxit
 
 the maximum number of CG iterations allowed. If cg_maxit < 0, this number will be reset to the dimension of the system + 1
 
@@ -230,7 +230,7 @@ the maximum number of CG iterations allowed. If cg_maxit < 0, this number will b
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 precon
+	INT precon
 
 the preconditioner to be used for the CG is defined by precon. Possible values are 0 automatic 1 no preconditioner, i.e, the identity within full factorization 2 full factorization 3 band within full factorization 4 diagonal using the barrier terms within full factorization
 
@@ -240,7 +240,7 @@ the preconditioner to be used for the CG is defined by precon. Possible values a
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nsemib
+	INT nsemib
 
 the semi-bandwidth of a band preconditioner, if appropriate
 
@@ -250,7 +250,7 @@ the semi-bandwidth of a band preconditioner, if appropriate
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 full_max_fill
+	INT full_max_fill
 
 if the ratio of the number of nonzeros in the factors of the reference matrix to the number of nonzeros in the matrix itself exceeds full_max_fill, and the preconditioner is being selected automatically (precon = 0), a banded approximation will be used instead
 
@@ -260,7 +260,7 @@ if the ratio of the number of nonzeros in the factors of the reference matrix to
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 deletion_strategy
+	INT deletion_strategy
 
 the constraint deletion strategy to be used. Possible values are:
 
@@ -272,7 +272,7 @@ the constraint deletion strategy to be used. Possible values are:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 restore_problem
+	INT restore_problem
 
 indicate whether and how much of the input problem should be restored on output. Possible values are 0 nothing restored 1 scalar and vector parameters 2 all parameters
 
@@ -282,7 +282,7 @@ indicate whether and how much of the input problem should be restored on output.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 monitor_residuals
+	INT monitor_residuals
 
 the frequency at which residuals will be monitored
 
@@ -292,7 +292,7 @@ the frequency at which residuals will be monitored
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 cold_start
+	INT cold_start
 
 indicates whether a cold or warm start should be made. Possible values are
 
@@ -304,7 +304,7 @@ indicates whether a cold or warm start should be made. Possible values are
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sif_file_device
+	INT sif_file_device
 
 specifies the unit number to write generated SIF file describing the current problem
 

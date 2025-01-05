@@ -10,12 +10,12 @@ cro_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct cro_control_type{T}
+        struct cro_control_type{T,INT}
           f_indexing::Bool
-          error::Int32
-          out::Int32
-          print_level::Int32
-          max_schur_complement::Int32
+          error::INT
+          out::INT
+          print_level::INT
+          max_schur_complement::INT
           infinity::T
           feasibility_tolerance::T
           check_io::Bool
@@ -25,10 +25,10 @@ cro_control_type structure
           symmetric_linear_solver::NTuple{31,Cchar}
           unsymmetric_linear_solver::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
-          sls_control::sls_control_type{T}
-          sbls_control::sbls_control_type{T}
-          uls_control::uls_control_type{T}
-          ir_control::ir_control_type{T}
+          sls_control::sls_control_type{T,INT}
+          sbls_control::sbls_control_type{T,INT}
+          uls_control::uls_control_type{T,INT}
+          ir_control::ir_control_type{T,INT}
 
 .. _details-structcro__control__type:
 
@@ -56,7 +56,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 error
+	INT error
 
 error and warning diagnostics occur on stream error
 
@@ -66,7 +66,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 out
+	INT out
 
 general output occurs on stream out
 
@@ -76,7 +76,7 @@ general output occurs on stream out
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 print_level
+	INT print_level
 
 the level of output required is specified by print_level
 
@@ -86,7 +86,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 max_schur_complement
+	INT max_schur_complement
 
 the maximum permitted size of the Schur complement before a refactorization is performed
 

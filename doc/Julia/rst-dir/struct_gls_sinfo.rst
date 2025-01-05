@@ -10,10 +10,10 @@ gls_sinfo structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct gls_sinfo_type
-          flag::Int32
-          more::Int32
-          stat::Int32
+        struct gls_sinfo_type{INT}
+          flag::INT
+          more::INT
+          stat::INT
 
 .. _details-structgls__sinfo:
 
@@ -31,7 +31,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 flag
+	INT flag
 
 Flags success or failure case.
 
@@ -41,7 +41,7 @@ Flags success or failure case.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 more
+	INT more
 
 More information on failure.
 
@@ -51,7 +51,7 @@ More information on failure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 stat
+	INT stat
 
 Status value after allocate failure.
 

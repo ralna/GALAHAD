@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_initialize(T, data, control, status)
+        function dps_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -31,7 +31,7 @@ Set default control values and initialize private data
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type INT that gives the exit status from the package. Possible values are (currently):
 
 		  * **0**
                     The initialization was successful.
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_read_specfile(T, control, specfile)
+        function dps_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_import(T, control, data, status, n, 
+        function dps_import(T, INT, control, data, status, n, 
                             H_type, ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -99,7 +99,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **1**
@@ -130,7 +130,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- H_type
@@ -140,22 +140,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL
+		- is a one-dimensional array of size ne and type INT that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL
+		- is a one-dimensional array of size ne and type INT that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL
 
 .. index:: pair: function; dps_reset_control
 .. _doxid-galahad__dps_8h_1a445d31a1c3e3aa63af85ceddd9769a5c:
@@ -163,7 +163,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_reset_control(T, control, data, status)
+        function dps_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -187,7 +187,7 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **1**
@@ -200,7 +200,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_solve_tr_problem(T, data, status, n, ne, H_val, c, f, 
+        function dps_solve_tr_problem(T, INT, data, status, n, ne, H_val, c, f, 
                                       radius, x)
 
 Find the global minimizer of the trust-region problem (1).
@@ -220,7 +220,7 @@ Find the global minimizer of the trust-region problem (1).
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -270,12 +270,12 @@ Find the global minimizer of the trust-region problem (1).
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
@@ -308,7 +308,7 @@ Find the global minimizer of the trust-region problem (1).
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_solve_rq_problem(T, data, status, n, ne, H_val, c, f, 
+        function dps_solve_rq_problem(T, INT, data, status, n, ne, H_val, c, f, 
                                       power, weight, x)
 
 Find the global minimizer of the regularized-quadartic problem (2).
@@ -328,7 +328,7 @@ Find the global minimizer of the regularized-quadartic problem (2).
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -378,12 +378,12 @@ Find the global minimizer of the regularized-quadartic problem (2).
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type INT that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
@@ -421,7 +421,7 @@ Find the global minimizer of the regularized-quadartic problem (2).
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_resolve_tr_problem(T, data, status, n, c, f, radius, x)
+        function dps_resolve_tr_problem(T, INT, data, status, n, c, f, radius, x)
 
 Find the global minimizer of the trust-region problem (1) if some non-matrix components have changed since a call to dps_solve_tr_problem.
 
@@ -440,7 +440,7 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -476,7 +476,7 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- c
@@ -504,7 +504,7 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_resolve_rq_problem(T, data, status, n, c, f, power, weight, x)
+        function dps_resolve_rq_problem(T, INT, data, status, n, c, f, power, weight, x)
 
 Find the global minimizer of the regularized-quadartic problem (2) if some non-matrix components have changed since a call to dps_solve_rq_problem.
 
@@ -523,7 +523,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -554,7 +554,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of variables
+		- is a scalar variable of type INT that holds the number of variables
 
 	*
 		- c
@@ -587,7 +587,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_information(T, data, inform, status)
+        function dps_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -611,7 +611,7 @@ Provides output information
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -624,7 +624,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_terminate(T, data, control, inform)
+        function dps_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

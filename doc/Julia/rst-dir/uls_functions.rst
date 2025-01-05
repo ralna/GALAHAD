@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_initialize(T, solver, data, control, status)
+        function uls_initialize(T, INT, solver, data, control, status)
 
 Set default control values and initialize private data
 
@@ -36,7 +36,7 @@ Select solver, set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -51,7 +51,7 @@ Select solver, set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_read_specfile(T, control, specfile)
+        function uls_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -83,7 +83,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_factorize_matrix(T, control, data, status, 
+        function uls_factorize_matrix(T, INT, control, data, status, 
                                       m, n, type, ne, val, row, col, ptr)
 
 Import matrix data into internal storage prior to solution, analyse the
@@ -109,7 +109,7 @@ sparsity patern, and subsequently factorize the matrix
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package.
 
 		  Possible values are:
@@ -160,12 +160,12 @@ sparsity patern, and subsequently factorize the matrix
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of rows in the unsymmetric matrix $A$.
+		- is a scalar variable of type INT that holds the number of rows in the unsymmetric matrix $A$.
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of columns in the unsymmetric matrix $A$.
+		- is a scalar variable of type INT that holds the number of columns in the unsymmetric matrix $A$.
 
 	*
 		- type
@@ -175,7 +175,7 @@ sparsity patern, and subsequently factorize the matrix
 	*
 		- ne
 
-		- is a scalar variable of type Int32 that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type INT that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- val
@@ -185,17 +185,17 @@ sparsity patern, and subsequently factorize the matrix
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the matrix $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
+		- is a one-dimensional array of size ne and type INT that holds the row indices of the matrix $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the matrix $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage schemes is used, and in this case can be C_NULL.
+		- is a one-dimensional array of size ne and type INT that holds the column indices of the matrix $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage schemes is used, and in this case can be C_NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size m+1 and type Int32 that holds the starting position of each row of the matrix $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
+		- is a one-dimensional array of size m+1 and type INT that holds the starting position of each row of the matrix $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; uls_reset_control
 .. _doxid-galahad__uls_8h_1ad2ad6daa4d54d75e40fbe253f2bc5881:
@@ -203,7 +203,7 @@ sparsity patern, and subsequently factorize the matrix
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_reset_control(T, control, data, status)
+        function uls_reset_control(T, INT, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -227,7 +227,7 @@ Reset control parameters after import if required.
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are:
 
 		  * **0**
@@ -239,7 +239,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_solve_system(T, data, status, m, n, sol, trans)
+        function uls_solve_system(T, INT, data, status, m, n, sol, trans)
 
 Solve the linear system $Ax=b$ or $A^Tx=b$.
 
@@ -257,7 +257,7 @@ Solve the linear system $Ax=b$ or $A^Tx=b$.
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit status from the package.
+		  is a scalar variable of type INT that gives the exit status from the package.
 
 		  Possible values are:
 
@@ -295,12 +295,12 @@ Solve the linear system $Ax=b$ or $A^Tx=b$.
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of rows in the unsymmetric matrix $A$.
+		- is a scalar variable of type INT that holds the number of rows in the unsymmetric matrix $A$.
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of columns in the unsymmetric matrix $A$.
+		- is a scalar variable of type INT that holds the number of columns in the unsymmetric matrix $A$.
 
 	*
 		- sol
@@ -318,7 +318,7 @@ Solve the linear system $Ax=b$ or $A^Tx=b$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_information(T, data, inform, status)
+        function uls_information(T, INT, data, inform, status)
 
 Provides output information
 
@@ -341,7 +341,7 @@ Provides output information
 		- status
 
 		-
-		  is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type INT that gives the exit status from the package. Possible values are (currently):
 
 		  * **0**
                     The values were recorded successfully
@@ -352,7 +352,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_terminate(T, data, control, inform)
+        function uls_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

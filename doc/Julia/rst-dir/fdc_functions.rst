@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function fdc_initialize(T, data, control, status)
+        function fdc_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -31,7 +31,7 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the exit
+		- is a scalar variable of type INT that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function fdc_read_specfile(T, control, specfile)
+        function fdc_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function fdc_find_dependent_rows(T, control, data, inform, status, 
+        function fdc_find_dependent_rows(T, INT, control, data, inform, status, 
                                          m, n, A_ne, A_col, A_ptr, A_val, b, 
                                          n_depen, depen)
 
@@ -105,7 +105,7 @@ Find dependent rows and, if any, check if $A x = b$ is consistent
 	*
 		- status
 
-		- is a scalar variable of type Int32 that gives the
+		- is a scalar variable of type INT that gives the
 		  entry and exit status from the package.
 
 		  Possible exit values are:
@@ -152,27 +152,27 @@ Find dependent rows and, if any, check if $A x = b$ is consistent
 	*
 		- m
 
-		- is a scalar variable of type Int32 that holds the number of rows of $A$.
+		- is a scalar variable of type INT that holds the number of rows of $A$.
 
 	*
 		- n
 
-		- is a scalar variable of type Int32 that holds the number of columns of $A$.
+		- is a scalar variable of type INT that holds the number of columns of $A$.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type Int32 that holds the number of nonzero entries in $A$.
+		- is a scalar variable of type INT that holds the number of nonzero entries in $A$.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in a row-wise storage scheme. The nonzeros must be ordered so that those in row i appear directly before those in row i+1, the order within each row is unimportant.
+		- is a one-dimensional array of size A_ne and type INT that holds the column indices of $A$ in a row-wise storage scheme. The nonzeros must be ordered so that those in row i appear directly before those in row i+1, the order within each row is unimportant.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries.
+		- is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of $A$, as well as the total number of entries.
 
 	*
 		- A_val
@@ -187,12 +187,12 @@ Find dependent rows and, if any, check if $A x = b$ is consistent
 	*
 		- n_depen
 
-		- is a scalar variable of type Int32 that holds the number of dependent constraints, if any.
+		- is a scalar variable of type INT that holds the number of dependent constraints, if any.
 
 	*
 		- depen
 
-		- is a one-dimensional array of size m and type Int32 whose first n_depen components contain the indices of dependent constraints.
+		- is a one-dimensional array of size m and type INT whose first n_depen components contain the indices of dependent constraints.
 
 .. index:: pair: function; fdc_terminate
 .. _doxid-galahad__fdc_8h_1a9c0167379258891dee32b35e0529b9f9:
@@ -200,7 +200,7 @@ Find dependent rows and, if any, check if $A x = b$ is consistent
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function fdc_terminate(T, data, control, inform)
+        function fdc_terminate(T, INT, data, control, inform)
 
 Deallocate all internal private storage
 

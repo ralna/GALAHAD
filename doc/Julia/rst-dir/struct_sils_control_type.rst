@@ -10,25 +10,25 @@ sils_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct sils_control_type{T}
+        struct sils_control_type{T,INT}
           f_indexing::Bool
-          ICNTL::NTuple{30,Cint}
-          lp::Int32
-          wp::Int32
-          mp::Int32
-          sp::Int32
-          ldiag::Int32
-          la::Int32
-          liw::Int32
-          maxla::Int32
-          maxliw::Int32
-          pivoting::Int32
-          nemin::Int32
-          factorblocking::Int32
-          solveblocking::Int32
-          thresh::Int32
-          ordering::Int32
-          scaling::Int32
+          ICNTL::NTuple{30,INT}
+          lp::INT
+          wp::INT
+          mp::INT
+          sp::INT
+          ldiag::INT
+          la::INT
+          liw::INT
+          maxla::INT
+          maxliw::INT
+          pivoting::INT
+          nemin::INT
+          factorblocking::INT
+          solveblocking::INT
+          thresh::INT
+          ordering::INT
+          scaling::INT
           CNTL::NTuple{5,T}
           multiplier::T
           reduce::T
@@ -64,7 +64,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ICNTL[30]
+	INT ICNTL[30]
 
 MA27 internal integer controls.
 
@@ -74,7 +74,7 @@ MA27 internal integer controls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 lp
+	INT lp
 
 Unit for error messages.
 
@@ -84,7 +84,7 @@ Unit for error messages.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 wp
+	INT wp
 
 Unit for warning messages.
 
@@ -94,7 +94,7 @@ Unit for warning messages.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 mp
+	INT mp
 
 Unit for monitor output.
 
@@ -104,7 +104,7 @@ Unit for monitor output.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 sp
+	INT sp
 
 Unit for statistical output.
 
@@ -114,7 +114,7 @@ Unit for statistical output.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ldiag
+	INT ldiag
 
 Controls level of diagnostic output.
 
@@ -124,7 +124,7 @@ Controls level of diagnostic output.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 la
+	INT la
 
 Initial size for real array for the factors. If less than nrlnec, default size used.
 
@@ -134,7 +134,7 @@ Initial size for real array for the factors. If less than nrlnec, default size u
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 liw
+	INT liw
 
 Initial size for integer array for the factors. If less than nirnec, default size used.
 
@@ -144,7 +144,7 @@ Initial size for integer array for the factors. If less than nirnec, default siz
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxla
+	INT maxla
 
 Max. size for real array for the factors.
 
@@ -154,7 +154,7 @@ Max. size for real array for the factors.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 maxliw
+	INT maxliw
 
 Max. size for integer array for the factors.
 
@@ -164,7 +164,7 @@ Max. size for integer array for the factors.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 pivoting
+	INT pivoting
 
 Controls pivoting. Possible values are:
 
@@ -182,7 +182,7 @@ Controls pivoting. Possible values are:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 nemin
+	INT nemin
 
 Minimum number of eliminations in a step (unused)
 
@@ -192,7 +192,7 @@ Minimum number of eliminations in a step (unused)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 factorblocking
+	INT factorblocking
 
 Level 3 blocking in factorize (unused)
 
@@ -202,7 +202,7 @@ Level 3 blocking in factorize (unused)
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 solveblocking
+	INT solveblocking
 
 Level 2 and 3 blocking in solve.
 
@@ -212,7 +212,7 @@ Level 2 and 3 blocking in solve.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 thresh
+	INT thresh
 
 Controls threshold for detecting full rows in analyse, registered as percentage of N, 100 Only fully dense rows detected (default)
 
@@ -222,7 +222,7 @@ Controls threshold for detecting full rows in analyse, registered as percentage 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 ordering
+	INT ordering
 
 Controls ordering: Possible values are:
 
@@ -246,7 +246,7 @@ Controls ordering: Possible values are:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 scaling
+	INT scaling
 
 Controls scaling: Possible values are:
 

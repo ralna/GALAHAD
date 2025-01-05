@@ -11,19 +11,19 @@ lpa_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct lpa_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct lpa_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          iter::Int32
-          la04_job::Int32
-          la04_job_info::Int32
+          iter::INT
+          la04_job::INT
+          la04_job_info::INT
           obj::T
           primal_infeasibility::T
           feasible::Bool
           RINFO::NTuple{40,T}
           time::lpa_time_type{T}
-          rpd_inform::rpd_inform_type
+          rpd_inform::rpd_inform_type{INT}
 	
 .. _details-structlpa__inform__type:
 
@@ -41,7 +41,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See LPA_solve for details
 
@@ -51,7 +51,7 @@ return status. See LPA_solve for details
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -71,7 +71,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter
+	INT iter
 
 the total number of iterations required
 
@@ -81,7 +81,7 @@ the total number of iterations required
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 la04_job
+	INT la04_job
 
 the final value of la04's job argument
 
@@ -91,7 +91,7 @@ the final value of la04's job argument
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 la04_job_info
+	INT la04_job_info
 
 any extra information from an unsuccessfull call to LA04 (LA04's RINFO(35)
 

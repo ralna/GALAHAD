@@ -58,12 +58,13 @@ int main(void) {
 
         // Initialize SBLS
         sbls_initialize( &data, &control, &status );
-        //control.print_level = 1;
+        control.print_level = 1;
+        control.sls_control.print_level = 1;
         control.preconditioner = 2;
         control.factorization = 2;
         control.get_norm_residual = true;
-        strcpy(control.symmetric_linear_solver, "sytr ") ;
-        strcpy(control.definite_linear_solver, "sytr ") ;
+        //strcpy(control.symmetric_linear_solver, "sytr ") ;
+        //strcpy(control.definite_linear_solver, "sytr ") ;
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing

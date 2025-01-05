@@ -10,23 +10,23 @@ dgo_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct dgo_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct dgo_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
-          iter::Int32
-          f_eval::Int32
-          g_eval::Int32
-          h_eval::Int32
+          iter::INT
+          f_eval::INT
+          g_eval::INT
+          h_eval::INT
           obj::T
           norm_pg::T
           length_ratio::T
           f_gap::T
           why_stop::NTuple{2,Cchar}
           time::dgo_time_type{T}
-          hash_inform::hash_inform_type
-          ugo_inform::ugo_inform_type{T}
-          trb_inform::trb_inform_type{T}
+          hash_inform::hash_inform_type{INT}
+          ugo_inform::ugo_inform_type{T,INT}
+          trb_inform::trb_inform_type{T,INT}
 
 .. _details-structdgo__inform__type:
 
@@ -45,7 +45,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 return status. See DGO_solve for details
 
@@ -55,7 +55,7 @@ return status. See DGO_solve for details
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -75,7 +75,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 iter
+	INT iter
 
 the total number of iterations performed
 
@@ -85,7 +85,7 @@ the total number of iterations performed
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 f_eval
+	INT f_eval
 
 the total number of evaluations of the objective function
 
@@ -95,7 +95,7 @@ the total number of evaluations of the objective function
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 g_eval
+	INT g_eval
 
 the total number of evaluations of the gradient of the objective function
 
@@ -105,7 +105,7 @@ the total number of evaluations of the gradient of the objective function
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 h_eval
+	INT h_eval
 
 the total number of evaluations of the Hessian of the objective function
 

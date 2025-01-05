@@ -10,9 +10,9 @@ ir_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct ir_inform_type{T}
-          status::Int32
-          alloc_status::Int32
+        struct ir_inform_type{T,INT}
+          status::INT
+          alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
           norm_initial_residual::T
           norm_final_residual::T
@@ -33,7 +33,7 @@ components
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 status
+	INT status
 
 the return status. Possible values are:
 
@@ -66,7 +66,7 @@ the return status. Possible values are:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	Int32 alloc_status
+	INT alloc_status
 
 the status of the last attempted allocation/deallocation.
 
