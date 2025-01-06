@@ -59,9 +59,9 @@ function cro_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
 end
 
 function cro_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64cro_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{cro_control_type{Float32,Int64}},
-                                            status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.cro_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{cro_control_type{Float32,Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function cro_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -97,8 +97,9 @@ function cro_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
 end
 
 function cro_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_single_64cro_read_specfile(control::Ptr{cro_control_type{Float32,Int64}},
-                                               specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single_64.cro_read_specfile(control::Ptr{cro_control_type{Float32,
+                                                                              Int64}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function cro_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
@@ -150,22 +151,22 @@ end
 function cro_crossover_solution(::Type{Float32}, ::Type{Int64}, data, control, inform, n, m,
                                 m_equal, h_ne, H_val, H_col, H_ptr, a_ne, A_val, A_col,
                                 A_ptr, g, c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
-  @ccall libgalahad_single_64cro_crossover_solution(data::Ptr{Ptr{Cvoid}},
-                                                    control::Ptr{cro_control_type{Float32,
-                                                                                  Int64}},
-                                                    inform::Ptr{cro_inform_type{Float32,
-                                                                                Int64}},
-                                                    n::Int64, m::Int64, m_equal::Int64,
-                                                    h_ne::Int64, H_val::Ptr{Float32},
-                                                    H_col::Ptr{Int64}, H_ptr::Ptr{Int64},
-                                                    a_ne::Int64, A_val::Ptr{Float32},
-                                                    A_col::Ptr{Int64}, A_ptr::Ptr{Int64},
-                                                    g::Ptr{Float32}, c_l::Ptr{Float32},
-                                                    c_u::Ptr{Float32}, x_l::Ptr{Float32},
-                                                    x_u::Ptr{Float32}, x::Ptr{Float32},
-                                                    c::Ptr{Float32}, y::Ptr{Float32},
-                                                    z::Ptr{Float32}, x_stat::Ptr{Int64},
-                                                    c_stat::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.cro_crossover_solution(data::Ptr{Ptr{Cvoid}},
+                                                     control::Ptr{cro_control_type{Float32,
+                                                                                   Int64}},
+                                                     inform::Ptr{cro_inform_type{Float32,
+                                                                                 Int64}},
+                                                     n::Int64, m::Int64, m_equal::Int64,
+                                                     h_ne::Int64, H_val::Ptr{Float32},
+                                                     H_col::Ptr{Int64}, H_ptr::Ptr{Int64},
+                                                     a_ne::Int64, A_val::Ptr{Float32},
+                                                     A_col::Ptr{Int64}, A_ptr::Ptr{Int64},
+                                                     g::Ptr{Float32}, c_l::Ptr{Float32},
+                                                     c_u::Ptr{Float32}, x_l::Ptr{Float32},
+                                                     x_u::Ptr{Float32}, x::Ptr{Float32},
+                                                     c::Ptr{Float32}, y::Ptr{Float32},
+                                                     z::Ptr{Float32}, x_stat::Ptr{Int64},
+                                                     c_stat::Ptr{Int64})::Cvoid
 end
 
 function cro_crossover_solution(::Type{Float64}, ::Type{Int32}, data, control, inform, n, m,
@@ -265,9 +266,9 @@ function cro_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function cro_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64cro_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{cro_control_type{Float32,Int64}},
-                                           inform::Ptr{cro_inform_type{Float32,Int64}})::Cvoid
+  @ccall libgalahad_single_64.cro_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{cro_control_type{Float32,Int64}},
+                                            inform::Ptr{cro_inform_type{Float32,Int64}})::Cvoid
 end
 
 function cro_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)

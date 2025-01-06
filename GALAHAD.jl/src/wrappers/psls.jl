@@ -82,9 +82,9 @@ function psls_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
 end
 
 function psls_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64psls_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{psls_control_type{Float32,Int64}},
-                                             status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.psls_initialize(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{psls_control_type{Float32,Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function psls_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -121,9 +121,9 @@ function psls_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
 end
 
 function psls_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_single_64psls_read_specfile(control::Ptr{psls_control_type{Float32,
-                                                                               Int64}},
-                                                specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single_64.psls_read_specfile(control::Ptr{psls_control_type{Float32,
+                                                                                Int64}},
+                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function psls_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
@@ -161,11 +161,11 @@ end
 
 function psls_import(::Type{Float32}, ::Type{Int64}, control, data, status, n, type, ne,
                      row, col, ptr)
-  @ccall libgalahad_single_64psls_import(control::Ptr{psls_control_type{Float32,Int64}},
-                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                         n::Int64, type::Ptr{Cchar}, ne::Int64,
-                                         row::Ptr{Int64}, col::Ptr{Int64},
-                                         ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.psls_import(control::Ptr{psls_control_type{Float32,Int64}},
+                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                          n::Int64, type::Ptr{Cchar}, ne::Int64,
+                                          row::Ptr{Int64}, col::Ptr{Int64},
+                                          ptr::Ptr{Int64})::Cvoid
 end
 
 function psls_import(::Type{Float64}, ::Type{Int32}, control, data, status, n, type, ne,
@@ -212,10 +212,10 @@ function psls_reset_control(::Type{Float32}, ::Type{Int32}, control, data, statu
 end
 
 function psls_reset_control(::Type{Float32}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_single_64psls_reset_control(control::Ptr{psls_control_type{Float32,
-                                                                               Int64}},
-                                                data::Ptr{Ptr{Cvoid}},
-                                                status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.psls_reset_control(control::Ptr{psls_control_type{Float32,
+                                                                                Int64}},
+                                                 data::Ptr{Ptr{Cvoid}},
+                                                 status::Ptr{Int64})::Cvoid
 end
 
 function psls_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
@@ -254,9 +254,9 @@ function psls_form_preconditioner(::Type{Float32}, ::Type{Int32}, data, status, 
 end
 
 function psls_form_preconditioner(::Type{Float32}, ::Type{Int64}, data, status, ne, val)
-  @ccall libgalahad_single_64psls_form_preconditioner(data::Ptr{Ptr{Cvoid}},
-                                                      status::Ptr{Int64}, ne::Int64,
-                                                      val::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.psls_form_preconditioner(data::Ptr{Ptr{Cvoid}},
+                                                       status::Ptr{Int64}, ne::Int64,
+                                                       val::Ptr{Float32})::Cvoid
 end
 
 function psls_form_preconditioner(::Type{Float64}, ::Type{Int32}, data, status, ne, val)
@@ -295,11 +295,11 @@ end
 
 function psls_form_subset_preconditioner(::Type{Float32}, ::Type{Int64}, data, status, ne,
                                          val, n_sub, sub)
-  @ccall libgalahad_single_64psls_form_subset_preconditioner(data::Ptr{Ptr{Cvoid}},
-                                                             status::Ptr{Int64}, ne::Int64,
-                                                             val::Ptr{Float32},
-                                                             n_sub::Int64,
-                                                             sub::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.psls_form_subset_preconditioner(data::Ptr{Ptr{Cvoid}},
+                                                              status::Ptr{Int64}, ne::Int64,
+                                                              val::Ptr{Float32},
+                                                              n_sub::Int64,
+                                                              sub::Ptr{Int64})::Cvoid
 end
 
 function psls_form_subset_preconditioner(::Type{Float64}, ::Type{Int32}, data, status, ne,
@@ -350,10 +350,10 @@ end
 
 function psls_update_preconditioner(::Type{Float32}, ::Type{Int64}, data, status, ne, val,
                                     n_del, del)
-  @ccall libgalahad_single_64psls_update_preconditioner(data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Int64}, ne::Int64,
-                                                        val::Ptr{Float32}, n_del::Int64,
-                                                        del::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.psls_update_preconditioner(data::Ptr{Ptr{Cvoid}},
+                                                         status::Ptr{Int64}, ne::Int64,
+                                                         val::Ptr{Float32}, n_del::Int64,
+                                                         del::Ptr{Int64})::Cvoid
 end
 
 function psls_update_preconditioner(::Type{Float64}, ::Type{Int32}, data, status, ne, val,
@@ -398,9 +398,9 @@ function psls_apply_preconditioner(::Type{Float32}, ::Type{Int32}, data, status,
 end
 
 function psls_apply_preconditioner(::Type{Float32}, ::Type{Int64}, data, status, n, sol)
-  @ccall libgalahad_single_64psls_apply_preconditioner(data::Ptr{Ptr{Cvoid}},
-                                                       status::Ptr{Int64}, n::Int64,
-                                                       sol::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.psls_apply_preconditioner(data::Ptr{Ptr{Cvoid}},
+                                                        status::Ptr{Int64}, n::Int64,
+                                                        sol::Ptr{Float32})::Cvoid
 end
 
 function psls_apply_preconditioner(::Type{Float64}, ::Type{Int32}, data, status, n, sol)
@@ -436,9 +436,9 @@ function psls_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
 end
 
 function psls_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64psls_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{psls_inform_type{Float32,Int64}},
-                                              status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.psls_information(data::Ptr{Ptr{Cvoid}},
+                                               inform::Ptr{psls_inform_type{Float32,Int64}},
+                                               status::Ptr{Int64})::Cvoid
 end
 
 function psls_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -475,9 +475,9 @@ function psls_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function psls_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64psls_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{psls_control_type{Float32,Int64}},
-                                            inform::Ptr{psls_inform_type{Float32,Int64}})::Cvoid
+  @ccall libgalahad_single_64.psls_terminate(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{psls_control_type{Float32,Int64}},
+                                             inform::Ptr{psls_inform_type{Float32,Int64}})::Cvoid
 end
 
 function psls_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)

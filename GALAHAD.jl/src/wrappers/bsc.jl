@@ -35,9 +35,9 @@ function bsc_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
 end
 
 function bsc_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64bsc_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{bsc_control_type{Int64}},
-                                            status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.bsc_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{bsc_control_type{Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function bsc_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -73,9 +73,9 @@ function bsc_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
 end
 
 function bsc_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64bsc_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{bsc_inform_type{Float32,Int64}},
-                                             status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.bsc_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{bsc_inform_type{Float32,Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function bsc_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -112,9 +112,9 @@ function bsc_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function bsc_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64bsc_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{bsc_control_type{Int64}},
-                                           inform::Ptr{bsc_inform_type{Float32,Int64}})::Cvoid
+  @ccall libgalahad_single_64.bsc_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{bsc_control_type{Int64}},
+                                            inform::Ptr{bsc_inform_type{Float32,Int64}})::Cvoid
 end
 
 function bsc_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)

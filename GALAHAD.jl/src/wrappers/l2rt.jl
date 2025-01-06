@@ -51,9 +51,9 @@ function l2rt_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
 end
 
 function l2rt_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64l2rt_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{l2rt_control_type{Float32,Int64}},
-                                             status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.l2rt_initialize(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{l2rt_control_type{Float32,Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function l2rt_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -90,9 +90,9 @@ function l2rt_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
 end
 
 function l2rt_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_single_64l2rt_read_specfile(control::Ptr{l2rt_control_type{Float32,
-                                                                               Int64}},
-                                                specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single_64.l2rt_read_specfile(control::Ptr{l2rt_control_type{Float32,
+                                                                                Int64}},
+                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function l2rt_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
@@ -128,10 +128,10 @@ function l2rt_import_control(::Type{Float32}, ::Type{Int32}, control, data, stat
 end
 
 function l2rt_import_control(::Type{Float32}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_single_64l2rt_import_control(control::Ptr{l2rt_control_type{Float32,
-                                                                                Int64}},
-                                                 data::Ptr{Ptr{Cvoid}},
-                                                 status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.l2rt_import_control(control::Ptr{l2rt_control_type{Float32,
+                                                                                 Int64}},
+                                                  data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Int64})::Cvoid
 end
 
 function l2rt_import_control(::Type{Float64}, ::Type{Int32}, control, data, status)
@@ -175,11 +175,11 @@ end
 
 function l2rt_solve_problem(::Type{Float32}, ::Type{Int64}, data, status, m, n, power,
                             weight, shift, x, u, v)
-  @ccall libgalahad_single_64l2rt_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                                m::Int64, n::Int64, power::Float32,
-                                                weight::Float32, shift::Float32,
-                                                x::Ptr{Float32}, u::Ptr{Float32},
-                                                v::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.l2rt_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                                 m::Int64, n::Int64, power::Float32,
+                                                 weight::Float32, shift::Float32,
+                                                 x::Ptr{Float32}, u::Ptr{Float32},
+                                                 v::Ptr{Float32})::Cvoid
 end
 
 function l2rt_solve_problem(::Type{Float64}, ::Type{Int32}, data, status, m, n, power,
@@ -228,9 +228,9 @@ function l2rt_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
 end
 
 function l2rt_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64l2rt_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{l2rt_inform_type{Float32,Int64}},
-                                              status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.l2rt_information(data::Ptr{Ptr{Cvoid}},
+                                               inform::Ptr{l2rt_inform_type{Float32,Int64}},
+                                               status::Ptr{Int64})::Cvoid
 end
 
 function l2rt_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -267,9 +267,9 @@ function l2rt_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function l2rt_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64l2rt_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{l2rt_control_type{Float32,Int64}},
-                                            inform::Ptr{l2rt_inform_type{Float32,Int64}})::Cvoid
+  @ccall libgalahad_single_64.l2rt_terminate(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{l2rt_control_type{Float32,Int64}},
+                                             inform::Ptr{l2rt_inform_type{Float32,Int64}})::Cvoid
 end
 
 function l2rt_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)

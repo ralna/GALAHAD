@@ -54,9 +54,9 @@ function gltr_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
 end
 
 function gltr_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64gltr_initialize(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{gltr_control_type{Float32,Int64}},
-                                             status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.gltr_initialize(data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{gltr_control_type{Float32,Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function gltr_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -93,9 +93,9 @@ function gltr_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
 end
 
 function gltr_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_single_64gltr_read_specfile(control::Ptr{gltr_control_type{Float32,
-                                                                               Int64}},
-                                                specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single_64.gltr_read_specfile(control::Ptr{gltr_control_type{Float32,
+                                                                                Int64}},
+                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 function gltr_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
@@ -131,10 +131,10 @@ function gltr_import_control(::Type{Float32}, ::Type{Int32}, control, data, stat
 end
 
 function gltr_import_control(::Type{Float32}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_single_64gltr_import_control(control::Ptr{gltr_control_type{Float32,
-                                                                                Int64}},
-                                                 data::Ptr{Ptr{Cvoid}},
-                                                 status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.gltr_import_control(control::Ptr{gltr_control_type{Float32,
+                                                                                 Int64}},
+                                                  data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Int64})::Cvoid
 end
 
 function gltr_import_control(::Type{Float64}, ::Type{Int32}, control, data, status)
@@ -176,10 +176,10 @@ end
 
 function gltr_solve_problem(::Type{Float32}, ::Type{Int64}, data, status, n, radius, x, r,
                             vector)
-  @ccall libgalahad_single_64gltr_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                                n::Int64, radius::Float32, x::Ptr{Float32},
-                                                r::Ptr{Float32},
-                                                vector::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.gltr_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                                 n::Int64, radius::Float32, x::Ptr{Float32},
+                                                 r::Ptr{Float32},
+                                                 vector::Ptr{Float32})::Cvoid
 end
 
 function gltr_solve_problem(::Type{Float64}, ::Type{Int32}, data, status, n, radius, x, r,
@@ -223,9 +223,9 @@ function gltr_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
 end
 
 function gltr_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64gltr_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{gltr_inform_type{Float32,Int64}},
-                                              status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.gltr_information(data::Ptr{Ptr{Cvoid}},
+                                               inform::Ptr{gltr_inform_type{Float32,Int64}},
+                                               status::Ptr{Int64})::Cvoid
 end
 
 function gltr_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -262,9 +262,9 @@ function gltr_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function gltr_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64gltr_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{gltr_control_type{Float32,Int64}},
-                                            inform::Ptr{gltr_inform_type{Float32,Int64}})::Cvoid
+  @ccall libgalahad_single_64.gltr_terminate(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{gltr_control_type{Float32,Int64}},
+                                             inform::Ptr{gltr_inform_type{Float32,Int64}})::Cvoid
 end
 
 function gltr_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)

@@ -30,9 +30,9 @@ function rpd_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
 end
 
 function rpd_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64rpd_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{rpd_control_type{Int64}},
-                                            status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.rpd_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{rpd_control_type{Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function rpd_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -73,12 +73,12 @@ end
 
 function rpd_get_stats(::Type{Float32}, ::Type{Int64}, qplib_file, qplib_file_len, control,
                        data, status, p_type, n, m, h_ne, a_ne, h_c_ne)
-  @ccall libgalahad_single_64rpd_get_stats(qplib_file::Ptr{Cchar}, qplib_file_len::Int64,
-                                           control::Ptr{rpd_control_type{Int64}},
-                                           data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                           p_type::Ptr{Cchar}, n::Ptr{Int64}, m::Ptr{Int64},
-                                           h_ne::Ptr{Int64}, a_ne::Ptr{Int64},
-                                           h_c_ne::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.rpd_get_stats(qplib_file::Ptr{Cchar}, qplib_file_len::Int64,
+                                            control::Ptr{rpd_control_type{Int64}},
+                                            data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                            p_type::Ptr{Cchar}, n::Ptr{Int64},
+                                            m::Ptr{Int64}, h_ne::Ptr{Int64},
+                                            a_ne::Ptr{Int64}, h_c_ne::Ptr{Int64})::Cvoid
 end
 
 function rpd_get_stats(::Type{Float64}, ::Type{Int32}, qplib_file, qplib_file_len, control,
@@ -130,8 +130,8 @@ function rpd_get_g(::Type{Float32}, ::Type{Int32}, data, status, n, g)
 end
 
 function rpd_get_g(::Type{Float32}, ::Type{Int64}, data, status, n, g)
-  @ccall libgalahad_single_64rpd_get_g(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64}, n::Int64,
-                                       g::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.rpd_get_g(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64}, n::Int64,
+                                        g::Ptr{Float32})::Cvoid
 end
 
 function rpd_get_g(::Type{Float64}, ::Type{Int32}, data, status, n, g)
@@ -162,8 +162,8 @@ function rpd_get_f(::Type{Float32}, ::Type{Int32}, data, status, f)
 end
 
 function rpd_get_f(::Type{Float32}, ::Type{Int64}, data, status, f)
-  @ccall libgalahad_single_64rpd_get_f(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                       f::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.rpd_get_f(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                        f::Ptr{Float32})::Cvoid
 end
 
 function rpd_get_f(::Type{Float64}, ::Type{Int32}, data, status, f)
@@ -194,9 +194,9 @@ function rpd_get_xlu(::Type{Float32}, ::Type{Int32}, data, status, n, x_l, x_u)
 end
 
 function rpd_get_xlu(::Type{Float32}, ::Type{Int64}, data, status, n, x_l, x_u)
-  @ccall libgalahad_single_64rpd_get_xlu(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                         n::Int64, x_l::Ptr{Float32},
-                                         x_u::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.rpd_get_xlu(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                          n::Int64, x_l::Ptr{Float32},
+                                          x_u::Ptr{Float32})::Cvoid
 end
 
 function rpd_get_xlu(::Type{Float64}, ::Type{Int32}, data, status, n, x_l, x_u)
@@ -230,9 +230,9 @@ function rpd_get_clu(::Type{Float32}, ::Type{Int32}, data, status, m, c_l, c_u)
 end
 
 function rpd_get_clu(::Type{Float32}, ::Type{Int64}, data, status, m, c_l, c_u)
-  @ccall libgalahad_single_64rpd_get_clu(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                         m::Int64, c_l::Ptr{Float32},
-                                         c_u::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.rpd_get_clu(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                          m::Int64, c_l::Ptr{Float32},
+                                          c_u::Ptr{Float32})::Cvoid
 end
 
 function rpd_get_clu(::Type{Float64}, ::Type{Int32}, data, status, m, c_l, c_u)
@@ -267,9 +267,9 @@ function rpd_get_h(::Type{Float32}, ::Type{Int32}, data, status, h_ne, h_row, h_
 end
 
 function rpd_get_h(::Type{Float32}, ::Type{Int64}, data, status, h_ne, h_row, h_col, h_val)
-  @ccall libgalahad_single_64rpd_get_h(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                       h_ne::Int64, h_row::Ptr{Int64}, h_col::Ptr{Int64},
-                                       h_val::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.rpd_get_h(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                        h_ne::Int64, h_row::Ptr{Int64}, h_col::Ptr{Int64},
+                                        h_val::Ptr{Float32})::Cvoid
 end
 
 function rpd_get_h(::Type{Float64}, ::Type{Int32}, data, status, h_ne, h_row, h_col, h_val)
@@ -305,9 +305,9 @@ function rpd_get_a(::Type{Float32}, ::Type{Int32}, data, status, a_ne, a_row, a_
 end
 
 function rpd_get_a(::Type{Float32}, ::Type{Int64}, data, status, a_ne, a_row, a_col, a_val)
-  @ccall libgalahad_single_64rpd_get_a(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                       a_ne::Int64, a_row::Ptr{Int64}, a_col::Ptr{Int64},
-                                       a_val::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.rpd_get_a(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                        a_ne::Int64, a_row::Ptr{Int64}, a_col::Ptr{Int64},
+                                        a_val::Ptr{Float32})::Cvoid
 end
 
 function rpd_get_a(::Type{Float64}, ::Type{Int32}, data, status, a_ne, a_row, a_col, a_val)
@@ -346,10 +346,10 @@ end
 
 function rpd_get_h_c(::Type{Float32}, ::Type{Int64}, data, status, h_c_ne, h_c_ptr, h_c_row,
                      h_c_col, h_c_val)
-  @ccall libgalahad_single_64rpd_get_h_c(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                         h_c_ne::Int64, h_c_ptr::Ptr{Int64},
-                                         h_c_row::Ptr{Int64}, h_c_col::Ptr{Int64},
-                                         h_c_val::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.rpd_get_h_c(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                          h_c_ne::Int64, h_c_ptr::Ptr{Int64},
+                                          h_c_row::Ptr{Int64}, h_c_col::Ptr{Int64},
+                                          h_c_val::Ptr{Float32})::Cvoid
 end
 
 function rpd_get_h_c(::Type{Float64}, ::Type{Int32}, data, status, h_c_ne, h_c_ptr, h_c_row,
@@ -392,8 +392,8 @@ function rpd_get_x_type(::Type{Float32}, ::Type{Int32}, data, status, n, x_type)
 end
 
 function rpd_get_x_type(::Type{Float32}, ::Type{Int64}, data, status, n, x_type)
-  @ccall libgalahad_single_64rpd_get_x_type(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                            n::Int64, x_type::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.rpd_get_x_type(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                             n::Int64, x_type::Ptr{Int64})::Cvoid
 end
 
 function rpd_get_x_type(::Type{Float64}, ::Type{Int32}, data, status, n, x_type)
@@ -424,8 +424,8 @@ function rpd_get_x(::Type{Float32}, ::Type{Int32}, data, status, n, x)
 end
 
 function rpd_get_x(::Type{Float32}, ::Type{Int64}, data, status, n, x)
-  @ccall libgalahad_single_64rpd_get_x(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64}, n::Int64,
-                                       x::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.rpd_get_x(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64}, n::Int64,
+                                        x::Ptr{Float32})::Cvoid
 end
 
 function rpd_get_x(::Type{Float64}, ::Type{Int32}, data, status, n, x)
@@ -456,8 +456,8 @@ function rpd_get_y(::Type{Float32}, ::Type{Int32}, data, status, m, y)
 end
 
 function rpd_get_y(::Type{Float32}, ::Type{Int64}, data, status, m, y)
-  @ccall libgalahad_single_64rpd_get_y(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64}, m::Int64,
-                                       y::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.rpd_get_y(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64}, m::Int64,
+                                        y::Ptr{Float32})::Cvoid
 end
 
 function rpd_get_y(::Type{Float64}, ::Type{Int32}, data, status, m, y)
@@ -488,8 +488,8 @@ function rpd_get_z(::Type{Float32}, ::Type{Int32}, data, status, n, z)
 end
 
 function rpd_get_z(::Type{Float32}, ::Type{Int64}, data, status, n, z)
-  @ccall libgalahad_single_64rpd_get_z(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64}, n::Int64,
-                                       z::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.rpd_get_z(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64}, n::Int64,
+                                        z::Ptr{Float32})::Cvoid
 end
 
 function rpd_get_z(::Type{Float64}, ::Type{Int32}, data, status, n, z)
@@ -521,9 +521,9 @@ function rpd_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
 end
 
 function rpd_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64rpd_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{rpd_inform_type{Int64}},
-                                             status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.rpd_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{rpd_inform_type{Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function rpd_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -559,9 +559,9 @@ function rpd_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function rpd_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64rpd_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{rpd_control_type{Int64}},
-                                           inform::Ptr{rpd_inform_type{Int64}})::Cvoid
+  @ccall libgalahad_single_64.rpd_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{rpd_control_type{Int64}},
+                                            inform::Ptr{rpd_inform_type{Int64}})::Cvoid
 end
 
 function rpd_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)

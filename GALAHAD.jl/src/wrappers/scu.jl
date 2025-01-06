@@ -21,9 +21,9 @@ function scu_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
 end
 
 function scu_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64scu_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{scu_control_type},
-                                            status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.scu_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{scu_control_type},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function scu_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -59,9 +59,9 @@ function scu_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
 end
 
 function scu_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64scu_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{scu_inform_type{Int64}},
-                                             status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.scu_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{scu_inform_type{Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function scu_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -97,9 +97,9 @@ function scu_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function scu_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64scu_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{scu_control_type},
-                                           inform::Ptr{scu_inform_type{Int64}})::Cvoid
+  @ccall libgalahad_single_64.scu_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{scu_control_type},
+                                            inform::Ptr{scu_inform_type{Int64}})::Cvoid
 end
 
 function scu_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)

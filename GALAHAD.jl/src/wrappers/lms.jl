@@ -46,9 +46,9 @@ function lms_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
 end
 
 function lms_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64lms_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{lms_control_type{Int64}},
-                                            status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.lms_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{lms_control_type{Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function lms_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -84,9 +84,9 @@ function lms_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
 end
 
 function lms_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64lms_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{lms_inform_type{Float32,Int64}},
-                                             status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.lms_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{lms_inform_type{Float32,Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function lms_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -123,9 +123,9 @@ function lms_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function lms_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64lms_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{lms_control_type{Int64}},
-                                           inform::Ptr{lms_inform_type{Float32,Int64}})::Cvoid
+  @ccall libgalahad_single_64.lms_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{lms_control_type{Int64}},
+                                            inform::Ptr{lms_inform_type{Float32,Int64}})::Cvoid
 end
 
 function lms_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)

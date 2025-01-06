@@ -128,9 +128,9 @@ function qpb_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
 end
 
 function qpb_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64qpb_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{qpb_control_type{Float32,Int64}},
-                                            status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.qpb_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{qpb_control_type{Float32,Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function qpb_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -166,8 +166,9 @@ function qpb_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
 end
 
 function qpb_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_single_64qpb_read_specfile(control::Ptr{qpb_control_type{Float32,Int64}},
-                                               specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single_64.qpb_read_specfile(control::Ptr{qpb_control_type{Float32,
+                                                                              Int64}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function qpb_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
@@ -208,13 +209,13 @@ end
 
 function qpb_import(::Type{Float32}, ::Type{Int64}, control, data, status, n, m, H_type,
                     H_ne, H_row, H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr)
-  @ccall libgalahad_single_64qpb_import(control::Ptr{qpb_control_type{Float32,Int64}},
-                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64}, n::Int64,
-                                        m::Int64, H_type::Ptr{Cchar}, H_ne::Int64,
-                                        H_row::Ptr{Int64}, H_col::Ptr{Int64},
-                                        H_ptr::Ptr{Int64}, A_type::Ptr{Cchar}, A_ne::Int64,
-                                        A_row::Ptr{Int64}, A_col::Ptr{Int64},
-                                        A_ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.qpb_import(control::Ptr{qpb_control_type{Float32,Int64}},
+                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                         n::Int64, m::Int64, H_type::Ptr{Cchar},
+                                         H_ne::Int64, H_row::Ptr{Int64}, H_col::Ptr{Int64},
+                                         H_ptr::Ptr{Int64}, A_type::Ptr{Cchar}, A_ne::Int64,
+                                         A_row::Ptr{Int64}, A_col::Ptr{Int64},
+                                         A_ptr::Ptr{Int64})::Cvoid
 end
 
 function qpb_import(::Type{Float64}, ::Type{Int32}, control, data, status, n, m, H_type,
@@ -271,9 +272,10 @@ function qpb_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status
 end
 
 function qpb_reset_control(::Type{Float32}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_single_64qpb_reset_control(control::Ptr{qpb_control_type{Float32,Int64}},
-                                               data::Ptr{Ptr{Cvoid}},
-                                               status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.qpb_reset_control(control::Ptr{qpb_control_type{Float32,
+                                                                              Int64}},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int64})::Cvoid
 end
 
 function qpb_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
@@ -319,15 +321,15 @@ end
 
 function qpb_solve_qp(::Type{Float32}, ::Type{Int64}, data, status, n, m, h_ne, H_val, g, f,
                       a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
-  @ccall libgalahad_single_64qpb_solve_qp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                          n::Int64, m::Int64, h_ne::Int64,
-                                          H_val::Ptr{Float32}, g::Ptr{Float32}, f::Float32,
-                                          a_ne::Int64, A_val::Ptr{Float32},
-                                          c_l::Ptr{Float32}, c_u::Ptr{Float32},
-                                          x_l::Ptr{Float32}, x_u::Ptr{Float32},
-                                          x::Ptr{Float32}, c::Ptr{Float32}, y::Ptr{Float32},
-                                          z::Ptr{Float32}, x_stat::Ptr{Int64},
-                                          c_stat::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.qpb_solve_qp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                           n::Int64, m::Int64, h_ne::Int64,
+                                           H_val::Ptr{Float32}, g::Ptr{Float32}, f::Float32,
+                                           a_ne::Int64, A_val::Ptr{Float32},
+                                           c_l::Ptr{Float32}, c_u::Ptr{Float32},
+                                           x_l::Ptr{Float32}, x_u::Ptr{Float32},
+                                           x::Ptr{Float32}, c::Ptr{Float32},
+                                           y::Ptr{Float32}, z::Ptr{Float32},
+                                           x_stat::Ptr{Int64}, c_stat::Ptr{Int64})::Cvoid
 end
 
 function qpb_solve_qp(::Type{Float64}, ::Type{Int32}, data, status, n, m, h_ne, H_val, g, f,
@@ -391,9 +393,9 @@ function qpb_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
 end
 
 function qpb_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64qpb_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{qpb_inform_type{Float32,Int64}},
-                                             status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.qpb_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{qpb_inform_type{Float32,Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function qpb_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -430,9 +432,9 @@ function qpb_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function qpb_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64qpb_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{qpb_control_type{Float32,Int64}},
-                                           inform::Ptr{qpb_inform_type{Float32,Int64}})::Cvoid
+  @ccall libgalahad_single_64.qpb_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{qpb_control_type{Float32,Int64}},
+                                            inform::Ptr{qpb_inform_type{Float32,Int64}})::Cvoid
 end
 
 function qpb_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)

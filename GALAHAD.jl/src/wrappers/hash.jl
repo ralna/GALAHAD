@@ -29,10 +29,10 @@ end
 
 function hash_initialize(::Type{Float32}, ::Type{Int64}, nchar, length, data, control,
                          inform)
-  @ccall libgalahad_single_64hash_initialize(nchar::Int64, length::Int64,
-                                             data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{hash_control_type{Int64}},
-                                             inform::Ptr{hash_inform_type{Int64}})::Cvoid
+  @ccall libgalahad_single_64.hash_initialize(nchar::Int64, length::Int64,
+                                              data::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{hash_control_type{Int64}},
+                                              inform::Ptr{hash_inform_type{Int64}})::Cvoid
 end
 
 function hash_initialize(::Type{Float64}, ::Type{Int32}, nchar, length, data, control,
@@ -76,9 +76,9 @@ function hash_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
 end
 
 function hash_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64hash_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{hash_inform_type{Int64}},
-                                              status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.hash_information(data::Ptr{Ptr{Cvoid}},
+                                               inform::Ptr{hash_inform_type{Int64}},
+                                               status::Ptr{Int64})::Cvoid
 end
 
 function hash_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -114,9 +114,9 @@ function hash_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function hash_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64hash_terminate(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{hash_control_type{Int64}},
-                                            inform::Ptr{hash_inform_type{Int64}})::Cvoid
+  @ccall libgalahad_single_64.hash_terminate(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{hash_control_type{Int64}},
+                                             inform::Ptr{hash_inform_type{Int64}})::Cvoid
 end
 
 function hash_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)

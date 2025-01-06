@@ -87,9 +87,9 @@ function trs_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
 end
 
 function trs_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64trs_initialize(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{trs_control_type{Float32,Int64}},
-                                            status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.trs_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{trs_control_type{Float32,Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function trs_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -125,8 +125,9 @@ function trs_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
 end
 
 function trs_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_single_64trs_read_specfile(control::Ptr{trs_control_type{Float32,Int64}},
-                                               specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single_64.trs_read_specfile(control::Ptr{trs_control_type{Float32,
+                                                                              Int64}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function trs_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
@@ -164,10 +165,11 @@ end
 
 function trs_import(::Type{Float32}, ::Type{Int64}, control, data, status, n, H_type, H_ne,
                     H_row, H_col, H_ptr)
-  @ccall libgalahad_single_64trs_import(control::Ptr{trs_control_type{Float32,Int64}},
-                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64}, n::Int64,
-                                        H_type::Ptr{Cchar}, H_ne::Int64, H_row::Ptr{Int64},
-                                        H_col::Ptr{Int64}, H_ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.trs_import(control::Ptr{trs_control_type{Float32,Int64}},
+                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                         n::Int64, H_type::Ptr{Cchar}, H_ne::Int64,
+                                         H_row::Ptr{Int64}, H_col::Ptr{Int64},
+                                         H_ptr::Ptr{Int64})::Cvoid
 end
 
 function trs_import(::Type{Float64}, ::Type{Int32}, control, data, status, n, H_type, H_ne,
@@ -216,10 +218,10 @@ end
 
 function trs_import_m(::Type{Float32}, ::Type{Int64}, data, status, n, M_type, M_ne, M_row,
                       M_col, M_ptr)
-  @ccall libgalahad_single_64trs_import_m(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                          n::Int64, M_type::Ptr{Cchar}, M_ne::Int64,
-                                          M_row::Ptr{Int64}, M_col::Ptr{Int64},
-                                          M_ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.trs_import_m(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                           n::Int64, M_type::Ptr{Cchar}, M_ne::Int64,
+                                           M_row::Ptr{Int64}, M_col::Ptr{Int64},
+                                           M_ptr::Ptr{Int64})::Cvoid
 end
 
 function trs_import_m(::Type{Float64}, ::Type{Int32}, data, status, n, M_type, M_ne, M_row,
@@ -264,10 +266,10 @@ end
 
 function trs_import_a(::Type{Float32}, ::Type{Int64}, data, status, m, A_type, A_ne, A_row,
                       A_col, A_ptr)
-  @ccall libgalahad_single_64trs_import_a(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                          m::Int64, A_type::Ptr{Cchar}, A_ne::Int64,
-                                          A_row::Ptr{Int64}, A_col::Ptr{Int64},
-                                          A_ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.trs_import_a(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                           m::Int64, A_type::Ptr{Cchar}, A_ne::Int64,
+                                           A_row::Ptr{Int64}, A_col::Ptr{Int64},
+                                           A_ptr::Ptr{Int64})::Cvoid
 end
 
 function trs_import_a(::Type{Float64}, ::Type{Int32}, data, status, m, A_type, A_ne, A_row,
@@ -310,9 +312,10 @@ function trs_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status
 end
 
 function trs_reset_control(::Type{Float32}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_single_64trs_reset_control(control::Ptr{trs_control_type{Float32,Int64}},
-                                               data::Ptr{Ptr{Cvoid}},
-                                               status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.trs_reset_control(control::Ptr{trs_control_type{Float32,
+                                                                              Int64}},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int64})::Cvoid
 end
 
 function trs_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
@@ -357,13 +360,13 @@ end
 
 function trs_solve_problem(::Type{Float32}, ::Type{Int64}, data, status, n, radius, f, c,
                            H_ne, H_val, x, M_ne, M_val, m, A_ne, A_val, y)
-  @ccall libgalahad_single_64trs_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                               n::Int64, radius::Float32, f::Float32,
-                                               c::Ptr{Float32}, H_ne::Int64,
-                                               H_val::Ptr{Float32}, x::Ptr{Float32},
-                                               M_ne::Int64, M_val::Ptr{Float32}, m::Int64,
-                                               A_ne::Int64, A_val::Ptr{Float32},
-                                               y::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.trs_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                                n::Int64, radius::Float32, f::Float32,
+                                                c::Ptr{Float32}, H_ne::Int64,
+                                                H_val::Ptr{Float32}, x::Ptr{Float32},
+                                                M_ne::Int64, M_val::Ptr{Float32}, m::Int64,
+                                                A_ne::Int64, A_val::Ptr{Float32},
+                                                y::Ptr{Float32})::Cvoid
 end
 
 function trs_solve_problem(::Type{Float64}, ::Type{Int32}, data, status, n, radius, f, c,
@@ -421,9 +424,9 @@ function trs_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
 end
 
 function trs_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64trs_information(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{trs_inform_type{Float32,Int64}},
-                                             status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.trs_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{trs_inform_type{Float32,Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function trs_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -460,9 +463,9 @@ function trs_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
 end
 
 function trs_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64trs_terminate(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{trs_control_type{Float32,Int64}},
-                                           inform::Ptr{trs_inform_type{Float32,Int64}})::Cvoid
+  @ccall libgalahad_single_64.trs_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{trs_control_type{Float32,Int64}},
+                                            inform::Ptr{trs_inform_type{Float32,Int64}})::Cvoid
 end
 
 function trs_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
