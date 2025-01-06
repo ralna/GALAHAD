@@ -16,7 +16,7 @@ Z: residual =  7.0e-310 status = 0
  preconditioner: G = H 
 
  Using SLS(ssids) to factorize the augmented matrix
- SLS: analysis complete: status = 0, ordering = 3
+ SLS: analysis complete: status = 0, ordering = 7
  K n = 5, nnz(prec,predicted factors) = 10, 15
  SLS: factorization complete: status = 0, pivoting = 1
  K nnz(prec,factors) = 10, 15
@@ -28,7 +28,7 @@ Z: residual =  7.0e-310 status = 0
  preconditioner: G = H 
 
  Using SLS(ssids) to factorize the augmented matrix
- SLS: analysis complete: status = 0, ordering = 3
+ SLS: analysis complete: status = 0, ordering = 7
  K n = 5, nnz(prec,predicted factors) = 10, 15
  SLS: factorization complete: status = 0, pivoting = 1
  K nnz(prec,factors) = 10, 15
@@ -40,11 +40,11 @@ Z: residual =  7.0e-310 status = 0
  preconditioner: G = H 
 
  Using SLS(ssids) to factorize the augmented matrix
- SLS: analysis complete: status = 0, ordering = 3
+ SLS: analysis complete: status = 0, ordering = 7
  K n = 5, nnz(prec,predicted factors) = 15, 15
  SLS: factorization complete: status = 0, pivoting = 1
  K nnz(prec,factors) = 15, 15
- time to form and factorize explicit preconditioner   0.00
+ time to form and factorize explicit preconditioner   0.01
 
  n = 3, m = 2
  preconditioner = 2, factorization = 2, solver = ssids
@@ -52,7 +52,7 @@ Z: residual =  7.0e-310 status = 0
  preconditioner: G = H 
 
  Using SLS(ssids) to factorize the augmented matrix
- SLS: analysis complete: status = 0, ordering = 3
+ SLS: analysis complete: status = 0, ordering = 7
  K n = 5, nnz(prec,predicted factors) = 11, 15
  SLS: factorization complete: status = 0, pivoting = 1
  K nnz(prec,factors) = 11, 15
@@ -64,11 +64,11 @@ Z: residual =  7.0e-310 status = 0
  preconditioner: G = H 
 
  Using SLS(ssids) to factorize the augmented matrix
- SLS: analysis complete: status = 0, ordering = 3
+ SLS: analysis complete: status = 0, ordering = 7
  K n = 5, nnz(prec,predicted factors) = 11, 15
  SLS: factorization complete: status = 0, pivoting = 1
  K nnz(prec,factors) = 11, 15
- time to form and factorize explicit preconditioner   0.00
+ time to form and factorize explicit preconditioner   0.01
 
  n = 3, m = 2
  preconditioner = 2, factorization = 2, solver = ssids
@@ -76,11 +76,11 @@ Z: residual =  7.0e-310 status = 0
  preconditioner: G = H 
 
  Using SLS(ssids) to factorize the augmented matrix
- SLS: analysis complete: status = 0, ordering = 3
+ SLS: analysis complete: status = 0, ordering = 7
  K n = 5, nnz(prec,predicted factors) = 11, 15
  SLS: factorization complete: status = 0, pivoting = 1
  K nnz(prec,factors) = 11, 15
- time to form and factorize explicit preconditioner   0.00
+ time to form and factorize explicit preconditioner   0.01
 
  n = 3, m = 2
  preconditioner = 2, factorization = 2, solver = ssids
@@ -88,7 +88,7 @@ Z: residual =  7.0e-310 status = 0
  preconditioner: G = H 
 
  Using SLS(ssids) to factorize the augmented matrix
- SLS: analysis complete: status = 0, ordering = 3
+ SLS: analysis complete: status = 0, ordering = 7
  K n = 5, nnz(prec,predicted factors) = 9, 15
  SLS: factorization complete: status = 0, pivoting = 1
  K nnz(prec,factors) = 9, 15
