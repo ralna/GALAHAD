@@ -79,16 +79,15 @@ end
 export rqs_initialize
 
 function rqs_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
-  @ccall libgalahad_single.rqs_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{rqs_control_type{Float32,Int32}},
-                                            status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.rqs_initialize(data::Ptr{Ptr{Cvoid}},
+                                          control::Ptr{rqs_control_type{Float32,Int32}},
+                                          status::Ptr{Int32})::Cvoid
 end
 
 function rqs_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64.rqs_initialize_s_64(data::Ptr{Ptr{Cvoid}},
-                                                  control::Ptr{rqs_control_type{Float32,
-                                                                                Int64}},
-                                                  status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64rqs_initialize(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{rqs_control_type{Float32,Int64}},
+                                            status::Ptr{Int64})::Cvoid
 end
 
 function rqs_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -98,37 +97,34 @@ function rqs_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
 end
 
 function rqs_initialize(::Type{Float64}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_double_64.rqs_initialize_64(data::Ptr{Ptr{Cvoid}},
-                                                control::Ptr{rqs_control_type{Float64,
-                                                                              Int64}},
-                                                status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.rqs_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{rqs_control_type{Float64,Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function rqs_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
-  @ccall libgalahad_quadruple.rqs_initialize_q(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{rqs_control_type{Float128,
-                                                                             Int32}},
-                                               status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_quadruple.rqs_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{rqs_control_type{Float128,Int32}},
+                                             status::Ptr{Int32})::Cvoid
 end
 
 function rqs_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_quadruple_64.rqs_initialize_q_64(data::Ptr{Ptr{Cvoid}},
-                                                     control::Ptr{rqs_control_type{Float128,
-                                                                                   Int64}},
-                                                     status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.rqs_initialize(data::Ptr{Ptr{Cvoid}},
+                                                control::Ptr{rqs_control_type{Float128,
+                                                                              Int64}},
+                                                status::Ptr{Int64})::Cvoid
 end
 
 export rqs_read_specfile
 
 function rqs_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
-  @ccall libgalahad_single.rqs_read_specfile_s(control::Ptr{rqs_control_type{Float32,Int32}},
-                                               specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single.rqs_read_specfile(control::Ptr{rqs_control_type{Float32,Int32}},
+                                             specfile::Ptr{Cchar})::Cvoid
 end
 
 function rqs_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_single_64.rqs_read_specfile_s_64(control::Ptr{rqs_control_type{Float32,
-                                                                                   Int64}},
-                                                     specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single_64rqs_read_specfile(control::Ptr{rqs_control_type{Float32,Int64}},
+                                               specfile::Ptr{Cchar})::Cvoid
 end
 
 function rqs_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
@@ -137,40 +133,39 @@ function rqs_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
 end
 
 function rqs_read_specfile(::Type{Float64}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_double_64.rqs_read_specfile_64(control::Ptr{rqs_control_type{Float64,
-                                                                                 Int64}},
-                                                   specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_double_64.rqs_read_specfile(control::Ptr{rqs_control_type{Float64,
+                                                                              Int64}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function rqs_read_specfile(::Type{Float128}, ::Type{Int32}, control, specfile)
-  @ccall libgalahad_quadruple.rqs_read_specfile_q(control::Ptr{rqs_control_type{Float128,
-                                                                                Int32}},
-                                                  specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_quadruple.rqs_read_specfile(control::Ptr{rqs_control_type{Float128,
+                                                                              Int32}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function rqs_read_specfile(::Type{Float128}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_quadruple_64.rqs_read_specfile_q_64(control::Ptr{rqs_control_type{Float128,
-                                                                                      Int64}},
-                                                        specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_quadruple_64.rqs_read_specfile(control::Ptr{rqs_control_type{Float128,
+                                                                                 Int64}},
+                                                   specfile::Ptr{Cchar})::Cvoid
 end
 
 export rqs_import
 
 function rqs_import(::Type{Float32}, ::Type{Int32}, control, data, status, n, H_type, H_ne,
                     H_row, H_col, H_ptr)
-  @ccall libgalahad_single.rqs_import_s(control::Ptr{rqs_control_type{Float32,Int32}},
-                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
-                                        H_type::Ptr{Cchar}, H_ne::Int32, H_row::Ptr{Int32},
-                                        H_col::Ptr{Int32}, H_ptr::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.rqs_import(control::Ptr{rqs_control_type{Float32,Int32}},
+                                      data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
+                                      H_type::Ptr{Cchar}, H_ne::Int32, H_row::Ptr{Int32},
+                                      H_col::Ptr{Int32}, H_ptr::Ptr{Int32})::Cvoid
 end
 
 function rqs_import(::Type{Float32}, ::Type{Int64}, control, data, status, n, H_type, H_ne,
                     H_row, H_col, H_ptr)
-  @ccall libgalahad_single_64.rqs_import_s_64(control::Ptr{rqs_control_type{Float32,Int64}},
-                                              data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                              n::Int64, H_type::Ptr{Cchar}, H_ne::Int64,
-                                              H_row::Ptr{Int64}, H_col::Ptr{Int64},
-                                              H_ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64rqs_import(control::Ptr{rqs_control_type{Float32,Int64}},
+                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64}, n::Int64,
+                                        H_type::Ptr{Cchar}, H_ne::Int64, H_row::Ptr{Int64},
+                                        H_col::Ptr{Int64}, H_ptr::Ptr{Int64})::Cvoid
 end
 
 function rqs_import(::Type{Float64}, ::Type{Int32}, control, data, status, n, H_type, H_ne,
@@ -183,48 +178,46 @@ end
 
 function rqs_import(::Type{Float64}, ::Type{Int64}, control, data, status, n, H_type, H_ne,
                     H_row, H_col, H_ptr)
-  @ccall libgalahad_double_64.rqs_import_64(control::Ptr{rqs_control_type{Float64,Int64}},
+  @ccall libgalahad_double_64.rqs_import(control::Ptr{rqs_control_type{Float64,Int64}},
+                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                         n::Int64, H_type::Ptr{Cchar}, H_ne::Int64,
+                                         H_row::Ptr{Int64}, H_col::Ptr{Int64},
+                                         H_ptr::Ptr{Int64})::Cvoid
+end
+
+function rqs_import(::Type{Float128}, ::Type{Int32}, control, data, status, n, H_type, H_ne,
+                    H_row, H_col, H_ptr)
+  @ccall libgalahad_quadruple.rqs_import(control::Ptr{rqs_control_type{Float128,Int32}},
+                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                         n::Int32, H_type::Ptr{Cchar}, H_ne::Int32,
+                                         H_row::Ptr{Int32}, H_col::Ptr{Int32},
+                                         H_ptr::Ptr{Int32})::Cvoid
+end
+
+function rqs_import(::Type{Float128}, ::Type{Int64}, control, data, status, n, H_type, H_ne,
+                    H_row, H_col, H_ptr)
+  @ccall libgalahad_quadruple_64.rqs_import(control::Ptr{rqs_control_type{Float128,Int64}},
                                             data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
                                             n::Int64, H_type::Ptr{Cchar}, H_ne::Int64,
                                             H_row::Ptr{Int64}, H_col::Ptr{Int64},
                                             H_ptr::Ptr{Int64})::Cvoid
 end
 
-function rqs_import(::Type{Float128}, ::Type{Int32}, control, data, status, n, H_type, H_ne,
-                    H_row, H_col, H_ptr)
-  @ccall libgalahad_quadruple.rqs_import_q(control::Ptr{rqs_control_type{Float128,Int32}},
-                                           data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                           n::Int32, H_type::Ptr{Cchar}, H_ne::Int32,
-                                           H_row::Ptr{Int32}, H_col::Ptr{Int32},
-                                           H_ptr::Ptr{Int32})::Cvoid
-end
-
-function rqs_import(::Type{Float128}, ::Type{Int64}, control, data, status, n, H_type, H_ne,
-                    H_row, H_col, H_ptr)
-  @ccall libgalahad_quadruple_64.rqs_import_q_64(control::Ptr{rqs_control_type{Float128,
-                                                                               Int64}},
-                                                 data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                                 n::Int64, H_type::Ptr{Cchar}, H_ne::Int64,
-                                                 H_row::Ptr{Int64}, H_col::Ptr{Int64},
-                                                 H_ptr::Ptr{Int64})::Cvoid
-end
-
 export rqs_import_m
 
 function rqs_import_m(::Type{Float32}, ::Type{Int32}, data, status, n, M_type, M_ne, M_row,
                       M_col, M_ptr)
-  @ccall libgalahad_single.rqs_import_m_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                          n::Int32, M_type::Ptr{Cchar}, M_ne::Int32,
-                                          M_row::Ptr{Int32}, M_col::Ptr{Int32},
-                                          M_ptr::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.rqs_import_m(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
+                                        M_type::Ptr{Cchar}, M_ne::Int32, M_row::Ptr{Int32},
+                                        M_col::Ptr{Int32}, M_ptr::Ptr{Int32})::Cvoid
 end
 
 function rqs_import_m(::Type{Float32}, ::Type{Int64}, data, status, n, M_type, M_ne, M_row,
                       M_col, M_ptr)
-  @ccall libgalahad_single_64.rqs_import_m_s_64(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                                n::Int64, M_type::Ptr{Cchar}, M_ne::Int64,
-                                                M_row::Ptr{Int64}, M_col::Ptr{Int64},
-                                                M_ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64rqs_import_m(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                          n::Int64, M_type::Ptr{Cchar}, M_ne::Int64,
+                                          M_row::Ptr{Int64}, M_col::Ptr{Int64},
+                                          M_ptr::Ptr{Int64})::Cvoid
 end
 
 function rqs_import_m(::Type{Float64}, ::Type{Int32}, data, status, n, M_type, M_ne, M_row,
@@ -236,45 +229,43 @@ end
 
 function rqs_import_m(::Type{Float64}, ::Type{Int64}, data, status, n, M_type, M_ne, M_row,
                       M_col, M_ptr)
-  @ccall libgalahad_double_64.rqs_import_m_64(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                              n::Int64, M_type::Ptr{Cchar}, M_ne::Int64,
-                                              M_row::Ptr{Int64}, M_col::Ptr{Int64},
-                                              M_ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.rqs_import_m(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                           n::Int64, M_type::Ptr{Cchar}, M_ne::Int64,
+                                           M_row::Ptr{Int64}, M_col::Ptr{Int64},
+                                           M_ptr::Ptr{Int64})::Cvoid
 end
 
 function rqs_import_m(::Type{Float128}, ::Type{Int32}, data, status, n, M_type, M_ne, M_row,
                       M_col, M_ptr)
-  @ccall libgalahad_quadruple.rqs_import_m_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                             n::Int32, M_type::Ptr{Cchar}, M_ne::Int32,
-                                             M_row::Ptr{Int32}, M_col::Ptr{Int32},
-                                             M_ptr::Ptr{Int32})::Cvoid
+  @ccall libgalahad_quadruple.rqs_import_m(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                           n::Int32, M_type::Ptr{Cchar}, M_ne::Int32,
+                                           M_row::Ptr{Int32}, M_col::Ptr{Int32},
+                                           M_ptr::Ptr{Int32})::Cvoid
 end
 
 function rqs_import_m(::Type{Float128}, ::Type{Int64}, data, status, n, M_type, M_ne, M_row,
                       M_col, M_ptr)
-  @ccall libgalahad_quadruple_64.rqs_import_m_q_64(data::Ptr{Ptr{Cvoid}},
-                                                   status::Ptr{Int64}, n::Int64,
-                                                   M_type::Ptr{Cchar}, M_ne::Int64,
-                                                   M_row::Ptr{Int64}, M_col::Ptr{Int64},
-                                                   M_ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.rqs_import_m(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                              n::Int64, M_type::Ptr{Cchar}, M_ne::Int64,
+                                              M_row::Ptr{Int64}, M_col::Ptr{Int64},
+                                              M_ptr::Ptr{Int64})::Cvoid
 end
 
 export rqs_import_a
 
 function rqs_import_a(::Type{Float32}, ::Type{Int32}, data, status, m, A_type, A_ne, A_row,
                       A_col, A_ptr)
-  @ccall libgalahad_single.rqs_import_a_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                          m::Int32, A_type::Ptr{Cchar}, A_ne::Int32,
-                                          A_row::Ptr{Int32}, A_col::Ptr{Int32},
-                                          A_ptr::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.rqs_import_a(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, m::Int32,
+                                        A_type::Ptr{Cchar}, A_ne::Int32, A_row::Ptr{Int32},
+                                        A_col::Ptr{Int32}, A_ptr::Ptr{Int32})::Cvoid
 end
 
 function rqs_import_a(::Type{Float32}, ::Type{Int64}, data, status, m, A_type, A_ne, A_row,
                       A_col, A_ptr)
-  @ccall libgalahad_single_64.rqs_import_a_s_64(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                                m::Int64, A_type::Ptr{Cchar}, A_ne::Int64,
-                                                A_row::Ptr{Int64}, A_col::Ptr{Int64},
-                                                A_ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64rqs_import_a(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                          m::Int64, A_type::Ptr{Cchar}, A_ne::Int64,
+                                          A_row::Ptr{Int64}, A_col::Ptr{Int64},
+                                          A_ptr::Ptr{Int64})::Cvoid
 end
 
 function rqs_import_a(::Type{Float64}, ::Type{Int32}, data, status, m, A_type, A_ne, A_row,
@@ -286,42 +277,40 @@ end
 
 function rqs_import_a(::Type{Float64}, ::Type{Int64}, data, status, m, A_type, A_ne, A_row,
                       A_col, A_ptr)
-  @ccall libgalahad_double_64.rqs_import_a_64(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+  @ccall libgalahad_double_64.rqs_import_a(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                           m::Int64, A_type::Ptr{Cchar}, A_ne::Int64,
+                                           A_row::Ptr{Int64}, A_col::Ptr{Int64},
+                                           A_ptr::Ptr{Int64})::Cvoid
+end
+
+function rqs_import_a(::Type{Float128}, ::Type{Int32}, data, status, m, A_type, A_ne, A_row,
+                      A_col, A_ptr)
+  @ccall libgalahad_quadruple.rqs_import_a(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                           m::Int32, A_type::Ptr{Cchar}, A_ne::Int32,
+                                           A_row::Ptr{Int32}, A_col::Ptr{Int32},
+                                           A_ptr::Ptr{Int32})::Cvoid
+end
+
+function rqs_import_a(::Type{Float128}, ::Type{Int64}, data, status, m, A_type, A_ne, A_row,
+                      A_col, A_ptr)
+  @ccall libgalahad_quadruple_64.rqs_import_a(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
                                               m::Int64, A_type::Ptr{Cchar}, A_ne::Int64,
                                               A_row::Ptr{Int64}, A_col::Ptr{Int64},
                                               A_ptr::Ptr{Int64})::Cvoid
 end
 
-function rqs_import_a(::Type{Float128}, ::Type{Int32}, data, status, m, A_type, A_ne, A_row,
-                      A_col, A_ptr)
-  @ccall libgalahad_quadruple.rqs_import_a_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                             m::Int32, A_type::Ptr{Cchar}, A_ne::Int32,
-                                             A_row::Ptr{Int32}, A_col::Ptr{Int32},
-                                             A_ptr::Ptr{Int32})::Cvoid
-end
-
-function rqs_import_a(::Type{Float128}, ::Type{Int64}, data, status, m, A_type, A_ne, A_row,
-                      A_col, A_ptr)
-  @ccall libgalahad_quadruple_64.rqs_import_a_q_64(data::Ptr{Ptr{Cvoid}},
-                                                   status::Ptr{Int64}, m::Int64,
-                                                   A_type::Ptr{Cchar}, A_ne::Int64,
-                                                   A_row::Ptr{Int64}, A_col::Ptr{Int64},
-                                                   A_ptr::Ptr{Int64})::Cvoid
-end
-
 export rqs_reset_control
 
 function rqs_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_single.rqs_reset_control_s(control::Ptr{rqs_control_type{Float32,Int32}},
-                                               data::Ptr{Ptr{Cvoid}},
-                                               status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.rqs_reset_control(control::Ptr{rqs_control_type{Float32,Int32}},
+                                             data::Ptr{Ptr{Cvoid}},
+                                             status::Ptr{Int32})::Cvoid
 end
 
 function rqs_reset_control(::Type{Float32}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_single_64.rqs_reset_control_s_64(control::Ptr{rqs_control_type{Float32,
-                                                                                   Int64}},
-                                                     data::Ptr{Ptr{Cvoid}},
-                                                     status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64rqs_reset_control(control::Ptr{rqs_control_type{Float32,Int64}},
+                                               data::Ptr{Ptr{Cvoid}},
+                                               status::Ptr{Int64})::Cvoid
 end
 
 function rqs_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
@@ -331,50 +320,48 @@ function rqs_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status
 end
 
 function rqs_reset_control(::Type{Float64}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_double_64.rqs_reset_control_64(control::Ptr{rqs_control_type{Float64,
-                                                                                 Int64}},
-                                                   data::Ptr{Ptr{Cvoid}},
-                                                   status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.rqs_reset_control(control::Ptr{rqs_control_type{Float64,
+                                                                              Int64}},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int64})::Cvoid
 end
 
 function rqs_reset_control(::Type{Float128}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_quadruple.rqs_reset_control_q(control::Ptr{rqs_control_type{Float128,
-                                                                                Int32}},
-                                                  data::Ptr{Ptr{Cvoid}},
-                                                  status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_quadruple.rqs_reset_control(control::Ptr{rqs_control_type{Float128,
+                                                                              Int32}},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int32})::Cvoid
 end
 
 function rqs_reset_control(::Type{Float128}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_quadruple_64.rqs_reset_control_q_64(control::Ptr{rqs_control_type{Float128,
-                                                                                      Int64}},
-                                                        data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.rqs_reset_control(control::Ptr{rqs_control_type{Float128,
+                                                                                 Int64}},
+                                                   data::Ptr{Ptr{Cvoid}},
+                                                   status::Ptr{Int64})::Cvoid
 end
 
 export rqs_solve_problem
 
 function rqs_solve_problem(::Type{Float32}, ::Type{Int32}, data, status, n, power, weight,
                            f, c, H_ne, H_val, x, M_ne, M_val, m, A_ne, A_val, y)
-  @ccall libgalahad_single.rqs_solve_problem_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                               n::Int32, power::Float32, weight::Float32,
-                                               f::Float32, c::Ptr{Float32}, H_ne::Int32,
-                                               H_val::Ptr{Float32}, x::Ptr{Float32},
-                                               M_ne::Int32, M_val::Ptr{Float32}, m::Int32,
-                                               A_ne::Int32, A_val::Ptr{Float32},
-                                               y::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single.rqs_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                             n::Int32, power::Float32, weight::Float32,
+                                             f::Float32, c::Ptr{Float32}, H_ne::Int32,
+                                             H_val::Ptr{Float32}, x::Ptr{Float32},
+                                             M_ne::Int32, M_val::Ptr{Float32}, m::Int32,
+                                             A_ne::Int32, A_val::Ptr{Float32},
+                                             y::Ptr{Float32})::Cvoid
 end
 
 function rqs_solve_problem(::Type{Float32}, ::Type{Int64}, data, status, n, power, weight,
                            f, c, H_ne, H_val, x, M_ne, M_val, m, A_ne, A_val, y)
-  @ccall libgalahad_single_64.rqs_solve_problem_s_64(data::Ptr{Ptr{Cvoid}},
-                                                     status::Ptr{Int64}, n::Int64,
-                                                     power::Float32, weight::Float32,
-                                                     f::Float32, c::Ptr{Float32},
-                                                     H_ne::Int64, H_val::Ptr{Float32},
-                                                     x::Ptr{Float32}, M_ne::Int64,
-                                                     M_val::Ptr{Float32}, m::Int64,
-                                                     A_ne::Int64, A_val::Ptr{Float32},
-                                                     y::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64rqs_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                               n::Int64, power::Float32, weight::Float32,
+                                               f::Float32, c::Ptr{Float32}, H_ne::Int64,
+                                               H_val::Ptr{Float32}, x::Ptr{Float32},
+                                               M_ne::Int64, M_val::Ptr{Float32}, m::Int64,
+                                               A_ne::Int64, A_val::Ptr{Float32},
+                                               y::Ptr{Float32})::Cvoid
 end
 
 function rqs_solve_problem(::Type{Float64}, ::Type{Int32}, data, status, n, power, weight,
@@ -390,56 +377,52 @@ end
 
 function rqs_solve_problem(::Type{Float64}, ::Type{Int64}, data, status, n, power, weight,
                            f, c, H_ne, H_val, x, M_ne, M_val, m, A_ne, A_val, y)
-  @ccall libgalahad_double_64.rqs_solve_problem_64(data::Ptr{Ptr{Cvoid}},
-                                                   status::Ptr{Int64}, n::Int64,
-                                                   power::Float64, weight::Float64,
-                                                   f::Float64, c::Ptr{Float64}, H_ne::Int64,
-                                                   H_val::Ptr{Float64}, x::Ptr{Float64},
-                                                   M_ne::Int64, M_val::Ptr{Float64},
-                                                   m::Int64, A_ne::Int64,
-                                                   A_val::Ptr{Float64},
-                                                   y::Ptr{Float64})::Cvoid
+  @ccall libgalahad_double_64.rqs_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                                n::Int64, power::Float64, weight::Float64,
+                                                f::Float64, c::Ptr{Float64}, H_ne::Int64,
+                                                H_val::Ptr{Float64}, x::Ptr{Float64},
+                                                M_ne::Int64, M_val::Ptr{Float64}, m::Int64,
+                                                A_ne::Int64, A_val::Ptr{Float64},
+                                                y::Ptr{Float64})::Cvoid
 end
 
 function rqs_solve_problem(::Type{Float128}, ::Type{Int32}, data, status, n, power, weight,
                            f, c, H_ne, H_val, x, M_ne, M_val, m, A_ne, A_val, y)
-  @ccall libgalahad_quadruple.rqs_solve_problem_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                                  n::Int32, power::Cfloat128,
-                                                  weight::Cfloat128, f::Cfloat128,
-                                                  c::Ptr{Float128}, H_ne::Int32,
-                                                  H_val::Ptr{Float128}, x::Ptr{Float128},
-                                                  M_ne::Int32, M_val::Ptr{Float128},
-                                                  m::Int32, A_ne::Int32,
-                                                  A_val::Ptr{Float128},
-                                                  y::Ptr{Float128})::Cvoid
+  @ccall libgalahad_quadruple.rqs_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                                n::Int32, power::Cfloat128,
+                                                weight::Cfloat128, f::Cfloat128,
+                                                c::Ptr{Float128}, H_ne::Int32,
+                                                H_val::Ptr{Float128}, x::Ptr{Float128},
+                                                M_ne::Int32, M_val::Ptr{Float128}, m::Int32,
+                                                A_ne::Int32, A_val::Ptr{Float128},
+                                                y::Ptr{Float128})::Cvoid
 end
 
 function rqs_solve_problem(::Type{Float128}, ::Type{Int64}, data, status, n, power, weight,
                            f, c, H_ne, H_val, x, M_ne, M_val, m, A_ne, A_val, y)
-  @ccall libgalahad_quadruple_64.rqs_solve_problem_q_64(data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Int64}, n::Int64,
-                                                        power::Cfloat128, weight::Cfloat128,
-                                                        f::Cfloat128, c::Ptr{Float128},
-                                                        H_ne::Int64, H_val::Ptr{Float128},
-                                                        x::Ptr{Float128}, M_ne::Int64,
-                                                        M_val::Ptr{Float128}, m::Int64,
-                                                        A_ne::Int64, A_val::Ptr{Float128},
-                                                        y::Ptr{Float128})::Cvoid
+  @ccall libgalahad_quadruple_64.rqs_solve_problem(data::Ptr{Ptr{Cvoid}},
+                                                   status::Ptr{Int64}, n::Int64,
+                                                   power::Cfloat128, weight::Cfloat128,
+                                                   f::Cfloat128, c::Ptr{Float128},
+                                                   H_ne::Int64, H_val::Ptr{Float128},
+                                                   x::Ptr{Float128}, M_ne::Int64,
+                                                   M_val::Ptr{Float128}, m::Int64,
+                                                   A_ne::Int64, A_val::Ptr{Float128},
+                                                   y::Ptr{Float128})::Cvoid
 end
 
 export rqs_information
 
 function rqs_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
-  @ccall libgalahad_single.rqs_information_s(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{rqs_inform_type{Float32,Int32}},
-                                             status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.rqs_information(data::Ptr{Ptr{Cvoid}},
+                                           inform::Ptr{rqs_inform_type{Float32,Int32}},
+                                           status::Ptr{Int32})::Cvoid
 end
 
 function rqs_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64.rqs_information_s_64(data::Ptr{Ptr{Cvoid}},
-                                                   inform::Ptr{rqs_inform_type{Float32,
-                                                                               Int64}},
-                                                   status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64rqs_information(data::Ptr{Ptr{Cvoid}},
+                                             inform::Ptr{rqs_inform_type{Float32,Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function rqs_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -449,37 +432,36 @@ function rqs_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
 end
 
 function rqs_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_double_64.rqs_information_64(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{rqs_inform_type{Float64,Int64}},
-                                                 status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.rqs_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{rqs_inform_type{Float64,Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function rqs_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
-  @ccall libgalahad_quadruple.rqs_information_q(data::Ptr{Ptr{Cvoid}},
-                                                inform::Ptr{rqs_inform_type{Float128,Int32}},
-                                                status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_quadruple.rqs_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{rqs_inform_type{Float128,Int32}},
+                                              status::Ptr{Int32})::Cvoid
 end
 
 function rqs_information(::Type{Float128}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_quadruple_64.rqs_information_q_64(data::Ptr{Ptr{Cvoid}},
-                                                      inform::Ptr{rqs_inform_type{Float128,
-                                                                                  Int64}},
-                                                      status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.rqs_information(data::Ptr{Ptr{Cvoid}},
+                                                 inform::Ptr{rqs_inform_type{Float128,
+                                                                             Int64}},
+                                                 status::Ptr{Int64})::Cvoid
 end
 
 export rqs_terminate
 
 function rqs_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
-  @ccall libgalahad_single.rqs_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{rqs_control_type{Float32,Int32}},
-                                           inform::Ptr{rqs_inform_type{Float32,Int32}})::Cvoid
+  @ccall libgalahad_single.rqs_terminate(data::Ptr{Ptr{Cvoid}},
+                                         control::Ptr{rqs_control_type{Float32,Int32}},
+                                         inform::Ptr{rqs_inform_type{Float32,Int32}})::Cvoid
 end
 
 function rqs_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64.rqs_terminate_s_64(data::Ptr{Ptr{Cvoid}},
-                                                 control::Ptr{rqs_control_type{Float32,
-                                                                               Int64}},
-                                                 inform::Ptr{rqs_inform_type{Float32,Int64}})::Cvoid
+  @ccall libgalahad_single_64rqs_terminate(data::Ptr{Ptr{Cvoid}},
+                                           control::Ptr{rqs_control_type{Float32,Int64}},
+                                           inform::Ptr{rqs_inform_type{Float32,Int64}})::Cvoid
 end
 
 function rqs_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
@@ -489,21 +471,20 @@ function rqs_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
 end
 
 function rqs_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_double_64.rqs_terminate_64(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{rqs_control_type{Float64,Int64}},
-                                               inform::Ptr{rqs_inform_type{Float64,Int64}})::Cvoid
+  @ccall libgalahad_double_64.rqs_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{rqs_control_type{Float64,Int64}},
+                                            inform::Ptr{rqs_inform_type{Float64,Int64}})::Cvoid
 end
 
 function rqs_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
-  @ccall libgalahad_quadruple.rqs_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{rqs_control_type{Float128,Int32}},
-                                              inform::Ptr{rqs_inform_type{Float128,Int32}})::Cvoid
+  @ccall libgalahad_quadruple.rqs_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{rqs_control_type{Float128,Int32}},
+                                            inform::Ptr{rqs_inform_type{Float128,Int32}})::Cvoid
 end
 
 function rqs_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_quadruple_64.rqs_terminate_q_64(data::Ptr{Ptr{Cvoid}},
-                                                    control::Ptr{rqs_control_type{Float128,
-                                                                                  Int64}},
-                                                    inform::Ptr{rqs_inform_type{Float128,
-                                                                                Int64}})::Cvoid
+  @ccall libgalahad_quadruple_64.rqs_terminate(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{rqs_control_type{Float128,
+                                                                             Int64}},
+                                               inform::Ptr{rqs_inform_type{Float128,Int64}})::Cvoid
 end

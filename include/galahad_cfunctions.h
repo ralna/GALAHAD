@@ -1,4 +1,51 @@
 #ifdef INTEGER_64
+#ifdef REAL_32
+#define spral_c_dgemm spral_c_sgemm_64
+#define spral_c_dpotrf spral_c_spotrf_64
+#define spral_c_dsytrf spral_c_ssytrf_64
+#define spral_c_dtrsm spral_c_strsm_64
+#define spral_c_dsyrk spral_c_ssyrk_64
+#define spral_c_dtrsv spral_c_strsv_64
+#define spral_c_dgemv spral_c_sgemv_64
+#elif REAL_128
+#define spral_c_dgemm spral_c_qgemm_64
+#define spral_c_dpotrf spral_c_qpotrf_64
+#define spral_c_dsytrf spral_c_qsytrf_64
+#define spral_c_dtrsm spral_c_qtrsm_64
+#define spral_c_dsyrk spral_c_qsyrk_64
+#define spral_c_dtrsv spral_c_qtrsv_64
+#define spral_c_dgemv spral_c_qgemv_64
+#else
+#define spral_c_dgemm spral_c_dgemm_64
+#define spral_c_dpotrf spral_c_dpotrf_64
+#define spral_c_dsytrf spral_c_dsytrf_64
+#define spral_c_dtrsm spral_c_dtrsm_64
+#define spral_c_dsyrk spral_c_dsyrk_64
+#define spral_c_dtrsv spral_c_dtrsv_64
+#define spral_c_dgemv spral_c_dgemv_64
+#endif
+#else
+#ifdef REAL_32
+#define spral_c_dgemm spral_c_sgemm
+#define spral_c_dpotrf spral_c_spotrf
+#define spral_c_dsytrf spral_c_ssytrf
+#define spral_c_dtrsm spral_c_strsm
+#define spral_c_dsyrk spral_c_ssyrk
+#define spral_c_dtrsv spral_c_strsv
+#define spral_c_dgemv spral_c_sgemv
+#elif REAL_128
+#define spral_c_dgemm spral_c_qgemm
+#define spral_c_dpotrf spral_c_qpotrf
+#define spral_c_dsytrf spral_c_qsytrf
+#define spral_c_dtrsm spral_c_qtrsm
+#define spral_c_dsyrk spral_c_qsyrk
+#define spral_c_dtrsv spral_c_qtrsv
+#define spral_c_dgemv spral_c_qgemv
+#endif
+#endif
+
+#ifdef MULTIPRECISION
+#ifdef INTEGER_64
 #define version_galahad version_galahad_64
 #ifdef REAL_32
 #define arc_initialize arc_initialize_s_64
@@ -388,13 +435,6 @@
 #define wcp_find_wcp wcp_find_wcp_s_64
 #define wcp_information wcp_information_s_64
 #define wcp_terminate wcp_terminate_s_64
-#define spral_c_dgemm spral_c_sgemm_64
-#define spral_c_dpotrf spral_c_spotrf_64
-#define spral_c_dsytrf spral_c_ssytrf_64
-#define spral_c_dtrsm spral_c_strsm_64
-#define spral_c_dsyrk spral_c_ssyrk_64
-#define spral_c_dtrsv spral_c_strsv_64
-#define spral_c_dgemv spral_c_sgemv_64
 #elif REAL_128
 #define arc_initialize arc_initialize_q_64
 #define arc_read_specfile arc_read_specfile_q_64
@@ -783,13 +823,6 @@
 #define wcp_find_wcp wcp_find_wcp_q_64
 #define wcp_information wcp_information_q_64
 #define wcp_terminate wcp_terminate_q_64
-#define spral_c_dgemm spral_c_qgemm_64
-#define spral_c_dpotrf spral_c_qpotrf_64
-#define spral_c_dsytrf spral_c_qsytrf_64
-#define spral_c_dtrsm spral_c_qtrsm_64
-#define spral_c_dsyrk spral_c_qsyrk_64
-#define spral_c_dtrsv spral_c_qtrsv_64
-#define spral_c_dgemv spral_c_qgemv_64
 #else
 #define arc_initialize arc_initialize_64
 #define arc_read_specfile arc_read_specfile_64
@@ -1178,13 +1211,6 @@
 #define wcp_find_wcp wcp_find_wcp_64
 #define wcp_information wcp_information_64
 #define wcp_terminate wcp_terminate_64
-#define spral_c_dgemm spral_c_dgemm_64
-#define spral_c_dpotrf spral_c_dpotrf_64
-#define spral_c_dsytrf spral_c_dsytrf_64
-#define spral_c_dtrsm spral_c_dtrsm_64
-#define spral_c_dsyrk spral_c_dsyrk_64
-#define spral_c_dtrsv spral_c_dtrsv_64
-#define spral_c_dgemv spral_c_dgemv_64
 #endif
 #else
 #ifdef REAL_32
@@ -1575,13 +1601,6 @@
 #define wcp_find_wcp wcp_find_wcp_s
 #define wcp_information wcp_information_s
 #define wcp_terminate wcp_terminate_s
-#define spral_c_dgemm spral_c_sgemm
-#define spral_c_dpotrf spral_c_spotrf
-#define spral_c_dsytrf spral_c_ssytrf
-#define spral_c_dtrsm spral_c_strsm
-#define spral_c_dsyrk spral_c_ssyrk
-#define spral_c_dtrsv spral_c_strsv
-#define spral_c_dgemv spral_c_sgemv
 #elif REAL_128
 #define arc_initialize arc_initialize_q
 #define arc_read_specfile arc_read_specfile_q
@@ -1970,12 +1989,6 @@
 #define wcp_find_wcp wcp_find_wcp_q
 #define wcp_information wcp_information_q
 #define wcp_terminate wcp_terminate_q
-#define spral_c_dgemm spral_c_qgemm
-#define spral_c_dpotrf spral_c_qpotrf
-#define spral_c_dsytrf spral_c_qsytrf
-#define spral_c_dtrsm spral_c_qtrsm
-#define spral_c_dsyrk spral_c_qsyrk
-#define spral_c_dtrsv spral_c_qtrsv
-#define spral_c_dgemv spral_c_qgemv
+#endif
 #endif
 #endif
