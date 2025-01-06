@@ -74,6 +74,7 @@ endif
 # Options
 install_modules = get_option('modules')
 int64 = get_option('int64')
+multiprecision = get_option('multiprecision')
 build_ciface = get_option('ciface')
 build_pythoniface = get_option('pythoniface')
 build_single = get_option('single')
@@ -334,6 +335,12 @@ endif
 extra_args_single += '-DDUMMY_MPI'
 extra_args_double += '-DDUMMY_MPI'
 extra_args_quadruple += '-DDUMMY_MPI'
+
+if multiprecision
+  extra_args_single += '-DMULTIPRECISION'
+  extra_args_double += '-DMULTIPRECISION'
+  extra_args_quadruple += '-DMULTIPRECISION'
+endif
 
 # Compile GALAHAD with 64-bit integer
 if int64

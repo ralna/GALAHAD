@@ -60,16 +60,15 @@ end
 export uls_initialize
 
 function uls_initialize(::Type{Float32}, ::Type{Int32}, solver, data, control, status)
-  @ccall libgalahad_single.uls_initialize_s(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{uls_control_type{Float32,Int32}},
-                                            status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.uls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
+                                          control::Ptr{uls_control_type{Float32,Int32}},
+                                          status::Ptr{Int32})::Cvoid
 end
 
 function uls_initialize(::Type{Float32}, ::Type{Int64}, solver, data, control, status)
-  @ccall libgalahad_single_64.uls_initialize_s_64(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
-                                                  control::Ptr{uls_control_type{Float32,
-                                                                                Int64}},
-                                                  status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.uls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{uls_control_type{Float32,Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function uls_initialize(::Type{Float64}, ::Type{Int32}, solver, data, control, status)
@@ -79,38 +78,35 @@ function uls_initialize(::Type{Float64}, ::Type{Int32}, solver, data, control, s
 end
 
 function uls_initialize(::Type{Float64}, ::Type{Int64}, solver, data, control, status)
-  @ccall libgalahad_double_64.uls_initialize_64(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
-                                                control::Ptr{uls_control_type{Float64,
-                                                                              Int64}},
-                                                status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.uls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{uls_control_type{Float64,Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function uls_initialize(::Type{Float128}, ::Type{Int32}, solver, data, control, status)
-  @ccall libgalahad_quadruple.uls_initialize_q(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{uls_control_type{Float128,
-                                                                             Int32}},
-                                               status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_quadruple.uls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{uls_control_type{Float128,Int32}},
+                                             status::Ptr{Int32})::Cvoid
 end
 
 function uls_initialize(::Type{Float128}, ::Type{Int64}, solver, data, control, status)
-  @ccall libgalahad_quadruple_64.uls_initialize_q_64(solver::Ptr{Cchar},
-                                                     data::Ptr{Ptr{Cvoid}},
-                                                     control::Ptr{uls_control_type{Float128,
-                                                                                   Int64}},
-                                                     status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.uls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
+                                                control::Ptr{uls_control_type{Float128,
+                                                                              Int64}},
+                                                status::Ptr{Int64})::Cvoid
 end
 
 export uls_read_specfile
 
 function uls_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
-  @ccall libgalahad_single.uls_read_specfile_s(control::Ptr{uls_control_type{Float32,Int32}},
-                                               specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single.uls_read_specfile(control::Ptr{uls_control_type{Float32,Int32}},
+                                             specfile::Ptr{Cchar})::Cvoid
 end
 
 function uls_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_single_64.uls_read_specfile_s_64(control::Ptr{uls_control_type{Float32,
-                                                                                   Int64}},
-                                                     specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single_64.uls_read_specfile(control::Ptr{uls_control_type{Float32,
+                                                                              Int64}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function uls_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
@@ -119,46 +115,45 @@ function uls_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
 end
 
 function uls_read_specfile(::Type{Float64}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_double_64.uls_read_specfile_64(control::Ptr{uls_control_type{Float64,
-                                                                                 Int64}},
-                                                   specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_double_64.uls_read_specfile(control::Ptr{uls_control_type{Float64,
+                                                                              Int64}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function uls_read_specfile(::Type{Float128}, ::Type{Int32}, control, specfile)
-  @ccall libgalahad_quadruple.uls_read_specfile_q(control::Ptr{uls_control_type{Float128,
-                                                                                Int32}},
-                                                  specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_quadruple.uls_read_specfile(control::Ptr{uls_control_type{Float128,
+                                                                              Int32}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function uls_read_specfile(::Type{Float128}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_quadruple_64.uls_read_specfile_q_64(control::Ptr{uls_control_type{Float128,
-                                                                                      Int64}},
-                                                        specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_quadruple_64.uls_read_specfile(control::Ptr{uls_control_type{Float128,
+                                                                                 Int64}},
+                                                   specfile::Ptr{Cchar})::Cvoid
 end
 
 export uls_factorize_matrix
 
 function uls_factorize_matrix(::Type{Float32}, ::Type{Int32}, control, data, status, m, n,
                               type, ne, val, row, col, ptr)
-  @ccall libgalahad_single.uls_factorize_matrix_s(control::Ptr{uls_control_type{Float32,
-                                                                                Int32}},
-                                                  data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                                  m::Int32, n::Int32, type::Ptr{Cchar},
-                                                  ne::Int32, val::Ptr{Float32},
-                                                  row::Ptr{Int32}, col::Ptr{Int32},
-                                                  ptr::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.uls_factorize_matrix(control::Ptr{uls_control_type{Float32,
+                                                                              Int32}},
+                                                data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                                m::Int32, n::Int32, type::Ptr{Cchar},
+                                                ne::Int32, val::Ptr{Float32},
+                                                row::Ptr{Int32}, col::Ptr{Int32},
+                                                ptr::Ptr{Int32})::Cvoid
 end
 
 function uls_factorize_matrix(::Type{Float32}, ::Type{Int64}, control, data, status, m, n,
                               type, ne, val, row, col, ptr)
-  @ccall libgalahad_single_64.uls_factorize_matrix_s_64(control::Ptr{uls_control_type{Float32,
-                                                                                      Int64}},
-                                                        data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Int64}, m::Int64,
-                                                        n::Int64, type::Ptr{Cchar},
-                                                        ne::Int64, val::Ptr{Float32},
-                                                        row::Ptr{Int64}, col::Ptr{Int64},
-                                                        ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.uls_factorize_matrix(control::Ptr{uls_control_type{Float32,
+                                                                                 Int64}},
+                                                   data::Ptr{Ptr{Cvoid}},
+                                                   status::Ptr{Int64}, m::Int64, n::Int64,
+                                                   type::Ptr{Cchar}, ne::Int64,
+                                                   val::Ptr{Float32}, row::Ptr{Int64},
+                                                   col::Ptr{Int64}, ptr::Ptr{Int64})::Cvoid
 end
 
 function uls_factorize_matrix(::Type{Float64}, ::Type{Int32}, control, data, status, m, n,
@@ -174,53 +169,51 @@ end
 
 function uls_factorize_matrix(::Type{Float64}, ::Type{Int64}, control, data, status, m, n,
                               type, ne, val, row, col, ptr)
-  @ccall libgalahad_double_64.uls_factorize_matrix_64(control::Ptr{uls_control_type{Float64,
-                                                                                    Int64}},
-                                                      data::Ptr{Ptr{Cvoid}},
-                                                      status::Ptr{Int64}, m::Int64,
-                                                      n::Int64, type::Ptr{Cchar}, ne::Int64,
-                                                      val::Ptr{Float64}, row::Ptr{Int64},
-                                                      col::Ptr{Int64},
-                                                      ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.uls_factorize_matrix(control::Ptr{uls_control_type{Float64,
+                                                                                 Int64}},
+                                                   data::Ptr{Ptr{Cvoid}},
+                                                   status::Ptr{Int64}, m::Int64, n::Int64,
+                                                   type::Ptr{Cchar}, ne::Int64,
+                                                   val::Ptr{Float64}, row::Ptr{Int64},
+                                                   col::Ptr{Int64}, ptr::Ptr{Int64})::Cvoid
 end
 
 function uls_factorize_matrix(::Type{Float128}, ::Type{Int32}, control, data, status, m, n,
                               type, ne, val, row, col, ptr)
-  @ccall libgalahad_quadruple.uls_factorize_matrix_q(control::Ptr{uls_control_type{Float128,
-                                                                                   Int32}},
-                                                     data::Ptr{Ptr{Cvoid}},
-                                                     status::Ptr{Int32}, m::Int32, n::Int32,
-                                                     type::Ptr{Cchar}, ne::Int32,
-                                                     val::Ptr{Float128}, row::Ptr{Int32},
-                                                     col::Ptr{Int32},
-                                                     ptr::Ptr{Int32})::Cvoid
+  @ccall libgalahad_quadruple.uls_factorize_matrix(control::Ptr{uls_control_type{Float128,
+                                                                                 Int32}},
+                                                   data::Ptr{Ptr{Cvoid}},
+                                                   status::Ptr{Int32}, m::Int32, n::Int32,
+                                                   type::Ptr{Cchar}, ne::Int32,
+                                                   val::Ptr{Float128}, row::Ptr{Int32},
+                                                   col::Ptr{Int32}, ptr::Ptr{Int32})::Cvoid
 end
 
 function uls_factorize_matrix(::Type{Float128}, ::Type{Int64}, control, data, status, m, n,
                               type, ne, val, row, col, ptr)
-  @ccall libgalahad_quadruple_64.uls_factorize_matrix_q_64(control::Ptr{uls_control_type{Float128,
-                                                                                         Int64}},
-                                                           data::Ptr{Ptr{Cvoid}},
-                                                           status::Ptr{Int64}, m::Int64,
-                                                           n::Int64, type::Ptr{Cchar},
-                                                           ne::Int64, val::Ptr{Float128},
-                                                           row::Ptr{Int64}, col::Ptr{Int64},
-                                                           ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.uls_factorize_matrix(control::Ptr{uls_control_type{Float128,
+                                                                                    Int64}},
+                                                      data::Ptr{Ptr{Cvoid}},
+                                                      status::Ptr{Int64}, m::Int64,
+                                                      n::Int64, type::Ptr{Cchar}, ne::Int64,
+                                                      val::Ptr{Float128}, row::Ptr{Int64},
+                                                      col::Ptr{Int64},
+                                                      ptr::Ptr{Int64})::Cvoid
 end
 
 export uls_reset_control
 
 function uls_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_single.uls_reset_control_s(control::Ptr{uls_control_type{Float32,Int32}},
-                                               data::Ptr{Ptr{Cvoid}},
-                                               status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.uls_reset_control(control::Ptr{uls_control_type{Float32,Int32}},
+                                             data::Ptr{Ptr{Cvoid}},
+                                             status::Ptr{Int32})::Cvoid
 end
 
 function uls_reset_control(::Type{Float32}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_single_64.uls_reset_control_s_64(control::Ptr{uls_control_type{Float32,
-                                                                                   Int64}},
-                                                     data::Ptr{Ptr{Cvoid}},
-                                                     status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.uls_reset_control(control::Ptr{uls_control_type{Float32,
+                                                                              Int64}},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int64})::Cvoid
 end
 
 function uls_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
@@ -230,38 +223,38 @@ function uls_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status
 end
 
 function uls_reset_control(::Type{Float64}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_double_64.uls_reset_control_64(control::Ptr{uls_control_type{Float64,
+  @ccall libgalahad_double_64.uls_reset_control(control::Ptr{uls_control_type{Float64,
+                                                                              Int64}},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int64})::Cvoid
+end
+
+function uls_reset_control(::Type{Float128}, ::Type{Int32}, control, data, status)
+  @ccall libgalahad_quadruple.uls_reset_control(control::Ptr{uls_control_type{Float128,
+                                                                              Int32}},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int32})::Cvoid
+end
+
+function uls_reset_control(::Type{Float128}, ::Type{Int64}, control, data, status)
+  @ccall libgalahad_quadruple_64.uls_reset_control(control::Ptr{uls_control_type{Float128,
                                                                                  Int64}},
                                                    data::Ptr{Ptr{Cvoid}},
                                                    status::Ptr{Int64})::Cvoid
 end
 
-function uls_reset_control(::Type{Float128}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_quadruple.uls_reset_control_q(control::Ptr{uls_control_type{Float128,
-                                                                                Int32}},
-                                                  data::Ptr{Ptr{Cvoid}},
-                                                  status::Ptr{Int32})::Cvoid
-end
-
-function uls_reset_control(::Type{Float128}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_quadruple_64.uls_reset_control_q_64(control::Ptr{uls_control_type{Float128,
-                                                                                      Int64}},
-                                                        data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Int64})::Cvoid
-end
-
 export uls_solve_system
 
 function uls_solve_system(::Type{Float32}, ::Type{Int32}, data, status, m, n, sol, trans)
-  @ccall libgalahad_single.uls_solve_system_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                              m::Int32, n::Int32, sol::Ptr{Float32},
-                                              trans::Bool)::Cvoid
+  @ccall libgalahad_single.uls_solve_system(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                            m::Int32, n::Int32, sol::Ptr{Float32},
+                                            trans::Bool)::Cvoid
 end
 
 function uls_solve_system(::Type{Float32}, ::Type{Int64}, data, status, m, n, sol, trans)
-  @ccall libgalahad_single_64.uls_solve_system_s_64(data::Ptr{Ptr{Cvoid}},
-                                                    status::Ptr{Int64}, m::Int64, n::Int64,
-                                                    sol::Ptr{Float32}, trans::Bool)::Cvoid
+  @ccall libgalahad_single_64.uls_solve_system(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                               m::Int64, n::Int64, sol::Ptr{Float32},
+                                               trans::Bool)::Cvoid
 end
 
 function uls_solve_system(::Type{Float64}, ::Type{Int32}, data, status, m, n, sol, trans)
@@ -271,37 +264,35 @@ function uls_solve_system(::Type{Float64}, ::Type{Int32}, data, status, m, n, so
 end
 
 function uls_solve_system(::Type{Float64}, ::Type{Int64}, data, status, m, n, sol, trans)
-  @ccall libgalahad_double_64.uls_solve_system_64(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                                  m::Int64, n::Int64, sol::Ptr{Float64},
-                                                  trans::Bool)::Cvoid
+  @ccall libgalahad_double_64.uls_solve_system(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                               m::Int64, n::Int64, sol::Ptr{Float64},
+                                               trans::Bool)::Cvoid
 end
 
 function uls_solve_system(::Type{Float128}, ::Type{Int32}, data, status, m, n, sol, trans)
-  @ccall libgalahad_quadruple.uls_solve_system_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                                 m::Int32, n::Int32, sol::Ptr{Float128},
-                                                 trans::Bool)::Cvoid
+  @ccall libgalahad_quadruple.uls_solve_system(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                               m::Int32, n::Int32, sol::Ptr{Float128},
+                                               trans::Bool)::Cvoid
 end
 
 function uls_solve_system(::Type{Float128}, ::Type{Int64}, data, status, m, n, sol, trans)
-  @ccall libgalahad_quadruple_64.uls_solve_system_q_64(data::Ptr{Ptr{Cvoid}},
-                                                       status::Ptr{Int64}, m::Int64,
-                                                       n::Int64, sol::Ptr{Float128},
-                                                       trans::Bool)::Cvoid
+  @ccall libgalahad_quadruple_64.uls_solve_system(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                                  m::Int64, n::Int64, sol::Ptr{Float128},
+                                                  trans::Bool)::Cvoid
 end
 
 export uls_information
 
 function uls_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
-  @ccall libgalahad_single.uls_information_s(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{uls_inform_type{Float32,Int32}},
-                                             status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.uls_information(data::Ptr{Ptr{Cvoid}},
+                                           inform::Ptr{uls_inform_type{Float32,Int32}},
+                                           status::Ptr{Int32})::Cvoid
 end
 
 function uls_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64.uls_information_s_64(data::Ptr{Ptr{Cvoid}},
-                                                   inform::Ptr{uls_inform_type{Float32,
-                                                                               Int64}},
-                                                   status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.uls_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{uls_inform_type{Float32,Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function uls_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -311,37 +302,36 @@ function uls_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
 end
 
 function uls_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_double_64.uls_information_64(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{uls_inform_type{Float64,Int64}},
-                                                 status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.uls_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{uls_inform_type{Float64,Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function uls_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
-  @ccall libgalahad_quadruple.uls_information_q(data::Ptr{Ptr{Cvoid}},
-                                                inform::Ptr{uls_inform_type{Float128,Int32}},
-                                                status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_quadruple.uls_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{uls_inform_type{Float128,Int32}},
+                                              status::Ptr{Int32})::Cvoid
 end
 
 function uls_information(::Type{Float128}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_quadruple_64.uls_information_q_64(data::Ptr{Ptr{Cvoid}},
-                                                      inform::Ptr{uls_inform_type{Float128,
-                                                                                  Int64}},
-                                                      status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.uls_information(data::Ptr{Ptr{Cvoid}},
+                                                 inform::Ptr{uls_inform_type{Float128,
+                                                                             Int64}},
+                                                 status::Ptr{Int64})::Cvoid
 end
 
 export uls_terminate
 
 function uls_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
-  @ccall libgalahad_single.uls_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{uls_control_type{Float32,Int32}},
-                                           inform::Ptr{uls_inform_type{Float32,Int32}})::Cvoid
+  @ccall libgalahad_single.uls_terminate(data::Ptr{Ptr{Cvoid}},
+                                         control::Ptr{uls_control_type{Float32,Int32}},
+                                         inform::Ptr{uls_inform_type{Float32,Int32}})::Cvoid
 end
 
 function uls_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64.uls_terminate_s_64(data::Ptr{Ptr{Cvoid}},
-                                                 control::Ptr{uls_control_type{Float32,
-                                                                               Int64}},
-                                                 inform::Ptr{uls_inform_type{Float32,Int64}})::Cvoid
+  @ccall libgalahad_single_64.uls_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{uls_control_type{Float32,Int64}},
+                                            inform::Ptr{uls_inform_type{Float32,Int64}})::Cvoid
 end
 
 function uls_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
@@ -351,21 +341,20 @@ function uls_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
 end
 
 function uls_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_double_64.uls_terminate_64(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{uls_control_type{Float64,Int64}},
-                                               inform::Ptr{uls_inform_type{Float64,Int64}})::Cvoid
+  @ccall libgalahad_double_64.uls_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{uls_control_type{Float64,Int64}},
+                                            inform::Ptr{uls_inform_type{Float64,Int64}})::Cvoid
 end
 
 function uls_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
-  @ccall libgalahad_quadruple.uls_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{uls_control_type{Float128,Int32}},
-                                              inform::Ptr{uls_inform_type{Float128,Int32}})::Cvoid
+  @ccall libgalahad_quadruple.uls_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{uls_control_type{Float128,Int32}},
+                                            inform::Ptr{uls_inform_type{Float128,Int32}})::Cvoid
 end
 
 function uls_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_quadruple_64.uls_terminate_q_64(data::Ptr{Ptr{Cvoid}},
-                                                    control::Ptr{uls_control_type{Float128,
-                                                                                  Int64}},
-                                                    inform::Ptr{uls_inform_type{Float128,
-                                                                                Int64}})::Cvoid
+  @ccall libgalahad_quadruple_64.uls_terminate(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{uls_control_type{Float128,
+                                                                             Int64}},
+                                               inform::Ptr{uls_inform_type{Float128,Int64}})::Cvoid
 end

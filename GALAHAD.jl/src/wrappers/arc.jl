@@ -103,16 +103,15 @@ end
 export arc_initialize
 
 function arc_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
-  @ccall libgalahad_single.arc_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{arc_control_type{Float32,Int32}},
-                                            status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.arc_initialize(data::Ptr{Ptr{Cvoid}},
+                                          control::Ptr{arc_control_type{Float32,Int32}},
+                                          status::Ptr{Int32})::Cvoid
 end
 
 function arc_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_single_64.arc_initialize_s_64(data::Ptr{Ptr{Cvoid}},
-                                                  control::Ptr{arc_control_type{Float32,
-                                                                                Int64}},
-                                                  status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.arc_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{arc_control_type{Float32,Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function arc_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
@@ -122,37 +121,35 @@ function arc_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
 end
 
 function arc_initialize(::Type{Float64}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_double_64.arc_initialize_64(data::Ptr{Ptr{Cvoid}},
-                                                control::Ptr{arc_control_type{Float64,
-                                                                              Int64}},
-                                                status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.arc_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{arc_control_type{Float64,Int64}},
+                                             status::Ptr{Int64})::Cvoid
 end
 
 function arc_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
-  @ccall libgalahad_quadruple.arc_initialize_q(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{arc_control_type{Float128,
-                                                                             Int32}},
-                                               status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_quadruple.arc_initialize(data::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{arc_control_type{Float128,Int32}},
+                                             status::Ptr{Int32})::Cvoid
 end
 
 function arc_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
-  @ccall libgalahad_quadruple_64.arc_initialize_q_64(data::Ptr{Ptr{Cvoid}},
-                                                     control::Ptr{arc_control_type{Float128,
-                                                                                   Int64}},
-                                                     status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.arc_initialize(data::Ptr{Ptr{Cvoid}},
+                                                control::Ptr{arc_control_type{Float128,
+                                                                              Int64}},
+                                                status::Ptr{Int64})::Cvoid
 end
 
 export arc_read_specfile
 
 function arc_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
-  @ccall libgalahad_single.arc_read_specfile_s(control::Ptr{arc_control_type{Float32,Int32}},
-                                               specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single.arc_read_specfile(control::Ptr{arc_control_type{Float32,Int32}},
+                                             specfile::Ptr{Cchar})::Cvoid
 end
 
 function arc_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_single_64.arc_read_specfile_s_64(control::Ptr{arc_control_type{Float32,
-                                                                                   Int64}},
-                                                     specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_single_64.arc_read_specfile(control::Ptr{arc_control_type{Float32,
+                                                                              Int64}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function arc_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
@@ -161,40 +158,40 @@ function arc_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
 end
 
 function arc_read_specfile(::Type{Float64}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_double_64.arc_read_specfile_64(control::Ptr{arc_control_type{Float64,
-                                                                                 Int64}},
-                                                   specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_double_64.arc_read_specfile(control::Ptr{arc_control_type{Float64,
+                                                                              Int64}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function arc_read_specfile(::Type{Float128}, ::Type{Int32}, control, specfile)
-  @ccall libgalahad_quadruple.arc_read_specfile_q(control::Ptr{arc_control_type{Float128,
-                                                                                Int32}},
-                                                  specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_quadruple.arc_read_specfile(control::Ptr{arc_control_type{Float128,
+                                                                              Int32}},
+                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 function arc_read_specfile(::Type{Float128}, ::Type{Int64}, control, specfile)
-  @ccall libgalahad_quadruple_64.arc_read_specfile_q_64(control::Ptr{arc_control_type{Float128,
-                                                                                      Int64}},
-                                                        specfile::Ptr{Cchar})::Cvoid
+  @ccall libgalahad_quadruple_64.arc_read_specfile(control::Ptr{arc_control_type{Float128,
+                                                                                 Int64}},
+                                                   specfile::Ptr{Cchar})::Cvoid
 end
 
 export arc_import
 
 function arc_import(::Type{Float32}, ::Type{Int32}, control, data, status, n, H_type, ne,
                     H_row, H_col, H_ptr)
-  @ccall libgalahad_single.arc_import_s(control::Ptr{arc_control_type{Float32,Int32}},
-                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
-                                        H_type::Ptr{Cchar}, ne::Int32, H_row::Ptr{Int32},
-                                        H_col::Ptr{Int32}, H_ptr::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.arc_import(control::Ptr{arc_control_type{Float32,Int32}},
+                                      data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
+                                      H_type::Ptr{Cchar}, ne::Int32, H_row::Ptr{Int32},
+                                      H_col::Ptr{Int32}, H_ptr::Ptr{Int32})::Cvoid
 end
 
 function arc_import(::Type{Float32}, ::Type{Int64}, control, data, status, n, H_type, ne,
                     H_row, H_col, H_ptr)
-  @ccall libgalahad_single_64.arc_import_s_64(control::Ptr{arc_control_type{Float32,Int64}},
-                                              data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                              n::Int64, H_type::Ptr{Cchar}, ne::Int64,
-                                              H_row::Ptr{Int64}, H_col::Ptr{Int64},
-                                              H_ptr::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.arc_import(control::Ptr{arc_control_type{Float32,Int64}},
+                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                         n::Int64, H_type::Ptr{Cchar}, ne::Int64,
+                                         H_row::Ptr{Int64}, H_col::Ptr{Int64},
+                                         H_ptr::Ptr{Int64})::Cvoid
 end
 
 function arc_import(::Type{Float64}, ::Type{Int32}, control, data, status, n, H_type, ne,
@@ -207,45 +204,44 @@ end
 
 function arc_import(::Type{Float64}, ::Type{Int64}, control, data, status, n, H_type, ne,
                     H_row, H_col, H_ptr)
-  @ccall libgalahad_double_64.arc_import_64(control::Ptr{arc_control_type{Float64,Int64}},
+  @ccall libgalahad_double_64.arc_import(control::Ptr{arc_control_type{Float64,Int64}},
+                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                         n::Int64, H_type::Ptr{Cchar}, ne::Int64,
+                                         H_row::Ptr{Int64}, H_col::Ptr{Int64},
+                                         H_ptr::Ptr{Int64})::Cvoid
+end
+
+function arc_import(::Type{Float128}, ::Type{Int32}, control, data, status, n, H_type, ne,
+                    H_row, H_col, H_ptr)
+  @ccall libgalahad_quadruple.arc_import(control::Ptr{arc_control_type{Float128,Int32}},
+                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                         n::Int32, H_type::Ptr{Cchar}, ne::Int32,
+                                         H_row::Ptr{Int32}, H_col::Ptr{Int32},
+                                         H_ptr::Ptr{Int32})::Cvoid
+end
+
+function arc_import(::Type{Float128}, ::Type{Int64}, control, data, status, n, H_type, ne,
+                    H_row, H_col, H_ptr)
+  @ccall libgalahad_quadruple_64.arc_import(control::Ptr{arc_control_type{Float128,Int64}},
                                             data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
                                             n::Int64, H_type::Ptr{Cchar}, ne::Int64,
                                             H_row::Ptr{Int64}, H_col::Ptr{Int64},
                                             H_ptr::Ptr{Int64})::Cvoid
 end
 
-function arc_import(::Type{Float128}, ::Type{Int32}, control, data, status, n, H_type, ne,
-                    H_row, H_col, H_ptr)
-  @ccall libgalahad_quadruple.arc_import_q(control::Ptr{arc_control_type{Float128,Int32}},
-                                           data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                           n::Int32, H_type::Ptr{Cchar}, ne::Int32,
-                                           H_row::Ptr{Int32}, H_col::Ptr{Int32},
-                                           H_ptr::Ptr{Int32})::Cvoid
-end
-
-function arc_import(::Type{Float128}, ::Type{Int64}, control, data, status, n, H_type, ne,
-                    H_row, H_col, H_ptr)
-  @ccall libgalahad_quadruple_64.arc_import_q_64(control::Ptr{arc_control_type{Float128,
-                                                                               Int64}},
-                                                 data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                                 n::Int64, H_type::Ptr{Cchar}, ne::Int64,
-                                                 H_row::Ptr{Int64}, H_col::Ptr{Int64},
-                                                 H_ptr::Ptr{Int64})::Cvoid
-end
-
 export arc_reset_control
 
 function arc_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_single.arc_reset_control_s(control::Ptr{arc_control_type{Float32,Int32}},
-                                               data::Ptr{Ptr{Cvoid}},
-                                               status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.arc_reset_control(control::Ptr{arc_control_type{Float32,Int32}},
+                                             data::Ptr{Ptr{Cvoid}},
+                                             status::Ptr{Int32})::Cvoid
 end
 
 function arc_reset_control(::Type{Float32}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_single_64.arc_reset_control_s_64(control::Ptr{arc_control_type{Float32,
-                                                                                   Int64}},
-                                                     data::Ptr{Ptr{Cvoid}},
-                                                     status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.arc_reset_control(control::Ptr{arc_control_type{Float32,
+                                                                              Int64}},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int64})::Cvoid
 end
 
 function arc_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
@@ -255,48 +251,46 @@ function arc_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status
 end
 
 function arc_reset_control(::Type{Float64}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_double_64.arc_reset_control_64(control::Ptr{arc_control_type{Float64,
-                                                                                 Int64}},
-                                                   data::Ptr{Ptr{Cvoid}},
-                                                   status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.arc_reset_control(control::Ptr{arc_control_type{Float64,
+                                                                              Int64}},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int64})::Cvoid
 end
 
 function arc_reset_control(::Type{Float128}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_quadruple.arc_reset_control_q(control::Ptr{arc_control_type{Float128,
-                                                                                Int32}},
-                                                  data::Ptr{Ptr{Cvoid}},
-                                                  status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_quadruple.arc_reset_control(control::Ptr{arc_control_type{Float128,
+                                                                              Int32}},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int32})::Cvoid
 end
 
 function arc_reset_control(::Type{Float128}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_quadruple_64.arc_reset_control_q_64(control::Ptr{arc_control_type{Float128,
-                                                                                      Int64}},
-                                                        data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.arc_reset_control(control::Ptr{arc_control_type{Float128,
+                                                                                 Int64}},
+                                                   data::Ptr{Ptr{Cvoid}},
+                                                   status::Ptr{Int64})::Cvoid
 end
 
 export arc_solve_with_mat
 
 function arc_solve_with_mat(::Type{Float32}, ::Type{Int32}, data, userdata, status, n, x, g,
                             ne, eval_f, eval_g, eval_h, eval_prec)
-  @ccall libgalahad_single.arc_solve_with_mat_s(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
-                                                status::Ptr{Int32}, n::Int32,
-                                                x::Ptr{Float32}, g::Ptr{Float32}, ne::Int32,
-                                                eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
-                                                eval_h::Ptr{Cvoid},
-                                                eval_prec::Ptr{Cvoid})::Cvoid
+  @ccall libgalahad_single.arc_solve_with_mat(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
+                                              status::Ptr{Int32}, n::Int32, x::Ptr{Float32},
+                                              g::Ptr{Float32}, ne::Int32,
+                                              eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
+                                              eval_h::Ptr{Cvoid},
+                                              eval_prec::Ptr{Cvoid})::Cvoid
 end
 
 function arc_solve_with_mat(::Type{Float32}, ::Type{Int64}, data, userdata, status, n, x, g,
                             ne, eval_f, eval_g, eval_h, eval_prec)
-  @ccall libgalahad_single_64.arc_solve_with_mat_s_64(data::Ptr{Ptr{Cvoid}},
-                                                      userdata::Ptr{Cvoid},
-                                                      status::Ptr{Int64}, n::Int64,
-                                                      x::Ptr{Float32}, g::Ptr{Float32},
-                                                      ne::Int64, eval_f::Ptr{Cvoid},
-                                                      eval_g::Ptr{Cvoid},
-                                                      eval_h::Ptr{Cvoid},
-                                                      eval_prec::Ptr{Cvoid})::Cvoid
+  @ccall libgalahad_single_64.arc_solve_with_mat(data::Ptr{Ptr{Cvoid}},
+                                                 userdata::Ptr{Cvoid}, status::Ptr{Int64},
+                                                 n::Int64, x::Ptr{Float32}, g::Ptr{Float32},
+                                                 ne::Int64, eval_f::Ptr{Cvoid},
+                                                 eval_g::Ptr{Cvoid}, eval_h::Ptr{Cvoid},
+                                                 eval_prec::Ptr{Cvoid})::Cvoid
 end
 
 function arc_solve_with_mat(::Type{Float64}, ::Type{Int32}, data, userdata, status, n, x, g,
@@ -311,61 +305,57 @@ end
 
 function arc_solve_with_mat(::Type{Float64}, ::Type{Int64}, data, userdata, status, n, x, g,
                             ne, eval_f, eval_g, eval_h, eval_prec)
-  @ccall libgalahad_double_64.arc_solve_with_mat_64(data::Ptr{Ptr{Cvoid}},
-                                                    userdata::Ptr{Cvoid},
-                                                    status::Ptr{Int64}, n::Int64,
-                                                    x::Ptr{Float64}, g::Ptr{Float64},
-                                                    ne::Int64, eval_f::Ptr{Cvoid},
-                                                    eval_g::Ptr{Cvoid}, eval_h::Ptr{Cvoid},
-                                                    eval_prec::Ptr{Cvoid})::Cvoid
+  @ccall libgalahad_double_64.arc_solve_with_mat(data::Ptr{Ptr{Cvoid}},
+                                                 userdata::Ptr{Cvoid}, status::Ptr{Int64},
+                                                 n::Int64, x::Ptr{Float64}, g::Ptr{Float64},
+                                                 ne::Int64, eval_f::Ptr{Cvoid},
+                                                 eval_g::Ptr{Cvoid}, eval_h::Ptr{Cvoid},
+                                                 eval_prec::Ptr{Cvoid})::Cvoid
 end
 
 function arc_solve_with_mat(::Type{Float128}, ::Type{Int32}, data, userdata, status, n, x,
                             g, ne, eval_f, eval_g, eval_h, eval_prec)
-  @ccall libgalahad_quadruple.arc_solve_with_mat_q(data::Ptr{Ptr{Cvoid}},
-                                                   userdata::Ptr{Cvoid}, status::Ptr{Int32},
-                                                   n::Int32, x::Ptr{Float128},
-                                                   g::Ptr{Float128}, ne::Int32,
-                                                   eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
-                                                   eval_h::Ptr{Cvoid},
-                                                   eval_prec::Ptr{Cvoid})::Cvoid
+  @ccall libgalahad_quadruple.arc_solve_with_mat(data::Ptr{Ptr{Cvoid}},
+                                                 userdata::Ptr{Cvoid}, status::Ptr{Int32},
+                                                 n::Int32, x::Ptr{Float128},
+                                                 g::Ptr{Float128}, ne::Int32,
+                                                 eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
+                                                 eval_h::Ptr{Cvoid},
+                                                 eval_prec::Ptr{Cvoid})::Cvoid
 end
 
 function arc_solve_with_mat(::Type{Float128}, ::Type{Int64}, data, userdata, status, n, x,
                             g, ne, eval_f, eval_g, eval_h, eval_prec)
-  @ccall libgalahad_quadruple_64.arc_solve_with_mat_q_64(data::Ptr{Ptr{Cvoid}},
-                                                         userdata::Ptr{Cvoid},
-                                                         status::Ptr{Int64}, n::Int64,
-                                                         x::Ptr{Float128}, g::Ptr{Float128},
-                                                         ne::Int64, eval_f::Ptr{Cvoid},
-                                                         eval_g::Ptr{Cvoid},
-                                                         eval_h::Ptr{Cvoid},
-                                                         eval_prec::Ptr{Cvoid})::Cvoid
+  @ccall libgalahad_quadruple_64.arc_solve_with_mat(data::Ptr{Ptr{Cvoid}},
+                                                    userdata::Ptr{Cvoid},
+                                                    status::Ptr{Int64}, n::Int64,
+                                                    x::Ptr{Float128}, g::Ptr{Float128},
+                                                    ne::Int64, eval_f::Ptr{Cvoid},
+                                                    eval_g::Ptr{Cvoid}, eval_h::Ptr{Cvoid},
+                                                    eval_prec::Ptr{Cvoid})::Cvoid
 end
 
 export arc_solve_without_mat
 
 function arc_solve_without_mat(::Type{Float32}, ::Type{Int32}, data, userdata, status, n, x,
                                g, eval_f, eval_g, eval_hprod, eval_prec)
-  @ccall libgalahad_single.arc_solve_without_mat_s(data::Ptr{Ptr{Cvoid}},
-                                                   userdata::Ptr{Cvoid}, status::Ptr{Int32},
-                                                   n::Int32, x::Ptr{Float32},
-                                                   g::Ptr{Float32}, eval_f::Ptr{Cvoid},
-                                                   eval_g::Ptr{Cvoid},
-                                                   eval_hprod::Ptr{Cvoid},
-                                                   eval_prec::Ptr{Cvoid})::Cvoid
+  @ccall libgalahad_single.arc_solve_without_mat(data::Ptr{Ptr{Cvoid}},
+                                                 userdata::Ptr{Cvoid}, status::Ptr{Int32},
+                                                 n::Int32, x::Ptr{Float32}, g::Ptr{Float32},
+                                                 eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
+                                                 eval_hprod::Ptr{Cvoid},
+                                                 eval_prec::Ptr{Cvoid})::Cvoid
 end
 
 function arc_solve_without_mat(::Type{Float32}, ::Type{Int64}, data, userdata, status, n, x,
                                g, eval_f, eval_g, eval_hprod, eval_prec)
-  @ccall libgalahad_single_64.arc_solve_without_mat_s_64(data::Ptr{Ptr{Cvoid}},
-                                                         userdata::Ptr{Cvoid},
-                                                         status::Ptr{Int64}, n::Int64,
-                                                         x::Ptr{Float32}, g::Ptr{Float32},
-                                                         eval_f::Ptr{Cvoid},
-                                                         eval_g::Ptr{Cvoid},
-                                                         eval_hprod::Ptr{Cvoid},
-                                                         eval_prec::Ptr{Cvoid})::Cvoid
+  @ccall libgalahad_single_64.arc_solve_without_mat(data::Ptr{Ptr{Cvoid}},
+                                                    userdata::Ptr{Cvoid},
+                                                    status::Ptr{Int64}, n::Int64,
+                                                    x::Ptr{Float32}, g::Ptr{Float32},
+                                                    eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
+                                                    eval_hprod::Ptr{Cvoid},
+                                                    eval_prec::Ptr{Cvoid})::Cvoid
 end
 
 function arc_solve_without_mat(::Type{Float64}, ::Type{Int32}, data, userdata, status, n, x,
@@ -380,66 +370,61 @@ end
 
 function arc_solve_without_mat(::Type{Float64}, ::Type{Int64}, data, userdata, status, n, x,
                                g, eval_f, eval_g, eval_hprod, eval_prec)
-  @ccall libgalahad_double_64.arc_solve_without_mat_64(data::Ptr{Ptr{Cvoid}},
+  @ccall libgalahad_double_64.arc_solve_without_mat(data::Ptr{Ptr{Cvoid}},
+                                                    userdata::Ptr{Cvoid},
+                                                    status::Ptr{Int64}, n::Int64,
+                                                    x::Ptr{Float64}, g::Ptr{Float64},
+                                                    eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
+                                                    eval_hprod::Ptr{Cvoid},
+                                                    eval_prec::Ptr{Cvoid})::Cvoid
+end
+
+function arc_solve_without_mat(::Type{Float128}, ::Type{Int32}, data, userdata, status, n,
+                               x, g, eval_f, eval_g, eval_hprod, eval_prec)
+  @ccall libgalahad_quadruple.arc_solve_without_mat(data::Ptr{Ptr{Cvoid}},
+                                                    userdata::Ptr{Cvoid},
+                                                    status::Ptr{Int32}, n::Int32,
+                                                    x::Ptr{Float128}, g::Ptr{Float128},
+                                                    eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
+                                                    eval_hprod::Ptr{Cvoid},
+                                                    eval_prec::Ptr{Cvoid})::Cvoid
+end
+
+function arc_solve_without_mat(::Type{Float128}, ::Type{Int64}, data, userdata, status, n,
+                               x, g, eval_f, eval_g, eval_hprod, eval_prec)
+  @ccall libgalahad_quadruple_64.arc_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                        userdata::Ptr{Cvoid},
                                                        status::Ptr{Int64}, n::Int64,
-                                                       x::Ptr{Float64}, g::Ptr{Float64},
+                                                       x::Ptr{Float128}, g::Ptr{Float128},
                                                        eval_f::Ptr{Cvoid},
                                                        eval_g::Ptr{Cvoid},
                                                        eval_hprod::Ptr{Cvoid},
                                                        eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function arc_solve_without_mat(::Type{Float128}, ::Type{Int32}, data, userdata, status, n,
-                               x, g, eval_f, eval_g, eval_hprod, eval_prec)
-  @ccall libgalahad_quadruple.arc_solve_without_mat_q(data::Ptr{Ptr{Cvoid}},
-                                                      userdata::Ptr{Cvoid},
-                                                      status::Ptr{Int32}, n::Int32,
-                                                      x::Ptr{Float128}, g::Ptr{Float128},
-                                                      eval_f::Ptr{Cvoid},
-                                                      eval_g::Ptr{Cvoid},
-                                                      eval_hprod::Ptr{Cvoid},
-                                                      eval_prec::Ptr{Cvoid})::Cvoid
-end
-
-function arc_solve_without_mat(::Type{Float128}, ::Type{Int64}, data, userdata, status, n,
-                               x, g, eval_f, eval_g, eval_hprod, eval_prec)
-  @ccall libgalahad_quadruple_64.arc_solve_without_mat_q_64(data::Ptr{Ptr{Cvoid}},
-                                                            userdata::Ptr{Cvoid},
-                                                            status::Ptr{Int64}, n::Int64,
-                                                            x::Ptr{Float128},
-                                                            g::Ptr{Float128},
-                                                            eval_f::Ptr{Cvoid},
-                                                            eval_g::Ptr{Cvoid},
-                                                            eval_hprod::Ptr{Cvoid},
-                                                            eval_prec::Ptr{Cvoid})::Cvoid
-end
-
 export arc_solve_reverse_with_mat
 
 function arc_solve_reverse_with_mat(::Type{Float32}, ::Type{Int32}, data, status,
                                     eval_status, n, x, f, g, ne, H_val, u, v)
-  @ccall libgalahad_single.arc_solve_reverse_with_mat_s(data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Int32},
-                                                        eval_status::Ptr{Int32}, n::Int32,
-                                                        x::Ptr{Float32}, f::Float32,
-                                                        g::Ptr{Float32}, ne::Int32,
-                                                        H_val::Ptr{Float32},
-                                                        u::Ptr{Float32},
-                                                        v::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single.arc_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
+                                                      status::Ptr{Int32},
+                                                      eval_status::Ptr{Int32}, n::Int32,
+                                                      x::Ptr{Float32}, f::Float32,
+                                                      g::Ptr{Float32}, ne::Int32,
+                                                      H_val::Ptr{Float32}, u::Ptr{Float32},
+                                                      v::Ptr{Float32})::Cvoid
 end
 
 function arc_solve_reverse_with_mat(::Type{Float32}, ::Type{Int64}, data, status,
                                     eval_status, n, x, f, g, ne, H_val, u, v)
-  @ccall libgalahad_single_64.arc_solve_reverse_with_mat_s_64(data::Ptr{Ptr{Cvoid}},
-                                                              status::Ptr{Int64},
-                                                              eval_status::Ptr{Int64},
-                                                              n::Int64, x::Ptr{Float32},
-                                                              f::Float32, g::Ptr{Float32},
-                                                              ne::Int64,
-                                                              H_val::Ptr{Float32},
-                                                              u::Ptr{Float32},
-                                                              v::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.arc_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
+                                                         status::Ptr{Int64},
+                                                         eval_status::Ptr{Int64}, n::Int64,
+                                                         x::Ptr{Float32}, f::Float32,
+                                                         g::Ptr{Float32}, ne::Int64,
+                                                         H_val::Ptr{Float32},
+                                                         u::Ptr{Float32},
+                                                         v::Ptr{Float32})::Cvoid
 end
 
 function arc_solve_reverse_with_mat(::Type{Float64}, ::Type{Int32}, data, status,
@@ -455,65 +440,61 @@ end
 
 function arc_solve_reverse_with_mat(::Type{Float64}, ::Type{Int64}, data, status,
                                     eval_status, n, x, f, g, ne, H_val, u, v)
-  @ccall libgalahad_double_64.arc_solve_reverse_with_mat_64(data::Ptr{Ptr{Cvoid}},
-                                                            status::Ptr{Int64},
-                                                            eval_status::Ptr{Int64},
-                                                            n::Int64, x::Ptr{Float64},
-                                                            f::Float64, g::Ptr{Float64},
-                                                            ne::Int64, H_val::Ptr{Float64},
-                                                            u::Ptr{Float64},
-                                                            v::Ptr{Float64})::Cvoid
+  @ccall libgalahad_double_64.arc_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
+                                                         status::Ptr{Int64},
+                                                         eval_status::Ptr{Int64}, n::Int64,
+                                                         x::Ptr{Float64}, f::Float64,
+                                                         g::Ptr{Float64}, ne::Int64,
+                                                         H_val::Ptr{Float64},
+                                                         u::Ptr{Float64},
+                                                         v::Ptr{Float64})::Cvoid
 end
 
 function arc_solve_reverse_with_mat(::Type{Float128}, ::Type{Int32}, data, status,
                                     eval_status, n, x, f, g, ne, H_val, u, v)
-  @ccall libgalahad_quadruple.arc_solve_reverse_with_mat_q(data::Ptr{Ptr{Cvoid}},
-                                                           status::Ptr{Int32},
-                                                           eval_status::Ptr{Int32},
-                                                           n::Int32, x::Ptr{Float128},
-                                                           f::Cfloat128, g::Ptr{Float128},
-                                                           ne::Int32, H_val::Ptr{Float128},
-                                                           u::Ptr{Float128},
-                                                           v::Ptr{Float128})::Cvoid
+  @ccall libgalahad_quadruple.arc_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
+                                                         status::Ptr{Int32},
+                                                         eval_status::Ptr{Int32}, n::Int32,
+                                                         x::Ptr{Float128}, f::Cfloat128,
+                                                         g::Ptr{Float128}, ne::Int32,
+                                                         H_val::Ptr{Float128},
+                                                         u::Ptr{Float128},
+                                                         v::Ptr{Float128})::Cvoid
 end
 
 function arc_solve_reverse_with_mat(::Type{Float128}, ::Type{Int64}, data, status,
                                     eval_status, n, x, f, g, ne, H_val, u, v)
-  @ccall libgalahad_quadruple_64.arc_solve_reverse_with_mat_q_64(data::Ptr{Ptr{Cvoid}},
-                                                                 status::Ptr{Int64},
-                                                                 eval_status::Ptr{Int64},
-                                                                 n::Int64, x::Ptr{Float128},
-                                                                 f::Cfloat128,
-                                                                 g::Ptr{Float128},
-                                                                 ne::Int64,
-                                                                 H_val::Ptr{Float128},
-                                                                 u::Ptr{Float128},
-                                                                 v::Ptr{Float128})::Cvoid
+  @ccall libgalahad_quadruple_64.arc_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
+                                                            status::Ptr{Int64},
+                                                            eval_status::Ptr{Int64},
+                                                            n::Int64, x::Ptr{Float128},
+                                                            f::Cfloat128, g::Ptr{Float128},
+                                                            ne::Int64, H_val::Ptr{Float128},
+                                                            u::Ptr{Float128},
+                                                            v::Ptr{Float128})::Cvoid
 end
 
 export arc_solve_reverse_without_mat
 
 function arc_solve_reverse_without_mat(::Type{Float32}, ::Type{Int32}, data, status,
                                        eval_status, n, x, f, g, u, v)
-  @ccall libgalahad_single.arc_solve_reverse_without_mat_s(data::Ptr{Ptr{Cvoid}},
-                                                           status::Ptr{Int32},
-                                                           eval_status::Ptr{Int32},
-                                                           n::Int32, x::Ptr{Float32},
-                                                           f::Float32, g::Ptr{Float32},
-                                                           u::Ptr{Float32},
-                                                           v::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single.arc_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
+                                                         status::Ptr{Int32},
+                                                         eval_status::Ptr{Int32}, n::Int32,
+                                                         x::Ptr{Float32}, f::Float32,
+                                                         g::Ptr{Float32}, u::Ptr{Float32},
+                                                         v::Ptr{Float32})::Cvoid
 end
 
 function arc_solve_reverse_without_mat(::Type{Float32}, ::Type{Int64}, data, status,
                                        eval_status, n, x, f, g, u, v)
-  @ccall libgalahad_single_64.arc_solve_reverse_without_mat_s_64(data::Ptr{Ptr{Cvoid}},
-                                                                 status::Ptr{Int64},
-                                                                 eval_status::Ptr{Int64},
-                                                                 n::Int64, x::Ptr{Float32},
-                                                                 f::Float32,
-                                                                 g::Ptr{Float32},
-                                                                 u::Ptr{Float32},
-                                                                 v::Ptr{Float32})::Cvoid
+  @ccall libgalahad_single_64.arc_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
+                                                            status::Ptr{Int64},
+                                                            eval_status::Ptr{Int64},
+                                                            n::Int64, x::Ptr{Float32},
+                                                            f::Float32, g::Ptr{Float32},
+                                                            u::Ptr{Float32},
+                                                            v::Ptr{Float32})::Cvoid
 end
 
 function arc_solve_reverse_without_mat(::Type{Float64}, ::Type{Int32}, data, status,
@@ -528,53 +509,50 @@ end
 
 function arc_solve_reverse_without_mat(::Type{Float64}, ::Type{Int64}, data, status,
                                        eval_status, n, x, f, g, u, v)
-  @ccall libgalahad_double_64.arc_solve_reverse_without_mat_64(data::Ptr{Ptr{Cvoid}},
-                                                               status::Ptr{Int64},
-                                                               eval_status::Ptr{Int64},
-                                                               n::Int64, x::Ptr{Float64},
-                                                               f::Float64, g::Ptr{Float64},
-                                                               u::Ptr{Float64},
-                                                               v::Ptr{Float64})::Cvoid
+  @ccall libgalahad_double_64.arc_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
+                                                            status::Ptr{Int64},
+                                                            eval_status::Ptr{Int64},
+                                                            n::Int64, x::Ptr{Float64},
+                                                            f::Float64, g::Ptr{Float64},
+                                                            u::Ptr{Float64},
+                                                            v::Ptr{Float64})::Cvoid
 end
 
 function arc_solve_reverse_without_mat(::Type{Float128}, ::Type{Int32}, data, status,
                                        eval_status, n, x, f, g, u, v)
-  @ccall libgalahad_quadruple.arc_solve_reverse_without_mat_q(data::Ptr{Ptr{Cvoid}},
-                                                              status::Ptr{Int32},
-                                                              eval_status::Ptr{Int32},
-                                                              n::Int32, x::Ptr{Float128},
-                                                              f::Cfloat128,
-                                                              g::Ptr{Float128},
-                                                              u::Ptr{Float128},
-                                                              v::Ptr{Float128})::Cvoid
+  @ccall libgalahad_quadruple.arc_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
+                                                            status::Ptr{Int32},
+                                                            eval_status::Ptr{Int32},
+                                                            n::Int32, x::Ptr{Float128},
+                                                            f::Cfloat128, g::Ptr{Float128},
+                                                            u::Ptr{Float128},
+                                                            v::Ptr{Float128})::Cvoid
 end
 
 function arc_solve_reverse_without_mat(::Type{Float128}, ::Type{Int64}, data, status,
                                        eval_status, n, x, f, g, u, v)
-  @ccall libgalahad_quadruple_64.arc_solve_reverse_without_mat_q_64(data::Ptr{Ptr{Cvoid}},
-                                                                    status::Ptr{Int64},
-                                                                    eval_status::Ptr{Int64},
-                                                                    n::Int64,
-                                                                    x::Ptr{Float128},
-                                                                    f::Cfloat128,
-                                                                    g::Ptr{Float128},
-                                                                    u::Ptr{Float128},
-                                                                    v::Ptr{Float128})::Cvoid
+  @ccall libgalahad_quadruple_64.arc_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
+                                                               status::Ptr{Int64},
+                                                               eval_status::Ptr{Int64},
+                                                               n::Int64, x::Ptr{Float128},
+                                                               f::Cfloat128,
+                                                               g::Ptr{Float128},
+                                                               u::Ptr{Float128},
+                                                               v::Ptr{Float128})::Cvoid
 end
 
 export arc_information
 
 function arc_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
-  @ccall libgalahad_single.arc_information_s(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{arc_inform_type{Float32,Int32}},
-                                             status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_single.arc_information(data::Ptr{Ptr{Cvoid}},
+                                           inform::Ptr{arc_inform_type{Float32,Int32}},
+                                           status::Ptr{Int32})::Cvoid
 end
 
 function arc_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_single_64.arc_information_s_64(data::Ptr{Ptr{Cvoid}},
-                                                   inform::Ptr{arc_inform_type{Float32,
-                                                                               Int64}},
-                                                   status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_single_64.arc_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{arc_inform_type{Float32,Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function arc_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
@@ -584,37 +562,36 @@ function arc_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
 end
 
 function arc_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_double_64.arc_information_64(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{arc_inform_type{Float64,Int64}},
-                                                 status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_double_64.arc_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{arc_inform_type{Float64,Int64}},
+                                              status::Ptr{Int64})::Cvoid
 end
 
 function arc_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
-  @ccall libgalahad_quadruple.arc_information_q(data::Ptr{Ptr{Cvoid}},
-                                                inform::Ptr{arc_inform_type{Float128,Int32}},
-                                                status::Ptr{Int32})::Cvoid
+  @ccall libgalahad_quadruple.arc_information(data::Ptr{Ptr{Cvoid}},
+                                              inform::Ptr{arc_inform_type{Float128,Int32}},
+                                              status::Ptr{Int32})::Cvoid
 end
 
 function arc_information(::Type{Float128}, ::Type{Int64}, data, inform, status)
-  @ccall libgalahad_quadruple_64.arc_information_q_64(data::Ptr{Ptr{Cvoid}},
-                                                      inform::Ptr{arc_inform_type{Float128,
-                                                                                  Int64}},
-                                                      status::Ptr{Int64})::Cvoid
+  @ccall libgalahad_quadruple_64.arc_information(data::Ptr{Ptr{Cvoid}},
+                                                 inform::Ptr{arc_inform_type{Float128,
+                                                                             Int64}},
+                                                 status::Ptr{Int64})::Cvoid
 end
 
 export arc_terminate
 
 function arc_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
-  @ccall libgalahad_single.arc_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{arc_control_type{Float32,Int32}},
-                                           inform::Ptr{arc_inform_type{Float32,Int32}})::Cvoid
+  @ccall libgalahad_single.arc_terminate(data::Ptr{Ptr{Cvoid}},
+                                         control::Ptr{arc_control_type{Float32,Int32}},
+                                         inform::Ptr{arc_inform_type{Float32,Int32}})::Cvoid
 end
 
 function arc_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_single_64.arc_terminate_s_64(data::Ptr{Ptr{Cvoid}},
-                                                 control::Ptr{arc_control_type{Float32,
-                                                                               Int64}},
-                                                 inform::Ptr{arc_inform_type{Float32,Int64}})::Cvoid
+  @ccall libgalahad_single_64.arc_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{arc_control_type{Float32,Int64}},
+                                            inform::Ptr{arc_inform_type{Float32,Int64}})::Cvoid
 end
 
 function arc_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
@@ -624,21 +601,20 @@ function arc_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
 end
 
 function arc_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_double_64.arc_terminate_64(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{arc_control_type{Float64,Int64}},
-                                               inform::Ptr{arc_inform_type{Float64,Int64}})::Cvoid
+  @ccall libgalahad_double_64.arc_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{arc_control_type{Float64,Int64}},
+                                            inform::Ptr{arc_inform_type{Float64,Int64}})::Cvoid
 end
 
 function arc_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
-  @ccall libgalahad_quadruple.arc_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{arc_control_type{Float128,Int32}},
-                                              inform::Ptr{arc_inform_type{Float128,Int32}})::Cvoid
+  @ccall libgalahad_quadruple.arc_terminate(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{arc_control_type{Float128,Int32}},
+                                            inform::Ptr{arc_inform_type{Float128,Int32}})::Cvoid
 end
 
 function arc_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
-  @ccall libgalahad_quadruple_64.arc_terminate_q_64(data::Ptr{Ptr{Cvoid}},
-                                                    control::Ptr{arc_control_type{Float128,
-                                                                                  Int64}},
-                                                    inform::Ptr{arc_inform_type{Float128,
-                                                                                Int64}})::Cvoid
+  @ccall libgalahad_quadruple_64.arc_terminate(data::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{arc_control_type{Float128,
+                                                                             Int64}},
+                                               inform::Ptr{arc_inform_type{Float128,Int64}})::Cvoid
 end
