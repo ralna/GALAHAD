@@ -63,8 +63,10 @@ int main(void) {
         control.preconditioner = 2;
         control.factorization = 2;
         control.get_norm_residual = true;
-        strcpy(control.symmetric_linear_solver, "sytr ") ;
-        strcpy(control.definite_linear_solver, "sytr ") ;
+        control.print_level = 1;
+        control.sls_control.print_level = 1;
+        // strcpy(control.symmetric_linear_solver, "sytr ") ;
+        // strcpy(control.definite_linear_solver, "sytr ") ;
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
@@ -159,7 +161,12 @@ int main(void) {
             sbls_information( &data, &inform, &status );
             printf("%c: SBLS_solve factorization exit status = %1" i_ipc_ "\n", 
                    st, inform.status);
-            continue;
+            printf("inform.sls_inform.bad_alloc = ");
+            for (size_t i = 0; i < 80; i++) {
+                printf("%c", inform.sls_inform.bad_alloc[i]);
+            }
+            printf("\n");
+            return 1;
         } 
 
         // Set right-hand side ( a, b )

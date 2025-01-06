@@ -55,8 +55,10 @@ function test_sbls(::Type{T}, ::Type{INT}) where {T,INT}
     @reset control[].preconditioner = INT(2)
     @reset control[].factorization = INT(2)
     @reset control[].get_norm_residual = true
-    @reset control[].symmetric_linear_solver = galahad_linear_solver("sytr")
-    @reset control[].definite_linear_solver = galahad_linear_solver("sytr")
+
+    # Debug
+    @reset control[].print_level = INT(1)
+    @reset control[].sls_control.print_level = INT(1)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # fortran sparse matrix indexing
@@ -166,6 +168,7 @@ function test_sbls(::Type{T}, ::Type{INT}) where {T,INT}
     if status[] != 0
       sbls_information(T, INT, data, inform, status)
       @printf("%c: SBLS_solve factorization exit status = %1i\n", st, inform[].status)
+      @printf("inform.sls_inform.bad_alloc = %s\n", prod(Char.(inform[].sls_inform.bad_alloc)))
       return 1
     end
 

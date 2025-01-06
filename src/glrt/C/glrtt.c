@@ -38,7 +38,7 @@ int main(void) {
       } else {
         control.unitm = true;
       }
-      control.print_level = 1;
+      //control.print_level = 1;
       glrt_import_control( &control, &data, &status );
       // resolve with a larger weight ?
       for( ipc_ new_weight=0; new_weight <= 1; new_weight++){

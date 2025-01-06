@@ -2652,6 +2652,7 @@
 
 !  trivial cases, no analysis
 
+write(6,*) 1, inform%status
      SELECT CASE ( SMT_get( matrix%type ) )
      CASE ( 'DIAGONAL', 'SCALED_IDENTITY', 'IDENTITY', 'ZERO', 'NONE' )
        IF ( matrix%n < 1 ) THEN
@@ -2671,6 +2672,7 @@
 
 !  check whether solver is available
 
+write(6,*) 2, inform%status
      SELECT CASE( data%solver( 1 : data%len_solver ) )
 
 !  = SILS =
@@ -2716,6 +2718,7 @@
 
 !  check input data
 
+write(6,*) 3, inform%status
      IF ( matrix%n < 1 .OR.                                                    &
          ( matrix%ne < 0 .AND. SMT_get( matrix%type ) == 'COORDINATE' ) .OR.   &
          .NOT. SLS_keyword( matrix%type ) ) THEN
@@ -2726,6 +2729,7 @@
        data%n = matrix%n
      END IF
 
+write(6,*) 4, inform%status
      IF ( control%pivot_control == 2 .OR. control%pivot_control == 3 )         &
        data%must_be_definite = .TRUE.
 
@@ -2758,14 +2762,20 @@
        IF ( COUNT( data%ORDER /= 1 ) /= 0 ) THEN
          inform%status = GALAHAD_error_permutation ; GO TO 900 ; END IF
      END IF
+write(6,*) 5, inform%status
+write(6,*) ' ordering ', control%ordering
 
 !  decide if the ordering should be chosen by one of mc61, mc68 or amd
 
      SELECT CASE( data%solver( 1 : data%len_solver ) )
      CASE ( 'ma77', 'ma86', 'ma87', 'ma97', 'ssids' )
-       mc6168_ordering = control%ordering >= 0 .AND. .NOT. PRESENT( PERM )
+!      mc6168_ordering = ( control%ordering >= 0 .AND. control%ordering /= 7 ) &
+       mc6168_ordering = control%ordering >= 0 .AND.                           &
+                           .NOT. PRESENT( PERM )
      CASE DEFAULT
-       mc6168_ordering = control%ordering > 0 .AND. .NOT. PRESENT( PERM )
+!      mc6168_ordering = ( control%ordering > 0 .AND. control%ordering /= 7 )  &
+       mc6168_ordering = control%ordering > 0 .AND.                            &
+                           .NOT. PRESENT( PERM )
      END SELECT
 
 !  convert the data to sorted compressed-sparse row format
@@ -2829,6 +2839,7 @@
          inform%status = GALAHAD_error_inertia
          GO TO 900
        END IF
+write(6,*) 7, inform%status
 
 !  now map the column data
 
@@ -2848,6 +2859,7 @@
                                 inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%matrix%VAL' ; GO TO 900 ; END IF
+write(6,*) 8, inform%status
 
        DO i = 1, matrix%n
          l = data%matrix%PTR( i )
@@ -2904,6 +2916,7 @@
        ELSE
          ordering = control%ordering
        END IF
+write(6,*) 9, inform%status
 
 !  AMD ordering (ACM TOMS rather than HSL implementation)
 
@@ -2931,6 +2944,7 @@
              WRITE( control%out, "( A, ' amd restrictions error' )" ) prefix
            inform%status = GALAHAD_error_restrictions ; GO TO 900
          END IF
+write(6,*) 10, inform%status
 
 !  mc68 sparsity ordering
 
@@ -3025,6 +3039,7 @@
        CALL SMT_put( data%matrix%type, 'SPARSE_BY_ROWS',                       &
                      inform%alloc_status )
      END IF
+write(6,*) 11, inform%status
 
 !  solver-dependent analysis
 
@@ -3392,6 +3407,7 @@
 
 !  convert the data to sorted compressed-sparse row format
 
+write(6,*) 12, inform%status
        IF ( .NOT. mc6168_ordering ) THEN
          CALL SPACE_resize_array( data%matrix_ne, data%MAPS,                   &
                                   inform%status, inform%alloc_status )
@@ -3447,6 +3463,7 @@
                                          inform%status, inform%alloc_status )
          END SELECT
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+write(6,*) 13, inform%status
 
          data%ne = data%matrix%PTR( matrix%n + 1 ) - 1
          CALL SPACE_resize_array( data%ne, data%matrix%COL, inform%status,     &
@@ -3457,6 +3474,7 @@
                                   inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%matrix%VAL' ; GO TO 900 ; END IF
+write(6,*) 14, inform%status
 
 !  now map the coordinates
 
@@ -3525,6 +3543,7 @@
            END DO
          END SELECT
        END IF
+write(6,*) 15, inform%status
 
        CALL SPACE_resize_array( data%ne, data%matrix%VAL,                      &
                                 inform%status, inform%alloc_status )
@@ -3535,6 +3554,7 @@
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
 
+write(6,*) 16, inform%status
        SELECT CASE( data%solver( 1 : data%len_solver ) )
 
 !  = MA86 =
@@ -3655,17 +3675,21 @@
 !  = SSIDS =
 
        CASE ( 'ssids' )
+write(6,*) 17, inform%status
          CALL SLS_copy_control_to_ssids( control, data%ssids_options )
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          IF ( mc6168_ordering ) THEN
            data%ssids_options%ordering = 0
+write(6,*) '17a'
            CALL SSIDS_analyse( .FALSE., data%matrix%n,                         &
                                data%matrix%PTR, data%matrix%COL,               &
                                data%ssids_akeep,                               &
                                data%ssids_options, data%ssids_inform,          &
                                order = data%ORDER )
+write(6,*) ' ssids_inform = ', data%ssids_inform
          ELSE
            IF ( PRESENT( PERM ) ) THEN
+write(6,*) '17b'
              data%ssids_options%ordering = 0
              CALL SSIDS_analyse( .FALSE., data%matrix%n,                       &
                                  data%matrix%PTR, data%matrix%COL,             &
@@ -3673,6 +3697,7 @@
                                  data%ssids_options, data%ssids_inform,        &
                                  order = data%ORDER )
            ELSE
+write(6,*) '17c'
              data%ssids_options%ordering = - control%ordering
              CALL SSIDS_analyse( .FALSE., data%matrix%n,                       &
                                  data%matrix%PTR, data%matrix%COL,             &
@@ -3681,7 +3706,9 @@
                                  order = data%ORDER )
            END IF
          END IF
+write(6,*) ' ssids_inform%stat = ', data%ssids_inform%stat
          CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
+write(6,*) 18, inform%status
          IF ( inform%status /= GALAHAD_ok ) GO TO 800
          CALL SPACE_resize_array( matrix%n, data%LFLAG,                        &
                                   inform%status, inform%alloc_status )
@@ -3690,6 +3717,7 @@
          DO i = 1, matrix%n
            data%LFLAG( i ) = .FALSE.
          END DO
+write(6,*) 19, inform%status
 
 !  = PARDISO =
 
@@ -4209,6 +4237,8 @@
      CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
      inform%time%analyse_external = time_now - time
      inform%time%clock_analyse_external = clock_now - clock
+write(6,*) 20, inform%status
+
 
 !  record total time
 
@@ -4220,6 +4250,7 @@
      inform%time%total = inform%time%total + time_now - time_start
      inform%time%clock_total =                                                 &
        inform%time%clock_total + clock_now - clock_start
+write(6,*) 21, inform%status
      RETURN
 
 !  End of SLS_analyse
