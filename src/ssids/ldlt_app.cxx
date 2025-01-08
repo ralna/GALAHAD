@@ -1,6 +1,6 @@
 /** \file \copyright 2016 The Science and Technology Facilities Council
  *  (STFC) \licence BSD licence, see LICENCE file for details \author
- *  Jonathan Hogg \version GALAHAD 5.1 - 2024-11-21 AT 10:20 GMT
+ *  Jonathan Hogg \version GALAHAD 5.1 - 2025-01-08 AT 08:10 GMT
  */
 #include "ssids_cpu_kernels_ldlt_app.hxx"
 
@@ -2501,12 +2501,19 @@ public:
             }
             // Rectangular part
             // (be careful with blocks that contain both diag and rect parts)
+//          copy_failed_rect(
+//                get_nrow(nblk-1, m, block_size), 
+//                get_ncol(jblk, n, block_size), 
+//                get_ncol(nblk-1, n, block_size), cdata[jblk],
+//                failed_rect.data() + (jfail*(m-n)+(nblk-1)*block_size-n), m-n,
+//                &a[jblk*block_size*lda+(nblk-1)*block_size], lda
+//                );
             copy_failed_rect(
-                  get_nrow(nblk-1, m, block_size),
-                  get_ncol(jblk, n, block_size),
-                  get_ncol(nblk-1, n, block_size), cdata[jblk],
-                  failed_rect.data() + (jfail*(m-n)+(nblk-1)*block_size-n), m-n,
-                  &a[jblk*block_size*lda+(nblk-1)*block_size], lda
+                  get_nrow(nblk-1, m, block_size) - 
+                  get_nrow(nblk-1, n, block_size), 
+                  get_ncol(jblk, n, block_size), 0, cdata[jblk],
+                  failed_rect.data() + jfail*(m-n), m-n,
+                  &a[jblk*block_size*lda+n], lda
                   );
             for(ipc_ iblk=nblk; iblk<mblk; ++iblk) {
                copy_failed_rect(
