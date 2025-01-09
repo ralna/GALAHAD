@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2025-01-07 AT 13:30 GMT.
 
 #include "spral_procedures.h"
 
@@ -23,8 +23,8 @@ module spral_hw_topology
 
   !> Fortran interoperable definition of spral::hw_topology::NumaRegion
   type, bind(C) :: c_numa_region
-     integer(C_IP_) :: nproc
-     integer(C_IP_) :: ngpu
+     integer(C_INT) :: nproc
+     integer(C_INT) :: ngpu
      type(C_PTR) :: gpus
   end type c_numa_region
 
@@ -37,18 +37,16 @@ module spral_hw_topology
   interface
      !> Interface to spral_hw_topology_guess()
      subroutine spral_hw_topology_guess(nregion, regions) bind(C)
-       use spral_kinds_precision, only: C_IP_
        use, intrinsic :: iso_c_binding
        implicit none
-       integer(C_IP_), intent(out) :: nregion
+       integer(C_INT), intent(out) :: nregion
        type(C_PTR), intent(out) :: regions
      end subroutine spral_hw_topology_guess
      !> Interface to spral_hw_topology_free()
      subroutine spral_hw_topology_free(nregion, regions) bind(C)
-       use spral_kinds_precision, only: C_IP_
        use, intrinsic :: iso_c_binding
        implicit none
-       integer(C_IP_), value :: nregion
+       integer(C_INT), value :: nregion
        type(C_PTR), value :: regions
      end subroutine spral_hw_topology_free
   end interface
@@ -67,7 +65,7 @@ contains
     integer(ip_), intent(out) :: st
 
     integer(ip_) :: i
-    integer(C_IP_) :: nregions
+    integer(C_INT) :: nregions
     type(C_PTR) :: c_regions
     type(c_numa_region), dimension(:), pointer, contiguous :: f_regions
     integer(C_IP_), dimension(:), pointer, contiguous :: f_gpus
