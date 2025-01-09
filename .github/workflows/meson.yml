@@ -16,7 +16,7 @@ jobs:
         os: ['windows-latest']
         arch: ['x64']
         compiler: ['gcc']
-        version: ['11', '12', '13']
+        version: ['9', '10', '11']
         int: ['32', '64']
     steps:
       - name: Checkout repository
