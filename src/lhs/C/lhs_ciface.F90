@@ -263,7 +263,6 @@
   TYPE ( f_lhs_full_data_type ), POINTER :: fdata
   TYPE ( f_lhs_control_type ) :: fcontrol
   TYPE ( f_lhs_inform_type ) :: finform
-
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol )

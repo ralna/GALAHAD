@@ -42,7 +42,7 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n_dimen,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n_points,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *seed,
-		int** X,
+		int* X,
 		const struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
 		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform,
 		void **data
@@ -176,7 +176,7 @@ relate to the components of the control structure.
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n_dimen,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n_points,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *seed,
-		int** X,
+		int* X,
 		const struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
 		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform,
 		void **data
@@ -229,7 +229,7 @@ Sampling, American Institute of Aeronautics and Astronautics Paper
 	*
 		- X
 
-		- is an array variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>` with dimensions [n_dimen][n_points] that gives the hyper-cube points
+		- is an array variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>` with dimensions [n_points][n_dimen] that gives the hyper-cube points
 
 	*
 		- control

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-14 AT 08:40 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2025-01-08 AT 15:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -77,13 +77,16 @@
 
       INTEGER ( KIND = ip_ ) :: n, m, ir, ic, la, lh, liw, iores, smt_stat
 !     INTEGER ( KIND = ip_ ) :: np1, npm
-      INTEGER ( KIND = ip_ ) :: i, j, l, neh, nea
+      INTEGER ( KIND = ip_ ) :: i, j, l, neh, nea, pass
       INTEGER ( KIND = ip_ ) :: status, alloc_stat, cutest_status, A_ne, H_ne
       REAL :: time, timeo, times, timet
+      REAL, ALLOCATABLE, DIMENSION( : ) :: timeap, timefp, timesp, timetp
       REAL ( KIND = rp_ ) :: clock, clocko, clocks, clockt
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: clockap, clockfp
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: clocksp, clocktp
       REAL ( KIND = rp_ ) :: objf
       REAL ( KIND = rp_ ) :: res_c, res_k
-      LOGICAL :: filexx, printo, is_specfile
+      LOGICAL :: filexx, is_specfile
 
 !  Functions
 
@@ -92,11 +95,11 @@
 !  Specfile characteristics
 
       INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
-      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 14
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 15
       CHARACTER ( LEN = 16 ) :: specname = 'RUNSLS'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNSLS.SPC'
-      CHARACTER ( LEN = 30 ) :: solver = "sils" // REPEAT( ' ', 26 )
+      CHARACTER ( LEN = 30 ) :: solver = "ssids" // REPEAT( ' ', 25 )
 
 !  The default values for SLS could have been set as:
 
@@ -104,8 +107,6 @@
 !  write-problem-data                                NO
 !  problem-data-file-name                            SLS.data
 !  problem-data-file-device                          26
-!  kkt-system                                        YES
-!  symmetric-linear-equation-solver                  sils
 !  print-full-solution                               NO
 !  write-solution                                    NO
 !  solution-file-name                                SLSSOL.d
@@ -113,12 +114,16 @@
 !  write-result-summary                              NO
 !  result-summary-file-name                          SLSRES.d
 !  result-summary-file-device                        47
+!  symmetric-linear-equation-solver                  ssids
+!  kkt-system                                        YES
 !  barrier-perturbation                              1.0
+!  solution-passes                                   1
 !  solve                                             YES
 ! END RUNSLS SPECIFICATIONS
 
 !  Default values for specfile-defined parameters
 
+      INTEGER ( KIND = ip_ ) :: passes = 1
       INTEGER ( KIND = ip_ ) :: dfiledevice = 26
       INTEGER ( KIND = ip_ ) :: sfiledevice = 62
       INTEGER ( KIND = ip_ ) :: rfiledevice = 47
@@ -162,7 +167,7 @@
         OPEN( input_specfile, FILE = runspec, FORM = 'FORMATTED',              &
               STATUS = 'OLD' )
 
-!   Define the keywords
+!  define the keywords
 
         spec( 1 )%keyword = 'write-problem-data'
         spec( 2 )%keyword = 'problem-data-file-name'
@@ -171,19 +176,20 @@
         spec( 5 )%keyword = 'write-solution'
         spec( 6 )%keyword = 'solution-file-name'
         spec( 7 )%keyword = 'solution-file-device'
-        spec( 8 )%keyword = 'symmetric-linear-equation-solver'
-        spec( 9 )%keyword = 'barrier-perturbation'
-        spec( 10 )%keyword = 'kkt-system'
-        spec( 11 )%keyword = 'solve'
-        spec( 12 )%keyword = 'write-result-summary'
-        spec( 13 )%keyword = 'result-summary-file-name'
-        spec( 14 )%keyword = 'result-summary-file-device'
+        spec( 8 )%keyword = 'write-result-summary'
+        spec( 9 )%keyword = 'result-summary-file-name'
+        spec( 10 )%keyword = 'result-summary-file-device'
+        spec( 11 )%keyword = 'symmetric-linear-equation-solver'
+        spec( 12 )%keyword = 'kkt-system'
+        spec( 13 )%keyword = 'barrier-perturbation'
+        spec( 14 )%keyword = 'solution-passes'
+        spec( 15 )%keyword = 'solve'
 
-!   Read the specfile
+!  read the specfile
 
         CALL SPECFILE_read( input_specfile, specname, spec, lspec, errout )
 
-!   Interpret the result
+!  interpret the result
 
         CALL SPECFILE_assign_logical( spec( 1 ), write_problem_data, errout )
         CALL SPECFILE_assign_string ( spec( 2 ), dfilename, errout )
@@ -192,23 +198,24 @@
         CALL SPECFILE_assign_logical( spec( 5 ), write_solution, errout )
         CALL SPECFILE_assign_string ( spec( 6 ), sfilename, errout )
         CALL SPECFILE_assign_integer( spec( 7 ), sfiledevice, errout )
-        CALL SPECFILE_assign_value( spec( 8 ), solver, errout )
-        CALL SPECFILE_assign_real( spec( 9 ), barrier_pert, errout )
-        CALL SPECFILE_assign_logical( spec( 10 ), kkt_system, errout )
-        CALL SPECFILE_assign_logical( spec( 11 ), solve, errout )
-        CALL SPECFILE_assign_logical( spec( 12 ), write_result_summary, errout )
-        CALL SPECFILE_assign_string ( spec( 13 ), rfilename, errout )
-        CALL SPECFILE_assign_integer( spec( 14 ), rfiledevice, errout )
+        CALL SPECFILE_assign_logical( spec( 8 ), write_result_summary, errout )
+        CALL SPECFILE_assign_string ( spec( 9 ), rfilename, errout )
+        CALL SPECFILE_assign_integer( spec( 10 ), rfiledevice, errout )
+        CALL SPECFILE_assign_value( spec( 11 ), solver, errout )
+        CALL SPECFILE_assign_logical( spec( 12 ), kkt_system, errout )
+        CALL SPECFILE_assign_real( spec( 13 ), barrier_pert, errout )
+        CALL SPECFILE_assign_integer( spec( 14 ), passes, errout )
+        CALL SPECFILE_assign_logical( spec( 15 ), solve, errout )
       END IF
 
       CALL CPU_TIME( time ) ; CALL CLOCK_time( clock )
 
-!  Determine the number of variables and constraints
+!  determine the number of variables and constraints
 
       CALL CUTEST_cdimen_r( cutest_status, input, n, m )
       IF ( cutest_status /= 0 ) GO TO 910
 
-!  Allocate suitable arrays
+!  allocate suitable arrays
 
       ALLOCATE( prob%X( n ), prob%X_l( n ), prob%X_u( n ),                     &
                 prob%G( n ), VNAME( n ), STAT = alloc_stat )
@@ -222,7 +229,7 @@
         WRITE( out, 2150 ) 'C', alloc_stat ; STOP
       END IF
 
-!  Set up the data structures necessary to hold the group partially
+!  set up the data structures necessary to hold the group partially
 !  separable function.
 
       CALL CUTEST_csetup_r( cutest_status, input, out, io_buffer,              &
@@ -232,7 +239,7 @@
       IF ( cutest_status /= 0 ) GO TO 910
       DEALLOCATE( LINEAR )
 
-!  Allocate derived types
+!  allocate derived types
 
       ALLOCATE( prob%X0( n ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
@@ -252,10 +259,10 @@
       IF ( cutest_status /= 0 ) GO TO 910
       WRITE( out, "( /, ' Problem: ', A10 )" ) pname
 
-!  Set up the initial estimate of the solution and
+!  set up the initial estimate of the solution and
 !  right-hand-side of the Kuhn-Tucker system.
 
-!  Determine the constant terms for the problem functions.
+!  determine the constant terms for the problem functions.
 
       prob%X( : n ) = MIN( prob%X_u( : n ),                                    &
                            MAX( prob%X_l( : n ), prob%X( : n ) ) )
@@ -264,7 +271,7 @@
 
       prob%X0 = zero
 
-!  Evaluate the constant terms of the objective (objf) and constraint
+!  evaluate the constant terms of the objective (objf) and constraint
 !  functions (C)
 
       CALL CUTEST_cfn_r( cutest_status, n, m, prob%X0, objf, prob%C( : m ) )
@@ -279,13 +286,13 @@
         END IF
       END DO
 
-!  Determine the number of nonzeros in the Jacobian
+!  determine the number of nonzeros in the Jacobian
 
       CALL CUTEST_cdimsj_r( cutest_status, la )
       IF ( cutest_status /= 0 ) GO TO 910
       la = MAX( la, 1 )
 
-!  Allocate arrays to hold the Jacobian
+!  allocate arrays to hold the Jacobian
 
       ALLOCATE( prob%A%row( la ), prob%A%col( la ), prob%A%val( la ),          &
                 STAT = alloc_stat )
@@ -293,14 +300,14 @@
         WRITE( out, 2050 ) 'A', alloc_stat ; STOP
       END IF
 
-!  Evaluate the linear terms of the constraint functions
+!  evaluate the linear terms of the constraint functions
 
       CALL CUTEST_csgr_r( cutest_status, n, m, prob%X0, prob%Y, .FALSE.,       &
                           nea, la, prob%A%val, prob%A%col, prob%A%row )
       IF ( cutest_status /= 0 ) GO TO 910
       DEALLOCATE( prob%X0 )
 
-!  Exclude zeros; set the linear term for the objective function
+!  exclude zeros; set the linear term for the objective function
 
       A_ne = 0
       prob%G( : n ) = zero
@@ -319,13 +326,13 @@
         END IF
       END DO
 
-!  Determine the number of nonzeros in the Hessian
+!  determine the number of nonzeros in the Hessian
 
       CALL CUTEST_cdimsh_r( cutest_status, lh )
       IF ( cutest_status /= 0 ) GO TO 910
       lh = MAX( lh, 1 )
 
-!  Allocate arrays to hold the Hessian
+!  allocate arrays to hold the Hessian
 
       ALLOCATE( prob%H%row( lh + n ), prob%H%col( lh + n ),                    &
                 prob%H%val( lh + n ), STAT = alloc_stat )
@@ -334,7 +341,7 @@
         STOP
       END IF
 
-!  Evaluate the Hessian of the Lagrangian function at the initial point.
+!  evaluate the Hessian of the Lagrangian function at the initial point.
 
       CALL CUTEST_csh_r( cutest_status, n, m, prob%X, prob%Y,                  &
                          neh, lh, prob%H%val, prob%H%row, prob%H%col )
@@ -358,7 +365,7 @@
         END IF
       END DO
 
-!  Add barrier terms
+!  add barrier terms
 
       IF ( barrier_pert > zero ) THEN
         DO i = 1, n
@@ -380,7 +387,7 @@
         END DO
       END IF
 
-!  Allocate and initialize dual variables.
+!  allocate and initialize dual variables.
 
       ALLOCATE( prob%Z( n ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
@@ -398,14 +405,14 @@
 !     WRITE( 26, "( ' H_col ', /, ( 10I6 ) )" ) prob%H%col( : H_ne )
 !     WRITE( 26, "( ' H_val ', /, ( 5ES12.4 ) )" ) prob%H%val( : H_ne )
 
-!  Deallocate arrays holding matrix row indices
+!  deallocate arrays holding matrix row indices
 
       DEALLOCATE( IW )
       ALLOCATE( SOL( n + m ), STAT = alloc_stat )
 
       prob%new_problem_structure = .TRUE.
 
-!  Store the problem dimensions
+!  store the problem dimensions
 
       prob%n = n ; prob%m = m
 
@@ -429,7 +436,7 @@
 !         K%col( A_ne + H_ne + i ) = n + i
 !         K%val( A_ne + H_ne + i ) = K22
 !       END DO
-        WRITE( 6, "( ' nnz(A,H) = ', I0, 1X, I0 )" ) A_ne, H_ne
+!       WRITE( 6, "( ' nnz(A,H) = ', I0, 1X, I0 )" ) A_ne, H_ne
       ELSE
         K%n = n ; K%ne = H_ne
         ALLOCATE( K%val( K%ne ), K%row( K%ne ), K%col( K%ne ) )
@@ -437,7 +444,7 @@
         K%row( : H_ne ) = prob%H%row( : H_ne )
         K%col( : H_ne ) = prob%H%col( : H_ne )
         K%val( : H_ne ) = prob%H%val( : H_ne )
-        WRITE( 6, "( ' nnz(H) = ', I0 )" ) H_ne
+!       WRITE( 6, "( ' nnz(H) = ', I0 )" ) H_ne
       END IF
 
 !     WRITE( 6, "( /, 'K', /, ( 3( 2I6, ES12.4 ) ) )" )                        &
@@ -459,8 +466,7 @@
       CALL CPU_TIME( times ) ; CALL CLOCK_time( clocks )
       times = times - time ; clocks = clocks - clock
 
-
-!  If required, print out the (raw) problem data
+!  if required, print out the (raw) problem data
 
       IF ( write_problem_data ) THEN
         INQUIRE( FILE = dfilename, EXIST = filexx )
@@ -513,78 +519,122 @@
         WRITE( rfiledevice, "( A10 )" ) pname
       END IF
 
-      CALL SLS_initialize( solver, data, SLS_control, SLS_inform )
-      IF ( is_specfile )                                                       &
-        CALL SLS_read_specfile( SLS_control, input_specfile )
-
-      printo = out > 0 .AND. SLS_control%print_level > 0
       WRITE( out, "( /, ' problem dimensions:  n = ', I0, ', m = ', I0,        &
      &       ', a_ne = ', I0, ', h_ne = ', I0 )" ) n, m, A_ne, H_ne
 
-      IF ( printo ) CALL COPYRIGHT( out, '2011' )
-      CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
+      passes = MAX( 1, passes )
+      ALLOCATE( timeap( passes ), timefp( passes ) )
+      ALLOCATE( timesp( passes ), timetp( passes ) )
+      ALLOCATE( clockap( passes ), clockfp( passes ) )
+      ALLOCATE( clocksp( passes ), clocktp( passes ) )
+      timeap = 0.0 ; timefp = 0.0 ; timesp = 0.0 ; timetp = 0.0
+      clockap = 0.0 ; clockfp = 0.0 ; clocksp = 0.0 ; clocktp = 0.0
 
-!  Call the solver
+      CALL COPYRIGHT( out, '2011' )
+      WRITE( out, " ( ' ** SLS solver used ** ' ) " )
+  
+!  perform a number of passes
 
-      IF ( prob%n > 0 ) THEN
+      DO pass = 1, passes
+        CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
+
+!  call the solver
+
+        IF ( prob%n > 0 ) THEN
 
 !  =================
 !  solve the problem
 !  =================
 
-        IF ( printo ) WRITE( out, " ( ' ** SLS solver used ** ' ) " )
+          IF ( passes > 1 ) WRITE( out, " ( /, ' pass ', I0 )" ) pass
+
+            CALL SLS_initialize( solver, data, SLS_control, SLS_inform )
+            IF ( is_specfile )                                                 &
+              CALL SLS_read_specfile( SLS_control, input_specfile )
 
 !  analyse
 
-        CALL SLS_analyse( K, data, SLS_control, SLS_inform )
-        WRITE( 6, "( /, ' analyse   time = ', F8.3, ' clock = ', F8.3,         &
-       &  ' ststus = ', I0 )" ) SLS_inform%time%analyse,                       &
-          SLS_inform%time%clock_analyse, SLS_inform%status
-        WRITE( 6, "( ' external  time = ', F8.3, ' clock = ', F8.3 )" )        &
-          SLS_inform%time%analyse_external,                                    &
-          SLS_inform%time%clock_analyse_external
-        WRITE( 6, "( ' K n = ', I0,                                            &
-         &  ', nnz(prec,predicted factors) = ', I0, ', ', I0 )" )              &
-               K%n, K%ne, SLS_inform%entries_in_factors
+          CALL CPU_TIME( time ) ; CALL CLOCK_time( clock )
+          CALL SLS_analyse( K, data, SLS_control, SLS_inform )
+          CALL CPU_TIME( timeap( pass ) ) ;  CALL CLOCK_time( clockap( pass ) )
+          timeap( pass ) = timeap( pass ) - time
+          clockap( pass ) = clockap( pass ) - clock
+          WRITE( 6, "( ' analyse   time = ', F8.3, ' clock = ', F8.3,          &
+         &  ' status = ', I0 )" ) SLS_inform%time%analyse,                     &
+            SLS_inform%time%clock_analyse, SLS_inform%status
+          WRITE( 6, "( ' external  time = ', F8.3, ' clock = ', F8.3 )" )      &
+            SLS_inform%time%analyse_external,                                  &
+            SLS_inform%time%clock_analyse_external
 
 !  factorize
 
-        IF ( SLS_inform%status >= 0 ) THEN
-          CALL SLS_factorize( K, data, SLS_control, SLS_inform )
-          WRITE( 6, "( ' factorize time = ', F8.3, ' clock = ', F8.3,          &
-       &    ' ststus = ', I0 )" ) SLS_inform%time%factorize,                   &
-            SLS_inform%time%clock_factorize, SLS_inform%status
-          WRITE( 6, "( ' external  time = ', F8.3, ' clock = ', F8.3 )" )      &
-            SLS_inform%time%factorize_external,                                &
-            SLS_inform%time%clock_factorize_external
+          IF ( SLS_inform%status >= 0 ) THEN
+            CALL CPU_TIME( time ) ; CALL CLOCK_time( clock )
+            CALL SLS_factorize( K, data, SLS_control, SLS_inform )
+            CALL CPU_TIME( timefp( pass ) )
+            CALL CLOCK_time( clockfp( pass ) )
+            timefp( pass ) = timefp( pass ) - time
+            clockfp( pass ) = clockfp( pass ) - clock
+            WRITE( 6, "( ' factorize time = ', F8.3, ' clock = ', F8.3,        &
+         &    ' status = ', I0 )" ) SLS_inform%time%factorize,                 &
+              SLS_inform%time%clock_factorize, SLS_inform%status
+            WRITE( 6, "( ' external  time = ', F8.3, ' clock = ', F8.3 )" )    &
+              SLS_inform%time%factorize_external,                              &
+              SLS_inform%time%clock_factorize_external
 
 !  solve
 
-          IF ( SLS_inform%status >= 0 .AND. solve ) THEN
-            CALL SLS_solve( K, SOL, data, SLS_control, SLS_inform )
-            WRITE( 6, "( ' solve status = ', I0 )" ) SLS_inform%status
-            prob%X( : prob%n ) = SOL( : prob%n )
-            prob%Y( : prob%m ) = SOL( prob%n + 1 : prob%n + prob%m )
+            IF ( SLS_inform%status >= 0 .AND. solve ) THEN
+              CALL CPU_TIME( time ) ; CALL CLOCK_time( clock )
+              CALL SLS_solve( K, SOL, data, SLS_control, SLS_inform )
+              CALL CPU_TIME( timesp( pass ) )
+              CALL CLOCK_time( clocksp( pass ) )
+              timesp( pass ) = timesp( pass ) - time
+              clocksp( pass ) = clocksp( pass ) - clock
+              WRITE( 6, "( ' solve     time = ', F8.3, ' clock = ', F8.3,      &
+           &    ' status = ', I0 )" ) SLS_inform%time%solve,                   &
+              SLS_inform%time%clock_solve, SLS_inform%status
+              WRITE( 6, "( ' external  time = ', F8.3, ' clock = ', F8.3 )" )  &
+                SLS_inform%time%solve_external,                                &
+                SLS_inform%time%clock_solve_external
+              prob%X( : prob%n ) = SOL( : prob%n )
+              prob%Y( : prob%m ) = SOL( prob%n + 1 : prob%n + prob%m )
+            END IF
           END IF
+
+!  deallocate arrays from the minimization
+
+          status = SLS_inform%status
+          CALL SLS_terminate( data, SLS_control, SLS_inform )
+        ELSE
+          status = 0
         END IF
-        IF ( printo ) WRITE( out, " ( /, ' ** SLS solver used ** ' ) " )
+        CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
+        timet = timet - timeo ; clockt = clockt - clocko
+        timetp( pass ) = timet ; clocktp( pass ) = clockt
 
-        WRITE( 6, "( ' nullity, # -ve eigenvalues = ', I0, ', ', I0 )" )       &
-              K%n - SLS_inform%rank, SLS_inform%negative_eigenvalues
+      END DO
 
-!  Deallocate arrays from the minimization
+!  record the average times
 
-        status = SLS_inform%status
-        CALL SLS_terminate( data, SLS_control, SLS_inform )
-      ELSE
-        status = 0
-      END IF
-      CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
-      timet = timet - timeo ; clockt = clockt - clocko
+      timet = SUM( timetp ) / REAL( passes )
+      clockt = SUM( clocktp ) / REAL( passes, KIND = rp_ )
 
-      WRITE( out, "( /, ' Solver: ', A, ' with ordering = ', I0 )" )           &
+      WRITE( out, "( /, ' SLS solver: ', A, ' with ordering = ', I0 )" )       &
         TRIM( solver ), SLS_control%ordering
-      WRITE( out, "(  ' Stopping with inform%status = ', I0 )" ) status
+      WRITE( out, "( ' K n = ', I0,                                            &
+         &  ', nnz(prec,predicted factors) = ', I0, ', ', I0 )" )              &
+               K%n, K%ne, SLS_inform%entries_in_factors
+      WRITE( out, "( ' nullity, # -ve eigenvalues = ', I0, ', ', I0 )" )       &
+          K%n - SLS_inform%rank, SLS_inform%negative_eigenvalues
+      WRITE( out, "(  ' stopping with inform%status = ', I0 )" ) status
+      WRITE( out, "( ' average time  (analyse,factorize,solve) = ', 3F10.3 )" )&
+        SUM( timeap ) / REAL( passes ), SUM( timefp ) / REAL( passes ),        &
+        SUM( timesp ) / REAL( passes )
+      WRITE( out, "( ' average clock (analyse,factorize,solve) = ', 3F10.3 )" )&
+        SUM( clockap ) / REAL( passes, KIND = rp_ ),                           &
+        SUM( clockfp ) / REAL( passes, KIND = rp_ ),                           &
+        SUM( clocksp ) / REAL( passes, KIND = rp_ )
 
       IF ( write_result_summary ) THEN
         BACKSPACE( rfiledevice )
@@ -602,7 +652,7 @@
       END IF
       IF ( .NOT. solve ) RETURN
 
-!  Compute maximum contraint residual
+!  compute maximum contraint residual
 
       IF ( status >= 0 ) THEN
         IF ( kkt_system ) THEN
@@ -616,7 +666,7 @@
           res_c = MAXVAL( ABS( AY ) )
           DEALLOCATE( AY )
 
-!  Compute maximum KKT residual
+!  compute maximum KKT residual
 
           ALLOCATE( AY( n ), HX( n ), STAT = alloc_stat )
           AY = zero ; HX = prob%G( : n )
@@ -643,7 +693,7 @@
           res_k = MAXVAL( ABS( HX( : n ) ) )
         END IF
 
-!  Print details of the solution obtained
+!  print details of the solution obtained
 
         IF ( status == GALAHAD_ok .OR.                                         &
              status == GALAHAD_error_cpu_limit .OR.                            &
@@ -653,7 +703,7 @@
           l = 4
           IF ( fulsol ) l = n
 
-!  Print details of the primal and dual variables
+!  print details of the primal and dual variables
 
           WRITE( out, 2000 )
           DO j = 1, 2
@@ -668,7 +718,7 @@
             END DO
           END DO
 
-!  Print details of the constraints.
+!  print details of the constraints.
 
           IF ( kkt_system .AND. m > 0 ) THEN
             WRITE( out, 2020 )
@@ -691,7 +741,7 @@
             WRITE( out, 2070 ) res_k
           END IF
 
-!  If required, write the solution to a file
+!  if required, write the solution to a file
 
           IF ( write_solution ) THEN
             INQUIRE( FILE = sfilename, EXIST = filexx )
@@ -745,12 +795,10 @@
      &                  '   ------ -----    ----   -----',                     &
      &                  '   -----   -----   -----  ' )" ) pname
 
-!  Compare the variants used so far
-
       WRITE( out, "( 1X, I6, 0P, 6F8.2 )" )                                    &
         status, times, timet, times + timet, clocks, clockt, clocks + clockt
 
-      DEALLOCATE( VNAME, CNAME, K%row, K%col, K%val )
+      DEALLOCATE( VNAME, CNAME, K%row, K%col, K%val, timetp, clocktp )
       IF ( is_specfile ) CLOSE( input_specfile )
       CALL CUTEST_cterminate_r( cutest_status )
 
