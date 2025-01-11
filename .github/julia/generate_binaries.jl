@@ -69,8 +69,12 @@ for (platform, libdir, ext) in platforms
 
       # Create a folder with the version number of the package
       mkdir("$(package)_binaries.$version2")
-      for folder in ("include", "share", "modules", "lib", "bin")
+      for folder in ("include", "share", "modules", "lib")
         cp(folder, "$(package)_binaries.$version2/$folder")
+      end
+      # Windows
+      if libdir == "bin"
+        cp(folder, "$(package)_binaries.$version2/bin")
       end
 
       cd("$(package)_binaries.$version2")
@@ -86,7 +90,7 @@ for (platform, libdir, ext) in platforms
     else
       @warn("The tarball deps.tar.gz is missing in $(tarball_name)!")
     end
-  else
-    @warn("The tarball for the platform $platform was not generated!")
+  # else
+  #   @warn("The tarball for the platform $platform was not generated!")
   end
 end
