@@ -131,7 +131,9 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          path: ./artifacts
+          path: .
+      - name: List files
+        run: ls -l
       - name: Create a new release
         uses: actions/create-release@v1
         id: create_release
@@ -149,7 +151,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/GALAHAD_binaries.${{ github.ref_name }}.x86_64-linux-gnu-libgfortran5.tar.gz
+          asset_path: GALAHAD_binaries.${{ github.ref_name }}.x86_64-linux-gnu-libgfortran5.tar.gz/GALAHAD_binaries.${{ github.ref_name }}.x86_64-linux-gnu-libgfortran5.tar.gz
           asset_name: GALAHAD.${{ github.ref_name }}.linux.tar.gz
           asset_content_type: application/gzip
       - name: upload Mac (Intel) artifact
@@ -158,7 +160,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/GALAHAD_binaries.${{ github.ref_name }}.x86_64-apple-darwin-libgfortran5.tar.gz
+          asset_path: GALAHAD_binaries.${{ github.ref_name }}.x86_64-linux-gnu-libgfortran5.tar.gz/GALAHAD_binaries.${{ github.ref_name }}.x86_64-linux-gnu-libgfortran5.tar.gz
           asset_name: GALAHAD.${{ github.ref_name }}.mac-intel.tar.gz
           asset_content_type: application/gzip
       - name: upload Mac (ARM) artifact
@@ -167,7 +169,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/GALAHAD_binaries.${{ github.ref_name }}.aarch64-apple-darwin-libgfortran5.tar.gz
+          asset_path: GALAHAD_binaries.${{ github.ref_name }}.aarch64-apple-darwin-libgfortran5.tar.gz/GALAHAD_binaries.${{ github.ref_name }}.aarch64-apple-darwin-libgfortran5.tar.gz
           asset_name: GALAHAD.${{ github.ref_name }}.mac-arm.tar.gz
           asset_content_type: application/gzip
       - name: upload Windows artifact
@@ -176,6 +178,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/GALAHAD_binaries.${{ github.ref_name }}.x86_64-w64-mingw32-libgfortran5.zip
+          asset_path: GALAHAD_binaries.${{ github.ref_name }}.x86_64-w64-mingw32-libgfortran5.zip/GALAHAD_binaries.${{ github.ref_name }}.x86_64-w64-mingw32-libgfortran5.zip
           asset_name: GALAHAD.${{ github.ref_name }}.windows.zip
           asset_content_type: application/zip

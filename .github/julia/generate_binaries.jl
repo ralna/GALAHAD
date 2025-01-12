@@ -74,14 +74,14 @@ for (platform, libdir, ext) in platforms
       end
       # Windows
       if libdir == "bin"
-        cp(folder, "$(package)_binaries.$version2/bin")
+        cp("bin", "$(package)_binaries.$version2/bin")
       end
 
       cd("$(package)_binaries.$version2")
       if ext == "dll"
         run(`zip -r --symlinks ../../../$(package)_binaries.$version2.$platform.zip include share modules lib bin`)
       else
-        run(`tar -czf ../../../$(package)_binaries.$version2.$platform.tar.gz include share modules lib bin`)
+        run(`tar -czf ../../../$(package)_binaries.$version2.$platform.tar.gz include share modules lib`)
       end
       cd("../../..")
 
