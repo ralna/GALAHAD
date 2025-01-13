@@ -511,9 +511,11 @@
 #define llsr_control_type llsr_control_type_s_64
 #define llsr_inform_type llsr_inform_type_s_64
 #define llsr_time_type llsr_time_type_s_64
+#define llsr_history_type llsr_history_type_s_64
 #define llst_control_type llst_control_type_s_64
 #define llst_inform_type llst_inform_type_s_64
 #define llst_time_type llst_time_type_s_64
+#define llst_history_type llst_history_type_s_64
 #define lms_control_type lms_control_type_s_64
 #define lms_inform_type lms_inform_type_s_64
 #define lms_time_type lms_time_type_s_64
@@ -553,6 +555,7 @@
 #define rqs_control_type rqs_control_type_s_64
 #define rqs_inform_type rqs_inform_type_s_64
 #define rqs_time_type rqs_time_type_s_64
+#define rqs_history_type rqs_history_type_s_64
 #define sbls_control_type sbls_control_type_s_64
 #define sbls_inform_type sbls_inform_type_s_64
 #define sbls_time_type sbls_time_type_s_64
@@ -575,6 +578,7 @@
 #define trs_control_type trs_control_type_s_64
 #define trs_inform_type trs_inform_type_s_64
 #define trs_time_type trs_time_type_s_64
+#define trs_history_type trs_history_type_s_64
 #define tru_control_type tru_control_type_s_64
 #define tru_inform_type tru_inform_type_s_64
 #define tru_time_type tru_time_type_s_64
@@ -1050,9 +1054,11 @@
 #define llsr_control_type llsr_control_type_q_64
 #define llsr_inform_type llsr_inform_type_q_64
 #define llsr_time_type llsr_time_type_q_64
+#define llsr_history_type llsr_history_type_q_64
 #define llst_control_type llst_control_type_q_64
 #define llst_inform_type llst_inform_type_q_64
 #define llst_time_type llst_time_type_q_64
+#define llst_history_type llst_history_type_q_64
 #define lms_control_type lms_control_type_q_64
 #define lms_inform_type lms_inform_type_q_64
 #define lms_time_type lms_time_type_q_64
@@ -1092,6 +1098,7 @@
 #define rqs_control_type rqs_control_type_q_64
 #define rqs_inform_type rqs_inform_type_q_64
 #define rqs_time_type rqs_time_type_q_64
+#define rqs_history_type rqs_history_type_q_64
 #define sbls_control_type sbls_control_type_q_64
 #define sbls_inform_type sbls_inform_type_q_64
 #define sbls_time_type sbls_time_type_q_64
@@ -1114,6 +1121,7 @@
 #define trs_control_type trs_control_type_q_64
 #define trs_inform_type trs_inform_type_q_64
 #define trs_time_type trs_time_type_q_64
+#define trs_history_type trs_history_type_q_64
 #define tru_control_type tru_control_type_q_64
 #define tru_inform_type tru_inform_type_q_64
 #define tru_time_type tru_time_type_q_64
@@ -1589,9 +1597,11 @@
 #define llsr_control_type llsr_control_type_64
 #define llsr_inform_type llsr_inform_type_64
 #define llsr_time_type llsr_time_type_64
+#define llsr_history_type llsr_history_type_64
 #define llst_control_type llst_control_type_64
 #define llst_inform_type llst_inform_type_64
 #define llst_time_type llst_time_type_64
+#define llst_history_type llst_history_type_64
 #define lms_control_type lms_control_type_64
 #define lms_inform_type lms_inform_type_64
 #define lms_time_type lms_time_type_64
@@ -1631,6 +1641,7 @@
 #define rqs_control_type rqs_control_type_64
 #define rqs_inform_type rqs_inform_type_64
 #define rqs_time_type rqs_time_type_64
+#define rqs_history_type rqs_history_type_64
 #define sbls_control_type sbls_control_type_64
 #define sbls_inform_type sbls_inform_type_64
 #define sbls_time_type sbls_time_type_64
@@ -1653,6 +1664,7 @@
 #define trs_control_type trs_control_type_64
 #define trs_inform_type trs_inform_type_64
 #define trs_time_type trs_time_type_64
+#define trs_history_type trs_history_type_64
 #define tru_control_type tru_control_type_64
 #define tru_inform_type tru_inform_type_64
 #define tru_time_type tru_time_type_64
@@ -2130,9 +2142,11 @@
 #define llsr_control_type llsr_control_type_s
 #define llsr_inform_type llsr_inform_type_s
 #define llsr_time_type llsr_time_type_s
-#define llst_control_type llst_control_type_s
+#define llsr_history_type llsr_history_type_s
+#define llst_history_type llst_history_type_s
 #define llst_inform_type llst_inform_type_s
 #define llst_time_type llst_time_type_s
+#define llst_control_type llst_control_type_s
 #define lms_control_type lms_control_type_s
 #define lms_inform_type lms_inform_type_s
 #define lms_time_type lms_time_type_s
@@ -2172,6 +2186,7 @@
 #define rqs_control_type rqs_control_type_s
 #define rqs_inform_type rqs_inform_type_s
 #define rqs_time_type rqs_time_type_s
+#define rqs_history_type rqs_history_type_s
 #define sbls_control_type sbls_control_type_s
 #define sbls_inform_type sbls_inform_type_s
 #define sbls_time_type sbls_time_type_s
@@ -2194,6 +2209,7 @@
 #define trs_control_type trs_control_type_s
 #define trs_inform_type trs_inform_type_s
 #define trs_time_type trs_time_type_s
+#define trs_history_type trs_history_type_s
 #define tru_control_type tru_control_type_s
 #define tru_inform_type tru_inform_type_s
 #define tru_time_type tru_time_type_s
@@ -2669,9 +2685,11 @@
 #define llsr_control_type llsr_control_type_q
 #define llsr_inform_type llsr_inform_type_q
 #define llsr_time_type llsr_time_type_q
+#define llsr_history_type llsr_history_type_q
 #define llst_control_type llst_control_type_q
 #define llst_inform_type llst_inform_type_q
 #define llst_time_type llst_time_type_q
+#define llst_history_type llst_history_type_q
 #define lms_control_type lms_control_type_q
 #define lms_inform_type lms_inform_type_q
 #define lms_time_type lms_time_type_q
@@ -2711,6 +2729,7 @@
 #define rqs_control_type rqs_control_type_q
 #define rqs_inform_type rqs_inform_type_q
 #define rqs_time_type rqs_time_type_q
+#define rqs_history_type rqs_history_type_q
 #define sbls_control_type sbls_control_type_q
 #define sbls_inform_type sbls_inform_type_q
 #define sbls_time_type sbls_time_type_q
@@ -2733,6 +2752,7 @@
 #define trs_control_type trs_control_type_q
 #define trs_inform_type trs_inform_type_q
 #define trs_time_type trs_time_type_q
+#define trs_history_type trs_history_type_q
 #define tru_control_type tru_control_type_q
 #define tru_inform_type tru_inform_type_q
 #define tru_time_type tru_time_type_q
@@ -2747,3 +2767,4 @@
 #endif
 #endif
 #endif
+

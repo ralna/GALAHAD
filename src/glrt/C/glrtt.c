@@ -38,7 +38,7 @@ int main(void) {
       } else {
         control.unitm = true;
       }
-      control.print_level = 1;
+      // control.print_level = 1;
       glrt_import_control( &control, &data, &status );
       // resolve with a larger weight ?
       for( ipc_ new_weight=0; new_weight <= 1; new_weight++){
@@ -49,7 +49,6 @@ int main(void) {
            weight = 10.0;
            status = 6;
         }
-        printf("MR = %1" i_ipc_ "%1" i_ipc_ "\n", unit_m, new_weight );
         for( ipc_ i = 0; i < n; i++) r[i] = 1.0;
 
         // iteration loop to find the minimizer

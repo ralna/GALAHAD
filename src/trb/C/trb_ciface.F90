@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-01-12 AT 09:10 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -132,12 +132,12 @@
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
-      TYPE ( TRS_control_type ) :: trs_control
-      TYPE ( GLTR_control_type ) :: gltr_control
-      TYPE ( PSLS_control_type ) :: psls_control
-      TYPE ( LMS_control_type ) :: lms_control
-      TYPE ( LMS_control_type ) :: lms_control_prec
-      TYPE ( SHA_control_type ) :: sha_control
+      TYPE ( trs_control_type ) :: trs_control
+      TYPE ( gltr_control_type ) :: gltr_control
+      TYPE ( psls_control_type ) :: psls_control
+      TYPE ( lms_control_type ) :: lms_control
+      TYPE ( lms_control_type ) :: lms_control_prec
+      TYPE ( sha_control_type ) :: sha_control
     END TYPE TRB_control_type
 
     TYPE, BIND( C ) :: TRB_time_type
@@ -172,13 +172,13 @@
       REAL ( KIND = rpc_ ) :: obj
       REAL ( KIND = rpc_ ) :: norm_pg
       REAL ( KIND = rpc_ ) :: radius
-      TYPE ( TRB_time_type ) :: time
-      TYPE ( TRS_inform_type ) :: trs_inform
-      TYPE ( GLTR_inform_type ) :: gltr_inform
-      TYPE ( PSLS_inform_type ) :: psls_inform
-      TYPE ( LMS_inform_type ) :: lms_inform
-      TYPE ( LMS_inform_type ) :: lms_inform_prec
-      TYPE ( SHA_inform_type ) :: sha_inform
+      TYPE ( trb_time_type ) :: time
+      TYPE ( trs_inform_type ) :: trs_inform
+      TYPE ( gltr_inform_type ) :: gltr_inform
+      TYPE ( psls_inform_type ) :: psls_inform
+      TYPE ( lms_inform_type ) :: lms_inform
+      TYPE ( lms_inform_type ) :: lms_inform_prec
+      TYPE ( sha_inform_type ) :: sha_inform
     END TYPE TRB_inform_type
 
 !----------------------
