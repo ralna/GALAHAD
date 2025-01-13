@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-01-13 AT 08:40 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -31,20 +31,20 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-    TYPE, BIND( C ) :: HASH_control_type
+    TYPE, BIND( C ) :: hash_control_type
       INTEGER ( KIND = ipc_ ) :: error
       INTEGER ( KIND = ipc_ ) :: out
       INTEGER ( KIND = ipc_ ) :: print_level
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
-    END TYPE HASH_control_type
+    END TYPE hash_control_type
 
-    TYPE, BIND( C ) :: HASH_inform_type
+    TYPE, BIND( C ) :: hash_inform_type
       INTEGER ( KIND = ipc_ ) :: status
       INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
-    END TYPE HASH_inform_type
+    END TYPE hash_inform_type
 
 !----------------------
 !   P r o c e d u r e s

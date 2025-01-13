@@ -2,19 +2,19 @@
 
  basic tests of storage formats
 
-format C  : RQS_solve_problem exit status = 0, f = -1.12
-format R  : RQS_solve_problem exit status = 0, f = -1.12
-format D  : RQS_solve_problem exit status = 0, f = -1.12
-format L  : RQS_solve_problem exit status = 0, f = -0.93
-format CM : RQS_solve_problem exit status = 0, f = -0.96
-format RM : RQS_solve_problem exit status = 0, f = -0.96
-format DM : RQS_solve_problem exit status = 0, f = -0.96
-format LM : RQS_solve_problem exit status = 0, f = -0.16
-format CA : RQS_solve_problem exit status = 0, f = -1.10
-format RA : RQS_solve_problem exit status = 0, f = -1.10
-format DA : RQS_solve_problem exit status = 0, f = -1.10
-format LA : RQS_solve_problem exit status = 0, f = -0.11
-format CMA: RQS_solve_problem exit status = 0, f = -0.95
-format RMA: RQS_solve_problem exit status = 0, f = -0.95
-format DMA: RQS_solve_problem exit status = 0, f = -0.95
-format LMA: RQS_solve_problem exit status = 0, f = 0.17
+format C  : RQS_solve_problem exit status = 0, f = -4.31
+format R  : RQS_solve_problem exit status = 0, f = -4.31
+format D  : RQS_solve_problem exit status = 0, f = -4.31
+format L  : RQS_solve_problem exit status = 0, f = -1.87
+format CM : RQS_solve_problem exit status = 0, f = -4.15
+format RM : RQS_solve_problem exit status = 0, f = -4.15
+format DM : RQS_solve_problem exit status = 0, f = -4.15
+format LM : RQS_solve_problem exit status = 0, f = -0.72
+format CA : RQS_solve_problem exit status = 0, f = -4.39
+format RA : RQS_solve_problem exit status = 0, f = -4.39
+format DA : RQS_solve_problem exit status = 0, f = -4.39
+format LA : RQS_solve_problem exit status = 0, f = -0.52
+format CMA: RQS_solve_problem exit status = 0, f = -4.11
+format RMA: RQS_solve_problem exit status = 0, f = -4.11
+format DMA: RQS_solve_problem exit status = 0, f = -4.11
+format LMA: RQS_solve_problem exit status = 0, f = -0.16
