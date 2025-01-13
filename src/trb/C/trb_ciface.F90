@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-01-12 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-01-12 AT 09:50 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -84,7 +84,7 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-    TYPE, BIND( C ) :: TRB_control_type
+    TYPE, BIND( C ) :: trb_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
       INTEGER ( KIND = ipc_ ) :: error
       INTEGER ( KIND = ipc_ ) :: out
@@ -138,9 +138,9 @@
       TYPE ( lms_control_type ) :: lms_control
       TYPE ( lms_control_type ) :: lms_control_prec
       TYPE ( sha_control_type ) :: sha_control
-    END TYPE TRB_control_type
+    END TYPE trb_control_type
 
-    TYPE, BIND( C ) :: TRB_time_type
+    TYPE, BIND( C ) :: trb_time_type
       REAL ( KIND = spc_ ) :: total
       REAL ( KIND = spc_ ) :: preprocess
       REAL ( KIND = spc_ ) :: analyse
@@ -151,9 +151,9 @@
       REAL ( KIND = rpc_ ) :: clock_analyse
       REAL ( KIND = rpc_ ) :: clock_factorize
       REAL ( KIND = rpc_ ) :: clock_solve
-    END TYPE TRB_time_type
+    END TYPE trb_time_type
 
-    TYPE, BIND( C ) :: TRB_inform_type
+    TYPE, BIND( C ) :: trb_inform_type
       INTEGER ( KIND = ipc_ ) :: status
       INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
@@ -179,7 +179,7 @@
       TYPE ( lms_inform_type ) :: lms_inform
       TYPE ( lms_inform_type ) :: lms_inform_prec
       TYPE ( sha_inform_type ) :: sha_inform
-    END TYPE TRB_inform_type
+    END TYPE trb_inform_type
 
 !----------------------
 !   I n t e r f a c e s
