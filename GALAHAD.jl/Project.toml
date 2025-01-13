@@ -11,7 +11,7 @@ OpenBLAS32_jll = "656ef2d0-ae68-5445-9ca0-591084a874a2"
 Quadmath = "be4d8f0f-7fa4-5f49-b795-2f01399ab2dd"
 
 [compat]
-GALAHAD_jll = "=5.0.2"
+GALAHAD_jll = "=5.1.0"
 Quadmath = "0.5.10"
 julia = "1.9"
 
