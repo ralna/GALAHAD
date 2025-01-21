@@ -127,25 +127,13 @@ runs:
         meson compile -C builddir
         meson install -C builddir
 
-    - name: Install OpenBLAS
-      if: inputs.os == 'self-hosted'
-      shell: bash
-      run: |
-        cd ..
-        mkdir -p deps
-        VERSION_OPENBLAS32="0.3.29"
-        VERSION_OPENBLAS="0.3.29"
-        wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v${VERSION_OPENBLAS}%2B0/OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz
-        tar -xzvf OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz -C deps
-        wget https://github.com/JuliaBinaryWrappers/OpenBLAS32_jll.jl/releases/download/OpenBLAS32-v${VERSION_OPENBLAS32}%2B0/OpenBLAS32.v${VERSION_OPENBLAS32}.$PLATFORM-libgfortran5.tar.gz
-        tar -xzvf OpenBLAS32.v${VERSION_OPENBLAS32}.$PLATFORM-libgfortran5.tar.gz -C deps
-
     - name: Install libHSL
       if: inputs.os != 'windows-latest'
       shell: bash
       run: |
         # self-hosted runner
         if [[ "$HOSTNAME" == "moonshot" ]]; then
+          mv /scratch/github-actions/actions_runner_galahad/lib/* $DEPS/deps/$LIBDIR
           if [[ "${{ inputs.int }}" == "64" ]]; then
             INT64="true"
             BLAS="openblas64_"
