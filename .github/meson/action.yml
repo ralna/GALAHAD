@@ -90,6 +90,7 @@ runs:
         echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
 
     - name: Install compilers
+      if: ${{ !(runner.labels contains 'self-hosted') }}
       uses: fortran-lang/setup-fortran@main
       with:
         compiler: ${{ inputs.compiler }}
@@ -126,26 +127,39 @@ runs:
         meson compile -C builddir
         meson install -C builddir
 
-    - name: Install dummy libHSL
+    - name: Install libHSL
       if: inputs.os != 'windows-latest'
       shell: bash
       run: |
-        VERSION_LIBHSL="4.0.2"
-        cd ..
-        if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
-          wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.zip
-          unzip v${VERSION_LIBHSL}.zip
+        # self-hosted runner
+        if [[ "$HOSTNAME" == "moonshot" ]]; then
+          cd /scratch/github-actions/actions_runner_galahad/hsl_subset
+          rm -rf builddir
+          meson setup builddir --buildtype=debug \
+                               --prefix=$DEPS/deps \
+                               -Dquadruple=true \
+                               -Ddefault_library=shared \
+                               -Dint64=${INT64}
+          meson compile -C builddir
+          meson install -C builddir
         else
-          wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.tar.gz
-          tar -xzvf v${VERSION_LIBHSL}.tar.gz
+          VERSION_LIBHSL="4.0.2"
+          cd ..
+          if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
+            wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.zip
+            unzip v${VERSION_LIBHSL}.zip
+          else
+            wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.tar.gz
+            tar -xzvf v${VERSION_LIBHSL}.tar.gz
+          fi
+          cd libHSL-${VERSION_LIBHSL}/hsl_subset
+          meson setup builddir --buildtype=debug \
+                               --prefix=$DEPS/deps \
+                               -Dquadruple=true \
+                               -Ddefault_library=shared
+          meson compile -C builddir
+          meson install -C builddir
         fi
-        cd libHSL-${VERSION_LIBHSL}/hsl_subset
-        meson setup builddir --buildtype=debug \
-                             --prefix=$DEPS/deps \
-                             -Dquadruple=true \
-                             -Ddefault_library=shared
-        meson compile -C builddir
-        meson install -C builddir
 
     - name: Install MUMPS
       if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'gcc'
