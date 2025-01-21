@@ -90,7 +90,7 @@ runs:
         echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
 
     - name: Install compilers
-      if: ${{ !(runner.labels contains 'self-hosted') }}
+      if: inputs.os != 'self-hosted'
       uses: fortran-lang/setup-fortran@main
       with:
         compiler: ${{ inputs.compiler }}
