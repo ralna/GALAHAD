@@ -133,6 +133,10 @@ runs:
       run: |
         # self-hosted runner
         if [[ "$HOSTNAME" == "moonshot" ]]; then
+          INT64="false"
+          if [[ "${{ inputs.int }}" == "64" ]]; then
+            INT64="true"
+          fi
           cd /scratch/github-actions/actions_runner_galahad/hsl_subset
           rm -rf builddir
           meson setup builddir --buildtype=debug \
