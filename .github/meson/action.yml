@@ -127,20 +127,50 @@ runs:
         meson compile -C builddir
         meson install -C builddir
 
+    - name: Install MUMPS
+      if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'gcc'
+      shell: bash
+      run: |
+        cd ..
+        mkdir -p deps
+        VERSION_MUMPS="5.7.2"
+        VERSION_METIS="5.1.2"
+        VERSION_OPENBLAS32="0.3.27"
+        VERSION_OPENBLAS="0.3.27"
+        wget https://github.com/amontoison/MUMPS_seq_jll.jl/releases/download/MUMPS_seq-v${VERSION_MUMPS}%2B0/MUMPS_seq.v${VERSION_MUMPS}.$PLATFORM-libgfortran5.tar.gz
+        tar -xzvf MUMPS_seq.v${VERSION_MUMPS}.$PLATFORM-libgfortran5.tar.gz -C deps
+        wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v${VERSION_OPENBLAS}%2B1/OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz
+        tar -xzvf OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz -C deps
+        wget https://github.com/JuliaBinaryWrappers/OpenBLAS32_jll.jl/releases/download/OpenBLAS32-v${VERSION_OPENBLAS32}%2B1/OpenBLAS32.v${VERSION_OPENBLAS32}.$PLATFORM-libgfortran5.tar.gz
+        tar -xzvf OpenBLAS32.v${VERSION_OPENBLAS32}.$PLATFORM-libgfortran5.tar.gz -C deps
+        wget https://github.com/JuliaBinaryWrappers/METIS_jll.jl/releases/download/METIS-v${VERSION_METIS}%2B0/METIS.v${VERSION_METIS}.$PLATFORM.tar.gz
+        tar -xzvf METIS.v${VERSION_METIS}.$PLATFORM.tar.gz -C deps
+
     - name: Install libHSL
       if: inputs.os != 'windows-latest'
       shell: bash
       run: |
         # self-hosted runner
         if [[ "$HOSTNAME" == "moonshot" ]]; then
-          INT64="false"
           if [[ "${{ inputs.int }}" == "64" ]]; then
             INT64="true"
+            BLAS="openblas64_"
+            LAPACK="openblas64_"
+          else
+            INT64="false"
+            BLAS="openblas"
+            LAPACK="openblas"
           fi
+          BLAS_PATH="$DEPS/deps/$LIBDIR"
+          LAPACK_PATH="$DEPS/deps/$LIBDIR"
           cd /scratch/github-actions/actions_runner_galahad/hsl_subset
           rm -rf builddir
           meson setup builddir --buildtype=debug \
                                --prefix=$DEPS/deps \
+                               -Dlibblas=${BLAS} \
+                               -Dliblapack=${LAPACK} \
+                               -Dlibblas_path=${BLAS_PATH} \
+                               -Dliblapack_path=${LAPACK_PATH} \
                                -Dquadruple=true \
                                -Ddefault_library=shared \
                                -Dint64=${INT64}
@@ -164,25 +194,6 @@ runs:
           meson compile -C builddir
           meson install -C builddir
         fi
-
-    - name: Install MUMPS
-      if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'gcc'
-      shell: bash
-      run: |
-        cd ..
-        mkdir -p deps
-        VERSION_MUMPS="5.7.2"
-        VERSION_METIS="5.1.2"
-        VERSION_OPENBLAS32="0.3.27"
-        VERSION_OPENBLAS="0.3.27"
-        wget https://github.com/amontoison/MUMPS_seq_jll.jl/releases/download/MUMPS_seq-v${VERSION_MUMPS}%2B0/MUMPS_seq.v${VERSION_MUMPS}.$PLATFORM-libgfortran5.tar.gz
-        tar -xzvf MUMPS_seq.v${VERSION_MUMPS}.$PLATFORM-libgfortran5.tar.gz -C deps
-        wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v${VERSION_OPENBLAS}%2B1/OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz
-        tar -xzvf OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz -C deps
-        wget https://github.com/JuliaBinaryWrappers/OpenBLAS32_jll.jl/releases/download/OpenBLAS32-v${VERSION_OPENBLAS32}%2B1/OpenBLAS32.v${VERSION_OPENBLAS32}.$PLATFORM-libgfortran5.tar.gz
-        tar -xzvf OpenBLAS32.v${VERSION_OPENBLAS32}.$PLATFORM-libgfortran5.tar.gz -C deps
-        wget https://github.com/JuliaBinaryWrappers/METIS_jll.jl/releases/download/METIS-v${VERSION_METIS}%2B0/METIS.v${VERSION_METIS}.$PLATFORM.tar.gz
-        tar -xzvf METIS.v${VERSION_METIS}.$PLATFORM.tar.gz -C deps
 
     - name: Install MKL
       if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'intel'
