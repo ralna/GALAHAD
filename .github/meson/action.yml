@@ -231,6 +231,9 @@ runs:
           BLAS_PATH="/opt/nvidia/hpc_sdk/Linux_x86_64/23.11/compilers/lib"
           LAPACK_PATH="/opt/nvidia/hpc_sdk/Linux_x86_64/23.11/compilers/lib"
         fi
+        if [[ "${{ inputs.os }}" == "self-hosted" ]]; then
+          PYTHON_INTERFACE="false"
+        fi
         if [[ "${{ inputs.int }}" == "64" ]]; then
           INT64="true"
           PYTHON_INTERFACE="false"
