@@ -133,7 +133,7 @@ runs:
       run: |
         # self-hosted runner
         if [[ "$HOSTNAME" == "moonshot" ]]; then
-          mv /scratch/github-actions/actions_runner_galahad/lib/* $DEPS/deps/$LIBDIR
+          cp /scratch/github-actions/actions_runner_galahad/lib/* $DEPS/deps/$LIBDIR
           if [[ "${{ inputs.int }}" == "64" ]]; then
             INT64="true"
             BLAS="openblas64_"
