@@ -128,7 +128,7 @@ runs:
         meson install -C builddir
 
     - name: Install MUMPS
-      if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'gcc'
+      if: (inputs.os == 'ubuntu-latest' && inputs.compiler == 'gcc') || (inputs.os == 'self-hosted')
       shell: bash
       run: |
         cd ..
