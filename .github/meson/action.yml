@@ -133,11 +133,11 @@ runs:
       run: |
         cd ..
         mkdir -p deps
-        VERSION_OPENBLAS32="0.3.27"
-        VERSION_OPENBLAS="0.3.27"
-        wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v${VERSION_OPENBLAS}%2B1/OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz
+        VERSION_OPENBLAS32="0.3.29"
+        VERSION_OPENBLAS="0.3.29"
+        wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v${VERSION_OPENBLAS}%2B0/OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz
         tar -xzvf OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz -C deps
-        wget https://github.com/JuliaBinaryWrappers/OpenBLAS32_jll.jl/releases/download/OpenBLAS32-v${VERSION_OPENBLAS32}%2B1/OpenBLAS32.v${VERSION_OPENBLAS32}.$PLATFORM-libgfortran5.tar.gz
+        wget https://github.com/JuliaBinaryWrappers/OpenBLAS32_jll.jl/releases/download/OpenBLAS32-v${VERSION_OPENBLAS32}%2B0/OpenBLAS32.v${VERSION_OPENBLAS32}.$PLATFORM-libgfortran5.tar.gz
         tar -xzvf OpenBLAS32.v${VERSION_OPENBLAS32}.$PLATFORM-libgfortran5.tar.gz -C deps
 
     - name: Install libHSL
