@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 15:00 GMT
+! THIS VERSION: GALAHAD 5.2 - 2025-01-15 AT 10:00 GMT
 
 #include "galahad_modules.h"
 
@@ -41,7 +41,7 @@
                SILS_reset_control, SILS_information,                           &
                SMT_type
 
-!    LOGICAL, PUBLIC, PARAMETER :: sils_available = .TRUE.
+     LOGICAL, PUBLIC, PARAMETER :: sils_available = .TRUE.
 
 !----------------------
 !   I n t e r f a c e s
@@ -279,6 +279,7 @@
        INTEGER ( KIND = ip_ ) :: latop = - 1  ! Position of final entry of val
        INTEGER ( KIND = ip_ ) :: dim_iw1 = - 1 ! Size of iw1 for solves
        INTEGER ( KIND = ip_ ) :: pivoting = - 1 ! type of pivoting used
+       INTEGER ( KIND = ip_ ) :: rank = - 1 ! estimated rank of matrix
        REAL ( KIND = rp_ ) :: ops = - one
      END TYPE SILS_factors
 
@@ -718,6 +719,11 @@
                      FACTORS%val, la, FACTORS%iw, liw, FACTORS%keep,           &
                      FACTORS%nsteps, FINFO%maxfrt, FACTORS_iw1,                &
                      ICNTL, CNTL, INFO )
+         IF ( INFO( 1 ) == 3 ) THEN
+           FACTORS%rank = INFO( 2 )
+         ELSE
+           FACTORS%rank = MATRIX%n
+         END IF
          FINFO%maxchange = zero
          FINFO%modstep = MATRIX%n + 1
        END IF
@@ -810,7 +816,7 @@
          END DO
          DEALLOCATE( flag, STAT = stat )
          IF ( stat /= 0 ) GO TO 100
-         FACTORS%iw( 1 ) = sign ( nblks, FACTORS%iw( 1 ) )
+         FACTORS%iw( 1 ) = SIGN( nblks, FACTORS%iw( 1 ) )
        END IF
      END IF
      FACTORS%dim_iw1 = ABS( FACTORS%iw( 1 ) )
@@ -2459,13 +2465,19 @@
        END IF
        IF ( PRESENT( PIVOTS ) ) THEN
           PIVOTS( kp + 1 : kp + nrows ) = FACTORS%iw( kw + 1 : kw + nrows )
+write(6,*) ' sils pivots ', PIVOTS( kp + 1 : kp + nrows )
           kp = kp + nrows
        END IF
        IF ( PRESENT( D ) ) THEN
          DO i = 1, nrows
            kd = kd + 1
-           D( 1, kd ) = FACTORS%val( ka )
-           IF ( FACTORS%iw( kw + i ) < 0 ) D( 2, kd ) = FACTORS%val( ka + 1 )
+           IF ( kd <= FACTORS%rank ) THEN
+             D( 1, kd ) = FACTORS%val( ka )
+             IF ( FACTORS%iw( kw + i ) < 0 ) D( 2, kd ) = FACTORS%val( ka + 1 )
+           ELSE
+             D( 1, kd ) = zero
+             IF ( FACTORS%iw( kw + i ) < 0 ) D( 2, kd ) = zero
+           END IF
            ka = ka + ncols + 1 - i
          END DO
        END IF
@@ -2646,8 +2658,14 @@
          DO
            IF ( i > nrows ) EXIT
            j = IW( kw + i )
+
+!  apply a 1x1 pivot
+
            IF ( j > 0 ) THEN
               X( j ) = A( ka ) * X( j )
+
+!  apply a 2x2 pivot
+
            ELSE
              j = - j
              j1 = IW( kw + i + 1 )

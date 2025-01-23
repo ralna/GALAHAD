@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-26 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-01-22 AT 14:00 GMT.
 ! (consistent with SPRAL up to issue #150)
 
 #include "spral_procedures.h"
@@ -1361,9 +1361,12 @@ contains
     call fkeep%enquire_indef(akeep, inform, piv_order, d)
 ! bug fix to give 1-based indices
     IF ( PRESENT( piv_order ) ) THEN
+!write(6,"(' ssids: piv_order ', 7I6 )" ) piv_order( : akeep%n )
       DO i = 1, akeep%n
         po = piv_order( i )
-        IF ( po >= 0 ) THEN
+!       IF ( po >= 0 ) THEN 
+! bug fix as 0-based 0 is positive!
+        IF ( po > 0 ) THEN
           piv_order( i ) = po + 1
         ELSE
           piv_order( i ) = po - 1

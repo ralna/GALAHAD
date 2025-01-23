@@ -22,7 +22,7 @@ DEPENDENCIES = make_sls_deps
 
 #  other packages that depend on package
 
-DEPENDS = ir psls sbls cro fdc rqs trs
+DEPENDS = ir psls sbls cro fdc rqs trs eks
 
 #  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)

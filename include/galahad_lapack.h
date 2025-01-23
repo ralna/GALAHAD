@@ -54,6 +54,7 @@
 #define DGEQP3     GALAHAD_SGEQP3_64
 #define DGEQR2     GALAHAD_SGEQR2_64
 #define DGEQRF     GALAHAD_SGEQRF_64
+#define DGESV      GALAHAD_SGESV_64
 #define DGESVD     GALAHAD_SGESVD_64
 #define DGETF2     GALAHAD_SGETF2_64
 #define DGETRF     GALAHAD_SGETRF_64
@@ -188,6 +189,7 @@
 #define DGEQP3     SGEQP364
 #define DGEQR2     SGEQR264
 #define DGEQRF     SGEQRF64
+#define DGESV      SGESV64
 #define DGESVD     SGESVD64
 #define DGETF2     SGETF264
 #define DGETRF     SGETRF64
@@ -321,6 +323,7 @@
 #define DGEQP3     SGEQP3__64
 #define DGEQR2     SGEQR2__64
 #define DGEQRF     SGEQRF__64
+#define DGESV      SGESV__64
 #define DGESVD     SGESVD__64
 #define DGETF2     SGETF2__64
 #define DGETRF     SGETRF__64
@@ -454,6 +457,7 @@
 #define DGEQP3     SGEQP3
 #define DGEQR2     SGEQR2
 #define DGEQRF     SGEQRF
+#define DGESV      SGESV
 #define DGESVD     SGESVD
 #define DGETF2     SGETF2
 #define DGETRF     SGETRF
@@ -587,6 +591,7 @@
 #define DGEQP3     SGEQP3_64
 #define DGEQR2     SGEQR2_64
 #define DGEQRF     SGEQRF_64
+#define DGESV      SGESV_64
 #define DGESVD     SGESVD_64
 #define DGETF2     SGETF2_64
 #define DGETRF     SGETRF_64
@@ -724,6 +729,7 @@
 #define DGEQP3     GALAHAD_SGEQP3
 #define DGEQR2     GALAHAD_SGEQR2
 #define DGEQRF     GALAHAD_SGEQRF
+#define DGESV      GALAHAD_SGESV
 #define DGESVD     GALAHAD_SGESVD
 #define DGETF2     GALAHAD_SGETF2
 #define DGETRF     GALAHAD_SGETRF
@@ -857,6 +863,7 @@
 #define DGEQP3     SGEQP3
 #define DGEQR2     SGEQR2
 #define DGEQRF     SGEQRF
+#define DGESV      SGESV
 #define DGESVD     SGESVD
 #define DGETF2     SGETF2
 #define DGETRF     SGETRF
@@ -996,6 +1003,7 @@
 #define DGEQP3     GALAHAD_QGEQP3_64
 #define DGEQR2     GALAHAD_QGEQR2_64
 #define DGEQRF     GALAHAD_QGEQRF_64
+#define DGESV      GALAHAD_QGESV_64
 #define DGESVD     GALAHAD_QGESVD_64
 #define DGETF2     GALAHAD_QGETF2_64
 #define DGETRF     GALAHAD_QGETRF_64
@@ -1130,6 +1138,7 @@
 #define DGEQP3     QGEQP364
 #define DGEQR2     QGEQR264
 #define DGEQRF     QGEQRF64
+#define DGESV      QGESV64
 #define DGESVD     QGESVD64
 #define DGETF2     QGETF264
 #define DGETRF     QGETRF64
@@ -1263,6 +1272,7 @@
 #define DGEQP3     QGEQP3__64
 #define DGEQR2     QGEQR2__64
 #define DGEQRF     QGEQRF__64
+#define DGESV      QGESV__64
 #define DGESVD     QGESVD__64
 #define DGETF2     QGETF2__64
 #define DGETRF     QGETRF__64
@@ -1396,6 +1406,7 @@
 #define DGEQP3     QGEQP3
 #define DGEQR2     QGEQR2
 #define DGEQRF     QGEQRF
+#define DGESV      QGESV
 #define DGESVD     QGESVD
 #define DGETF2     QGETF2
 #define DGETRF     QGETRF
@@ -1529,6 +1540,7 @@
 #define DGEQP3     QGEQP3_64
 #define DGEQR2     QGEQR2_64
 #define DGEQRF     QGEQRF_64
+#define DGESV      QGESV_64
 #define DGESVD     QGESVD_64
 #define DGETF2     QGETF2_64
 #define DGETRF     QGETRF_64
@@ -1666,6 +1678,7 @@
 #define DGEQP3     GALAHAD_QGEQP3
 #define DGEQR2     GALAHAD_QGEQR2
 #define DGEQRF     GALAHAD_QGEQRF
+#define DGESV      GALAHAD_QGESV
 #define DGESVD     GALAHAD_QGESVD
 #define DGETF2     GALAHAD_QGETF2
 #define DGETRF     GALAHAD_QGETRF
@@ -1799,6 +1812,7 @@
 #define DGEQP3     QGEQP3
 #define DGEQR2     QGEQR2
 #define DGEQRF     QGEQRF
+#define DGESV      QGESV
 #define DGESVD     QGESVD
 #define DGETF2     QGETF2
 #define DGETRF     QGETRF
@@ -1938,6 +1952,7 @@
 #define DGEQP3     GALAHAD_DGEQP3_64
 #define DGEQR2     GALAHAD_DGEQR2_64
 #define DGEQRF     GALAHAD_DGEQRF_64
+#define DGESV      GALAHAD_DGESV_64
 #define DGESVD     GALAHAD_DGESVD_64
 #define DGETF2     GALAHAD_DGETF2_64
 #define DGETRF     GALAHAD_DGETRF_64
@@ -2072,6 +2087,7 @@
 #define DGEQP3     DGEQP364
 #define DGEQR2     DGEQR264
 #define DGEQRF     DGEQRF64
+#define DGESV      DGESV64
 #define DGESVD     DGESVD64
 #define DGETF2     DGETF264
 #define DGETRF     DGETRF64
@@ -2205,6 +2221,7 @@
 #define DGEQP3     DGEQP3__64
 #define DGEQR2     DGEQR2__64
 #define DGEQRF     DGEQRF__64
+#define DGESV      DGESV__64
 #define DGESVD     DGESVD__64
 #define DGETF2     DGETF2__64
 #define DGETRF     DGETRF__64
@@ -2339,6 +2356,7 @@
 #define DGEQP3     DGEQP3_64
 #define DGEQR2     DGEQR2_64
 #define DGEQRF     DGEQRF_64
+#define DGESV      DGESV_64
 #define DGESVD     DGESVD_64
 #define DGETF2     DGETF2_64
 #define DGETRF     DGETRF_64
@@ -2476,6 +2494,7 @@
 #define DGEQP3     GALAHAD_DGEQP3
 #define DGEQR2     GALAHAD_DGEQR2
 #define DGEQRF     GALAHAD_DGEQRF
+#define DGESV      GALAHAD_DGESV
 #define DGESVD     GALAHAD_DGESVD
 #define DGETF2     GALAHAD_DGETF2
 #define DGETRF     GALAHAD_DGETRF

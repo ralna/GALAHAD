@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-01-22 AT 14:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -706,17 +706,39 @@
       REAL ( KIND = rp_ ) :: clock_now, clock_record
       REAL ( KIND = rp_ ) :: root1, root2, dmax, dmin, dmax_allowed
       REAL ( KIND = rp_ ) :: big, res, res_max, rmax, rmin
-
-      LOGICAL ::  twobytwo
+      LOGICAL ::  twobytwo, available, pivots, d
       CHARACTER ( LEN = 80 ) :: array_name
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
-! initialize solver-specific data
-
+      out = data%control%out
       data%control = control
+
+!  check that solver is avaliable and fit for purpose
+
+     CALL SLS_available( control%symmetric_linear_solver,                      &
+                         available = available, pivots = pivots, d = d )
+
+     IF ( .NOT. available ) THEN
+      IF ( out > 0 .AND. data%control%print_level >= 1 )                       &
+        WRITE( out, "( A, ' solver ', A, ' is not available' )" )              &
+          prefix, TRIM( control%symmetric_linear_solver )
+        inform%status = GALAHAD_error_unknown_solver ; RETURN
+     ELSE IF ( .NOT. pivots ) THEN
+      IF ( out > 0 .AND. data%control%print_level >= 1 ) WRITE( out,           &
+        "( A, ' solver ', A, ' does not provide pivot details' )" )            &
+          prefix, TRIM( control%symmetric_linear_solver )
+        inform%status = GALAHAD_unavailable_option ; RETURN
+     ELSE IF ( .NOT. d ) THEN 
+      IF ( out > 0 .AND. data%control%print_level >= 1 ) WRITE( out,           &
+        "( A, ' solver ', A, ' does not provide diagonals' )" )                &
+          prefix, TRIM( control%symmetric_linear_solver )
+        inform%status = GALAHAD_unavailable_option ; RETURN
+     END IF
+
+!  initialize solver-specific data
+
       CALL SLS_initialize_solver( control%symmetric_linear_solver,             &
                                   data%SLS_data, control%error,                &
                                   inform%SLS_inform, check = .TRUE. )
@@ -725,10 +747,10 @@
       data%control%SLS_control%relative_pivot_tolerance = control%pivot_tol
 !     write(6,*) ' solver ', inform%SLS_inform%solver
 
-      out = data%control%out
       IF ( out > 0 .AND. data%control%print_level >= 1 ) WRITE( out,           &
          "( /, A, 5( ' -' ), ' SLS test for rank defficiency', 5( ' - ' ),     &
-        &   /, A, 5( ' -' ), ' m = ', I0, ', n = ', I0 )" ) prefix, prefix, m, n
+        &   /, A, 5( ' -' ), ' m = ', I0, ', n = ', I0, ', solver is ', A )" ) &
+         prefix, prefix, m, n, TRIM( inform%SLS_inform%solver )
 
 !  Check that the problem makes sense
 
@@ -884,7 +906,9 @@
 !  Test that the factorization succeeded
 
       inform%factorization_status = inform%SLS_inform%status
-      IF ( inform%SLS_inform%status < 0 ) THEN
+!     IF ( inform%SLS_inform%status < 0 ) THEN
+      IF ( inform%SLS_inform%status < 0 .AND.                                  &
+           inform%SLS_inform%status /= GALAHAD_error_inertia )THEN
         IF ( data%control%error > 0 .AND. data%control%print_level >= 1 )      &
            WRITE( data%control%error,                                          &
             "( A, '   **  Error return ', I0, ' from SLS_factorize' )")        &
@@ -897,8 +921,10 @@
 
       IF ( out > 0 .AND. data%control%print_level >= 1 .AND.                   &
            inform%SLS_inform%rank < data%K%n ) WRITE( out,                     &
-            "( /, A, ' ** Warning - matrix has ', I0, ' zero eigenvalues' )" ) &
-            prefix, data%K%n - inform%SLS_inform%rank
+            "( /, A, ' ** Warning - matrix has ', I0,                          &
+           &   ' zero eigenvalue', A )" ) prefix,                              &
+              data%K%n - inform%SLS_inform%rank,                               &
+              TRIM( STRING_pleural( data%K%n - inform%SLS_inform%rank ) )
 
 !  Allocate the arrays for the rank detetmination phase
 
@@ -930,7 +956,23 @@
 
       CALL SLS_enquire( data%SLS_data, inform%SLS_inform, PIVOTS = data%P,     &
                         D = data%D )
-!write(6,*) ' fdc pivots ', data%P( : data%K%n )
+      IF ( inform%SLS_inform%status == GALAHAD_error_access_pivots .OR.        &
+           inform%SLS_inform%status == GALAHAD_error_access_diagonal ) THEN
+
+        IF ( data%control%error > 0 .AND. data%control%print_level >= 1 )      &
+           WRITE( data%control%error,                                          &
+            "( A, '   **  The requested linear solver does not return',        &
+           & ' required factor details' )" ) prefix
+        inform%status = GALAHAD_unavailable_option
+        RETURN   
+      END IF
+
+! write(6,"( ' solver is is ', A )" )  TRIM( inform%SLS_inform%solver )
+! write(6,"( ' fdc pivots ', 10I6, /, ( 10I6 ) )" ) data%P( : data%K%n )
+! write(6,"( ' fdc D_diag ', 5ES12.4, /,  ( 12X, 5ES12.4 ) )" ) &
+!  data%D( 1, : data%K%n )
+! write(6,"( ' fdc D_off  ', 5ES12.4, /, ( 12X, 5ES12.4 ) )" ) &
+!  data%D( 2, : data%K%n )
 
 !  Compute the smallest and largest eigenvalues of the block diagonal factor
 
@@ -1109,7 +1151,7 @@
                                     - data%D( 1, i ) - data%D( 1, i + 1 ),     &
                                     one, epsmch, nroots, root1, root2, .FALSE. )
 
-!write(6,*) ' 2 x 2 ', data%P( i ), data%P( i + 1 ), root1, root2
+!write(6,*) ' fdc: 2 x 2 ', data%P( i ), data%P( i + 1 ), root1, root2
               IF ( ABS( root2 ) >= big .OR.                                    &
                    root1 == zero .OR. root2 == zero ) THEN
                 IF ( ABS( root1 ) >= big .OR.                                  &
@@ -1122,14 +1164,14 @@
                 END IF
                 n_depen = n_depen + 1
                 DEPEN( n_depen ) = MAX( ABS( data%P( i ) ),                    &
-                                          ABS( data%P( i + 1 ) ) ) - n
+                                        ABS( data%P( i + 1 ) ) ) - n
               END IF
 
             ELSE
 
 !  A 1x1 block
 
-!write(6,*) ' 1 x 1 ', data%P( i ), root1
+!write(6,*) ' fdc: 1 x 1 ', data%P( i ), data%D( 1, i )
               IF ( ABS( data%D( 1, i ) ) >= big .OR.                           &
                         data%D( 1, i ) == zero ) THEN
                 n_depen = n_depen + 1
@@ -1141,7 +1183,7 @@
 !  The final 1x1 block
 
           ELSE
-!write(6,*) ' final 1 x 1 ', data%P( i ), data%D( 1, i )
+!write(6,*) ' fdc: final 1 x 1 ', data%P( i ), data%D( 1, i )
             IF ( ABS( data%D( 1, i ) ) >= big .OR. data%D( 1, i ) == zero ) THEN
               n_depen = n_depen + 1
               DEPEN( n_depen ) = data%P( i ) - n
@@ -1160,7 +1202,7 @@
 
 !  Reset "small" pivots to zero
 
-        CALL SLS_alter_d( data%SLS_data, data%D, inform%SLS_inform )
+       CALL SLS_alter_d( data%SLS_data, data%D, inform%SLS_inform )
 
 !  Check to see if the constraints are consistent
 

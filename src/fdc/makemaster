@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD FDC package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2023-05-11
+#  This version: 2025-01-23
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -19,7 +19,7 @@ PACKAGE = FDC
 #  auxiliary packages that current package depends on (prepend with make_)
 
 DEPENDENCIES = make_sls_deps make_sls make_ma33 make_gls \
-               make_ma48 make_uls make_roots
+               make_ma48 make_uls make_roots make_lmt make_qpt
 
 #  other packages that depend on package
 

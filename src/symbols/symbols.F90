@@ -633,7 +633,7 @@
          prefix, routine, prefix
      CASE( GALAHAD_error_inertia )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
-      &       '   the preconditioner has the wrong inertia' )" )               &
+      &       '   the matrix/preconditioner has the wrong inertia' )" )        &
          prefix, routine, prefix
      CASE( GALAHAD_error_file )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &

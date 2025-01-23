@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.1 - 2024-11-12 AT 10:40 GMT
+ *  \version   GALAHAD 5.2 - 2025-01-22 AT 12:00 GMT
  */
 
 #pragma once
@@ -471,6 +471,7 @@ public:
 //              printf("d67 = %.1f %.1f\n", dptr[6], dptr[7]);
 //            }
 //          printf("ni = %i, nelim = %i\n", ni+1, nelim);
+//printf(" print from ssids_cpu_NumericSubtree.hxx:\n");
             for(ipc_ i=0; i<nelim; ) {
 //             bool a=i+1==nelim ;
 //             bool b=(std::isfinite(dptr[2*i+2]));
@@ -484,6 +485,7 @@ public:
                   /* 1x1 pivot */
                   if(piv_order) {
                      piv_order[nodes_[ni].perm[i]-1] = (piv++);
+//printf(" 1x1 pivot order %d = %d\n", nodes_[ni].perm[i]-1, piv_order[nodes_[ni].perm[i]-1]);
                   }
                   if(d) {
 //                   printf("in = %i d(1,1) = %.1f\n", 2*i+0, dptr[2*i+0]);
@@ -496,13 +498,15 @@ public:
                   /* 2x2 pivot */
                   if(piv_order) {
                      piv_order[nodes_[ni].perm[i]-1] = -(piv++);
+//printf(" 2x2 pivot order %d = %d\n", nodes_[ni].perm[i]-1, piv_order[nodes_[ni].perm[i]-1]);
                      piv_order[nodes_[ni].perm[i+1]-1] = -(piv++);
+//printf(" 2x2 pivot order %d = %d\n", nodes_[ni].perm[i+1]-1, piv_order[nodes_[ni].perm[i+1]-1]);
                   }
                   if(d) {
 //                    printf("in = %i d(1,1) = %.1f\n", 2*i+0, dptr[2*i+0]);
 //                    printf("in = %i d(2,1) = %.1f\n", 2*i+1, dptr[2*i+1]);
 //                    printf("in = %i d(1,2) = %.1f\n", 2*i+2, dptr[2*i+2]);
-//                    printf("in = %i d(2,2) = %.1f\n", 2*i+3, dptr[2*i+3]);
+///                    printf("in = %i d(2,2) = %.1f\n", 2*i+3, dptr[2*i+3]);
                      *(d++) = dptr[2*i+0];
                      *(d++) = dptr[2*i+1];
                      *(d++) = dptr[2*i+3]; /* not 2*i+2 as stated ?? */
@@ -523,7 +527,6 @@ public:
          ipc_ ldl = align_lda<T>(blkm);
          ipc_ nelim = nodes_[ni].nelim;
          T* dptr = &nodes_[ni].lcol[blkn*ldl];
-//         T dum;
 
          for(ipc_ i=0; i<nelim; ) {
 #ifdef REAL_128
@@ -533,14 +536,19 @@ public:
 #endif
                /* 1x1 pivot */
                dptr[2*i+0] = *(d++);
-//               dum = *(d++);
+               d++; /* correct incremenet */
+//             printf("in = %i d(1,1) = %.1f\n", 2*i+0, dptr[2*i+0]);
                i+=1;
             } else {
                /* 2x2 pivot */
                dptr[2*i+0] = *(d++);
                dptr[2*i+1] = *(d++);
                dptr[2*i+3] = *(d++);
-//               dum = *(d++);
+               d++; /* correct incremenet */
+//             printf("in = %i d(1,1) = %.1f\n", 2*i+0, dptr[2*i+0]);
+//             printf("in = %i d(2,1) = %.1f\n", 2*i+1, dptr[2*i+1]);
+//             printf("in = %i d(1,2) = %.1f\n", 2*i+2, dptr[2*i+2]);
+//             printf("in = %i d(2,2) = %.1f\n", 2*i+3, dptr[2*i+3]);
                i+=2;
             }
          }

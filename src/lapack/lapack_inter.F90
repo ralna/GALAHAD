@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:00 GMT
+! THIS VERSION: GALAHAD 5.2 - 2025-01-16 AT 11:20 GMT
 
 #include "galahad_modules.h"
 #include "galahad_lapack.h"
@@ -62,6 +62,43 @@
         END SUBROUTINE DGETRS
 
       END INTERFACE GETRS
+
+!  LU factorization and solve
+
+      INTERFACE GESV
+
+       SUBROUTINE DGESV( n, nrhs, A, lda, IPIV, B, ldb, info )
+       USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
+       INTEGER ( KIND = ip_ ) :: info, lda, ldb, n, nrhs
+       INTEGER ( KIND = ip_ ) :: IPIV( * )
+       REAL ( KIND = rp_ ) :: A( lda, n ), B( ldb, nrhs )
+       END SUBROUTINE DGESV
+
+      END INTERFACE GESV
+
+!  QR factorization
+
+      INTERFACE GEQRF
+
+        SUBROUTINE DGEQRF( m, n, A, lda, TAU, WORK, lwork, info )
+        USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
+        INTEGER ( KIND = ip_ ):: info, lda, lwork, m, n
+        REAL ( KIND = rp_ ) :: A( lda, n ), TAU( * ), WORK( * )
+        END SUBROUTINE DGEQRF
+
+      END INTERFACE GEQRF
+
+!  recover Q from QR factors
+
+      INTERFACE ORGQR
+
+        SUBROUTINE DORGQR( m, n, k, A, lda, TAU, WORK, lwork, info )
+        USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
+        INTEGER ( KIND = ip_ ):: info, lda, lwork, m, n, k
+        REAL ( KIND = rp_ ) :: A( lda, n ), TAU( * ), WORK( * )
+        END SUBROUTINE DORGQR
+
+      END INTERFACE ORGQR
 
 !  Least-squares solution
 

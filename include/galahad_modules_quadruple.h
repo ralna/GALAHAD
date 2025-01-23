@@ -32,8 +32,9 @@
 #define GALAHAD_DLP_precision GALAHAD_DLP_quadruple_64
 #define GALAHAD_DPS_precision GALAHAD_DPS_quadruple_64
 #define GALAHAD_DQP_precision GALAHAD_DQP_quadruple_64
-#define GALAHAD_EQP_precision GALAHAD_EQP_quadruple_64
+#define GALAHAD_EKS_precision GALAHAD_EKS_quadruple_64
 #define GALAHAD_EPF_precision GALAHAD_EPF_quadruple_64
+#define GALAHAD_EQP_precision GALAHAD_EQP_quadruple_64
 #define GALAHAD_ERMO_precision GALAHAD_ERMO_quadruple_64
 #define GALAHAD_EXTEND_precision GALAHAD_EXTEND_quadruple_64
 #define GALAHAD_FASTR_precision GALAHAD_FASTR_quadruple_64
@@ -156,8 +157,9 @@
 #define GALAHAD_USEDLP_precision GALAHAD_USEDLP_quadruple_64
 #define GALAHAD_USEDPS_precision GALAHAD_USEDPS_quadruple_64
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_quadruple_64
-#define GALAHAD_USEEQP_precision GALAHAD_USEEQP_quadruple_64
+#define GALAHAD_USEEKS_precision GALAHAD_USEEKS_quadruple_64
 #define GALAHAD_USEEPF_precision GALAHAD_USEEPF_quadruple_64
+#define GALAHAD_USEEQP_precision GALAHAD_USEEQP_quadruple_64
 #define GALAHAD_USEERMO_precision GALAHAD_USEERMO_quadruple_64
 #define GALAHAD_USEFASTR_precision GALAHAD_USEFASTR_quadruple_64
 #define GALAHAD_USEFDH_precision GALAHAD_USEFDH_quadruple_64
@@ -357,6 +359,7 @@
 #define RUNTRACE_SIF_precision RUNTRACE_SIF_quadruple_64
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_quadruple_64
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_quadruple_64
+#define RUNEKS_SIF_precision RUNEKS_SIF_quadruple_64
 #define RUNEPF_SIF_precision RUNEPF_SIF_quadruple_64
 #define RUNERMO_SIF_precision RUNERMO_SIF_quadruple_64
 #define RUNFASTR_SIF_precision RUNFASTR_SIF_quadruple_64
@@ -427,8 +430,9 @@
 #define GALAHAD_DLP_precision GALAHAD_DLP_quadruple
 #define GALAHAD_DPS_precision GALAHAD_DPS_quadruple
 #define GALAHAD_DQP_precision GALAHAD_DQP_quadruple
-#define GALAHAD_EQP_precision GALAHAD_EQP_quadruple
+#define GALAHAD_EKS_precision GALAHAD_EKS_quadruple
 #define GALAHAD_EPF_precision GALAHAD_EPF_quadruple
+#define GALAHAD_EQP_precision GALAHAD_EQP_quadruple
 #define GALAHAD_ERMO_precision GALAHAD_ERMO_quadruple
 #define GALAHAD_EXTEND_precision GALAHAD_EXTEND_quadruple
 #define GALAHAD_FASTR_precision GALAHAD_FASTR_quadruple
@@ -551,8 +555,9 @@
 #define GALAHAD_USEDLP_precision GALAHAD_USEDLP_quadruple
 #define GALAHAD_USEDPS_precision GALAHAD_USEDPS_quadruple
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_quadruple
-#define GALAHAD_USEEQP_precision GALAHAD_USEEQP_quadruple
+#define GALAHAD_USEEKS_precision GALAHAD_USEEKS_quadruple
 #define GALAHAD_USEEPF_precision GALAHAD_USEEPF_quadruple
+#define GALAHAD_USEEQP_precision GALAHAD_USEEQP_quadruple
 #define GALAHAD_USEERMO_precision GALAHAD_USEERMO_quadruple
 #define GALAHAD_USEFASTR_precision GALAHAD_USEFASTR_quadruple
 #define GALAHAD_USEFDH_precision GALAHAD_USEFDH_quadruple
@@ -752,6 +757,7 @@
 #define RUNTRACE_SIF_precision RUNTRACE_SIF_quadruple
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_quadruple
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_quadruple
+#define RUNEKS_SIF_precision RUNEKS_SIF_quadruple
 #define RUNEPF_SIF_precision RUNEPF_SIF_quadruple
 #define RUNERMO_SIF_precision RUNERMO_SIF_quadruple
 #define RUNFASTR_SIF_precision RUNFASTR_SIF_quadruple

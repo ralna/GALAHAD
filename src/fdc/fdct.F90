@@ -21,6 +21,8 @@
 !  control%print_level = 1
    control%use_sls = .TRUE.
    control%symmetric_linear_solver = 'sytr'
+!  control%symmetric_linear_solver = 'ma57'
+!  control%symmetric_linear_solver = 'ssids'
    CALL FDC_find_dependent( n, m, A_val, A_col, A_ptr, B, n_depen, DEPEN,      &
                             data, control, inform ) ! Check for dependencies
    WRITE( 6, "( ' linear solver used: ', A )" ) inform%SLS_inform%solver

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 15:00 GMT
+! THIS VERSION: GALAHAD 5.2 - 2025-01-22 AT 14:10 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -81,7 +81,12 @@
      PUBLIC :: SLS_initialize, SLS_analyse, SLS_factorize, SLS_solve,          &
                SLS_fredholm_alternative, SLS_terminate, SLS_enquire,           &
                SLS_alter_d, SLS_part_solve, SLS_sparse_forward_solve,          &
-               SLS_read_specfile, SLS_initialize_solver,                       &
+               SLS_read_specfile, SLS_available, SLS_ssids_available,          &
+               SLS_sils_available, SLS_ma57_available, SLS_ma77_available,     &
+               SLS_ma86_available, SLS_ma87_available, SLS_ma97_available,     &
+               SLS_mumps_available, SLS_pardiso_available,                     &
+               SLS_mkl_pardiso_available, SLS_pastix_available,                &
+               SLS_wsmp_available, SLS_initialize_solver,                      &
                SLS_coord_to_extended_csr, SLS_coord_to_sorted_csr,             &
                SLS_full_initialize, SLS_full_terminate,                        &
                SLS_analyse_matrix, SLS_factorize_matrix, SLS_solve_system,     &
@@ -881,6 +886,443 @@
      END INTERFACE
 
    CONTAINS
+
+!- - - - G A L A H A D -  S L S _ A V A I L A B L E   S U B R O U T I N E - - - 
+
+     SUBROUTINE SLS_available( solver, available, enquire, perm, pivots, d,    &
+                               perturbation, alter, part_solve,                &
+                               sparse_forward_solve, fredholm_alternative )
+
+!  for a given solver, indicate which of the following options are provided
+!  (.TRUE.) or not (.FALSE.):
+!
+!    available - the solver itself
+!    enquire - the enquire function used to detemine the following 4 attributes
+!    perm - the pivot permutation selected by sls_analyse
+!    pivots - the index of pivots P after factorization
+!    d - the block 1x1 and 2x2 diagonal matrix D where A + E = P L D L' P'
+!    perturbation - any diagonal perturbations E added during factorization
+!    alter - the alter function used to alter the diagonals D
+!    part_solve - the part_solve function to solve one of PL / D / L'P' x = b
+!    sparse_forward_solve - function to solve P L x = b for sparse b
+!    fredholm_alternative - function to find either A x = b or Ax = 0 or b'x = 0
+
+!  Dummy arguments
+
+     CHARACTER ( LEN = * ), INTENT( IN ) :: solver
+     LOGICAL, OPTIONAL, INTENT( OUT ) :: available
+     LOGICAL, OPTIONAL, INTENT( OUT ) :: enquire
+     LOGICAL, OPTIONAL, INTENT( OUT ) :: perm
+     LOGICAL, OPTIONAL, INTENT( OUT ) :: pivots
+     LOGICAL, OPTIONAL, INTENT( OUT ) :: d
+     LOGICAL, OPTIONAL, INTENT( OUT ) :: perturbation
+     LOGICAL, OPTIONAL, INTENT( OUT ) :: alter
+     LOGICAL, OPTIONAL, INTENT( OUT ) :: part_solve
+     LOGICAL, OPTIONAL, INTENT( OUT ) :: sparse_forward_solve
+     LOGICAL, OPTIONAL, INTENT( OUT ) :: fredholm_alternative
+
+!  initialize solver-specific controls
+
+     INTEGER :: len_solver
+     len_solver = LEN( solver )
+     SELECT CASE( solver( 1 : len_solver ) )
+
+!  = SILS =
+
+     CASE ( 'sils', 'ma27' )
+       IF ( PRESENT( available ) ) available = SLS_sils_available( )
+       IF ( PRESENT( enquire ) ) enquire = .TRUE.
+       IF ( PRESENT( perm ) ) perm = .TRUE.
+       IF ( PRESENT( pivots ) ) pivots = .TRUE.
+       IF ( PRESENT( d ) ) d = .TRUE.
+       IF ( PRESENT( perturbation ) ) perturbation = .TRUE.
+       IF ( PRESENT( alter ) ) alter = .TRUE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .FALSE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+
+
+!  = MA57 =
+
+     CASE ( 'ma57' )
+       IF ( PRESENT( available ) ) available = SLS_ma57_available( )
+       IF ( PRESENT( enquire ) ) enquire = .TRUE.
+       IF ( PRESENT( perm ) ) perm = .TRUE.
+       IF ( PRESENT( pivots ) ) pivots = .TRUE.
+       IF ( PRESENT( d ) ) d = .TRUE.
+       IF ( PRESENT( perturbation ) ) perturbation = .TRUE.
+       IF ( PRESENT( alter ) ) alter = .TRUE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .TRUE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .TRUE.
+
+!  = MA77 =
+
+     CASE ( 'ma77' )
+       IF ( PRESENT( available ) ) available = SLS_ma77_available( )
+       IF ( PRESENT( enquire ) ) enquire = .TRUE.
+       IF ( PRESENT( perm ) ) perm = .TRUE.
+       IF ( PRESENT( pivots ) ) pivots = .TRUE.
+       IF ( PRESENT( d ) ) d = .TRUE.
+       IF ( PRESENT( perturbation ) ) perturbation = .FALSE.
+       IF ( PRESENT( alter ) ) alter = .TRUE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .FALSE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .TRUE.
+
+!  = MA86 =
+
+     CASE ( 'ma86' )
+       IF ( PRESENT( available ) ) available = SLS_ma86_available( )
+       IF ( PRESENT( enquire ) ) enquire = .TRUE.
+       IF ( PRESENT( perm ) ) perm = .TRUE.
+       IF ( PRESENT( pivots ) ) pivots = .FALSE.
+       IF ( PRESENT( d ) ) d = .TRUE.
+       IF ( PRESENT( perturbation ) ) perturbation = .TRUE.
+       IF ( PRESENT( alter ) ) alter = .FALSE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .TRUE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+
+!  = MA87 =
+
+     CASE ( 'ma87' )
+       IF ( PRESENT( available ) ) available = SLS_ma87_available( )
+       IF ( PRESENT( enquire ) ) enquire = .TRUE.
+       IF ( PRESENT( perm ) ) perm = .TRUE.
+       IF ( PRESENT( pivots ) ) pivots = .FALSE.
+       IF ( PRESENT( d ) ) d = .TRUE.
+       IF ( PRESENT( perturbation ) ) perturbation = .TRUE.
+       IF ( PRESENT( alter ) ) alter = .FALSE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .TRUE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+
+!  = MA97 =
+
+     CASE ( 'ma97' )
+       IF ( PRESENT( available ) ) available = SLS_ma97_available( )
+       IF ( PRESENT( enquire ) ) enquire = .TRUE.
+       IF ( PRESENT( perm ) ) perm = .TRUE.
+       IF ( PRESENT( pivots ) ) pivots = .TRUE.
+       IF ( PRESENT( d ) ) d = .TRUE.
+       IF ( PRESENT( perturbation ) ) perturbation = .TRUE.
+       IF ( PRESENT( alter ) ) alter = .TRUE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .TRUE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .TRUE.
+
+!  = SSIDS =
+
+     CASE ( 'ssids' )
+       IF ( PRESENT( available ) ) available = SLS_ssids_available( )
+       IF ( PRESENT( enquire ) ) enquire = .TRUE.
+       IF ( PRESENT( perm ) ) perm = .TRUE.
+       IF ( PRESENT( pivots ) ) pivots = .TRUE.
+       IF ( PRESENT( d ) ) d = .TRUE.
+       IF ( PRESENT( perturbation ) ) perturbation = .TRUE.
+       IF ( PRESENT( alter ) ) alter = .TRUE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .FALSE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+
+!  = MUMPS =
+
+     CASE ( 'mumps' )
+       IF ( PRESENT( available ) ) available = SLS_mumps_available( )
+       IF ( PRESENT( enquire ) ) enquire = .TRUE.
+       IF ( PRESENT( perm ) ) perm = .TRUE.
+       IF ( PRESENT( pivots ) ) pivots = .FALSE.
+       IF ( PRESENT( d ) ) d = .FALSE.
+       IF ( PRESENT( perturbation ) ) perturbation = .FALSE.
+       IF ( PRESENT( alter ) ) alter = .FALSE.
+       IF ( PRESENT( part_solve ) ) part_solve = .FALSE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .FALSE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+
+!  = PARDISO =
+
+     CASE ( 'pardiso' )
+       IF ( PRESENT( available ) ) available = SLS_pardiso_available( )
+       IF ( PRESENT( enquire ) ) enquire = .FALSE.
+       IF ( PRESENT( perm ) ) perm = .FALSE.
+       IF ( PRESENT( pivots ) ) pivots = .FALSE.
+       IF ( PRESENT( d ) ) d = .FALSE.
+       IF ( PRESENT( perturbation ) ) perturbation = .FALSE.
+       IF ( PRESENT( alter ) ) alter = .FALSE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .TRUE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+
+!  = MKL PARDISO =
+
+     CASE ( 'mkl_pardiso' )
+       IF ( PRESENT( available ) ) available = SLS_mkl_pardiso_available( )
+       IF ( PRESENT( enquire ) ) enquire = .FALSE.
+       IF ( PRESENT( perm ) ) perm = .FALSE.
+       IF ( PRESENT( pivots ) ) pivots = .FALSE.
+       IF ( PRESENT( d ) ) d = .FALSE.
+       IF ( PRESENT( perturbation ) ) perturbation = .FALSE.
+       IF ( PRESENT( alter ) ) alter = .FALSE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .TRUE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+
+!  = PaStiX =
+
+     CASE ( 'pastix' )
+       IF ( PRESENT( available ) ) available = SLS_pastix_available( )
+       IF ( PRESENT( enquire ) ) enquire = .TRUE.
+       IF ( PRESENT( perm ) ) perm = .TRUE.
+       IF ( PRESENT( pivots ) ) pivots = .FALSE.
+       IF ( PRESENT( d ) ) d = .FALSE.
+       IF ( PRESENT( perturbation ) ) perturbation = .FALSE.
+       IF ( PRESENT( alter ) ) alter = .FALSE.
+       IF ( PRESENT( part_solve ) ) part_solve = .FALSE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .FALSE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+
+!  = WSMP =
+
+     CASE ( 'wsmp' )
+       IF ( PRESENT( available ) ) available = SLS_wsmp_available( )
+       IF ( PRESENT( enquire ) ) enquire = .FALSE.
+       IF ( PRESENT( perm ) ) perm = .FALSE.
+       IF ( PRESENT( pivots ) ) pivots = .FALSE.
+       IF ( PRESENT( d ) ) d = .FALSE.
+       IF ( PRESENT( perturbation ) ) perturbation = .FALSE.
+       IF ( PRESENT( alter ) ) alter = .FALSE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .TRUE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+
+!  = POTR =
+
+     CASE ( 'potr' )
+       IF ( PRESENT( available ) ) available = .TRUE.
+       IF ( PRESENT( enquire ) ) enquire = .TRUE.
+       IF ( PRESENT( perm ) ) perm = .TRUE.
+       IF ( PRESENT( pivots ) ) pivots = .TRUE.
+       IF ( PRESENT( d ) ) d = .TRUE.
+       IF ( PRESENT( perturbation ) ) perturbation = .FALSE.
+       IF ( PRESENT( alter ) ) alter = .TRUE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .TRUE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+
+!  = SYTR =
+
+     CASE ( 'sytr' )
+       IF ( PRESENT( available ) ) available = .TRUE.
+       IF ( PRESENT( enquire ) ) enquire = .TRUE.
+       IF ( PRESENT( perm ) ) perm = .TRUE.
+       IF ( PRESENT( pivots ) ) pivots = .TRUE.
+       IF ( PRESENT( d ) ) d = .TRUE.
+       IF ( PRESENT( perturbation ) ) perturbation = .FALSE.
+       IF ( PRESENT( alter ) ) alter = .TRUE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .TRUE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+
+!  = PBTR =
+
+     CASE ( 'pbtr' )
+       IF ( PRESENT( available ) ) available = .TRUE.
+       IF ( PRESENT( enquire ) ) enquire = .TRUE.
+       IF ( PRESENT( perm ) ) perm = .TRUE.
+       IF ( PRESENT( pivots ) ) pivots = .TRUE.
+       IF ( PRESENT( d ) ) d = .TRUE.
+       IF ( PRESENT( perturbation ) ) perturbation = .FALSE.
+       IF ( PRESENT( alter ) ) alter = .TRUE.
+       IF ( PRESENT( part_solve ) ) part_solve = .TRUE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .TRUE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+
+!  == anything else ==
+
+     CASE DEFAULT
+       IF ( PRESENT( available ) ) available = .FALSE.
+       IF ( PRESENT( enquire ) ) enquire = .FALSE.
+       IF ( PRESENT( perm ) ) perm = .FALSE.
+       IF ( PRESENT( pivots ) ) pivots = .FALSE.
+       IF ( PRESENT( d ) ) d = .FALSE.
+       IF ( PRESENT( perturbation ) ) perturbation = .FALSE.
+       IF ( PRESENT( alter ) ) alter = .FALSE.
+       IF ( PRESENT( part_solve ) ) part_solve = .FALSE.
+       IF ( PRESENT( sparse_forward_solve ) ) sparse_forward_solve = .FALSE.
+       IF ( PRESENT( fredholm_alternative ) ) fredholm_alternative = .FALSE.
+     END SELECT
+
+     RETURN
+
+!  End of SLS_available
+
+     END SUBROUTINE SLS_available
+
+! - G A L A H A D - S L S _ M A 2 7 _ A V A I L A B L E  F U N C T I O N -
+
+      LOGICAL FUNCTION SLS_sils_available( )
+      INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL_ma27
+      REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL_ma27
+      CALL MA27I( ICNTL_ma27, CNTL_ma27 )
+      SLS_sils_available = ICNTL_ma27( 4 ) /= - 1
+      END FUNCTION SLS_sils_available
+
+! - G A L A H A D - S L S _ M A 5 7 _ A V A I L A B L E  F U N C T I O N -
+
+      LOGICAL FUNCTION SLS_ma57_available( )
+      SLS_ma57_available = ma57_available
+      END FUNCTION SLS_ma57_available
+
+! - G A L A H A D - S L S _ M A 7 7 _ A V A I L A B L E  F U N C T I O N -
+
+      LOGICAL FUNCTION SLS_ma77_available( )
+      SLS_ma77_available = ma77_available
+      END FUNCTION SLS_ma77_available
+
+! - G A L A H A D - S L S _ M A 8 6 _ A V A I L A B L E  F U N C T I O N -
+
+      LOGICAL FUNCTION SLS_ma86_available( )
+      SLS_ma86_available = ma86_available
+      END FUNCTION SLS_ma86_available
+
+! - G A L A H A D - S L S _ M A 8 7 _ A V A I L A B L E  F U N C T I O N -
+
+      LOGICAL FUNCTION SLS_ma87_available( )
+      SLS_ma87_available = ma87_available
+      END FUNCTION SLS_ma87_available
+
+! - G A L A H A D - S L S _ M A 9 7 _ A V A I L A B L E  F U N C T I O N -
+
+      LOGICAL FUNCTION SLS_ma97_available( )
+      SLS_ma97_available = ma97_available
+      END FUNCTION SLS_ma97_available
+
+! - G A L A H A D - S L S _ S S I D S _ A V A I L A B L E  F U N C T ION -
+
+      LOGICAL FUNCTION SLS_ssids_available( )
+      SLS_ssids_available = ssids_available
+      END FUNCTION SLS_ssids_available
+
+! - G A L A H A D - S L S _ M U M P S _ A V A I L A B L E  F U N C T ION -
+
+      LOGICAL FUNCTION SLS_mumps_available( )
+      INTEGER ( KIND = ip_ ) :: mpi_ierr
+      LOGICAL :: mpi_initialzed_flag, mpi_available
+      TYPE ( MUMPS_STRUC ) :: mumps_par
+      CALL MPI_INITIALIZED( mpi_initialzed_flag, mpi_ierr )
+      IF ( mpi_initialzed_flag ) THEN
+        mpi_available = .TRUE.
+      ELSE
+        CALL MPI_INIT( mpi_ierr )
+        mpi_available = mpi_ierr >= 0
+      END IF
+      IF ( mpi_available ) THEN
+        mumps_par%COMM = MPI_COMM_WORLD_mumps
+        mumps_par%JOB = - 1
+        mumps_par%SYM = 2 ! symmetric
+        mumps_par%PAR = 1 ! parallel solve
+        CALL MUMPS_precision( mumps_par )
+        SLS_mumps_available = mumps_par%INFOG( 1 ) /= - 999
+      ELSE
+        SLS_mumps_available = .FALSE.
+      END IF
+      END FUNCTION SLS_mumps_available
+
+! - G A L A H A D - S L S _ P A S T I X _ A V A I L A B L E  FUNCTION -
+
+      LOGICAL FUNCTION SLS_pastix_available( )
+      TYPE ( spmatrix_t ), POINTER :: spm
+      ALLOCATE( spm )
+      CALL spmInit( spm )
+      SLS_pastix_available = spm%mtxtype == - 1
+      DEALLOCATE( spm )
+      END FUNCTION SLS_pastix_available
+
+! - G A L A H A D - S L S _ P A R D I S O _ A V A I L A B L E  FUNCTION -
+
+      LOGICAL FUNCTION SLS_pardiso_available( posdef )
+      LOGICAL, OPTIONAL, INTENT( IN ) :: posdef
+      INTEGER ( KIND = long_ ), DIMENSION( 64 ) :: PT
+      INTEGER ( KIND = ip_ ) :: mtype
+      INTEGER ( KIND = ip_ ), PARAMETER :: sls = 0_ip_
+      INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: IPARM
+      REAL ( KIND = rp_ ), DIMENSION( 64 ) :: DPARM
+      INTEGER ( KIND = ip_ ) :: error
+      IF ( PRESENT( posdef ) ) THEN
+        IF ( posdef ) THEN
+          mtype = 2_ip_
+        ELSE
+          mtype = - 2_ip_
+        END IF
+      ELSE 
+        mtype = - 2_ip_
+      END IF
+      IPARM( 1 ) = 0_ip_
+      CALL PARDISOINIT( PT, mtype, sls, IPARM, DPARM, error )
+      SLS_pardiso_available = error == 0_ip_
+      END FUNCTION SLS_pardiso_available
+
+! - G A L A H A D - S L S _ M K L _ P A R D I S O _ A V A I L A B L E  F -
+
+      LOGICAL FUNCTION SLS_mkl_pardiso_available( posdef )
+!     USE MKL_PARDISO_PRIVATE
+      LOGICAL, OPTIONAL, INTENT( IN ) :: posdef
+      TYPE( MKL_PARDISO_HANDLE ) :: PT( 64 )
+      INTEGER ( KIND = ip_ ), PARAMETER :: maxfct = 1_ip_
+      INTEGER ( KIND = ip_ ), PARAMETER  :: mnum = 1_ip_
+      INTEGER ( KIND = ip_ ) :: mtype
+      INTEGER ( KIND = ip_ ), PARAMETER :: phase = 11_ip_
+      INTEGER ( KIND = ip_ ), PARAMETER  :: n = 1
+      INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: PTR
+      INTEGER ( KIND = ip_ ), DIMENSION( n ) :: COL
+      INTEGER ( KIND = ip_ ), DIMENSION( n ) :: PERM
+      INTEGER ( KIND = ip_ ), PARAMETER :: nrhs = 1_ip_
+      INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: IPARM
+      INTEGER ( KIND = ip_ ), PARAMETER :: msglvl = 0_ip_
+      INTEGER ( KIND = ip_ ) :: error
+      REAL( KIND = sp_ ), DIMENSION( n ) :: VAL
+      REAL( KIND = sp_ ), DIMENSION ( n ) :: B
+      REAL( KIND = sp_ ), DIMENSION( n ) :: X
+      PT( 1 : 64 )%DUMMY = 0_long_
+      IF ( PRESENT( posdef ) ) THEN
+        IF ( posdef ) THEN
+          mtype = 2_ip_
+        ELSE
+          mtype = - 2_ip_
+        END IF
+      ELSE 
+        mtype = - 2_ip_
+      END IF
+      CALL MKL_PARDISO_SOLVE( PT, maxfct, mnum, mtype, phase, n, VAL, PTR,     &
+                              COL, PERM, nrhs, IPARM, msglvl, X, B, error )
+      SLS_mkl_pardiso_available = error == 0_ip_
+      END FUNCTION SLS_mkl_pardiso_available
+
+! - G A L A H A D - S L S _ W S M P _ A V A I L A B L E  F U N C T I O N -
+
+      LOGICAL FUNCTION SLS_wsmp_available( )
+      INTEGER ( KIND = ip_ ), PARAMETER :: n = 1_ip_
+      INTEGER ( KIND = ip_ ), PARAMETER :: ldb = n
+      INTEGER ( KIND = ip_ ), PARAMETER :: nrhs = 1_ip_
+      INTEGER ( KIND = ip_ ), PARAMETER :: naux = 0_ip_
+      INTEGER ( KIND = ip_ ), DIMENSION( 2 ) :: PTR = (/ 1_ip_, 2_ip_ /)
+      INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: COL = (/ 1_ip_ /) 
+      INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: PERM, INVP, MRP
+      INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: AUX
+      INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: IPARM
+      REAL ( KIND = rp_ ), DIMENSION( 1 ) :: VAL = (/ 1.0_rp_ /)
+      REAL ( KIND = rp_ ), DIMENSION( 0 ) :: DIAG
+      REAL ( KIND = rp_ ), DIMENSION( ldb, nrhs ) :: B
+      REAL ( KIND = rp_ ), DIMENSION( 64 ) :: DPARM
+      CALL WSMP_INITIALIZE( )
+      IPARM( 1 : 3 ) = 0_ip_
+      CALL WSSMP( n, PTR, COL, VAL, DIAG, PERM, INVP, B, ldb, nrhs,            &
+                  AUX, naux, MRP, IPARM, DPARM )
+      SLS_wsmp_available = IPARM( 64 ) == 0_ip_
+      END FUNCTION SLS_wsmp_available
+
+!- - - G A L A H A D -  S L S _ I N I T I A L I Z E  S U B R O U T I N E - - - 
 
      SUBROUTINE SLS_initialize( solver, data, control, inform, check )
 
@@ -4944,6 +5386,7 @@
            inform%status = GALAHAD_error_permutation
          ELSE IF ( inform%status == - 3 .OR. inform%status == 2 .OR.           &
                    inform%status == 3 ) THEN
+           inform%rank = data%ma86_info%matrix_rank
            inform%status = GALAHAD_error_inertia
          ELSE IF ( inform%status == - 4 ) THEN
            inform%status = GALAHAD_error_restrictions
@@ -7512,6 +7955,11 @@
 
      CASE ( 'ma57' )
        CALL MA57_enquire( data%ma57_factors, PERM, PIVOTS, D, PERTURBATION )
+       IF ( PRESENT( D ) ) THEN
+         IF ( inform%rank < data%n ) THEN
+           D( 1, inform%rank + 1 : data%n ) = 0.0_rp_
+         END IF
+       END IF
 
 !  = MA77 =
 
@@ -7690,7 +8138,7 @@
        IF ( PRESENT( D ) ) THEN
          D( 1, : ) = 1.0_rp_ ; D( 2, : ) = 0.0_rp_
        END IF
-       IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
+       IF ( PRESENT( PIVOTS ) ) PIVOTS = data%ORDER( : data%n )
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
 
 !  = SYTR =
@@ -7759,7 +8207,7 @@
        IF ( PRESENT( D ) ) THEN
          D( 1, : ) = 1.0_rp_ ; D( 2, : ) = 0.0_rp_
        END IF
-       IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
+       IF ( PRESENT( PIVOTS ) ) PIVOTS = data%ORDER( : data%n )
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
 
 !  = anything else =

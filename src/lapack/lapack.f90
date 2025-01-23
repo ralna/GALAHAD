@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-30 AT 16:00 GMT
+! THIS VERSION: GALAHAD 5.2 - 2025-01-18 AT 16:00 GMT
 
 #include "galahad_lapack.h"
 
@@ -1957,6 +1957,35 @@
           IF (i<=k) CALL DGEQR2(m-i+1, n-i+1, a(i,i), lda, tau(i), work,    &
             iinfo)
           work(1) = REAL(iws,rp_)
+          RETURN
+        END SUBROUTINE
+
+        SUBROUTINE DGESV( n, nrhs, a, lda, ipiv, b, ldb, info)
+          USE BLAS_LAPACK_KINDS_precision
+          INTEGER(ip_) :: info, lda, ldb, n, nrhs
+          INTEGER(ip_) :: ipiv(*)
+          REAL(rp_) :: a(lda, *), b(ldb, *)
+          EXTERNAL ::  DGETRF, DGETRS, XERBLA2
+          INTRINSIC :: MAX
+          info = 0
+          IF( n<.0 ) THEN
+            info = -1
+          ELSE IF( nrhs<0 ) THEN
+            info = -2
+          ELSE IF( lda<MAX( 1, n ) ) THEN
+            info = -4
+          ELSE IF( ldb<MAX( 1, n ) ) THEN
+            info = -7
+          END IF
+          IF( INFO.NE.0 ) THEN
+             CALL XERBLA2('GESV ', -info)
+             RETURN
+          END IF
+          CALL DGETRF(n, n, a, lda, ipiv, info)
+          IF( info==0 ) THEN
+             CALL DGETRS('No transpose', n, nrhs, a, lda, ipiv, b, ldb,     &
+                         info )
+          END IF
           RETURN
         END SUBROUTINE
 

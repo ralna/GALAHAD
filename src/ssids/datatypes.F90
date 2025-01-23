@@ -337,7 +337,7 @@ contains
     if ((this%print_level .lt. 1) .or. (this%unit_diagnostics .lt. 0)) return
     if (posdef) then
        write (this%unit_diagnostics,'(//3a,i2,a)') &
-            ' Entering ', context, ' with posdef = .true. and :'
+            ' Entering ', TRIM(context), ' with posdef = .true. and :'
        write (this%unit_diagnostics,'(a,5(/a,i12),5(/a,es12.4))') &
             ' options parameters (options%) :', &
             ' print_level         Level of diagnostic printing           = ', &
@@ -352,7 +352,7 @@ contains
             this%scaling
     else ! indef
        write (this%unit_diagnostics,'(//3a,i2,a)') &
-            ' Entering ', context, ' with posdef = .false. and :'
+            ' Entering ', TRIM(context), ' with posdef = .false. and :'
        write (this%unit_diagnostics,'(a,5(/a,i12),5(/a,es12.4))') &
             ' options parameters (options%) :', &
             ' print_level         Level of diagnostic printing           = ', &

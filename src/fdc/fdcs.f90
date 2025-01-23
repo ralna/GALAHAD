@@ -19,6 +19,9 @@
    CALL FDC_initialize( data, control, inform )  ! Initialize control parameters
    control%use_sls = .TRUE.
    control%symmetric_linear_solver = 'sytr'
+   control%symmetric_linear_solver = 'ssids '
+   control%symmetric_linear_solver = 'ma86 '
+   control%print_level = 3
    CALL FDC_find_dependent( n, m, A_val, A_col, A_ptr, B, n_depen, DEPEN,      &
                             data, control, inform )  ! Check for dependencies
    IF ( inform%status == 0 ) THEN              ! Successful return
@@ -29,7 +32,7 @@
          DEPEN
      END IF
    ELSE !  Error returns
-     WRITE( 6, "( ' FDC_find_dependent exit status = ', I6 ) " ) inform%status
+     WRITE( 6, "( ' FDC_find_dependent exit status = ', I0 ) " ) inform%status
    END IF
    CALL FDC_terminate( data, control, inform, DEPEN ) ! Delete workspace
    END PROGRAM GALAHAD_FDC_example

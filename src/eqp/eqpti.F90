@@ -54,6 +54,11 @@
    DO data_storage_type = 1, 6
      CALL EQP_initialize( data, control, inform )
      CALL WHICH_sls( control )
+control%FDC_control%symmetric_linear_solver = 'ssids'
+control%FDC_control%symmetric_linear_solver = 'ma57 '
+control%print_level = 2
+control%FDC_control%SLS_control%print_level = 2
+control%FDC_control%SLS_control%print_level_solver = 2
      X = 0.0_rp_ ; Y = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -102,6 +107,7 @@
        WRITE( 6, "( A2, ': EQP_solve exit status = ', I0 ) " ) st, inform%status
      END IF
      CALL EQP_terminate( data, control, inform )  ! delete internal workspace
+stop
    END DO
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, H_zero )
 
