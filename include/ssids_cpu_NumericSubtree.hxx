@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.2 - 2025-01-22 AT 12:00 GMT
+ *  \version   GALAHAD 5.2 - 2025-01-24 AT 14:00 GMT
  */
 
 #pragma once
@@ -485,7 +485,8 @@ public:
                   /* 1x1 pivot */
                   if(piv_order) {
                      piv_order[nodes_[ni].perm[i]-1] = (piv++);
-//printf(" 1x1 pivot order %d = %d\n", nodes_[ni].perm[i]-1, piv_order[nodes_[ni].perm[i]-1]);
+//                   printf(" 1x1 pivot order %d = %d\n", nodes_[ni].perm[i]-1,
+//                            piv_order[nodes_[ni].perm[i]-1]);
                   }
                   if(d) {
 //                   printf("in = %i d(1,1) = %.1f\n", 2*i+0, dptr[2*i+0]);
@@ -498,15 +499,17 @@ public:
                   /* 2x2 pivot */
                   if(piv_order) {
                      piv_order[nodes_[ni].perm[i]-1] = -(piv++);
-//printf(" 2x2 pivot order %d = %d\n", nodes_[ni].perm[i]-1, piv_order[nodes_[ni].perm[i]-1]);
+//                   printf(" 2x2 pivot order %d = %d\n", nodes_[ni].perm[i]-1,
+//                            piv_order[nodes_[ni].perm[i]-1]);
                      piv_order[nodes_[ni].perm[i+1]-1] = -(piv++);
-//printf(" 2x2 pivot order %d = %d\n", nodes_[ni].perm[i+1]-1, piv_order[nodes_[ni].perm[i+1]-1]);
+//                  printf(" 2x2 pivot order %d = %d\n", nodes_[ni].perm[i+1]-1,
+//                         piv_order[nodes_[ni].perm[i+1]-1]);
                   }
                   if(d) {
 //                    printf("in = %i d(1,1) = %.1f\n", 2*i+0, dptr[2*i+0]);
 //                    printf("in = %i d(2,1) = %.1f\n", 2*i+1, dptr[2*i+1]);
 //                    printf("in = %i d(1,2) = %.1f\n", 2*i+2, dptr[2*i+2]);
-///                    printf("in = %i d(2,2) = %.1f\n", 2*i+3, dptr[2*i+3]);
+//                    printf("in = %i d(2,2) = %.1f\n", 2*i+3, dptr[2*i+3]);
                      *(d++) = dptr[2*i+0];
                      *(d++) = dptr[2*i+1];
                      *(d++) = dptr[2*i+3]; /* not 2*i+2 as stated ?? */
@@ -515,7 +518,13 @@ public:
                   i+=2;
                }
             }
+
          }
+//            printf("piv_order: ");
+//            for(ipc_ i=0; i<4; i++) {
+//              printf("  %d", piv_order[i]);
+//            }
+//            printf("\n");
       }
    }
 
@@ -536,7 +545,7 @@ public:
 #endif
                /* 1x1 pivot */
                dptr[2*i+0] = *(d++);
-               d++; /* correct incremenet */
+               d++; /* bug fix - correct increment */
 //             printf("in = %i d(1,1) = %.1f\n", 2*i+0, dptr[2*i+0]);
                i+=1;
             } else {
@@ -544,7 +553,7 @@ public:
                dptr[2*i+0] = *(d++);
                dptr[2*i+1] = *(d++);
                dptr[2*i+3] = *(d++);
-               d++; /* correct incremenet */
+               d++; /* bug fix - correct increment */
 //             printf("in = %i d(1,1) = %.1f\n", 2*i+0, dptr[2*i+0]);
 //             printf("in = %i d(2,1) = %.1f\n", 2*i+1, dptr[2*i+1]);
 //             printf("in = %i d(1,2) = %.1f\n", 2*i+2, dptr[2*i+2]);

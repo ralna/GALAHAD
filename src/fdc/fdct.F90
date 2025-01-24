@@ -22,7 +22,7 @@
    control%use_sls = .TRUE.
    control%symmetric_linear_solver = 'sytr'
 !  control%symmetric_linear_solver = 'ma57'
-!  control%symmetric_linear_solver = 'ssids'
+   control%symmetric_linear_solver = 'ssids'
    CALL FDC_find_dependent( n, m, A_val, A_col, A_ptr, B, n_depen, DEPEN,      &
                             data, control, inform ) ! Check for dependencies
    WRITE( 6, "( ' linear solver used: ', A )" ) inform%SLS_inform%solver
@@ -30,8 +30,8 @@
      IF ( n_depen == 0 ) THEN
        WRITE( 6, "( ' FDC_find_dependent - no dependencies ' )" )
      ELSE
-       WRITE( 6, "( ' FDC_find_dependent - dependent constraint(s):', 3I3 )")  &
-         DEPEN( : n_depen )
+       WRITE( 6, "( ' FDC_find_dependent -',                                   &
+      &  ' indices of dependent constraint(s):', 3I3 )") DEPEN( : n_depen )
      END IF
    ELSE                                        !  Error returns
      WRITE( 6, "( ' FDC_find_dependent exit status = ', I6 ) " ) inform%status

@@ -2,6 +2,10 @@
 
  basic tests of qp storage formats
 
-At line 1306 of file eqp.F90
-Fortran runtime error: Index '0' of dimension 1 of array 'data' outside of expected range (1:2)
-           2           0
+C:     1 cg iterations. Optimal objective value = 0.44 status = 0
+R:     1 cg iterations. Optimal objective value = 0.44 status = 0
+D:     1 cg iterations. Optimal objective value = 0.44 status = 0
+L:     1 cg iterations. Optimal objective value = 0.44 status = 0
+S:     1 cg iterations. Optimal objective value = 0.44 status = 0
+I:     1 cg iterations. Optimal objective value = 0.44 status = 0
+W:     1 cg iterations. Optimal objective value = 0.44 status = 0

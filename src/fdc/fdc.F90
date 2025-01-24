@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-01-22 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-01-24 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -967,12 +967,15 @@
         RETURN   
       END IF
 
-! write(6,"( ' solver is is ', A )" )  TRIM( inform%SLS_inform%solver )
-! write(6,"( ' fdc pivots ', 10I6, /, ( 10I6 ) )" ) data%P( : data%K%n )
-! write(6,"( ' fdc D_diag ', 5ES12.4, /,  ( 12X, 5ES12.4 ) )" ) &
-!  data%D( 1, : data%K%n )
-! write(6,"( ' fdc D_off  ', 5ES12.4, /, ( 12X, 5ES12.4 ) )" ) &
-!  data%D( 2, : data%K%n )
+      IF ( out > 0 .AND. data%control%print_level >= 4 ) THEN
+        WRITE( out, "( ' solver is is ', A )" ) TRIM( inform%SLS_inform%solver )
+        WRITE( out, "( ' fdc pivots ', 10I6, /, ( 10I6 ) )" )                  &
+          data%P( : data%K%n )
+        WRITE( out, "( ' fdc D_diag ', 5ES12.4, /,  ( 12X, 5ES12.4 ) )" )      &
+         data%D( 1, : data%K%n )
+        WRITE( out, "( ' fdc D_off  ', 5ES12.4, /, ( 12X, 5ES12.4 ) )" )       &
+         data%D( 2, : data%K%n )
+      END IF
 
 !  Compute the smallest and largest eigenvalues of the block diagonal factor
 

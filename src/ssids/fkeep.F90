@@ -413,6 +413,7 @@ subroutine enquire_indef_cpu(akeep, fkeep, inform, piv_order, d)
    if(present(piv_order)) then
       do i = 1, akeep%n
          piv_order( akeep%invp(i) ) = po(i)
+!        piv_order( i ) = po(i)
       end do
    endif
 

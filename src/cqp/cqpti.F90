@@ -58,7 +58,9 @@
 
    DO data_storage_type = 1, 7
      CALL CQP_initialize( data, control, inform )
-     CALL WHICH_sls( control )
+     control%print_level = 3
+     control%fdc_control%print_level = 4
+!    CALL WHICH_sls( control )
      X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
