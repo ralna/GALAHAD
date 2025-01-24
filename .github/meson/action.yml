@@ -275,7 +275,7 @@ runs:
         if [[ "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
           SSIDS="false"
         fi
-        if [[ "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || "${{ inputs.compiler }}" == "intel" ]]; then
+        if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || "${{ inputs.compiler }}" == "intel" ]]; then
           QUADRUPLE="false"
         fi
 
