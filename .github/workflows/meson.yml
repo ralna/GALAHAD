@@ -73,6 +73,28 @@ jobs:
           version: ${{ matrix.version }}
           int: ${{ matrix.int }}
 
+  arm-linux-build:
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-24.04-arm']
+        arch: ['arm64']
+        compiler: ['gcc']
+        version: ['14']
+        int: ['32', '64']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run common setup
+        uses: ./.github/meson
+        with:
+          os: ${{ matrix.os }}
+          compiler: ${{ matrix.compiler }}
+          version: ${{ matrix.version }}
+          int: ${{ matrix.int }}
+
   # intel-classic-build:
   #   name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
   #   runs-on: ${{ matrix.os }}

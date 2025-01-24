@@ -38,6 +38,12 @@ runs:
         echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
         echo "DEPS=$GITHUB_WORKSPACE/.." >> $GITHUB_ENV
         echo "CUTEST=$GITHUB_WORKSPACE/../CUTEst" >> $GITHUB_ENV
+        if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" ]]; then
+          echo "LIBDIR=lib" >> $GITHUB_ENV
+          echo "DLEXT=so" >> $GITHUB_ENV
+          echo "PLATFORM=aarch64-linux-gnu" >> $GITHUB_ENV
+          echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/lib" >> $GITHUB_ENV
+        fi
         if [[ "${{ inputs.os }}" == "ubuntu-latest" ]]; then
           echo "LIBDIR=lib" >> $GITHUB_ENV
           echo "DLEXT=so" >> $GITHUB_ENV
@@ -67,7 +73,7 @@ runs:
     - name: Set the environment variables LIBRARY_PATH, LD_LIBRARY_PATH and DYLD_LIBRARY_PATH
       shell: bash
       run: |
-        if [[ "${{ inputs.os }}" == "ubuntu-latest" ]]; then
+        if [[ "${{ inputs.os }}" == "ubuntu-latest" || "${{ inputs.os }}" == "ubuntu-24.04-arm" ]]; then
           echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
         fi
@@ -269,7 +275,7 @@ runs:
         if [[ "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
           SSIDS="false"
         fi
-        if [[ "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || "${{ inputs.compiler }}" == "intel" ]]; then
+        if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || "${{ inputs.compiler }}" == "intel" ]]; then
           QUADRUPLE="false"
         fi
 
