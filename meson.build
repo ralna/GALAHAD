@@ -295,47 +295,63 @@ endif
 
 extra_args_single = ['-DREAL_32']
 extra_args_double = []
-extra_args_quadruple = ['-DREAL_128', '-DGALAHAD_BLAS', '-DGALAHAD_LAPACK', '-DDUMMY_QMUMPS']
+extra_args_quadruple = ['-DREAL_128']
 
+# BLAS
 if not libblas.found()
   extra_args_single += '-DGALAHAD_BLAS'
   extra_args_double += '-DGALAHAD_BLAS'
 endif
+extra_args_quadruple += '-DGALAHAD_BLAS'
+
+# LAPACK
 if not liblapack.found()
   extra_args_single += '-DGALAHAD_LAPACK'
   extra_args_double += '-DGALAHAD_LAPACK'
 endif
+extra_args_quadruple += '-DGALAHAD_LAPACK'
+
+# MUMPS
 if not libsmumps.found()
   extra_args_single += '-DDUMMY_SMUMPS'
 endif
 if not libdmumps.found()
   extra_args_double += '-DDUMMY_DMUMPS'
 endif
+extra_args_quadruple += '-DDUMMY_QMUMPS'
+
+# MKL PARDISO
 if not (libblas_name == 'mkl_rt' or liblapack_name == 'mkl_rt')
   extra_args_single += '-DDUMMY_MKL_PARDISO'
   extra_args_double += '-DDUMMY_MKL_PARDISO'
-  extra_args_quadruple += '-DDUMMY_MKL_PARDISO'
 endif
+extra_args_quadruple += '-DDUMMY_MKL_PARDISO'
+
+# PARDISO
 if not libpardiso.found()
   extra_args_single += '-DDUMMY_PARDISO'
   extra_args_double += '-DDUMMY_PARDISO'
-  extra_args_quadruple += '-DDUMMY_PARDISO'
 endif
-if not libpastix.found()
+extra_args_quadruple += '-DDUMMY_PARDISO'
+
+# PASTIX and SPM
+if not (libspm.found() and libpastix.found())
   extra_args_single += '-DDUMMY_PASTIX'
-  extra_args_double += '-DDUMMY_PASTIX'
-  extra_args_quadruple += '-DDUMMY_PASTIX'
-endif
-if not libspm.found()
   extra_args_single += '-DDUMMY_SPM'
+  extra_args_double += '-DDUMMY_PASTIX'
   extra_args_double += '-DDUMMY_SPM'
-  extra_args_quadruple += '-DDUMMY_SPM'
 endif
+extra_args_quadruple += '-DDUMMY_PASTIX'
+extra_args_quadruple += '-DDUMMY_SPM'
+
+# WSMP
 if not libwsmp.found()
   extra_args_single += '-DDUMMY_WSMP'
   extra_args_double += '-DDUMMY_WSMP'
-  extra_args_quadruple += '-DDUMMY_WSMP'
 endif
+extra_args_quadruple += '-DDUMMY_WSMP'
+
+# HSL
 if not libhsl.found()
   extra_args_single += '-DDUMMY_HSL'
   extra_args_double += '-DDUMMY_HSL'
