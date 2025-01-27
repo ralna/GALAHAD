@@ -259,8 +259,7 @@ libgalahad_include = [include_directories('include'),
                       include_directories('src/nodend/metis51/include'),
                       include_directories('src/nodend/metis52/include'),
                       include_directories('src/ampl')]
-libgalahad_include = libgalahad_include + libhwloc_include + libhsl_modules +
-                     libcutest_modules + libspm_modules + libpastix_modules
+libgalahad_include = libgalahad_include + libhwloc_include + libhsl_modules + libcutest_modules + libspm_modules + libpastix_modules
 
 if host_machine.system() == 'linux'
   add_global_arguments('-DSPRAL_HAVE_SCHED_GETCPU', language : 'cpp')
