@@ -115,6 +115,8 @@ libhwloc_path = get_option('libhwloc_path')
 libhwloc_include = include_directories(get_option('libhwloc_include'))
 libhsl_modules = include_directories(get_option('libhsl_modules'))
 libcutest_modules = include_directories(get_option('libcutest_modules'))
+libspmf_modules = include_directories(get_option('libspmf_modules'))
+libpastixf_modules = include_directories(get_option('libpastixf_modules'))
 
 # Dependencies
 libblas = fc.find_library(libblas_name, dirs : libblas_path, required : false)
@@ -245,10 +247,9 @@ galahad_c_tests = []
 galahad_python_tests = []
 
 # Folders that contain headers and Fortran modules
-libgalahad_include = [include_directories('include'),
-                      include_directories('src/dum/include'),
-                      include_directories('src/metis/include'),
-                      include_directories('src/ampl')] + libhsl_modules + libcutest_modules + libhwloc_include
+libgalahad_include = [include_directories('include'), include_directories('src/dum/include'),
+                      include_directories('src/metis/include'), include_directories('src/ampl')]
+libgalahad_include = libgalahad_include + libhwloc_include + libhsl_modules + libcutest_modules + libspmf_modules + libpastixf_modules
 
 if host_machine.system() == 'linux'
   add_global_arguments('-DSPRAL_HAVE_SCHED_GETCPU', language : 'cpp')
@@ -284,47 +285,63 @@ endif
 
 extra_args_single = ['-DREAL_32']
 extra_args_double = []
-extra_args_quadruple = ['-DREAL_128', '-DGALAHAD_BLAS', '-DGALAHAD_LAPACK', '-DDUMMY_QMUMPS']
+extra_args_quadruple = ['-DREAL_128']
 
+# BLAS
 if not libblas.found()
   extra_args_single += '-DGALAHAD_BLAS'
   extra_args_double += '-DGALAHAD_BLAS'
 endif
+extra_args_quadruple += '-DGALAHAD_BLAS'
+
+# LAPACK
 if not liblapack.found()
   extra_args_single += '-DGALAHAD_LAPACK'
   extra_args_double += '-DGALAHAD_LAPACK'
 endif
+extra_args_quadruple += '-DGALAHAD_LAPACK'
+
+# MUMPS
 if not libsmumps.found()
   extra_args_single += '-DDUMMY_SMUMPS'
 endif
 if not libdmumps.found()
   extra_args_double += '-DDUMMY_DMUMPS'
 endif
+extra_args_quadruple += '-DDUMMY_QMUMPS'
+
+# MKL PARDISO
 if not (libblas_name == 'mkl_rt' or liblapack_name == 'mkl_rt')
   extra_args_single += '-DDUMMY_MKL_PARDISO'
   extra_args_double += '-DDUMMY_MKL_PARDISO'
-  extra_args_quadruple += '-DDUMMY_MKL_PARDISO'
 endif
+extra_args_quadruple += '-DDUMMY_MKL_PARDISO'
+
+# PARDISO
 if not libpardiso.found()
   extra_args_single += '-DDUMMY_PARDISO'
   extra_args_double += '-DDUMMY_PARDISO'
-  extra_args_quadruple += '-DDUMMY_PARDISO'
 endif
-if not libpastixf.found()
+extra_args_quadruple += '-DDUMMY_PARDISO'
+
+# PASTIX and SPM
+if not (libspmf.found() and libpastixf.found())
   extra_args_single += '-DDUMMY_PASTIXF'
-  extra_args_double += '-DDUMMY_PASTIXF'
-  extra_args_quadruple += '-DDUMMY_PASTIXF'
-endif
-if not libspmf.found()
   extra_args_single += '-DDUMMY_SPMF'
+  extra_args_double += '-DDUMMY_PASTIXF'
   extra_args_double += '-DDUMMY_SPMF'
-  extra_args_quadruple += '-DDUMMY_SPMF'
 endif
+extra_args_quadruple += '-DDUMMY_PASTIXF'
+extra_args_quadruple += '-DDUMMY_SPMF'
+
+# WSMP
 if not libwsmp.found()
   extra_args_single += '-DDUMMY_WSMP'
   extra_args_double += '-DDUMMY_WSMP'
-  extra_args_quadruple += '-DDUMMY_WSMP'
 endif
+extra_args_quadruple += '-DDUMMY_WSMP'
+
+# HSL
 if not libhsl.found()
   extra_args_single += '-DDUMMY_HSL'
   extra_args_double += '-DDUMMY_HSL'
