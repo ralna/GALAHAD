@@ -16,6 +16,10 @@ jobs:
         arch: ['x64']
         allow_failure: [false]
         include:
+          - os: ubuntu-24.04-arm
+            arch: 'arm64'
+            version: '1'
+            allow_failure: false
           - os: macos-latest
             arch: 'arm64'
             version: '1'
