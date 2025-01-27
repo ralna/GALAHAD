@@ -224,5 +224,5 @@ int main(void) {
         // Delete internal workspace
         cqp_terminate( &data, &control, &inform );
     }
-
+    printf("Tests complete\n");
 }

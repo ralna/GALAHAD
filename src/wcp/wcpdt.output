@@ -2,6 +2,7 @@
 
  basic tests of wcp storage formats
 
-C:     6 iterations. Optimal objective value =  0.01 status = 0
-R:     6 iterations. Optimal objective value =  0.01 status = 0
-D:     6 iterations. Optimal objective value =  0.01 status = 0
+C:     6 iterations. Optimal objective value = 0.01 status = 0
+R:     6 iterations. Optimal objective value = 0.01 status = 0
+D:     6 iterations. Optimal objective value = 0.01 status = 0
+Done
