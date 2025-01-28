@@ -192,15 +192,15 @@
 
 !  the total CPU time spent in the package
 
-       REAL :: total = 0.0
+       REAL ( KIND = sp_ ) :: total = 0.0
 
 !  the CPU time spent performing univariate global optimization
 
-       REAL :: univariate_global = 0.0
+       REAL ( KIND = sp_ ) :: univariate_global = 0.0
 
 !  the CPU time spent performing multivariate local optimization
 
-       REAL :: multivariate_local = 0.0
+       REAL ( KIND = sp_ ) :: multivariate_local = 0.0
 
 !  the total clock time spent in the package
 

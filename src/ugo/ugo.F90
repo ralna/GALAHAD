@@ -228,7 +228,7 @@
 
 !  the total CPU time spent in the package
 
-       REAL :: total = 0.0
+       REAL ( KIND = sp_ ) :: total = 0.0
 
 !  the total clock time spent in the package
 

@@ -221,27 +221,27 @@
 
 !  total time
 
-       REAL :: total = 0.0
+       REAL ( KIND = sp_ ) :: total = 0.0
 
 !  time to assemble the preconditioner prior to factorization
 
-        REAL :: assemble = 0.0
+        REAL ( KIND = sp_ ) :: assemble = 0.0
 
 !  time for the analysis phase
 
-       REAL :: analyse = 0.0
+       REAL ( KIND = sp_ ) :: analyse = 0.0
 
 !  time for the factorization phase
 
-       REAL :: factorize = 0.0
+       REAL ( KIND = sp_ ) :: factorize = 0.0
 
 !  time for the linear solution phase
 
-       REAL :: solve = 0.0
+       REAL ( KIND = sp_ ) :: solve = 0.0
 
 !  time to update the factorization
 
-        REAL :: update = 0.0
+        REAL ( KIND = sp_ ) :: update = 0.0
 
 !  total clock time spent in the package
 
