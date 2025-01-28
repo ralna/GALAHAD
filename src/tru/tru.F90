@@ -387,23 +387,23 @@
 
 !  the total CPU time spent in the package
 
-       REAL :: total = 0.0
+       REAL ( KIND = sp_ ) :: total = 0.0
 
 !  the CPU time spent preprocessing the problem
 
-       REAL :: preprocess = 0.0
+       REAL ( KIND = sp_ ) :: preprocess = 0.0
 
 !  the CPU time spent analysing the required matrices prior to factorization
 
-       REAL :: analyse = 0.0
+       REAL ( KIND = sp_ ) :: analyse = 0.0
 
 !  the CPU time spent factorizing the required matrices
 
-       REAL :: factorize = 0.0
+       REAL ( KIND = sp_ ) :: factorize = 0.0
 
 !  the CPU time spent computing the search direction
 
-       REAL :: solve = 0.0
+       REAL ( KIND = sp_ ) :: solve = 0.0
 
 !  the total clock time spent in the package
 
