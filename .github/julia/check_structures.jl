@@ -51,17 +51,28 @@ function F_structures()
               end
               type = split(newline, "::")[1] |> strip
               field = split(newline, "::")[2] |> strip
+              field = split(field, "!")[1] |> strip
               field = split(field, "=")[1] |> strip
-              # println(field)
-
-              # field = split(field, "!")[1] |> strip
-              for syntax in ("TYPE", "REAL", "INTEGER", "CHARACTER", "=")
-                type = split(type, syntax)[end]
-                # println(type)
+              for syntax in ("TYPE", "REAL", "INTEGER", "KIND", "ALLOCATABLE", "=", "(", ",", ")")
+                type = replace(type, syntax => "")
+              end
+              type = replace(type, "CHARACTER" => "Char")
+              for dim in ("DIMENSION", "dimension")
+                if contains(type, dim)
+                  type = replace(type, dim => "[")
+                  type = type * "]"
+                end
+              end
+              for len in ("LEN", "len")
+                if contains(type, len)
+                  type = replace(type, len => "[")
+                  type = type * "]"
+                end
               end
               field = lowercase(field)
               type = lowercase(type)
-              type = strip(type)
+              type = replace(type, " " => "")
+              println(type)
 
               push!(f_types[f_struct], type)
               push!(f_structures[f_struct], field)
@@ -285,13 +296,13 @@ for structure in c_list
         h_field = h_structures[structure][i]
         c_field = c_structures[structure][i]
         if h_field != c_field
-          println("The field $i of the structure $structure is not consistent ($h_field / $c_field).")
+          println("The field $i of the structure $structure is not consistent (H:$h_field / C:$c_field).")
           global n += 1
         else
           h_type = h_types[structure][i]
           c_type = c_types[structure][i]
           if h_type != c_type
-            println("The type of field $(h_field) of the structure $structure is not consistent ($h_type / $c_type).")
+            println("The type of field $(h_field) of the structure $structure is not consistent (H:$h_type / C:$c_type).")
             global n += 1
           end
         end
@@ -314,17 +325,17 @@ for structure in c_list
       diff_structures('F', f_structures[structure], 'C', c_structures[structure])
       global n += 1
     # else
-    #   for i = 1:h_nfields
-    #     h_field = h_structures[structure][i]
+    #   for i = 1:f_nfields
+    #     f_field = f_structures[structure][i]
     #     c_field = c_structures[structure][i]
-    #     if h_field != c_field
-    #       println("The field $i of the structure $structure is not consistent ($h_field / $c_field).")
+    #     if f_field != c_field
+    #       println("The field $i of the structure $structure is not consistent (F:$f_field / C:$c_field).")
     #       global n += 1
     #     else
-    #       h_type = h_types[structure][i]
+    #       f_type = f_types[structure][i]
     #       c_type = c_types[structure][i]
-    #       if h_type != c_type
-    #         println("The type of field $(h_field) of the structure $structure is not consistent ($h_type / $c_type).")
+    #       if f_type != c_type
+    #         println("The type of field $(h_field) of the structure $structure is not consistent (F:$f_type / C:$c_type).")
     #         global n += 1
     #       end
     #     end
