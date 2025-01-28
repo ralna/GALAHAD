@@ -46,9 +46,13 @@ int main(void) {
 
         // Initialize SLS - use the sytr solver
         sls_initialize( "sytr", &data, &control, &status );
+        sls_initialize( "ma57", &data, &control, &status );
+        //sls_initialize( "ssids", &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
+        //control.print_level = 1;
+        //control.print_level_solver = 2;
 
         switch(d){ // import matrix data and factorize
             case 1: // sparse co-ordinate storage
@@ -75,7 +79,6 @@ int main(void) {
         for(i=0; i<n; i++) x[i] = rhs[i];
         sls_solve_system( &data, &status, n, x );
         sls_information( &data, &inform, &status );
-
         if(inform.status == 0){
           for(i=0; i<n; i++) error[i] = x[i]-sol[i];
           status = maxabsarray( error, n, &norm_residual );
@@ -96,7 +99,6 @@ int main(void) {
         for(i=0; i<n; i++) x[i] = rhs[i];
         sls_solve_system( &data, &status, n, x );
         sls_information( &data, &inform, &status );
-
         if(inform.status == 0){
           for(i=0; i<n; i++) error[i] = x[i]-sol[i];
           status = maxabsarray( error, n, &norm_residual );
@@ -112,7 +114,9 @@ int main(void) {
         // obtain the solution by part solves
         for(i=0; i<n; i++) x[i] = rhs[i];
         sls_partial_solve_system( "L", &data, &status, n, x );
+        sls_information( &data, &inform, &status );
         sls_partial_solve_system( "D", &data, &status, n, x );
+        sls_information( &data, &inform, &status );
         sls_partial_solve_system( "U", &data, &status, n, x );
         sls_information( &data, &inform, &status );
 

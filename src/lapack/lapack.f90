@@ -1968,7 +1968,7 @@
           EXTERNAL ::  DGETRF, DGETRS, XERBLA2
           INTRINSIC :: MAX
           info = 0
-          IF( n<.0 ) THEN
+          IF( n<0 ) THEN
             info = -1
           ELSE IF( nrhs<0 ) THEN
             info = -2

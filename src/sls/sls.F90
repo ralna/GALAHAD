@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-01-22 AT 14:10 GMT
+! THIS VERSION: GALAHAD 5.2 - 2025-01-27 AT 11:10 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -1588,8 +1588,8 @@
 
 !  Dummy arguments
 
-     CHARACTER ( LEN = * ), INTENT( IN ) :: solver
-     TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
+     CHARACTER ( LEN = * ), INTENT( IN ) :: solver 
+    TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: error
      TYPE ( SLS_inform_type ), INTENT( OUT ) :: inform
      LOGICAL, OPTIONAL, INTENT( IN ) :: check
@@ -1604,6 +1604,7 @@
      TYPE ( ssids_akeep ) :: akeep_ssids
 !$   LOGICAL :: OMP_GET_CANCELLATION
 !$   INTEGER ( KIND = ip_ ) :: OMP_GET_PROC_BIND
+!$   INTEGER :: omp_status
 
 !  record the solver
 
@@ -1622,10 +1623,15 @@
 
 !$   SELECT CASE( data%solver( 1 : data%len_solver ) )
 !$   CASE ( 'ssids', 'mumps' )
-!!!!$     write(6,*) 'omp', OMP_GET_CANCELLATION( ), OMP_GET_PROC_BIND( )
-!$     IF ( .NOT. OMP_GET_CANCELLATION( ) .OR.                                 &
-!$          OMP_GET_PROC_BIND( ) == 0 ) THEN
-!!!!$          OMP_GET_PROC_BIND( ) /= 1 ) THEN
+!$     CALL get_environment_variable( "OMP_CANCELLATION", STATUS = omp_status )
+!$     IF ( omp_status == 0 ) THEN
+!$       CALL get_environment_variable( "OMP_PROC_BIND", STATUS = omp_status )
+!$       IF ( omp_status == 0 ) THEN
+!$         IF ( .NOT. OMP_GET_CANCELLATION( ) .OR.                             &
+!$              OMP_GET_PROC_BIND( ) == 0 ) omp_status = - 3
+!$       END IF
+!$     END IF
+!$     IF (  omp_status /= 0 ) THEN
 !$       IF ( error > 0 ) WRITE( error,                                        &
 !$         "( ' WARNING: To use the requested linear solver ', A,              &
 !$      &     ', the environment variables', /,  '          OMP_CANCELLATION', &
@@ -8736,8 +8742,8 @@
 !  = SSIDS =
 
      CASE ( 'ssids' )
-       inform%status = GALAHAD_unavailable_option
-       GO TO 900
+!      inform%status = GALAHAD_unavailable_option
+!      GO TO 900
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        IF ( part == 'L' .OR. ( part == 'S' .AND. data%must_be_definite ) ) THEN
          CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,  &
