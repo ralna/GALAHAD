@@ -377,17 +377,19 @@ for structure in c_list
     f_nfields = length(f_structures[structure2])
     c_nfields = length(c_structures[structure])
     c_nfields = ("f_indexing" in c_structures[structure]) ? c_nfields-1 : c_nfields
+    c_nfields = ("array_base" in c_structures[structure]) ? c_nfields-1 : c_nfields
 
     if f_nfields != c_nfields
       println("[$package] -- The structure `$structure` has missing attributes (F:$f_nfields / C:$c_nfields).")
       diff_structures('F', f_structures[structure2], 'C', c_structures[structure])
-      global n += 1
+      # global n += 1
     else
       for (i, c_field) in enumerate(c_structures[structure])
         (c_field == "f_indexing") && continue
+        (c_field == "array_base") && continue
         if !(c_field in f_structures[structure2])
           println("[$package] -- The field `$(c_field)` of the C structure `$structure` can't be found in the Fortran structure `$structure2`.")
-          global n += 1
+          # global n += 1
         else
           j = findfirst(str -> str == c_field, f_structures[structure2])
           c_type = c_types[structure][i]
