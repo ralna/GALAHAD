@@ -1220,7 +1220,7 @@
 
          INTEGER ( KIND = ip_ ) :: level
 
- ! the global printout level
+! the global printout level
 
          INTEGER ( KIND = ip_ ) :: print_level
 
@@ -1232,7 +1232,7 @@
 
          INTEGER ( KIND = ip_ ) :: model_used
 
- ! the position of the next vote for a model in the vector s%vote
+! the position of the next vote for a model in the vector s%vote
 
          INTEGER ( KIND = ip_ ) :: next_vote
 

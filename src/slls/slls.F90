@@ -262,19 +262,19 @@
 
 !  total time
 
-       REAL :: total = 0.0
+       REAL ( KIND = sp_ ) :: total = 0.0
 
 !  time for the analysis phase
 
-       REAL :: analyse = 0.0
+       REAL ( KIND = sp_ ) :: analyse = 0.0
 
 !  time for the factorization phase
 
-       REAL :: factorize = 0.0
+       REAL ( KIND = sp_ ) :: factorize = 0.0
 
 !  time for the linear solution phase
 
-       REAL :: solve = 0.0
+       REAL ( KIND = sp_ ) :: solve = 0.0
      END TYPE SLLS_time_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - -

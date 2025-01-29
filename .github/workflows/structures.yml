@@ -1,4 +1,4 @@
-name: Headers
+name: Structures
 on:
   push:
     branches:
@@ -17,5 +17,5 @@ jobs:
         with:
           version: 1
           arch: x64
-      - name: Check the C headers
-        run: julia --color=yes .github/julia/check_headers.jl
+      - name: Check the structures
+        run: julia --color=yes .github/julia/check_structures.jl
