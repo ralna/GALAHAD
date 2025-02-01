@@ -188,6 +188,16 @@ option('libcutest_modules',
        value : [],
        description : 'Additional directories to search for the CUTEST modules')
 
+option('libspmf_modules',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the SPMF modules')
+
+option('libpastixf_modules',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the PASTIXF modules')
+
 option('int64',
        type : 'boolean',
        value : false,
