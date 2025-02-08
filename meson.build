@@ -180,6 +180,12 @@ elif cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm-cl'
 endif
 
 lomp = '-lgomp'
+if cxx.get_id() == 'intel' or cxx.get_id() == 'intel-llvm'
+  lomp = '-liomp5'
+endif
+if cxx.get_id() == 'nvidia_hpc'
+  lomp = '-lomp'
+endif
 if host_machine.system() == 'darwin' or host_machine.system() == 'freebsd'
   if cxx.get_id() == 'clang'
     lomp = '-lomp'

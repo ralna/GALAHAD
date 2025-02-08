@@ -6,10 +6,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-# needed to allow julia-actions/cache to delete old caches that it has created
-permissions:
-  actions: write
-  contents: read
 jobs:
   test:
     name: aarch64-apple-darwin
@@ -22,7 +18,6 @@ jobs:
         with:
           version: "1.7"
           arch: x64
-      - uses: julia-actions/cache@v1
       # Set environment variables required by BinaryBuilder.
       - name: Set the environment variables
         run: |
