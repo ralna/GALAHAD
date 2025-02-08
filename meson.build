@@ -149,29 +149,22 @@ endif
 # OpenMP
 if fc.get_id() == 'nvidia_hpc'
   add_global_arguments('-mp', language : 'fortran')
-  add_global_link_arguments('-mp', language : 'fortran')
 elif fc.get_id() == 'nagfor'
   add_global_arguments('-openmp', language : 'fortran')
-  add_global_link_arguments('-openmp', language : 'fortran')
 elif fc.get_id() == 'gcc'
   add_global_arguments('-fopenmp', language : 'fortran')
-  add_global_link_arguments('-fopenmp', language : 'fortran')
 elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm'
   add_global_arguments('-qopenmp', language : 'fortran')
-  add_global_link_arguments('-qopenmp', language : 'fortran')
 elif fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
   add_global_arguments('/Qopenmp', language : 'fortran')
 endif
 
 if cc.get_id() == 'nvidia_hpc'
   add_global_arguments('-mp', language : 'c')
-  add_global_link_arguments('-mp', language : 'c')
 elif cc.get_id() == 'gcc' or cc.get_id() == 'clang' or cc.get_id() == 'clang-cl'
   add_global_arguments('-fopenmp', language : 'c')
-  add_global_link_arguments('-fopenmp', language : 'c')
 elif cc.get_id() == 'intel' or cc.get_id() == 'intel-llvm'
   add_global_arguments('-qopenmp', language : 'c')
-  add_global_link_arguments('-qopenmp', language : 'c')
 elif cc.get_id() == 'intel-cl' or cc.get_id() == 'intel-llvm-cl'
   add_global_arguments('/Qopenmp', language : 'c')
 endif
@@ -184,6 +177,13 @@ elif cxx.get_id() == 'intel' or cxx.get_id() == 'intel-llvm'
   add_global_arguments('-qopenmp', language : 'cpp')
 elif cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm-cl'
   add_global_arguments('/Qopenmp', language : 'cpp')
+endif
+
+lomp = '-lgomp'
+if host_machine.system() == 'darwin' or host_machine.system() == 'freebsd'
+  if cxx.get_id() == 'clang'
+    lomp = '-lomp'
+  endif
 endif
 
 libgalahad_single_deps = [libsmumps, libcutest_single, libblas, liblapack,
@@ -519,7 +519,7 @@ if build_single
                               c_args : extra_args_single,
                               cpp_args : extra_args_single,
                               link_language : 'fortran',
-                              link_args : lstdcpp,
+                              link_args : [lstdcpp, lomp],
                               include_directories: libgalahad_include,
                               install : true)
 endif
@@ -572,7 +572,7 @@ if build_double
                               c_args : extra_args_double,
                               cpp_args : extra_args_double,
                               link_language : 'fortran',
-                              link_args : lstdcpp,
+                              link_args : [lstdcpp, lomp],
                               include_directories: libgalahad_include,
                               install : true)
 endif
@@ -625,7 +625,7 @@ if build_quadruple
                               c_args : extra_args_quadruple,
                               cpp_args : extra_args_quadruple,
                               link_language : 'fortran',
-                              link_args : lstdcpp,
+                              link_args : [lstdcpp, lomp],
                               include_directories: libgalahad_include,
                               install : true)
 endif
