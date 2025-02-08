@@ -185,6 +185,9 @@ if host_machine.system() == 'darwin' or host_machine.system() == 'freebsd'
     lomp = '-lomp'
   endif
 endif
+add_global_link_arguments(lomp, language : 'fortran')
+add_global_link_arguments(lomp, language : 'c')
+add_global_link_arguments(lomp, language : 'cpp')
 
 libgalahad_single_deps = [libsmumps, libcutest_single, libblas, liblapack,
                           libhsl, libwsmp, libpardiso, libspmf, libpastixf,
@@ -519,7 +522,7 @@ if build_single
                               c_args : extra_args_single,
                               cpp_args : extra_args_single,
                               link_language : 'fortran',
-                              link_args : [lstdcpp, lomp],
+                              link_args : lstdcpp,
                               include_directories: libgalahad_include,
                               install : true)
 endif
@@ -572,7 +575,7 @@ if build_double
                               c_args : extra_args_double,
                               cpp_args : extra_args_double,
                               link_language : 'fortran',
-                              link_args : [lstdcpp, lomp],
+                              link_args : lstdcpp,
                               include_directories: libgalahad_include,
                               install : true)
 endif
@@ -625,7 +628,7 @@ if build_quadruple
                               c_args : extra_args_quadruple,
                               cpp_args : extra_args_quadruple,
                               link_language : 'fortran',
-                              link_args : [lstdcpp, lomp],
+                              link_args : lstdcpp,
                               include_directories: libgalahad_include,
                               install : true)
 endif
