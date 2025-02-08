@@ -40,13 +40,16 @@ int main(void) {
     printf(" C sparse matrix indexing\n\n");
 
     printf(" basic tests of storage formats\n\n");
+    //char solver[] = "sytr";
+    //char solver[] = "ma57";
+    char solver[] = "ssids";
+    printf(" solver %s\n", solver);
 
     printf(" storage          RHS   refine  partial\n");
     for( ipc_ d=1; d <= 3; d++){
 
         // Initialize SLS - use the sytr solver
-        sls_initialize( "sytr", &data, &control, &status );
-        sls_initialize( "ma57", &data, &control, &status );
+        sls_initialize( solver, &data, &control, &status );
         //sls_initialize( "ssids", &data, &control, &status );
 
         // Set user-defined control options
