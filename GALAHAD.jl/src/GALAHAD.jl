@@ -20,9 +20,9 @@ else
   const libgalahad_single = GALAHAD_jll.libgalahad_single
   const libgalahad_double = GALAHAD_jll.libgalahad_double
   const libgalahad_quadruple = replace(libgalahad_double, "double" => "quadruple")
-  const libgalahad_single_64 = "" # GALAHAD_jll.libgalahad_single_64
-  const libgalahad_double_64 = "" # GALAHAD_jll.libgalahad_double_64
-  const libgalahad_quadruple_64 = "" # replace(libgalahad_double_64, "double" => "quadruple")
+  const libgalahad_single_64 = GALAHAD_jll.libgalahad_single_64
+  const libgalahad_double_64 = GALAHAD_jll.libgalahad_double_64
+  const libgalahad_quadruple_64 = replace(libgalahad_double_64, "double" => "quadruple")
 end
 
 function __init__()
