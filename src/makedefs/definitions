@@ -195,6 +195,17 @@ LMS64 = $(OBJS64)/$(MSTATIC64)
 LMD64 = $(OBJD64)/$(MSTATIC64)
 LMQ64 = $(OBJQ64)/$(MSTATIC64)
 
+M4STATIC = libmetis4_nodend.a
+M4STATIC64 = libmetis464_nodend.a
+LM4  = $(OBJ)/$(M4STATIC)
+LM464 = $(OBJ)/$(M4STATIC64)
+LM4S = $(OBJS)/$(M4STATIC)
+LM4D = $(OBJD)/$(M4STATIC)
+LM4Q = $(OBJQ)/$(M4STATIC)
+LM4S64 = $(OBJS64)/$(M4STATIC64)
+LM4D64 = $(OBJD64)/$(M4STATIC64)
+LM4Q64 = $(OBJQ64)/$(M4STATIC64)
+
 M4LG  = $(OBJ)/libgalahad_metis4.a
 M4LGS = $(OBJS)/libgalahad_metis4.a
 M4LGD = $(OBJD)/libgalahad_metis4.a

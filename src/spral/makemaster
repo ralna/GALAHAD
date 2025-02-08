@@ -110,7 +110,8 @@ RLGQ64 = $(OBJQ64)/libgalahad_spral.a
 #  Libraries used
 
 ifeq "$(METIS_64)" "_64"
-  LIBS = -L$(OBJ) $(METIS64) $(LAPACK64) $(BLAS64) -lgalahad $(METIS64)
+# LIBS = -L$(OBJ) $(METIS64) $(LAPACK64) $(BLAS64) -lgalahad $(METIS64)
+  LIBS = -L$(OBJ) $(METIS64) $(LAPACK) $(BLAS) -lgalahad $(METIS64)
 else
   LIBS = -L$(OBJ) $(METIS) $(LAPACK) $(BLAS) -lgalahad $(METIS)
 endif

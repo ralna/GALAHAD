@@ -93,22 +93,25 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
 
 $(package)_gcov: ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
-	$(CP) ../$(package)/$(package).F90 $(package).F90
-	$(FORTRAN) -o $(package)_cov.o $(FFLAGSS) $(COVERAGE) \
-            $(package)_cov.F90 \
+	$(CP) ../$(package)/$(package).F90 $(package)_gcov.F90
+	$(FORTRAN) -o $(package)_gcov.o $(FFLAGSOMP) $(COVERAGE) \
+            $(package)_gcov.F90 \
           || ( printf ' %-26s' "=> Disabling optimization " ; \
-            $(FORTRAN) -o $(package)_cov.o $(FFLAGSN) $(COVERAGE) \
-              $(package)_cov.F90 )
-	$(CP) $(package)t.F90 $(package)t_cov.F90
-	$(FORTRAN) -g $(BASIC) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
-          $(package)t_cov.F90
-	$(FORTRAN) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
-          -o ./$(package)_cov $(package)_cov.o $(package)t_cov.o \
-           -L$(OBJ) $(LIBS)
+            $(FORTRAN) -o $(package)_gcov.o $(FFLAGSOMPN) $(COVERAGE) \
+              $(package)_gcov.F90 )
+	echo "a"
+	$(CP) $(package)t.F90 $(package)t_gcov.F90
+	$(FORTRAN) $(FFLAGSOMP) -o $(package)t_gcov.o $(package)t_gcov.F90
+	echo "b"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(COVERAGE) \
+          -o ./$(package)_gcov $(package)_gcov.o $(package)t_gcov.o -L $(OBJ) \
+          -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
+             $(METIS)  $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
+	echo "c"
 	./$(package)_gcov
 	gcov ./$(package)_gcov
-	$(MV) ./$(package)_cov.F90.cov ./$(package)_coverage
-	$(RM) ./$(package)*cov* ./galahad_$(package)_*.mod
+	$(MV) ./$(package)_gcov.F90.gcov ./$(package)_coverage
+	$(RM) ./$(package)*gcov* ./galahad_$(package)_*.mod
 
 #  test programs for specification document
 
