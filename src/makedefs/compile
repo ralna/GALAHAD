@@ -99,19 +99,16 @@ $(package)_gcov: ../$(package)/$(package).F90
           || ( printf ' %-26s' "=> Disabling optimization " ; \
             $(FORTRAN) -o $(package)_gcov.o $(FFLAGSOMPN) $(COVERAGE) \
               $(package)_gcov.F90 )
-	echo "a"
 	$(CP) $(package)t.F90 $(package)t_gcov.F90
 	$(FORTRAN) $(FFLAGSOMP) -o $(package)t_gcov.o $(package)t_gcov.F90
-	echo "b"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(COVERAGE) \
           -o ./$(package)_gcov $(package)_gcov.o $(package)t_gcov.o -L $(OBJ) \
           -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
              $(METIS)  $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
-	echo "c"
 	./$(package)_gcov
 	gcov ./$(package)_gcov
 	$(MV) ./$(package)_gcov.F90.gcov ./$(package)_coverage
-	$(RM) ./$(package)*gcov* ./galahad_$(package)_*.mod
+#	$(RM) ./$(package)*gcov* ./galahad_$(package)_*.mod
 
 #  test programs for specification document
 

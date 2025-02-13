@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 12:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-02-13 AT 08:20 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_BLLS_interface_test
    USE GALAHAD_KINDS_precision
@@ -111,7 +111,7 @@
    WRITE( 6, "( /, ' basic tests of Jacobian storage formats', / )" )
 
 !  DO data_storage_type = 1, 1
-   DO data_storage_type = 1, 5
+   DO data_storage_type = 1, 6
      CALL BLLS_initialize( data, control, inform )
 !    control%print_level = 1
 !    control%SBLS_control%print_level = 1
@@ -134,19 +134,25 @@
                           Ao_ne, null_, Ao_col, Ao_ptr )
         CALL BLLS_solve_given_a( data, userdata, status, Ao_val, B,            &
                                 X_l, X_u, X, Z, R, G, X_stat, W = W )
-     CASE ( 3 ) ! dense_by_rows
+     CASE ( 3 ) ! dense
+       st = ' DD'
+       CALL BLLS_import( control, data, status, n, o, 'dense',                 &
+                                  Ao_ne, null_, null_, null_ )
+       CALL BLLS_solve_given_a( data, userdata, status, Ao_dense, B,           &
+                                X_l, X_u, X, Z, R, G, X_stat, W = W )
+     CASE ( 4 ) ! dense_by_rows
        st = ' DR'
        CALL BLLS_import( control, data, status, n, o, 'dense_by_rows',         &
                                   Ao_ne, null_, null_, null_ )
        CALL BLLS_solve_given_a( data, userdata, status, Ao_dense, B,           &
                                 X_l, X_u, X, Z, R, G, X_stat, W = W )
-     CASE ( 4 ) ! sparse by cols
+     CASE ( 5 ) ! sparse by cols
        st = ' SC'
        CALL BLLS_import( control, data, status, n, o, 'sparse_by_columns',     &
                                   Ao_ne, Ao_by_col_row, null_, Ao_by_col_ptr )
        CALL BLLS_solve_given_a( data, userdata, status, Ao_by_col_val, B,      &
                                 X_l, X_u, X, Z, R, G, X_stat, W = W )
-     CASE ( 5 ) ! dense_by_cols
+     CASE ( 6 ) ! dense_by_cols
        st = ' DC'
        CALL BLLS_import( control, data, status, n, o, 'dense_by_columns',      &
                          Ao_ne, null_, null_, null_ )
@@ -243,7 +249,7 @@
    CONTAINS
      SUBROUTINE WHICH_sls( control )
      TYPE ( BLLS_control_type ) :: control
-#include "galahad_sls_defaults.h"
+#include "galahad_sls_defaults_ls.h"
      control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%definite_linear_solver = definite_linear_solver
      END SUBROUTINE WHICH_sls

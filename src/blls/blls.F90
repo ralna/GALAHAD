@@ -886,6 +886,7 @@
 !       In this case, the following must be set:
 !
 !       Ao%type( 1 : 13 ) = TRANSFER( 'DENSE_BY_ROWS', Ao%type )
+!                    but 'DENSE' is a synonym for 'DENSE_BY_ROWS', here.
 !       Ao%val( : )  the values of the components of A_o, stored row by row,
 !                    with each the entries in each row in order of
 !                    increasing column indicies.
@@ -6740,7 +6741,7 @@
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
 !   -3. The restriction n > 0, o >= 0 or requirement that Ao_type contains
-!       its relevant string 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',
+!       its relevant string 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',
 !       'COORDINATE', 'SPARSE_BY_ROWS', or 'SPARSE_BY_COLUMNS'
 !       has been violated.
 !
@@ -6953,7 +6954,7 @@
          data%prob%Ao%row( : data%prob%Ao%ne ) = Ao_row( : data%prob%Ao%ne ) + 1
        END IF
 
-     CASE ( 'dense_by_rows', 'DENSE_BY_ROWS' )
+     CASE ( 'dense', 'DENSE', 'dense_by_rows', 'DENSE_BY_ROWS' )
        CALL SMT_put( data%prob%Ao%type, 'DENSE_BY_ROWS',                       &
                      data%blls_inform%alloc_status )
        data%prob%Ao%n = n ; data%prob%Ao%m = o

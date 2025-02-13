@@ -50,7 +50,6 @@ int main(void) {
 
         // Initialize SLS - use the sytr solver
         sls_initialize( solver, &data, &control, &status );
-        //sls_initialize( "ssids", &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing

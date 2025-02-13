@@ -148,7 +148,7 @@ int main(void) {
 
     printf(" basic tests of blls storage formats\n\n");
 
-    for( ipc_ d=1; d <= 5; d++){
+    for( ipc_ d=1; d <= 6; d++){
 
         // Initialize BLLS
         blls_initialize( &data, &control, &status );
@@ -180,7 +180,16 @@ int main(void) {
                                     Ao_ne, Ao_val, b, x_l, x_u,
                                     x, z, r, g, x_stat, w, prec );
                 break;
-            case 3: // dense by rows
+            case 3: // dense
+                strcpy( st, "DD" );
+                blls_import( &control, &data, &status, n, o,
+                             "dense", Ao_dense_ne,
+                              NULL, NULL,0,  NULL );
+                blls_solve_given_a( &data, &userdata, &status, n, o,
+                                    Ao_dense_ne, Ao_dense, b, x_l, x_u,
+                                    x, z, r, g, x_stat, w, prec );
+                break;
+            case 4: // dense by rows
                 strcpy( st, "DR" );
                 blls_import( &control, &data, &status, n, o,
                              "dense_by_rows", Ao_dense_ne,
@@ -189,7 +198,7 @@ int main(void) {
                                     Ao_dense_ne, Ao_dense, b, x_l, x_u,
                                     x, z, r, g, x_stat, w, prec );
                 break;
-            case 4: // sparse by columns
+            case 5: // sparse by columns
                 strcpy( st, "SC" );
                 blls_import( &control, &data, &status, n, o,
                              "sparse_by_columns", Ao_ne, Ao_by_col_row,
@@ -198,7 +207,7 @@ int main(void) {
                                     Ao_ne, Ao_by_col_val, b, x_l, x_u,
                                     x, z, r, g, x_stat, w, prec );
                 break;
-            case 5: // dense by columns
+            case 6: // dense by columns
                 strcpy( st, "DC" );
                 blls_import( &control, &data, &status, n, o,
                              "dense_by_columns", Ao_dense_ne,
