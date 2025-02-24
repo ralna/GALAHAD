@@ -1,0 +1,128 @@
+#  Makefile stub for nodend components of metis51 (including the required GKlib)
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2024-03-24
+
+#  include standard HSL subset makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+.SUFFIXES:
+.SUFFIXES: .c .o .h _64.o
+
+# Gklib and metis procedures used
+
+SRC =  memory.c random.c error.c timers.c mcore.c fs.c io.c string.c \
+       timing.c fortran.c wspace.c debug.c options.c contig.c graph.c \
+       checkgraph.c compress.c bucketsort.c initpart.c mincover.c \
+       separator.c refine.c srefine.c balance.c fm.c sfm.c kwayrefine.c \
+       kwayfm.c mcutil.c coarsen.c minconn.c util.c mmd.c gklib.c \
+       smbfactor.c test_io.c auxapi.c ometis.c
+
+TEST = test_nodend.c
+
+OBJFILE = $(SRC:.c=.o)
+OBJFILE64 = $(SRC:.c=_64.o)
+TESTOBJ = $(TEST:.c=.o)
+TESTOBJ64 = $(TEST:.c=_64.o)
+
+all: build$(HSL_64)
+	@printf ' %-21s\n' "MeTiS procedures ($(PRECIS) $(SUCC)"
+#build: $(LM51)($(OBJFILE)) $(LG)(adapter.o) $(LG)(metis.o)
+#build_64: $(LM5164)($(OBJFILE64)) $(LG)(adapter_64.o) $(LG)(metis_64.o)
+build: $(LM51)($(OBJFILE)) $(LG)(adapter51.o) $(LG)(metis51.o)
+build_64: $(LM5164)($(OBJFILE64))  $(LG)(adapter51_64.o) $(LG)(metis51_64.o)
+build_cutest: build $(LG)(usemetis51.o) runmetis51_sif
+build_cutest_64: build_64 $(LG)(usemetis51_64.o) runmetis51_sif
+
+$(LM51)($(OBJFILE)): $(SRC)
+	@printf ' %-9s %-15s\t\t' "Compiling" $*
+	@$(CC) $(CFLAGS) $*.c -o $*.o
+	@$(AR) $(ARREPFLAGS) $@ $*.o
+	@$(RM) $*.o
+	@printf '[ OK ]\n'
+
+$(LM5164)($(OBJFILE64)): $(SRC)
+	@printf ' %-9s %-15s\t\t' "Compiling" $(*:_64=)
+	@$(CC) $(CFLAGS) $(*:_64=.c) -o $*.o
+	@$(AR) $(ARREPFLAGS) $@ $*.o
+	@$(RM) $*.o
+	@printf '[ OK ]\n'
+
+$(LG)(metis51.o): metis51.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "metis51"
+	$(FORTRAN) -o metis51.o $(FFLAGS) metis51.f90
+	$(ARR) metis51.o
+	$(RM) metis51.o
+	@printf '[ OK ]\n'
+
+$(LG)(metis51_64.o): metis51.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "metis51"
+	$(FORTRAN) -o metis51_64.o $(FFLAGS) metis51.f90
+	$(ARR) metis51_64.o
+	$(RM) metis51_64.o
+	@printf '[ OK ]\n'
+
+$(LG)(adapter51.o): adapter51.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "adapter51"
+	$(CC) -o adapter51.o $(CFLAGS) adapter51.c
+	$(ARR) adapter51.o
+	$(RM) adapter51.o
+	@printf '[ OK ]\n'
+
+$(LG)(adapter51_64.o): adapter51.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "adapter51"
+	$(CC) -o adapter51_64.o $(CFLAGS) adapter51.c
+	$(ARR) adapter51_64.o
+	$(RM) adapter51_64.o
+	@printf '[ OK ]\n'
+
+$(LG)(usemetis51.o): usemetis51.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usemetis51"
+	$(FORTRAN) -o usemetis51.o $(FFLAGS) usemetis51.f90
+	$(ARR) usemetis51.o
+	$(RM) usemetis51.o $(OBJ)/runmetis51_sif_$(PRECIS).o
+	$(MV) -f ./*.mod $(MOD)/
+	@printf '[ OK ]\n'
+
+$(LG)(usemetis51_64.o): usemetis51.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usemetis51"
+	$(FORTRAN) -o usemetis51_64.o $(FFLAGS) usemetis51.f90
+	$(ARR) usemetis51_64.o
+	$(RM) usemetis51_64.o $(OBJ)/runmetis51_64_sif_$(PRECIS).o
+	$(MV) -f ./*.mod $(MOD)/
+	@printf '[ OK ]\n'
+
+testall: test$(HSL_64)
+
+test: $(LM51)($(OBJFILE))
+	@echo [Run test]
+	@$(CC) -c $(CFLAGS) $(TEST)
+	@$(CC) -o ./test_nodend $(TESTOBJ) -L . -L $(OBJ) -lmetis51_nodend -lm
+	@./test_nodend
+	@$(RM) ./test_nodend $(TESTOBJ)
+
+test_64: $(LM5164)($(OBJFILE64))
+	@echo [Run test 64]
+	@$(CC) -c $(CFLAGS) -o $(TESTOBJ64) $(TEST)
+	@$(CC) -o ./test_nodend $(TESTOBJ64) -L . -L $(OBJ) -lmetis5164_nodend -lm
+	@./test_nodend
+	@$(RM) ./test_nodend $(TESTOBJ64)
+
+#  main program
+
+runmetis51_sif: $(OBJ)/runmetis51_sif_$(PRECIS).o
+
+$(OBJ)/runmetis51_sif_$(PRECIS).o: ../metis51/runmetis51_sif.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runmetis51_sif"
+	$(CP) ../metis51/runmetis51_sif.F90 $(OBJ)/runmetis51_sif.F90
+	cd $(OBJ); $(FORTRAN) -o runmetis51_sif_$(PRECIS).o \
+                     $(FFLAGSS) runmetis51_sif.F90
+	$(RM) $(OBJ)/runmetis51_sif.F90
+	@printf '[ OK ]\n'
+
+cleanall:
+	@$(RM) $(OBJFILE) $(LM51) $(OBJFILE64) $(LM5164)
+
+clean:
+	@$(RM) $(OBJFILE) $(OBJFILE64)
