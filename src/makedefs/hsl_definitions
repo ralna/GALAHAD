@@ -136,6 +136,14 @@ M4LGS64 = $(OBJS64)/libgalahad_metis4.a
 M4LGD64 = $(OBJD64)/libgalahad_metis4.a
 M4LGQ64 = $(OBJQ64)/libgalahad_metis4.a
 
+M51LG  = $(OBJ)/libgalahad_metis51.a
+M51LGS = $(OBJS)/libgalahad_metis51.a
+M51LGD = $(OBJD)/libgalahad_metis51.a
+M51LGQ = $(OBJQ)/libgalahad_metis51.a
+M51LGS64 = $(OBJS64)/libgalahad_metis51.a
+M51LGD64 = $(OBJD64)/libgalahad_metis51.a
+M51LGQ64 = $(OBJQ64)/libgalahad_metis51.a
+
 M5LG  = $(OBJ)/libgalahad_metis5.a
 M5LGS = $(OBJS)/libgalahad_metis5.a
 M5LGD = $(OBJD)/libgalahad_metis5.a

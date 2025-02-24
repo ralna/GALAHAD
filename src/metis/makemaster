@@ -30,6 +30,8 @@ all: build$(HSL_64)
 	@printf ' %-21s\n' "MeTiS procedures ($(PRECIS) $(SUCC)"
 build: $(LM)($(OBJFILE)) $(LG)(adapter.o) $(LG)(metis.o)
 build_64: $(LM64)($(OBJFILE64)) $(LG)(adapter_64.o) $(LG)(metis_64.o)
+build_cutest: build $(LG)(usemetis.o) runmetis_sif
+build_cutest_64: build_64 $(LG)(usemetis_64.o) runmetis_sif
 
 $(LM)($(OBJFILE)): $(SRC)
 	@printf ' %-9s %-15s\t\t' "Compiling" $*
@@ -73,6 +75,22 @@ $(LG)(adapter_64.o): adapter.c
 	$(RM) adapter_64.o
 	@printf '[ OK ]\n'
 
+$(LG)(usemetis.o): usemetis.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usemetis"
+	$(FORTRAN) -o usemetis.o $(FFLAGS) usemetis.f90
+	$(ARR) usemetis.o
+	$(RM) usemetis.o
+	$(MV) -f ./*.mod $(MOD)/
+	@printf '[ OK ]\n'
+
+$(LG)(usemetis_64.o): usemetis.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usemetis"
+	$(FORTRAN) -o usemetis_64.o $(FFLAGS) usemetis.f90
+	$(ARR) usemetis_64.o
+	$(RM) usemetis_64.o
+	$(MV) -f ./*.mod $(MOD)/
+	@printf '[ OK ]\n'
+
 testall: test$(HSL_64)
 
 test: $(LM)($(OBJFILE))
@@ -88,6 +106,18 @@ test_64: $(LM64)($(OBJFILE64))
 	@$(CC) -o ./test_nodend $(TESTOBJ64) -L . -L $(OBJ) -lmetis64_nodend -lm
 	@./test_nodend
 	@$(RM) ./test_nodend  $(TESTOBJ64)
+
+#  main program
+
+runmetis_sif: $(OBJ)/runmetis_sif_$(PRECIS).o
+
+$(OBJ)/runmetis_sif_$(PRECIS).o: ../metis/runmetis_sif.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runmetis_sif"
+	$(CP) ../metis/runmetis_sif.F90 $(OBJ)/runmetis_sif.F90
+	cd $(OBJ); $(FORTRAN) -o runmetis_sif_$(PRECIS).o \
+                     $(FFLAGSS) runmetis_sif.F90
+	rm $(OBJ)/runmetis_sif.F90
+	@printf '[ OK ]\n'
 
 cleanall:
 	@$(RM) $(OBJFILE) $(LM) $(OBJFILE64) $(LM64)

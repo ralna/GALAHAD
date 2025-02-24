@@ -33,6 +33,8 @@
 #define GALAHAD_DPS_precision GALAHAD_DPS_single_64
 #define GALAHAD_DQP_precision GALAHAD_DQP_single_64
 #define GALAHAD_EKS_precision GALAHAD_EKS_single_64
+#define GALAHAD_EKTR_precision GALAHAD_EKTR_single_64
+#define GALAHAD_EKRT_precision GALAHAD_EKRT_single_64
 #define GALAHAD_EPF_precision GALAHAD_EPF_single_64
 #define GALAHAD_EQP_precision GALAHAD_EQP_single_64
 #define GALAHAD_ERMO_precision GALAHAD_ERMO_single_64
@@ -158,6 +160,8 @@
 #define GALAHAD_USEDPS_precision GALAHAD_USEDPS_single_64
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_single_64
 #define GALAHAD_USEEKS_precision GALAHAD_USEEKS_single_64
+#define GALAHAD_USEEKTR_precision GALAHAD_USEEKTR_single_64
+#define GALAHAD_USEEKRT_precision GALAHAD_USEEKRT_single_64
 #define GALAHAD_USEEPF_precision GALAHAD_USEEPF_single_64
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_single_64
 #define GALAHAD_USEERMO_precision GALAHAD_USEERMO_single_64
@@ -201,6 +205,9 @@
 #define GALAHAD_USESILS_precision GALAHAD_USESILS_single_64
 #define GALAHAD_USESLLS_precision GALAHAD_USESLLS_single_64
 #define GALAHAD_USESLS_precision GALAHAD_USESLS_single_64
+#define GALAHAD_USEMETIS_precision GALAHAD_USEMETIS_single_64
+#define GALAHAD_USEMETIS51_precision GALAHAD_USEMETIS51_single_64
+#define GALAHAD_USEMETIS4_precision GALAHAD_USEMETIS4_single_64
 #define GALAHAD_USESQP_precision GALAHAD_USESQP_single_64
 #define GALAHAD_USESUPERB_precision GALAHAD_USESUPERB_single_64
 #define GALAHAD_USETRACE_precision GALAHAD_USETRACE_single_64
@@ -333,6 +340,9 @@
 #define RUNLSRT_SIF_precision RUNLSRT_SIF_single_64
 #define RUNLSTR_SIF_precision RUNLSTR_SIF_single_64
 #define RUNMIQR_SIF_precision RUNMIQR_SIF_single_64
+#define RUNMETIS_SIF_precision RUNMETIS_SIF_single_64
+#define RUNMETIS51_SIF_precision RUNMETIS51_SIF_single_64
+#define RUNMETIS4_SIF_precision RUNMETIS4_SIF_single_64
 #define RUNNLS_SIF_precision RUNNLS_SIF_single_64
 #define RUNPRESOLVE_SIF_precision RUNPRESOLVE_SIF_single_64
 #define RUNQPA_SIF_precision RUNQPA_SIF_single_64
@@ -359,6 +369,8 @@
 #define RUNTRACE_SIF_precision RUNTRACE_SIF_single_64
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_single_64
 #define RUNEKS_SIF_precision RUNEKS_SIF_single_64
+#define RUNEKTR_SIF_precision RUNEKTR_SIF_single_64
+#define RUNEKRT_SIF_precision RUNEKRT_SIF_single_64
 #define RUNEPF_SIF_precision RUNEPF_SIF_single_64
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_single_64
 #define RUNERMO_SIF_precision RUNERMO_SIF_single_64
@@ -431,6 +443,8 @@
 #define GALAHAD_DPS_precision GALAHAD_DPS_single
 #define GALAHAD_DQP_precision GALAHAD_DQP_single
 #define GALAHAD_EKS_precision GALAHAD_EKS_single
+#define GALAHAD_EKTR_precision GALAHAD_EKTR_single
+#define GALAHAD_EKRT_precision GALAHAD_EKRT_single
 #define GALAHAD_EPF_precision GALAHAD_EPF_single
 #define GALAHAD_EQP_precision GALAHAD_EQP_single
 #define GALAHAD_ERMO_precision GALAHAD_ERMO_single
@@ -556,6 +570,8 @@
 #define GALAHAD_USEDPS_precision GALAHAD_USEDPS_single
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_single
 #define GALAHAD_USEEKS_precision GALAHAD_USEEKS_single
+#define GALAHAD_USEEKTR_precision GALAHAD_USEEKTR_single
+#define GALAHAD_USEEKRT_precision GALAHAD_USEEKRT_single
 #define GALAHAD_USEEPF_precision GALAHAD_USEEPF_single
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_single
 #define GALAHAD_USEERMO_precision GALAHAD_USEERMO_single
@@ -599,6 +615,9 @@
 #define GALAHAD_USESILS_precision GALAHAD_USESILS_single
 #define GALAHAD_USESLLS_precision GALAHAD_USESLLS_single
 #define GALAHAD_USESLS_precision GALAHAD_USESLS_single
+#define GALAHAD_USEMETIS_precision GALAHAD_USEMETIS_single
+#define GALAHAD_USEMETIS51_precision GALAHAD_USEMETIS51_single
+#define GALAHAD_USEMETIS4_precision GALAHAD_USEMETIS4_single
 #define GALAHAD_USESQP_precision GALAHAD_USESQP_single
 #define GALAHAD_USESUPERB_precision GALAHAD_USESUPERB_single
 #define GALAHAD_USETRACE_precision GALAHAD_USETRACE_single
@@ -731,6 +750,9 @@
 #define RUNLSRT_SIF_precision RUNLSRT_SIF_single
 #define RUNLSTR_SIF_precision RUNLSTR_SIF_single
 #define RUNMIQR_SIF_precision RUNMIQR_SIF_single
+#define RUNMETIS_SIF_precision RUNMETIS_SIF_single
+#define RUNMETIS51_SIF_precision RUNMETIS51_SIF_single
+#define RUNMETIS4_SIF_precision RUNMETIS4_SIF_single
 #define RUNNLS_SIF_precision RUNNLS_SIF_single
 #define RUNPRESOLVE_SIF_precision RUNPRESOLVE_SIF_single
 #define RUNQPA_SIF_precision RUNQPA_SIF_single
@@ -757,6 +779,8 @@
 #define RUNTRACE_SIF_precision RUNTRACE_SIF_single
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_single
 #define RUNEKS_SIF_precision RUNEKS_SIF_single
+#define RUNEKTR_SIF_precision RUNEKTR_SIF_single
+#define RUNEKRT_SIF_precision RUNEKRT_SIF_single
 #define RUNEPF_SIF_precision RUNEPF_SIF_single
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_single
 #define RUNERMO_SIF_precision RUNERMO_SIF_single

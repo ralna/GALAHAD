@@ -443,6 +443,33 @@ $(M4LG)(metis4.o): ../external/metis/metis4.f90
 	cd $(OBJ); $(M4ARR) metis4.o ; $(RM) metis4.f90 metis4.o
 	@printf '[ OK ]\n'
 
+#  metis51 package
+
+metis51_silent: metis51_$(PRECIS)
+metis51: metis51_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: metis51 ($(PRECIS) $(SUCC)"
+metis51_single: symbols_silent $(M4LGS)(metis51.o)
+	$(RANLIB) $(M4LGS)
+metis51_double: symbols_silent $(M4LGD)(metis51.o)
+	$(RANLIB) $(M4LGD)
+metis51_quadruple: symbols_silent $(M4LGQ)(metis51.o)
+	$(RANLIB) $(M4LGQ)
+metis51_single_64: symbols_silent $(M4LGS64)(metis51.o)
+	$(RANLIB) $(M4LGS64)
+metis51_double_64: symbols_silent $(M4LGD64)(metis51.o)
+	$(RANLIB) $(M4LGD64)
+metis51_quadruple_64: symbols_silent $(M4LGQ64)(metis51.o)
+	$(RANLIB) $(M4LGQ64)
+
+metis51.o: $(M4LG)(metis51.o)
+
+$(M4LG)(metis51.o): ../external/metis/metis51.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "metis51  "
+	$(CP) ../external/metis/metis51.f90 $(OBJ)/metis51.f90
+	cd $(OBJ); $(FORTRAN) -o metis51.o $(FFLAGS) metis51.f90
+	cd $(OBJ); $(M4ARR) metis51.o ; $(RM) metis51.f90 metis51.o
+	@printf '[ OK ]\n'
+
 #  metis5 package
 
 metis5_silent: metis5_$(PRECIS)
@@ -603,6 +630,13 @@ METISQ = symbols_silent $(MLGQ)(metis4.o)
 METISS64 = symbols_silent $(MLGS64)(metis4.o)
 METISD64 = symbols_silent $(MLGD64)(metis4.o)
 METISQ64 = symbols_silent $(MLGQ64)(metis4.o)
+
+METIS51S = symbols_silent $(M51LGS)(metis51.o)
+METIS51D = symbols_silent $(M51LGD)(metis51.o)
+METIS51Q = symbols_silent $(M51LGQ)(metis51.o)
+METIS51S64 = symbols_silent $(M51LGS64)(metis51.o)
+METIS51D64 = symbols_silent $(M51LGD64)(metis51.o)
+METIS51Q64 = symbols_silent $(M51LGQ64)(metis51.o)
 
 WSMPS = symbols_silent $(WLGS)(wsmp.o)
 WSMPD = symbols_silent $(WLGD)(wsmp.o)
