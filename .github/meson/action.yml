@@ -355,4 +355,4 @@ runs:
     - name: Test GALAHAD.jl
       if: (inputs.os != 'windows-latest' || inputs.compiler != 'intel')
       shell: bash
-      run: julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
+      run: julia --color=yes -e 'using Pkg; Pkg.update(); Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
