@@ -36,6 +36,7 @@ CDEPENDENCIES = make_ciface_common make_ciface_sbls_deps \
                 make_ciface_lpb make_ciface_convert make_ciface_blls \
                 make_ciface_clls make_ciface_bllsb make_ciface_slls
 
+
 #  auxiliary packages that the python interface to the current package depends
 #  on (prepend with make_pyiface_)
 
@@ -62,6 +63,7 @@ TESTDEPS = make_copyright
 #  packages that are needed for CUTEst interfaces (prepend with make_)
 
 CUTESTDEPS = $(CUTEST_TESTS) $(TESTDEPS) \
+             make_nodend_cutest make_sls_cutest make_sbls_cutest \
              make_eqp_cutest make_qpa_cutest make_qpb_cutest \
              make_qpc_cutest make_blls_cutest make_bqp_cutest \
              make_bqpb_cutest make_cqp_cutest make_dqp_cutest \
@@ -466,6 +468,21 @@ make_slls_cutest:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls_cutest_addon \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+
+make_nodend_cutest:
+	( cd $(GALAHAD)/src/nodend ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nodend_cutest_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nodend )
+
+make_sls_cutest:
+	( cd $(GALAHAD)/src/sls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sls_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sls )
+
+make_sbls_cutest:
+	( cd $(GALAHAD)/src/sbls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sbls_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sbls )
 
 #  AMPL specific interfaces
 

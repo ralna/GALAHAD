@@ -78,6 +78,7 @@
 #define GALAHAD_LSRT_precision GALAHAD_LSRT_single_64
 #define GALAHAD_LSTR_precision GALAHAD_LSTR_single_64
 #define GALAHAD_MAP_precision GALAHAD_MAP_single_64
+#define GALAHAD_NODEND_precision GALAHAD_NODEND_single_64
 #define GALAHAD_MIQR_precision GALAHAD_MIQR_single_64
 #define GALAHAD_MOP_precision GALAHAD_MOP_single_64
 #define GALAHAD_NLLSRT_precision GALAHAD_NLLSRT_single_64
@@ -205,7 +206,7 @@
 #define GALAHAD_USESILS_precision GALAHAD_USESILS_single_64
 #define GALAHAD_USESLLS_precision GALAHAD_USESLLS_single_64
 #define GALAHAD_USESLS_precision GALAHAD_USESLS_single_64
-#define GALAHAD_USEMETIS_precision GALAHAD_USEMETIS_single_64
+#define GALAHAD_USENODEND_precision GALAHAD_USENODEND_single_64
 #define GALAHAD_USEMETIS51_precision GALAHAD_USEMETIS51_single_64
 #define GALAHAD_USEMETIS4_precision GALAHAD_USEMETIS4_single_64
 #define GALAHAD_USESQP_precision GALAHAD_USESQP_single_64
@@ -272,6 +273,7 @@
 #define GALAHAD_LSRT_precision_ciface GALAHAD_LSRT_single_ciface_64
 #define GALAHAD_LSTR_precision_ciface GALAHAD_LSTR_single_ciface_64
 #define GALAHAD_NLS_precision_ciface GALAHAD_NLS_single_ciface_64
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_single_ciface_64
 #define GALAHAD_PRESOL_precision_ciface GALAHAD_PRESOL_single_ciface_64
 #define GALAHAD_PSLS_precision_ciface GALAHAD_PSLS_single_ciface_64
 #define GALAHAD_QPA_precision_ciface GALAHAD_QPA_single_ciface_64
@@ -340,7 +342,7 @@
 #define RUNLSRT_SIF_precision RUNLSRT_SIF_single_64
 #define RUNLSTR_SIF_precision RUNLSTR_SIF_single_64
 #define RUNMIQR_SIF_precision RUNMIQR_SIF_single_64
-#define RUNMETIS_SIF_precision RUNMETIS_SIF_single_64
+#define RUNNODEND_SIF_precision RUNNODEND_SIF_single_64
 #define RUNMETIS51_SIF_precision RUNMETIS51_SIF_single_64
 #define RUNMETIS4_SIF_precision RUNMETIS4_SIF_single_64
 #define RUNNLS_SIF_precision RUNNLS_SIF_single_64
@@ -488,6 +490,7 @@
 #define GALAHAD_LSRT_precision GALAHAD_LSRT_single
 #define GALAHAD_LSTR_precision GALAHAD_LSTR_single
 #define GALAHAD_MAP_precision GALAHAD_MAP_single
+#define GALAHAD_NODEND_precision GALAHAD_NODEND_single
 #define GALAHAD_MIQR_precision GALAHAD_MIQR_single
 #define GALAHAD_MOP_precision GALAHAD_MOP_single
 #define GALAHAD_NLLSRT_precision GALAHAD_NLLSRT_single
@@ -615,7 +618,7 @@
 #define GALAHAD_USESILS_precision GALAHAD_USESILS_single
 #define GALAHAD_USESLLS_precision GALAHAD_USESLLS_single
 #define GALAHAD_USESLS_precision GALAHAD_USESLS_single
-#define GALAHAD_USEMETIS_precision GALAHAD_USEMETIS_single
+#define GALAHAD_USENODEND_precision GALAHAD_USENODEND_single
 #define GALAHAD_USEMETIS51_precision GALAHAD_USEMETIS51_single
 #define GALAHAD_USEMETIS4_precision GALAHAD_USEMETIS4_single
 #define GALAHAD_USESQP_precision GALAHAD_USESQP_single
@@ -682,6 +685,7 @@
 #define GALAHAD_LSRT_precision_ciface GALAHAD_LSRT_single_ciface
 #define GALAHAD_LSTR_precision_ciface GALAHAD_LSTR_single_ciface
 #define GALAHAD_NLS_precision_ciface GALAHAD_NLS_single_ciface
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_single_ciface
 #define GALAHAD_PRESOL_precision_ciface GALAHAD_PRESOLVE_single_ciface
 #define GALAHAD_PSLS_precision_ciface GALAHAD_PSLS_single_ciface
 #define GALAHAD_QPA_precision_ciface GALAHAD_QPA_single_ciface
@@ -750,7 +754,7 @@
 #define RUNLSRT_SIF_precision RUNLSRT_SIF_single
 #define RUNLSTR_SIF_precision RUNLSTR_SIF_single
 #define RUNMIQR_SIF_precision RUNMIQR_SIF_single
-#define RUNMETIS_SIF_precision RUNMETIS_SIF_single
+#define RUNNODEND_SIF_precision RUNNODEND_SIF_single
 #define RUNMETIS51_SIF_precision RUNMETIS51_SIF_single
 #define RUNMETIS4_SIF_precision RUNMETIS4_SIF_single
 #define RUNNLS_SIF_precision RUNNLS_SIF_single

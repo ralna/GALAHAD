@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-23 AT 15:50 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-03-10 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -38,7 +38,7 @@
                STRING_integer_6, STRING_integer_right_6,                       &
                STRING_real_7, STRING_real_12, STRING_trim_real_24,             &
                STRING_trim_integer_16, STRING_es, STRING_es12,                 &
-               STRING_exponent, STRING_ordinal
+               STRING_exponent, STRING_ordinal, STRING_leading_zero
 
 !  Set parameters
 
@@ -87,6 +87,13 @@
        MODULE PROCEDURE STRING_exponent_single, STRING_exponent_double,        &
                         STRING_exponent_quadruple
      END INTERFACE
+
+     INTERFACE STRING_leading_zero
+       MODULE PROCEDURE STRING_leading_zero_single,                            &
+                        STRING_leading_zero_double,                            &
+                        STRING_leading_zero_quadruple
+     END INTERFACE
+
 #else
      INTERFACE STRING_sign
        MODULE PROCEDURE STRING_sign_single, STRING_sign_double
@@ -115,9 +122,12 @@
      INTERFACE STRING_exponent
        MODULE PROCEDURE STRING_exponent_single, STRING_exponent_double
      END INTERFACE
+
+     INTERFACE STRING_leading_zero
+       MODULE PROCEDURE STRING_leading_zero_single,                            &
+                        STRING_leading_zero_double
+     END INTERFACE
 #endif
-
-
 
      INTERFACE STRING_lower
        MODULE PROCEDURE STRING_lower_scalar, STRING_lower_component
@@ -2117,6 +2127,30 @@
 
      END FUNCTION STRING_exponent_double
 
+!-  G A L A H A D -  S T R I N G _ l e a d i n g _ z e r o  F U N C T I O N  -
+
+     FUNCTION STRING_leading_zero_single( r )
+     CHARACTER ( LEN = 1 ) :: STRING_leading_zero_single
+     REAL ( KIND = sp_ ) :: r
+     IF ( r < 1.0_sp_ ) THEN
+       STRING_leading_zero_single = '0'
+     ELSE
+       STRING_leading_zero_single = ' '
+     END IF
+     END FUNCTION STRING_leading_zero_single
+
+!-  G A L A H A D -  S T R I N G _ l e a d i n g _ z e r o  F U N C T I O N  -
+
+     FUNCTION STRING_leading_zero_double( r )
+     CHARACTER ( LEN = 1 ) :: STRING_leading_zero_double
+     REAL ( KIND = dp_ ) :: r
+     IF ( r < 1.0_dp_ ) THEN
+       STRING_leading_zero_double = '0'
+     ELSE
+       STRING_leading_zero_double = ' '
+     END IF
+     END FUNCTION STRING_leading_zero_double
+
 !-*-*-  G A L A H A D -  S T R I N G _ o r d i n a l   F U N C T I O N  -*-*-
 
      FUNCTION STRING_ordinal( num )
@@ -2859,6 +2893,19 @@
 !  End of STRING_exponent_quadruple
 
      END FUNCTION STRING_exponent_quadruple
+
+!-  G A L A H A D -  S T R I N G _ l e a d i n g _ z e r o  F U N C T I O N  -
+
+     FUNCTION STRING_leading_zero_quadruple( r )
+     CHARACTER ( LEN = 1 ) :: STRING_leading_zero_quadruple
+     REAL ( KIND = dp_ ) :: r
+     IF ( r < 1.0_dp_ ) THEN
+       STRING_leading_zero_quadruple = '0'
+     ELSE
+       STRING_leading_zero_quadruple = ' '
+     END IF
+     END FUNCTION STRING_leading_zero_quadruple
+
 #endif
 
 !  End of module GALAHAD_STRING

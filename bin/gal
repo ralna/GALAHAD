@@ -32,7 +32,7 @@
 #  History -
 #   originally released pre GALAHAD Version 1.0. August 20th, 1999 (for csh)
 #   update released with GALAHAD Version 2.0. May 11th 2006 (for sh)
-#   this version 2024-11-12
+#   this version 2025-03-11
 
 if [[ -z $GALAHAD ]]; then
   echo ' You have not set the GALAHAD environment variable. '
@@ -1051,31 +1051,13 @@ elif [[ $2 == 'demo' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec demo update
   [[ ! -L RUNDEMO.SPC ]] && ln -s ~/.galahad/specs/RUNDEMO.SPC RUNDEMO.SPC
 
-# metis
+# nodend
 
-elif [[ $2 == 'metis' ]]; then
-  RUNMAIN=$GALOBJ/runmetis_sif_$PRECIS.o
-  [[ ! -e ~/.galahad/specs/RUNMETIS.SPC ]] && $GALOBJ/buildspec metis
-  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec metis update
-  [[ ! -L RUNMETIS.SPC ]] && ln -s ~/.galahad/specs/RUNMETIS.SPC RUNMETIS.SPC
-
-# metis51
-
-elif [[ $2 == 'metis51' ]]; then
-  RUNMAIN=$GALOBJ/runmetis51_sif_$PRECIS.o
-  METIS=-lmetis51_nodend
-  [[ ! -e ~/.galahad/specs/RUNMETIS51.SPC ]] && $GALOBJ/buildspec metis51
-  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec metis51 update
-  [[ ! -L RUNMETIS51.SPC ]] && ln -s ~/.galahad/specs/RUNMETIS51.SPC RUNMETIS51.SPC
-
-# metis4
-
-elif [[ $2 == 'metis4' ]]; then
-  RUNMAIN=$GALOBJ/runmetis4_sif_$PRECIS.o
-  METIS=-lmetis4_nodend
-  [[ ! -e ~/.galahad/specs/RUNMETIS4.SPC ]] && $GALOBJ/buildspec metis4
-  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec metis4 update
-  [[ ! -L RUNMETIS4.SPC ]] && ln -s ~/.galahad/specs/RUNMETIS4.SPC RUNMETIS4.SPC
+elif [[ $2 == 'nodend' ]]; then
+  RUNMAIN=$GALOBJ/runnodend_sif_$PRECIS.o
+  [[ ! -e ~/.galahad/specs/RUNNODEND.SPC ]] && $GALOBJ/buildspec nodend
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec nodend update
+  [[ ! -L RUNNODEND.SPC ]] && ln -s ~/.galahad/specs/RUNNODEND.SPC RUNNODEND.SPC
 
 #  lancelot_steering
 

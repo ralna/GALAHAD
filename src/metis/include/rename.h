@@ -131,6 +131,8 @@
 #define Greedy_McKWayVolOptimize        galmetis__Greedy_McKWayVolOptimize_64
 #define IsArticulationNode              galmetis__IsArticulationNode_64
 #define KWayVolUpdate                   galmetis__KWayVolUpdate_64
+#define Greedy_KWayEdgeStats            galmetis__Greedy_KWayEdgeStats_64
+#define Greedy_KWayEdgeCutOptimize      galmetis__Greedy_KWayEdgeCutOptimize_64
 
 /* kwayrefine.c */
 #define RefineKWay			galmetis__RefineKWay_64
@@ -381,6 +383,8 @@
 #define Greedy_McKWayVolOptimize        galmetis__Greedy_McKWayVolOptimize
 #define IsArticulationNode              galmetis__IsArticulationNode
 #define KWayVolUpdate                   galmetis__KWayVolUpdate
+#define Greedy_KWayEdgeStats            galmetis__Greedy_KWayEdgeStats
+#define Greedy_KWayEdgeCutOptimize      galmetis__Greedy_KWayEdgeCutOptimize
 
 /* kwayrefine.c */
 #define RefineKWay			galmetis__RefineKWay

@@ -103,7 +103,7 @@ contains
     ! Determine level structure
     allocate(stream_data%lvllist(nnodes), &
          stream_data%lvlptr(nnodes + 1), stat=stats%st)
-    if (stats%st .ne. 0) goto  100
+    if (stats%st .ne. 0) goto 100
     call assign_nodes_to_levels(nnodes, sparent, gpu_contribs, &
          stream_data%num_levels, stream_data%lvlptr, stream_data%lvllist, &
          stats%st)

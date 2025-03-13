@@ -17,8 +17,8 @@
 /* name change to avoid any possible conflicts */
 
 void galahad_metis5_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
-                            idx_t* numflag, idx_t* options, idx_t* perm,
-                            idx_t* iperm){
+                            idx_t* numflag, idx_t* options, 
+                            idx_t* perm, idx_t* iperm){
     idx_t options5[METIS_NOPTIONS];
     int debug = 0;
 
@@ -86,7 +86,7 @@ void galahad_metis5_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
       printf("options5[METIS_OPTION_FAST] = %d\n", 
                        options5[METIS_OPTION_FAST]);
     }
-
+ 
     /* Translate MeTiS 4 options MeTiS 5 options */
     if(options[0] != 0){
         if(options[1] == 1) /* random matching */
@@ -129,11 +129,8 @@ void galahad_metis5_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
         options5[METIS_OPTION_PFACTOR] = options[6];
 
         options5[METIS_OPTION_NSEPS] = options[7];
+
     }
-
-    /* override inappropriate MeTiS 5 ufactor option */
-
-    options5[METIS_OPTION_UFACTOR] = 1;
 
 /*
     options5[METIS_OPTION_OBJTYPE] =  METIS_OBJTYPE_NODE;

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for dummy and basic GALAHAD packages
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2024-11-14
+#  This version: 2025-03-11
 
 #  include standard GALAHAD makefile definitions
 
@@ -18,7 +18,7 @@ DUMMYS = kinds_silent clock_silent extend_silent symbols_silent \
          string_silent version_silent buildspec_silent
 
 BASICS = $(DUMMYS) zd11_silent smt_silent space_silent \
-         specfile_silent sort_silent norms_silent
+         specfile_silent sort_silent norms_silent nodend_silent
 
 #  main compilations and runs
 
@@ -509,6 +509,13 @@ $(M5LG)(metis5_adapter.o): ../external/metis/metis5_adapter.c
 	cd $(OBJ); $(M5ARR) metis5_adapter.o ; \
           $(RM) metis5_adapter.c metis5_adapter.o
 	@printf '[ OK ]\n'
+
+#  nodend package
+
+nodend_silent:
+	( cd ../nodend ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) nodend_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../nodend )
 
 #  mpi package
 

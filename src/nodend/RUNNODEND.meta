@@ -1,0 +1,13 @@
+MAIN
+!  print-permutation                                 no
+!  write-permutation                                 no
+!  permutation-file-name                             NODENDPERM.d
+!  permutation-file-device                           62
+!  write-result-summary                              no
+!  result-summary-file-name                          NODENDRES.d
+!  result-summary-file-device                        47
+!  analyse                                           no
+!  symmetric-linear-equation-solver                  ssids
+!  exhaustive-tests                                  no
+!  all-versions                                      no
+INCLUDE NODEND
