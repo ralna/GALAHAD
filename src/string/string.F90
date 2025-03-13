@@ -2898,8 +2898,8 @@
 
      FUNCTION STRING_leading_zero_quadruple( r )
      CHARACTER ( LEN = 1 ) :: STRING_leading_zero_quadruple
-     REAL ( KIND = dp_ ) :: r
-     IF ( r < 1.0_dp_ ) THEN
+     REAL ( KIND = qp_ ) :: r
+     IF ( r < 1.0_qp_ ) THEN
        STRING_leading_zero_quadruple = '0'
      ELSE
        STRING_leading_zero_quadruple = ' '
