@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-03-04 AT 16:40 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -542,6 +542,7 @@
       IF ( specitem%line > 0 ) THEN
          lvalue = LEN_TRIM( specitem%value )
          IF ( lvalue > 0 ) THEN
+            sparam = REPEAT( ' ', 30 )
             sparam = TRIM( specitem%value )
          ELSE
             WRITE( errout, * ) ' *** SPECFILE WARNING: string value ',         &

@@ -1,0 +1,168 @@
+#  Main body of the installation makefile for the GALAHAD NODEND package
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2025-03-09
+
+#  include standard GALAHAD makefile defaults before package-specifics
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#.SUFFIXES:
+#.SUFFIXES: .c .o .h _64.o
+
+.PHONY: metis4 metis51 metis52
+.PHONY: metis4_silent metis51_silent metis52_silent
+.PHONY: nodend.o adapter_nodend.o nodend_ciface.o
+.PHONY: nodend nodend_silent test spec spec2
+.PHONY: nodend_cutest nodend_cutste_silent
+.PHONY: nodend_ciface nodend_ciface_silent
+
+all: nodend
+	@printf ' %-21s\n' "Nodend procedures ($(IPRECIS)$(ISUCC)"
+cutest: nodend_cutest$(HSL_64)
+	@printf ' %-21s\n' "Nodend procedures for CUTEst ($(IPRECIS)$(ISUCC)"
+
+nodend: metis4 metis51 metis52 \
+       $(LG)(adapter_nodend_$(PRECIS).o) $(LG)(nodend_$(PRECIS).o)
+nodend_silent: metis4_silent metis51_silent metis52_silent \
+       $(LG)(adapter_nodend_$(PRECIS).o) $(LG)(nodend_$(PRECIS).o)
+
+nodend_cutest: nodend $(LG)(usenodend_$(PRECIS).o) runnodend_sif
+nodend_cutest_silent: nodend_silent $(LG)(usenodend_$(PRECIS).o) runnodend_sif
+
+nodend_ciface: nodend $(CLG)(nodend_ciface_$(PRECIS).o)
+nodend_ciface_silent: nodend_silent $(CLG)(nodend_ciface_$(PRECIS).o)
+
+metis4:
+	( cd $(GALAHAD)/src/external/metis4 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all \
+          PRECIS=$(PRECIS) PWD=. )
+metis51:
+	( cd ./metis51 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all \
+          PRECIS=$(PRECIS) PWD=. )
+metis52:
+	( cd ./metis52 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all \
+          PRECIS=$(PRECIS) PWD=. )
+
+metis4_silent:
+	( cd $(GALAHAD)/src/external/metis4 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) metis4_silent \
+          PRECIS=$(PRECIS) PWD=. )
+metis51_silent:
+	( cd ./metis51 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) metis51_silent \
+          PRECIS=$(PRECIS) PWD=. )
+metis52_silent:
+	( cd ./metis52 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) metis52_silent \
+          PRECIS=$(PRECIS) PWD=. )
+
+nodend.o: $(LG)(nodend_$(PRECIS).o)
+
+$(LG)(nodend_$(PRECIS).o): nodend.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "nodend"
+	$(CP) nodend.F90 $(OBJ)/nodend.F90
+	cd $(OBJ); $(FORTRAN) -o nodend_$(PRECIS).o $(FFLAGS) nodend.F90
+	cd $(OBJ); $(ARR) nodend_$(PRECIS).o ; \
+           $(RM) nodend.F90 nodend_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+adapter_nodend.o: $(LG)(adapter_nodend_$(PRECIS).o)
+
+$(LG)(adapter_nodend_$(PRECIS).o): adapter_nodend.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "adapter"
+	$(CP) ./adapter_nodend.c $(OBJ)/adapter_nodend.c
+	cd $(OBJ); $(CC) -o adapter_nodend_$(PRECIS).o \
+           $(CFLAGS) adapter_nodend.c
+	cd $(OBJ); $(ARR) adapter_nodend_$(PRECIS).o ; \
+           $(RM) adapter_nodend.c adapter_nodend_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+usenodend.o: $(LG)(usenodend_$(PRECIS).o)
+
+$(LG)(usenodend_$(PRECIS).o): usenodend.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usenodend"
+	$(CP) ./usenodend.F90 $(OBJ)/usenodend.F90
+	cd $(OBJ); $(FORTRAN) -o usenodend_$(PRECIS).o $(FFLAGS) usenodend.F90
+	cd $(OBJ); $(ARR) usenodend_$(PRECIS).o ; \
+          $(RM) usenodend.F90 usenodend_$(PRECIS).o runnodend_sif_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+nodend_ciface.o: $(CLG)(nodend_ciface_$(PRECIS).o)
+
+$(CLG)(nodend_ciface_$(PRECIS).o): C/nodend_ciface.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "nodend_ciface"
+	$(CP) C/nodend_ciface.F90 $(OBJ)/nodend_ciface.F90
+	cd $(OBJ); $(FORTRAN) -o nodend_ciface_$(PRECIS).o \
+           $(FFLAGS) nodend_ciface.F90
+	cd $(OBJ); $(CARR) nodend_ciface_$(PRECIS).o ; \
+           $(RM) nodend_ciface.F90 nodend_ciface_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# testing
+
+spec: nodend
+	@echo [Run fortran spec test]
+	$(FORTRAN) $(FFLAGS) nodends.f90
+	$(FORTRAN) -o ./nodendt nodends.o -L. -L$(OBJ) \
+          -lgalahad -lmetis4_nodend -lmetis5_nodend -lhsl
+	./nodendt > nodendds.output
+	$(CAT)  nodendds.output
+	$(RM) ./nodendt nodends.o 
+
+spec2: nodend
+	@echo [Run fortran spec test]
+	$(FORTRAN) $(FFLAGS) nodends2.f90
+	$(FORTRAN) -o ./nodendt nodends2.o -L. -L$(OBJ) \
+          -lgalahad -lmetis4_nodend -lmetis5_nodend -lhsl
+	./nodendt > nodendds2.output
+	$(CAT)  nodendds2.output
+	$(RM) ./nodendt nodends2.o 
+
+test: nodend
+	@echo [Run fortran test]
+	$(FORTRAN) $(FFLAGS) nodendt.F90
+	$(FORTRAN) -o ./nodendt nodendt.o -L. -L$(OBJ) \
+          -lgalahad -lmetis4_nodend -lmetis5_nodend -lhsl
+	./nodendt
+	$(RM) ./nodendt nodendt.o 
+
+#  main program
+
+runnodend_sif: $(OBJ)/runnodend_sif_$(PRECIS).o
+
+$(OBJ)/runnodend_sif_$(PRECIS).o: ../nodend/runnodend_sif.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runnodend_sif"
+	$(CP) ../nodend/runnodend_sif.F90 $(OBJ)/runnodend_sif.F90
+	cd $(OBJ); $(FORTRAN) -o runnodend_sif_$(PRECIS).o \
+                     $(FFLAGSS) runnodend_sif.F90
+	rm $(OBJ)/runnodend_sif.F90
+	@printf '[ OK ]\n'
+
+# book keeping
+
+cleanall:
+	( cd $(GALAHAD)/src/external/metis4 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cleanall \
+          PRECIS=$(PRECIS) PWD=. )
+	( cd ./metis51 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cleanall \
+          PRECIS=$(PRECIS) PWD=. )
+	( cd ./metis52 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cleanall \
+          PRECIS=$(PRECIS) PWD=. )
+	$(RMARFILE) adapter_nodend$(HSL_64).o
+	$(RMARFILE) nodend$(HSL_64).o
+	$(RMARFILE) usenodend$(HSL_64).o
+	$(CRMARFILE) nodend_ciface_$(PRECIS).o
+
+clean:
+	$(RMARFILE) adapter_nodend$(HSL_64).o
+	$(RMARFILE) nodend$(HSL_64).o
+	$(RMARFILE) usenodend$(HSL_64).o
+	$(CRMARFILE) nodend_ciface_$(PRECIS).o

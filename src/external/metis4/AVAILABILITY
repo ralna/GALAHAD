@@ -1,0 +1,13 @@
+A copy of Version 4.0.3 of the MeTiS software is available from
+
+  https://github.com/CIBC-Internal/metis-4.0.3
+
+We presume that this has been made available "with prior approval"
+as signalled in the LICENSE file, but to be sure, you should contact 
+the original author or the Regents as mentioned in that file.
+
+If you wish to use the above within GALAHAD, have agreed to
+the Metis 4 License conditions, and have downloaded the source tree
+to an appropriate location (say metis-4.0.3), you should edit the file
+$GALAHAD/src/makedefs/packages and change the variable METIS4SRC to point
+to the directory metis-4.0.3/Lib that contains the required source files.

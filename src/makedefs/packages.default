@@ -1,4 +1,4 @@
-# THIS VERSION: GALAHAD 5.0 - 2024-03-24 AT 14:15 GMT.
+# THIS VERSION: GALAHAD 5.2 - 2025-03-02 AT 12:30 GMT.
 
 # Updates 12/Nov/2004 to allow for MA57, version 2
 #         29/Mar/2005 to allow for MA57, version 3
@@ -33,6 +33,7 @@
 #                     been removed
 #         24/Mar/2024 simplify everything so that all that is actually required
 #                     is HSLSUBSET, HSLARCHIVESUBSET and MKLPARDISO
+#         02/Mar/2025 introduce remote MeTiS 4 support
 
 # -------------------------- HSL Software -----------------------------------
 
@@ -99,6 +100,18 @@ ifneq "$(HSLSUBSET)" "$(GALAHAD)/src/external/hsl"
 else
   LINEARSOLVER = sils
 endif
+
+# -------------------- METIS4SRC environment variables ----------------------
+
+#  METIS4SRC is the source directory for the MeTiS 4 packages. 
+#  If the subset is available, set METIS4SRC to (the Lib 
+#  subdirectory) of its package directory; if not, set METLS4SRC to 
+#  $(GALAHAD)/src/external/metis4 which contains dummy versions
+#  Note that the more-modern MeTiS 5 is available as part of GALAHAD, 
+#  and so this opportunity is only for specialists
+
+METIS4SRC = $(GALAHAD)/src/external/metis4
+#METIS4SRC = $(GALAHAD)/../metis4/Lib
 
 # -------------------- MKLPARDISO environment variable ----------------------
 

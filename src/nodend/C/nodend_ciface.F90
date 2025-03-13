@@ -1,0 +1,169 @@
+! THIS VERSION: GALAHAD 5.2 - 2025-03-13 AT 08:25 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
+
+!-*-*-*-*-*-*-  G A L A H A D _ N O D E N D   C   I N T E R F A C E  -*-*-*-*-*-
+
+!  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+!  Principal authors: Jaroslav Fowkes & Nick Gould
+
+!  History -
+!    originally released GALAHAD Version 5.2. March 13th 2025
+
+!  For full documentation, see
+!   http://galahad.rl.ac.uk/galahad-www/specs.html
+
+!  C interface module to GALAHAD_NODEND types and interfaces
+
+  MODULE GALAHAD_NODEND_precision_ciface
+    USE GALAHAD_KINDS_precision
+    USE GALAHAD_common_ciface
+    USE GALAHAD_NODEND_precision, ONLY:                                        &
+        f_nodend_control_type => NODEND_control_type,                          &
+        f_nodend_inform_type  => NODEND_inform_type
+    IMPLICIT NONE
+
+!-------------------------------------------------
+!  D e r i v e d   t y p e   d e f i n i t i o n s
+!-------------------------------------------------
+
+    TYPE, BIND( C ) :: nodend_control_type
+      LOGICAL ( KIND = C_BOOL ) :: f_indexing
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: version
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
+      INTEGER ( KIND = ipc_ ) :: metis4_ptype
+      INTEGER ( KIND = ipc_ ) :: metis4_ctype
+      INTEGER ( KIND = ipc_ ) :: metis4_itype
+      INTEGER ( KIND = ipc_ ) :: metis4_rtype
+      INTEGER ( KIND = ipc_ ) :: metis4_dbglvl
+      INTEGER ( KIND = ipc_ ) :: metis4_oflags
+      INTEGER ( KIND = ipc_ ) :: metis4_pfactor
+      INTEGER ( KIND = ipc_ ) :: metis4_nseps
+      INTEGER ( KIND = ipc_ ) :: metis5_ptype
+      INTEGER ( KIND = ipc_ ) :: metis5_objtype
+      INTEGER ( KIND = ipc_ ) :: metis5_ctype
+      INTEGER ( KIND = ipc_ ) :: metis5_iptype
+      INTEGER ( KIND = ipc_ ) :: metis5_rtype
+      INTEGER ( KIND = ipc_ ) :: metis5_dbglvl
+      INTEGER ( KIND = ipc_ ) :: metis5_niter
+      INTEGER ( KIND = ipc_ ) :: metis5_ncuts
+      INTEGER ( KIND = ipc_ ) :: metis5_seed
+      INTEGER ( KIND = ipc_ ) :: metis5_no2hop
+      INTEGER ( KIND = ipc_ ) :: metis5_minconn
+      INTEGER ( KIND = ipc_ ) :: metis5_contig
+      INTEGER ( KIND = ipc_ ) :: metis5_compress
+      INTEGER ( KIND = ipc_ ) :: metis5_ccorder
+      INTEGER ( KIND = ipc_ ) :: metis5_pfactor
+      INTEGER ( KIND = ipc_ ) :: metis5_nseps
+      INTEGER ( KIND = ipc_ ) :: metis5_ufactor
+      INTEGER ( KIND = ipc_ ) :: metis5_niparts
+      INTEGER ( KIND = ipc_ ) :: metis5_ondisk
+      INTEGER ( KIND = ipc_ ) :: metis5_dropedges
+      INTEGER ( KIND = ipc_ ) :: metis5_twohop
+      INTEGER ( KIND = ipc_ ) :: metis5_fast
+    END TYPE nodend_control_type
+
+    TYPE, BIND( C ) :: nodend_inform_type
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
+    END TYPE nodend_inform_type
+
+!----------------------
+!   P r o c e d u r e s
+!----------------------
+
+  CONTAINS
+
+!  copy C control parameters to fortran
+
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
+    TYPE ( nodend_control_type ), INTENT( IN ) :: ccontrol
+    TYPE ( f_nodend_control_type ), INTENT( OUT ) :: fcontrol
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
+
+    ! C or Fortran sparse matrix indexing
+    IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
+
+   ! Integers
+    fcontrol%error = ccontrol%error
+    fcontrol%out = ccontrol%out
+    fcontrol%print_level = ccontrol%print_level
+    fcontrol%metis4_ptype = ccontrol%metis4_ptype
+    fcontrol%metis4_ctype = ccontrol%metis4_ctype
+    fcontrol%metis4_itype = ccontrol%metis4_itype
+    fcontrol%metis4_rtype = ccontrol%metis4_rtype
+    fcontrol%metis4_dbglvl = ccontrol%metis4_dbglvl
+    fcontrol%metis4_oflags = ccontrol%metis4_oflags
+    fcontrol%metis4_pfactor = ccontrol%metis4_pfactor
+    fcontrol%metis4_nseps = ccontrol%metis4_nseps
+    fcontrol%metis5_ptype = ccontrol%metis5_ptype
+    fcontrol%metis5_objtype = ccontrol%metis5_objtype
+    fcontrol%metis5_ctype = ccontrol%metis5_ctype
+    fcontrol%metis5_iptype = ccontrol%metis5_iptype
+    fcontrol%metis5_rtype = ccontrol%metis5_rtype
+    fcontrol%metis5_dbglvl = ccontrol%metis5_dbglvl
+    fcontrol%metis5_niter = ccontrol%metis5_niter
+    fcontrol%metis5_ncuts = ccontrol%metis5_ncuts
+    fcontrol%metis5_seed = ccontrol%metis5_seed
+    fcontrol%metis5_no2hop = ccontrol%metis5_no2hop
+    fcontrol%metis5_minconn = ccontrol%metis5_minconn
+    fcontrol%metis5_contig = ccontrol%metis5_contig
+    fcontrol%metis5_compress = ccontrol%metis5_compress
+    fcontrol%metis5_ccorder = ccontrol%metis5_ccorder
+    fcontrol%metis5_pfactor = ccontrol%metis5_pfactor
+    fcontrol%metis5_nseps = ccontrol%metis5_nseps
+    fcontrol%metis5_ufactor = ccontrol%metis5_ufactor
+    fcontrol%metis5_niparts = ccontrol%metis5_niparts
+    fcontrol%metis5_ondisk = ccontrol%metis5_ondisk
+    fcontrol%metis5_dropedges = ccontrol%metis5_dropedges
+    fcontrol%metis5_twohop = ccontrol%metis5_twohop
+    fcontrol%metis5_fast = ccontrol%metis5_fast
+
+    ! Strings
+    DO i = 1, LEN( fcontrol%version )
+      IF ( ccontrol%version( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%version( i : i ) = ccontrol%version( i )
+    END DO
+    DO i = 1, LEN( fcontrol%prefix )
+      IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%prefix( i : i ) = ccontrol%prefix( i )
+    END DO
+    RETURN
+
+    END SUBROUTINE copy_control_in
+
+!  copy fortran information parameters to C
+
+    SUBROUTINE copy_inform_out( finform, cinform )
+    TYPE ( f_nodend_inform_type ), INTENT( IN ) :: finform
+    TYPE ( nodend_inform_type ), INTENT( OUT ) :: cinform
+    INTEGER ( KIND = ip_ ) :: i, l
+
+   ! Integers
+    cinform%status = finform%status
+    cinform%alloc_status = finform%alloc_status
+
+    ! Strings
+    l = LEN( finform%bad_alloc )
+    DO i = 1, l
+      cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
+    END DO
+    cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
+    RETURN
+
+    END SUBROUTINE copy_inform_out
+
+  END MODULE GALAHAD_NODEND_precision_ciface
+
+
+
+
+
+
+

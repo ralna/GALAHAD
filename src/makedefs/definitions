@@ -8,36 +8,42 @@
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single_64"
+  IPRECIS = 64
   DPREC = -DINTEGER_64 -DREAL_32 $(QUADREAL)
   HSL_64 = _64
   HSL_PRECIS = s_64
   HSL_IPRECIS = i_64
   HSL_LPRECIS = l_64
 else ifeq "$(PRECIS)" "quadruple_64"
+  IPRECIS = 64
   DPREC = -DINTEGER_64 -DREAL_128 $(QUADREAL)
   HSL_64 = _64
   HSL_PRECIS = q_64
   HSL_IPRECIS = i_64
   HSL_LPRECIS = l_64
 else ifeq "$(PRECIS)" "double_64"
+  IPRECIS = 64
   DPREC = -DINTEGER_64 $(QUADREAL)
   HSL_64 = _64
   HSL_PRECIS = d_64
   HSL_IPRECIS = i_64
   HSL_LPRECIS = l_64
 else ifeq "$(PRECIS)" "single"
+  IPRECIS = 32
   DPREC = -DREAL_32 $(QUADREAL)
   HSL_64 =
   HSL_PRECIS = s
   HSL_IPRECIS = i
   HSL_LPRECIS = l
 else ifeq "$(PRECIS)" "quadruple"
+  IPRECIS = 32
   DPREC = -DREAL_128 $(QUADREAL)
   HSL_64 =
   HSL_PRECIS = q
   HSL_IPRECIS = i
   HSL_LPRECIS = l
 else
+  IPRECIS = 32
   DPREC = -DREAL_64 $(QUADREAL)
   HSL_64 =
   HSL_PRECIS = d
@@ -214,6 +220,25 @@ M4LGS64 = $(OBJS64)/libgalahad_metis4.a
 M4LGD64 = $(OBJD64)/libgalahad_metis4.a
 M4LGQ64 = $(OBJQ64)/libgalahad_metis4.a
 
+M5STATIC = libmetis5_nodend.a
+M5STATIC64 = libmetis564_nodend.a
+LM5  = $(OBJ)/$(M5STATIC)
+LM564 = $(OBJ)/$(M5STATIC64)
+LM5S = $(OBJS)/$(M5STATIC)
+LM5D = $(OBJD)/$(M5STATIC)
+LM5Q = $(OBJQ)/$(M5STATIC)
+LM5S64 = $(OBJS64)/$(M5STATIC64)
+LM5D64 = $(OBJD64)/$(M5STATIC64)
+LM5Q64 = $(OBJQ64)/$(M5STATIC64)
+
+M5LG  = $(OBJ)/libgalahad_metis5.a
+M5LGS = $(OBJS)/libgalahad_metis5.a
+M5LGD = $(OBJD)/libgalahad_metis5.a
+M5LGQ = $(OBJQ)/libgalahad_metis5.a
+M5LGS64 = $(OBJS64)/libgalahad_metis5.a
+M5LGD64 = $(OBJD64)/libgalahad_metis5.a
+M5LGQ64 = $(OBJQ64)/libgalahad_metis5.a
+
 M51STATIC = libmetis51_nodend.a
 M51STATIC64 = libmetis5164_nodend.a
 LM51  = $(OBJ)/$(M51STATIC)
@@ -232,14 +257,6 @@ M51LGQ = $(OBJQ)/libgalahad_metis51.a
 M51LGS64 = $(OBJS64)/libgalahad_metis51.a
 M51LGD64 = $(OBJD64)/libgalahad_metis51.a
 M51LGQ64 = $(OBJQ64)/libgalahad_metis51.a
-
-M5LG  = $(OBJ)/libgalahad_metis5.a
-M5LGS = $(OBJS)/libgalahad_metis5.a
-M5LGD = $(OBJD)/libgalahad_metis5.a
-M5LGQ = $(OBJQ)/libgalahad_metis5.a
-M5LGS64 = $(OBJS64)/libgalahad_metis5.a
-M5LGD64 = $(OBJD64)/libgalahad_metis5.a
-M5LGQ64 = $(OBJQ64)/libgalahad_metis5.a
 
 MDLG  = $(OBJ)/libgalahad_metis_dummy.a
 MDLGS = $(OBJS)/libgalahad_metis_dummy.a
@@ -424,6 +441,7 @@ LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
 
 #  strings
 
+ISUCC = -bit integer version) compiled successfully
 SUCC = precision version) compiled successfully
 SUCC_C = precision version) for C compiled successfully
 SUCC_PY = precision version) for python compiled successfully

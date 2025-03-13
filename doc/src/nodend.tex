@@ -1,0 +1,911 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{nodend}
+\newcommand{\packagename}{nodend}
+\newcommand{\fullpackagename}{\libraryname\_\-\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+
+This package
+{\bf finds a symmetric row and column permutation $\bmP \bmA \bmP^T$ 
+of a symmetric, sparse matrix $\bmA$ with the aim of limiting 
+the fill-in during subsequent Cholesky-like factorization}. 
+The package is actually a wrapper to the {\tt METIS\_NodeND} 
+procedure from versions 4.0, 5.1 and 5.2 of the
+{\tt METIS} package from the Karypis Lab; Versions 5 are freely 
+available under an open-source licence, and included here, 
+while Version 4 requires a more restrictive licence, and a separate download, 
+see {\tt https://github.com/KarypisLab}; if Version 4 is not provided,
+a dummy will be substituted.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galcalls
+{\tt GALAHAD\-\_KINDS},
+{\tt GAL\-AHAD\-\_SYMBOLS},
+{\tt GALAHAD\_SMT},
+{\tt GALAHAD\_\-SORT}
+and 
+{\tt GALAHAD\_SPECFILE},
+\galdate March 2025.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+\subsection{Calling sequences}
+
+The package is available with either 32-bit or 64-bit integers, 
+and the subsidiary {\tt SMT\_type} package may use
+single, double and (if available) quadruple precision reals.
+Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip
+\noindent
+with the obvious substitution 
+{\tt \fullpackagename\_double},
+{\tt \fullpackagename\_quadruple},
+{\tt \fullpackagename\_single\_64},
+{\tt \fullpackagename\_double\_64} and
+{\tt \fullpackagename\_quadruple\_64} for the other variants.
+
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
+{\tt SMT\_type},
+{\tt \packagename\_control\_type}
+and
+{\tt \packagename\_inform\_type}
+(\S\ref{galtypes}),
+and the subroutines
+{\tt \packagename\-\_order}
+and
+{\tt \packagename\-\_order\_adjacency},
+(\S\ref{galarguments})
+must be renamed on one of the {\tt USE} statements.
+
+\noindent There are two principal subroutines for user calls.
+
+\begin{description}
+
+\item[] {\tt \packagename\_order} takes the (symmetric) pattern of $\bmA$
+ and finds a symmetric permutation $\bmP$ so that the fill-in
+ during Cholesky-like factorizations of $\bmP \bmA \bmP^T$
+ is kept small.
+
+\item[] {\tt \packagename\_order\_adjacency} takes the adjacency graph of 
+ the (whole) pattern of $\bmA$, and performs the same task as
+ {\tt \packagename\_order}. This package is actually called
+ by its predecessor, but is provided for use by experts, and for
+ those whose application is naturally in adjacency form.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmatrix
+The sparsity pattern of the matrix $\bmA$ may be stored in 
+a variety of input formats.
+
+\subsubsection{Sparse co-ordinate storage format}\label{coordinate}
+Only the nonzero entries of the lower-triangular part of $\bmA$ are stored.
+For the $l$-th entry of the lower-triangular portion of $\bmA$,
+its row index $i$ and column index $j$
+are stored in the $l$-th components of the integer arrays 
+{\tt row} and {\tt col}, respectively.
+The order is unimportant, but the total number of entries
+{\tt ne} is also required.
+
+\subsubsection{Sparse row-wise storage format}\label{rowwise}
+Again only the nonzero entries of the lower-triangular part are stored,
+but this time they are ordered so that those in row $i$ appear directly
+before those in row $i+1$. For the $i$-th row of $\bmA$, the $i$-th component
+of an integer array {\tt ptr} holds the position of the first entry in this row,
+while {\tt ptr} $(m+1)$ holds the total number of entries plus one.
+The column indices $j$ of the entries in the $i$-th row are 
+stored in components $l =$ {\tt ptr}$(i)$, \ldots ,{\tt ptr} $(i+1)-1$ 
+of the integer array {\tt col}.
+
+For sparse matrices, this scheme almost always requires less storage than
+its predecessor.
+
+\subsubsection{Dense storage format}\label{dense}
+The matrix $\bmA$ is stored as a compact
+dense matrix by rows, that is, the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+Since no indexing information is needed, no integer arrays are required.
+Indeed, there no point in reordering a dense matrix, and this option
+is simply included for completeness.
+
+%%%%%%%%%%%%%%%%%%%%%% graph format %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgraph
+The sparsity pattern of $\bmA$ may also be stored as an adjacency graph.
+For each column of $\bmA$, a list of indices of rows of the whole of 
+$\bmA$ (that is, both triangles) that correspond to nonzero entries are 
+recorded; by convention for column $j$, if row $j$ occurs, it is omitted. 
+Two integer arrays {\tt IND} and {\tt PTR}
+are used, and the row indices of column $j$ are stored as
+{\tt IND(l)}, {\tt l} $=$ {\tt PTR}$(j)$, \ldots ,{\tt PTR} $(j+1)-1$.
+for $j = 1,\ldots,n$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Three derived data types are used by the package.
+
+%%%%%%%%%%% problem type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding the matrix}\label{typeprob}
+The derived data type {\tt SMT\_type} is used to hold the matrix $\bmA$.
+The components of {\tt SMT\_type} used are:
+
+\begin{description}
+
+\ittf{n} is a scalar variable of type \integer, that holds
+the order $n$ of the matrix  $\bmA$.
+\restriction {\tt n} $\geq$ {\tt 1}.
+
+\itt{type} is an allocatable array of rank one and type default \character, that
+indicates the storage scheme used. If the
+sparse co-ordinate scheme (see \S\ref{coordinate}) is used
+the first ten components of {\tt type} must contain the
+string {\tt COORDINATE}.
+For the sparse row-wise storage scheme (see \S\ref{rowwise}),
+the first fourteen components of {\tt type} must contain the
+string {\tt SPARSE\_BY\_ROWS}, and
+for dense storage scheme (see \S\ref{dense})
+the first five components of {\tt type} must contain the
+string {\tt DENSE}.
+%and for the diagonal storage scheme (see \S\ref{diagonal}),
+%the first eight components of {\tt type} must contain the
+%string {\tt DIAGONAL}.
+
+For convenience, the procedure {\tt SMT\_put}
+may be used to allocate sufficient space and insert the required keyword
+into {\tt type}.
+For example, if $\bmA$ is to be stored in the structure {\tt A}
+of derived type {\tt SMT\_type} and we wish to use
+the co-ordinate scheme, we may simply
+%\vspace*{-2mm}
+{\tt
+\begin{verbatim}
+        CALL SMT_put( A%type, 'COORDINATE', istat )
+\end{verbatim}
+}
+%\vspace*{-4mm}
+\noindent
+See the documentation for the \galahad\ package {\tt SMT}
+for further details on the use of {\tt SMT\_put}.
+
+\itt{ne} is a scalar variable of type \integer, that
+holds the number of entries in the {\bf lower triangular} part of $\bmA$
+in the sparse co-ordinate storage scheme (see \S\ref{coordinate}).
+It need not be set for any of the other schemes.
+
+\itt{row} is a rank-one allocatable array of type \integer,
+that holds the row indices of the {\bf lower triangular} part of $\bmA$
+in the sparse co-ordinate storage
+scheme (see \S\ref{coordinate}).
+It need not be allocated for any of the other schemes.
+Any entry whose row index lies out of the range $[$1,n$]$ will be ignored.
+
+\itt{col} is a rank-one allocatable array variable of type \integer,
+that holds the column indices of the {\bf lower triangular} part of
+$\bmA$ in either the sparse co-ordinate
+(see \S\ref{coordinate}), or the sparse row-wise
+(see \S\ref{rowwise}) storage scheme.
+It need not be allocated when the dense
+%or diagonal storage schemes are used.
+storage scheme is used.
+Any entry whose column index lies out of the range $[$1,n$]$ will be ignored,
+while the row and column indices of any entry from the
+{\bf strict upper triangle} will implicitly be swapped.
+
+\itt{ptr} is a rank-one allocatable array of size {\tt n+1} and type
+\integer, that holds the starting position of
+each row of the {\bf lower triangular} part of $\bmA$, as well
+as the total number of entries plus one, in the sparse row-wise storage
+scheme (see \S\ref{rowwise}). It need not be allocated for the
+other schemes.
+
+\end{description}
+The derived type also has a {\tt val} component that may hold real values
+that are not used here, but can be by other applications that share
+a {\tt SMT\_type} variable.
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control
+ parameters}\label{typecontrol}
+The derived data type
+{\tt \packagename\_control\_type}
+is used to hold controlling data. Values specifically for the desired solver
+may be changed at run time by calling
+{\tt \packagename\_read\-\_specfile}
+(see \S\ref{readspec}).
+The components of
+{\tt \packagename\_control\_type}
+are:
+
+\begin{description}
+
+\itt{version} is a scalar variable of type default \character\
+and length 30, that specifies the desired version of METIS. Possible
+values are '4.0', '5.1' and '5.2'.
+The default is {\tt version = '5.2'}.
+
+\itt{error} is a scalar variable of type \integer, that holds the
+unit number for error messages.
+Printing of error messages is suppressed if ${\tt error} < {\tt 0}$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type \integer, that holds the
+unit number for informational messages.
+Printing of informational messages is suppressed if ${\tt out} < {\tt 0}$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type \integer,
+that is used
+to control the amount of informational output that is required. No
+informational output will occur if ${\tt print\_level} \leq {\tt 0}$. If
+{\tt print\_level} $\geq$ {\tt 1} details of the ordering process will 
+be produced. The default is {\tt print\_level = 0}.
+
+\itt{metis4\_ptype} is a scalar variable of type \integer, that specifies
+the partitioning method employed. 0 = multilevel recursive bisectioning:
+ 1 = multilevel k-way partitioning
+The default is {\tt metis4\_ptype = 0}, and any invalid value will be
+replaced by this default.
+
+\itt{metis4\_ctype} is a scalar variable of type \integer, that specifies
+the matching scheme to be used during coarsening: {\tt 1} = random matching, 
+ {\tt 2} = heavy-edge matching, {\tt 3} = sorted heavy-edge matching, and
+ {\tt 4} = k-way sorted heavy-edge matching.
+The default is {\tt metis4\_ctype = 3}, and any invalid value will be
+replaced by this default.
+
+\itt{metis4\_itype} is a scalar variable of type \integer, that specifies
+the algorithm used during initial partitioning: 
+ {\tt 1} = edge-based region growing and {\tt 2} = node-based region growing.
+The default is {\tt metis4\_itype = 1}, and any invalid value will be
+replaced by this default.
+
+\itt{metis4\_rtype} is a scalar variable of type \integer, that specifies
+the algorithm used for refinement: 
+ {\tt 1} = two-sided node Fiduccia-Mattheyses (FM) refinement, and
+ {\tt 2} = one-sided node FM refinement.
+The default is {\tt metis4\_rtype = 1}, and any invalid value will be
+replaced by this default.
+
+\itt{metis4\_dbglvl} is a scalar variable of type \integer, that specifies
+the amount of progress/debugging information printed: 
+{\tt 0} = nothing, {\tt 1} = timings, and $>$ {\tt 1} increasingly more.
+The default is {\tt metis4\_dbglvl = 0}, and any invalid value will be
+replaced by this default.
+
+\itt{metis4\_oflags} is a scalar variable of type \integer, that specifies
+select whether or not to compress the graph, and to order connected 
+ components separately: {\tt 0} = do neither, 
+ {\tt 1} = try to compress the graph, 
+ {\tt 2} = order each connected component separately, and {\tt 3} = do both.
+The default is {\tt metis4\_oflags = 1}, and any invalid value will be
+replaced by this default.
+
+\itt{metis4\_pfactor } is a scalar variable of type \integer, that specifies
+the minimum degree of the vertices that will be ordered last. 
+More specifically, any vertices with a degree greater than 
+0.1 {\tt metis4\_pfactor} times the average degree are removed from
+the graph, an ordering of the rest of the vertices is computed, and an
+overall ordering is computed by ordering the removed vertices at the end
+of the overall ordering. Any value
+smaller than 1 means that no vertices will be ordered last.
+The default is {\tt metis4\_pfactor =-1 }.
+
+\itt{metis4\_nseps} is a scalar variable of type \integer, that specifies
+the number of different separators that the algorithm will compute
+at each level of nested dissection.
+The default is {\tt metis4\_nseps = 1}, and any smaller value
+will be replaced by this default.
+
+\itt{metis5\_ptype} is a scalar variable of type \integer, that specifies
+the partitioning method. The value {\tt 0} gives multilevel recursive 
+bisectioning, while {\tt 1} corresponds to multilevel $k$-way partitioning.
+The default is {\tt metis5\_ptype = 0}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_objtype} is a scalar variable of type \integer, that specifies
+the type of the objective. Currently the only and default value
+{\tt metis5\_objtype = 2}, specifies node-based nested dissection, 
+and any invalid value will be replaced by this default.
+
+\itt{metis5\_ctype} is a scalar variable of type \integer, that specifies
+the matching scheme to be used during coarsening: {\tt 0} = random matching, 
+ and {\tt 1} = sorted heavy-edge matching.
+The default is {\tt metis5\_ctype = 1}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_iptype} is a scalar variable of type \integer, that specifies
+the algorithm used during initial partitioning:
+ {\tt 2} = derive separators from edge cuts, and
+ {\tt 3} = grow bisections using a greedy node-based strategy.
+The default is {\tt metis5\_iptype = 2}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_rtype} is a scalar variable of type \integer, that specifies
+the algorithm used for refinement: {\tt 2} = Two-sided node FM refinement,
+ and {\tt 3} = One-sided node FM refinement.
+The default is {\tt metis5\_rtype = 2}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_dbglvl} is a scalar variable of type \integer, that specifies
+the amount of progress/debugging information printed: {\tt 0} = nothing, 
+ {\tt 1} = diagnostics, {\tt 2} = plus timings, and $>$ 2 plus more.
+The default is {\tt metis5\_dbglvl = 0}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_niparts} is a scalar variable of type \integer, that specifies
+the number of initial partitions used by MeTiS 5.2.
+The default is {\tt metis5\_niparts = -1}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_niter} is a scalar variable of type \integer, that specifies
+the number of iterations used by the refinement algorithm.
+The default is {\tt metis5\_niter = 10}, and any non-positive value will be
+replaced by this default.
+
+\itt{metis5\_ncuts} is a scalar variable of type \integer, that specifies
+the number of different partitionings that it will compute: {\tt -1} = not used.
+The default is {\tt metis5\_ncuts = -1}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_seed} is a scalar variable of type \integer, that specifies
+the seed for the random number generator.
+The default is {\tt metis5\_seed = -1}.
+
+\itt{metis5\_ondisk} is a scalar variable of type \integer, that specifies
+whether on-disk storage is used ({\tt 0} = no, {\tt 1} = yes) by MeTiS 5.2.
+The default is {\tt metis5\_ondisk = 0}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_minconn} is a scalar variable of type \integer, that specifies
+specify that the partitioning routines should try to minimize the maximum 
+degree of the subdomain graph: {\tt 0} = no, {\tt 1} = yes, and 
+{\tt -1} = not used. 
+The default is {\tt metis5\_minconn =-1  }, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_contig} is a scalar variable of type \integer, that specifies
+specify that the partitioning routines should try to produce partitions 
+that are contiguous: {\tt 0} = no, {\tt 1} = yes, and {\tt -1} = not used.
+The default is {\tt metis5\_contig = 1}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_compress} is a scalar variable of type \integer, that specifies
+specify that the graph should be compressed by combining together vertices 
+that have identical adjacency lists: {\tt 0} = no, and {\tt 1} = yes.
+The default is {\tt metis5\_compress = 1}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_ccorder} is a scalar variable of type \integer, that specifies
+specify if the connected components of the graph should first be
+identified and ordered separately: {\tt 0} = no, and {\tt 1} = yes.
+The default is {\tt metis5\_ccorder = 0}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_pfactor} is a scalar variable of type \integer, that specifies
+the minimum degree of the vertices that will be ordered last.
+More specifically, any vertices with a degree greater than 
+0.1 {\tt metis4\_pfactor} times the average degree are removed from
+the graph, an ordering of the rest of the vertices is computed, and an
+overall ordering is computed by ordering the removed vertices at the end
+of the overall ordering. The default is {\tt metis5\_pfactor = 0}, and any 
+negative value will be replaced by this default.
+
+\itt{metis5\_nseps} is a scalar variable of type \integer, that specifies
+the number of different separators that the algorithm will compute
+at each level of nested dissection.
+The default is {\tt metis5\_nseps = 1}, and any non-positive value will be
+replaced by this default.
+
+\itt{metis5\_ufactor} is a scalar variable of type \integer, that specifies
+the maximum allowed load imbalance {\tt (1 +  metis5\_ufactor)/1000} 
+among the partitions.
+The default is {\tt metis5\_ufactor = 200}, and any negative value will be
+replaced by this default.
+
+\itt{metis5\_dropedges} is a scalar variable of type \integer, that specifies
+whether edges will be dropped ({\tt 0} = no, {\tt 1} = yes) by MeTiS 5.2.
+The default is {\tt metis5\_dropedges = 0}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_no2hop} is a scalar variable of type \integer, that specifies
+specify that the coarsening will not perform any 2–hop matchings when 
+the standard matching approach fails to sufficiently coarsen the graph:
+{\tt 0} = no, and {\tt 1} = yes
+The default is {\tt metis5\_no2hop = 0}, and any invalid value will be
+replaced by this default.
+
+\itt{metis5\_twohop} is a scalar variable of type \integer, 
+that is reserved for future use but ignored at present.
+The default is {\tt metis5\_twohop = -1}.
+
+\itt{metis5\_fast} is a scalar variable of type \integer, 
+that is reserved for future use but ignored at present.
+The default is {\tt metis5\_fast = -1}.
+replaced by this default.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected
+character string to preface every line of printed output.
+Specifically, each line of output will be prefaced by the string
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoring the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, the default {\tt prefix = ""} should be used.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected
+character string to preface every line of printed output.
+Specifically, each line of output will be prefaced by the string
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoring the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, the default {\tt prefix = ""} should be used.
+
+\end{description}
+
+%%%%%%%%%%% inform type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type
+{\tt \packagename\_inform\_type}
+is used to hold parameters that give information about the progress and needs
+of the algorithm. The components of
+{\tt \packagename\_inform\_type}
+are as follows---any component that is not relevant to the solver being used
+will have the value {\tt -1} or {\tt -1.0} as appropriate:
+
+\begin{description}
+
+\itt{status} is a scalar variable of type \integer, that gives the
+exit status of the algorithm.
+%See Sections~\ref{galerrors} and \ref{galinfo}
+See \S\ref{galerrors}
+for details.
+
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
+the status of the last attempted array allocation or deallocation.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array
+for which there were allocation or deallocation errors.
+This will be the null string if there have been no
+allocation or deallocation errors.
+
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type
+{\tt \packagename\_data\_type}
+is used to hold all the data for a particular problem,
+or sequences of problems with the same structure, between calls to
+{\tt \packagename} procedures.
+%This data should be preserved, untouched, from the initial call to
+%{\tt \packagename\_initialize}
+%to the final call to
+%{\tt \packagename\_terminate}.
+All components are private.
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+
+%%%%%% order subroutine %%%%%%
+
+\subsubsection{The basic ordering subroutine}\label{suborder}
+A nested-dissection-based ordering of the sparsity pattern of $\bmA$ 
+may be obtained as follows:
+\vskip2mm
+
+\hskip0.5in
+{\tt CALL \packagename\_order( A, PERM, control, inform )}
+\begin{description}
+\itt{A} is scalar \intentin\ argument of type {\tt SMT\_type}
+that is used to specify $\bmA$.
+The user must set all of the relevant components of {\tt matrix} according
+to the storage scheme desired (see \S\ref{typeprob}.
+Incorrectly-set components will result in errors
+flagged in {\tt inform\%status}, see \S\ref{galerrors}.
+
+\itt{perm} is an 
+\itt{PERM} is a rank-one \integer\ \intentout\ array argument
+of \intentout\ and length $A\%n$.
+{\tt PERM} will be set to the permutation array, so that the 
+{\tt PERM(i)}-th rows and columns in the permuted matrix 
+$\bmP \bmA \bmP^T$ correspond to those labelled {\tt i} in $\bmA$.
+
+\itt{control} is a scalar \intentout argument of type
+{\tt \packagename\_control\_type}. Its components control the action
+of the analysis phase, as explained in
+\S\ref{typecontrol}.
+
+\itt{inform} is a scalar \intentout argument of type
+{\tt \packagename\_inform\_type}
+(see \S\ref{typeinform}).
+A successful call is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see \S\ref{galerrors}.
+
+\end{description}
+
+\subsubsection{The graph ordering subroutine}\label{subgraphorder}
+A nested-dissection-based ordering of the adjacency graph (see 
+\S\ref{galgraph}) of $\bmA$ may be obtained as follows:
+\vskip2mm
+
+\hskip0.5in
+{\tt CALL \packagename\_order\_adjacency( n, PTR, IND, PERM, control, inform )}
+\begin{description}
+\itt{n} is an \intentin\ scalar of type  {\tt INTEGER} that gives the
+number of rows (and columns) of $\bmA$.
+
+\itt{PTR} is a rank-one \integer\ array argument of \intentin\ and length 
+ at least $n+1$. Its $j$ entry, {\tt PTR}$(j)$, must be set to the position
+ in {\tt IND} of the first entry in column $j$ of the whole of $\bmA$,
+ while {\tt PTR}$(n+1)$ points to the first unoccupied position in {\tt IND}.
+
+\itt{IND} is a rank-one \integer\ array argument of \intentin\ and length 
+ at least  {\tt PTR}$(n+1)-1$. Components
+ {\tt IND(}$(l)${\tt )}, $l =$ {\tt PTR}$(j)$, \ldots ,{\tt PTR} $(j+1)-1$
+ must hold the row indices of non-diagonal entries in column $j$ of $\bmA$.
+
+\itt{PERM} is a rank-one \integer\ \intentout\ array argument
+ of \intentout\ and length {\tt n}.
+ {\tt PERM} will be set to the permutation array, so that the 
+ {\tt PERM(i)}-th rows and columns in the permuted matrix 
+ $\bmP \bmA \bmP^T$ correspond to those labelled {\tt i} in $\bmA$.
+
+\itt{control} is a scalar \intentout argument of type
+{\tt \packagename\_control\_type}. Its components control the action
+of the analysis phase, as explained in
+\S\ref{typecontrol}.
+
+\itt{inform} is a scalar \intentout argument of type
+{\tt \packagename\_inform\_type}
+(see \S\ref{typeinform}).
+A successful call is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see \S\ref{galerrors}.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt inform\%status} on exit from the subroutines
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\itt{\galerrallocate} An allocation error occurred. A message indicating
+the offending
+array is written on unit {\tt control\%error}, and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrdeallocate} A deallocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error} and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrrestrictions} One of the restrictions
+ {\tt n} $> 0$,
+ {\tt A\%n} $> 0$ or
+ {\tt A\%ne} $< 0$, for co-ordinate entry,
+  or requirements that {\tt A\%type}
+  contain its relevant string
+ {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'} or {\tt 'DENSE'}, and
+ {\tt control\%version} in one of {\tt '4.0'}, {\tt '5.1'} or {\tt '5.2'}
+  has been violated.
+
+\itt{\galunknownsolver} The requested solver is not available.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galcontrolfeatures
+\noindent In this section, we describe an alternative means of setting
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}),
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of
+``specification commands''. Each command occurs on a separate line,
+and comprises a ``keyword'',
+that is a string (in a close-to-natural language) used to identify a
+control parameter, and
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive,
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and
+each line of the specification file is limited to 80 characters,
+including the blanks separating keyword and value.
+
+The portion of the specification file used by
+{\tt \packagename\_read\_specfile}
+must start
+with a ``{\tt BEGIN \packagename}'' command and end with an
+``{\tt END}'' command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by METIS_read_specfile .. )
+    BEGIN METIS
+       keyword    value
+       .......    .....
+       keyword    value
+    END
+  ( .. lines ignored by METIS_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
+may contain additional (trailing) strings so long as such strings are
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN METIS SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END METIS SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore,
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored.
+The content
+of a line after a {\tt !} or {\tt *} character is also
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy way to ``comment out'' some
+specification commands, or to comment specific values
+of certain control parameters.
+
+The value of a control parameter may be of three different types, namely
+integer, character or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively).
+%Permitted values for logical
+%parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}",
+%"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+%"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}".
+%Empty values are also allowed for
+%logical control parameters, and are interpreted as "{\tt TRUE}".
+
+The specification file must be open for
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated unit number
+passed to the routine in {\tt device} (see below).
+Note that the corresponding
+file is rewound, which makes it possible to combine the specifications
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in
+
+\def\baselinestretch{0.8}
+{\tt
+\begin{verbatim}
+     CALL METIS_read_specfile( control, device )
+\end{verbatim}
+}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout\ argument of type
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}).
+Default values should have already been set, perhaps by calling
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and
+the component (see \S\ref{typecontrol}) of {\tt control}
+that each affects are given in Table~\ref{specfile}.
+
+\pctable{|l|l|l|}
+\hline
+  command & component of {\tt control} & value type \\
+\hline
+
+
+{\tt version} & {\tt \%version} & {\tt character} \\
+{\tt error-printout-device} & {\tt \%error} & {\tt integer} \\
+{\tt printout-device} & {\tt \%out} & {\tt integer} \\
+{\tt print-level} & {\tt \%print\_level} & {\tt integer} \\
+{\tt metis4-ptype} & {\tt \%metis4\_ptype} & {\tt integer} \\
+{\tt metis4-ctype} & {\tt \%metis4\_ctype} & {\tt integer} \\
+{\tt metis4-itype} & {\tt \%metis4\_itype} & {\tt integer} \\
+{\tt metis4-rtype} & {\tt \%metis4\_rtype} & {\tt integer} \\
+{\tt metis4-dbglvl} & {\tt \%metis4\_dbglvl} & {\tt integer} \\
+{\tt metis4-oflags} & {\tt \%metis4\_oflags} & {\tt integer} \\
+{\tt metis4-pfactor} & {\tt \%metis4\_pfactor} & {\tt integer} \\
+{\tt metis4-nseps} & {\tt \%metis4\_nseps} & {\tt integer} \\
+{\tt metis5-ptype} & {\tt \%metis5\_ptype} & {\tt integer} \\
+{\tt metis5-objtype} & {\tt \%metis5\_objtype} & {\tt integer} \\
+{\tt metis5-ctype} & {\tt \%metis5\_ctype} & {\tt integer} \\
+{\tt metis5-iptype} & {\tt \%metis5\_iptype} & {\tt integer} \\
+{\tt metis5-rtype} & {\tt \%metis5\_rtype} & {\tt integer} \\
+{\tt metis5-dbglvl} & {\tt \%metis5\_dbglvl} & {\tt integer} \\
+{\tt metis5-niparts} & {\tt \%metis5\_niparts} & {\tt integer} \\
+{\tt metis5-niter} & {\tt \%metis5\_niter} & {\tt integer} \\
+{\tt metis5-ncuts} & {\tt \%metis5\_ncuts} & {\tt integer} \\
+{\tt metis5-seed} & {\tt \%metis5\_seed} & {\tt integer} \\
+{\tt metis5-ondisk} & {\tt \%metis5\_ondisk} & {\tt integer} \\
+{\tt metis5-minconn} & {\tt \%metis5\_minconn} & {\tt integer} \\
+{\tt metis5-contig} & {\tt \%metis5\_contig} & {\tt integer} \\
+{\tt metis5-compress} & {\tt \%metis5\_compress} & {\tt integer} \\
+{\tt metis5-ccorder} & {\tt \%metis5\_ccorder} & {\tt integer} \\
+{\tt metis5-pfactor} & {\tt \%metis5\_pfactor} & {\tt integer} \\
+{\tt metis5-nseps} & {\tt \%metis5\_nseps} & {\tt integer} \\
+{\tt metis5-ufactor} & {\tt \%metis5\_ufactor} & {\tt integer} \\
+{\tt metis5-dropedges} & {\tt \%metis5\_dropedges} & {\tt integer} \\
+{\tt metis5-no2hop} & {\tt \%metis5\_no2hop} & {\tt integer} \\
+{\tt metis5-twohop} & {\tt \%metis5\_twohop} & {\tt integer} \\
+{\tt metis5-fast} & {\tt \%metis5\_fast} & {\tt integer} \\
+{\tt output-line-prefix} & {\tt \%prefix} & {\tt character} \\
+\hline
+
+\ectable{\label{specfile}Specfile commands and associated
+components of {\tt control}.}
+
+\itt{device} is a scalar \intentin\ argument of type \integer,
+that must be set to the unit number on which the specification file
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+%\galcommon None.
+\galworkspace Provided automatically by the module.
+\galmodules {\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_KINDS},
+{\tt GALAHAD\_SYMBOLS},
+{\tt GALAHAD\_SORT\_single/double},
+{\tt GALAHAD\_SMT\-\_sin\-gle/double}
+and
+{\tt GALAHAD\_SPECFILE\_single/double},
+\galio Output is under control of the arguments
+{\tt control\%error},
+{\tt control\%out}
+\galrestrictions {\tt n} $\geq$ {\tt 1}, {\tt A\%n} $\geq$ {\tt 1},
+{\tt A\%ne} $\geq$ {\tt 0} if {\tt A\%type = 'COORDINATE'},
+{\tt A\%type} one of
+{\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'} or   {\tt 'DENSE'}.
+{\tt control\%version} one of
+{\tt '4.0'}, {\tt '5.1'} or   {\tt '5.2'}.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+Variants of node-based nested-dissection ordering are used.
+
+\noindent
+The package relies crucially on the ordering package {\tt METIS} from 
+the Karypis Lab. To obtain {\tt METIS} 4.0, see
+
+  {\tt https://github.com/KarypisLab}.
+
+\noindent
+or 
+
+  {\tt https://github.com/CIBC-Internal/metis-4.0.3}
+
+\noindent
+Versions 5.1 and 5.2 are open-source software, and included.
+
+\vspace*{1mm}
+
+\galreferences
+\vspace*{1mm}
+
+\noindent
+The methods used are described in the user-documentation
+\vspace*{1mm}
+
+\noindent
+G. Karypis.
+METIS, A software package for partitioning unstructured
+graphs, partitioning meshes, and computing
+fill-reducing orderings of sparse matrices, Version 5,
+Department of Computer Science \& Engineering, University of Minnesota
+Minneapolis, MN 55455, USA (2013), see
+
+   {\tt https://github.com/KarypisLab/METIS/blob/master/manual/manual.pdf}
+
+\noindent
+and paper
+
+\noindent
+G. Karypis and V. Kumar (1999). 
+A fast and high quality multilevel scheme for partitioning irregular graphs,
+SIAM Journal on Scientific Computing. {\bf 20(1)} (1999) 359--392.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+We illustrate the use of the package on the symmetric matrix with structure
+\disp{\mat{ccccc}{ \ast &      & \ast &      & \ast \\
+                        & \ast &      &      &      \\
+                   \ast &      & \ast &      &      \\
+                        &      &      & \ast & \ast \\
+                   \ast &      &      & \ast & \ast },}
+where $\ast$ denotes a nonzero.
+Then, we may use the following code to find a suitable nested-dissection 
+permutation prior to Cholesky-like factorization.
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+%with the following data
+%{\tt \small
+%\VerbatimInput{\packagedata}
+%}
+%\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+\noindent
+Alternatively, we may use the adjacency graph format to produce the same
+ordering.
+
+{\tt \small
+\VerbatimInput{\packageexampleb}
+}
+\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresultsb}
+}
+\noindent
+\end{document}

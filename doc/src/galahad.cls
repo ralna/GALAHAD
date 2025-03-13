@@ -42,7 +42,7 @@
 
 \newcommand{\libraryname}{GA\-LA\-H\-AD}
 %\newcommand{\releasename}{GALAHAD Optimization Library version $2.\epsilon$}
-\newcommand{\releasename}{GALAHAD Optimization Library version $5.1$}
+\newcommand{\releasename}{GALAHAD Optimization Library version $5.2$}
 
 \newcommand\@ptsize{}
 \newif\if@restonecol
@@ -809,6 +809,7 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 
 \newcommand{\galterminology}{\subsection{Basic terminology\label{galterminology}}}
 \newcommand{\galmatrix}{\subsection{Matrix storage formats\label{galmatrix}}}
+\newcommand{\galgraph}{\subsection{Matrix-graph storage format\label{galgraph}}}
 \newcommand{\galsymbols}{\subsection{The GALAHAD symbols\label{galsymbols}}}
 \newcommand{\galtype}{\subsection{The derived data type\label{galtype}}}
 \newcommand{\galtypes}{\subsection{The derived data types\label{galtypes}}}

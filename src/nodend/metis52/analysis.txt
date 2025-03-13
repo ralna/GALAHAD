@@ -1,0 +1,1192 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 26.32      0.35     0.35    52561     0.00     0.00  CreateCoarseGraph_52
+ 14.29      0.54     0.19    35263     0.00     0.00  Match_SHEM_52
+ 14.29      0.73     0.19    17298     0.00     0.00  Match_RM_52
+ 10.53      0.87     0.14    52561     0.00     0.00  BucketSortKeysInc_52
+  7.52      0.97     0.10    16023     0.00     0.00  SplitGraphOrder_52
+  3.76      1.02     0.05    69604     0.00     0.00  Compute2WayNodePartitionParams_52
+  3.76      1.07     0.05    17043     0.00     0.00  GrowBisection_52
+  3.01      1.11     0.04   704195     0.00     0.00  libmetis__iset
+  2.26      1.14     0.03  9560406     0.00     0.00  libmetis__irandInRange
+  2.26      1.17     0.03     7366     0.00     0.00  Match_2HopAny_52
+  1.50      1.19     0.02  9560406     0.00     0.00  gk_randint32
+  1.50      1.21     0.02    84609     0.00     0.00  libmetis__isum
+  0.75      1.22     0.01  1753195     0.00     0.00  gk_gkmcoreDel
+  0.75      1.23     0.01   966990     0.00     0.00  mmdelm_52
+  0.75      1.24     0.01   749981     0.00     0.00  libmetis__rpqGetTop
+  0.75      1.25     0.01    80739     0.00     0.00  mmdupd_52
+  0.75      1.26     0.01    69604     0.00     0.00  FM_2WayNodeRefine1Sided_52
+  0.75      1.27     0.01    67697     0.00     0.00  Compute2WayPartitionParams_52
+  0.75      1.28     0.01    52561     0.00     0.00  Project2WayNodePartition_52
+  0.75      1.29     0.01    50654     0.00     0.00  FM_2WayCutRefine_52
+  0.75      1.30     0.01    16024     0.00     0.00  genmmd_52
+  0.75      1.31     0.01     7163     0.00     0.00  libmetis__ikvsorti
+  0.75      1.32     0.01        1     0.01     0.01  CompressGraph_52
+  0.75      1.33     0.01        1     0.01     0.01  SetupGraph_label_52
+  0.00      1.33     0.00  9560406     0.00     0.00  libmetis__irand
+  0.00      1.33     0.00  1753196     0.00     0.00  gk_gkmcoreAdd
+  0.00      1.33     0.00  1752424     0.00     0.00  gk_malloc
+  0.00      1.33     0.00  1393715     0.00     0.00  gk_mcoreAdd
+  0.00      1.33     0.00  1027850     0.00     0.00  gk_free
+  0.00      1.33     0.00  1014051     0.00     0.00  gk_mcoreMalloc
+  0.00      1.33     0.00  1014051     0.00     0.00  wspacemalloc_52
+  0.00      1.33     0.00  1006889     0.00     0.00  iwspacemalloc_52
+  0.00      1.33     0.00   898722     0.00     0.00  libmetis__rpqInsert
+  0.00      1.33     0.00   887303     0.00     0.00  libmetis__imalloc
+  0.00      1.33     0.00   379664     0.00     0.00  gk_mcorePop
+  0.00      1.33     0.00   379664     0.00     0.00  gk_mcorePush
+  0.00      1.33     0.00   379664     0.00     0.00  wspacepop_52
+  0.00      1.33     0.00   379664     0.00     0.00  wspacepush_52
+  0.00      1.33     0.00   304870     0.00     0.00  libmetis__rpqReset
+  0.00      1.33     0.00   280691     0.00     0.00  libmetis__irandArrayPermute
+  0.00      1.33     0.00   208762     0.00     0.00  gk_idxset
+  0.00      1.33     0.00   208762     0.00     0.00  gk_idxsmalloc
+  0.00      1.33     0.00   208762     0.00     0.00  libmetis__rkvmalloc
+  0.00      1.33     0.00   208762     0.00     0.00  libmetis__rpqCreate
+  0.00      1.33     0.00   208762     0.00     0.00  libmetis__rpqDestroy
+  0.00      1.33     0.00   208762     0.00     0.00  libmetis__rpqFree
+  0.00      1.33     0.00   208762     0.00     0.00  libmetis__rpqInit
+  0.00      1.33     0.00   122376     0.00     0.00  libmetis__rpqDelete
+  0.00      1.33     0.00   107124     0.00     0.00  libmetis__rpqSeeTopVal
+  0.00      1.33     0.00   102671     0.00     0.00  FreeRData_52
+  0.00      1.33     0.00    84609     0.00     0.00  libmetis__rmalloc
+  0.00      1.33     0.00    84608     0.00     0.00  CreateGraph_52
+  0.00      1.33     0.00    84608     0.00     0.00  FreeGraph_52
+  0.00      1.33     0.00    84608     0.00     0.00  FreeSData_52
+  0.00      1.33     0.00    84608     0.00     0.00  InitGraph_52
+  0.00      1.33     0.00    71884     0.00     0.00  libmetis__icopy
+  0.00      1.33     0.00    69604     0.00     0.00  Allocate2WayNodePartitionMemory_52
+  0.00      1.33     0.00    52561     0.00     0.00  FM_2WayNodeBalance_52
+  0.00      1.33     0.00    52561     0.00     0.00  ReAdjustMemory_52
+  0.00      1.33     0.00    52561     0.00     0.00  SetupCoarseGraph_52
+  0.00      1.33     0.00    52561     0.00     0.00  graph_ReadFromDisk_52
+  0.00      1.33     0.00    52561     0.00     0.00  graph_WriteToDisk_52
+  0.00      1.33     0.00    50654     0.00     0.00  Balance2Way_52
+  0.00      1.33     0.00    50654     0.00     0.00  ComputeLoadImbalanceDiff_52
+  0.00      1.33     0.00    50654     0.00     0.00  FM_2WayRefine_52
+  0.00      1.33     0.00    32047     0.00     0.00  SetupGraph_tvwgt_52
+  0.00      1.33     0.00    32046     0.00     0.00  SetupSplitGraph_52
+  0.00      1.33     0.00    18563     0.00     0.00  libmetis__rpqUpdate
+  0.00      1.33     0.00    17298     0.00     0.00  Refine2WayNode_52
+  0.00      1.33     0.00    17043     0.00     0.00  Allocate2WayPartitionMemory_52
+  0.00      1.33     0.00    17043     0.00     0.00  CoarsenGraph_52
+  0.00      1.33     0.00    17043     0.00     0.00  ConstructSeparator_52
+  0.00      1.33     0.00    17043     0.00     0.00  FM_2WayNodeRefine2Sided_52
+  0.00      1.33     0.00    17043     0.00     0.00  InitSeparator_52
+  0.00      1.33     0.00    17043     0.00     0.00  MlevelNodeBisectionL1_52
+  0.00      1.33     0.00    17043     0.00     0.00  Setup2WayBalMultipliers_52
+  0.00      1.33     0.00    16024     0.00     0.00  MMDOrder_52
+  0.00      1.33     0.00    16024     0.00     0.00  mmdint_52
+  0.00      1.33     0.00    16024     0.00     0.00  mmdnum_52
+  0.00      1.33     0.00    16023     0.00     0.00  MlevelNodeBisectionL2_52
+  0.00      1.33     0.00    16023     0.00     0.00  MlevelNodeBisectionMultiple_52
+  0.00      1.33     0.00     7162     0.00     0.00  Match_2HopAll_52
+  0.00      1.33     0.00     7162     0.00     0.00  Match_2Hop_52
+  0.00      1.33     0.00     7162     0.00     0.00  ikvwspacemalloc_52
+  0.00      1.33     0.00      774     0.00     0.00  gk_realloc
+  0.00      1.33     0.00      774     0.00     0.00  libmetis__irealloc
+  0.00      1.33     0.00      255     0.00     0.00  CoarsenGraphNlevels_52
+  0.00      1.33     0.00        5     0.00     0.00  libmetis__ismalloc
+  0.00      1.33     0.00        2     0.00     0.00  libmetis__rset
+  0.00      1.33     0.00        2     0.00     0.00  libmetis__rsmalloc
+  0.00      1.33     0.00        1     0.00     0.00  AllocateWorkSpace_52
+  0.00      1.33     0.00        1     0.00     0.00  CheckParams_52
+  0.00      1.33     0.00        1     0.00     0.00  FreeCtrl_52
+  0.00      1.33     0.00        1     0.00     0.00  FreeWorkSpace_52
+  0.00      1.33     0.00        1     0.00     0.00  InitRandom_52
+  0.00      1.33     0.00        1     0.00     1.33  METIS_NodeND_52
+  0.00      1.33     0.00        1     0.00     0.00  METIS_SetDefaultOptions_52
+  0.00      1.33     0.00        1     0.00     1.31  MlevelNestedDissection_52
+  0.00      1.33     0.00        1     0.00     0.00  SetupCtrl_52
+  0.00      1.33     0.00        1     0.00     0.01  SetupGraph_52
+  0.00      1.33     0.00        1     0.00     1.33  Test_ND
+  0.00      1.33     0.00        1     0.00     0.00  VerifyND
+  0.00      1.33     0.00        1     0.00     0.00  gk_gkmcoreCreate
+  0.00      1.33     0.00        1     0.00     0.00  gk_gkmcoreDestroy
+  0.00      1.33     0.00        1     0.00     0.00  gk_gkmcorePop
+  0.00      1.33     0.00        1     0.00     0.00  gk_gkmcorePush
+  0.00      1.33     0.00        1     0.00     0.00  gk_malloc_cleanup
+  0.00      1.33     0.00        1     0.00     0.00  gk_malloc_init
+  0.00      1.33     0.00        1     0.00     0.00  gk_mcoreCreate
+  0.00      1.33     0.00        1     0.00     0.00  gk_mcoreDestroy
+  0.00      1.33     0.00        1     0.00     0.00  gk_randinit
+  0.00      1.33     0.00        1     0.00     0.00  gk_sigtrap
+  0.00      1.33     0.00        1     0.00     0.00  gk_siguntrap
+  0.00      1.33     0.00        1     0.00     0.00  libmetis__ikvmalloc
+  0.00      1.33     0.00        1     0.00     0.00  libmetis__isrand
+  0.00      1.33     0.00        1     0.00     0.00  metis_rcode_52
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2024 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 0.75% of 1.33 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]    100.0    0.00    1.33                 main [1]
+                0.00    1.33       1/1           Test_ND [2]
+                0.00    0.00       1/1027850     gk_free [41]
+-----------------------------------------------
+                0.00    1.33       1/1           main [1]
+[2]    100.0    0.00    1.33       1         Test_ND [2]
+                0.00    1.33       1/1           METIS_NodeND_52 [3]
+                0.00    0.00       1/1           METIS_SetDefaultOptions_52 [52]
+                0.00    0.00       1/1027850     gk_free [41]
+                0.00    0.00       3/1752424     gk_malloc [60]
+                0.00    0.00       3/887303      libmetis__imalloc [66]
+                0.00    0.00       1/1           VerifyND [104]
+-----------------------------------------------
+                0.00    1.33       1/1           Test_ND [2]
+[3]    100.0    0.00    1.33       1         METIS_NodeND_52 [3]
+                0.00    1.31       1/1           MlevelNestedDissection_52 [4]
+                0.01    0.00       1/1           CompressGraph_52 [33]
+                0.00    0.01       1/1           SetupGraph_52 [34]
+                0.00    0.00       1/1           SetupCtrl_52 [53]
+                0.00    0.00       1/1           FreeCtrl_52 [54]
+                0.00    0.00       1/1027850     gk_free [41]
+                0.00    0.00       2/1752424     gk_malloc [60]
+                0.00    0.00       2/887303      libmetis__imalloc [66]
+                0.00    0.00       1/1           gk_malloc_init [110]
+                0.00    0.00       1/1           gk_sigtrap [113]
+                0.00    0.00       1/1           gk_siguntrap [114]
+                0.00    0.00       1/1           metis_rcode_52 [117]
+                0.00    0.00       1/1           gk_malloc_cleanup [109]
+                0.00    0.00       1/1           AllocateWorkSpace_52 [101]
+-----------------------------------------------
+                               16022             MlevelNestedDissection_52 [4]
+                0.00    1.31       1/1           METIS_NodeND_52 [3]
+[4]     98.5    0.00    1.31       1+16022   MlevelNestedDissection_52 [4]
+                0.00    0.98   15768/17043       MlevelNodeBisectionL1_52 [5]
+                0.10    0.01   16023/16023       SplitGraphOrder_52 [12]
+                0.00    0.10   16023/16023       MlevelNodeBisectionL2_52 [13]
+                0.00    0.08   16023/17298       Refine2WayNode_52 [15]
+                0.00    0.03   16024/16024       MMDOrder_52 [24]
+                0.00    0.00   32047/84608       FreeGraph_52 [43]
+                0.00    0.00   16023/379664      gk_mcorePop [56]
+                0.00    0.00   16023/16023       MlevelNodeBisectionMultiple_52 [95]
+                0.00    0.00   16023/379664      wspacepop_52 [68]
+                               16022             MlevelNestedDissection_52 [4]
+-----------------------------------------------
+                0.00    0.08    1275/17043       MlevelNodeBisectionL2_52 [13]
+                0.00    0.98   15768/17043       MlevelNestedDissection_52 [4]
+[5]     79.8    0.00    1.06   17043         MlevelNodeBisectionL1_52 [5]
+                0.00    0.93   17043/17043       CoarsenGraph_52 [6]
+                0.00    0.14   17043/17043       InitSeparator_52 [11]
+-----------------------------------------------
+                0.00    0.93   17043/17043       MlevelNodeBisectionL1_52 [5]
+[6]     69.7    0.00    0.93   17043         CoarsenGraph_52 [6]
+                0.19    0.37   34498/35263       Match_SHEM_52 [7]
+                0.19    0.18   17043/17298       Match_RM_52 [8]
+                0.00    0.00   51541/52561       graph_WriteToDisk_52 [85]
+                0.00    0.00   50521/1752424     gk_malloc [60]
+                0.00    0.00   50521/887303      libmetis__imalloc [66]
+-----------------------------------------------
+                0.00    0.01     765/35263       CoarsenGraphNlevels_52 [29]
+                0.19    0.37   34498/35263       CoarsenGraph_52 [6]
+[7]     42.6    0.19    0.38   35263         Match_SHEM_52 [7]
+                0.23    0.01   35263/52561       CreateCoarseGraph_52 [9]
+                0.09    0.00   35263/52561       BucketSortKeysInc_52 [10]
+                0.00    0.03    4505/7162        Match_2Hop_52 [19]
+                0.00    0.01   35263/280691      libmetis__irandArrayPermute [18]
+                0.00    0.00   35263/704195      libmetis__iset [20]
+                0.00    0.00  105789/379664      gk_mcorePop [56]
+                0.00    0.00  141052/1014051     gk_mcoreMalloc [62]
+                0.00    0.00  141052/1014051     wspacemalloc_52 [63]
+                0.00    0.00  141052/1006889     iwspacemalloc_52 [64]
+                0.00    0.00  105789/379664      wspacepop_52 [68]
+                0.00    0.00   35263/1393715     gk_mcoreAdd [61]
+                0.00    0.00   35263/379664      gk_mcorePush [67]
+                0.00    0.00   35263/379664      wspacepush_52 [69]
+-----------------------------------------------
+                0.00    0.00     255/17298       CoarsenGraphNlevels_52 [29]
+                0.19    0.18   17043/17298       CoarsenGraph_52 [6]
+[8]     28.4    0.19    0.19   17298         Match_RM_52 [8]
+                0.12    0.01   17298/52561       CreateCoarseGraph_52 [9]
+                0.05    0.00   17298/52561       BucketSortKeysInc_52 [10]
+                0.00    0.02    2657/7162        Match_2Hop_52 [19]
+                0.00    0.00   17298/280691      libmetis__irandArrayPermute [18]
+                0.00    0.00   17298/704195      libmetis__iset [20]
+                0.00    0.00   51894/379664      gk_mcorePop [56]
+                0.00    0.00   69192/1014051     gk_mcoreMalloc [62]
+                0.00    0.00   69192/1014051     wspacemalloc_52 [63]
+                0.00    0.00   69192/1006889     iwspacemalloc_52 [64]
+                0.00    0.00   51894/379664      wspacepop_52 [68]
+                0.00    0.00   17298/1393715     gk_mcoreAdd [61]
+                0.00    0.00   17298/379664      gk_mcorePush [67]
+                0.00    0.00   17298/379664      wspacepush_52 [69]
+-----------------------------------------------
+                0.12    0.01   17298/52561       Match_RM_52 [8]
+                0.23    0.01   35263/52561       Match_SHEM_52 [7]
+[9]     27.7    0.35    0.02   52561         CreateCoarseGraph_52 [9]
+                0.01    0.00   52561/84609       libmetis__isum [27]
+                0.01    0.00  105122/704195      libmetis__iset [20]
+                0.00    0.00   52561/52561       ReAdjustMemory_52 [50]
+                0.00    0.00  105122/1014051     gk_mcoreMalloc [62]
+                0.00    0.00  105122/1014051     wspacemalloc_52 [63]
+                0.00    0.00  105122/1006889     iwspacemalloc_52 [64]
+                0.00    0.00   52561/1393715     gk_mcoreAdd [61]
+                0.00    0.00   52561/379664      gk_mcorePush [67]
+                0.00    0.00   52561/379664      wspacepush_52 [69]
+                0.00    0.00   52561/52561       SetupCoarseGraph_52 [83]
+-----------------------------------------------
+                0.05    0.00   17298/52561       Match_RM_52 [8]
+                0.09    0.00   35263/52561       Match_SHEM_52 [7]
+[10]    10.8    0.14    0.00   52561         BucketSortKeysInc_52 [10]
+                0.00    0.00   52561/704195      libmetis__iset [20]
+                0.00    0.00   52561/1393715     gk_mcoreAdd [61]
+                0.00    0.00   52561/379664      gk_mcorePush [67]
+                0.00    0.00   52561/379664      wspacepush_52 [69]
+                0.00    0.00   52561/1014051     gk_mcoreMalloc [62]
+                0.00    0.00   52561/1014051     wspacemalloc_52 [63]
+                0.00    0.00   52561/1006889     iwspacemalloc_52 [64]
+-----------------------------------------------
+                0.00    0.14   17043/17043       MlevelNodeBisectionL1_52 [5]
+[11]    10.2    0.00    0.14   17043         InitSeparator_52 [11]
+                0.05    0.05   17043/17043       GrowBisection_52 [14]
+                0.00    0.02   17043/17043       ConstructSeparator_52 [28]
+                0.00    0.01   17043/69604       FM_2WayNodeRefine1Sided_52 [21]
+                0.00    0.00   17043/67697       Compute2WayPartitionParams_52 [30]
+                0.00    0.00   34086/379664      gk_mcorePop [56]
+                0.00    0.00   34086/379664      wspacepop_52 [68]
+                0.00    0.00   17043/17043       Setup2WayBalMultipliers_52 [92]
+-----------------------------------------------
+                0.10    0.01   16023/16023       MlevelNestedDissection_52 [4]
+[12]     8.2    0.10    0.01   16023         SplitGraphOrder_52 [12]
+                0.00    0.01   32046/32047       SetupGraph_tvwgt_52 [42]
+                0.00    0.00   32046/704195      libmetis__iset [20]
+                0.00    0.00   32046/32046       SetupSplitGraph_52 [89]
+                0.00    0.00   16023/1393715     gk_mcoreAdd [61]
+                0.00    0.00   16023/379664      gk_mcorePush [67]
+                0.00    0.00   16023/379664      wspacepush_52 [69]
+                0.00    0.00   16023/1014051     gk_mcoreMalloc [62]
+                0.00    0.00   16023/1014051     wspacemalloc_52 [63]
+                0.00    0.00   16023/1006889     iwspacemalloc_52 [64]
+-----------------------------------------------
+                0.00    0.10   16023/16023       MlevelNestedDissection_52 [4]
+[13]     7.8    0.00    0.10   16023         MlevelNodeBisectionL2_52 [13]
+                0.00    0.08    1275/17043       MlevelNodeBisectionL1_52 [5]
+                0.00    0.02     255/255         CoarsenGraphNlevels_52 [29]
+                0.00    0.01    1275/17298       Refine2WayNode_52 [15]
+                0.00    0.00    1020/102671      FreeRData_52 [49]
+                0.00    0.00     255/379664      gk_mcorePop [56]
+                0.00    0.00     360/71884       libmetis__icopy [81]
+                0.00    0.00     255/1393715     gk_mcoreAdd [61]
+                0.00    0.00     255/379664      gk_mcorePush [67]
+                0.00    0.00     255/379664      wspacepush_52 [69]
+                0.00    0.00     255/1014051     gk_mcoreMalloc [62]
+                0.00    0.00     255/1014051     wspacemalloc_52 [63]
+                0.00    0.00     255/1006889     iwspacemalloc_52 [64]
+                0.00    0.00     255/379664      wspacepop_52 [68]
+-----------------------------------------------
+                0.05    0.05   17043/17043       InitSeparator_52 [11]
+[14]     7.6    0.05    0.05   17043         GrowBisection_52 [14]
+                0.01    0.02   50654/50654       FM_2WayCutRefine_52 [22]
+                0.01    0.01   50654/67697       Compute2WayPartitionParams_52 [30]
+                0.01    0.00  101308/704195      libmetis__iset [20]
+                0.00    0.00   51114/9560406     libmetis__irandInRange [17]
+                0.00    0.00   50654/379664      gk_mcorePop [56]
+                0.00    0.00   51129/1014051     gk_mcoreMalloc [62]
+                0.00    0.00   51129/1014051     wspacemalloc_52 [63]
+                0.00    0.00   51129/1006889     iwspacemalloc_52 [64]
+                0.00    0.00   50654/50654       Balance2Way_52 [86]
+                0.00    0.00   50654/379664      wspacepop_52 [68]
+                0.00    0.00   50654/50654       FM_2WayRefine_52 [88]
+                0.00    0.00   37438/71884       libmetis__icopy [81]
+                0.00    0.00   17043/1393715     gk_mcoreAdd [61]
+                0.00    0.00   17043/379664      gk_mcorePush [67]
+                0.00    0.00   17043/379664      wspacepush_52 [69]
+                0.00    0.00   17043/17043       Allocate2WayPartitionMemory_52 [91]
+-----------------------------------------------
+                0.00    0.01    1275/17298       MlevelNodeBisectionL2_52 [13]
+                0.00    0.08   16023/17298       MlevelNestedDissection_52 [4]
+[15]     6.7    0.00    0.09   17298         Refine2WayNode_52 [15]
+                0.04    0.01   52561/69604       Compute2WayNodePartitionParams_52 [16]
+                0.01    0.02   52561/69604       FM_2WayNodeRefine1Sided_52 [21]
+                0.01    0.00   52561/52561       Project2WayNodePartition_52 [31]
+                0.00    0.00   52561/52561       FM_2WayNodeBalance_52 [48]
+                0.00    0.00   56325/379664      gk_mcorePop [56]
+                0.00    0.00   56325/379664      wspacepop_52 [68]
+                0.00    0.00   52561/52561       graph_ReadFromDisk_52 [84]
+-----------------------------------------------
+                0.01    0.00   17043/69604       ConstructSeparator_52 [28]
+                0.04    0.01   52561/69604       Refine2WayNode_52 [15]
+[16]     4.4    0.05    0.01   69604         Compute2WayNodePartitionParams_52 [16]
+                0.01    0.00  139208/704195      libmetis__iset [20]
+-----------------------------------------------
+                0.00    0.00   51114/9560406     GrowBisection_52 [14]
+                0.03    0.02 9509292/9560406     libmetis__irandArrayPermute [18]
+[17]     3.8    0.03    0.02 9560406         libmetis__irandInRange [17]
+                0.02    0.00 9560406/9560406     gk_randint32 [26]
+                0.00    0.00 9560406/9560406     libmetis__irand [58]
+-----------------------------------------------
+                0.00    0.00    3764/280691      FM_2WayNodeBalance_52 [48]
+                0.00    0.00   17043/280691      FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   17298/280691      Match_RM_52 [8]
+                0.00    0.01   35263/280691      Match_SHEM_52 [7]
+                0.00    0.01   63461/280691      FM_2WayCutRefine_52 [22]
+                0.00    0.03  143862/280691      FM_2WayNodeRefine1Sided_52 [21]
+[18]     3.7    0.00    0.05  280691         libmetis__irandArrayPermute [18]
+                0.03    0.02 9509292/9560406     libmetis__irandInRange [17]
+-----------------------------------------------
+                0.00    0.02    2657/7162        Match_RM_52 [8]
+                0.00    0.03    4505/7162        Match_SHEM_52 [7]
+[19]     3.1    0.00    0.04    7162         Match_2Hop_52 [19]
+                0.03    0.00    7366/7366        Match_2HopAny_52 [23]
+                0.00    0.01    7162/7162        Match_2HopAll_52 [32]
+-----------------------------------------------
+                0.00    0.00       1/704195      METIS_SetDefaultOptions_52 [52]
+                0.00    0.00       1/704195      SetupCtrl_52 [53]
+                0.00    0.00       2/704195      SetupGraph_52 [34]
+                0.00    0.00       2/704195      CompressGraph_52 [33]
+                0.00    0.00    3764/704195      FM_2WayNodeBalance_52 [48]
+                0.00    0.00    7162/704195      Match_2HopAll_52 [32]
+                0.00    0.00    7366/704195      Match_2HopAny_52 [23]
+                0.00    0.00   17043/704195      FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   17298/704195      Match_RM_52 [8]
+                0.00    0.00   32046/704195      SplitGraphOrder_52 [12]
+                0.00    0.00   35263/704195      Match_SHEM_52 [7]
+                0.00    0.00   50654/704195      FM_2WayCutRefine_52 [22]
+                0.00    0.00   52561/704195      BucketSortKeysInc_52 [10]
+                0.01    0.00  101308/704195      GrowBisection_52 [14]
+                0.01    0.00  105122/704195      CreateCoarseGraph_52 [9]
+                0.01    0.00  135394/704195      Compute2WayPartitionParams_52 [30]
+                0.01    0.00  139208/704195      Compute2WayNodePartitionParams_52 [16]
+[20]     3.0    0.04    0.00  704195         libmetis__iset [20]
+-----------------------------------------------
+                0.00    0.01   17043/69604       InitSeparator_52 [11]
+                0.01    0.02   52561/69604       Refine2WayNode_52 [15]
+[21]     3.0    0.01    0.03   69604         FM_2WayNodeRefine1Sided_52 [21]
+                0.00    0.03  143862/280691      libmetis__irandArrayPermute [18]
+                0.00    0.00  224932/749981      libmetis__rpqGetTop [36]
+                0.00    0.00   69604/208762      libmetis__rpqDestroy [45]
+                0.00    0.00  234890/898722      libmetis__rpqInsert [65]
+                0.00    0.00  208812/1014051     gk_mcoreMalloc [62]
+                0.00    0.00  208812/1014051     wspacemalloc_52 [63]
+                0.00    0.00  208812/1006889     iwspacemalloc_52 [64]
+                0.00    0.00  143862/304870      libmetis__rpqReset [70]
+                0.00    0.00   69604/1393715     gk_mcoreAdd [61]
+                0.00    0.00   69604/379664      gk_mcorePush [67]
+                0.00    0.00   69604/379664      wspacepush_52 [69]
+                0.00    0.00   69604/208762      libmetis__rpqCreate [74]
+                0.00    0.00    1123/18563       libmetis__rpqUpdate [90]
+-----------------------------------------------
+                0.01    0.02   50654/50654       GrowBisection_52 [14]
+[22]     2.4    0.01    0.02   50654         FM_2WayCutRefine_52 [22]
+                0.00    0.01   63461/280691      libmetis__irandArrayPermute [18]
+                0.01    0.00  473119/749981      libmetis__rpqGetTop [36]
+                0.00    0.00   50654/704195      libmetis__iset [20]
+                0.00    0.00  101308/208762      libmetis__rpqDestroy [45]
+                0.00    0.00  571877/898722      libmetis__rpqInsert [65]
+                0.00    0.00  151962/1014051     gk_mcoreMalloc [62]
+                0.00    0.00  151962/1014051     wspacemalloc_52 [63]
+                0.00    0.00  151962/1006889     iwspacemalloc_52 [64]
+                0.00    0.00  126922/304870      libmetis__rpqReset [70]
+                0.00    0.00  101308/208762      libmetis__rpqCreate [74]
+                0.00    0.00   87692/122376      libmetis__rpqDelete [76]
+                0.00    0.00   50654/1393715     gk_mcoreAdd [61]
+                0.00    0.00   50654/379664      gk_mcorePush [67]
+                0.00    0.00   50654/379664      wspacepush_52 [69]
+                0.00    0.00      40/18563       libmetis__rpqUpdate [90]
+-----------------------------------------------
+                0.03    0.00    7366/7366        Match_2Hop_52 [19]
+[23]     2.3    0.03    0.00    7366         Match_2HopAny_52 [23]
+                0.00    0.00    7366/704195      libmetis__iset [20]
+                0.00    0.00    7366/379664      gk_mcorePop [56]
+                0.00    0.00   14732/1014051     gk_mcoreMalloc [62]
+                0.00    0.00   14732/1014051     wspacemalloc_52 [63]
+                0.00    0.00   14732/1006889     iwspacemalloc_52 [64]
+                0.00    0.00    7366/1393715     gk_mcoreAdd [61]
+                0.00    0.00    7366/379664      gk_mcorePush [67]
+                0.00    0.00    7366/379664      wspacepush_52 [69]
+                0.00    0.00    7366/379664      wspacepop_52 [68]
+-----------------------------------------------
+                0.00    0.03   16024/16024       MlevelNestedDissection_52 [4]
+[24]     2.3    0.00    0.03   16024         MMDOrder_52 [24]
+                0.01    0.02   16024/16024       genmmd_52 [25]
+                0.00    0.00   16024/379664      gk_mcorePop [56]
+                0.00    0.00   96144/1014051     gk_mcoreMalloc [62]
+                0.00    0.00   96144/1014051     wspacemalloc_52 [63]
+                0.00    0.00   96144/1006889     iwspacemalloc_52 [64]
+                0.00    0.00   16024/1393715     gk_mcoreAdd [61]
+                0.00    0.00   16024/379664      gk_mcorePush [67]
+                0.00    0.00   16024/379664      wspacepush_52 [69]
+                0.00    0.00   16024/379664      wspacepop_52 [68]
+-----------------------------------------------
+                0.01    0.02   16024/16024       MMDOrder_52 [24]
+[25]     2.3    0.01    0.02   16024         genmmd_52 [25]
+                0.01    0.00  966990/966990      mmdelm_52 [35]
+                0.01    0.00   80739/80739       mmdupd_52 [37]
+                0.00    0.00   16024/16024       mmdint_52 [93]
+                0.00    0.00   16024/16024       mmdnum_52 [94]
+-----------------------------------------------
+                0.02    0.00 9560406/9560406     libmetis__irandInRange [17]
+[26]     1.5    0.02    0.00 9560406         gk_randint32 [26]
+-----------------------------------------------
+                0.00    0.00       1/84609       SetupGraph_52 [34]
+                0.01    0.00   32047/84609       SetupGraph_tvwgt_52 [42]
+                0.01    0.00   52561/84609       CreateCoarseGraph_52 [9]
+[27]     1.5    0.02    0.00   84609         libmetis__isum [27]
+-----------------------------------------------
+                0.00    0.02   17043/17043       InitSeparator_52 [11]
+[28]     1.5    0.00    0.02   17043         ConstructSeparator_52 [28]
+                0.01    0.00   17043/69604       Compute2WayNodePartitionParams_52 [16]
+                0.00    0.01   17043/17043       FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   17043/102671      FreeRData_52 [49]
+                0.00    0.00   34086/379664      gk_mcorePop [56]
+                0.00    0.00   34086/71884       libmetis__icopy [81]
+                0.00    0.00   34086/379664      wspacepop_52 [68]
+                0.00    0.00   17043/1393715     gk_mcoreAdd [61]
+                0.00    0.00   17043/379664      gk_mcorePush [67]
+                0.00    0.00   17043/379664      wspacepush_52 [69]
+                0.00    0.00   17043/1014051     gk_mcoreMalloc [62]
+                0.00    0.00   17043/1014051     wspacemalloc_52 [63]
+                0.00    0.00   17043/1006889     iwspacemalloc_52 [64]
+                0.00    0.00   17043/69604       Allocate2WayNodePartitionMemory_52 [82]
+-----------------------------------------------
+                0.00    0.02     255/255         MlevelNodeBisectionL2_52 [13]
+[29]     1.3    0.00    0.02     255         CoarsenGraphNlevels_52 [29]
+                0.00    0.01     765/35263       Match_SHEM_52 [7]
+                0.00    0.00     255/17298       Match_RM_52 [8]
+                0.00    0.00    1020/52561       graph_WriteToDisk_52 [85]
+                0.00    0.00    1020/1752424     gk_malloc [60]
+                0.00    0.00    1020/887303      libmetis__imalloc [66]
+-----------------------------------------------
+                0.00    0.00   17043/67697       InitSeparator_52 [11]
+                0.01    0.01   50654/67697       GrowBisection_52 [14]
+[30]     1.3    0.01    0.01   67697         Compute2WayPartitionParams_52 [30]
+                0.01    0.00  135394/704195      libmetis__iset [20]
+-----------------------------------------------
+                0.01    0.00   52561/52561       Refine2WayNode_52 [15]
+[31]     1.0    0.01    0.00   52561         Project2WayNodePartition_52 [31]
+                0.00    0.00   52561/84608       FreeGraph_52 [43]
+                0.00    0.00   52561/69604       Allocate2WayNodePartitionMemory_52 [82]
+-----------------------------------------------
+                0.00    0.01    7162/7162        Match_2Hop_52 [19]
+[32]     0.8    0.00    0.01    7162         Match_2HopAll_52 [32]
+                0.01    0.00    7162/7163        libmetis__ikvsorti [38]
+                0.00    0.00    7162/704195      libmetis__iset [20]
+                0.00    0.00    7162/379664      gk_mcorePop [56]
+                0.00    0.00   14324/1014051     gk_mcoreMalloc [62]
+                0.00    0.00   14324/1014051     wspacemalloc_52 [63]
+                0.00    0.00    7162/1393715     gk_mcoreAdd [61]
+                0.00    0.00    7162/379664      gk_mcorePush [67]
+                0.00    0.00    7162/379664      wspacepush_52 [69]
+                0.00    0.00    7162/7162        ikvwspacemalloc_52 [96]
+                0.00    0.00    7162/1006889     iwspacemalloc_52 [64]
+                0.00    0.00    7162/379664      wspacepop_52 [68]
+-----------------------------------------------
+                0.01    0.00       1/1           METIS_NodeND_52 [3]
+[33]     0.8    0.01    0.00       1         CompressGraph_52 [33]
+                0.00    0.00       1/7163        libmetis__ikvsorti [38]
+                0.00    0.00       2/704195      libmetis__iset [20]
+                0.00    0.00       1/1027850     gk_free [41]
+                0.00    0.00       2/5           libmetis__ismalloc [98]
+                0.00    0.00       1/1752424     gk_malloc [60]
+                0.00    0.00       1/1           libmetis__ikvmalloc [115]
+-----------------------------------------------
+                0.00    0.01       1/1           METIS_NodeND_52 [3]
+[34]     0.8    0.00    0.01       1         SetupGraph_52 [34]
+                0.01    0.00       1/1           SetupGraph_label_52 [39]
+                0.00    0.00       1/84609       libmetis__isum [27]
+                0.00    0.00       1/32047       SetupGraph_tvwgt_52 [42]
+                0.00    0.00       2/704195      libmetis__iset [20]
+                0.00    0.00       2/1752424     gk_malloc [60]
+                0.00    0.00       2/5           libmetis__ismalloc [98]
+                0.00    0.00       1/84608       CreateGraph_52 [79]
+                0.00    0.00       1/887303      libmetis__imalloc [66]
+                0.00    0.00       1/84609       libmetis__rmalloc [78]
+-----------------------------------------------
+                0.01    0.00  966990/966990      genmmd_52 [25]
+[35]     0.8    0.01    0.00  966990         mmdelm_52 [35]
+-----------------------------------------------
+                0.00    0.00   15007/749981      FM_2WayNodeBalance_52 [48]
+                0.00    0.00   36923/749981      FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00  224932/749981      FM_2WayNodeRefine1Sided_52 [21]
+                0.01    0.00  473119/749981      FM_2WayCutRefine_52 [22]
+[36]     0.8    0.01    0.00  749981         libmetis__rpqGetTop [36]
+-----------------------------------------------
+                0.01    0.00   80739/80739       genmmd_52 [25]
+[37]     0.8    0.01    0.00   80739         mmdupd_52 [37]
+-----------------------------------------------
+                0.00    0.00       1/7163        CompressGraph_52 [33]
+                0.01    0.00    7162/7163        Match_2HopAll_52 [32]
+[38]     0.8    0.01    0.00    7163         libmetis__ikvsorti [38]
+-----------------------------------------------
+                0.01    0.00       1/1           SetupGraph_52 [34]
+[39]     0.8    0.01    0.00       1         SetupGraph_label_52 [39]
+                0.00    0.00       1/1752424     gk_malloc [60]
+                0.00    0.00       1/887303      libmetis__imalloc [66]
+-----------------------------------------------
+                0.00    0.00     774/1753195     gk_realloc [51]
+                0.01    0.00 1752421/1753195     gk_free [41]
+[40]     0.8    0.01    0.00 1753195         gk_gkmcoreDel [40]
+-----------------------------------------------
+                0.00    0.00       1/1027850     main [1]
+                0.00    0.00       1/1027850     Test_ND [2]
+                0.00    0.00       1/1027850     gk_mcoreDestroy [57]
+                0.00    0.00       1/1027850     METIS_NodeND_52 [3]
+                0.00    0.00       1/1027850     FreeWorkSpace_52 [55]
+                0.00    0.00       1/1027850     FreeCtrl_52 [54]
+                0.00    0.00       1/1027850     CompressGraph_52 [33]
+                0.00    0.00       2/1027850     gk_mcorePop [56]
+                0.00    0.00  102671/1027850     FreeRData_52 [49]
+                0.00    0.00  169216/1027850     FreeGraph_52 [43]
+                0.00    0.00  208762/1027850     libmetis__rpqFree [47]
+                0.00    0.00  208762/1027850     libmetis__rpqDestroy [45]
+                0.00    0.00  338430/1027850     FreeSData_52 [46]
+[41]     0.8    0.00    0.01 1027850         gk_free [41]
+                0.01    0.00 1752421/1753195     gk_gkmcoreDel [40]
+-----------------------------------------------
+                0.00    0.00       1/32047       SetupGraph_52 [34]
+                0.00    0.01   32046/32047       SplitGraphOrder_52 [12]
+[42]     0.6    0.00    0.01   32047         SetupGraph_tvwgt_52 [42]
+                0.01    0.00   32047/84609       libmetis__isum [27]
+-----------------------------------------------
+                0.00    0.00   32047/84608       MlevelNestedDissection_52 [4]
+                0.00    0.00   52561/84608       Project2WayNodePartition_52 [31]
+[43]     0.4    0.00    0.01   84608         FreeGraph_52 [43]
+                0.00    0.00   84608/84608       FreeSData_52 [46]
+                0.00    0.00  169216/1027850     gk_free [41]
+                0.00    0.00   84608/102671      FreeRData_52 [49]
+-----------------------------------------------
+                0.00    0.01   17043/17043       ConstructSeparator_52 [28]
+[44]     0.4    0.00    0.01   17043         FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   17043/280691      libmetis__irandArrayPermute [18]
+                0.00    0.00   17043/704195      libmetis__iset [20]
+                0.00    0.00   34086/208762      libmetis__rpqDestroy [45]
+                0.00    0.00   36923/749981      libmetis__rpqGetTop [36]
+                0.00    0.00  107124/107124      libmetis__rpqSeeTopVal [77]
+                0.00    0.00   79604/898722      libmetis__rpqInsert [65]
+                0.00    0.00   68172/1014051     gk_mcoreMalloc [62]
+                0.00    0.00   68172/1014051     wspacemalloc_52 [63]
+                0.00    0.00   68172/1006889     iwspacemalloc_52 [64]
+                0.00    0.00   34684/122376      libmetis__rpqDelete [76]
+                0.00    0.00   34086/208762      libmetis__rpqCreate [74]
+                0.00    0.00   34086/304870      libmetis__rpqReset [70]
+                0.00    0.00   17344/18563       libmetis__rpqUpdate [90]
+                0.00    0.00   17043/1393715     gk_mcoreAdd [61]
+                0.00    0.00   17043/379664      gk_mcorePush [67]
+                0.00    0.00   17043/379664      wspacepush_52 [69]
+-----------------------------------------------
+                0.00    0.00    3764/208762      FM_2WayNodeBalance_52 [48]
+                0.00    0.00   34086/208762      FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   69604/208762      FM_2WayNodeRefine1Sided_52 [21]
+                0.00    0.00  101308/208762      FM_2WayCutRefine_52 [22]
+[45]     0.3    0.00    0.00  208762         libmetis__rpqDestroy [45]
+                0.00    0.00  208762/1027850     gk_free [41]
+                0.00    0.00  208762/208762      libmetis__rpqFree [47]
+-----------------------------------------------
+                0.00    0.00   84608/84608       FreeGraph_52 [43]
+[46]     0.2    0.00    0.00   84608         FreeSData_52 [46]
+                0.00    0.00  338430/1027850     gk_free [41]
+-----------------------------------------------
+                0.00    0.00  208762/208762      libmetis__rpqDestroy [45]
+[47]     0.2    0.00    0.00  208762         libmetis__rpqFree [47]
+                0.00    0.00  208762/1027850     gk_free [41]
+-----------------------------------------------
+                0.00    0.00   52561/52561       Refine2WayNode_52 [15]
+[48]     0.1    0.00    0.00   52561         FM_2WayNodeBalance_52 [48]
+                0.00    0.00    3764/280691      libmetis__irandArrayPermute [18]
+                0.00    0.00    3764/704195      libmetis__iset [20]
+                0.00    0.00   15007/749981      libmetis__rpqGetTop [36]
+                0.00    0.00    3764/208762      libmetis__rpqDestroy [45]
+                0.00    0.00   12351/898722      libmetis__rpqInsert [65]
+                0.00    0.00    7528/1014051     gk_mcoreMalloc [62]
+                0.00    0.00    7528/1014051     wspacemalloc_52 [63]
+                0.00    0.00    7528/1006889     iwspacemalloc_52 [64]
+                0.00    0.00    3764/1393715     gk_mcoreAdd [61]
+                0.00    0.00    3764/379664      gk_mcorePush [67]
+                0.00    0.00    3764/379664      wspacepush_52 [69]
+                0.00    0.00    3764/208762      libmetis__rpqCreate [74]
+                0.00    0.00      56/18563       libmetis__rpqUpdate [90]
+-----------------------------------------------
+                0.00    0.00    1020/102671      MlevelNodeBisectionL2_52 [13]
+                0.00    0.00   17043/102671      ConstructSeparator_52 [28]
+                0.00    0.00   84608/102671      FreeGraph_52 [43]
+[49]     0.1    0.00    0.00  102671         FreeRData_52 [49]
+                0.00    0.00  102671/1027850     gk_free [41]
+-----------------------------------------------
+                0.00    0.00   52561/52561       CreateCoarseGraph_52 [9]
+[50]     0.0    0.00    0.00   52561         ReAdjustMemory_52 [50]
+                0.00    0.00     774/774         gk_realloc [51]
+                0.00    0.00     774/774         libmetis__irealloc [97]
+-----------------------------------------------
+                0.00    0.00     774/774         ReAdjustMemory_52 [50]
+[51]     0.0    0.00    0.00     774         gk_realloc [51]
+                0.00    0.00     774/1753195     gk_gkmcoreDel [40]
+                0.00    0.00     774/1753196     gk_gkmcoreAdd [59]
+-----------------------------------------------
+                0.00    0.00       1/1           Test_ND [2]
+[52]     0.0    0.00    0.00       1         METIS_SetDefaultOptions_52 [52]
+                0.00    0.00       1/704195      libmetis__iset [20]
+-----------------------------------------------
+                0.00    0.00       1/1           METIS_NodeND_52 [3]
+[53]     0.0    0.00    0.00       1         SetupCtrl_52 [53]
+                0.00    0.00       1/704195      libmetis__iset [20]
+                0.00    0.00       2/1752424     gk_malloc [60]
+                0.00    0.00       2/2           libmetis__rset [99]
+                0.00    0.00       2/2           libmetis__rsmalloc [100]
+                0.00    0.00       1/5           libmetis__ismalloc [98]
+                0.00    0.00       1/84609       libmetis__rmalloc [78]
+                0.00    0.00       1/1           gk_randinit [112]
+                0.00    0.00       1/1           libmetis__isrand [116]
+                0.00    0.00       1/1           InitRandom_52 [103]
+                0.00    0.00       1/1           CheckParams_52 [102]
+-----------------------------------------------
+                0.00    0.00       1/1           METIS_NodeND_52 [3]
+[54]     0.0    0.00    0.00       1         FreeCtrl_52 [54]
+                0.00    0.00       1/1           FreeWorkSpace_52 [55]
+                0.00    0.00       1/1027850     gk_free [41]
+-----------------------------------------------
+                0.00    0.00       1/1           FreeCtrl_52 [54]
+[55]     0.0    0.00    0.00       1         FreeWorkSpace_52 [55]
+                0.00    0.00       1/1           gk_mcoreDestroy [57]
+                0.00    0.00       1/1027850     gk_free [41]
+-----------------------------------------------
+                0.00    0.00     255/379664      MlevelNodeBisectionL2_52 [13]
+                0.00    0.00    7162/379664      Match_2HopAll_52 [32]
+                0.00    0.00    7366/379664      Match_2HopAny_52 [23]
+                0.00    0.00   16023/379664      MlevelNestedDissection_52 [4]
+                0.00    0.00   16024/379664      MMDOrder_52 [24]
+                0.00    0.00   34086/379664      InitSeparator_52 [11]
+                0.00    0.00   34086/379664      ConstructSeparator_52 [28]
+                0.00    0.00   50654/379664      GrowBisection_52 [14]
+                0.00    0.00   51894/379664      Match_RM_52 [8]
+                0.00    0.00   56325/379664      Refine2WayNode_52 [15]
+                0.00    0.00  105789/379664      Match_SHEM_52 [7]
+[56]     0.0    0.00    0.00  379664         gk_mcorePop [56]
+                0.00    0.00       2/1027850     gk_free [41]
+-----------------------------------------------
+                0.00    0.00       1/1           FreeWorkSpace_52 [55]
+[57]     0.0    0.00    0.00       1         gk_mcoreDestroy [57]
+                0.00    0.00       1/1027850     gk_free [41]
+-----------------------------------------------
+                0.00    0.00 9560406/9560406     libmetis__irandInRange [17]
+[58]     0.0    0.00    0.00 9560406         libmetis__irand [58]
+-----------------------------------------------
+                0.00    0.00       1/1753196     gk_malloc_init [110]
+                0.00    0.00     774/1753196     gk_realloc [51]
+                0.00    0.00 1752421/1753196     gk_malloc [60]
+[59]     0.0    0.00    0.00 1753196         gk_gkmcoreAdd [59]
+-----------------------------------------------
+                0.00    0.00       1/1752424     SetupGraph_label_52 [39]
+                0.00    0.00       1/1752424     CompressGraph_52 [33]
+                0.00    0.00       2/1752424     gk_mcoreMalloc [62]
+                0.00    0.00       2/1752424     libmetis__rsmalloc [100]
+                0.00    0.00       2/1752424     METIS_NodeND_52 [3]
+                0.00    0.00       2/1752424     SetupCtrl_52 [53]
+                0.00    0.00       2/1752424     SetupGraph_52 [34]
+                0.00    0.00       3/1752424     Test_ND [2]
+                0.00    0.00       3/1752424     gk_mcoreCreate [111]
+                0.00    0.00       5/1752424     libmetis__ismalloc [98]
+                0.00    0.00    1020/1752424     CoarsenGraphNlevels_52 [29]
+                0.00    0.00   50521/1752424     CoarsenGraph_52 [6]
+                0.00    0.00   84608/1752424     CreateGraph_52 [79]
+                0.00    0.00  102258/1752424     Allocate2WayPartitionMemory_52 [91]
+                0.00    0.00  208762/1752424     gk_idxsmalloc [72]
+                0.00    0.00  208762/1752424     libmetis__rpqInit [75]
+                0.00    0.00  208762/1752424     libmetis__rpqCreate [74]
+                0.00    0.00  224322/1752424     SetupSplitGraph_52 [89]
+                0.00    0.00  315366/1752424     SetupCoarseGraph_52 [83]
+                0.00    0.00  348020/1752424     Allocate2WayNodePartitionMemory_52 [82]
+[60]     0.0    0.00    0.00 1752424         gk_malloc [60]
+                0.00    0.00 1752421/1753196     gk_gkmcoreAdd [59]
+-----------------------------------------------
+                0.00    0.00     255/1393715     MlevelNodeBisectionL2_52 [13]
+                0.00    0.00    3764/1393715     FM_2WayNodeBalance_52 [48]
+                0.00    0.00    7162/1393715     Match_2HopAll_52 [32]
+                0.00    0.00    7366/1393715     Match_2HopAny_52 [23]
+                0.00    0.00   16023/1393715     SplitGraphOrder_52 [12]
+                0.00    0.00   16024/1393715     MMDOrder_52 [24]
+                0.00    0.00   17043/1393715     GrowBisection_52 [14]
+                0.00    0.00   17043/1393715     ConstructSeparator_52 [28]
+                0.00    0.00   17043/1393715     FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   17298/1393715     Match_RM_52 [8]
+                0.00    0.00   35263/1393715     Match_SHEM_52 [7]
+                0.00    0.00   50654/1393715     FM_2WayCutRefine_52 [22]
+                0.00    0.00   52561/1393715     CreateCoarseGraph_52 [9]
+                0.00    0.00   52561/1393715     BucketSortKeysInc_52 [10]
+                0.00    0.00   69604/1393715     FM_2WayNodeRefine1Sided_52 [21]
+                0.00    0.00 1014051/1393715     gk_mcoreMalloc [62]
+[61]     0.0    0.00    0.00 1393715         gk_mcoreAdd [61]
+-----------------------------------------------
+                0.00    0.00     255/1014051     MlevelNodeBisectionL2_52 [13]
+                0.00    0.00    7528/1014051     FM_2WayNodeBalance_52 [48]
+                0.00    0.00   14324/1014051     Match_2HopAll_52 [32]
+                0.00    0.00   14732/1014051     Match_2HopAny_52 [23]
+                0.00    0.00   16023/1014051     SplitGraphOrder_52 [12]
+                0.00    0.00   17043/1014051     ConstructSeparator_52 [28]
+                0.00    0.00   51129/1014051     GrowBisection_52 [14]
+                0.00    0.00   52561/1014051     BucketSortKeysInc_52 [10]
+                0.00    0.00   68172/1014051     FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   69192/1014051     Match_RM_52 [8]
+                0.00    0.00   96144/1014051     MMDOrder_52 [24]
+                0.00    0.00  105122/1014051     CreateCoarseGraph_52 [9]
+                0.00    0.00  141052/1014051     Match_SHEM_52 [7]
+                0.00    0.00  151962/1014051     FM_2WayCutRefine_52 [22]
+                0.00    0.00  208812/1014051     FM_2WayNodeRefine1Sided_52 [21]
+[62]     0.0    0.00    0.00 1014051         gk_mcoreMalloc [62]
+                0.00    0.00 1014051/1393715     gk_mcoreAdd [61]
+                0.00    0.00       2/1752424     gk_malloc [60]
+-----------------------------------------------
+                0.00    0.00     255/1014051     MlevelNodeBisectionL2_52 [13]
+                0.00    0.00    7528/1014051     FM_2WayNodeBalance_52 [48]
+                0.00    0.00   14324/1014051     Match_2HopAll_52 [32]
+                0.00    0.00   14732/1014051     Match_2HopAny_52 [23]
+                0.00    0.00   16023/1014051     SplitGraphOrder_52 [12]
+                0.00    0.00   17043/1014051     ConstructSeparator_52 [28]
+                0.00    0.00   51129/1014051     GrowBisection_52 [14]
+                0.00    0.00   52561/1014051     BucketSortKeysInc_52 [10]
+                0.00    0.00   68172/1014051     FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   69192/1014051     Match_RM_52 [8]
+                0.00    0.00   96144/1014051     MMDOrder_52 [24]
+                0.00    0.00  105122/1014051     CreateCoarseGraph_52 [9]
+                0.00    0.00  141052/1014051     Match_SHEM_52 [7]
+                0.00    0.00  151962/1014051     FM_2WayCutRefine_52 [22]
+                0.00    0.00  208812/1014051     FM_2WayNodeRefine1Sided_52 [21]
+[63]     0.0    0.00    0.00 1014051         wspacemalloc_52 [63]
+-----------------------------------------------
+                0.00    0.00     255/1006889     MlevelNodeBisectionL2_52 [13]
+                0.00    0.00    7162/1006889     Match_2HopAll_52 [32]
+                0.00    0.00    7528/1006889     FM_2WayNodeBalance_52 [48]
+                0.00    0.00   14732/1006889     Match_2HopAny_52 [23]
+                0.00    0.00   16023/1006889     SplitGraphOrder_52 [12]
+                0.00    0.00   17043/1006889     ConstructSeparator_52 [28]
+                0.00    0.00   51129/1006889     GrowBisection_52 [14]
+                0.00    0.00   52561/1006889     BucketSortKeysInc_52 [10]
+                0.00    0.00   68172/1006889     FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   69192/1006889     Match_RM_52 [8]
+                0.00    0.00   96144/1006889     MMDOrder_52 [24]
+                0.00    0.00  105122/1006889     CreateCoarseGraph_52 [9]
+                0.00    0.00  141052/1006889     Match_SHEM_52 [7]
+                0.00    0.00  151962/1006889     FM_2WayCutRefine_52 [22]
+                0.00    0.00  208812/1006889     FM_2WayNodeRefine1Sided_52 [21]
+[64]     0.0    0.00    0.00 1006889         iwspacemalloc_52 [64]
+-----------------------------------------------
+                0.00    0.00   12351/898722      FM_2WayNodeBalance_52 [48]
+                0.00    0.00   79604/898722      FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00  234890/898722      FM_2WayNodeRefine1Sided_52 [21]
+                0.00    0.00  571877/898722      FM_2WayCutRefine_52 [22]
+[65]     0.0    0.00    0.00  898722         libmetis__rpqInsert [65]
+-----------------------------------------------
+                0.00    0.00       1/887303      SetupGraph_label_52 [39]
+                0.00    0.00       1/887303      SetupGraph_52 [34]
+                0.00    0.00       2/887303      METIS_NodeND_52 [3]
+                0.00    0.00       3/887303      Test_ND [2]
+                0.00    0.00    1020/887303      CoarsenGraphNlevels_52 [29]
+                0.00    0.00   50521/887303      CoarsenGraph_52 [6]
+                0.00    0.00  102258/887303      Allocate2WayPartitionMemory_52 [91]
+                0.00    0.00  192276/887303      SetupSplitGraph_52 [89]
+                0.00    0.00  262805/887303      SetupCoarseGraph_52 [83]
+                0.00    0.00  278416/887303      Allocate2WayNodePartitionMemory_52 [82]
+[66]     0.0    0.00    0.00  887303         libmetis__imalloc [66]
+-----------------------------------------------
+                0.00    0.00     255/379664      MlevelNodeBisectionL2_52 [13]
+                0.00    0.00    3764/379664      FM_2WayNodeBalance_52 [48]
+                0.00    0.00    7162/379664      Match_2HopAll_52 [32]
+                0.00    0.00    7366/379664      Match_2HopAny_52 [23]
+                0.00    0.00   16023/379664      SplitGraphOrder_52 [12]
+                0.00    0.00   16024/379664      MMDOrder_52 [24]
+                0.00    0.00   17043/379664      GrowBisection_52 [14]
+                0.00    0.00   17043/379664      ConstructSeparator_52 [28]
+                0.00    0.00   17043/379664      FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   17298/379664      Match_RM_52 [8]
+                0.00    0.00   35263/379664      Match_SHEM_52 [7]
+                0.00    0.00   50654/379664      FM_2WayCutRefine_52 [22]
+                0.00    0.00   52561/379664      CreateCoarseGraph_52 [9]
+                0.00    0.00   52561/379664      BucketSortKeysInc_52 [10]
+                0.00    0.00   69604/379664      FM_2WayNodeRefine1Sided_52 [21]
+[67]     0.0    0.00    0.00  379664         gk_mcorePush [67]
+-----------------------------------------------
+                0.00    0.00     255/379664      MlevelNodeBisectionL2_52 [13]
+                0.00    0.00    7162/379664      Match_2HopAll_52 [32]
+                0.00    0.00    7366/379664      Match_2HopAny_52 [23]
+                0.00    0.00   16023/379664      MlevelNestedDissection_52 [4]
+                0.00    0.00   16024/379664      MMDOrder_52 [24]
+                0.00    0.00   34086/379664      InitSeparator_52 [11]
+                0.00    0.00   34086/379664      ConstructSeparator_52 [28]
+                0.00    0.00   50654/379664      GrowBisection_52 [14]
+                0.00    0.00   51894/379664      Match_RM_52 [8]
+                0.00    0.00   56325/379664      Refine2WayNode_52 [15]
+                0.00    0.00  105789/379664      Match_SHEM_52 [7]
+[68]     0.0    0.00    0.00  379664         wspacepop_52 [68]
+-----------------------------------------------
+                0.00    0.00     255/379664      MlevelNodeBisectionL2_52 [13]
+                0.00    0.00    3764/379664      FM_2WayNodeBalance_52 [48]
+                0.00    0.00    7162/379664      Match_2HopAll_52 [32]
+                0.00    0.00    7366/379664      Match_2HopAny_52 [23]
+                0.00    0.00   16023/379664      SplitGraphOrder_52 [12]
+                0.00    0.00   16024/379664      MMDOrder_52 [24]
+                0.00    0.00   17043/379664      GrowBisection_52 [14]
+                0.00    0.00   17043/379664      ConstructSeparator_52 [28]
+                0.00    0.00   17043/379664      FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   17298/379664      Match_RM_52 [8]
+                0.00    0.00   35263/379664      Match_SHEM_52 [7]
+                0.00    0.00   50654/379664      FM_2WayCutRefine_52 [22]
+                0.00    0.00   52561/379664      CreateCoarseGraph_52 [9]
+                0.00    0.00   52561/379664      BucketSortKeysInc_52 [10]
+                0.00    0.00   69604/379664      FM_2WayNodeRefine1Sided_52 [21]
+[69]     0.0    0.00    0.00  379664         wspacepush_52 [69]
+-----------------------------------------------
+                0.00    0.00   34086/304870      FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00  126922/304870      FM_2WayCutRefine_52 [22]
+                0.00    0.00  143862/304870      FM_2WayNodeRefine1Sided_52 [21]
+[70]     0.0    0.00    0.00  304870         libmetis__rpqReset [70]
+-----------------------------------------------
+                0.00    0.00  208762/208762      libmetis__rpqInit [75]
+[71]     0.0    0.00    0.00  208762         gk_idxset [71]
+-----------------------------------------------
+                0.00    0.00  208762/208762      libmetis__rpqInit [75]
+[72]     0.0    0.00    0.00  208762         gk_idxsmalloc [72]
+                0.00    0.00  208762/1752424     gk_malloc [60]
+-----------------------------------------------
+                0.00    0.00  208762/208762      libmetis__rpqInit [75]
+[73]     0.0    0.00    0.00  208762         libmetis__rkvmalloc [73]
+-----------------------------------------------
+                0.00    0.00    3764/208762      FM_2WayNodeBalance_52 [48]
+                0.00    0.00   34086/208762      FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   69604/208762      FM_2WayNodeRefine1Sided_52 [21]
+                0.00    0.00  101308/208762      FM_2WayCutRefine_52 [22]
+[74]     0.0    0.00    0.00  208762         libmetis__rpqCreate [74]
+                0.00    0.00  208762/1752424     gk_malloc [60]
+                0.00    0.00  208762/208762      libmetis__rpqInit [75]
+-----------------------------------------------
+                0.00    0.00  208762/208762      libmetis__rpqCreate [74]
+[75]     0.0    0.00    0.00  208762         libmetis__rpqInit [75]
+                0.00    0.00  208762/1752424     gk_malloc [60]
+                0.00    0.00  208762/208762      libmetis__rkvmalloc [73]
+                0.00    0.00  208762/208762      gk_idxset [71]
+                0.00    0.00  208762/208762      gk_idxsmalloc [72]
+-----------------------------------------------
+                0.00    0.00   34684/122376      FM_2WayNodeRefine2Sided_52 [44]
+                0.00    0.00   87692/122376      FM_2WayCutRefine_52 [22]
+[76]     0.0    0.00    0.00  122376         libmetis__rpqDelete [76]
+-----------------------------------------------
+                0.00    0.00  107124/107124      FM_2WayNodeRefine2Sided_52 [44]
+[77]     0.0    0.00    0.00  107124         libmetis__rpqSeeTopVal [77]
+-----------------------------------------------
+                0.00    0.00       1/84609       SetupCtrl_52 [53]
+                0.00    0.00       1/84609       SetupGraph_52 [34]
+                0.00    0.00   32046/84609       SetupSplitGraph_52 [89]
+                0.00    0.00   52561/84609       SetupCoarseGraph_52 [83]
+[78]     0.0    0.00    0.00   84609         libmetis__rmalloc [78]
+-----------------------------------------------
+                0.00    0.00       1/84608       SetupGraph_52 [34]
+                0.00    0.00   32046/84608       SetupSplitGraph_52 [89]
+                0.00    0.00   52561/84608       SetupCoarseGraph_52 [83]
+[79]     0.0    0.00    0.00   84608         CreateGraph_52 [79]
+                0.00    0.00   84608/1752424     gk_malloc [60]
+                0.00    0.00   84608/84608       InitGraph_52 [80]
+-----------------------------------------------
+                0.00    0.00   84608/84608       CreateGraph_52 [79]
+[80]     0.0    0.00    0.00   84608         InitGraph_52 [80]
+-----------------------------------------------
+                0.00    0.00     360/71884       MlevelNodeBisectionL2_52 [13]
+                0.00    0.00   34086/71884       ConstructSeparator_52 [28]
+                0.00    0.00   37438/71884       GrowBisection_52 [14]
+[81]     0.0    0.00    0.00   71884         libmetis__icopy [81]
+-----------------------------------------------
+                0.00    0.00   17043/69604       ConstructSeparator_52 [28]
+                0.00    0.00   52561/69604       Project2WayNodePartition_52 [31]
+[82]     0.0    0.00    0.00   69604         Allocate2WayNodePartitionMemory_52 [82]
+                0.00    0.00  348020/1752424     gk_malloc [60]
+                0.00    0.00  278416/887303      libmetis__imalloc [66]
+-----------------------------------------------
+                0.00    0.00   52561/52561       CreateCoarseGraph_52 [9]
+[83]     0.0    0.00    0.00   52561         SetupCoarseGraph_52 [83]
+                0.00    0.00  315366/1752424     gk_malloc [60]
+                0.00    0.00  262805/887303      libmetis__imalloc [66]
+                0.00    0.00   52561/84608       CreateGraph_52 [79]
+                0.00    0.00   52561/84609       libmetis__rmalloc [78]
+-----------------------------------------------
+                0.00    0.00   52561/52561       Refine2WayNode_52 [15]
+[84]     0.0    0.00    0.00   52561         graph_ReadFromDisk_52 [84]
+-----------------------------------------------
+                0.00    0.00    1020/52561       CoarsenGraphNlevels_52 [29]
+                0.00    0.00   51541/52561       CoarsenGraph_52 [6]
+[85]     0.0    0.00    0.00   52561         graph_WriteToDisk_52 [85]
+-----------------------------------------------
+                0.00    0.00   50654/50654       GrowBisection_52 [14]
+[86]     0.0    0.00    0.00   50654         Balance2Way_52 [86]
+                0.00    0.00   50654/50654       ComputeLoadImbalanceDiff_52 [87]
+-----------------------------------------------
+                0.00    0.00   50654/50654       Balance2Way_52 [86]
+[87]     0.0    0.00    0.00   50654         ComputeLoadImbalanceDiff_52 [87]
+-----------------------------------------------
+                0.00    0.00   50654/50654       GrowBisection_52 [14]
+[88]     0.0    0.00    0.00   50654         FM_2WayRefine_52 [88]
+-----------------------------------------------
+                0.00    0.00   32046/32046       SplitGraphOrder_52 [12]
+[89]     0.0    0.00    0.00   32046         SetupSplitGraph_52 [89]
+                0.00    0.00  224322/1752424     gk_malloc [60]
+                0.00    0.00  192276/887303      libmetis__imalloc [66]
+                0.00    0.00   32046/84608       CreateGraph_52 [79]
+                0.00    0.00   32046/84609       libmetis__rmalloc [78]
+-----------------------------------------------
+                0.00    0.00      40/18563       FM_2WayCutRefine_52 [22]
+                0.00    0.00      56/18563       FM_2WayNodeBalance_52 [48]
+                0.00    0.00    1123/18563       FM_2WayNodeRefine1Sided_52 [21]
+                0.00    0.00   17344/18563       FM_2WayNodeRefine2Sided_52 [44]
+[90]     0.0    0.00    0.00   18563         libmetis__rpqUpdate [90]
+-----------------------------------------------
+                0.00    0.00   17043/17043       GrowBisection_52 [14]
+[91]     0.0    0.00    0.00   17043         Allocate2WayPartitionMemory_52 [91]
+                0.00    0.00  102258/1752424     gk_malloc [60]
+                0.00    0.00  102258/887303      libmetis__imalloc [66]
+-----------------------------------------------
+                0.00    0.00   17043/17043       InitSeparator_52 [11]
+[92]     0.0    0.00    0.00   17043         Setup2WayBalMultipliers_52 [92]
+-----------------------------------------------
+                0.00    0.00   16024/16024       genmmd_52 [25]
+[93]     0.0    0.00    0.00   16024         mmdint_52 [93]
+-----------------------------------------------
+                0.00    0.00   16024/16024       genmmd_52 [25]
+[94]     0.0    0.00    0.00   16024         mmdnum_52 [94]
+-----------------------------------------------
+                0.00    0.00   16023/16023       MlevelNestedDissection_52 [4]
+[95]     0.0    0.00    0.00   16023         MlevelNodeBisectionMultiple_52 [95]
+-----------------------------------------------
+                0.00    0.00    7162/7162        Match_2HopAll_52 [32]
+[96]     0.0    0.00    0.00    7162         ikvwspacemalloc_52 [96]
+-----------------------------------------------
+                0.00    0.00     774/774         ReAdjustMemory_52 [50]
+[97]     0.0    0.00    0.00     774         libmetis__irealloc [97]
+-----------------------------------------------
+                0.00    0.00       1/5           SetupCtrl_52 [53]
+                0.00    0.00       2/5           SetupGraph_52 [34]
+                0.00    0.00       2/5           CompressGraph_52 [33]
+[98]     0.0    0.00    0.00       5         libmetis__ismalloc [98]
+                0.00    0.00       5/1752424     gk_malloc [60]
+-----------------------------------------------
+                0.00    0.00       2/2           SetupCtrl_52 [53]
+[99]     0.0    0.00    0.00       2         libmetis__rset [99]
+-----------------------------------------------
+                0.00    0.00       2/2           SetupCtrl_52 [53]
+[100]    0.0    0.00    0.00       2         libmetis__rsmalloc [100]
+                0.00    0.00       2/1752424     gk_malloc [60]
+-----------------------------------------------
+                0.00    0.00       1/1           METIS_NodeND_52 [3]
+[101]    0.0    0.00    0.00       1         AllocateWorkSpace_52 [101]
+                0.00    0.00       1/1           gk_mcoreCreate [111]
+-----------------------------------------------
+                0.00    0.00       1/1           SetupCtrl_52 [53]
+[102]    0.0    0.00    0.00       1         CheckParams_52 [102]
+-----------------------------------------------
+                0.00    0.00       1/1           SetupCtrl_52 [53]
+[103]    0.0    0.00    0.00       1         InitRandom_52 [103]
+-----------------------------------------------
+                0.00    0.00       1/1           Test_ND [2]
+[104]    0.0    0.00    0.00       1         VerifyND [104]
+-----------------------------------------------
+                0.00    0.00       1/1           gk_malloc_init [110]
+[105]    0.0    0.00    0.00       1         gk_gkmcoreCreate [105]
+-----------------------------------------------
+                0.00    0.00       1/1           gk_malloc_cleanup [109]
+[106]    0.0    0.00    0.00       1         gk_gkmcoreDestroy [106]
+-----------------------------------------------
+                0.00    0.00       1/1           gk_malloc_cleanup [109]
+[107]    0.0    0.00    0.00       1         gk_gkmcorePop [107]
+-----------------------------------------------
+                0.00    0.00       1/1           gk_malloc_init [110]
+[108]    0.0    0.00    0.00       1         gk_gkmcorePush [108]
+-----------------------------------------------
+                0.00    0.00       1/1           METIS_NodeND_52 [3]
+[109]    0.0    0.00    0.00       1         gk_malloc_cleanup [109]
+                0.00    0.00       1/1           gk_gkmcorePop [107]
+                0.00    0.00       1/1           gk_gkmcoreDestroy [106]
+-----------------------------------------------
+                0.00    0.00       1/1           METIS_NodeND_52 [3]
+[110]    0.0    0.00    0.00       1         gk_malloc_init [110]
+                0.00    0.00       1/1753196     gk_gkmcoreAdd [59]
+                0.00    0.00       1/1           gk_gkmcorePush [108]
+                0.00    0.00       1/1           gk_gkmcoreCreate [105]
+-----------------------------------------------
+                0.00    0.00       1/1           AllocateWorkSpace_52 [101]
+[111]    0.0    0.00    0.00       1         gk_mcoreCreate [111]
+                0.00    0.00       3/1752424     gk_malloc [60]
+-----------------------------------------------
+                0.00    0.00       1/1           SetupCtrl_52 [53]
+[112]    0.0    0.00    0.00       1         gk_randinit [112]
+-----------------------------------------------
+                0.00    0.00       1/1           METIS_NodeND_52 [3]
+[113]    0.0    0.00    0.00       1         gk_sigtrap [113]
+-----------------------------------------------
+                0.00    0.00       1/1           METIS_NodeND_52 [3]
+[114]    0.0    0.00    0.00       1         gk_siguntrap [114]
+-----------------------------------------------
+                0.00    0.00       1/1           CompressGraph_52 [33]
+[115]    0.0    0.00    0.00       1         libmetis__ikvmalloc [115]
+-----------------------------------------------
+                0.00    0.00       1/1           SetupCtrl_52 [53]
+[116]    0.0    0.00    0.00       1         libmetis__isrand [116]
+-----------------------------------------------
+                0.00    0.00       1/1           METIS_NodeND_52 [3]
+[117]    0.0    0.00    0.00       1         metis_rcode_52 [117]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2024 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [82] Allocate2WayNodePartitionMemory_52 [13] MlevelNodeBisectionL2_52 [84] graph_ReadFromDisk_52
+  [91] Allocate2WayPartitionMemory_52 [95] MlevelNodeBisectionMultiple_52 [85] graph_WriteToDisk_52
+ [101] AllocateWorkSpace_52   [31] Project2WayNodePartition_52 [96] ikvwspacemalloc_52
+  [86] Balance2Way_52         [50] ReAdjustMemory_52      [64] iwspacemalloc_52
+  [10] BucketSortKeysInc_52   [15] Refine2WayNode_52      [81] libmetis__icopy
+ [102] CheckParams_52         [92] Setup2WayBalMultipliers_52 [115] libmetis__ikvmalloc
+  [29] CoarsenGraphNlevels_52 [83] SetupCoarseGraph_52    [38] libmetis__ikvsorti
+   [6] CoarsenGraph_52        [53] SetupCtrl_52           [66] libmetis__imalloc
+  [33] CompressGraph_52       [34] SetupGraph_52          [58] libmetis__irand
+  [16] Compute2WayNodePartitionParams_52 [39] SetupGraph_label_52 [18] libmetis__irandArrayPermute
+  [30] Compute2WayPartitionParams_52 [42] SetupGraph_tvwgt_52 [17] libmetis__irandInRange
+  [87] ComputeLoadImbalanceDiff_52 [89] SetupSplitGraph_52 [97] libmetis__irealloc
+  [28] ConstructSeparator_52  [12] SplitGraphOrder_52     [20] libmetis__iset
+   [9] CreateCoarseGraph_52    [2] Test_ND                [98] libmetis__ismalloc
+  [79] CreateGraph_52        [104] VerifyND              [116] libmetis__isrand
+  [22] FM_2WayCutRefine_52    [25] genmmd_52              [27] libmetis__isum
+  [48] FM_2WayNodeBalance_52  [41] gk_free                [73] libmetis__rkvmalloc
+  [21] FM_2WayNodeRefine1Sided_52 [59] gk_gkmcoreAdd      [78] libmetis__rmalloc
+  [44] FM_2WayNodeRefine2Sided_52 [105] gk_gkmcoreCreate  [74] libmetis__rpqCreate
+  [88] FM_2WayRefine_52       [40] gk_gkmcoreDel          [76] libmetis__rpqDelete
+  [54] FreeCtrl_52           [106] gk_gkmcoreDestroy      [45] libmetis__rpqDestroy
+  [43] FreeGraph_52          [107] gk_gkmcorePop          [47] libmetis__rpqFree
+  [49] FreeRData_52          [108] gk_gkmcorePush         [36] libmetis__rpqGetTop
+  [46] FreeSData_52           [71] gk_idxset              [75] libmetis__rpqInit
+  [55] FreeWorkSpace_52       [72] gk_idxsmalloc          [65] libmetis__rpqInsert
+  [14] GrowBisection_52       [60] gk_malloc              [70] libmetis__rpqReset
+  [80] InitGraph_52          [109] gk_malloc_cleanup      [77] libmetis__rpqSeeTopVal
+ [103] InitRandom_52         [110] gk_malloc_init         [90] libmetis__rpqUpdate
+  [11] InitSeparator_52       [61] gk_mcoreAdd            [99] libmetis__rset
+   [3] METIS_NodeND_52       [111] gk_mcoreCreate        [100] libmetis__rsmalloc
+  [52] METIS_SetDefaultOptions_52 [57] gk_mcoreDestroy   [117] metis_rcode_52
+  [24] MMDOrder_52            [62] gk_mcoreMalloc         [35] mmdelm_52
+  [32] Match_2HopAll_52       [56] gk_mcorePop            [93] mmdint_52
+  [23] Match_2HopAny_52       [67] gk_mcorePush           [94] mmdnum_52
+  [19] Match_2Hop_52         [112] gk_randinit            [37] mmdupd_52
+   [8] Match_RM_52            [26] gk_randint32           [63] wspacemalloc_52
+   [7] Match_SHEM_52          [51] gk_realloc             [68] wspacepop_52
+   [4] MlevelNestedDissection_52 [113] gk_sigtrap         [69] wspacepush_52
+   [5] MlevelNodeBisectionL1_52 [114] gk_siguntrap

@@ -361,6 +361,11 @@ make_nls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nls.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nls )
 
+make_nodend:
+	( cd $(GALAHAD)/src/nodend ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nodend.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nodend )
+
 make_norms:
 	( cd $(GALAHAD)/src/norms ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms.o \
@@ -507,14 +512,14 @@ make_sils:
 make_sls_deps: make_sls_deps_$(PRECIS)
 
 make_sls_deps_single: make_dummy make_specfile make_sort make_zd11 \
-               make_smt make_svt make_space make_sils make_hsl \
+               make_smt make_svt make_space make_sils make_nodend make_hsl \
                make_copyright make_spralrb make_amd make_$(SSIDS)
 #              make_spralrb make_amd make_ssids_dum
 make_sls_deps_double: make_dummy make_specfile make_sort make_zd11 \
-               make_smt make_svt make_space make_sils make_hsl \
+               make_smt make_svt make_space make_sils  make_nodend make_hsl \
                make_copyright make_spralrb make_amd make_$(SSIDS)
 make_sls_deps_quadruple: make_dummy make_specfile make_sort make_zd11 \
-               make_smt make_svt make_space make_sils make_hsl \
+               make_smt make_svt make_space make_sils  make_nodend make_hsl \
                make_copyright make_spralrb make_amd make_$(SSIDS)
 make_sls_deps_single_64: make_sls_deps_single
 make_sls_deps_double_64: make_sls_deps_double

@@ -1,0 +1,98 @@
+#  Makefile stub for nodend components of MeTiS 5.2 (including those for GKlib)
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2025-03-07
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+.SUFFIXES:
+.SUFFIXES: .c _52.o .h _52_64.o
+
+.PHONY: metis52 metis52_silent test test_64
+
+# Gklib and metis procedures used
+
+SRC =  memory.c random.c error.c timers.c mcore.c fs.c io.c string.c \
+       timing.c fortran.c wspace.c debug.c options.c contig.c graph.c \
+       checkgraph.c compress.c bucketsort.c initpart.c mincover.c \
+       separator.c refine.c srefine.c balance.c fm.c sfm.c kwayrefine.c \
+       kwayfm.c mcutil.c coarsen.c minconn.c util.c mmd.c gklib.c \
+       auxapi.c ometis.c
+
+TEST=test_nodend.c
+FTEST=metist.f90
+
+OBJFILE = $(SRC:.c=_52.o)
+OBJFILE64 = $(SRC:.c=_52_64.o)
+TESTOBJ = $(TEST:.c=_52.o)
+TESTOBJ64 = $(TEST:.c=_52_64.o)
+FTESTOBJ = $(FTEST:.f90=_52.o)
+FTESTOBJ64 = $(FTEST:.f90=_52_64.o)
+
+CFLAGSM = $(CFLAGS) -DNDEBUG -pg
+
+all: build$(HSL_64)
+	@printf ' %-21s\n' "MeTiS 5.2 procedures ($(IPRECIS)$(ISUCC)"
+metis52_silent: build$(HSL_64)
+build: $(LM5)($(OBJFILE))
+build_64: $(LM564)($(OBJFILE64))
+
+$(LM5)($(OBJFILE)): $(SRC)
+	@printf ' %-9s %-15s\t\t' "Compiling" $*
+	$(CC) $(CFLAGSM) $*.c -o $*_52.o
+	$(AR) $(ARREPFLAGS) $@ $*_52.o
+	$(RM) $*_52.o
+	@printf '[ OK ]\n'
+
+$(LM564)($(OBJFILE64)): $(SRC)
+	@printf ' %-9s %-15s\t\t' "Compiling" $(*:_64=)
+	$(CC) $(CFLAGSM) $(*:_52_64=.c) -o $*_52.o
+	$(AR) $(ARREPFLAGS) $@ $*_52_64.o
+	$(RM) $*.o
+	@printf '[ OK ]\n'
+
+# testing
+
+testall: test$(HSL_64)
+
+test: $(LM5)($(OBJFILE))
+	@echo [Run test]
+	$(CC) -c $(CFLAGSM) -o $(TESTOBJ) $(TEST)
+	$(CC) -o ./test_nodend $(TESTOBJ) -L.  -L$(OBJ) -lmetis5_nodend -lm
+	./test_nodend
+	@$(RM) ./test_nodend  $(TESTOBJ)
+
+test_64: $(LM564)($(OBJFILE64))
+	@echo [Run test 64]
+	$(CC) -c $(CFLAGSM) -o $(TESTOBJ64) $(TEST)
+	$(CC) -o ./test_nodend $(TESTOBJ64) -L. -L$(OBJ) -lmetis564_nodend -lm
+	./test_nodend
+	@$(RM) ./test_nodend  $(TESTOBJ64)
+
+ftest: build
+	@echo [Run fortran test]
+	$(FORTRAN) $(FFLAGS) $(FTEST)
+	$(FORTRAN) -o ./metist $(FTESTOBJ) -L. \
+           -L$(OBJ) -lgalahad -lmetis5_nodend
+	./metist
+	@$(RM) ./metist  $(FTESTOBJ)
+
+test_gprof: $(LM5)($(OBJFILE))
+	@echo [Run test]
+	$(CC) -c -pg $(CFLAGSM) -o $(TESTOBJ) $(TEST)
+	$(CC) -o ./test_nodend -pg $(TESTOBJ) -L.  -L$(OBJ) -lmetis5_nodend -lm
+#	ldd ./test_nodend
+#	nm ./test_nodend
+	./test_nodend
+	gprof ./test_nodend gmon.out > analysis.txt
+	@$(RM) ./test_nodend  $(TESTOBJ)
+
+# book keeping
+
+cleanall:
+	@$(RM) $(OBJFILE) $(LM5) $(OBJFILE64) $(LM564)
+
+clean:
+	@$(RM) $(OBJFILE) $(OBJFILE64)

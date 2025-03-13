@@ -1177,7 +1177,7 @@ contains
    where (iperm(1:m) .eq. 0) dualu(1:m) = 0.0
 
    ! Return if matrix has full structural rank
-   if (num .eq. min(m,n)) return
+!  if (num .eq. min(m,n)) return
 
    ! Otherwise, matrix is structurally singular, complete iperm.
    ! jperm, out are work arrays (now commented out)
