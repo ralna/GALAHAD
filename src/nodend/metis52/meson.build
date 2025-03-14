@@ -38,3 +38,4 @@ libgalahad_cc_src += files('auxapi.c',
 
 galahad_c_tests += [['nodend', 'test_nodend52', files('test_nodend.c')]]
 
+include_directories('include')
