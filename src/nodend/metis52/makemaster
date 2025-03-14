@@ -40,14 +40,14 @@ build: $(LM5)($(OBJFILE))
 build_64: $(LM564)($(OBJFILE64))
 
 $(LM5)($(OBJFILE)): $(SRC)
-	@printf ' %-9s %-15s\t\t' "Compiling" $*
+	@printf ' %-9s %-15s\t\t' "Compiling" $*"_52"
 	$(CC) $(CFLAGSM) $*.c -o $*_52.o
 	$(AR) $(ARREPFLAGS) $@ $*_52.o
 	$(RM) $*_52.o
 	@printf '[ OK ]\n'
 
 $(LM564)($(OBJFILE64)): $(SRC)
-	@printf ' %-9s %-15s\t\t' "Compiling" $(*:_64=)
+	@printf ' %-9s %-15s\t\t' "Compiling" $(*:_64=)"_52"
 	$(CC) $(CFLAGSM) $(*:_52_64=.c) -o $*_52.o
 	$(AR) $(ARREPFLAGS) $@ $*_52_64.o
 	$(RM) $*.o

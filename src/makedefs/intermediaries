@@ -1663,6 +1663,11 @@ make_ciface_nls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nls_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nls )
 
+make_ciface_nodend:
+	( cd $(GALAHAD)/src/nodend ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nodend_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nodend )
+
 make_ciface_norms:
 	( cd $(GALAHAD)/src/norms ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms_ciface.o \
