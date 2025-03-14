@@ -248,6 +248,9 @@ galahad_python_tests = []
 libgalahad_include = [include_directories('include'),
                       include_directories('src/dum/include'),
                       include_directories('src/metis/include'),
+                      # include_directories('src/external/metis4/include'),
+                      # include_directories('src/nodend/metis51/include'),
+                      # include_directories('src/nodend/metis52/include'),
                       include_directories('src/ampl')] + libhsl_modules + libcutest_modules + libhwloc_include
 
 if host_machine.system() == 'linux'
@@ -423,7 +426,7 @@ subdir('src/miqr')
 subdir('src/mop')
 subdir('src/nlpt')
 subdir('src/nls')
-subdir('src/nodend')
+# subdir('src/nodend')
 subdir('src/norms')
 subdir('src/oblivion')
 subdir('src/opt')

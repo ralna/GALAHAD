@@ -41,6 +41,7 @@ if build_ciface
                            'galahad_lstr.h',
                            'galahad_modules.h',
                            'galahad_nls.h',
+                           'galahad_nodend.h',
                            'galahad_precision.h',
                            'galahad_presolve.h',
                            'galahad_psls.h',

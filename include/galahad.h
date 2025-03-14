@@ -352,6 +352,7 @@
 #include "galahad_lsrt.h"
 #include "galahad_lstr.h"
 #include "galahad_nls.h"
+#include "galahad_nodend.h"
 #include "galahad_presolve.h"
 #include "galahad_psls.h"
 #include "galahad_qpa.h"
