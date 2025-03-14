@@ -1,3 +1,6 @@
+subdir('metis51')
+subdir('metis52')
+
 libgalahad_src += files('nodend.F90')
 
 libgalahad_cc_src += files('adapter_nodend.c')
