@@ -31,4 +31,4 @@ galahad_headers = files('defsbin.h',
                         'proto.h',
                         'rename.h',
                         'stdheaders.h',
-                        'struct.h'
+                        'struct.h')
