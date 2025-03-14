@@ -24,5 +24,5 @@ libgalahad_cc_src += files('balance.c',
                            'timing.c',
                            'util.c')
 
-galahad_cc_tests += [['nodend', 'test_nodend', files('test_nodend.c')],
-                     ['nodend2', 'test_nodend2', files('test_nodend2.c')]]
+galahad_c_tests += [['nodend', 'test_nodend', files('test_nodend.c')],
+                    ['nodend2', 'test_nodend2', files('test_nodend2.c')]]
