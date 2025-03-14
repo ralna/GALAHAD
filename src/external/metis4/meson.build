@@ -27,4 +27,4 @@ libgalahad_cc_src += files('balance.c',
 galahad_c_tests += [['nodend', 'test_nodend4', files('test_nodend.c')],
                     ['nodend', 'test_nodend42', files('test_nodend2.c')]]
 
-subdir('include')
+libgalahad_include = include_directories('include')

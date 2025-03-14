@@ -39,4 +39,4 @@ libgalahad_cc_src += files('auxapi.c',
 
 galahad_c_tests += [['nodend', 'test_nodend51', files('test_nodend.c')]]
 
-subdir('include')
+libgalahad_include = include_directories('include')
