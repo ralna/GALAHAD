@@ -37,4 +37,4 @@ libgalahad_cc_src += files('auxapi.c',
                            'util.c',
                            'wspace.c')
 
-galahad_c_tests += [['nodend', 'test_nodend', files('test_nodend.c')]]
+galahad_c_tests += [['nodend', 'test_nodend51', files('test_nodend.c')]]
