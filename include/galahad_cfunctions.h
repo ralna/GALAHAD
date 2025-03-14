@@ -537,6 +537,8 @@
 #define nls_subproblem_control_type nls_subproblem_control_type_s_64
 #define nls_subproblem_inform_type nls_subproblem_inform_type_s_64
 #define nls_time_type nls_time_type_s_64
+#define nodend_control_type nodend_control_type_s_64
+#define nodend_inform_type nodend_inform_type_s_64
 #define presolve_control_type presolve_control_type_s_64
 #define presolve_inform_type presolve_inform_type_s_64
 #define psls_control_type psls_control_type_s_64
@@ -1080,6 +1082,8 @@
 #define nls_subproblem_control_type nls_subproblem_control_type_q_64
 #define nls_subproblem_inform_type nls_subproblem_inform_type_q_64
 #define nls_time_type nls_time_type_q_64
+#define nodend_control_type nodend_control_type_q_64
+#define nodend_inform_type nodend_inform_type_q_64
 #define presolve_control_type presolve_control_type_q_64
 #define presolve_inform_type presolve_inform_type_q_64
 #define psls_control_type psls_control_type_q_64
@@ -1623,6 +1627,8 @@
 #define nls_subproblem_control_type nls_subproblem_control_type_64
 #define nls_subproblem_inform_type nls_subproblem_inform_type_64
 #define nls_time_type nls_time_type_64
+#define nodend_control_type nodend_control_type_64
+#define nodend_inform_type nodend_inform_type_64
 #define presolve_control_type presolve_control_type_64
 #define presolve_inform_type presolve_inform_type_64
 #define psls_control_type psls_control_type_64
@@ -2168,6 +2174,8 @@
 #define nls_subproblem_control_type nls_subproblem_control_type_s
 #define nls_subproblem_inform_type nls_subproblem_inform_type_s
 #define nls_time_type nls_time_type_s
+#define nodend_control_type nodend_control_type_s
+#define nodend_inform_type nodend_inform_type_s
 #define presolve_control_type presolve_control_type_s
 #define presolve_inform_type presolve_inform_type_s
 #define psls_control_type psls_control_type_s
@@ -2711,6 +2719,8 @@
 #define nls_subproblem_control_type nls_subproblem_control_type_q
 #define nls_subproblem_inform_type nls_subproblem_inform_type_q
 #define nls_time_type nls_time_type_q
+#define nodend_control_type nodend_control_type_q
+#define nodend_inform_type nodend_inform_type_q
 #define presolve_control_type presolve_control_type_q
 #define presolve_inform_type presolve_inform_type_q
 #define psls_control_type psls_control_type_q

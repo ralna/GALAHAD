@@ -142,7 +142,8 @@
     END INTERFACE
 
     INTERFACE
-      SUBROUTINE galahad_nodend51_adapter( n, PTR, ROW, options,               &
+      INTEGER( KIND = ipc_ )                                                   &
+        FUNCTION galahad_nodend51_adapter( n, PTR, ROW, options,               &
                                            perm, iperm ) BIND( C )
         USE GALAHAD_KINDS, ONLY: ipc_
         IMPLICIT NONE
@@ -150,11 +151,12 @@
         INTEGER( KIND = ipc_ ), DIMENSION( * ), INTENT( IN ) :: PTR, ROW
         INTEGER( KIND = ipc_ ), DIMENSION( * ), INTENT( IN ) :: options
         INTEGER( KIND = ipc_ ), DIMENSION( * ), INTENT( OUT ) :: perm, iperm
-      END SUBROUTINE galahad_nodend51_adapter
+      END FUNCTION galahad_nodend51_adapter
     END INTERFACE
 
     INTERFACE
-      SUBROUTINE galahad_nodend52_adapter( n, PTR, ROW, options,               &
+      INTEGER( KIND = ipc_ )                                                   &
+        FUNCTION galahad_nodend52_adapter( n, PTR, ROW, options,               &
                                            perm, iperm ) BIND( C )
         USE GALAHAD_KINDS, ONLY: ipc_
         IMPLICIT NONE
@@ -162,7 +164,7 @@
         INTEGER( KIND = ipc_ ), DIMENSION( * ), INTENT( IN ) :: PTR, ROW
         INTEGER( KIND = ipc_ ), DIMENSION( * ), INTENT( IN ) :: options
         INTEGER( KIND = ipc_ ), DIMENSION( * ), INTENT( OUT ) :: perm, iperm
-      END SUBROUTINE galahad_nodend52_adapter
+      END FUNCTION galahad_nodend52_adapter
     END INTERFACE
 
 !-------------------------------------------------
@@ -763,13 +765,13 @@
 
 !  local variables
 
-      INTEGER ( KIND = ip_ ) :: out
+      INTEGER ( KIND = ip_ ) :: out, metis_status
       INTEGER ( KIND = ip_ ), DIMENSION( 40 ) :: options
       INTEGER ( KIND = ip_ ), DIMENSION( n ) :: INVERSE_PERM
       INTEGER ( KIND = ip_ ), PARAMETER :: n_dummy = 2
       INTEGER ( KIND = ip_ ), DIMENSION( n_dummy + 1 ) ::                      &
                                 PTR_dummy = (/ 1, 2, 3 /)
-      INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: ROW_dummy = (/ 2, 1 /)
+      INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: IND_dummy = (/ 2, 1 /)
 
 !  use 1-based arrays
 
@@ -856,10 +858,9 @@
 
         CALL galahad_nodend4_adapter( n, PTR, IND, options,                    &
                                       INVERSE_PERM, PERM )
-!       CALL METIS_NodeND_4( n, PTR, IND, 1_ip_, options, INVERSE_PERM, PERM )
         IF ( PERM( 1 ) == - 2 ) THEN
 !         write(6,*) ' bailed out of MeTiS 4'
-          inform%status = - 999
+          inform%status = GALAHAD_error_metis
           RETURN
         END IF
 
@@ -954,8 +955,18 @@
 
 !  call MeTiS 5.1 to get ordering via C MeTiS 4 to 5.1 adapter
 
-        CALL galahad_nodend51_adapter( n, PTR, IND, options,                   &
-                                       INVERSE_PERM, PERM )
+        metis_status = galahad_nodend51_adapter( n, PTR, IND, options,         &
+                                                 INVERSE_PERM, PERM )
+        SELECT CASE( metis_status )
+        CASE ( 1 )
+          inform%status = GALAHAD_ok
+        CASE ( - 2 )
+          inform%status = GALAHAD_error_restrictions
+        CASE ( - 3 )
+          inform%status = GALAHAD_error_metis_memory
+        CASE DEFAULT
+          inform%status = GALAHAD_error_metis
+        END SELECT
 
 !  MeTiS 5.2
 
@@ -1071,8 +1082,18 @@
 
 !  call MeTiS 5.2 to get ordering via C MeTiS 4 to 5.2 adapter
 
-        CALL galahad_nodend52_adapter( n, PTR, IND, options,                   &
-                                      INVERSE_PERM, PERM )
+        metis_status = galahad_nodend52_adapter( n, PTR, IND, options,         &
+                                                 INVERSE_PERM, PERM )
+        SELECT CASE( metis_status )
+        CASE ( 1 )
+          inform%status = GALAHAD_ok
+        CASE ( - 2 )
+          inform%status = GALAHAD_error_restrictions
+        CASE ( - 3 )
+          inform%status = GALAHAD_error_metis_memory
+        CASE DEFAULT
+          inform%status = GALAHAD_error_metis
+        END SELECT
 
 !  MeTiS version not known
 

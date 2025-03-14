@@ -49,8 +49,9 @@ void galahad_nodend4_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
     METIS_NodeND_4(nvtxs, xadj, adjncy, &numflag, options, perm, iperm);
 }
 
-void galahad_nodend51_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
+int galahad_nodend51_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
                              idx_t* options, idx_t* perm, idx_t* iperm){
+    int stat;
 
     /* Handle MA57 pathological case */
     if(*nvtxs == 1){
@@ -59,15 +60,17 @@ void galahad_nodend51_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
          */
         perm[0] = 1;
         iperm[0] = 1;
-        return;
+        return 0;
     }
 
     /* Call MeTiS 5.1 to get ordering */
-    METIS_NodeND_51(nvtxs, xadj, adjncy, NULL, options, perm, iperm);
+    stat = METIS_NodeND_51(nvtxs, xadj, adjncy, NULL, options, perm, iperm);
+    return stat;
 }
 
-void galahad_nodend52_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
+int galahad_nodend52_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
                              idx_t* options, idx_t* perm, idx_t* iperm){
+    int stat;
 
     /* Handle MA57 pathological case */
     if(*nvtxs == 1){
@@ -76,9 +79,10 @@ void galahad_nodend52_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
          */
         perm[0] = 1;
         iperm[0] = 1;
-        return;
+        return 0;
     }
 
     /* Call MeTiS 5.2 to get ordering */
-    METIS_NodeND_52(nvtxs, xadj, adjncy, NULL, options, perm, iperm);
+    stat = METIS_NodeND_52(nvtxs, xadj, adjncy, NULL, options, perm, iperm);
+    return stat;
 }

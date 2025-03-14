@@ -1022,6 +1022,7 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\galerrahunordered}{-53}
 \newcommand{\galerryunallocated}{-54}
 \newcommand{\galerrzunallocated}{-55}
+\newcommand{\galerrmetismemory}{-57}
 \newcommand{\galerrscale}{-61}
 \newcommand{\galerrpresolve}{-62}
 \newcommand{\galerrqpa}{-63}
@@ -1041,7 +1042,6 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\galerrunknownstorage}{-90}
 \newcommand{\galerrmaxstorage}{-91}
 \newcommand{\galbudgetexhausted}{-99}
-
 \newcommand{\galsymsilent}{0}
 \newcommand{\galsymtrace}{1}
 \newcommand{\galsymaction}{2}
