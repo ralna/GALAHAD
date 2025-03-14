@@ -248,7 +248,7 @@ galahad_python_tests = []
 libgalahad_include = [include_directories('include'),
                       include_directories('src/dum/include'),
                       include_directories('src/metis/include'),
-                      # include_directories('src/external/metis4/include'),
+                      include_directories('src/external/metis4/include'),
                       # include_directories('src/nodend/metis51/include'),
                       # include_directories('src/nodend/metis52/include'),
                       include_directories('src/ampl')] + libhsl_modules + libcutest_modules + libhwloc_include

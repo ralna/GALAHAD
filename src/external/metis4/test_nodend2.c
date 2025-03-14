@@ -13,7 +13,7 @@
  *
  */
 
-#include "metis.h"
+#include "metis4.h"
 #include <time.h>
 
 int main( )

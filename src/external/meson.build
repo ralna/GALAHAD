@@ -1,5 +1,5 @@
 subdir('hsl')
-# subdir('metis4')
+subdir('metis4')
 
 libgalahad_src += files('mkl_pardiso/mkl_pardiso_interface.F90', 
                         'mumps/mumps_types.F90',

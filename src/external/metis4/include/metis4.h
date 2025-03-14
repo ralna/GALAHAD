@@ -29,9 +29,8 @@
 #include <dmalloc.h>
 #endif
 
-#include <defs.h>
-#include <struct.h>
-#include <macros.h>
-#include <rename.h>
-#include <proto.h>
-
+#include <defs_metis4.h>
+#include <struct_metis4.h>
+#include <macros_metis4.h>
+#include <rename_metis4.h>
+#include <proto_metis4.h>
