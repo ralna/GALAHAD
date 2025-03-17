@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-03-05 AT 08:45 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-03-16 AT 09:45 GMT.
 
 #include "spral_procedures.h"
 
@@ -19,7 +19,9 @@
 module spral_match_order_precision
 
   use spral_kinds_precision
-  use spral_metis_wrapper, only : metis_order
+! use spral_metis_wrapper, only : metis_order
+  use GALAHAD_NODEND_precision, only : NODEND_half_order, NODEND_control_type, &
+                                       NODEND_inform_type
   use spral_scaling_precision, only : hungarian_match
   implicit none
 
@@ -51,7 +53,8 @@ contains
 ! more efficient on memory and does not need to expand supplied matrix)
 !
   subroutine match_order_metis_ptr32(n, ptr, row, val, order, scale, &
-       flag, stat)
+       nodend_options, nodend_inform, flag, stat)
+!      flag, stat)
     implicit none
     integer(ip_), intent(in) :: n
     integer(i4_), dimension(:), intent(in) :: ptr
@@ -63,7 +66,8 @@ contains
       ! scaling
     integer(ip_), intent(out) :: flag ! return value
     integer(ip_), intent(out) :: stat ! stat value returned on failed allocation
-
+    type ( NODEND_control_type ), INTENT( IN )  :: nodend_options
+    type ( NODEND_inform_type ), INTENT( INOUT ) :: nodend_inform
     integer(ip_), dimension(:), allocatable :: cperm ! used to hold matching
     integer(i8_), dimension(:), allocatable :: ptr2 ! column pointers for
       ! expanded matrix.
@@ -121,7 +125,9 @@ contains
     ! Split matching into 1- and 2-cycles only and then
     ! compress matrix and order.
 
-    call mo_split(n,row2,ptr2,order,cperm,flag,stat)
+    call mo_split(n,row2,ptr2,order,cperm, &
+                  nodend_options, nodend_inform, flag, stat)
+!                 flag,stat)
 
     scale(1:n) = exp( scale(1:n) )
 
@@ -136,7 +142,8 @@ contains
 ! more efficient on memory and does not need to expand supplied matrix)
 !
   subroutine match_order_metis_ptr64(n, ptr, row, val, order, scale, &
-       flag, stat)
+       nodend_options, nodend_inform, flag, stat)
+!      flag, stat)
     implicit none
     integer(ip_), intent(in) :: n
     integer(i8_), dimension(:), intent(in) :: ptr
@@ -146,6 +153,8 @@ contains
       ! position of variable i in the elimination order (pivot sequence).
     real(rp_), dimension(n), intent(out) :: scale ! returns the mc64 symmetric
       ! scaling
+    type ( NODEND_control_type ), INTENT( IN )  :: nodend_options
+    type ( NODEND_inform_type ), INTENT( INOUT ) :: nodend_inform
     integer(ip_), intent(out) :: flag ! return value
     integer(ip_), intent(out) :: stat ! stat value returned on failed allocation
 
@@ -206,7 +215,9 @@ contains
     ! Split matching into 1- and 2-cycles only and then
     ! compress matrix and order.
 
-    call mo_split(n,row2,ptr2,order,cperm,flag,stat)
+    call mo_split(n,row2,ptr2,order,cperm, &
+                  nodend_options, nodend_inform, flag, stat)
+!                 flag,stat)
 
     scale(1:n) = exp( scale(1:n) )
   end subroutine match_order_metis_ptr64
@@ -221,13 +232,17 @@ contains
 ! of the matrix (with explicit zeros removed).
 ! Overwritten in the singular case
 !
-  subroutine mo_split(n,row2,ptr2,order,cperm,flag,stat)
+  subroutine mo_split(n,row2,ptr2,order,cperm, &
+                      nodend_options, nodend_inform, flag, stat)
+!                     flag,stat)
     implicit none
     integer(ip_), intent(in) :: n
     integer(long_), dimension(:), intent(in) :: ptr2
     integer(ip_), dimension(:), intent(in) :: row2
     integer(ip_), dimension(n), intent(out) :: order ! used to hold ordering
     integer(ip_), dimension(n), intent(inout) :: cperm ! used to hold matching
+    type ( NODEND_control_type ), INTENT( IN )  :: nodend_options
+    type ( NODEND_inform_type ), INTENT( INOUT ) :: nodend_inform
     integer(ip_), intent(inout) :: flag
     integer(ip_), intent(inout) :: stat
 
@@ -364,7 +379,12 @@ contains
 
     ! reorder the compressed matrix using metis.
     ! switch off metis printing
-    call metis_order(ncomp,ptr3,row3,order,invp,metis_flag,stat)
+!   call metis_order(ncomp,ptr3,row3,order,invp,metis_flag,stat)
+    CALL NODEND_half_order( ncomp, ptr3, row3, order, &
+                            nodend_options, nodend_inform)
+    metis_flag = nodend_inform%status
+    stat = nodend_inform%alloc_status
+
     select case(metis_flag)
     case(0)
        ! OK, do nothing
@@ -619,7 +639,7 @@ contains
 
     do i = 1, n
        j = old_to_new(i)
-       if (j .eq. 0) then
+       if (j .lt. 0) then
           scale(i) = -huge(scale)
        else
           ! Note: we need to subtract col max using old matrix numbering

@@ -17,7 +17,7 @@
  *
  */
 
-#include "metis4.h"
+#include "metis.h"
 
 /* GKlib utilities */
 

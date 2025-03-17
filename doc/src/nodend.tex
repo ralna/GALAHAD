@@ -454,14 +454,10 @@ that is reserved for future use but ignored at present.
 The default is {\tt metis5\_fast = -1}.
 replaced by this default.
 
-\itt{prefix} is a scalar variable of type default \character\
-and length 30, that may be used to provide a user-selected
-character string to preface every line of printed output.
-Specifically, each line of output will be prefaced by the string
-{\tt prefix(2:LEN(TRIM(prefix))-1)},
-thus ignoring the first and last non-null components of the
-supplied string. If the user does not want to preface lines by such
-a string, the default {\tt prefix = ""} should be used.
+\itt{no\_metis\_4\_use\_5\_instead} is a scalar variable of type \logical, 
+that specifies whether to use {\tt METIS} version 5 (specifically, 5.2) 
+if {\tt METIS} is unavailable.
+The default is {\tt no\_metis\_4\_use\_5\_instead = \true}.
 
 \itt{prefix} is a scalar variable of type default \character\
 and length 30, that may be used to provide a user-selected
@@ -502,6 +498,9 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if there have been no
 allocation or deallocation errors.
+
+\itt{version} is a scalar variable of type default \character\
+and length 3, that contains the actual version of {\tt METIS} used.
 
 \end{description}
 
@@ -788,6 +787,8 @@ that each affects are given in Table~\ref{specfile}.
 {\tt metis5-no2hop} & {\tt \%metis5\_no2hop} & {\tt integer} \\
 {\tt metis5-twohop} & {\tt \%metis5\_twohop} & {\tt integer} \\
 {\tt metis5-fast} & {\tt \%metis5\_fast} & {\tt integer} \\
+{\tt no-metis-4-use-5-instead} & {\tt \%no\_metis\_4\_use\_5\_instead} 
+ & {\tt logical} \\
 {\tt output-line-prefix} & {\tt \%prefix} & {\tt character} \\
 \hline
 

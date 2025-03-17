@@ -14,30 +14,36 @@
 #ifdef REAL_32
 #ifdef INTEGER_64
 #define GALAHAD_KINDS_single galahad_kinds_single_64
+#define GALAHAD_NODEND_precision GALAHAD_NODEND_single_64
 #define SPRAL_SSIDS_single spral_ssids_single_64
 #define SPRAL_SSIDS_precision spral_ssids_single_64
 #define SPRAL_SSIDS_precision_ciface spral_ssids_single_ciface_64
 #else
+#define GALAHAD_NODEND_precision GALAHAD_NODEND_single
 #define SPRAL_SSIDS_precision spral_ssids_single
 #define SPRAL_SSIDS_precision_ciface spral_ssids_single_ciface
 #endif
 #elif REAL_128
 #ifdef INTEGER_64
 #define GALAHAD_KINDS_quadruple galahad_kinds_quadruple_64
+#define GALAHAD_NODEND_precision GALAHAD_NODEND_quadruple_64
 #define SPRAL_SSIDS_quadruple spral_ssids_quadruple_64
 #define SPRAL_SSIDS_precision spral_ssids_quadruple_64
 #define SPRAL_SSIDS_precision_ciface spral_ssids_quadruple_ciface_64
 #else
+#define GALAHAD_NODEND_precision GALAHAD_NODEND_quadruple
 #define SPRAL_SSIDS_precision spral_ssids_quadruple
 #define SPRAL_SSIDS_precision_ciface spral_ssids_quadruple_ciface
 #endif
 #else
 #ifdef INTEGER_64
 #define GALAHAD_KINDS_double galahad_kinds_double_64
+#define GALAHAD_NODEND_precision GALAHAD_NODEND_double_64
 #define SPRAL_SSIDS_double spral_ssids_double_64
 #define SPRAL_SSIDS_precision spral_ssids_double_64
 #define SPRAL_SSIDS_precision_ciface spral_ssids_double_ciface_64
 #else
+#define GALAHAD_NODEND_precision GALAHAD_NODEND_double
 #define SPRAL_SSIDS_precision spral_ssids_double
 #define SPRAL_SSIDS_precision_ciface spral_ssids_double_ciface
 #endif

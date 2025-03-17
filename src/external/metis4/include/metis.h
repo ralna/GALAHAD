@@ -1,18 +1,16 @@
 /*
  * Copyright 1997, Regents of the University of Minnesota
  *
- * stdheaders.h
+ * metis.h
  *
  * This file includes all necessary header files
  *
  * Started 8/27/94
  * George
  *
- * $Id: stdheaders.h 5993 2009-01-07 02:09:57Z karypis $
+ * $Id: metis.h,v 1.1 1998/11/27 17:59:21 karypis Exp $
  */
 
-#ifndef _LIBMETIS_STDHEADERS_H_
-#define _LIBMETIS_STDHEADERS_H_
 
 #include <stdio.h>
 #ifdef __STDC__
@@ -20,10 +18,19 @@
 #else
 #include <malloc.h>
 #endif
+#include <strings.h>
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
 #include <stdarg.h>
 #include <time.h>
 
+#ifdef DMALLOC
+#include <dmalloc.h>
 #endif
+
+#include <metis.h>
+#include <struct.h>
+#include <macros.h>
+#include <rename.h>
+#include <proto.h>

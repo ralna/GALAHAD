@@ -15,7 +15,7 @@
  *
  */
 
-#include "metis4.h"
+#include "metis.h"
 
 void METIS_NodeND(int *nvtxs, idxtype *xadj, idxtype *adjncy, 
                   int *numflag, int *options, 

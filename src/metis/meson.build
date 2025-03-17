@@ -1,7 +1,6 @@
-libgalahad_src += files('metis.f90')
+libgalahad_include = [include_directories('include')]
 
-libgalahad_cc_src += files('adapter.c',
-                           'auxapi.c',
+libgalahad_cc_src += files('auxapi.c',
                            'balance.c',
                            'bucketsort.c',
                            'checkgraph.c',

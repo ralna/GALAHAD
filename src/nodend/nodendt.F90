@@ -16,6 +16,8 @@
      TYPE ( NODEND_inform_type ) :: inform
      INTEGER :: version, type, status
 
+!  test the full storage versions
+
      DO version = 1, 3
        SELECT CASE( version )
        CASE( 1 )
@@ -43,12 +45,43 @@
        END IF
      END DO
 
+!  test the half storage versions
+
      ALLOCATE( A%row( nz_compact ), A%col( nz_compact ), A%ptr( n + 1 ),       &
                STAT = status )
      A%n = n ; A%ne = nz_compact
      A%row = (/ 1, 2, 3, 3 /)
      A%col = (/ 1, 2, 1, 3 /)
      A%ptr = (/ 1, 2, 3, 5 /)
+
+     DO version = 1, 3
+       SELECT CASE( version )
+       CASE( 1 )
+         control%version = '4.0'
+       CASE( 2 )
+         control%version = '5.1'
+       CASE( 3 )
+         control%version = '5.2'
+       END SELECT
+       CALL NODEND_half_order( n, A%ptr, A%col, PERM, control, inform )
+       IF ( PERM( 1 ) <= 0 ) THEN
+         WRITE( out, "( ' No Nodend_half ', A, ' available, stopping' )" )     &
+           TRIM( control%version )
+       ELSE IF ( inform%status < 0 ) THEN
+         WRITE( out, "( ' Nodend_half ', A, ' failure, status = ', I0 )" )     &
+           TRIM( control%version ), inform%status
+       ELSE 
+         IF ( inform%status == 0 ) THEN
+           WRITE( out, "(  ' Nodend_half ', A, ' call successful' )" )         &
+             TRIM( control%version )
+         ELSE
+           WRITE( out, "(  ' Nodend_half ', A, ' call unsuccessful,',          &
+          &  ' no permutation found' )" ) TRIM( control%version )
+         END IF
+       END IF
+     END DO
+
+!  test the different storage versions
 
      DO type = 1, 3
        SELECT CASE( type )
@@ -77,6 +110,7 @@
        END IF
        DEALLOCATE( A%type )
      END DO
+
      DEALLOCATE( A%row, A%col, A%ptr )
 
      END PROGRAM NODEND_test
