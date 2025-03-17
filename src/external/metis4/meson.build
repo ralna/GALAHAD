@@ -1,5 +1,3 @@
-libgalahad_include = [include_directories('include')]
-
 libgalahad_cc_src += files('balance.c',
                            'bucketsort.c',
                            'ccgraph.c',
