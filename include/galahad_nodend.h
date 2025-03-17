@@ -75,16 +75,21 @@ struct nodend_control_type {
     char version[31];
 
     /// \brief
-    /// error and warning diagnostics occur on stream error
+    /// error and warning diagnostics occur on stream error.
     ipc_ error;
 
     /// \brief
-    /// general output occurs on stream out
+    /// general output occurs on stream out.
     ipc_ out;
 
     /// \brief
     /// the level of output required. <= 0 gives no output, >= 1 warning message
     ipc_ print_level;
+
+    /// \brief
+    /// should the method revert to METIS 5.2 if METIS 4.0 is requested but
+    /// unavailable?
+    bool no_metis_4_use_5_instead;
 
     /// \brief
     /// all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1)
@@ -146,6 +151,10 @@ struct nodend_inform_type {
     /// the name of the array for which an allocation/deallocation error
     /// occurred.
     char bad_alloc[81];
+
+    /// \brief
+    /// the actual version of METIS used.
+    char version[4];
 
 };
 

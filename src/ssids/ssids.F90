@@ -18,7 +18,9 @@ module spral_ssids_precision
                                           convert_coord_to_cscl, &
                                           clean_cscl_oop, &
                                           apply_conversion_map
-  use spral_metis_wrapper, only : metis_order
+! use spral_metis_wrapper, only : metis_order
+  use GALAHAD_NODEND_precision, only : NODEND_half_order, NODEND_control_type, &
+                                       NODEND_inform_type
   use spral_scaling_precision, only : auction_scale_sym, equilib_scale_sym, &
                                       hungarian_scale_sym, &
                                       equilib_options, equilib_inform, &
@@ -314,16 +316,28 @@ contains
     case(1)
        ! METIS ordering
        if (check) then
-          call metis_order(n, akeep%ptr, akeep%row, order2, akeep%invp, &
-               flag, inform%stat)
-          if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
-          if (flag .lt. 0) go to 490
+!         call metis_order(n, akeep%ptr, akeep%row, order2, akeep%invp, &
+!              flag, inform%stat)
+!         if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
+!         if (flag .lt. 0) go to 490
+          CALL NODEND_half_order(n, akeep%ptr, akeep%row, order2, &
+                                 options%nodend_options,  &
+                                 inform%nodend_inform)
+          inform%flag = inform%nodend_inform%status
+          st = inform%nodend_inform%alloc_status
+          if (inform%flag .lt. 0) go to 490
           call expand_pattern(n, nz, akeep%ptr, akeep%row, ptr2, row2)
        else
-          call metis_order(n, ptr, row, order2, akeep%invp, &
-               flag, inform%stat)
-          if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
-          if (flag .lt. 0) go to 490
+!         call metis_order(n, ptr, row, order2, akeep%invp, &
+!              flag, inform%stat)
+!         if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
+!         if (flag .lt. 0) go to 490
+          CALL NODEND_half_order(n, ptr, row, order2, &
+                                 options%nodend_options,  &
+                                 inform%nodend_inform)
+          inform%flag = inform%nodend_inform%status
+          st = inform%nodend_inform%alloc_status
+          if (inform%flag .lt. 0) go to 490
           call expand_pattern(n, nz, ptr, row, ptr2, row2)
        end if
        if (flag .lt. 0) go to 490
@@ -340,9 +354,11 @@ contains
           call expand_matrix(n, nz, ptr, row, val, ptr2, row2, val2)
        end if
 
+!      call match_order_metis(n, ptr2, row2, val2, order2, akeep%scaling, &
+!           mo_flag, inform%stat)
        call match_order_metis(n, ptr2, row2, val2, order2, akeep%scaling, &
-            mo_flag, inform%stat)
-
+                              options%nodend_options, inform%nodend_inform, &
+                              mo_flag, inform%stat)
        select case(mo_flag)
        case(0)
           ! Success; do nothing
@@ -546,7 +562,7 @@ contains
     character(50)  :: context      ! Procedure name (used when printing).
     integer(ip_) :: mu_flag      ! error flag for matrix_util routines
     integer(long_) :: nz     ! entries in expanded matrix
-    integer(ip_) :: flag         ! error flag for metis
+!   integer(ip_) :: flag         ! error flag for metis
     integer(ip_) :: st           ! stat parameter
     integer(ip_) :: free_flag
 
@@ -670,10 +686,16 @@ contains
 
     case(1)
        ! METIS ordering
-       call metis_order(n, akeep%ptr, akeep%row, order2, akeep%invp, &
-            flag, inform%stat)
-       if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
-       if (flag .lt. 0) go to 490
+!      call metis_order(n, akeep%ptr, akeep%row, order2, akeep%invp, &
+!           flag, inform%stat)
+!      if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
+!      if (flag .lt. 0) go to 490
+       CALL NODEND_half_order(n, akeep%ptr, akeep%row, order2, &
+                              options%nodend_options,  &
+                              inform%nodend_inform)
+       inform%flag = inform%nodend_inform%status
+       st = inform%nodend_inform%alloc_status
+       if (inform%flag .lt. 0) go to 490
        call expand_pattern(n, nz, akeep%ptr, akeep%row, ptr2, row2)
 
     case(2)
@@ -683,8 +705,11 @@ contains
             val2)
        deallocate (val_clean,stat=st)
 
-       call match_order_metis(n,ptr2,row2,val2,order2,akeep%scaling,mo_flag, &
-            inform%stat)
+!      call match_order_metis(n,ptr2,row2,val2,order2,akeep%scaling,mo_flag, &
+!           inform%stat)
+       call match_order_metis(n, ptr2, row2, val2, order2, akeep%scaling, &
+                              options%nodend_options, inform%nodend_inform, &
+                              mo_flag, inform%stat)
 
        select case(mo_flag)
        case(0)

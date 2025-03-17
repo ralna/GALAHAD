@@ -110,10 +110,10 @@ RLGQ64 = $(OBJQ64)/libgalahad_spral.a
 #  Libraries used
 
 ifeq "$(METIS_64)" "_64"
-# LIBS = -L$(OBJ) $(METIS64) $(LAPACK64) $(BLAS64) -lgalahad $(METIS64)
-  LIBS = -L$(OBJ) $(METIS64) $(LAPACK) $(BLAS) -lgalahad $(METIS64)
+# LIBS = -L$(OBJ) $(METIS64) $(LAPACK64) $(BLAS64) -lgalahad $(METIS64) $(HSL)
+  LIBS = -L$(OBJ) $(METIS64) $(LAPACK) $(BLAS) -lgalahad $(METIS64) $(HSL)
 else
-  LIBS = -L$(OBJ) $(METIS) $(LAPACK) $(BLAS) -lgalahad $(METIS)
+  LIBS = -L$(OBJ) $(METIS) $(LAPACK) $(BLAS) -lgalahad $(METIS) $(HSL)
 endif
 
 PLIBS = $(LIBS) -lgalahad_problem
@@ -289,7 +289,6 @@ SSIDSS = extend basics $(SPRALRBS) $(CUDASUSE) \
          $(RLGS)(ldlt_nopiv_single.o) $(RLGS)(ldlt_tpp_single.o) \
          $(RLGS)(wrappers_single.o) \
          $(RLGS)(ThreadStats.o) $(RLGS)(hw_topology.o) \
-         $(RLGS)(metis4_wrapper.o) \
          $(RLGS)(spral_scaling_single.o) \
          $(RLGS)(match_order_single.o) $(RLGS)(datatypes_single.o) \
          $(RLGS)(core_analyse.o) $(RLGS)(pgm.o) \
@@ -308,7 +307,6 @@ SSIDSD = extend basics $(SPRALRBD) $(CUDADUSE) \
          $(RLGD)(ldlt_nopiv_double.o) $(RLGD)(ldlt_tpp_double.o) \
          $(RLGD)(wrappers_double.o) \
          $(RLGD)(ThreadStats.o) $(RLGD)(hw_topology.o) \
-         $(RLGD)(metis4_wrapper.o) \
          $(RLGD)(spral_scaling_double.o) \
          $(RLGD)(match_order_double.o) $(RLGD)(datatypes_double.o) \
          $(RLGD)(core_analyse.o) $(RLGD)(pgm.o) \
@@ -327,7 +325,6 @@ SSIDSQ = extend basics $(SPRALRBQ) $(CUDAQUSE) \
          $(RLGQ)(ldlt_nopiv_quadruple.o) $(RLGQ)(ldlt_tpp_quadruple.o) \
          $(RLGQ)(wrappers_quadruple.o) \
          $(RLGQ)(ThreadStats.o) $(RLGQ)(hw_topology.o) \
-         $(RLGQ)(metis4_wrapper.o) \
          $(RLGQ)(spral_scaling_quadruple.o) \
          $(RLGQ)(match_order_quadruple.o) $(RLGQ)(datatypes_quadruple.o) \
          $(RLGQ)(core_analyse.o) $(RLGQ)(pgm.o) \
@@ -345,7 +342,7 @@ SSIDSS64 = extend basics $(SPRALRBS64) $(CUDASUSE64) \
          $(RLGS64)(cholesky_single_64.o) $(RLGS64)(ldlt_app_single_64.o) \
          $(RLGS64)(ldlt_nopiv_single_64.o) $(RLGS64)(ldlt_tpp_single_64.o) \
          $(RLGS64)(wrappers_single_64.o) $(RLGS64)(ThreadStats.o) \
-         $(RLGS64)(hw_topology.o) $(RLGS64)(metis4_wrapper.o) \
+         $(RLGS64)(hw_topology.o) \
          $(RLGS64)(spral_scaling_single_64.o) \
          $(RLGS64)(match_order_single_64.o) $(RLGS64)(datatypes_single_64.o) \
          $(RLGS64)(core_analyse.o) $(RLGS64)(pgm.o) \
@@ -363,7 +360,7 @@ SSIDSD64 = extend basics $(SPRALRBD64) $(CUDADUSE64) \
          $(RLGD64)(cholesky_double_64.o) $(RLGD64)(ldlt_app_double_64.o) \
          $(RLGD64)(ldlt_nopiv_double_64.o) $(RLGD64)(ldlt_tpp_double_64.o) \
          $(RLGD64)(wrappers_double_64.o) $(RLGD64)(ThreadStats.o) \
-         $(RLGD64)(hw_topology.o) $(RLGD64)(metis4_wrapper.o) \
+         $(RLGD64)(hw_topology.o) \
          $(RLGD64)(spral_scaling_double_64.o) \
          $(RLGD64)(match_order_double_64.o) $(RLGD64)(datatypes_double_64.o) \
          $(RLGD64)(core_analyse.o) $(RLGD64)(pgm.o) \
@@ -382,7 +379,7 @@ SSIDSQ64 = extend basics $(SPRALRBQ64) $(CUDAQUSE64) \
          $(RLGQ64)(ldlt_nopiv_quadruple_64.o) \
          $(RLGQ64)(ldlt_tpp_quadruple_64.o) \
          $(RLGQ64)(wrappers_quadruple_64.o) $(RLGQ64)(ThreadStats.o) \
-         $(RLGQ64)(hw_topology.o) $(RLGQ64)(metis4_wrapper.o) \
+         $(RLGQ64)(hw_topology.o) \
          $(RLGQ64)(spral_scaling_quadruple_64.o) \
          $(RLGQ64)(match_order_quadruple_64.o) \
          $(RLGQ64)(datatypes_quadruple_64.o) \

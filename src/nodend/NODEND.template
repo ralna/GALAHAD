@@ -32,4 +32,5 @@
 !  metis5-no2hop                                     0
 !  metis5-twohop                                     -1
 !  metis5-fast                                       -1
+!  no-metis-4-use-5-instead                          yes
 !  output-line-prefix                                ""

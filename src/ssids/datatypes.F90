@@ -11,6 +11,7 @@ module spral_ssids_types_precision
 !$  use omp_lib
   use, intrinsic :: iso_c_binding
   use spral_scaling_precision, only : auction_options, auction_inform
+  use GALAHAD_NODEND_precision, only : NODEND_control_type
   implicit none
 
   private
@@ -263,6 +264,8 @@ module spral_ssids_types_precision
      real(rp_) :: small = 1e-20_rp_ ! Minimum pivot size (absolute value of a
        ! pivot must be of size at least small to be accepted).
      real(rp_) :: u = 0.01
+
+     type ( NODEND_control_type ) :: nodend_options
 
      !
      ! Undocumented

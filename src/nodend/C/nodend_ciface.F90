@@ -34,6 +34,7 @@
       INTEGER ( KIND = ipc_ ) :: error
       INTEGER ( KIND = ipc_ ) :: out
       INTEGER ( KIND = ipc_ ) :: print_level
+      LOGICAL ( KIND = C_BOOL ) :: no_metis_4_use_5_instead
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
       INTEGER ( KIND = ipc_ ) :: metis4_ptype
       INTEGER ( KIND = ipc_ ) :: metis4_ctype
@@ -71,6 +72,7 @@
       INTEGER ( KIND = ipc_ ) :: status
       INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 4 ) :: version
     END TYPE nodend_inform_type
 
 !----------------------
@@ -125,6 +127,9 @@
     fcontrol%metis5_twohop = ccontrol%metis5_twohop
     fcontrol%metis5_fast = ccontrol%metis5_fast
 
+    ! Logicals
+    fcontrol%no_metis_4_use_5_instead = ccontrol%no_metis_4_use_5_instead
+
     ! Strings
     DO i = 1, LEN( fcontrol%version )
       IF ( ccontrol%version( i ) == C_NULL_CHAR ) EXIT
@@ -155,6 +160,10 @@
       cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
     END DO
     cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
+    DO i = 1, 3
+      cinform%version( i ) = finform%version( i : i )
+    END DO
+    cinform%version( 4 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_inform_out

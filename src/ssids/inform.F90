@@ -12,6 +12,7 @@ module spral_ssids_inform_precision
 ! use spral_kinds_precision, only : ip_, long_
   use spral_kinds_precision
   use spral_ssids_types_precision
+  use GALAHAD_NODEND_precision, only : NODEND_inform_type
   implicit none
 
   private
@@ -44,6 +45,7 @@ module spral_ssids_inform_precision
      type(auction_inform) :: auction
      integer(ip_) :: cuda_error = 0
      integer(ip_) :: cublas_error = 0
+     type ( NODEND_inform_type ) :: nodend_inform
 
      ! Undocumented FIXME: should we document them?
      integer(ip_) :: not_first_pass = 0

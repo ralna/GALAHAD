@@ -143,6 +143,6 @@
    END DO
 !  CALL MPI_INITIALIZED( mpi_flag, i )
 !  IF ( mpi_flag ) CALL MPI_FINALIZE( i )
-   WRITE( 6, "( /, '  end ssids tests' )" )
+   WRITE( 6, "( /, '  ssids tests completed' )" )
    STOP
    END PROGRAM SPRAL_SSIDS_test_program

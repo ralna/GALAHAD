@@ -54,6 +54,7 @@
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_SMT_precision
      USE GALAHAD_SILS_precision
+     USE GALAHAD_NODEND_precision
      USE GALAHAD_BLAS_inter_precision, ONLY : TRSV, TBSV, GEMV, GER, SWAP, SCAL
      USE GALAHAD_LAPACK_inter_precision, ONLY : LAENV, POTRF, POTRS, SYTRF,    &
                                                 SYTRS, PBTRF, PBTRS ! , SYEV
@@ -374,6 +375,11 @@
 !  e.g. "string" or 'string'
 
        CHARACTER ( LEN = 30 ) :: prefix = '""' // REPEAT( ' ', 28 )
+
+!  control parameters for NODEND
+
+       TYPE ( NODEND_control_type ) :: nodend_control
+
      END TYPE SLS_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
@@ -685,6 +691,10 @@
 !  the output structure from ssids
 
        TYPE ( SSIDS_inform ) :: ssids_inform
+
+!  the output structure from nodend
+
+       TYPE ( NODEND_inform_type ) :: nodend_inform
 
 !  the integer and real output arrays from mc61
 
@@ -1345,10 +1355,11 @@
 
      INTEGER ( KIND = ip_ ), PARAMETER :: n_dummy = 2
      INTEGER ( KIND = ip_ ), DIMENSION( n_dummy + 1 )  :: PTR = (/ 1, 2, 3 /)
-     INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: ROW = (/ 2, 1 /)
+!    INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: ROW = (/ 2, 1 /)
      INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: ROWL = (/ 1, 2 /)
-     INTEGER ( KIND = ip_ ), DIMENSION( 8 ) :: ICNTL_metis
-     INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: PERM, INVP
+!    INTEGER ( KIND = ip_ ), DIMENSION( 8 ) :: ICNTL_metis
+     INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: PERM
+!    INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: INVP
      TYPE ( mc68_control ) :: control_mc68
      TYPE ( mc68_info ) :: info_mc68
 
@@ -1369,9 +1380,10 @@
 
 !  check to see if the MeTiS ordering packages is available
 
-     CALL galahad_metis_setopt( ICNTL_metis )
-     CALL galahad_metis( n_dummy, PTR, ROW, 1_ip_, ICNTL_metis, INVP, PERM )
-     metis_available = PERM( 1 ) > 0
+!    CALL galahad_metis_setopt( ICNTL_metis )
+!    CALL galahad_metis( n_dummy, PTR, ROW, 1_ip_, ICNTL_metis, INVP, PERM )
+!    metis_available = PERM( 1 ) > 0
+     metis_available = .TRUE.
 ! write(6,*) ' hsl_available, metis_available ', hsl_available, metis_available
 ! write(6,*) ' solver ', TRIM( inform%solver )
 ! stop
@@ -1386,17 +1398,16 @@
 
 !  set the ordering so that, in the worst case, it defaults to early AMD
 
-     IF ( check_available ) THEN
-       IF ( control%ordering > 0 ) THEN
-         IF ( hsl_available ) THEN
-           IF ( control%ordering == 3 .AND. .NOT. metis_available )            &
-             control%ordering = 1
-         ELSE
-           control%ordering = 7
-         END IF
-       END IF
-
-     END IF
+!    IF ( check_available ) THEN
+!      IF ( control%ordering > 0 ) THEN
+!        IF ( hsl_available ) THEN
+!          IF ( control%ordering == 3 .AND. .NOT. metis_available )            &
+!            control%ordering = 1
+!        ELSE
+!          control%ordering = 7
+!        END IF
+!      END IF
+!    END IF
 
 !  initialize solver-specific controls
 
@@ -1432,15 +1443,16 @@
 !86V2  IF ( control%scaling == 0 )                                             &
 !86V2    control%scaling = - data%ma86_control%scaling
        IF ( control%ordering == 0 ) THEN
-         IF ( hsl_available ) THEN
-           IF ( metis_available ) THEN
-             control%ordering = 3
-           ELSE
-             control%ordering = 1
-           END IF
-         ELSE
-           control%ordering = 7
-         END IF
+         control%ordering = 3
+!        IF ( hsl_available ) THEN
+!          IF ( metis_available ) THEN
+!            control%ordering = 3
+!          ELSE
+!            control%ordering = 1
+!          END IF
+!        ELSE
+!          control%ordering = 7
+!        END IF
        END IF
 
 !  = MA87 =
@@ -1448,15 +1460,16 @@
      CASE ( 'ma87' )
        control%zero_pivot_tolerance = SQRT( EPSILON( 1.0_rp_ ) )
        IF ( control%ordering == 0 ) THEN
-         IF ( hsl_available ) THEN
-           IF ( metis_available ) THEN
-             control%ordering = 3
-           ELSE
-             control%ordering = 1
-           END IF
-         ELSE
-           control%ordering = 7
-         END IF
+         control%ordering = 3
+!        IF ( hsl_available ) THEN
+!          IF ( metis_available ) THEN
+!            control%ordering = 3
+!          ELSE
+!            control%ordering = 1
+!          END IF
+!        ELSE
+!          control%ordering = 7
+!        END IF
        END IF
 
 !  = MA97 =
@@ -1466,15 +1479,16 @@
          control%scaling = - data%ma97_control%scaling
 !      control%node_amalgamation = 8
        IF ( control%ordering == 0 ) THEN
-         IF ( check_available ) THEN
-           IF ( metis_available ) THEN
-             control%ordering = - 3
-           ELSE
-             control%ordering = - 5
-           END IF
-         ELSE
-           control%ordering = - 5
-         END IF
+         control%ordering = 3
+!        IF ( check_available ) THEN
+!          IF ( metis_available ) THEN
+!            control%ordering = - 3
+!          ELSE
+!            control%ordering = - 5
+!          END IF
+!        ELSE
+!          control%ordering = - 5
+!        END IF
        END IF
 
 !  = SSIDS =
@@ -1484,15 +1498,16 @@
          control%scaling = - data%ssids_options%scaling
 !      control%node_amalgamation = 8
        IF ( control%ordering == 0 ) THEN
-         IF ( hsl_available ) THEN
-           IF ( metis_available ) THEN
-             control%ordering = 3
-           ELSE
-             control%ordering = 1
-           END IF
-         ELSE
-           control%ordering = 7
-         END IF
+         control%ordering = 3
+!        IF ( hsl_available ) THEN
+!          IF ( metis_available ) THEN
+!            control%ordering = 3
+!          ELSE
+!            control%ordering = 1
+!          END IF
+!        ELSE
+!          control%ordering = 7
+!        END IF
        END IF
 
 !  = PARDISO =
@@ -3054,6 +3069,16 @@
      CALL SPECFILE_assign_value( spec( prefix ),                               &
                                  control%prefix,                               &
                                  control%error )
+
+!  Read the specfile for NODEND
+
+     IF ( PRESENT( alt_specname ) ) THEN
+       CALL NODEND_read_specfile( control%nodend_control, device,              &
+                          alt_specname = TRIM( alt_specname ) // '-NODEND' )
+     ELSE
+       CALL NODEND_read_specfile( control%nodend_control, device )
+     END IF
+
      RETURN
 
 !  End of SLS_read_specfile
@@ -3283,7 +3308,7 @@
        data%matrix%n = matrix%n
        data%ne = data%matrix%PTR( matrix%n + 1 ) - 1
        data%matrix%ne = data%ne
-!      CALL SMT_put( data%matrix%type, 'SPARSE_BY_ROWS', inform%alloc_status )
+       CALL SMT_put( data%matrix%type, 'SPARSE_BY_ROWS', inform%alloc_status )
        CALL SPACE_resize_array( data%ne, data%matrix%ROW, inform%status,       &
                                 inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
@@ -3337,7 +3362,9 @@
 
 !  now compute the required ordering
 
-       CALL ZD11_put( data%matrix%type, 'pattern', inform%alloc_status )
+!      CALL SMT_put( data%matrix%type, 'pattern', inform%alloc_status )
+!      CALL SMT_put( data%matrix%type, 'SPARSE_BY_ROWS', inform%alloc_status )
+                       
        CALL SPACE_resize_array( matrix%n, data%ORDER,                          &
                                 inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
@@ -3378,6 +3405,17 @@
            IF ( control%print_level > 0 .AND. control%out > 0 )                &
              WRITE( control%out, "( A, ' amd restrictions error' )" ) prefix
            inform%status = GALAHAD_error_restrictions ; GO TO 900
+         END IF
+
+!  METIS node-nested-dissection ordering
+
+       ELSE IF ( ordering == 3 ) THEN
+!        CALL SMT_put( data%matrix%type, 'SPARSE_BY_ROWS',                     &
+!                      inform%alloc_status )
+         CALL NODEND_order( data%matrix, data%ORDER, control%nodend_control,   &
+                            inform%nodend_inform )
+         IF ( inform%nodend_inform%status /= GALAHAD_ok ) THEN
+           inform%nodend_inform%status = GALAHAD_error_metis ; GO TO 900
          END IF
 
 !  mc68 sparsity ordering

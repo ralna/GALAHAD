@@ -218,7 +218,8 @@
              IF ( solver == pbtr ) THEN
                control%ordering = 6
              ELSE
-               control%ordering = 7
+               control%ordering = 3
+!              control%ordering = 7
              END IF
            ELSE
              control%ordering = 0
@@ -828,6 +829,6 @@
    DEALLOCATE( matrix%type )
    CALL MPI_INITIALIZED( mpi_flag, i )
    IF ( mpi_flag ) CALL MPI_FINALIZE( i )
-   WRITE( 6, "( /, ' tests completed' )" )
+   WRITE( 6, "( /, ' sls tests completed' )" )
    STOP
    END PROGRAM GALAHAD_SLS_test_program
