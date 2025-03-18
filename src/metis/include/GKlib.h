@@ -51,6 +51,7 @@
 #if defined(__OPENMP__) 
 #include <omp.h>
 #endif
+
 #include <gk_types.h>
 #include <gk_struct.h>
 #include <gk_externs.h>
@@ -69,5 +70,3 @@
 #include <gk_proto.h>
 
 #endif  /* GKlib.h */
-
-

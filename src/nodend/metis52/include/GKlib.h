@@ -70,5 +70,3 @@
 #include <gk_proto.h>
 
 #endif  /* GKlib.h */
-
-
