@@ -31,8 +31,9 @@ libgalahad_cc_src += files('auxapi.c',
                            'sfm.c',
                            'srefine.c',
                            'string.c',
-                           'test_nodend.c',
                            'timers.c',
                            'timing.c',
                            'util.c',
                            'wspace.c')
+
+galahad_c_tests += [['metis', 'test_metis', files('test_nodend.c')]]
