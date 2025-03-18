@@ -12,12 +12,10 @@ can be used to define other memory allocation routines.
 \version\verbatim $Id: memory.c 10783 2011-09-21 23:19:56Z karypis $ \endverbatim
 */
 
-
-#include <GKlib.h>
+#include <GKlib_51.h>
 
 /* This is for the global mcore that tracks all heap allocations */
 static __thread gk_mcore_t *gkmcore = NULL;
-
 
 /*************************************************************************/
 /*! Define the set of memory allocation routines for each data type */
@@ -40,11 +38,6 @@ GK_MKALLOC(gk_fkv,   gk_fkv_t)
 GK_MKALLOC(gk_dkv,   gk_dkv_t)
 GK_MKALLOC(gk_skv,   gk_skv_t)
 GK_MKALLOC(gk_idxkv, gk_idxkv_t)
-
-
-
-
-
 
 /*************************************************************************/
 /*! This function allocates a two-dimensional matrix.

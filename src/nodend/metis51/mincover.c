@@ -11,7 +11,7 @@
  * $Id: mincover.c 9942 2011-05-17 22:09:52Z karypis $
  */
 
-#include "metislib.h"
+#include "metislib_51.h"
 
 /*************************************************************************
 * Constants used by mincover algorithm
@@ -24,7 +24,6 @@
 #define VR 4
 #define SR 5
 #define HR 6
-
 
 /*************************************************************************
 * This function returns the min-cover of a bipartite graph.

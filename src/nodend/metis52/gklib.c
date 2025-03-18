@@ -8,9 +8,7 @@
 \version\verbatim $Id: gklib.c 10395 2011-06-23 23:28:06Z karypis $ \endverbatim
 */
 
-
-#include "metislib.h"
-
+#include "metislib_52.h"
 
 /*************************************************************************/
 /*! BLAS routines */

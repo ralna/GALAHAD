@@ -13,9 +13,7 @@
  *
  */
 
-#include "metislib.h"
-
-
+#include "metislib_51.h"
 
 /*************************************************************************/
 /*! This function checks if a graph is valid. A valid graph must satisfy 

@@ -12,7 +12,7 @@
  *
  */
 
-#include "metisbin.h"
+#include "metisbin_51.h"
 #include <time.h>
 
 /*********************************************************

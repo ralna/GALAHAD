@@ -15,8 +15,7 @@
  *
  */
 
-#include "metisbin.h"
-
+#include "metisbin_51.h"
 
 /*************************************************************************/
 /*! This function sets up data structures for fill-in computations */

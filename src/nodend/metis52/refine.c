@@ -8,8 +8,7 @@
 \version\verbatim $Id: refine.c 14362 2013-05-21 21:35:23Z karypis $ \endverbatim
 */
 
-#include "metislib.h"
-
+#include "metislib_52.h"
 
 /*************************************************************************/
 /*! This function is the entry point of refinement */
@@ -47,7 +46,6 @@ void Refine2Way(ctrl_t *ctrl, graph_t *orggraph, graph_t *graph, real_t *tpwgts)
   IFSET(ctrl->dbglvl, METIS_DBG_TIME, gk_stopcputimer(ctrl->UncoarsenTmr));
 }
 
-
 /*************************************************************************/
 /*! This function allocates memory for 2-way edge refinement */
 /*************************************************************************/
@@ -65,7 +63,6 @@ void Allocate2WayPartitionMemory(ctrl_t *ctrl, graph_t *graph)
   graph->id     = imalloc(nvtxs, "Allocate2WayPartitionMemory: id");
   graph->ed     = imalloc(nvtxs, "Allocate2WayPartitionMemory: ed");
 }
-
 
 /*************************************************************************/
 /*! This function computes the initial id/ed */

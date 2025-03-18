@@ -10,9 +10,7 @@
  * and procedures
 */
 
-#include "metislib.h"
-
-
+#include "metislib_51.h"
 
 /*************************************************************************/
 /* Top-level routine for k-way partitioning refinement. This routine just

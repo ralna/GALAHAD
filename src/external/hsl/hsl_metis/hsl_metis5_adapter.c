@@ -4,7 +4,7 @@
  */
 
 #ifdef METIS51
-#include "hsl_metis51.h" /*  adapted from MeTiS 5.1 */
+#include "hsl_metis_51.h" /*  adapted from MeTiS 5.1 */
 #else
 #include "hsl_metis.h"  /*  adapted from MeTiS 5.2 */
 #endif

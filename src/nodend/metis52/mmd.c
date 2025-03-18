@@ -19,8 +19,7 @@
  * $Id: mmd.c 22385 2019-06-03 22:08:48Z karypis $
  */
 
-#include "metislib.h"
-
+#include "metislib_52.h"
 
 /*************************************************************************
 *  genmmd  -- multiple minimum external degree

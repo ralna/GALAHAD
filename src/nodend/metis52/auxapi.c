@@ -8,9 +8,7 @@
 \version\verbatim $Id: auxapi.c 10409 2011-06-25 16:58:34Z karypis $ \endverbatim
 */
 
-
-#include "metislib.h"
-
+#include "metislib_52.h"
 
 /*************************************************************************/
 /*! This function frees memory that was allocated by METIS and returns
@@ -25,7 +23,6 @@ int METIS_Free(void *ptr)
   if (ptr != NULL) free(ptr);
   return METIS_OK;
 }
-
 
 /*************************************************************************/
 /*! This function sets the default values for the options.

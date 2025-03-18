@@ -15,8 +15,7 @@
  *
  */
 
-#include "metislib.h"
-
+#include "metislib_51.h"
 
 /*************************************************************************/
 /*! This function performs a node-based FM refinement */

@@ -15,9 +15,7 @@
  *
  */
 
-#include "metisbin.h"
-
-
+#include "metisbin_51.h"
 
 /*************************************************************************/
 /*! This function reads in a sparse graph */

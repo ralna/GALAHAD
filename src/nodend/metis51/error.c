@@ -13,8 +13,7 @@ This file contains functions dealing with error reporting and termination
 #define _GK_ERROR_C_  /* this is needed to properly declare the gk_jub* variables
                          as an extern function in GKlib.h */
 
-#include <GKlib.h>
-
+#include <GKlib_51.h>
 
 /* These are the jmp_buf for the graceful exit in case of severe errors.
    Multiple buffers are defined to allow for recursive invokation. */

@@ -8,8 +8,7 @@
 \version\verbatim $Id: random.c 18796 2015-06-02 11:39:45Z karypis $ \endverbatim
 */
 
-#include <GKlib.h>
-
+#include <GKlib_52.h>
 
 /*************************************************************************/
 /*! Create the various random number functions */

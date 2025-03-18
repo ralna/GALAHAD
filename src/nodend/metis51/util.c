@@ -11,8 +11,7 @@
  * $Id: util.c 10495 2011-07-06 16:04:45Z karypis $
  */
 
-#include "metislib.h"
-
+#include "metislib_51.h"
 
 /*************************************************************************/
 /*! This function initializes the random number generator 

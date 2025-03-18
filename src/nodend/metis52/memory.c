@@ -12,8 +12,7 @@ can be used to define other memory allocation routines.
 \version\verbatim $Id: memory.c 21050 2017-05-25 03:53:58Z karypis $ \endverbatim
 */
 
-
-#include <GKlib.h>
+#include <GKlib_52.h>
 
 /* This is for the global mcore that tracks all heap allocations */
 static __thread gk_mcore_t *gkmcore = NULL;
@@ -51,11 +50,6 @@ GK_MKALLOC(gk_dkv,   gk_dkv_t)
 GK_MKALLOC(gk_skv,   gk_skv_t)
 GK_MKALLOC(gk_idxkv, gk_idxkv_t)
 
-
-
-
-
-
 /*************************************************************************/
 /*! This function allocates a two-dimensional matrix.
   */
@@ -80,7 +74,6 @@ void gk_AllocMatrix(void ***r_matrix, size_t elmlen, size_t ndim1, size_t ndim2)
 
   *r_matrix = matrix;
 }
-
 
 /*************************************************************************/
 /*! This function frees a two-dimensional matrix.

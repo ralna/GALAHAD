@@ -32,9 +32,9 @@
 
 
 #ifdef __MSC__ 
-  #include "ms_stdint.h"
-  #include "ms_inttypes.h"
-  #include "ms_stat.h"
+  #include "ms_stdint_51.h"
+  #include "ms_inttypes_51.h"
+  #include "ms_stat_51.h"
 #else
 #ifndef SUNOS
   #include <stdint.h>

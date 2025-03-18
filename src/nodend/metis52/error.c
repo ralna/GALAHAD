@@ -9,12 +9,10 @@ This file contains functions dealing with error reporting and termination
 \version\verbatim $Id: error.c 10711 2011-08-31 22:23:04Z karypis $ \endverbatim
 */
 
+#define _GK_ERROR_C_  /* this is needed to properly declare the gk_jub*
+                         variables as an extern function in GKlib.h */
 
-#define _GK_ERROR_C_  /* this is needed to properly declare the gk_jub* variables
-                         as an extern function in GKlib.h */
-
-#include <GKlib.h>
-
+#include <GKlib_52.h>
 
 /* These are the jmp_buf for the graceful exit in case of severe errors.
    Multiple buffers are defined to allow for recursive invokation. */
@@ -45,8 +43,6 @@ void gk_set_exit_on_error(int value)
   gk_exit_on_error = value;
 }
 
-
-
 /*************************************************************************/
 /*! This function prints an error message and exits
  */
@@ -69,7 +65,6 @@ void errexit(char *f_str,...)
   /* abort(); */
 }
 
-
 /*************************************************************************/
 /*! This function prints an error message and raises a signum signal
  */
@@ -89,7 +84,6 @@ void gk_errexit(int signum, char *f_str,...)
     raise(signum);
 }
 
-
 /***************************************************************************/
 /*! This function sets a number of signal handlers and sets the return point
     of a longjmp
@@ -108,7 +102,6 @@ int gk_sigtrap()
   return 1;
 }
 
-
 /***************************************************************************/
 /*! This function sets the handlers for the signals to their default handlers
  */
@@ -126,7 +119,6 @@ int gk_siguntrap()
   return 1;
 }
 
-
 /*************************************************************************/
 /*! This function is the custome signal handler, which all it does is to
     perform a longjump to the most recent saved environment
@@ -136,7 +128,6 @@ void gk_sigthrow(int signum)
 {
   longjmp(gk_jbufs[gk_cur_jbufs], signum);
 }
-
 
 /***************************************************************************
 * This function sets a number of signal handlers and sets the return point
@@ -148,7 +139,6 @@ void gk_SetSignalHandlers()
   old_SIGERR_handler = signal(SIGERR,  gk_NonLocalExit_Handler);
 }
 
-
 /***************************************************************************
 * This function sets the handlers for the signals to their default handlers
 ****************************************************************************/
@@ -158,7 +148,6 @@ void gk_UnsetSignalHandlers()
   signal(SIGERR,  old_SIGERR_handler);
 }
 
-
 /*************************************************************************
 * This function is the handler for SIGUSR1 that implements the cleaning up
 * process prior to a non-local exit.
@@ -167,7 +156,6 @@ void gk_NonLocalExit_Handler(int signum)
 {
   longjmp(gk_jbuf, signum);
 }
-
 
 /*************************************************************************/
 /*! \brief Thread-safe implementation of strerror() */
@@ -191,8 +179,6 @@ char *gk_strerror(int errnum)
 {
   return strerror(errnum);
 }
-
-
 
 /*************************************************************************
 * This function prints a backtrace of calling functions

@@ -10,8 +10,7 @@
 * modified by Nick Gould, STFC-RAL, 2024-03-21 to remove unused variables
 */
 
-#include "metislib.h"
-
+#include "metislib_52.h"
 
 /*************************************************************************/
 /*! This function is the entry point of cut-based refinement */
