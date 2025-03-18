@@ -8,8 +8,7 @@
 \version\verbatim $Id: random.c 11793 2012-04-04 21:03:02Z karypis $ \endverbatim
 */
 
-#include <GKlib.h>
-
+#include <GKlib_51.h>
 
 /*************************************************************************/
 /*! Create the various random number functions */
@@ -20,8 +19,6 @@ GK_MKRANDOM(gk_f,   size_t, float)
 GK_MKRANDOM(gk_d,   size_t, double)
 GK_MKRANDOM(gk_idx, size_t, gk_idx_t)
 GK_MKRANDOM(gk_z,   size_t, ssize_t)
-
-
 
 /*************************************************************************/
 /*! GKlib's built in random number generator for portability across 

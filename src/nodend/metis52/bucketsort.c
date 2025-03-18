@@ -11,9 +11,7 @@
  *
  */
 
-#include "metislib.h"
-
-
+#include "metislib_52.h"
 
 /*************************************************************************
 * This function uses simple counting sort to return a permutation array

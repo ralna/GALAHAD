@@ -16,7 +16,7 @@ This file contains various functions that perform I/O.
 #undef _GNU_SOURCE
 #endif
 
-#include <GKlib.h>
+#include <GKlib_52.h>
 
 /*************************************************************************
 * This function opens a file

@@ -10,8 +10,7 @@
  * and procedures
 */
 
-#include "metislib.h"
-
+#include "metislib_51.h"
 
 /*************************************************************************
 * This function performs an edge-based FM refinement

@@ -7,7 +7,7 @@
  * George
  */
 
-#include <GKlib.h>
+#include <GKlib_51.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -27,14 +27,14 @@
 #endif
 
 
-#include <metis.h>
-#include "rename.h"
-#include "gklib_defs.h"
-#include "defs.h"
-#include "macros.h"
-#include "defs.h"
-#include "struct.h"
-#include "proto.h"
+#include <metis_51.h>
+#include "rename_51.h"
+#include "gklib_defs_51.h"
+#include "defs_51.h"
+#include "macros_51.h"
+#include "defs_51.h"
+#include "struct_51.h"
+#include "proto_51.h"
 
 
 #if defined(COMPILER_GCC)
@@ -98,5 +98,5 @@ typedef struct {
   size_t maxmemory;
 } params_t;
 
-#include "protobin.h"
-#include "defsbin.h"
+#include "protobin_51.h"
+#include "defsbin_51.h"

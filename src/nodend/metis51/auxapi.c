@@ -8,9 +8,7 @@
 \version\verbatim $Id: auxapi.c 10409 2011-06-25 16:58:34Z karypis $ \endverbatim
 */
 
-
-#include "metislib.h"
-
+#include "metislib_51.h"
 
 /*************************************************************************/
 /*! This function free memory that was allocated by METIS and retuned

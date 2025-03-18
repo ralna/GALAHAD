@@ -11,9 +11,7 @@
  * modified by Nick Gould, STFC-RAL, 2024-03-21 to remove unused variables
  */
 
-#include "metislib.h"
-
-
+#include "metislib_52.h"
 
 /*************************************************************************/
 /*! This function checks if a graph is valid. A valid graph must satisfy

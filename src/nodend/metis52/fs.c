@@ -10,10 +10,7 @@ the filesystem in a portable way.
 \version\verbatim $Id: fs.c 14332 2013-05-18 12:22:57Z karypis $ \endverbatim
 */
 
-
-#include <GKlib.h>
-
-
+#include <GKlib_52.h>
 
 /*************************************************************************
 * This function checks if a file exists

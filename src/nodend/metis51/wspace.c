@@ -8,8 +8,7 @@
 \version $Id: wspace.c 10492 2011-07-06 09:28:42Z karypis $
 */
 
-#include "metislib.h"
-
+#include "metislib_51.h"
 
 /*************************************************************************/
 /*! This function allocates memory for the workspace */

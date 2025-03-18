@@ -12,9 +12,7 @@
  * and procedures
  */
 
-#include "metislib.h"
-
-
+#include "metislib_51.h"
 
 /*************************************************************************/
 /*! This function computes the total edgecut 

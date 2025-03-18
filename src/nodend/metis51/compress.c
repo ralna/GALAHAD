@@ -14,7 +14,7 @@
  *
  */
 
-#include "metislib.h"
+#include "metislib_51.h"
 
 /*************************************************************************/
 /*! This function compresses a graph by merging identical vertices

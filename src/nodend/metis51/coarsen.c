@@ -10,8 +10,7 @@
  * and procedures
 */
 
-
-#include "metislib.h"
+#include "metislib_51.h"
 
 #define UNMATCHEDFOR2HOP  0.10  /* The fraction of unmatched vertices that triggers 2-hop */
                                   

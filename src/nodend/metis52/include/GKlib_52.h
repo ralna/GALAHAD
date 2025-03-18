@@ -3,8 +3,9 @@
  * 
  * George's library of most frequently used routines
  *
- * $Id: GKlib.h 13005 2012-10-23 22:34:36Z karypis $
+ * $Id: GKlib.h 14866 2013-08-03 16:40:04Z karypis $
  *
+ * modified by Nick Gould for GALAHAD version 2024-04-12
  */
 
 #ifndef _GKLIB_H_
@@ -19,9 +20,7 @@
 #define __ICC__
 #endif
 
-
-#include "gk_arch.h" /*!< This should be here, prior to the includes */
-
+#include "gk_arch_52.h" /*!< This should be here, prior to the includes */
 
 /*************************************************************************
 * Header file inclusion section
@@ -30,6 +29,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <memory.h>
 #include <errno.h>
 #include <ctype.h>
 #include <math.h>
@@ -42,43 +42,29 @@
 #include <assert.h>
 #include <sys/stat.h>
 
-#if defined(__WITHPCRE__)
-  #include <pcreposix.h>
+#if defined(USE_GKREGEX)
+#include "gkregex_52.h"
 #else
-  #if defined(USE_GKREGEX)
-    #include "gkregex.h"
-  #else
-    #include <regex.h>
-  #endif /* defined(USE_GKREGEX) */
-#endif /* defined(__WITHPCRE__) */
-
-
+#include <regex.h>
+#endif
 
 #if defined(__OPENMP__) 
 #include <omp.h>
 #endif
 
-
-
-
-#include <gk_types.h>
-#include <gk_struct.h>
-#include <gk_externs.h>
-#include <gk_defs.h>
-#include <gk_macros.h>
-#include <gk_getopt.h>
-
-#include <gk_mksort.h>
-#include <gk_mkblas.h>
-#include <gk_mkmemory.h>
-#include <gk_mkpqueue.h>
-#include <gk_mkpqueue2.h>
-#include <gk_mkrandom.h>
-#include <gk_mkutils.h>
-
-#include <gk_proto.h>
-
+#include <gk_types_52.h>
+#include <gk_struct_52.h>
+#include <gk_externs_52.h>
+#include <gk_defs_52.h>
+#include <gk_macros_52.h>
+#include <gk_getopt_52.h>
+#include <gk_mksort_52.h>
+#include <gk_mkblas_52.h>
+#include <gk_mkmemory_52.h>
+#include <gk_mkpqueue_52.h>
+#include <gk_mkpqueue2_52.h>
+#include <gk_mkrandom_52.h>
+#include <gk_mkutils_52.h>
+#include <gk_proto_52.h>
 
 #endif  /* GKlib.h */
-
-

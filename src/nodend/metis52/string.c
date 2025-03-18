@@ -18,9 +18,7 @@ of standard functions (but with enhanced functionality).
 #include <time.h>
 #undef _XOPEN_SOURCE
 
-#include <GKlib.h>
-
-
+#include <GKlib_52.h>
 
 /************************************************************************/
 /*! \brief Replaces certain characters in a string.

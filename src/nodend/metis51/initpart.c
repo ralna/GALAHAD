@@ -14,7 +14,7 @@
  *
  */
 
-#include "metislib.h"
+#include "metislib_51.h"
 
 /*************************************************************************/
 /*! This function computes the initial bisection of the coarsest graph */

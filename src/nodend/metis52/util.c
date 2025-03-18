@@ -11,8 +11,7 @@
  * $Id: util.c 10495 2011-07-06 16:04:45Z karypis $
  */
 
-#include "metislib.h"
-
+#include "metislib_52.h"
 
 /*************************************************************************/
 /*! This function initializes the random number generator 
@@ -22,7 +21,6 @@ void InitRandom(idx_t seed)
 {
   isrand((seed == -1 ? 4321 : seed)); 
 }
-
 
 /*************************************************************************/
 /*! Returns the highest weight index of x[i]*y[i] 
@@ -37,7 +35,6 @@ idx_t iargmax_nrm(size_t n, idx_t *x, real_t *y)
                 
   return max;
 }
-
 
 /*************************************************************************/
 /*! These functions return the index of the maximum element in a vector

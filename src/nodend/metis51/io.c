@@ -16,7 +16,7 @@ This file contains various functions that perform I/O.
 #undef _GNU_SOURCE
 #endif
 
-#include <GKlib.h>
+#include <GKlib_51.h>
 
 /*************************************************************************
 * This function opens a file
@@ -37,7 +37,6 @@ FILE *gk_fopen(char *fname, char *mode, const char *msg)
   return NULL;
 }
 
-
 /*************************************************************************
 * This function closes a file
 **************************************************************************/
@@ -45,7 +44,6 @@ void gk_fclose(FILE *fp)
 {
   fclose(fp);
 }
-
 
 /*************************************************************************/
 /*! This function is the GKlib implementation of glibc's getline()

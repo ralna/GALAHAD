@@ -7,11 +7,7 @@
 \version\verbatim $Id: timers.c 10711 2011-08-31 22:23:04Z karypis $ \endverbatim
 */
 
-
-#include <GKlib.h>
-
-
-
+#include <GKlib_52.h>
 
 /*************************************************************************
 * This function returns the CPU seconds
@@ -28,7 +24,6 @@ double gk_WClockSeconds(void)
   return (double)time(NULL);
 #endif
 }
-
 
 /*************************************************************************
 * This function returns the CPU seconds

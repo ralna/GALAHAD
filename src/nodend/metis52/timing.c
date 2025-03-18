@@ -12,8 +12,7 @@
  *
  */
 
-#include "metislib.h"
-
+#include "metislib_52.h"
 
 /*************************************************************************
 * This function clears the timers
@@ -33,8 +32,6 @@ void InitTimers(ctrl_t *ctrl)
   gk_clearcputimer(ctrl->Aux2Tmr);
   gk_clearcputimer(ctrl->Aux3Tmr);
 }
-
-
 
 /*************************************************************************
 * This function prints the various timers

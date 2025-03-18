@@ -8,8 +8,7 @@
   \version\verbatim $Id: options.c 17717 2014-10-03 19:09:31Z dominique $ \endverbatim
   */
 
-#include "metislib.h"
-
+#include "metislib_52.h"
 
 /*************************************************************************/
 /*! This function creates and sets the run parameters (ctrl_t) */
