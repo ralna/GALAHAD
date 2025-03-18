@@ -11,8 +11,7 @@
  *
  */
 
-#include "metislib.h"
-
+#include "metislib_5.h"
 
 /*************************************************************************/
 /*! This function compares two vectors x & y and returns true 

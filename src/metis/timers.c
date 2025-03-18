@@ -7,11 +7,7 @@
 \version\verbatim $Id: timers.c 10711 2011-08-31 22:23:04Z karypis $ \endverbatim
 */
 
-
-#include <GKlib.h>
-
-
-
+#include <GKlib_5.h>
 
 /*************************************************************************
 * This function returns the CPU seconds

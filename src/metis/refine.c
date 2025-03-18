@@ -8,8 +8,7 @@
 \version\verbatim $Id: refine.c 14362 2013-05-21 21:35:23Z karypis $ \endverbatim
 */
 
-#include "metislib.h"
-
+#include "metislib_5.h"
 
 /*************************************************************************/
 /*! This function is the entry point of refinement */

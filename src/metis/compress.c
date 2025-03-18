@@ -12,7 +12,7 @@
  * modified by Nick Gould, STFC-RAL, 2024-03-21 to remove unused variables
  */
 
-#include "metislib.h"
+#include "metislib_5.h"
 
 /*************************************************************************/
 /*! This function compresses a graph by merging identical vertices

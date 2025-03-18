@@ -16,9 +16,9 @@
  *
  */
 
-#include "metislib.h"
-#include "proto.h"
-#include "test_proto.h"
+#include "metislib_5.h"
+#include "proto_5.h"
+#include "test_proto_5.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

@@ -46,7 +46,7 @@
   #include <pcreposix.h>
 #else
   #if defined(USE_GKREGEX)
-    #include "gkregex_51.h"
+    #include "gk_regex_51.h"
   #else
     #include <regex.h>
   #endif /* defined(USE_GKREGEX) */

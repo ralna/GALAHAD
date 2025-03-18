@@ -10,7 +10,7 @@
 #ifndef _LIBMETIS_GKLIB_H_
 #define _LIBMETIS_GKLIB_H_
 
-#include "gklib_rename.h"
+#include "gklib_rename_5.h"
 
 /*************************************************************************/
 /*! Stores a weighted edge */

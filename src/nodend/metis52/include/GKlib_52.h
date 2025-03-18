@@ -43,7 +43,7 @@
 #include <sys/stat.h>
 
 #if defined(USE_GKREGEX)
-#include "gkregex_52.h"
+#include "gk_regex_52.h"
 #else
 #include <regex.h>
 #endif

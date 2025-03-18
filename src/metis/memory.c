@@ -12,8 +12,7 @@ can be used to define other memory allocation routines.
 \version\verbatim $Id: memory.c 21050 2017-05-25 03:53:58Z karypis $ \endverbatim
 */
 
-
-#include <GKlib.h>
+#include <GKlib_5.h>
 
 /* This is for the global mcore that tracks all heap allocations */
 static __thread gk_mcore_t *gkmcore = NULL;

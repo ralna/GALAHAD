@@ -10,7 +10,7 @@
 * modified by Nick Gould, STFC-RAL, 2024-03-21 to remove unused variables
 */
 
-#include "metislib.h"
+#include "metislib_5.h"
 
 /*************************************************************************
 * This function is the entry poidx_t of the bisection balancing algorithms.
@@ -34,7 +34,6 @@ void Balance2Way(ctrl_t *ctrl, graph_t *graph, real_t *ntpwgts)
     McGeneral2WayBalance(ctrl, graph, ntpwgts);
   }
 }
-
 
 /*************************************************************************
 * This function balances two partitions by moving boundary nodes
