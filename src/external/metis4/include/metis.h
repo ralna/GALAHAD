@@ -29,7 +29,7 @@
 #include <dmalloc.h>
 #endif
 
-#include <metis.h>
+#include <defs.h>
 #include <struct.h>
 #include <macros.h>
 #include <rename.h>
