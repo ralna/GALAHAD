@@ -20,7 +20,7 @@
 #define __ICC__
 #endif
 
-#include "gk_arch.h" /*!< This should be here, prior to the includes */
+#include "gk_arch_5.h" /*!< This should be here, prior to the includes */
 
 /*************************************************************************
 * Header file inclusion section
@@ -43,7 +43,7 @@
 #include <sys/stat.h>
 
 #if defined(USE_GKREGEX)
-#include "gkregex.h"
+#include "gkregex_5.h"
 #else
 #include <regex.h>
 #endif
@@ -52,21 +52,18 @@
 #include <omp.h>
 #endif
 
-#include <gk_types.h>
-#include <gk_struct.h>
-#include <gk_externs.h>
-#include <gk_defs.h>
-#include <gk_macros.h>
-#include <gk_getopt.h>
-
-#include <gk_mksort.h>
-#include <gk_mkblas.h>
-#include <gk_mkmemory.h>
-#include <gk_mkpqueue.h>
-#include <gk_mkpqueue2.h>
-#include <gk_mkrandom.h>
-#include <gk_mkutils.h>
-
-#include <gk_proto.h>
-
+#include <gk_types_5.h>
+#include <gk_struct_5.h>
+#include <gk_externs_5.h>
+#include <gk_defs_5.h>
+#include <gk_macros_5.h>
+#include <gk_getopt_5.h>
+#include <gk_mksort_5.h>
+#include <gk_mkblas_5.h>
+#include <gk_mkmemory_5.h>
+#include <gk_mkpqueue_5.h>
+#include <gk_mkpqueue2_5.h>
+#include <gk_mkrandom_5.h>
+#include <gk_mkutils_5.h>
+#include <gk_proto_5.h>
 #endif  /* GKlib.h */

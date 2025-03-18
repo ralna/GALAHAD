@@ -16,8 +16,7 @@
  *
  */
 
-#include "metislib.h"
-
+#include "metislib_5.h"
 
 /*************************************************************************/
 /*! This function is the entry point for the multilevel nested dissection

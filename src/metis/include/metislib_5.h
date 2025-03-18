@@ -14,20 +14,20 @@
 #ifndef _LIBMETIS_METISLIB_H_
 #define _LIBMETIS_METISLIB_H_
 
-#include <GKlib.h>
+#include <GKlib_5.h>
 
 #if defined(ENABLE_OPENMP)
   #include <omp.h>
 #endif
 
-#include <hsl_metis.h> /* changed from metis.h to allow extra hsl includes */
-#include "rename.h" /* modified to provide unique 64-bit procedure names*/
-#include "gklib_defs.h"
+#include <hsl_metis_5.h> /* changed from metis.h to allow extra hsl includes */
+#include "rename_5.h" /* modified to provide unique 64-bit procedure names*/
+#include "gklib_defs_5.h"
 
-#include "defs.h"
-#include "struct.h"
-#include "macros.h"
-#include "proto.h"
+#include "defs_5.h"
+#include "struct_5.h"
+#include "macros_5.h"
+#include "proto_5.h"
 
 
 #if defined(COMPILER_MSC)

@@ -10,8 +10,7 @@
  *
  */
 
-#include "metislib.h"
-
+#include "metislib_5.h"
 
 /*************************************************************************/
 /*! This function changes the numbering to start from 0 instead of 1 */

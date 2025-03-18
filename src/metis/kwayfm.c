@@ -10,9 +10,7 @@
 * modified by Nick Gould, STFC-RAL, 2024-03-21 to remove unused variables
 */
 
-#include "metislib.h"
-
-
+#include "metislib_5.h"
 
 /*************************************************************************/
 /* Top-level routine for k-way partitioning refinement. This routine just
@@ -41,7 +39,6 @@ void Greedy_KWayOptimize(ctrl_t *ctrl, graph_t *graph, idx_t niter,
       gk_errexit(SIGERR, "Unknown objtype of %d\n", ctrl->objtype);
   }
 }
-
 
 /*************************************************************************/
 /*! K-way partitioning optimization in which the vertices are visited in

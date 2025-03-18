@@ -10,8 +10,7 @@
 * modified by Nick Gould, STFC-RAL, 2024-03-21 to remove unused variables
 */
 
-
-#include "metislib.h"
+#include "metislib_5.h"
 
 #define UNMATCHEDFOR2HOP  0.10  /* The fraction of unmatched vertices that triggers 2-hop */
 
