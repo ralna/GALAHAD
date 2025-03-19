@@ -52,6 +52,8 @@
 #include <omp.h>
 #endif
 
+#include <gk_rename_52.h>
+
 #include <gk_types_52.h>
 #include <gk_struct_52.h>
 #include <gk_externs_52.h>
