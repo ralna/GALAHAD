@@ -20,16 +20,14 @@
   #include <omp.h>
 #endif
 
-
 #include <metis_51.h>
-#include <rename_51.h>
+#include <rename_51.h>  /* modified to provide unique 64-bit procedure names*/
 #include <gklib_defs_51.h>
 
 #include <defs_51.h>
 #include <struct_51.h>
 #include <macros_51.h>
 #include <proto_51.h>
-
 
 #if defined(COMPILER_MSC)
 #if defined(rint)
