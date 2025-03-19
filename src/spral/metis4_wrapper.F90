@@ -91,7 +91,11 @@ contains
 
    ! Carry out ordering
     metis_opts(1) = 0 ! MeTiS defaults
-    call metis_nodend(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
+#ifdef INTEGER_64
+    call metis_nodend_4_64(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
+#else
+    call metis_nodend_4(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
+#endif
 ! nimg added 2021-03-24
     if (perm(1)<0) then
       flag = ERROR_NO_METIS
@@ -163,7 +167,11 @@ contains
 
     ! Carry out ordering
     metis_opts(1) = 0 ! MeTiS defaults
-    call metis_nodend(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
+#ifdef INTEGER_64
+    call metis_nodend_4_64(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
+#else
+    call metis_nodend_4(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
+#endif
 ! nimg added 2021-03-24
     if (perm(1)<0) then
       flag = ERROR_NO_METIS
