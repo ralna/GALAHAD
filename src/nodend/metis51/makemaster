@@ -20,7 +20,7 @@ SRC =  memory.c random.c error.c timers.c mcore.c fs.c io.c string.c \
        checkgraph.c compress.c bucketsort.c initpart.c mincover.c \
        separator.c refine.c srefine.c balance.c fm.c sfm.c kwayrefine.c \
        kwayfm.c mcutil.c coarsen.c minconn.c util.c mmd.c gklib.c \
-       smbfactor.c auxapi.c ometis.c
+       auxapi.c ometis.c
 
 TEST = test_nodend.c
 
