@@ -42,6 +42,8 @@
 #include <assert.h>
 #include <sys/stat.h>
 
+#include <gk_rename_51.h>
+
 #if defined(__WITHPCRE__)
   #include <pcreposix.h>
 #else
@@ -55,8 +57,6 @@
 #if defined(__OPENMP__) 
 #include <omp.h>
 #endif
-
-#include <gk_rename_51.h>
 
 #include <gk_types_51.h>
 #include <gk_struct_51.h>

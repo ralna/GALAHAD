@@ -1,14 +1,9 @@
 /*!
 \file
-
- * Copyright 1997, Regents of the University of Minnesota
  *
- * This file contains header files
+ * This file contains aliases for GKlib 5.1 procedures
  *
- * Started 10/2/97
- * George
- *
- * $Id: gklib_rename.h 10395 2011-06-23 23:28:06Z karypis $
+ * Nick Gould, STFC-RAL, 2025-03-19
  *
  */
 
@@ -35,7 +30,7 @@
 #define gk_ckvSetMatrix gk_ckvSetMatrix_51_64
 #define gk_ckvsmalloc gk_ckvsmalloc_51_64
 #define gk_cmalloc gk_cmalloc_51_64
-#define gk_CPUSecon gk_CPUSecon_51_64
+#define gk_CPUSeconds gk_CPUSeconds_51_64
 #define gk_crand gk_crand_51_64
 #define gk_crandArrayPermute gk_crandArrayPermute_51_64
 #define gk_crandArrayPermuteFine gk_crandArrayPermuteFine_51_64
@@ -45,7 +40,7 @@
 #define gk_cSetMatrix gk_cSetMatrix_51_64
 #define gk_csmalloc gk_csmalloc_51_64
 #define gk_csrand gk_csrand_51_64
-#define ﻿gk_cur_jbufs ﻿gk_cur_jbufs_51_64
+#define gk_cur_jbufs gk_cur_jbufs_51_64
 #define gk_dAllocMatrix gk_dAllocMatrix_51_64
 #define gk_dcopy gk_dcopy_51_64
 #define gk_dexists gk_dexists_51_64
@@ -280,7 +275,7 @@
 #define gk_ckvSetMatrix gk_ckvSetMatrix_51
 #define gk_ckvsmalloc gk_ckvsmalloc_51
 #define gk_cmalloc gk_cmalloc_51
-#define gk_CPUSecon gk_CPUSecon_51
+#define gk_CPUSeconds gk_CPUSeconds_51
 #define gk_crand gk_crand_51
 #define gk_crandArrayPermute gk_crandArrayPermute_51
 #define gk_crandArrayPermuteFine gk_crandArrayPermuteFine_51
@@ -290,7 +285,7 @@
 #define gk_cSetMatrix gk_cSetMatrix_51
 #define gk_csmalloc gk_csmalloc_51
 #define gk_csrand gk_csrand_51
-#define ﻿gk_cur_jbufs ﻿gk_cur_jbufs_51
+#define gk_cur_jbufs gk_cur_jbufs_51
 #define gk_dAllocMatrix gk_dAllocMatrix_51
 #define gk_dcopy gk_dcopy_51
 #define gk_dexists gk_dexists_51

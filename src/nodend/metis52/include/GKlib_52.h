@@ -42,6 +42,8 @@
 #include <assert.h>
 #include <sys/stat.h>
 
+#include <gk_rename_52.h>
+
 #if defined(USE_GKREGEX)
 #include "gk_regex_52.h"
 #else
@@ -51,8 +53,6 @@
 #if defined(__OPENMP__) 
 #include <omp.h>
 #endif
-
-#include <gk_rename_52.h>
 
 #include <gk_types_52.h>
 #include <gk_struct_52.h>
