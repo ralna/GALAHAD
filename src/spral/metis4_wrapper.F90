@@ -6,9 +6,11 @@
 !
 
 #ifdef INTEGER_64
-#define galahad_metis galahad_metis_64
+#define METIS_NodeND_4 METIS_NodeND_4_64
 #define spral_metis_wrapper spral_metis_wrapper_64
 #define spral_kinds spral_kinds_64
+#else
+#define METIS_NodeND_4 METIS_NodeND_4
 #endif
 
 module spral_metis_wrapper
@@ -29,6 +31,17 @@ module spral_metis_wrapper
   interface metis_order
      module procedure metis_order32, metis_order64
   end interface metis_order
+
+  INTERFACE
+    SUBROUTINE METIS_NodeND( n, PTR, ROW, options, perm, iperm ) BIND( C )
+      USE SPRAL_KINDS, ONLY: ipc_
+      IMPLICIT NONE
+      INTEGER( KIND = ipc_ ), INTENT( IN ) :: n
+      INTEGER( KIND = ipc_ ), DIMENSION( * ), INTENT( IN ) :: PTR, ROW
+      INTEGER( KIND = ipc_ ), DIMENSION( * ), INTENT( IN ) :: options
+      INTEGER( KIND = ipc_ ), DIMENSION( * ), INTENT( OUT ) :: perm, iperm
+    END SUBROUTINE METIS_NodeND
+  END INTERFACE
 
 contains
 
@@ -91,11 +104,7 @@ contains
 
    ! Carry out ordering
     metis_opts(1) = 0 ! MeTiS defaults
-#ifdef INTEGER_64
-    call METIS_NodeND_4_64(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
-#else
-    call METIS_NodeND_4(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
-#endif
+    call METIS_NodeND(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
 ! nimg added 2021-03-24
     if (perm(1)<0) then
       flag = ERROR_NO_METIS
@@ -167,11 +176,7 @@ contains
 
     ! Carry out ordering
     metis_opts(1) = 0 ! MeTiS defaults
-#ifdef INTEGER_64
-    call METIS_NodeND_4_64(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
-#else
-    call METIS_NodeND_4(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
-#endif
+    call METIS_NodeND(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
 ! nimg added 2021-03-24
     if (perm(1)<0) then
       flag = ERROR_NO_METIS
