@@ -21,9 +21,7 @@
 int main()
 {
   idx_t options[METIS_NOPTIONS];
-/*  graph_t *graph; */
   idx_t *perm, *iperm;
-/*  params_t *params; */
   int status=0;
 
   idx_t n = 1000000;
@@ -49,14 +47,6 @@ int main()
   adjncy[l]= n-2;
   l++;
   adj[n]=l;
-
-/*  params = parse_cmdline(argc, argv);*/
-
-/*
-  gk_startcputimer(params->iotimer);
-  graph = ReadGraph(params);
-  gk_stopcputimer(params->iotimer);
-*/
 
   perm  = imalloc(n, "main: perm");
   iperm = imalloc(n, "main: iperm");
@@ -140,7 +130,6 @@ int main()
   }
 
   gk_malloc_init();
-/*  gk_startcputimer(params->parttimer);*/
 
 /*  status = METIS_NodeND(&n, adj, adjncy, NULL, options, perm, iperm);*/
   printf(" ** start metis nodend 5.1 test **\n");
@@ -151,35 +140,16 @@ int main()
   printf(" ** total execution time: %f seconds\n", time_elapsed);
   printf(" ** end test **\n");
 
-/*  gk_stopcputimer(params->parttimer);*/
   if (gk_GetCurMemoryUsed() != 0)
-    printf("***It seems that Metis did not free all of its memory! Report this.\n");
-/*  params->maxmemory = gk_GetMaxMemoryUsed();*/
+    printf("***Metis did not free all of its memory! Report this.\n");
   gk_malloc_cleanup(0);
 
 
   if (status != METIS_OK) {
     printf("\n***Metis returned with an error.\n");
   }
-  else {
-/*
-    if (!params->nooutput) {
-*/
-      /* Write the solution */
-/*
-      gk_startcputimer(params->iotimer);
-      WritePermutation(params->filename, iperm, n); 
-      gk_stopcputimer(params->iotimer);
-    }
-*/
-  }
 
-/*  FreeGraph(&graph); */
   gk_free((void **)&perm, &iperm, LTERM);
-/*
-  gk_free((void **)&params->filename, &params->tpwgtsfile, &params->tpwgts, 
-      &params->ubvec, &params, LTERM);
-*/
   gk_free((void **)&adj, &adjncy, LTERM);
 }
 

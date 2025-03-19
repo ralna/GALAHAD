@@ -29,7 +29,6 @@
 #include "macros_52.h"
 #include "proto_52.h"
 
-
 #if defined(COMPILER_MSC)
 #if defined(rint)
   #undef rint

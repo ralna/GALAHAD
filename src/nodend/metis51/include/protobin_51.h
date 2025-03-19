@@ -13,18 +13,6 @@
 #ifndef _PROTOBIN_H_
 #define _PROTOBIN_H_
 
-
-/* io.c */ 
-graph_t *ReadGraph(params_t *); 
-mesh_t *ReadMesh(params_t *); 
-void ReadTPwgts(params_t *params, idx_t ncon);
-void ReadPOVector(graph_t *graph, char *filename, idx_t *vector);
-void WritePartition(char *, idx_t *, idx_t, idx_t);
-void WriteMeshPartition(char *, idx_t, idx_t, idx_t *, idx_t, idx_t *);
-void WritePermutation(char *, idx_t *, idx_t);
-void WriteGraph(graph_t *graph, char *filename);
-
-
 /* smbfactor.c */
 void ComputeFillIn(graph_t *graph, idx_t *perm, idx_t *iperm,
          size_t *r_maxlnz, size_t *r_opc);
