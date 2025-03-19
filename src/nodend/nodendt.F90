@@ -14,7 +14,7 @@
      TYPE ( SMT_type ) :: A
      TYPE ( NODEND_control_type ) :: control
      TYPE ( NODEND_inform_type ) :: inform
-     INTEGER :: version, type, status
+     INTEGER ( KIND = ip_ ) :: version, type, status
 
 !  test the full storage versions
 

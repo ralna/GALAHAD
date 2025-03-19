@@ -98,5 +98,4 @@ typedef struct {
   size_t maxmemory;
 } params_t;
 
-#include "protobin_51.h"
 #include "defsbin_51.h"

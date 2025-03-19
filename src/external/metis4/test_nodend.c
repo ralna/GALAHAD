@@ -54,6 +54,8 @@ int main( )
   printf("%s", METISTITLE);
 */
 
+  printf("start testing\n");
+
   Test_ND(n, adj, adjncy);
 
   printf("\nTesting completed\n");

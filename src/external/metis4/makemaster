@@ -60,7 +60,7 @@ testall: test$(HSL_64)
 
 test: $(LM4)($(OBJFILE))
 	@echo [Run test]
-	$(CC) -c $(CFLAGSM) $(TEST)
+	$(CC) -c $(CFLAGSM) -o $(TESTOBJ) $(TEST)
 	$(CC) -o ./test_nodend $(TESTOBJ) -L .  -L $(OBJ) -lmetis4_nodend -lm
 	./test_nodend
 	$(RM) ./test_nodend $(TESTOBJ)
@@ -75,7 +75,7 @@ test_64: $(LM464)($(OBJFILE64))
 
 test2: $(LM4)($(OBJFILE))
 	@echo [Run test2]
-	$(CC) -c $(CFLAGSM) $(TEST2)
+	$(CC) -c $(CFLAGSM) -o $(TEST2OBJ) $(TEST2)
 	$(CC) -o ./test2_nodend $(TEST2OBJ) -L .  -L $(OBJ) -lmetis4_nodend -lm
 	./test2_nodend
 	$(RM) ./test2_nodend $(TEST2OBJ)
