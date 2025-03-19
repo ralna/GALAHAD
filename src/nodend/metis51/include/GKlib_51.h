@@ -56,9 +56,7 @@
 #include <omp.h>
 #endif
 
-#define gk_cur_jbufs gk_cur_jbufs_51
-#define gk_jbufs gk_jbufs_51
-#define gk_jbuf gk_jbuf_51
+#include <gk_rename_51.h>
 
 #include <gk_types_51.h>
 #include <gk_struct_51.h>
