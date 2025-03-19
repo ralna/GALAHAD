@@ -36,34 +36,34 @@ build_64: $(LM64)($(OBJFILE64))
 #build_cutest_64: build_64 $(LG)(usemetis_64.o) runmetis_sif
 
 $(LM)($(OBJFILE)): $(SRC)
-	@printf ' %-9s %-15s\t\t' "Compiling" $*
-	@$(CC) $(CFLAGS) $*.c -o $*.o
-	@$(AR) $(ARREPFLAGS) $@ $*.o
-	@$(RM) $*.o
+	@printf ' %-9s %-15s\t\t' "Compiling" $*"_5"
+	$(CC) $(CFLAGS) $*.c -o $*.o
+	$(AR) $(ARREPFLAGS) $@ $*.o
+	$(RM) $*.o
 	@printf '[ OK ]\n'
 
 $(LM64)($(OBJFILE64)): $(SRC)
-	@printf ' %-9s %-15s\t\t' "Compiling" $(*:_64=)
-	@$(CC) $(CFLAGS) $(*:_64=.c) -o $*.o
-	@$(AR) $(ARREPFLAGS) $@ $*.o
-	@$(RM) $*.o
+	@printf ' %-9s %-15s\t\t' "Compiling" $(*:_64=)"_5"
+	$(CC) $(CFLAGS) $(*:_64=.c) -o $*.o
+	$(AR) $(ARREPFLAGS) $@ $*.o
+	$(RM) $*.o
 	@printf '[ OK ]\n'
 
 testall: test$(HSL_64)
 
 test: $(LM)($(OBJFILE))
 	@echo [Run test]
-	@$(CC) -c $(CFLAGS) $(TEST)
-	@$(CC) -o ./test_nodend $(TESTOBJ) -L .  -L $(OBJ) -lmetis_nodend -lm
-	@./test_nodend
-	@$(RM) ./test_nodend  $(TESTOBJ)
+	$(CC) -c $(CFLAGS) $(TEST)
+	$(CC) -o ./test_nodend $(TESTOBJ) -L .  -L $(OBJ) -lmetis_nodend -lm
+	./test_nodend
+	$(RM) ./test_nodend  $(TESTOBJ)
 
 test_64: $(LM64)($(OBJFILE64))
 	@echo [Run test 64]
-	@$(CC) -c $(CFLAGS) -o $(TESTOBJ64) $(TEST)
-	@$(CC) -o ./test_nodend $(TESTOBJ64) -L . -L $(OBJ) -lmetis64_nodend -lm
-	@./test_nodend
-	@$(RM) ./test_nodend  $(TESTOBJ64)
+	$(CC) -c $(CFLAGS) -o $(TESTOBJ64) $(TEST)
+	$(CC) -o ./test_nodend $(TESTOBJ64) -L . -L $(OBJ) -lmetis64_nodend -lm
+	./test_nodend
+	$(RM) ./test_nodend  $(TESTOBJ64)
 
 cleanall:
 	@$(RM) $(OBJFILE) $(LM) $(OBJFILE64) $(LM64)
