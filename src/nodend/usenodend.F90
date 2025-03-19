@@ -196,7 +196,7 @@
 
 !  determine the number of variables and constraints
 
-      CALL CUTEST_pname( cutest_status, input, pname )
+      CALL CUTEST_pname_r( cutest_status, input, pname )
       IF ( cutest_status /= 0 ) GO TO 910
       CALL CUTEST_cdimen_r( cutest_status, input, n, m )
       IF ( cutest_status /= 0 ) GO TO 910
@@ -222,8 +222,8 @@
 
 !  determine the number of nonzeros in the Jacobian J and Hessian H
 
-        CALL CUTEST_cdimsh( cutest_status, lh )
-        CALL CUTEST_cdimsj( cutest_status, lj )
+        CALL CUTEST_cdimsh_r( cutest_status, lh )
+        CALL CUTEST_cdimsj_r( cutest_status, lj )
 
 !  allocate space to store the row and column indices of K
 
@@ -237,9 +237,9 @@
 
 !  find the row and column indices
 
-        CALL CUTEST_csgrshp( cutest_status, n, nnzj, lj,                       &
-                             K_col( lh + 1 : lk ), K_row( lh + 1 : lk ),       &
-                             nnzh, lh, K_row( 1 : lh ), K_col( 1 : lh ) )
+        CALL CUTEST_csgrshp_r( cutest_status, n, nnzj, lj,                     &
+                               K_col( lh + 1 : lk ), K_row( lh + 1 : lk ),     &
+                               nnzh, lh, K_row( 1 : lh ), K_col( 1 : lh ) )
 
 !  remove gradient entries from the Jacobian
 
@@ -269,7 +269,7 @@
 
 !  determine the number of nonzeros in the Hessian H
 
-        CALL CUTEST_udimsh( cutest_status, lk )
+        CALL CUTEST_udimsh_r( cutest_status, lk )
 
 !  allocate space to store the row and column indices of K
 
@@ -282,8 +282,8 @@
 
 !  find the row and column indices
 
-        CALL CUTEST_ushp( cutest_status, n, nnzk, lk,                          &
-                          K_row( 1 : lk ), K_col( 1 : lk ) )
+        CALL CUTEST_ushp_r( cutest_status, n, nnzk, lk,                        &
+                            K_row( 1 : lk ), K_col( 1 : lk ) )
 
       END IF
 
