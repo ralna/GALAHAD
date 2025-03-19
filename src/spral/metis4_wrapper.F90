@@ -92,9 +92,9 @@ contains
    ! Carry out ordering
     metis_opts(1) = 0 ! MeTiS defaults
 #ifdef INTEGER_64
-    call metis_nodend_4_64(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
+    call METIS_NodeND_4_64(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
 #else
-    call metis_nodend_4(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
+    call METIS_NodeND_4(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
 #endif
 ! nimg added 2021-03-24
     if (perm(1)<0) then
@@ -168,9 +168,9 @@ contains
     ! Carry out ordering
     metis_opts(1) = 0 ! MeTiS defaults
 #ifdef INTEGER_64
-    call metis_nodend_4_64(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
+    call METIS_NodeND_4_64(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
 #else
-    call metis_nodend_4(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
+    call METIS_NodeND_4(n,ptr2,row2,1_ip_,metis_opts,invp,perm)
 #endif
 ! nimg added 2021-03-24
     if (perm(1)<0) then
