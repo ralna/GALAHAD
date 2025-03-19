@@ -6,13 +6,36 @@
 #ifdef INTEGER_64
 typedef int64_t idx_t;
 #define galahad_nodend4_adapter galahad_nodend4_adapter_64
-#define METIS_NodeND_4 METIS_NodeND_4_64
 #define galahad_nodend51_adapter galahad_nodend51_adapter_64
-#define METIS_NodeND_51 METIS_NodeND_51_64
 #define galahad_nodend52_adapter galahad_nodend52_adapter_64
-#define METIS_NodeND_52 METIS_NodeND_52_64
+#ifdef REAL_32
+#define METIS_NodeND_4 METIS_NodeND_4s_64
+#define METIS_NodeND_51 METIS_NodeND_51s_64
+#define METIS_NodeND_52 METIS_NodeND_52s_64
+#elif REAL_128
+#define METIS_NodeND_4 METIS_NodeND_4q_64
+#define METIS_NodeND_51 METIS_NodeND_51q_64
+#define METIS_NodeND_52 METIS_NodeND_52q_64
+#else
+#define METIS_NodeND_4 METIS_NodeND_4d_64
+#define METIS_NodeND_51 METIS_NodeND_51d_64
+#define METIS_NodeND_52 METIS_NodeND_52d_64
+#endif
 #else
 typedef int32_t idx_t;
+#ifdef REAL_32
+#define METIS_NodeND_4 METIS_NodeND_4s
+#define METIS_NodeND_51 METIS_NodeND_51s
+#define METIS_NodeND_52 METIS_NodeND_52s
+#elif REAL_128
+#define METIS_NodeND_4 METIS_NodeND_4q
+#define METIS_NodeND_51 METIS_NodeND_51q
+#define METIS_NodeND_52 METIS_NodeND_52q
+#else
+#define METIS_NodeND_4 METIS_NodeND_4d
+#define METIS_NodeND_51 METIS_NodeND_51d
+#define METIS_NodeND_52 METIS_NodeND_52d
+#endif
 #endif
 
 /*--------------------
