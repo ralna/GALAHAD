@@ -1,14 +1,10 @@
 /*!
 \file
 
- * Copyright 1997, Regents of the University of Minnesota
  *
- * This file contains header files
+ * This file contains aliases for GKlib 5.2 procedures
  *
- * Started 10/2/97
- * George
- *
- * $Id: gk_rename.h 10395 2011-06-23 23:28:06Z karypis $
+ * Nick Gould, STFC-RAL, 2025-03-19
  *
  */
 
@@ -35,7 +31,7 @@
 #define gk_ckvSetMatrix gk_ckvSetMatrix_52_64
 #define gk_ckvsmalloc gk_ckvsmalloc_52_64
 #define gk_cmalloc gk_cmalloc_52_64
-#define gk_CPUSecond gk_CPUSecond_52_64
+#define gk_CPUSeconds gk_CPUSeconds_52_64
 #define gk_crand gk_crand_52_64
 #define gk_crandArrayPermute gk_crandArrayPermute_52_64
 #define gk_crandArrayPermuteFine gk_crandArrayPermuteFine_52_64
@@ -381,7 +377,7 @@
 #define gk_ckvSetMatrix gk_ckvSetMatrix_52
 #define gk_ckvsmalloc gk_ckvsmalloc_52
 #define gk_cmalloc gk_cmalloc_52
-#define gk_CPUSecond gk_CPUSecond_52
+#define gk_CPUSeconds gk_CPUSeconds_52
 #define gk_crand gk_crand_52
 #define gk_crandArrayPermute gk_crandArrayPermute_52
 #define gk_crandArrayPermuteFine gk_crandArrayPermuteFine_52
