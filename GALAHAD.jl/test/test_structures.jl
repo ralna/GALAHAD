@@ -695,6 +695,12 @@ Ref{nls_inform_type{Float64,Int64}}()[]
 Ref{nls_inform_type{Float128,Int32}}()[]
 Ref{nls_inform_type{Float128,Int64}}()[]
 
+# Structures for nodend
+Ref{nodend_control_type{Int32}}()[]
+Ref{nodend_control_type{Int64}}()[]
+Ref{nodend_inform_type{Int32}}()[]
+Ref{nodend_inform_type{Int64}}()[]
+
 # Structures for presolve
 Ref{presolve_control_type{Float32,Int32}}()[]
 Ref{presolve_control_type{Float32,Int64}}()[]
