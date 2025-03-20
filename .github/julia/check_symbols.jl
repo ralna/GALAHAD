@@ -80,8 +80,8 @@ for (symbols1, symbols2, int1, int2, name) in symbols_combinations
     flag9 = mapreduce(x -> symbol == x, |, ["version_galahad_64", "METIS_Free_64", "METIS_NodeND_64", "METIS_SetDefaultOptions_64", "gal_kb07ai_64_"]) && (int1 == int2 == 64)
     flag10 = mapreduce(x -> symbol == x, |, ["CoarsenGraphNlevels", "ComputeBFSOrdering", "Greedy_KWayEdgeCutOptimize", "Greedy_KWayEdgeStats", "GrowBisectionNode2"])
     flag11 = mapreduce(x -> symbol == x, |, unknown_symbols)
-    flag12 = mapreduce(x -> symbol == x || symbol * "_64" == x, |, metis_adapters)
-    flag13 = mapreduce(x -> symbol * "_51" == x || symbol * "_51_64" == x || symbol * "_52" == x || symbol * "_52_64" == x, |, metis_symbols)
+    flag12 = mapreduce(x -> symbol == x || symbol == x * "_64", |, metis_adapters)
+    flag13 = mapreduce(x -> symbol == x * "_51" || symbol == x * "_51_64" || symbol == x * "_52" || symbol == x * "_52_64", |, metis_symbols)
     if !flag1 && !flag2 && !flag3 && !flag4 && !flag5 && !flag6 && !flag7 && !flag8 && !flag9 && !flag10 && !flag11 && !flag12 && !flag13
       println(symbol)
       global n = n+1
