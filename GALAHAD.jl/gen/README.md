@@ -59,6 +59,7 @@ The possible values for `library` are:
 - `"lsrt"`;
 - `"lstr"`;
 - `"nls"`;
+- `"nodend"`;
 - `"presolve"`;
 - `"psls"`;
 - `"qpa"`;
