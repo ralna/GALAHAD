@@ -15,7 +15,6 @@
 #define _LIBMETIS_STRUCT_H_
 
 
-
 /*************************************************************************/
 /*! This data structure stores cut-based k-way refinement info about an
     adjacent subdomain for a given vertex. */

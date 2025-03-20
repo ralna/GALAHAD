@@ -27,8 +27,8 @@
 #endif
 
 
-#include <metis_51.h>
 #include "rename_51.h"
+#include "metis_51.h"
 #include "gklib_defs_51.h"
 #include "defs_51.h"
 #include "macros_51.h"

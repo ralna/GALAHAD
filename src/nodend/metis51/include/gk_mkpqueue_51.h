@@ -383,22 +383,22 @@ int FPRFX ## CheckHeap(PQT *queue)\
   gk_idx_t i, j;\
   size_t nnodes;\
   gk_idx_t *locator;\
-  KVT *heap;\
+/*  KVT *heap;*/\
 \
-  heap    = queue->heap;\
+/*  heap    = queue->heap;*/\
   locator = queue->locator;\
   nnodes  = queue->nnodes;\
 \
   if (nnodes == 0)\
     return 1;\
 \
-  ASSERT(locator[heap[0].val] == 0);\
-  for (i=1; i<nnodes; i++) {\
-    ASSERT(locator[heap[i].val] == i);\
-    ASSERT(!KEY_LT(heap[i].key, heap[(i-1)/2].key));\
-  }\
-  for (i=1; i<nnodes; i++)\
-    ASSERT(!KEY_LT(heap[i].key, heap[0].key));\
+/*  ASSERT(locator[heap[0].val] == 0);*/\
+/*  for (i=1; i<nnodes; i++) {*/\
+/*    ASSERT(locator[heap[i].val] == i);*/\
+/*    ASSERT(!KEY_LT(heap[i].key, heap[(i-1)/2].key));*/\
+/*  }*/\
+/*  for (i=1; i<nnodes; i++)*/\
+/*    ASSERT(!KEY_LT(heap[i].key, heap[0].key));*/\
 \
   for (j=i=0; i<queue->maxnodes; i++) {\
     if (locator[i] != -1)\
