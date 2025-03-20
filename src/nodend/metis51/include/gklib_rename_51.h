@@ -118,6 +118,18 @@
 #define rsorti rsorti_51_64
 #define rsum rsum_51_64
 #define uvwsorti uvwsorti_51_64
+#define re_compile_pattern re_compile_pattern_51_64
+#define re_set_syntax re_set_syntax_51_64
+#define re_compile_fastmap re_compile_fastmap_51_64
+#define regcomp regcomp_51_64
+#define regerror regerror_51_64
+#define regfree regfree_51_64
+#define regexec regexec_51_64
+#define re_match re_match_51_64
+#define re_search re_search_51_64
+#define re_match_2 re_match_2_51_64
+#define re_search_2 re_search_2_51_64
+#define re_set_registers re_set_registers_51_64
 
 /* 32-bit integer procedures */
 
@@ -221,7 +233,19 @@
 #define rsorti rsorti_51
 #define rsum rsum_51
 #define uvwsorti uvwsorti_51
-
+#define re_compile_pattern re_compile_pattern_51
+#define re_set_syntax re_set_syntax_51
+#define re_compile_fastmap re_compile_fastmap_51
+#define regcomp regcomp_51
+#define regerror regerror_51
+#define regfree regfree_51
+#define regexec regexec_51
+#define re_match re_match_51
+#define re_search re_search_51
+#define re_match_2 re_match_2_51
+#define re_search_2 re_search_2_51
+#define re_set_registers re_set_registers_51
+#define re_syntax_options re_syntax_options_51
 #endif
 
 #endif
