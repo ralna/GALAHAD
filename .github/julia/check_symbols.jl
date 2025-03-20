@@ -47,6 +47,20 @@ single_double_quadruple_modules = ["hash_MOD", "string_MOD", "string_64_MOD", "c
                                    "version_64_MOD", "spral_hw_topology_MOD", "spral_pgm_MOD", "spral_metis_wrapper_MOD", "spral_core_analyse_64_MOD",
                                    "galahad_version_MOD", "spral_core_analyse_MOD"]
 
+metis_adapters = ["galahad_nodend4_adapter", "galahad_nodend51_adapter", "galahad_nodend52_adapter"]
+
+metis_symbols = ["PrintBackTrace", "errexit", "getpathname", "iAllocMatrix", "iFreeMatrix", "iSetMatrix", "iargmax", "iargmax_n",
+                 "iargmin", "iarray2csr", "iaxpy", "icopy", "idot", "iincset", "ikvAllocMatrix", "ikvFreeMatrix", "ikvSetMatrix",
+                 "ikvcopy", "ikvmalloc", "ikvrealloc", "ikvset", "ikvsmalloc", "ikvsortd", "ikvsorti", "ikvsortii", "imalloc",
+                 "imax", "imin", "inorm2", "ipqCheckHeap", "ipqCreate", "ipqDelete", "ipqDestroy", "ipqFree", "ipqGetTop", "ipqInit",
+                 "ipqInsert", "ipqLength", "ipqReset", "ipqSeeKey", "ipqSeeTopKey", "ipqSeeTopVal", "ipqUpdate", "irandArrayPermuteFine",
+                 "irandArrayPermute", "irandInRange", "irand", "irealloc", "iscale", "iset", "ismalloc", "isortd", "isorti", "isrand",
+                 "isum", "rAllocMatrix", "rFreeMatrix", "rSetMatrix", "rargmax", "rargmax_n", "rargmin", "raxpy", "rcopy", "rdot",
+                 "rincset", "rkvAllocMatrix", "rkvFreeMatrix", "rkvSetMatrix", "rkvcopy", "rkvmalloc", "rkvrealloc", "rkvset", "rkvsmalloc",
+                 "rkvsortd", "rkvsorti", "rmalloc", "rmax", "rmin", "rnorm2", "rpqCheckHeap", "rpqCreate", "rpqDelete", "rpqDestroy",
+                 "rpqFree", "rpqGetTop", "rpqInit", "rpqInsert", "rpqLength", "rpqReset", "rpqSeeKey", "rpqSeeTopKey", "rpqSeeTopVal",
+                 "rpqUpdate", "rrealloc", "rscale", "rset", "rsmalloc", "rsortd", "rsorti", "rsum", "uvwsorti"]
+
 unknown_symbols = ["errexit", "getpathname", "gkfooo", "main", "PrintBackTrace", "spral_hw_topology_free", "spral_hw_topology_guess",
                    "Test_ND", "VerifyND", "xerbla2_"]
 
@@ -65,8 +79,10 @@ for (symbols1, symbols2, int1, int2, name) in symbols_combinations
     flag8 = mapreduce(x -> symbol == x, |, ["version_galahad", "METIS_Free", "METIS_NodeND", "METIS_SetDefaultOptions", "gal_kb07ai_"]) && (int1 == int2 == 32)
     flag9 = mapreduce(x -> symbol == x, |, ["version_galahad_64", "METIS_Free_64", "METIS_NodeND_64", "METIS_SetDefaultOptions_64", "gal_kb07ai_64_"]) && (int1 == int2 == 64)
     flag10 = mapreduce(x -> symbol == x, |, ["CoarsenGraphNlevels", "ComputeBFSOrdering", "Greedy_KWayEdgeCutOptimize", "Greedy_KWayEdgeStats", "GrowBisectionNode2"])
-    flag11 =  mapreduce(x -> symbol == x, |, unknown_symbols)
-    if !flag1 && !flag2 && !flag3 && !flag4 && !flag5 && !flag6 && !flag7 && !flag8 && !flag9 && !flag10 && !flag11
+    flag11 = mapreduce(x -> symbol == x, |, unknown_symbols)
+    flag12 = mapreduce(x -> symbol == x || symbol * "_64" == x, |, metis_adapters)
+    flag13 = mapreduce(x -> symbol * "_51" == x || symbol * "_51_64" == x || symbol * "_52" == x || symbol * "_52_64" == x, |, metis_symbols)
+    if !flag1 && !flag2 && !flag3 && !flag4 && !flag5 && !flag6 && !flag7 && !flag8 && !flag9 && !flag10 && !flag11 && !flag12 && !flag13
       println(symbol)
       global n = n+1
     end
