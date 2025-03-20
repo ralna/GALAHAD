@@ -144,6 +144,8 @@ endif
 # METIS
 if host_machine.system() == 'windows'
   add_global_arguments('-DUSE_GKREGEX', language : 'c')
+else
+  add_global_arguments('-D_POSIX_C_SOURCE=200112L', language : 'c')
 endif
 
 # OpenMP
@@ -252,8 +254,6 @@ libgalahad_include = [include_directories('include'),
                       include_directories('src/nodend/metis51/include'),
                       include_directories('src/nodend/metis52/include'),
                       include_directories('src/ampl')] + libhsl_modules + libcutest_modules + libhwloc_include
-
-libgalahad_include_default = libgalahad_include
 
 if host_machine.system() == 'linux'
   add_global_arguments('-DSPRAL_HAVE_SCHED_GETCPU', language : 'cpp')
