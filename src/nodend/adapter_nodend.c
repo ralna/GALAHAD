@@ -66,7 +66,7 @@ METIS_API(int) METIS_NodeND_52(idx_t *nvtxs, idx_t *xadj, idx_t *adjncy,
 
 void galahad_nodend4_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
                             idx_t* options, idx_t* perm, idx_t* iperm){
-    int numflag = 1;
+    idx_t numflag = 1;
 
     /* Call MeTiS 4 to get ordering */
     METIS_NodeND_4(nvtxs, xadj, adjncy, &numflag, options, perm, iperm);

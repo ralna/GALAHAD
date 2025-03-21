@@ -12,10 +12,11 @@ include $(GALAHAD)/src/makedefs/definitions
 DUMMYS = kinds_silent clock_silent extend_silent symbols_silent \
          dummy_silent cutest_dummy_silent dummy_hsl_silent dummy_hsl_c_silent \
          dummy_spral_silent blas_silent lapack_silent blas_inter_silent \
-         lapack_inter_silent hsl_inter_silent metis_silent \
+         lapack_inter_silent hsl_inter_silent \
          pardiso_silent mkl_pardiso_silent wsmp_silent \
          pastix_silent mpi_silent mumps_silent umfpack_silent \
          string_silent version_silent buildspec_silent
+#         lapack_inter_silent hsl_inter_silent metis_silent \
 
 BASICS = $(DUMMYS) zd11_silent smt_silent space_silent \
          specfile_silent sort_silent norms_silent nodend_silent

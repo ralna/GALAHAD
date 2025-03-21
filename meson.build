@@ -147,6 +147,7 @@ if host_machine.system() == 'windows'
 else
   add_global_arguments('-D_POSIX_C_SOURCE=200112L', language : 'c')
 endif
+add_global_arguments('-DNDEBUG', language : 'c')
 
 # OpenMP
 if fc.get_id() == 'nvidia_hpc'
@@ -249,7 +250,6 @@ galahad_python_tests = []
 # Folders that contain headers and Fortran modules
 libgalahad_include = [include_directories('include'),
                       include_directories('src/dum/include'),
-                      include_directories('src/metis/include'),
                       include_directories('src/external/metis4/include'),
                       include_directories('src/nodend/metis51/include'),
                       include_directories('src/nodend/metis52/include'),
@@ -423,7 +423,6 @@ subdir('src/lsqp')
 subdir('src/lsrb')
 subdir('src/lsrt')
 subdir('src/lstr')
-subdir('src/metis')
 subdir('src/miqr')
 subdir('src/mop')
 subdir('src/nlpt')

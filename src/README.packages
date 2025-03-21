@@ -1,17 +1,22 @@
 package     | status | purpose
 --------------------------------------------------------------------------------
+amd         | ok     | approximate minimum-degree ordering
 ampl        | ok     | ampl interfaces to QP routines
 arc         | ok     | unconstrained optimization, regularization method
 ats         | beta   | minimize a quadratic within abs value trust region, sls
 auxiliary   | ok     | auxiliary packages (norms, time, cutest interaces ... )
+band        | ok     | factorize band matrix with modification
 bgo         | ok     | bound-constrained stochastic global optimization
-blls        | ok     | cound-constrained linear least-squares
+blls        | ok     | bound-constrained linear least-squares
+bllsb       | ok     | bound-constrained linear least-squares, interior-point
+bnls        | alpha  | bound-constrained nonlinear least-squares
 bqp         | ok     | bound-constrained QP, proconditioned projected gradients
 bqpb        | ok     | bound-constrained QP, interior point
 bsc         | ok     | assemble the Schur complement
 ccqp        | beta   | QP, crossover interior-point to lunge
 cdqp        | beta   | QP, crossover interior-point to dual gradient prohection
 check       | ok     | check derivatives
+clls        | ok     | linearly-constrained linear least-squares
 clock       | ok     | record system clock times
 convert     | beta   | convert between sparse-matrix formats
 cqp         | ok     | convex QP, interior-point
@@ -22,6 +27,9 @@ dgo         | ok     | bound-constrained deterministic global optimization
 dps         | ok     | regularized quadratic subproblem in a diagonalising norm
 dqp         | ok     | strictly-convex QP, dual projection
 dum         | ok     | replacement no-use packages for unsupplied externals
+eks         | alpha  | build an extended Krylov space
+ektr        | alpha  | minimize a quadratic within a trust region using eks
+environment | alpha  | set environment variables
 eqp         | ok     | equality-constrained QP
 fdc         | ok     | find dependent equality linear constraints
 fdh         | ok     | obtain a finite-difference sparse Hessian approximation
@@ -35,8 +43,8 @@ gltr        | ok     | minimize a quadratic within a trust region via Lanczos
 gmtr        | alpha  | minimize a quadratic within a trust region via MINRES
 ir          | ok     | apply iterative refinement for sls
 l2rt        | ok     | regularized root linear least-squares via Lanczos
-lanb        | ok     | LANCELOT, augmented Lagrangian using partial separability
-lanb_simple | ok     | easy-to-use dense LANCELOT
+lancelot    | ok     | LANCELOT, augmented Lagrangian using partial separability
+lan_simple  | ok     | easy-to-use dense LANCELOT
 lanc        | alpha  | improved LANCELOT
 lapack      | ok     | required LAPACK/BLAS (no doc)
 lhs         | beta   | Latin Hypercube samples
@@ -54,8 +62,9 @@ matlab      | ok     | Matlab interfaces to main GALAHAD packages
 miqr        | ok     | Incomplete QR factorization
 mop         | ok     | various matrix operations
 nlpt        | ok     | NLP structure
-nls         | beta   | nonlinear least-squares
+nls         | ok     | nonlinear least-squares
 nlstr       | alpha  | nonlinear least-squares, trust-region
+nodend      | beta   | universal METIS adapter
 opt         | ok     | optimality statistics (no doc)
 pre         | ok     | QP, presolve
 psls        | beta   | definite symmetric linear solver, multiple interfaces
@@ -79,8 +88,10 @@ rqs         | ok     | minimize a quadratic + regularization term via sbls
 sbls        | ok     | symmetric block linear solver, multiple interfaces
 scale       | ok     | compute scale factors in various ways
 scu         | ok     | Schur-compleemnt updating for evolving linear systems
+sec         | alpha  | dense secant Hessian approximation
 sha         | beta   | sparse Hessian approximation via secant equations
 sils        | ok     | modern fortran interface to ma27
+slls        | ok     | simplex-constrained linear least-squares
 sls         | ok     | symmetric linear solver, multiple interfaces
 smt         | ok     | alias for zd11
 sort        | ok     | various sorting algorithms

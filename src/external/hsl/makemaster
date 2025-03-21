@@ -897,9 +897,9 @@ metis_nodend:
 
 hsl_metis.o: $(LH)(hsl_metis$(HSL_64).o)
 
-$(LH)(hsl_metis$(HSL_64).o): $(HSLSRC)/hsl_metis/hsl_metis.f90
+$(LH)(hsl_metis$(HSL_64).o): ./hsl_metis/hsl_metis.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_metis"
-	$(CP) $(HSLSRC)/hsl_metis/hsl_metis.f90 \
+	$(CP) ./hsl_metis/hsl_metis.f90 \
            $(OBJ)/hsl_metis$(HSL_64).f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_metis$(HSL_64).f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
@@ -910,11 +910,24 @@ $(LH)(hsl_metis$(HSL_64).o): $(HSLSRC)/hsl_metis/hsl_metis.f90
 	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
+#$(LH)(hsl_metis$(HSL_64).o): $(HSLSRC)/hsl_metis/hsl_metis.f90
+#	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_metis"
+#	$(CP) $(HSLSRC)/hsl_metis/hsl_metis.f90 \
+#           $(OBJ)/hsl_metis$(HSL_64).f90
+#	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_metis$(HSL_64).f90 \
+#                || ( printf ' %-26s' "=> Disabling optimization " ; \
+#                   $(FORTRAN) $(FFLAGSN) hsl_metis$(HSL_64).f90 )
+#	cd $(OBJ); $(HARR) hsl_metis$(HSL_64).o; \
+#          $(RM) hsl_metis$(HSL_64).f90 hsl_metis$(HSL_64).o
+#	$(HRMARFILE) ma57$(HSL_PRECIS).o
+#	$(RANLIB) $(LH)
+#	@printf '[ OK ]\n'
+
 hsl_metis5_adapter.o: $(LH)(hsl_metis5_adapter$(HSL_64).o)
 
-$(LH)(hsl_metis5_adapter$(HSL_64).o): $(HSLSRC)/hsl_metis/hsl_metis5_adapter.c
+$(LH)(hsl_metis5_adapter$(HSL_64).o): ./hsl_metis/hsl_metis5_adapter.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_metis5_adapter"
-	$(CP) $(HSLSRC)/hsl_metis/hsl_metis5_adapter.c \
+	$(CP) ./hsl_metis/hsl_metis5_adapter.c \
            $(OBJ)/hsl_metis5_adapter$(HSL_64).c
 	cd $(OBJ); $(CC) $(CFLAGS)  hsl_metis5_adapter$(HSL_64).c \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
@@ -923,6 +936,18 @@ $(LH)(hsl_metis5_adapter$(HSL_64).o): $(HSLSRC)/hsl_metis/hsl_metis5_adapter.c
           $(RM) hsl_metis5_adapter$(HSL_64).c hsl_metis5_adapter$(HSL_64).o
 	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
+
+#$(LH)(hsl_metis5_adapter$(HSL_64).o): $(HSLSRC)/hsl_metis/hsl_metis5_adapter.c
+#	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_metis5_adapter"
+#	$(CP) $(HSLSRC)/hsl_metis/hsl_metis5_adapter.c \
+#           $(OBJ)/hsl_metis5_adapter$(HSL_64).c
+#	cd $(OBJ); $(CC) $(CFLAGS)  hsl_metis5_adapter$(HSL_64).c \
+#                || ( printf ' %-26s' "=> Disabling optimization " ; \
+#                   $(CC) $(CFLAGSN) hsl_metis5_adapter$(HSL_64).c )
+#	cd $(OBJ); $(HARR) hsl_metis5_adapter$(HSL_64).o; \
+#          $(RM) hsl_metis5_adapter$(HSL_64).c hsl_metis5_adapter$(HSL_64).o
+#	$(RANLIB) $(LH)
+#	@printf '[ OK ]\n'
 
 #  =======================
 #  individual compilations
