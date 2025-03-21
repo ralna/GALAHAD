@@ -1,11 +1,59 @@
 /* Copyright (C) 2020 COIN-OR
  * All Rights Reserved.
  * This file is distributed under the Eclipse Public License.
+ *
+ * Mods for HSL/GALAHAD, Nick Gould, 2025-03-21
  */
 
 #ifdef METIS51
+#ifdef INTEGER_64
+#ifdef REAL_32
+#define METIS_NodeND METIS_NodeND_51s_64
+#define METIS_SetDefaultOptions METIS_SetDefaultOptions_51s_64
+#elif REAL_128
+#define METIS_NodeND METIS_NodeND_51q_64
+#define METIS_SetDefaultOptions METIS_SetDefaultOptions_51q_64
+#else
+#define METIS_NodeND METIS_NodeND_51d_64
+#define METIS_SetDefaultOptions METIS_SetDefaultOptions_51d_64
+#endif
+#else
+#ifdef REAL_32
+#define METIS_NodeND METIS_NodeND_51s
+#define METIS_SetDefaultOptions METIS_SetDefaultOptions_51s
+#elif REAL_128
+#define METIS_NodeND METIS_NodeND_51q
+#define METIS_SetDefaultOptions METIS_SetDefaultOptions_51q
+#else
+#define METIS_NodeND METIS_NodeND_51d
+#define METIS_SetDefaultOptions METIS_SetDefaultOptions_51d
+#endif
+#endif
 #include "hsl_metis_51.h" /*  adapted from MeTiS 5.1 */
 #else
+#ifdef INTEGER_64
+#ifdef REAL_32
+#define METIS_NodeND METIS_NodeND_52s_64
+#define METIS_SetDefaultOptions METIS_SetDefaultOptions_52s_64
+#elif REAL_128
+#define METIS_NodeND METIS_NodeND_52q_64
+#define METIS_SetDefaultOptions METIS_SetDefaultOptions_52q_64
+#else
+#define METIS_NodeND METIS_NodeND_52d_64
+#define METIS_SetDefaultOptions METIS_SetDefaultOptions_52d_64
+#endif
+#else
+#ifdef REAL_32
+#define METIS_NodeND METIS_NodeND_52s
+#define METIS_SetDefaultOptions METIS_SetDefaultOptions_52s
+#elif REAL_128
+#define METIS_NodeND METIS_NodeND_52q
+#define METIS_SetDefaultOptions METIS_SetDefaultOptions_52q
+#else
+#define METIS_NodeND METIS_NodeND_52d
+#define METIS_SetDefaultOptions METIS_SetDefaultOptions_52d
+#endif
+#endif
 #include "hsl_metis.h"  /*  adapted from MeTiS 5.2 */
 #endif
 #include "stdio.h"

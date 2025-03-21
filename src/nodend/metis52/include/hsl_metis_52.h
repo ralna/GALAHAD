@@ -152,7 +152,6 @@ typedef __int64 int64_t;
   #error "Incorrect user-supplied value for REALTYPEWIDTH"
 #endif
 
-
 /*------------------------------------------------------------------------
 * Constant definitions
 *-------------------------------------------------------------------------*/
@@ -163,8 +162,6 @@ typedef __int64 int64_t;
 
 /* The maximum length of the options[] array */
 #define METIS_NOPTIONS          40
-
-
 
 /*------------------------------------------------------------------------
 * Function prototypes
@@ -178,43 +175,9 @@ typedef __int64 int64_t;
 #define METIS_API(type) type
 #endif
 
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-METIS_API(int) METIS_PartGraphRecursive(idx_t *nvtxs, idx_t *ncon, idx_t *xadj,
-                  idx_t *adjncy, idx_t *vwgt, idx_t *vsize, idx_t *adjwgt,
-                  idx_t *nparts, real_t *tpwgts, real_t *ubvec, idx_t *options,
-                  idx_t *edgecut, idx_t *part);
-
-METIS_API(int) METIS_PartGraphKway(idx_t *nvtxs, idx_t *ncon, idx_t *xadj,
-                  idx_t *adjncy, idx_t *vwgt, idx_t *vsize, idx_t *adjwgt,
-                  idx_t *nparts, real_t *tpwgts, real_t *ubvec, idx_t *options,
-                  idx_t *edgecut, idx_t *part);
-
-METIS_API(int) METIS_MeshToDual(idx_t *ne, idx_t *nn, idx_t *eptr, 
-                                idx_t *eind, idx_t *ncommon, 
-                                idx_t *numflag, idx_t **r_xadj, 
-                                idx_t **r_adjncy);
-
-METIS_API(int) METIS_MeshToNodal(idx_t *ne, idx_t *nn, idx_t *eptr, 
-                                 idx_t *eind, idx_t *numflag, 
-                                 idx_t **r_xadj, idx_t **r_adjncy);
-
-METIS_API(int) METIS_PartMeshNodal(idx_t *ne, idx_t *nn, idx_t *eptr, 
-                                   idx_t *eind, idx_t *vwgt, idx_t *vsize, 
-                                   idx_t *nparts, real_t *tpwgts,
-                                   idx_t *options, idx_t *objval, 
-                                   idx_t *epart, idx_t *npart);
-
-METIS_API(int) METIS_PartMeshDual(idx_t *ne, idx_t *nn, idx_t *eptr, 
-                                  idx_t *eind, idx_t *vwgt, idx_t *vsize, 
-                                  idx_t *ncommon, idx_t *nparts,
-                                  real_t *tpwgts, idx_t *options, 
-                                  idx_t *objval, idx_t *epart,
-                                  idx_t *npart);
 
 METIS_API(int) METIS_NodeND(idx_t *nvtxs, idx_t *xadj, idx_t *adjncy, 
                             idx_t *vwgt,  idx_t *options, idx_t *perm, 
@@ -224,33 +187,9 @@ METIS_API(int) METIS_Free(void *ptr);
 
 METIS_API(int) METIS_SetDefaultOptions(idx_t *options);
 
-
-/* These functions are used by ParMETIS */
-
-METIS_API(int) METIS_NodeNDP(idx_t nvtxs, idx_t *xadj, idx_t *adjncy, 
-                             idx_t *vwgt, idx_t npes, idx_t *options, 
-                             idx_t *perm, idx_t *iperm, idx_t *sizes);
-
-METIS_API(int) METIS_ComputeVertexSeparator(idx_t *nvtxs, idx_t *xadj, 
-                                            idx_t *adjncy, idx_t *vwgt, 
-                                            idx_t *options, idx_t *sepsize, 
-                                            idx_t *part);
-
-METIS_API(int) METIS_NodeRefine(idx_t nvtxs, idx_t *xadj, idx_t *vwgt, 
-                                idx_t *adjncy, idx_t *where, 
-                                idx_t *hmarker, real_t ubfactor);
-
-/* These functions are used by DGL */
-
-METIS_API(int) METIS_CacheFriendlyReordering(idx_t nvtxs, idx_t *xadj, 
-                                             idx_t *adjncy, idx_t *part, 
-                                             idx_t *old2new);
-
 #ifdef __cplusplus
 }
 #endif
-
-
 
 /*------------------------------------------------------------------------
 * Enum type definitions
@@ -262,7 +201,6 @@ typedef enum {
   METIS_ERROR_MEMORY    = -3,   /*!< Returned due to insufficient memory */
   METIS_ERROR           = -4    /*!< Some other errors */
 } rstatus_et;
-
 
 /*! Operation type codes */
 typedef enum {
