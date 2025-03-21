@@ -69,6 +69,7 @@ void Test_ND(int nvtxs, idxtype *xadj, idxtype *adjncy)
   /*=================================================================*/
 
   printf("\nTesting METIS_NodeND ----------------------------\n\n");
+  fflush(stdout);
   tstnum = 1;
 
 /**/
@@ -327,13 +328,31 @@ int VerifyND(int nvtxs, idxtype *perm, idxtype *iperm)
   int i, rcode=0;
 
   for (i=0; i<nvtxs; i++) {
-    if (i != perm[iperm[i]])
+    if (perm[i]<0){
       rcode = 1;
+      return rcode;
+    }
   }
 
   for (i=0; i<nvtxs; i++) {
-    if (i != iperm[perm[i]])
+    if (iperm[i]<0){
       rcode = 2;
+      return rcode;
+    }
+  }
+
+  for (i=0; i<nvtxs; i++) {
+    if (i != perm[iperm[i]]){
+      rcode = 3;
+      return rcode;
+    }
+  }
+
+  for (i=0; i<nvtxs; i++) {
+    if (i != iperm[perm[i]]){
+      rcode = 4;
+      return rcode;
+    }
   }
 
   MALLOC_CHECK(NULL);

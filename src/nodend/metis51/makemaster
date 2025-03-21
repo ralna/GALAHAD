@@ -23,13 +23,14 @@ SRC =  memory.c random.c error.c timers.c mcore.c fs.c io.c string.c \
        auxapi.c ometis.c
 
 TEST = test_nodend.c
+TEST2 = test_nodend2.c
 
 OBJFILE = $(SRC:.c=_51.o)
 OBJFILE64 = $(SRC:.c=_51_64.o)
 TESTOBJ = $(TEST:.c=_51.o)
 TESTOBJ64 = $(TEST:.c=_51_64.o)
-FTESTOBJ = $(FTEST:.f90=_51.o)
-FTESTOBJ64 = $(FTEST:.f90=_51_64.o)
+TEST2OBJ = $(TEST2:.c=_51.o)
+TEST2OBJ64 = $(TEST2:.c=_51_64.o)
 
 CFLAGSM = $(CFLAGS) -DNDEBUG
 
@@ -48,9 +49,9 @@ $(LM5)($(OBJFILE)): $(SRC)
 
 $(LM564)($(OBJFILE64)): $(SRC)
 	@printf ' %-9s %-15s\t\t' "Compiling" $(*:_64=)"_51"
-	@$(CC) $(CFLAGSM) $(*:_51_64=.c) -o $*_51.o
-	@$(AR) $(ARREPFLAGS) $@ $*_51.o
-	@$(RM) $*_51_64.o
+	$(CC) $(CFLAGSM) $*.c -o $*_51_64.o
+	$(AR) $(ARREPFLAGS) $@ $*_51_64.o
+	$(RM) $*_51_64.o
 	@printf '[ OK ]\n'
 
 testall: test$(HSL_64)
@@ -60,14 +61,29 @@ test: $(LM5)($(OBJFILE))
 	$(CC) -c $(CFLAGSM) -o $(TESTOBJ) $(TEST)
 	$(CC) -o ./test_nodend $(TESTOBJ) -L. -L$(OBJ) -lmetis5_nodend -lm
 	./test_nodend
-	@$(RM) ./test_nodend $(TESTOBJ)
+	$(RM) ./test_nodend $(TESTOBJ)
 
 test_64: $(LM564)($(OBJFILE64))
 	@echo [Run test 64]
 	$(CC) -c $(CFLAGSM) -o $(TESTOBJ64) $(TEST)
 	$(CC) -o ./test_nodend $(TESTOBJ64) -L. -L $(OBJ) -lmetis564_nodend -lm
 	./test_nodend
-	@$(RM) ./test_nodend $(TESTOBJ64)
+	$(RM) $(TESTOBJ64)
+#	$(RM) ./test_nodend $(TESTOBJ64)
+
+test2: $(LM5)($(OBJFILE))
+	@echo [Run test]
+	$(CC) -c $(CFLAGSM) -o $(TEST2OBJ) $(TEST2)
+	$(CC) -o ./test_nodend $(TEST2OBJ) -L. -L$(OBJ) -lmetis5_nodend -lm
+	./test_nodend
+	$(RM) ./test_nodend $(TEST2OBJ)
+
+test2_64: $(LM564)($(OBJFILE64))
+	@echo [Run test 64]
+	$(CC) -c $(CFLAGSM) -o $(TEST2OBJ64) $(TEST2)
+	$(CC) -o ./test_nodend $(TEST2OBJ64) -L. -L $(OBJ) -lmetis564_nodend -lm
+	./test_nodend
+	$(RM) ./test_nodend $(TEST2OBJ64)
 
 cleanall:
 	@$(RM) $(OBJFILE) $(LM5) $(OBJFILE64) $(LM564)

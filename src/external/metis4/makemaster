@@ -49,9 +49,9 @@ $(LM4)($(OBJFILE)): $(METIS4SRC)/$(SRC)
 $(LM464)($(OBJFILE64)): $(METIS4SRC)/$(SRC)
 	@printf ' %-9s %-15s\t\t' "Compiling" $(*:_64=)"_4"
 	$(CP) $(METIS4SRC)/$*.c $(OBJ)/
-	$(CC) $(CFLAGSM) $OBJ)/$(*:_64=.c) -o $(OBJ)/$*_4.o
-	cd $(OBJ); $(AR) $(ARREPFLAGS) $@ $*_4.o
-	$(RM) $(OBJ)/$*.c $(OBJ)/$*_4.o
+	$(CC) $(CFLAGSM) $(OBJ)/$*.c -o $(OBJ)/$*_4_64.o
+	cd $(OBJ); $(AR) $(ARREPFLAGS) $@ $*_4_64.o
+	$(RM) $(OBJ)/$*.c $(OBJ)/$*_4_64.o
 	printf '[ OK ]\n'
 
 # testing
@@ -79,6 +79,14 @@ test2: $(LM4)($(OBJFILE))
 	$(CC) -o ./test2_nodend $(TEST2OBJ) -L .  -L $(OBJ) -lmetis4_nodend -lm
 	./test2_nodend
 	$(RM) ./test2_nodend $(TEST2OBJ)
+
+test2_64: $(LM464)($(OBJFILE64))
+	@echo [Run test 64]
+	$(CC) -c $(CFLAGSM) -o $(TEST2OBJ64) $(TEST2)
+	$(CC) -o ./test_nodend $(TEST2OBJ64) -L . -L $(OBJ) \
+         -lmetis464_nodend -lm
+	./test_nodend
+	$(RM) ./test_nodend $(TEST2OBJ64)
 
 # book keeping
 
