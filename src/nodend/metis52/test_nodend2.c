@@ -26,29 +26,17 @@ int main( )
 {
 
 /*  idx_t n = 10; */
-  idx_t n = 1000000;
-  idx_t i, l;
-  idx_t *adj = (idx_t *)  malloc((n+1) * sizeof(idx_t));
-  idx_t *adjncy = (idx_t *)  malloc((2*(n-1)) * sizeof(idx_t));
+  idx_t n = 2;
+  idx_t *adj = (int *)  malloc((n+1) * sizeof(idx_t));
+  idx_t *adjncy = (int *)  malloc((2) * sizeof(idx_t));
 
-/* tri-diagonal matrix example */
+/* dense 2x2 example */
 
-  l = 0;
-  adj[0]=l;
-  adjncy[l]= 1;
-
-  for(i=1; i<n-1; i++) {
-    l++;
-    adj[i]=l;
-    adjncy[l]= i-1;
-    l++;
-    adjncy[l]= i+1;
-  }
-  l++;
-  adj[n-1]=l;
-  adjncy[l]= n-2;
-  l++;
-  adj[n]=l;
+  adj[0]=0;
+  adjncy[0]= 1;
+  adj[1]=1;
+  adjncy[1]= 0;
+  adj[2]=2;
 
 /*
   for (i=0; i<n+1; i++)

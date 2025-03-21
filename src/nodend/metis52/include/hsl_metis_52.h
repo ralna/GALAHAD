@@ -33,8 +33,12 @@
 --------------------------------------------------------------------------*/
 #ifdef INTEGER_64
   #define IDXTYPEWIDTH 64
+  #define d_ipc_ "ld"
+  #define i_ipc_ "li"
 #else
   #define IDXTYPEWIDTH 32
+  #define d_ipc_ "d"
+  #define i_ipc_ "i"
 #endif
 
 /*--------------------------------------------------------------------------

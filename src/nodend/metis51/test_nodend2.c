@@ -1,12 +1,10 @@
 /*
  * Copyright 1994-2011, Regents of the University of Minnesota
  *
- * test_nodend.c (simplified version of test/mtest.c by Nick Gould, STFC-RAL,
+ * test_nodend2.c (simplified version of test/mtest.c by Nick Gould, STFC-RAL,
  * 2025-03, in which a specific test example is given rather than one read from
  * a data file, the test is only performed for metis_nodend, and where
  * unused variables have been removed/fixed)
- *
- * Driver programs for nested disection ordering
  *
  * Started 8/28/94
  * George
@@ -27,29 +25,17 @@ int main()
   idx_t *perm, *iperm;
   int status=0;
 
-  idx_t n = 1000000;
-  idx_t i, l;
-  idx_t *adj = (idx_t *)  malloc((n+1) * sizeof(idx_t));
-  idx_t *adjncy = (idx_t *)  malloc((2*(n-1)) * sizeof(idx_t));
+  idx_t n = 2;
+  idx_t *adj = (int *)  malloc((n+1) * sizeof(idx_t));
+  idx_t *adjncy = (int *)  malloc((2) * sizeof(idx_t));
 
-/* tri-diagonal matrix example */
+/* dense 2x2 example */
 
-  l = 0;
-  adj[0]=l;
-  adjncy[l]= 1;
-
-  for(i=1; i<n-1; i++) {
-    l++;
-    adj[i]=l;
-    adjncy[l]= i-1;
-    l++;
-    adjncy[l]= i+1;
-  }
-  l++;
-  adj[n-1]=l;
-  adjncy[l]= n-2;
-  l++;
-  adj[n]=l;
+  adj[0]=0;
+  adjncy[0]= 1;
+  adj[1]=1;
+  adjncy[1]= 0;
+  adj[2]=2;
 
   perm  = imalloc(n, "main: perm");
   iperm = imalloc(n, "main: iperm");
@@ -142,7 +128,6 @@ int main()
   clock_t end = clock();
   double time_elapsed = (double)(end - begin) / CLOCKS_PER_SEC;
   printf(" ** total execution time: %f seconds\n", time_elapsed);
-  fflush(stdout);
   printf(" ** end test **\n");
 
   if (gk_GetCurMemoryUsed() != 0)

@@ -30,8 +30,16 @@
  GCC does provides these definitions in stdint.h, but it may require some
  modifications on other architectures.
 --------------------------------------------------------------------------*/
-#define IDXTYPEWIDTH 32
 
+#ifdef INTEGER_64
+  #define IDXTYPEWIDTH 64
+  #define d_ipc_ "ld"
+  #define i_ipc_ "li"
+#else
+  #define IDXTYPEWIDTH 32
+  #define d_ipc_ "d"
+  #define i_ipc_ "i"
+#endif
 
 /*--------------------------------------------------------------------------
  Specifies the data type that will hold floating-point style information.
@@ -41,8 +49,6 @@
    64 : double precission floating point (double)
 --------------------------------------------------------------------------*/
 #define REALTYPEWIDTH 32
-
-
 
 /****************************************************************************
 * In principle, nothing needs to be changed beyond this point, unless the
@@ -150,7 +156,6 @@ typedef __int64 int64_t;
   #error "Incorrect user-supplied value for REALTYPEWIDTH"
 #endif
 
-
 /*------------------------------------------------------------------------
 * Constant definitions 
 *-------------------------------------------------------------------------*/
@@ -161,8 +166,6 @@ typedef __int64 int64_t;
 
 /* The maximum length of the options[] array */
 #define METIS_NOPTIONS          40
-
-
 
 /*------------------------------------------------------------------------
 * Function prototypes 
@@ -191,8 +194,6 @@ METIS_API(int) METIS_SetDefaultOptions(idx_t *options);
 #ifdef __cplusplus
 }
 #endif
-
-
 
 /*------------------------------------------------------------------------
 * Enum type definitions 

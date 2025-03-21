@@ -671,9 +671,8 @@
 
 !  local variables
 
-      INTEGER ( KIND = ip_ ) :: i, j, k, n, ne, status
+      INTEGER ( KIND = ip_ ) :: i, j, k, n, ne
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr, IW
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -704,8 +703,7 @@
 
 !  next allocate workspace for the full matrix
 
-      ALLOCATE( A_row( ne ), A_col( ne ), A_ptr( n + 1 ),                      &
-                IW( n + 1 ), STAT = inform%alloc_status )
+      ALLOCATE( A_row( ne ), A_col( ne ), STAT = inform%alloc_status )
       IF ( inform%alloc_status /= 0 ) THEN
         WRITE( control%error, "( A, ' allocation error ', I0, ' for A_*' )" )  &
           prefix, inform%alloc_status
@@ -750,23 +748,13 @@
         END DO
       END SELECT
 
-!  reorder the full matrix to column order
+!  find the ordering
 
-      CALL SORT_reorder_by_cols( n, n, ne, A_row, A_col, ne, A_ptr, n + 1,     &
-                                IW, n + 1, control%error, control%out, status )
-      IF ( status > 0 ) THEN
-        WRITE( control%error, "( A, ' sort error = ', I0 )" ) prefix, status
-        inform%status = GALAHAD_error_sort
-      ELSE
-
-!  call the Nodend ordering packages
-
-        CALL NODEND_order_adjacency( n, A_ptr, A_row, PERM, control, inform )
-      END IF
+      CALL NODEND_order_main( n, ne, A_row, A_col, PERM, control, inform )
 
 !  deallocate workspace arrays
 
-      DEALLOCATE( A_row, A_col, A_ptr, IW, STAT = inform%alloc_status )
+      DEALLOCATE( A_row, A_col, STAT = inform%alloc_status )
       IF ( inform%alloc_status /= 0 ) THEN
         WRITE( control%error, "( A, ' deallocation error ', I0, ' for A_*' )") &
           prefix, inform%alloc_status
@@ -1182,10 +1170,9 @@
 
 !  local variables
 
-      INTEGER ( KIND = ip_ ) :: i, j, ne, status
+      INTEGER ( KIND = ip_ ) :: i, j, ne
       INTEGER ( KIND = i4_ ) :: k
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr, IW
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -1203,8 +1190,7 @@
 
 !  next allocate workspace for the full matrix
 
-      ALLOCATE( A_row( ne ), A_col( ne ), A_ptr( n + 1 ),                      &
-                IW( n + 1 ), STAT = inform%alloc_status )
+      ALLOCATE( A_row( ne ), A_col( ne ), STAT = inform%alloc_status )
       IF ( inform%alloc_status /= 0 ) THEN
         WRITE( control%error, "( A, ' allocation error ', I0, ' for A_*' )" )  &
           prefix, inform%alloc_status
@@ -1227,23 +1213,13 @@
         END DO
       END DO
 
-!  reorder the full matrix to column order
+!  find the ordering
 
-      CALL SORT_reorder_by_cols( n, n, ne, A_row, A_col, ne, A_ptr, n + 1,     &
-                                IW, n + 1, control%error, control%out, status )
-      IF ( status > 0 ) THEN
-        WRITE( control%error, "( A, ' sort error = ', I0 )" ) prefix, status
-        inform%status = GALAHAD_error_sort
-      ELSE
-
-!  call the Nodend ordering packages
-
-        CALL NODEND_order_adjacency( n, A_ptr, A_row, PERM, control, inform )
-      END IF
+      CALL NODEND_order_main( n, ne, A_row, A_col, PERM, control, inform )
 
 !  deallocate workspace arrays
 
-      DEALLOCATE( A_row, A_col, A_ptr, IW, STAT = inform%alloc_status )
+      DEALLOCATE( A_row, A_col, STAT = inform%alloc_status )
       IF ( inform%alloc_status /= 0 ) THEN
         WRITE( control%error, "( A, ' deallocation error ', I0, ' for A_*' )") &
           prefix, inform%alloc_status
@@ -1271,10 +1247,9 @@
 
 !  local variables
 
-      INTEGER ( KIND = ip_ ) :: i, j, ne, status
+      INTEGER ( KIND = ip_ ) :: i, j, ne
       INTEGER ( KIND = i8_ ) :: k
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr, IW
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -1292,8 +1267,7 @@
 
 !  next allocate workspace for the full matrix
 
-      ALLOCATE( A_row( ne ), A_col( ne ), A_ptr( n + 1 ),                      &
-                IW( n + 1 ), STAT = inform%alloc_status )
+      ALLOCATE( A_row( ne ), A_col( ne ), STAT = inform%alloc_status )
       IF ( inform%alloc_status /= 0 ) THEN
         WRITE( control%error, "( A, ' allocation error ', I0, ' for A_*' )" )  &
           prefix, inform%alloc_status
@@ -1316,23 +1290,13 @@
         END DO
       END DO
 
-!  reorder the full matrix to column order
+!  find the ordering
 
-      CALL SORT_reorder_by_cols( n, n, ne, A_row, A_col, ne, A_ptr, n + 1,     &
-                                IW, n + 1, control%error, control%out, status )
-      IF ( status > 0 ) THEN
-        WRITE( control%error, "( A, ' sort error = ', I0 )" ) prefix, status
-        inform%status = GALAHAD_error_sort
-      ELSE
-
-!  call the Nodend ordering packages
-
-        CALL NODEND_order_adjacency( n, A_ptr, A_row, PERM, control, inform )
-      END IF
+      CALL NODEND_order_main( n, ne, A_row, A_col, PERM, control, inform )
 
 !  deallocate workspace arrays
 
-      DEALLOCATE( A_row, A_col, A_ptr, IW, STAT = inform%alloc_status )
+      DEALLOCATE( A_row, A_col, STAT = inform%alloc_status )
       IF ( inform%alloc_status /= 0 ) THEN
         WRITE( control%error, "( A, ' deallocation error ', I0, ' for A_*' )") &
           prefix, inform%alloc_status
@@ -1345,17 +1309,65 @@
 
       END SUBROUTINE NODEND_half_order_i8
 
+!- - G A L A H A D -  M E T I S _ O R D E R _ M A I N   S U B R O U T I N E - -
+
+!  MeTiS 4 and 5 interface with compact (symmetric) sparse-by-row structue
+
+      SUBROUTINE NODEND_order_main( n, ne, A_row, A_col, PERM, control, inform )
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ne
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( ne ) :: A_row, A_col
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
+      TYPE ( NODEND_control_type ), INTENT( IN ) :: control
+      TYPE ( NODEND_inform_type ), INTENT( OUT ) :: inform
+
+!  local variables
+
+      INTEGER ( KIND = ip_ ) :: status
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr, IW
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  allocate further workspace for the full matrix
+
+      ALLOCATE( A_ptr( n + 1 ), IW( n + 1 ), STAT = inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        WRITE( control%error, "( A, ' allocation error ', I0, ' for IW' )" )   &
+          prefix, inform%alloc_status
+        inform%status = GALAHAD_error_allocate ; inform%bad_alloc = 'IW'
+        RETURN
+      END IF
+
+!  reorder the full matrix to column order
+
+      CALL SORT_reorder_by_cols( n, n, ne, A_row, A_col, ne, A_ptr, n + 1,     &
+                                 IW, n + 1, control%error, control%out, status )
+      IF ( status > 0 ) THEN
+        WRITE( control%error, "( A, ' sort error = ', I0 )" ) prefix, status
+        inform%status = GALAHAD_error_sort
+      ELSE
+
+!  call the nodend ordering packages
+
+        CALL NODEND_order_adjacency( n, A_ptr, A_row, PERM, control, inform )
+      END IF
+
+!  deallocate workspace arrays
+
+      DEALLOCATE( A_ptr, IW, STAT = inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        WRITE( control%error, "( A, ' deallocation error ', I0, ' for A_*' )") &
+          prefix, inform%alloc_status
+        inform%status = GALAHAD_error_deallocate ; inform%bad_alloc = 'A_*'
+      END IF
+
+      RETURN
+
+!  End of subroutine NODEND_order_main
+
+      END SUBROUTINE NODEND_order_main
+
 !  end of module GALAHAD_NODEND
 
    END MODULE GALAHAD_NODEND_precision
-
-
-
-
-
-
-
-
-
-
 
