@@ -132,6 +132,15 @@ test: nodend
 	./nodendt
 	$(RM) ./nodendt nodendt.o 
 
+valgrind: nodend
+	@echo [Run fortran test]
+	$(FORTRAN) $(FFLAGS) nodendt.F90
+	$(FORTRAN) -o ./nodendt nodendt.o -L. -L$(OBJ) \
+          -lgalahad -lmetis4_nodend -lmetis5_nodend -lhsl
+	valgrind $(VALGRIND) ./nodendt > valgrind.output
+	$(RM) nodendt.o 
+#	$(RM) ./nodendt nodendt.o 
+
 #  main program
 
 runnodend_sif: $(OBJ)/runnodend_sif_$(PRECIS).o

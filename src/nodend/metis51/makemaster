@@ -85,6 +85,16 @@ test2_64: $(LM564)($(OBJFILE64))
 	./test_nodend
 	$(RM) ./test_nodend $(TEST2OBJ64)
 
+test_gprof: $(LM5)($(OBJFILE))
+	@echo [Run test]
+	$(CC) -c -pg $(CFLAGSM) -o $(TESTOBJ) $(TEST)
+	$(CC) -o ./test_nodend -pg $(TESTOBJ) -L.  -L$(OBJ) -lmetis5_nodend -lm
+#	ldd ./test_nodend
+#	nm ./test_nodend
+	./test_nodend
+	gprof ./test_nodend gmon.out > analysis.txt
+	$(RM) ./test_nodend  $(TESTOBJ)
+
 cleanall:
 	@$(RM) $(OBJFILE) $(LM5) $(OBJFILE64) $(LM564)
 

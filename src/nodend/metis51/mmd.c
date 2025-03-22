@@ -55,6 +55,7 @@ void genmmd(idx_t neqns, idx_t *xadj, idx_t *adjncy, idx_t *invp, idx_t *perm,
 {
     idx_t  ehead, i, mdeg, mdlmt, mdeg_node, nextmd, num, tag;
 
+printf(" neqns = %" d_ipc_ "\n", neqns);
     if (neqns <= 0)  
       return;
 
@@ -98,6 +99,7 @@ void genmmd(idx_t neqns, idx_t *xadj, idx_t *adjncy, idx_t *invp, idx_t *perm,
 
 n500:
       mdeg_node = head[mdeg];
+ printf(" init mdef = %" d_ipc_ "\n", mdeg_node);
       while (mdeg_node <= 0) {
         mdeg++;
 
@@ -108,8 +110,8 @@ n500:
 
       /*  remove 'mdeg_node' from the degree structure. */
 
-/* printf(" mdef = %" d_ipc_ "\n", mdeg_node);*/
-/* fflush(stdout);*/
+ printf(" mdef = %" d_ipc_ "\n", mdeg_node);
+ fflush(stdout);
       nextmd = invp[mdeg_node];
       head[mdeg] = nextmd;
       if (nextmd > 0)  
