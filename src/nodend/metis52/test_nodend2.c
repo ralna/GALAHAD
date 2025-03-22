@@ -27,8 +27,8 @@ int main( )
 
 /*  idx_t n = 10; */
   idx_t n = 2;
-  idx_t *adj = (int *)  malloc((n+1) * sizeof(idx_t));
-  idx_t *adjncy = (int *)  malloc((2) * sizeof(idx_t));
+  idx_t *adj = (idx_t *)  malloc((n+1) * sizeof(idx_t));
+  idx_t *adjncy = (idx_t *)  malloc((2) * sizeof(idx_t));
 
 /* dense 2x2 example */
 
