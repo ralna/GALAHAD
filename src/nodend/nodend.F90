@@ -677,11 +677,23 @@
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
+!  check for input data errors and trivial permutations
+
+      n = A%n
+      IF ( n < 1 ) THEN
+        inform%status = GALAHAD_error_restrictions
+        WRITE( control%error, "( A, ' A%n = ', I0, ' < 0' )" ) prefix, n
+        RETURN
+      ELSE IF ( n == 1 ) THEN
+        PERM( 1 ) = 1
+        inform%status = GALAHAD_ok
+        RETURN
+      END IF
+
 !  copy from the symmetric (one triangle) input order to full (both
 !  triangles) order, but without the diagonals. First, compute the required
 !  space to hold the full matrix
 
-      n = A%n
       SELECT CASE ( SMT_get( A%type ) )
       CASE ( 'COORDINATE' )
         ne = 2 * COUNT( A%row( : A%ne ) /= A%col( : A%ne ) )
@@ -700,6 +712,14 @@
           prefix, SMT_get( A%type ) 
         RETURN
       END SELECT
+
+!  if the full matrix is diagonal, return the trivial permutation
+
+      IF ( ne == 0 ) THEN
+        PERM( : n ) = (/ ( i, i = 1, n ) /)
+        inform%status = GALAHAD_ok
+        RETURN
+      END IF
 
 !  next allocate workspace for the full matrix
 
@@ -767,7 +787,275 @@
 
       END SUBROUTINE NODEND_order
 
-!- - -  -  G A L A H A D -  M E T I S _ O R D E R   S U B R O U T I N E - - - -
+!- G A L A H A D -  M E T I S _ H A L F _ O R D E R _ I 4  S U B R O U T I N E -
+
+!  MeTiS 4 and 5 interface with compact (symmetric) sparse-by-row structue
+
+      SUBROUTINE NODEND_half_order_i4( n, A_half_ptr, A_half_col, PERM,        &
+                                       control, inform )
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      INTEGER ( KIND = i4_ ), INTENT( IN ), DIMENSION( n + 1 ) :: A_half_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: A_half_col
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
+      TYPE ( NODEND_control_type ), INTENT( IN ) :: control
+      TYPE ( NODEND_inform_type ), INTENT( OUT ) :: inform
+
+!  local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, ne
+      INTEGER ( KIND = i4_ ) :: k
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  check for input data errors and trivial permutations
+
+      IF ( n < 1 ) THEN
+        inform%status = GALAHAD_error_restrictions
+        WRITE( control%error, "( A, ' n = ', I0, ' < 0' )" ) prefix, n
+        RETURN
+      ELSE IF ( n == 1 ) THEN
+        PERM( 1 ) = 1
+        inform%status = GALAHAD_ok
+        RETURN
+      END IF
+
+!  copy from the half (one triangle) input order to full (both triangles) 
+!  order, but without the diagonals. First, compute the required space to 
+!  hold the full matrix
+
+      ne = 0
+      DO i = 1, n
+        DO k = A_half_ptr( i ), A_half_ptr( i + 1 ) - 1
+          IF ( A_half_col( k ) /= i ) ne = ne + 2 
+        END DO
+      END DO
+
+!  if the full matrix is diagonal, return the trivial permutation
+
+      IF ( ne == 0 ) THEN
+        PERM( : n ) = (/ ( i, i = 1, n ) /)
+        inform%status = GALAHAD_ok
+        RETURN
+      END IF
+
+!  next allocate workspace for the full matrix
+
+      ALLOCATE( A_row( ne ), A_col( ne ), STAT = inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        WRITE( control%error, "( A, ' allocation error ', I0, ' for A_*' )" )  &
+          prefix, inform%alloc_status
+        inform%status = GALAHAD_error_allocate ; inform%bad_alloc = 'A_*'
+        RETURN
+      END IF
+
+!  now copy the half matrix to the full one
+
+      ne = 0
+      DO i = 1, n
+        DO k = A_half_ptr( i ), A_half_ptr( i + 1 ) - 1
+          j = A_half_col( k )
+          IF ( i /= j ) THEN
+            ne = ne + 1
+            A_row( ne ) = i ; A_col( ne ) = j
+            ne = ne + 1
+            A_row( ne ) = j ; A_col( ne ) = i
+          END IF
+        END DO
+      END DO
+
+!  find the ordering
+
+      CALL NODEND_order_main( n, ne, A_row, A_col, PERM, control, inform )
+
+!  deallocate workspace arrays
+
+      DEALLOCATE( A_row, A_col, STAT = inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        WRITE( control%error, "( A, ' deallocation error ', I0, ' for A_*' )") &
+          prefix, inform%alloc_status
+        inform%status = GALAHAD_error_deallocate ; inform%bad_alloc = 'A_*'
+      END IF
+
+      RETURN
+
+!  End of subroutine NODEND_half_order_i4
+
+      END SUBROUTINE NODEND_half_order_i4
+
+!- G A L A H A D -  M E T I S _ H A L F _ O R D E R _ I 8  S U B R O U T I N E -
+
+!  MeTiS 4 and 5 interface with compact (symmetric) sparse-by-row structue
+
+      SUBROUTINE NODEND_half_order_i8( n, A_half_ptr, A_half_col, PERM,        &
+                                       control, inform )
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      INTEGER ( KIND = i8_ ), INTENT( IN ), DIMENSION( n + 1 ) :: A_half_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: A_half_col
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
+      TYPE ( NODEND_control_type ), INTENT( IN ) :: control
+      TYPE ( NODEND_inform_type ), INTENT( OUT ) :: inform
+
+!  local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, ne
+      INTEGER ( KIND = i8_ ) :: k
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  check for input data errors and trivial permutations
+
+      IF ( n < 1 ) THEN
+        inform%status = GALAHAD_error_restrictions
+        WRITE( control%error, "( A, ' n = ', I0, ' < 0' )" ) prefix, n
+        RETURN
+      ELSE IF ( n == 1 ) THEN
+        PERM( 1 ) = 1
+        inform%status = GALAHAD_ok
+        RETURN
+      END IF
+
+!  copy from the half (one triangle) input order to full (both triangles) 
+!  order, but without the diagonals. First, compute the required space to 
+!  hold the full matrix
+
+      ne = 0
+      DO i = 1, n
+        DO k = A_half_ptr( i ), A_half_ptr( i + 1 ) - 1
+          IF ( A_half_col( k ) /= i ) ne = ne + 2 
+        END DO
+      END DO
+
+!  if the full matrix is diagonal, return the trivial permutation
+
+      IF ( ne == 0 ) THEN
+        PERM( : n ) = (/ ( i, i = 1, n ) /)
+        inform%status = GALAHAD_ok
+        RETURN
+      END IF
+
+!  next allocate workspace for the full matrix
+
+      ALLOCATE( A_row( ne ), A_col( ne ), STAT = inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        WRITE( control%error, "( A, ' allocation error ', I0, ' for A_*' )" )  &
+          prefix, inform%alloc_status
+        inform%status = GALAHAD_error_allocate ; inform%bad_alloc = 'A_*'
+        RETURN
+      END IF
+
+!  now copy the half matrix to the full one
+
+      ne = 0
+      DO i = 1, n
+        DO k = A_half_ptr( i ), A_half_ptr( i + 1 ) - 1
+          j = A_half_col( k )
+          IF ( i /= j ) THEN
+            ne = ne + 1
+            A_row( ne ) = i ; A_col( ne ) = j
+            ne = ne + 1
+            A_row( ne ) = j ; A_col( ne ) = i
+          END IF
+        END DO
+      END DO
+
+!  find the ordering
+
+      CALL NODEND_order_main( n, ne, A_row, A_col, PERM, control, inform )
+
+!  deallocate workspace arrays
+
+      DEALLOCATE( A_row, A_col, STAT = inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        WRITE( control%error, "( A, ' deallocation error ', I0, ' for A_*' )") &
+          prefix, inform%alloc_status
+        inform%status = GALAHAD_error_deallocate ; inform%bad_alloc = 'A_*'
+      END IF
+
+      RETURN
+
+!  End of subroutine NODEND_half_order_i8
+
+      END SUBROUTINE NODEND_half_order_i8
+
+!- - G A L A H A D -  M E T I S _ O R D E R _ M A I N   S U B R O U T I N E - -
+
+!  MeTiS 4 and 5 interface with compact (symmetric) sparse-by-row structue
+
+      SUBROUTINE NODEND_order_main( n, ne, A_row, A_col, PERM, control, inform )
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ne
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( ne ) :: A_row, A_col
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
+      TYPE ( NODEND_control_type ), INTENT( IN ) :: control
+      TYPE ( NODEND_inform_type ), INTENT( OUT ) :: inform
+
+!  local variables
+
+      INTEGER ( KIND = ip_ ) :: i, status
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr, IW
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  check for input data errors and trivial permutations
+
+      IF ( n < 1 ) THEN
+        inform%status = GALAHAD_error_restrictions
+        WRITE( control%error, "( A, ' n = ', I0, ' < 0' )" ) prefix, n
+        RETURN
+      ELSE IF ( n == 1 ) THEN
+        PERM( 1 ) = 1
+        inform%status = GALAHAD_ok
+        RETURN
+      ELSE IF ( ne == 0 ) THEN
+        PERM( : n ) = (/ ( i, i = 1, n ) /)
+        inform%status = GALAHAD_ok
+        RETURN
+      END IF
+
+!  allocate further workspace for the full matrix
+
+      ALLOCATE( A_ptr( n + 1 ), IW( n + 1 ), STAT = inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        WRITE( control%error, "( A, ' allocation error ', I0, ' for IW' )" )   &
+          prefix, inform%alloc_status
+        inform%status = GALAHAD_error_allocate ; inform%bad_alloc = 'IW'
+        RETURN
+      END IF
+
+!  reorder the full matrix to column order
+
+      CALL SORT_reorder_by_cols( n, n, ne, A_row, A_col, ne, A_ptr, n + 1,     &
+                                 IW, n + 1, control%error, control%out, status )
+      IF ( status > 0 ) THEN
+        WRITE( control%error, "( A, ' sort error = ', I0 )" ) prefix, status
+        inform%status = GALAHAD_error_sort
+      ELSE
+
+!  call the nodend ordering packages
+
+        CALL NODEND_order_adjacency( n, A_ptr, A_row, PERM, control, inform )
+      END IF
+
+!  deallocate workspace arrays
+
+      DEALLOCATE( A_ptr, IW, STAT = inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        WRITE( control%error, "( A, ' deallocation error ', I0, ' for A_*' )") &
+          prefix, inform%alloc_status
+        inform%status = GALAHAD_error_deallocate ; inform%bad_alloc = 'A_*'
+      END IF
+
+      RETURN
+
+!  End of subroutine NODEND_order_main
+
+      END SUBROUTINE NODEND_order_main
+
+! G A L A H A D - M E T I S _ O R D E R _ A D J A C E N C Y  S U B R O U T I N E
 
 !  MeTiS 4 and 5 interfaces with full (non-symmetric) structure
 
@@ -781,7 +1069,7 @@
 
 !  local variables
 
-      INTEGER ( KIND = ip_ ) :: out, metis_status
+      INTEGER ( KIND = ip_ ) :: i, out, metis_status
       INTEGER ( KIND = ip_ ), DIMENSION( 40 ) :: options
       INTEGER ( KIND = ip_ ), DIMENSION( n ) :: INVERSE_PERM
       INTEGER ( KIND = ip_ ), PARAMETER :: n_dummy = 2
@@ -792,6 +1080,22 @@
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  check for input data errors and trivial permutations
+
+      IF ( n < 1 ) THEN
+        inform%status = GALAHAD_error_restrictions
+        WRITE( control%error, "( A, ' n = ', I0, ' < 0' )" ) prefix, n
+        RETURN
+      ELSE IF ( n == 1 ) THEN
+        PERM( 1 ) = 1
+        inform%status = GALAHAD_ok
+        RETURN
+      ELSE IF ( PTR( n + 1 ) == 1 ) THEN
+        PERM( : n ) = (/ ( i, i = 1, n ) /)
+        inform%status = GALAHAD_ok
+        RETURN
+      END IF
 
 !  use 1-based arrays
 
@@ -1154,218 +1458,6 @@
 !  End of subroutine NODEND_order_adjacency
 
       END SUBROUTINE NODEND_order_adjacency
-
-!- G A L A H A D -  M E T I S _ H A L F _ O R D E R _ I 4  S U B R O U T I N E -
-
-!  MeTiS 4 and 5 interface with compact (symmetric) sparse-by-row structue
-
-      SUBROUTINE NODEND_half_order_i4( n, A_half_ptr, A_half_col, PERM,        &
-                                       control, inform )
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
-      INTEGER ( KIND = i4_ ), INTENT( IN ), DIMENSION( n + 1 ) :: A_half_ptr
-      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: A_half_col
-      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
-      TYPE ( NODEND_control_type ), INTENT( IN ) :: control
-      TYPE ( NODEND_inform_type ), INTENT( OUT ) :: inform
-
-!  local variables
-
-      INTEGER ( KIND = ip_ ) :: i, j, ne
-      INTEGER ( KIND = i4_ ) :: k
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col
-      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
-        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
-!  copy from the half (one triangle) input order to full (both triangles) 
-!  order, but without the diagonals. First, compute the required space to 
-!  hold the full matrix
-
-      ne = 0
-      DO i = 1, n
-        DO k = A_half_ptr( i ), A_half_ptr( i + 1 ) - 1
-          IF ( A_half_col( k ) /= i ) ne = ne + 2 
-        END DO
-      END DO
-
-!  next allocate workspace for the full matrix
-
-      ALLOCATE( A_row( ne ), A_col( ne ), STAT = inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        WRITE( control%error, "( A, ' allocation error ', I0, ' for A_*' )" )  &
-          prefix, inform%alloc_status
-        inform%status = GALAHAD_error_allocate ; inform%bad_alloc = 'A_*'
-        RETURN
-      END IF
-
-!  now copy the half matrix to the full one
-
-      ne = 0
-      DO i = 1, n
-        DO k = A_half_ptr( i ), A_half_ptr( i + 1 ) - 1
-          j = A_half_col( k )
-          IF ( i /= j ) THEN
-            ne = ne + 1
-            A_row( ne ) = i ; A_col( ne ) = j
-            ne = ne + 1
-            A_row( ne ) = j ; A_col( ne ) = i
-          END IF
-        END DO
-      END DO
-
-!  find the ordering
-
-      CALL NODEND_order_main( n, ne, A_row, A_col, PERM, control, inform )
-
-!  deallocate workspace arrays
-
-      DEALLOCATE( A_row, A_col, STAT = inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        WRITE( control%error, "( A, ' deallocation error ', I0, ' for A_*' )") &
-          prefix, inform%alloc_status
-        inform%status = GALAHAD_error_deallocate ; inform%bad_alloc = 'A_*'
-      END IF
-
-      RETURN
-
-!  End of subroutine NODEND_half_order_i4
-
-      END SUBROUTINE NODEND_half_order_i4
-
-!- G A L A H A D -  M E T I S _ H A L F _ O R D E R _ I 8  S U B R O U T I N E -
-
-!  MeTiS 4 and 5 interface with compact (symmetric) sparse-by-row structue
-
-      SUBROUTINE NODEND_half_order_i8( n, A_half_ptr, A_half_col, PERM,        &
-                                       control, inform )
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
-      INTEGER ( KIND = i8_ ), INTENT( IN ), DIMENSION( n + 1 ) :: A_half_ptr
-      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: A_half_col
-      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
-      TYPE ( NODEND_control_type ), INTENT( IN ) :: control
-      TYPE ( NODEND_inform_type ), INTENT( OUT ) :: inform
-
-!  local variables
-
-      INTEGER ( KIND = ip_ ) :: i, j, ne
-      INTEGER ( KIND = i8_ ) :: k
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col
-      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
-        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
-!  copy from the half (one triangle) input order to full (both triangles) 
-!  order, but without the diagonals. First, compute the required space to 
-!  hold the full matrix
-
-      ne = 0
-      DO i = 1, n
-        DO k = A_half_ptr( i ), A_half_ptr( i + 1 ) - 1
-          IF ( A_half_col( k ) /= i ) ne = ne + 2 
-        END DO
-      END DO
-
-!  next allocate workspace for the full matrix
-
-      ALLOCATE( A_row( ne ), A_col( ne ), STAT = inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        WRITE( control%error, "( A, ' allocation error ', I0, ' for A_*' )" )  &
-          prefix, inform%alloc_status
-        inform%status = GALAHAD_error_allocate ; inform%bad_alloc = 'A_*'
-        RETURN
-      END IF
-
-!  now copy the half matrix to the full one
-
-      ne = 0
-      DO i = 1, n
-        DO k = A_half_ptr( i ), A_half_ptr( i + 1 ) - 1
-          j = A_half_col( k )
-          IF ( i /= j ) THEN
-            ne = ne + 1
-            A_row( ne ) = i ; A_col( ne ) = j
-            ne = ne + 1
-            A_row( ne ) = j ; A_col( ne ) = i
-          END IF
-        END DO
-      END DO
-
-!  find the ordering
-
-      CALL NODEND_order_main( n, ne, A_row, A_col, PERM, control, inform )
-
-!  deallocate workspace arrays
-
-      DEALLOCATE( A_row, A_col, STAT = inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        WRITE( control%error, "( A, ' deallocation error ', I0, ' for A_*' )") &
-          prefix, inform%alloc_status
-        inform%status = GALAHAD_error_deallocate ; inform%bad_alloc = 'A_*'
-      END IF
-
-      RETURN
-
-!  End of subroutine NODEND_half_order_i8
-
-      END SUBROUTINE NODEND_half_order_i8
-
-!- - G A L A H A D -  M E T I S _ O R D E R _ M A I N   S U B R O U T I N E - -
-
-!  MeTiS 4 and 5 interface with compact (symmetric) sparse-by-row structue
-
-      SUBROUTINE NODEND_order_main( n, ne, A_row, A_col, PERM, control, inform )
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ne
-      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( ne ) :: A_row, A_col
-      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
-      TYPE ( NODEND_control_type ), INTENT( IN ) :: control
-      TYPE ( NODEND_inform_type ), INTENT( OUT ) :: inform
-
-!  local variables
-
-      INTEGER ( KIND = ip_ ) :: status
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr, IW
-      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
-        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
-!  allocate further workspace for the full matrix
-
-      ALLOCATE( A_ptr( n + 1 ), IW( n + 1 ), STAT = inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        WRITE( control%error, "( A, ' allocation error ', I0, ' for IW' )" )   &
-          prefix, inform%alloc_status
-        inform%status = GALAHAD_error_allocate ; inform%bad_alloc = 'IW'
-        RETURN
-      END IF
-
-!  reorder the full matrix to column order
-
-      CALL SORT_reorder_by_cols( n, n, ne, A_row, A_col, ne, A_ptr, n + 1,     &
-                                 IW, n + 1, control%error, control%out, status )
-      IF ( status > 0 ) THEN
-        WRITE( control%error, "( A, ' sort error = ', I0 )" ) prefix, status
-        inform%status = GALAHAD_error_sort
-      ELSE
-
-!  call the nodend ordering packages
-
-        CALL NODEND_order_adjacency( n, A_ptr, A_row, PERM, control, inform )
-      END IF
-
-!  deallocate workspace arrays
-
-      DEALLOCATE( A_ptr, IW, STAT = inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        WRITE( control%error, "( A, ' deallocation error ', I0, ' for A_*' )") &
-          prefix, inform%alloc_status
-        inform%status = GALAHAD_error_deallocate ; inform%bad_alloc = 'A_*'
-      END IF
-
-      RETURN
-
-!  End of subroutine NODEND_order_main
-
-      END SUBROUTINE NODEND_order_main
 
 !  end of module GALAHAD_NODEND
 
