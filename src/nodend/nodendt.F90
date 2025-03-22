@@ -18,7 +18,8 @@
 
 !  test the full storage versions
 
-     DO version = 1, 3
+     DO version = 3, 1, - 1
+!      IF ( version == 2 ) CYCLE
        SELECT CASE( version )
        CASE( 1 )
          control%version = '4.0'
