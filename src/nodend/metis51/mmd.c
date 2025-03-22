@@ -107,6 +107,8 @@ n500:
       };
 
       /*  remove 'mdeg_node' from the degree structure. */
+
+printf(" mdef = %" d_ipc_ "\n", mdeg_node);
       nextmd = invp[mdeg_node];
       head[mdeg] = nextmd;
       if (nextmd > 0)  
