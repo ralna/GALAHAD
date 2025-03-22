@@ -68,8 +68,8 @@ test_64: $(LM564)($(OBJFILE64))
 	$(CC) -c $(CFLAGSM) -o $(TESTOBJ64) $(TEST)
 	$(CC) -o ./test_nodend $(TESTOBJ64) -L. -L $(OBJ) -lmetis564_nodend -lm
 	./test_nodend
-	$(RM) $(TESTOBJ64)
-#	$(RM) ./test_nodend $(TESTOBJ64)
+#	$(RM) $(TESTOBJ64)
+	$(RM) ./test_nodend $(TESTOBJ64)
 
 test2: $(LM5)($(OBJFILE))
 	@echo [Run test]
