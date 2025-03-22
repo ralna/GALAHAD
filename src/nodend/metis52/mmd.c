@@ -193,7 +193,7 @@ void mmdelm(idx_t mdeg_node, idx_t *xadj, idx_t *adjncy, idx_t *head, idx_t *for
         nabor = adjncy[i];
 
 printf(" nabor = %" d_ipc_ "\n", nabor);
-fflush(stdout);*/
+fflush(stdout);
         if ( nabor == 0 ) break;
         if ( marker[nabor] < tag ) {
            marker[nabor] = tag;
