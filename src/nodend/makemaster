@@ -10,21 +10,24 @@ include $(GALAHAD)/src/makedefs/definitions
 #.SUFFIXES:
 #.SUFFIXES: .c .o .h _64.o
 
-.PHONY: metis4 metis51 metis52
-.PHONY: metis4_silent metis51_silent metis52_silent
+.PHONY: core metis4 metis51 metis52
+.PHONY: core_silent metis4_silent metis51_silent metis52_silent
 .PHONY: nodend.o adapter_nodend.o nodend_ciface.o
 .PHONY: nodend nodend_silent test spec spec2
 .PHONY: nodend_cutest nodend_cutste_silent
 .PHONY: nodend_ciface nodend_ciface_silent
+.PHONY: nodendss nodendss2 nodendst 
+.PHONY: nodendds nodendds2 nodenddt 
+.PHONY: nodendqs nodendqs2 nodendqt 
 
 all: nodend
 	@printf ' %-21s\n' "Nodend procedures ($(IPRECIS)$(ISUCC)"
 cutest: nodend_cutest$(HSL_64)
 	@printf ' %-21s\n' "Nodend procedures for CUTEst ($(IPRECIS)$(ISUCC)"
 
-nodend: metis4 metis51 metis52 \
+nodend: core metis4 metis51 metis52 \
        $(LG)(adapter_nodend_$(PRECIS).o) $(LG)(nodend_$(PRECIS).o)
-nodend_silent: metis4_silent metis51_silent metis52_silent \
+nodend_silent: core_silent metis4_silent metis51_silent metis52_silent \
        $(LG)(adapter_nodend_$(PRECIS).o) $(LG)(nodend_$(PRECIS).o)
 
 nodend_cutest: nodend $(LG)(usenodend_$(PRECIS).o) runnodend_sif
@@ -33,6 +36,22 @@ nodend_cutest_silent: nodend_silent $(LG)(usenodend_$(PRECIS).o) runnodend_sif
 nodend_ciface: nodend $(CLG)(nodend_ciface_$(PRECIS).o)
 nodend_ciface_silent: nodend_silent $(CLG)(nodend_ciface_$(PRECIS).o)
 
+nodendss: spec
+nodendds: spec
+nodendqs: spec
+
+nodendss2: spec2
+nodendds2: spec2
+nodendqs2: spec2
+
+nodendst: test
+nodenddt: test
+nodendqt: test
+
+core:
+	( cd $(GALAHAD)/src/general ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) core \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 metis4:
 	( cd $(GALAHAD)/src/external/metis4 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all \
@@ -46,6 +65,10 @@ metis52:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all \
           PRECIS=$(PRECIS) PWD=. )
 
+core_silent:
+	( cd $(GALAHAD)/src/general ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) core_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 metis4_silent:
 	( cd $(GALAHAD)/src/external/metis4 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) metis4_silent \

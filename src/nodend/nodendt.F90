@@ -7,9 +7,12 @@
      USE GALAHAD_NODEND_precision
      USE GALAHAD_SMT_precision
      INTEGER, PARAMETER :: out = 6
-     INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, nz = 5, nz_compact = 4
-     INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: PTR = (/ 1, 3, 4, 6 /)
-     INTEGER ( KIND = ip_ ), DIMENSION( nz ) :: IND = (/ 1, 3, 2, 1, 3 /)
+!    INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, nz = 5, nz_compact = 4
+!    INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: PTR = (/ 1, 3, 4, 6 /)
+!    INTEGER ( KIND = ip_ ), DIMENSION( nz ) :: IND = (/ 1, 3, 2, 1, 3 /)
+     INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, nz = 2, nz_compact = 4
+     INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: PTR = (/ 1, 2, 2, 3 /)
+     INTEGER ( KIND = ip_ ), DIMENSION( nz ) :: IND = (/ 3, 1 /)
      INTEGER ( KIND = ip_ ), DIMENSION( n ) :: PERM
      TYPE ( SMT_type ) :: A
      TYPE ( NODEND_control_type ) :: control
@@ -18,7 +21,7 @@
 
 !  test the full storage versions
 
-     DO version = 3, 1, - 1
+     DO version = 1, 3
 !      IF ( version == 2 ) CYCLE
        SELECT CASE( version )
        CASE( 1 )
