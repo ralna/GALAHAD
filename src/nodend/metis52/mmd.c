@@ -182,7 +182,9 @@ void mmdelm(idx_t mdeg_node, idx_t *xadj, idx_t *adjncy, idx_t *head, idx_t *for
     marker[mdeg_node] = tag;
     istart = xadj[mdeg_node];
     istop = xadj[mdeg_node+1] - 1;
+/* 
 printf(" istart, istop = %" d_ipc_ " %" d_ipc_ "\n", istart, istop);
+*/
 
     /* 'element' points to the beginning of the list of  */
     /* eliminated nabors of 'mdeg_node', and 'rloc' gives the */
@@ -192,9 +194,10 @@ printf(" istart, istop = %" d_ipc_ " %" d_ipc_ "\n", istart, istop);
     rlmt = istop;
     for ( i = istart; i <= istop; i++ ) {
         nabor = adjncy[i];
-
+/*
 printf(" nabor = %" d_ipc_ "\n", nabor);
 fflush(stdout);
+*/
         if ( nabor == 0 ) break;
         if ( marker[nabor] < tag ) {
            marker[nabor] = tag;

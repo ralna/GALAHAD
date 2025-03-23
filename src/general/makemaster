@@ -16,10 +16,10 @@ DUMMYS = kinds_silent clock_silent extend_silent symbols_silent \
          pardiso_silent mkl_pardiso_silent wsmp_silent \
          pastix_silent mpi_silent mumps_silent umfpack_silent \
          string_silent version_silent buildspec_silent
-#         lapack_inter_silent hsl_inter_silent metis_silent \
 
-BASICS = $(DUMMYS) zd11_silent smt_silent space_silent \
-         specfile_silent sort_silent norms_silent nodend_silent
+CORE = $(DUMMYS) space_silent specfile_silent sort_silent norms_silent
+
+BASICS = $(CORE) nodend_silent
 
 #  main compilations and runs
 
@@ -42,6 +42,25 @@ basic_single_64: $(BASICS)
 basic_double_64: $(BASICS)
 	$(RANLIB) $(LGD64)
 basic_quadruple_64: $(BASICS)
+	$(RANLIB) $(LGQ64)
+
+#  all of the core packages
+
+core_silent: $(CORE)
+
+core: core_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: core packages ($(PRECIS) $(SUCC)"
+core_single: $(CORE)
+	$(RANLIB) $(LGS)
+core_double: $(CORE)
+	$(RANLIB) $(LGD)
+core_quadruple: $(CORE)
+	$(RANLIB) $(LGQ)
+core_single_64: $(CORE)
+	$(RANLIB) $(LGS64)
+core_double_64: $(CORE)
+	$(RANLIB) $(LGD64)
+core_quadruple_64: $(CORE)
 	$(RANLIB) $(LGQ64)
 
 dummys_silent: $(DUMMYS)

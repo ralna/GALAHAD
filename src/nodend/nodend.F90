@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-03-09 AT 12:00 GMT
+! THIS VERSION: GALAHAD 5.2 - 2025-03-23 AT 09:45 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -35,8 +35,9 @@
      END INTERFACE NODEND_half_order
 
      PRIVATE
-     PUBLIC :: NODEND_read_specfile, NODEND_order, NODEND_order_adjacency,     &
-               NODEND_half_order, SMT_type, SMT_put, SMT_get
+     PUBLIC :: NODEND_initialize, NODEND_read_specfile, NODEND_order,          &
+               NODEND_order_adjacency, NODEND_half_order,                      &
+               SMT_type, SMT_put, SMT_get
 
 !  MeTiS 4 option addresses
 
@@ -388,6 +389,41 @@
      END TYPE NODEND_inform_type
 
    CONTAINS
+
+!-*-*-*-*-   N O D E N D _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*
+
+      SUBROUTINE NODEND_initialize( control, inform )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Default control data for NODEND. This routine should be called before
+!  other NODEND procedres
+!
+!  ---------------------------------------------------------------------------
+!
+!  Arguments:
+!
+!  control  a structure containing control information. See preamble
+!  inform   a structure containing output information. See preamble
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+      TYPE ( NODEND_control_type ), INTENT( OUT ) :: control
+      TYPE ( NODEND_inform_type ), INTENT( OUT ) :: inform
+
+!  local variables
+
+      TYPE ( NODEND_control_type ) :: control_local
+      TYPE ( NODEND_inform_type ) :: inform_local
+
+!  set default values
+
+      control = control_local
+      inform = inform_local
+
+!  End of NODEND_initialize
+
+      END SUBROUTINE NODEND_initialize
 
 !-*-*-*-   M E T I S _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
