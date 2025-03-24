@@ -47,7 +47,7 @@ struct spral_ssids_options {
    ipc_ pivot_method;
    rpc_ small;
    rpc_ u;
-   struct nodend_control_type nodend_control;
+   struct nodend_control_type nodend_options;
    ipc_ nstream;
    rpc_ multiplier;
    real_sp_ min_loadbalance;

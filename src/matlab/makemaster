@@ -65,6 +65,7 @@ MAT_ULS = $(MAT_BASIC) $(MLG)(galahad_uls_matlab_types.o)
 MAT_SLS = $(MAT_BASIC) $(MLG)(galahad_sls_matlab_types.o)
 MAT_LMS = $(MAT_BASIC) $(MLG)(galahad_lms_matlab_types.o)
 MAT_SHA = $(MAT_BASIC) $(MLG)(galahad_sha_matlab_types.o)
+MAT_NODEND = $(MAT_BASIC) $(MLG)(galahad_nodend_matlab_types.o)
 MAT_SCALE = $(MAT_BASIC) $(MLG)(galahad_scale_matlab_types.o)
 MAT_PRESOLVE = $(MAT_BASIC) $(MLG)(galahad_presolve_matlab_types.o)
 MAT_PSLS = $(MAT_SLS) $(MLG)(galahad_psls_matlab_types.o)
@@ -144,6 +145,7 @@ USES_LSQP = galahad_lsqp.$(MEXEXT) galahad_qpb.$(MEXEXT)
 USES_LSRT = galahad_lsrt.$(MEXEXT)
 USES_LSTR = galahad_lstr.$(MEXEXT)
 USES_NLS = galahad_nls.$(MEXEXT)
+USES_NODEND = galahad_nodend.$(MEXEXT) galahad_sls.$(MEXEXT)
 USES_PRESOLVE = galahad_presolve.$(MEXEXT) galahad_qp.$(MEXEXT)
 USES_PSLS = galahad_psls.$(MEXEXT) galahad_arc.$(MEXEXT) galahad_nls.$(MEXEXT) \
             galahad_trb.$(MEXEXT) galahad_tru.$(MEXEXT)
@@ -518,6 +520,17 @@ galahad_nls.$(MEXEXT): galahad_nls.F90
                      nls_silent PRECIS=double PWD=$(PWD)/../nls )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_nls"
 	$(MEX) galahad_nls.F90 -output galahad_nls $(MEXFLAGS)
+	@printf '[ OK ]\n'
+
+#  nodend
+
+nodend: $(MAT_NODEND) galahad_nodend.$(MEXEXT)
+
+galahad_nodend.$(MEXEXT): galahad_nodend.F90
+	( cd ../nodend ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     nodend_silent PRECIS=double PWD=$(PWD)/../nodend )
+	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_nodend"
+	$(MEX) galahad_nodend.F90 -output galahad_nodend $(MEXFLAGS)
 	@printf '[ OK ]\n'
 
 #  qpa
@@ -1248,6 +1261,23 @@ $(MLG)(galahad_nls_matlab_types.o): galahad_nls_matlab_types.F90
               $(OBJ)/galahad_nls_matlab_types.F90
 	$(MVMODS)
 	$(RM) $(USES_NLS)
+	@printf '[ OK ]\n'
+
+# nodend
+
+galahad_nodend_matlab_types.o: $(MLG)(galahad_nodend_matlab_types.o)
+
+$(MLG)(galahad_nodend_matlab_types.o): galahad_nodend_matlab_types.F90
+	( cd ../nodend ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     nodend_silent PRECIS=double PWD=$(PWD)/../nodend )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_nodend_matlab_types"
+	$(CP) galahad_nodend_matlab_types.F90 $(OBJ)/galahad_nodend_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_nodend_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_nodend_matlab_types.o
+	$(RM) $(OBJ)/galahad_nodend_matlab_types.o \
+              $(OBJ)/galahad_nodend_matlab_types.F90
+	$(MVMODS)
+	$(RM) $(USES_NODEND)
 	@printf '[ OK ]\n'
 
 #  presolve
