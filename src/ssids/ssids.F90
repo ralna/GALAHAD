@@ -332,6 +332,7 @@ contains
 !              flag, inform%stat)
 !         if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
 !         if (flag .lt. 0) go to 490
+write(6,*) options%nodend_options
           CALL NODEND_half_order(n, ptr, row, order2, &
                                  options%nodend_options,  &
                                  inform%nodend_inform)

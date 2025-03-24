@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-03-11 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-03-23 AT 09:55 GMT.
      PROGRAM NODEND_example_adjacency
      USE GALAHAD_KINDS_double, ONLY: ip_
      USE GALAHAD_NODEND_double
@@ -9,10 +9,11 @@
      INTEGER ( KIND = ip_ ), DIMENSION( n ) :: PERM
      TYPE ( NODEND_control_type ) :: control
      TYPE ( NODEND_inform_type ) :: inform
+     CALL NODEND_initialize( control, inform )
      control%version = '5.1'
      CALL NODEND_order_adjacency( n, PTR, IND, PERM, control, inform )
      IF ( PERM( 1 ) <= 0 ) THEN
-       WRITE( out, "( ' No METIS ', A, ' available, stopping' )" )            &
+       WRITE( out, "( ' No METIS ', A, ' available, stopping' )" )             &
          control%version
      ELSE IF ( inform%status < 0 ) THEN
        WRITE( out, "( ' Nodend ', A, ' failure, status = ', I0 )" )            &

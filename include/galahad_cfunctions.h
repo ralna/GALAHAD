@@ -279,6 +279,10 @@
 #define nls_solve_reverse_without_mat nls_solve_reverse_without_mat_s_64
 #define nls_information nls_information_s_64
 #define nls_terminate nls_terminate_s_64
+#define nodend_initialize nodend_initialize_s_64
+#define nodend_read_specfile nodend_read_specfile_s_64
+#define nodend_information nodend_information_s_64
+#define nodend_terminate nodend_terminate_s_64
 #define presolve_initialize presolve_initialize_s_64
 #define presolve_read_specfile presolve_read_specfile_s_64
 #define presolve_import_problem presolve_import_problem_s_64
@@ -824,6 +828,10 @@
 #define nls_solve_reverse_without_mat nls_solve_reverse_without_mat_q_64
 #define nls_information nls_information_q_64
 #define nls_terminate nls_terminate_q_64
+#define nodend_initialize nodend_initialize_q_64
+#define nodend_read_specfile nodend_read_specfile_q_64
+#define nodend_information nodend_information_q_64
+#define nodend_terminate nodend_terminate_q_64
 #define presolve_initialize presolve_initialize_q_64
 #define presolve_read_specfile presolve_read_specfile_q_64
 #define presolve_import_problem presolve_import_problem_q_64
@@ -1369,6 +1377,10 @@
 #define nls_solve_reverse_without_mat nls_solve_reverse_without_mat_64
 #define nls_information nls_information_64
 #define nls_terminate nls_terminate_64
+#define nodend_initialize nodend_initialize_64
+#define nodend_read_specfile nodend_read_specfile_64
+#define nodend_information nodend_information_64
+#define nodend_terminate nodend_terminate_64
 #define presolve_initialize presolve_initialize_64
 #define presolve_read_specfile presolve_read_specfile_64
 #define presolve_import_problem presolve_import_problem_64
@@ -1916,6 +1928,10 @@
 #define nls_solve_reverse_without_mat nls_solve_reverse_without_mat_s
 #define nls_information nls_information_s
 #define nls_terminate nls_terminate_s
+#define nodend_initialize nodend_initialize_s
+#define nodend_read_specfile nodend_read_specfile_s
+#define nodend_information nodend_information_s
+#define nodend_terminate nodend_terminate_s
 #define presolve_initialize presolve_initialize_s
 #define presolve_read_specfile presolve_read_specfile_s
 #define presolve_import_problem presolve_import_problem_s
@@ -2461,6 +2477,10 @@
 #define nls_solve_reverse_without_mat nls_solve_reverse_without_mat_q
 #define nls_information nls_information_q
 #define nls_terminate nls_terminate_q
+#define nodend_initialize nodend_initialize_q
+#define nodend_read_specfile nodend_read_specfile_q
+#define nodend_information nodend_information_q
+#define nodend_terminate nodend_terminate_q
 #define presolve_initialize presolve_initialize_q
 #define presolve_read_specfile presolve_read_specfile_q
 #define presolve_import_problem presolve_import_problem_q

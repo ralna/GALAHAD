@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-03-11 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-03-23 AT 09:55 GMT.
 
 #include "galahad_modules.h"
 
@@ -22,7 +22,7 @@
 !  test the full storage versions
 
      DO version = 1, 3
-!      IF ( version == 2 ) CYCLE
+       CALL NODEND_initialize( control, inform )
        SELECT CASE( version )
        CASE( 1 )
          control%version = '4.0'
@@ -59,6 +59,7 @@
      A%ptr = (/ 1, 2, 3, 5 /)
 
      DO version = 1, 3
+       CALL NODEND_initialize( control, inform )
        SELECT CASE( version )
        CASE( 1 )
          control%version = '4.0'
@@ -88,6 +89,7 @@
 !  test the different storage versions
 
      DO type = 1, 3
+       CALL NODEND_initialize( control, inform )
        SELECT CASE( type )
        CASE( 1 )
          CALL SMT_put( A%type, 'COORDINATE', status )

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-20 AT 11:25 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-03-23 AT 13:50 GMT
 
 #ifdef REAL_32
 #ifdef INTEGER_64
@@ -6,11 +6,13 @@
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface_64
 #define SPRAL_SSIDS_types_precision spral_ssids_types_single_64
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_single_64
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_single_ciface_64
 #else
 #define SPRAL_KINDS_precision SPRAL_KINDS_single
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
 #define SPRAL_SSIDS_types_precision spral_ssids_types_single
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_single
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_single_ciface
 #endif
 #elif REAL_128
 #ifdef INTEGER_64
@@ -18,11 +20,13 @@
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_quadruple_ciface_64
 #define SPRAL_SSIDS_types_precision spral_ssids_types_quadruple_64
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_quadruple_64
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_quadruple_ciface_64
 #else
 #define SPRAL_KINDS_precision SPRAL_KINDS_quadruple
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_quadruple_ciface
 #define SPRAL_SSIDS_types_precision spral_ssids_types_quadruple
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_quadruple
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_quadruple_ciface
 #endif
 #else
 #ifdef INTEGER_64
@@ -30,11 +34,13 @@
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface_64
 #define SPRAL_SSIDS_types_precision spral_ssids_types_double_64
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_double_64
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_double_ciface_64
 #else
 #define SPRAL_KINDS_precision SPRAL_KINDS_double
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface
 #define SPRAL_SSIDS_types_precision spral_ssids_types_double
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_double
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_double_ciface
 #endif
 #endif
 
@@ -57,6 +63,10 @@
     USE SPRAL_KINDS_precision
     USE SPRAL_SSIDS_types_precision, ONLY : f_ssids_options => ssids_options
     USE SPRAL_SSIDS_inform_precision, ONLY : f_ssids_inform => ssids_inform
+    USE GALAHAD_NODEND_precision_ciface, ONLY:                                 &
+        nodend_inform_type, nodend_control_type,                               &
+        copy_nodend_options_in => copy_control_in,                             &
+        copy_nodend_inform_out => copy_inform_out
 
     IMPLICIT NONE
 
@@ -85,6 +95,7 @@
        INTEGER ( KIND = ipc_ ) :: pivot_method
        REAL ( KIND = rpc_ ) :: small
        REAL ( KIND = rpc_ ) :: u
+       TYPE ( nodend_control_type ) :: nodend_options
        INTEGER ( KIND = ipc_ ) :: nstream
        REAL ( KIND = rpc_ ) :: multiplier
 !     type(auction_options) :: auction
@@ -112,6 +123,7 @@
 !    type(auction_inform) :: auction
        INTEGER ( KIND = ipc_ ) :: cuda_error
        INTEGER ( KIND = ipc_ ) :: cublas_error
+       TYPE ( nodend_inform_type ) :: nodend_inform
        INTEGER ( KIND = ipc_ ) :: not_first_pass
        INTEGER ( KIND = ipc_ ) :: not_second_pass
        INTEGER ( KIND = ipc_ ) :: nparts
@@ -151,6 +163,8 @@
     foptions%pivot_method = coptions%pivot_method
     foptions%small = coptions%small
     foptions%u = coptions%u
+    CALL copy_nodend_options_in( coptions%nodend_options,                      &
+                                 foptions%nodend_options )
     foptions%nstream = coptions%nstream
     foptions%multiplier = coptions%multiplier
     foptions%min_loadbalance = coptions%min_loadbalance
@@ -182,6 +196,7 @@
     cinform%stat = finform%stat
     cinform%cuda_error = finform%cuda_error
     cinform%cublas_error = finform%cublas_error
+    CALL copy_nodend_inform_out( finform%nodend_inform, cinform%nodend_inform )
     cinform%not_first_pass = finform%not_first_pass
     cinform%not_second_pass = finform%not_second_pass
     cinform%nparts = finform%nparts

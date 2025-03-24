@@ -1,6 +1,6 @@
 //* \file spral_ssids.h */
 /**  
- * \version   GALAHAD 4.3 - 2024-02-04 AT 10:10 GMT
+ * \version   GALAHAD 5.2 - 2025-03-23 AT 13:50 GMT
  */
 
 #ifdef __cplusplus
@@ -17,6 +17,10 @@ extern "C" {
 // precision
 #include "galahad_precision.h"
 #include "ssids_rip.hxx"
+#include "galahad_cfunctions.h"
+
+// required packages
+#include "galahad_nodend.h"
 
 /************************************
  * Derived types
@@ -43,6 +47,7 @@ struct spral_ssids_options {
    ipc_ pivot_method;
    rpc_ small;
    rpc_ u;
+   struct nodend_control_type nodend_control;
    ipc_ nstream;
    rpc_ multiplier;
    real_sp_ min_loadbalance;
@@ -68,6 +73,7 @@ struct spral_ssids_inform {
    ipc_ stat;
    ipc_ cuda_error;
    ipc_ cublas_error;
+   struct nodend_inform_type nodend_inform;
    ipc_ not_first_pass;
    ipc_ not_second_pass;
    ipc_ nparts;

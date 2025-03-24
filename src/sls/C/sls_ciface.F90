@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-20 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-03-23 AT 13:50 GMT
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -83,6 +83,14 @@
         copy_ssids_inform_out => copy_inform_out,                              &
         copy_ssids_options_in => copy_options_in
 
+    USE GALAHAD_NODEND_precision_ciface, ONLY:                                 &
+        nodend_inform_type,                                                    &
+        nodend_control_type,                                                   &
+        copy_nodend_inform_in  => copy_inform_in,                              &
+        copy_nodend_inform_out => copy_inform_out,                             &
+        copy_nodend_control_in => copy_control_in,                             &
+        copy_nodend_control_out => copy_control_out
+
     USE hsl_mc64_precision_ciface, ONLY:                                       &
         mc64_info,                                                             &
         mc64_control,                                                          &
@@ -157,6 +165,7 @@
          out_of_core_indefinite_file
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 501 ) :: out_of_core_restart_file
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
+      TYPE ( nodend_control_type ) :: nodend_control
     END TYPE sls_control_type
 
     TYPE, BIND( C ) :: sls_time_type
@@ -236,6 +245,7 @@
       TYPE ( ma87_info ) :: ma87_info
       TYPE ( ma97_info ) :: ma97_info
       TYPE ( spral_ssids_inform ) :: ssids_inform
+      TYPE ( nodend_inform_type ) :: nodend_inform
       INTEGER ( KIND = ipc_ ), DIMENSION( 10 ) :: mc61_info
       REAL ( KIND = rpc_ ), DIMENSION( 15 ) :: mc61_rinfo
       TYPE ( mc64_info ) :: mc64_info
@@ -324,6 +334,10 @@
     ! Logicals
     fcontrol%multiple_rhs = ccontrol%multiple_rhs
     fcontrol%generate_matrix_file = ccontrol%generate_matrix_file
+
+    ! Derived types
+    CALL copy_nodend_control_in( ccontrol%nodend_control,                      &
+                                 fcontrol%nodend_control )
 
     ! Strings
     DO i = 1, LEN( fcontrol%matrix_file_name )
@@ -428,6 +442,10 @@
     ! Logicals
     ccontrol%multiple_rhs = fcontrol%multiple_rhs
     ccontrol%generate_matrix_file = fcontrol%generate_matrix_file
+
+    ! Derived types
+    CALL copy_nodend_control_out( fcontrol%nodend_control,                     &
+                                  ccontrol%nodend_control )
 
     ! Strings
     l = LEN( fcontrol%matrix_file_name )
@@ -614,6 +632,8 @@
     CALL copy_sils_finfo_in( cinform%sils_finfo, finform%sils_finfo )
     CALL copy_sils_sinfo_in( cinform%sils_sinfo, finform%sils_sinfo )
 !   CALL copy_ssids_inform_in( cinform%ssids_inform, finform%ssids_inform )
+    CALL copy_nodend_inform_in( cinform%nodend_inform,                         &
+                                finform%nodend_inform )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -714,6 +734,7 @@
     CALL copy_ma86_info_out( finform%ma86_info, cinform%ma86_info )
     CALL copy_ma87_info_out( finform%ma87_info, cinform%ma87_info )
     CALL copy_ma97_info_out( finform%ma97_info, cinform%ma97_info )
+    CALL copy_nodend_inform_out( finform%nodend_inform, cinform%nodend_inform )
     CALL copy_ssids_inform_out( finform%ssids_inform, cinform%ssids_inform )
     CALL copy_mc64_info_out( finform%mc64_info, cinform%mc64_info )
     CALL copy_mc68_info_out( finform%mc68_info, cinform%mc68_info )

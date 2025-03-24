@@ -1,7 +1,7 @@
 //* \file galahad_sls.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 5.2 - 2025-03-23 AT 13:50 GMT
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -350,6 +350,7 @@ extern "C" {
 #include "hsl_ma86.h"
 #include "hsl_ma87.h"
 #include "hsl_ma97.h"
+#include "galahad_nodend.h"
 #include "spral_ssids.h"
 #include "hsl_mc64.h"
 #include "hsl_mc68.h"
@@ -595,6 +596,10 @@ struct sls_control_type {
     /// where prefix contains the required string enclosed in quotes,
     /// e.g. "string" or 'string'
     char prefix[31];
+
+    /// \brief
+    /// control parameters for NODEND
+    struct nodend_control_type nodend_control;
 };
 
 /**
@@ -907,6 +912,10 @@ struct sls_inform_type {
     /// \brief
     /// the output structure from ssids
     struct spral_ssids_inform ssids_inform;
+
+    /// \brief
+    /// the output structure from nodend
+    struct nodend_inform_type nodend_inform;
 
     /// \brief
     /// the integer and real output arrays from mc61

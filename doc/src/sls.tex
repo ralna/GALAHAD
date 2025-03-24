@@ -52,7 +52,8 @@ solvers directly rather that via this package.
 {\tt GALAHAD\_SPECFILE},
 {\tt GALAHAD\_STRING},
 {\tt GALAHAD\_SMT},
-{\tt GALAHAD\_SILS}
+{\tt GALAHAD\_SILS},
+{\tt GALAHAD\_NODEND}
 %{\tt HSL\_ZD11}
 and optionally
 {\tt HSL\_\-MA57},
@@ -498,8 +499,8 @@ Possible values are:
 \itt{1} The ordering will be chosen by the Approximate Minimum Degree method
        with provisions for ``dense'' rows/columns.
 \itt{2} The ordering will be chosen by the Minimum Degree method.
-\itt{3} The ordering will be chosen by the Nested Dissection method; this
- requires the user to have installed the external package {\tt METIS}.
+\itt{3} The ordering will be chosen by the Nested Dissection method using
+         the \galahad\ package {\tt NODEND}.
 \itt{4} An indefinite ordering involving a combination of 1x1 and 2x2 pivots
        will be used.
 % , that is optionally required by {\tt HSL\_MA57} and {\tt PARDISO}.
@@ -724,6 +725,15 @@ Specifically, each line of output will be prefaced by the string
 thus ignoring the first and last non-null components of the
 supplied string. If the user does not want to preface lines by such
 a string, the default {\tt prefix = ""} should be used.
+
+\itt{NODEND\_control} is a scalar variable of type
+{\tt NODEND\_control\_type}
+whose components are used to control nested-dissection ordering, when 
+required by {\tt control\%ordering = 3} as performed by the package
+{\tt \libraryname\_NODEND}.
+See the specification sheet for the package
+{\tt \libraryname\_NODEND}
+for details, and appropriate default values.
 
 \end{description}
 
@@ -1034,6 +1044,11 @@ details.
 \itt{ssids\_inform} is a scalar variable of type {\tt ssids\_inform},
 that corresponds to the output value {\tt ssids\_inform}
 from {\tt SSIDS}. See the documentation for {\tt SSIDS} for further
+details.
+
+\itt{nodend\_inform} is a scalar variable of type {\tt nodend\_inform},
+that corresponds to the output value {\tt nodend\_inform}
+from {\tt NODEND}. See the documentation for {\tt NODEND} for further
 details.
 
 \itt{mc64\_info} is a scalar variable of type {\tt mc64\_info},
@@ -1946,7 +1961,8 @@ will be printed on unit {\tt control\%error}.
 {\tt GALAHAD\_SPECFILE\_single/double},
 {\tt GALAHAD\_STRING\_single/double},
 {\tt GALAHAD\_SMT\-\_sin\-gle/double},
-{\tt GALAHAD\_SILS\_single/double}
+{\tt GALAHAD\_SILS\_single/double},
+{\tt GALAHAD\_NODEND\_single/double}
 and optionally
 {\tt HSL\_MA57\_single/double},
 {\tt HSL\_MA77\_single/\-double},
@@ -2051,10 +2067,11 @@ machined-tuned versions should be used.
 
 \noindent
 Explicit sparsity re-orderings are obtained by calling the HSL package
-{\tt HSL\_MC68}.
-Both this, {\tt HSL\_MA57} and {\tt PARDISO} rely optionally
-on the ordering package {\tt METIS} from the Karypis Lab. To obtain
-{\tt METIS}, see
+{\tt HSL\_MC68} and \galahads\ {\tt NODEND}.
+Both these, {\tt HSL\_MA57} and {\tt PARDISO} rely optionally
+on the ordering package {\tt METIS} from the Karypis Lab. {\tt METIS}
+versions 5.1 and 5.2 are provided, but to obtain
+{\tt METIS} version 4.0, see
 
 {\tt http://glaros.dtc.umn.edu/gkhome/views/metis/ }.
 
