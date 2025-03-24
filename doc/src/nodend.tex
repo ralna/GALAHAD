@@ -74,15 +74,18 @@ and
 {\tt \packagename\_inform\_type}
 (\S\ref{galtypes}),
 and the subroutines
+{\tt \packagename\-\_initialize},
 {\tt \packagename\-\_order}
 and
 {\tt \packagename\-\_order\_adjacency},
 (\S\ref{galarguments})
 must be renamed on one of the {\tt USE} statements.
 
-\noindent There are two principal subroutines for user calls.
+\noindent There are three principal subroutines for user calls.
 
 \begin{description}
+\item[]{\tt \packagename\_initialize} is used to set or re-initialize 
+ default control and information values.
 
 \item[] {\tt \packagename\_order} takes the (symmetric) pattern of $\bmA$
  and finds a symmetric permutation $\bmP$ so that the fill-in
@@ -521,6 +524,35 @@ All components are private.
 %%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galarguments
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize( control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{control} is a scalar \intentout\ argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}).
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
 
 %%%%%% order subroutine %%%%%%
 

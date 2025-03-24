@@ -1388,6 +1388,8 @@
 ! write(6,*) ' solver ', TRIM( inform%solver )
 ! stop
 
+     CALL NODEND_initialize( control%nodend_control, inform%nodend_inform )
+
 !  if required, check to see which ordering options are available
 
      IF ( PRESENT( check ) ) THEN

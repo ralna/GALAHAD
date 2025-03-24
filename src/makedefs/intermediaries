@@ -1801,12 +1801,12 @@ make_ciface_sils:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sils )
 
 make_ciface_sls_deps: make_ciface_sls_deps_$(PRECIS)
-make_ciface_sls_deps_single: make_ciface_sils make_ciface_$(SSIDS) \
-                      make_ciface_hsl
-make_ciface_sls_deps_double: make_ciface_sils make_ciface_$(SSIDS) \
-                      make_ciface_hsl
-make_ciface_sls_deps_quadruple: make_ciface_sils make_ciface_$(SSIDS) \
-                      make_ciface_hsl
+make_ciface_sls_deps_single: make_ciface_sils make_ciface_nodend \
+                      make_ciface_$(SSIDS) make_ciface_hsl
+make_ciface_sls_deps_double: make_ciface_sils make_ciface_nodend \
+                      make_ciface_$(SSIDS) make_ciface_hsl
+make_ciface_sls_deps_quadruple: make_ciface_sils make_ciface_nodend \
+                      make_ciface_$(SSIDS) make_ciface_hsl
 make_ciface_sls_deps_single_64: make_ciface_sls_deps_single
 make_ciface_sls_deps_double_64: make_ciface_sls_deps_double
 make_ciface_sls_deps_quadruple_64: make_ciface_sls_deps_quadruple

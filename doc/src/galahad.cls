@@ -635,6 +635,7 @@
 \fi
 
 \newcommand{\galahad}{\textsf{GALAHAD}}
+\newcommand{\galahads}{\textsf{GALAHAD}'s}
 \newcommand{\lancelot}{\textsf{LANCELOT}}
 \newcommand{\lancelota}{\textsf{LANCELOT A}}
 \newcommand{\lancelotb}{\textsf{LANCELOT B}}

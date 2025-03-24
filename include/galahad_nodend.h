@@ -1,7 +1,7 @@
 //* \file galahad_nodend.h */
 
 /*
- * THIS VERSION: GALAHAD 5.2 - 2025-03-14 AT 08:05 GMT.
+ * THIS VERSION: GALAHAD 5.2 - 2025-03-23 AT 13:50 GMT
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_NODEND C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -157,6 +157,65 @@ struct nodend_inform_type {
     char version[4];
 
 };
+
+// *-*-*-*-*-*-*-*-*-    N O D E N D  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-
+
+void nodend_initialize( void **data,
+                        struct nodend_control_type *control,
+                        ipc_ *status );
+
+/*!<
+ Set default control values and initialize private data
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see nodend_control_type)
+
+  @param[out] status is a scalar variable of type ipc_, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The import was succesful.
+*/
+
+// *-*-*-*-*-*-*-*-    N O D E N D  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-
+
+void nodend_read_specfile( struct nodend_control_type *control,
+                           const char specfile[] );
+
+/*!<
+  Read the content of a specification file, and assign values associated
+  with given keywords to the corresponding control parameters.
+  By default, the spcification file will be named RUNNODEND.SPC and
+  lie in the current directory.
+  Refer to Table 2.1 in the fortran documentation provided in
+  $GALAHAD/doc/nodend.pdf for a list of keywords that may be set.
+
+  @param[in,out]  control is a struct containing control information
+              (see nodend_control_type)
+
+  @param[in]  specfile is a character string containing the name of
+              the specification file
+*/
+
+// *-*-*-*-*-*-*-*-*-    N O D E N D  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-
+
+void nodend_information( void **data,
+                         struct nodend_inform_type *inform,
+                         ipc_ *status );
+
+/*!<
+  Provides output information
+
+  @param[in,out] data  holds private internal data
+
+  @param[out] inform   is a struct containing output information
+              (see nodend_inform_type)
+
+  @param[out] status is a scalar variable of type ipc_, that gives
+              the exit status from the package.
+              Possible values are (currently):
+  \li  0. The values were recorded succesfully
+*/
 
 // end include guard
 #endif

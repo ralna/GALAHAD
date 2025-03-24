@@ -15,3 +15,5 @@ MAIN
 ! solution-passes                                   1
 ! solve                                             yes
 INCLUDE SLS
+INCLUDE NODEND
+

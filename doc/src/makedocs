@@ -62,9 +62,9 @@
 #foreach pack ( scale )
 #foreach pack ( gls )
 #foreach pack ( uls )
-#foreach pack ( sls )
+foreach pack ( sls )
 #foreach pack ( psls )
-foreach pack ( nodend )
+#foreach pack ( nodend }
 #foreach pack ( sbls )
 #foreach pack ( icfs )
 #foreach pack ( smt )

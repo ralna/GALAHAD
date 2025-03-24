@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-03-13 AT 08:25 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-03-23 AT 13:50 GMT
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -20,8 +20,12 @@
     USE GALAHAD_KINDS_precision
     USE GALAHAD_common_ciface
     USE GALAHAD_NODEND_precision, ONLY:                                        &
-        f_nodend_control_type => NODEND_control_type,                          &
-        f_nodend_inform_type  => NODEND_inform_type
+        f_nodend_control_type   => NODEND_control_type,                        &
+        f_nodend_inform_type    => NODEND_inform_type,                         &
+        f_nodend_full_data_type => NODEND_full_data_type,                      &
+        f_nodend_initialize     => NODEND_initialize,                          &
+        f_nodend_read_specfile  => NODEND_read_specfile,                       &
+        f_nodend_information    => NODEND_information
     IMPLICIT NONE
 
 !-------------------------------------------------
@@ -143,6 +147,94 @@
 
     END SUBROUTINE copy_control_in
 
+!  copy fortran control parameters to C
+
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
+    TYPE ( f_nodend_control_type ), INTENT( IN ) :: fcontrol
+    TYPE ( nodend_control_type ), INTENT( OUT ) :: ccontrol
+    LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i, l
+
+    ! C or Fortran sparse matrix indexing
+    IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
+
+    ! Integers
+    ccontrol%error = fcontrol%error
+    ccontrol%out = fcontrol%out
+    ccontrol%print_level = fcontrol%print_level
+    ccontrol%metis4_ptype = fcontrol%metis4_ptype
+    ccontrol%metis4_ctype = fcontrol%metis4_ctype
+    ccontrol%metis4_itype = fcontrol%metis4_itype
+    ccontrol%metis4_rtype = fcontrol%metis4_rtype
+    ccontrol%metis4_dbglvl = fcontrol%metis4_dbglvl
+    ccontrol%metis4_oflags = fcontrol%metis4_oflags
+    ccontrol%metis4_pfactor = fcontrol%metis4_pfactor
+    ccontrol%metis4_nseps = fcontrol%metis4_nseps
+    ccontrol%metis5_ptype = fcontrol%metis5_ptype
+    ccontrol%metis5_objtype = fcontrol%metis5_objtype
+    ccontrol%metis5_ctype = fcontrol%metis5_ctype
+    ccontrol%metis5_iptype = fcontrol%metis5_iptype
+    ccontrol%metis5_rtype = fcontrol%metis5_rtype
+    ccontrol%metis5_dbglvl = fcontrol%metis5_dbglvl
+    ccontrol%metis5_niter = fcontrol%metis5_niter
+    ccontrol%metis5_ncuts = fcontrol%metis5_ncuts
+    ccontrol%metis5_seed = fcontrol%metis5_seed
+    ccontrol%metis5_no2hop = fcontrol%metis5_no2hop
+    ccontrol%metis5_minconn = fcontrol%metis5_minconn
+    ccontrol%metis5_contig = fcontrol%metis5_contig
+    ccontrol%metis5_compress = fcontrol%metis5_compress
+    ccontrol%metis5_ccorder = fcontrol%metis5_ccorder
+    ccontrol%metis5_pfactor = fcontrol%metis5_pfactor
+    ccontrol%metis5_nseps = fcontrol%metis5_nseps
+    ccontrol%metis5_ufactor = fcontrol%metis5_ufactor
+    ccontrol%metis5_niparts = fcontrol%metis5_niparts
+    ccontrol%metis5_ondisk = fcontrol%metis5_ondisk
+    ccontrol%metis5_dropedges = fcontrol%metis5_dropedges
+    ccontrol%metis5_twohop = fcontrol%metis5_twohop
+    ccontrol%metis5_fast = fcontrol%metis5_fast
+
+    ! Logicals
+    ccontrol%no_metis_4_use_5_instead = fcontrol%no_metis_4_use_5_instead
+
+    ! Strings
+    l = LEN( fcontrol%version )
+    DO i = 1, l
+      ccontrol%version( i ) = fcontrol%version( i : i )
+    END DO
+    ccontrol%version( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%version )
+    DO i = 1, l
+      ccontrol%version( i ) = fcontrol%version( i : i )
+    END DO
+    ccontrol%version( l + 1 ) = C_NULL_CHAR
+    RETURN
+
+    END SUBROUTINE copy_control_out
+
+!  copy C inform parameters to fortran
+
+    SUBROUTINE copy_inform_in( cinform, finform )
+    TYPE ( nodend_inform_type ), INTENT( IN ) :: cinform
+    TYPE ( f_nodend_inform_type ), INTENT( OUT ) :: finform
+    INTEGER ( KIND = ip_ ) :: i
+
+    ! Integers
+    finform%status = cinform%status
+    finform%alloc_status = cinform%alloc_status
+
+    ! Strings
+    DO i = 1, LEN( finform%bad_alloc )
+      IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
+      finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
+    END DO
+    DO i = 1, LEN( finform%version )
+      IF ( cinform%version( i ) == C_NULL_CHAR ) EXIT
+      finform%version( i : i ) = cinform%version( i )
+    END DO
+    RETURN
+
+    END SUBROUTINE copy_inform_in
+
 !  copy fortran information parameters to C
 
     SUBROUTINE copy_inform_out( finform, cinform )
@@ -170,8 +262,132 @@
 
   END MODULE GALAHAD_NODEND_precision_ciface
 
+!  ----------------------------------------
+!  C interface to fortran nodend_initialize
+!  ----------------------------------------
 
+  SUBROUTINE nodend_initialize( cdata, ccontrol, status ) BIND( C )
+  USE GALAHAD_NODEND_precision_ciface
+  IMPLICIT NONE
 
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+  TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
+  TYPE ( nodend_control_type ), INTENT( OUT ) :: ccontrol
+
+!  local variables
+
+  TYPE ( f_nodend_full_data_type ), POINTER :: fdata
+  TYPE ( f_nodend_control_type ) :: fcontrol
+  TYPE ( f_nodend_inform_type ) :: finform
+  LOGICAL :: f_indexing
+
+!  allocate fdata
+
+  ALLOCATE( fdata ); cdata = C_LOC( fdata )
+
+!  initialize required fortran types
+
+  CALL f_nodend_initialize( fdata, fcontrol, finform )
+  status = finform%status
+
+!  C sparse matrix indexing by default
+
+  f_indexing = .FALSE.
+  fdata%f_indexing = f_indexing
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+
+  RETURN
+
+  END SUBROUTINE nodend_initialize
+
+!  -------------------------------------------
+!  C interface to fortran nodend_read_specfile
+!  -------------------------------------------
+
+  SUBROUTINE nodend_read_specfile( ccontrol, cspecfile ) BIND( C )
+  USE GALAHAD_NODEND_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( nodend_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cspecfile
+
+!  local variables
+
+  TYPE ( f_nodend_control_type ) :: fcontrol
+  CHARACTER ( KIND = C_CHAR, LEN = strlen( cspecfile ) ) :: fspecfile
+  LOGICAL :: f_indexing
+
+!  device unit number for specfile
+
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
+
+!  convert C string to Fortran string
+
+  fspecfile = cstr_to_fchar( cspecfile )
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  open specfile for reading
+
+  OPEN( UNIT = device, FILE = fspecfile )
+
+!  read control parameters from the specfile
+
+  CALL f_nodend_read_specfile( fcontrol, device )
+
+!  close specfile
+
+  CLOSE( device )
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+  RETURN
+
+  END SUBROUTINE nodend_read_specfile
+
+!  -----------------------------------------
+!  C interface to fortran nodend_information
+!  -----------------------------------------
+
+  SUBROUTINE nodend_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_NODEND_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( nodend_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_nodend_full_data_type ), pointer :: fdata
+  TYPE ( f_nodend_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain NODEND solution information
+
+  CALL f_nodend_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE nodend_information
 
 
 

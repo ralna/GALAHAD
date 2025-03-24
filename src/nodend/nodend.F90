@@ -30,14 +30,23 @@
 
      IMPLICIT NONE
 
+     PRIVATE
+     PUBLIC :: NODEND_initialize, NODEND_read_specfile, NODEND_order,          &
+               NODEND_order_adjacency, NODEND_half_order,                      &
+               NODEND_full_initialize, NODEND_information,                     &
+               SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
      INTERFACE NODEND_half_order
        MODULE PROCEDURE NODEND_half_order_i4, NODEND_half_order_i8
      END INTERFACE NODEND_half_order
 
-     PRIVATE
-     PUBLIC :: NODEND_initialize, NODEND_read_specfile, NODEND_order,          &
-               NODEND_order_adjacency, NODEND_half_order,                      &
-               SMT_type, SMT_put, SMT_get
+     INTERFACE NODEND_initialize
+       MODULE PROCEDURE NODEND_initialize, NODEND_full_initialize
+     END INTERFACE NODEND_initialize
 
 !  MeTiS 4 option addresses
 
@@ -388,6 +397,17 @@
 
      END TYPE NODEND_inform_type
 
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: NODEND_full_data_type
+        LOGICAL :: f_indexing = .TRUE.
+!       TYPE ( NODEND_data_type ) :: NODEND_data
+        TYPE ( NODEND_control_type ) :: NODEND_control
+        TYPE ( NODEND_inform_type ) :: NODEND_inform
+      END TYPE NODEND_full_data_type
+
    CONTAINS
 
 !-*-*-*-*-   N O D E N D _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*
@@ -424,6 +444,38 @@
 !  End of NODEND_initialize
 
       END SUBROUTINE NODEND_initialize
+
+!- G A L A H A D - N O D E N D  _ F U L L _ I N I T I A L I Z E  S U B ROUTINE -
+
+      SUBROUTINE NODEND_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for NODEND controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      TYPE ( NODEND_full_data_type ), INTENT( INOUT ) :: data
+      TYPE ( NODEND_control_type ), INTENT( OUT ) :: control
+      TYPE ( NODEND_inform_type ), INTENT( OUT ) :: inform
+
+      CALL NODEND_initialize( control, inform )
+
+      RETURN
+
+!  End of subroutine NODEND_full_initialize
+
+      END SUBROUTINE NODEND_full_initialize
 
 !-*-*-*-   M E T I S _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
@@ -1494,6 +1546,42 @@
 !  End of subroutine NODEND_order_adjacency
 
       END SUBROUTINE NODEND_order_adjacency
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+
+! ----------------------------------------------------------------------------
+!- G A L A H A D -  N O D E N D _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE NODEND_information( data, inform, status )
+
+!  return solver information during or after solution by NODEND
+!  See NODEND_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( NODEND_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( NODEND_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%nodend_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine NODEND_information
+
+     END SUBROUTINE NODEND_information
 
 !  end of module GALAHAD_NODEND
 
