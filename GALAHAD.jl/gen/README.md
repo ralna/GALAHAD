@@ -6,14 +6,23 @@ This is done using [Clang.jl](https://github.com/JuliaInterop/Clang.jl).
 
 # Usage
 
-Either run `julia wrapper.jl` directly, or include it and call the
-`main()` function.  Be sure to activate and instantiate the project
-environment in this folder to install `Clang.jl` and
-`JuliaFormatter.jl`.
+Activate and instantiate the project environment in this folder
+to install the dependencies `Clang.jl` and `JuliaFormatter.jl`:
 ```julia
 julia --project
 julia> ]
 (gen) pkg> instantiate
+```
+
+Then, regenerate the Julia wrappers with the following commands:
+```julia
+julia> include("wrapper.jl")
+julia> main()
+```
+
+If you have already instantiated the environment, you can also run:
+```bash
+julia --project wrapper.jl
 ```
 
 The `main` function supports the boolean keyword argument `optimized` to
