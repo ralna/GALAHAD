@@ -18,4 +18,4 @@ jobs:
           version: 1
           arch: x64
       - name: Check the structures
-        run: julia --color=yes .github/julia/check_structures.jl
+        run: julia --color=no .github/julia/check_structures.jl
