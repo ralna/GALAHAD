@@ -26,10 +26,10 @@ jobs:
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
       - name: Cross-compilation of GALAHAD -- x86_64-linux-gnu-libgfortran5
         run: |
-          julia --color=yes -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=yes .github/julia/build_tarballs.jl x86_64-linux-gnu-libgfortran5 --verbose
+          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=no .github/julia/build_tarballs.jl x86_64-linux-gnu-libgfortran5 --verbose
       - name: Archive artifact
-        run: julia --color=yes .github/julia/generate_binaries.jl
+        run: julia --color=no .github/julia/generate_binaries.jl
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -55,10 +55,10 @@ jobs:
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
       - name: Cross-compilation of GALAHAD -- x86_64-w64-mingw32-libgfortran5
         run: |
-          julia --color=yes -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=yes .github/julia/build_tarballs.jl x86_64-w64-mingw32-libgfortran5 --verbose
+          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=no .github/julia/build_tarballs.jl x86_64-w64-mingw32-libgfortran5 --verbose
       - name: Archive artifact
-        run: julia --color=yes .github/julia/generate_binaries.jl
+        run: julia --color=no .github/julia/generate_binaries.jl
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -84,10 +84,10 @@ jobs:
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
       - name: Cross-compilation of GALAHAD -- x86_64-apple-darwin-libgfortran5
         run: |
-          julia --color=yes -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=yes .github/julia/build_tarballs.jl x86_64-apple-darwin-libgfortran5 --verbose
+          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=no .github/julia/build_tarballs.jl x86_64-apple-darwin-libgfortran5 --verbose
       - name: Archive artifact
-        run: julia --color=yes .github/julia/generate_binaries.jl
+        run: julia --color=no .github/julia/generate_binaries.jl
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -113,10 +113,10 @@ jobs:
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
       - name: Cross-compilation of GALAHAD -- aarch64-apple-darwin-libgfortran5
         run: |
-          julia --color=yes -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=yes .github/julia/build_tarballs.jl aarch64-apple-darwin-libgfortran5 --verbose
+          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=no .github/julia/build_tarballs.jl aarch64-apple-darwin-libgfortran5 --verbose
       - name: Archive artifact
-        run: julia --color=yes .github/julia/generate_binaries.jl
+        run: julia --color=no .github/julia/generate_binaries.jl
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

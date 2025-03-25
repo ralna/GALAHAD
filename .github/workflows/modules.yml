@@ -46,4 +46,4 @@ jobs:
           arch: x64
 
       - name: Check the modules
-        run: julia --color=yes .github/julia/check_modules.jl
+        run: julia --color=no .github/julia/check_modules.jl
