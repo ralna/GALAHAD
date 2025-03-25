@@ -21,6 +21,7 @@ struct spral_ssids_options{T,INT}
   pivot_method::INT
   small::T
   u::T
+  nodend_options::nodend_control_type{INT}
   nstream::INT
   multiplier::T
   min_loadbalance::Float32
@@ -47,6 +48,7 @@ struct spral_ssids_inform{INT}
   stat::INT
   cuda_error::INT
   cublas_error::INT
+  nodend_inform::nodend_inform_type{INT}
   not_first_pass::INT
   not_second_pass::INT
   nparts::INT
