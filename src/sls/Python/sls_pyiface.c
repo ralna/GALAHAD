@@ -1,7 +1,7 @@
 //* \file sls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 5.2 - 2025-03-26 AT 13:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -22,6 +22,10 @@
 PyObject* sils_make_ainfo_dict(const struct sils_ainfo_type *inform);
 PyObject* sils_make_finfo_dict(const struct sils_finfo_type *inform);
 PyObject* sils_make_sinfo_dict(const struct sils_sinfo_type *inform);
+bool nodend_update_control(struct nodend_control_type *control,
+                        PyObject *py_options);
+PyObject* nodend_make_options_dict(const struct nodend_control_type *control);
+PyObject* nodend_make_inform_dict(const struct nodend_inform_type *inform);
 //PyObject* ma57_make_ainfo_dict(const struct ma57_ainfo_type *inform);
 //PyObject* ma57_make_finfo_dict(const struct ma57_finfo_type *inform);
 //PyObject* ma57_make_sinfo_dict(const struct ma57_sinfo_type *inform);
@@ -370,6 +374,11 @@ bool sls_update_control(struct sls_control_type *control,
                 return false;
             continue;
         }
+        if(strcmp(key_name, "nodend_options") == 0){
+            if(!nodend_update_control(&control->nodend_control, value))
+                return false;
+            continue;
+        }
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
           "unrecognised option options['%s']\n", key_name);
@@ -486,7 +495,8 @@ PyObject* sls_make_options_dict(const struct sls_control_type *control){
                          PyUnicode_FromString(control->out_of_core_restart_file));
     PyDict_SetItemString(py_options, "prefix",
                          PyUnicode_FromString(control->prefix));
-
+    PyDict_SetItemString(py_options, "nodend_options",
+                         nodend_make_options_dict(&control->nodend_control));
     return py_options;
 }
 
@@ -693,7 +703,9 @@ PyObject* sls_make_inform_dict(const struct sls_inform_type *inform){
     // Set time nested dictionary
     PyDict_SetItemString(py_inform, "time",
                          sls_make_time_dict(&inform->time));
-
+    // Set dictionaries from subservient packages
+    PyDict_SetItemString(py_inform, "nodend_inform",
+                         nodend_make_inform_dict(&inform->nodend_inform));
     return py_inform;
 }
 

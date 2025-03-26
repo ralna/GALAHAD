@@ -23,7 +23,7 @@
 
   Find a symmetric row and column permutation P A P'
   of a symmetric, sparse matrix A with the aim of limiting 
-  the fill-in during subsequent Cholesky-like factorization}. 
+  the fill-in during subsequent Cholesky-like factorization. 
   The package is actually a wrapper to the METIS_NodeND
   procedure from versions 4.0, 5.1 and 5.2 of the
   METIS package from the Karypis Lab.
