@@ -222,7 +222,7 @@ WRITE(89, "(' col_ptr ', /, 6( 1X,  I11 ) )" ) col_ptr( :  A%n + 1 )
 !BACKSPACE(89)
 WRITE(89, "(' coordinate' )" )
 WRITE(89, "(' n, ne ', I0, 1X, I0 )" ) A%n, A%ne
-WRITE(89, "(' a_row, col, val ', /, 6( 1X,  2I11, ES12.4 ) )" ) &
+WRITE(89, "(' a_row, col, val ', /, 2( 1X,  2I11, ES12.4 ) )" ) &
 ( A%row(i),a%col(i),a%val(i), i = 1, A%ne )
 CLOSE(89)
 !--------------print---------------------
