@@ -3,6 +3,7 @@ libgalahad_src += files('sls.F90')
 libgalahad_c_src += files('C/sls_ciface.F90')
 
 libgalahad_python_src += [['sls', files('Python/sls_pyiface.c',
+                                        '../nodend/Python/nodend_pyiface.c',
                                         '../sils/Python/sils_pyiface.c')]]
 
 libgalahad_cutest_src += files('usesls.F90')
