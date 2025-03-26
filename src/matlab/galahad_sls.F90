@@ -243,6 +243,15 @@
         END IF
       END IF
 
+!     control%out = 6
+!     INQUIRE( control%out, OPENED = opened )
+!     IF ( .NOT. opened ) THEN
+!       WRITE( char_output_unit, "( I0 )" ) control%out
+!       filename = "output_sls." // TRIM( char_output_unit )
+!       OPEN( control%out, FILE = filename, FORM = 'FORMATTED',                &
+!             STATUS = 'REPLACE', IOSTAT = iores )
+!     END IF
+
 !  initialize the internal structures for sls
 
       IF ( TRIM( mode ) == 'initial' .OR. TRIM( mode ) == 'all' ) THEN
@@ -274,7 +283,7 @@
 !  if the third argument is present, extract the input control data
 
         s_len = slen
-        IF ( nrhs == c_arg ) THEN
+        IF ( nrhs >= c_arg ) THEN
           c_in = prhs( c_arg )
           IF ( .NOT. mxIsStruct( c_in ) )                                      &
             CALL mexErrMsgTxt( ' last input argument must be a structure' )

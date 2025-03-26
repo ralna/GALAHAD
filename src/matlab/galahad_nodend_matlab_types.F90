@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 5.2 - 2025-03-24 AT 16:00 GMT.
+!  THIS VERSION: GALAHAD 5.2 - 2025-03-25 AT 16:00 GMT.
 
 !-*-*-  G A L A H A D _ N O D E N D _ M A T L A B _ T Y P E S   M O D U L E  -*-
 
@@ -45,9 +45,7 @@
 
       TYPE, PUBLIC :: NODEND_pointer_type
         mwPointer :: pointer
-        mwPointer :: status, alloc_status, bad_alloc
-        mwPointer :: max_degree, differences_needed, max_reduced_degree
-        mwPointer :: approximation_algorithm_used, bad_row
+        mwPointer :: status, alloc_status, bad_alloc, version
       END TYPE
 
     CONTAINS

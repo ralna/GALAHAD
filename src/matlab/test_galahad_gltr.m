@@ -21,7 +21,7 @@ end
 
 [ control ]   = galahad_gltr( 'initial' ) ;
 control.out = 6 ;
-control.print_level = 1 ;
+%control.print_level = 1 ;
 
 fprintf('solve dense examples \n')
 control.unitm = 1 ;

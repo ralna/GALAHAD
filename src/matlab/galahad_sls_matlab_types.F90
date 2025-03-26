@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 26/02/2010 AT 14:00 GMT.
+!  THIS VERSION: GALAHAD 5.2 - 2025-03-25 AT 16:30 GMT.
 
 !-**-*-*-  G A L A H A D _ S L S _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
 
@@ -19,6 +19,7 @@
 
       USE GALAHAD_MATLAB
       USE GALAHAD_SLS_double
+      USE GALAHAD_NODEND_MATLAB_TYPES
 
       IMPLICIT NONE
 
@@ -63,6 +64,7 @@
         mwPointer :: minimum_scaling_factor, maximum_scaling_factor
         mwPointer :: condition_number_1, condition_number_2
         mwPointer :: backward_error_1, backward_error_2, forward_error
+        TYPE ( NODEND_pointer_type ) :: NODEND_pointer
       END TYPE
 
     CONTAINS
@@ -90,8 +92,9 @@
 !  local variables
 
       INTEGER :: i, nfields
-      mwPointer :: pc
+      mwPointer :: pc, mxGetField
       mwSize :: mxGetNumberOfFields
+      LOGICAL :: mxIsStruct
       CHARACTER ( LEN = slen ) :: name, mxGetFieldNameByNumber
 
       nfields = mxGetNumberOfFields( ps )
@@ -212,6 +215,12 @@
         CASE( 'prefix' )
           CALL galmxGetCharacter( ps, 'prefix',                                &
                                   pc, SLS_control%prefix, len )
+        CASE( 'NODEND_control' )
+          pc = mxGetField( ps, 1_mwi_, 'NODEND_control' )
+          IF ( .NOT. mxIsStruct( pc ) )                                        &
+            CALL mexErrMsgTxt( ' component NODEND_control must be a structure' )
+          CALL NODEND_matlab_control_set( pc, SLS_control%NODEND_control, len )
+
         END SELECT
       END DO
 
@@ -246,7 +255,7 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 38
+      INTEGER * 4, PARAMETER :: ninform = 39
       CHARACTER ( LEN = 28 ), PARAMETER :: finform( ninform ) = (/             &
            'error                       ', 'warning                     ',     &
            'out                         ', 'statistics                  ',     &
@@ -266,7 +275,8 @@
            'absolute_pivot_tolerance    ', 'zero_tolerance              ',     &
            'static_pivot_tolerance      ', 'static_level_switch         ',     &
            'consistency_tolerance       ', 'acceptable_residual_relative',     &
-           'acceptable_residual_absolute', 'prefix                      '     /)
+           'acceptable_residual_absolute', 'prefix                      ',     &
+           'NODEND_control              ' /)
 
 !  create the structure
 
@@ -357,6 +367,10 @@
       CALL MATLAB_fill_component( pointer, 'prefix',                           &
                                   SLS_control%prefix )
 
+!  create the components of sub-structure NODEND_control
+
+      CALL NODEND_matlab_control_get( pointer, SLS_control%NODEND_control,     &
+                                      'NODEND_control' )
       RETURN
 
 !  End of subroutine SLS_matlab_control_get
@@ -389,7 +403,7 @@
 
       mwPointer :: mxCreateStructMatrix
 
-      INTEGER * 4, PARAMETER :: ninform = 42
+      INTEGER * 4, PARAMETER :: ninform = 43
       CHARACTER ( LEN = 24 ), PARAMETER :: finform( ninform ) = (/             &
            'status                  ', 'alloc_status            ',             &
            'bad_alloc               ', 'more_info               ',             &
@@ -412,7 +426,8 @@
            'largest_modified_pivot  ', 'minimum_scaling_factor  ',             &
            'maximum_scaling_factor  ', 'condition_number_1      ',             &
            'condition_number_2      ', 'backward_error_1        ',             &
-           'backward_error_2        ', 'forward_error           ' /)
+           'backward_error_2        ', 'forward_error           ',             &
+           'NODEND_inform           '  /)
 
 !  create the structure
 
@@ -510,6 +525,12 @@
         'backward_error_2', SLS_pointer%backward_error_2 )
       CALL MATLAB_create_real_component( SLS_pointer%pointer,                  &
         'forward_error', SLS_pointer%forward_error )
+
+!  Define the components of sub-structure SBLS_inform
+
+      CALL NODEND_matlab_inform_create( SLS_pointer%pointer,                   &
+                                        SLS_pointer%NODEND_pointer,            &
+                                        'NODEND_inform' )
       RETURN
 
 !  End of subroutine SLS_matlab_inform_create
@@ -622,6 +643,11 @@
             mxGetPr( SLS_pointer%backward_error_2 ) )
       CALL MATLAB_copy_to_ptr( SLS_inform%forward_error,                       &
             mxGetPr( SLS_pointer%forward_error ) )
+
+!  nested-dissection ordeing
+
+      CALL NODEND_matlab_inform_get( SLS_inform%NODEND_inform,                 &
+                                     SLS_pointer%NODEND_pointer )
 
       RETURN
 

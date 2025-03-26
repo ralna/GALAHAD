@@ -14,6 +14,10 @@ MEX = $(MATLAB)/bin/mex
 
 MEXEXT = $(shell $(MATLAB)/bin/mexext)
 
+#  Mex file extension
+
+MEXOUTDIR = $(MEXEXT)_output
+
 #  compiler flags
 
 MATLABINC = -I$(MATLAB)/extern/include
@@ -27,7 +31,7 @@ MFLAGS    = CC='$(CC)' FC='$(FORTRAN)' \
             -silent -largeArrayDims $(MATLABINC) $(MOMP)
 #            -g -largeArrayDims -compatibleArrayDims $(MATLABINC) $(MOMP)
 
-MEXFLAGS = -L$(OBJD) $(LIBS) $(MFLAGS)
+MEXFLAGS = -L$(OBJD) $(LIBS) $(MFLAGS) -outdir $(MEXOUTDIR)
 
 #  names of random libraries
 
@@ -62,10 +66,10 @@ MAT_LSRT = $(MAT_BASIC) $(MLG)(galahad_lsrt_matlab_types.o)
 MAT_LSTR = $(MAT_BASIC) $(MLG)(galahad_lstr_matlab_types.o)
 MAT_L2RT = $(MAT_BASIC) $(MLG)(galahad_l2rt_matlab_types.o)
 MAT_ULS = $(MAT_BASIC) $(MLG)(galahad_uls_matlab_types.o)
-MAT_SLS = $(MAT_BASIC) $(MLG)(galahad_sls_matlab_types.o)
+MAT_NODEND = $(MAT_BASIC) $(MLG)(galahad_nodend_matlab_types.o)
+MAT_SLS = $(MAT_NODEND) $(MLG)(galahad_sls_matlab_types.o)
 MAT_LMS = $(MAT_BASIC) $(MLG)(galahad_lms_matlab_types.o)
 MAT_SHA = $(MAT_BASIC) $(MLG)(galahad_sha_matlab_types.o)
-MAT_NODEND = $(MAT_BASIC) $(MLG)(galahad_nodend_matlab_types.o)
 MAT_SCALE = $(MAT_BASIC) $(MLG)(galahad_scale_matlab_types.o)
 MAT_PRESOLVE = $(MAT_BASIC) $(MLG)(galahad_presolve_matlab_types.o)
 MAT_PSLS = $(MAT_SLS) $(MLG)(galahad_psls_matlab_types.o)
@@ -201,7 +205,6 @@ all_doublee_64:
 #failed qpb
 #missing dicfs (glrt gltr)
 
-
 #  everything including current developments
 
 all_current: all_current_$(PRECIS)
@@ -266,11 +269,13 @@ smt:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             smt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 basic_single:
+	$(MKDIR) -p $(MEXOUTDIR)
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             ssids_dum PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 basic_double:
+	$(MKDIR) -p $(MEXOUTDIR)
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -285,6 +290,7 @@ galahad_arc.$(MEXEXT): galahad_arc.F90
                      arc_silent PRECIS=double PWD=$(PWD)/../arc )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_arc"
 	$(MEX) galahad_arc.F90 -output galahad_arc $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_arc.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  bgo
@@ -296,6 +302,7 @@ galahad_bgo.$(MEXEXT): galahad_bgo.F90
                      bgo_silent PRECIS=double PWD=$(PWD)/../bgo )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_bgo"
 	$(MEX) galahad_bgo.F90 -output galahad_bgo $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_bgo.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  blls
@@ -307,6 +314,7 @@ galahad_blls.$(MEXEXT): galahad_blls.F90
                      blls_silent PRECIS=double PWD=$(PWD)/../blls )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_blls"
 	$(MEX) galahad_blls.F90 -output galahad_blls $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_blls.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  bllsb
@@ -318,6 +326,7 @@ galahad_bllsb.$(MEXEXT): galahad_bllsb.F90
                      bllsb_silent PRECIS=double PWD=$(PWD)/../bllsb )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_bllsb"
 	$(MEX) galahad_bllsb.F90 -output galahad_bllsb $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_bllsb.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  clls
@@ -329,6 +338,7 @@ galahad_clls.$(MEXEXT): galahad_clls.F90
                      clls_silent PRECIS=double PWD=$(PWD)/../clls )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_clls"
 	$(MEX) galahad_clls.F90 -output galahad_clls $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_clls.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  slls
@@ -340,6 +350,7 @@ galahad_slls.$(MEXEXT): galahad_slls.F90
                      slls_silent PRECIS=double PWD=$(PWD)/../slls )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_slls"
 	$(MEX) galahad_slls.F90 -output galahad_slls $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_slls.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  dgo
@@ -351,6 +362,7 @@ galahad_dgo.$(MEXEXT): galahad_dgo.F90
                      dgo_silent PRECIS=double PWD=$(PWD)/../dgo )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_dgo"
 	$(MEX) galahad_dgo.F90 -output galahad_dgo $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_dgo.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  bqp
@@ -362,6 +374,7 @@ galahad_bqp.$(MEXEXT): galahad_bqp.F90
                      bqp_silent PRECIS=double PWD=$(PWD)/../bqp )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_bqp"
 	$(MEX) galahad_bqp.F90 -output galahad_bqp $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_bqp.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  bqpb
@@ -373,6 +386,7 @@ galahad_bqpb.$(MEXEXT): galahad_bqpb.F90
                      bqpb_silent PRECIS=double PWD=$(PWD)/../bqpb )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_bqpb"
 	$(MEX) galahad_bqpb.F90 -output galahad_bqpb $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_bqpb.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  lpa
@@ -384,6 +398,7 @@ galahad_lpa.$(MEXEXT): galahad_lpa.F90
                      lpa_silent PRECIS=double PWD=$(PWD)/../lpa )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_lpa"
 	$(MEX) galahad_lpa.F90 -output galahad_lpa $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_lpa.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  lpb
@@ -395,6 +410,7 @@ galahad_lpb.$(MEXEXT): galahad_lpb.F90
                      lpb_silent PRECIS=double PWD=$(PWD)/../lpb )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_lpb"
 	$(MEX) galahad_lpb.F90 -output galahad_lpb $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_lpb.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  cqp
@@ -406,6 +422,7 @@ galahad_cqp.$(MEXEXT): galahad_cqp.F90
                      cqp_silent PRECIS=double PWD=$(PWD)/../cqp )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_cqp"
 	$(MEX) galahad_cqp.F90 -output galahad_cqp $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_cqp.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  dqp
@@ -417,6 +434,7 @@ galahad_dqp.$(MEXEXT): galahad_dqp.F90
                      dqp_silent PRECIS=double PWD=$(PWD)/../dqp )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_dqp"
 	$(MEX) galahad_dqp.F90 -output galahad_dqp $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_dqp.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  eqp
@@ -428,6 +446,7 @@ galahad_eqp.$(MEXEXT): galahad_eqp.F90
                      eqp_silent PRECIS=double PWD=$(PWD)/../eqp )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_eqp"
 	$(MEX) galahad_eqp.F90 -output galahad_eqp $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_eqp.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  glrt
@@ -441,6 +460,7 @@ galahad_glrt.$(MEXEXT): galahad_glrt.F90
                      psls_silent PRECIS=double PWD=$(PWD)/../psls )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_glrt"
 	$(MEX) galahad_glrt.F90 -output galahad_glrt $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_glrt.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  gltr
@@ -454,6 +474,7 @@ galahad_gltr.$(MEXEXT): galahad_gltr.F90
                      psls_silent PRECIS=double PWD=$(PWD)/../psls )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_gltr"
 	$(MEX) galahad_gltr.F90 -output galahad_gltr $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_gltr.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  llst
@@ -465,6 +486,7 @@ galahad_llst.$(MEXEXT): galahad_llst.F90
                      llst_silent PRECIS=double PWD=$(PWD)/../llst )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_llst"
 	$(MEX) galahad_llst.F90 -output galahad_llst $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_llst.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  lsqp
@@ -476,6 +498,7 @@ galahad_lsqp.$(MEXEXT): galahad_lsqp.F90
                      lsqp_silent PRECIS=double PWD=$(PWD)/../lsqp )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_lsqp"
 	$(MEX) galahad_lsqp.F90 -output galahad_lsqp $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_lsqp.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  lsrt
@@ -487,6 +510,7 @@ galahad_lsrt.$(MEXEXT): galahad_lsrt.F90
                      lsrt_silent PRECIS=double PWD=$(PWD)/../lsrt )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_lsrt"
 	$(MEX) galahad_lsrt.F90 -output galahad_lsrt $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_lsrt.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  lstr
@@ -498,6 +522,7 @@ galahad_lstr.$(MEXEXT): galahad_lstr.F90
                      lstr_silent PRECIS=double PWD=$(PWD)/../lstr )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_lstr"
 	$(MEX) galahad_lstr.F90 -output galahad_lstr $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_lstr.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  l2rt
@@ -509,6 +534,7 @@ galahad_l2rt.$(MEXEXT): galahad_l2rt.F90
                      l2rt_silent PRECIS=double PWD=$(PWD)/../l2rt )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_l2rt"
 	$(MEX) galahad_l2rt.F90 -output galahad_l2rt $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_l2rt.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  nls
@@ -520,6 +546,7 @@ galahad_nls.$(MEXEXT): galahad_nls.F90
                      nls_silent PRECIS=double PWD=$(PWD)/../nls )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_nls"
 	$(MEX) galahad_nls.F90 -output galahad_nls $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_nls.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  nodend
@@ -531,6 +558,7 @@ galahad_nodend.$(MEXEXT): galahad_nodend.F90
                      nodend_silent PRECIS=double PWD=$(PWD)/../nodend )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_nodend"
 	$(MEX) galahad_nodend.F90 -output galahad_nodend $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_nodend.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  qpa
@@ -542,6 +570,7 @@ galahad_qpa.$(MEXEXT): galahad_qpa.F90
                      qpa_silent PRECIS=double PWD=$(PWD)/../qpa )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_qpa"
 	$(MEX) galahad_qpa.F90 -output galahad_qpa $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_qpa.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  qpb
@@ -553,6 +582,7 @@ galahad_qpb.$(MEXEXT): galahad_qpb.F90
                      qpb_silent PRECIS=double PWD=$(PWD)/../qpb )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_qpb"
 	$(MEX) galahad_qpb.F90 -output galahad_qpb $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_qpb.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  qpc
@@ -564,6 +594,7 @@ galahad_qpc.$(MEXEXT): galahad_qpc.F90
                      qpc_silent PRECIS=double PWD=$(PWD)/../qpc )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_qpc"
 	$(MEX) galahad_qpc.F90 -output galahad_qpc $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_qpc.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  qp
@@ -575,6 +606,7 @@ galahad_qp.$(MEXEXT): galahad_qp.F90
                      qp_silent PRECIS=double PWD=$(PWD)/../qp )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_qp"
 	$(MEX) galahad_qp.F90 -output galahad_qp $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_qp.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  rqs
@@ -586,6 +618,7 @@ galahad_rqs.$(MEXEXT): galahad_rqs.F90
                      rqs_silent PRECIS=double PWD=$(PWD)/../rqs )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_rqs"
 	$(MEX) galahad_rqs.F90 -output galahad_rqs $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_rqs.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  sbls
@@ -597,6 +630,7 @@ galahad_sbls.$(MEXEXT): galahad_sbls.F90
                      sbls_silent PRECIS=double PWD=$(PWD)/../sbls )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_sbls"
 	$(MEX) galahad_sbls.F90 -output galahad_sbls $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_sbls.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  sils
@@ -608,6 +642,7 @@ galahad_sils.$(MEXEXT): galahad_sils.F90
                     sils_silent PRECIS=double PWD=$(PWD)/../sils )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_sils"
 	$(MEX) galahad_sils.F90 -output galahad_sils $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_sils.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  sls
@@ -619,6 +654,7 @@ galahad_sls.$(MEXEXT): galahad_sls.F90
                      sls_silent PRECIS=double PWD=$(PWD)/../sls )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_sls"
 	$(MEX) galahad_sls.F90 -output galahad_sls $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_sls.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  trb
@@ -630,6 +666,7 @@ galahad_trb.$(MEXEXT): galahad_trb.F90
                      trb_silent PRECIS=double PWD=$(PWD)/../trb )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_trb"
 	$(MEX) galahad_trb.F90 -output galahad_trb $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_trb.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  trs
@@ -641,6 +678,7 @@ galahad_trs.$(MEXEXT): galahad_trs.F90
                      trs_silent PRECIS=double PWD=$(PWD)/../trs )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_trs"
 	$(MEX) galahad_trs.F90 -output galahad_trs $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_trs.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  tru
@@ -652,6 +690,7 @@ galahad_tru.$(MEXEXT): galahad_tru.F90
                      tru_silent PRECIS=double PWD=$(PWD)/../tru )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_tru"
 	$(MEX) galahad_tru.F90 -output galahad_tru $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_tru.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  ugo
@@ -663,6 +702,7 @@ galahad_ugo.$(MEXEXT): galahad_ugo.F90
                      ugo_silent PRECIS=double PWD=$(PWD)/../ugo )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_ugo"
 	$(MEX) galahad_ugo.F90 -output galahad_ugo $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_ugo.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  uls
@@ -674,6 +714,7 @@ galahad_uls.$(MEXEXT): galahad_uls.F90
                      uls_silent PRECIS=double PWD=$(PWD)/../uls )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_uls"
 	$(MEX) galahad_uls.F90 -output galahad_uls $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_uls.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  wcp
@@ -685,6 +726,7 @@ galahad_wcp.$(MEXEXT): galahad_wcp.F90
                      wcp_silent PRECIS=double PWD=$(PWD)/../wcp )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_wcp"
 	$(MEX) galahad_wcp.F90 -output galahad_wcp $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_wcp.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  demo
@@ -1640,11 +1682,11 @@ $(MLG)(galahad_wcp_matlab_types.o): galahad_wcp_matlab_types.F90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning generated mex files"
-	$(RM) $(MLG) ./*.mexglx ./*.mexa64 $(OBJ)/libgalahad_matlab.a \
+	$(RM) $(MLG) ./*.mexglx $(MEXOUTDIR)/* $(OBJ)/libgalahad_matlab.a \
           $(MOD)/*matlab*
 	@printf '[ OK ]\n'
 
 cleanall:
 	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
-	$(RM) -r $(OBJ)/* $(MOD)/* ./*.mexglx ./output_* ./*.mexa64
+	$(RM) -r $(OBJ)/* $(MOD)/* ./*.mexglx  $(MEXOUTDIR)/*
 	@printf '[ OK ]\n'

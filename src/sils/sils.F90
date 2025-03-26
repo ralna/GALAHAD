@@ -2465,7 +2465,7 @@
        END IF
        IF ( PRESENT( PIVOTS ) ) THEN
           PIVOTS( kp + 1 : kp + nrows ) = FACTORS%iw( kw + 1 : kw + nrows )
-write(6,*) ' sils pivots ', PIVOTS( kp + 1 : kp + nrows )
+!write(6,*) ' sils pivots ', PIVOTS( kp + 1 : kp + nrows )
           kp = kp + nrows
        END IF
        IF ( PRESENT( D ) ) THEN
