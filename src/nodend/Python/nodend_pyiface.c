@@ -381,7 +381,7 @@ PyObject* nodend_make_inform_dict(const struct nodend_inform_type *inform){
 static PyObject* py_nodend_initialize(PyObject *self){
 
     // Call nodend_initialize
-    nodend_initialize(&control, &status);
+    nodend_initialize(&data, &control, &status);
 
     // Record that NODEND has been initialised
     init_called = true;
