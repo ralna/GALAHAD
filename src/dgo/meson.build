@@ -3,10 +3,19 @@ libgalahad_src += files('dgo.F90')
 libgalahad_c_src += files('C/dgo_ciface.F90')
 
 libgalahad_python_src += [['dgo', files('Python/dgo_pyiface.c',
-                                        '../sls/Python/sls_pyiface.c','../ir/Python/ir_pyiface.c','../trs/Python/trs_pyiface.c',
-                                        '../gltr/Python/gltr_pyiface.c','../lhs/Python/lhs_pyiface.c','../lms/Python/lms_pyiface.c',
-                                        '../psls/Python/psls_pyiface.c','../sha/Python/sha_pyiface.c','../trb/Python/trb_pyiface.c',
-                                        '../ugo/Python/ugo_pyiface.c','../hash/Python/hash_pyiface.c','../sils/Python/sils_pyiface.c')]]
+                                        '../nodend/Python/nodend_pyiface.c',
+                                        '../sls/Python/sls_pyiface.c',
+                                        '../ir/Python/ir_pyiface.c',
+                                        '../trs/Python/trs_pyiface.c',
+                                        '../gltr/Python/gltr_pyiface.c',
+                                        '../lhs/Python/lhs_pyiface.c',
+                                        '../lms/Python/lms_pyiface.c',
+                                        '../psls/Python/psls_pyiface.c',
+                                        '../sha/Python/sha_pyiface.c',
+                                        '../trb/Python/trb_pyiface.c',
+                                        '../ugo/Python/ugo_pyiface.c',
+                                        '../hash/Python/hash_pyiface.c',
+                                        '../sils/Python/sils_pyiface.c')]]
 
 libgalahad_cutest_src += files('usedgo.F90')
 

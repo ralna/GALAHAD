@@ -3,7 +3,9 @@ libgalahad_src += files('trs.F90')
 libgalahad_c_src += files('C/trs_ciface.F90')
 
 libgalahad_python_src += [['trs', files('Python/trs_pyiface.c',
-                                        '../sls/Python/sls_pyiface.c','../ir/Python/ir_pyiface.c',
+                                        '../nodend/Python/nodend_pyiface.c',
+                                        '../sls/Python/sls_pyiface.c',
+                                        '../ir/Python/ir_pyiface.c',
                                         '../sils/Python/sils_pyiface.c')]]
 
 libgalahad_cutest_src += files('usetrs.F90')

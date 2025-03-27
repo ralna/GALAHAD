@@ -5,9 +5,16 @@ galahad_binaries += [['inqpb', files('inqpb.F90')]]
 libgalahad_c_src += files('C/qpb_ciface.F90')
 
 libgalahad_python_src += [['qpb', files('Python/qpb_pyiface.c',
-                                        '../sls/Python/sls_pyiface.c','../sbls/Python/sbls_pyiface.c','../fit/Python/fit_pyiface.c',
-                                        '../gltr/Python/gltr_pyiface.c','../fdc/Python/fdc_pyiface.c','../lsqp/Python/lsqp_pyiface.c',
-                                        '../sils/Python/sils_pyiface.c','../uls/Python/uls_pyiface.c','../gls/Python/gls_pyiface.c',)]]
+                                        '../nodend/Python/nodend_pyiface.c',
+                                        '../sls/Python/sls_pyiface.c',
+                                        '../sbls/Python/sbls_pyiface.c',
+                                        '../fit/Python/fit_pyiface.c',
+                                        '../gltr/Python/gltr_pyiface.c',
+                                        '../fdc/Python/fdc_pyiface.c',
+                                        '../lsqp/Python/lsqp_pyiface.c',
+                                        '../sils/Python/sils_pyiface.c',
+                                        '../uls/Python/uls_pyiface.c',
+                                        '../gls/Python/gls_pyiface.c',)]]
 
 libgalahad_cutest_src += files('useqpb.F90')
 

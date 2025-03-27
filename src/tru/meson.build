@@ -3,9 +3,16 @@ libgalahad_src += files('tru.F90')
 libgalahad_c_src += files('C/tru_ciface.F90')
 
 libgalahad_python_src += [['tru', files('Python/tru_pyiface.c',
-                                        '../sls/Python/sls_pyiface.c','../ir/Python/ir_pyiface.c','../trs/Python/trs_pyiface.c',
-                                        '../gltr/Python/gltr_pyiface.c','../psls/Python/psls_pyiface.c','../dps/Python/dps_pyiface.c',
-                                        '../lms/Python/lms_pyiface.c','../sec/Python/sec_pyiface.c','../sha/Python/sha_pyiface.c',
+                                        '../nodend/Python/nodend_pyiface.c',
+                                        '../sls/Python/sls_pyiface.c',
+                                        '../ir/Python/ir_pyiface.c',
+                                        '../trs/Python/trs_pyiface.c',
+                                        '../gltr/Python/gltr_pyiface.c',
+                                        '../psls/Python/psls_pyiface.c',
+                                        '../dps/Python/dps_pyiface.c',
+                                        '../lms/Python/lms_pyiface.c',
+                                        '../sec/Python/sec_pyiface.c',
+                                        '../sha/Python/sha_pyiface.c',
                                         '../sils/Python/sils_pyiface.c')]]
 
 libgalahad_cutest_src += files('usetru.F90')

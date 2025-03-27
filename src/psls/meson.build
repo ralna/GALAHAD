@@ -3,7 +3,9 @@ libgalahad_src += files('psls.F90')
 libgalahad_c_src += files('C/psls_ciface.F90')
 
 libgalahad_python_src += [['psls', files('Python/psls_pyiface.c',
-                                         '../sls/Python/sls_pyiface.c','../sils/Python/sils_pyiface.c')]]
+                                         '../nodend/Python/nodend_pyiface.c',
+                                         '../sls/Python/sls_pyiface.c',
+                                         '../sils/Python/sils_pyiface.c')]]
 
 galahad_tests += [['psls', 'pslst', files('pslst.F90')],
                   ['psls', 'pslsti', files('pslsti.F90')]]

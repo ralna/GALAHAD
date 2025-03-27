@@ -4,8 +4,13 @@ libgalahad_c_src += files('C/blls_ciface.F90')
 
 
 libgalahad_python_src += [['blls', files('Python/blls_pyiface.c',
-                                         '../sbls/Python/sbls_pyiface.c','../convert/Python/convert_pyiface.c','../sls/Python/sls_pyiface.c',
-                                         '../uls/Python/uls_pyiface.c','../roots/Python/roots_pyiface.c','../sils/Python/sils_pyiface.c',
+                                         '../nodend/Python/nodend_pyiface.c',
+                                         '../sbls/Python/sbls_pyiface.c',
+                                         '../convert/Python/convert_pyiface.c',
+                                         '../sls/Python/sls_pyiface.c',
+                                         '../uls/Python/uls_pyiface.c',
+                                         '../roots/Python/roots_pyiface.c',
+                                         '../sils/Python/sils_pyiface.c',
                                          '../gls/Python/gls_pyiface.c')]]
 
 libgalahad_cutest_src += files('useblls.F90')

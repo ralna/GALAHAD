@@ -3,9 +3,16 @@ libgalahad_src += files('cro.F90')
 libgalahad_c_src += files('C/cro_ciface.F90')
 
 libgalahad_python_src += [['cro', files('Python/cro_pyiface.c',
-                                        '../sbls/Python/sbls_pyiface.c','../lms/Python/lms_pyiface.c','../scu/Python/scu_pyiface.c',
-                                        '../ir/Python/ir_pyiface.c','../rpd/Python/rpd_pyiface.c','../sls/Python/sls_pyiface.c',
-                                        '../sils/Python/sils_pyiface.c','../uls/Python/uls_pyiface.c','../gls/Python/gls_pyiface.c')]]
+                                        '../nodend/Python/nodend_pyiface.c',
+                                        '../sbls/Python/sbls_pyiface.c',
+                                        '../lms/Python/lms_pyiface.c',
+                                        '../scu/Python/scu_pyiface.c',
+                                        '../ir/Python/ir_pyiface.c',
+                                        '../rpd/Python/rpd_pyiface.c',
+                                        '../sls/Python/sls_pyiface.c',
+                                        '../sils/Python/sils_pyiface.c',
+                                        '../uls/Python/uls_pyiface.c',
+                                        '../gls/Python/gls_pyiface.c')]]
 
 galahad_tests += [['cro', 'crot', files('crot.F90')],
                   ['cro', 'croti', files('croti.F90')]]

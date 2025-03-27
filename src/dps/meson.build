@@ -3,7 +3,9 @@ libgalahad_src += files('dps.F90')
 libgalahad_c_src += files('C/dps_ciface.F90')
 
 libgalahad_python_src += [['dps', files('Python/dps_pyiface.c',
-                                        '../sls/Python/sls_pyiface.c','../sils/Python/sils_pyiface.c')]]
+                                        '../nodend/Python/nodend_pyiface.c',
+                                        '../sls/Python/sls_pyiface.c',
+                                        '../sils/Python/sils_pyiface.c')]]
 
 libgalahad_cutest_src += files('usedps.F90')
 

@@ -5,6 +5,7 @@ galahad_binaries += [['incqp', files('incqp.F90')]]
 libgalahad_c_src += files('C/cqp_ciface.F90')
 
 libgalahad_python_src += [['cqp', files('Python/cqp_pyiface.c',
+                                        '../nodend/Python/nodend_pyiface.c',
                                         '../sbls/Python/sbls_pyiface.c',
                                         '../sls/Python/sls_pyiface.c',
                                         '../uls/Python/uls_pyiface.c',

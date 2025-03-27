@@ -3,8 +3,13 @@ libgalahad_src += files('lsqp.F90')
 libgalahad_c_src += files('C/lsqp_ciface.F90')
 
 libgalahad_python_src += [['lsqp', files('Python/lsqp_pyiface.c',
-                                         '../sbls/Python/sbls_pyiface.c','../gltr/Python/gltr_pyiface.c','../sls/Python/sls_pyiface.c',
-                                         '../sils/Python/sils_pyiface.c','../uls/Python/uls_pyiface.c','../gls/Python/gls_pyiface.c',
+                                         '../nodend/Python/nodend_pyiface.c',
+                                         '../sbls/Python/sbls_pyiface.c',
+                                         '../gltr/Python/gltr_pyiface.c',
+                                         '../sls/Python/sls_pyiface.c',
+                                         '../sils/Python/sils_pyiface.c',
+                                         '../uls/Python/uls_pyiface.c',
+                                         '../gls/Python/gls_pyiface.c',
                                          '../fdc/Python/fdc_pyiface.c')]]
 
 galahad_tests += [['lsqp', 'lsqpt', files('lsqpt.F90')],
