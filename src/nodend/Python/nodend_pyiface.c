@@ -413,7 +413,6 @@ static PyObject* py_nodend_information(PyObject *self){
 static PyMethodDef nodend_module_methods[] = {
     {"initialize", (PyCFunction) py_nodend_initialize, METH_NOARGS,NULL},
     {"information", (PyCFunction) py_nodend_information, METH_NOARGS, NULL},
-    {"terminate", (PyCFunction) py_nodend_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };
 
