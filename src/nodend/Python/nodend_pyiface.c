@@ -352,7 +352,7 @@ PyObject* nodend_make_options_dict(const struct nodend_control_type *control){
                          PyLong_FromLong(control->metis5_dropedges));
     PyDict_SetItemString(py_options, "metis5_twohop",
                          PyLong_FromLong(control->metis5_twohop));
-    PyDict_SetItemString(py_options, "metis5_fast ",
+    PyDict_SetItemString(py_options, "metis5_fast",
                          PyLong_FromLong(control->metis5_fast ));
 
    return py_options;
