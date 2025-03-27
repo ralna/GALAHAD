@@ -22,8 +22,8 @@
       PUBLIC :: VERSION_galahad
 
       INTEGER ( KIND = ip_ ), PARAMETER :: major = 5
-      INTEGER ( KIND = ip_ ), PARAMETER :: minor = 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: patch = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: minor = 2
+      INTEGER ( KIND = ip_ ), PARAMETER :: patch = 0
 
     CONTAINS
 
