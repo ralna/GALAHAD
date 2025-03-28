@@ -1,7 +1,7 @@
 name = "GALAHAD"
 uuid = "c591611e-c43e-4808-98fb-ce4cafe3a717"
 authors = ["Alexis Montoison <alexis.montoison@polymtl.ca>", "Dominique Orban <dominique.orban@polymtl.ca>"]
-version = "0.4.0"
+version = "0.4.1"
 
 [deps]
 GALAHAD_jll = "1621ace8-c1f0-5e32-a05d-ca786afa56c2"
@@ -11,7 +11,7 @@ OpenBLAS32_jll = "656ef2d0-ae68-5445-9ca0-591084a874a2"
 Quadmath = "be4d8f0f-7fa4-5f49-b795-2f01399ab2dd"
 
 [compat]
-GALAHAD_jll = "=5.1.1"
+GALAHAD_jll = "=5.2.0"
 Quadmath = "0.5.10"
 julia = "1.9"
 
