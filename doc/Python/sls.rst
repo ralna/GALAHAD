@@ -255,6 +255,8 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
+          nodend_control : dict
+             the input options structure for nodend.
 
    .. function:: sls.analyse_matrix(n, A_type, A_ne, A_row, A_col, A_ptr, options=None)
 
@@ -571,6 +573,8 @@ functions
              the output structure from ma97.
           ssids_inform : dict
              the output structure from ssids.
+          nodend_inform : dict
+             the output structure from nodend.
           mc61_info : int
              the integer and real output arrays from mc61.
           mc61_rinfo : float

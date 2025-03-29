@@ -616,7 +616,7 @@ if .crossover is true, cross over the solution to one defined by linearly-indepe
 
 	bool space_critical
 
-if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time
+if .space_critical is true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
 .. _doxid-structcqp__control__type_1a58a2c67fad6e808e8365eff67700cba5:

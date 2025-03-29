@@ -66,6 +66,7 @@ sls_control_type structure
 		char :ref:`out_of_core_indefinite_file<doxid-structsls__control__type_1a6e9acddbc56a33e87fb4532349da129b>`[401];
 		char :ref:`out_of_core_restart_file<doxid-structsls__control__type_1a24a37f3b4cc3a36dfa2954f906a45e11>`[501];
 		char :ref:`prefix<doxid-structsls__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
+		struct nodend_control_type :ref:`nodend_control<doxid-structsls__control__type_nodend_control>`;
 	};
 .. _details-structsls__control__type:
 
@@ -623,3 +624,12 @@ see out_of_core_integer_factor_file
 
 all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
 
+.. index:: pair: variable; nodend_control
+.. _doxid-structsls__control__type_nodend_control:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	struct :ref:`nodend_control_type<doxid-structnodend__control__type>` nodend_control
+
+the input control structure for nodend

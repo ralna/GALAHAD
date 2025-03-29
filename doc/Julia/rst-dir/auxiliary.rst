@@ -27,6 +27,7 @@ are used to perform commonly-occurring numerical tasks.
    IR - given matrix factors, perform iterative refinement to solve systems <ir>
    LHS - compute an array of Latin Hypercube samples <lhs>
    LMS - maintain limited-memory Hessian approximations <lms>
+   NODEND - find a row/column ordering for symmetric matrix factorization <nodend> 
    ROOTS - find real roots of real polynomials <roots>
    RPD - convert LP/QP data to and from QPLIB format <rpd>
    SCU - build and extend factors for an evolving block sparse matrix <scu>

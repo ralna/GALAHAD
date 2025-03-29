@@ -71,6 +71,7 @@ sls_inform_type structure
           ma87_info::ma87_info{T,INT}
           ma97_info::ma97_info{T,INT}
           ssids_inform::spral_ssids_inform{INT}
+          nodend_inform::nodend_inform_type{INT}
           mc61_info::NTuple{10,INT}
           mc61_rinfo::NTuple{15,T}
           mc64_info::mc64_info{INT}
@@ -732,6 +733,16 @@ the output structure from hsl_ma97
 	struct :ref:`spral_ssids_inform <details-structspral__ssids__inform>` ssids_inform
 
 the output structure from ssids
+
+.. index:: pair: variable; nodend_inform
+.. _doxid-structsls__inform__type_nodend_inform:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	struct :ref:`nodend_inform_type<doxid-structnodend__inform__type>` nodend_inform
+
+the output structure from nodend
 
 .. index:: pair: variable; mc61_info
 .. _doxid-structsls__inform__type_1ad29411cd0e18c59e43b474314a2adbe8:

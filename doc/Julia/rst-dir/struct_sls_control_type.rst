@@ -62,6 +62,7 @@ sls_control_type structure
           out_of_core_indefinite_file::NTuple{401,Cchar}
           out_of_core_restart_file::NTuple{501,Cchar}
           prefix::NTuple{31,Cchar}
+          nodend_control::nodend_control_type{INT}
 
 .. _details-structsls__control__type:
 
@@ -619,3 +620,12 @@ see out_of_core_integer_factor_file
 
 all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
 
+.. index:: pair: variable; nodend_control
+.. _doxid-structsls__control__type_nodend_control:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	struct :ref:`nodend_control_type<doxid-structnodend__control__type>` nodend_control
+
+the input control structure for nodend
