@@ -282,6 +282,7 @@
 #define nodend_initialize nodend_initialize_s_64
 #define nodend_read_specfile nodend_read_specfile_s_64
 #define nodend_information nodend_information_s_64
+#define nodend_order nodend_order_s_64
 #define nodend_terminate nodend_terminate_s_64
 #define presolve_initialize presolve_initialize_s_64
 #define presolve_read_specfile presolve_read_specfile_s_64
@@ -831,6 +832,7 @@
 #define nodend_initialize nodend_initialize_q_64
 #define nodend_read_specfile nodend_read_specfile_q_64
 #define nodend_information nodend_information_q_64
+#define nodend_order nodend_order_q_64
 #define nodend_terminate nodend_terminate_q_64
 #define presolve_initialize presolve_initialize_q_64
 #define presolve_read_specfile presolve_read_specfile_q_64
@@ -1380,6 +1382,7 @@
 #define nodend_initialize nodend_initialize_64
 #define nodend_read_specfile nodend_read_specfile_64
 #define nodend_information nodend_information_64
+#define nodend_order nodend_order_64
 #define nodend_terminate nodend_terminate_64
 #define presolve_initialize presolve_initialize_64
 #define presolve_read_specfile presolve_read_specfile_64
@@ -1931,6 +1934,7 @@
 #define nodend_initialize nodend_initialize_s
 #define nodend_read_specfile nodend_read_specfile_s
 #define nodend_information nodend_information_s
+#define nodend_order nodend_order_s
 #define nodend_terminate nodend_terminate_s
 #define presolve_initialize presolve_initialize_s
 #define presolve_read_specfile presolve_read_specfile_s
@@ -2480,6 +2484,7 @@
 #define nodend_initialize nodend_initialize_q
 #define nodend_read_specfile nodend_read_specfile_q
 #define nodend_information nodend_information_q
+#define nodend_order nodend_order_q
 #define nodend_terminate nodend_terminate_q
 #define presolve_initialize presolve_initialize_q
 #define presolve_read_specfile presolve_read_specfile_q
