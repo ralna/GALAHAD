@@ -34,7 +34,7 @@
      PUBLIC :: NODEND_initialize, NODEND_read_specfile, NODEND_order,          &
                NODEND_order_adjacency, NODEND_half_order,                      &
                NODEND_full_initialize, NODEND_information,                     &
-               SMT_type, SMT_put, SMT_get
+               NODEND_order_a, SMT_type, SMT_put, SMT_get
 
 !----------------------
 !   I n t e r f a c e s
@@ -1555,9 +1555,236 @@
 ! =============================================================================
 
 ! ----------------------------------------------------------------------------
+
+!-*-*-  G A L A H A D -  N O D E N D _ o r d e r _ a  S U B R O U T I N E -*-*-
+
+      SUBROUTINE NODEND_order_a( control, data, status, n, PERM,               &
+                                 a_type, a_ne, A_row, A_col, A_ptr )
+
+!  find the permutation of the rows/columns of A. Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to NODEND_solve
+!
+!  data is a scalar variable of type NODEND_full_data_type used for internal 
+!   data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the order_a. Possible values are:
+!
+!    0. The ordering was succesful
+!
+!   -ve. An error occurred. See above for possible values and their meaning
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  PERMS is a rank-one array of type default integer and length n, that holds
+!   returns the the row/column permutation, so that the PERM(i)-th row/column
+!   in the permuted matrix P A P^T corresponds to those labelled i in A.
+!
+!  a_type is a character string that specifies the Hessian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or
+!   'diagonal'. Lower or upper case variants are allowed.
+!
+!  a_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  a_row is a rank-one array of type default integer, that holds
+!   the row indices of the lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  a_col is a rank-one array of type default integer,
+!   that holds the column indices of the lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  a_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      TYPE ( NODEND_control_type ), INTENT( INOUT ) :: control
+      TYPE ( NODEND_full_data_type ), INTENT( INOUT ) :: data
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, A_ne
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+
+!  local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, k, ne
+      LOGICAL :: f_indexing
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row_full
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_col_full
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  check for input data errors and trivial permutations
+
+      IF ( n < 1 ) THEN
+        data%nodend_inform%status = GALAHAD_error_restrictions
+        WRITE( control%error, "( A, ' n = ', I0, ' < 0' )" ) prefix, n
+        GO TO 900
+      ELSE IF ( n == 1 ) THEN
+        IF ( f_indexing ) THEN
+          PERM( 1 ) = 1
+        ELSE
+        END IF
+        data%nodend_inform%status = GALAHAD_ok
+        GO TO 900
+      END IF
+      f_indexing = data%f_indexing
+
+!  copy from the symmetric (one triangle) input order to full (both
+!  triangles) order, but without the diagonals. First, compute the required
+!  space to hold the full matrix
+
+      SELECT CASE ( A_type )
+      CASE ( 'coordinate', 'COORDINATE' )
+        IF ( .NOT. ( PRESENT( A_row ) .AND. PRESENT( A_col ) ) ) THEN
+          data%nodend_inform%status = GALAHAD_error_optional
+          GO TO 900
+        END IF
+        ne = 2 * COUNT( A_row( : A_ne ) /= A_col( : A_ne ) )
+
+      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+        IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
+          data%nodend_inform%status = GALAHAD_error_optional
+          GO TO 900
+        END IF
+        ne = 0
+        IF ( f_indexing ) THEN
+          DO i = 1, n
+            DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
+              IF ( A_col( k ) /= i ) ne = ne + 2 
+            END DO
+          END DO
+        ELSE
+          DO i = 1, n
+            DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
+              IF ( A_col( k + 1 ) + 1 /= i ) ne = ne + 2 
+            END DO
+          END DO
+        END IF
+      CASE ( 'dense', 'DENSE', 'diagonal', 'DIAGONAL' )
+        ne = 0 ! this is simply to force a return with the trivial permutation
+      CASE DEFAULT
+        data%nodend_inform%status = GALAHAD_error_restrictions
+        WRITE( control%error, "( A, ' matrix type ', A, ' unknown' )" )        &
+          prefix, A_type
+        GO TO 900
+      END SELECT
+
+!  if the full matrix is diagonal, return the trivial permutation
+
+      IF ( ne == 0 ) THEN
+        IF ( f_indexing ) THEN
+          PERM( : n ) = (/ ( i, i = 1, n ) /)
+        ELSE
+          PERM( : n ) = (/ ( i, i = 0, n - 1 ) /)
+        END IF
+        data%nodend_inform%status = GALAHAD_ok
+        GO TO 900
+      END IF
+
+!  next allocate workspace for the full matrix
+
+      ALLOCATE( A_row_full( ne ), A_col_full( ne ),                            &
+                STAT = data%nodend_inform%alloc_status )
+      IF ( data%nodend_inform%alloc_status /= 0 ) THEN
+        WRITE( control%error, "( A, ' allocation error ', I0, ' for A_*' )" )  &
+          prefix, data%nodend_inform%alloc_status
+        data%nodend_inform%status = GALAHAD_error_allocate
+        data%nodend_inform%bad_alloc = 'A_*'
+        GO TO 900
+      END IF
+
+!  now copy the symmetrix matrix to the full one
+
+      ne = 0
+      SELECT CASE ( A_type )
+      CASE ( 'coordinate', 'COORDINATE' )
+        DO k = 1, A_ne
+          i = A_row( k ) ; j = A_col( k ) 
+          IF ( .NOT. f_indexing ) THEN
+            i = i + 1 ; j = j + 1
+          END IF
+          IF ( i /= j ) THEN
+            ne = ne + 1
+            A_row_full( ne ) = i ; A_col_full( ne ) = j
+            ne = ne + 1
+            A_row_full( ne ) = j ; A_col_full( ne ) = i
+          END IF
+        END DO
+      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+        IF ( f_indexing ) THEN
+          DO i = 1, n
+            DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
+              j = A_col( k )
+              IF ( i /= j ) THEN
+                ne = ne + 1
+                A_row_full( ne ) = i ; A_col_full( ne ) = j
+                ne = ne + 1
+                A_row_full( ne ) = j ; A_col_full( ne ) = i
+              END IF
+            END DO
+          END DO
+        ELSE
+          DO i = 1, n
+            DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
+              j = A_col( k + 1 ) + 1
+              IF ( i /= j ) THEN
+                ne = ne + 1
+                A_row_full( ne ) = i ; A_col_full( ne ) = j
+                ne = ne + 1
+                A_row_full( ne ) = j ; A_col_full( ne ) = i
+              END IF
+            END DO
+          END DO
+        END IF
+      END SELECT
+
+!  find the ordering
+
+      CALL NODEND_order_main( n, ne, A_row_full, A_col_full, PERM,             &
+                              control, data%nodend_inform )
+      IF ( .NOT. f_indexing ) PERM( : n ) = PERM( : n ) - 1
+
+!  deallocate workspace arrays
+
+      DEALLOCATE( A_row_full, A_col_full,                                      &
+                  STAT = data%nodend_inform%alloc_status )
+      IF ( data%nodend_inform%alloc_status /= 0 ) THEN
+        WRITE( control%error, "( A, ' deallocation error ', I0, ' for A_*' )") &
+          prefix, data%nodend_inform%alloc_status
+        data%nodend_inform%status = GALAHAD_error_deallocate
+        data%nodend_inform%bad_alloc = 'A_*'
+      END IF
+
+  900 CONTINUE
+      status = data%nodend_inform%status
+      RETURN
+
+!  End of subroutine NODEND_order_a
+
+      END SUBROUTINE NODEND_order_a
+
 !- G A L A H A D -  N O D E N D _ i n f o r m a t i o n   S U B R O U T I N E  -
 
-     SUBROUTINE NODEND_information( data, inform, status )
+      SUBROUTINE NODEND_information( data, inform, status )
 
 !  return solver information during or after solution by NODEND
 !  See NODEND_solve for a description of the required arguments
@@ -1566,22 +1793,22 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( NODEND_full_data_type ), INTENT( INOUT ) :: data
-     TYPE ( NODEND_inform_type ), INTENT( OUT ) :: inform
-     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      TYPE ( NODEND_full_data_type ), INTENT( INOUT ) :: data
+      TYPE ( NODEND_inform_type ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
-     inform = data%nodend_inform
+      inform = data%nodend_inform
 
 !  flag a successful call
 
-     status = GALAHAD_ok
-     RETURN
+      status = GALAHAD_ok
+      RETURN
 
 !  end of subroutine NODEND_information
 
-     END SUBROUTINE NODEND_information
+      END SUBROUTINE NODEND_information
 
 !  end of module GALAHAD_NODEND
 

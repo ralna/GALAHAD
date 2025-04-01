@@ -7,10 +7,6 @@ the fill-in during subsequent Cholesky-like factorization. The package
 is actually a wrapper to the METIS_NodeND procedure from versions 
 4.0, 5.1 and 5.2 of the METIS package from the Karypis Lab.
 
-**Currently only the options and inform dictionaries are exposed**; these are 
-provided and used by other GALAHAD packages with Python interfaces.
-Please contact us if you would like full functionality!
-
 See Section 4 of $GALAHAD/doc/nodend.pdf for additional details.
 
 method

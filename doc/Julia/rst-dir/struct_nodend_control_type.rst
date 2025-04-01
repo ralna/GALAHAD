@@ -10,7 +10,7 @@ nodend_control_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct nodend_control_type{T,INT}
+        struct nodend_control_type{INT}
           f_indexing::Bool
           version::NTuple{31,Cchar}
           error::INT
