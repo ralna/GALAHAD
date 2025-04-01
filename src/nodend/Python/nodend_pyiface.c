@@ -1,7 +1,7 @@
 //* \file nodend_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.2 - 2025-03-26 AT 13:30 GMT.
+ * THIS VERSION: GALAHAD 5.2 - 2025-04-01 AT 11:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_NODEND PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -449,13 +449,6 @@ static PyObject* py_nodend_order(PyObject *self, PyObject *args, PyObject *keywd
         long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
         for(int i = 0; i < n+1; i++) A_ptr[i] = (int) A_ptr_long[i];
     }
-
-    // Reset control options
-    nodend_reset_control(&control, &data, &status);
-
-    // Update NODEND control options
-    if(!nodend_update_control(&control, py_options))
-        return NULL;
 
     // Call nodend_import
     nodend_order(&control, &data, &status, n, perm,
