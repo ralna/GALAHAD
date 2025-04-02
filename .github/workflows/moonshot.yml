@@ -20,6 +20,7 @@ jobs:
         compiler: ['gcc']
         version: ['13']
         int: ['32', '64']
+        sanitizers: ['false']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,3 +31,4 @@ jobs:
           compiler: ${{ matrix.compiler }}
           version: ${{ matrix.version }}
           int: ${{ matrix.int }}
+          sanitizers: ${{ matrix.sanitizers }}
