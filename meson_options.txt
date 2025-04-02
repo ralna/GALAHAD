@@ -197,3 +197,8 @@ option('multiprecision',
        type : 'boolean',
        value : false,
        description : 'Compile GALAHAD with -DMULTIPRECISION to have a different suffix for each C routine')
+
+option('openmp',
+       type : 'boolean',
+       value : true,
+       description : 'option to compile SPRAL with OpenMP')
