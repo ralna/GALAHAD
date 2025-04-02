@@ -14,6 +14,9 @@ inputs:
   int:
     description: 'Integer type'
     required: true
+  sanitizers:
+    description: 'Sanitizers'
+    required: true
 
 runs:
   using: "composite"
@@ -29,7 +32,7 @@ runs:
     - name: Install Meson and Ninja
       shell: bash
       run: |
-        pip install meson==1.6.1
+        pip install meson==1.7.1
         pip install ninja numpy
 
     - name: Set the environment variables
@@ -278,6 +281,10 @@ runs:
         if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || "${{ inputs.compiler }}" == "intel" ]]; then
           QUADRUPLE="false"
         fi
+        SANITIZER="none"
+        if [[ "${{inputs.sanitizers}}" == "true" ]]; then
+          SANITIZER="address,undefined"
+        fi
 
         meson setup builddir -Ddefault_library=${SHARED_STATIC} \
                              --buildtype=debug \
@@ -307,8 +314,8 @@ runs:
                              -Dlibcutest_modules=../CUTEst/modules \
                              -Dlibhsl=${HSL} \
                              -Dlibhsl_path=${HSL_PATH} \
-                             -Dlibhsl_modules=../deps/modules
-                             # -Db_sanitize=address,undefined
+                             -Dlibhsl_modules=../deps/modules \
+                             -Db_sanitize=${SANITIZER}
 
     - name: Build GALAHAD
       shell: bash
