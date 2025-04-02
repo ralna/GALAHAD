@@ -1,4 +1,4 @@
-name: Moonshot
+name: Sanitizers
 on:
   push:
     branches:
@@ -7,20 +7,18 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  test-moonshot-hsl:
-    env:
-      CUDA_VISIBLE_DEVICES: 1
-      JULIA_DEPOT_PATH: /scratch/github-actions/julia_depot_galahad
-    runs-on: self-hosted
+  sanitizers-linux-build:
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: ['self-hosted']
+        os: ['ubuntu-latest']
         arch: ['x64']
         compiler: ['gcc']
-        version: ['13']
+        version: ['14']
         int: ['32', '64']
-        sanitizers: ['false']
+        sanitizers: ['true']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
