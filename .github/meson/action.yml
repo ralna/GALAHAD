@@ -372,4 +372,4 @@ runs:
     - name: Test GALAHAD.jl
       if: (inputs.os != 'windows-latest' || inputs.compiler != 'intel')
       shell: bash
-      run: julia --color=no -e 'using Pkg; Pkg.update(); Pkg.develop(path="GALAHAD.jl"); Base.compilecache(Base.identify_package("GALAHAD")); include("./GALAHAD.jl/test/runtests.jl")'
+      run: julia --color=no -e 'using Pkg; Pkg.update(); Pkg.develop(path="GALAHAD.jl"); Base.compilecache(Base.identify_package("GALAHAD")); Pkg.test("GALAHAD")'
