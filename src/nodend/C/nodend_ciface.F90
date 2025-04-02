@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-03-23 AT 13:50 GMT
+! THIS VERSION: GALAHAD 5.2 - 2025-03-30 AT 13:50 GMT
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -25,6 +25,7 @@
         f_nodend_full_data_type => NODEND_full_data_type,                      &
         f_nodend_initialize     => NODEND_initialize,                          &
         f_nodend_read_specfile  => NODEND_read_specfile,                       &
+        f_nodend_order_a        => NODEND_order_a,                             &
         f_nodend_information    => NODEND_information
     IMPLICIT NONE
 
@@ -354,6 +355,62 @@
   RETURN
 
   END SUBROUTINE nodend_read_specfile
+
+!  -----------------------------------
+!  C interface to fortran nodend_order
+!  -----------------------------------
+
+  SUBROUTINE nodend_order( ccontrol, cdata, status, n, perm,                   &
+                           chtype, ane, arow, acol, aptr ) BIND( C )
+  USE GALAHAD_NODEND_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+  TYPE ( nodend_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, ane
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: aptr
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: perm
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
+
+!  local variables
+
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
+  TYPE ( f_nodend_control_type ) :: fcontrol
+  TYPE ( f_nodend_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
+
+!  copy control and inform in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  convert C string to Fortran string
+
+  fhtype = cstr_to_fchar( chtype )
+
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
+!  order the problem data into the required NODEND structure
+
+  CALL f_nodend_order_a( fcontrol, fdata, status, n, perm, fhtype,             &
+                         ane, arow, acol, aptr )
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+  RETURN
+
+  END SUBROUTINE nodend_order
 
 !  -----------------------------------------
 !  C interface to fortran nodend_information

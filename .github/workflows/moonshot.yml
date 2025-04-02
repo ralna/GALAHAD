@@ -8,9 +8,6 @@ on:
 
 jobs:
   test-moonshot-hsl:
-    env:
-      CUDA_VISIBLE_DEVICES: 1
-      JULIA_DEPOT_PATH: /scratch/github-actions/julia_depot_galahad
     runs-on: self-hosted
     strategy:
       fail-fast: false

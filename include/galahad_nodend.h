@@ -197,6 +197,84 @@ void nodend_read_specfile( struct nodend_control_type *control,
               the specification file
 */
 
+// *-*-*-*-*-*-*-*-*-*-*-*-    N O D E N D  _ O R D E R   -*-*-*-*-*-*-*-*-*-*
+
+void nodend_order( struct nodend_control_type *control,
+                   void **data,
+                   ipc_ *status,
+                   ipc_ n,
+                   ipc_ perm[],
+                   const char A_type[],
+                   ipc_ ne,
+                   const ipc_ A_row[],
+                   const ipc_ A_col[],
+                   const ipc_ A_ptr[] );
+
+/*!<
+ find the permutation of the rows/columns of A. 
+
+ @param[in] control is a struct whose members provide control
+  paramters for the remaining prcedures (see nodend_control_type)
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type ipc_, that gives
+    the exit status from the package. Possible values are:
+  \li  0. The import was succesful, and the package is ready for the solve phase
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
+       inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
+       returned allocation status and a string containing the
+       name of the offending array are held in
+       inform.alloc_status and inform.bad_alloc respectively.
+  \li -3. The restriction n > 0, A_ne >= 0, the requirement that type contains
+       its relevant string 'dense', 'coordinate', 'sparse_by_rows' or
+       'diagonal', or that control. in one of '4.0', '5.1' or '5.2
+        has been violated.
+  \li -26. The requested version of METIS is not available.
+  \li -57. METIS has insufficient memory to continue.
+  \li -71. An internal METIS error occurred.
+
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
+    variables.
+
+ @param[out] perm is a one-dimensional array of size n and type ipc_, that
+    contains the row/column permutation, so that the perm[i]-th row/column
+    in the permuted matrix P A P^T corresponds to those labelled i in A
+
+ @param[in]  A_type is a one-dimensional array of type char that specifies the
+   \link main_symmetric_matrices symmetric storage scheme \endlink
+   used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows',
+  'dense', 'diagonal' or 'absent', the latter if access to the Hessian is
+  via matrix-vector products; lower or upper case variants are allowed.
+
+ @param[in]  ne is a scalar variable of type ipc_, that holds the number of
+   entries in the  lower triangular part of H in the sparse co-ordinate
+   storage scheme. It need not be set for any of the other three schemes.
+
+ @param[in]  A_row is a one-dimensional array of size ne and type ipc_, that
+   holds the row indices of the lower triangular part of H in the sparse
+   co-ordinate storage scheme. It need not be set for any of the other
+   three schemes, and in this case can be NULL
+
+ @param[in]  A_col is a one-dimensional array of size ne and type ipc_,
+   that holds the column indices of the  lower triangular part of H in either
+   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+   be set when the dense or diagonal storage schemes are used, and in this
+   case can be NULL
+
+ @param[in]  A_ptr is a one-dimensional array of size n+1 and type ipc_,
+   that holds the starting position of  each row of the lower
+   triangular part of H, as well as the total number of entries,
+   in the sparse row-wise storage scheme. It need not be set when the
+   other schemes are used, and in this case can be NULL
+
+*/
+
 // *-*-*-*-*-*-*-*-*-    N O D E N D  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-
 
 void nodend_information( void **data,

@@ -59,7 +59,7 @@ return status. Possible values are:
   One of the restrictions
   n $> 0$, A.n $> 0$ or A.ne $< 0$, for co-ordinate entry,
   or requirements that A.type contain its relevant string
-  'COORDINATE', 'SPARSE_BY_ROWS' or 'DENSE', and
+  'COORDINATE' or 'SPARSE_BY_ROWS', and
   control.version in one of '4.0', '5.1' or '5.2'
   has been violated.
 

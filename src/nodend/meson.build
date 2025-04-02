@@ -15,6 +15,9 @@ galahad_cutest_binaries += [['runnodend_sif', files('runnodend_sif.F90')]]
 
 galahad_tests += [['nodend', 'nodendt', files('nodendt.F90')]]
 
+galahad_c_tests += [['nodend', 'nodendt_c', files('C/nodendt.c')],
+                    ['nodend', 'nodendtf_c', files('C/nodendtf.c')]]
+
 galahad_python_tests += [['nodend', 'nodend_py', 
                           files('Python/test_nodend.py')]]
 

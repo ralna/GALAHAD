@@ -5,6 +5,8 @@ NODEND
 
 .. include:: nodend_intro.rst
 
+.. include:: nodend_storage.rst
+
 functions
 ---------
 
@@ -68,13 +70,15 @@ functions
             compute at each level of nested dissection.
           metis5_ptype : int
             the partitioning method. The value 0 gives multilevel recursive 
-            bisectioning, while 1 corresponds to multilevel $k$-way partitioning.
+            bisectioning, while 1 corresponds to multilevel $k$-way 
+            partitioning.
           metis5_objtype : int
             the type of the objective. Currently the only and default value
             metis5_objtype = 2, specifies node-based nested dissection, 
             and any invalid value will be replaced by this default.
           metis5_ctype : int
-            the matching scheme to be used during coarsening: 0 = random matching, 
+            the matching scheme to be used during coarsening: 
+             0 = random matching, 
              and 1 = sorted heavy-edge matching.
           metis5_iptype : int
             the algorithm used during initial partitioning:
@@ -126,14 +130,53 @@ functions
           metis5_dropedges : int
             will edges be dropped (0 = no, 1 = yes) by MeTiS 5.2.
           metis5_no2hop : int
-            specify that the coarsening will not perform any 2–hop matchings when 
-            the standard matching approach fails to sufficiently coarsen the graph:
-            0 = no, and 1 = yes.
+            specify that the coarsening will not perform any 2–hop matchings 
+            when the standard matching approach fails to sufficiently coarsen 
+            the graph: 0 = no, and 1 = yes.
           metis5_twohop : int
             reserved for future use but ignored at present.
           metis5_fast : int
             reserved for future use but ignored at present.
 
+
+   .. function:: nodend.order(n, A_type, A_ne, A_row, A_col, A_ptr, options=None)
+
+      Find a row/colum permutation for sparse Cholesky-like factorization.
+
+      **Parameters:**
+
+      n : int
+          holds the number of variables.
+      A_type : string
+          specifies the symmetric storage scheme used for $A$.
+          It should be one of 'coordinate' or 'sparse_by_rows';
+          lower or upper case variants are allowed. If A_type is not one
+          of the supported values, the identity permutation will be returned.
+      A_ne : int
+          holds the number of entries in the  lower triangular part of
+          $A$ in the sparse co-ordinate storage scheme. It need
+          not be set for the sparse-by-row scheme.
+      A_row : ndarray(A_ne)
+          holds the row indices of the lower triangular part of $A$
+          in the sparse co-ordinate storage scheme. It need not be set for
+          the sparse-by-row scheme, and in this case can be None.
+      A_col : ndarray(A_ne)
+          holds the column indices of the  lower triangular part of
+          $A$ in either of the supported storage schemes.
+      A_ptr : ndarray(n+1)
+          holds the starting position of each row of the lower triangular
+          part of $A$, as well as the total number of entries,
+          in the sparse row-wise storage scheme. It need not be set when the
+          coordinate scheme is used, and in this case can be None.
+      options : dict, optional
+          dictionary of control options (see ``nodend.initialize``).
+
+      **Returns:**
+
+      perm : ndarray(n)
+          holds the permutation array, so that the perm[$i$]-th rows and 
+          columns in the permuted matrix $P A P^T$ correspond to those 
+          labelled i in $A$, 0 $\leq$ i $\leq$ n-1.
 
    .. function:: [optional] nodend.information()
 
@@ -171,7 +214,7 @@ functions
                One of the restrictions
                n $> 0$, A.n $> 0$ or A.ne $< 0$, for co-ordinate entry,
                or requirements that A.type contain its relevant string
-               'COORDINATE', 'SPARSE_BY_ROWS' or 'DENSE', and
+               'coordinate' or 'sparse_by_rows', and
                options['version'] in one of '4.0', '5.1' or '5.2'
                has been violated.
 
@@ -195,3 +238,10 @@ functions
           version : str
             specifies the version of METIS that was actually used.
 
+example code
+------------
+
+.. include:: ../../src/nodend/Python/test_nodend.py
+   :code: python
+
+This example code is available in $GALAHAD/src/nodend/Python/test_nodend.py .

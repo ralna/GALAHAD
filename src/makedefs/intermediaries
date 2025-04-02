@@ -128,6 +128,11 @@ make_copyright:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) copyright.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/copyright )
 
+make_core:
+	( cd $(GALAHAD)/src/general ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) core_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
+
 make_cputime:
 	( cd $(GALAHAD)/src/cputime ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cputime.o \
@@ -340,6 +345,21 @@ make_map:
 	( cd $(GALAHAD)/src/map ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) map.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/map )
+
+make_metis4:
+	( cd $(GALAHAD)/src/external/metis4 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) metis4_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/metis4 )
+
+make_metis51:
+	( cd $(GALAHAD)/src/nodend/metis51 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) metis51_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nodend/metis51 )
+
+make_metis52:
+	( cd $(GALAHAD)/src/nodend/metis52 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) metis52_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nodend/metis52 )
 
 make_miqr:
 	( cd $(GALAHAD)/src/miqr ; \
@@ -1530,6 +1550,11 @@ make_ciface_hash:
 	( cd $(GALAHAD)/src/hash ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hash_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/hash )
+
+make_ciface_hsl_dum:
+	( cd $(GALAHAD)/src/general ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummy_hsl_c_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_ciface_ir:
 	( cd $(GALAHAD)/src/ir ; \

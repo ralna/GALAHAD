@@ -1,7 +1,7 @@
 //* \file nodend_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.2 - 2025-03-26 AT 13:30 GMT.
+ * THIS VERSION: GALAHAD 5.2 - 2025-04-01 AT 11:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_NODEND PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -391,7 +391,86 @@ static PyObject* py_nodend_initialize(PyObject *self){
     return Py_BuildValue("O", py_options);
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   NODEND_INFORMATION   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-*-*-   NODEND_ORDER    -*-*-*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_nodend_order(PyObject *self, PyObject *args, PyObject *keywds){
+    PyArrayObject *py_A_row, *py_A_col, *py_A_ptr;
+    PyObject *py_options = NULL;
+    int *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
+    const char *A_type;
+    int n, A_ne;
+
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
+
+    // Parse positional and keyword arguments
+    static char *kwlist[] = {"n","A_type","A_ne","A_row","A_col","A_ptr",
+                             "options",NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O",
+                                    kwlist, &n, &A_type, &A_ne, &py_A_row,
+                                    &py_A_col, &py_A_ptr,
+                                    &py_options))
+        return NULL;
+
+    // Check that array inputs are of correct type, size, and shape
+
+    if(!(
+        check_array_int("A_row", py_A_row, A_ne) &&
+        check_array_int("A_col", py_A_col, A_ne) &&
+        check_array_int("A_ptr", py_A_ptr, n+1)
+        ))
+        return NULL;
+
+    // Create NumPy output arrays
+    npy_intp ndim[] = {n}; // size of perm
+    PyArrayObject *py_perm =
+      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
+    int *perm = (int *) PyArray_DATA(py_perm);
+
+    // Convert 64bit integer A_row array to 32bit
+    if((PyObject *) py_A_row != Py_None){
+        A_row = malloc(A_ne * sizeof(int));
+        long int *A_row_long = (long int *) PyArray_DATA(py_A_row);
+        for(int i = 0; i < A_ne; i++) A_row[i] = (int) A_row_long[i];
+    }
+
+    // Convert 64bit integer A_col array to 32bit
+    if((PyObject *) py_A_col != Py_None){
+        A_col = malloc(A_ne * sizeof(int));
+        long int *A_col_long = (long int *) PyArray_DATA(py_A_col);
+        for(int i = 0; i < A_ne; i++) A_col[i] = (int) A_col_long[i];
+    }
+
+    // Convert 64bit integer A_ptr array to 32bit
+    if((PyObject *) py_A_ptr != Py_None){
+        A_ptr = malloc((n+1) * sizeof(int));
+        long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
+        for(int i = 0; i < n+1; i++) A_ptr[i] = (int) A_ptr_long[i];
+    }
+
+    // Call nodend_import
+    nodend_order(&control, &data, &status, n, perm,
+               A_type, A_ne, A_row, A_col, A_ptr);
+
+    // Free allocated memory
+    if(A_row != NULL) free(A_row);
+    if(A_col != NULL) free(A_col);
+    if(A_ptr != NULL) free(A_ptr);
+
+    // Raise any status errors
+    if(!check_error_codes(status))
+        return NULL;
+
+    // Return perm
+    PyObject *solve_nodend_return;
+    solve_nodend_return = Py_BuildValue("O", py_perm);
+    Py_INCREF(solve_nodend_return);
+    return solve_nodend_return;
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   NODEND_INFORMATION   -*-*-*-*-*-*-*-*-
 
 static PyObject* py_nodend_information(PyObject *self){
 
@@ -407,11 +486,12 @@ static PyObject* py_nodend_information(PyObject *self){
     return Py_BuildValue("O", py_inform);
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   INITIALIZE NODEND PYTHON MODULE    -*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   INITIALIZE NODEND PYTHON MODULE    -*-*-*-*-*-*-*-*-
 
 /* nodend python module method table */
 static PyMethodDef nodend_module_methods[] = {
     {"initialize", (PyCFunction) py_nodend_initialize, METH_NOARGS,NULL},
+    {"order", (PyCFunction) py_nodend_order, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_nodend_information, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };

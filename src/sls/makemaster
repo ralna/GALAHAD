@@ -40,7 +40,7 @@ PYDEPENDENCIES = make_pyiface_sils
 
 #  other python interface packages that depend on current interface package
 
-PYEPENDS = ir_pyiface sbls_pyiface trs_pyiface rqs_pyiface
+PYDEPENDS = ir_pyiface sbls_pyiface trs_pyiface rqs_pyiface
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
