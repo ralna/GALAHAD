@@ -11,6 +11,7 @@ jobs:
     env:
       CUDA_VISIBLE_DEVICES: 1
       JULIA_DEPOT_PATH: /scratch/github-actions/julia_depot_galahad
+      JULIA_GALAHAD_LIBRARY_PATH: /scratch/github-actions/actions_runner_galahad/_work/GALAHAD/GALAHAD/galahad/lib
     runs-on: self-hosted
     strategy:
       fail-fast: false
