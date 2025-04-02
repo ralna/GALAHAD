@@ -21,6 +21,7 @@ function test_nodend(::Type{T}, ::Type{INT}) where {T,INT}
   A_col = zeros(INT, A_ne)  # column indices
   A_ptr = zeros(INT, n + 1)  # row pointers
   perm = zeros(INT, n)  # permutation
+  status = Ref{INT}()
 
   # Set output storage
   st = ' '
