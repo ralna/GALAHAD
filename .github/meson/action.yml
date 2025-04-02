@@ -98,6 +98,14 @@ runs:
         echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
         echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
 
+    - name: Set environment variables for Moonshot
+      if: inputs.os == 'self-hosted'
+      shell: bash
+      run: |
+        echo "CUDA_VISIBLE_DEVICES=1" >> $GITHUB_ENV
+        echo "JULIA_DEPOT_PATH=/scratch/github-actions/julia_depot_galahad" >> $GITHUB_ENV
+        echo "JULIA_GALAHAD_LIBRARY_PATH=/scratch/github-actions/actions_runner_galahad/_work/GALAHAD/GALAHAD/galahad/lib" >> $GITHUB_ENV
+
     - name: Install compilers
       if: inputs.os != 'self-hosted'
       uses: fortran-lang/setup-fortran@main
