@@ -56,7 +56,7 @@ struct nodend_inform_type{T,INT}
   alloc_status::INT
   bad_alloc::NTuple{81,Cchar}
   version::NTuple{4,Cchar}
-  time::cqp_time_type{T}
+  time::nodend_time_type{T}
 end
 
 export nodend_initialize
