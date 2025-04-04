@@ -19,13 +19,13 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
 	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
 	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
 	struct :ref:`nodend_control_type<doxid-structnodend__control__type>`;
+	struct :ref:`nodend_time_type<doxid-structnodend__time__type>`;
 	struct :ref:`nodend_inform_type<doxid-structnodend__inform__type>`;
 
 	// global functions
@@ -61,6 +61,19 @@ overview of functions provided
 
 typedefs
 --------
+
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef double rpc_
+
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``REAL_32`` or (if supported) to
+``__real128`` using the variable ``REAL_128``.
+
 
 .. index:: pair: typedef; ipc_
 .. _doxid-galahad__ipc_8h_:

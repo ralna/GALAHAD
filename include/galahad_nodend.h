@@ -130,6 +130,28 @@ struct nodend_control_type {
 };
 
 /**
+ * time derived type as a C struct
+ */
+struct nodend_time_type {
+
+    /// \brief
+    /// the total CPU time spent in the package
+    rpc_ total;
+
+    /// \brief
+    /// the CPU time spent in the METIS package
+    rpc_ metis;
+
+    /// \brief
+    /// the total clock time spent in the package
+    rpc_ clock_total;
+
+    /// \brief
+    /// the clock time spent in the METIS package
+    rpc_ clock_metis;
+};
+
+/**
  * inform derived type as a C struct
  */
 struct nodend_inform_type {
@@ -155,6 +177,10 @@ struct nodend_inform_type {
     /// \brief
     /// the actual version of METIS used.
     char version[4];
+
+    /// \brief
+    /// timings (see above)
+    struct nodend_time_type time;
 
 };
 

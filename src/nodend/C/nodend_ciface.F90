@@ -21,6 +21,7 @@
     USE GALAHAD_common_ciface
     USE GALAHAD_NODEND_precision, ONLY:                                        &
         f_nodend_control_type   => NODEND_control_type,                        &
+        f_nodend_time_type      => NODEND_time_type,                           &
         f_nodend_inform_type    => NODEND_inform_type,                         &
         f_nodend_full_data_type => NODEND_full_data_type,                      &
         f_nodend_initialize     => NODEND_initialize,                          &
@@ -73,11 +74,19 @@
       INTEGER ( KIND = ipc_ ) :: metis5_fast
     END TYPE nodend_control_type
 
+    TYPE, BIND( C ) :: nodend_time_type
+      REAL ( KIND = rpc_ ) :: total
+      REAL ( KIND = rpc_ ) :: metis
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_metis
+    END TYPE nodend_time_type
+
     TYPE, BIND( C ) :: nodend_inform_type
       INTEGER ( KIND = ipc_ ) :: status
       INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 4 ) :: version
+      TYPE ( nodend_time_type ) :: time
     END TYPE nodend_inform_type
 
 !----------------------
@@ -212,6 +221,36 @@
 
     END SUBROUTINE copy_control_out
 
+!  copy C time parameters to fortran
+
+    SUBROUTINE copy_time_in( ctime, ftime )
+    TYPE ( nodend_time_type ), INTENT( IN ) :: ctime
+    TYPE ( f_nodend_time_type ), INTENT( OUT ) :: ftime
+
+    ! Reals
+    ftime%total = ctime%total
+    ftime%metis = ctime%metis
+    ftime%clock_total = ctime%clock_total
+    ftime%clock_metis = ctime%clock_metis
+    RETURN
+
+    END SUBROUTINE copy_time_in
+
+!  copy fortran time parameters to C
+
+    SUBROUTINE copy_time_out( ftime, ctime )
+    TYPE ( f_nodend_time_type ), INTENT( IN ) :: ftime
+    TYPE ( nodend_time_type ), INTENT( OUT ) :: ctime
+
+    ! Reals
+    ctime%total = ftime%total
+    ctime%metis = ftime%metis
+    ctime%clock_total = ftime%clock_total
+    ctime%clock_metis = ftime%clock_metis
+    RETURN
+
+    END SUBROUTINE copy_time_out
+
 !  copy C inform parameters to fortran
 
     SUBROUTINE copy_inform_in( cinform, finform )
@@ -222,6 +261,9 @@
     ! Integers
     finform%status = cinform%status
     finform%alloc_status = cinform%alloc_status
+
+    ! Derived types
+    CALL copy_time_in( cinform%time, finform%time )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -243,9 +285,12 @@
     TYPE ( nodend_inform_type ), INTENT( OUT ) :: cinform
     INTEGER ( KIND = ip_ ) :: i, l
 
-   ! Integers
+    ! Integers
     cinform%status = finform%status
     cinform%alloc_status = finform%alloc_status
+
+    ! Derived types
+    CALL copy_time_out( finform%time, cinform%time )
 
     ! Strings
     l = LEN( finform%bad_alloc )

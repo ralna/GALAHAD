@@ -40,13 +40,23 @@ struct nodend_control_type{INT}
   metis5_fast::INT
 end
 
+export nodend_time_type
+
+struct nodend_time_type{T}
+  total::T
+  metis::T
+  clock_total::T
+  clock_metis::T
+end
+
 export nodend_inform_type
 
-struct nodend_inform_type{INT}
+struct nodend_inform_type{T,INT}
   status::INT
   alloc_status::INT
   bad_alloc::NTuple{81,Cchar}
   version::NTuple{4,Cchar}
+  time::cqp_time_type{T}
 end
 
 export nodend_initialize
@@ -180,36 +190,36 @@ export nodend_information
 
 function nodend_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_single.nodend_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{nodend_inform_type{Int32}},
+                                              inform::Ptr{nodend_inform_type{Float32,Int32}},
                                               status::Ptr{Int32})::Cvoid
 end
 
 function nodend_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
   @ccall libgalahad_single_64.nodend_information(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{nodend_inform_type{Int64}},
+                                                 inform::Ptr{nodend_inform_type{Float32,Int64}},
                                                  status::Ptr{Int64})::Cvoid
 end
 
 function nodend_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_double.nodend_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{nodend_inform_type{Int32}},
+                                              inform::Ptr{nodend_inform_type{Float64,Int32}},
                                               status::Ptr{Int32})::Cvoid
 end
 
 function nodend_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
   @ccall libgalahad_double_64.nodend_information(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{nodend_inform_type{Int64}},
+                                                 inform::Ptr{nodend_inform_type{Float64,Int64}},
                                                  status::Ptr{Int64})::Cvoid
 end
 
 function nodend_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_quadruple.nodend_information(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{nodend_inform_type{Int32}},
+                                                 inform::Ptr{nodend_inform_type{Float128,Int32}},
                                                  status::Ptr{Int32})::Cvoid
 end
 
 function nodend_information(::Type{Float128}, ::Type{Int64}, data, inform, status)
   @ccall libgalahad_quadruple_64.nodend_information(data::Ptr{Ptr{Cvoid}},
-                                                    inform::Ptr{nodend_inform_type{Int64}},
+                                                    inform::Ptr{nodend_inform_type{Float128,Int64}},
                                                     status::Ptr{Int64})::Cvoid
 end

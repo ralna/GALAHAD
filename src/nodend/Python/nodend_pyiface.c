@@ -358,6 +358,26 @@ PyObject* nodend_make_options_dict(const struct nodend_control_type *control){
    return py_options;
 }
 
+//  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the time struct from C and turn it into a python dictionary */
+static PyObject* nodend_make_time_dict(const struct nodend_time_type *time){
+    PyObject *py_time = PyDict_New();
+
+    // Set float/double time entries
+
+    PyDict_SetItemString(py_time, "total",
+                         PyFloat_FromDouble(time->total));
+    PyDict_SetItemString(py_time, "metis",
+                         PyFloat_FromDouble(time->metis));
+    PyDict_SetItemString(py_time, "clock_total",
+                         PyFloat_FromDouble(time->clock_total));
+    PyDict_SetItemString(py_time, "clock_metis",
+                         PyFloat_FromDouble(time->clock_metis));
+
+    return py_time;
+}
+
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
@@ -373,6 +393,11 @@ PyObject* nodend_make_inform_dict(const struct nodend_inform_type *inform){
                          PyUnicode_FromString(inform->bad_alloc));
     PyDict_SetItemString(py_inform, "version",
                          PyUnicode_FromString(inform->version));
+
+    // Set time nested dictionary
+    PyDict_SetItemString(py_inform, "time",
+                         nodend_make_time_dict(&inform->time));
+
     return py_inform;
 }
 

@@ -45,7 +45,7 @@ The string A_type = 'sparse_by_rows' should be specified.
 
 	nodend_functions.rst
 
-.. include:: it.rst
+.. include:: irt.rst
 
 .. include:: nodend_functions.rst
 
@@ -53,6 +53,8 @@ available structures
 --------------------
 
 .. include :: struct_nodend_control_type.rst
+
+.. include :: struct_nodend_time_type.rst
 
 .. include :: struct_nodend_inform_type.rst
 

@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nodend_initialize(INT, data, control, status)
+        function nodend_initialize(T, INT, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nodend_read_specfile(INT, control, specfile)
+        function nodend_read_specfile(T, INT, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nodend_order(INT, control, data, status, n, perm, 
+        function nodend_order(T, INT, control, data, status, n, perm, 
                               A_type, ne, A_row, A_col, A_ptr)
 
 Order problem data into internal storage prior to solution.
@@ -178,7 +178,7 @@ Order problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nodend_information(INT, data, inform, status)
+        function nodend_information(T, INT, data, inform, status)
 
 Provides output information
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-03-23 AT 09:45 GMT
+! THIS VERSION: GALAHAD 5.2 - 2025-04-04 AT 13:00 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -22,7 +22,8 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_NODEND_precision
-     USE GALAHAD_KINDS, ONLY: i4_, i8_, ip_, ipc_
+     USE GALAHAD_KINDS_precision, ONLY: i4_, i8_, ip_, ipc_, rp_
+     USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_SMT_precision
@@ -370,6 +371,30 @@
 
      END TYPE NODEND_control_type
 
+!  - - - - - - - - - - - - - - - - - - - - - -
+!   time derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - -
+
+     TYPE, PUBLIC :: NODEND_time_type
+
+!  the total CPU time spent in the package
+
+       REAL ( KIND = rp_ ) :: total = 0.0
+
+!  the CPU time spent in the METIS package
+
+       REAL ( KIND = rp_ ) :: metis = 0.0
+
+!  the total clock time spent in the package
+
+       REAL ( KIND = rp_ ) :: clock_total = 0.0
+
+!  the clock time spent in the METIS package
+
+       REAL ( KIND = rp_ ) :: clock_metis = 0.0
+
+     END TYPE NODEND_time_type
+
 !  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -394,6 +419,10 @@
 !  the version of MeTiS used
 
        CHARACTER ( LEN = 3 ) :: version = '5.2'
+
+!  timings (see above)
+
+        TYPE ( NODEND_time_type ) :: time
 
      END TYPE NODEND_inform_type
 
@@ -761,9 +790,15 @@
 
       INTEGER ( KIND = ip_ ) :: i, j, k, n, ne
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col
+      REAL :: time_start, time_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  initialize time
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
 
 !  check for input data errors and trivial permutations
 
@@ -868,6 +903,12 @@
           prefix, inform%alloc_status
         inform%status = GALAHAD_error_deallocate ; inform%bad_alloc = 'A_*'
       END IF
+
+!  record the overall time
+
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = REAL( time_now - time_start, rp_ )
+      inform%time%clock_total = clock_now - clock_start
 
       RETURN
 
@@ -1158,16 +1199,21 @@
 !  local variables
 
       INTEGER ( KIND = ip_ ) :: i, out, metis_status
+      REAL :: time_start, time_record, time_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
       INTEGER ( KIND = ip_ ), DIMENSION( 40 ) :: options
       INTEGER ( KIND = ip_ ), DIMENSION( n ) :: INVERSE_PERM
       INTEGER ( KIND = ip_ ), PARAMETER :: n_dummy = 2
       INTEGER ( KIND = ip_ ), DIMENSION( n_dummy + 1 ) ::                      &
                                 PTR_dummy = (/ 1, 2, 3 /)
       INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: IND_dummy = (/ 2, 1 /)
-
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  initialize time
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
 
 !  check for input data errors and trivial permutations
 
@@ -1280,6 +1326,7 @@
 
 !  call MeTiS 4 to get the ordering
 
+        CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
         CALL galahad_nodend4_adapter( n, PTR, IND, options,                    &
                                       INVERSE_PERM, PERM )
         IF ( PERM( 1 ) == - 2 ) THEN
@@ -1379,6 +1426,7 @@
 
 !  call MeTiS 5.1 to get ordering via C MeTiS 4 to 5.1 adapter
 
+        CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
         metis_status = galahad_nodend51_adapter( n, PTR, IND, options,         &
                                                  INVERSE_PERM, PERM )
         SELECT CASE( metis_status )
@@ -1506,6 +1554,7 @@
 
 !  call MeTiS 5.2 to get ordering via C MeTiS 4 to 5.2 adapter
 
+        CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
         metis_status = galahad_nodend52_adapter( n, PTR, IND, options,         &
                                                  INVERSE_PERM, PERM )
         SELECT CASE( metis_status )
@@ -1534,6 +1583,14 @@
         WRITE( out, "( ' PERM:   ', 10I7, /, ( 10X, 10I7 ) ) " ) PERM
         WRITE( out, "( ' INVPRM: ', 10I7, /, ( 10X, 10I7 ) ) " ) INVERSE_PERM
       END IF
+
+!  record the overall and MeTiS times
+
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = REAL( time_now - time_start, rp_ )
+      inform%time%clock_total = clock_now - clock_start
+      inform%time%metis = REAL( time_now - time_record, rp_ )
+      inform%time%clock_metis = clock_now - clock_record
 
       inform%status = GALAHAD_ok
       RETURN
@@ -1625,12 +1682,18 @@
 !  local variables
 
       INTEGER ( KIND = ip_ ) :: i, j, k, ne
+      REAL :: time_start, time_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
       LOGICAL :: f_indexing
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row_full
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_col_full
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  initialize time
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
 
 !  check for input data errors and trivial permutations
 
@@ -1773,6 +1836,12 @@
         data%nodend_inform%status = GALAHAD_error_deallocate
         data%nodend_inform%bad_alloc = 'A_*'
       END IF
+
+!  record the overall time
+
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      data%nodend_inform%time%total = REAL( time_now - time_start, rp_ )
+      data%nodend_inform%time%clock_total = clock_now - clock_start
 
   900 CONTINUE
       status = data%nodend_inform%status

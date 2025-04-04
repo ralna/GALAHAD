@@ -32,6 +32,7 @@ a dummy will be substituted.
 \galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
 \galcalls
 {\tt GALAHAD\-\_KINDS},
+{\tt GALA\-HAD\_CLOCK},
 {\tt GAL\-AHAD\-\_SYMBOLS},
 {\tt GALAHAD\_SMT},
 {\tt GALAHAD\_\-SORT}
@@ -45,31 +46,33 @@ and
 
 \galhowto
 
-\subsection{Calling sequences}
+%\subsection{Calling sequences}
 
-The package is available with either 32-bit or 64-bit integers, 
-and the subsidiary {\tt SMT\_type} package may use
-single, double and (if available) quadruple precision reals.
-Access to the 32-bit integer,
-single precision version requires the {\tt USE} statement
-\medskip
+%The package is available with either 32-bit or 64-bit integers, 
+%and the subsidiary {\tt SMT\_type} package may use
+%single, double and (if available) quadruple precision reals.
+%Access to the 32-bit integer,
+%single precision version requires the {\tt USE} statement
+%\medskip
 
-\hspace{8mm} {\tt USE \fullpackagename\_single}
+%\hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip
-\noindent
-with the obvious substitution 
-{\tt \fullpackagename\_double},
-{\tt \fullpackagename\_quadruple},
-{\tt \fullpackagename\_single\_64},
-{\tt \fullpackagename\_double\_64} and
-{\tt \fullpackagename\_quadruple\_64} for the other variants.
+%\medskip
+%\noindent
+%with the obvious substitution 
+%{\tt \fullpackagename\_double},
+%{\tt \fullpackagename\_quadruple},
+%{\tt \fullpackagename\_single\_64},
+%{\tt \fullpackagename\_double\_64} and
+%{\tt \fullpackagename\_quadruple\_64} for the other variants.
+
+\input{versions}
 
 \noindent
 If it is required to use more than one of the modules at the same time, 
 the derived types
 {\tt SMT\_type},
-{\tt \packagename\_control\_type}
+{\tt \packagename\_control\-\_type}
 and
 {\tt \packagename\_inform\_type}
 (\S\ref{galtypes}),
@@ -77,7 +80,7 @@ and the subroutines
 {\tt \packagename\-\_initialize},
 {\tt \packagename\-\_order}
 and
-{\tt \packagename\-\_order\_adjacency},
+{\tt \packagename\-\_order\-\_adjacency},
 (\S\ref{galarguments})
 must be renamed on one of the {\tt USE} statements.
 
@@ -154,7 +157,7 @@ for $j = 1,\ldots,n$.
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galtypes
-Three derived data types are used by the package.
+Four derived data types are used by the package.
 
 %%%%%%%%%%% problem type %%%%%%%%%%%
 
@@ -333,7 +336,7 @@ will be replaced by this default.
 \itt{metis5\_ptype} is a scalar variable of type \integer, that specifies
 the partitioning method. The value {\tt 0} gives multilevel recursive 
 bisectioning, while {\tt 1} corresponds to multilevel $k$-way partitioning.
-The default is {\tt metis5\_ptype = 0}, and any invalid value will be
+The default is {\tt metis5\-\_ptype = 0}, and any invalid value will be
 replaced by this default.
 
 \itt{metis5\_objtype} is a scalar variable of type \integer, that specifies
@@ -473,6 +476,32 @@ a string, the default {\tt prefix = ""} should be used.
 
 \end{description}
 
+%%%%%%%%%%% time type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding timing
+ information}\label{typetime}
+The derived data type
+{\tt \packagename\_time\_type}
+is used to hold elapsed CPU and system clock times for the various parts of
+the calculation. The components of
+{\tt \packagename\_time\_type}
+are:
+\begin{description}
+\itt{total} is a scalar variable of type \realdp, that gives
+ the total CPU time spent in the package.
+
+\itt{metis} is a scalar variable of type \realdp, that gives
+ the CPU time spent in the {\tt METIS} package.
+
+\itt{clock\_total} is a scalar variable of type \realdp, that gives
+ the total elapsed system clock time spent in the package.
+
+\itt{clock\_metis} is a scalar variable of type \realdp, that gives
+ the elapsed system clock time spent in the {\tt METIS} package.
+
+\end{description}
+
+
 %%%%%%%%%%% inform type %%%%%%%%%%%
 
 \subsubsection{The derived data type for holding informational
@@ -504,6 +533,10 @@ allocation or deallocation errors.
 
 \itt{version} is a scalar variable of type default \character\
 and length 3, that contains the actual version of {\tt METIS} used.
+
+\ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
+whose components are used to hold elapsed CPU and system clock times for the
+various parts of the calculation (see Section~\ref{typetime}).
 
 \end{description}
 

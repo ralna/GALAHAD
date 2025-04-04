@@ -19,6 +19,7 @@ nodend_inform_type structure
        :ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structnodend__inform__type_alloc_status>`;
        char :ref:`bad_alloc<doxid-structnodend__inform__type_bad_alloc>`[81];
        char :ref:`version<doxid-structnodend__inform__type_version>`[4];
+       struct :ref:`nodend_time_type<doxid-structnodend__time__type>` :ref:`time<doxid-structnodend__inform__type_time>`;
        };
 .. _details-structnodend__inform__type:
 
@@ -108,3 +109,13 @@ the name of the array for which an allocation/deallocation error occurred
 	char version[4]
 
 the version of METIS that was actually used
+
+.. index:: pair: variable; time
+.. _doxid-structnodend__inform__type_time:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	struct :ref:`nodend_time_type<doxid-structnodend__time__type>` time
+
+timings (see above)

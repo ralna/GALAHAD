@@ -237,6 +237,16 @@ functions
              error occurred.
           version : str
             specifies the version of METIS that was actually used.
+          time : dict
+             dictionary containing timing information:
+               total : float
+                  the total CPU time spent in the package.
+               preprocess : float
+                  the CPU time spent in the METIS package.
+               clock_total : float
+                  the total clock time spent in the package.
+               clock_preprocess : float
+                  the clock time spent in the METIS package.
 
 example code
 ------------

@@ -10,11 +10,12 @@ nodend_inform_type structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct nodend_inform_type{INT}
+        struct nodend_inform_type{T,INT}
           status::INT
           alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
           version::NTuple{4,Cchar}
+          time::nodend_time_type{T}
 
 .. _details-structnodend__inform__type:
 
@@ -104,3 +105,13 @@ the name of the array for which an allocation/deallocation error occurred
 	NTuple{4,Cchar} version
 
 the version of METIS that was actually used
+
+.. index:: pair: variable; time
+.. _doxid-structnodend__inform__type_time:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	struct :ref:`nodend_time_type<doxid-structnodend__time__type>` time
+
+timings (see above)
