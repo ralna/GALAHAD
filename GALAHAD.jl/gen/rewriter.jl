@@ -80,7 +80,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
 
     # SSIDS
     text = replace(text, "::spral_ssids_options" => "::spral_ssids_options{T,INT}")
-    text = replace(text, "::spral_ssids_inform" => "::spral_ssids_inform{INT}")
+    text = replace(text, "::spral_ssids_inform" => "::spral_ssids_inform{T,INT}")
 
     blocks = split(text, "end\n")
     text = ""
