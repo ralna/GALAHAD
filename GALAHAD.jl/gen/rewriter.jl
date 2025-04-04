@@ -18,18 +18,19 @@ nonparametric_structures_int = ("arc_time_type", "bgo_time_type", "blls_time_typ
                                 "qpb_time_type", "rqs_time_type", "rqs_history_type", "sbls_time_type",
                                 "scu_control_type", "slls_time_type", "sls_time_type", "trb_time_type",
                                 "trs_time_type", "trs_history_type", "tru_time_type", "ugo_time_type",
-                                "wcp_time_type")
+                                "wcp_time_type", "nodend_time_type")
 
 nonparametric_structures_float = ("bqp_time_type", "bsc_control_type", "convert_control_type", "fit_control_type",
                                   "fit_inform_type", "gls_sinfo_type", "hash_control_type", "hash_inform_type",
                                   "lhs_control_type", "lhs_inform_type", "lms_control_type", "ma48_sinfo",
                                   "mc64_control", "mc64_info", "mc68_control", "mc68_info", "nodend_control_type",
-                                  "nodend_inform_type", "presolve_inform_type", "roots_inform_type",
-                                  "rpd_control_type", "rpd_inform_type", "scu_control_type", "scu_inform_type",
-                                  "sec_inform_type", "sha_control_type", "slls_time_type", "spral_ssids_inform")
+                                  "presolve_inform_type", "roots_inform_type", "rpd_control_type", "rpd_inform_type",
+                                  "scu_control_type", "scu_inform_type", "sec_inform_type", "sha_control_type",
+                                  "slls_time_type", "spral_ssids_inform")
 
 # Structures that don't have a field with rpc_ but have an inner structure with rpc_ as a field.
-special_structures_float = ("convert_inform_type", "cro_inform_type", "lms_inform_type", "ugo_inform_type", "uls_inform_type")
+special_structures_float = ("convert_inform_type", "cro_inform_type", "lms_inform_type", "ugo_inform_type",
+                            "uls_inform_type", "nodend_inform_type")
 
 function rewrite!(path::String, name::String, optimized::Bool)
   structures = "# Structures for $name\n"

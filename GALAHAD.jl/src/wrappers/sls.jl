@@ -136,7 +136,7 @@ struct sls_inform_type{T,INT}
   ma87_info::ma87_info{T,INT}
   ma97_info::ma97_info{T,INT}
   ssids_inform::spral_ssids_inform{INT}
-  nodend_inform::nodend_inform_type{INT}
+  nodend_inform::nodend_inform_type{T,INT}
   mc61_info::NTuple{10,INT}
   mc61_rinfo::NTuple{15,T}
   mc64_info::mc64_info{INT}

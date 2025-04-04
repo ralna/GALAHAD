@@ -48,7 +48,7 @@ struct spral_ssids_inform{INT}
   stat::INT
   cuda_error::INT
   cublas_error::INT
-  nodend_inform::nodend_inform_type{INT}
+  nodend_inform::nodend_inform_type{T,INT}
   not_first_pass::INT
   not_second_pass::INT
   nparts::INT

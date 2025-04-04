@@ -196,7 +196,8 @@ end
 
 function nodend_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
   @ccall libgalahad_single_64.nodend_information(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{nodend_inform_type{Float32,Int64}},
+                                                 inform::Ptr{nodend_inform_type{Float32,
+                                                                                Int64}},
                                                  status::Ptr{Int64})::Cvoid
 end
 
@@ -208,18 +209,21 @@ end
 
 function nodend_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
   @ccall libgalahad_double_64.nodend_information(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{nodend_inform_type{Float64,Int64}},
+                                                 inform::Ptr{nodend_inform_type{Float64,
+                                                                                Int64}},
                                                  status::Ptr{Int64})::Cvoid
 end
 
 function nodend_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_quadruple.nodend_information(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{nodend_inform_type{Float128,Int32}},
+                                                 inform::Ptr{nodend_inform_type{Float128,
+                                                                                Int32}},
                                                  status::Ptr{Int32})::Cvoid
 end
 
 function nodend_information(::Type{Float128}, ::Type{Int64}, data, inform, status)
   @ccall libgalahad_quadruple_64.nodend_information(data::Ptr{Ptr{Cvoid}},
-                                                    inform::Ptr{nodend_inform_type{Float128,Int64}},
+                                                    inform::Ptr{nodend_inform_type{Float128,
+                                                                                   Int64}},
                                                     status::Ptr{Int64})::Cvoid
 end
