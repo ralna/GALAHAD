@@ -30,7 +30,7 @@ end
 
 export spral_ssids_inform
 
-struct spral_ssids_inform{INT}
+struct spral_ssids_inform{T,INT}
   flag::INT
   matrix_dup::INT
   matrix_missing_diag::INT
