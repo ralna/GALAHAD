@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-01-27 AT 11:10 GMT
+! THIS VERSION: GALAHAD 5.2 - 2025-04-05 AT 11:10 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -7784,8 +7784,10 @@
 
      CASE ( 'pastix' )
        CALL pastixFinalize( data%pastix_data )
-       CALL spmExit( data%spm )
-       DEALLOCATE( data%spm )
+       IF ( ASSOCIATED( data%spm ) ) THEN
+         CALL spmExit( data%spm )
+         DEALLOCATE( data%spm )
+       END IF
        data%no_pastix = .FALSE.
 
 !  = MUMPS =
