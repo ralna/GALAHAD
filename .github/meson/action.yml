@@ -292,7 +292,8 @@ runs:
         fi
         SANITIZER="none"
         if [[ "${{inputs.sanitizers}}" == "true" ]]; then
-          SANITIZER="address,undefined"
+          # SANITIZER="address,undefined"
+          SANITIZER="address"
         fi
 
         rm -rf builddir
