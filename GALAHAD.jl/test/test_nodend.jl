@@ -82,6 +82,9 @@ function test_nodend(::Type{T}, ::Type{INT}) where {T,INT}
     else
       @printf("%c: NODEND_order exit status = %i\n", st, inform[].status)
     end
+
+    # Delete internal workspace
+    nodend_terminate(T, INT, data)
   end
 
   return 0

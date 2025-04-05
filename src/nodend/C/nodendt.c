@@ -82,5 +82,9 @@ int main(void) {
             printf("%c: NODEND_order exit status = %1" i_ipc_ "\n", 
                    st, inform.status);
         }
+
+        // Terminate NODEND
+        nodend_terminate( &data );
+
     }
 }

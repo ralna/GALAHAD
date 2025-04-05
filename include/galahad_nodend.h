@@ -321,6 +321,17 @@ void nodend_information( void **data,
   \li  0. The values were recorded succesfully
 */
 
+// *-*-*-*-*-*-*-*-*-    N O D E N D _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-
+
+void nodend_terminate( void **data );
+
+/*!<
+  Deallocate all internal private storage
+
+  @param[in,out] data  holds private internal data
+
+ */
+
 // end include guard
 #endif
 

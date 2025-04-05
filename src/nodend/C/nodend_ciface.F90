@@ -266,6 +266,7 @@
     CALL copy_time_in( cinform%time, finform%time )
 
     ! Strings
+write(6,*) ' i ', LEN( finform%bad_alloc )
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
@@ -294,6 +295,7 @@
 
     ! Strings
     l = LEN( finform%bad_alloc )
+write(6,*) ' l ', l
     DO i = 1, l
       cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
     END DO
@@ -491,6 +493,52 @@
 
   END SUBROUTINE nodend_information
 
+!  ------------------------------------
+!  C interface to fortran nodend_terminate
+!  ------------------------------------
 
+! SUBROUTINE nodend_terminate( cdata, ccontrol, cinform ) BIND( C )
+  SUBROUTINE nodend_terminate( cdata ) BIND( C )
+  USE GALAHAD_NODEND_precision_ciface
+  IMPLICIT NONE
 
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+! TYPE ( nodend_control_type ), INTENT( IN ) :: ccontrol
+! TYPE ( nodend_inform_type ), INTENT( INOUT ) :: cinform
+
+!  local variables
+
+  TYPE ( f_nodend_full_data_type ), POINTER :: fdata
+! TYPE ( f_nodend_control_type ) :: fcontrol
+! TYPE ( f_nodend_inform_type ) :: finform
+! LOGICAL :: f_indexing
+
+!  copy control in
+
+!  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  copy inform in
+
+!  CALL copy_inform_in( cinform, finform )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  deallocate workspace
+
+!  CALL f_nodend_terminate( fdata, fcontrol, finform )
+
+!  copy inform out
+
+!  CALL copy_inform_out( finform, cinform )
+
+!  deallocate data
+
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
+  RETURN
+
+  END SUBROUTINE nodend_terminate
 

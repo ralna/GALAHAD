@@ -27,3 +27,6 @@ print(" perm",perm)
 inform = nodend.information()
 print('** nodend exit status:', inform['status'])
 
+# deallocate internal data
+
+nodend.terminate()

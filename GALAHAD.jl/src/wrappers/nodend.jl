@@ -227,3 +227,29 @@ function nodend_information(::Type{Float128}, ::Type{Int64}, data, inform, statu
                                                                                    Int64}},
                                                     status::Ptr{Int64})::Cvoid
 end
+
+export nodend_terminate
+
+function nodend_terminate(::Type{Float32}, ::Type{Int32}, data)
+  @ccall libgalahad_single.nodend_terminate(data::Ptr{Ptr{Cvoid}})::Cvoid
+end
+
+function nodend_terminate(::Type{Float32}, ::Type{Int64}, data)
+  @ccall libgalahad_single_64.nodend_terminate(data::Ptr{Ptr{Cvoid}})::Cvoid
+end
+
+function nodend_terminate(::Type{Float64}, ::Type{Int32}, data)
+  @ccall libgalahad_double.nodend_terminate(data::Ptr{Ptr{Cvoid}})::Cvoid
+end
+
+function nodend_terminate(::Type{Float64}, ::Type{Int64}, data)
+  @ccall libgalahad_double_64.nodend_terminate(data::Ptr{Ptr{Cvoid}})::Cvoid
+end
+
+function nodend_terminate(::Type{Float128}, ::Type{Int32}, data)
+  @ccall libgalahad_quadruple.nodend_terminate(data::Ptr{Ptr{Cvoid}})::Cvoid
+end
+
+function nodend_terminate(::Type{Float128}, ::Type{Int64}, data)
+  @ccall libgalahad_quadruple_64.nodend_terminate(data::Ptr{Ptr{Cvoid}})::Cvoid
+end

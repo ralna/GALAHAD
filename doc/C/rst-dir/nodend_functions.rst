@@ -57,6 +57,10 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
+	void :ref:`nodend_terminate<doxid-galahad__nodend_8h_terminate>`(
+		void **data
+	);
+
 .. _details-global:
 
 typedefs
@@ -316,3 +320,24 @@ Provides output information
                     The values were recorded successfully
 
 
+.. index:: pair: function; nodend_terminate
+.. _doxid-galahad__nodend_8h_terminate:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	void nodend_terminate(
+		void **data
+	)
+
+Deallocate all internal private storage
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- data
+
+		- holds private internal data

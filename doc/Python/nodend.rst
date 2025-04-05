@@ -248,6 +248,11 @@ functions
                clock_preprocess : float
                   the clock time spent in the METIS package.
 
+
+   .. function:: nodend.terminate()
+
+     Deallocate all internal private storage.
+
 example code
 ------------
 

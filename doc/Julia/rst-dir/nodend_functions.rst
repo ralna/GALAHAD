@@ -207,3 +207,22 @@ Provides output information
 		  * **0**
                     The values were recorded successfully
 
+.. index:: pair: function; nodend_terminate
+.. _doxid-galahad__nodend_8h_terminate:
+
+.. ref-code-block:: julia
+        :class: doxyrest-title-code-block
+
+        function nodend_terminate(T, INT, data)
+
+Deallocate all internal private storage
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- data
+
+		- holds private internal data
