@@ -1,7 +1,7 @@
 //* \file nodend_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.2 - 2025-04-01 AT 11:30 GMT.
+ * THIS VERSION: GALAHAD 5.2 - 2025-04-05 AT 16:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_NODEND PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -511,6 +511,22 @@ static PyObject* py_nodend_information(PyObject *self){
     return Py_BuildValue("O", py_inform);
 }
 
+//  *-*-*-*-*-*-*-*-*-*-   NODEND_TERMINATE   -*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_nodend_terminate(PyObject *self){
+
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
+
+    // Call nodend_terminate
+    nodend_terminate(&data);
+
+    // Return None boilerplate
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 //  *-*-*-*-*-*-*-*-*-*-   INITIALIZE NODEND PYTHON MODULE    -*-*-*-*-*-*-*-*-
 
 /* nodend python module method table */
@@ -518,6 +534,7 @@ static PyMethodDef nodend_module_methods[] = {
     {"initialize", (PyCFunction) py_nodend_initialize, METH_NOARGS,NULL},
     {"order", (PyCFunction) py_nodend_order, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_nodend_information, METH_NOARGS, NULL},
+    {"terminate", (PyCFunction) py_nodend_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };
 

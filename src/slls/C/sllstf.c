@@ -287,7 +287,7 @@ int main(void) {
               p[n] = p[n] + v[i];
             }
           }
-          for( ipc_ l = 0; l < nz_p_end; l++) mask[nz_p[l]] = 0;
+          for( ipc_ l = 0; l < nz_p_end; l++) mask[nz_p[l]-1] = 0;
         }else if(status == 6){ // evaluate p = sparse A^Tv
           for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
             i = nz_v[l]-1;

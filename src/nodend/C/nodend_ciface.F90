@@ -266,7 +266,6 @@
     CALL copy_time_in( cinform%time, finform%time )
 
     ! Strings
-write(6,*) ' i ', LEN( finform%bad_alloc )
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
@@ -295,7 +294,6 @@ write(6,*) ' i ', LEN( finform%bad_alloc )
 
     ! Strings
     l = LEN( finform%bad_alloc )
-write(6,*) ' l ', l
     DO i = 1, l
       cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
     END DO
