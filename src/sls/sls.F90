@@ -1778,6 +1778,7 @@
            GO TO 10
          ELSE
 !          DEALLOCATE( data%spm )
+           DEALLOCATE( data%spm )
            inform%status = GALAHAD_unavailable_option ; RETURN
          END IF
        END IF

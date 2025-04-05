@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-04-05 AT 08:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SLLS_interface_test
    USE GALAHAD_KINDS_precision
@@ -224,7 +224,7 @@
      WRITE( 6, "( A3, ': SLLS_solve exit status = ', I0 ) " ) st, inform%status
    END IF
    CALL SLLS_terminate( data, control, inform )  ! delete internal workspace
-   DEALLOCATE( B, X, Z, C, G, X_stat, NZ_in, NZ_out, V, P )
+   DEALLOCATE( B, X, Z, C, G, X_stat, NZ_in, NZ_out, V, P, MASK )
 
    CONTAINS
      SUBROUTINE WHICH_sls( control )
@@ -233,5 +233,4 @@
      control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%definite_linear_solver = definite_linear_solver
      END SUBROUTINE WHICH_sls
-
    END PROGRAM GALAHAD_SLLS_interface_test

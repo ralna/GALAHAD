@@ -212,11 +212,11 @@
       ccontrol%version( i ) = fcontrol%version( i : i )
     END DO
     ccontrol%version( l + 1 ) = C_NULL_CHAR
-    l = LEN( fcontrol%version )
+    l = LEN( fcontrol%prefix )
     DO i = 1, l
-      ccontrol%version( i ) = fcontrol%version( i : i )
+      ccontrol%prefix( i ) = fcontrol%prefix( i : i )
     END DO
-    ccontrol%version( l + 1 ) = C_NULL_CHAR
+    ccontrol%prefix( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_control_out

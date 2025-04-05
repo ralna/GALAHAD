@@ -331,9 +331,7 @@ void Test_ND(int nvtxs, idxtype *xadj, idxtype *adjncy)
   else
     printf("[%d:err-%d]\n", tstnum++, rcode);
   fflush(stdout);
-/*
-*/
-
+  GK_free(&perm, &iperm, LTERM);
 /*  GK_free(&vwgt, &perm, &iperm, LTERM); */
 }
 
