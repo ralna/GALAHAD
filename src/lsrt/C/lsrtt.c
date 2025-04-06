@@ -66,7 +66,7 @@ int main(void) {
 #else
     printf("lsrt_solve_problem exit status = %" i_ipc_
            ", f = %.2f\n", inform.status, inform.obj );
+#endif
     // Delete internal workspace
     lsrt_terminate( &data, &control, &inform );
-#endif
 }

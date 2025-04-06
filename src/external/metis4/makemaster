@@ -33,6 +33,7 @@ TEST2OBJ64 = $(TEST2:.c=_4_64.o)
 CFLAGSM = $(CFLAGS) -DNDEBUG
 
 all: metis4$(HSL_64)
+	echo $(LM464)
 	@printf ' %-21s\n' "MeTiS 4 procedures ($(IPRECIS)$(ISUCC)"
 metis4_silent: metis4$(HSL_64)
 metis4: $(LM4)($(OBJFILE))

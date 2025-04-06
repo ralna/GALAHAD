@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-04-04 AT 13:00 GMT
+! THIS VERSION: GALAHAD 5.2 - 2025-04-06 AT 08:40 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -210,7 +210,7 @@
 
 !  if MeTiS 4.0 is not availble, should we use Metis 5.2 instead?
 
-       LOGICAL :: no_metis_4_use_5_instead
+       LOGICAL :: no_metis_4_use_5_instead = .TRUE.
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
 !   where %prefix contains the required string enclosed in
