@@ -238,3 +238,5 @@ for d in 1:1
   # Delete internal workspace
   ccqp_terminate(T, INT, data, control, inform)
 end
+
+# build: 1
