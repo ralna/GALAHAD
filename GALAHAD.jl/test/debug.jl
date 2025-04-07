@@ -46,6 +46,8 @@ status = Ref{INT}()
 @printf(" basic tests of qp storage formats\n\n")
 
 for d in 1:7
+  println("Case: $d")
+
   # Initialize CCQP
   ccqp_initialize(T, INT, data, control, status)
 
