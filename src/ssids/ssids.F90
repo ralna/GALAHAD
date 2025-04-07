@@ -1098,14 +1098,17 @@ contains
     ! Call main factorization routine
     if (akeep%check) then
 !write(6,*) 'val2 = ', val2(:nz)
-       print *, "Call inner_factor"
+       print *, "Call inner_factor -- line 1101"
        call fkeep%inner_factor(akeep, val2, options, inform)
+       print *, "Finished inner_factor -- line 1103"
     else
 !write(6,*) 'val = ', val(:ptr(n+1)-1)
-       print *, "Call inner_factor"
+       print *, "Call inner_factor -- line 1106"
        call fkeep%inner_factor(akeep, val, options, inform)
+       print *, "Finished inner_factor -- line 1108"
     end if
     if (inform%flag .lt. 0) then
+       print *, "inform.flag < 0"
        fkeep%inform = inform
        goto 100
     end if
@@ -1114,15 +1117,31 @@ contains
        ! Rank deficient
        ! Note: If we reach this point then must be options%action=.true.
        if (options%action) then
+          print *, "inform.flag = SSIDS_WARNING_FACT_SINGULAR"
           inform%flag = SSIDS_WARNING_FACT_SINGULAR
        else
+          print *, "inform.flag = SSIDS_ERROR_SINGULAR"
           inform%flag = SSIDS_ERROR_SINGULAR
        end if
+       print *, "Call inform.print_flag"
        call inform%print_flag(options, context)
     end if
 
-    ! if ((options%print_level .ge. 1) .and. &
-    !     (options%unit_diagnostics .ge. 0)) then
+   print '(A)', 'Completed factorisation with:'
+   print '(A,3(/A,I12),2(/A,ES12.4),5(/A,I12))', &
+        ' information parameters (inform%) :', &
+        ' flag         = ', inform%flag, &
+        ' maxfront     = ', inform%maxfront, &
+        ' maxsupernode = ', inform%maxsupernode, &
+        ' num_factor   = ', real(inform%num_factor), &
+        ' num_flops    = ', real(inform%num_flops), &
+        ' num_two      = ', inform%num_two, &
+        ' num_delay    = ', inform%num_delay, &
+        ' rank         = ', inform%matrix_rank, &
+        ' num_neg      = ', inform%num_neg
+
+    if ((options%print_level .ge. 1) .and. &
+        (options%unit_diagnostics .ge. 0)) then
        write (options%unit_diagnostics,'(/a)') &
             ' Completed factorisation with:'
        write (options%unit_diagnostics, &
@@ -1146,7 +1165,7 @@ contains
          inform%matrix_rank, &
          ' num_neg                Computed number of negative eigenvalues  = ',&
           inform%num_neg
-    ! end if
+    end if
 
     ! Normal return just drops through
 100 continue
