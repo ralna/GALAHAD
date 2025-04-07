@@ -137,11 +137,11 @@ void* spral_ssids_cpu_create_num_subtree(
          printf("Final factors:\n");
          subtree->print();
       }
+      return (void*) subtree;
       } catch (const std::bad_alloc& e) {
          fprintf(stderr, "[ERROR] std::bad_alloc during NumericSubtreeIndef creation: %s\n", e.what());
          return nullptr;
       }
-      return (void*) subtree;
    }
 }
 
