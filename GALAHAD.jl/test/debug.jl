@@ -45,11 +45,12 @@ status = Ref{INT}()
 @printf(" Fortran sparse matrix indexing\n\n")
 @printf(" basic tests of qp storage formats\n\n")
 
+# Initialize CCQP
+println("ccqp_initialize")
+ccqp_initialize(T, INT, data, control, status)
+
 # Set user-defined control options
 global control = @reset control[].f_indexing = true # Fortran sparse matrix indexing
-
-# Initialize CCQP
-ccqp_initialize(T, INT, data, control, status)
 
 # Start from 0
 x = T[0.0, 0.0, 0.0]
@@ -58,14 +59,18 @@ z = T[0.0, 0.0, 0.0]
 
 # sparse co-ordinate storage
 global st = 'C'
+
+println("ccqp_import")
 ccqp_import(T, INT, control, data, status, n, m,
             "coordinate", H_ne, H_row, H_col, C_NULL,
             "coordinate", A_ne, A_row, A_col, C_NULL)
 
+println("ccqp_solve_qp")
 ccqp_solve_qp(T, INT, data, status, n, m, H_ne, H_val, g, f,
               A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
               x_stat, c_stat)
 
+println("ccqp_information")
 ccqp_information(T, INT, data, inform, status)
 
 if inform[].status == 0
@@ -74,6 +79,7 @@ else
   @printf("%c: CCQP_solve exit status = %1i\n", st, inform[].status)
 end
 
+println("ccqp_terminate")
 ccqp_terminate(T, INT, data, control, inform)
 
 for d in 1:7
