@@ -16,18 +16,9 @@ jobs:
       fail-fast: false
       matrix:
         version: ['1']
-        os: [ubuntu-latest, windows-latest, macos-13]
-        arch: ['x64']
+        os: [macos-latest]
+        arch: ['arm64']
         allow_failure: [false]
-        include:
-          - os: ubuntu-24.04-arm
-            arch: 'arm64'
-            version: '1'
-            allow_failure: false
-          - os: macos-latest
-            arch: 'arm64'
-            version: '1'
-            allow_failure: false
     steps:
       - uses: actions/checkout@v4
 
@@ -48,4 +39,4 @@ jobs:
           (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[GALAHAD.jl]'))
         shell: bash
         run: |
-          julia --color=no -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
+          julia --color=no -e 'using Pkg; Pkg.add(url="https://github.com/amontoison/GALAHAD_jll.jl", rev="main"); Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
