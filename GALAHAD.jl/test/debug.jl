@@ -53,9 +53,10 @@ for d in 1:7
 
   # Set user-defined control options
   global control = @reset control[].f_indexing = true # Fortran sparse matrix indexing
-  global control = @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("sytr")
-  global control = @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
-  global control = @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("sytr")
+  # global control = @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+  # global control = @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+  # global control = @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("sytr")
+
   # global control = @reset control[].sbls_pounce_control.symmetric_linear_solver = galahad_linear_solver("sytr")
   # global control = @reset control[].sbls_pounce_control.definite_linear_solver = galahad_linear_solver("sytr")
 
