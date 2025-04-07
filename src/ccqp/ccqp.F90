@@ -9725,7 +9725,6 @@
 !                    on its upper bound, and
 !               = 0, the i-th constraint is not in the working set
 
-     print *, "Inside CCQP_solve_qp"
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( CCQP_full_data_type ), INTENT( INOUT ) :: data
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_val
@@ -9752,7 +9751,7 @@
      data%prob%f = f
 
 !  save the linear term of the objective function
-
+     print *, "Inside CCQP_solve_qp"
      IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
      ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
