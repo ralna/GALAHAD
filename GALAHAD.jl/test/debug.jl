@@ -50,7 +50,7 @@ for d in 1:7
   ccqp_initialize(T, INT, data, control, status)
 
   # Set user-defined control options
-  @reset control[].f_indexing = true # Fortran sparse matrix indexing
+  global control = @reset control[].f_indexing = true # Fortran sparse matrix indexing
 
   # Start from 0
   x = T[0.0, 0.0, 0.0]
