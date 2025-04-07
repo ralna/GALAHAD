@@ -45,48 +45,6 @@ status = Ref{INT}()
 @printf(" Fortran sparse matrix indexing\n\n")
 @printf(" basic tests of qp storage formats\n\n")
 
-# Initialize CCQP
-println("ccqp_initialize")
-ccqp_initialize(T, INT, data, control, status)
-
-# Set user-defined control options
-global control = @reset control[].f_indexing = true # Fortran sparse matrix indexing
-global control = @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("sytr")
-global control = @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
-global control = @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("sytr")
-# global control = @reset control[].sbls_pounce_control.symmetric_linear_solver = galahad_linear_solver("sytr")
-# global control = @reset control[].sbls_pounce_control.definite_linear_solver = galahad_linear_solver("sytr")
-
-# Start from 0
-x = T[0.0, 0.0, 0.0]
-y = T[0.0, 0.0]
-z = T[0.0, 0.0, 0.0]
-
-# sparse co-ordinate storage
-global st = 'C'
-
-println("ccqp_import")
-ccqp_import(T, INT, control, data, status, n, m,
-            "coordinate", H_ne, H_row, H_col, C_NULL,
-            "coordinate", A_ne, A_row, A_col, C_NULL)
-
-println("ccqp_solve_qp")
-ccqp_solve_qp(T, INT, data, status, n, m, H_ne, H_val, g, f,
-              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
-              x_stat, c_stat)
-
-println("ccqp_information")
-ccqp_information(T, INT, data, inform, status)
-
-if inform[].status == 0
-  @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st, inform[].iter, inform[].obj, inform[].status)
-else
-  @printf("%c: CCQP_solve exit status = %1i\n", st, inform[].status)
-end
-
-println("ccqp_terminate")
-ccqp_terminate(T, INT, data, control, inform)
-
 for d in 1:7
   println("Case: $d")
 
@@ -95,6 +53,11 @@ for d in 1:7
 
   # Set user-defined control options
   global control = @reset control[].f_indexing = true # Fortran sparse matrix indexing
+  global control = @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+  global control = @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+  global control = @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("sytr")
+  # global control = @reset control[].sbls_pounce_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+  # global control = @reset control[].sbls_pounce_control.definite_linear_solver = galahad_linear_solver("sytr")
 
   # Start from 0
   x = T[0.0, 0.0, 0.0]
