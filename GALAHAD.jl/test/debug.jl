@@ -45,6 +45,37 @@ status = Ref{INT}()
 @printf(" Fortran sparse matrix indexing\n\n")
 @printf(" basic tests of qp storage formats\n\n")
 
+# Set user-defined control options
+global control = @reset control[].f_indexing = true # Fortran sparse matrix indexing
+
+# Initialize CCQP
+ccqp_initialize(T, INT, data, control, status)
+
+# Start from 0
+x = T[0.0, 0.0, 0.0]
+y = T[0.0, 0.0]
+z = T[0.0, 0.0, 0.0]
+
+# sparse co-ordinate storage
+global st = 'C'
+ccqp_import(T, INT, control, data, status, n, m,
+            "coordinate", H_ne, H_row, H_col, C_NULL,
+            "coordinate", A_ne, A_row, A_col, C_NULL)
+
+ccqp_solve_qp(T, INT, data, status, n, m, H_ne, H_val, g, f,
+              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
+              x_stat, c_stat)
+
+ccqp_information(T, INT, data, inform, status)
+
+if inform[].status == 0
+  @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st, inform[].iter, inform[].obj, inform[].status)
+else
+  @printf("%c: CCQP_solve exit status = %1i\n", st, inform[].status)
+end
+
+ccqp_terminate(T, INT, data, control, inform)
+
 for d in 1:7
   println("Case: $d")
 
