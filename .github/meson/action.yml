@@ -291,9 +291,11 @@ runs:
           QUADRUPLE="false"
         fi
         SANITIZER="none"
+        C_INTERFACE="true"
         if [[ "${{inputs.sanitizers}}" == "true" ]]; then
           # SANITIZER="address,undefined"
           SANITIZER="address"
+          C_INTERFACE="false"
         fi
 
         rm -rf builddir
@@ -306,6 +308,7 @@ runs:
                              -Dtests=true \
                              -Dbinaries=true \
                              -Dssids=${SSIDS} \
+                             -Dciface=${C_INTERFACE} \
                              -Dpythoniface=${PYTHON_INTERFACE} \
                              -Dint64=${INT64} \
                              -Dquadruple=${QUADRUPLE} \
