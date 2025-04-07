@@ -374,6 +374,6 @@ runs:
       uses: julia-actions/setup-julia@v2
 
     - name: Test GALAHAD.jl
-      if: (inputs.os != 'windows-latest' || inputs.compiler != 'intel')
+      if: (inputs.os != 'windows-latest' || inputs.compiler != 'intel') && (inputs.sanitizers == 'false')
       shell: bash
       run: julia --color=no -e 'using Pkg; Pkg.update(); Pkg.develop(path="GALAHAD.jl"); Base.compilecache(Base.identify_package("GALAHAD")); Pkg.test("GALAHAD")'
