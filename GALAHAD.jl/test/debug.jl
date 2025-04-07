@@ -184,7 +184,12 @@ for d in 1:1
   ccqp_initialize(T, INT, data, control, status)
 
   # Set user-defined control options
-  @reset control[].f_indexing = true # Fortran sparse matrix indexing
+  global control = @reset control[].f_indexing = true # Fortran sparse matrix indexing
+  global control = @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+  global control = @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+  global control = @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("sytr")
+  # global control = @reset control[].sbls_pounce_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+  # global control = @reset control[].sbls_pounce_control.definite_linear_solver = galahad_linear_solver("sytr")
 
   # Start from 0
   x = T[0.0, 0.0, 0.0]
@@ -198,7 +203,7 @@ for d in 1:1
 
   # sparse co-ordinate storage
   if d == 1
-    st = 'W'
+    global st = 'W'
     ccqp_import(T, INT, control, data, status, n, m,
                 "shifted_least_distance", H_ne, C_NULL, C_NULL, C_NULL,
                 "coordinate", A_ne, A_row, A_col, C_NULL)
