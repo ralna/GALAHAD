@@ -45,11 +45,11 @@ status = Ref{INT}()
 @printf(" Fortran sparse matrix indexing\n\n")
 @printf(" basic tests of qp storage formats\n\n")
 
-# Initialize CCQP
-ccqp_initialize(T, INT, data, control, status)
-
 # Set user-defined control options
 global control = @reset control[].f_indexing = true # Fortran sparse matrix indexing
+
+# Initialize CCQP
+ccqp_initialize(T, INT, data, control, status)
 
 # Start from 0
 x = T[0.0, 0.0, 0.0]
