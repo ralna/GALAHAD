@@ -783,6 +783,7 @@ contains
 
     integer(i8_), dimension(:), allocatable :: ptr64
 
+    print *, "Inside ssids_factor_ptr32_precision"
     ! Copy from 32-bit to 64-bit ptr
     allocate(ptr64(akeep%n+1), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -793,6 +794,7 @@ contains
     end if
     ptr64(1:akeep%n+1) = ptr(1:akeep%n+1)
 
+    print *, "Call ssids_factor_ptr64_precision"
     ! Call 64-bit routine
     call ssids_factor_ptr64_precision(posdef, val, akeep, fkeep, options, &
          inform, scale=scale, ptr=ptr64, row=row)
@@ -846,6 +848,7 @@ contains
     type(rb_write_options) :: rb_options
     integer(ip_) :: flag
 
+    print *, "Inside ssids_factor_ptr64_precision"
     ! Setup for any printing we may require
     context = 'ssids_factor'
 
@@ -869,6 +872,7 @@ contains
     n = akeep%n
 
     ! Ensure OpenMP setup is as required
+    print *, "Call push_omp_settings"
     call push_omp_settings(user_omp_settings, inform%flag)
     if (inform%flag .lt. 0) then
        fkeep%inform = inform
@@ -900,8 +904,10 @@ contains
     ! If matrix has been checked, produce a clean version of val in val2
     if (akeep%check) then
        nz = akeep%ptr(n+1) - 1
+       print *, "Call allocate(val2(nz),stat=st)"
        allocate(val2(nz),stat=st)
        if (st .ne. 0) go to 10
+       print *, "Call apply_conversion_map"
        call apply_conversion_map(matrix_type, akeep%lmap, akeep%map, val, &
             nz, val2)
     else
@@ -922,9 +928,11 @@ contains
     if (allocated(options%rb_dump)) then
        write(options%unit_warning,*) "Dumping matrix to '", options%rb_dump, "'"
        if (akeep%check) then
+         print *, "Call rb_write"
           call rb_write(options%rb_dump, SPRAL_MATRIX_REAL_SYM_INDEF, &
                n, n, akeep%ptr, akeep%row, rb_options, flag, val=val2)
        else
+         print *, "Call rb_write"
           call rb_write(options%rb_dump, SPRAL_MATRIX_REAL_SYM_INDEF, &
                n, n, ptr, row, rb_options, flag, val=val)
        end if
@@ -970,9 +978,11 @@ contains
        ! Run Hungarian algorithm
        hsoptions%scale_if_singular = options%action
        if (akeep%check) then
+         print *, "Call hungarian_scale_sym"
           call hungarian_scale_sym(n, akeep%ptr, akeep%row, val2, scaling, &
                hsoptions, hsinform)
        else
+         print *, "Call hungarian_scale_sym"
           call hungarian_scale_sym(n, ptr, row, val, scaling, &
                hsoptions, hsinform)
        end if
@@ -1003,9 +1013,11 @@ contains
        if (st .ne. 0) goto 10
        ! Run auction algorithm
        if (akeep%check) then
+         print *, "Call auction_scale_sym"
           call auction_scale_sym(n, akeep%ptr, akeep%row, val2, scaling, &
                options%auction, inform%auction)
        else
+         print *, "Call auction_scale_sym"
           call auction_scale_sym(n, ptr, row, val, scaling, &
                options%auction, inform%auction)
        end if
@@ -1041,9 +1053,11 @@ contains
        if (st .ne. 0) goto 10
        ! Run equilibriation algorithm
        if (akeep%check) then
+          print *, "Call equilib_scale_sym"
           call equilib_scale_sym(n, akeep%ptr, akeep%row, val2, scaling, &
                esoptions, esinform)
        else
+          print *, "Call equilib_scale_sym"
           call equilib_scale_sym(n, ptr, row, val, scaling, &
                esoptions, esinform)
        end if
@@ -1084,9 +1098,11 @@ contains
     ! Call main factorization routine
     if (akeep%check) then
 !write(6,*) 'val2 = ', val2(:nz)
+       print *, "Call inner_factor"
        call fkeep%inner_factor(akeep, val2, options, inform)
     else
 !write(6,*) 'val = ', val(:ptr(n+1)-1)
+       print *, "Call inner_factor"
        call fkeep%inner_factor(akeep, val, options, inform)
     end if
     if (inform%flag .lt. 0) then
@@ -1105,8 +1121,8 @@ contains
        call inform%print_flag(options, context)
     end if
 
-    if ((options%print_level .ge. 1) .and. &
-        (options%unit_diagnostics .ge. 0)) then
+    ! if ((options%print_level .ge. 1) .and. &
+    !     (options%unit_diagnostics .ge. 0)) then
        write (options%unit_diagnostics,'(/a)') &
             ' Completed factorisation with:'
        write (options%unit_diagnostics, &
@@ -1130,13 +1146,14 @@ contains
          inform%matrix_rank, &
          ' num_neg                Computed number of negative eigenvalues  = ',&
           inform%num_neg
-    end if
+    ! end if
 
     ! Normal return just drops through
 100 continue
     ! Clean up and return
     fkeep%inform = inform
     call inform%print_flag(options, context)
+    print *, "Call pop_omp_settings"
     call pop_omp_settings(user_omp_settings)
     return
     !!!!!!!!!!!!!!!!!!!!
