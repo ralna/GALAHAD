@@ -5,6 +5,7 @@ using Quadmath
 # @info("GALAHAD_VERSION : $(version_galahad())")
 include("test_structures.jl")
 
+include("debug.jl")
 include("test_arc.jl")
 include("test_bgo.jl")
 include("test_blls.jl")

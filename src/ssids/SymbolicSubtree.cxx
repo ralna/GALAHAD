@@ -16,10 +16,16 @@ void* spral_ssids_cpu_create_symbolic_subtree(
       longc_ const* rptr, ipc_ const* rlist, longc_ const* nptr, 
       longc_ const* nlist, ipc_ ncontrib, ipc_ const* contrib_idx,
       struct cpu_factor_options const* options) {
-   return (void*) new SymbolicSubtree(
-         n, sa, en, sptr, sparent, rptr, rlist, nptr, nlist, ncontrib,
-         contrib_idx, *options
-         );
+      printf("Create a SymbolicSubtree\n");
+      try {
+         SymbolicSubtree* subtree = new SymbolicSubtree(
+            n, sa, en, sptr, sparent, rptr, rlist, nptr, nlist, ncontrib,
+            contrib_idx, *options);
+         return (void*)subtree;
+      } catch (const std::bad_alloc& e) {
+         fprintf(stderr, "[ERROR] std::bad_alloc during SymbolicSubtree creation: %s\n", e.what());
+         return nullptr;
+      }
 }
 
 extern "C"
