@@ -154,29 +154,22 @@ add_global_arguments('-DNDEBUG', language : 'c')
 if build_openmp
   if fc.get_id() == 'nvidia_hpc'
     add_global_arguments('-mp', language : 'fortran')
-    add_global_link_arguments('-mp', language : 'fortran')
   elif fc.get_id() == 'nagfor'
     add_global_arguments('-openmp', language : 'fortran')
-    add_global_link_arguments('-openmp', language : 'fortran')
   elif fc.get_id() == 'gcc' or fc.get_id() == 'llvm-flang'
     add_global_arguments('-fopenmp', language : 'fortran')
-    add_global_link_arguments('-fopenmp', language : 'fortran')
   elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm'
     add_global_arguments('-qopenmp', language : 'fortran')
-    add_global_link_arguments('-qopenmp', language : 'fortran')
   elif fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
     add_global_arguments('/Qopenmp', language : 'fortran')
   endif
 
   if cc.get_id() == 'nvidia_hpc'
     add_global_arguments('-mp', language : 'c')
-    add_global_link_arguments('-mp', language : 'c')
   elif cc.get_id() == 'gcc' or cc.get_id() == 'clang' or cc.get_id() == 'clang-cl'
     add_global_arguments('-fopenmp', language : 'c')
-    add_global_link_arguments('-fopenmp', language : 'c')
   elif cc.get_id() == 'intel' or cc.get_id() == 'intel-llvm'
     add_global_arguments('-qopenmp', language : 'c')
-    add_global_link_arguments('-qopenmp', language : 'c')
   elif cc.get_id() == 'intel-cl' or cc.get_id() == 'intel-llvm-cl'
     add_global_arguments('/Qopenmp', language : 'c')
   endif
