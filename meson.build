@@ -190,6 +190,22 @@ if build_openmp
   elif cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm-cl'
     add_global_arguments('/Qopenmp', language : 'cpp')
   endif
+
+  lomp = '-lgomp'
+  if cxx.get_id() == 'intel' or cxx.get_id() == 'intel-llvm'
+    lomp = '-liomp5'
+  endif
+  if cxx.get_id() == 'nvidia_hpc'
+    lomp = '-lomp'
+  endif
+  if host_machine.system() == 'darwin' or host_machine.system() == 'freebsd'
+    if cxx.get_id() == 'clang'
+      lomp = '-lomp'
+    endif
+  endif
+  add_global_link_arguments(lomp, language : 'fortran')
+  add_global_link_arguments(lomp, language : 'c')
+  add_global_link_arguments(lomp, language : 'cpp')
 endif
 
 libgalahad_single_deps = [libsmumps, libcutest_single, libblas, liblapack,
