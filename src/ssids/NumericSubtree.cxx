@@ -115,6 +115,8 @@ void* spral_ssids_cpu_create_num_subtree(
 
    // Perform factorization
    if(posdef) {
+      printf("Create a NumericSubtreePosdef\n");
+      try {
       auto* subtree = new NumericSubtreePosdef
          (symbolic_subtree, aval, scaling, child_contrib, *options, *stats);
       if(options->print_level > 9999) {
@@ -122,7 +124,13 @@ void* spral_ssids_cpu_create_num_subtree(
          subtree->print();
       }
       return (void*) subtree;
+      } catch (const std::bad_alloc& e) {
+         fprintf(stderr, "[ERROR] std::bad_alloc during NumericSubtreePosdef creation: %s\n", e.what());
+         return nullptr;
+      }
    } else { /* indef */
+      printf("Create a NumericSubtreeIndef\n");
+      try {
       auto* subtree = new NumericSubtreeIndef
          (symbolic_subtree, aval, scaling, child_contrib, *options, *stats);
       if(options->print_level > 9999) {
@@ -130,6 +138,10 @@ void* spral_ssids_cpu_create_num_subtree(
          subtree->print();
       }
       return (void*) subtree;
+      } catch (const std::bad_alloc& e) {
+         fprintf(stderr, "[ERROR] std::bad_alloc during NumericSubtreeIndef creation: %s\n", e.what());
+         return nullptr;
+      }
    }
 }
 

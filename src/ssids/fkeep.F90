@@ -81,7 +81,9 @@ subroutine inner_factor_cpu(fkeep, akeep, val, options, inform)
 #endif
 
   ! Allocate space for subtrees
+  print *, "Start -- allocate fkeep.subtree"
   allocate(fkeep%subtree(akeep%nparts), stat=inform%stat)
+  print *, "End -- allocate fkeep.subtree"
   if(inform%stat.ne.0) goto 200
 
   ! Determine resources
@@ -93,12 +95,16 @@ subroutine inner_factor_cpu(fkeep, akeep, val, options, inform)
   end do
 
   ! Call subtree factor routines
+  print *, "Start -- allocate child_contrib"
   allocate(child_contrib(akeep%nparts), stat=inform%stat)
+  print *, "End -- allocate child_contrib"
   if(inform%stat.ne.0) goto 200
   ! Split into numa regions; parallelism within a region is responsibility
   ! of subtrees.
   to_launch = size(akeep%topology)*(1+max_gpus)
+  print *, "Start -- allocate thread_inform"
   allocate(thread_inform(to_launch), stat=inform%stat)
+  print *, "End -- allocate thread_inform"
   if(inform%stat.ne.0) goto 200
   all_region = .false.
 

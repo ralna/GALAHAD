@@ -9751,7 +9751,7 @@
      data%prob%f = f
 
 !  save the linear term of the objective function
-
+     print *, "Inside CCQP_solve_qp"
      IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
      ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
@@ -9759,6 +9759,7 @@
      ELSE
        data%prob%gradient_kind = 2
        array_name = 'ccqp: data%prob%G'
+       print *, "Call SPACE_resize_array"
        CALL SPACE_resize_array( n, data%prob%G,                                &
               data%ccqp_inform%status, data%ccqp_inform%alloc_status,          &
               array_name = array_name,                                         &
@@ -9804,6 +9805,7 @@
 
 !  call the solver
 
+     print *, "Call CCQP_solve"
      CALL CCQP_solve( data%prob, data%ccqp_data, data%ccqp_control,            &
                       data%ccqp_inform )
 

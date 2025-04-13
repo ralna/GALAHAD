@@ -1724,6 +1724,7 @@
 !  = SSIDS =
 
      CASE ( 'ssids' )
+       print *, "Call SSIDS_free"
        CALL SSIDS_free( akeep_ssids, flag_ssids )
        data%no_ssids = flag_ssids == GALAHAD_unavailable_option
        IF ( data%no_ssids ) THEN
@@ -4144,6 +4145,7 @@
 !  = SSIDS =
 
        CASE ( 'ssids' )
+         print *, "Call SLS_copy_control_to_ssids"
          CALL SLS_copy_control_to_ssids( control, data%ssids_options )
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          IF ( mc6168_ordering ) THEN
@@ -5528,6 +5530,7 @@
 !  = SSIDS =
 
        CASE ( 'ssids' )
+         print *, "Call SLS_copy_control_to_ssids"
          CALL SLS_copy_control_to_ssids( control, data%ssids_options )
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
 !    WRITE( 77, * ) data%matrix%n
@@ -5537,21 +5540,25 @@
 !    stop
          must_be_definite = data%must_be_definite
          IF ( data%ssids_options%scaling == 0 ) THEN
+           print *, "Call SSIDS_factor"
            CALL SSIDS_factor( must_be_definite, data%matrix%VAL,               &
                               data%ssids_akeep, data%ssids_fkeep,              &
                               data%ssids_options, data%ssids_inform,           &
                               ptr = data%matrix%PTR, row = data%matrix%COL )
          ELSE
+           print *, "Call SPACE_resize_array"
            CALL SPACE_resize_array( data%n, data%SCALE,                        &
                                     inform%status, inform%alloc_status )
            IF ( inform%status /= GALAHAD_ok ) THEN
              inform%bad_alloc = 'sls: data%matrix%VAL' ; GO TO 800 ; END IF
+           print *, "Call SSIDS_factor"
            CALL SSIDS_factor( must_be_definite, data%matrix%VAL,               &
                               data%ssids_akeep, data%ssids_fkeep,              &
                               data%ssids_options, data%ssids_inform,           &
                               scale = data%SCALE,                              &
                               ptr = data%matrix%PTR, row = data%matrix%COL )
          END IF
+         print *, "Call SLS_copy_control_to_ssids"
          CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
 
 !  = PARDISO =
@@ -6876,10 +6883,13 @@
 !  = SSIDS =
 
      CASE ( 'ssids' )
+       print *, "Call SLS_copy_control_to_ssids"
        CALL SLS_copy_control_to_ssids( control, data%ssids_options )
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
+       print *, "Call SSIDS_solve"
        CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,    &
                         data%ssids_options, data%ssids_inform )
+       print *, "Call SLS_copy_inform_from_ssids"
        CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
 
 !  = PARDISO =
@@ -7295,10 +7305,13 @@
      CASE ( 'ssids' )
        inform%status = GALAHAD_unavailable_option
        lx = SIZE( X, 1 ) ; nrhs = SIZE( X, 2 )
+       print *, "Call SLS_copy_control_to_ssids"
        CALL SLS_copy_control_to_ssids( control, data%ssids_options )
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
+       print *, "Call SSIDS_solve"
        CALL SSIDS_solve( nrhs, X, lx, data%ssids_akeep, data%ssids_fkeep,      &
                         data%ssids_options, data%ssids_inform )
+       print *, "Call SLS_copy_inform_from_ssids"
        CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
 
 !  = PARDISO =
@@ -7710,7 +7723,9 @@
 !  = SSIDS =
 
      CASE ( 'ssids' )
+       print *, "Call SPACE_dealloc_array"
        CALL SPACE_dealloc_array( data%X2, inform%status, inform%alloc_status )
+       print *, "Call SSIDS_free"
        CALL SSIDS_free( data%ssids_akeep, data%ssids_fkeep, inform%status )
        inform%status = 0
 
@@ -8111,6 +8126,7 @@
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
        IF ( data%must_be_definite ) THEN
          IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
+         print *, "Call SSIDS_enquire_posdef"
          CALL SSIDS_enquire_posdef( data%ssids_akeep, data%ssids_fkeep,        &
                                     data%ssids_options, data%ssids_inform,     &
                                     D( 1, : ) )
@@ -8118,6 +8134,7 @@
        ELSE
 
          IF ( PRESENT( PIVOTS ) ) THEN
+           print *, "Call SPACE_resize_array"
            CALL SPACE_resize_array( data%n, data%INVP,                         &
                                     inform%status, inform%alloc_status )
            IF ( inform%status /= GALAHAD_ok ) THEN
@@ -8127,22 +8144,27 @@
 
          IF ( PRESENT( D ) ) THEN
            IF ( PRESENT( PIVOTS ) ) THEN
+             print *, "Call SSIDS_enquire_posdef"
              CALL SSIDS_enquire_indef( data%ssids_akeep, data%ssids_fkeep,     &
                                        data%ssids_options, data%ssids_inform,  &
                                        piv_order = data%INVP, d = D )
            ELSE
+             print *, "Call SPACE_resize_array"
              CALL SPACE_resize_array( data%n, data%PIVOTS,                     &
                                       inform%status, inform%alloc_status )
              IF ( inform%status /= GALAHAD_ok ) GO TO 900
+             print *, "Call SSIDS_enquire_posdef"
              CALL SSIDS_enquire_indef( data%ssids_akeep, data%ssids_fkeep,     &
                                        data%ssids_options, data%ssids_inform,  &
                                        d = D )
            END IF
          ELSE
+           print *, "Call SPACE_resize_array"
            CALL SPACE_resize_array( 2_ip_, data%n, data%D, inform%status,      &
                                     inform%alloc_status )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            IF ( PRESENT( PIVOTS ) ) THEN
+             print *, "Call SSIDS_enquire_posdef"
              CALL SSIDS_enquire_indef( data%ssids_akeep, data%ssids_fkeep,     &
                                        data%ssids_options, data%ssids_inform,  &
                                        piv_order = data%INVP )
@@ -8363,8 +8385,10 @@
        IF ( data%must_be_definite ) THEN
          inform%status = GALAHAD_ok
        ELSE
+         print *, "Call SSIDS_alter"
          CALL SSIDS_alter( D, data%ssids_akeep, data%ssids_fkeep,              &
                            data%ssids_options, data%ssids_inform )
+         print *, "Call SLS_copy_inform_from_ssids"
          CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
        END IF
 
@@ -8787,10 +8811,12 @@
 !  = SSIDS =
 
      CASE ( 'ssids' )
+       print *, "Call SSIDS_solve"
 !      inform%status = GALAHAD_unavailable_option
 !      GO TO 900
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        IF ( part == 'L' .OR. ( part == 'S' .AND. data%must_be_definite ) ) THEN
+         print *, "Call SSIDS_solve"
          CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,  &
                            data%ssids_options, data%ssids_inform, job = 1_ip_ )
        ELSE IF ( part == 'D' ) THEN
@@ -8798,24 +8824,31 @@
            inform%status = 0
            GO TO 900
          ELSE
+           print *, "Call SSIDS_solve"
            CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,&
                            data%ssids_options, data%ssids_inform, job = 2_ip_ )
          END IF
        ELSE  IF ( part == 'U' ) THEN
+         print *, "Call SSIDS_solve"
          CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,  &
                            data%ssids_options, data%ssids_inform, job = 3_ip_ )
        ELSE
+         print *, "Call SSIDS_solve"
          CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,  &
                            data%ssids_options, data%ssids_inform, job = 1_ip_ )
+         print *, "Call SLS_copy_inform_from_ssids"
          CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+         print *, "Call SPACE_resize_array"
          CALL SPACE_resize_array( data%n, data%WORK,                           &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          data%WORK( : data%n ) = X( : data%n )
+         print *, "Call SSIDS_solve"
          CALL SSIDS_solve( data%WORK( : data%n ), data%ssids_akeep,            &
                            data%ssids_fkeep,                                   &
                            data%ssids_options, data%ssids_inform, job = 2_ip_ )
+         print *, "Call SLS_copy_inform_from_ssids"
          CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          DO i = 1, data%n
@@ -8835,6 +8868,7 @@
            END IF
          END DO
        END IF
+       print *, "Call SLS_copy_inform_from_ssids"
        CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
 
 !  = PARDISO =
