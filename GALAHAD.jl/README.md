@@ -36,16 +36,33 @@ libraries.
 
 To use your own installation of `GALAHAD`, set the environment variable
 `JULIA_GALAHAD_LIBRARY_PATH` to point to the folder that contains the
-shared libraries `libgalahad_single` and `libgalahad_double` before
-`using GALAHAD`.
+shared libraries `libgalahad_single`, `libgalahad_double` and `libgalahad_quadruple`
+before `using GALAHAD`.
 
 ```bash
 export JULIA_GALAHAD_LIBRARY_PATH=/home/alexis/Applications/GALAHAD/lib
 ```
 
-The `JULIA_GALAHAD_LIBRARY_PATH` environment variable may be set
-permanently in the shell's startup file, or in
-`$HOME/.julia/config/startup.jl`
-via 
-`ENV["JULIA_GALAHAD_LIBRARY_PATH"] = "/home/alexis/Applications/GALAHAD/lib".
+The environment variable `JULIA_GALAHAD_LIBRARY_PATH` can be set
+permanently in your shell's startup file (e.g., `.bashrc`)
+or in Julia's startup file at `$HOME/.julia/config/startup.jl`.
 
+You can also define it directly from within Julia:
+```julia
+ENV["JULIA_GALAHAD_LIBRARY_PATH"] = "/home/alexis/Applications/GALAHAD/lib"
+```
+
+You can check whether you're using the default precompiled libraries (`"YGGDRASIL"`)
+or your own local ones (`"CUSTOM"`) by inspecting the constant `GALAHAD_INSTALLATION` in `GALAHAD.jl`:
+```julia
+using GALAHAD
+GALAHAD.GALAHAD_INSTALLATION
+```
+
+If you have set the environment variable `JULIA_GALAHAD_LIBRARY_PATH` but `GALAHAD_INSTALLATION` still shows `"YGGDRASIL"`,
+you may need to regenerate the cache of `GALAHAD.jl` by running:
+
+```julia
+force_recompile(package_name::String) = Base.compilecache(Base.identify_package(package_name))
+force_recompile("GALAHAD")
+```
