@@ -1,17 +1,83 @@
- C sparse matrix indexing
-
- tests options for all-in-one storage format
-
-C:     5 iterations. Optimal objective value = -1.00 status = 0
-R:     5 iterations. Optimal objective value = -1.00 status = 0
-D:     5 iterations. Optimal objective value = -1.00 status = 0
-I:    15 iterations. Optimal objective value = -1.00 status = 0
-P:     9 iterations. Optimal objective value = -1.00 status = 0
-
- tests reverse-communication options
-
-C:     5 iterations. Optimal objective value = -1.00 status = 0
-R:     5 iterations. Optimal objective value = -1.00 status = 0
-D:     5 iterations. Optimal objective value = -1.00 status = 0
-I:    15 iterations. Optimal objective value = -1.00 status = 0
-P:     9 iterations. Optimal objective value = -1.00 status = 0
+==468741==Shadow memory range interleaves with an existing memory mapping. ASan cannot proceed correctly. ABORTING.
+==468741==ASan shadow was supposed to be located in the [0x00007fff7000-0x10007fff7fff] range.
+==468741==This might be related to ELF_ET_DYN_BASE change in Linux 4.12.
+==468741==See https://github.com/google/sanitizers/issues/856 for possible workarounds.
+==468741==Process memory map follows:
+	0x0ef125200000-0x0ef125300000	
+	0x0ef125400000-0x0ef125500000	
+	0x0ef125600000-0x0ef125700000	
+	0x0ef125800000-0x0ef125900000	
+	0x0ef125a00000-0x0ef125b00000	
+	0x0ef125c00000-0x0ef125f8e000	
+	0x0ef126000000-0x0ef126028000	/usr/lib/x86_64-linux-gnu/libc.so.6
+	0x0ef126028000-0x0ef1261b0000	/usr/lib/x86_64-linux-gnu/libc.so.6
+	0x0ef1261b0000-0x0ef1261ff000	/usr/lib/x86_64-linux-gnu/libc.so.6
+	0x0ef1261ff000-0x0ef126203000	/usr/lib/x86_64-linux-gnu/libc.so.6
+	0x0ef126203000-0x0ef126205000	/usr/lib/x86_64-linux-gnu/libc.so.6
+	0x0ef126205000-0x0ef126212000	
+	0x0ef126400000-0x0ef12641d000	/usr/lib/x86_64-linux-gnu/libgfortran.so.5.0.0
+	0x0ef12641d000-0x0ef1266f2000	/usr/lib/x86_64-linux-gnu/libgfortran.so.5.0.0
+	0x0ef1266f2000-0x0ef12671b000	/usr/lib/x86_64-linux-gnu/libgfortran.so.5.0.0
+	0x0ef12671b000-0x0ef12671c000	/usr/lib/x86_64-linux-gnu/libgfortran.so.5.0.0
+	0x0ef12671c000-0x0ef12671e000	/usr/lib/x86_64-linux-gnu/libgfortran.so.5.0.0
+	0x0ef126800000-0x0ef12684d000	/share/system/usr/local/lib/libhwloc.so.15.1.0
+	0x0ef12684d000-0x0ef126a4c000	/share/system/usr/local/lib/libhwloc.so.15.1.0
+	0x0ef126a4c000-0x0ef126a4d000	/share/system/usr/local/lib/libhwloc.so.15.1.0
+	0x0ef126a4d000-0x0ef126a4e000	/share/system/usr/local/lib/libhwloc.so.15.1.0
+	0x0ef126de4000-0x0ef126de6000	/usr/lib/x86_64-linux-gnu/libz.so.1.3
+	0x0ef126de6000-0x0ef126df8000	/usr/lib/x86_64-linux-gnu/libz.so.1.3
+	0x0ef126df8000-0x0ef126dfe000	/usr/lib/x86_64-linux-gnu/libz.so.1.3
+	0x0ef126dfe000-0x0ef126dff000	/usr/lib/x86_64-linux-gnu/libz.so.1.3
+	0x0ef126dff000-0x0ef126e00000	/usr/lib/x86_64-linux-gnu/libz.so.1.3
+	0x0ef126e00000-0x0ef126e9d000	/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+	0x0ef126e9d000-0x0ef126fe5000	/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+	0x0ef126fe5000-0x0ef12706c000	/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+	0x0ef12706c000-0x0ef127077000	/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+	0x0ef127077000-0x0ef12707a000	/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33
+	0x0ef12707a000-0x0ef12707e000	
+	0x0ef127083000-0x0ef127093000	
+	0x0ef127093000-0x0ef127097000	/usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+	0x0ef127097000-0x0ef1270bb000	/usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+	0x0ef1270bb000-0x0ef1270bf000	/usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+	0x0ef1270bf000-0x0ef1270c0000	/usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+	0x0ef1270c0000-0x0ef1270c1000	/usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+	0x0ef1270c1000-0x0ef1270cc000	/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+	0x0ef1270cc000-0x0ef127108000	/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+	0x0ef127108000-0x0ef127115000	/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+	0x0ef127115000-0x0ef127116000	/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+	0x0ef127116000-0x0ef127117000	/usr/lib/x86_64-linux-gnu/libgomp.so.1.0.0
+	0x0ef127117000-0x0ef127127000	/usr/lib/x86_64-linux-gnu/libm.so.6
+	0x0ef127127000-0x0ef1271a6000	/usr/lib/x86_64-linux-gnu/libm.so.6
+	0x0ef1271a6000-0x0ef1271fe000	/usr/lib/x86_64-linux-gnu/libm.so.6
+	0x0ef1271fe000-0x0ef1271ff000	/usr/lib/x86_64-linux-gnu/libm.so.6
+	0x0ef1271ff000-0x0ef127200000	/usr/lib/x86_64-linux-gnu/libm.so.6
+	0x0ef127200000-0x0ef127236000	/usr/lib/x86_64-linux-gnu/libasan.so.8.0.0
+	0x0ef127236000-0x0ef12735c000	/usr/lib/x86_64-linux-gnu/libasan.so.8.0.0
+	0x0ef12735c000-0x0ef127395000	/usr/lib/x86_64-linux-gnu/libasan.so.8.0.0
+	0x0ef127395000-0x0ef127399000	/usr/lib/x86_64-linux-gnu/libasan.so.8.0.0
+	0x0ef127399000-0x0ef12739d000	/usr/lib/x86_64-linux-gnu/libasan.so.8.0.0
+	0x0ef12739d000-0x0ef1278d1000	
+	0x0ef1278d5000-0x0ef1278eb000	
+	0x0ef1278eb000-0x0ef1278ed000	/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1
+	0x0ef1278ed000-0x0ef1278f2000	/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1
+	0x0ef1278f2000-0x0ef1278f4000	/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1
+	0x0ef1278f4000-0x0ef1278f5000	/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1
+	0x0ef1278f5000-0x0ef1278f6000	/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1
+	0x0ef1278f6000-0x0ef1278f8000	
+	0x0ef127900000-0x0ef127921000	
+	0x0ef127921000-0x0ef127922000	/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+	0x0ef127922000-0x0ef12794d000	/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+	0x0ef12794d000-0x0ef127957000	/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+	0x0ef127957000-0x0ef127959000	/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+	0x0ef127959000-0x0ef12795b000	/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+	0x619afacf3000-0x619afad66000	/home/nimg/Dropbox/fortran/optrove/galahad/src/tru/run_tru
+	0x619afad66000-0x619afb9b5000	/home/nimg/Dropbox/fortran/optrove/galahad/src/tru/run_tru
+	0x619afb9b5000-0x619afbb52000	/home/nimg/Dropbox/fortran/optrove/galahad/src/tru/run_tru
+	0x619afbb52000-0x619afbb5e000	/home/nimg/Dropbox/fortran/optrove/galahad/src/tru/run_tru
+	0x619afbb5e000-0x619afbbb3000	/home/nimg/Dropbox/fortran/optrove/galahad/src/tru/run_tru
+	0x619afbbb3000-0x619afbbc6000	
+	0x7ffdce340000-0x7ffdce368000	[stack]
+	0x7ffdce378000-0x7ffdce37c000	[vvar]
+	0x7ffdce37c000-0x7ffdce37e000	[vdso]
+	0xffffffffff600000-0xffffffffff601000	[vsyscall]
+==468741==End of process memory map.

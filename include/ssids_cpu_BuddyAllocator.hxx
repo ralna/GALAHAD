@@ -103,8 +103,10 @@ public:
 #endif /* MEM_STATS */
    }
    ~Page() noexcept(false) {
+      /*
       if(next_ && head_[nlevel-1] != 0)
          throw std::runtime_error("outstanding allocations on cleanup\n");
+      */
       if(next_) {
          typename IntAllocTraits::allocator_type intAlloc(alloc_);
          IntAllocTraits::deallocate(intAlloc, next_, 1<<(nlevel-1));

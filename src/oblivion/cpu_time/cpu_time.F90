@@ -31,7 +31,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      REAL ( KIND = sp_ ) ), INTENT( OUT ) :: time
+      REAL ( KIND = sp_ ), INTENT( OUT ) :: time
 
 ! For all machines using the NAG f90 compiler
 

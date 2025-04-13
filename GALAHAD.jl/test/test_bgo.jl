@@ -21,7 +21,8 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
-    f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + mag * cos(freq * x[1]) + sum(x)
+    f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + 
+           mag * cos(freq * x[1]) + sum(x)
     return 0
   end
 
@@ -62,7 +63,8 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # Hessian-vector product
-  function hessprod(x::Vector{T}, u::Vector{T}, v::Vector{T}, got_h::Bool, userdata::userdata_bgo)
+  function hessprod(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
+                    got_h::Bool, userdata::userdata_bgo)
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -115,7 +117,8 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # Apply preconditioner
-  function prec(x::Vector{T}, u::Vector{T}, v::Vector{T}, userdata::userdata_bgo)
+  function prec(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
+                   userdata::userdata_bgo)
     u[1] = 0.5 * v[1]
     u[2] = 0.5 * v[2]
     u[3] = 0.25 * v[3]
@@ -156,7 +159,8 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # Hessian-vector product
-  function hessprod_diag(x::Vector{T}, u::Vector{T}, v::Vector{T}, got_h::Bool, userdata::userdata_bgo)
+  function hessprod_diag(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
+                    got_h::Bool, userdata::userdata_bgo)
     freq = userdata.freq
     mag = userdata.mag
 
@@ -168,8 +172,9 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
 
   # Sparse Hessian-vector product
   function shessprod_diag(x::Vector{T}, nnz_v::INT, index_nz_v::Vector{INT},
-                          v::Vector{T}, nnz_u::Ref{INT}, index_nz_u::Vector{INT},
-                          u::Vector{T}, got_h::Bool, userdata::userdata_bgo)
+                          v::Vector{T}, nnz_u::Ref{INT}, 
+                          index_nz_u::Vector{INT}, u::Vector{T}, 
+                          got_h::Bool, userdata::userdata_bgo)
     freq = userdata.freq
     mag = userdata.mag
 

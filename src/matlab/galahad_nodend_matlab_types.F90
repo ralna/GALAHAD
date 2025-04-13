@@ -43,6 +43,12 @@
 !  Derived type definitions
 !--------------------------
 
+      TYPE, PUBLIC :: NODEND_time_pointer_type
+        mwPointer :: pointer
+        mwPointer :: total, metis
+        mwPointer :: clock_total, clock_metis
+      END TYPE
+
       TYPE, PUBLIC :: NODEND_pointer_type
         mwPointer :: pointer
         mwPointer :: status, alloc_status, bad_alloc, version
@@ -360,12 +366,16 @@
 
       mwPointer :: mxCreateStructMatrix
 
-      INTEGER * 4, PARAMETER :: ninform = 4
+      INTEGER * 4, PARAMETER :: ninform = 5
       CHARACTER ( LEN = 28 ), PARAMETER :: finform( ninform ) = (/             &
-           'status                      ',                                     &
-           'alloc_status                ',                                     &
-           'bad_alloc                   ',                                     &
-           'version                     '                         /)
+           'status                      ', 'alloc_status                ',     &
+           'bad_alloc                   ', 'version                     ',     &
+           'time                        '  /)
+
+      INTEGER * 4, PARAMETER :: t_ninform = 4
+      CHARACTER ( LEN = 21 ), PARAMETER :: t_finform( t_ninform ) = (/         &
+           'total                ', 'metis               ',                    &
+           'clock_total          ', 'clock_metis         ' /)
 
 !  create the structure
 
@@ -386,6 +396,19 @@
         'bad_alloc', NODEND_pointer%bad_alloc )
       CALL MATLAB_create_char_component( NODEND_pointer%pointer,               &
         'version', NODEND_pointer%version )
+
+!  create the components of sub-structure time
+
+      CALL MATLAB_create_substructure( NODEND_pointer%pointer,                 &
+        'time', NODEND_pointer%time_pointer%pointer, t_ninform, t_finform )
+      CALL MATLAB_create_real_component( NODEND_pointer%time_pointer%pointer,  &
+        'total', NODEND_pointer%time_pointer%total )
+      CALL MATLAB_create_real_component( NODEND_pointer%time_pointer%pointer,  &
+        'metis', NODEND_pointer%time_pointer%metis )
+      CALL MATLAB_create_real_component( NODEND_pointer%time_pointer%pointer,  &
+        'clock_total', NODEND_pointer%time_pointer%clock_total )
+      CALL MATLAB_create_real_component( NODEND_pointer%time_pointer%pointer,  &
+        'clock_metis', NODEND_pointer%time_pointer%clock_metis )
 
       RETURN
 
@@ -423,7 +446,16 @@
                                'bad_alloc', NODEND_inform%bad_alloc )
       CALL MATLAB_copy_to_ptr( NODEND_pointer%pointer,                         &
                                'version', NODEND_inform%version )
+!  time components
 
+      CALL MATLAB_copy_to_ptr( REAL( NODEND_inform%time%total, wp ),           &
+                               mxGetPr( NODEND_pointer%time_pointer%total ) )
+      CALL MATLAB_copy_to_ptr( REAL( NODEND_inform%time%metis, wp ),           &
+                               mxGetPr( NODEND_pointer%time_pointer%metis ) )
+      CALL MATLAB_copy_to_ptr( REAL( NODEND_inform%time%clock_total, wp ),     &
+                      mxGetPr( NODEND_pointer%time_pointer%clock_total ) )
+      CALL MATLAB_copy_to_ptr( REAL( NODEND_inform%time%clock_metis, wp ),     &
+                      mxGetPr( NODEND_pointer%time_pointer%clock_metis ) )
       RETURN
 
 !  End of subroutine NODEND_matlab_inform_get

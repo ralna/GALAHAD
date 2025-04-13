@@ -4460,6 +4460,7 @@
 
      CASE ( 'mumps' )
 
+!write(6,*) ' mumps myid in ', data%mumps_par%MYID
        IF ( data%mumps_par%MYID == 0 ) THEN
          data%mumps_par%N = matrix%n
          data%mumps_par%NNZ = data%matrix_ne
@@ -7793,6 +7794,7 @@
 !  = MUMPS =
 
      CASE ( 'mumps' )
+!write(6,*) ' mumps myid ', data%mumps_par%MYID
        IF ( data%mumps_par%MYID == 0 ) THEN
          CALL SPACE_dealloc_pointer( data%mumps_par%IRN, inform%status,        &
                                      inform%alloc_status )

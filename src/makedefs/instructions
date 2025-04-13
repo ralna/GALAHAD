@@ -1606,9 +1606,9 @@ $(package)dt: $($(PACKAGE)DT)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)DT)
 	$(RMOOC)
-	- ./run_$(package) 2>/dev/null
-#	- ./run_$(package) > $(package)dt.output 2>&1
-#	cat $(package)dt.output
+#	- ./run_$(package) 2>/dev/null
+	- ./run_$(package) > $(package)dt.output 2>&1
+	cat $(package)dt.output
 	rm ./run_$(package)
 
 $(package)dt2: $($(PACKAGE)DT2)
@@ -1621,6 +1621,16 @@ $(package)dt2: $($(PACKAGE)DT2)
 	- ./run_$(package) > $(package)dt2.output 2>&1
 	cat $(package)dt2.output
 	rm ./run_$(package)
+
+$(package)dt_keep: $($(PACKAGE)DT)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DT)
+	$(RMOOC)
+#	- ./run_$(package) 2>/dev/null
+	- ./run_$(package) > $(package)dt.output 2>&1
+	cat $(package)dt.output
 
 $(package)dt_valgrind: $($(PACKAGE)DT)
 	echo ""

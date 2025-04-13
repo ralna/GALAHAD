@@ -178,8 +178,6 @@
 
 !  Compute row norms
 
-      END DO
-
 !  End of subroutine QPS_apply
 
       END SUBROUTINE QPS_apply

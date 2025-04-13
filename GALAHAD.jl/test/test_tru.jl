@@ -52,7 +52,8 @@ function test_tru(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # Hessian-vector product
-  function hessprod(x::Vector{T}, u::Vector{T}, v::Vector{T}, got_h::Bool, userdata::userdata_tru{T})
+  function hessprod(x::Vector{T}, u::Vector{T}, v::Vector{T}, got_h::Bool, 
+                    userdata::userdata_tru{T})
     u[1] = u[1] + 2.0 * (v[1] + v[3]) - cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * (v[2] + v[3])
     u[3] = u[3] + 2.0 * (v[1] + v[2] + 2.0 * v[3])
@@ -60,7 +61,8 @@ function test_tru(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # Apply preconditioner
-  function prec(x::Vector{T}, u::Vector{T}, v::Vector{T}, userdata::userdata_tru{T})
+  function prec(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
+                userdata::userdata_tru{T})
     u[1] = 0.5 * v[1]
     u[2] = 0.5 * v[2]
     u[3] = 0.25 * v[3]
@@ -92,7 +94,8 @@ function test_tru(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # Hessian-vector product
-  function hessprod_diag(x::Vector{T}, u::Vector{T}, v::Vector{T}, got_h::Bool, userdata::userdata_tru{T})
+  function hessprod_diag(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
+                         got_h::Bool, userdata::userdata_tru{T})
     u[1] = u[1] + -cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * v[2]
     u[3] = u[3] + 2.0 * v[3]
@@ -153,7 +156,8 @@ function test_tru(::Type{T}, ::Type{INT}) where {T,INT}
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(T, INT, data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
+        tru_solve_reverse_with_mat(T, INT, data, status, eval_status, 
+                                   n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -180,7 +184,8 @@ function test_tru(::Type{T}, ::Type{INT}) where {T,INT}
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(T, INT, data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
+        tru_solve_reverse_with_mat(T, INT, data, status, eval_status, 
+                                   n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -207,8 +212,9 @@ function test_tru(::Type{T}, ::Type{INT}) where {T,INT}
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(T, INT, data, status, eval_status, n, x, f[], g,
-                                   div(n * (n + 1), 2), H_dense, u, v)
+        tru_solve_reverse_with_mat(T, INT, data, status, eval_status, 
+                                   n, x, f[], g, div(n * (n + 1), 2), 
+                                   H_dense, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -230,11 +236,13 @@ function test_tru(::Type{T}, ::Type{INT}) where {T,INT}
     # diagonal
     if d == 4
       st = 'I'
-      tru_import(T, INT, control, data, status, n, "diagonal", ne, C_NULL, C_NULL, C_NULL)
+      tru_import(T, INT, control, data, status, n, "diagonal",
+                 ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(T, INT, data, status, eval_status, n, x, f[], g, n, H_diag, u, v)
+        tru_solve_reverse_with_mat(T, INT, data, status, eval_status, 
+                                   n, x, f[], g, n, H_diag, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -261,7 +269,8 @@ function test_tru(::Type{T}, ::Type{INT}) where {T,INT}
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_without_mat(T, INT, data, status, eval_status, n, x, f[], g, u, v)
+        tru_solve_reverse_without_mat(T, INT, data, status, eval_status, 
+                                      n, x, f[], g, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit

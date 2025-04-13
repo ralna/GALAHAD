@@ -21,7 +21,8 @@ function test_dgo(::Type{T}, ::Type{INT}) where {T,INT}
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
-    f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + mag * cos(freq * x[1]) + x[1] + x[2] + x[3]
+    f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + 
+           mag * cos(freq * x[1]) + x[1] + x[2] + x[3]
     return 0
   end
 
@@ -62,7 +63,8 @@ function test_dgo(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # Hessian-vector product
-  function hessprod(x::Vector{T}, u::Vector{T}, v::Vector{T}, got_h::Bool, userdata::userdata_dgo)
+  function hessprod(x::Vector{T}, u::Vector{T}, v::Vector{T}, got_h::Bool, 
+                    userdata::userdata_dgo)
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -156,7 +158,8 @@ function test_dgo(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # Hessian-vector product
-  function hessprod_diag(x::Vector{T}, u::Vector{T}, v::Vector{T}, got_h::Bool, userdata::userdata_dgo)
+  function hessprod_diag(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
+                         got_h::Bool, userdata::userdata_dgo)
     freq = userdata.freq
     mag = userdata.mag
 
@@ -168,8 +171,9 @@ function test_dgo(::Type{T}, ::Type{INT}) where {T,INT}
 
   # Sparse Hessian-vector product
   function shessprod_diag(x::Vector{T}, nnz_v::INT, index_nz_v::Vector{INT},
-                          v::Vector{T}, nnz_u::Ref{INT}, index_nz_u::Vector{INT},
-                          u::Vector{T}, got_h::Bool, userdata)
+                          v::Vector{T}, nnz_u::Ref{INT}, 
+                          index_nz_u::Vector{INT}, u::Vector{T}, 
+                          got_h::Bool, userdata)
     freq = userdata.freq
     mag = userdata.mag
 
@@ -253,11 +257,13 @@ function test_dgo(::Type{T}, ::Type{INT}) where {T,INT}
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      dgo_import(T, INT, control, data, status, n, x_l, x_u, "coordinate", ne, H_row, H_col, C_NULL)
+      dgo_import(T, INT, control, data, status, n, x_l, x_u, "coordinate", 
+                 ne, H_row, H_col, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        dgo_solve_reverse_with_mat(T, INT, data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
+        dgo_solve_reverse_with_mat(T, INT, data, status, eval_status, 
+                                   n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit

@@ -33,14 +33,16 @@ function test_nls(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # compute the Hessian
-  function hess(x::Vector{T}, y::Vector{T}, hval::Vector{T}, userdata::userdata_nls)
+  function hess(x::Vector{T}, y::Vector{T}, hval::Vector{T}, 
+                userdata::userdata_nls)
     hval[1] = 2.0 * y[1]
     hval[2] = 2.0 * y[2]
     return 0
   end
 
   # compute Jacobian-vector products
-  function jacprod(x::Vector{T}, trans::Bool, u::Vector{T}, v::Vector{T}, got_j::Bool, userdata::userdata_nls)
+  function jacprod(x::Vector{T}, trans::Bool, u::Vector{T}, v::Vector{T}, 
+                   got_j::Bool, userdata::userdata_nls)
     if trans
       u[1] = u[1] + 2.0 * x[1] * v[1] + v[2] + v[3]
       u[2] = u[2] + 2.0 * x[2] * v[2] - v[3]
@@ -53,21 +55,24 @@ function test_nls(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # compute Hessian-vector products
-  function hessprod(x::Vector{T}, y::Vector{T}, u::Vector{T}, v::Vector{T}, got_h::Bool, userdata::userdata_nls)
+  function hessprod(x::Vector{T}, y::Vector{T}, u::Vector{T}, v::Vector{T}, 
+                    got_h::Bool, userdata::userdata_nls)
     u[1] = u[1] + 2.0 * y[1] * v[1]
     u[2] = u[2] + 2.0 * y[2] * v[2]
     return 0
   end
 
   # compute residual-Hessians-vector products
-  function rhessprods(x::Vector{T}, v::Vector{T}, pval::Vector{T}, got_h::Bool, userdata::userdata_nls)
+  function rhessprods(x::Vector{T}, v::Vector{T}, pval::Vector{T}, 
+                      got_h::Bool, userdata::userdata_nls)
     pval[1] = 2.0 * v[1]
     pval[2] = 2.0 * v[2]
     return 0
   end
 
   # # scale v
-  function scale(x::Vector{T}, u::Vector{T}, v::Vector{T}, userdata::userdata_nls)
+  function scale(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
+                 userdata::userdata_nls)
     u[1] = v[1]
     u[2] = v[2]
     return 0
@@ -85,7 +90,8 @@ function test_nls(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # compute the dense Hessian
-  function hess_dense(x::Vector{T}, y::Vector{T}, hval::Vector{T}, userdata::userdata_nls)
+  function hess_dense(x::Vector{T}, y::Vector{T}, hval::Vector{T}, 
+                      userdata::userdata_nls)
     hval[1] = 2.0 * y[1]
     hval[2] = 0.0
     hval[3] = 2.0 * y[2]
@@ -93,7 +99,8 @@ function test_nls(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # compute dense residual-Hessians-vector products
-  function rhessprods_dense(x::Vector{T}, v::Vector{T}, pval::Vector{T}, got_h::Bool, userdata::userdata_nls)
+  function rhessprods_dense(x::Vector{T}, v::Vector{T}, pval::Vector{T}, 
+                            got_h::Bool, userdata::userdata_nls)
     pval[1] = 2.0 * v[1]
     pval[2] = 0.0
     pval[3] = 0.0

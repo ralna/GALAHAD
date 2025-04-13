@@ -60,5 +60,5 @@
      GO TO 10  !  return to BNLS_solve
    END SELECT
    CALL BNLS_terminate( data, control, inform )  ! delete internal workspace
-   DEALLOCATE( nlp%X, nlp%G nlp%X_l, nlp%X_u )
+   DEALLOCATE( nlp%X, nlp%G, nlp%X_l, nlp%X_u )
    END PROGRAM GALAHAD_BNLS_EXAMPLE3
