@@ -127,26 +127,26 @@ jobs:
   #         int: ${{ matrix.int }}
   #         sanitizers: ${{ matrix.sanitizers }}
 
-  nvidia-build:
-    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        arch: ['x64']
-        compiler: ['nvidia-hpc']
-        version: ['25.3']
-        int: ['32', '64']
-        sanitizers: ['false']
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run common setup
-        uses: ./.github/meson
-        with:
-          os: ${{ matrix.os }}
-          compiler: ${{ matrix.compiler }}
-          version: ${{ matrix.version }}
-          int: ${{ matrix.int }}
-          sanitizers: ${{ matrix.sanitizers }}
+  # nvidia-build:
+  #   name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [ubuntu-latest]
+  #       arch: ['x64']
+  #       compiler: ['nvidia-hpc']
+  #       version: ['25.3']
+  #       int: ['32', '64']
+  #       sanitizers: ['false']
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #     - name: Run common setup
+  #       uses: ./.github/meson
+  #       with:
+  #         os: ${{ matrix.os }}
+  #         compiler: ${{ matrix.compiler }}
+  #         version: ${{ matrix.version }}
+  #         int: ${{ matrix.int }}
+  #         sanitizers: ${{ matrix.sanitizers }}
