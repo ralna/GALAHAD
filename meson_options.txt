@@ -201,4 +201,4 @@ option('multiprecision',
 option('openmp',
        type : 'boolean',
        value : true,
-       description : 'option to compile SPRAL with OpenMP')
+       description : 'option to compile GALAHAD with OpenMP')

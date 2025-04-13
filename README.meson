@@ -23,14 +23,32 @@ meson setup --wipe builddir/pc64.lnx.gfo
 
 ## Performance of debugging?
 
+```shell
 meson setup builddir/pc64.lnx.gfo --buildtype=release (default)
 meson setup builddir/pc64.lnx.gfo --buildtype=debug
+```
 
 ## Static or shared libraries?
 
+```shell
 meson setup builddir/pc64.lnx.gfo -Ddefault_library=shared (default)
 meson setup builddir/pc64.lnx.gfo -Ddefault_library=static
 meson setup builddir/pc64.lnx.gfo -Ddefault_library=both
+```
+
+## Use a sanitizer?
+
+To enable sanitizers with Meson, you can pass the option `-Db_sanitize` when setting up your build directory.
+
+- ASAN (AddressSanitizer): Detects memory-related errors such as buffer overflows, use-after-free, and memory leaks.
+```shell
+meson setup builddir/pc64.lnx.gfo -Db_sanitize=address
+```
+
+- UBSAN (UndefinedBehaviorSanitizer): Helps catch undefined behavior like integer overflows, invalid casts, or out-of-bounds accesses.
+```shell
+meson setup builddir/pc64.lnx.gfo -Db_sanitize=undefined
+```
 
 ## 32-bit or 64-bit integers?
 
@@ -45,10 +63,10 @@ where `libdep` is an option described below to provide the name of the library.
 GALAHAD will not link with the dependency or compile its own 64-bit version, except for BLAS and LAPACK.
 
 ```shell
-meson setup builddir/pc64.lnx.gfo -Dint64=true -Dlibblas= -Dliblapack= -Dlibmetis=
+meson setup builddir/pc64.lnx.gfo -Dint64=true -Dlibblas= -Dliblapack=
 ```
 
-For instance, GALAHAD is compiled with our own version of BLAS, LAPACK and METIS.
+For instance, GALAHAD is compiled with our own version of BLAS and LAPACK.
 
 # Details
 
@@ -105,7 +123,8 @@ Currently supported options with their default value:
 * `-Dlibhwloc_include=[]`: additional directories to search for the HWLOC header files;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
 * `-Dlibcutest_modules[]`: additional directories to search for the CUTEst modules;
-* `-Dint64=false`: compile GALAHAD with 64-bit integer.
+* `-Dint64=false`: compile GALAHAD with 64-bit integer;
+* `-Dopenmp:true`: compile GALAHAD with OpenMP.
 
 Non-default compilers can be selected by setting the `CC`, `CXX` and
 `FC` shell variables.  For instance,
@@ -125,15 +144,14 @@ Note that the Intel MKL Pardiso linear solver is only available when GALAHAD
 is compiled with Intel MKL.
 This implies that `libblas` or `liblapack` should be set to `mkl_rt`.
 
-
 ### HSL
 
 To compile GALAHAD with the HSL subset, use the following commands:
 ```shell
-meson setup builddir_int32 -Dlibmetis= -Dlibhsl=hsl_subset -Dlibhsl_path=... -Dlibhsl_modules=...
+meson setup builddir_int32 -Dlibhsl=hsl_subset -Dlibhsl_path=... -Dlibhsl_modules=...
 meson compile -C builddir_int32
 
-meson setup builddir_int64 -Dint64=true -Dlibmetis= -Dlibhsl=hsl_subset_64 -Dlibhsl_path=... -Dlibhsl_modules=...
+meson setup builddir_int64 -Dint64=true -Dlibhsl=hsl_subset_64 -Dlibhsl_path=... -Dlibhsl_modules=...
 meson compile -C builddir_int64
 ```
 
