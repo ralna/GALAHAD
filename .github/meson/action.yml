@@ -347,7 +347,7 @@ runs:
                              -Dciface=${C_INTERFACE} \
                              -Dpythoniface=${PYTHON_INTERFACE} \
                              -Dint64=${INT64} \
-                             -Dquadruple=false \ # ${QUADRUPLE}
+                             -Dquadruple=false \
                              -Dlibblas_path=${BLAS_PATH} \
                              -Dliblapack_path=${LAPACK_PATH} \
                              -Dlibblas=${BLAS} \
