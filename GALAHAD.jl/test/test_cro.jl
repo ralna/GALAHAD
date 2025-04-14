@@ -57,9 +57,6 @@ function test_cro(::Type{T}, ::Type{INT}) where {T,INT}
   # Initialize CRO
   cro_initialize(T, INT, data, control, status)
 
-  # Set user-defined control options
-  @reset control[].f_indexing = true # Fortran sparse matrix indexing
-
   # crossover the solution
   cro_crossover_solution(T, INT, data, control, inform, n, m, m_equal, H_ne, H_val, H_col, H_ptr,
                          A_ne, A_val, A_col, A_ptr, g, c_l, c_u, x_l, x_u, x, c, y, z,

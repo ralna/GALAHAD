@@ -65,9 +65,6 @@ function test_trs(::Type{T}, ::Type{INT}) where {T,INT}
         # Initialize TRS
         trs_initialize(T, INT, data, control, status)
 
-        # Set user-defined control options
-        @reset control[].f_indexing = true # fortran sparse matrix indexing
-
         # sparse co-ordinate storage
         if storage_type == 1
           st = 'C'

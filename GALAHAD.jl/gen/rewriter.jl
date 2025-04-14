@@ -88,10 +88,19 @@ function rewrite!(path::String, name::String, optimized::Bool)
       if contains(code, "function")
         fname = split(split(code, "function ")[2], "(")[1]
 
+        # Set the option for 1-based indexing by default
+        both_indexing_packages = ("ugo", "sils", "sha", "sec", "scu", "roots", "lstr", "lsrt", "lms", "lhs",
+                                  "l2rt", "ir", "hash", "gltr", "gls", "glrt", "fit", "convert", "bsc")
+        if endswith(fname, "initialize") && !(name in both_indexing_packages)
+          end_routine = "  @reset control[].f_indexing = true\nend\n"
+        else
+          end_routine = "end\n"
+        end
+
         # Int32
-        routine_single_int32 = code * "end\n"
-        routine_double_int32 = code * "end\n"
-        routine_quadruple_int32 = code * "end\n"
+        routine_single_int32 = code * end_routine
+        routine_double_int32 = code * end_routine
+        routine_quadruple_int32 = code * end_routine
 
         routine_single_int32 = replace(routine_single_int32, "function $fname(" => "function $fname(::Type{Float32}, ::Type{Int32}, ")
         routine_double_int32 = replace(routine_double_int32, "function $fname(" => "function $fname(::Type{Float64}, ::Type{Int32}, ")

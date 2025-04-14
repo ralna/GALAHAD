@@ -141,7 +141,6 @@ function test_tru(::Type{T}, ::Type{INT}) where {T,INT}
     tru_initialize(T, INT, data, control, status)
 
     # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
     # @reset control[].print_level = INT(1)
     # @reset control[].maxit = INT(1)
 

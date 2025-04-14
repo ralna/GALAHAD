@@ -58,9 +58,6 @@ function test_sbls(::Type{T}, ::Type{INT}) where {T,INT}
     @reset control[].symmetric_linear_solver = galahad_linear_solver("sytr")
     @reset control[].definite_linear_solver = galahad_linear_solver("sytr")
 
-    # Set user-defined control options
-    @reset control[].f_indexing = true # fortran sparse matrix indexing
-
     # sparse co-ordinate storage
     if d == 1
       st = 'C'

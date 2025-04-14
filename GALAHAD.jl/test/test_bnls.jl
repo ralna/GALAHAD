@@ -92,7 +92,6 @@ for d = 1:5
 bnls_initialize(T, INT, data, control, inform)
 
 # Set user-defined control options
-control[].f_indexing = true # Fortran sparse matrix indexing
 # control[].print_level = 1
 control[].jacobian_available = 2
 control[].hessian_available = 2
@@ -186,7 +185,6 @@ for d = 1:5
 bnls_initialize(T, INT, data, control, inform)
 
 # Set user-defined control options
-control[].f_indexing = true # Fortran sparse matrix indexing
 #control[].print_level = 1
 control[].jacobian_available = 2
 control[].hessian_available = 2
@@ -375,7 +373,6 @@ for(int model=3 model <= 8 model++)
 bnls_initialize(T, INT, data, control, inform)
 
 # Set user-defined control options
-control[].f_indexing = true # Fortran sparse matrix indexing
 #control[].print_level = 1
 control[].jacobian_available = 2
 control[].hessian_available = 2
@@ -412,7 +409,6 @@ for(int model=3 model <= 8 model++)
 bnls_initialize(T, INT, data, control, inform)
 
 # Set user-defined control options
-control[].f_indexing = true # Fortran sparse matrix indexing
 #control[].print_level = 1
 control[].jacobian_available = 2
 control[].hessian_available = 2
@@ -446,7 +442,6 @@ for(int model=3 model <= 8 model++)
 bnls_initialize(T, INT, data, control, inform)
 
 # Set user-defined control options
-control[].f_indexing = true # Fortran sparse matrix indexing
 #control[].print_level = 1
 control[].jacobian_available = 2
 control[].hessian_available = 2
@@ -501,7 +496,6 @@ for(int model=3 model <= 8 model++)
 bnls_initialize(T, INT, data, control, inform)
 
 # Set user-defined control options
-control[].f_indexing = true # Fortran sparse matrix indexing
 #control[].print_level = 1
 control[].jacobian_available = 2
 control[].hessian_available = 2

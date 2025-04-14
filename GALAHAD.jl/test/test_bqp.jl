@@ -91,9 +91,6 @@ function test_bqp(::Type{T}, ::Type{INT}) where {T,INT}
     # Initialize BQP
     bqp_initialize(T, INT, data, control, status)
 
-    # Set user-defined control options
-    @reset control[].f_indexing = true # fortran sparse matrix indexing
-
     # Start from 0
     for i in 1:n
       x[i] = 0.0
@@ -180,9 +177,6 @@ function test_bqp(::Type{T}, ::Type{INT}) where {T,INT}
   # Initialize BQP
   bqp_initialize(T, INT, data, control, status)
   # @reset control[].print_level = 1
-
-  # Set user-defined control options
-  @reset control[].f_indexing = true # fortran sparse matrix indexing
 
   # Start from 0
   for i in 1:n

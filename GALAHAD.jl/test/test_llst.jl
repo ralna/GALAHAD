@@ -103,9 +103,6 @@ function test_llst(::Type{T}, ::Type{INT}) where {T,INT}
     @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("potr")
     # @reset control[].print_level = INT(1)
 
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
-
     # use s or not (1 or 0)
     for use_s in 0:1
       # sparse co-ordinate storage

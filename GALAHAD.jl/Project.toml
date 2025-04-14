@@ -4,6 +4,7 @@ authors = ["Alexis Montoison <alexis.montoison@polymtl.ca>", "Dominique Orban <d
 version = "0.4.1"
 
 [deps]
+Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
 GALAHAD_jll = "1621ace8-c1f0-5e32-a05d-ca786afa56c2"
 Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
@@ -11,14 +12,14 @@ OpenBLAS32_jll = "656ef2d0-ae68-5445-9ca0-591084a874a2"
 Quadmath = "be4d8f0f-7fa4-5f49-b795-2f01399ab2dd"
 
 [compat]
+Accessors = "0.1.42"
 GALAHAD_jll = "=5.2.0"
 Quadmath = "0.5.10"
 julia = "1.9"
 
 [extras]
-Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "Printf", "Accessors"]
+test = ["Test", "Printf"]

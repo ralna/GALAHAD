@@ -42,9 +42,6 @@ function test_sls(::Type{T}, ::Type{INT}) where {T,INT}
     # Initialize SLS - use the sytr solver
     sls_initialize(T, INT, "sytr", data, control, status)
 
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
-
     # sparse co-ordinate storage
     if d == 1
       @printf(" coordinate ")

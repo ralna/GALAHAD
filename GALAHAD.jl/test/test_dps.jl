@@ -40,7 +40,6 @@ function test_dps(::Type{T}, ::Type{INT}) where {T,INT}
     dps_initialize(T, INT, data, control, status)
 
     # Set user-defined control options
-    @reset control[].f_indexing = true # fortran sparse matrix indexing
     @reset control[].symmetric_linear_solver = galahad_linear_solver("sytr")
 
     # sparse co-ordinate storage

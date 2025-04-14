@@ -161,9 +161,6 @@ function test_blls(::Type{T}, ::Type{INT}) where {T,INT}
   # Initialize BLLS
   blls_initialize(T, INT, data, control, status)
 
-  # Set user-defined control options
-  @reset control[].f_indexing = true # fortran sparse matrix indexing
-
   # Start from 0
   for i in 1:n
     x[i] = 0.0

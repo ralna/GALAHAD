@@ -1,5 +1,6 @@
 module GALAHAD
 
+using Accessors
 using Libdl
 using LinearAlgebra
 using Quadmath
