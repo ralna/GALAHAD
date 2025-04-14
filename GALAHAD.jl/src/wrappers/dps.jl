@@ -59,35 +59,35 @@ function dps_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.dps_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{dps_control_type{Float32,Int32}},
                                           status::Ptr{Int32})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function dps_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
   @ccall libgalahad_single_64.dps_initialize(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{dps_control_type{Float32,Int64}},
                                              status::Ptr{Int64})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function dps_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.dps_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{dps_control_type{Float64,Int32}},
                                           status::Ptr{Int32})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function dps_initialize(::Type{Float64}, ::Type{Int64}, data, control, status)
   @ccall libgalahad_double_64.dps_initialize(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{dps_control_type{Float64,Int64}},
                                              status::Ptr{Int64})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function dps_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_quadruple.dps_initialize(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{dps_control_type{Float128,Int32}},
                                              status::Ptr{Int32})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function dps_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
@@ -95,7 +95,7 @@ function dps_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
                                                 control::Ptr{dps_control_type{Float128,
                                                                               Int64}},
                                                 status::Ptr{Int64})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 export dps_read_specfile

@@ -68,28 +68,28 @@ function slls_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.slls_initialize(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{slls_control_type{Float32,Int32}},
                                            status::Ptr{Int32})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function slls_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
   @ccall libgalahad_single_64.slls_initialize(data::Ptr{Ptr{Cvoid}},
                                               control::Ptr{slls_control_type{Float32,Int64}},
                                               status::Ptr{Int64})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function slls_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.slls_initialize(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{slls_control_type{Float64,Int32}},
                                            status::Ptr{Int32})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function slls_initialize(::Type{Float64}, ::Type{Int64}, data, control, status)
   @ccall libgalahad_double_64.slls_initialize(data::Ptr{Ptr{Cvoid}},
                                               control::Ptr{slls_control_type{Float64,Int64}},
                                               status::Ptr{Int64})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function slls_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
@@ -97,7 +97,7 @@ function slls_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
                                               control::Ptr{slls_control_type{Float128,
                                                                              Int32}},
                                               status::Ptr{Int32})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function slls_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
@@ -105,7 +105,7 @@ function slls_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
                                                  control::Ptr{slls_control_type{Float128,
                                                                                 Int64}},
                                                  status::Ptr{Int64})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 export slls_read_specfile

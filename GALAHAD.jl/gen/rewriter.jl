@@ -92,7 +92,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
         both_indexing_packages = ("ugo", "sils", "sha", "sec", "scu", "roots", "lstr", "lsrt", "lms", "lhs",
                                   "l2rt", "ir", "hash", "gltr", "gls", "glrt", "fit", "convert", "bsc")
         if endswith(fname, "initialize") && !(name in both_indexing_packages)
-          end_routine = "  @reset control[].f_indexing = true\nend\n"
+          end_routine = "  control[] = @reset control[].f_indexing = true\nend\n"
         else
           end_routine = "end\n"
         end

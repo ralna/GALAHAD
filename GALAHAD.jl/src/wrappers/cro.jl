@@ -56,35 +56,35 @@ function cro_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.cro_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{cro_control_type{Float32,Int32}},
                                           status::Ptr{Int32})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function cro_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
   @ccall libgalahad_single_64.cro_initialize(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{cro_control_type{Float32,Int64}},
                                              status::Ptr{Int64})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function cro_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.cro_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{cro_control_type{Float64,Int32}},
                                           status::Ptr{Int32})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function cro_initialize(::Type{Float64}, ::Type{Int64}, data, control, status)
   @ccall libgalahad_double_64.cro_initialize(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{cro_control_type{Float64,Int64}},
                                              status::Ptr{Int64})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function cro_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_quadruple.cro_initialize(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{cro_control_type{Float128,Int32}},
                                              status::Ptr{Int32})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function cro_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
@@ -92,7 +92,7 @@ function cro_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
                                                 control::Ptr{cro_control_type{Float128,
                                                                               Int64}},
                                                 status::Ptr{Int64})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 export cro_read_specfile

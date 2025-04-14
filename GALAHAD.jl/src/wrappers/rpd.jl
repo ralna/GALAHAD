@@ -27,42 +27,42 @@ function rpd_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.rpd_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{rpd_control_type{Int32}},
                                           status::Ptr{Int32})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function rpd_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
   @ccall libgalahad_single_64.rpd_initialize(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{rpd_control_type{Int64}},
                                              status::Ptr{Int64})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function rpd_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.rpd_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{rpd_control_type{Int32}},
                                           status::Ptr{Int32})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function rpd_initialize(::Type{Float64}, ::Type{Int64}, data, control, status)
   @ccall libgalahad_double_64.rpd_initialize(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{rpd_control_type{Int64}},
                                              status::Ptr{Int64})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function rpd_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_quadruple.rpd_initialize(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{rpd_control_type{Int32}},
                                              status::Ptr{Int32})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 function rpd_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
   @ccall libgalahad_quadruple_64.rpd_initialize(data::Ptr{Ptr{Cvoid}},
                                                 control::Ptr{rpd_control_type{Int64}},
                                                 status::Ptr{Int64})::Cvoid
-  @reset control[].f_indexing = true
+  return control[] = @reset control[].f_indexing = true
 end
 
 export rpd_get_stats
