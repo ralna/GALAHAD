@@ -15,10 +15,10 @@ Help files are provided for MATLAB functions.
 
 ## Installation
 
-### Precompiled Library
+### Precompiled library
 We provide a precompiled GALAHAD library in the [releases tab](https://github.com/ralna/galahad/releases/latest/) for Linux, macOS (Intel & Silicon) and Windows. 
 
-### Installation from Source 
+### Installation from source 
 GALAHAD can be installed from source using the [Meson build system](https://mesonbuild.com) (all commands below are to be run from the top of the source tree):
 
 ```
@@ -55,7 +55,7 @@ Please see [README.meson](https://github.com/ralna/GALAHAD/blob/master/README.me
 GALAHAD can use optimization test problems from the [CUTEst test collection](https://github.com/ralna/CUTEst/blob/master/doc/README). For example, to link GALAHAD with double precision CUTEst compiled with gfortran on a 64bit Linux machine:
 
 ```
-meson setup builddir -Dlibcutest_double_path=/path/to/CUTEst/objects/pc64.lnx.gfo/double/ -Dlibcutest_double_modules=/path/to/CUTEst/modules/pc64.lnx.gfo/double/ -Dsingle=false
+meson setup builddir -Dlibcutest_double_path=/path/to/CUTEst/objects/pc64.lnx.gfo/double/ -Dlibcutest_modules=/path/to/CUTEst/modules/pc64.lnx.gfo/double/ -Dsingle=false
 meson compile -C builddir
 meson install -C builddir
 ```
