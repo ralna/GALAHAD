@@ -9,14 +9,14 @@
 !>
 !> PaStiX Fortran 90 wrapper
 !>
-!> @copyright 2017-2022 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+!> @copyright 2017-2024 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
 !>                      Univ. Bordeaux. All rights reserved.
 !>
-!> @version 6.3.2
+!> @version 6.4.0
 !> @author Mathieu Faverge
 !> @author Tony Delarue
 !> @author Selmane Lebdaoui
-!> @date 2023-07-21
+!> @date 2024-06-08
 
 #ifdef INTEGER_64
 #define pastixf_enums pastixf_enums_64

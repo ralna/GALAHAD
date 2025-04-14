@@ -4,6 +4,20 @@
 
 !-*-  G A L A H A D  -  D U M M Y   P A S T I X F _ E N U M S   M O D U L E  -*-
 
+!  Extracted from
+!> @file pastixf_enums.F90
+!>
+!> PaStiX fortran 90 wrapper to define enums and datatypes
+!>
+!> @copyright 2017-2024 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+!>                      Univ. Bordeaux. All rights reserved.
+!>
+!> @version 6.4.0
+!> @author Mathieu Faverge
+!> @author Tony Delarue
+!> @author Selmane Lebdaoui
+!> @date 2024-06-08
+
  MODULE pastixf_enums
 
    USE spmf_enums
@@ -32,6 +46,7 @@
      TYPE ( c_ptr ) :: selevtx
      INTEGER ( KIND = pastix_int_t ) :: sndenbr
      TYPE ( c_ptr ) :: sndetab
+     TYPE ( c_ptr ) :: peritab_exp
    END TYPE pastix_order_t
 
    INTEGER, PARAMETER :: PASTIX_SUCCESS = 0
