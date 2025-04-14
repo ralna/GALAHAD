@@ -44,7 +44,6 @@ function test_eqp(::Type{T}, ::Type{INT}) where {T,INT}
     eqp_initialize(T, INT, data, control, status)
 
     # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
     @reset control[].fdc_control.use_sls = true
     @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("sytr")
     @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
@@ -170,9 +169,6 @@ function test_eqp(::Type{T}, ::Type{INT}) where {T,INT}
     @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("sytr")
     @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
     @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("sytr")
-
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
 
     # Start from 0
     x = T[0.0, 0.0, 0.0]

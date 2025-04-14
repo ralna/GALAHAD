@@ -49,9 +49,6 @@ function test_qpa(::Type{T}, ::Type{INT}) where {T,INT}
     # Initialize QPA
     qpa_initialize(T, INT, data, control, status)
 
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
-
     # Start from 0
     x = T[0.0, 0.0, 0.0]
     y = T[0.0, 0.0]
@@ -172,9 +169,6 @@ function test_qpa(::Type{T}, ::Type{INT}) where {T,INT}
 
   @printf("\n basic tests of l_1 qp storage formats\n\n")
   qpa_initialize(T, INT, data, control, status)
-
-  # Set user-defined control options
-  @reset control[].f_indexing = true # Fortran sparse matrix indexing
 
   # Start from 0
   x = T[0.0, 0.0, 0.0]

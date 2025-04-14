@@ -29,11 +29,8 @@ function test_rpd(::Type{T}, ::Type{INT}) where {T,INT}
   @printf(" Fortran sparse matrix indexing\n\n")
   @printf(" basic tests of storage formats\n\n")
 
-  # Initialize RPD */
+  # Initialize RPD
   rpd_initialize(T, INT, data, control, status)
-
-  # Set user-defined control options */
-  @reset control[].f_indexing = true # fortran sparse matrix indexing
 
   # Recover vital statistics from the QPLIB file
   rpd_get_stats(T, INT, qplib_file, qplib_file_len, control, data, status, p_type, n, m, h_ne, a_ne,

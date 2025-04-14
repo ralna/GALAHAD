@@ -48,9 +48,6 @@ function test_dqp(::Type{T}, ::Type{INT}) where {T,INT}
     # Initialize DQP
     dqp_initialize(T, INT, data, control, status)
 
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
-
     # Start from 0
     x = T[0.0, 0.0, 0.0]
     y = T[0.0, 0.0]
@@ -162,9 +159,6 @@ function test_dqp(::Type{T}, ::Type{INT}) where {T,INT}
 
     # Initialize DQP
     dqp_initialize(T, INT, data, control, status)
-
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
 
     # Start from 0
     x = T[0.0, 0.0, 0.0]

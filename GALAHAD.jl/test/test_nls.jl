@@ -164,7 +164,6 @@ function test_nls(::Type{T}, ::Type{INT}) where {T,INT}
     nls_initialize(T, INT, data, control, inform)
 
     # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
     # @reset control[].print_level = INT(1)
     @reset control[].jacobian_available = INT(2)
     @reset control[].hessian_available = INT(2)
@@ -347,7 +346,6 @@ function test_nls(::Type{T}, ::Type{INT}) where {T,INT}
     nls_initialize(T, INT, data, control, inform)
 
     # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
     # @reset control[].print_level = INT(1)
     @reset control[].jacobian_available = INT(2)
     @reset control[].hessian_available = INT(2)
@@ -401,7 +399,6 @@ function test_nls(::Type{T}, ::Type{INT}) where {T,INT}
     nls_initialize(T, INT, data, control, inform)
 
     # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
     # @reset control[].print_level = 1
     @reset control[].jacobian_available = INT(2)
     @reset control[].hessian_available = INT(2)

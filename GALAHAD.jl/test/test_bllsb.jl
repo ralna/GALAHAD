@@ -36,7 +36,6 @@ function test_bllsb(::Type{T}, ::Type{INT}) where {T,INT}
     bllsb_initialize(T, INT, data, control, status)
 
     # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
     @reset control[].symmetric_linear_solver = galahad_linear_solver("potr")
     @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("potr")
     @reset control[].fdc_control.use_sls = true

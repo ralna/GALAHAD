@@ -38,9 +38,6 @@ function test_psls(::Type{T}, ::Type{INT}) where {T,INT}
     @reset control[].semi_bandwidth = INT(1) # semibandwidth
     @reset control[].definite_linear_solver = galahad_linear_solver("sils")
 
-    # Set user-defined control options
-    @reset control[].f_indexing = true # fortran sparse matrix indexing
-
     # sparse co-ordinate storage
     if d == 1
       st = 'C'

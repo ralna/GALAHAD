@@ -42,9 +42,6 @@ function test_wcp(::Type{T}, ::Type{INT}) where {T,INT}
     # Initialize WCP
     wcp_initialize(T, INT, data, control, status)
 
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
-
     # Start from 0
     x = T[0.0, 0.0, 0.0]
     y_l = T[0.0, 0.0]

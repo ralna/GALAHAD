@@ -32,9 +32,6 @@ function test_fdc(::Type{T}, ::Type{INT}) where {T,INT}
   # Initialize FDC
   fdc_initialize(T, INT, data, control, status)
 
-  # Set user-defined control options
-  @reset control[].f_indexing = true # Fortran sparse matrix indexing
-
   # Start from 0
   fdc_find_dependent_rows(T, INT, control, data, inform, status, m, n, A_ne, A_col, A_ptr, A_val, b,
                           n_depen, depen)

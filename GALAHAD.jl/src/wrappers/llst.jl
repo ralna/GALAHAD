@@ -71,24 +71,28 @@ function llst_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.llst_initialize(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{llst_control_type{Float32,Int32}},
                                            status::Ptr{Int32})::Cvoid
+  @reset control[].f_indexing = true
 end
 
 function llst_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
   @ccall libgalahad_single_64.llst_initialize(data::Ptr{Ptr{Cvoid}},
                                               control::Ptr{llst_control_type{Float32,Int64}},
                                               status::Ptr{Int64})::Cvoid
+  @reset control[].f_indexing = true
 end
 
 function llst_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.llst_initialize(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{llst_control_type{Float64,Int32}},
                                            status::Ptr{Int32})::Cvoid
+  @reset control[].f_indexing = true
 end
 
 function llst_initialize(::Type{Float64}, ::Type{Int64}, data, control, status)
   @ccall libgalahad_double_64.llst_initialize(data::Ptr{Ptr{Cvoid}},
                                               control::Ptr{llst_control_type{Float64,Int64}},
                                               status::Ptr{Int64})::Cvoid
+  @reset control[].f_indexing = true
 end
 
 function llst_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
@@ -96,6 +100,7 @@ function llst_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
                                               control::Ptr{llst_control_type{Float128,
                                                                              Int32}},
                                               status::Ptr{Int32})::Cvoid
+  @reset control[].f_indexing = true
 end
 
 function llst_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
@@ -103,6 +108,7 @@ function llst_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
                                                  control::Ptr{llst_control_type{Float128,
                                                                                 Int64}},
                                                  status::Ptr{Int64})::Cvoid
+  @reset control[].f_indexing = true
 end
 
 export llst_read_specfile
