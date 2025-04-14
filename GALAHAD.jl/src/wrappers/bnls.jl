@@ -190,28 +190,36 @@ function bnls_initialize(::Type{Float32}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_single.bnls_initialize(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{bnls_control_type{Float32,Int32}},
                                            inform::Ptr{bnls_inform_type{Float32,Int32}})::Cvoid
-  return control[] = @reset control[].f_indexing = true
+  new_control = @set control[].f_indexing = true
+  control[] = new_control[]
+  return Cvoid
 end
 
 function bnls_initialize(::Type{Float32}, ::Type{Int64}, data, control, inform)
   @ccall libgalahad_single_64.bnls_initialize(data::Ptr{Ptr{Cvoid}},
                                               control::Ptr{bnls_control_type{Float32,Int64}},
                                               inform::Ptr{bnls_inform_type{Float32,Int64}})::Cvoid
-  return control[] = @reset control[].f_indexing = true
+  new_control = @set control[].f_indexing = true
+  control[] = new_control[]
+  return Cvoid
 end
 
 function bnls_initialize(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.bnls_initialize(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{bnls_control_type{Float64,Int32}},
                                            inform::Ptr{bnls_inform_type{Float64,Int32}})::Cvoid
-  return control[] = @reset control[].f_indexing = true
+  new_control = @set control[].f_indexing = true
+  control[] = new_control[]
+  return Cvoid
 end
 
 function bnls_initialize(::Type{Float64}, ::Type{Int64}, data, control, inform)
   @ccall libgalahad_double_64.bnls_initialize(data::Ptr{Ptr{Cvoid}},
                                               control::Ptr{bnls_control_type{Float64,Int64}},
                                               inform::Ptr{bnls_inform_type{Float64,Int64}})::Cvoid
-  return control[] = @reset control[].f_indexing = true
+  new_control = @set control[].f_indexing = true
+  control[] = new_control[]
+  return Cvoid
 end
 
 function bnls_initialize(::Type{Float128}, ::Type{Int32}, data, control, inform)
@@ -219,7 +227,9 @@ function bnls_initialize(::Type{Float128}, ::Type{Int32}, data, control, inform)
                                               control::Ptr{bnls_control_type{Float128,
                                                                              Int32}},
                                               inform::Ptr{bnls_inform_type{Float128,Int32}})::Cvoid
-  return control[] = @reset control[].f_indexing = true
+  new_control = @set control[].f_indexing = true
+  control[] = new_control[]
+  return Cvoid
 end
 
 function bnls_initialize(::Type{Float128}, ::Type{Int64}, data, control, inform)
@@ -228,7 +238,9 @@ function bnls_initialize(::Type{Float128}, ::Type{Int64}, data, control, inform)
                                                                                 Int64}},
                                                  inform::Ptr{bnls_inform_type{Float128,
                                                                               Int64}})::Cvoid
-  return control[] = @reset control[].f_indexing = true
+  new_control = @set control[].f_indexing = true
+  control[] = new_control[]
+  return Cvoid
 end
 
 export bnls_read_specfile
