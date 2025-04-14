@@ -63,35 +63,45 @@ function uls_initialize(::Type{Float32}, ::Type{Int32}, solver, data, control, s
   @ccall libgalahad_single.uls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{uls_control_type{Float32,Int32}},
                                           status::Ptr{Int32})::Cvoid
-  return control[] = @reset control[].f_indexing = true
+  new_control = @set control[].f_indexing = true
+  control[] = new_control[]
+  return Cvoid
 end
 
 function uls_initialize(::Type{Float32}, ::Type{Int64}, solver, data, control, status)
   @ccall libgalahad_single_64.uls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{uls_control_type{Float32,Int64}},
                                              status::Ptr{Int64})::Cvoid
-  return control[] = @reset control[].f_indexing = true
+  new_control = @set control[].f_indexing = true
+  control[] = new_control[]
+  return Cvoid
 end
 
 function uls_initialize(::Type{Float64}, ::Type{Int32}, solver, data, control, status)
   @ccall libgalahad_double.uls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{uls_control_type{Float64,Int32}},
                                           status::Ptr{Int32})::Cvoid
-  return control[] = @reset control[].f_indexing = true
+  new_control = @set control[].f_indexing = true
+  control[] = new_control[]
+  return Cvoid
 end
 
 function uls_initialize(::Type{Float64}, ::Type{Int64}, solver, data, control, status)
   @ccall libgalahad_double_64.uls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{uls_control_type{Float64,Int64}},
                                              status::Ptr{Int64})::Cvoid
-  return control[] = @reset control[].f_indexing = true
+  new_control = @set control[].f_indexing = true
+  control[] = new_control[]
+  return Cvoid
 end
 
 function uls_initialize(::Type{Float128}, ::Type{Int32}, solver, data, control, status)
   @ccall libgalahad_quadruple.uls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{uls_control_type{Float128,Int32}},
                                              status::Ptr{Int32})::Cvoid
-  return control[] = @reset control[].f_indexing = true
+  new_control = @set control[].f_indexing = true
+  control[] = new_control[]
+  return Cvoid
 end
 
 function uls_initialize(::Type{Float128}, ::Type{Int64}, solver, data, control, status)
@@ -99,7 +109,9 @@ function uls_initialize(::Type{Float128}, ::Type{Int64}, solver, data, control, 
                                                 control::Ptr{uls_control_type{Float128,
                                                                               Int64}},
                                                 status::Ptr{Int64})::Cvoid
-  return control[] = @reset control[].f_indexing = true
+  new_control = @set control[].f_indexing = true
+  control[] = new_control[]
+  return Cvoid
 end
 
 export uls_read_specfile
