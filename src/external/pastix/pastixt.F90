@@ -1,5 +1,5 @@
 ! Fortran 90 PaStiX example using a 5 by 5 symmetric matrix in different formats
-! Example by Mathieu Faverge, modified by Nick Gould, this version 2024-06-11
+! Example by Mathieu Faverge, modified by Nick Gould, this version 2025-04-15
 
 #include "galahad_modules.h"
 
@@ -18,12 +18,12 @@ PROGRAM test_pastix
   INTEGER ( KIND = ip_ ), PARAMETER :: neu = 11
   INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: ROW, COL, PTR
   REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: VAL
-  REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: x0, x, b
+  REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: X0, X, B
   TYPE( pastix_data_t ), POINTER :: pastix_data
   TYPE( spmatrix_t ), POINTER :: spm, spm2
   INTEGER ( kind = pastix_int_t ), target :: iparm( iparm_size )
   REAL ( kind = c_precision ), target :: dparm( dparm_size )
-  INTEGER ( KIND = ip_ ) :: nrhs, store
+  INTEGER ( KIND = ip_ ) :: nrhs, store, status
   INTEGER ( ipc_ ) :: info
   INTEGER ( kind = pastix_int_t ), DIMENSION( : ), POINTER :: permtab
   TYPE ( pastix_order_t ), POINTER :: order => NULL( )
@@ -52,10 +52,12 @@ PROGRAM test_pastix
 
 !   Create the spm out of the internal data
 
-    ALLOCATE( spm )
+    ALLOCATE( spm, STAT = status )
     CALL spmInit( spm )
     IF ( spm%mtxtype == - 1 ) THEN
       WRITE( 6, * ) ' no PaStiX available'
+      DEALLOCATE( spm, STAT = status )
+      spm => NULL( )
       STOP
     END IF
 
@@ -93,13 +95,13 @@ write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
       VAL( : ne ) = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 1.0_rp_, 5.0_rp_, 6.0_rp_,   &
                        1.0_rp_ /)
       IF ( .TRUE. ) THEN
-      ALLOCATE( spm2 )
+      ALLOCATE( spm2, STAT = status )
       CALL spmCheckAndCorrect( spm, spm2, info )
       IF ( info /= 0 ) THEN
          CALL spmExit( spm )
          spm = spm2
       END IF
-      DEALLOCATE( spm2 )
+      DEALLOCATE( spm2, STAT = status )
       END IF
 
 !  store the matrix in CSC form
@@ -135,13 +137,13 @@ write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
 
 !     IF ( .TRUE. ) THEN
       IF ( .FALSE. ) THEN
-      ALLOCATE( spm2 )
+      ALLOCATE( spm2, STAT = status )
       CALL spmCheckAndCorrect( spm, spm2, info )
       IF ( info /= 0 ) THEN
          CALL spmExit( spm )
          spm = spm2
       END IF
-      DEALLOCATE( spm2 )
+      DEALLOCATE( spm2, STAT = status )
       END IF
 
 !  store the matrix as general in CSC form
@@ -177,13 +179,13 @@ write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
 
 !     IF ( .TRUE. ) THEN
       IF ( .FALSE. ) THEN
-      ALLOCATE( spm2 )
+      ALLOCATE( spm2, STAT = status )
       CALL spmCheckAndCorrect( spm, spm2, info )
       IF ( info /= 0 ) THEN
          CALL spmExit( spm )
          spm = spm2
       END IF
-      DEALLOCATE( spm2 )
+      DEALLOCATE( spm2, STAT = status )
       END IF
     END IF
 
@@ -192,7 +194,9 @@ write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
 !    set the right hand side for a solution of ( i, i = 1, n )
 
     nrhs = 1
-    ALLOCATE( x0(spm%nexp, nrhs), x( spm%nexp, nrhs), b( spm%nexp, nrhs) )
+    ALLOCATE( x0(spm%nexp, nrhs), x( spm%nexp, nrhs), b( spm%nexp, nrhs),      &
+              STAT = status )
+
 !   call spmGenRHS( SpmRhsRndX, nrhs, spm, x0, spm%nexp, b, spm%nexp, info )
     X0( : n, 1 ) = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_ /)
     B( : n, 1 ) = (/ 8.0_rp_, 45.0_rp_, 31.0_rp_, 15.0_rp_, 17.0_rp_ /)
@@ -229,9 +233,13 @@ write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
     CALL spmCheckAxb( eps, nrhs, spm, X0, spm%nexp, B, spm%nexp, X, spm%nexp, &
                       info )
 
+!  destroy any remaining fortran structures
+
+    DEALLOCATE( X0, X, B, STAT = status )
     CALL spmExit( spm )
-    DEALLOCATE( spm )
-    DEALLOCATE( x0, x, b )
+
+    DEALLOCATE( spm, STAT = status )
+    spm => NULL( )
 
   END DO
 

@@ -14,7 +14,7 @@ PLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
 
-BASICZ = blas lapack symbols dummy blas_inter lapack_inter
+BASICSZ = kinds blas lapack symbols dummy blas_inter lapack_inter
 
 PASTIXS = $(BASICSZ) $(PXLGS)(spmf_enums_single.o) \
           $(PXLGS)(spmf_interfaces_single.o) \
@@ -101,6 +101,10 @@ pastixqt: $(PASTIXQT)
 	rm ../pastix/run_pastix
 
 #  blas and lapack generic packages and interfaces
+
+kinds:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            kinds_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 blas:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
