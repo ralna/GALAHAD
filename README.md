@@ -52,15 +52,19 @@ By default GALAHAD will build the [SSIDS linear solver](https://github.com/ralna
 Please see [README.meson](https://github.com/ralna/GALAHAD/blob/master/README.meson) for instructions on how to tell Meson where to find these optional dependencies.
 
 #### CUTEst Test Collection
-GALAHAD can use optimization test problems from the [CUTEst test collection](https://github.com/ralna/CUTEst/blob/master/doc/README). For example, to link GALAHAD with double precision CUTEst compiled with gfortran on a 64bit Linux machine:
+GALAHAD can use optimization test problems from the [CUTEst test collection](https://github.com/ralna/CUTEst/blob/master/doc/README). For example, to link GALAHAD with double precision CUTEst:
 
 ```
-meson setup builddir -Dlibcutest_double_path=/path/to/CUTEst/objects/pc64.lnx.gfo/double/ -Dlibcutest_modules=/path/to/CUTEst/modules/pc64.lnx.gfo/double/ -Dsingle=false
+meson setup builddir -Dlibcutest_double_path=/path/to/CUTEst/lib -Dlibcutest_modules=/path/to/CUTEst/modules -Dsingle=false
 meson compile -C builddir
 meson install -C builddir
 ```
 
-One can similarly link GALAHAD with single precision CUTEst, please see [meson_options.txt](https://github.com/ralna/GALAHAD/blob/master/meson_options.txt).
+GALAHAD can similarly be linked with the single or quadruple precision variants of CUTEst.
+For more details, refer to the file [meson_options.txt](https://github.com/ralna/GALAHAD/blob/master/meson_options.txt).
+
+**Note:** only the shared libraries of CUTEst are supported when compiling GALAHAD with Meson.
+Please follow the [instructions](https://github.com/ralna/CUTEst?tab=readme-ov-file#new-approach-with-shared-libraries-and-trampolines) to set up CUTEst accordingly.
 
 ### C Interface
 To install the C interface using the [Meson build system](https://mesonbuild.com):
