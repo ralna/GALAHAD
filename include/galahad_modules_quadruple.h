@@ -1,4 +1,5 @@
 #ifdef INTEGER_64
+#define CUTEST_TRAMPOLINE_precision CUTEST_TRAMPOLINE_quadruple_64
 #define CUTEst_interface_precision CUTEST_interface_quadruple_64
 #define CUTEST_interface_precision CUTEST_interface_quadruple_64
 #define CUTEST_INTERFACE_precision CUTEST_interface_quadruple_64
@@ -411,6 +412,7 @@
 
 #else
 
+#define CUTEST_TRAMPOLINE_precision CUTEST_TRAMPOLINE_quadruple
 #define CUTEst_interface_precision CUTEST_interface_quadruple
 #define CUTEST_interface_precision CUTEST_interface_quadruple
 #define CUTEST_INTERFACE_precision CUTEST_interface_quadruple
