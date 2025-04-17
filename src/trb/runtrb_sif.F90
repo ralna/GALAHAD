@@ -23,19 +23,26 @@
 
    INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
    INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
-   CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
+   CHARACTER ( LEN = 256 ) :: prbdat = 'OUTSDIF.d'
    INTEGER ( KIND = ip_ ) :: iostat
 
 !  Load the shared library
 
 #ifdef CUTEST_SHARED
    CHARACTER ( LEN = 256 ) :: libsif_path
+   CHARACTER ( LEN = 256 ) :: outsdif_path
    INTEGER :: arg_len
+   INTEGER :: arg_len2
 
    CALL GET_COMMAND_ARGUMENT(1, libsif_path, LENGTH = arg_len)
    IF (arg_len <= 0) THEN
       WRITE(*,*) 'ERROR: please provide the path to the shared library'
       STOP 1
+   END IF
+   CALL GET_COMMAND_ARGUMENT(2, outsdif_path, LENGTH = arg_len2)
+   IF (arg_len2 > 0) THEN
+      prbdat = TRIM(outsdif_path)
+      WRITE(*,*) 'Using OUTSDIF file:', prbdat
    END IF
 
    CALL CUTEST_LOAD_ROUTINES(TRIM(libsif_path) // c_null_char)
