@@ -11,10 +11,6 @@
    PROGRAM RUNARC_SIF_precision
    USE GALAHAD_KINDS_precision
    USE GALAHAD_USEARC_precision
-#ifdef CUTEST_SHARED
-   USE CUTEST_TRAMPOLINE_precision
-   USE iso_c_binding, ONLY: c_null_char
-#endif
 
 !  Main program for the SIF interface to ARC, an adaptive cubic overestimation
 !  algorithm for unconstrained optimization
@@ -25,21 +21,6 @@
    INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
    INTEGER ( KIND = ip_ ) :: iostat
-
-!  Load the shared library
-
-#ifdef CUTEST_SHARED
-   CHARACTER ( LEN = 256 ) :: libsif_path
-   INTEGER :: arg_len
-
-   CALL GET_COMMAND_ARGUMENT(1, libsif_path, LENGTH = arg_len)
-   IF (arg_len <= 0) THEN
-      WRITE(*,*) 'ERROR: please provide the path to the shared library'
-      STOP 1
-   END IF
-
-   CALL CUTEST_LOAD_ROUTINES(TRIM(libsif_path) // c_null_char)
-#endif
 
 !  Open the data input file
 
@@ -59,13 +40,6 @@
 !  Close the data input file
 
    CLOSE( insif )
-
-!  Unload the shared library
-
-#ifdef CUTEST_SHARED
-   CALL CUTEST_UNLOAD_ROUTINES()
-#endif
-
    STOP
 
 !  End of RUNARC_SIF_precision
