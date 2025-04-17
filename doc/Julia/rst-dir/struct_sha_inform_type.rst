@@ -32,7 +32,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structsha__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structsha__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -42,7 +42,7 @@ components
 return status. See SHA_solve for details
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structsha__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structsha__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -52,7 +52,7 @@ return status. See SHA_solve for details
 the status of the last attempted allocation/deallocation.
 
 .. index:: pair: variable; max_degree
-.. _doxid-structsha__inform__type_1a8eabc621540d71c2a7e3076d6c3826bc:
+.. _doxid-structsha__inform__type_max_degree:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -62,7 +62,7 @@ the status of the last attempted allocation/deallocation.
 the maximum degree in the adgacency graph.
 
 .. index:: pair: variable; differences_needed
-.. _doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a6:
+.. _doxid-structsha__inform__type_differences_needed:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -72,7 +72,7 @@ the maximum degree in the adgacency graph.
 the number of differences that will be needed.
 
 .. index:: pair: variable; max_reduced_degree
-.. _doxid-structsha__inform__type_1a389835dfe2e9309431892a98be9beb2c:
+.. _doxid-structsha__inform__type_max_reduced_degree:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -82,7 +82,7 @@ the number of differences that will be needed.
 the maximum reduced degree in the adgacency graph.
 
 .. index:: pair: variable; approximation_algorithm_used
-.. _doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a0:
+.. _doxid-structsha__inform__type_approximation_algorithm_used:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -92,7 +92,7 @@ the maximum reduced degree in the adgacency graph.
 the approximation algorithm actually used
 
 .. index:: pair: variable; bad_row
-.. _doxid-structsha__inform__type_1ab9c826769c483d92749a2bad8b0b972b:
+.. _doxid-structsha__inform__type_bad_row:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -103,7 +103,7 @@ a failure occured when forming the bad_row-th row (0 = no failure).
 
 
 .. index:: pair: variable; max_off_diagonal_difference
-.. _doxid-structsha__inform__type_1ab9c826769c483d92749a2bad8b0b972c:
+.. _doxid-structsha__inform__type_max_off_diagonal_difference:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -115,7 +115,7 @@ pairs if approximation algorithm 1, 3 or 4 has been employed and
 control.average_off_diagonals is true. It will be zero otherwise.
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structsha__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structsha__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

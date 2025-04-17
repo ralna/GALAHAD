@@ -15,8 +15,8 @@ convert_time_type structure
 	struct convert_time_type {
 		// fields
 	
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structconvert__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structconvert__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structconvert__time__type_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structconvert__time__type_clock_total>`;
 	};
 .. _details-structconvert__time__type:
 
@@ -29,7 +29,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; total
-.. _doxid-structconvert__time__type_1ad3803b3bb79c5c74d9300520fbe733f4:
+.. _doxid-structconvert__time__type_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -39,7 +39,7 @@ components
 total cpu time spent in the package
 
 .. index:: pair: variable; clock_total
-.. _doxid-structconvert__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
+.. _doxid-structconvert__time__type_clock_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

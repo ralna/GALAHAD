@@ -36,7 +36,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structllsr__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structllsr__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -74,7 +74,7 @@ reported return status:
   ill-conditioning has prevented furthr progress
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structllsr__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structllsr__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -84,7 +84,7 @@ reported return status:
 STAT value after allocate failure.
 
 .. index:: pair: variable; factorizations
-.. _doxid-structllsr__inform__type_1a9a6a5a0de7d7a6048b4170a768c0c86f:
+.. _doxid-structllsr__inform__type_factorizations:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -94,7 +94,7 @@ STAT value after allocate failure.
 the number of factorizations performed
 
 .. index:: pair: variable; len_history
-.. _doxid-structllsr__inform__type_1a2087c1ee7c5859aa738d2f07ba91b4a6:
+.. _doxid-structllsr__inform__type_len_history:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -104,7 +104,7 @@ the number of factorizations performed
 the number of ($\|x\|_S$, $\lambda$) pairs in the history
 
 .. index:: pair: variable; r_norm
-.. _doxid-structllsr__inform__type_1ae908410fabf891cfd89626c3605c38ca:
+.. _doxid-structllsr__inform__type_r_norm:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -114,7 +114,7 @@ the number of ($\|x\|_S$, $\lambda$) pairs in the history
 corresponding value of the two-norm of the residual, $\|A x(\lambda) - b\|$
 
 .. index:: pair: variable; x_norm
-.. _doxid-structllsr__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
+.. _doxid-structllsr__inform__type_x_norm:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -124,7 +124,7 @@ corresponding value of the two-norm of the residual, $\|A x(\lambda) - b\|$
 the S-norm of x, $\|x\|_S$
 
 .. index:: pair: variable; multiplier
-.. _doxid-structllsr__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0:
+.. _doxid-structllsr__inform__type_multiplier:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -134,7 +134,7 @@ the S-norm of x, $\|x\|_S$
 the multiplier corresponding to the regularization term
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structllsr__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structllsr__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -144,7 +144,7 @@ the multiplier corresponding to the regularization term
 name of array which provoked an allocate failure
 
 .. index:: pair: variable; time
-.. _doxid-structllsr__inform__type_1ace18e9a0877156e432cc23c7d5799dd6:
+.. _doxid-structllsr__inform__type_time:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -154,7 +154,7 @@ name of array which provoked an allocate failure
 time information
 
 .. index:: pair: variable; history
-.. _doxid-structllsr__inform__type_1a13047d24b0cf3469a41cc14c364d3587:
+.. _doxid-structllsr__inform__type_history:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -164,7 +164,7 @@ time information
 history information
 
 .. index:: pair: variable; sbls_inform
-.. _doxid-structllsr__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68:
+.. _doxid-structllsr__inform__type_sbls_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -174,7 +174,7 @@ history information
 information from the symmetric factorization and related linear solves (see sbls_c documentation)
 
 .. index:: pair: variable; sls_inform
-.. _doxid-structllsr__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0:
+.. _doxid-structllsr__inform__type_sls_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -184,7 +184,7 @@ information from the symmetric factorization and related linear solves (see sbls
 information from the factorization of S and related linear solves (see sls_c documentation)
 
 .. index:: pair: variable; ir_inform
-.. _doxid-structllsr__inform__type_1ae3db15e2ecf7454c4db293d5b30bc7f5:
+.. _doxid-structllsr__inform__type_ir_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

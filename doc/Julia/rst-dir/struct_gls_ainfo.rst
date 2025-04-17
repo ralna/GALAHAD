@@ -38,7 +38,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; flag
-.. _doxid-structgls__ainfo_1adf916204820072417ed73a32de1cefcf:
+.. _doxid-structgls__ainfo_flag:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -48,7 +48,7 @@ components
 Flags success or failure case.
 
 .. index:: pair: variable; more
-.. _doxid-structgls__ainfo_1a4628f2fb17af64608416810cc4e5a9d0:
+.. _doxid-structgls__ainfo_more:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -78,7 +78,7 @@ Size for analysis.
 Size for factorize.
 
 .. index:: pair: variable; ncmpa
-.. _doxid-structgls__ainfo_1a5e8b1d7aba05cfece368396811da24a3:
+.. _doxid-structgls__ainfo_ncmpa:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -88,7 +88,7 @@ Size for factorize.
 Number of compresses.
 
 .. index:: pair: variable; rank
-.. _doxid-structgls__ainfo_1a6cfd95afd0afebd625b889fb6e58371c:
+.. _doxid-structgls__ainfo_rank:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -118,7 +118,7 @@ Number of entries dropped.
 Structural rank of matrix.
 
 .. index:: pair: variable; oor
-.. _doxid-structgls__ainfo_1afa0283d540a2a393c746b5eb05c3431c:
+.. _doxid-structgls__ainfo_oor:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -128,7 +128,7 @@ Structural rank of matrix.
 Number of indices out-of-range.
 
 .. index:: pair: variable; dup
-.. _doxid-structgls__ainfo_1adc4cf3f551bb367858644559d69cfdf5:
+.. _doxid-structgls__ainfo_dup:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -138,7 +138,7 @@ Number of indices out-of-range.
 Number of duplicates.
 
 .. index:: pair: variable; stat
-.. _doxid-structgls__ainfo_1a7d6f8a25e94209bd3ba29b2051ca4f08:
+.. _doxid-structgls__ainfo_stat:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

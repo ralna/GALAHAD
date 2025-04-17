@@ -30,7 +30,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structsec__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structsec__control__type_f_indexing:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -40,7 +40,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structsec__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structsec__control__type_error:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -50,7 +50,7 @@ use C or Fortran sparse matrix indexing
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
-.. _doxid-structsec__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structsec__control__type_out:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -60,7 +60,7 @@ error and warning diagnostics occur on stream error
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
-.. _doxid-structsec__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structsec__control__type_print_level:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -70,7 +70,7 @@ general output occurs on stream out
 the level of output required. <= 0 gives no output, >= 1 warning message
 
 .. index:: pair: variable; h_initial
-.. _doxid-structsec__control__type_1a023bd6b7e060144782755238a1da549e:
+.. _doxid-structsec__control__type_h_initial:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -80,7 +80,7 @@ the level of output required. <= 0 gives no output, >= 1 warning message
 the initial Hessian approximation will be h_initial \* $I$
 
 .. index:: pair: variable; update_skip_tol
-.. _doxid-structsec__control__type_1a8dfc46d0fb22a5d3b62f751e8c4a024b:
+.. _doxid-structsec__control__type_update_skip_tol:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -90,7 +90,7 @@ the initial Hessian approximation will be h_initial \* $I$
 an update is skipped if the resulting matrix would have grown too much; specifically it is skipped when y^T s / y^T y <= update_skip_tol.
 
 .. index:: pair: variable; prefix
-.. _doxid-structsec__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structsec__control__type_prefix:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

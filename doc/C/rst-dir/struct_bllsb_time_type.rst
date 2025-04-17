@@ -16,18 +16,18 @@ bllsb_time_type structure
 	struct bllsb_time_type {
 		// components
 	
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structbllsb__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`preprocess<doxid-structbllsb__time__type_1a811a9183909ac7697f36d0ea8987715c>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`find_dependent<doxid-structbllsb__time__type_1a30beab370e7d02ef42fe7ce99c55b147>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`analyse<doxid-structbllsb__time__type_1a9c5b9155e1665977103d8c32881d9f00>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorize<doxid-structbllsb__time__type_1a79e62dbb4cbb6e99d82167e60c703015>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`solve<doxid-structbllsb__time__type_1a4c971b10c915041b89daa05a29125376>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structbllsb__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_preprocess<doxid-structbllsb__time__type_1a0c3b390c67037ef2fe8b4cf29e079e4e>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_find_dependent<doxid-structbllsb__time__type_1a61d58c11f3f43b2171b6fc679e9845fa>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structbllsb__time__type_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`preprocess<doxid-structbllsb__time__type_preprocess>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`find_dependent<doxid-structbllsb__time__type_find_dependent>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`analyse<doxid-structbllsb__time__type_analyse>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorize<doxid-structbllsb__time__type_factorize>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`solve<doxid-structbllsb__time__type_solve>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structbllsb__time__type_clock_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_preprocess<doxid-structbllsb__time__type_clock_preprocess>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_find_dependent<doxid-structbllsb__time__type_clock_find_dependent>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_analyse<doxid-structbllsb__time__type_1a3394e706afb1s75d930c81c4b86fe8f4b>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_factorize<doxid-structbllsb__time__type_1ad3f0f50628260b90d6cf974e02f86192>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_solve<doxid-structbllsb__time__type_1af569df4b8828eb7ac8a05ef1030d1358>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_factorize<doxid-structbllsb__time__type_clock_factorize>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_solve<doxid-structbllsb__time__type_clock_solve>`;
 	};
 .. _details-structbllsb__time__type:
 
@@ -40,7 +40,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; total
-.. _doxid-structbllsb__time__type_1ad3803b3bb79c5c74d9300520fbe733f4:
+.. _doxid-structbllsb__time__type_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -50,7 +50,7 @@ components
 the total CPU time spent in the package
 
 .. index:: pair: variable; preprocess
-.. _doxid-structbllsb__time__type_1a811a9183909ac7697f36d0ea8987715c:
+.. _doxid-structbllsb__time__type_preprocess:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -60,7 +60,7 @@ the total CPU time spent in the package
 the CPU time spent preprocessing the problem
 
 .. index:: pair: variable; find_dependent
-.. _doxid-structbllsb__time__type_1a30beab370e7d02ef42fe7ce99c55b147:
+.. _doxid-structbllsb__time__type_find_dependent:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -70,7 +70,7 @@ the CPU time spent preprocessing the problem
 the CPU time spent detecting linear dependencies
 
 .. index:: pair: variable; analyse
-.. _doxid-structbllsb__time__type_1a9c5b9155e1665977103d8c32881d9f00:
+.. _doxid-structbllsb__time__type_analyse:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -80,7 +80,7 @@ the CPU time spent detecting linear dependencies
 the CPU time spent analysing the required matrices prior to factorization
 
 .. index:: pair: variable; factorize
-.. _doxid-structbllsb__time__type_1a79e62dbb4cbb6e99d82167e60c703015:
+.. _doxid-structbllsb__time__type_factorize:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -90,7 +90,7 @@ the CPU time spent analysing the required matrices prior to factorization
 the CPU time spent factorizing the required matrices
 
 .. index:: pair: variable; solve
-.. _doxid-structbllsb__time__type_1a4c971b10c915041b89daa05a29125376:
+.. _doxid-structbllsb__time__type_solve:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -100,7 +100,7 @@ the CPU time spent factorizing the required matrices
 the CPU time spent computing the search direction
 
 .. index:: pair: variable; clock_total
-.. _doxid-structbllsb__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
+.. _doxid-structbllsb__time__type_clock_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -110,7 +110,7 @@ the CPU time spent computing the search direction
 the total clock time spent in the package
 
 .. index:: pair: variable; clock_preprocess
-.. _doxid-structbllsb__time__type_1a0c3b390c67037ef2fe8b4cf29e079e4e:
+.. _doxid-structbllsb__time__type_clock_preprocess:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -120,7 +120,7 @@ the total clock time spent in the package
 the clock time spent preprocessing the problem
 
 .. index:: pair: variable; clock_find_dependent
-.. _doxid-structbllsb__time__type_1a61d58c11f3f43b2171b6fc679e9845fa:
+.. _doxid-structbllsb__time__type_clock_find_dependent:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -130,7 +130,7 @@ the clock time spent preprocessing the problem
 the clock time spent detecting linear dependencies
 
 .. index:: pair: variable; clock_analyse
-.. _doxid-structbllsb__time__type_1a3394e706afb175d930c81c4b86fe8f4b:
+.. _doxid-structbllsb__time__type_clock_analyse:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -140,7 +140,7 @@ the clock time spent detecting linear dependencies
 the clock time spent analysing the required matrices prior to factorization
 
 .. index:: pair: variable; clock_factorize
-.. _doxid-structbllsb__time__type_1ad3f0f50628260b90d6cf974e02f86192:
+.. _doxid-structbllsb__time__type_clock_factorize:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -150,7 +150,7 @@ the clock time spent analysing the required matrices prior to factorization
 the clock time spent factorizing the required matrices
 
 .. index:: pair: variable; clock_solve
-.. _doxid-structbllsb__time__type_1af569df4b8828eb7ac8a05ef1030d1358:
+.. _doxid-structbllsb__time__type_clock_solve:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

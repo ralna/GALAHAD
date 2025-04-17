@@ -41,7 +41,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structcro__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structcro__control__type_f_indexing:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -51,7 +51,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structcro__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structcro__control__type_error:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -61,7 +61,7 @@ use C or Fortran sparse matrix indexing
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
-.. _doxid-structcro__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structcro__control__type_out:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -71,7 +71,7 @@ error and warning diagnostics occur on stream error
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
-.. _doxid-structcro__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structcro__control__type_print_level:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -81,7 +81,7 @@ general output occurs on stream out
 the level of output required is specified by print_level
 
 .. index:: pair: variable; max_schur_complement
-.. _doxid-structcro__control__type_1abd1f3cb576a120eb097ebb819874af8d:
+.. _doxid-structcro__control__type_max_schur_complement:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -91,7 +91,7 @@ the level of output required is specified by print_level
 the maximum permitted size of the Schur complement before a refactorization is performed
 
 .. index:: pair: variable; infinity
-.. _doxid-structcro__control__type_1a11a46bd456ea63bac8bdffb056fe98c9:
+.. _doxid-structcro__control__type_infinity:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -101,7 +101,7 @@ the maximum permitted size of the Schur complement before a refactorization is p
 any bound larger than infinity in modulus will be regarded as infinite
 
 .. index:: pair: variable; feasibility_tolerance
-.. _doxid-structcro__control__type_1aefac38140eecc872a3bc2907de2f0a30:
+.. _doxid-structcro__control__type_feasibility_tolerance:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -111,7 +111,7 @@ any bound larger than infinity in modulus will be regarded as infinite
 feasibility tolerance for KKT violation
 
 .. index:: pair: variable; check_io
-.. _doxid-structcro__control__type_1a26ffe1bc01e525bfbc88f91b08e2295d:
+.. _doxid-structcro__control__type_check_io:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -121,7 +121,7 @@ feasibility tolerance for KKT violation
 if .check_io is true, the input (x,y,z) will be fully tested for consistency
 
 .. index:: pair: variable; refine_solution
-.. _doxid-structcro__control__type_1a31c847b86043424b65e29784b7196b78:
+.. _doxid-structcro__control__type_refine_solution:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -131,7 +131,7 @@ if .check_io is true, the input (x,y,z) will be fully tested for consistency
 if .refine solution is true, attempt to satisfy the KKT conditions as accurately as possible
 
 .. index:: pair: variable; space_critical
-.. _doxid-structcro__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structcro__control__type_space_critical:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -141,7 +141,7 @@ if .refine solution is true, attempt to satisfy the KKT conditions as accurately
 if .space_critical is true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structcro__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structcro__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -151,7 +151,7 @@ if .space_critical is true, every effort will be made to use as little space as 
 if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue
 
 .. index:: pair: variable; symmetric_linear_solver
-.. _doxid-structcro__control__type_1af297ace351b9307640715643cde57384:
+.. _doxid-structcro__control__type_symmetric_linear_solver:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -161,7 +161,7 @@ if .deallocate_error_fatal is true, any array/pointer deallocation error will te
 indefinite linear equation solver
 
 .. index:: pair: variable; unsymmetric_linear_solver
-.. _doxid-structcro__control__type_1aef6da6b715a0f41983c2a62397104eec:
+.. _doxid-structcro__control__type_unsymmetric_linear_solver:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -171,7 +171,7 @@ indefinite linear equation solver
 unsymmetric linear equation solver
 
 .. index:: pair: variable; prefix
-.. _doxid-structcro__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structcro__control__type_prefix:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -181,7 +181,7 @@ unsymmetric linear equation solver
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
 
 .. index:: pair: variable; sls_control
-.. _doxid-structcro__control__type_1a31b308b91955ee385daacc3de00f161b:
+.. _doxid-structcro__control__type_sls_control:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -191,7 +191,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 control parameters for SLS
 
 .. index:: pair: variable; sbls_control
-.. _doxid-structcro__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a:
+.. _doxid-structcro__control__type_sbls_control:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -201,7 +201,7 @@ control parameters for SLS
 control parameters for SBLS
 
 .. index:: pair: variable; uls_control
-.. _doxid-structcro__control__type_1ac6782df4602dd9c04417e2554d72bb00:
+.. _doxid-structcro__control__type_uls_control:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -211,7 +211,7 @@ control parameters for SBLS
 control parameters for ULS
 
 .. index:: pair: variable; ir_control
-.. _doxid-structcro__control__type_1ab87f601227d3bf99916ff3caa3413404:
+.. _doxid-structcro__control__type_ir_control:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

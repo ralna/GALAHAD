@@ -15,32 +15,32 @@ sils_control_type structure
 	struct sils_control_type {
 		// fields
 	
-		bool :ref:`f_indexing<doxid-structsils__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`ICNTL<doxid-structsils__control__type_1a7d01102f1deac390a1e4e22a7bb59ea0>`[30];
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`lp<doxid-structsils__control__type_1a3eec33a4e6d8295c25d117bb25dd1b9b>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`wp<doxid-structsils__control__type_1af203f5ddbac4a47afed1a07b97e7e477>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mp<doxid-structsils__control__type_1a4b5efeeced2b749191f71afc3bc8bebd>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sp<doxid-structsils__control__type_1a024603cda52d9847e8d8df3c2e884b8c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`ldiag<doxid-structsils__control__type_1ad0e905fe282a7125424a53219afc0791>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`la<doxid-structsils__control__type_1a8e48dcc59e4b8bbe40fe5b58321e4e72>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`liw<doxid-structsils__control__type_1a534631c6f6077b8813cb930ea43f3bfc>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`maxla<doxid-structsils__control__type_1a6437ead17fd48daf197640949e8d4ff3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`maxliw<doxid-structsils__control__type_1a6f46a87af5a04d87697736b7d789ea33>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pivoting<doxid-structsils__control__type_1aa4d2d93f87da5df80b8aa2bce688c030>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nemin<doxid-structsils__control__type_1a2683299c9b72fbc4bf7d0b3078cd75ca>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorblocking<doxid-structsils__control__type_1a32bd98cbf6436700c5a8848d77ce3917>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`solveblocking<doxid-structsils__control__type_1ae3a41a26d065502707d23c2936aaed6e>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`thresh<doxid-structsils__control__type_1a6cf8bf160a02413bc3d5d18b0294b581>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`ordering<doxid-structsils__control__type_1a4175ebe476addcfc3433fc97c19e0708>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`scaling<doxid-structsils__control__type_1a26f0572eeeaa419eabb09dc89c00b89d>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`CNTL<doxid-structsils__control__type_1a9dd8bf3b6f412e66450dab7b2261846e>`[5];
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`multiplier<doxid-structsils__control__type_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`reduce<doxid-structsils__control__type_1a595df8d359282d27f49ac529283c509a>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`u<doxid-structsils__control__type_1abb669b70ee8fb00689add7fad23ce00f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`static_tolerance<doxid-structsils__control__type_1a3ce9c9cc8dd0f7c4684ea0bd80cc5946>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`static_level<doxid-structsils__control__type_1ae7faebd3367553993434f6a03e65502d>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`tolerance<doxid-structsils__control__type_1ad0dcb73e98bad740852a54d6b7d1f6c2>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`convergence<doxid-structsils__control__type_1ae7c621b1f1fcf3364b6c47d62406e82f>`;
+		bool :ref:`f_indexing<doxid-structsils__control__type_f_indexing>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`ICNTL<doxid-structsils__control__type_ICNTL>`[30];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`lp<doxid-structsils__control__type_lp>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`wp<doxid-structsils__control__type_wp>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mp<doxid-structsils__control__type_mp>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sp<doxid-structsils__control__type_sp>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`ldiag<doxid-structsils__control__type_ldiag>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`la<doxid-structsils__control__type_la>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`liw<doxid-structsils__control__type_liw>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`maxla<doxid-structsils__control__type_maxla>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`maxliw<doxid-structsils__control__type_maxliw>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pivoting<doxid-structsils__control__type_pivoting>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nemin<doxid-structsils__control__type_nemin>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorblocking<doxid-structsils__control__type_factorblocking>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`solveblocking<doxid-structsils__control__type_solveblocking>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`thresh<doxid-structsils__control__type_thresh>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`ordering<doxid-structsils__control__type_ordering>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`scaling<doxid-structsils__control__type_scaling>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`CNTL<doxid-structsils__control__type_CNTL>`[5];
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`multiplier<doxid-structsils__control__type_multiplier>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`reduce<doxid-structsils__control__type_reduce>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`u<doxid-structsils__control__type_u>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`static_tolerance<doxid-structsils__control__type_static_tolerance>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`static_level<doxid-structsils__control__type_static_level>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`tolerance<doxid-structsils__control__type_tolerance>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`convergence<doxid-structsils__control__type_convergence>`;
 	};
 .. _details-structsils__control__type:
 
@@ -53,7 +53,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structsils__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structsils__control__type_f_indexing:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -63,7 +63,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; ICNTL
-.. _doxid-structsils__control__type_1a7d01102f1deac390a1e4e22a7bb59ea0:
+.. _doxid-structsils__control__type_ICNTL:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -73,7 +73,7 @@ use C or Fortran sparse matrix indexing
 MA27 internal integer controls.
 
 .. index:: pair: variable; lp
-.. _doxid-structsils__control__type_1a3eec33a4e6d8295c25d117bb25dd1b9b:
+.. _doxid-structsils__control__type_lp:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -83,7 +83,7 @@ MA27 internal integer controls.
 Unit for error messages.
 
 .. index:: pair: variable; wp
-.. _doxid-structsils__control__type_1af203f5ddbac4a47afed1a07b97e7e477:
+.. _doxid-structsils__control__type_wp:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -93,7 +93,7 @@ Unit for error messages.
 Unit for warning messages.
 
 .. index:: pair: variable; mp
-.. _doxid-structsils__control__type_1a4b5efeeced2b749191f71afc3bc8bebd:
+.. _doxid-structsils__control__type_mp:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -103,7 +103,7 @@ Unit for warning messages.
 Unit for monitor output.
 
 .. index:: pair: variable; sp
-.. _doxid-structsils__control__type_1a024603cda52d9847e8d8df3c2e884b8c:
+.. _doxid-structsils__control__type_sp:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -113,7 +113,7 @@ Unit for monitor output.
 Unit for statistical output.
 
 .. index:: pair: variable; ldiag
-.. _doxid-structsils__control__type_1ad0e905fe282a7125424a53219afc0791:
+.. _doxid-structsils__control__type_ldiag:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -123,7 +123,7 @@ Unit for statistical output.
 Controls level of diagnostic output.
 
 .. index:: pair: variable; la
-.. _doxid-structsils__control__type_1a8e48dcc59e4b8bbe40fe5b58321e4e72:
+.. _doxid-structsils__control__type_la:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -133,7 +133,7 @@ Controls level of diagnostic output.
 Initial size for real array for the factors. If less than nrlnec, default size used.
 
 .. index:: pair: variable; liw
-.. _doxid-structsils__control__type_1a534631c6f6077b8813cb930ea43f3bfc:
+.. _doxid-structsils__control__type_liw:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -143,7 +143,7 @@ Initial size for real array for the factors. If less than nrlnec, default size u
 Initial size for integer array for the factors. If less than nirnec, default size used.
 
 .. index:: pair: variable; maxla
-.. _doxid-structsils__control__type_1a6437ead17fd48daf197640949e8d4ff3:
+.. _doxid-structsils__control__type_maxla:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -153,7 +153,7 @@ Initial size for integer array for the factors. If less than nirnec, default siz
 Max. size for real array for the factors.
 
 .. index:: pair: variable; maxliw
-.. _doxid-structsils__control__type_1a6f46a87af5a04d87697736b7d789ea33:
+.. _doxid-structsils__control__type_maxliw:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -163,7 +163,7 @@ Max. size for real array for the factors.
 Max. size for integer array for the factors.
 
 .. index:: pair: variable; pivoting
-.. _doxid-structsils__control__type_1aa4d2d93f87da5df80b8aa2bce688c030:
+.. _doxid-structsils__control__type_pivoting:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -181,7 +181,7 @@ Controls pivoting. Possible values are:
 * 4 No pivoting is performed but pivots are changed to all be positive.
 
 .. index:: pair: variable; nemin
-.. _doxid-structsils__control__type_1a2683299c9b72fbc4bf7d0b3078cd75ca:
+.. _doxid-structsils__control__type_nemin:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -191,7 +191,7 @@ Controls pivoting. Possible values are:
 Minimum number of eliminations in a step (unused)
 
 .. index:: pair: variable; factorblocking
-.. _doxid-structsils__control__type_1a32bd98cbf6436700c5a8848d77ce3917:
+.. _doxid-structsils__control__type_factorblocking:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -201,7 +201,7 @@ Minimum number of eliminations in a step (unused)
 Level 3 blocking in factorize (unused)
 
 .. index:: pair: variable; solveblocking
-.. _doxid-structsils__control__type_1ae3a41a26d065502707d23c2936aaed6e:
+.. _doxid-structsils__control__type_solveblocking:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -211,7 +211,7 @@ Level 3 blocking in factorize (unused)
 Level 2 and 3 blocking in solve.
 
 .. index:: pair: variable; thresh
-.. _doxid-structsils__control__type_1a6cf8bf160a02413bc3d5d18b0294b581:
+.. _doxid-structsils__control__type_thresh:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -221,7 +221,7 @@ Level 2 and 3 blocking in solve.
 Controls threshold for detecting full rows in analyse, registered as percentage of N, 100 Only fully dense rows detected (default)
 
 .. index:: pair: variable; ordering
-.. _doxid-structsils__control__type_1a4175ebe476addcfc3433fc97c19e0708:
+.. _doxid-structsils__control__type_ordering:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -245,7 +245,7 @@ Controls ordering: Possible values are:
 * >5 Presently equivalent to 5 but may chnage
 
 .. index:: pair: variable; scaling
-.. _doxid-structsils__control__type_1a26f0572eeeaa419eabb09dc89c00b89d:
+.. _doxid-structsils__control__type_scaling:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -259,7 +259,7 @@ Controls scaling: Possible values are:
 * >0 Scaling using HSL's MC64 but may change for > 1
 
 .. index:: pair: variable; CNTL
-.. _doxid-structsils__control__type_1a9dd8bf3b6f412e66450dab7b2261846e:
+.. _doxid-structsils__control__type_CNTL:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -269,7 +269,7 @@ Controls scaling: Possible values are:
 MA27 internal real controls.
 
 .. index:: pair: variable; multiplier
-.. _doxid-structsils__control__type_1ac8bfb1ed777319ef92b7039c66f9a9b0:
+.. _doxid-structsils__control__type_multiplier:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -279,7 +279,7 @@ MA27 internal real controls.
 Factor by which arrays sizes are to be increased if they are too small.
 
 .. index:: pair: variable; reduce
-.. _doxid-structsils__control__type_1a595df8d359282d27f49ac529283c509a:
+.. _doxid-structsils__control__type_reduce:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -289,7 +289,7 @@ Factor by which arrays sizes are to be increased if they are too small.
 If previously allocated internal workspace arrays are greater than reduce times the currently required sizes, they are reset to current requirment.
 
 .. index:: pair: variable; u
-.. _doxid-structsils__control__type_1abb669b70ee8fb00689add7fad23ce00f:
+.. _doxid-structsils__control__type_u:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -299,7 +299,7 @@ If previously allocated internal workspace arrays are greater than reduce times 
 Pivot threshold.
 
 .. index:: pair: variable; static_tolerance
-.. _doxid-structsils__control__type_1a3ce9c9cc8dd0f7c4684ea0bd80cc5946:
+.. _doxid-structsils__control__type_static_tolerance:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -309,7 +309,7 @@ Pivot threshold.
 used for setting static pivot level
 
 .. index:: pair: variable; static_level
-.. _doxid-structsils__control__type_1ae7faebd3367553993434f6a03e65502d:
+.. _doxid-structsils__control__type_static_level:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -319,7 +319,7 @@ used for setting static pivot level
 used for switch to static
 
 .. index:: pair: variable; tolerance
-.. _doxid-structsils__control__type_1ad0dcb73e98bad740852a54d6b7d1f6c2:
+.. _doxid-structsils__control__type_tolerance:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -329,7 +329,7 @@ used for switch to static
 Anything less than this is considered zero.
 
 .. index:: pair: variable; convergence
-.. _doxid-structsils__control__type_1ae7c621b1f1fcf3364b6c47d62406e82f:
+.. _doxid-structsils__control__type_convergence:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

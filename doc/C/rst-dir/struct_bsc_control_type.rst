@@ -15,17 +15,17 @@ bsc_control_type structure
 	struct bsc_control_type {
 		// fields
 	
-		bool :ref:`f_indexing<doxid-structbsc__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structbsc__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structbsc__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structbsc__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_col<doxid-structbsc__control__type_1abca2db33b9520095e98790d45a1be93f>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`new_a<doxid-structbsc__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`extra_space_s<doxid-structbsc__control__type_1ad1d6fbcd01c19f28d44ca8ba150efce5>`;
-		bool :ref:`s_also_by_column<doxid-structbsc__control__type_1abad1637e3128deb63e2a8eab714e5ffd>`;
-		bool :ref:`space_critical<doxid-structbsc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		bool :ref:`deallocate_error_fatal<doxid-structbsc__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structbsc__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
+		bool :ref:`f_indexing<doxid-structbsc__control__type_f_indexing>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structbsc__control__type_error>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structbsc__control__type_out>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structbsc__control__type_print_level>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_col<doxid-structbsc__control__type_max_col>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`new_a<doxid-structbsc__control__type_new_a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`extra_space_s<doxid-structbsc__control__type_extra_space_s>`;
+		bool :ref:`s_also_by_column<doxid-structbsc__control__type_s_also_by_column>`;
+		bool :ref:`space_critical<doxid-structbsc__control__type_space_critical>`;
+		bool :ref:`deallocate_error_fatal<doxid-structbsc__control__type_deallocate_error_fatal>`;
+		char :ref:`prefix<doxid-structbsc__control__type_prefix>`[31];
 	};
 .. _details-structbsc__control__type:
 
@@ -38,7 +38,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structbsc__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structbsc__control__type_f_indexing:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -48,7 +48,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structbsc__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structbsc__control__type_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -58,7 +58,7 @@ use C or Fortran sparse matrix indexing
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
-.. _doxid-structbsc__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structbsc__control__type_out:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -68,7 +68,7 @@ error and warning diagnostics occur on stream error
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
-.. _doxid-structbsc__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structbsc__control__type_print_level:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -78,7 +78,7 @@ general output occurs on stream out
 the level of output required is specified by print_level
 
 .. index:: pair: variable; max_col
-.. _doxid-structbsc__control__type_1abca2db33b9520095e98790d45a1be93f:
+.. _doxid-structbsc__control__type_max_col:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -88,7 +88,7 @@ the level of output required is specified by print_level
 maximum permitted number of nonzeros in a column of $A$; -ve means unlimit
 
 .. index:: pair: variable; new_a
-.. _doxid-structbsc__control__type_1a7bea45d51fd9384037bbbf82f7750ce6:
+.. _doxid-structbsc__control__type_new_a:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -106,7 +106,7 @@ how much has $A$ changed since it was last accessed:
 * 3 = structure changed but values not required
 
 .. index:: pair: variable; extra_space_s
-.. _doxid-structbsc__control__type_1ad1d6fbcd01c19f28d44ca8ba150efce5:
+.. _doxid-structbsc__control__type_extra_space_s:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -116,7 +116,7 @@ how much has $A$ changed since it was last accessed:
 how much extra space is to be allocated in $S$ above that needed to hold the Schur complement
 
 .. index:: pair: variable; s_also_by_column
-.. _doxid-structbsc__control__type_1abad1637e3128deb63e2a8eab714e5ffd:
+.. _doxid-structbsc__control__type_s_also_by_column:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -126,7 +126,7 @@ how much extra space is to be allocated in $S$ above that needed to hold the Sch
 should s.ptr also be set to indicate the first entry in each column of $S$
 
 .. index:: pair: variable; space_critical
-.. _doxid-structbsc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structbsc__control__type_space_critical:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -136,7 +136,7 @@ should s.ptr also be set to indicate the first entry in each column of $S$
 if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structbsc__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structbsc__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -146,7 +146,7 @@ if .space_critical true, every effort will be made to use as little space as pos
 if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue
 
 .. index:: pair: variable; prefix
-.. _doxid-structbsc__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structbsc__control__type_prefix:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

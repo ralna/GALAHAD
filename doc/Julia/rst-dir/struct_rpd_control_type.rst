@@ -30,7 +30,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structrpd__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structrpd__control__type_f_indexing:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -40,7 +40,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; qplib
-.. _doxid-structrpd__control__type_1ae6020f0898b39b85c5f656161513a1d0:
+.. _doxid-structrpd__control__type_qplib:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -50,7 +50,7 @@ use C or Fortran sparse matrix indexing
 QPLIB file input stream number.
 
 .. index:: pair: variable; error
-.. _doxid-structrpd__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structrpd__control__type_error:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -60,7 +60,7 @@ QPLIB file input stream number.
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
-.. _doxid-structrpd__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structrpd__control__type_out:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -70,7 +70,7 @@ error and warning diagnostics occur on stream error
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
-.. _doxid-structrpd__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structrpd__control__type_print_level:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -84,7 +84,7 @@ the level of output required is specified by print_level
 * $\geq$ 1 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; space_critical
-.. _doxid-structrpd__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structrpd__control__type_space_critical:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -94,7 +94,7 @@ the level of output required is specified by print_level
 if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structrpd__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structrpd__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

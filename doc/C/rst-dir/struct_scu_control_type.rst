@@ -15,7 +15,7 @@ scu_control_type structure
 	struct scu_control_type {
 		// fields
 	
-		bool :ref:`f_indexing<doxid-structscu__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
+		bool :ref:`f_indexing<doxid-structscu__control__type_f_indexing>`;
 	};
 .. _details-structscu__control__type:
 
@@ -28,7 +28,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structscu__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structscu__control__type_f_indexing:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

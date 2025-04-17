@@ -24,7 +24,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structscu__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structscu__control__type_f_indexing:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

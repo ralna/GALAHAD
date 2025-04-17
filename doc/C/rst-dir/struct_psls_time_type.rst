@@ -15,18 +15,18 @@ psls_time_type structure
 	struct psls_time_type {
 		// fields
 	
-		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`total<doxid-structpsls__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc>`;
-		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`assemble<doxid-structpsls__time__type_1a10940eefc2f59c72a3ecc6cb4f44e233>`;
-		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`analyse<doxid-structpsls__time__type_1a0ca2b20748c7749a77d684124011c531>`;
-		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`factorize<doxid-structpsls__time__type_1ab7eecce4b013c87e490b8984c74c59c3>`;
-		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`solve<doxid-structpsls__time__type_1a6356532c25755a6e5fedee1a7d703949>`;
-		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`update<doxid-structpsls__time__type_1abe9f0d8cfe95c5d6b3fb64a0c1e6e55f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structpsls__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_assemble<doxid-structpsls__time__type_1a4df2b92cea9269b8f8cad7024b83a10d>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_analyse<doxid-structpsls__time__type_1a3394e706afb175d930c81c4b86fe8f4b>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_factorize<doxid-structpsls__time__type_1ad3f0f50628260b90d6cf974e02f86192>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_solve<doxid-structpsls__time__type_1af569df4b8828eb7ac8a05ef1030d1358>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_update<doxid-structpsls__time__type_1acb90c4a0e3e2434c815d1428316c8ee9>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`total<doxid-structpsls__time__type_total>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`assemble<doxid-structpsls__time__type_assemble>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`analyse<doxid-structpsls__time__type_analyse>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`factorize<doxid-structpsls__time__type_factorize>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`solve<doxid-structpsls__time__type_solve>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`update<doxid-structpsls__time__type_update>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structpsls__time__type_clock_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_assemble<doxid-structpsls__time__type_clock_assemble>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_analyse<doxid-structpsls__time__type_clock_analyse>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_factorize<doxid-structpsls__time__type_clock_factorize>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_solve<doxid-structpsls__time__type_clock_solve>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_update<doxid-structpsls__time__type_clock_update>`;
 	};
 .. _details-structpsls__time__type:
 
@@ -39,7 +39,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; total
-.. _doxid-structpsls__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc:
+.. _doxid-structpsls__time__type_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -49,7 +49,7 @@ components
 total time
 
 .. index:: pair: variable; assemble
-.. _doxid-structpsls__time__type_1a10940eefc2f59c72a3ecc6cb4f44e233:
+.. _doxid-structpsls__time__type_assemble:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -59,7 +59,7 @@ total time
 time to assemble the preconditioner prior to factorization
 
 .. index:: pair: variable; analyse
-.. _doxid-structpsls__time__type_1a0ca2b20748c7749a77d684124011c531:
+.. _doxid-structpsls__time__type_analyse:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -69,7 +69,7 @@ time to assemble the preconditioner prior to factorization
 time for the analysis phase
 
 .. index:: pair: variable; factorize
-.. _doxid-structpsls__time__type_1ab7eecce4b013c87e490b8984c74c59c3:
+.. _doxid-structpsls__time__type_factorize:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -79,7 +79,7 @@ time for the analysis phase
 time for the factorization phase
 
 .. index:: pair: variable; solve
-.. _doxid-structpsls__time__type_1a6356532c25755a6e5fedee1a7d703949:
+.. _doxid-structpsls__time__type_solve:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -89,7 +89,7 @@ time for the factorization phase
 time for the linear solution phase
 
 .. index:: pair: variable; update
-.. _doxid-structpsls__time__type_1abe9f0d8cfe95c5d6b3fb64a0c1e6e55f:
+.. _doxid-structpsls__time__type_update:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -99,7 +99,7 @@ time for the linear solution phase
 time to update the factorization
 
 .. index:: pair: variable; clock_total
-.. _doxid-structpsls__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
+.. _doxid-structpsls__time__type_clock_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -109,7 +109,7 @@ time to update the factorization
 total clock time spent in the package
 
 .. index:: pair: variable; clock_assemble
-.. _doxid-structpsls__time__type_1a4df2b92cea9269b8f8cad7024b83a10d:
+.. _doxid-structpsls__time__type_clock_assemble:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -119,7 +119,7 @@ total clock time spent in the package
 clock time to assemble the preconditioner prior to factorization
 
 .. index:: pair: variable; clock_analyse
-.. _doxid-structpsls__time__type_1a3394e706afb175d930c81c4b86fe8f4b:
+.. _doxid-structpsls__time__type_clock_analyse:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -129,7 +129,7 @@ clock time to assemble the preconditioner prior to factorization
 clock time for the analysis phase
 
 .. index:: pair: variable; clock_factorize
-.. _doxid-structpsls__time__type_1ad3f0f50628260b90d6cf974e02f86192:
+.. _doxid-structpsls__time__type_clock_factorize:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -139,7 +139,7 @@ clock time for the analysis phase
 clock time for the factorization phase
 
 .. index:: pair: variable; clock_solve
-.. _doxid-structpsls__time__type_1af569df4b8828eb7ac8a05ef1030d1358:
+.. _doxid-structpsls__time__type_clock_solve:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -149,7 +149,7 @@ clock time for the factorization phase
 clock time for the linear solution phase
 
 .. index:: pair: variable; clock_update
-.. _doxid-structpsls__time__type_1acb90c4a0e3e2434c815d1428316c8ee9:
+.. _doxid-structpsls__time__type_clock_update:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

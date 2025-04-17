@@ -15,7 +15,7 @@ sec_inform_type structure
 	struct sec_inform_type {
 		// fields
 	
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structsec__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structsec__inform__type_status>`;
 	};
 .. _details-structsec__inform__type:
 
@@ -28,7 +28,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structsec__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structsec__inform__type_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

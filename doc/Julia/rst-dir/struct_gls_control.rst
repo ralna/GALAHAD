@@ -46,7 +46,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structgls__control_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structgls__control_f_indexing:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -56,7 +56,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; lp
-.. _doxid-structgls__control_1a3eec33a4e6d8295c25d117bb25dd1b9b:
+.. _doxid-structgls__control_lp:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -66,7 +66,7 @@ use C or Fortran sparse matrix indexing
 Unit for error messages.
 
 .. index:: pair: variable; wp
-.. _doxid-structgls__control_1af203f5ddbac4a47afed1a07b97e7e477:
+.. _doxid-structgls__control_wp:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -76,7 +76,7 @@ Unit for error messages.
 Unit for warning messages.
 
 .. index:: pair: variable; mp
-.. _doxid-structgls__control_1a4b5efeeced2b749191f71afc3bc8bebd:
+.. _doxid-structgls__control_mp:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -86,7 +86,7 @@ Unit for warning messages.
 Unit for monitor output.
 
 .. index:: pair: variable; ldiag
-.. _doxid-structgls__control_1ad0e905fe282a7125424a53219afc0791:
+.. _doxid-structgls__control_ldiag:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -106,7 +106,7 @@ Controls level of diagnostic output.
 Minimum block size for block-triangular form (BTF). Set to $n$ to avoid.
 
 .. index:: pair: variable; maxit
-.. _doxid-structgls__control_1ab717630b215f0362699acac11fb3652c:
+.. _doxid-structgls__control_maxit:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -136,7 +136,7 @@ Level 3 blocking in factorize.
 Switch for using Level 1 or 2 BLAS in solve.
 
 .. index:: pair: variable; la
-.. _doxid-structgls__control_1a8e48dcc59e4b8bbe40fe5b58321e4e72:
+.. _doxid-structgls__control_la:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -156,7 +156,7 @@ Initial size for real array for the factors.
 Initial size for integer array for the factors.
 
 .. index:: pair: variable; maxla
-.. _doxid-structgls__control_1a6437ead17fd48daf197640949e8d4ff3:
+.. _doxid-structgls__control_maxla:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -166,7 +166,7 @@ Initial size for integer array for the factors.
 Maximum size for real array for the factors.
 
 .. index:: pair: variable; pivoting
-.. _doxid-structgls__control_1aa4d2d93f87da5df80b8aa2bce688c030:
+.. _doxid-structgls__control_pivoting:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -186,7 +186,7 @@ Controls pivoting: Number of columns searched. Zero for Markowitz.
 Initially fill_in \* ne space allocated for factors.
 
 .. index:: pair: variable; multiplier
-.. _doxid-structgls__control_1ac8bfb1ed777319ef92b7039c66f9a9b0:
+.. _doxid-structgls__control_multiplier:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -196,7 +196,7 @@ Initially fill_in \* ne space allocated for factors.
 Factor by which arrays sizes are to be increased if they are too small.
 
 .. index:: pair: variable; reduce
-.. _doxid-structgls__control_1a595df8d359282d27f49ac529283c509a:
+.. _doxid-structgls__control_reduce:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -206,7 +206,7 @@ Factor by which arrays sizes are to be increased if they are too small.
 if previously allocated internal workspace arrays are greater than reduce times the currently required sizes, they are reset to current requirment
 
 .. index:: pair: variable; u
-.. _doxid-structgls__control_1abb669b70ee8fb00689add7fad23ce00f:
+.. _doxid-structgls__control_u:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -236,7 +236,7 @@ Density for switch to full code.
 Drop tolerance.
 
 .. index:: pair: variable; tolerance
-.. _doxid-structgls__control_1ad0dcb73e98bad740852a54d6b7d1f6c2:
+.. _doxid-structgls__control_tolerance:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

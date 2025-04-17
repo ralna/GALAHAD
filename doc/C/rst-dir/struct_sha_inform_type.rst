@@ -15,15 +15,15 @@ sha_inform_type structure
 	struct sha_inform_type {
 		// fields
 
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structsha__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structsha__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_degree<doxid-structsha__inform__type_1a8eabc621540d71c2a7e3076d6c3826bc>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`differences_needed<doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a6>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_reduced_degree<doxid-structsha__inform__type_1a389835dfe2e9309431892a98be9beb2c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`approximation_algorithm_used<doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a0>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`bad_row<doxid-structsha__inform__type_1ab9c826769c483d92749a2bad8b0b972b>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structsha__inform__type_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structsha__inform__type_alloc_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_degree<doxid-structsha__inform__type_max_degree>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`differences_needed<doxid-structsha__inform__type_differences_needed>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_reduced_degree<doxid-structsha__inform__type_max_reduced_degree>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`approximation_algorithm_used<doxid-structsha__inform__type_approximation_algorithm_used>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`bad_row<doxid-structsha__inform__type_bad_row>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`max_off_diagonal_difference<doxid-structsha__inform__type_1a42d0c89df887685f68327d07c6e92f04>`;
-		char :ref:`bad_alloc<doxid-structsha__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
+		char :ref:`bad_alloc<doxid-structsha__inform__type_bad_alloc>`[81];
 	};
 .. _details-structsha__inform__type:
 
@@ -36,7 +36,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structsha__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structsha__inform__type_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -46,7 +46,7 @@ components
 return status. See SHA_solve for details
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structsha__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structsha__inform__type_alloc_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -56,7 +56,7 @@ return status. See SHA_solve for details
 the status of the last attempted allocation/deallocation.
 
 .. index:: pair: variable; max_degree
-.. _doxid-structsha__inform__type_1a8eabc621540d71c2a7e3076d6c3826bc:
+.. _doxid-structsha__inform__type_max_degree:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -66,7 +66,7 @@ the status of the last attempted allocation/deallocation.
 the maximum degree in the adgacency graph.
 
 .. index:: pair: variable; differences_needed
-.. _doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a6:
+.. _doxid-structsha__inform__type_differences_needed:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -76,7 +76,7 @@ the maximum degree in the adgacency graph.
 the number of differences that will be needed.
 
 .. index:: pair: variable; max_reduced_degree
-.. _doxid-structsha__inform__type_1a389835dfe2e9309431892a98be9beb2c:
+.. _doxid-structsha__inform__type_max_reduced_degree:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -86,7 +86,7 @@ the number of differences that will be needed.
 the maximum reduced degree in the adgacency graph.
 
 .. index:: pair: variable; approximation_algorithm_used
-.. _doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a0:
+.. _doxid-structsha__inform__type_approximation_algorithm_used:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -96,7 +96,7 @@ the maximum reduced degree in the adgacency graph.
 the approximation algorithm actually used
 
 .. index:: pair: variable; bad_row
-.. _doxid-structsha__inform__type_1ab9c826769c483d92749a2bad8b0b972b:
+.. _doxid-structsha__inform__type_bad_row:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -118,7 +118,7 @@ the maximum difference between estimated Hessian off-diagonal
 pairs if approximation algorithm 1, 3 or 4 has been employed.
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structsha__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structsha__inform__type_bad_alloc:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

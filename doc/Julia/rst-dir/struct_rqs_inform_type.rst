@@ -40,7 +40,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structrqs__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structrqs__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -82,7 +82,7 @@ reported return status:
   ill-conditioning has prevented furthr progress
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structrqs__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structrqs__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -92,7 +92,7 @@ reported return status:
 STAT value after allocate failure.
 
 .. index:: pair: variable; factorizations
-.. _doxid-structrqs__inform__type_1a9a6a5a0de7d7a6048b4170a768c0c86f:
+.. _doxid-structrqs__inform__type_factorizations:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -102,7 +102,7 @@ STAT value after allocate failure.
 the number of factorizations performed
 
 .. index:: pair: variable; max_entries_factors
-.. _doxid-structrqs__inform__type_1a177e429e737cfa2cd3df051a65fcfb68:
+.. _doxid-structrqs__inform__type_max_entries_factors:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -112,7 +112,7 @@ the number of factorizations performed
 the maximum number of entries in the factors
 
 .. index:: pair: variable; len_history
-.. _doxid-structrqs__inform__type_1a2087c1ee7c5859aa738d2f07ba91b4a6:
+.. _doxid-structrqs__inform__type_len_history:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -122,7 +122,7 @@ the maximum number of entries in the factors
 the number of $(\|x\|_M,\lambda)$ pairs in the history
 
 .. index:: pair: variable; obj
-.. _doxid-structrqs__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:
+.. _doxid-structrqs__inform__type_obj:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -132,7 +132,7 @@ the number of $(\|x\|_M,\lambda)$ pairs in the history
 the value of the quadratic function
 
 .. index:: pair: variable; obj_regularized
-.. _doxid-structrqs__inform__type_1a1631e243108715d623e2ddb83310fa33:
+.. _doxid-structrqs__inform__type_obj_regularized:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -142,7 +142,7 @@ the value of the quadratic function
 the value of the regularized quadratic function
 
 .. index:: pair: variable; x_norm
-.. _doxid-structrqs__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
+.. _doxid-structrqs__inform__type_x_norm:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -152,7 +152,7 @@ the value of the regularized quadratic function
 the $M$ -norm of $x$, $\|x\|_M$
 
 .. index:: pair: variable; multiplier
-.. _doxid-structrqs__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0:
+.. _doxid-structrqs__inform__type_multiplier:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -162,7 +162,7 @@ the $M$ -norm of $x$, $\|x\|_M$
 the Lagrange multiplier corresponding to the regularization
 
 .. index:: pair: variable; pole
-.. _doxid-structrqs__inform__type_1ad2dc9016b1d2b00a970ec28129f7000d:
+.. _doxid-structrqs__inform__type_pole:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -172,7 +172,7 @@ the Lagrange multiplier corresponding to the regularization
 a lower bound max $(0,-\lambda_1)$, where $\lambda_1$ is the left-most eigenvalue of $(H,M)$
 
 .. index:: pair: variable; dense_factorization
-.. _doxid-structrqs__inform__type_1a107cef1ccaad53efc9d7a578d400f324:
+.. _doxid-structrqs__inform__type_dense_factorization:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -182,7 +182,7 @@ a lower bound max $(0,-\lambda_1)$, where $\lambda_1$ is the left-most eigenvalu
 was a dense factorization used?
 
 .. index:: pair: variable; hard_case
-.. _doxid-structrqs__inform__type_1a22215075b7081ccac9f121daf07a0f7e:
+.. _doxid-structrqs__inform__type_hard_case:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -192,7 +192,7 @@ was a dense factorization used?
 has the hard case occurred?
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structrqs__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structrqs__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -202,7 +202,7 @@ has the hard case occurred?
 name of array which provoked an allocate failure
 
 .. index:: pair: variable; time
-.. _doxid-structrqs__inform__type_1a7ea9c3c8923491cb7b82bc1e2eaa865e:
+.. _doxid-structrqs__inform__type_time:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -212,7 +212,7 @@ name of array which provoked an allocate failure
 time information
 
 .. index:: pair: variable; history
-.. _doxid-structrqs__inform__type_1a8a8041f7210288f13c6fa994dfc73aab:
+.. _doxid-structrqs__inform__type_history:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -222,7 +222,7 @@ time information
 history information
 
 .. index:: pair: variable; sls_inform
-.. _doxid-structrqs__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0:
+.. _doxid-structrqs__inform__type_sls_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -232,7 +232,7 @@ history information
 cholesky information (see sls_c documentation)
 
 .. index:: pair: variable; ir_inform
-.. _doxid-structrqs__inform__type_1ae3db15e2ecf7454c4db293d5b30bc7f5:
+.. _doxid-structrqs__inform__type_ir_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

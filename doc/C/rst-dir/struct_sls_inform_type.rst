@@ -15,84 +15,84 @@ sls_inform_type structure
 	struct sls_inform_type {
 		// fields
 	
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structsls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structsls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structsls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`more_info<doxid-structsls__inform__type_1a24d9e61a5ee1839c2fda4f8d5cff0cb7>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`entries<doxid-structsls__inform__type_1a05de9d2e9fdfcc8bf932ca13b95ede29>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out_of_range<doxid-structsls__inform__type_1a8daa2a776cae6116e9f14e2b009430a5>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`duplicates<doxid-structsls__inform__type_1a4266bf48aafe2914b08e60d6ef9cf446>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`upper<doxid-structsls__inform__type_1a0a1a19aadb8cf4f2b05d37a8798b667c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`missing_diagonals<doxid-structsls__inform__type_1a8d33160feb6e388439a1d38641b00b3d>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_depth_assembly_tree<doxid-structsls__inform__type_1a6d6dc5b49ec465fb45c83d1a0de40e02>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nodes_assembly_tree<doxid-structsls__inform__type_1ac0b9b02071c45a104c814d8664d56a0c>`;
-		int64_t :ref:`real_size_desirable<doxid-structsls__inform__type_1a578f47757db464cbf8ed9b83bc0fe19b>`;
-		int64_t :ref:`integer_size_desirable<doxid-structsls__inform__type_1a8dd3cb87057fef593aa3a13a5b537e03>`;
-		int64_t :ref:`real_size_necessary<doxid-structsls__inform__type_1a81e92687a9d89d7449fe0c7e108c99e5>`;
-		int64_t :ref:`integer_size_necessary<doxid-structsls__inform__type_1a8ac7a09dd6adc2d2a535e7a14a43c8d3>`;
-		int64_t :ref:`real_size_factors<doxid-structsls__inform__type_1a2fb34bb982d673eade451dd5044b5ed0>`;
-		int64_t :ref:`integer_size_factors<doxid-structsls__inform__type_1aa0143d6a3ae9a2a606b8631ad3da7610>`;
-		int64_t :ref:`entries_in_factors<doxid-structsls__inform__type_1ab741fb84b79d2b013a84d71932452681>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_task_pool_size<doxid-structsls__inform__type_1adbfc63b37c8305f76154af9ab21a73e1>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_front_size<doxid-structsls__inform__type_1a854d688fc9f75d1011046b68798c3ec3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`compresses_real<doxid-structsls__inform__type_1a08f180b15976fad5be1793aeadd89d1d>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`compresses_integer<doxid-structsls__inform__type_1ae278663a9e98a86e0947f89a75549d51>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`two_by_two_pivots<doxid-structsls__inform__type_1af922a8827cb6bb34ae8b7ea113eb88d9>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`semi_bandwidth<doxid-structsls__inform__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`delayed_pivots<doxid-structsls__inform__type_1aceacc7f8144f94b9ff16506b1bc581e3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pivot_sign_changes<doxid-structsls__inform__type_1ac41ffa6bf566e674ac90de4178c81477>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`static_pivots<doxid-structsls__inform__type_1ab7569a21ad5852708f0a43b7c269ac0d>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`first_modified_pivot<doxid-structsls__inform__type_1a735be3d14946330c6c7b451743b86ae9>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`rank<doxid-structsls__inform__type_1a6cfd95afd0afebd625b889fb6e58371c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`negative_eigenvalues<doxid-structsls__inform__type_1ad9bf58dadb2657173be0588308d100b3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`num_zero<doxid-structsls__inform__type_1a9e21341bbd4963be2eaae5a0f8851648>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iterative_refinements<doxid-structsls__inform__type_1a22c83a8ec8964a169bdd9d0cdf196cf1>`;
-		int64_t :ref:`flops_assembly<doxid-structsls__inform__type_1a24b90be205ee95fe42ce3dc31d77ccfa>`;
-		int64_t :ref:`flops_elimination<doxid-structsls__inform__type_1a9dde906a7f13e691e9a885e827179c8d>`;
-		int64_t :ref:`flops_blas<doxid-structsls__inform__type_1a34f890f9248fc1f05ba5fae571990d6d>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`largest_modified_pivot<doxid-structsls__inform__type_1a62d158ab4a7acedf5d7a06841765ec49>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`minimum_scaling_factor<doxid-structsls__inform__type_1a250fb521c37638fcca8c2867ff43b576>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`maximum_scaling_factor<doxid-structsls__inform__type_1ad8f20093907b8b8d244b4e37a13143cc>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`condition_number_1<doxid-structsls__inform__type_1a198ba7b98aa903f1ab5b65745c5289ea>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`condition_number_2<doxid-structsls__inform__type_1a9ffbf5df4bb4e49067cf2813ad6a016e>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`backward_error_1<doxid-structsls__inform__type_1a83c0d093c0b2b8636f686ab30acfb5a3>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`backward_error_2<doxid-structsls__inform__type_1a6fab94020d1a5e4b25a5006103a231cf>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`forward_error<doxid-structsls__inform__type_1ab63fd70aff6616a414f16af190bd4105>`;
-		bool :ref:`alternative<doxid-structsls__inform__type_1a48c07c7da1803ed8af25ca949f4854b5>`;
-		char :ref:`solver<doxid-structsls__inform__type_1af335c33211ea78f2d5b7314d7b1c210d>`[21];
-		struct :ref:`sls_time_type<doxid-structsls__time__type>` :ref:`time<doxid-structsls__inform__type_1aeb306e2c697a3b16156c7bbf95933d04>`;
-		struct :ref:`sils_ainfo_type<doxid-structsils__ainfo__type>` :ref:`sils_ainfo<doxid-structsls__inform__type_1a6490df077bf8d853c6ce6242ef95ef3f>`;
-		struct :ref:`sils_finfo_type<doxid-structsils__finfo__type>` :ref:`sils_finfo<doxid-structsls__inform__type_1aaca9130b6f951c48e420ef2d880e2e6a>`;
-		struct :ref:`sils_sinfo_type<doxid-structsils__sinfo__type>` :ref:`sils_sinfo<doxid-structsls__inform__type_1a02b2db43c1e7bc2d42a9f584433dbe01>`;
-		struct ma57_ainfo :ref:`ma57_ainfo<doxid-structsls__inform__type_1aa7061ae61ef272126c2d93c0bb7c3e92>`;
-		struct ma57_finfo :ref:`ma57_finfo<doxid-structsls__inform__type_1ae25ef469002f1c7bdbfcb22780e58d6f>`;
-		struct ma57_sinfo :ref:`ma57_sinfo<doxid-structsls__inform__type_1a87ebdff77dff15b8a72f8fb8528495f8>`;
-		struct ma77_info :ref:`ma77_info<doxid-structsls__inform__type_1a296c08f6844db0dd56124633c5bead05>`;
-		struct ma86_info :ref:`ma86_info<doxid-structsls__inform__type_1a0e8dbbed5f52f17a0c85cc24c1d4133a>`;
-		struct ma87_info :ref:`ma87_info<doxid-structsls__inform__type_1a5a0d5c7fc9b533354415c7f26c5ca0fa>`;
-		struct ma97_info :ref:`ma97_info<doxid-structsls__inform__type_1a97187c145bd03b5812c1b08cfd0c1fdd>`;
-		struct spral_ssids_inform :ref:`ssids_inform<doxid-structsls__inform__type_1a1460057cd78a3850b14e78583b051054>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structsls__inform__type_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structsls__inform__type_alloc_status>`;
+		char :ref:`bad_alloc<doxid-structsls__inform__type_bad_alloc>`[81];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`more_info<doxid-structsls__inform__type_more_info>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`entries<doxid-structsls__inform__type_entries>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out_of_range<doxid-structsls__inform__type_out_of_range>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`duplicates<doxid-structsls__inform__type_duplicates>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`upper<doxid-structsls__inform__type_upper>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`missing_diagonals<doxid-structsls__inform__type_missing_diagonals>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_depth_assembly_tree<doxid-structsls__inform__type_max_depth_assembly_tree>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nodes_assembly_tree<doxid-structsls__inform__type_nodes_assembly_tree>`;
+		int64_t :ref:`real_size_desirable<doxid-structsls__inform__type_real_size_desirable>`;
+		int64_t :ref:`integer_size_desirable<doxid-structsls__inform__type_integer_size_desirable>`;
+		int64_t :ref:`real_size_necessary<doxid-structsls__inform__type_real_size_necessary>`;
+		int64_t :ref:`integer_size_necessary<doxid-structsls__inform__type_integer_size_necessary>`;
+		int64_t :ref:`real_size_factors<doxid-structsls__inform__type_real_size_factors>`;
+		int64_t :ref:`integer_size_factors<doxid-structsls__inform__type_integer_size_factors>`;
+		int64_t :ref:`entries_in_factors<doxid-structsls__inform__type_entries_in_factors>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_task_pool_size<doxid-structsls__inform__type_max_task_pool_size>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_front_size<doxid-structsls__inform__type_max_front_size>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`compresses_real<doxid-structsls__inform__type_compresses_real>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`compresses_integer<doxid-structsls__inform__type_compresses_integer>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`two_by_two_pivots<doxid-structsls__inform__type_two_by_two_pivots>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`semi_bandwidth<doxid-structsls__inform__type_semi_bandwidth>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`delayed_pivots<doxid-structsls__inform__type_delayed_pivots>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pivot_sign_changes<doxid-structsls__inform__type_pivot_sign_changes>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`static_pivots<doxid-structsls__inform__type_static_pivots>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`first_modified_pivot<doxid-structsls__inform__type_first_modified_pivot>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`rank<doxid-structsls__inform__type_rank>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`negative_eigenvalues<doxid-structsls__inform__type_negative_eigenvalues>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`num_zero<doxid-structsls__inform__type_num_zero>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iterative_refinements<doxid-structsls__inform__type_iterative_refinements>`;
+		int64_t :ref:`flops_assembly<doxid-structsls__inform__type_flops_assembly>`;
+		int64_t :ref:`flops_elimination<doxid-structsls__inform__type_flops_elimination>`;
+		int64_t :ref:`flops_blas<doxid-structsls__inform__type_flops_blas>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`largest_modified_pivot<doxid-structsls__inform__type_largest_modified_pivot>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`minimum_scaling_factor<doxid-structsls__inform__type_minimum_scaling_factor>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`maximum_scaling_factor<doxid-structsls__inform__type_maximum_scaling_factor>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`condition_number_1<doxid-structsls__inform__type_condition_number_1>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`condition_number_2<doxid-structsls__inform__type_condition_number_2>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`backward_error_1<doxid-structsls__inform__type_backward_error_1>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`backward_error_2<doxid-structsls__inform__type_backward_error_2>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`forward_error<doxid-structsls__inform__type_forward_error>`;
+		bool :ref:`alternative<doxid-structsls__inform__type_alternative>`;
+		char :ref:`solver<doxid-structsls__inform__type_solver>`[21];
+		struct :ref:`sls_time_type<doxid-structsls__time__type>` :ref:`time<doxid-structsls__inform__type_time>`;
+		struct :ref:`sils_ainfo_type<doxid-structsils__ainfo__type>` :ref:`sils_ainfo<doxid-structsls__inform__type_sils_ainfo>`;
+		struct :ref:`sils_finfo_type<doxid-structsils__finfo__type>` :ref:`sils_finfo<doxid-structsls__inform__type_sils_finfo>`;
+		struct :ref:`sils_sinfo_type<doxid-structsils__sinfo__type>` :ref:`sils_sinfo<doxid-structsls__inform__type_sils_sinfo>`;
+		struct ma57_ainfo :ref:`ma57_ainfo<doxid-structsls__inform__type_ma57_ainfo>`;
+		struct ma57_finfo :ref:`ma57_finfo<doxid-structsls__inform__type_ma57_finfo>`;
+		struct ma57_sinfo :ref:`ma57_sinfo<doxid-structsls__inform__type_ma57_sinfo>`;
+		struct ma77_info :ref:`ma77_info<doxid-structsls__inform__type_ma77_info>`;
+		struct ma86_info :ref:`ma86_info<doxid-structsls__inform__type_ma86_info>`;
+		struct ma87_info :ref:`ma87_info<doxid-structsls__inform__type_ma87_info>`;
+		struct ma97_info :ref:`ma97_info<doxid-structsls__inform__type_ma97_info>`;
+		struct spral_ssids_inform :ref:`ssids_inform<doxid-structsls__inform__type_ssids_inform>`;
 		struct spral_ssids_inform :ref:`nodend_inform<doxid-structsls__inform__type_nodend_inform>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mc61_info<doxid-structsls__inform__type_1ad29411cd0e18c59e43b474314a2adbe8>`[10];
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mc61_rinfo<doxid-structsls__inform__type_1a6966776cf11a3b9c447f7a1c9621152f>`[15];
-		struct mc64_info :ref:`mc64_info<doxid-structsls__inform__type_1a4b3b5b1c3585cea6e9006dcb9f34182c>`;
-		struct mc68_info :ref:`mc68_info<doxid-structsls__inform__type_1a47a1ee8b0f64c664c47bbd23bacb4af6>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mc77_info<doxid-structsls__inform__type_1ac143b7dbde27738930a06678d7a84135>`[10];
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mc77_rinfo<doxid-structsls__inform__type_1a02ac14c9a03a409b25bf374862f17166>`[10];
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mumps_error<doxid-structsls__inform__type_1aabe7dce2361151a723670484e385d4e2>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mumps_info<doxid-structsls__inform__type_1a1e9b1230547090c9405ed025acddf937>`[80];
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mumps_rinfo<doxid-structsls__inform__type_1a0e35523297d295b968ff61aff25c6279>`[40];
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pardiso_error<doxid-structsls__inform__type_1af4edf991dc128b2aa6bb7c5909bce7bb>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pardiso_IPARM<doxid-structsls__inform__type_1a94bd760acd69f7e452771c96f9a6d83b>`[64];
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`pardiso_DPARM<doxid-structsls__inform__type_1ad94ecfb58762fd0f79d1dcc51c1a6c13>`[64];
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mkl_pardiso_error<doxid-structsls__inform__type_1a0af76cb45fcf59f7749bf196c1f848f1>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mkl_pardiso_IPARM<doxid-structsls__inform__type_1aeaa2b4360e0796404f57ede659a0dc5f>`[64];
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pastix_info<doxid-structsls__inform__type_1a8317c10c22116e0cf019d281a7f07595>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`wsmp_error<doxid-structsls__inform__type_1a12ce464e4b92fb3ce21377773cf801ef>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`wsmp_iparm<doxid-structsls__inform__type_1a9dafb01a424625a16f75ba37f96e6067>`[64];
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`wsmp_dparm<doxid-structsls__inform__type_1acec90b9af7496ccc0a7fc9fc0dbfb49c>`[64];
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mpi_ierr<doxid-structsls__inform__type_1ab885ec4629b2033ab17e5ca273739488>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`lapack_error<doxid-structsls__inform__type_1a0319e2c4ee2d95fe244f92d276038bd4>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mc61_info<doxid-structsls__inform__type_mc61_info>`[10];
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mc61_rinfo<doxid-structsls__inform__type_mc61_rinfo>`[15];
+		struct mc64_info :ref:`mc64_info<doxid-structsls__inform__type_mc64_info>`;
+		struct mc68_info :ref:`mc68_info<doxid-structsls__inform__type_mc68_info>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mc77_info<doxid-structsls__inform__type_mc77_info>`[10];
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mc77_rinfo<doxid-structsls__inform__type_mc77_rinfo>`[10];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mumps_error<doxid-structsls__inform__type_mumps_error>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mumps_info<doxid-structsls__inform__type_mumps_info>`[80];
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mumps_rinfo<doxid-structsls__inform__type_mumps_rinfo>`[40];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pardiso_error<doxid-structsls__inform__type_pardiso_error>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pardiso_IPARM<doxid-structsls__inform__type_pardiso_IPARM>`[64];
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`pardiso_DPARM<doxid-structsls__inform__type_pardiso_DPARM>`[64];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mkl_pardiso_error<doxid-structsls__inform__type_mkl_pardiso_error>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mkl_pardiso_IPARM<doxid-structsls__inform__type_mkl_pardiso_IPARM>`[64];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pastix_info<doxid-structsls__inform__type_pastix_info>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`wsmp_error<doxid-structsls__inform__type_wsmp_error>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`wsmp_iparm<doxid-structsls__inform__type_wsmp_iparm>`[64];
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`wsmp_dparm<doxid-structsls__inform__type_wsmp_dparm>`[64];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mpi_ierr<doxid-structsls__inform__type_mpi_ierr>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`lapack_error<doxid-structsls__inform__type_lapack_error>`;
 	};
 .. _details-structsls__inform__type:
 
@@ -105,7 +105,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structsls__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structsls__inform__type_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -115,7 +115,7 @@ components
 reported return status: 0 success -1 allocation error -2 deallocation error -3 matrix data faulty (.n < 1, .ne < 0) -20 alegedly +ve definite matrix is not -29 unavailable option -31 input order is not a permutation or is faulty in some other way -32 > control.max_integer_factor_size integer space required for factor -33 > control.max_real_factor_size real space required for factors -40 not possible to alter the diagonals -41 no access to permutation or pivot sequence used -42 no access to diagonal perturbations -43 direct-access file error -50 solver-specific error; see the solver's info parameter -101 unknown solver
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structsls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structsls__inform__type_alloc_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -125,7 +125,7 @@ reported return status: 0 success -1 allocation error -2 deallocation error -3 m
 STAT value after allocate failure.
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structsls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structsls__inform__type_bad_alloc:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -135,7 +135,7 @@ STAT value after allocate failure.
 name of array which provoked an allocate failure
 
 .. index:: pair: variable; more_info
-.. _doxid-structsls__inform__type_1a24d9e61a5ee1839c2fda4f8d5cff0cb7:
+.. _doxid-structsls__inform__type_more_info:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -145,7 +145,7 @@ name of array which provoked an allocate failure
 further information on failure
 
 .. index:: pair: variable; entries
-.. _doxid-structsls__inform__type_1a05de9d2e9fdfcc8bf932ca13b95ede29:
+.. _doxid-structsls__inform__type_entries:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -155,7 +155,7 @@ further information on failure
 number of entries
 
 .. index:: pair: variable; out_of_range
-.. _doxid-structsls__inform__type_1a8daa2a776cae6116e9f14e2b009430a5:
+.. _doxid-structsls__inform__type_out_of_range:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -165,7 +165,7 @@ number of entries
 number of indices out-of-range
 
 .. index:: pair: variable; duplicates
-.. _doxid-structsls__inform__type_1a4266bf48aafe2914b08e60d6ef9cf446:
+.. _doxid-structsls__inform__type_duplicates:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -175,7 +175,7 @@ number of indices out-of-range
 number of duplicates
 
 .. index:: pair: variable; upper
-.. _doxid-structsls__inform__type_1a0a1a19aadb8cf4f2b05d37a8798b667c:
+.. _doxid-structsls__inform__type_upper:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -185,7 +185,7 @@ number of duplicates
 number of entries from the strict upper triangle
 
 .. index:: pair: variable; missing_diagonals
-.. _doxid-structsls__inform__type_1a8d33160feb6e388439a1d38641b00b3d:
+.. _doxid-structsls__inform__type_missing_diagonals:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -195,7 +195,7 @@ number of entries from the strict upper triangle
 number of missing diagonal entries for an allegedly-definite matrix
 
 .. index:: pair: variable; max_depth_assembly_tree
-.. _doxid-structsls__inform__type_1a6d6dc5b49ec465fb45c83d1a0de40e02:
+.. _doxid-structsls__inform__type_max_depth_assembly_tree:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -205,7 +205,7 @@ number of missing diagonal entries for an allegedly-definite matrix
 maximum depth of the assembly tree
 
 .. index:: pair: variable; nodes_assembly_tree
-.. _doxid-structsls__inform__type_1ac0b9b02071c45a104c814d8664d56a0c:
+.. _doxid-structsls__inform__type_nodes_assembly_tree:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -215,7 +215,7 @@ maximum depth of the assembly tree
 nodes in the assembly tree (= number of elimination steps)
 
 .. index:: pair: variable; real_size_desirable
-.. _doxid-structsls__inform__type_1a578f47757db464cbf8ed9b83bc0fe19b:
+.. _doxid-structsls__inform__type_real_size_desirable:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -225,7 +225,7 @@ nodes in the assembly tree (= number of elimination steps)
 desirable or actual size for real array for the factors and other data
 
 .. index:: pair: variable; integer_size_desirable
-.. _doxid-structsls__inform__type_1a8dd3cb87057fef593aa3a13a5b537e03:
+.. _doxid-structsls__inform__type_integer_size_desirable:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -235,7 +235,7 @@ desirable or actual size for real array for the factors and other data
 desirable or actual size for integer array for the factors and other dat
 
 .. index:: pair: variable; real_size_necessary
-.. _doxid-structsls__inform__type_1a81e92687a9d89d7449fe0c7e108c99e5:
+.. _doxid-structsls__inform__type_real_size_necessary:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -245,7 +245,7 @@ desirable or actual size for integer array for the factors and other dat
 necessary size for real array for the factors and other data
 
 .. index:: pair: variable; integer_size_necessary
-.. _doxid-structsls__inform__type_1a8ac7a09dd6adc2d2a535e7a14a43c8d3:
+.. _doxid-structsls__inform__type_integer_size_necessary:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -255,7 +255,7 @@ necessary size for real array for the factors and other data
 necessary size for integer array for the factors and other data
 
 .. index:: pair: variable; real_size_factors
-.. _doxid-structsls__inform__type_1a2fb34bb982d673eade451dd5044b5ed0:
+.. _doxid-structsls__inform__type_real_size_factors:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -265,7 +265,7 @@ necessary size for integer array for the factors and other data
 predicted or actual number of reals to hold factors
 
 .. index:: pair: variable; integer_size_factors
-.. _doxid-structsls__inform__type_1aa0143d6a3ae9a2a606b8631ad3da7610:
+.. _doxid-structsls__inform__type_integer_size_factors:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -275,7 +275,7 @@ predicted or actual number of reals to hold factors
 predicted or actual number of integers to hold factors
 
 .. index:: pair: variable; entries_in_factors
-.. _doxid-structsls__inform__type_1ab741fb84b79d2b013a84d71932452681:
+.. _doxid-structsls__inform__type_entries_in_factors:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -285,7 +285,7 @@ predicted or actual number of integers to hold factors
 number of entries in factors
 
 .. index:: pair: variable; max_task_pool_size
-.. _doxid-structsls__inform__type_1adbfc63b37c8305f76154af9ab21a73e1:
+.. _doxid-structsls__inform__type_max_task_pool_size:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -295,7 +295,7 @@ number of entries in factors
 maximum number of tasks in the factorization task pool
 
 .. index:: pair: variable; max_front_size
-.. _doxid-structsls__inform__type_1a854d688fc9f75d1011046b68798c3ec3:
+.. _doxid-structsls__inform__type_max_front_size:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -305,7 +305,7 @@ maximum number of tasks in the factorization task pool
 forecast or actual size of largest front
 
 .. index:: pair: variable; compresses_real
-.. _doxid-structsls__inform__type_1a08f180b15976fad5be1793aeadd89d1d:
+.. _doxid-structsls__inform__type_compresses_real:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -315,7 +315,7 @@ forecast or actual size of largest front
 number of compresses of real data
 
 .. index:: pair: variable; compresses_integer
-.. _doxid-structsls__inform__type_1ae278663a9e98a86e0947f89a75549d51:
+.. _doxid-structsls__inform__type_compresses_integer:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -325,7 +325,7 @@ number of compresses of real data
 number of compresses of integer data
 
 .. index:: pair: variable; two_by_two_pivots
-.. _doxid-structsls__inform__type_1af922a8827cb6bb34ae8b7ea113eb88d9:
+.. _doxid-structsls__inform__type_two_by_two_pivots:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -335,7 +335,7 @@ number of compresses of integer data
 number of 2x2 pivots
 
 .. index:: pair: variable; semi_bandwidth
-.. _doxid-structsls__inform__type_1abf884043df0f9c0d95bcff6fae1bf9bb:
+.. _doxid-structsls__inform__type_semi_bandwidth:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -345,7 +345,7 @@ number of 2x2 pivots
 semi-bandwidth of matrix following bandwidth reduction
 
 .. index:: pair: variable; delayed_pivots
-.. _doxid-structsls__inform__type_1aceacc7f8144f94b9ff16506b1bc581e3:
+.. _doxid-structsls__inform__type_delayed_pivots:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -355,7 +355,7 @@ semi-bandwidth of matrix following bandwidth reduction
 number of delayed pivots (total)
 
 .. index:: pair: variable; pivot_sign_changes
-.. _doxid-structsls__inform__type_1ac41ffa6bf566e674ac90de4178c81477:
+.. _doxid-structsls__inform__type_pivot_sign_changes:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -365,7 +365,7 @@ number of delayed pivots (total)
 number of pivot sign changes if no pivoting is used successfully
 
 .. index:: pair: variable; static_pivots
-.. _doxid-structsls__inform__type_1ab7569a21ad5852708f0a43b7c269ac0d:
+.. _doxid-structsls__inform__type_static_pivots:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -375,7 +375,7 @@ number of pivot sign changes if no pivoting is used successfully
 number of static pivots chosen
 
 .. index:: pair: variable; first_modified_pivot
-.. _doxid-structsls__inform__type_1a735be3d14946330c6c7b451743b86ae9:
+.. _doxid-structsls__inform__type_first_modified_pivot:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -385,7 +385,7 @@ number of static pivots chosen
 first pivot modification when static pivoting
 
 .. index:: pair: variable; rank
-.. _doxid-structsls__inform__type_1a6cfd95afd0afebd625b889fb6e58371c:
+.. _doxid-structsls__inform__type_rank:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -395,7 +395,7 @@ first pivot modification when static pivoting
 estimated rank of the matrix
 
 .. index:: pair: variable; negative_eigenvalues
-.. _doxid-structsls__inform__type_1ad9bf58dadb2657173be0588308d100b3:
+.. _doxid-structsls__inform__type_negative_eigenvalues:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -405,7 +405,7 @@ estimated rank of the matrix
 number of negative eigenvalues
 
 .. index:: pair: variable; num_zero
-.. _doxid-structsls__inform__type_1a9e21341bbd4963be2eaae5a0f8851648:
+.. _doxid-structsls__inform__type_num_zero:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -415,7 +415,7 @@ number of negative eigenvalues
 number of pivots that are considered zero (and ignored)
 
 .. index:: pair: variable; iterative_refinements
-.. _doxid-structsls__inform__type_1a22c83a8ec8964a169bdd9d0cdf196cf1:
+.. _doxid-structsls__inform__type_iterative_refinements:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -425,7 +425,7 @@ number of pivots that are considered zero (and ignored)
 number of iterative refinements performed
 
 .. index:: pair: variable; flops_assembly
-.. _doxid-structsls__inform__type_1a24b90be205ee95fe42ce3dc31d77ccfa:
+.. _doxid-structsls__inform__type_flops_assembly:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -435,7 +435,7 @@ number of iterative refinements performed
 anticipated or actual number of floating-point operations in assembly
 
 .. index:: pair: variable; flops_elimination
-.. _doxid-structsls__inform__type_1a9dde906a7f13e691e9a885e827179c8d:
+.. _doxid-structsls__inform__type_flops_elimination:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -445,7 +445,7 @@ anticipated or actual number of floating-point operations in assembly
 anticipated or actual number of floating-point operations in elimination
 
 .. index:: pair: variable; flops_blas
-.. _doxid-structsls__inform__type_1a34f890f9248fc1f05ba5fae571990d6d:
+.. _doxid-structsls__inform__type_flops_blas:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -455,7 +455,7 @@ anticipated or actual number of floating-point operations in elimination
 additional number of floating-point operations for BLAS
 
 .. index:: pair: variable; largest_modified_pivot
-.. _doxid-structsls__inform__type_1a62d158ab4a7acedf5d7a06841765ec49:
+.. _doxid-structsls__inform__type_largest_modified_pivot:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -465,7 +465,7 @@ additional number of floating-point operations for BLAS
 largest diagonal modification when static pivoting or ensuring definiten
 
 .. index:: pair: variable; minimum_scaling_factor
-.. _doxid-structsls__inform__type_1a250fb521c37638fcca8c2867ff43b576:
+.. _doxid-structsls__inform__type_minimum_scaling_factor:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -475,7 +475,7 @@ largest diagonal modification when static pivoting or ensuring definiten
 minimum scaling factor
 
 .. index:: pair: variable; maximum_scaling_factor
-.. _doxid-structsls__inform__type_1ad8f20093907b8b8d244b4e37a13143cc:
+.. _doxid-structsls__inform__type_maximum_scaling_factor:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -485,7 +485,7 @@ minimum scaling factor
 maximum scaling factor
 
 .. index:: pair: variable; condition_number_1
-.. _doxid-structsls__inform__type_1a198ba7b98aa903f1ab5b65745c5289ea:
+.. _doxid-structsls__inform__type_condition_number_1:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -495,7 +495,7 @@ maximum scaling factor
 esimate of the condition number of the matrix (category 1 equations)
 
 .. index:: pair: variable; condition_number_2
-.. _doxid-structsls__inform__type_1a9ffbf5df4bb4e49067cf2813ad6a016e:
+.. _doxid-structsls__inform__type_condition_number_2:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -505,7 +505,7 @@ esimate of the condition number of the matrix (category 1 equations)
 estimate of the condition number of the matrix (category 2 equations)
 
 .. index:: pair: variable; backward_error_1
-.. _doxid-structsls__inform__type_1a83c0d093c0b2b8636f686ab30acfb5a3:
+.. _doxid-structsls__inform__type_backward_error_1:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -515,7 +515,7 @@ estimate of the condition number of the matrix (category 2 equations)
 esimate of the backward error (category 1 equations)
 
 .. index:: pair: variable; backward_error_2
-.. _doxid-structsls__inform__type_1a6fab94020d1a5e4b25a5006103a231cf:
+.. _doxid-structsls__inform__type_backward_error_2:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -525,7 +525,7 @@ esimate of the backward error (category 1 equations)
 esimate of the backward error (category 2 equations)
 
 .. index:: pair: variable; forward_error
-.. _doxid-structsls__inform__type_1ab63fd70aff6616a414f16af190bd4105:
+.. _doxid-structsls__inform__type_forward_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -535,7 +535,7 @@ esimate of the backward error (category 2 equations)
 estimate of forward error
 
 .. index:: pair: variable; alternative
-.. _doxid-structsls__inform__type_1a48c07c7da1803ed8af25ca949f4854b5:
+.. _doxid-structsls__inform__type_alternative:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -545,7 +545,7 @@ estimate of forward error
 has an "alternative" y: A y = 0 and yT b > 0 been found when trying to solve A x = b ?
 
 .. index:: pair: variable; solver
-.. _doxid-structsls__inform__type_1af335c33211ea78f2d5b7314d7b1c210d:
+.. _doxid-structsls__inform__type_solver:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -555,7 +555,7 @@ has an "alternative" y: A y = 0 and yT b > 0 been found when trying to solve A x
 name of external solver used to factorize and solve
 
 .. index:: pair: variable; time
-.. _doxid-structsls__inform__type_1aeb306e2c697a3b16156c7bbf95933d04:
+.. _doxid-structsls__inform__type_time:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -565,7 +565,7 @@ name of external solver used to factorize and solve
 timings (see above)
 
 .. index:: pair: variable; sils_ainfo
-.. _doxid-structsls__inform__type_1a6490df077bf8d853c6ce6242ef95ef3f:
+.. _doxid-structsls__inform__type_sils_ainfo:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -575,7 +575,7 @@ timings (see above)
 the output structure from sils
 
 .. index:: pair: variable; sils_finfo
-.. _doxid-structsls__inform__type_1aaca9130b6f951c48e420ef2d880e2e6a:
+.. _doxid-structsls__inform__type_sils_finfo:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -585,7 +585,7 @@ the output structure from sils
 see sils_ainfo
 
 .. index:: pair: variable; sils_sinfo
-.. _doxid-structsls__inform__type_1a02b2db43c1e7bc2d42a9f584433dbe01:
+.. _doxid-structsls__inform__type_sils_sinfo:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -595,7 +595,7 @@ see sils_ainfo
 see sils_ainfo
 
 .. index:: pair: variable; ma57_ainfo
-.. _doxid-structsls__inform__type_1aa7061ae61ef272126c2d93c0bb7c3e92:
+.. _doxid-structsls__inform__type_ma57_ainfo:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -605,7 +605,7 @@ see sils_ainfo
 the output structure from ma57
 
 .. index:: pair: variable; ma57_finfo
-.. _doxid-structsls__inform__type_1ae25ef469002f1c7bdbfcb22780e58d6f:
+.. _doxid-structsls__inform__type_ma57_finfo:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -615,7 +615,7 @@ the output structure from ma57
 see ma57_ainfo
 
 .. index:: pair: variable; ma57_sinfo
-.. _doxid-structsls__inform__type_1a87ebdff77dff15b8a72f8fb8528495f8:
+.. _doxid-structsls__inform__type_ma57_sinfo:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -625,7 +625,7 @@ see ma57_ainfo
 see ma57_ainfo
 
 .. index:: pair: variable; ma77_info
-.. _doxid-structsls__inform__type_1a296c08f6844db0dd56124633c5bead05:
+.. _doxid-structsls__inform__type_ma77_info:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -635,7 +635,7 @@ see ma57_ainfo
 the output structure from ma77
 
 .. index:: pair: variable; ma86_info
-.. _doxid-structsls__inform__type_1a0e8dbbed5f52f17a0c85cc24c1d4133a:
+.. _doxid-structsls__inform__type_ma86_info:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -645,7 +645,7 @@ the output structure from ma77
 the output structure from ma86
 
 .. index:: pair: variable; ma87_info
-.. _doxid-structsls__inform__type_1a5a0d5c7fc9b533354415c7f26c5ca0fa:
+.. _doxid-structsls__inform__type_ma87_info:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -655,7 +655,7 @@ the output structure from ma86
 the output structure from ma87
 
 .. index:: pair: variable; ma97_info
-.. _doxid-structsls__inform__type_1a97187c145bd03b5812c1b08cfd0c1fdd:
+.. _doxid-structsls__inform__type_ma97_info:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -665,7 +665,7 @@ the output structure from ma87
 the output structure from ma97
 
 .. index:: pair: variable; ssids_inform
-.. _doxid-structsls__inform__type_1a1460057cd78a3850b14e78583b051054:
+.. _doxid-structsls__inform__type_ssids_inform:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -685,7 +685,7 @@ the output structure from ssids
 the output structure from nodend
 
 .. index:: pair: variable; mc61_info
-.. _doxid-structsls__inform__type_1ad29411cd0e18c59e43b474314a2adbe8:
+.. _doxid-structsls__inform__type_mc61_info:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -695,7 +695,7 @@ the output structure from nodend
 the integer and real output arrays from mc61
 
 .. index:: pair: variable; mc61_rinfo
-.. _doxid-structsls__inform__type_1a6966776cf11a3b9c447f7a1c9621152f:
+.. _doxid-structsls__inform__type_mc61_rinfo:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -705,7 +705,7 @@ the integer and real output arrays from mc61
 see mc61_info
 
 .. index:: pair: variable; mc64_info
-.. _doxid-structsls__inform__type_1a4b3b5b1c3585cea6e9006dcb9f34182c:
+.. _doxid-structsls__inform__type_mc64_info:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -715,7 +715,7 @@ see mc61_info
 the output structure from mc64
 
 .. index:: pair: variable; mc68_info
-.. _doxid-structsls__inform__type_1a47a1ee8b0f64c664c47bbd23bacb4af6:
+.. _doxid-structsls__inform__type_mc68_info:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -725,7 +725,7 @@ the output structure from mc64
 the output structure from mc68
 
 .. index:: pair: variable; mc77_info
-.. _doxid-structsls__inform__type_1ac143b7dbde27738930a06678d7a84135:
+.. _doxid-structsls__inform__type_mc77_info:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -735,7 +735,7 @@ the output structure from mc68
 the integer output array from mc77
 
 .. index:: pair: variable; mc77_rinfo
-.. _doxid-structsls__inform__type_1a02ac14c9a03a409b25bf374862f17166:
+.. _doxid-structsls__inform__type_mc77_rinfo:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -745,7 +745,7 @@ the integer output array from mc77
 the real output status from mc77
 
 .. index:: pair: variable; mumps_error
-.. _doxid-structsls__inform__type_1aabe7dce2361151a723670484e385d4e2:
+.. _doxid-structsls__inform__type_mumps_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -755,7 +755,7 @@ the real output status from mc77
 the output scalars and arrays from mumps
 
 .. index:: pair: variable; mumps_info
-.. _doxid-structsls__inform__type_1a1e9b1230547090c9405ed025acddf937:
+.. _doxid-structsls__inform__type_mumps_info:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -765,7 +765,7 @@ the output scalars and arrays from mumps
 see mumps_error
 
 .. index:: pair: variable; mumps_rinfo
-.. _doxid-structsls__inform__type_1a0e35523297d295b968ff61aff25c6279:
+.. _doxid-structsls__inform__type_mumps_rinfo:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -775,7 +775,7 @@ see mumps_error
 see mumps_error
 
 .. index:: pair: variable; pardiso_error
-.. _doxid-structsls__inform__type_1af4edf991dc128b2aa6bb7c5909bce7bb:
+.. _doxid-structsls__inform__type_pardiso_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -785,7 +785,7 @@ see mumps_error
 the output scalars and arrays from pardiso
 
 .. index:: pair: variable; pardiso_IPARM
-.. _doxid-structsls__inform__type_1a94bd760acd69f7e452771c96f9a6d83b:
+.. _doxid-structsls__inform__type_pardiso_IPARM:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -795,7 +795,7 @@ the output scalars and arrays from pardiso
 see pardiso_error
 
 .. index:: pair: variable; pardiso_DPARM
-.. _doxid-structsls__inform__type_1ad94ecfb58762fd0f79d1dcc51c1a6c13:
+.. _doxid-structsls__inform__type_pardiso_DPARM:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -805,7 +805,7 @@ see pardiso_error
 see pardiso_error
 
 .. index:: pair: variable; mkl_pardiso_error
-.. _doxid-structsls__inform__type_1a0af76cb45fcf59f7749bf196c1f848f1:
+.. _doxid-structsls__inform__type_mkl_pardiso_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -815,7 +815,7 @@ see pardiso_error
 the output scalars and arrays from mkl_pardiso
 
 .. index:: pair: variable; mkl_pardiso_IPARM
-.. _doxid-structsls__inform__type_1aeaa2b4360e0796404f57ede659a0dc5f:
+.. _doxid-structsls__inform__type_mkl_pardiso_IPARM:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -825,7 +825,7 @@ the output scalars and arrays from mkl_pardiso
 see mkl_pardiso_error
 
 .. index:: pair: variable; pastix_info
-.. _doxid-structsls__inform__type_1a8317c10c22116e0cf019d281a7f07595:
+.. _doxid-structsls__inform__type_pastix_info:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -835,7 +835,7 @@ see mkl_pardiso_error
 the output flag from pastix
 
 .. index:: pair: variable; wsmp_error
-.. _doxid-structsls__inform__type_1a12ce464e4b92fb3ce21377773cf801ef:
+.. _doxid-structsls__inform__type_wsmp_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -845,7 +845,7 @@ the output flag from pastix
 the output scalars and arrays from wsmp
 
 .. index:: pair: variable; wsmp_iparm
-.. _doxid-structsls__inform__type_1a9dafb01a424625a16f75ba37f96e6067:
+.. _doxid-structsls__inform__type_wsmp_iparm:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -855,7 +855,7 @@ the output scalars and arrays from wsmp
 see wsmp_error
 
 .. index:: pair: variable; wsmp_dparm
-.. _doxid-structsls__inform__type_1acec90b9af7496ccc0a7fc9fc0dbfb49c:
+.. _doxid-structsls__inform__type_wsmp_dparm:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -865,7 +865,7 @@ see wsmp_error
 see wsmp_error
 
 .. index:: pair: variable; mpi_ierr
-.. _doxid-structsls__inform__type_1ab885ec4629b2033ab17e5ca273739488:
+.. _doxid-structsls__inform__type_mpi_ierr:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -875,7 +875,7 @@ see wsmp_error
 the output flag from MPI routines
 
 .. index:: pair: variable; lapack_error
-.. _doxid-structsls__inform__type_1a0319e2c4ee2d95fe244f92d276038bd4:
+.. _doxid-structsls__inform__type_lapack_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

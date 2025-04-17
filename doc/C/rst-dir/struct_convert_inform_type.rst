@@ -15,11 +15,11 @@ convert_inform_type structure
 	struct convert_inform_type {
 		// fields
 	
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structconvert__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structconvert__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`duplicates<doxid-structconvert__inform__type_1a4266bf48aafe2914b08e60d6ef9cf446>`;
-		char :ref:`bad_alloc<doxid-structconvert__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		struct :ref:`convert_time_type<doxid-structconvert__time__type>` :ref:`time<doxid-structconvert__inform__type_1a9d7e0c775ea50ee659169c07a40bb27d>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structconvert__inform__type_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structconvert__inform__type_alloc_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`duplicates<doxid-structconvert__inform__type_duplicates>`;
+		char :ref:`bad_alloc<doxid-structconvert__inform__type_bad_alloc>`[81];
+		struct :ref:`convert_time_type<doxid-structconvert__time__type>` :ref:`time<doxid-structconvert__inform__type_time>`;
 	};
 .. _details-structconvert__inform__type:
 
@@ -32,7 +32,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structconvert__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structconvert__inform__type_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -86,7 +86,7 @@ the return status. Possible values are:
   a requested output format is not recognised.
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structconvert__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structconvert__inform__type_alloc_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -96,7 +96,7 @@ the return status. Possible values are:
 the status of the last attempted allocation/deallocation.
 
 .. index:: pair: variable; duplicates
-.. _doxid-structconvert__inform__type_1a4266bf48aafe2914b08e60d6ef9cf446:
+.. _doxid-structconvert__inform__type_duplicates:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -106,7 +106,7 @@ the status of the last attempted allocation/deallocation.
 the number of duplicates found (-ve = not checked).
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structconvert__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structconvert__inform__type_bad_alloc:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -116,7 +116,7 @@ the number of duplicates found (-ve = not checked).
 the name of the array for which an allocation/deallocation error occurred.
 
 .. index:: pair: variable; time
-.. _doxid-structconvert__inform__type_1a9d7e0c775ea50ee659169c07a40bb27d:
+.. _doxid-structconvert__inform__type_time:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

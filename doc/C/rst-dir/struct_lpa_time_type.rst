@@ -16,10 +16,10 @@ lpa_time_type structure
 	struct lpa_time_type {
 		// components
 	
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structlpa__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`preprocess<doxid-structlpa__time__type_1a811a9183909ac7697f36d0ea8987715c>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structlpa__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_preprocess<doxid-structlpa__time__type_1a0c3b390c67037ef2fe8b4cf29e079e4e>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structlpa__time__type_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`preprocess<doxid-structlpa__time__type_preprocess>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structlpa__time__type_clock_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_preprocess<doxid-structlpa__time__type_clock_preprocess>`;
 	};
 .. _details-structlpa__time__type:
 
@@ -32,7 +32,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; total
-.. _doxid-structlpa__time__type_1ad3803b3bb79c5c74d9300520fbe733f4:
+.. _doxid-structlpa__time__type_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -42,7 +42,7 @@ components
 the total CPU time spent in the package
 
 .. index:: pair: variable; preprocess
-.. _doxid-structlpa__time__type_1a811a9183909ac7697f36d0ea8987715c:
+.. _doxid-structlpa__time__type_preprocess:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -52,7 +52,7 @@ the total CPU time spent in the package
 the CPU time spent preprocessing the problem
 
 .. index:: pair: variable; clock_total
-.. _doxid-structlpa__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
+.. _doxid-structlpa__time__type_clock_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -62,7 +62,7 @@ the CPU time spent preprocessing the problem
 the total clock time spent in the package
 
 .. index:: pair: variable; clock_preprocess
-.. _doxid-structlpa__time__type_1a0c3b390c67037ef2fe8b4cf29e079e4e:
+.. _doxid-structlpa__time__type_clock_preprocess:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

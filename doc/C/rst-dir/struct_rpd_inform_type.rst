@@ -15,12 +15,12 @@ rpd_inform_type structure
 	struct rpd_inform_type {
 		// fields
 	
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structrpd__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structrpd__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structrpd__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`io_status<doxid-structrpd__inform__type_1a0ae587ad93ebdbad173f9e8475f936b9>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`line<doxid-structrpd__inform__type_1a41ebd28ef1d7c6ade45642cb6acc1039>`;
-		char :ref:`p_type<doxid-structrpd__inform__type_1a1ed26df99ee0d5be3db580aff3ab5397>`[4];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structrpd__inform__type_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structrpd__inform__type_alloc_status>`;
+		char :ref:`bad_alloc<doxid-structrpd__inform__type_bad_alloc>`[81];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`io_status<doxid-structrpd__inform__type_io_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`line<doxid-structrpd__inform__type_line>`;
+		char :ref:`p_type<doxid-structrpd__inform__type_p_type>`[4];
 	};
 .. _details-structrpd__inform__type:
 
@@ -33,7 +33,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structrpd__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structrpd__inform__type_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -73,7 +73,7 @@ return status. Possible values are:
   The problem type was not recognised.
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structrpd__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structrpd__inform__type_alloc_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -83,7 +83,7 @@ return status. Possible values are:
 the status of the last attempted allocation or deallocation
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structrpd__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structrpd__inform__type_bad_alloc:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -93,7 +93,7 @@ the status of the last attempted allocation or deallocation
 the name of the array for which an allocation or deallocation error occurred
 
 .. index:: pair: variable; io_status
-.. _doxid-structrpd__inform__type_1a0ae587ad93ebdbad173f9e8475f936b9:
+.. _doxid-structrpd__inform__type_io_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -103,7 +103,7 @@ the name of the array for which an allocation or deallocation error occurred
 status from last read attempt
 
 .. index:: pair: variable; line
-.. _doxid-structrpd__inform__type_1a41ebd28ef1d7c6ade45642cb6acc1039:
+.. _doxid-structrpd__inform__type_line:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -113,7 +113,7 @@ status from last read attempt
 number of last line read from i/o file
 
 .. index:: pair: variable; p_type
-.. _doxid-structrpd__inform__type_1a1ed26df99ee0d5be3db580aff3ab5397:
+.. _doxid-structrpd__inform__type_p_type:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

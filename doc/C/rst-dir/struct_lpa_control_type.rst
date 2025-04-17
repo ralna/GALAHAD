@@ -16,40 +16,40 @@ lpa_control_type structure
 	struct lpa_control_type {
 		// components
 	
-		bool :ref:`f_indexing<doxid-structlpa__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structlpa__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structlpa__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structlpa__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`start_print<doxid-structlpa__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`stop_print<doxid-structlpa__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`maxit<doxid-structlpa__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_iterative_refinements<doxid-structlpa__control__type_1ab044fd598767830ddc06560a91b80936>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`min_real_factor_size<doxid-structlpa__control__type_1a60c3d0376bbe5c06260509a9be31c562>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`min_integer_factor_size<doxid-structlpa__control__type_1addaddc306c33f5d7e6ebf7eeeab2612e>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`random_number_seed<doxid-structlpa__control__type_1aaaf923bc58fa592eb0fc15779e087eeb>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sif_file_device<doxid-structlpa__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`qplib_file_device<doxid-structlpa__control__type_1a580c343e54a25a2d687782410c9b6917>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infinity<doxid-structlpa__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`tol_data<doxid-structlpa__control__type_1a4464f8bdf548161e0f111713567b93d7>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`feas_tol<doxid-structlpa__control__type_1aa636051ebb14fdebe323a3843e7e24e3>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`relative_pivot_tolerance<doxid-structlpa__control__type_1a65344e4192516e9b621cc7416f09045c>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`growth_limit<doxid-structlpa__control__type_1a8652f551eab44da378ee44afde39bccb>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`zero_tolerance<doxid-structlpa__control__type_1afb83ea8401da6498362914aa88ae823f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`change_tolerance<doxid-structlpa__control__type_1ad16b465967317e22e8290067805720f7>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`identical_bounds_tol<doxid-structlpa__control__type_1abc74ac9bbf6375075f8943aac6ee09e4>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`cpu_time_limit<doxid-structlpa__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_time_limit<doxid-structlpa__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		bool :ref:`scale<doxid-structlpa__control__type_1aff7a60d3f21b50f4ad18e40d99d33a61>`;
-		bool :ref:`dual<doxid-structlpa__control__type_1a7043f852111a1d50ac13fc7c35a6c4f3>`;
-		bool :ref:`warm_start<doxid-structlpa__control__type_1a510fc17653a2903edbfeabf9148ff211>`;
-		bool :ref:`steepest_edge<doxid-structlpa__control__type_1ac4f367280fb3162d00e79beba8cb7d91>`;
-		bool :ref:`space_critical<doxid-structlpa__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		bool :ref:`deallocate_error_fatal<doxid-structlpa__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		bool :ref:`generate_sif_file<doxid-structlpa__control__type_1aa75b3a16d146c0d7ad57bf9817033843>`;
-		bool :ref:`generate_qplib_file<doxid-structlpa__control__type_1ad226b26090e539cf47228ba5ec7dc08d>`;
-		char :ref:`sif_file_name<doxid-structlpa__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
-		char :ref:`qplib_file_name<doxid-structlpa__control__type_1a3d36354e9f30d642f8b081ba85d777d3>`[31];
-		char :ref:`prefix<doxid-structlpa__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
+		bool :ref:`f_indexing<doxid-structlpa__control__type_f_indexing>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structlpa__control__type_error>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structlpa__control__type_out>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structlpa__control__type_print_level>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`start_print<doxid-structlpa__control__type_start_print>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`stop_print<doxid-structlpa__control__type_stop_print>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`maxit<doxid-structlpa__control__type_maxit>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_iterative_refinements<doxid-structlpa__control__type_max_iterative_refinements>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`min_real_factor_size<doxid-structlpa__control__type_min_real_factor_size>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`min_integer_factor_size<doxid-structlpa__control__type_min_integer_factor_size>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`random_number_seed<doxid-structlpa__control__type_random_number_seed>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sif_file_device<doxid-structlpa__control__type_sif_file_device>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`qplib_file_device<doxid-structlpa__control__type_qplib_file_device>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infinity<doxid-structlpa__control__type_infinity>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`tol_data<doxid-structlpa__control__type_tol_data>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`feas_tol<doxid-structlpa__control__type_feas_tol>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`relative_pivot_tolerance<doxid-structlpa__control__type_relative_pivot_tolerance>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`growth_limit<doxid-structlpa__control__type_growth_limit>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`zero_tolerance<doxid-structlpa__control__type_zero_tolerance>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`change_tolerance<doxid-structlpa__control__type_change_tolerance>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`identical_bounds_tol<doxid-structlpa__control__type_identical_bounds_tol>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`cpu_time_limit<doxid-structlpa__control__type_cpu_time_limit>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_time_limit<doxid-structlpa__control__type_clock_time_limit>`;
+		bool :ref:`scale<doxid-structlpa__control__type_scale>`;
+		bool :ref:`dual<doxid-structlpa__control__type_dual>`;
+		bool :ref:`warm_start<doxid-structlpa__control__type_warm_start>`;
+		bool :ref:`steepest_edge<doxid-structlpa__control__type_steepest_edge>`;
+		bool :ref:`space_critical<doxid-structlpa__control__type_space_critical>`;
+		bool :ref:`deallocate_error_fatal<doxid-structlpa__control__type_deallocate_error_fatal>`;
+		bool :ref:`generate_sif_file<doxid-structlpa__control__type_generate_sif_file>`;
+		bool :ref:`generate_qplib_file<doxid-structlpa__control__type_generate_qplib_file>`;
+		char :ref:`sif_file_name<doxid-structlpa__control__type_sif_file_name>`[31];
+		char :ref:`qplib_file_name<doxid-structlpa__control__type_qplib_file_name>`[31];
+		char :ref:`prefix<doxid-structlpa__control__type_prefix>`[31];
 	};
 .. _details-structlpa__control__type:
 
@@ -62,7 +62,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structlpa__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structlpa__control__type_f_indexing:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -72,7 +72,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structlpa__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structlpa__control__type_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -82,7 +82,7 @@ use C or Fortran sparse matrix indexing
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
-.. _doxid-structlpa__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structlpa__control__type_out:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -92,7 +92,7 @@ error and warning diagnostics occur on stream error
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
-.. _doxid-structlpa__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structlpa__control__type_print_level:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -102,7 +102,7 @@ general output occurs on stream out
 the level of output required is specified by print_level (>= 2 turns on LA04 output)
 
 .. index:: pair: variable; start_print
-.. _doxid-structlpa__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa:
+.. _doxid-structlpa__control__type_start_print:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -112,7 +112,7 @@ the level of output required is specified by print_level (>= 2 turns on LA04 out
 any printing will start on this iteration
 
 .. index:: pair: variable; stop_print
-.. _doxid-structlpa__control__type_1a9a3d9960a04602d2a18009c82ae2124e:
+.. _doxid-structlpa__control__type_stop_print:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -122,7 +122,7 @@ any printing will start on this iteration
 any printing will stop on this iteration
 
 .. index:: pair: variable; maxit
-.. _doxid-structlpa__control__type_1ab717630b215f0362699acac11fb3652c:
+.. _doxid-structlpa__control__type_maxit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -132,7 +132,7 @@ any printing will stop on this iteration
 at most maxit inner iterations are allowed
 
 .. index:: pair: variable; max_iterative_refinements
-.. _doxid-structlpa__control__type_1ab044fd598767830ddc06560a91b80936:
+.. _doxid-structlpa__control__type_max_iterative_refinements:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -142,7 +142,7 @@ at most maxit inner iterations are allowed
 maximum number of iterative refinements allowed
 
 .. index:: pair: variable; min_real_factor_size
-.. _doxid-structlpa__control__type_1a60c3d0376bbe5c06260509a9be31c562:
+.. _doxid-structlpa__control__type_min_real_factor_size:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -152,7 +152,7 @@ maximum number of iterative refinements allowed
 initial size for real array for the factors and other data
 
 .. index:: pair: variable; min_integer_factor_size
-.. _doxid-structlpa__control__type_1addaddc306c33f5d7e6ebf7eeeab2612e:
+.. _doxid-structlpa__control__type_min_integer_factor_size:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -162,7 +162,7 @@ initial size for real array for the factors and other data
 initial size for integer array for the factors and other data
 
 .. index:: pair: variable; random_number_seed
-.. _doxid-structlpa__control__type_1aaaf923bc58fa592eb0fc15779e087eeb:
+.. _doxid-structlpa__control__type_random_number_seed:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -172,7 +172,7 @@ initial size for integer array for the factors and other data
 the initial seed used when generating random numbers
 
 .. index:: pair: variable; sif_file_device
-.. _doxid-structlpa__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0:
+.. _doxid-structlpa__control__type_sif_file_device:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -182,7 +182,7 @@ the initial seed used when generating random numbers
 specifies the unit number to write generated SIF file describing the current problem
 
 .. index:: pair: variable; qplib_file_device
-.. _doxid-structlpa__control__type_1a580c343e54a25a2d687782410c9b6917:
+.. _doxid-structlpa__control__type_qplib_file_device:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -192,7 +192,7 @@ specifies the unit number to write generated SIF file describing the current pro
 specifies the unit number to write generated QPLIB file describing the current problem
 
 .. index:: pair: variable; infinity
-.. _doxid-structlpa__control__type_1a11a46bd456ea63bac8bdffb056fe98c9:
+.. _doxid-structlpa__control__type_infinity:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -202,7 +202,7 @@ specifies the unit number to write generated QPLIB file describing the current p
 any bound larger than infinity in modulus will be regarded as infinite
 
 .. index:: pair: variable; tol_data
-.. _doxid-structlpa__control__type_1a4464f8bdf548161e0f111713567b93d7:
+.. _doxid-structlpa__control__type_tol_data:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -212,7 +212,7 @@ any bound larger than infinity in modulus will be regarded as infinite
 the tolerable relative perturbation of the data (A,g,..) defining the problem
 
 .. index:: pair: variable; feas_tol
-.. _doxid-structlpa__control__type_1aa636051ebb14fdebe323a3843e7e24e3:
+.. _doxid-structlpa__control__type_feas_tol:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -222,7 +222,7 @@ the tolerable relative perturbation of the data (A,g,..) defining the problem
 any constraint violated by less than feas_tol will be considered to be satisfied
 
 .. index:: pair: variable; relative_pivot_tolerance
-.. _doxid-structlpa__control__type_1a65344e4192516e9b621cc7416f09045c:
+.. _doxid-structlpa__control__type_relative_pivot_tolerance:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -232,7 +232,7 @@ any constraint violated by less than feas_tol will be considered to be satisfied
 pivot threshold used to control the selection of pivot elements in the matrix factorization. Any potential pivot which is less than the largest entry in its row times the threshold is excluded as a candidate
 
 .. index:: pair: variable; growth_limit
-.. _doxid-structlpa__control__type_1a8652f551eab44da378ee44afde39bccb:
+.. _doxid-structlpa__control__type_growth_limit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -242,7 +242,7 @@ pivot threshold used to control the selection of pivot elements in the matrix fa
 limit to control growth in the upated basis factors. A refactorization occurs if the growth exceeds this limit
 
 .. index:: pair: variable; zero_tolerance
-.. _doxid-structlpa__control__type_1afb83ea8401da6498362914aa88ae823f:
+.. _doxid-structlpa__control__type_zero_tolerance:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -252,7 +252,7 @@ limit to control growth in the upated basis factors. A refactorization occurs if
 any entry in the basis smaller than this is considered zero
 
 .. index:: pair: variable; change_tolerance
-.. _doxid-structlpa__control__type_1ad16b465967317e22e8290067805720f7:
+.. _doxid-structlpa__control__type_change_tolerance:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -262,7 +262,7 @@ any entry in the basis smaller than this is considered zero
 any solution component whose change is smaller than a tolerence times the largest change may be considered to be zero
 
 .. index:: pair: variable; identical_bounds_tol
-.. _doxid-structlpa__control__type_1abc74ac9bbf6375075f8943aac6ee09e4:
+.. _doxid-structlpa__control__type_identical_bounds_tol:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -272,7 +272,7 @@ any solution component whose change is smaller than a tolerence times the larges
 any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than identical_bounds_tol will be reset to the average of their values
 
 .. index:: pair: variable; cpu_time_limit
-.. _doxid-structlpa__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd:
+.. _doxid-structlpa__control__type_cpu_time_limit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -282,7 +282,7 @@ any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than identi
 the maximum CPU time allowed (-ve means infinite)
 
 .. index:: pair: variable; clock_time_limit
-.. _doxid-structlpa__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8:
+.. _doxid-structlpa__control__type_clock_time_limit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -292,7 +292,7 @@ the maximum CPU time allowed (-ve means infinite)
 the maximum elapsed clock time allowed (-ve means infinite)
 
 .. index:: pair: variable; scale
-.. _doxid-structlpa__control__type_1aff7a60d3f21b50f4ad18e40d99d33a61:
+.. _doxid-structlpa__control__type_scale:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -302,7 +302,7 @@ the maximum elapsed clock time allowed (-ve means infinite)
 if .scale is true, the problem will be automatically scaled prior to solution. This may improve computation time and accuracy
 
 .. index:: pair: variable; dual
-.. _doxid-structlpa__control__type_1a7043f852111a1d50ac13fc7c35a6c4f3:
+.. _doxid-structlpa__control__type_dual:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -312,7 +312,7 @@ if .scale is true, the problem will be automatically scaled prior to solution. T
 should the dual problem be solved rather than the primal?
 
 .. index:: pair: variable; warm_start
-.. _doxid-structlpa__control__type_1a510fc17653a2903edbfeabf9148ff211:
+.. _doxid-structlpa__control__type_warm_start:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -322,7 +322,7 @@ should the dual problem be solved rather than the primal?
 should a warm start using the data in C_stat and X_stat be attempted?
 
 .. index:: pair: variable; steepest_edge
-.. _doxid-structlpa__control__type_1ac4f367280fb3162d00e79beba8cb7d91:
+.. _doxid-structlpa__control__type_steepest_edge:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -332,7 +332,7 @@ should a warm start using the data in C_stat and X_stat be attempted?
 should steepest-edge weights be used to detetrmine the variable leaving the basis?
 
 .. index:: pair: variable; space_critical
-.. _doxid-structlpa__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structlpa__control__type_space_critical:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -342,7 +342,7 @@ should steepest-edge weights be used to detetrmine the variable leaving the basi
 if .space_critical is true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structlpa__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structlpa__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -352,7 +352,7 @@ if .space_critical is true, every effort will be made to use as little space as 
 if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue
 
 .. index:: pair: variable; generate_sif_file
-.. _doxid-structlpa__control__type_1aa75b3a16d146c0d7ad57bf9817033843:
+.. _doxid-structlpa__control__type_generate_sif_file:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -362,7 +362,7 @@ if .deallocate_error_fatal is true, any array/pointer deallocation error will te
 if .generate_sif_file is .true. if a SIF file describing the current problem is to be generated
 
 .. index:: pair: variable; generate_qplib_file
-.. _doxid-structlpa__control__type_1ad226b26090e539cf47228ba5ec7dc08d:
+.. _doxid-structlpa__control__type_generate_qplib_file:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -372,7 +372,7 @@ if .generate_sif_file is .true. if a SIF file describing the current problem is 
 if .generate_qplib_file is .true. if a QPLIB file describing the current problem is to be generated
 
 .. index:: pair: variable; sif_file_name
-.. _doxid-structlpa__control__type_1aaa95e830b709da79d9790471bab54193:
+.. _doxid-structlpa__control__type_sif_file_name:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -382,7 +382,7 @@ if .generate_qplib_file is .true. if a QPLIB file describing the current problem
 name of generated SIF file containing input problem
 
 .. index:: pair: variable; qplib_file_name
-.. _doxid-structlpa__control__type_1a3d36354e9f30d642f8b081ba85d777d3:
+.. _doxid-structlpa__control__type_qplib_file_name:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -392,7 +392,7 @@ name of generated SIF file containing input problem
 name of generated QPLIB file containing input problem
 
 .. index:: pair: variable; prefix
-.. _doxid-structlpa__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structlpa__control__type_prefix:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

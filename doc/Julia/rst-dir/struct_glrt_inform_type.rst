@@ -35,7 +35,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structglrt__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structglrt__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -45,7 +45,7 @@ components
 return status. See :ref:`glrt_solve_problem <doxid-galahad__glrt_8h_1aa5e9905bd3a79584bc5133b7f7a6816f>` for details
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structglrt__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structglrt__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -55,7 +55,7 @@ return status. See :ref:`glrt_solve_problem <doxid-galahad__glrt_8h_1aa5e9905bd3
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structglrt__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structglrt__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -65,7 +65,7 @@ the status of the last attempted allocation/deallocation
 the name of the array for which an allocation/deallocation error occurred
 
 .. index:: pair: variable; iter
-.. _doxid-structglrt__inform__type_1aab6f168571c2073e01e240524b8a3da0:
+.. _doxid-structglrt__inform__type_iter:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -75,7 +75,7 @@ the name of the array for which an allocation/deallocation error occurred
 the total number of iterations required
 
 .. index:: pair: variable; iter_pass2
-.. _doxid-structglrt__inform__type_1aa69f8ea5f07782fd8ad0318f87202ac4:
+.. _doxid-structglrt__inform__type_iter_pass2:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -85,7 +85,7 @@ the total number of iterations required
 the total number of pass-2 iterations required
 
 .. index:: pair: variable; obj
-.. _doxid-structglrt__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:
+.. _doxid-structglrt__inform__type_obj:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -95,7 +95,7 @@ the total number of pass-2 iterations required
 the value of the quadratic function
 
 .. index:: pair: variable; obj_regularized
-.. _doxid-structglrt__inform__type_1a1631e243108715d623e2ddb83310fa33:
+.. _doxid-structglrt__inform__type_obj_regularized:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -105,7 +105,7 @@ the value of the quadratic function
 the value of the regularized quadratic function
 
 .. index:: pair: variable; multiplier
-.. _doxid-structglrt__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0:
+.. _doxid-structglrt__inform__type_multiplier:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -115,7 +115,7 @@ the value of the regularized quadratic function
 the multiplier, $\sigma \|x\|^{p-2}$
 
 .. index:: pair: variable; xpo_norm
-.. _doxid-structglrt__inform__type_1a145ebf82ab029a86c0bd00aec2ee4ae0:
+.. _doxid-structglrt__inform__type_xpo_norm:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -125,7 +125,7 @@ the multiplier, $\sigma \|x\|^{p-2}$
 the value of the norm $\|x\|_M$
 
 .. index:: pair: variable; leftmost
-.. _doxid-structglrt__inform__type_1ab90b7ed1b1bfb32aeba7ad89a9a706d0:
+.. _doxid-structglrt__inform__type_leftmost:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -135,7 +135,7 @@ the value of the norm $\|x\|_M$
 an estimate of the leftmost generalized eigenvalue of the pencil $(H,M)$
 
 .. index:: pair: variable; negative_curvature
-.. _doxid-structglrt__inform__type_1aee928a2d12ccd5c99a5f3e65e9926021:
+.. _doxid-structglrt__inform__type_negative_curvature:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -145,7 +145,7 @@ an estimate of the leftmost generalized eigenvalue of the pencil $(H,M)$
 was negative curvature encountered ?
 
 .. index:: pair: variable; hard_case
-.. _doxid-structglrt__inform__type_1a22215075b7081ccac9f121daf07a0f7e:
+.. _doxid-structglrt__inform__type_hard_case:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

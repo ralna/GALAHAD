@@ -15,19 +15,19 @@ dps_inform_type structure
 	struct dps_inform_type {
 		// fields
 	
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structdps__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structdps__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mod_1by1<doxid-structdps__inform__type_1a2a214743335ff43abbc71e6b00a50ea2>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mod_2by2<doxid-structdps__inform__type_1a6597a7caccf77ae67ed2b86f9281804a>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structdps__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj_regularized<doxid-structdps__inform__type_1a1631e243108715d623e2ddb83310fa33>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`x_norm<doxid-structdps__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`multiplier<doxid-structdps__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`pole<doxid-structdps__inform__type_1ad2dc9016b1d2b00a970ec28129f7000d>`;
-		bool :ref:`hard_case<doxid-structdps__inform__type_1a22215075b7081ccac9f121daf07a0f7e>`;
-		char :ref:`bad_alloc<doxid-structdps__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		struct :ref:`dps_time_type<doxid-structdps__time__type>` :ref:`time<doxid-structdps__inform__type_1ac1ae6841280bc6d2f24f9665cb75c40e>`;
-		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structdps__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structdps__inform__type_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structdps__inform__type_alloc_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mod_1by1<doxid-structdps__inform__type_mod_1by1>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mod_2by2<doxid-structdps__inform__type_mod_2by2>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structdps__inform__type_obj>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj_regularized<doxid-structdps__inform__type_obj_regularized>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`x_norm<doxid-structdps__inform__type_x_norm>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`multiplier<doxid-structdps__inform__type_multiplier>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`pole<doxid-structdps__inform__type_pole>`;
+		bool :ref:`hard_case<doxid-structdps__inform__type_hard_case>`;
+		char :ref:`bad_alloc<doxid-structdps__inform__type_bad_alloc>`[81];
+		struct :ref:`dps_time_type<doxid-structdps__time__type>` :ref:`time<doxid-structdps__inform__type_time>`;
+		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structdps__inform__type_sls_inform>`;
 	};
 .. _details-structdps__inform__type:
 
@@ -40,7 +40,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structdps__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structdps__inform__type_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -50,7 +50,7 @@ components
 return status. See DPS_solve for details
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structdps__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structdps__inform__type_alloc_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -60,7 +60,7 @@ return status. See DPS_solve for details
 STAT value after allocate failure.
 
 .. index:: pair: variable; mod_1by1
-.. _doxid-structdps__inform__type_1a2a214743335ff43abbc71e6b00a50ea2:
+.. _doxid-structdps__inform__type_mod_1by1:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -70,7 +70,7 @@ STAT value after allocate failure.
 the number of 1 by 1 blocks from the factorization of H that were modified when constructing $M$
 
 .. index:: pair: variable; mod_2by2
-.. _doxid-structdps__inform__type_1a6597a7caccf77ae67ed2b86f9281804a:
+.. _doxid-structdps__inform__type_mod_2by2:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -80,7 +80,7 @@ the number of 1 by 1 blocks from the factorization of H that were modified when 
 the number of 2 by 2 blocks from the factorization of H that were modified when constructing $M$
 
 .. index:: pair: variable; obj
-.. _doxid-structdps__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:
+.. _doxid-structdps__inform__type_obj:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -90,7 +90,7 @@ the number of 2 by 2 blocks from the factorization of H that were modified when 
 the value of the quadratic function
 
 .. index:: pair: variable; obj_regularized
-.. _doxid-structdps__inform__type_1a1631e243108715d623e2ddb83310fa33:
+.. _doxid-structdps__inform__type_obj_regularized:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -100,7 +100,7 @@ the value of the quadratic function
 the value of the regularized quadratic function
 
 .. index:: pair: variable; x_norm
-.. _doxid-structdps__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
+.. _doxid-structdps__inform__type_x_norm:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -110,7 +110,7 @@ the value of the regularized quadratic function
 the M-norm of the solution
 
 .. index:: pair: variable; multiplier
-.. _doxid-structdps__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0:
+.. _doxid-structdps__inform__type_multiplier:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -120,7 +120,7 @@ the M-norm of the solution
 the Lagrange multiplier associated with the constraint/regularization
 
 .. index:: pair: variable; pole
-.. _doxid-structdps__inform__type_1ad2dc9016b1d2b00a970ec28129f7000d:
+.. _doxid-structdps__inform__type_pole:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -130,7 +130,7 @@ the Lagrange multiplier associated with the constraint/regularization
 a lower bound max(0,-lambda_1), where lambda_1 is the left-most eigenvalue of $(H,M)$
 
 .. index:: pair: variable; hard_case
-.. _doxid-structdps__inform__type_1a22215075b7081ccac9f121daf07a0f7e:
+.. _doxid-structdps__inform__type_hard_case:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -140,7 +140,7 @@ a lower bound max(0,-lambda_1), where lambda_1 is the left-most eigenvalue of $(
 has the hard case occurred?
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structdps__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structdps__inform__type_bad_alloc:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -150,7 +150,7 @@ has the hard case occurred?
 name of array that provoked an allocate failure
 
 .. index:: pair: variable; time
-.. _doxid-structdps__inform__type_1ac1ae6841280bc6d2f24f9665cb75c40e:
+.. _doxid-structdps__inform__type_time:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -160,7 +160,7 @@ name of array that provoked an allocate failure
 time information
 
 .. index:: pair: variable; sls_inform
-.. _doxid-structdps__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0:
+.. _doxid-structdps__inform__type_sls_inform:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

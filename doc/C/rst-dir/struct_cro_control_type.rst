@@ -16,24 +16,24 @@ cro_control_type structure
 	struct cro_control_type {
 		// components
 	
-		bool :ref:`f_indexing<doxid-structcro__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structcro__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structcro__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structcro__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_schur_complement<doxid-structcro__control__type_1abd1f3cb576a120eb097ebb819874af8d>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infinity<doxid-structcro__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`feasibility_tolerance<doxid-structcro__control__type_1aefac38140eecc872a3bc2907de2f0a30>`;
-		bool :ref:`check_io<doxid-structcro__control__type_1a26ffe1bc01e525bfbc88f91b08e2295d>`;
-		bool :ref:`refine_solution<doxid-structcro__control__type_1a31c847b86043424b65e29784b7196b78>`;
-		bool :ref:`space_critical<doxid-structcro__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		bool :ref:`deallocate_error_fatal<doxid-structcro__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`symmetric_linear_solver<doxid-structcro__control__type_1af297ace351b9307640715643cde57384>`[31];
-		char :ref:`unsymmetric_linear_solver<doxid-structcro__control__type_1aef6da6b715a0f41983c2a62397104eec>`[31];
-		char :ref:`prefix<doxid-structcro__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structcro__control__type_1a31b308b91955ee385daacc3de00f161b>`;
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structcro__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct :ref:`uls_control_type<doxid-structuls__control__type>` :ref:`uls_control<doxid-structcro__control__type_1ac6782df4602dd9c04417e2554d72bb00>`;
-		struct :ref:`ir_control_type<doxid-structir__control__type>` :ref:`ir_control<doxid-structcro__control__type_1ab87f601227d3bf99916ff3caa3413404>`;
+		bool :ref:`f_indexing<doxid-structcro__control__type_f_indexing>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structcro__control__type_error>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structcro__control__type_out>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structcro__control__type_print_level>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_schur_complement<doxid-structcro__control__type_max_schur_complement>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infinity<doxid-structcro__control__type_infinity>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`feasibility_tolerance<doxid-structcro__control__type_feasibility_tolerance>`;
+		bool :ref:`check_io<doxid-structcro__control__type_check_io>`;
+		bool :ref:`refine_solution<doxid-structcro__control__type_refine_solution>`;
+		bool :ref:`space_critical<doxid-structcro__control__type_space_critical>`;
+		bool :ref:`deallocate_error_fatal<doxid-structcro__control__type_deallocate_error_fatal>`;
+		char :ref:`symmetric_linear_solver<doxid-structcro__control__type_symmetric_linear_solver>`[31];
+		char :ref:`unsymmetric_linear_solver<doxid-structcro__control__type_unsymmetric_linear_solver>`[31];
+		char :ref:`prefix<doxid-structcro__control__type_prefix>`[31];
+		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structcro__control__type_sls_control>`;
+		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structcro__control__type_sbls_control>`;
+		struct :ref:`uls_control_type<doxid-structuls__control__type>` :ref:`uls_control<doxid-structcro__control__type_uls_control>`;
+		struct :ref:`ir_control_type<doxid-structir__control__type>` :ref:`ir_control<doxid-structcro__control__type_ir_control>`;
 	};
 .. _details-structcro__control__type:
 
@@ -46,7 +46,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structcro__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structcro__control__type_f_indexing:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -56,7 +56,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structcro__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structcro__control__type_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -66,7 +66,7 @@ use C or Fortran sparse matrix indexing
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
-.. _doxid-structcro__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structcro__control__type_out:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -76,7 +76,7 @@ error and warning diagnostics occur on stream error
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
-.. _doxid-structcro__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structcro__control__type_print_level:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -86,7 +86,7 @@ general output occurs on stream out
 the level of output required is specified by print_level
 
 .. index:: pair: variable; max_schur_complement
-.. _doxid-structcro__control__type_1abd1f3cb576a120eb097ebb819874af8d:
+.. _doxid-structcro__control__type_max_schur_complement:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -96,7 +96,7 @@ the level of output required is specified by print_level
 the maximum permitted size of the Schur complement before a refactorization is performed
 
 .. index:: pair: variable; infinity
-.. _doxid-structcro__control__type_1a11a46bd456ea63bac8bdffb056fe98c9:
+.. _doxid-structcro__control__type_infinity:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -106,7 +106,7 @@ the maximum permitted size of the Schur complement before a refactorization is p
 any bound larger than infinity in modulus will be regarded as infinite
 
 .. index:: pair: variable; feasibility_tolerance
-.. _doxid-structcro__control__type_1aefac38140eecc872a3bc2907de2f0a30:
+.. _doxid-structcro__control__type_feasibility_tolerance:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -116,7 +116,7 @@ any bound larger than infinity in modulus will be regarded as infinite
 feasibility tolerance for KKT violation
 
 .. index:: pair: variable; check_io
-.. _doxid-structcro__control__type_1a26ffe1bc01e525bfbc88f91b08e2295d:
+.. _doxid-structcro__control__type_check_io:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -126,7 +126,7 @@ feasibility tolerance for KKT violation
 if .check_io is true, the input (x,y,z) will be fully tested for consistency
 
 .. index:: pair: variable; refine_solution
-.. _doxid-structcro__control__type_1a31c847b86043424b65e29784b7196b78:
+.. _doxid-structcro__control__type_refine_solution:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -136,7 +136,7 @@ if .check_io is true, the input (x,y,z) will be fully tested for consistency
 if .refine solution is true, attempt to satisfy the KKT conditions as accurately as possible
 
 .. index:: pair: variable; space_critical
-.. _doxid-structcro__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structcro__control__type_space_critical:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -146,7 +146,7 @@ if .refine solution is true, attempt to satisfy the KKT conditions as accurately
 if .space_critical is true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structcro__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structcro__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -156,7 +156,7 @@ if .space_critical is true, every effort will be made to use as little space as 
 if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue
 
 .. index:: pair: variable; symmetric_linear_solver
-.. _doxid-structcro__control__type_1af297ace351b9307640715643cde57384:
+.. _doxid-structcro__control__type_symmetric_linear_solver:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -166,7 +166,7 @@ if .deallocate_error_fatal is true, any array/pointer deallocation error will te
 the name of the symmetric-indefinite linear equation solver used. Possible choices are currently: 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl_pardiso', 'pastix', 'wsmp', and 'sytr', although only 'sytr' and, for OMP 4.0-compliant compilers, 'ssids' are installed by default; others are easily installed (see README.external). More details of the capabilities of each solver are provided in the documentation for :ref:`galahad_sls<details-sls__solvers>`.
 
 .. index:: pair: variable; unsymmetric_linear_solver
-.. _doxid-structcro__control__type_1aef6da6b715a0f41983c2a62397104eec:
+.. _doxid-structcro__control__type_unsymmetric_linear_solver:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -176,7 +176,7 @@ the name of the symmetric-indefinite linear equation solver used. Possible choic
 the name of the unsymmetric linear equation solver used. Possible choices are currently: 'gls', 'ma48' and 'getr', although only 'getr' is installed by default; others are easily installed (see README.external). More details of the capabilities of each solver are provided in the documentation for :ref:`galahad_uls<details-uls__solvers>`.
 
 .. index:: pair: variable; prefix
-.. _doxid-structcro__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structcro__control__type_prefix:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -186,7 +186,7 @@ the name of the unsymmetric linear equation solver used. Possible choices are cu
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
 
 .. index:: pair: variable; sls_control
-.. _doxid-structcro__control__type_1a31b308b91955ee385daacc3de00f161b:
+.. _doxid-structcro__control__type_sls_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -196,7 +196,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 control parameters for SLS
 
 .. index:: pair: variable; sbls_control
-.. _doxid-structcro__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a:
+.. _doxid-structcro__control__type_sbls_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -206,7 +206,7 @@ control parameters for SLS
 control parameters for SBLS
 
 .. index:: pair: variable; uls_control
-.. _doxid-structcro__control__type_1ac6782df4602dd9c04417e2554d72bb00:
+.. _doxid-structcro__control__type_uls_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -216,7 +216,7 @@ control parameters for SBLS
 control parameters for ULS
 
 .. index:: pair: variable; ir_control
-.. _doxid-structcro__control__type_1ab87f601227d3bf99916ff3caa3413404:
+.. _doxid-structcro__control__type_ir_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

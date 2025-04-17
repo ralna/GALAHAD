@@ -29,7 +29,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structlms__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structlms__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -75,7 +75,7 @@ the return status. Possible values are:
   control.any_method = false was specified when calling lhs_setup.
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structlms__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structlms__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -85,7 +85,7 @@ the return status. Possible values are:
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; length
-.. _doxid-structlms__inform__type_1a9f59b34b1f25fe00023291b678246bcc:
+.. _doxid-structlms__inform__type_length:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -95,7 +95,7 @@ the status of the last attempted allocation/deallocation
 the number of pairs $(s_k,y_k)$ currently used to represent the limited-memory matrix.
 
 .. index:: pair: variable; updates_skipped
-.. _doxid-structlms__inform__type_1a40b8937875a7d11bf4825d7f3bce57e8:
+.. _doxid-structlms__inform__type_updates_skipped:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -105,7 +105,7 @@ the number of pairs $(s_k,y_k)$ currently used to represent the limited-memory m
 have $(s_k,y_k)$ pairs been skipped when forming the limited-memory matrix?
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structlms__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structlms__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -115,7 +115,7 @@ have $(s_k,y_k)$ pairs been skipped when forming the limited-memory matrix?
 the name of the array for which an allocation/deallocation error occurred.
 
 .. index:: pair: variable; time
-.. _doxid-structlms__inform__type_1aa55b2c025b7cbc14de6ba0e1acfdae05:
+.. _doxid-structlms__inform__type_time:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

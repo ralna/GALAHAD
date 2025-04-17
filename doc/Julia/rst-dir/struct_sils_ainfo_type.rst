@@ -40,7 +40,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; flag
-.. _doxid-structsils__ainfo__type_1adf916204820072417ed73a32de1cefcf:
+.. _doxid-structsils__ainfo__type_flag:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -50,7 +50,7 @@ components
 Flags success or failure case.
 
 .. index:: pair: variable; more
-.. _doxid-structsils__ainfo__type_1a4628f2fb17af64608416810cc4e5a9d0:
+.. _doxid-structsils__ainfo__type_more:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -60,7 +60,7 @@ Flags success or failure case.
 More information on failure.
 
 .. index:: pair: variable; nsteps
-.. _doxid-structsils__ainfo__type_1aa2414080b021dbb9b56eeaeedec0ffa2:
+.. _doxid-structsils__ainfo__type_nsteps:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -70,7 +70,7 @@ More information on failure.
 Number of elimination steps.
 
 .. index:: pair: variable; nrltot
-.. _doxid-structsils__ainfo__type_1a87d1fb870bb3dc94213c3adf550a7a3a:
+.. _doxid-structsils__ainfo__type_nrltot:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -80,7 +80,7 @@ Number of elimination steps.
 Size for a without compression.
 
 .. index:: pair: variable; nirtot
-.. _doxid-structsils__ainfo__type_1af19131d647173a929ed0594f33c46999:
+.. _doxid-structsils__ainfo__type_nirtot:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -90,7 +90,7 @@ Size for a without compression.
 Size for iw without compression.
 
 .. index:: pair: variable; nrlnec
-.. _doxid-structsils__ainfo__type_1a812f6ee1b4bd452745b3876b084cd4af:
+.. _doxid-structsils__ainfo__type_nrlnec:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -100,7 +100,7 @@ Size for iw without compression.
 Size for a with compression.
 
 .. index:: pair: variable; nirnec
-.. _doxid-structsils__ainfo__type_1a2db255a81b52a84b3fec32d8c1a4ec17:
+.. _doxid-structsils__ainfo__type_nirnec:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -110,7 +110,7 @@ Size for a with compression.
 Size for iw with compression.
 
 .. index:: pair: variable; nrladu
-.. _doxid-structsils__ainfo__type_1a881410b19c211fe38617f51dcb6709d7:
+.. _doxid-structsils__ainfo__type_nrladu:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -120,7 +120,7 @@ Size for iw with compression.
 Number of reals to hold factors.
 
 .. index:: pair: variable; niradu
-.. _doxid-structsils__ainfo__type_1a900738bbb8814829eb8e674c53a68ae3:
+.. _doxid-structsils__ainfo__type_niradu:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -130,7 +130,7 @@ Number of reals to hold factors.
 Number of integers to hold factors.
 
 .. index:: pair: variable; ncmpa
-.. _doxid-structsils__ainfo__type_1a5e8b1d7aba05cfece368396811da24a3:
+.. _doxid-structsils__ainfo__type_ncmpa:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -140,7 +140,7 @@ Number of integers to hold factors.
 Number of compresses.
 
 .. index:: pair: variable; oor
-.. _doxid-structsils__ainfo__type_1afa0283d540a2a393c746b5eb05c3431c:
+.. _doxid-structsils__ainfo__type_oor:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -150,7 +150,7 @@ Number of compresses.
 Number of indices out-of-range.
 
 .. index:: pair: variable; dup
-.. _doxid-structsils__ainfo__type_1adc4cf3f551bb367858644559d69cfdf5:
+.. _doxid-structsils__ainfo__type_dup:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -160,7 +160,7 @@ Number of indices out-of-range.
 Number of duplicates.
 
 .. index:: pair: variable; maxfrt
-.. _doxid-structsils__ainfo__type_1a1a03f6fb5030d0b1d6bf3703d8c24cc4:
+.. _doxid-structsils__ainfo__type_maxfrt:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -170,7 +170,7 @@ Number of duplicates.
 Forecast maximum front size.
 
 .. index:: pair: variable; stat
-.. _doxid-structsils__ainfo__type_1a7d6f8a25e94209bd3ba29b2051ca4f08:
+.. _doxid-structsils__ainfo__type_stat:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -180,7 +180,7 @@ Forecast maximum front size.
 STAT value after allocate failure.
 
 .. index:: pair: variable; faulty
-.. _doxid-structsils__ainfo__type_1a6dfcf1d95eca288e459a114d6418d6f1:
+.. _doxid-structsils__ainfo__type_faulty:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -190,7 +190,7 @@ STAT value after allocate failure.
 legacy component, now not used
 
 .. index:: pair: variable; opsa
-.. _doxid-structsils__ainfo__type_1a5514c74cf880eb762c480fe9c94b45dd:
+.. _doxid-structsils__ainfo__type_opsa:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -200,7 +200,7 @@ legacy component, now not used
 Anticipated number of operations in assembly.
 
 .. index:: pair: variable; opse
-.. _doxid-structsils__ainfo__type_1ae4d20d784bebe9b7f04a435f016e20d6:
+.. _doxid-structsils__ainfo__type_opse:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

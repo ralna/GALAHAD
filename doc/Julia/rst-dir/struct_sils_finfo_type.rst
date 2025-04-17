@@ -51,7 +51,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; flag
-.. _doxid-structsils__finfo__type_1adf916204820072417ed73a32de1cefcf:
+.. _doxid-structsils__finfo__type_flag:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -61,7 +61,7 @@ components
 Flags success or failure case.
 
 .. index:: pair: variable; more
-.. _doxid-structsils__finfo__type_1a4628f2fb17af64608416810cc4e5a9d0:
+.. _doxid-structsils__finfo__type_more:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -71,7 +71,7 @@ Flags success or failure case.
 More information on failure.
 
 .. index:: pair: variable; maxfrt
-.. _doxid-structsils__finfo__type_1a1a03f6fb5030d0b1d6bf3703d8c24cc4:
+.. _doxid-structsils__finfo__type_maxfrt:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -81,7 +81,7 @@ More information on failure.
 Largest front size.
 
 .. index:: pair: variable; nebdu
-.. _doxid-structsils__finfo__type_1ad711b100f86e360e8a840d058d96671a:
+.. _doxid-structsils__finfo__type_nebdu:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -91,7 +91,7 @@ Largest front size.
 Number of entries in factors.
 
 .. index:: pair: variable; nrlbdu
-.. _doxid-structsils__finfo__type_1af2c296d8547ed8e4278a63772f775e50:
+.. _doxid-structsils__finfo__type_nrlbdu:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -101,7 +101,7 @@ Number of entries in factors.
 Number of reals that hold factors.
 
 .. index:: pair: variable; nirbdu
-.. _doxid-structsils__finfo__type_1a8fbe1e93500e9552d69c42a20dbeb7ba:
+.. _doxid-structsils__finfo__type_nirbdu:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -111,7 +111,7 @@ Number of reals that hold factors.
 Number of integers that hold factors.
 
 .. index:: pair: variable; nrltot
-.. _doxid-structsils__finfo__type_1a87d1fb870bb3dc94213c3adf550a7a3a:
+.. _doxid-structsils__finfo__type_nrltot:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -121,7 +121,7 @@ Number of integers that hold factors.
 Size for a without compression.
 
 .. index:: pair: variable; nirtot
-.. _doxid-structsils__finfo__type_1af19131d647173a929ed0594f33c46999:
+.. _doxid-structsils__finfo__type_nirtot:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -131,7 +131,7 @@ Size for a without compression.
 Size for iw without compression.
 
 .. index:: pair: variable; nrlnec
-.. _doxid-structsils__finfo__type_1a812f6ee1b4bd452745b3876b084cd4af:
+.. _doxid-structsils__finfo__type_nrlnec:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -141,7 +141,7 @@ Size for iw without compression.
 Size for a with compression.
 
 .. index:: pair: variable; nirnec
-.. _doxid-structsils__finfo__type_1a2db255a81b52a84b3fec32d8c1a4ec17:
+.. _doxid-structsils__finfo__type_nirnec:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -151,7 +151,7 @@ Size for a with compression.
 Size for iw with compression.
 
 .. index:: pair: variable; ncmpbr
-.. _doxid-structsils__finfo__type_1a1f120d69b5f9dad9acb22de7946169ac:
+.. _doxid-structsils__finfo__type_ncmpbr:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -161,7 +161,7 @@ Size for iw with compression.
 Number of compresses of real data.
 
 .. index:: pair: variable; ncmpbi
-.. _doxid-structsils__finfo__type_1a56e6baa407d862416316a7ef3edc345c:
+.. _doxid-structsils__finfo__type_ncmpbi:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -171,7 +171,7 @@ Number of compresses of real data.
 Number of compresses of integer data.
 
 .. index:: pair: variable; ntwo
-.. _doxid-structsils__finfo__type_1aa8a36bb6a93ac6d099aef27c76ccc1f8:
+.. _doxid-structsils__finfo__type_ntwo:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -181,7 +181,7 @@ Number of compresses of integer data.
 Number of 2x2 pivots.
 
 .. index:: pair: variable; neig
-.. _doxid-structsils__finfo__type_1a5a9c67ca97b64a81e04f18d037242075:
+.. _doxid-structsils__finfo__type_neig:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -191,7 +191,7 @@ Number of 2x2 pivots.
 Number of negative eigenvalues.
 
 .. index:: pair: variable; delay
-.. _doxid-structsils__finfo__type_1a6f1be1f780ff54ec75b41451cd4d90bd:
+.. _doxid-structsils__finfo__type_delay:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -201,7 +201,7 @@ Number of negative eigenvalues.
 Number of delayed pivots (total)
 
 .. index:: pair: variable; signc
-.. _doxid-structsils__finfo__type_1a3321ebac07d2b23b0fcc04ac6f0129bf:
+.. _doxid-structsils__finfo__type_signc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -211,7 +211,7 @@ Number of delayed pivots (total)
 Number of pivot sign changes when control.pivoting=3.
 
 .. index:: pair: variable; nstatic
-.. _doxid-structsils__finfo__type_1a4f8d909bc8fbafc899cd820077eb802b:
+.. _doxid-structsils__finfo__type_nstatic:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -221,7 +221,7 @@ Number of pivot sign changes when control.pivoting=3.
 Number of static pivots chosen.
 
 .. index:: pair: variable; modstep
-.. _doxid-structsils__finfo__type_1a7fdac7d8f75bd2eff8fac17e9a36da64:
+.. _doxid-structsils__finfo__type_modstep:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -231,7 +231,7 @@ Number of static pivots chosen.
 First pivot modification when control.pivoting=4.
 
 .. index:: pair: variable; rank
-.. _doxid-structsils__finfo__type_1a6cfd95afd0afebd625b889fb6e58371c:
+.. _doxid-structsils__finfo__type_rank:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -241,7 +241,7 @@ First pivot modification when control.pivoting=4.
 Rank of original factorization.
 
 .. index:: pair: variable; stat
-.. _doxid-structsils__finfo__type_1a7d6f8a25e94209bd3ba29b2051ca4f08:
+.. _doxid-structsils__finfo__type_stat:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -251,7 +251,7 @@ Rank of original factorization.
 STAT value after allocate failure.
 
 .. index:: pair: variable; faulty
-.. _doxid-structsils__finfo__type_1a6dfcf1d95eca288e459a114d6418d6f1:
+.. _doxid-structsils__finfo__type_faulty:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -261,7 +261,7 @@ STAT value after allocate failure.
 legacy component, now not used
 
 .. index:: pair: variable; step
-.. _doxid-structsils__finfo__type_1abc16e65f240ed0c8f3e876e8732c0a33:
+.. _doxid-structsils__finfo__type_step:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -271,7 +271,7 @@ legacy component, now not used
 legacy component, now not used
 
 .. index:: pair: variable; opsa
-.. _doxid-structsils__finfo__type_1a5514c74cf880eb762c480fe9c94b45dd:
+.. _doxid-structsils__finfo__type_opsa:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -286,7 +286,7 @@ operations in assembly
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. index:: pair: variable; opse
-.. _doxid-structsils__finfo__type_1ae4d20d784bebe9b7f04a435f016e20d6:
+.. _doxid-structsils__finfo__type_opse:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -296,7 +296,7 @@ operations in assembly
 number of operations in elimination
 
 .. index:: pair: variable; opsb
-.. _doxid-structsils__finfo__type_1a13983da267912e6dd3d3aa630542bba7:
+.. _doxid-structsils__finfo__type_opsb:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -306,7 +306,7 @@ number of operations in elimination
 Additional number of operations for BLAS.
 
 .. index:: pair: variable; maxchange
-.. _doxid-structsils__finfo__type_1a1082a3beb83c2223482de252ca6f12cb:
+.. _doxid-structsils__finfo__type_maxchange:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -316,7 +316,7 @@ Additional number of operations for BLAS.
 Largest control.pivoting=4 modification.
 
 .. index:: pair: variable; smin
-.. _doxid-structsils__finfo__type_1a36400de40b86ef41ccf65900ae74e219:
+.. _doxid-structsils__finfo__type_smin:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -326,7 +326,7 @@ Largest control.pivoting=4 modification.
 Minimum scaling factor.
 
 .. index:: pair: variable; smax
-.. _doxid-structsils__finfo__type_1a47957579e4f203ac77f60ea3eace2467:
+.. _doxid-structsils__finfo__type_smax:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

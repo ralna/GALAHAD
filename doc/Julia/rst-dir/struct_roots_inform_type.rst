@@ -26,7 +26,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structroots__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structroots__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -60,7 +60,7 @@ return status. Possible values are:
   specified degree.
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structroots__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structroots__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -70,7 +70,7 @@ return status. Possible values are:
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structroots__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structroots__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

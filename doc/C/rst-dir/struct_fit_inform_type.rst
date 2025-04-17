@@ -15,9 +15,9 @@ fit_inform_type structure
 	struct fit_inform_type {
 		// fields
 	
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structfit__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structfit__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structfit__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structfit__inform__type_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structfit__inform__type_alloc_status>`;
+		char :ref:`bad_alloc<doxid-structfit__inform__type_bad_alloc>`[81];
 	};
 .. _details-structfit__inform__type:
 
@@ -30,7 +30,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structfit__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structfit__inform__type_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -62,7 +62,7 @@ return status. Possible values are:
   the restriction n >= 1 has been violated.
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structfit__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structfit__inform__type_alloc_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -72,7 +72,7 @@ return status. Possible values are:
 the status of the last attempted allocation/deallocation.
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structfit__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structfit__inform__type_bad_alloc:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

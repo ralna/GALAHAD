@@ -30,7 +30,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; flag
-.. _doxid-structsils__sinfo__type_1adf916204820072417ed73a32de1cefcf:
+.. _doxid-structsils__sinfo__type_flag:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -40,7 +40,7 @@ components
 Flags success or failure case.
 
 .. index:: pair: variable; stat
-.. _doxid-structsils__sinfo__type_1a7d6f8a25e94209bd3ba29b2051ca4f08:
+.. _doxid-structsils__sinfo__type_stat:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -50,7 +50,7 @@ Flags success or failure case.
 STAT value after allocate failure.
 
 .. index:: pair: variable; cond
-.. _doxid-structsils__sinfo__type_1a006d728493fbea61aabf1e6229e34185:
+.. _doxid-structsils__sinfo__type_cond:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -60,7 +60,7 @@ STAT value after allocate failure.
 Condition number of matrix (category 1 eqs)
 
 .. index:: pair: variable; cond2
-.. _doxid-structsils__sinfo__type_1ae6b598341b9634df4e446be3de0ed839:
+.. _doxid-structsils__sinfo__type_cond2:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -70,7 +70,7 @@ Condition number of matrix (category 1 eqs)
 Condition number of matrix (category 2 eqs)
 
 .. index:: pair: variable; berr
-.. _doxid-structsils__sinfo__type_1ad2150d4466031c9e63281a146e5ccd03:
+.. _doxid-structsils__sinfo__type_berr:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -80,7 +80,7 @@ Condition number of matrix (category 2 eqs)
 Backward error for the system (category 1 eqs)
 
 .. index:: pair: variable; berr2
-.. _doxid-structsils__sinfo__type_1ade02e126e145400e9ead3c3f3bc06dab:
+.. _doxid-structsils__sinfo__type_berr2:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -90,7 +90,7 @@ Backward error for the system (category 1 eqs)
 Backward error for the system (category 2 eqs)
 
 .. index:: pair: variable; error
-.. _doxid-structsils__sinfo__type_1a2b7e3bae2c2111a08302ba1dc7f14cef:
+.. _doxid-structsils__sinfo__type_error:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

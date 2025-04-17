@@ -16,15 +16,15 @@ ugo_inform_type structure
 	struct ugo_inform_type {
 		// components
 	
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structugo__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`eval_status<doxid-structugo__inform__type_1a7b88f94f39913a54e69ea23c12d3e4bd>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structugo__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structugo__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter<doxid-structugo__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`f_eval<doxid-structugo__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`g_eval<doxid-structugo__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`h_eval<doxid-structugo__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
-		struct :ref:`ugo_time_type<doxid-structugo__time__type>` :ref:`time<doxid-structugo__inform__type_1a9113f4cf33f961d4a1a97455a054eac6>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structugo__inform__type_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`eval_status<doxid-structugo__inform__type_eval_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structugo__inform__type_alloc_status>`;
+		char :ref:`bad_alloc<doxid-structugo__inform__type_bad_alloc>`[81];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter<doxid-structugo__inform__type_iter>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`f_eval<doxid-structugo__inform__type_f_eval>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`g_eval<doxid-structugo__inform__type_g_eval>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`h_eval<doxid-structugo__inform__type_h_eval>`;
+		struct :ref:`ugo_time_type<doxid-structugo__time__type>` :ref:`time<doxid-structugo__inform__type_time>`;
 	};
 .. _details-structugo__inform__type:
 
@@ -37,7 +37,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structugo__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structugo__inform__type_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -47,7 +47,7 @@ components
 return status. See UGO_solve for details
 
 .. index:: pair: variable; eval_status
-.. _doxid-structugo__inform__type_1a7b88f94f39913a54e69ea23c12d3e4bd:
+.. _doxid-structugo__inform__type_eval_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -57,7 +57,7 @@ return status. See UGO_solve for details
 evaluation status for reverse communication interface
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structugo__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structugo__inform__type_alloc_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -67,7 +67,7 @@ evaluation status for reverse communication interface
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structugo__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structugo__inform__type_bad_alloc:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -77,7 +77,7 @@ the status of the last attempted allocation/deallocation
 the name of the array for which an allocation/deallocation error occurred
 
 .. index:: pair: variable; iter
-.. _doxid-structugo__inform__type_1aab6f168571c2073e01e240524b8a3da0:
+.. _doxid-structugo__inform__type_iter:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -87,7 +87,7 @@ the name of the array for which an allocation/deallocation error occurred
 the total number of iterations performed
 
 .. index:: pair: variable; f_eval
-.. _doxid-structugo__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa:
+.. _doxid-structugo__inform__type_f_eval:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -97,7 +97,7 @@ the total number of iterations performed
 the total number of evaluations of the objective function
 
 .. index:: pair: variable; g_eval
-.. _doxid-structugo__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469:
+.. _doxid-structugo__inform__type_g_eval:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -107,7 +107,7 @@ the total number of evaluations of the objective function
 the total number of evaluations of the gradient of the objective function
 
 .. index:: pair: variable; h_eval
-.. _doxid-structugo__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a:
+.. _doxid-structugo__inform__type_h_eval:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -117,7 +117,7 @@ the total number of evaluations of the gradient of the objective function
 the total number of evaluations of the Hessian of the objective function
 
 .. index:: pair: variable; time
-.. _doxid-structugo__inform__type_1a9113f4cf33f961d4a1a97455a054eac6:
+.. _doxid-structugo__inform__type_time:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

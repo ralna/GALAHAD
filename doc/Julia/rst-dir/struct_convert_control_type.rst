@@ -33,7 +33,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structconvert__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structconvert__control__type_f_indexing:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -43,7 +43,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structconvert__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structconvert__control__type_error:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -53,7 +53,7 @@ use C or Fortran sparse matrix indexing
 unit for error messages
 
 .. index:: pair: variable; out
-.. _doxid-structconvert__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structconvert__control__type_out:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -63,7 +63,7 @@ unit for error messages
 unit for monitor output
 
 .. index:: pair: variable; print_level
-.. _doxid-structconvert__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structconvert__control__type_print_level:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -73,7 +73,7 @@ unit for monitor output
 controls level of diagnostic output
 
 .. index:: pair: variable; transpose
-.. _doxid-structconvert__control__type_1a25a62de4b18dc349803bf5447052d673:
+.. _doxid-structconvert__control__type_transpose:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -83,7 +83,7 @@ controls level of diagnostic output
 obtain the transpose of the input matrix?
 
 .. index:: pair: variable; sum_duplicates
-.. _doxid-structconvert__control__type_1a6a46ec71c5b01b04c75c9bf0038d1762:
+.. _doxid-structconvert__control__type_sum_duplicates:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -93,7 +93,7 @@ obtain the transpose of the input matrix?
 add the values of entries in duplicate positions?
 
 .. index:: pair: variable; order
-.. _doxid-structconvert__control__type_1a0176c64e4b8b660bf4ac9cdc29b852ce:
+.. _doxid-structconvert__control__type_order:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -103,7 +103,7 @@ add the values of entries in duplicate positions?
 order row or column data by increasing index?
 
 .. index:: pair: variable; space_critical
-.. _doxid-structconvert__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structconvert__control__type_space_critical:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -113,7 +113,7 @@ order row or column data by increasing index?
 if space is critical, ensure allocated arrays are no bigger than needed
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structconvert__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structconvert__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -123,7 +123,7 @@ if space is critical, ensure allocated arrays are no bigger than needed
 exit if any deallocation fails
 
 .. index:: pair: variable; prefix
-.. _doxid-structconvert__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structconvert__control__type_prefix:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

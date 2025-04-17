@@ -16,65 +16,65 @@ lpb_control_type structure
 	struct lpb_control_type {
 		// components
 	
-		bool :ref:`f_indexing<doxid-structlpb__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structlpb__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structlpb__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structlpb__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`start_print<doxid-structlpb__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`stop_print<doxid-structlpb__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`maxit<doxid-structlpb__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`infeas_max<doxid-structlpb__control__type_1af7d33b88b67b2366d7e2df31d42083a9>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`muzero_fixed<doxid-structlpb__control__type_1ab62ab11b934e2380467d5bafe2aaacfb>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`restore_problem<doxid-structlpb__control__type_1a19f10912888ac7ebd153fb21baaeaefa>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`indicator_type<doxid-structlpb__control__type_1a5abba51271587463f528b0cbdb478141>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`arc<doxid-structlpb__control__type_1a30b5726116ac85ea64777e5d6e333894>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`series_order<doxid-structlpb__control__type_1a67cdd80087746b1190369ae6ed303b25>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sif_file_device<doxid-structlpb__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`qplib_file_device<doxid-structlpb__control__type_1a580c343e54a25a2d687782410c9b6917>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infinity<doxid-structlpb__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_abs_p<doxid-structlpb__control__type_1a3749f9dcb2eeb60815a18c85a7d7d440>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_rel_p<doxid-structlpb__control__type_1a068065b9d50d5b222fbc8710d530bd9e>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_abs_d<doxid-structlpb__control__type_1a67b6a7be5dbfa34e9db4c960943fe31f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_rel_d<doxid-structlpb__control__type_1ab479c27e2044c310e8d0c86869ea2307>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_abs_c<doxid-structlpb__control__type_1a1ed92b5ffb35957c5a8a0e657e312820>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_rel_c<doxid-structlpb__control__type_1a5c131e3b6061c09670e9c1959b6585a3>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`prfeas<doxid-structlpb__control__type_1a09a0a5771a0300078ebe5f344ef4e492>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`dufeas<doxid-structlpb__control__type_1a2ac34c5838499ed4992037655f52134a>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`muzero<doxid-structlpb__control__type_1a8f4661dd5869e1555ba329b4bd535b4d>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`tau<doxid-structlpb__control__type_1aa6fb9757f95c75d1a32c5132e939d238>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`gamma_c<doxid-structlpb__control__type_1a80165efc96729e34ab1ae75223dac718>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`gamma_f<doxid-structlpb__control__type_1a9ce8b2b646d97d4f0c1485bd8842f198>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`reduce_infeas<doxid-structlpb__control__type_1aaac67273a340e9f96523583bfdce4c59>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj_unbounded<doxid-structlpb__control__type_1a7eed67e26bc4e17ca334031b7fd608a6>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`potential_unbounded<doxid-structlpb__control__type_1a0c5882a8efc33627a50dce09db1ba40a>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`identical_bounds_tol<doxid-structlpb__control__type_1abc74ac9bbf6375075f8943aac6ee09e4>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mu_pounce<doxid-structlpb__control__type_1a32eb4d353d409b46521eb28008a74c36>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`indicator_tol_p<doxid-structlpb__control__type_1a9f245bb23cea009fc7a95d86ebe57ddd>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`indicator_tol_pd<doxid-structlpb__control__type_1aa131ce5e639e5601d1b61fb540ac7187>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`indicator_tol_tapia<doxid-structlpb__control__type_1abf4fb7dcdbaa9f729af1f063d357000a>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`cpu_time_limit<doxid-structlpb__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_time_limit<doxid-structlpb__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		bool :ref:`remove_dependencies<doxid-structlpb__control__type_1ae17a6b550239434c639239ddf45bc1ad>`;
-		bool :ref:`treat_zero_bounds_as_general<doxid-structlpb__control__type_1a59b23877e9c8cb49f1f6261e24660295>`;
-		bool :ref:`just_feasible<doxid-structlpb__control__type_1a1337f1d22b070690c78f25f7ecaf1e96>`;
-		bool :ref:`getdua<doxid-structlpb__control__type_1ae31443582be206db6b858b35e1fff00b>`;
-		bool :ref:`puiseux<doxid-structlpb__control__type_1a444d111a9f28a15760d75b6ff7eb0131>`;
-		bool :ref:`every_order<doxid-structlpb__control__type_1a64cb389e65df8d4add9bc97debd32c69>`;
-		bool :ref:`feasol<doxid-structlpb__control__type_1a2d28372a45268cac881a4586c4e875d6>`;
-		bool :ref:`balance_initial_complentarity<doxid-structlpb__control__type_1a88bfd9dc0be7872a0bc1ae611d4d1173>`;
-		bool :ref:`crossover<doxid-structlpb__control__type_1a479e35eaf4aeb8b4d0c2d5fe2e4196c4>`;
-		bool :ref:`space_critical<doxid-structlpb__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		bool :ref:`deallocate_error_fatal<doxid-structlpb__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		bool :ref:`generate_sif_file<doxid-structlpb__control__type_1aa75b3a16d146c0d7ad57bf9817033843>`;
-		bool :ref:`generate_qplib_file<doxid-structlpb__control__type_1ad226b26090e539cf47228ba5ec7dc08d>`;
-		char :ref:`sif_file_name<doxid-structlpb__control__type_1aaa95e830b709da79d9790471bab54193>`[31];
-		char :ref:`qplib_file_name<doxid-structlpb__control__type_1a3d36354e9f30d642f8b081ba85d777d3>`[31];
-		char :ref:`prefix<doxid-structlpb__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`fdc_control_type<doxid-structfdc__control__type>` :ref:`fdc_control<doxid-structlpb__control__type_1a7bef6e4f678e16a4dcdc40677efddd80>`;
-		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structlpb__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a>`;
-		struct :ref:`fit_control_type<doxid-structfit__control__type>` :ref:`fit_control<doxid-structlpb__control__type_1a4b2e99077c510333b6b2a6f0b59114b9>`;
-		struct :ref:`roots_control_type<doxid-structroots__control__type>` :ref:`roots_control<doxid-structlpb__control__type_1a08df6708e7b5364ff3e8fbde29f29014>`;
-		struct :ref:`cro_control_type<doxid-structcro__control__type>` :ref:`cro_control<doxid-structlpb__control__type_1a7fbe482405119bceefb8480356d6bd43>`;
+		bool :ref:`f_indexing<doxid-structlpb__control__type_f_indexing>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structlpb__control__type_error>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structlpb__control__type_out>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structlpb__control__type_print_level>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`start_print<doxid-structlpb__control__type_start_print>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`stop_print<doxid-structlpb__control__type_stop_print>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`maxit<doxid-structlpb__control__type_maxit>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`infeas_max<doxid-structlpb__control__type_infeas_max>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`muzero_fixed<doxid-structlpb__control__type_muzero_fixed>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`restore_problem<doxid-structlpb__control__type_restore_problem>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`indicator_type<doxid-structlpb__control__type_indicator_type>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`arc<doxid-structlpb__control__type_arc>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`series_order<doxid-structlpb__control__type_series_order>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sif_file_device<doxid-structlpb__control__type_sif_file_device>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`qplib_file_device<doxid-structlpb__control__type_qplib_file_device>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infinity<doxid-structlpb__control__type_infinity>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_abs_p<doxid-structlpb__control__type_stop_abs_p>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_rel_p<doxid-structlpb__control__type_stop_rel_p>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_abs_d<doxid-structlpb__control__type_stop_abs_d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_rel_d<doxid-structlpb__control__type_stop_rel_d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_abs_c<doxid-structlpb__control__type_stop_abs_c>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_rel_c<doxid-structlpb__control__type_stop_rel_c>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`prfeas<doxid-structlpb__control__type_prfeas>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`dufeas<doxid-structlpb__control__type_dufeas>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`muzero<doxid-structlpb__control__type_muzero>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`tau<doxid-structlpb__control__type_tau>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`gamma_c<doxid-structlpb__control__type_gamma_c>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`gamma_f<doxid-structlpb__control__type_gamma_f>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`reduce_infeas<doxid-structlpb__control__type_reduce_infeas>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj_unbounded<doxid-structlpb__control__type_obj_unbounded>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`potential_unbounded<doxid-structlpb__control__type_potential_unbounded>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`identical_bounds_tol<doxid-structlpb__control__type_identical_bounds_tol>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mu_pounce<doxid-structlpb__control__type_mu_pounce>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`indicator_tol_p<doxid-structlpb__control__type_indicator_tol_p>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`indicator_tol_pd<doxid-structlpb__control__type_indicator_tol_pd>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`indicator_tol_tapia<doxid-structlpb__control__type_indicator_tol_tapia>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`cpu_time_limit<doxid-structlpb__control__type_cpu_time_limit>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_time_limit<doxid-structlpb__control__type_clock_time_limit>`;
+		bool :ref:`remove_dependencies<doxid-structlpb__control__type_remove_dependencies>`;
+		bool :ref:`treat_zero_bounds_as_general<doxid-structlpb__control__type_treat_zero_bounds_as_general>`;
+		bool :ref:`just_feasible<doxid-structlpb__control__type_just_feasible>`;
+		bool :ref:`getdua<doxid-structlpb__control__type_getdua>`;
+		bool :ref:`puiseux<doxid-structlpb__control__type_puiseux>`;
+		bool :ref:`every_order<doxid-structlpb__control__type_every_order>`;
+		bool :ref:`feasol<doxid-structlpb__control__type_feasol>`;
+		bool :ref:`balance_initial_complentarity<doxid-structlpb__control__type_balance_initial_complentarity>`;
+		bool :ref:`crossover<doxid-structlpb__control__type_crossover>`;
+		bool :ref:`space_critical<doxid-structlpb__control__type_space_critical>`;
+		bool :ref:`deallocate_error_fatal<doxid-structlpb__control__type_deallocate_error_fatal>`;
+		bool :ref:`generate_sif_file<doxid-structlpb__control__type_generate_sif_file>`;
+		bool :ref:`generate_qplib_file<doxid-structlpb__control__type_generate_qplib_file>`;
+		char :ref:`sif_file_name<doxid-structlpb__control__type_sif_file_name>`[31];
+		char :ref:`qplib_file_name<doxid-structlpb__control__type_qplib_file_name>`[31];
+		char :ref:`prefix<doxid-structlpb__control__type_prefix>`[31];
+		struct :ref:`fdc_control_type<doxid-structfdc__control__type>` :ref:`fdc_control<doxid-structlpb__control__type_fdc_control>`;
+		struct :ref:`sbls_control_type<doxid-structsbls__control__type>` :ref:`sbls_control<doxid-structlpb__control__type_sbls_control>`;
+		struct :ref:`fit_control_type<doxid-structfit__control__type>` :ref:`fit_control<doxid-structlpb__control__type_fit_control>`;
+		struct :ref:`roots_control_type<doxid-structroots__control__type>` :ref:`roots_control<doxid-structlpb__control__type_roots_control>`;
+		struct :ref:`cro_control_type<doxid-structcro__control__type>` :ref:`cro_control<doxid-structlpb__control__type_cro_control>`;
 	};
 .. _details-structlpb__control__type:
 
@@ -87,7 +87,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structlpb__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structlpb__control__type_f_indexing:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -97,7 +97,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structlpb__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structlpb__control__type_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -107,7 +107,7 @@ use C or Fortran sparse matrix indexing
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
-.. _doxid-structlpb__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structlpb__control__type_out:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -117,7 +117,7 @@ error and warning diagnostics occur on stream error
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
-.. _doxid-structlpb__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structlpb__control__type_print_level:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -127,7 +127,7 @@ general output occurs on stream out
 the level of output required is specified by print_level
 
 .. index:: pair: variable; start_print
-.. _doxid-structlpb__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa:
+.. _doxid-structlpb__control__type_start_print:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -137,7 +137,7 @@ the level of output required is specified by print_level
 any printing will start on this iteration
 
 .. index:: pair: variable; stop_print
-.. _doxid-structlpb__control__type_1a9a3d9960a04602d2a18009c82ae2124e:
+.. _doxid-structlpb__control__type_stop_print:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -147,7 +147,7 @@ any printing will start on this iteration
 any printing will stop on this iteration
 
 .. index:: pair: variable; maxit
-.. _doxid-structlpb__control__type_1ab717630b215f0362699acac11fb3652c:
+.. _doxid-structlpb__control__type_maxit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -157,7 +157,7 @@ any printing will stop on this iteration
 at most maxit inner iterations are allowed
 
 .. index:: pair: variable; infeas_max
-.. _doxid-structlpb__control__type_1af7d33b88b67b2366d7e2df31d42083a9:
+.. _doxid-structlpb__control__type_infeas_max:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -167,7 +167,7 @@ at most maxit inner iterations are allowed
 the number of iterations for which the overall infeasibility of the problem is not reduced by at least a factor .reduce_infeas before the problem is flagged as infeasible (see reduce_infeas)
 
 .. index:: pair: variable; muzero_fixed
-.. _doxid-structlpb__control__type_1ab62ab11b934e2380467d5bafe2aaacfb:
+.. _doxid-structlpb__control__type_muzero_fixed:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -177,7 +177,7 @@ the number of iterations for which the overall infeasibility of the problem is n
 the initial value of the barrier parameter will not be changed for the first muzero_fixed iterations
 
 .. index:: pair: variable; restore_problem
-.. _doxid-structlpb__control__type_1a19f10912888ac7ebd153fb21baaeaefa:
+.. _doxid-structlpb__control__type_restore_problem:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -193,7 +193,7 @@ indicate whether and how much of the input problem should be restored on output.
 * 2 all parameters
 
 .. index:: pair: variable; indicator_type
-.. _doxid-structlpb__control__type_1a5abba51271587463f528b0cbdb478141:
+.. _doxid-structlpb__control__type_indicator_type:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -209,7 +209,7 @@ specifies the type of indicator function used. Pssible values are
 * 3 primal-dual indicator: constraint active if and only if distance to the nearest bound <= .indicator_tol_tapia \* distance to same bound at previous iteration
 
 .. index:: pair: variable; arc
-.. _doxid-structlpb__control__type_1a30b5726116ac85ea64777e5d6e333894:
+.. _doxid-structlpb__control__type_arc:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -227,7 +227,7 @@ which residual trajectory should be used to aim from the current iteration to th
 * 4 the mixed linear-quadratic residual trajectory
 
 .. index:: pair: variable; series_order
-.. _doxid-structlpb__control__type_1a67cdd80087746b1190369ae6ed303b25:
+.. _doxid-structlpb__control__type_series_order:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -237,7 +237,7 @@ which residual trajectory should be used to aim from the current iteration to th
 the order of (Taylor/Puiseux) series to fit to the path data
 
 .. index:: pair: variable; sif_file_device
-.. _doxid-structlpb__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0:
+.. _doxid-structlpb__control__type_sif_file_device:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -247,7 +247,7 @@ the order of (Taylor/Puiseux) series to fit to the path data
 specifies the unit number to write generated SIF file describing the current problem
 
 .. index:: pair: variable; qplib_file_device
-.. _doxid-structlpb__control__type_1a580c343e54a25a2d687782410c9b6917:
+.. _doxid-structlpb__control__type_qplib_file_device:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -257,7 +257,7 @@ specifies the unit number to write generated SIF file describing the current pro
 specifies the unit number to write generated QPLIB file describing the current problem
 
 .. index:: pair: variable; infinity
-.. _doxid-structlpb__control__type_1a11a46bd456ea63bac8bdffb056fe98c9:
+.. _doxid-structlpb__control__type_infinity:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -267,7 +267,7 @@ specifies the unit number to write generated QPLIB file describing the current p
 any bound larger than infinity in modulus will be regarded as infinite
 
 .. index:: pair: variable; stop_abs_p
-.. _doxid-structlpb__control__type_1a3749f9dcb2eeb60815a18c85a7d7d440:
+.. _doxid-structlpb__control__type_stop_abs_p:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -277,7 +277,7 @@ any bound larger than infinity in modulus will be regarded as infinite
 the required absolute and relative accuracies for the primal infeasibility
 
 .. index:: pair: variable; stop_rel_p
-.. _doxid-structlpb__control__type_1a068065b9d50d5b222fbc8710d530bd9e:
+.. _doxid-structlpb__control__type_stop_rel_p:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -287,7 +287,7 @@ the required absolute and relative accuracies for the primal infeasibility
 see stop_abs_p
 
 .. index:: pair: variable; stop_abs_d
-.. _doxid-structlpb__control__type_1a67b6a7be5dbfa34e9db4c960943fe31f:
+.. _doxid-structlpb__control__type_stop_abs_d:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -297,7 +297,7 @@ see stop_abs_p
 the required absolute and relative accuracies for the dual infeasibility
 
 .. index:: pair: variable; stop_rel_d
-.. _doxid-structlpb__control__type_1ab479c27e2044c310e8d0c86869ea2307:
+.. _doxid-structlpb__control__type_stop_rel_d:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -307,7 +307,7 @@ the required absolute and relative accuracies for the dual infeasibility
 see stop_abs_d
 
 .. index:: pair: variable; stop_abs_c
-.. _doxid-structlpb__control__type_1a1ed92b5ffb35957c5a8a0e657e312820:
+.. _doxid-structlpb__control__type_stop_abs_c:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -317,7 +317,7 @@ see stop_abs_d
 the required absolute and relative accuracies for the complementarity
 
 .. index:: pair: variable; stop_rel_c
-.. _doxid-structlpb__control__type_1a5c131e3b6061c09670e9c1959b6585a3:
+.. _doxid-structlpb__control__type_stop_rel_c:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -327,7 +327,7 @@ the required absolute and relative accuracies for the complementarity
 see stop_abs_c
 
 .. index:: pair: variable; prfeas
-.. _doxid-structlpb__control__type_1a09a0a5771a0300078ebe5f344ef4e492:
+.. _doxid-structlpb__control__type_prfeas:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -337,7 +337,7 @@ see stop_abs_c
 initial primal variables will not be closer than prfeas from their bound
 
 .. index:: pair: variable; dufeas
-.. _doxid-structlpb__control__type_1a2ac34c5838499ed4992037655f52134a:
+.. _doxid-structlpb__control__type_dufeas:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -347,7 +347,7 @@ initial primal variables will not be closer than prfeas from their bound
 initial dual variables will not be closer than dufeas from their bounds
 
 .. index:: pair: variable; muzero
-.. _doxid-structlpb__control__type_1a8f4661dd5869e1555ba329b4bd535b4d:
+.. _doxid-structlpb__control__type_muzero:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -357,7 +357,7 @@ initial dual variables will not be closer than dufeas from their bounds
 the initial value of the barrier parameter. If muzero is not positive, it will be reset to an appropriate value
 
 .. index:: pair: variable; tau
-.. _doxid-structlpb__control__type_1aa6fb9757f95c75d1a32c5132e939d238:
+.. _doxid-structlpb__control__type_tau:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -367,7 +367,7 @@ the initial value of the barrier parameter. If muzero is not positive, it will b
 the weight attached to primal-dual infeasibility compared to complementarity when assessing step acceptance
 
 .. index:: pair: variable; gamma_c
-.. _doxid-structlpb__control__type_1a80165efc96729e34ab1ae75223dac718:
+.. _doxid-structlpb__control__type_gamma_c:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -377,7 +377,7 @@ the weight attached to primal-dual infeasibility compared to complementarity whe
 individual complementarities will not be allowed to be smaller than gamma_c times the average value
 
 .. index:: pair: variable; gamma_f
-.. _doxid-structlpb__control__type_1a9ce8b2b646d97d4f0c1485bd8842f198:
+.. _doxid-structlpb__control__type_gamma_f:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -387,7 +387,7 @@ individual complementarities will not be allowed to be smaller than gamma_c time
 the average complementarity will not be allowed to be smaller than gamma_f times the primal/dual infeasibility
 
 .. index:: pair: variable; reduce_infeas
-.. _doxid-structlpb__control__type_1aaac67273a340e9f96523583bfdce4c59:
+.. _doxid-structlpb__control__type_reduce_infeas:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -397,7 +397,7 @@ the average complementarity will not be allowed to be smaller than gamma_f times
 if the overall infeasibility of the problem is not reduced by at least a factor reduce_infeas over .infeas_max iterations, the problem is flagged as infeasible (see infeas_max)
 
 .. index:: pair: variable; obj_unbounded
-.. _doxid-structlpb__control__type_1a7eed67e26bc4e17ca334031b7fd608a6:
+.. _doxid-structlpb__control__type_obj_unbounded:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -407,7 +407,7 @@ if the overall infeasibility of the problem is not reduced by at least a factor 
 if the objective function value is smaller than obj_unbounded, it will be flagged as unbounded from below.
 
 .. index:: pair: variable; potential_unbounded
-.. _doxid-structlpb__control__type_1a0c5882a8efc33627a50dce09db1ba40a:
+.. _doxid-structlpb__control__type_potential_unbounded:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -417,7 +417,7 @@ if the objective function value is smaller than obj_unbounded, it will be flagge
 if W=0 and the potential function value is smaller than potential_unbounded \* number of one-sided bounds, the analytic center will be flagged as unbounded
 
 .. index:: pair: variable; identical_bounds_tol
-.. _doxid-structlpb__control__type_1abc74ac9bbf6375075f8943aac6ee09e4:
+.. _doxid-structlpb__control__type_identical_bounds_tol:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -427,7 +427,7 @@ if W=0 and the potential function value is smaller than potential_unbounded \* n
 any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than identical_bounds_tol will be reset to the average of their values
 
 .. index:: pair: variable; mu_pounce
-.. _doxid-structlpb__control__type_1a32eb4d353d409b46521eb28008a74c36:
+.. _doxid-structlpb__control__type_mu_pounce:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -437,7 +437,7 @@ any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than identi
 start terminal extrapolation when mu reaches mu_pounce
 
 .. index:: pair: variable; indicator_tol_p
-.. _doxid-structlpb__control__type_1a9f245bb23cea009fc7a95d86ebe57ddd:
+.. _doxid-structlpb__control__type_indicator_tol_p:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -447,7 +447,7 @@ start terminal extrapolation when mu reaches mu_pounce
 if .indicator_type = 1, a constraint/bound will be deemed to be active if and only if distance to nearest bound <= .indicator_p_tol
 
 .. index:: pair: variable; indicator_tol_pd
-.. _doxid-structlpb__control__type_1aa131ce5e639e5601d1b61fb540ac7187:
+.. _doxid-structlpb__control__type_indicator_tol_pd:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -457,7 +457,7 @@ if .indicator_type = 1, a constraint/bound will be deemed to be active if and on
 if .indicator_type = 2, a constraint/bound will be deemed to be active if and only if distance to nearest bound <= .indicator_tol_pd \* size of corresponding multiplier
 
 .. index:: pair: variable; indicator_tol_tapia
-.. _doxid-structlpb__control__type_1abf4fb7dcdbaa9f729af1f063d357000a:
+.. _doxid-structlpb__control__type_indicator_tol_tapia:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -467,7 +467,7 @@ if .indicator_type = 2, a constraint/bound will be deemed to be active if and on
 if .indicator_type = 3, a constraint/bound will be deemed to be active if and only if distance to nearest bound <= .indicator_tol_tapia \* distance to same bound at previous iteration
 
 .. index:: pair: variable; cpu_time_limit
-.. _doxid-structlpb__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd:
+.. _doxid-structlpb__control__type_cpu_time_limit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -477,7 +477,7 @@ if .indicator_type = 3, a constraint/bound will be deemed to be active if and on
 the maximum CPU time allowed (-ve means infinite)
 
 .. index:: pair: variable; clock_time_limit
-.. _doxid-structlpb__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8:
+.. _doxid-structlpb__control__type_clock_time_limit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -487,7 +487,7 @@ the maximum CPU time allowed (-ve means infinite)
 the maximum elapsed clock time allowed (-ve means infinite)
 
 .. index:: pair: variable; remove_dependencies
-.. _doxid-structlpb__control__type_1ae17a6b550239434c639239ddf45bc1ad:
+.. _doxid-structlpb__control__type_remove_dependencies:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -497,7 +497,7 @@ the maximum elapsed clock time allowed (-ve means infinite)
 the equality constraints will be preprocessed to remove any linear dependencies if true
 
 .. index:: pair: variable; treat_zero_bounds_as_general
-.. _doxid-structlpb__control__type_1a59b23877e9c8cb49f1f6261e24660295:
+.. _doxid-structlpb__control__type_treat_zero_bounds_as_general:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -507,7 +507,7 @@ the equality constraints will be preprocessed to remove any linear dependencies 
 any problem bound with the value zero will be treated as if it were a general value if true
 
 .. index:: pair: variable; just_feasible
-.. _doxid-structlpb__control__type_1a1337f1d22b070690c78f25f7ecaf1e96:
+.. _doxid-structlpb__control__type_just_feasible:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -517,7 +517,7 @@ any problem bound with the value zero will be treated as if it were a general va
 if .just_feasible is true, the algorithm will stop as soon as a feasible point is found. Otherwise, the optimal solution to the problem will be found
 
 .. index:: pair: variable; getdua
-.. _doxid-structlpb__control__type_1ae31443582be206db6b858b35e1fff00b:
+.. _doxid-structlpb__control__type_getdua:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -527,7 +527,7 @@ if .just_feasible is true, the algorithm will stop as soon as a feasible point i
 if .getdua, is true, advanced initial values are obtained for the dual variables
 
 .. index:: pair: variable; puiseux
-.. _doxid-structlpb__control__type_1a444d111a9f28a15760d75b6ff7eb0131:
+.. _doxid-structlpb__control__type_puiseux:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -537,7 +537,7 @@ if .getdua, is true, advanced initial values are obtained for the dual variables
 decide between Puiseux and Taylor series approximations to the arc
 
 .. index:: pair: variable; every_order
-.. _doxid-structlpb__control__type_1a64cb389e65df8d4add9bc97debd32c69:
+.. _doxid-structlpb__control__type_every_order:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -547,7 +547,7 @@ decide between Puiseux and Taylor series approximations to the arc
 try every order of series up to series_order?
 
 .. index:: pair: variable; feasol
-.. _doxid-structlpb__control__type_1a2d28372a45268cac881a4586c4e875d6:
+.. _doxid-structlpb__control__type_feasol:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -557,7 +557,7 @@ try every order of series up to series_order?
 if .feasol is true, the final solution obtained will be perturbed so tha variables close to their bounds are moved onto these bounds
 
 .. index:: pair: variable; balance_initial_complentarity
-.. _doxid-structlpb__control__type_1a88bfd9dc0be7872a0bc1ae611d4d1173:
+.. _doxid-structlpb__control__type_balance_initial_complentarity:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -567,7 +567,7 @@ if .feasol is true, the final solution obtained will be perturbed so tha variabl
 if .balance_initial_complentarity is true, the initial complemetarity is required to be balanced
 
 .. index:: pair: variable; crossover
-.. _doxid-structlpb__control__type_1a479e35eaf4aeb8b4d0c2d5fe2e4196c4:
+.. _doxid-structlpb__control__type_crossover:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -577,7 +577,7 @@ if .balance_initial_complentarity is true, the initial complemetarity is require
 if .crossover is true, cross over the solution to one defined by linearly-independent constraints if possible
 
 .. index:: pair: variable; space_critical
-.. _doxid-structlpb__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structlpb__control__type_space_critical:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -587,7 +587,7 @@ if .crossover is true, cross over the solution to one defined by linearly-indepe
 if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structlpb__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structlpb__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -597,7 +597,7 @@ if .space_critical true, every effort will be made to use as little space as pos
 if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue
 
 .. index:: pair: variable; generate_sif_file
-.. _doxid-structlpb__control__type_1aa75b3a16d146c0d7ad57bf9817033843:
+.. _doxid-structlpb__control__type_generate_sif_file:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -607,7 +607,7 @@ if .deallocate_error_fatal is true, any array/pointer deallocation error will te
 if .generate_sif_file is .true. if a SIF file describing the current problem is to be generated
 
 .. index:: pair: variable; generate_qplib_file
-.. _doxid-structlpb__control__type_1ad226b26090e539cf47228ba5ec7dc08d:
+.. _doxid-structlpb__control__type_generate_qplib_file:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -617,7 +617,7 @@ if .generate_sif_file is .true. if a SIF file describing the current problem is 
 if .generate_qplib_file is .true. if a QPLIB file describing the current problem is to be generated
 
 .. index:: pair: variable; sif_file_name
-.. _doxid-structlpb__control__type_1aaa95e830b709da79d9790471bab54193:
+.. _doxid-structlpb__control__type_sif_file_name:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -627,7 +627,7 @@ if .generate_qplib_file is .true. if a QPLIB file describing the current problem
 name of generated SIF file containing input problem
 
 .. index:: pair: variable; qplib_file_name
-.. _doxid-structlpb__control__type_1a3d36354e9f30d642f8b081ba85d777d3:
+.. _doxid-structlpb__control__type_qplib_file_name:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -637,7 +637,7 @@ name of generated SIF file containing input problem
 name of generated QPLIB file containing input problem
 
 .. index:: pair: variable; prefix
-.. _doxid-structlpb__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structlpb__control__type_prefix:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -647,7 +647,7 @@ name of generated QPLIB file containing input problem
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
 
 .. index:: pair: variable; fdc_control
-.. _doxid-structlpb__control__type_1a7bef6e4f678e16a4dcdc40677efddd80:
+.. _doxid-structlpb__control__type_fdc_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -657,7 +657,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 control parameters for FDC
 
 .. index:: pair: variable; sbls_control
-.. _doxid-structlpb__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a:
+.. _doxid-structlpb__control__type_sbls_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -667,7 +667,7 @@ control parameters for FDC
 control parameters for SBLS
 
 .. index:: pair: variable; fit_control
-.. _doxid-structlpb__control__type_1a4b2e99077c510333b6b2a6f0b59114b9:
+.. _doxid-structlpb__control__type_fit_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -677,7 +677,7 @@ control parameters for SBLS
 control parameters for FIT
 
 .. index:: pair: variable; roots_control
-.. _doxid-structlpb__control__type_1a08df6708e7b5364ff3e8fbde29f29014:
+.. _doxid-structlpb__control__type_roots_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -687,7 +687,7 @@ control parameters for FIT
 control parameters for ROOTS
 
 .. index:: pair: variable; cro_control
-.. _doxid-structlpb__control__type_1a7fbe482405119bceefb8480356d6bd43:
+.. _doxid-structlpb__control__type_cro_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

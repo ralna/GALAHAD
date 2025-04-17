@@ -15,12 +15,12 @@ lms_inform_type structure
 	struct lms_inform_type {
 		// fields
 	
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structlms__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structlms__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`length<doxid-structlms__inform__type_1a9f59b34b1f25fe00023291b678246bcc>`;
-		bool :ref:`updates_skipped<doxid-structlms__inform__type_1a40b8937875a7d11bf4825d7f3bce57e8>`;
-		char :ref:`bad_alloc<doxid-structlms__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		struct :ref:`lms_time_type<doxid-structlms__time__type>` :ref:`time<doxid-structlms__inform__type_1aa55b2c025b7cbc14de6ba0e1acfdae05>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structlms__inform__type_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structlms__inform__type_alloc_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`length<doxid-structlms__inform__type_length>`;
+		bool :ref:`updates_skipped<doxid-structlms__inform__type_updates_skipped>`;
+		char :ref:`bad_alloc<doxid-structlms__inform__type_bad_alloc>`[81];
+		struct :ref:`lms_time_type<doxid-structlms__time__type>` :ref:`time<doxid-structlms__inform__type_time>`;
 	};
 .. _details-structlms__inform__type:
 
@@ -33,7 +33,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structlms__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structlms__inform__type_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -79,7 +79,7 @@ the return status. Possible values are:
   specified when calling lhs_setup.
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structlms__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structlms__inform__type_alloc_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -89,7 +89,7 @@ the return status. Possible values are:
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; length
-.. _doxid-structlms__inform__type_1a9f59b34b1f25fe00023291b678246bcc:
+.. _doxid-structlms__inform__type_length:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -99,7 +99,7 @@ the status of the last attempted allocation/deallocation
 the number of pairs (s,y) currently used to represent the limited-memory matrix.
 
 .. index:: pair: variable; updates_skipped
-.. _doxid-structlms__inform__type_1a40b8937875a7d11bf4825d7f3bce57e8:
+.. _doxid-structlms__inform__type_updates_skipped:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -109,7 +109,7 @@ the number of pairs (s,y) currently used to represent the limited-memory matrix.
 have (s,y) pairs been skipped when forming the limited-memory matrix?
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structlms__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structlms__inform__type_bad_alloc:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -119,7 +119,7 @@ have (s,y) pairs been skipped when forming the limited-memory matrix?
 the name of the array for which an allocation/deallocation error occurred.
 
 .. index:: pair: variable; time
-.. _doxid-structlms__inform__type_1aa55b2c025b7cbc14de6ba0e1acfdae05:
+.. _doxid-structlms__inform__type_time:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

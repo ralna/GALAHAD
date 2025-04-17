@@ -15,16 +15,16 @@ llst_time_type structure
 	struct llst_time_type {
 		// fields
 	
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structllst__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`assemble<doxid-structllst__time__type_1ae84d232eee798a974ebaeb9c82d623f4>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`analyse<doxid-structllst__time__type_1a9c5b9155e1665977103d8c32881d9f00>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorize<doxid-structllst__time__type_1a79e62dbb4cbb6e99d82167e60c703015>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`solve<doxid-structllst__time__type_1a4c971b10c915041b89daa05a29125376>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structllst__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_assemble<doxid-structllst__time__type_1a4df2b92cea9269b8f8cad7024b83a10d>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_analyse<doxid-structllst__time__type_1a3394e706afb175d930c81c4b86fe8f4b>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_factorize<doxid-structllst__time__type_1ad3f0f50628260b90d6cf974e02f86192>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_solve<doxid-structllst__time__type_1af569df4b8828eb7ac8a05ef1030d1358>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structllst__time__type_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`assemble<doxid-structllst__time__type_assemble>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`analyse<doxid-structllst__time__type_analyse>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorize<doxid-structllst__time__type_factorize>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`solve<doxid-structllst__time__type_solve>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structllst__time__type_clock_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_assemble<doxid-structllst__time__type_clock_assemble>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_analyse<doxid-structllst__time__type_clock_analyse>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_factorize<doxid-structllst__time__type_clock_factorize>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_solve<doxid-structllst__time__type_clock_solve>`;
 	};
 .. _details-structllst__time__type:
 
@@ -37,7 +37,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; total
-.. _doxid-structllst__time__type_1ad3803b3bb79c5c74d9300520fbe733f4:
+.. _doxid-structllst__time__type_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -47,7 +47,7 @@ components
 total CPU time spent in the package
 
 .. index:: pair: variable; assemble
-.. _doxid-structllst__time__type_1ae84d232eee798a974ebaeb9c82d623f4:
+.. _doxid-structllst__time__type_assemble:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -57,7 +57,7 @@ total CPU time spent in the package
 CPU time assembling $K(\lambda)$ in (1)
 
 .. index:: pair: variable; analyse
-.. _doxid-structllst__time__type_1a9c5b9155e1665977103d8c32881d9f00:
+.. _doxid-structllst__time__type_analyse:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -67,7 +67,7 @@ CPU time assembling $K(\lambda)$ in (1)
 CPU time spent analysing $K(\lambda)$.
 
 .. index:: pair: variable; factorize
-.. _doxid-structllst__time__type_1a79e62dbb4cbb6e99d82167e60c703015:
+.. _doxid-structllst__time__type_factorize:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -77,7 +77,7 @@ CPU time spent analysing $K(\lambda)$.
 CPU time spent factorizing $K(\lambda)$.
 
 .. index:: pair: variable; solve
-.. _doxid-structllst__time__type_1a4c971b10c915041b89daa05a29125376:
+.. _doxid-structllst__time__type_solve:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -87,7 +87,7 @@ CPU time spent factorizing $K(\lambda)$.
 CPU time spent solving linear systems inolving $K(\lambda)$.
 
 .. index:: pair: variable; clock_total
-.. _doxid-structllst__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
+.. _doxid-structllst__time__type_clock_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -97,7 +97,7 @@ CPU time spent solving linear systems inolving $K(\lambda)$.
 total clock time spent in the package
 
 .. index:: pair: variable; clock_assemble
-.. _doxid-structllst__time__type_1a4df2b92cea9269b8f8cad7024b83a10d:
+.. _doxid-structllst__time__type_clock_assemble:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -107,7 +107,7 @@ total clock time spent in the package
 clock time assembling $K(\lambda)$
 
 .. index:: pair: variable; clock_analyse
-.. _doxid-structllst__time__type_1a3394e706afb175d930c81c4b86fe8f4b:
+.. _doxid-structllst__time__type_clock_analyse:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -117,7 +117,7 @@ clock time assembling $K(\lambda)$
 clock time spent analysing $K(\lambda)$
 
 .. index:: pair: variable; clock_factorize
-.. _doxid-structllst__time__type_1ad3f0f50628260b90d6cf974e02f86192:
+.. _doxid-structllst__time__type_clock_factorize:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -127,7 +127,7 @@ clock time spent analysing $K(\lambda)$
 clock time spent factorizing $K(\lambda)$
 
 .. index:: pair: variable; clock_solve
-.. _doxid-structllst__time__type_1af569df4b8828eb7ac8a05ef1030d1358:
+.. _doxid-structllst__time__type_clock_solve:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

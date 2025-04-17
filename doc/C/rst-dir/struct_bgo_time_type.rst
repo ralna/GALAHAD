@@ -16,12 +16,12 @@ bgo_time_type structure
 	struct bgo_time_type {
 		// components
 	
-		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`total<doxid-structbgo__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc>`;
-		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`univariate_global<doxid-structbgo__time__type_1ae803cab9cf49e3b9f259415e254f7a8e>`;
-		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`multivariate_local<doxid-structbgo__time__type_1ae3473e3e6e1f5482c642784f7e5b85e7>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structbgo__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_univariate_global<doxid-structbgo__time__type_1a35fea348c7aed26574dec4efbd9a7107>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_multivariate_local<doxid-structbgo__time__type_1a7e6ac9410dc0d6af0a020612ad4fceb0>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`total<doxid-structbgo__time__type_total>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`univariate_global<doxid-structbgo__time__type_univariate_global>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`multivariate_local<doxid-structbgo__time__type_multivariate_local>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structbgo__time__type_clock_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_univariate_global<doxid-structbgo__time__type_clock_univariate_global>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_multivariate_local<doxid-structbgo__time__type_clock_multivariate_local>`;
 	};
 .. _details-structbgo__time__type:
 
@@ -35,7 +35,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; total
-.. _doxid-structbgo__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc:
+.. _doxid-structbgo__time__type_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -45,7 +45,7 @@ components
 the total CPU time spent in the package
 
 .. index:: pair: variable; univariate_global
-.. _doxid-structbgo__time__type_1ae803cab9cf49e3b9f259415e254f7a8e:
+.. _doxid-structbgo__time__type_univariate_global:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -55,7 +55,7 @@ the total CPU time spent in the package
 the CPU time spent performing univariate global optimization
 
 .. index:: pair: variable; multivariate_local
-.. _doxid-structbgo__time__type_1ae3473e3e6e1f5482c642784f7e5b85e7:
+.. _doxid-structbgo__time__type_multivariate_local:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -65,7 +65,7 @@ the CPU time spent performing univariate global optimization
 the CPU time spent performing multivariate local optimization
 
 .. index:: pair: variable; clock_total
-.. _doxid-structbgo__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
+.. _doxid-structbgo__time__type_clock_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -75,7 +75,7 @@ the CPU time spent performing multivariate local optimization
 the total clock time spent in the package
 
 .. index:: pair: variable; clock_univariate_global
-.. _doxid-structbgo__time__type_1a35fea348c7aed26574dec4efbd9a7107:
+.. _doxid-structbgo__time__type_clock_univariate_global:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -85,7 +85,7 @@ the total clock time spent in the package
 the clock time spent performing univariate global optimization
 
 .. index:: pair: variable; clock_multivariate_local
-.. _doxid-structbgo__time__type_1a7e6ac9410dc0d6af0a020612ad4fceb0:
+.. _doxid-structbgo__time__type_clock_multivariate_local:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

@@ -16,28 +16,28 @@ bgo_control_type structure
 	struct bgo_control_type {
 		// components
 	
-		bool :ref:`f_indexing<doxid-structbgo__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structbgo__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structbgo__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structbgo__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`attempts_max<doxid-structbgo__control__type_1adf3a400ef30c3d5d65bfc00c68fc291b>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_evals<doxid-structbgo__control__type_1a19d3bb811675792cbe138aef2d1c6603>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sampling_strategy<doxid-structbgo__control__type_1a6c37622ea827ff9870202cd50878bda6>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`hypercube_discretization<doxid-structbgo__control__type_1a30db27deb26d273fdd69bf125bc86ecd>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alive_unit<doxid-structbgo__control__type_1a3fc6359d77a53a63d57ea600b51eac13>`;
-		char :ref:`alive_file<doxid-structbgo__control__type_1ac631699a26f321b14dbed37115f3c006>`[31];
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infinity<doxid-structbgo__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj_unbounded<doxid-structbgo__control__type_1a7eed67e26bc4e17ca334031b7fd608a6>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`cpu_time_limit<doxid-structbgo__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_time_limit<doxid-structbgo__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		bool :ref:`random_multistart<doxid-structbgo__control__type_1a172f98defa4da75031c5f280b5cfbab6>`;
-		bool :ref:`hessian_available<doxid-structbgo__control__type_1a0fa05e3076ccb30e3b859c1e4be08981>`;
-		bool :ref:`space_critical<doxid-structbgo__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		bool :ref:`deallocate_error_fatal<doxid-structbgo__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structbgo__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`ugo_control_type<doxid-structugo__control__type>` :ref:`ugo_control<doxid-structbgo__control__type_1a750a67a99a91211b1c9521111a471960>`;
-		struct :ref:`lhs_control_type<doxid-structlhs__control__type>` :ref:`lhs_control<doxid-structbgo__control__type_1a4938e30d02d3b452486980daef1f6f73>`;
-		struct :ref:`trb_control_type<doxid-structtrb__control__type>` :ref:`trb_control<doxid-structbgo__control__type_1a8538960a9c63512c78babb9a8f4b1ca2>`;
+		bool :ref:`f_indexing<doxid-structbgo__control__type_f_indexing>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structbgo__control__type_error>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structbgo__control__type_out>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structbgo__control__type_print_level>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`attempts_max<doxid-structbgo__control__type_attempts_max>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_evals<doxid-structbgo__control__type_max_evals>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sampling_strategy<doxid-structbgo__control__type_sampling_strategy>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`hypercube_discretization<doxid-structbgo__control__type_hypercube_discretization>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alive_unit<doxid-structbgo__control__type_alive_unit>`;
+		char :ref:`alive_file<doxid-structbgo__control__type_alive_file>`[31];
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infinity<doxid-structbgo__control__type_infinity>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj_unbounded<doxid-structbgo__control__type_obj_unbounded>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`cpu_time_limit<doxid-structbgo__control__type_cpu_time_limit>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_time_limit<doxid-structbgo__control__type_clock_time_limit>`;
+		bool :ref:`random_multistart<doxid-structbgo__control__type_random_multistart>`;
+		bool :ref:`hessian_available<doxid-structbgo__control__type_hessian_available>`;
+		bool :ref:`space_critical<doxid-structbgo__control__type_space_critical>`;
+		bool :ref:`deallocate_error_fatal<doxid-structbgo__control__type_deallocate_error_fatal>`;
+		char :ref:`prefix<doxid-structbgo__control__type_prefix>`[31];
+		struct :ref:`ugo_control_type<doxid-structugo__control__type>` :ref:`ugo_control<doxid-structbgo__control__type_ugo_control>`;
+		struct :ref:`lhs_control_type<doxid-structlhs__control__type>` :ref:`lhs_control<doxid-structbgo__control__type_lhs_control>`;
+		struct :ref:`trb_control_type<doxid-structtrb__control__type>` :ref:`trb_control<doxid-structbgo__control__type_trb_control>`;
 	};
 .. _details-structbgo__control__type:
 
@@ -50,7 +50,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structbgo__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structbgo__control__type_f_indexing:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -60,7 +60,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structbgo__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structbgo__control__type_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -70,7 +70,7 @@ use C or Fortran sparse matrix indexing
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
-.. _doxid-structbgo__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structbgo__control__type_out:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -80,7 +80,7 @@ error and warning diagnostics occur on stream error
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
-.. _doxid-structbgo__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structbgo__control__type_print_level:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -98,7 +98,7 @@ the level of output required. Possible values are:
 * $\geq$ 3 increasingly verbose (debugging) output
 
 .. index:: pair: variable; attempts_max
-.. _doxid-structbgo__control__type_1adf3a400ef30c3d5d65bfc00c68fc291b:
+.. _doxid-structbgo__control__type_attempts_max:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -108,7 +108,7 @@ the level of output required. Possible values are:
 the maximum number of random searches from the best point found so far
 
 .. index:: pair: variable; max_evals
-.. _doxid-structbgo__control__type_1a19d3bb811675792cbe138aef2d1c6603:
+.. _doxid-structbgo__control__type_max_evals:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -118,7 +118,7 @@ the maximum number of random searches from the best point found so far
 the maximum number of function evaluations made
 
 .. index:: pair: variable; sampling_strategy
-.. _doxid-structbgo__control__type_1a6c37622ea827ff9870202cd50878bda6:
+.. _doxid-structbgo__control__type_sampling_strategy:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -134,7 +134,7 @@ sampling strategy used. Possible values are
 * 3 niformly spread within a Latin hypercube
 
 .. index:: pair: variable; hypercube_discretization
-.. _doxid-structbgo__control__type_1a30db27deb26d273fdd69bf125bc86ecd:
+.. _doxid-structbgo__control__type_hypercube_discretization:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -144,7 +144,7 @@ sampling strategy used. Possible values are
 hyper-cube discretization (for sampling stategies 2 and 3)
 
 .. index:: pair: variable; alive_unit
-.. _doxid-structbgo__control__type_1a3fc6359d77a53a63d57ea600b51eac13:
+.. _doxid-structbgo__control__type_alive_unit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -154,7 +154,7 @@ hyper-cube discretization (for sampling stategies 2 and 3)
 removal of the file alive_file from unit alive_unit terminates execution
 
 .. index:: pair: variable; alive_file
-.. _doxid-structbgo__control__type_1ac631699a26f321b14dbed37115f3c006:
+.. _doxid-structbgo__control__type_alive_file:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -164,7 +164,7 @@ removal of the file alive_file from unit alive_unit terminates execution
 see alive_unit
 
 .. index:: pair: variable; infinity
-.. _doxid-structbgo__control__type_1a11a46bd456ea63bac8bdffb056fe98c9:
+.. _doxid-structbgo__control__type_infinity:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -174,7 +174,7 @@ see alive_unit
 any bound larger than infinity in modulus will be regarded as infinite
 
 .. index:: pair: variable; obj_unbounded
-.. _doxid-structbgo__control__type_1a7eed67e26bc4e17ca334031b7fd608a6:
+.. _doxid-structbgo__control__type_obj_unbounded:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -184,7 +184,7 @@ any bound larger than infinity in modulus will be regarded as infinite
 the smallest value the objective function may take before the problem is marked as unbounded
 
 .. index:: pair: variable; cpu_time_limit
-.. _doxid-structbgo__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd:
+.. _doxid-structbgo__control__type_cpu_time_limit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -194,7 +194,7 @@ the smallest value the objective function may take before the problem is marked 
 the maximum CPU time allowed (-ve means infinite)
 
 .. index:: pair: variable; clock_time_limit
-.. _doxid-structbgo__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8:
+.. _doxid-structbgo__control__type_clock_time_limit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -204,7 +204,7 @@ the maximum CPU time allowed (-ve means infinite)
 the maximum elapsed clock time allowed (-ve means infinite)
 
 .. index:: pair: variable; random_multistart
-.. _doxid-structbgo__control__type_1a172f98defa4da75031c5f280b5cfbab6:
+.. _doxid-structbgo__control__type_random_multistart:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -214,7 +214,7 @@ the maximum elapsed clock time allowed (-ve means infinite)
 perform random-multistart as opposed to local minimize and probe
 
 .. index:: pair: variable; hessian_available
-.. _doxid-structbgo__control__type_1a0fa05e3076ccb30e3b859c1e4be08981:
+.. _doxid-structbgo__control__type_hessian_available:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -224,7 +224,7 @@ perform random-multistart as opposed to local minimize and probe
 is the Hessian matrix of second derivatives available or is access only via matrix-vector products?
 
 .. index:: pair: variable; space_critical
-.. _doxid-structbgo__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structbgo__control__type_space_critical:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -234,7 +234,7 @@ is the Hessian matrix of second derivatives available or is access only via matr
 if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structbgo__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structbgo__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -244,7 +244,7 @@ if .space_critical true, every effort will be made to use as little space as pos
 if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue
 
 .. index:: pair: variable; prefix
-.. _doxid-structbgo__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structbgo__control__type_prefix:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -254,7 +254,7 @@ if .deallocate_error_fatal is true, any array/pointer deallocation error will te
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
 
 .. index:: pair: variable; ugo_control
-.. _doxid-structbgo__control__type_1a750a67a99a91211b1c9521111a471960:
+.. _doxid-structbgo__control__type_ugo_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -264,7 +264,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 control parameters for UGO
 
 .. index:: pair: variable; lhs_control
-.. _doxid-structbgo__control__type_1a4938e30d02d3b452486980daef1f6f73:
+.. _doxid-structbgo__control__type_lhs_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -274,7 +274,7 @@ control parameters for UGO
 control parameters for LHS
 
 .. index:: pair: variable; trb_control
-.. _doxid-structbgo__control__type_1a8538960a9c63512c78babb9a8f4b1ca2:
+.. _doxid-structbgo__control__type_trb_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

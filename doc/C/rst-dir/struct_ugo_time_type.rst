@@ -16,8 +16,8 @@ ugo_time_type structure
 	struct ugo_time_type {
 		// components
 	
-		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`total<doxid-structugo__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structugo__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`total<doxid-structugo__time__type_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structugo__time__type_clock_total>`;
 	};
 .. _details-structugo__time__type:
 
@@ -30,7 +30,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; total
-.. _doxid-structugo__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc:
+.. _doxid-structugo__time__type_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -40,7 +40,7 @@ components
 the total CPU time spent in the package
 
 .. index:: pair: variable; clock_total
-.. _doxid-structugo__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
+.. _doxid-structugo__time__type_clock_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

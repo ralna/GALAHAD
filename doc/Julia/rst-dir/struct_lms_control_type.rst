@@ -33,7 +33,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structlms__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structlms__control__type_f_indexing:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -43,7 +43,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structlms__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structlms__control__type_error:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -53,7 +53,7 @@ use C or Fortran sparse matrix indexing
 unit for error messages
 
 .. index:: pair: variable; out
-.. _doxid-structlms__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structlms__control__type_out:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -63,7 +63,7 @@ unit for error messages
 unit for monitor output
 
 .. index:: pair: variable; print_level
-.. _doxid-structlms__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structlms__control__type_print_level:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -73,7 +73,7 @@ unit for monitor output
 controls level of diagnostic output
 
 .. index:: pair: variable; memory_length
-.. _doxid-structlms__control__type_1a43017042f3cf20a8e9b364b4f7be0104:
+.. _doxid-structlms__control__type_memory_length:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -83,7 +83,7 @@ controls level of diagnostic output
 limited memory length
 
 .. index:: pair: variable; method
-.. _doxid-structlms__control__type_1adcc9a19ad3119f823a658f6a49a24e64:
+.. _doxid-structlms__control__type_method:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -101,7 +101,7 @@ limited-memory formula required (others may be added in due course):
 * 4 The inverse of the shifted BFGS formula. This should be used instead of .method = 3 whenever a shift is planned.
 
 .. index:: pair: variable; any_method
-.. _doxid-structlms__control__type_1a1314157047f4fc989c8d680141a32d6b:
+.. _doxid-structlms__control__type_any_method:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -111,7 +111,7 @@ limited-memory formula required (others may be added in due course):
 allow space to permit different methods if required (less efficient)
 
 .. index:: pair: variable; space_critical
-.. _doxid-structlms__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structlms__control__type_space_critical:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -121,7 +121,7 @@ allow space to permit different methods if required (less efficient)
 if space is critical, ensure allocated arrays are no bigger than needed
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structlms__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structlms__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -131,7 +131,7 @@ if space is critical, ensure allocated arrays are no bigger than needed
 exit if any deallocation fails
 
 .. index:: pair: variable; prefix
-.. _doxid-structlms__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structlms__control__type_prefix:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

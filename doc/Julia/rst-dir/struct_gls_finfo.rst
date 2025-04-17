@@ -31,7 +31,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; flag
-.. _doxid-structgls__finfo_1adf916204820072417ed73a32de1cefcf:
+.. _doxid-structgls__finfo_flag:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -41,7 +41,7 @@ components
 Flags success or failure case.
 
 .. index:: pair: variable; more
-.. _doxid-structgls__finfo_1a4628f2fb17af64608416810cc4e5a9d0:
+.. _doxid-structgls__finfo_more:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -81,7 +81,7 @@ Size for subsequent factorization.
 Number of entries dropped.
 
 .. index:: pair: variable; rank
-.. _doxid-structgls__finfo_1a6cfd95afd0afebd625b889fb6e58371c:
+.. _doxid-structgls__finfo_rank:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -91,7 +91,7 @@ Number of entries dropped.
 Estimated rank.
 
 .. index:: pair: variable; stat
-.. _doxid-structgls__finfo_1a7d6f8a25e94209bd3ba29b2051ca4f08:
+.. _doxid-structgls__finfo_stat:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

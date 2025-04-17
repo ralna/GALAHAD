@@ -34,7 +34,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; total
-.. _doxid-structtru__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc:
+.. _doxid-structtru__time__type_total:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -44,7 +44,7 @@ components
 the total CPU time spent in the package
 
 .. index:: pair: variable; preprocess
-.. _doxid-structtru__time__type_1adc5369028902776a12fe8d393be67174:
+.. _doxid-structtru__time__type_preprocess:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -54,7 +54,7 @@ the total CPU time spent in the package
 the CPU time spent preprocessing the problem
 
 .. index:: pair: variable; analyse
-.. _doxid-structtru__time__type_1a0ca2b20748c7749a77d684124011c531:
+.. _doxid-structtru__time__type_analyse:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -64,7 +64,7 @@ the CPU time spent preprocessing the problem
 the CPU time spent analysing the required matrices prior to factorization
 
 .. index:: pair: variable; factorize
-.. _doxid-structtru__time__type_1ab7eecce4b013c87e490b8984c74c59c3:
+.. _doxid-structtru__time__type_factorize:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -74,7 +74,7 @@ the CPU time spent analysing the required matrices prior to factorization
 the CPU time spent factorizing the required matrices
 
 .. index:: pair: variable; solve
-.. _doxid-structtru__time__type_1a6356532c25755a6e5fedee1a7d703949:
+.. _doxid-structtru__time__type_solve:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -84,7 +84,7 @@ the CPU time spent factorizing the required matrices
 the CPU time spent computing the search direction
 
 .. index:: pair: variable; clock_total
-.. _doxid-structtru__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
+.. _doxid-structtru__time__type_clock_total:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -94,7 +94,7 @@ the CPU time spent computing the search direction
 the total clock time spent in the package
 
 .. index:: pair: variable; clock_preprocess
-.. _doxid-structtru__time__type_1a0c3b390c67037ef2fe8b4cf29e079e4e:
+.. _doxid-structtru__time__type_clock_preprocess:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -104,7 +104,7 @@ the total clock time spent in the package
 the clock time spent preprocessing the problem
 
 .. index:: pair: variable; clock_analyse
-.. _doxid-structtru__time__type_1a3394e706afb175d930c81c4b86fe8f4b:
+.. _doxid-structtru__time__type_clock_analyse:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -114,7 +114,7 @@ the clock time spent preprocessing the problem
 the clock time spent analysing the required matrices prior to factorization
 
 .. index:: pair: variable; clock_factorize
-.. _doxid-structtru__time__type_1ad3f0f50628260b90d6cf974e02f86192:
+.. _doxid-structtru__time__type_clock_factorize:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -124,7 +124,7 @@ the clock time spent analysing the required matrices prior to factorization
 the clock time spent factorizing the required matrices
 
 .. index:: pair: variable; clock_solve
-.. _doxid-structtru__time__type_1af569df4b8828eb7ac8a05ef1030d1358:
+.. _doxid-structtru__time__type_clock_solve:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

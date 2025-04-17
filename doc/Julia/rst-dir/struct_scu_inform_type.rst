@@ -26,7 +26,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structscu__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structscu__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -36,7 +36,7 @@ components
 return status. A non-zero value indicates an error or a request for further information. See SCU_solve for details.
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structscu__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structscu__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -46,7 +46,7 @@ return status. A non-zero value indicates an error or a request for further info
 the return status from the last attempted internal workspace array allocation or deallocation. A non-zero value indicates that the allocation or deallocation was unsuccessful, and corresponds to the fortran STAT= value on the user’s system.
 
 .. index:: pair: variable; inertia
-.. _doxid-structscu__inform__type_1a4387aa0c0c3c91d72fb78c8925f05993:
+.. _doxid-structscu__inform__type_inertia:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

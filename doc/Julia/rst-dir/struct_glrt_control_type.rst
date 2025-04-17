@@ -44,7 +44,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structglrt__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structglrt__control__type_f_indexing:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -54,7 +54,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structglrt__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structglrt__control__type_error:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -64,7 +64,7 @@ use C or Fortran sparse matrix indexing
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
-.. _doxid-structglrt__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structglrt__control__type_out:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -74,7 +74,7 @@ error and warning diagnostics occur on stream error
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
-.. _doxid-structglrt__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structglrt__control__type_print_level:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -84,7 +84,7 @@ general output occurs on stream out
 the level of output required is specified by print_level
 
 .. index:: pair: variable; itmax
-.. _doxid-structglrt__control__type_1ac8da2a7f67eddd46d6b08817471e3063:
+.. _doxid-structglrt__control__type_itmax:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -94,7 +94,7 @@ the level of output required is specified by print_level
 the maximum number of iterations allowed (-ve = no bound)
 
 .. index:: pair: variable; stopping_rule
-.. _doxid-structglrt__control__type_1a39dcb82333184b2fa9251a89c3e30e1a:
+.. _doxid-structglrt__control__type_stopping_rule:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -110,7 +110,7 @@ the stopping rule used (see below). Possible values are:
 * other. stopping rule = 1.0.
 
 .. index:: pair: variable; freq
-.. _doxid-structglrt__control__type_1ae0d22272b68e75d19ac0b80c01f806b6:
+.. _doxid-structglrt__control__type_freq:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -120,7 +120,7 @@ the stopping rule used (see below). Possible values are:
 frequency for solving the reduced tri-diagonal problem
 
 .. index:: pair: variable; extra_vectors
-.. _doxid-structglrt__control__type_1ac24a274f1682ee791e15979f6c4341e1:
+.. _doxid-structglrt__control__type_extra_vectors:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -130,7 +130,7 @@ frequency for solving the reduced tri-diagonal problem
 the number of extra work vectors of length n used
 
 .. index:: pair: variable; ritz_printout_device
-.. _doxid-structglrt__control__type_1aa733751a194838432e841fce75b56682:
+.. _doxid-structglrt__control__type_ritz_printout_device:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -140,7 +140,7 @@ the number of extra work vectors of length n used
 the unit number for writing debug Ritz values
 
 .. index:: pair: variable; stop_relative
-.. _doxid-structglrt__control__type_1ae3103abf29cabc33010d53428da2f2fc:
+.. _doxid-structglrt__control__type_stop_relative:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -150,7 +150,7 @@ the unit number for writing debug Ritz values
 the iteration stops successfully when the gradient in the $M^{-1}$ norm is smaller than max( stop_relative \* min( 1, stopping_rule ) \* norm initial gradient, stop_absolute )
 
 .. index:: pair: variable; stop_absolute
-.. _doxid-structglrt__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6:
+.. _doxid-structglrt__control__type_stop_absolute:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -160,7 +160,7 @@ the iteration stops successfully when the gradient in the $M^{-1}$ norm is small
 see stop_relative
 
 .. index:: pair: variable; fraction_opt
-.. _doxid-structglrt__control__type_1a3a722628453f92a1fb510e15f0bd71bb:
+.. _doxid-structglrt__control__type_fraction_opt:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -170,7 +170,7 @@ see stop_relative
 an estimate of the solution that gives at least .fraction_opt times the optimal objective value will be found
 
 .. index:: pair: variable; rminvr_zero
-.. _doxid-structglrt__control__type_1a1326abe392007db57e814413298b152f:
+.. _doxid-structglrt__control__type_rminvr_zero:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -180,7 +180,7 @@ an estimate of the solution that gives at least .fraction_opt times the optimal 
 the smallest value that the square of the M norm of the gradient of the objective may be before it is considered to be zero
 
 .. index:: pair: variable; f_0
-.. _doxid-structglrt__control__type_1a221da497cd332f1acdcdb2919f282fb4:
+.. _doxid-structglrt__control__type_f_0:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -190,7 +190,7 @@ the smallest value that the square of the M norm of the gradient of the objectiv
 the constant term, f0, in the objective function
 
 .. index:: pair: variable; unitm
-.. _doxid-structglrt__control__type_1ae18a96ff3d3a13fe7a965fc39325d25c:
+.. _doxid-structglrt__control__type_unitm:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -200,7 +200,7 @@ the constant term, f0, in the objective function
 is M the identity matrix ?
 
 .. index:: pair: variable; impose_descent
-.. _doxid-structglrt__control__type_1a837f5d19d77de4475c6acc7974230bad:
+.. _doxid-structglrt__control__type_impose_descent:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -210,7 +210,7 @@ is M the identity matrix ?
 is descent required i.e., should $c^T x < 0$?
 
 .. index:: pair: variable; space_critical
-.. _doxid-structglrt__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structglrt__control__type_space_critical:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -220,7 +220,7 @@ is descent required i.e., should $c^T x < 0$?
 if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structglrt__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structglrt__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -230,7 +230,7 @@ if .space_critical true, every effort will be made to use as little space as pos
 if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue
 
 .. index:: pair: variable; print_ritz_values
-.. _doxid-structglrt__control__type_1aa12aeab97d40062126b39c7fa300d147:
+.. _doxid-structglrt__control__type_print_ritz_values:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -240,7 +240,7 @@ if .deallocate_error_fatal is true, any array/pointer deallocation error will te
 should the Ritz values be written to the debug stream?
 
 .. index:: pair: variable; ritz_file_name
-.. _doxid-structglrt__control__type_1afda2047534d65487e814d835cd819316:
+.. _doxid-structglrt__control__type_ritz_file_name:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -250,7 +250,7 @@ should the Ritz values be written to the debug stream?
 name of debug file containing the Ritz values
 
 .. index:: pair: variable; prefix
-.. _doxid-structglrt__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structglrt__control__type_prefix:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

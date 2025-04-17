@@ -25,7 +25,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; total
-.. _doxid-structconvert__time__type_1ad3803b3bb79c5c74d9300520fbe733f4:
+.. _doxid-structconvert__time__type_total:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -35,7 +35,7 @@ components
 total cpu time spent in the package
 
 .. index:: pair: variable; clock_total
-.. _doxid-structconvert__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
+.. _doxid-structconvert__time__type_clock_total:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

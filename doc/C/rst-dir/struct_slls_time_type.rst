@@ -16,10 +16,10 @@ slls_time_type structure
 	struct slls_time_type {
 		// components
 	
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structslls__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`analyse<doxid-structslls__time__type_1a9c5b9155e1665977103d8c32881d9f00>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorize<doxid-structslls__time__type_1a79e62dbb4cbb6e99d82167e60c703015>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`solve<doxid-structslls__time__type_1a4c971b10c915041b89daa05a29125376>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structslls__time__type_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`analyse<doxid-structslls__time__type_analyse>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorize<doxid-structslls__time__type_factorize>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`solve<doxid-structslls__time__type_solve>`;
 	};
 .. _details-structslls__time__type:
 
@@ -32,7 +32,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; total
-.. _doxid-structslls__time__type_1ad3803b3bb79c5c74d9300520fbe733f4:
+.. _doxid-structslls__time__type_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -42,7 +42,7 @@ components
 the total CPU time spent in the package
 
 .. index:: pair: variable; analyse
-.. _doxid-structslls__time__type_1a9c5b9155e1665977103d8c32881d9f00:
+.. _doxid-structslls__time__type_analyse:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -52,7 +52,7 @@ the total CPU time spent in the package
 the CPU time spent analysing the required matrices prior to factorization
 
 .. index:: pair: variable; factorize
-.. _doxid-structslls__time__type_1a79e62dbb4cbb6e99d82167e60c703015:
+.. _doxid-structslls__time__type_factorize:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -62,7 +62,7 @@ the CPU time spent analysing the required matrices prior to factorization
 the CPU time spent factorizing the required matrices
 
 .. index:: pair: variable; solve
-.. _doxid-structslls__time__type_1a4c971b10c915041b89daa05a29125376:
+.. _doxid-structslls__time__type_solve:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

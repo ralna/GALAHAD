@@ -49,7 +49,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structarc__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structarc__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -59,7 +59,7 @@ components
 return status. See ARC_solve for details
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structarc__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structarc__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -69,7 +69,7 @@ return status. See ARC_solve for details
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structarc__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structarc__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -79,7 +79,7 @@ the status of the last attempted allocation/deallocation
 the name of the array for which an allocation/deallocation error occurred
 
 .. index:: pair: variable; iter
-.. _doxid-structarc__inform__type_1aab6f168571c2073e01e240524b8a3da0:
+.. _doxid-structarc__inform__type_iter:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -89,7 +89,7 @@ the name of the array for which an allocation/deallocation error occurred
 the total number of iterations performed
 
 .. index:: pair: variable; cg_iter
-.. _doxid-structarc__inform__type_1ad37cf7ad93af3413bc01b6515aad692a:
+.. _doxid-structarc__inform__type_cg_iter:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -99,7 +99,7 @@ the total number of iterations performed
 the total number of CG iterations performed
 
 .. index:: pair: variable; f_eval
-.. _doxid-structarc__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa:
+.. _doxid-structarc__inform__type_f_eval:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -109,7 +109,7 @@ the total number of CG iterations performed
 the total number of evaluations of the objective function
 
 .. index:: pair: variable; g_eval
-.. _doxid-structarc__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469:
+.. _doxid-structarc__inform__type_g_eval:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -119,7 +119,7 @@ the total number of evaluations of the objective function
 the total number of evaluations of the gradient of the objective functio
 
 .. index:: pair: variable; h_eval
-.. _doxid-structarc__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a:
+.. _doxid-structarc__inform__type_h_eval:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -129,7 +129,7 @@ the total number of evaluations of the gradient of the objective functio
 the total number of evaluations of the Hessian of the objective function
 
 .. index:: pair: variable; factorization_status
-.. _doxid-structarc__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210:
+.. _doxid-structarc__inform__type_factorization_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -139,7 +139,7 @@ the total number of evaluations of the Hessian of the objective function
 the return status from the factorization
 
 .. index:: pair: variable; factorization_max
-.. _doxid-structarc__inform__type_1a97dadabf3b7bdf921c4dcd1f43129f05:
+.. _doxid-structarc__inform__type_factorization_max:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -149,7 +149,7 @@ the return status from the factorization
 the maximum number of factorizations in a sub-problem solve
 
 .. index:: pair: variable; max_entries_factors
-.. _doxid-structarc__inform__type_1a177e429e737cfa2cd3df051a65fcfb68:
+.. _doxid-structarc__inform__type_max_entries_factors:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -159,7 +159,7 @@ the maximum number of factorizations in a sub-problem solve
 the maximum number of entries in the factors
 
 .. index:: pair: variable; factorization_integer
-.. _doxid-structarc__inform__type_1a29cd3a5b0f30227170f825116d9ade9e:
+.. _doxid-structarc__inform__type_factorization_integer:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -169,7 +169,7 @@ the maximum number of entries in the factors
 the total integer workspace required for the factorization
 
 .. index:: pair: variable; factorization_real
-.. _doxid-structarc__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc:
+.. _doxid-structarc__inform__type_factorization_real:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -179,7 +179,7 @@ the total integer workspace required for the factorization
 the total real workspace required for the factorization
 
 .. index:: pair: variable; factorization_average
-.. _doxid-structarc__inform__type_1a42d0c89df887685f68327d07c6e92f05:
+.. _doxid-structarc__inform__type_factorization_average:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -189,7 +189,7 @@ the total real workspace required for the factorization
 the average number of factorizations per sub-problem solve
 
 .. index:: pair: variable; obj
-.. _doxid-structarc__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:
+.. _doxid-structarc__inform__type_obj:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -199,7 +199,7 @@ the average number of factorizations per sub-problem solve
 the value of the objective function at the best estimate of the solution determined by the package.
 
 .. index:: pair: variable; norm_g
-.. _doxid-structarc__inform__type_1ae1bc0a751c6ede62421bbc49fbe7d9fe:
+.. _doxid-structarc__inform__type_norm_g:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -209,7 +209,7 @@ the value of the objective function at the best estimate of the solution determi
 the norm of the gradient of the objective function at the best estimate of the solution determined by the package.
 
 .. index:: pair: variable; weight
-.. _doxid-structarc__inform__type_1adcd20aeaf7042e972ddab56f3867ce70:
+.. _doxid-structarc__inform__type_weight:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -219,7 +219,7 @@ the norm of the gradient of the objective function at the best estimate of the s
 the current value of the regularization weight
 
 .. index:: pair: variable; time
-.. _doxid-structarc__inform__type_1a4288efaa60a28f967b947ef1b07cf445:
+.. _doxid-structarc__inform__type_time:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -229,7 +229,7 @@ the current value of the regularization weight
 timings (see above)
 
 .. index:: pair: variable; rqs_inform
-.. _doxid-structarc__inform__type_1a68497e7bbd1695ac9b830fc8fe594d60:
+.. _doxid-structarc__inform__type_rqs_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -239,7 +239,7 @@ timings (see above)
 inform parameters for RQS
 
 .. index:: pair: variable; glrt_inform
-.. _doxid-structarc__inform__type_1aa5a47a840c1f9680ac8b9e4db3eb9e88:
+.. _doxid-structarc__inform__type_glrt_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -249,7 +249,7 @@ inform parameters for RQS
 inform parameters for GLRT
 
 .. index:: pair: variable; dps_inform
-.. _doxid-structarc__inform__type_1aec61ddb290b679c265693de171a6394f:
+.. _doxid-structarc__inform__type_dps_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -259,7 +259,7 @@ inform parameters for GLRT
 inform parameters for DPS
 
 .. index:: pair: variable; psls_inform
-.. _doxid-structarc__inform__type_1a57ca5ed37882eb917736f845d3cdb8ee:
+.. _doxid-structarc__inform__type_psls_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -269,7 +269,7 @@ inform parameters for DPS
 inform parameters for PSLS
 
 .. index:: pair: variable; lms_inform
-.. _doxid-structarc__inform__type_1a6428cf213f8c899aa1bfb1fc3d24f37d:
+.. _doxid-structarc__inform__type_lms_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -279,7 +279,7 @@ inform parameters for PSLS
 inform parameters for LMS
 
 .. index:: pair: variable; lms_inform_prec
-.. _doxid-structarc__inform__type_1a2040147e726e4ad18ef6d81d8339644e:
+.. _doxid-structarc__inform__type_lms_inform_prec:
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
@@ -288,7 +288,7 @@ inform parameters for LMS
 inform parameters for LMS used for preconditioning
 
 .. index:: pair: variable; sha_inform
-.. _doxid-structarc__inform__type_1a196d9da91c7ed4a67aa6e009e336e101:
+.. _doxid-structarc__inform__type_sha_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

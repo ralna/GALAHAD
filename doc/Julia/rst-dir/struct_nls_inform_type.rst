@@ -50,7 +50,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structnls__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structnls__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -60,7 +60,7 @@ components
 return status. See NLS_solve for details
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structnls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structnls__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -70,7 +70,7 @@ return status. See NLS_solve for details
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structnls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structnls__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -80,7 +80,7 @@ the status of the last attempted allocation/deallocation
 the name of the array for which an allocation/deallocation error occurred
 
 .. index:: pair: variable; bad_eval
-.. _doxid-structnls__inform__type_1a184c27298dc565470437c213a2bd2f3e:
+.. _doxid-structnls__inform__type_bad_eval:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -90,7 +90,7 @@ the name of the array for which an allocation/deallocation error occurred
 the name of the user-supplied evaluation routine for which an error occurred
 
 .. index:: pair: variable; iter
-.. _doxid-structnls__inform__type_1aab6f168571c2073e01e240524b8a3da0:
+.. _doxid-structnls__inform__type_iter:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -100,7 +100,7 @@ the name of the user-supplied evaluation routine for which an error occurred
 the total number of iterations performed
 
 .. index:: pair: variable; cg_iter
-.. _doxid-structnls__inform__type_1ad37cf7ad93af3413bc01b6515aad692a:
+.. _doxid-structnls__inform__type_cg_iter:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -110,7 +110,7 @@ the total number of iterations performed
 the total number of CG iterations performed
 
 .. index:: pair: variable; c_eval
-.. _doxid-structnls__inform__type_1ab8312e1defeefffdcc0b5956bcb31ad4:
+.. _doxid-structnls__inform__type_c_eval:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -120,7 +120,7 @@ the total number of CG iterations performed
 the total number of evaluations of the residual function c(x)
 
 .. index:: pair: variable; j_eval
-.. _doxid-structnls__inform__type_1a47a079918ad01b32fd15ed6a0b8bd581:
+.. _doxid-structnls__inform__type_j_eval:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -130,7 +130,7 @@ the total number of evaluations of the residual function c(x)
 the total number of evaluations of the Jacobian J(x) of c(x)
 
 .. index:: pair: variable; h_eval
-.. _doxid-structnls__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a:
+.. _doxid-structnls__inform__type_h_eval:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -140,7 +140,7 @@ the total number of evaluations of the Jacobian J(x) of c(x)
 the total number of evaluations of the scaled Hessian H(x,y) of c(x)
 
 .. index:: pair: variable; factorization_max
-.. _doxid-structnls__inform__type_1a97dadabf3b7bdf921c4dcd1f43129f05:
+.. _doxid-structnls__inform__type_factorization_max:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -150,7 +150,7 @@ the total number of evaluations of the scaled Hessian H(x,y) of c(x)
 the maximum number of factorizations in a sub-problem solve
 
 .. index:: pair: variable; factorization_status
-.. _doxid-structnls__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210:
+.. _doxid-structnls__inform__type_factorization_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -160,7 +160,7 @@ the maximum number of factorizations in a sub-problem solve
 the return status from the factorization
 
 .. index:: pair: variable; max_entries_factors
-.. _doxid-structnls__inform__type_1a177e429e737cfa2cd3df051a65fcfb68:
+.. _doxid-structnls__inform__type_max_entries_factors:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -170,7 +170,7 @@ the return status from the factorization
 the maximum number of entries in the factors
 
 .. index:: pair: variable; factorization_integer
-.. _doxid-structnls__inform__type_1a29cd3a5b0f30227170f825116d9ade9e:
+.. _doxid-structnls__inform__type_factorization_integer:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -180,7 +180,7 @@ the maximum number of entries in the factors
 the total integer workspace required for the factorization
 
 .. index:: pair: variable; factorization_real
-.. _doxid-structnls__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc:
+.. _doxid-structnls__inform__type_factorization_real:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -190,7 +190,7 @@ the total integer workspace required for the factorization
 the total real workspace required for the factorization
 
 .. index:: pair: variable; factorization_average
-.. _doxid-structnls__inform__type_1a42d0c89df887685f68327d07c6e92f05:
+.. _doxid-structnls__inform__type_factorization_average:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -200,7 +200,7 @@ the total real workspace required for the factorization
 the average number of factorizations per sub-problem solve
 
 .. index:: pair: variable; obj
-.. _doxid-structnls__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:
+.. _doxid-structnls__inform__type_obj:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -210,7 +210,7 @@ the average number of factorizations per sub-problem solve
 the value of the objective function $\frac{1}{2}\|c(x)\|^2_W$ at the best estimate the solution, x, determined by NLS_solve
 
 .. index:: pair: variable; norm_c
-.. _doxid-structnls__inform__type_1a4969b17b30edb63a6bbcb89c7c10a340:
+.. _doxid-structnls__inform__type_norm_c:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -220,7 +220,7 @@ the value of the objective function $\frac{1}{2}\|c(x)\|^2_W$ at the best estima
 the norm of the residual $\|c(x)\|_W$ at the best estimate of the solution x, determined by NLS_solve
 
 .. index:: pair: variable; norm_g
-.. _doxid-structnls__inform__type_1ae1bc0a751c6ede62421bbc49fbe7d9fe:
+.. _doxid-structnls__inform__type_norm_g:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -230,7 +230,7 @@ the norm of the residual $\|c(x)\|_W$ at the best estimate of the solution x, de
 the norm of the gradient of $\|c(x)\|_W$ of the objective function at the best estimate, x, of the solution determined by NLS_solve
 
 .. index:: pair: variable; weight
-.. _doxid-structnls__inform__type_1adcd20aeaf7042e972ddab56f3867ce70:
+.. _doxid-structnls__inform__type_weight:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -240,7 +240,7 @@ the norm of the gradient of $\|c(x)\|_W$ of the objective function at the best e
 the final regularization weight used
 
 .. index:: pair: variable; time
-.. _doxid-structnls__inform__type_1a44dc03b1a33bf900f668c713cbac9498:
+.. _doxid-structnls__inform__type_time:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -250,7 +250,7 @@ the final regularization weight used
 timings (see above)
 
 .. index:: pair: variable; rqs_inform
-.. _doxid-structnls__inform__type_1a68497e7bbd1695ac9b830fc8fe594d60:
+.. _doxid-structnls__inform__type_rqs_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -260,7 +260,7 @@ timings (see above)
 inform parameters for RQS
 
 .. index:: pair: variable; glrt_inform
-.. _doxid-structnls__inform__type_1aa5a47a840c1f9680ac8b9e4db3eb9e88:
+.. _doxid-structnls__inform__type_glrt_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -270,7 +270,7 @@ inform parameters for RQS
 inform parameters for GLRT
 
 .. index:: pair: variable; psls_inform
-.. _doxid-structnls__inform__type_1a57ca5ed37882eb917736f845d3cdb8ee:
+.. _doxid-structnls__inform__type_psls_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -280,7 +280,7 @@ inform parameters for GLRT
 inform parameters for PSLS
 
 .. index:: pair: variable; bsc_inform
-.. _doxid-structnls__inform__type_1ab95c5e6786b9d93eb147f64fbf14da17:
+.. _doxid-structnls__inform__type_bsc_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -290,7 +290,7 @@ inform parameters for PSLS
 inform parameters for BSC
 
 .. index:: pair: variable; roots_inform
-.. _doxid-structnls__inform__type_1a68574d04a336f7be88a151fa8b975885:
+.. _doxid-structnls__inform__type_roots_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -300,7 +300,7 @@ inform parameters for BSC
 inform parameters for ROOTS
 
 .. index:: pair: variable; subproblem_inform
-.. _doxid-structnls__inform__type_1afe321f4b9cfc27d8927047e53e2f288a:
+.. _doxid-structnls__inform__type_subproblem_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

@@ -60,7 +60,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structeqp__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structeqp__control__type_f_indexing:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -70,7 +70,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structeqp__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structeqp__control__type_error:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -80,7 +80,7 @@ use C or Fortran sparse matrix indexing
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
-.. _doxid-structeqp__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structeqp__control__type_out:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -90,7 +90,7 @@ error and warning diagnostics occur on stream error
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
-.. _doxid-structeqp__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structeqp__control__type_print_level:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -100,7 +100,7 @@ general output occurs on stream out
 the level of output required is specified by print_level
 
 .. index:: pair: variable; factorization
-.. _doxid-structeqp__control__type_1a108359f1209601e6c6074c215e3abd8b:
+.. _doxid-structeqp__control__type_factorization:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -110,7 +110,7 @@ the level of output required is specified by print_level
 the factorization to be used. Possible values are /li 0 automatic /li 1 Schur-complement factorization /li 2 augmented-system factorization (OBSOLETE)
 
 .. index:: pair: variable; max_col
-.. _doxid-structeqp__control__type_1abca2db33b9520095e98790d45a1be93f:
+.. _doxid-structeqp__control__type_max_col:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -120,7 +120,7 @@ the factorization to be used. Possible values are /li 0 automatic /li 1 Schur-co
 the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization (OBSOLETE)
 
 .. index:: pair: variable; indmin
-.. _doxid-structeqp__control__type_1a5031bbc31f94e4cba6a540a3182b6d80:
+.. _doxid-structeqp__control__type_indmin:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -130,7 +130,7 @@ the maximum number of nonzeros in a column of A which is permitted with the Schu
 an initial guess as to the integer workspace required by SBLS (OBSOLETE)
 
 .. index:: pair: variable; valmin
-.. _doxid-structeqp__control__type_1a0e142fa8dc9c363c3c2993b6129b0955:
+.. _doxid-structeqp__control__type_valmin:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -140,7 +140,7 @@ an initial guess as to the integer workspace required by SBLS (OBSOLETE)
 an initial guess as to the real workspace required by SBLS (OBSOLETE)
 
 .. index:: pair: variable; len_ulsmin
-.. _doxid-structeqp__control__type_1a600c95211b782597cd1b2475bb2c54c6:
+.. _doxid-structeqp__control__type_len_ulsmin:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -150,7 +150,7 @@ an initial guess as to the real workspace required by SBLS (OBSOLETE)
 an initial guess as to the workspace required by ULS (OBSOLETE)
 
 .. index:: pair: variable; itref_max
-.. _doxid-structeqp__control__type_1a903ba4ef0869186a65d4c32459a6a0ed:
+.. _doxid-structeqp__control__type_itref_max:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -160,7 +160,7 @@ an initial guess as to the workspace required by ULS (OBSOLETE)
 the maximum number of iterative refinements allowed (OBSOLETE)
 
 .. index:: pair: variable; cg_maxit
-.. _doxid-structeqp__control__type_1a7a1029142a22f3e2a1963c3428276849:
+.. _doxid-structeqp__control__type_cg_maxit:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -170,7 +170,7 @@ the maximum number of iterative refinements allowed (OBSOLETE)
 the maximum number of CG iterations allowed. If cg_maxit < 0, this number will be reset to the dimension of the system + 1
 
 .. index:: pair: variable; preconditioner
-.. _doxid-structeqp__control__type_1adf7719f1a4491459e361e80a00c55656:
+.. _doxid-structeqp__control__type_preconditioner:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -192,7 +192,7 @@ the preconditioner to be used for the CG. Possible values are
 * 5 optionally supplied diagonal, G = D
 
 .. index:: pair: variable; semi_bandwidth
-.. _doxid-structeqp__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb:
+.. _doxid-structeqp__control__type_semi_bandwidth:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -202,7 +202,7 @@ the preconditioner to be used for the CG. Possible values are
 the semi-bandwidth of a band preconditioner, if appropriate (OBSOLETE)
 
 .. index:: pair: variable; new_a
-.. _doxid-structeqp__control__type_1a7bea45d51fd9384037bbbf82f7750ce6:
+.. _doxid-structeqp__control__type_new_a:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -212,7 +212,7 @@ the semi-bandwidth of a band preconditioner, if appropriate (OBSOLETE)
 how much has A changed since last problem solved: 0 = not changed, 1 = values changed, 2 = structure changed
 
 .. index:: pair: variable; new_h
-.. _doxid-structeqp__control__type_1ae60c5b5b987dd62f25253ba4164813f5:
+.. _doxid-structeqp__control__type_new_h:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -222,7 +222,7 @@ how much has A changed since last problem solved: 0 = not changed, 1 = values ch
 how much has H changed since last problem solved: 0 = not changed, 1 = values changed, 2 = structure changed
 
 .. index:: pair: variable; sif_file_device
-.. _doxid-structeqp__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0:
+.. _doxid-structeqp__control__type_sif_file_device:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -232,7 +232,7 @@ how much has H changed since last problem solved: 0 = not changed, 1 = values ch
 specifies the unit number to write generated SIF file describing the current problem
 
 .. index:: pair: variable; pivot_tol
-.. _doxid-structeqp__control__type_1a133347eb5f45a24a77b63b4afd4212e8:
+.. _doxid-structeqp__control__type_pivot_tol:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -242,7 +242,7 @@ specifies the unit number to write generated SIF file describing the current pro
 the threshold pivot used by the matrix factorization. See the documentation for SBLS for details (OBSOLETE)
 
 .. index:: pair: variable; pivot_tol_for_basis
-.. _doxid-structeqp__control__type_1a1912d9ec51c4e88125762b7d03ef31a6:
+.. _doxid-structeqp__control__type_pivot_tol_for_basis:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -252,7 +252,7 @@ the threshold pivot used by the matrix factorization. See the documentation for 
 the threshold pivot used by the matrix factorization when finding the ba See the documentation for ULS for details (OBSOLETE)
 
 .. index:: pair: variable; zero_pivot
-.. _doxid-structeqp__control__type_1aed8525bc028ed7ae0a9dd1bb3154cda2:
+.. _doxid-structeqp__control__type_zero_pivot:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -262,7 +262,7 @@ the threshold pivot used by the matrix factorization when finding the ba See the
 any pivots smaller than zero_pivot in absolute value will be regarded to zero when attempting to detect linearly dependent constraints (OBSOLETE)
 
 .. index:: pair: variable; inner_fraction_opt
-.. _doxid-structeqp__control__type_1a5840187311d612d0efdfecf7078a2b7e:
+.. _doxid-structeqp__control__type_inner_fraction_opt:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -272,7 +272,7 @@ any pivots smaller than zero_pivot in absolute value will be regarded to zero wh
 the computed solution which gives at least inner_fraction_opt times the optimal value will be found (OBSOLETE)
 
 .. index:: pair: variable; radius
-.. _doxid-structeqp__control__type_1a72757b6410f755f008e2fb6d711b61be:
+.. _doxid-structeqp__control__type_radius:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -282,7 +282,7 @@ the computed solution which gives at least inner_fraction_opt times the optimal 
 an upper bound on the permitted step (-ve will be reset to an appropriat large value by eqp_solve)
 
 .. index:: pair: variable; min_diagonal
-.. _doxid-structeqp__control__type_1a984528c49e15a61a1d30fc8fa2d166cc:
+.. _doxid-structeqp__control__type_min_diagonal:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -292,7 +292,7 @@ an upper bound on the permitted step (-ve will be reset to an appropriat large v
 diagonal preconditioners will have diagonals no smaller than min_diagonal (OBSOLETE)
 
 .. index:: pair: variable; max_infeasibility_relative
-.. _doxid-structeqp__control__type_1a975d28c18ad695cd215c57948fac11c0:
+.. _doxid-structeqp__control__type_max_infeasibility_relative:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -302,7 +302,7 @@ diagonal preconditioners will have diagonals no smaller than min_diagonal (OBSOL
 if the constraints are believed to be rank defficient and the residual at a "typical" feasible point is larger than max( max_infeasibility_relative \* norm A, max_infeasibility_absolute ) the problem will be marked as infeasible
 
 .. index:: pair: variable; max_infeasibility_absolute
-.. _doxid-structeqp__control__type_1aebbb79536b216e3c116e5a9d21426840:
+.. _doxid-structeqp__control__type_max_infeasibility_absolute:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -312,7 +312,7 @@ if the constraints are believed to be rank defficient and the residual at a "typ
 see max_infeasibility_relative
 
 .. index:: pair: variable; inner_stop_relative
-.. _doxid-structeqp__control__type_1a7aedce06c5903f675a7c1496f42ff834:
+.. _doxid-structeqp__control__type_inner_stop_relative:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -322,7 +322,7 @@ see max_infeasibility_relative
 the computed solution is considered as an acceptable approximation to th minimizer of the problem if the gradient of the objective in the preconditioning(inverse) norm is less than max( inner_stop_relative \* initial preconditioning(inverse) gradient norm, inner_stop_absolute )
 
 .. index:: pair: variable; inner_stop_absolute
-.. _doxid-structeqp__control__type_1a80ae9dce0bca96a4691b0a222e3257b5:
+.. _doxid-structeqp__control__type_inner_stop_absolute:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -332,7 +332,7 @@ the computed solution is considered as an acceptable approximation to th minimiz
 see inner_stop_relative
 
 .. index:: pair: variable; inner_stop_inter
-.. _doxid-structeqp__control__type_1a5f1bee15068a0476f5dd4e65dc4468ce:
+.. _doxid-structeqp__control__type_inner_stop_inter:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -342,7 +342,7 @@ see inner_stop_relative
 see inner_stop_relative
 
 .. index:: pair: variable; find_basis_by_transpose
-.. _doxid-structeqp__control__type_1aa88001d7f86370d329247cf28f8ff499:
+.. _doxid-structeqp__control__type_find_basis_by_transpose:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -352,7 +352,7 @@ see inner_stop_relative
 if .find_basis_by_transpose is true, implicit factorization precondition will be based on a basis of A found by examining A's transpose (OBSOLETE)
 
 .. index:: pair: variable; remove_dependencies
-.. _doxid-structeqp__control__type_1ae17a6b550239434c639239ddf45bc1ad:
+.. _doxid-structeqp__control__type_remove_dependencies:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -362,7 +362,7 @@ if .find_basis_by_transpose is true, implicit factorization precondition will be
 if .remove_dependencies is true, the equality constraints will be preprocessed to remove any linear dependencies
 
 .. index:: pair: variable; space_critical
-.. _doxid-structeqp__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structeqp__control__type_space_critical:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -372,7 +372,7 @@ if .remove_dependencies is true, the equality constraints will be preprocessed t
 if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structeqp__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structeqp__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -382,7 +382,7 @@ if .space_critical true, every effort will be made to use as little space as pos
 if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue
 
 .. index:: pair: variable; generate_sif_file
-.. _doxid-structeqp__control__type_1aa75b3a16d146c0d7ad57bf9817033843:
+.. _doxid-structeqp__control__type_generate_sif_file:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -392,7 +392,7 @@ if .deallocate_error_fatal is true, any array/pointer deallocation error will te
 if .generate_sif_file is .true. if a SIF file describing the current problem is to be generated
 
 .. index:: pair: variable; sif_file_name
-.. _doxid-structeqp__control__type_1aaa95e830b709da79d9790471bab54193:
+.. _doxid-structeqp__control__type_sif_file_name:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -402,7 +402,7 @@ if .generate_sif_file is .true. if a SIF file describing the current problem is 
 name of generated SIF file containing input problem
 
 .. index:: pair: variable; prefix
-.. _doxid-structeqp__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structeqp__control__type_prefix:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -412,7 +412,7 @@ name of generated SIF file containing input problem
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
 
 .. index:: pair: variable; fdc_control
-.. _doxid-structeqp__control__type_1a7bef6e4f678e16a4dcdc40677efddd80:
+.. _doxid-structeqp__control__type_fdc_control:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -422,7 +422,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 control parameters for FDC
 
 .. index:: pair: variable; sbls_control
-.. _doxid-structeqp__control__type_1a04ba974b3c8d21137deb070d0e8dfc3a:
+.. _doxid-structeqp__control__type_sbls_control:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -432,7 +432,7 @@ control parameters for FDC
 control parameters for SBLS
 
 .. index:: pair: variable; gltr_control
-.. _doxid-structeqp__control__type_1aa48d482633f3788830b1d8dc85fa91d6:
+.. _doxid-structeqp__control__type_gltr_control:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

@@ -33,7 +33,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structfdc__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structfdc__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -43,7 +43,7 @@ components
 return status. See FDC_find_dependent for details
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structfdc__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structfdc__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -53,7 +53,7 @@ return status. See FDC_find_dependent for details
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structfdc__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structfdc__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -63,7 +63,7 @@ the status of the last attempted allocation/deallocation
 the name of the array for which an allocation/deallocation error occurred
 
 .. index:: pair: variable; factorization_status
-.. _doxid-structfdc__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210:
+.. _doxid-structfdc__inform__type_factorization_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -73,7 +73,7 @@ the name of the array for which an allocation/deallocation error occurred
 the return status from the factorization
 
 .. index:: pair: variable; factorization_integer
-.. _doxid-structfdc__inform__type_1a29cd3a5b0f30227170f825116d9ade9e:
+.. _doxid-structfdc__inform__type_factorization_integer:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -83,7 +83,7 @@ the return status from the factorization
 the total integer workspace required for the factorization
 
 .. index:: pair: variable; factorization_real
-.. _doxid-structfdc__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc:
+.. _doxid-structfdc__inform__type_factorization_real:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -93,7 +93,7 @@ the total integer workspace required for the factorization
 the total real workspace required for the factorization
 
 .. index:: pair: variable; non_negligible_pivot
-.. _doxid-structfdc__inform__type_1a827ddb7fead8e375404c9b770b67e771:
+.. _doxid-structfdc__inform__type_non_negligible_pivot:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -103,7 +103,7 @@ the total real workspace required for the factorization
 the smallest pivot which was not judged to be zero when detecting linear dependent constraints
 
 .. index:: pair: variable; time
-.. _doxid-structfdc__inform__type_1af77e8a375712c74c7ec4cb4d6ee89826:
+.. _doxid-structfdc__inform__type_time:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -113,7 +113,7 @@ the smallest pivot which was not judged to be zero when detecting linear depende
 timings (see above)
 
 .. index:: pair: variable; sls_inform
-.. _doxid-structfdc__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0:
+.. _doxid-structfdc__inform__type_sls_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -123,7 +123,7 @@ timings (see above)
 SLS inform type.
 
 .. index:: pair: variable; uls_inform
-.. _doxid-structfdc__inform__type_1aa39eb0d7b50d4a858849f8ef652ae84c:
+.. _doxid-structfdc__inform__type_uls_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

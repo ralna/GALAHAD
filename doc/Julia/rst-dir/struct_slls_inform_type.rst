@@ -34,7 +34,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structslls__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structslls__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -44,7 +44,7 @@ components
 reported return status.
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structslls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structslls__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -54,7 +54,7 @@ reported return status.
 Fortran STAT value after allocate failure.
 
 .. index:: pair: variable; factorization_status
-.. _doxid-structslls__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210:
+.. _doxid-structslls__inform__type_factorization_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -64,7 +64,7 @@ Fortran STAT value after allocate failure.
 status return from factorization
 
 .. index:: pair: variable; iter
-.. _doxid-structslls__inform__type_1aab6f168571c2073e01e240524b8a3da0:
+.. _doxid-structslls__inform__type_iter:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -74,7 +74,7 @@ status return from factorization
 number of iterations required
 
 .. index:: pair: variable; cg_iter
-.. _doxid-structslls__inform__type_1ad37cf7ad93af3413bc01b6515aad692a:
+.. _doxid-structslls__inform__type_cg_iter:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -84,7 +84,7 @@ number of iterations required
 number of CG iterations required
 
 .. index:: pair: variable; obj
-.. _doxid-structslls__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:
+.. _doxid-structslls__inform__type_obj:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -94,7 +94,7 @@ number of CG iterations required
 current value of the objective function, r(x).
 
 .. index:: pair: variable; norm_pg
-.. _doxid-structslls__inform__type_1acb02a4d1ae275a55874bb9897262b1fe:
+.. _doxid-structslls__inform__type_norm_pg:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -104,7 +104,7 @@ current value of the objective function, r(x).
 current value of the Euclidean norm of projected gradient of r(x).
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structslls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structslls__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -114,7 +114,7 @@ current value of the Euclidean norm of projected gradient of r(x).
 name of array which provoked an allocate failure
 
 .. index:: pair: variable; time
-.. _doxid-structslls__inform__type_1ac8d53b198a1597a4a9fe75d4c1191ec0:
+.. _doxid-structslls__inform__type_time:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -124,7 +124,7 @@ name of array which provoked an allocate failure
 times for various stages
 
 .. index:: pair: variable; sbls_inform
-.. _doxid-structslls__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68:
+.. _doxid-structslls__inform__type_sbls_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -134,7 +134,7 @@ times for various stages
 inform values from SBLS
 
 .. index:: pair: variable; convert_inform
-.. _doxid-structslls__inform__type_1a7006a98737e58bb90259d7705ef537ae:
+.. _doxid-structslls__inform__type_convert_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

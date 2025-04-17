@@ -25,7 +25,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; lambda
-.. _doxid-structrqs__history__type_1a69856cb11373bfb6f36d8a28df6dd08f:
+.. _doxid-structrqs__history__type_lambda:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -35,7 +35,7 @@ components
 the value of $\lambda$
 
 .. index:: pair: variable; x_norm
-.. _doxid-structrqs__history__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
+.. _doxid-structrqs__history__type_x_norm:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

@@ -41,7 +41,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structsbls__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structsbls__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -51,7 +51,7 @@ components
 return status. See SBLS_form_and_factorize for details
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structsbls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structsbls__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -61,7 +61,7 @@ return status. See SBLS_form_and_factorize for details
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structsbls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structsbls__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -71,7 +71,7 @@ the status of the last attempted allocation/deallocation
 the name of the array for which an allocation/deallocation error occurred
 
 .. index:: pair: variable; sort_status
-.. _doxid-structsbls__inform__type_1acb9e43ddb17591d930fc31faa3e6f69f:
+.. _doxid-structsbls__inform__type_sort_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -81,7 +81,7 @@ the name of the array for which an allocation/deallocation error occurred
 the return status from the sorting routines
 
 .. index:: pair: variable; factorization_integer
-.. _doxid-structsbls__inform__type_1a29cd3a5b0f30227170f825116d9ade9e:
+.. _doxid-structsbls__inform__type_factorization_integer:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -91,7 +91,7 @@ the return status from the sorting routines
 the total integer workspace required for the factorization
 
 .. index:: pair: variable; factorization_real
-.. _doxid-structsbls__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc:
+.. _doxid-structsbls__inform__type_factorization_real:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -101,7 +101,7 @@ the total integer workspace required for the factorization
 the total real workspace required for the factorization
 
 .. index:: pair: variable; preconditioner
-.. _doxid-structsbls__inform__type_1adf7719f1a4491459e361e80a00c55656:
+.. _doxid-structsbls__inform__type_preconditioner:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -111,7 +111,7 @@ the total real workspace required for the factorization
 the preconditioner used
 
 .. index:: pair: variable; factorization
-.. _doxid-structsbls__inform__type_1a108359f1209601e6c6074c215e3abd8b:
+.. _doxid-structsbls__inform__type_factorization:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -121,7 +121,7 @@ the preconditioner used
 the factorization used
 
 .. index:: pair: variable; d_plus
-.. _doxid-structsbls__inform__type_1a9e94a7e5692a82e8c239c857be5b80ea:
+.. _doxid-structsbls__inform__type_d_plus:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -131,7 +131,7 @@ the factorization used
 how many of the diagonals in the factorization are positive
 
 .. index:: pair: variable; rank
-.. _doxid-structsbls__inform__type_1a6cfd95afd0afebd625b889fb6e58371c:
+.. _doxid-structsbls__inform__type_rank:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -141,7 +141,7 @@ how many of the diagonals in the factorization are positive
 the computed rank of $A$
 
 .. index:: pair: variable; rank_def
-.. _doxid-structsbls__inform__type_1aad74061a53e6daf7ca65b2e82290871b:
+.. _doxid-structsbls__inform__type_rank_def:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -151,7 +151,7 @@ the computed rank of $A$
 is the matrix A rank defficient?
 
 .. index:: pair: variable; perturbed
-.. _doxid-structsbls__inform__type_1a6e04ee4d6dc38d2c5231d39d4f21be75:
+.. _doxid-structsbls__inform__type_perturbed:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -161,7 +161,7 @@ is the matrix A rank defficient?
 has the used preconditioner been perturbed to guarantee correct inertia?
 
 .. index:: pair: variable; iter_pcg
-.. _doxid-structsbls__inform__type_1a1694e6d072d1a8d796f85f4da8a054af:
+.. _doxid-structsbls__inform__type_iter_pcg:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -171,7 +171,7 @@ has the used preconditioner been perturbed to guarantee correct inertia?
 the total number of projected CG iterations required
 
 .. index:: pair: variable; norm_residual
-.. _doxid-structsbls__inform__type_1a1f77ff3a30a89cc31d4de01c54343e86:
+.. _doxid-structsbls__inform__type_norm_residual:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -181,7 +181,7 @@ the total number of projected CG iterations required
 the norm of the residual
 
 .. index:: pair: variable; alternative
-.. _doxid-structsbls__inform__type_1a48c07c7da1803ed8af25ca949f4854b5:
+.. _doxid-structsbls__inform__type_alternative:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -191,7 +191,7 @@ the norm of the residual
 has an "alternative" $y$ : $K y = 0$ and $y^T c > 0$ been found when trying to solve $K y = c$ for generic $K$?
 
 .. index:: pair: variable; time
-.. _doxid-structsbls__inform__type_1aaa565e03cbc8470593f946cf00beb639:
+.. _doxid-structsbls__inform__type_time:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -201,7 +201,7 @@ has an "alternative" $y$ : $K y = 0$ and $y^T c > 0$ been found when trying to s
 timings (see above)
 
 .. index:: pair: variable; sls_inform
-.. _doxid-structsbls__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0:
+.. _doxid-structsbls__inform__type_sls_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -211,7 +211,7 @@ timings (see above)
 inform parameters from the GALAHAD package SLS used
 
 .. index:: pair: variable; uls_inform
-.. _doxid-structsbls__inform__type_1aa39eb0d7b50d4a858849f8ef652ae84c:
+.. _doxid-structsbls__inform__type_uls_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

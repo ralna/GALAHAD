@@ -30,7 +30,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structbsc__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structbsc__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -64,7 +64,7 @@ the return status from the package. Possible values are:
   violated.
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structbsc__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structbsc__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -74,7 +74,7 @@ the return status from the package. Possible values are:
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structbsc__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structbsc__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -84,7 +84,7 @@ the status of the last attempted allocation/deallocation
 the name of the array for which an allocation/deallocation error occurred.
 
 .. index:: pair: variable; max_col_a
-.. _doxid-structbsc__inform__type_1afa7a035a987c746be5967674390199c2:
+.. _doxid-structbsc__inform__type_max_col_a:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -94,7 +94,7 @@ the name of the array for which an allocation/deallocation error occurred.
 the maximum number of entries in a column of $A$
 
 .. index:: pair: variable; exceeds_max_col
-.. _doxid-structbsc__inform__type_1a182eb2982f975bbbdce953a362bf0c2d:
+.. _doxid-structbsc__inform__type_exceeds_max_col:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -104,7 +104,7 @@ the maximum number of entries in a column of $A$
 the number of columns of $A$ that have more than control.max_col entries
 
 .. index:: pair: variable; time
-.. _doxid-structbsc__inform__type_1afb418c91547eccd73ea85693be0e1cea:
+.. _doxid-structbsc__inform__type_time:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -114,7 +114,7 @@ the number of columns of $A$ that have more than control.max_col entries
 the total CPU time spent in the package
 
 .. index:: pair: variable; clock_time
-.. _doxid-structbsc__inform__type_1a70a6a867f00d49b434e314b7177c6f23:
+.. _doxid-structbsc__inform__type_clock_time:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

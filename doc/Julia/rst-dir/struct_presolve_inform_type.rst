@@ -28,7 +28,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structpresolve__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structpresolve__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -319,7 +319,7 @@ The presolve exit condition. It can take the following values (symbol in parenth
   (WRONG_HNE) incompatible value of H_ne
 
 .. index:: pair: variable; nbr_transforms
-.. _doxid-structpresolve__inform__type_1ac678d67797411ebadaab2a5e07f62e8a:
+.. _doxid-structpresolve__inform__type_nbr_transforms:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -329,7 +329,7 @@ The presolve exit condition. It can take the following values (symbol in parenth
 The final number of problem transformations, as reported to the user at exit.
 
 .. index:: pair: variable; message
-.. _doxid-structpresolve__inform__type_1ad3ed7aeb962cfe24345625354d733206:
+.. _doxid-structpresolve__inform__type_message:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

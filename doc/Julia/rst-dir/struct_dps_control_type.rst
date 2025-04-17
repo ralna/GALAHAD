@@ -42,7 +42,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structdps__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structdps__control__type_f_indexing:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -52,7 +52,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structdps__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structdps__control__type_error:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -62,7 +62,7 @@ use C or Fortran sparse matrix indexing
 unit for error messages
 
 .. index:: pair: variable; out
-.. _doxid-structdps__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structdps__control__type_out:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -72,7 +72,7 @@ unit for error messages
 unit for monitor output
 
 .. index:: pair: variable; problem
-.. _doxid-structdps__control__type_1a540c0b4e7d398c31890f62ad69cd551c:
+.. _doxid-structdps__control__type_problem:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -82,7 +82,7 @@ unit for monitor output
 unit to write problem data into file problem_file
 
 .. index:: pair: variable; print_level
-.. _doxid-structdps__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structdps__control__type_print_level:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -92,7 +92,7 @@ unit to write problem data into file problem_file
 controls level of diagnostic output
 
 .. index:: pair: variable; new_h
-.. _doxid-structdps__control__type_1ae60c5b5b987dd62f25253ba4164813f5:
+.. _doxid-structdps__control__type_new_h:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -108,7 +108,7 @@ how much of $H$ has changed since the previous call. Possible values are
 * 2 values and indices have changed
 
 .. index:: pair: variable; taylor_max_degree
-.. _doxid-structdps__control__type_1a338fa3956816be173e13bfd4198c4078:
+.. _doxid-structdps__control__type_taylor_max_degree:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -118,7 +118,7 @@ how much of $H$ has changed since the previous call. Possible values are
 maximum degree of Taylor approximant allowed
 
 .. index:: pair: variable; eigen_min
-.. _doxid-structdps__control__type_1a133028d7b94139b129034f5b820ffdef:
+.. _doxid-structdps__control__type_eigen_min:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -128,7 +128,7 @@ maximum degree of Taylor approximant allowed
 smallest allowable value of an eigenvalue of the block diagonal factor of $H$
 
 .. index:: pair: variable; lower
-.. _doxid-structdps__control__type_1a965ee2cfb38687d6f158d35586595eed:
+.. _doxid-structdps__control__type_lower:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -138,7 +138,7 @@ smallest allowable value of an eigenvalue of the block diagonal factor of $H$
 lower and upper bounds on the multiplier, if known
 
 .. index:: pair: variable; upper
-.. _doxid-structdps__control__type_1ab8b6572a40141ada6d5f0455eb806d41:
+.. _doxid-structdps__control__type_upper:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -148,7 +148,7 @@ lower and upper bounds on the multiplier, if known
 see lower
 
 .. index:: pair: variable; stop_normal
-.. _doxid-structdps__control__type_1a3573530258a38cc836b106b9f7a54565:
+.. _doxid-structdps__control__type_stop_normal:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -158,7 +158,7 @@ see lower
 stop trust-region solution when $| ||x||_M - \delta | \leq$ max( .stop_normal \* delta, .stop_absolute_normal )
 
 .. index:: pair: variable; stop_absolute_normal
-.. _doxid-structdps__control__type_1a02066d2241f2971e375ca4a56532bc2c:
+.. _doxid-structdps__control__type_stop_absolute_normal:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -168,7 +168,7 @@ stop trust-region solution when $| ||x||_M - \delta | \leq$ max( .stop_normal \*
 see stop_normal
 
 .. index:: pair: variable; goldfarb
-.. _doxid-structdps__control__type_1a732b25a17a3b8c219c0a3a948520278c:
+.. _doxid-structdps__control__type_goldfarb:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -178,7 +178,7 @@ see stop_normal
 use the Goldfarb variant of the trust-region/regularization norm rather than the modified absolute-value version
 
 .. index:: pair: variable; space_critical
-.. _doxid-structdps__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structdps__control__type_space_critical:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -188,7 +188,7 @@ use the Goldfarb variant of the trust-region/regularization norm rather than the
 if space is critical, ensure allocated arrays are no bigger than needed
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structdps__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structdps__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -198,7 +198,7 @@ if space is critical, ensure allocated arrays are no bigger than needed
 exit if any deallocation fails
 
 .. index:: pair: variable; problem_file
-.. _doxid-structdps__control__type_1afbe46916454c2158f31d64ad8dbeaf34:
+.. _doxid-structdps__control__type_problem_file:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -208,7 +208,7 @@ exit if any deallocation fails
 name of file into which to write problem data
 
 .. index:: pair: variable; symmetric_linear_solver
-.. _doxid-structdps__control__type_1af297ace351b9307640715643cde57384:
+.. _doxid-structdps__control__type_symmetric_linear_solver:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -218,7 +218,7 @@ name of file into which to write problem data
 symmetric (indefinite) linear equation solver
 
 .. index:: pair: variable; prefix
-.. _doxid-structdps__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structdps__control__type_prefix:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -228,7 +228,7 @@ symmetric (indefinite) linear equation solver
 all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
 
 .. index:: pair: variable; sls_control
-.. _doxid-structdps__control__type_1a31b308b91955ee385daacc3de00f161b:
+.. _doxid-structdps__control__type_sls_control:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

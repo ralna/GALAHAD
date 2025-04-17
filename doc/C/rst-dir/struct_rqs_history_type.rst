@@ -15,8 +15,8 @@ rqs_history_type structure
 	struct rqs_history_type {
 		// fields
 	
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`lambda<doxid-structrqs__history__type_1a69856cb11373bfb6f36d8a28df6dd08f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`x_norm<doxid-structrqs__history__type_1a32b3ba51ed1b0d7941f34e736da26ae3>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`lambda<doxid-structrqs__history__type_lambda>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`x_norm<doxid-structrqs__history__type_x_norm>`;
 	};
 .. _details-structrqs__history__type:
 
@@ -29,7 +29,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; lambda
-.. _doxid-structrqs__history__type_1a69856cb11373bfb6f36d8a28df6dd08f:
+.. _doxid-structrqs__history__type_lambda:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -39,7 +39,7 @@ components
 the value of $\lambda$
 
 .. index:: pair: variable; x_norm
-.. _doxid-structrqs__history__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
+.. _doxid-structrqs__history__type_x_norm:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

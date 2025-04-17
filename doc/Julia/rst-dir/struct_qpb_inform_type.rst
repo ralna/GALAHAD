@@ -43,7 +43,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structqpb__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structqpb__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -53,7 +53,7 @@ components
 return status. See QPB_solve for details
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structqpb__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structqpb__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -63,7 +63,7 @@ return status. See QPB_solve for details
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structqpb__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structqpb__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -73,7 +73,7 @@ the status of the last attempted allocation/deallocation
 the name of the array for which an allocation/deallocation error occurred
 
 .. index:: pair: variable; iter
-.. _doxid-structqpb__inform__type_1aab6f168571c2073e01e240524b8a3da0:
+.. _doxid-structqpb__inform__type_iter:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -83,7 +83,7 @@ the name of the array for which an allocation/deallocation error occurred
 the total number of iterations required
 
 .. index:: pair: variable; cg_iter
-.. _doxid-structqpb__inform__type_1ad37cf7ad93af3413bc01b6515aad692a:
+.. _doxid-structqpb__inform__type_cg_iter:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -93,7 +93,7 @@ the total number of iterations required
 the total number of conjugate gradient iterations required
 
 .. index:: pair: variable; factorization_status
-.. _doxid-structqpb__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210:
+.. _doxid-structqpb__inform__type_factorization_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -103,7 +103,7 @@ the total number of conjugate gradient iterations required
 the return status from the factorization
 
 .. index:: pair: variable; factorization_integer
-.. _doxid-structqpb__inform__type_1a29cd3a5b0f30227170f825116d9ade9e:
+.. _doxid-structqpb__inform__type_factorization_integer:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -113,7 +113,7 @@ the return status from the factorization
 the total integer workspace required for the factorization
 
 .. index:: pair: variable; factorization_real
-.. _doxid-structqpb__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc:
+.. _doxid-structqpb__inform__type_factorization_real:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -123,7 +123,7 @@ the total integer workspace required for the factorization
 the total real workspace required for the factorization
 
 .. index:: pair: variable; nfacts
-.. _doxid-structqpb__inform__type_1af54a1b17cb663c1e89a5bcd5f1e9961f:
+.. _doxid-structqpb__inform__type_nfacts:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -133,7 +133,7 @@ the total real workspace required for the factorization
 the total number of factorizations performed
 
 .. index:: pair: variable; nbacts
-.. _doxid-structqpb__inform__type_1a4b9a11ae940f04846c342978808696d6:
+.. _doxid-structqpb__inform__type_nbacts:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -143,7 +143,7 @@ the total number of factorizations performed
 the total number of "wasted" function evaluations during the linesearch
 
 .. index:: pair: variable; nmods
-.. _doxid-structqpb__inform__type_1aedcbf93d59a135329f358f366e37cc94:
+.. _doxid-structqpb__inform__type_nmods:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -153,7 +153,7 @@ the total number of "wasted" function evaluations during the linesearch
 the total number of factorizations which were modified to ensure that th matrix was an appropriate preconditioner
 
 .. index:: pair: variable; obj
-.. _doxid-structqpb__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:
+.. _doxid-structqpb__inform__type_obj:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -163,7 +163,7 @@ the total number of factorizations which were modified to ensure that th matrix 
 the value of the objective function at the best estimate of the solution determined by QPB_solve
 
 .. index:: pair: variable; non_negligible_pivot
-.. _doxid-structqpb__inform__type_1a827ddb7fead8e375404c9b770b67e771:
+.. _doxid-structqpb__inform__type_non_negligible_pivot:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -173,7 +173,7 @@ the value of the objective function at the best estimate of the solution determi
 the smallest pivot which was not judged to be zero when detecting linear dependent constraints
 
 .. index:: pair: variable; feasible
-.. _doxid-structqpb__inform__type_1aa43a71eb35dd7b8676c0b6236ceee321:
+.. _doxid-structqpb__inform__type_feasible:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -183,7 +183,7 @@ the smallest pivot which was not judged to be zero when detecting linear depende
 is the returned "solution" feasible?
 
 .. index:: pair: variable; time
-.. _doxid-structqpb__inform__type_1ae4e944df2baf87107a291094002befb2:
+.. _doxid-structqpb__inform__type_time:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -193,7 +193,7 @@ is the returned "solution" feasible?
 timings (see above)
 
 .. index:: pair: variable; lsqp_inform
-.. _doxid-structqpb__inform__type_1acc149a8b0411baab4ddd0d9e4ccf28ff:
+.. _doxid-structqpb__inform__type_lsqp_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -203,7 +203,7 @@ timings (see above)
 inform parameters for LSQP
 
 .. index:: pair: variable; fdc_inform
-.. _doxid-structqpb__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4:
+.. _doxid-structqpb__inform__type_fdc_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -213,7 +213,7 @@ inform parameters for LSQP
 inform parameters for FDC
 
 .. index:: pair: variable; sbls_inform
-.. _doxid-structqpb__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68:
+.. _doxid-structqpb__inform__type_sbls_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -223,7 +223,7 @@ inform parameters for FDC
 inform parameters for SBLS
 
 .. index:: pair: variable; gltr_inform
-.. _doxid-structqpb__inform__type_1a27a98844f05f18669d3dd60d3e6a8e46:
+.. _doxid-structqpb__inform__type_gltr_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -233,7 +233,7 @@ inform parameters for SBLS
 return information from GLTR
 
 .. index:: pair: variable; fit_inform
-.. _doxid-structqpb__inform__type_1ac6efa45e989564727014956bf3e00deb:
+.. _doxid-structqpb__inform__type_fit_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

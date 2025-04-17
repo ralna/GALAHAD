@@ -15,11 +15,11 @@ presolve_inform_type structure
 	struct presolve_inform_type {
 		// fields
 	
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structpresolve__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structpresolve__inform__type_status>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status_continue<doxid-structpresolve__inform__type_1ab9d0ea9275be048bd854d13bd68b06d1>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status_continued<doxid-structpresolve__inform__type_1ae9021be7a578e777cc20e3cd5f0ab51d>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nbr_transforms<doxid-structpresolve__inform__type_1ac678d67797411ebadaab2a5e07f62e8a>`;
-		char :ref:`message<doxid-structpresolve__inform__type_1ad3ed7aeb962cfe24345625354d733206>`[3][81];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nbr_transforms<doxid-structpresolve__inform__type_nbr_transforms>`;
+		char :ref:`message<doxid-structpresolve__inform__type_message>`[3][81];
 	};
 .. _details-structpresolve__inform__type:
 
@@ -32,7 +32,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structpresolve__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structpresolve__inform__type_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -335,7 +335,7 @@ The presolve exit condition. It can take the following values (symbol in parenth
   (WRONG_HNE) incompatible value of H_ne
 
 .. index:: pair: variable; nbr_transforms
-.. _doxid-structpresolve__inform__type_1ac678d67797411ebadaab2a5e07f62e8a:
+.. _doxid-structpresolve__inform__type_nbr_transforms:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -345,7 +345,7 @@ The presolve exit condition. It can take the following values (symbol in parenth
 The final number of problem transformations, as reported to the user at exit.
 
 .. index:: pair: variable; message
-.. _doxid-structpresolve__inform__type_1ad3ed7aeb962cfe24345625354d733206:
+.. _doxid-structpresolve__inform__type_message:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

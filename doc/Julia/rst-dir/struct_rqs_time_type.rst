@@ -33,7 +33,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; total
-.. _doxid-structrqs__time__type_1ad3803b3bb79c5c74d9300520fbe733f4:
+.. _doxid-structrqs__time__type_total:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -43,7 +43,7 @@ components
 total CPU time spent in the package
 
 .. index:: pair: variable; assemble
-.. _doxid-structrqs__time__type_1ae84d232eee798a974ebaeb9c82d623f4:
+.. _doxid-structrqs__time__type_assemble:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -53,7 +53,7 @@ total CPU time spent in the package
 CPU time spent building $H + \lambda M$.
 
 .. index:: pair: variable; analyse
-.. _doxid-structrqs__time__type_1a9c5b9155e1665977103d8c32881d9f00:
+.. _doxid-structrqs__time__type_analyse:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -63,7 +63,7 @@ CPU time spent building $H + \lambda M$.
 CPU time spent reordering $H + \lambda M$ prior to factorization.
 
 .. index:: pair: variable; factorize
-.. _doxid-structrqs__time__type_1a79e62dbb4cbb6e99d82167e60c703015:
+.. _doxid-structrqs__time__type_factorize:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -73,7 +73,7 @@ CPU time spent reordering $H + \lambda M$ prior to factorization.
 CPU time spent factorizing $H + \lambda M$.
 
 .. index:: pair: variable; solve
-.. _doxid-structrqs__time__type_1a4c971b10c915041b89daa05a29125376:
+.. _doxid-structrqs__time__type_solve:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -83,7 +83,7 @@ CPU time spent factorizing $H + \lambda M$.
 CPU time spent solving linear systems inolving $H + \lambda M$.
 
 .. index:: pair: variable; clock_total
-.. _doxid-structrqs__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
+.. _doxid-structrqs__time__type_clock_total:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -93,7 +93,7 @@ CPU time spent solving linear systems inolving $H + \lambda M$.
 total clock time spent in the package
 
 .. index:: pair: variable; clock_assemble
-.. _doxid-structrqs__time__type_1a4df2b92cea9269b8f8cad7024b83a10d:
+.. _doxid-structrqs__time__type_clock_assemble:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -103,7 +103,7 @@ total clock time spent in the package
 clock time spent building $H + \lambda M$
 
 .. index:: pair: variable; clock_analyse
-.. _doxid-structrqs__time__type_1a3394e706afb175d930c81c4b86fe8f4b:
+.. _doxid-structrqs__time__type_clock_analyse:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -113,7 +113,7 @@ clock time spent building $H + \lambda M$
 clock time spent reordering $H + \lambda M$ prior to factorization
 
 .. index:: pair: variable; clock_factorize
-.. _doxid-structrqs__time__type_1ad3f0f50628260b90d6cf974e02f86192:
+.. _doxid-structrqs__time__type_clock_factorize:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -123,7 +123,7 @@ clock time spent reordering $H + \lambda M$ prior to factorization
 clock time spent factorizing $H + \lambda M$
 
 .. index:: pair: variable; clock_solve
-.. _doxid-structrqs__time__type_1af569df4b8828eb7ac8a05ef1030d1358:
+.. _doxid-structrqs__time__type_clock_solve:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

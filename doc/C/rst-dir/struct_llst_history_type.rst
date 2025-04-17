@@ -15,9 +15,9 @@ llst_history_type structure
 	struct llst_history_type {
 		// fields
 	
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`lambda<doxid-structllst__history__type_1a69856cb11373bfb6f36d8a28df6dd08f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`x_norm<doxid-structllst__history__type_1a32b3ba51ed1b0d7941f34e736da26ae3>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`r_norm<doxid-structllst__history__type_1ae908410fabf891cfd89626c3605c38ca>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`lambda<doxid-structllst__history__type_lambda>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`x_norm<doxid-structllst__history__type_x_norm>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`r_norm<doxid-structllst__history__type_r_norm>`;
 	};
 .. _details-structllst__history__type:
 
@@ -30,7 +30,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; lambda
-.. _doxid-structllst__history__type_1a69856cb11373bfb6f36d8a28df6dd08f:
+.. _doxid-structllst__history__type_lambda:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -40,7 +40,7 @@ components
 the value of $\lambda$
 
 .. index:: pair: variable; x_norm
-.. _doxid-structllst__history__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
+.. _doxid-structllst__history__type_x_norm:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -50,7 +50,7 @@ the value of $\lambda$
 the corresponding value of $\|x(\lambda)\|_S$
 
 .. index:: pair: variable; r_norm
-.. _doxid-structllst__history__type_1ae908410fabf891cfd89626c3605c38ca:
+.. _doxid-structllst__history__type_r_norm:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

@@ -26,7 +26,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; flag
-.. _doxid-structgls__sinfo_1adf916204820072417ed73a32de1cefcf:
+.. _doxid-structgls__sinfo_flag:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -36,7 +36,7 @@ components
 Flags success or failure case.
 
 .. index:: pair: variable; more
-.. _doxid-structgls__sinfo_1a4628f2fb17af64608416810cc4e5a9d0:
+.. _doxid-structgls__sinfo_more:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -46,7 +46,7 @@ Flags success or failure case.
 More information on failure.
 
 .. index:: pair: variable; stat
-.. _doxid-structgls__sinfo_1a7d6f8a25e94209bd3ba29b2051ca4f08:
+.. _doxid-structgls__sinfo_stat:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

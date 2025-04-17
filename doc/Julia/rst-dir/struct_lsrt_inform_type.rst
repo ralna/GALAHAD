@@ -37,7 +37,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structlsrt__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structlsrt__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -47,7 +47,7 @@ components
 return status. See :ref:`lsrt_solve_problem <doxid-galahad__lsrt_8h_1aa1b3479d5f21fe373ef8948d55763992>` for details
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structlsrt__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structlsrt__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -57,7 +57,7 @@ return status. See :ref:`lsrt_solve_problem <doxid-galahad__lsrt_8h_1aa1b3479d5f
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structlsrt__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structlsrt__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -67,7 +67,7 @@ the status of the last attempted allocation/deallocation
 the name of the array for which an allocation/deallocation error occurred
 
 .. index:: pair: variable; iter
-.. _doxid-structlsrt__inform__type_1aab6f168571c2073e01e240524b8a3da0:
+.. _doxid-structlsrt__inform__type_iter:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -77,7 +77,7 @@ the name of the array for which an allocation/deallocation error occurred
 the total number of iterations required
 
 .. index:: pair: variable; iter_pass2
-.. _doxid-structlsrt__inform__type_1aa69f8ea5f07782fd8ad0318f87202ac4:
+.. _doxid-structlsrt__inform__type_iter_pass2:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -87,7 +87,7 @@ the total number of iterations required
 the total number of pass-2 iterations required
 
 .. index:: pair: variable; biters
-.. _doxid-structlsrt__inform__type_1a0c5347be8391fbb23d728cebe0f3a5a8:
+.. _doxid-structlsrt__inform__type_biters:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -97,7 +97,7 @@ the total number of pass-2 iterations required
 the total number of inner iterations performed
 
 .. index:: pair: variable; biter_min
-.. _doxid-structlsrt__inform__type_1a6fe473492218a28f33e53f014c741e81:
+.. _doxid-structlsrt__inform__type_biter_min:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -107,7 +107,7 @@ the total number of inner iterations performed
 the smallest number of inner iterations performed during an outer iteration
 
 .. index:: pair: variable; biter_max
-.. _doxid-structlsrt__inform__type_1aaa032644e73bb5bbc6092733db7f013b:
+.. _doxid-structlsrt__inform__type_biter_max:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -117,7 +117,7 @@ the smallest number of inner iterations performed during an outer iteration
 the largest number of inner iterations performed during an outer iteration
 
 .. index:: pair: variable; obj
-.. _doxid-structlsrt__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:
+.. _doxid-structlsrt__inform__type_obj:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -127,7 +127,7 @@ the largest number of inner iterations performed during an outer iteration
 the value of the objective function
 
 .. index:: pair: variable; multiplier
-.. _doxid-structlsrt__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0:
+.. _doxid-structlsrt__inform__type_multiplier:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -137,7 +137,7 @@ the value of the objective function
 the multiplier, $\lambda = sigma ||x||^(p-2)$
 
 .. index:: pair: variable; x_norm
-.. _doxid-structlsrt__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3:
+.. _doxid-structlsrt__inform__type_x_norm:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -147,7 +147,7 @@ the multiplier, $\lambda = sigma ||x||^(p-2)$
 the Euclidean norm of $x$
 
 .. index:: pair: variable; r_norm
-.. _doxid-structlsrt__inform__type_1ae908410fabf891cfd89626c3605c38ca:
+.. _doxid-structlsrt__inform__type_r_norm:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -157,7 +157,7 @@ the Euclidean norm of $x$
 the Euclidean norm of $Ax-b$
 
 .. index:: pair: variable; Atr_norm
-.. _doxid-structlsrt__inform__type_1a0dc3a69b13123a76ec6ee7dd031eadff:
+.. _doxid-structlsrt__inform__type_Atr_norm:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -167,7 +167,7 @@ the Euclidean norm of $Ax-b$
 the Euclidean norm of $A^T (Ax-b) + \lambda x$
 
 .. index:: pair: variable; biter_mean
-.. _doxid-structlsrt__inform__type_1a0c9f077f6c3bc52c519c2045c0578b22:
+.. _doxid-structlsrt__inform__type_biter_mean:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

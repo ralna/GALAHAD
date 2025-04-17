@@ -24,7 +24,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structsec__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structsec__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

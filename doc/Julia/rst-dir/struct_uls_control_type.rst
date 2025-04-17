@@ -49,7 +49,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structuls__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structuls__control__type_f_indexing:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -59,7 +59,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structuls__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structuls__control__type_error:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -69,7 +69,7 @@ use C or Fortran sparse matrix indexing
 unit for error messages
 
 .. index:: pair: variable; warning
-.. _doxid-structuls__control__type_1af44472f3bdd4c3af6ed5465266b25312:
+.. _doxid-structuls__control__type_warning:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -79,7 +79,7 @@ unit for error messages
 unit for warning messages
 
 .. index:: pair: variable; out
-.. _doxid-structuls__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structuls__control__type_out:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -89,7 +89,7 @@ unit for warning messages
 unit for monitor output
 
 .. index:: pair: variable; print_level
-.. _doxid-structuls__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structuls__control__type_print_level:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -99,7 +99,7 @@ unit for monitor output
 controls level of diagnostic output
 
 .. index:: pair: variable; print_level_solver
-.. _doxid-structuls__control__type_1afc17ef86601030a3cb1c7edb7a79a39f:
+.. _doxid-structuls__control__type_print_level_solver:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -109,7 +109,7 @@ controls level of diagnostic output
 controls level of diagnostic output from external solver
 
 .. index:: pair: variable; initial_fill_in_factor
-.. _doxid-structuls__control__type_1a9a5f5bbcbc09508812a16fee01fc812d:
+.. _doxid-structuls__control__type_initial_fill_in_factor:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -119,7 +119,7 @@ controls level of diagnostic output from external solver
 prediction of factor by which the fill-in will exceed the initial number of nonzeros in $A$
 
 .. index:: pair: variable; min_real_factor_size
-.. _doxid-structuls__control__type_1a60c3d0376bbe5c06260509a9be31c562:
+.. _doxid-structuls__control__type_min_real_factor_size:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -129,7 +129,7 @@ prediction of factor by which the fill-in will exceed the initial number of nonz
 initial size for real array for the factors and other data
 
 .. index:: pair: variable; min_integer_factor_size
-.. _doxid-structuls__control__type_1addaddc306c33f5d7e6ebf7eeeab2612e:
+.. _doxid-structuls__control__type_min_integer_factor_size:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -139,7 +139,7 @@ initial size for real array for the factors and other data
 initial size for integer array for the factors and other data
 
 .. index:: pair: variable; max_factor_size
-.. _doxid-structuls__control__type_1ae7e9983ad0ee9b1e837f3e1cacc9f4e9:
+.. _doxid-structuls__control__type_max_factor_size:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -149,7 +149,7 @@ initial size for integer array for the factors and other data
 maximum size for real array for the factors and other data
 
 .. index:: pair: variable; blas_block_size_factorize
-.. _doxid-structuls__control__type_1aa2177c655d92533f17fcff58482e52c1:
+.. _doxid-structuls__control__type_blas_block_size_factorize:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -159,7 +159,7 @@ maximum size for real array for the factors and other data
 level 3 blocking in factorize
 
 .. index:: pair: variable; blas_block_size_solve
-.. _doxid-structuls__control__type_1a1af3c20cdeaaee431f309395f9f09564:
+.. _doxid-structuls__control__type_blas_block_size_solve:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -169,7 +169,7 @@ level 3 blocking in factorize
 level 2 and 3 blocking in solve
 
 .. index:: pair: variable; pivot_control
-.. _doxid-structuls__control__type_1a7489428a42ce1420b4891f638153c99f:
+.. _doxid-structuls__control__type_pivot_control:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -189,7 +189,7 @@ pivot control:
 * 5 Threshold Diagonal Pivoting is desired
 
 .. index:: pair: variable; pivot_search_limit
-.. _doxid-structuls__control__type_1a9a4b5f33dbbc1f6e9aa81dee63af5d2e:
+.. _doxid-structuls__control__type_pivot_search_limit:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -199,7 +199,7 @@ pivot control:
 number of rows/columns pivot selection restricted to (0 = no restriction)
 
 .. index:: pair: variable; minimum_size_for_btf
-.. _doxid-structuls__control__type_1ac1bd945b4d891a5f407f98afccb2c357:
+.. _doxid-structuls__control__type_minimum_size_for_btf:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -209,7 +209,7 @@ number of rows/columns pivot selection restricted to (0 = no restriction)
 the minimum permitted size of blocks within the block-triangular form
 
 .. index:: pair: variable; max_iterative_refinements
-.. _doxid-structuls__control__type_1ab044fd598767830ddc06560a91b80936:
+.. _doxid-structuls__control__type_max_iterative_refinements:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -219,7 +219,7 @@ the minimum permitted size of blocks within the block-triangular form
 maximum number of iterative refinements allowed
 
 .. index:: pair: variable; stop_if_singular
-.. _doxid-structuls__control__type_1a5d1b79218a7bf1f16c3195835a311195:
+.. _doxid-structuls__control__type_stop_if_singular:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -229,7 +229,7 @@ maximum number of iterative refinements allowed
 stop if the matrix is found to be structurally singular
 
 .. index:: pair: variable; array_increase_factor
-.. _doxid-structuls__control__type_1a6189cbfe4360772c9fa6b554e93a9b2b:
+.. _doxid-structuls__control__type_array_increase_factor:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -239,7 +239,7 @@ stop if the matrix is found to be structurally singular
 factor by which arrays sizes are to be increased if they are too small
 
 .. index:: pair: variable; switch_to_full_code_density
-.. _doxid-structuls__control__type_1a95f87bc195563b7a846fd33107fbe09c:
+.. _doxid-structuls__control__type_switch_to_full_code_density:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -249,7 +249,7 @@ factor by which arrays sizes are to be increased if they are too small
 switch to full code when the density exceeds this factor
 
 .. index:: pair: variable; array_decrease_factor
-.. _doxid-structuls__control__type_1abee09e4efae03be7d0d1a8503b338ce7:
+.. _doxid-structuls__control__type_array_decrease_factor:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -259,7 +259,7 @@ switch to full code when the density exceeds this factor
 if previously allocated internal workspace arrays are greater than array_decrease_factor times the currently required sizes, they are reset to current requirements
 
 .. index:: pair: variable; relative_pivot_tolerance
-.. _doxid-structuls__control__type_1a65344e4192516e9b621cc7416f09045c:
+.. _doxid-structuls__control__type_relative_pivot_tolerance:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -269,7 +269,7 @@ if previously allocated internal workspace arrays are greater than array_decreas
 pivot threshold
 
 .. index:: pair: variable; absolute_pivot_tolerance
-.. _doxid-structuls__control__type_1aa5e25bdcf567fac1fb496199a7c06d5a:
+.. _doxid-structuls__control__type_absolute_pivot_tolerance:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -279,7 +279,7 @@ pivot threshold
 any pivot small than this is considered zero
 
 .. index:: pair: variable; zero_tolerance
-.. _doxid-structuls__control__type_1afb83ea8401da6498362914aa88ae823f:
+.. _doxid-structuls__control__type_zero_tolerance:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -289,7 +289,7 @@ any pivot small than this is considered zero
 any entry smaller than this in modulus is reset to zero
 
 .. index:: pair: variable; acceptable_residual_relative
-.. _doxid-structuls__control__type_1a97a6571829dbdccad7598f7b5c3ddfbd:
+.. _doxid-structuls__control__type_acceptable_residual_relative:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -299,7 +299,7 @@ any entry smaller than this in modulus is reset to zero
 refinement will cease as soon as the residual $\|Ax-b\|$ falls below max( acceptable_residual_relative \* $\|b\|$, acceptable_residual_absolute )
 
 .. index:: pair: variable; acceptable_residual_absolute
-.. _doxid-structuls__control__type_1a5ee0e70d90b1398019054b19b68057a0:
+.. _doxid-structuls__control__type_acceptable_residual_absolute:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -309,7 +309,7 @@ refinement will cease as soon as the residual $\|Ax-b\|$ falls below max( accept
 see acceptable_residual_relative
 
 .. index:: pair: variable; prefix
-.. _doxid-structuls__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structuls__control__type_prefix:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

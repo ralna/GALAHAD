@@ -15,16 +15,16 @@ roots_control_type structure
 	struct roots_control_type {
 		// fields
 	
-		bool :ref:`f_indexing<doxid-structroots__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structroots__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structroots__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structroots__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`tol<doxid-structroots__control__type_1adbee5a29b5dbbe5274332980af85f697>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`zero_coef<doxid-structroots__control__type_1a2760b013e8ef1a2ab6d0a0301379e10f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`zero_f<doxid-structroots__control__type_1a1c2d0687cfd3cda18d1595b79a7fdfe8>`;
-		bool :ref:`space_critical<doxid-structroots__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		bool :ref:`deallocate_error_fatal<doxid-structroots__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structroots__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
+		bool :ref:`f_indexing<doxid-structroots__control__type_f_indexing>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structroots__control__type_error>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structroots__control__type_out>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structroots__control__type_print_level>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`tol<doxid-structroots__control__type_tol>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`zero_coef<doxid-structroots__control__type_zero_coef>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`zero_f<doxid-structroots__control__type_zero_f>`;
+		bool :ref:`space_critical<doxid-structroots__control__type_space_critical>`;
+		bool :ref:`deallocate_error_fatal<doxid-structroots__control__type_deallocate_error_fatal>`;
+		char :ref:`prefix<doxid-structroots__control__type_prefix>`[31];
 	};
 .. _details-structroots__control__type:
 
@@ -37,7 +37,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structroots__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structroots__control__type_f_indexing:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -47,7 +47,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structroots__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structroots__control__type_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -57,7 +57,7 @@ use C or Fortran sparse matrix indexing
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
-.. _doxid-structroots__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structroots__control__type_out:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -67,7 +67,7 @@ error and warning diagnostics occur on stream error
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
-.. _doxid-structroots__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structroots__control__type_print_level:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -77,7 +77,7 @@ general output occurs on stream out
 the level of output required is specified by print_level
 
 .. index:: pair: variable; tol
-.. _doxid-structroots__control__type_1adbee5a29b5dbbe5274332980af85f697:
+.. _doxid-structroots__control__type_tol:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -87,7 +87,7 @@ the level of output required is specified by print_level
 the required accuracy of the roots
 
 .. index:: pair: variable; zero_coef
-.. _doxid-structroots__control__type_1a2760b013e8ef1a2ab6d0a0301379e10f:
+.. _doxid-structroots__control__type_zero_coef:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -97,7 +97,7 @@ the required accuracy of the roots
 any coefficient smaller in absolute value than zero_coef will be regarde to be zero
 
 .. index:: pair: variable; zero_f
-.. _doxid-structroots__control__type_1a1c2d0687cfd3cda18d1595b79a7fdfe8:
+.. _doxid-structroots__control__type_zero_f:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -107,7 +107,7 @@ any coefficient smaller in absolute value than zero_coef will be regarde to be z
 any value of the polynomial smaller in absolute value than zero_f will be regarded as giving a root
 
 .. index:: pair: variable; space_critical
-.. _doxid-structroots__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structroots__control__type_space_critical:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -117,7 +117,7 @@ any value of the polynomial smaller in absolute value than zero_f will be regard
 if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structroots__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structroots__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -127,7 +127,7 @@ if .space_critical true, every effort will be made to use as little space as pos
 if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue
 
 .. index:: pair: variable; prefix
-.. _doxid-structroots__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structroots__control__type_prefix:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

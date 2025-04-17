@@ -16,55 +16,55 @@ tru_control_type structure
 	struct tru_control_type {
 		// components
 	
-		bool :ref:`f_indexing<doxid-structtru__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structtru__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structtru__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structtru__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`start_print<doxid-structtru__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`stop_print<doxid-structtru__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_gap<doxid-structtru__control__type_1a31edaef6b722ef2721633484405a649b>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`maxit<doxid-structtru__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alive_unit<doxid-structtru__control__type_1a3fc6359d77a53a63d57ea600b51eac13>`;
-		char :ref:`alive_file<doxid-structtru__control__type_1ac631699a26f321b14dbed37115f3c006>`[31];
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`non_monotone<doxid-structtru__control__type_1a856b2df558071805c217b6d72a1e215b>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`model<doxid-structtru__control__type_1a027a1f1731d22465c926ce57be2364c3>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`norm<doxid-structtru__control__type_1a5b6da5fd1d9c6f86967fa0b4197e3498>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`semi_bandwidth<doxid-structtru__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`lbfgs_vectors<doxid-structtru__control__type_1a90eb3c326cdd5cd8f81f084c4ec5bf30>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_dxg<doxid-structtru__control__type_1a0d14c8b2992107c3e0f8099cf7f3d04f>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`icfs_vectors<doxid-structtru__control__type_1adb095f545799aab1d69fcdca912d4afd>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mi28_lsize<doxid-structtru__control__type_1a97a46af6187162b529821f79d1559827>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mi28_rsize<doxid-structtru__control__type_1a8cd04d404e41a2a09c29eeb2de78cd85>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_g_absolute<doxid-structtru__control__type_1a6182fed3e6c11b9aa39e1460c1def7f8>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_g_relative<doxid-structtru__control__type_1aeb89f1dc942cea0814ee1e8d645467d3>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_s<doxid-structtru__control__type_1a56612668b00bf042745379f43166cd27>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`advanced_start<doxid-structtru__control__type_1a7565611061db14e471a4f68e6dabbc17>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`initial_radius<doxid-structtru__control__type_1aa1a65cb31a449551c7819e7e886ca028>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`maximum_radius<doxid-structtru__control__type_1ad67b5e31569fee1255347e8d1782ce9d>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`eta_successful<doxid-structtru__control__type_1ac0774abb09bb59381960d771cb38b8ef>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`eta_very_successful<doxid-structtru__control__type_1a5e55cf3fe7846b0f9b23919b0f95469e>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`eta_too_successful<doxid-structtru__control__type_1a6af4c9666b9342fa75b665bfb8cef524>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`radius_increase<doxid-structtru__control__type_1a5fdd7428d08e428c376420582cbff66e>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`radius_reduce<doxid-structtru__control__type_1a5c424056838394ef7a658c5376614567>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`radius_reduce_max<doxid-structtru__control__type_1ab47548da92f2f23bae395a0b960d7fba>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj_unbounded<doxid-structtru__control__type_1a7eed67e26bc4e17ca334031b7fd608a6>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`cpu_time_limit<doxid-structtru__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_time_limit<doxid-structtru__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		bool :ref:`hessian_available<doxid-structtru__control__type_1a0fa05e3076ccb30e3b859c1e4be08981>`;
-		bool :ref:`subproblem_direct<doxid-structtru__control__type_1a8c10db7cf72a4e3e52c9601007f7b1de>`;
-		bool :ref:`retrospective_trust_region<doxid-structtru__control__type_1a7a834a2cc8deb90becaf0245edb7eea9>`;
-		bool :ref:`renormalize_radius<doxid-structtru__control__type_1a761e5ba3ea38a06456f35a1690e77a2e>`;
-		bool :ref:`space_critical<doxid-structtru__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
-		bool :ref:`deallocate_error_fatal<doxid-structtru__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
-		char :ref:`prefix<doxid-structtru__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
-		struct :ref:`trs_control_type<doxid-structtrs__control__type>` :ref:`trs_control<doxid-structtru__control__type_1a0fb493acc030672e71f68fa1ef1727e8>`;
-		struct :ref:`gltr_control_type<doxid-structgltr__control__type>` :ref:`gltr_control<doxid-structtru__control__type_1aa48d482633f3788830b1d8dc85fa91d6>`;
-		struct :ref:`dps_control_type<doxid-structdps__control__type>` :ref:`dps_control<doxid-structtru__control__type_1a400a915be09fbe2f8114fc9f7f9dddf1>`;
-		struct :ref:`psls_control_type<doxid-structpsls__control__type>` :ref:`psls_control<doxid-structtru__control__type_1a6fe2b1a82e177fbd1a39d9de9652a2c5>`;
-		struct :ref:`lms_control_type<doxid-structlms__control__type>` :ref:`lms_control<doxid-structtru__control__type_1a7149e4807d93e93adf2eb1e3e42c6fb6>`;
-		struct :ref:`lms_control_type<doxid-structlms__control__type>` :target:`lms_control_prec<doxid-structtru__control__type_1aaad01db9888c4f77c450ff45fac4dfec>`;
-		struct :ref:`sec_control_type<doxid-structsec__control__type>` :ref:`sec_control<doxid-structtru__control__type_1a3b18636f4c3c9a62ddcaf9dfb5b56da6>`;
-		struct :ref:`sha_control_type<doxid-structsha__control__type>` :ref:`sha_control<doxid-structtru__control__type_1a0e0b1319a0f3da41507bfb343a26ab96>`;
+		bool :ref:`f_indexing<doxid-structtru__control__type_f_indexing>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structtru__control__type_error>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structtru__control__type_out>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structtru__control__type_print_level>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`start_print<doxid-structtru__control__type_start_print>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`stop_print<doxid-structtru__control__type_stop_print>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_gap<doxid-structtru__control__type_print_gap>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`maxit<doxid-structtru__control__type_maxit>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alive_unit<doxid-structtru__control__type_alive_unit>`;
+		char :ref:`alive_file<doxid-structtru__control__type_alive_file>`[31];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`non_monotone<doxid-structtru__control__type_non_monotone>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`model<doxid-structtru__control__type_model>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`norm<doxid-structtru__control__type_norm>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`semi_bandwidth<doxid-structtru__control__type_semi_bandwidth>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`lbfgs_vectors<doxid-structtru__control__type_lbfgs_vectors>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_dxg<doxid-structtru__control__type_max_dxg>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`icfs_vectors<doxid-structtru__control__type_icfs_vectors>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mi28_lsize<doxid-structtru__control__type_mi28_lsize>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mi28_rsize<doxid-structtru__control__type_mi28_rsize>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_g_absolute<doxid-structtru__control__type_stop_g_absolute>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_g_relative<doxid-structtru__control__type_stop_g_relative>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_s<doxid-structtru__control__type_stop_s>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`advanced_start<doxid-structtru__control__type_advanced_start>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`initial_radius<doxid-structtru__control__type_initial_radius>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`maximum_radius<doxid-structtru__control__type_maximum_radius>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`eta_successful<doxid-structtru__control__type_eta_successful>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`eta_very_successful<doxid-structtru__control__type_eta_very_successful>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`eta_too_successful<doxid-structtru__control__type_eta_too_successful>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`radius_increase<doxid-structtru__control__type_radius_increase>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`radius_reduce<doxid-structtru__control__type_radius_reduce>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`radius_reduce_max<doxid-structtru__control__type_radius_reduce_max>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj_unbounded<doxid-structtru__control__type_obj_unbounded>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`cpu_time_limit<doxid-structtru__control__type_cpu_time_limit>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_time_limit<doxid-structtru__control__type_clock_time_limit>`;
+		bool :ref:`hessian_available<doxid-structtru__control__type_hessian_available>`;
+		bool :ref:`subproblem_direct<doxid-structtru__control__type_subproblem_direct>`;
+		bool :ref:`retrospective_trust_region<doxid-structtru__control__type_retrospective_trust_region>`;
+		bool :ref:`renormalize_radius<doxid-structtru__control__type_renormalize_radius>`;
+		bool :ref:`space_critical<doxid-structtru__control__type_space_critical>`;
+		bool :ref:`deallocate_error_fatal<doxid-structtru__control__type_deallocate_error_fatal>`;
+		char :ref:`prefix<doxid-structtru__control__type_prefix>`[31];
+		struct :ref:`trs_control_type<doxid-structtrs__control__type>` :ref:`trs_control<doxid-structtru__control__type_trs_control>`;
+		struct :ref:`gltr_control_type<doxid-structgltr__control__type>` :ref:`gltr_control<doxid-structtru__control__type_gltr_control>`;
+		struct :ref:`dps_control_type<doxid-structdps__control__type>` :ref:`dps_control<doxid-structtru__control__type_dps_control>`;
+		struct :ref:`psls_control_type<doxid-structpsls__control__type>` :ref:`psls_control<doxid-structtru__control__type_psls_control>`;
+		struct :ref:`lms_control_type<doxid-structlms__control__type>` :ref:`lms_control<doxid-structtru__control__type_lms_control>`;
+		struct :ref:`lms_control_type<doxid-structlms__control__type>` :target:`lms_control_prec<doxid-structtru__control__type_lms_control_prec>`;
+		struct :ref:`sec_control_type<doxid-structsec__control__type>` :ref:`sec_control<doxid-structtru__control__type_sec_control>`;
+		struct :ref:`sha_control_type<doxid-structsha__control__type>` :ref:`sha_control<doxid-structtru__control__type_sha_control>`;
 	};
 .. _details-structtru__control__type:
 
@@ -77,7 +77,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; f_indexing
-.. _doxid-structtru__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3:
+.. _doxid-structtru__control__type_f_indexing:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -87,7 +87,7 @@ components
 use C or Fortran sparse matrix indexing
 
 .. index:: pair: variable; error
-.. _doxid-structtru__control__type_1a11614f44ef4d939bdd984953346a7572:
+.. _doxid-structtru__control__type_error:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -97,7 +97,7 @@ use C or Fortran sparse matrix indexing
 error and warning diagnostics occur on stream error
 
 .. index:: pair: variable; out
-.. _doxid-structtru__control__type_1aa8000eda101cade7c6c4b913fce0cc9c:
+.. _doxid-structtru__control__type_out:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -107,7 +107,7 @@ error and warning diagnostics occur on stream error
 general output occurs on stream out
 
 .. index:: pair: variable; print_level
-.. _doxid-structtru__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81:
+.. _doxid-structtru__control__type_print_level:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -125,7 +125,7 @@ the level of output required.
 * $\geq$ 3 gives increasingly verbose (debugging) output
 
 .. index:: pair: variable; start_print
-.. _doxid-structtru__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa:
+.. _doxid-structtru__control__type_start_print:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -135,7 +135,7 @@ the level of output required.
 any printing will start on this iteration
 
 .. index:: pair: variable; stop_print
-.. _doxid-structtru__control__type_1a9a3d9960a04602d2a18009c82ae2124e:
+.. _doxid-structtru__control__type_stop_print:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -145,7 +145,7 @@ any printing will start on this iteration
 any printing will stop on this iteration
 
 .. index:: pair: variable; print_gap
-.. _doxid-structtru__control__type_1a31edaef6b722ef2721633484405a649b:
+.. _doxid-structtru__control__type_print_gap:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -155,7 +155,7 @@ any printing will stop on this iteration
 the number of iterations between printing
 
 .. index:: pair: variable; maxit
-.. _doxid-structtru__control__type_1ab717630b215f0362699acac11fb3652c:
+.. _doxid-structtru__control__type_maxit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -165,7 +165,7 @@ the number of iterations between printing
 the maximum number of iterations allowed
 
 .. index:: pair: variable; alive_unit
-.. _doxid-structtru__control__type_1a3fc6359d77a53a63d57ea600b51eac13:
+.. _doxid-structtru__control__type_alive_unit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -175,7 +175,7 @@ the maximum number of iterations allowed
 removal of the file alive_file from unit alive_unit terminates execution
 
 .. index:: pair: variable; alive_file
-.. _doxid-structtru__control__type_1ac631699a26f321b14dbed37115f3c006:
+.. _doxid-structtru__control__type_alive_file:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -185,7 +185,7 @@ removal of the file alive_file from unit alive_unit terminates execution
 see alive_unit
 
 .. index:: pair: variable; non_monotone
-.. _doxid-structtru__control__type_1a856b2df558071805c217b6d72a1e215b:
+.. _doxid-structtru__control__type_non_monotone:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -201,7 +201,7 @@ Possible values are
 * anything else, a non-monotone strategy with history length .non_monotine is used.
 
 .. index:: pair: variable; model
-.. _doxid-structtru__control__type_1a027a1f1731d22465c926ce57be2364c3:
+.. _doxid-structtru__control__type_model:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -227,7 +227,7 @@ Possible values are
 * 6 secant second-order (limited-memory SR1, with .lbfgs_vectors history)
 
 .. index:: pair: variable; norm
-.. _doxid-structtru__control__type_1a5b6da5fd1d9c6f86967fa0b4197e3498:
+.. _doxid-structtru__control__type_norm:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -267,7 +267,7 @@ The norm is defined via $\|v\|^2 = v^T P v$, and will define the preconditioner 
 * 10 diagonalizing norm from GALAHAD_DPS (*subproblem_direct only*)
 
 .. index:: pair: variable; semi_bandwidth
-.. _doxid-structtru__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb:
+.. _doxid-structtru__control__type_semi_bandwidth:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -277,7 +277,7 @@ The norm is defined via $\|v\|^2 = v^T P v$, and will define the preconditioner 
 specify the semi-bandwidth of the band matrix $P$ if required
 
 .. index:: pair: variable; lbfgs_vectors
-.. _doxid-structtru__control__type_1a90eb3c326cdd5cd8f81f084c4ec5bf30:
+.. _doxid-structtru__control__type_lbfgs_vectors:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -287,7 +287,7 @@ specify the semi-bandwidth of the band matrix $P$ if required
 number of vectors used by the L-BFGS matrix $P$ if required
 
 .. index:: pair: variable; max_dxg
-.. _doxid-structtru__control__type_1a0d14c8b2992107c3e0f8099cf7f3d04f:
+.. _doxid-structtru__control__type_max_dxg:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -297,7 +297,7 @@ number of vectors used by the L-BFGS matrix $P$ if required
 number of vectors used by the sparsity-based secant Hessian if required
 
 .. index:: pair: variable; icfs_vectors
-.. _doxid-structtru__control__type_1adb095f545799aab1d69fcdca912d4afd:
+.. _doxid-structtru__control__type_icfs_vectors:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -307,7 +307,7 @@ number of vectors used by the sparsity-based secant Hessian if required
 number of vectors used by the Lin-More' incomplete factorization matrix $P$ if required
 
 .. index:: pair: variable; mi28_lsize
-.. _doxid-structtru__control__type_1a97a46af6187162b529821f79d1559827:
+.. _doxid-structtru__control__type_mi28_lsize:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -317,7 +317,7 @@ number of vectors used by the Lin-More' incomplete factorization matrix $P$ if r
 the maximum number of fill entries within each column of the incomplete factor L computed by HSL_MI28. In general, increasing .mi28_lsize improve the quality of the preconditioner but increases the time to compute and then apply the preconditioner. Values less than 0 are treated as 0
 
 .. index:: pair: variable; mi28_rsize
-.. _doxid-structtru__control__type_1a8cd04d404e41a2a09c29eeb2de78cd85:
+.. _doxid-structtru__control__type_mi28_rsize:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -327,7 +327,7 @@ the maximum number of fill entries within each column of the incomplete factor L
 the maximum number of entries within each column of the strictly lower triangular matrix $R$ used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold $R$. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize >= .mi28_lsize is generally recommended
 
 .. index:: pair: variable; stop_g_absolute
-.. _doxid-structtru__control__type_1a6182fed3e6c11b9aa39e1460c1def7f8:
+.. _doxid-structtru__control__type_stop_g_absolute:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -337,7 +337,7 @@ the maximum number of entries within each column of the strictly lower triangula
 overall convergence tolerances. The iteration will terminate when the norm of the gradient of the objective function is smaller than MAX( .stop_g_absolute, .stop_g_relative \* norm of the initial gradient ) or if the step is less than .stop_s
 
 .. index:: pair: variable; stop_g_relative
-.. _doxid-structtru__control__type_1aeb89f1dc942cea0814ee1e8d645467d3:
+.. _doxid-structtru__control__type_stop_g_relative:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -347,7 +347,7 @@ overall convergence tolerances. The iteration will terminate when the norm of th
 see stop_g_absolute
 
 .. index:: pair: variable; stop_s
-.. _doxid-structtru__control__type_1a56612668b00bf042745379f43166cd27:
+.. _doxid-structtru__control__type_stop_s:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -357,7 +357,7 @@ see stop_g_absolute
 see stop_g_absolute
 
 .. index:: pair: variable; advanced_start
-.. _doxid-structtru__control__type_1a7565611061db14e471a4f68e6dabbc17:
+.. _doxid-structtru__control__type_advanced_start:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -367,7 +367,7 @@ see stop_g_absolute
 try to pick a good initial trust-region radius using .advanced_start iterates of a variant on the strategy of Sartenaer SISC 18(6) 1990:1788-1803
 
 .. index:: pair: variable; initial_radius
-.. _doxid-structtru__control__type_1aa1a65cb31a449551c7819e7e886ca028:
+.. _doxid-structtru__control__type_initial_radius:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -377,7 +377,7 @@ try to pick a good initial trust-region radius using .advanced_start iterates of
 initial value for the trust-region radius
 
 .. index:: pair: variable; maximum_radius
-.. _doxid-structtru__control__type_1ad67b5e31569fee1255347e8d1782ce9d:
+.. _doxid-structtru__control__type_maximum_radius:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -387,7 +387,7 @@ initial value for the trust-region radius
 maximum permitted trust-region radius
 
 .. index:: pair: variable; eta_successful
-.. _doxid-structtru__control__type_1ac0774abb09bb59381960d771cb38b8ef:
+.. _doxid-structtru__control__type_eta_successful:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -397,7 +397,7 @@ maximum permitted trust-region radius
 a potential iterate will only be accepted if the actual decrease $f - f(x_{new})$ is larger than .eta_successful times that predicted by a quadratic model of the decrease. The trust-region radius will be increased if this relative decrease is greater than .eta_very_successful but smaller than .eta_too_successful
 
 .. index:: pair: variable; eta_very_successful
-.. _doxid-structtru__control__type_1a5e55cf3fe7846b0f9b23919b0f95469e:
+.. _doxid-structtru__control__type_eta_very_successful:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -407,7 +407,7 @@ a potential iterate will only be accepted if the actual decrease $f - f(x_{new})
 see eta_successful
 
 .. index:: pair: variable; eta_too_successful
-.. _doxid-structtru__control__type_1a6af4c9666b9342fa75b665bfb8cef524:
+.. _doxid-structtru__control__type_eta_too_successful:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -417,7 +417,7 @@ see eta_successful
 see eta_successful
 
 .. index:: pair: variable; radius_increase
-.. _doxid-structtru__control__type_1a5fdd7428d08e428c376420582cbff66e:
+.. _doxid-structtru__control__type_radius_increase:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -427,7 +427,7 @@ see eta_successful
 on very successful iterations, the trust-region radius will be increased by the factor .radius_increase, while if the iteration is unsucceful, the radius will be decreased by a factor .radius_reduce but no more than .radius_reduce_max
 
 .. index:: pair: variable; radius_reduce
-.. _doxid-structtru__control__type_1a5c424056838394ef7a658c5376614567:
+.. _doxid-structtru__control__type_radius_reduce:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -437,7 +437,7 @@ on very successful iterations, the trust-region radius will be increased by the 
 see radius_increase;
 
 .. index:: pair: variable; radius_reduce_max
-.. _doxid-structtru__control__type_1ab47548da92f2f23bae395a0b960d7fba:
+.. _doxid-structtru__control__type_radius_reduce_max:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -447,7 +447,7 @@ see radius_increase;
 see radius_increase;
 
 .. index:: pair: variable; obj_unbounded
-.. _doxid-structtru__control__type_1a7eed67e26bc4e17ca334031b7fd608a6:
+.. _doxid-structtru__control__type_obj_unbounded:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -457,7 +457,7 @@ see radius_increase;
 the smallest value the objective function may take before the problem is marked as unbounded
 
 .. index:: pair: variable; cpu_time_limit
-.. _doxid-structtru__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd:
+.. _doxid-structtru__control__type_cpu_time_limit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -467,7 +467,7 @@ the smallest value the objective function may take before the problem is marked 
 the maximum CPU time allowed (-ve means infinite)
 
 .. index:: pair: variable; clock_time_limit
-.. _doxid-structtru__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8:
+.. _doxid-structtru__control__type_clock_time_limit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -477,7 +477,7 @@ the maximum CPU time allowed (-ve means infinite)
 the maximum elapsed clock time allowed (-ve means infinite)
 
 .. index:: pair: variable; hessian_available
-.. _doxid-structtru__control__type_1a0fa05e3076ccb30e3b859c1e4be08981:
+.. _doxid-structtru__control__type_hessian_available:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -487,7 +487,7 @@ the maximum elapsed clock time allowed (-ve means infinite)
 is the Hessian matrix of second derivatives available or is access only via matrix-vector products?
 
 .. index:: pair: variable; subproblem_direct
-.. _doxid-structtru__control__type_1a8c10db7cf72a4e3e52c9601007f7b1de:
+.. _doxid-structtru__control__type_subproblem_direct:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -497,7 +497,7 @@ is the Hessian matrix of second derivatives available or is access only via matr
 use a direct (factorization) or (preconditioned) iterative method to find the search direction
 
 .. index:: pair: variable; retrospective_trust_region
-.. _doxid-structtru__control__type_1a7a834a2cc8deb90becaf0245edb7eea9:
+.. _doxid-structtru__control__type_retrospective_trust_region:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -507,7 +507,7 @@ use a direct (factorization) or (preconditioned) iterative method to find the se
 is a retrospective strategy to be used to update the trust-region radius?
 
 .. index:: pair: variable; renormalize_radius
-.. _doxid-structtru__control__type_1a761e5ba3ea38a06456f35a1690e77a2e:
+.. _doxid-structtru__control__type_renormalize_radius:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -517,7 +517,7 @@ is a retrospective strategy to be used to update the trust-region radius?
 should the radius be renormalized to account for a change in preconditioner?
 
 .. index:: pair: variable; space_critical
-.. _doxid-structtru__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
+.. _doxid-structtru__control__type_space_critical:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -527,7 +527,7 @@ should the radius be renormalized to account for a change in preconditioner?
 if .space_critical is true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
-.. _doxid-structtru__control__type_1a58a2c67fad6e808e8365eff67700cba5:
+.. _doxid-structtru__control__type_deallocate_error_fatal:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -537,7 +537,7 @@ if .space_critical is true, every effort will be made to use as little space as 
 if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue
 
 .. index:: pair: variable; prefix
-.. _doxid-structtru__control__type_1a1dc05936393ba705f516a0c275df4ffc:
+.. _doxid-structtru__control__type_prefix:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -547,7 +547,7 @@ if .deallocate_error_fatal is true, any array/pointer deallocation error will te
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
 
 .. index:: pair: variable; trs_control
-.. _doxid-structtru__control__type_1a0fb493acc030672e71f68fa1ef1727e8:
+.. _doxid-structtru__control__type_trs_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -557,7 +557,7 @@ all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .pref
 control parameters for TRS
 
 .. index:: pair: variable; gltr_control
-.. _doxid-structtru__control__type_1aa48d482633f3788830b1d8dc85fa91d6:
+.. _doxid-structtru__control__type_gltr_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -567,7 +567,7 @@ control parameters for TRS
 control parameters for GLTR
 
 .. index:: pair: variable; dps_control
-.. _doxid-structtru__control__type_1a400a915be09fbe2f8114fc9f7f9dddf1:
+.. _doxid-structtru__control__type_dps_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -577,7 +577,7 @@ control parameters for GLTR
 control parameters for DPS
 
 .. index:: pair: variable; psls_control
-.. _doxid-structtru__control__type_1a6fe2b1a82e177fbd1a39d9de9652a2c5:
+.. _doxid-structtru__control__type_psls_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -587,7 +587,7 @@ control parameters for DPS
 control parameters for PSLS
 
 .. index:: pair: variable; lms_control
-.. _doxid-structtru__control__type_1a7149e4807d93e93adf2eb1e3e42c6fb6:
+.. _doxid-structtru__control__type_lms_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -597,7 +597,7 @@ control parameters for PSLS
 control parameters for LMS
 
 .. index:: pair: variable; lms_control_prec
-.. _doxid-structtru__control__type_1aaad01db9888c4f77c450ff45fac4dfec:
+.. _doxid-structtru__control__type_lms_control_prec:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -607,7 +607,7 @@ control parameters for LMS
 control parameters for LMS used for preconditioning
 
 .. index:: pair: variable; sec_control
-.. _doxid-structtru__control__type_1a3b18636f4c3c9a62ddcaf9dfb5b56da6:
+.. _doxid-structtru__control__type_sec_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -617,7 +617,7 @@ control parameters for LMS used for preconditioning
 control parameters for SEC
 
 .. index:: pair: variable; sha_control
-.. _doxid-structtru__control__type_1a0e0b1319a0f3da41507bfb343a26ab96:
+.. _doxid-structtru__control__type_sha_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

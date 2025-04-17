@@ -48,7 +48,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structuls__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structuls__inform__type_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -98,7 +98,7 @@ reported return status:
   solver-specific error; see the solver's info parameter
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structuls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structuls__inform__type_alloc_status:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -108,7 +108,7 @@ reported return status:
 STAT value after allocate failure.
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structuls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structuls__inform__type_bad_alloc:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -118,7 +118,7 @@ STAT value after allocate failure.
 name of array which provoked an allocate failure
 
 .. index:: pair: variable; more_info
-.. _doxid-structuls__inform__type_1a24d9e61a5ee1839c2fda4f8d5cff0cb7:
+.. _doxid-structuls__inform__type_more_info:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -128,7 +128,7 @@ name of array which provoked an allocate failure
 further information on failure
 
 .. index:: pair: variable; out_of_range
-.. _doxid-structuls__inform__type_1ae595bb33a1e4f5e95da1927ac4673bbf:
+.. _doxid-structuls__inform__type_out_of_range:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -138,7 +138,7 @@ further information on failure
 number of indices out-of-range
 
 .. index:: pair: variable; duplicates
-.. _doxid-structuls__inform__type_1aba4e8149b1ecbb5c21f4534ef36d75b8:
+.. _doxid-structuls__inform__type_duplicates:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -148,7 +148,7 @@ number of indices out-of-range
 number of duplicates
 
 .. index:: pair: variable; entries_dropped
-.. _doxid-structuls__inform__type_1a2092110f6de97b4607da184213cd7492:
+.. _doxid-structuls__inform__type_entries_dropped:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -158,7 +158,7 @@ number of duplicates
 number of entries dropped during the factorization
 
 .. index:: pair: variable; workspace_factors
-.. _doxid-structuls__inform__type_1a4e43e0824a84867596aac783665f8057:
+.. _doxid-structuls__inform__type_workspace_factors:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -168,7 +168,7 @@ number of entries dropped during the factorization
 predicted or actual number of reals and integers to hold factors
 
 .. index:: pair: variable; compresses
-.. _doxid-structuls__inform__type_1a06332c9a99b61a82393d2cf74a47428e:
+.. _doxid-structuls__inform__type_compresses:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -178,7 +178,7 @@ predicted or actual number of reals and integers to hold factors
 number of compresses of data required
 
 .. index:: pair: variable; entries_in_factors
-.. _doxid-structuls__inform__type_1ab741fb84b79d2b013a84d71932452681:
+.. _doxid-structuls__inform__type_entries_in_factors:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -188,7 +188,7 @@ number of compresses of data required
 number of entries in factors
 
 .. index:: pair: variable; rank
-.. _doxid-structuls__inform__type_1a6cfd95afd0afebd625b889fb6e58371c:
+.. _doxid-structuls__inform__type_rank:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -198,7 +198,7 @@ number of entries in factors
 estimated rank of the matrix
 
 .. index:: pair: variable; structural_rank
-.. _doxid-structuls__inform__type_1a870efaeda81975bbbd9e247fe17baed1:
+.. _doxid-structuls__inform__type_structural_rank:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -208,7 +208,7 @@ estimated rank of the matrix
 structural rank of the matrix
 
 .. index:: pair: variable; pivot_control
-.. _doxid-structuls__inform__type_1a7489428a42ce1420b4891f638153c99f:
+.. _doxid-structuls__inform__type_pivot_control:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -238,7 +238,7 @@ pivot control:
   Threshold Diagonal Pivoting has been desired
 
 .. index:: pair: variable; iterative_refinements
-.. _doxid-structuls__inform__type_1a22c83a8ec8964a169bdd9d0cdf196cf1:
+.. _doxid-structuls__inform__type_iterative_refinements:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -248,7 +248,7 @@ pivot control:
 number of iterative refinements performed
 
 .. index:: pair: variable; alternative
-.. _doxid-structuls__inform__type_1a48c07c7da1803ed8af25ca949f4854b5:
+.. _doxid-structuls__inform__type_alternative:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -258,7 +258,7 @@ number of iterative refinements performed
 has an "alternative" y: A^T y = 0 and yT b > 0 been found when trying to solve A x = b ?
 
 .. index:: pair: variable; solver
-.. _doxid-structuls__inform__type_1af335c33211ea78f2d5b7314d7b1c210d:
+.. _doxid-structuls__inform__type_solver:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -268,7 +268,7 @@ has an "alternative" y: A^T y = 0 and yT b > 0 been found when trying to solve A
 name of external solver used to factorize and solve
 
 .. index:: pair: variable; gls_ainfo
-.. _doxid-structuls__inform__type_1a8fb46433ac34c44f07902189c1c9d028:
+.. _doxid-structuls__inform__type_gls_ainfo:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -278,7 +278,7 @@ name of external solver used to factorize and solve
 the analyse output structure from gls
 
 .. index:: pair: variable; gls_finfo
-.. _doxid-structuls__inform__type_1a8da479a8d3bd8e6b4070e73dc8a3d52a:
+.. _doxid-structuls__inform__type_gls_finfo:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -288,7 +288,7 @@ the analyse output structure from gls
 the factorize output structure from gls
 
 .. index:: pair: variable; gls_sinfo
-.. _doxid-structuls__inform__type_1acbf9c9748ab5d9c111befc05c395059a:
+.. _doxid-structuls__inform__type_gls_sinfo:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -298,7 +298,7 @@ the factorize output structure from gls
 the solve output structure from gls
 
 .. index:: pair: variable; ma48_ainfo
-.. _doxid-structuls__inform__type_1a9487553043c4ec110826e99e071ce9bc:
+.. _doxid-structuls__inform__type_ma48_ainfo:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -308,7 +308,7 @@ the solve output structure from gls
 the analyse output structure from hsl_ma48
 
 .. index:: pair: variable; ma48_finfo
-.. _doxid-structuls__inform__type_1ac28e039b045cad8dec788fdca9823348:
+.. _doxid-structuls__inform__type_ma48_finfo:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -318,7 +318,7 @@ the analyse output structure from hsl_ma48
 the factorize output structure from hsl_ma48
 
 .. index:: pair: variable; ma48_sinfo
-.. _doxid-structuls__inform__type_1a78e9faeec60579cc0fa6c34e0aaeecc3:
+.. _doxid-structuls__inform__type_ma48_sinfo:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
@@ -328,7 +328,7 @@ the factorize output structure from hsl_ma48
 the solve output structure from hsl_ma48
 
 .. index:: pair: variable; lapack_error
-.. _doxid-structuls__inform__type_1a0319e2c4ee2d95fe244f92d276038bd4:
+.. _doxid-structuls__inform__type_lapack_error:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block

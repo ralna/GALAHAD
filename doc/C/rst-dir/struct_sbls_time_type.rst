@@ -15,14 +15,14 @@ sbls_time_type structure
 	struct sbls_time_type {
 		// fields
 	
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structsbls__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`form<doxid-structsbls__time__type_1a8ac63de5e103d8e01b0e0f88bb7d230d>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorize<doxid-structsbls__time__type_1a79e62dbb4cbb6e99d82167e60c703015>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`apply<doxid-structsbls__time__type_1a9d8129bf5b1a9f21dfcc24dc5c706274>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structsbls__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_form<doxid-structsbls__time__type_1ab275f3b71b8e019aa35acf43c3fd7473>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_factorize<doxid-structsbls__time__type_1ad3f0f50628260b90d6cf974e02f86192>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_apply<doxid-structsbls__time__type_1afbbb1dd5fc63c640620fbd32a0481493>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structsbls__time__type_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`form<doxid-structsbls__time__type_form>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorize<doxid-structsbls__time__type_factorize>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`apply<doxid-structsbls__time__type_apply>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structsbls__time__type_clock_total>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_form<doxid-structsbls__time__type_clock_form>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_factorize<doxid-structsbls__time__type_clock_factorize>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_apply<doxid-structsbls__time__type_clock_apply>`;
 	};
 .. _details-structsbls__time__type:
 
@@ -35,7 +35,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; total
-.. _doxid-structsbls__time__type_1ad3803b3bb79c5c74d9300520fbe733f4:
+.. _doxid-structsbls__time__type_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -45,7 +45,7 @@ components
 total cpu time spent in the package
 
 .. index:: pair: variable; form
-.. _doxid-structsbls__time__type_1a8ac63de5e103d8e01b0e0f88bb7d230d:
+.. _doxid-structsbls__time__type_form:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -55,7 +55,7 @@ total cpu time spent in the package
 cpu time spent forming the preconditioner $K_G$
 
 .. index:: pair: variable; factorize
-.. _doxid-structsbls__time__type_1a79e62dbb4cbb6e99d82167e60c703015:
+.. _doxid-structsbls__time__type_factorize:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -65,7 +65,7 @@ cpu time spent forming the preconditioner $K_G$
 cpu time spent factorizing $K_G$
 
 .. index:: pair: variable; apply
-.. _doxid-structsbls__time__type_1a9d8129bf5b1a9f21dfcc24dc5c706274:
+.. _doxid-structsbls__time__type_apply:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -75,7 +75,7 @@ cpu time spent factorizing $K_G$
 cpu time spent solving linear systems inolving $K_G$
 
 .. index:: pair: variable; clock_total
-.. _doxid-structsbls__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f:
+.. _doxid-structsbls__time__type_clock_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -85,7 +85,7 @@ cpu time spent solving linear systems inolving $K_G$
 total clock time spent in the package
 
 .. index:: pair: variable; clock_form
-.. _doxid-structsbls__time__type_1ab275f3b71b8e019aa35acf43c3fd7473:
+.. _doxid-structsbls__time__type_clock_form:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -95,7 +95,7 @@ total clock time spent in the package
 clock time spent forming the preconditioner $K_G$
 
 .. index:: pair: variable; clock_factorize
-.. _doxid-structsbls__time__type_1ad3f0f50628260b90d6cf974e02f86192:
+.. _doxid-structsbls__time__type_clock_factorize:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -105,7 +105,7 @@ clock time spent forming the preconditioner $K_G$
 clock time spent factorizing $K_G$
 
 .. index:: pair: variable; clock_apply
-.. _doxid-structsbls__time__type_1afbbb1dd5fc63c640620fbd32a0481493:
+.. _doxid-structsbls__time__type_clock_apply:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

@@ -16,25 +16,25 @@ wcp_inform_type structure
 	struct wcp_inform_type {
 		// components
 	
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structwcp__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structwcp__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		char :ref:`bad_alloc<doxid-structwcp__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter<doxid-structwcp__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorization_status<doxid-structwcp__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		int64_t :ref:`factorization_integer<doxid-structwcp__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
-		int64_t :ref:`factorization_real<doxid-structwcp__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nfacts<doxid-structwcp__inform__type_1af54a1b17cb663c1e89a5bcd5f1e9961f>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`c_implicit<doxid-structwcp__inform__type_1a67593aebe8ddd8c5a8d66377bd1eaf00>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`x_implicit<doxid-structwcp__inform__type_1a15ecbcc95a8f49b406624abba6f9efe1>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`y_implicit<doxid-structwcp__inform__type_1a7164fa79af695ec1d80d860366b291c9>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`z_implicit<doxid-structwcp__inform__type_1a52829cf481145b7ec90572748e73331b>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structwcp__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mu_final_target_max<doxid-structwcp__inform__type_1accc994a96bff755fa1ca935daf9ec4d8>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`non_negligible_pivot<doxid-structwcp__inform__type_1a827ddb7fead8e375404c9b770b67e771>`;
-		bool :ref:`feasible<doxid-structwcp__inform__type_1aa43a71eb35dd7b8676c0b6236ceee321>`;
-		struct :ref:`wcp_time_type<doxid-structwcp__time__type>` :ref:`time<doxid-structwcp__inform__type_1afd2e59f6d17df493c93987f3f6b8b042>`;
-		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` :ref:`fdc_inform<doxid-structwcp__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
-		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structwcp__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structwcp__inform__type_status>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structwcp__inform__type_alloc_status>`;
+		char :ref:`bad_alloc<doxid-structwcp__inform__type_bad_alloc>`[81];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter<doxid-structwcp__inform__type_iter>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorization_status<doxid-structwcp__inform__type_factorization_status>`;
+		int64_t :ref:`factorization_integer<doxid-structwcp__inform__type_factorization_integer>`;
+		int64_t :ref:`factorization_real<doxid-structwcp__inform__type_factorization_real>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nfacts<doxid-structwcp__inform__type_nfacts>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`c_implicit<doxid-structwcp__inform__type_c_implicit>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`x_implicit<doxid-structwcp__inform__type_x_implicit>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`y_implicit<doxid-structwcp__inform__type_y_implicit>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`z_implicit<doxid-structwcp__inform__type_z_implicit>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structwcp__inform__type_obj>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mu_final_target_max<doxid-structwcp__inform__type_mu_final_target_max>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`non_negligible_pivot<doxid-structwcp__inform__type_non_negligible_pivot>`;
+		bool :ref:`feasible<doxid-structwcp__inform__type_feasible>`;
+		struct :ref:`wcp_time_type<doxid-structwcp__time__type>` :ref:`time<doxid-structwcp__inform__type_time>`;
+		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` :ref:`fdc_inform<doxid-structwcp__inform__type_fdc_inform>`;
+		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structwcp__inform__type_sbls_inform>`;
 	};
 .. _details-structwcp__inform__type:
 
@@ -47,7 +47,7 @@ components
 ~~~~~~~~~~
 
 .. index:: pair: variable; status
-.. _doxid-structwcp__inform__type_1a6e27f49150e9a14580fb313cc2777e00:
+.. _doxid-structwcp__inform__type_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -57,7 +57,7 @@ components
 return status. See WCP_solve for details
 
 .. index:: pair: variable; alloc_status
-.. _doxid-structwcp__inform__type_1a4335d5f44067aca76d5fff71eeb7d381:
+.. _doxid-structwcp__inform__type_alloc_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -67,7 +67,7 @@ return status. See WCP_solve for details
 the status of the last attempted allocation/deallocation
 
 .. index:: pair: variable; bad_alloc
-.. _doxid-structwcp__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:
+.. _doxid-structwcp__inform__type_bad_alloc:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -77,7 +77,7 @@ the status of the last attempted allocation/deallocation
 the name of the array for which an allocation/deallocation error occurred
 
 .. index:: pair: variable; iter
-.. _doxid-structwcp__inform__type_1aab6f168571c2073e01e240524b8a3da0:
+.. _doxid-structwcp__inform__type_iter:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -87,7 +87,7 @@ the name of the array for which an allocation/deallocation error occurred
 the total number of iterations required
 
 .. index:: pair: variable; factorization_status
-.. _doxid-structwcp__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210:
+.. _doxid-structwcp__inform__type_factorization_status:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -97,7 +97,7 @@ the total number of iterations required
 the return status from the factorization
 
 .. index:: pair: variable; factorization_integer
-.. _doxid-structwcp__inform__type_1a29cd3a5b0f30227170f825116d9ade9e:
+.. _doxid-structwcp__inform__type_factorization_integer:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -107,7 +107,7 @@ the return status from the factorization
 the total integer workspace required for the factorization
 
 .. index:: pair: variable; factorization_real
-.. _doxid-structwcp__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc:
+.. _doxid-structwcp__inform__type_factorization_real:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -117,7 +117,7 @@ the total integer workspace required for the factorization
 the total real workspace required for the factorization
 
 .. index:: pair: variable; nfacts
-.. _doxid-structwcp__inform__type_1af54a1b17cb663c1e89a5bcd5f1e9961f:
+.. _doxid-structwcp__inform__type_nfacts:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -127,7 +127,7 @@ the total real workspace required for the factorization
 the total number of factorizations performed
 
 .. index:: pair: variable; c_implicit
-.. _doxid-structwcp__inform__type_1a67593aebe8ddd8c5a8d66377bd1eaf00:
+.. _doxid-structwcp__inform__type_c_implicit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -137,7 +137,7 @@ the total number of factorizations performed
 the number of general constraints that lie on (one) of their bounds for feasible solutions
 
 .. index:: pair: variable; x_implicit
-.. _doxid-structwcp__inform__type_1a15ecbcc95a8f49b406624abba6f9efe1:
+.. _doxid-structwcp__inform__type_x_implicit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -147,7 +147,7 @@ the number of general constraints that lie on (one) of their bounds for feasible
 the number of variables that lie on (one) of their bounds for all feasible solutions
 
 .. index:: pair: variable; y_implicit
-.. _doxid-structwcp__inform__type_1a7164fa79af695ec1d80d860366b291c9:
+.. _doxid-structwcp__inform__type_y_implicit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -157,7 +157,7 @@ the number of variables that lie on (one) of their bounds for all feasible solut
 the number of Lagrange multipliers for general constraints that lie on (one) of their bounds for all feasible solutions
 
 .. index:: pair: variable; z_implicit
-.. _doxid-structwcp__inform__type_1a52829cf481145b7ec90572748e73331b:
+.. _doxid-structwcp__inform__type_z_implicit:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -167,7 +167,7 @@ the number of Lagrange multipliers for general constraints that lie on (one) of 
 the number of dual variables that lie on (one) of their bounds for all feasible solutions
 
 .. index:: pair: variable; obj
-.. _doxid-structwcp__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d:
+.. _doxid-structwcp__inform__type_obj:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -177,7 +177,7 @@ the number of dual variables that lie on (one) of their bounds for all feasible 
 the value of the objective function at the best estimate of the solution determined by WCP_solve
 
 .. index:: pair: variable; mu_final_target_max
-.. _doxid-structwcp__inform__type_1accc994a96bff755fa1ca935daf9ec4d8:
+.. _doxid-structwcp__inform__type_mu_final_target_max:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -187,7 +187,7 @@ the value of the objective function at the best estimate of the solution determi
 the largest target value on termination
 
 .. index:: pair: variable; non_negligible_pivot
-.. _doxid-structwcp__inform__type_1a827ddb7fead8e375404c9b770b67e771:
+.. _doxid-structwcp__inform__type_non_negligible_pivot:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -197,7 +197,7 @@ the largest target value on termination
 the smallest pivot which was not judged to be zero when detecting linear dependent constraints
 
 .. index:: pair: variable; feasible
-.. _doxid-structwcp__inform__type_1aa43a71eb35dd7b8676c0b6236ceee321:
+.. _doxid-structwcp__inform__type_feasible:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -207,7 +207,7 @@ the smallest pivot which was not judged to be zero when detecting linear depende
 is the returned primal-dual "solution" strictly feasible?
 
 .. index:: pair: variable; time
-.. _doxid-structwcp__inform__type_1afd2e59f6d17df493c93987f3f6b8b042:
+.. _doxid-structwcp__inform__type_time:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -217,7 +217,7 @@ is the returned primal-dual "solution" strictly feasible?
 timings (see above)
 
 .. index:: pair: variable; fdc_inform
-.. _doxid-structwcp__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4:
+.. _doxid-structwcp__inform__type_fdc_inform:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -227,7 +227,7 @@ timings (see above)
 inform parameters for FDC
 
 .. index:: pair: variable; sbls_inform
-.. _doxid-structwcp__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68:
+.. _doxid-structwcp__inform__type_sbls_inform:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
