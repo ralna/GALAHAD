@@ -103,8 +103,8 @@ Currently supported options with their default value:
 * `-Dlibcutest_quadruple=cutest_quadruple`: CUTEst library in quadruple precision against which to link;
 * `-Dlibwsmp=wsmp`: WSMP library against which to link;
 * `-Dlibpardiso=pardiso`: PARDISO library against which to link;
-* `-Dlibspmf=spmf`: SPMF library against which to link;
-* `-Dlibpastix=pastix`: PASTIX library against which to link;
+* `-Dlibspm=spmf`: SPM library against which to link;
+* `-Dlibpastix=pastixf`: PASTIX library against which to link;
 * `-Dlibsmumps=smumps`: Single-precision MUMPS library against which to link;
 * `-Dlibdmumps=dmumps`: Double-precision MUMPS library against which to link;
 * `-Dlibampl=ampl`: AMPL library against which to link;
@@ -115,7 +115,7 @@ Currently supported options with their default value:
 * `-Dlibcutest_path=[]`: additional directories to search for the CUTEST libraries;
 * `-Dlibwsmp_path=[]`: additional directories to search for the WSMP library;
 * `-Dlibpardiso_path=[]`: additional directories to search for the PARDISO library;
-* `-Dlibspmf_path=[]`: additional directories to search for the SPMF library;
+* `-Dlibspm_path=[]`: additional directories to search for the SPM library;
 * `-Dlibpastix_path=[]`: additional directories to search for the PASTIX library;
 * `-Dlibmumps_path=[]`: additional directories to search for the MUMPS libraries;
 * `-Dlibampl_path=[]`: additional directories to search for the AMPL library library;
@@ -123,6 +123,8 @@ Currently supported options with their default value:
 * `-Dlibhwloc_include=[]`: additional directories to search for the HWLOC header files;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
 * `-Dlibcutest_modules[]`: additional directories to search for the CUTEst modules;
+* `-Dlibspm_modules=[]`: additional directories to search for the SPM modules;
+* `-Dlibpastix_modules=[]`: additional directories to search for the PASTIX modules;
 * `-Dint64=false`: compile GALAHAD with 64-bit integer;
 * `-Dopenmp:true`: compile GALAHAD with OpenMP.
 
