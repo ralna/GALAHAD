@@ -2,6 +2,9 @@
 build-backend = 'mesonpy'
 requires = ['meson-python']
 
+[tool.meson-python.args]
+setup = ['-Dpythoniface=true', '-Dpython.install_env=auto']
+
 [project]
 name = 'galahad-solvers'
 version = '5.2.0'
