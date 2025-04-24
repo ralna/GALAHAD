@@ -43,7 +43,7 @@ Please see [README.meson](https://github.com/ralna/GALAHAD/blob/master/README.me
 #### Linear Solvers
 By default GALAHAD will build the [SSIDS linear solver](https://github.com/ralna/spral), other alternative linear solvers are:
 
-* [HSL](https://licences.stfc.ac.uk/product/libhsl)
+* [HSL](http://www.hsl.rl.ac.uk/download/hslarchive-galahad/latest)
 * [UMFPACK](https://people.engr.tamu.edu/davis/suitesparse.html)
 * [PARDISO](https://panua.ch/pardiso/)
 * [PaStiX](https://solverstack.gitlabpages.inria.fr/pastix/)
