@@ -7,7 +7,7 @@ setup = ['-Dpythoniface=true', '-Dpython.install_env=auto']
 
 [project]
 name = 'galahad-solvers'
-version = '5.2.0'
+dynamic = ['version']
 dependencies = [
     "numpy"
 ]
