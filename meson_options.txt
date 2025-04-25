@@ -20,7 +20,7 @@ option('examples',
 
 option('tests',
        type : 'boolean',
-       value : false,
+       value : true,
        description : 'whether to generate the tests')
 
 option('binaries',
