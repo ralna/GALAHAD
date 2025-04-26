@@ -14,7 +14,7 @@ bqp         | ok     | bound-constrained QP, proconditioned projected gradients
 bqpb        | ok     | bound-constrained QP, interior point
 bsc         | ok     | assemble the Schur complement
 ccqp        | beta   | QP, crossover interior-point to lunge
-cdqp        | beta   | QP, crossover interior-point to dual gradient prohection
+cdqp        | beta   | QP, crossover interior-point to dual gradient projection
 check       | ok     | check derivatives
 clls        | ok     | linearly-constrained linear least-squares
 clock       | ok     | record system clock times

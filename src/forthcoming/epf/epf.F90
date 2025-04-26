@@ -177,7 +177,7 @@
 
        REAL ( KIND = rp_ ) :: advanced_start = ten ** ( - 2 )
 
-!  stop the advanced start search once the residuals sufficientl small
+!  stop the advanced start search once the residuals are sufficientl small
 
        REAL ( KIND = rp_ ) :: advanced_stop = ten ** ( - 8 )
 

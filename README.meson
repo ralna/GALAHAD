@@ -38,14 +38,17 @@ meson setup builddir/pc64.lnx.gfo -Ddefault_library=both
 
 ## Use a sanitizer?
 
-To enable sanitizers with Meson, you can pass the option `-Db_sanitize` when setting up your build directory.
+To enable sanitizers with Meson, you can pass the option `-Db_sanitize` 
+when setting up your build directory.
 
-- ASAN (AddressSanitizer): Detects memory-related errors such as buffer overflows, use-after-free, and memory leaks.
+- ASAN (AddressSanitizer): Detects memory-related errors such as buffer 
+  overflows, use-after-free, and memory leaks.
 ```shell
 meson setup builddir/pc64.lnx.gfo -Db_sanitize=address
 ```
 
-- UBSAN (UndefinedBehaviorSanitizer): Helps catch undefined behavior like integer overflows, invalid casts, or out-of-bounds accesses.
+- UBSAN (UndefinedBehaviorSanitizer): Helps catch undefined behavior 
+  like integer overflows, invalid casts, or out-of-bounds accesses.
 ```shell
 meson setup builddir/pc64.lnx.gfo -Db_sanitize=undefined
 ```
@@ -57,10 +60,12 @@ meson setup builddir/pc64.lnx.gfo -Dint64=false (default)
 meson setup builddir/pc64.lnx.gfo -Dint64=true
 ```
 
-Note that all dependencies (BLAS, LAPACK, etc...) must also be compiled with 64-bit integers.
-To force Meson to not use a dependency compiled with 32-bit integers, you can use the option `-Dlibdep=`
-where `libdep` is an option described below to provide the name of the library.
-GALAHAD will not link with the dependency or compile its own 64-bit version, except for BLAS and LAPACK.
+Note that all dependencies (BLAS, LAPACK, etc...) must also be compiled
+with 64-bit integers.  To force Meson to not use a dependency compiled
+with 32-bit integers, you can use the option `-Dlibdep=` where `libdep`
+is an option described below to provide the name of the library.
+GALAHAD will not link with the dependency or compile its own 64-bit
+version, except for BLAS and LAPACK.
 
 ```shell
 meson setup builddir/pc64.lnx.gfo -Dint64=true -Dlibblas= -Dliblapack=
