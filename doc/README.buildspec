@@ -1,0 +1,78 @@
+----------------------------------------------------------------------
+Assemble the algorithmic specification (spec)file for GALAHAD programs
+----------------------------------------------------------------------
+
+use: buildspec_precision package [update]
+
+buildspec_pprecision is the name of the object file created by compiling the
+buildspec.F90 program (precision is one of single, double or quadruple
+depending on the real precision sought), package is the name of the
+package whose specfile is required, and the optional word update
+indicates that non-default values from an existing version of the
+specfile in $GALAHAD/spec/ should be retained.  Here and elsewhere []
+means an optional argument, and (value) and (VALUE) indicates the lower-
+and upper-case conversion of these arguments.
+
+The program will process the file $GALAHAD/src/(package)/RUN(PACKAGE).meta
+one line at a time. The result of processing the meta file will be a
+so-called problem specification (spec)file, which is written to
+~/.galahad/specs//RUN(PACKAGE).SPC. This specfile may subsequently be edited
+by users to change options that control the performance of the package
+
+The meta file may contain the following keywords:
+
+MAIN
+INCLUDE template_name [section_name]
+REMOVE
+REPLACE
+COMMENT
+
+A keyword remains active until replaced by another one
+
+Any other line (except blank lines, which are ignored) will start with
+the character "!" and provide default and optional values for each
+package called, or comments as appropriate
+
+The MAIN section should occur first (if at all) and announces the start
+of the options relating to the main program that will be used to call
+package. Any following "!" lines that occur until the next keyword will
+define options that control the action of the main program, that will be
+compiled from $GALAHAD/src/(package)/use_(package).f90. These options will
+be written to the specfile, and bookended by the lines
+BEGIN RUN(PACKAGE) SPECIFICATIONS
+and
+END RUN(PACKAGE) SPECIFICATIONS
+
+An INCLUDE section announces the start of the options relating to a
+particular package template_name.f90 that is called by use_(package).f90.
+If section_name is absent, it takes the value template_name. The options
+for the package in question will be copied, verbatim, from the template
+file $GALAHAD/src/(TEMPLATE_NAME).template, and appended to the specfile,
+and bookended by the lines
+BEGIN (SECTION_NAME) SPECIFICATIONS
+and
+END (SECTION_NAME) SPECIFICATIONS
+
+A REMOVE section indicates that any subsequent "!" lines that occur until
+the next keyword will be removed from the current MAIN or INCLUDE section
+in the final specfile. The string following the "!" will be compared to
+the set of "!" lines for the current section, and any matches removed.
+This provides a mechanism to remove a generic option that is not
+appropriate in the context of the main program
+
+A REPLACE section indicates that any subsequent "!" lines that occur until
+the next keyword will replace any similar line from the current MAIN or
+INCLUDE section in the final specfile. The string following the "!" will
+be compared to the set of "!" lines for the current section, and the
+first match replaced. This provides a mechanism to replace a generic
+option value that is inappropriate in the context of the main program
+
+A COMMENT section indicates that any subsequent "!" lines that occur until
+the next keyword will be copied verbatim into the specfile.
+
+The order of MAIN, INCLUDE and COMMENT sections defines the order that
+the resulting options will appear in the final specfile
+
+Nick Gould
+For GALAHAD productions
+October 23rd 2017
