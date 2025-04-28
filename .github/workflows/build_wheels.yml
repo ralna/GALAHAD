@@ -15,27 +15,20 @@ jobs:
     strategy:
       matrix:
         # Note: builds on these are backward compatible
-        # (Linux builds use manylinux Docker containers)
-        # (macOS builds target old versions by default)
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # macos-13 is an intel runner, macos-14 is apple silicon
+        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==2.23.3
-
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23.3
+        run: pipx run cibuildwheel==2.23.3
         # to supply options, put them in 'env', like:
         # env:
         #   CIBW_SOME_OPTION: value
         env:
           # List of platforms to build on
           CIBW_BUILD: cp3{9,10,11,12,13}-manylinux_x86_64 cp3{9,10,11,12,13}-macosx_x86_64 cp3{9,10,11,12,13}-macosx_arm64 cp3{9,10,11,12,13}-win_amd64
-
-          # Install GCC and OpenBLAS on macOS
-          CIBW_BEFORE_ALL_MACOS: brew install gcc openblas
 
           # cibuildwheel doesn't yet ship a default repair command for Windows
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
