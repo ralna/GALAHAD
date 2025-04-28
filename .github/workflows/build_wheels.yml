@@ -1,0 +1,73 @@
+name: Build and upload to PyPI
+
+# Build on every branch push, tag push, and pull request change:
+on: [push, pull_request]
+# Alternatively, to publish when a (published) GitHub Release is created, use the following:
+#on:
+#  release:
+#    types:
+#      - published
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # Note: builds on these are backward compatible
+        # (Linux builds use manylinux Docker containers)
+        # (macOS builds target old versions by default)
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel==2.23.3
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.23.3
+        # to supply options, put them in 'env', like:
+        # env:
+        #   CIBW_SOME_OPTION: value
+        env:
+          # List of platforms to build on
+          CIBW_BUILD: cp3{9,10,11,12,13}-manylinux_x86_64 cp3{9,10,11,12,13}-macosx_x86_64 cp3{9,10,11,12,13}-macosx_arm64 cp3{9,10,11,12,13}-win_amd64
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ./wheelhouse/*.whl
+
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build sdist
+        run: pipx run build --sdist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-sdist
+          path: dist/*.tar.gz
+
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    # To publish when a GitHub Release is created, use the following rule:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          # unpacks all CIBW artifacts into dist/
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+
+      - uses: pypa/gh-action-pypi-publish@v1.5.0
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_password }}
+          # To test: repository_url: https://test.pypi.org/legacy/
