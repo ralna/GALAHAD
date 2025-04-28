@@ -1,7 +1,7 @@
 name: Build and upload to PyPI
 
 # Build on every branch push, tag push, and pull request change:
-on: [push, pull_request]
+on: [pull_request]
 # Alternatively, to publish when a (published) GitHub Release is created, use the following:
 #on:
 #  release:
@@ -33,6 +33,13 @@ jobs:
         env:
           # List of platforms to build on
           CIBW_BUILD: cp3{9,10,11,12,13}-manylinux_x86_64 cp3{9,10,11,12,13}-macosx_x86_64 cp3{9,10,11,12,13}-macosx_arm64 cp3{9,10,11,12,13}-win_amd64
+
+          # Install GCC and OpenBLAS on macOS
+          CIBW_BEFORE_ALL_MACOS: brew install gcc openblas
+
+          # cibuildwheel doesn't yet ship a default repair command for Windows
+          CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w {dest_dir} {wheel}"
 
       - uses: actions/upload-artifact@v4
         with:
