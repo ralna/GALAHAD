@@ -21,6 +21,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Fix gfortran on macOS runners
+        shell: bash
         run: |
           if [[ "${{matrix.os}}" == "macos-latest" ]]; then
             sudo ln -s /opt/homebrew/bin/gfortran-13 /opt/homebrew/bin/gfortran
