@@ -4,6 +4,7 @@ requires = ['meson-python', 'numpy']
 
 [tool.meson-python.args]
 setup = ['-Dpythoniface=true', '-Dpython.install_env=auto']
+install = ['--tags=runtime,python-runtime']
 
 [project]
 name = 'galahad-solvers'
