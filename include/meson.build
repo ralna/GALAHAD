@@ -1,6 +1,10 @@
 galahad_headers += files('spral_config.h',
                          'spral_procedures.h',
-                         'spral_ssids.h')
+                         'spral_ssids.h',
+                         'galahad_modules.h',
+                         'galahad_modules_single.h',
+                         'galahad_modules_double.h',
+                         'galahad_modules_quadruple.h')
 
 if build_ciface
   galahad_headers += files('galahad_arc.h',
@@ -17,7 +21,6 @@ if build_ciface
                            'galahad_cqp.h',
                            'galahad_cro.h',
                            'galahad_dgo.h',
-                           'galahad_double.h',
                            'galahad_dps.h',
                            'galahad_dqp.h',
                            'galahad_eqp.h',
@@ -39,7 +42,6 @@ if build_ciface
                            'galahad_lsqp.h',
                            'galahad_lsrt.h',
                            'galahad_lstr.h',
-                           'galahad_modules.h',
                            'galahad_nls.h',
                            'galahad_nodend.h',
                            'galahad_precision.h',
@@ -47,7 +49,6 @@ if build_ciface
                            'galahad_psls.h',
                            'galahad_qpa.h',
                            'galahad_qpb.h',
-                           'galahad_quadruple.h',
                            'galahad_roots.h',
                            'galahad_rpd.h',
                            'galahad_rqs.h',
@@ -56,7 +57,6 @@ if build_ciface
                            'galahad_sec.h',
                            'galahad_sha.h',
                            'galahad_sils.h',
-                           'galahad_single.h',
                            'galahad_slls.h',
                            'galahad_sls_defaults.h',
                            'galahad_sls.h',
@@ -71,10 +71,6 @@ endif
 
 if build_pythoniface
   galahad_headers += files('galahad_python.h')
-endif
-
-if build_ssids
-  galahad_headers += files('ssids_contrib.h')
 endif
 
 if not libhsl.found()
