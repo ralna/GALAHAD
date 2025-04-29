@@ -381,6 +381,7 @@
        LOGICAL :: reverse_hprod, reverse_prec
        LOGICAL :: constrained, map_h_to_jtj, no_bounds, header, update_vw
        LOGICAL :: eval_fc, eval_gj, eval_hl, initialize_munu, update_munu
+       LOGICAL :: use_advanced
 
        CHARACTER ( LEN = 1 ) :: negcur, bndry, perturb, hard
 
@@ -1659,6 +1660,7 @@ stop
 !  set space for matrices and vectors required for advanced start if necessary
 
      IF ( data%control%advanced_start > zero ) THEN
+       data%use_advanced = .FALSE.
 !      data%np1 = nlp%n + 1 ; data%npm = nlp%n + nlp%m
 
        array_name = 'colt: data%B_rows'
@@ -1894,10 +1896,10 @@ stop
            k = k + 1
          END IF
        END DO
-write(6,"( ' B ' )" )
-do l = 1, data%B_ssls%ne
-write(6,"( ' row, col ', 2i7 )" ) data%B_ssls%row( l ), data%B_ssls%col( l )
-end do
+!write(6,"( ' B ' )" )
+!do l = 1, data%B_ssls%ne
+!write(6,"( ' row, col ', 2i7 )" ) data%B_ssls%row( l ), data%B_ssls%col( l )
+!end do
 
 !  set space for the C block
 
@@ -2105,7 +2107,7 @@ end do
 !  compute the (infinity-) norm of the infeasibility
 
              inform%primal_infeasibility                                       &
-               = MAX( EPF_infeasibility( nlp%n, data%qpf%X, nlp%X_l, nlp%X_u,  &
+               = MAX( EPF_infeasibility( nlp%n, data%epf%X, nlp%X_l, nlp%X_u,  &
                                          control%infinity ),                   &
                       EPF_infeasibility( nlp%m, nlp%C, nlp%C_l, nlp%C_u,       &
                                          control%infinity ) )
@@ -2456,7 +2458,7 @@ end do
          CALL CLOCK_time( data%clock_now )
          data%clock_now = data%clock_now - data%clock_start
          IF ( data%printi ) WRITE( data%out,                                   &
-           "( A, I6, ES16.8, 4ES9.1, I6, F9.2 )" )                             &
+           "( A, I6, ES16.8, 4ES9.1, 2I6, F9.2 )" )                            &
              prefix, inform%iter, inform%obj, inform%primal_infeasibility,     &
              inform%dual_infeasibility, inform%complementary_slackness,        &
              data%max_mu, inform%tru_inform%iter, inform%tru_inform%status,    &
@@ -2512,7 +2514,8 @@ end do
                             MAXVAL( data%MU_u( : nlp%m ) ) )
        END IF
 
-       IF ( data%rnorm <= zero ) GO TO 500
+!write(6,*) ' rnorm ', data%rnorm
+!       IF ( data%rnorm <= zero ) GO TO 500
 
 !  To find an "advanced" starting point for the next major iteration, let
 
@@ -2599,9 +2602,15 @@ write(6,"( 'z_l, ve^(-x/mu), z_l/mu', 3ES12.4 )") data%Z_l( j ), &
          END IF
        END DO
        data%rnorm = TWO_NORM( data%R( : data%npm ) )
-write(6,"( ' ||r|| = ', ES11.4 )" ) data%rnorm, TWO_NORM( data%R( : nlp%n ) )
+write(6,"( ' ||r(n+m)|| ||r(n)|| start = ', 3ES11.4 )" ) data%rnorm, &
+  TWO_NORM( data%R( : nlp%n ) ), data%control%advanced_start
 
        IF ( data%rnorm > data%control%advanced_start ) GO TO 500
+       IF ( .NOT. data%use_advanced ) THEN
+         IF ( data%printi ) WRITE( data%out, "( 20( ' - ' ),                   &
+        &  ' advanced start', 20( ' - ' ) )" )
+         data%use_advanced = .TRUE.
+       END IF
 
 !  loop to search for an advanced starting point
 
