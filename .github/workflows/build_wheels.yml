@@ -20,11 +20,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fix gfortran on macOS runners
+      - name: Fix GCC on macOS runners
         shell: bash
         run: |
           if [[ "${{matrix.os}}" == "macos-latest" ]]; then
             sudo ln -s /opt/homebrew/bin/gfortran-13 /opt/homebrew/bin/gfortran
+            sudo ln -s /opt/homebrew/bin/gcc-13 /opt/homebrew/bin/gcc
             sudo ln -s /opt/homebrew/Cellar/gcc/13.*/lib/gcc/13/*.dylib /opt/homebrew/lib/
           fi
 
