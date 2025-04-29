@@ -65,17 +65,17 @@ QRUN$(PACKAGE)64 = $(CUTEST_TESTS) $(TESTDEPS) \
 #  qplib packages
 
 SQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) \
-                   $(OBJS)/in$(package)_single.o
+                   $(OBJS)/run$(package)_qplib_single.o
 DQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) \
-                   $(OBJD)/in$(package)_double.o
+                   $(OBJD)/run$(package)_qplib_double.o
 QQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) \
-                   $(OBJQ)/in$(package)_quadruple.o
+                   $(OBJQ)/run$(package)_qplib_quadruple.o
 SQPLIB$(PACKAGE)64 = $(QPLIB_TESTS) $(TESTDEPS) \
-                   $(OBJS64)/in$(package)_single_64.o
+                   $(OBJS64)/run$(package)_qplib_single_64.o
 DQPLIB$(PACKAGE)64 = $(QPLIB_TESTS) $(TESTDEPS) \
-                   $(OBJD64)/in$(package)_double_64.o
+                   $(OBJD64)/run$(package)_qplib_double_64.o
 QQPLIB$(PACKAGE)64 = $(QPLIB_TESTS) $(TESTDEPS) \
-                   $(OBJQ64)/in$(package)_quadruple_64.o
+                   $(OBJQ64)/run$(package)_qplib_quadruple_64.o
 
 #  rb package
 
@@ -632,12 +632,12 @@ $(package)_qplib_silent_quadruple_64: $($(PACKAGE)OBJECTSQ_QPLIB64)
 #  process package add-ons for QPLIB
 
 $(package)_qplib_addon: $(package)_qplib_addon_$(PRECIS)
-$(package)_qplib_addon_single: $(OBJS)/in$(package)_single.o
-$(package)_qplib_addon_double: $(OBJD)/in$(package)_double.o
-$(package)_qplib_addon_quadruple: $(OBJQ)/in$(package)_quadruple.o
-$(package)_qplib_addon_single_64: $(OBJS64)/in$(package)_single_64.o
-$(package)_qplib_addon_double_64: $(OBJD64)/in$(package)_double_64.o
-$(package)_qplib_addon_quadruple_64: $(OBJQ64)/in$(package)_quadruple_64.o
+$(package)_qplib_addon_single: $(OBJS)/run$(package)_qplib_single.o
+$(package)_qplib_addon_double: $(OBJD)/run$(package)_qplib_double.o
+$(package)_qplib_addon_quadruple: $(OBJQ)/run$(package)_qplib_quadruple.o
+$(package)_qplib_addon_single_64: $(OBJS64)/run$(package)_qplib_single_64.o
+$(package)_qplib_addon_double_64: $(OBJD64)/run$(package)_qplib_double_64.o
+$(package)_qplib_addon_quadruple_64: $(OBJQ64)/run$(package)_qplib_quadruple_64.o
 
 #  process package for RB
 
@@ -663,12 +663,12 @@ $(package)_rb_silent_quadruple_64: $($(PACKAGE)OBJECTSQ_RB64)
 #  process package add-ons for RB
 
 $(package)_rb_addon: $(package)_rb_addon_$(PRECIS)
-$(package)_rb_addon_single: $(OBJS)/in$(package)_single.o
-$(package)_rb_addon_double: $(OBJD)/in$(package)_double.o
-$(package)_rb_addon_quadruple: $(OBJQ)/in$(package)_quadruple.o
-$(package)_rb_addon_single_64: $(OBJS64)/in$(package)_single.o
-$(package)_rb_addon_double_64: $(OBJD64)/in$(package)_double.o
-$(package)_rb_addon_quadruple_64: $(OBJQ64)/in$(package)_quadruple.o
+$(package)_rb_addon_single: $(OBJS)/run$(package)_qplib_single.o
+$(package)_rb_addon_double: $(OBJD)/run$(package)_qplib_double.o
+$(package)_rb_addon_quadruple: $(OBJQ)/run$(package)_qplib_quadruple.o
+$(package)_rb_addon_single_64: $(OBJS64)/run$(package)_qplib_single.o
+$(package)_rb_addon_double_64: $(OBJD64)/run$(package)_qplib_double.o
+$(package)_rb_addon_quadruple_64: $(OBJQ64)/run$(package)_qplib_quadruple.o
 
 #  run independent package tests
 
@@ -687,14 +687,14 @@ $(package)qrunall_64: $(package)qs_64 $(package)qs2_64 \
 
 #  run qp data format package
 
-in$(package): in$(package)_$(PRECIS)
-in$(package)_single: $($(PACKAGE)OBJECTSS) $(OBJS)/in$(package)_single.o
-in$(package)_double: $($(PACKAGE)OBJECTSD) $(OBJD)/in$(package)_double.o
-in$(package)_quadruple: $($(PACKAGE)OBJECTSQ) $(OBJQ)/in$(package)_quadruple.o
-in$(package)_single_64: $($(PACKAGE)OBJECTSS64) $(OBJS64)/in$(package)_single.o
-in$(package)_double_64: $($(PACKAGE)OBJECTSD64) $(OBJD64)/in$(package)_double.o
-in$(package)_quadruple_64: $($(PACKAGE)OBJECTSQ64) \
-                           $(OBJQ64)/in$(package)_quadruple.o
+run$(package)_qplib: run$(package)_qplib_$(PRECIS)
+run$(package)_qplib_single: $($(PACKAGE)OBJECTSS) $(OBJS)/run$(package)_qplib_single.o
+run$(package)_qplib_double: $($(PACKAGE)OBJECTSD) $(OBJD)/run$(package)_qplib_double.o
+run$(package)_qplib_quadruple: $($(PACKAGE)OBJECTSQ) $(OBJQ)/run$(package)_qplib_quadruple.o
+run$(package)_qplib_single_64: $($(PACKAGE)OBJECTSS64) $(OBJS64)/run$(package)_qplib_single.o
+run$(package)_qplib_double_64: $($(PACKAGE)OBJECTSD64) $(OBJD64)/run$(package)_qplib_double.o
+run$(package)_qplib_quadruple_64: $($(PACKAGE)OBJECTSQ64) \
+                           $(OBJQ64)/run$(package)_qplib_quadruple.o
 
 #  exhaustive test package without CUTEst
 
@@ -2324,14 +2324,15 @@ $(OBJ)/run$(package)_sif_$(PRECIS).o: ../$(package)/run$(package)_sif.F90
 
 # main progarms for data-file interface
 
-in$(package).o: $(OBJ)/in$(package)_$(PRECIS).o
+run$(package)_qplib.o: $(OBJ)/run$(package)_qplib_$(PRECIS).o
 
-$(OBJ)/in$(package)_$(PRECIS).o: ../$(package)/in$(package).F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "in$(package)"
-	$(CP) ../$(package)/in$(package).F90 $(OBJ)/in$(package).F90
-	cd $(OBJ); $(FORTRAN) -o in$(package)_$(PRECIS).o \
-                     $(FFLAGSOMP) in$(package).F90
-	rm $(OBJ)/in$(package).F90
+$(OBJ)/run$(package)_qplib_$(PRECIS).o: ../$(package)/run$(package)_qplib.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "run$(package)_qplib"
+	$(CP) ../$(package)/run$(package)_qplib.F90 \
+           $(OBJ)/run$(package)_qplib.F90
+	cd $(OBJ); $(FORTRAN) -o run$(package)_qplib_$(PRECIS).o \
+                     $(FFLAGSOMP) run$(package)_qplib.F90
+	rm $(OBJ)/run$(package)_qplib.F90
 	@printf '[ OK ]\n'
 
 #  book keeping

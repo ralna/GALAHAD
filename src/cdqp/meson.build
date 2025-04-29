@@ -1,6 +1,6 @@
 libgalahad_src += files('cdqp.F90')
 
-galahad_binaries += [['incdqp', files('incdqp.F90')]]
+galahad_binaries += [['runcdqp_qplib', files('runcdqp_qplib.F90')]]
 
 libgalahad_cutest_src += files('usecdqp.F90')
 

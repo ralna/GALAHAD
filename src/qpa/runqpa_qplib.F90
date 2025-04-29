@@ -1,8 +1,8 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 12:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-04-29 AT 13:55 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N Q P A _ D A T A  *-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N Q P A _ Q P L I B  -*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
@@ -13,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNQPA_DATA_precision
+   PROGRAM RUNQPA_QPLIB_precision
 
 !    ----------------------------------------------------------
 !    | Main program for the problem-data-file interface to    |
@@ -23,20 +23,16 @@
    USE GALAHAD_KINDS_precision
    USE GALAHAD_QPT_precision
    USE GALAHAD_RPD_precision
-   USE GALAHAD_SMT_precision, only: SMT_put
+   USE GALAHAD_SMT_precision, ONLY: SMT_put
    USE GALAHAD_QPT_precision
    USE GALAHAD_QPA_precision
-   USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+   USE GALAHAD_SORT_precision, ONLY: SORT_reorder_by_rows
    USE GALAHAD_RAND_precision
    USE GALAHAD_PRESOLVE_precision
    USE GALAHAD_SPECFILE_precision
    USE GALAHAD_COPYRIGHT
-   USE GALAHAD_SYMBOLS,                                                        &
-       ACTIVE                => GALAHAD_ACTIVE,                                &
-       TRACE                 => GALAHAD_TRACE,                                 &
-       DEBUG                 => GALAHAD_DEBUG,                                 &
-       GENERAL               => GALAHAD_GENERAL,                               &
-       ALL_ZEROS             => GALAHAD_ALL_ZEROS
+   USE GALAHAD_SYMBOLS, ACTIVE => GALAHAD_ACTIVE, TRACE => GALAHAD_TRACE,      &
+                        DEBUG  => GALAHAD_DEBUG
    USE GALAHAD_SCALE_precision
 
 !  Problem input characteristics
@@ -978,6 +974,6 @@
  2250 FORMAT( /, ' Problem:    ', A10, /, ' Solver :   ', A5,                  &
               /, ' Objective:', ES24.16 )
 
-!  End of RUNQPA_DATA
+!  End of RUNQPA_QPLIB_precision
 
-   END PROGRAM RUNQPA_DATA_precision
+   END PROGRAM RUNQPA_QPLIB_precision

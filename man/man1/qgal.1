@@ -1,9 +1,9 @@
-.TH dgal 1
+.TH qgal 1
 .SH NAME
-\fBdgal\fR \- Read a QPLib2014 problem-data-file and run a GALAHAD package
+\fBqgal\fR \- Read a QPLib2014 problem-data-file and run a GALAHAD package
 on the result
 .SH USAGE
-.B dgal architecture package
+.B qgal architecture package
 [options]
 .IR file[.qplib]
 ,
@@ -58,7 +58,7 @@ BQPB for bound-constrained quadratic programming using an interior-point method
 
 .SH DESCRIPTION
 .LP
-.B dgal
+.B qgal
 reads a user-defined QPLib2014 problem-data file, and runs one of the GALAHAD
 large-scale linear/quadratic programming packages on the result.
 .SH OPTIONS
@@ -108,16 +108,16 @@ seconds on the GALAHAD run. The default is 99999999 seconds.
 .SH FILES
 .TP 20
 .BI achitecture.package
-executable output file created by dgal
+executable output file created by qgal
 .TP
 .IB RUN package .SPC
 user-supplied option specification file
 .TP
 .IB SOLUTION.d
-file containing solution created by dgal
+file containing solution created by qgal
 .TP
 .IB SUMMARY.d
-file containing summary of solution created by dgal
+file containing summary of solution created by qgal
 .SH "ENVIRONMENT VARIABLES"
 Environment variables may be used to override default external library settings.
 By default these are unset, but if required they should be exported after
@@ -246,7 +246,7 @@ link options required may be obtained by executing the command
 and PLPLOTLIB should be set to the output of this command.
 N.B. PLPLOTLIB is only optionally required.
 .SH DIAGNOSTICS
-The diagnostics produced by dgal itself are intended to be self-explanatory.
+The diagnostics produced by qgal itself are intended to be self-explanatory.
 .SH "SEE ALSO"
 
 N. I. M. Gould, D. Orban and Ph. L. Toint,

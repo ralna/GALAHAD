@@ -1,8 +1,8 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-10-04 AT 10:40 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-04-29 AT 13:40 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N B Q P B _ D A T A  *-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N B Q P B _ Q P L I B  -*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
@@ -13,29 +13,24 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNBQPB_DATA_precision
+   PROGRAM RUNBQPB_QPLIB_precision
 
-!    ----------------------------------------------------
-!    | Main program for the problem-data-file interface |
-!    | to BQPB, a preconditioned conjugate-gradient     |
-!    | interior-point algorithm for bound-constrained   |
-!    | convex quadratic programming                     |
-!    ----------------------------------------------------
+!    ---------------------------------------------------
+!    | Main program for the QPLIB problem-data-file    | 
+!    | interface to BQPB, a preconditioned             |
+!    | conjugate-gradient interior-point algorithm for |
+!    | bound-constrained convex quadratic programming  |
+!    ---------------------------------------------------
 
    USE GALAHAD_KINDS_precision
    USE GALAHAD_QPT_precision
    USE GALAHAD_RPD_precision
-   USE GALAHAD_SMT_precision, only: SMT_put
+   USE GALAHAD_SMT_precision, ONLY: SMT_put
    USE GALAHAD_BQPB_precision
-   USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+   USE GALAHAD_SORT_precision, ONLY: SORT_reorder_by_rows
    USE GALAHAD_SPECFILE_precision
    USE GALAHAD_COPYRIGHT
-   USE GALAHAD_SYMBOLS,                                                        &
-       ACTIVE                => GALAHAD_ACTIVE,                                &
-       TRACE                 => GALAHAD_TRACE,                                 &
-       DEBUG                 => GALAHAD_DEBUG,                                 &
-       GENERAL               => GALAHAD_GENERAL,                               &
-       ALL_ZEROS             => GALAHAD_ALL_ZEROS
+   USE GALAHAD_SYMBOLS, ACTIVE => GALAHAD_ACTIVE
    USE GALAHAD_SCALE_precision
 
 !  Problem input characteristics
@@ -712,6 +707,6 @@
  2250 FORMAT( /, ' Problem:    ', A10, /, ' Solver :   ', A5,                  &
               /, ' Objective:', ES24.16 )
 
-!  End of RUNBQPB_DATA_precision
+!  End of RUNBQPB_QPLIB_precision
 
-   END PROGRAM RUNBQPB_DATA_precision
+   END PROGRAM RUNBQPB_QPLIB_precision

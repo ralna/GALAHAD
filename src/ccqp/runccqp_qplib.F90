@@ -1,26 +1,26 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 12:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-04-29 AT 13:55 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N C D Q P _ D A T A  *-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N C C Q P _ Q P L I B  -*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released as inccqp with GALAHAD Version 2.7, July 17th 2015
-!   renamed incdqp GALAHAD Version 4.1, May 17th 2022
+!   based on incqp, originally released in GALAHAD Version 2.4. June 16th 2010
+!   inccqp released with GALAHAD Version 4.1. May 18th 2022
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNCDQP_DATA_precision
+   PROGRAM RUNCCQP_QPLIB_precision
 
-!     -------------------------------------------------------------------
-!    | Main program for the problem-data-file interface to CDQP, an      |
-!    | infeasible primal-dual interior-point to dual gradient-projection |
-!    | crossover method for convex quadratic programming                 |
-!     -------------------------------------------------------------------
+!     --------------------------------------------------------
+!    | Main program for the QPLIB problem-data-file interface |
+!    | to CCQP, an infeasible primal-dual interior-point      |
+!    | crossover method for convex quadratic programming      |
+!     --------------------------------------------------------
 
    USE GALAHAD_KINDS_precision
 !$ USE omp_lib
@@ -29,7 +29,7 @@
    USE GALAHAD_QPT_precision
    USE GALAHAD_RPD_precision
    USE GALAHAD_SMT_precision, ONLY: SMT_put
-   USE GALAHAD_CDQP_precision
+   USE GALAHAD_CCQP_precision
    USE GALAHAD_SORT_precision, ONLY: SORT_reorder_by_rows
    USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
    USE GALAHAD_SLS_precision
@@ -37,12 +37,8 @@
    USE GALAHAD_SPECFILE_precision
    USE GALAHAD_STRING, ONLY: STRING_upper_word
    USE GALAHAD_COPYRIGHT
-   USE GALAHAD_SYMBOLS,                                                        &
-       ACTIVE                => GALAHAD_ACTIVE,                                &
-       TRACE                 => GALAHAD_TRACE,                                 &
-       DEBUG                 => GALAHAD_DEBUG,                                 &
-       GENERAL               => GALAHAD_GENERAL,                               &
-       ALL_ZEROS             => GALAHAD_ALL_ZEROS
+   USE GALAHAD_SYMBOLS, ACTIVE => GALAHAD_ACTIVE, TRACE => GALAHAD_TRACE,      &
+                        DEBUG  => GALAHAD_DEBUG
    USE GALAHAD_SCALE_precision
 
 !  Problem input characteristics
@@ -58,7 +54,7 @@
 !     subject to     c_l <= A x <= c_u
 !                    x_l <=  x <= x_u
 !
-!  using the GALAHAD package GALAHAD_CDQP
+!  using the GALAHAD package GALAHAD_CCQP
 !
 !  --------------------------------------------
 
@@ -128,8 +124,8 @@
 
       INTEGER ( KIND = ip_ ) :: n, m, ir, ic, liw, iores, smt_stat
 !     INTEGER ( KIND = ip_ ) :: np1, npm
-      INTEGER ( KIND = ip_ ) :: i, j, l, status
-      INTEGER ( KIND = ip_ ) :: mfixed, mdegen, nfixed, ndegen, mequal, mredun
+      INTEGER ( KIND = ip_ ) :: i, j, l, mequal, mredun
+      INTEGER ( KIND = ip_ ) :: status, mfixed, mdegen, nfixed, ndegen
       INTEGER ( KIND = ip_ ) :: alloc_stat, newton, A_ne, H_ne, iter
       REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4
       REAL ( KIND = rp_ ) :: clock, clocko, clocks, clockt
@@ -143,15 +139,15 @@
 
       INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
       INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 26
-      CHARACTER ( LEN = 16 ) :: specname = 'RUNCDQP'
+      CHARACTER ( LEN = 16 ) :: specname = 'RUNCCQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
-      CHARACTER ( LEN = 16 ) :: runspec = 'RUNCDQP.SPC'
+      CHARACTER ( LEN = 16 ) :: runspec = 'RUNCCQP.SPC'
 
-!  The default values for CDQP could have been set as:
+!  The default values for CCQP could have been set as:
 
-! BEGIN RUNCDQP SPECIFICATIONS (DEFAULT)
+! BEGIN RUNCCQP SPECIFICATIONS (DEFAULT)
 !  write-problem-data                        NO
-!  problem-data-file-name                    CDQP.data
+!  problem-data-file-name                    CCQP.data
 !  problem-data-file-device                  26
 !  write-initial-sif                         NO
 !  initial-sif-file-name                     INITIAL.SIF
@@ -168,15 +164,15 @@
 !  solve-problem                             YES
 !  print-full-solution                       NO
 !  write-solution                            NO
-!  solution-file-name                        CDQPSOL.d
+!  solution-file-name                        CCQPSOL.d
 !  solution-file-device                      62
 !  write-result-summary                      NO
-!  result-summary-file-name                  CDQPRES.d
+!  result-summary-file-name                  CCQPRES.d
 !  result-summary-file-device                47
 !  perturb-bounds-by                         0.0
 !  perturb-hessian-diagonals-by              0.0
 !  convexify                                 NO
-! END RUNCDQP SPECIFICATIONS
+! END RUNCCQP SPECIFICATIONS
 
 !  Default values for specfile-defined parameters
 
@@ -193,12 +189,12 @@
       LOGICAL :: write_scaled_sif     = .FALSE.
       LOGICAL :: write_solution       = .FALSE.
       LOGICAL :: write_result_summary = .FALSE.
-      CHARACTER ( LEN = 30 ) :: dfilename = 'CDQP.data'
+      CHARACTER ( LEN = 30 ) :: dfilename = 'CCQP.data'
       CHARACTER ( LEN = 30 ) :: ifilename = 'INITIAL.SIF'
       CHARACTER ( LEN = 30 ) :: pfilename = 'PRESOLVE.SIF'
       CHARACTER ( LEN = 30 ) :: qfilename = 'SCALED.SIF'
-      CHARACTER ( LEN = 30 ) :: rfilename = 'CDQPRES.d'
-      CHARACTER ( LEN = 30 ) :: sfilename = 'CDQPSOL.d'
+      CHARACTER ( LEN = 30 ) :: rfilename = 'CCQPRES.d'
+      CHARACTER ( LEN = 30 ) :: sfilename = 'CCQPSOL.d'
       LOGICAL :: do_presolve = .FALSE.
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE.
@@ -219,9 +215,9 @@
 
       TYPE ( RPD_control_type ) :: RPD_control
       TYPE ( RPD_inform_type ) :: RPD_inform
-      TYPE ( CDQP_data_type ) :: data
-      TYPE ( CDQP_control_type ) :: CDQP_control
-      TYPE ( CDQP_inform_type ) :: CDQP_inform
+      TYPE ( CCQP_data_type ) :: data
+      TYPE ( CCQP_control_type ) :: CCQP_control
+      TYPE ( CCQP_inform_type ) :: CCQP_inform
       TYPE ( QPT_problem_type ) :: prob
       TYPE ( PRESOLVE_control_type ) :: PRE_control
       TYPE ( PRESOLVE_inform_type )  :: PRE_inform
@@ -306,7 +302,6 @@
       m = prob%m
       H_ne = prob%H%ne
       A_ne = prob%A%ne
-      pname = TRANSFER( prob%name, pname )
 
 !  Allocate derived types
 
@@ -316,7 +311,6 @@
         STOP
       END IF
       prob%X0 = prob%X
-
 
       ALLOCATE( C_stat( m ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
@@ -367,7 +361,7 @@
       DEALLOCATE( IW )
       ALLOCATE( prob%A%row( 0 ), prob%H%row( 0 ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
-        WRITE( out, "( ' stop - allocate error ', i6 )" ) alloc_stat ; STOP
+        WRITE( out, "( ' whoa there - allocate error ', I0 )" ) alloc_stat; STOP
       END IF
 
       prob%new_problem_structure = .TRUE.
@@ -388,7 +382,7 @@
 
       CALL CPU_TIME( times ) ; CALL CLOCK_time( clocks )
 
-!  ------------------ Open the specfile for CDQP ----------------
+!  ------------------ Open the specfile for ccqp ----------------
 
       INQUIRE( FILE = runspec, EXIST = is_specfile )
       IF ( is_specfile ) THEN
@@ -462,10 +456,8 @@
 
 !  find the leftmost eigenvalue of H by minimizing x^T H x : || x ||_2 = 1
 
-        CALL SLS_initialize(                                                   &
-          CDQP_control%CQP_control%SBLS_control%symmetric_linear_solver,       &
-          sls_data, sls_control, sls_inform )
-
+        CALL SLS_initialize( CCQP_control%SBLS_control%symmetric_linear_solver,&
+                             sls_data, sls_control, sls_inform )
 !sls_control%print_level = 2
 
         CALL SLS_analyse( prob%H, sls_data, sls_control, sls_inform )
@@ -513,9 +505,8 @@
 !  refactorize H
 
           CALL SLS_terminate( sls_data, sls_control, sls_inform )
-          CALL SLS_initialize(                                                 &
-            CDQP_control%CQP_control%SBLS_control%definite_linear_solver,      &
-            sls_data, sls_control, sls_inform )
+          CALL SLS_initialize(CCQP_control%SBLS_control%definite_linear_solver,&
+                               sls_data, sls_control, sls_inform )
           CALL SLS_analyse( prob%H, sls_data, sls_control, sls_inform )
           IF ( sls_inform%status < 0 ) THEN
             WRITE( 6, '( A, I0 )' )                                            &
@@ -660,11 +651,11 @@
 
 !  Set all default values, and override defaults if requested
 
-      CALL CDQP_initialize( data, CDQP_control, CDQP_inform )
-      CALL CDQP_read_specfile( CDQP_control, input_specfile )
+      CALL CCQP_initialize( data, CCQP_control, CCQP_inform )
+      CALL CCQP_read_specfile( CCQP_control, input_specfile )
 
-      printo = out > 0 .AND. CDQP_control%print_level > 0
-      printe = out > 0 .AND. CDQP_control%print_level >= 0
+      printo = out > 0 .AND. CCQP_control%print_level > 0
+      printe = out > 0 .AND. CCQP_control%print_level >= 0
 
       WRITE( out, 2020 ) pname
       WRITE( out, 2200 ) n, m, A_ne, H_ne
@@ -755,9 +746,9 @@
 
 !       Overide some defaults
 
-        PRE_control%infinity = CDQP_control%infinity
-        PRE_control%c_accuracy = ten * CDQP_control%CQP_control%stop_abs_p
-        PRE_control%z_accuracy = ten * CDQP_control%CQP_control%stop_abs_d
+        PRE_control%infinity = CCQP_control%infinity
+        PRE_control%c_accuracy = ten * CCQP_control%stop_abs_p
+        PRE_control%z_accuracy = ten * CCQP_control%stop_abs_d
 
 !  Call the presolver
 
@@ -779,7 +770,7 @@
 
         IF ( write_presolved_sif ) THEN
           CALL QPT_write_to_sif( prob, pname, pfilename, pfiledevice,          &
-                                 .FALSE., .FALSE., CDQP_control%infinity )
+                                 .FALSE., .FALSE., CCQP_control%infinity )
         END IF
       END IF
 
@@ -828,21 +819,22 @@
 !       WRITE( 6, "( ' y ', /, (5ES12.4) )" ) prob%Y
 !       WRITE( 6, "( ' z ', /, (5ES12.4) )" ) prob%Z
 
-        solv = ' CDQP'
-        IF ( printo ) WRITE( out, " ( ' ** CDQP solver used ** ' ) " )
-        CALL CDQP_solve( prob, data, CDQP_control, CDQP_inform, C_stat, B_stat )
+        solv = ' CCQP'
+        IF ( printo ) WRITE( out, " ( ' ** CCQP solver used ** ' ) " )
+!       CALL CCQP_solve( prob, data, CCQP_control, CCQP_inform, C_stat, B_stat )
+        CALL CCQP_solve( prob, data, CCQP_control, CCQP_inform )
 
-        IF ( printo ) WRITE( out, " ( /, ' ** CDQP solver used ** ' ) " )
-        qfval = CDQP_inform%obj ; newton = 0
+        IF ( printo ) WRITE( out, " ( /, ' ** CCQP solver used ** ' ) " )
+        qfval = CCQP_inform%obj ; newton = 0
 
         CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
 !  Deallocate arrays from the minimization
 
-        status = CDQP_inform%status
-        iter = CDQP_inform%CQP_inform%iter + CDQP_inform%DQP_inform%iter
-        stopr = CDQP_control%CQP_control%stop_abs_d
-        CALL CDQP_terminate( data, CDQP_control, CDQP_inform )
+        status = CCQP_inform%status
+        iter = CCQP_inform%iter
+        stopr = CCQP_control%stop_abs_d
+        CALL CCQP_terminate( data, CCQP_control, CCQP_inform )
 
 !  If the problem was scaled, unscale it.
 
@@ -861,7 +853,7 @@
         iter  = 0
         solv   = ' NONE'
         status = 0
-        stopr  = CDQP_control%CQP_control%stop_abs_d
+        stopr  = CCQP_control%stop_abs_d
         newton = 0
         qfval  = prob%f
       END IF
@@ -1137,26 +1129,26 @@
         END IF
       END IF
 
-      sls_solv = CDQP_control%CQP_control%SBLS_control%symmetric_linear_solver
+      sls_solv = CCQP_control%SBLS_control%symmetric_linear_solver
       CALL STRING_upper_word( sls_solv )
-      WRITE( out, "( /, 1X, A, ' symmetric equation solver used' )" )        &
+      WRITE( out, "( /, 1X, A, ' symmetric equation solver used' )" )          &
         TRIM( sls_solv )
       WRITE( out, "( ' Typically ', I0, ', ', I0,                              &
     &                ' entries in matrix, factors' )" )                        &
-        CDQP_inform%CQP_inform%SBLS_inform%SLS_inform%entries,                 &
-        CDQP_inform%CQP_inform%SBLS_inform%SLS_inform%entries_in_factors
+        CCQP_inform%SBLS_inform%SLS_inform%entries,                            &
+        CCQP_inform%SBLS_inform%SLS_inform%entries_in_factors
       WRITE( out, "( ' Analyse, factorize & solve CPU   times =',              &
      &  3( 1X, F8.3 ), /, ' Analyse, factorize & solve clock times =',         &
-     &  3( 1X, F8.3 ) )" ) CDQP_inform%time%analyse,                           &
-        CDQP_inform%time%factorize,                                            &
-        CDQP_inform%time%solve, CDQP_inform%time%clock_analyse,                &
-        CDQP_inform%time%clock_factorize, CDQP_inform%time%clock_solve
+     &  3( 1X, F8.3 ) )" )                                                     &
+        CCQP_inform%time%analyse, CCQP_inform%time%factorize,                  &
+        CCQP_inform%time%solve, CCQP_inform%time%clock_analyse,                &
+        CCQP_inform%time%clock_factorize, CCQP_inform%time%clock_solve
 
       times = times - time ; timet = timet - timeo
       clocks = clocks - clock ; clockt = clockt - clocko
       WRITE( out, "( /, ' Total CPU, clock times = ', F8.3, ', ', F8.3 )" )    &
         times + timet, clocks + clockt
-      WRITE( out, "( ' number of threads = ', I0 )" ) CDQP_inform%threads
+      WRITE( out, "( ' number of threads = ', I0 )" ) CCQP_inform%threads
       WRITE( out, 2070 ) pname
 
 !  Compare the variants used so far
@@ -1198,7 +1190,7 @@
                  ' Maximum constraint violation    ', ES22.14, /,              &
                  ' Maximum dual infeasibility      ', ES22.14, /,              &
                  ' Maximum complementary slackness ', ES22.14, //,             &
-       ' Number of CDQP iterations = ', I0 )
+       ' Number of CCQP iterations = ', I0 )
  2040 FORMAT( /, ' Constraints : ', /, '                             ',        &
                  '        <------ Bounds ------> ', /                          &
                  '      # name       state    value   ',                       &
@@ -1238,6 +1230,6 @@
  2250 FORMAT( /, ' Problem:    ', A10, /, ' Solver :   ', A5,                  &
               /, ' Objective:', ES24.16 )
 
-!  End of RUNCDQP_DATA_precision
+!  End of RUNCCQP_QPLIB_precision
 
-   END PROGRAM RUNCDQP_DATA_precision
+   END PROGRAM RUNCCQP_QPLIB_precision

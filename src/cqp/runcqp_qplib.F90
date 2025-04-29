@@ -1,25 +1,25 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 12:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-04-29 AT 13:55 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N L 1 Q P _ D A T A  *-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N C Q P _ Q P L I B  -*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released with GALAHAD Version 3.0. June 29th 2017
+!   originally released with GALAHAD Version 2.4. January 1st 2010
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNL1QP_DATA_precision
+   PROGRAM RUNCQP_QPLIB_precision
 
-!     -------------------------------------------------------------------
-!    | Main program for the problem-data-file interface to L1QP, an      |
-!    | infeasible primal-dual interior-point to dual gradient-projection |
-!    | crossover method for strictly convex l_1 quadratic programming    |
-!     -------------------------------------------------------------------
+!    -----------------------------------------------------------
+!    | Main program for the QPLIB problem-data-file interface  |
+!    | to CQP, an infeasible primal-dual interior-point method |
+!    | for convex quadratic programming                        |
+!    -----------------------------------------------------------
 
    USE GALAHAD_KINDS_precision
 !$ USE omp_lib
@@ -27,50 +27,35 @@
    USE GALAHAD_RAND_precision
    USE GALAHAD_QPT_precision
    USE GALAHAD_RPD_precision
-   USE GALAHAD_SMT_precision, only: SMT_put
-   USE GALAHAD_L1QP_precision
-   USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+   USE GALAHAD_SMT_precision, ONLY: SMT_put
+   USE GALAHAD_CQP_precision
+   USE GALAHAD_SORT_precision, ONLY: SORT_reorder_by_rows
    USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
    USE GALAHAD_SLS_precision
    USE GALAHAD_PRESOLVE_precision
    USE GALAHAD_SPECFILE_precision
    USE GALAHAD_STRING, ONLY: STRING_upper_word
    USE GALAHAD_COPYRIGHT
-   USE GALAHAD_SYMBOLS,                                                        &
-       ACTIVE                => GALAHAD_ACTIVE,                                &
-       TRACE                 => GALAHAD_TRACE,                                 &
-       DEBUG                 => GALAHAD_DEBUG,                                 &
-       GENERAL               => GALAHAD_GENERAL,                               &
-       ALL_ZEROS             => GALAHAD_ALL_ZEROS
+   USE GALAHAD_SYMBOLS, ACTIVE => GALAHAD_ACTIVE, TRACE => GALAHAD_TRACE,      &
+                        DEBUG  => GALAHAD_DEBUG
    USE GALAHAD_SCALE_precision
 
 !  Problem input characteristics
 
    INTEGER ( KIND = ip_ ), PARAMETER :: input = 5
 
-!  -------------------------------------------------------------
+!  --------------------------------------------
 !
-!  Solve the l_1 quadratic program
+!  Solve the quadratic program
 !
-!    minimize q(x) + rho || min( A x - c_l, c_u - A x, 0 )||_1
+!     minimize     1/2 x(T) H x + g(T) x + f
 !
-!  or
+!     subject to     c_l <= A x <= c_u
+!                    x_l <=  x <= x_u
 !
-!    minimize s(x) + rho || min( A x - c_l, c_u - A x, 0 )||_1
+!  using the GALAHAD package GALAHAD_CQP
 !
-!  subject to the bound constraints x_l <= x <= x_u
-!
-!  using the GALAHAD package GALAHAD_L1QP
-!
-!  Here q(x) is the quadratic function
-!
-!    q(x) = 1/2 x^T H x + g^T x + f
-!
-!  and s(x) is the linear/seprable function
-!
-!    s(x) = 1/2 || W * ( x - x^0 ) ||_2^2 + g^T x + f
-!
-!  ------------------------------------------------------------
+!  --------------------------------------------
 
 !  ****************************************************************************
 
@@ -138,9 +123,9 @@
 
       INTEGER ( KIND = ip_ ) :: n, m, ir, ic, liw, iores, smt_stat
 !     INTEGER ( KIND = ip_ ) :: np1, npm
-      INTEGER ( KIND = ip_ ) :: i, j, l, status
-      INTEGER ( KIND = ip_ ) :: mfixed, mdegen, nfixed, ndegen, mequal, mredun
-      INTEGER ( KIND = ip_ ) :: alloc_stat, newton, A_ne, H_ne, iter, iter_dqp
+      INTEGER ( KIND = ip_ ) :: i, j, l, mredun
+      INTEGER ( KIND = ip_ ) :: status, mfixed, mdegen, nfixed, ndegen, mequal
+      INTEGER ( KIND = ip_ ) :: alloc_stat, newton, A_ne, H_ne, iter
       REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4
       REAL ( KIND = rp_ ) :: clock, clocko, clocks, clockt
       REAL ( KIND = rp_ ) :: qfval, stopr, dummy, wnorm, wnorm_old
@@ -152,16 +137,16 @@
 !  Specfile characteristics
 
       INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
-      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 27
-      CHARACTER ( LEN = 16 ) :: specname = 'RUNL1QP'
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 26
+      CHARACTER ( LEN = 16 ) :: specname = 'RUNCQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
-      CHARACTER ( LEN = 16 ) :: runspec = 'RUNL1QP.SPC'
+      CHARACTER ( LEN = 16 ) :: runspec = 'RUNCQP.SPC'
 
-!  The default values for L1QP could have been set as:
+!  The default values for CQP could have been set as:
 
-! BEGIN RUNL1QP SPECIFICATIONS (DEFAULT)
+! BEGIN RUNCQP SPECIFICATIONS (DEFAULT)
 !  write-problem-data                        NO
-!  problem-data-file-name                    L1QP.data
+!  problem-data-file-name                    CQP.data
 !  problem-data-file-device                  26
 !  write-initial-sif                         NO
 !  initial-sif-file-name                     INITIAL.SIF
@@ -178,16 +163,15 @@
 !  solve-problem                             YES
 !  print-full-solution                       NO
 !  write-solution                            NO
-!  solution-file-name                        L1QPSOL.d
+!  solution-file-name                        CQPSOL.d
 !  solution-file-device                      62
 !  write-result-summary                      NO
-!  result-summary-file-name                  L1QPRES.d
+!  result-summary-file-name                  CQPRES.d
 !  result-summary-file-device                47
 !  perturb-bounds-by                         0.0
 !  perturb-hessian-diagonals-by              0.0
 !  convexify                                 NO
-!  penalty parameter                         0.0
-! END RUNL1QP SPECIFICATIONS
+! END RUNCQP SPECIFICATIONS
 
 !  Default values for specfile-defined parameters
 
@@ -204,19 +188,18 @@
       LOGICAL :: write_scaled_sif     = .FALSE.
       LOGICAL :: write_solution       = .FALSE.
       LOGICAL :: write_result_summary = .FALSE.
-      CHARACTER ( LEN = 30 ) :: dfilename = 'L1QP.data'
+      CHARACTER ( LEN = 30 ) :: dfilename = 'CQP.data'
       CHARACTER ( LEN = 30 ) :: ifilename = 'INITIAL.SIF'
       CHARACTER ( LEN = 30 ) :: pfilename = 'PRESOLVE.SIF'
       CHARACTER ( LEN = 30 ) :: qfilename = 'SCALED.SIF'
-      CHARACTER ( LEN = 30 ) :: rfilename = 'L1QPRES.d'
-      CHARACTER ( LEN = 30 ) :: sfilename = 'L1QPSOL.d'
+      CHARACTER ( LEN = 30 ) :: rfilename = 'CQPRES.d'
+      CHARACTER ( LEN = 30 ) :: sfilename = 'CQPSOL.d'
       LOGICAL :: do_presolve = .FALSE.
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE.
       REAL ( KIND = rp_ ) :: pert_bnd = zero
       REAL ( KIND = rp_ ) :: H_pert = zero
       REAL ( KIND = rp_ ) :: wnorm_stop = 0.0000000000001_rp_
-      REAL ( KIND = rp_ ) :: rho = 0.0_rp_
       LOGICAL :: convexify = .FALSE.
 
 !  Output file characteristics
@@ -225,15 +208,15 @@
       INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN =  5 ) :: state, solv
       CHARACTER ( LEN = 10 ) :: pname
-      CHARACTER ( LEN = 30 ) :: sls_solver
+      CHARACTER ( LEN = 30 ) :: sls_solv
 
 !  Arrays
 
       TYPE ( RPD_control_type ) :: RPD_control
       TYPE ( RPD_inform_type ) :: RPD_inform
-      TYPE ( L1QP_data_type ) :: data
-      TYPE ( L1QP_control_type ) :: control
-      TYPE ( L1QP_inform_type ) :: inform
+      TYPE ( CQP_data_type ) :: data
+      TYPE ( CQP_control_type ) :: CQP_control
+      TYPE ( CQP_inform_type ) :: CQP_inform
       TYPE ( QPT_problem_type ) :: prob
       TYPE ( PRESOLVE_control_type ) :: PRE_control
       TYPE ( PRESOLVE_inform_type )  :: PRE_inform
@@ -249,7 +232,7 @@
 !  Allocatable arrays
 
       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AY, HX, D, O
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, X_stat
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
 
      CALL CPU_TIME( time )  ; CALL CLOCK_time( clock )
 
@@ -293,7 +276,18 @@
         STOP
       END SELECT
 
-!  check that the problem is a QP
+!  check that the problem is a convex QP
+
+      SELECT CASE ( RPD_inform%p_type( 1 : 1 ) )
+      CASE ( 'L', 'D', 'C' )
+      CASE ( 'Q' )
+        WRITE( out, "( /, ' ** Problem ', A, ', warning - objective function', &
+       &  ' might not be convex' )" ) TRIM( pname )
+      CASE DEFAULT
+        WRITE( out, "( /, ' ** Problem ', A, ', objective function',           &
+       &  ' is not convex. Stopping' )" ) TRIM( pname )
+        STOP
+      END SELECT
 
       SELECT CASE ( RPD_inform%p_type( 3 : 3 ) )
       CASE ( 'N', 'B', 'L' )
@@ -310,13 +304,12 @@
 
 !  Allocate derived types
 
-      ALLOCATE( prob%X0( n ), X_stat( n ), STAT = alloc_stat )
+      ALLOCATE( prob%X0( n ), B_stat( n ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
         WRITE( out, 2150 ) 'X0', alloc_stat
         STOP
       END IF
       prob%X0 = prob%X
-
 
       ALLOCATE( C_stat( m ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
@@ -367,7 +360,7 @@
       DEALLOCATE( IW )
       ALLOCATE( prob%A%row( 0 ), prob%H%row( 0 ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
-        WRITE( out, "( ' stop - allocate error ', i6 )" ) alloc_stat ; STOP
+        WRITE( out, "( ' whoa there - allocate error ', I0 )" ) alloc_stat; STOP
       END IF
 
       prob%new_problem_structure = .TRUE.
@@ -388,7 +381,7 @@
 
       CALL CPU_TIME( times ) ; CALL CLOCK_time( clocks )
 
-!  ------------------ Open the specfile for L1QP ----------------
+!  ------------------ Open the specfile for cqp ----------------
 
       INQUIRE( FILE = runspec, EXIST = is_specfile )
       IF ( is_specfile ) THEN
@@ -422,7 +415,6 @@
         spec( 24 )%keyword = 'scaled-sif-file-device'
         spec( 25 )%keyword = 'perturb-hessian-diagonals-by'
         spec( 26 )%keyword = 'convexify'
-        spec( 27 )%keyword = 'penalty-parameter'
 
 !   Read the specfile
 
@@ -455,11 +447,7 @@
         CALL SPECFILE_assign_integer( spec( 24 ), qfiledevice, errout )
         CALL SPECFILE_assign_real( spec( 25 ), H_pert, errout )
         CALL SPECFILE_assign_logical( spec( 26 ), convexify, errout )
-        CALL SPECFILE_assign_real( spec( 27 ), rho, errout )
       END IF
-
-      sls_solver = control%CQP_control%SBLS_control%symmetric_linear_solver
-      CALL STRING_upper_word( sls_solver )
 
 !  convexify?
 
@@ -467,7 +455,8 @@
 
 !  find the leftmost eigenvalue of H by minimizing x^T H x : || x ||_2 = 1
 
-        CALL SLS_initialize( sls_solver, sls_data, sls_control, sls_inform )
+        CALL SLS_initialize( CQP_control%SBLS_control%symmetric_linear_solver, &
+                             sls_data, sls_control, sls_inform )
 !sls_control%print_level = 2
 
         CALL SLS_analyse( prob%H, sls_data, sls_control, sls_inform )
@@ -515,9 +504,8 @@
 !  refactorize H
 
           CALL SLS_terminate( sls_data, sls_control, sls_inform )
-          CALL SLS_initialize(                                                 &
-            control%CQP_control%SBLS_control%definite_linear_solver,           &
-            sls_data, sls_control, sls_inform )
+          CALL SLS_initialize( CQP_control%SBLS_control%definite_linear_solver,&
+                               sls_data, sls_control, sls_inform )
           CALL SLS_analyse( prob%H, sls_data, sls_control, sls_inform )
           IF ( sls_inform%status < 0 ) THEN
             WRITE( 6, '( A, I0 )' )                                            &
@@ -545,7 +533,6 @@
 !  solve ( H + lambda I ) w = d, overwriting d with the solution
 
             sls_control%max_iterative_refinements = 1
-!           control%acceptable_residual_relative = 0.0_rp_
             CALL SLS_solve( prob%H, D, sls_data, sls_control, sls_inform )
 
 !  Normalize w
@@ -663,18 +650,18 @@
 
 !  Set all default values, and override defaults if requested
 
-      CALL L1QP_initialize( data, control, inform )
-      CALL L1QP_read_specfile( control, input_specfile )
+      CALL CQP_initialize( data, CQP_control, CQP_inform )
+      CALL CQP_read_specfile( CQP_control, input_specfile )
 
-      printo = out > 0 .AND. control%print_level > 0
-      printe = out > 0 .AND. control%print_level >= 0
+      printo = out > 0 .AND. CQP_control%print_level > 0
+      printe = out > 0 .AND. CQP_control%print_level >= 0
 
       WRITE( out, 2020 ) pname
       WRITE( out, 2200 ) n, m, A_ne, H_ne
 
-      IF ( printo ) CALL COPYRIGHT( out, '2017' )
+      IF ( printo ) CALL COPYRIGHT( out, '2010' )
 
-      C_stat = 0 ; X_stat = 0
+      C_stat = 0 ; B_stat = 0
 
 !  If required, scale the problem
 
@@ -758,9 +745,9 @@
 
 !       Overide some defaults
 
-        PRE_control%infinity = control%infinity
-        PRE_control%c_accuracy = ten * control%CQP_control%stop_abs_p
-        PRE_control%z_accuracy = ten * control%CQP_control%stop_abs_d
+        PRE_control%infinity = CQP_control%infinity
+        PRE_control%c_accuracy = ten * CQP_control%stop_abs_p
+        PRE_control%z_accuracy = ten * CQP_control%stop_abs_d
 
 !  Call the presolver
 
@@ -782,7 +769,7 @@
 
         IF ( write_presolved_sif ) THEN
           CALL QPT_write_to_sif( prob, pname, pfilename, pfiledevice,          &
-                                 .FALSE., .FALSE., control%infinity )
+                                 .FALSE., .FALSE., CQP_control%infinity )
         END IF
       END IF
 
@@ -831,23 +818,21 @@
 !       WRITE( 6, "( ' y ', /, (5ES12.4) )" ) prob%Y
 !       WRITE( 6, "( ' z ', /, (5ES12.4) )" ) prob%Z
 
-        control%rho = rho
-        solv = ' L1QP'
-        IF ( printo ) WRITE( out, " ( ' ** L1QP solver used ** ' ) " )
-        CALL L1QP_solve( prob, data, control, inform, C_stat, X_stat )
+        solv = ' CQP'
+        IF ( printo ) WRITE( out, " ( ' ** CQP solver used ** ' ) " )
+        CALL CQP_solve( prob, data, CQP_control, CQP_inform, C_stat, B_stat )
 
-        IF ( printo ) WRITE( out, " ( /, ' ** L1QP solver used ** ' ) " )
-        qfval = inform%obj ; newton = 0
+        IF ( printo ) WRITE( out, " ( /, ' ** CQP solver used ** ' ) " )
+        qfval = CQP_inform%obj ; newton = 0
 
         CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
 !  Deallocate arrays from the minimization
 
-        status = inform%status
-        iter = inform%CQP_inform%iter
-        iter_dqp = inform%DQP_inform%iter
-        stopr = control%CQP_control%stop_abs_d
-        CALL L1QP_terminate( data, control, inform )
+        status = CQP_inform%status
+        iter = CQP_inform%iter
+        stopr = CQP_control%stop_abs_d
+        CALL CQP_terminate( data, CQP_control, CQP_inform )
 
 !  If the problem was scaled, unscale it.
 
@@ -864,10 +849,9 @@
         timeo  = 0.0
         timet  = 0.0
         iter  = 0
-        iter_dqp  = 0
         solv   = ' NONE'
         status = 0
-        stopr  = control%CQP_control%stop_abs_d
+        stopr  = CQP_control%stop_abs_d
         newton = 0
         qfval  = prob%f
       END IF
@@ -1088,7 +1072,7 @@
            WRITE( out, 2110 ) m, mequal, mredun
            IF ( m /= mequal ) WRITE( out, 2120 ) m - mequal, mfixed, mdegen
         END IF
-        WRITE( out, 2030 ) qfval, res_c, res_k, max_cs, iter, iter_dqp
+        WRITE( out, 2030 ) qfval, res_c, res_k, max_cs, iter
 
 !  If required, write the solution to a file
 
@@ -1138,41 +1122,41 @@
             END DO
           END IF
 
-          WRITE( sfiledevice, 2030 ) qfval, res_c, res_k, max_cs, iter, iter_dqp
+          WRITE( sfiledevice, 2030 ) qfval, res_c, res_k, max_cs, iter
           CLOSE( sfiledevice )
         END IF
       END IF
 
+      sls_solv = CQP_control%SBLS_control%symmetric_linear_solver
+      CALL STRING_upper_word( sls_solv )
       WRITE( out, "( /, 1X, A, ' symmetric equation solver used' )" )        &
-        TRIM( sls_solver )
+        TRIM( sls_solv )
       WRITE( out, "( ' Typically ', I0, ', ', I0,                              &
     &                ' entries in matrix, factors' )" )                        &
-        inform%CQP_inform%SBLS_inform%SLS_inform%entries,                      &
-        inform%CQP_inform%SBLS_inform%SLS_inform%entries_in_factors
+        CQP_inform%SBLS_inform%SLS_inform%entries,                             &
+        CQP_inform%SBLS_inform%SLS_inform%entries_in_factors
       WRITE( out, "( ' Analyse, factorize & solve CPU   times =',              &
      &  3( 1X, F8.3 ), /, ' Analyse, factorize & solve clock times =',         &
-     &  3( 1X, F8.3 ) )" ) inform%CQP_inform%time%analyse,                     &
-        inform%CQP_inform%time%factorize, inform%CQP_inform%time%solve,        &
-        inform%CQP_inform%time%clock_analyse,                                  &
-        inform%CQP_inform%time%clock_factorize,                                &
-        inform%CQP_inform%time%clock_solve
+     &  3( 1X, F8.3 ) )" ) CQP_inform%time%analyse, CQP_inform%time%factorize, &
+        CQP_inform%time%solve, CQP_inform%time%clock_analyse,                  &
+        CQP_inform%time%clock_factorize, CQP_inform%time%clock_solve
 
       times = times - time ; timet = timet - timeo
       clocks = clocks - clock ; clockt = clockt - clocko
       WRITE( out, "( /, ' Total CPU, clock times = ', F8.3, ', ', F8.3 )" )    &
         times + timet, clocks + clockt
-      WRITE( out, "( ' number of threads = ', I0 )" ) inform%CQP_inform%threads
+      WRITE( out, "( ' number of threads = ', I0 )" ) CQP_inform%threads
       WRITE( out, 2070 ) pname
 
 !  Compare the variants used so far
 
-      WRITE( out, 2080 ) solv, iter, iter_dqp, qfval, status, times,           &
+      WRITE( out, 2080 ) solv, iter, qfval, status, times,                     &
                          timet, times + timet
 
       IF ( write_result_summary ) THEN
         BACKSPACE( rfiledevice )
         WRITE( rfiledevice, 2190 )                                             &
-           pname, n, m, iter, iter_dqp, newton, qfval, status, timet
+           pname, n, m, iter, newton, qfval, status, timet
       END IF
 
 !  Print the first and last few components of the solution.
@@ -1203,7 +1187,7 @@
                  ' Maximum constraint violation    ', ES22.14, /,              &
                  ' Maximum dual infeasibility      ', ES22.14, /,              &
                  ' Maximum complementary slackness ', ES22.14, //,             &
-       ' Number of CQP, DQP iterations = ', I0, ', ', I0 )
+       ' Number of CQP iterations = ', I0 )
  2040 FORMAT( /, ' Constraints : ', /, '                             ',        &
                  '        <------ Bounds ------> ', /                          &
                  '      # name       state    value   ',                       &
@@ -1216,7 +1200,7 @@
                  '   status setup   solve   total', /,                         &
                  ' ------  ----------   -------   ',                           &
                  ' ------ -----    ----   -----  ' )
- 2080 FORMAT( A5, I7, I8, 6X, ES12.4, I6, 0P, 3F8.2 )
+ 2080 FORMAT( A5, I7, 6X, ES12.4, I6, 0P, 3F8.2 )
  2090 FORMAT( /, ' Solution : ', /, '                              ',          &
                  '        <------ Bounds ------> ', /                          &
                  '      # name       state    value   ',                       &
@@ -1231,7 +1215,7 @@
  2150 FORMAT( ' Allocation error, variable ', A8, ' status = ', I6 )
  2160 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
  2180 FORMAT( A10 )
- 2190 FORMAT( A10, I7, 3I6, I8, ES13.4, I6, 0P, F8.2 )
+ 2190 FORMAT( A10, I7, 3I6, ES13.4, I6, 0P, F8.2 )
  2200 FORMAT( /, ' problem dimensions:  n = ', I0, ' m = ', I0,                &
               ' a_ne = ', I0, ' h_ne = ', I0 )
  2300 FORMAT( ' updated dimensions:  n = ', I0, ' m = ', I0,                   &
@@ -1243,6 +1227,6 @@
  2250 FORMAT( /, ' Problem:    ', A10, /, ' Solver :   ', A5,                  &
               /, ' Objective:', ES24.16 )
 
-!  End of RUNL1QP_DATA_precision
+!  End of RUNCQP_QPLIB_precision
 
-   END PROGRAM RUNL1QP_DATA_precision
+   END PROGRAM RUNCQP_QPLIB_precision

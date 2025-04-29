@@ -20,7 +20,7 @@ $(LG)($(package)_$(PRECIS).o): ../$(package)/$(package).F90
            $(RM) $(package).F90 $(package)_$(PRECIS).o
 	$(RMARFILES) $(DEPENDS)
 	$(CURMARFILE) use$(package)_$(PRECIS).o
-	$(RMOBFILE) in$(package)_$(PRECIS).o
+	$(RMOBFILE) run$(package)_qplib_$(PRECIS).o
 	$(RMOBFILE) $(package)s.o
 	$(RMOBFILE) $(package)s2.o
 	$(RMOBFILE) $(package)s3.o

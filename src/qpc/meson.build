@@ -1,6 +1,6 @@
 libgalahad_src += files('qpc.F90')
 
-galahad_binaries += [['inqpc', files('inqpc.F90')]]
+galahad_binaries += [['runqpc_qplib', files('runqpc_qplib.F90')]]
 
 libgalahad_cutest_src += files('useqpc.F90')
 

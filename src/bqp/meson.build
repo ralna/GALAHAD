@@ -1,6 +1,6 @@
 libgalahad_src += files('bqp.F90')
 
-galahad_binaries += [['inbqp', files('inbqp.F90')]]
+galahad_binaries += [['runbqp_qplib', files('runbqp_qplib.F90')]]
 
 libgalahad_c_src += files('C/bqp_ciface.F90')
 

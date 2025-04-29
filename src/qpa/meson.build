@@ -1,6 +1,6 @@
 libgalahad_src += files('qpa.F90')
 
-galahad_binaries += [['inqpa', files('inqpa.F90')]]
+galahad_binaries += [['runqpa_qplib', files('runqpa_qplib.F90')]]
 
 libgalahad_c_src += files('C/qpa_ciface.F90')
 

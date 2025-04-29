@@ -1,25 +1,25 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 12:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-04-29 AT 14:05 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N L P B _ D A T A  *-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N D L P _ Q P L I B  -*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released with GALAHAD Version 3.1. October 15th 2018
+!   originally released with GALAHAD Version 2.6. January 30th 2015
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNLPB_DATA_precision
+   PROGRAM RUNDLP_QPLIB_precision
 
-!     ------------------------------------------------
-!    | Main program for the problem-data-file         |
-!    | interface to LPB, a primal-dual interior-point |
-!    | method for linear programming                  |
-!     ------------------------------------------------
+!     ----------------------------------------------
+!    | Main program for the QPLIB problem-data-file |
+!    | interface to DLP, a dual gradient-projection |
+!    | method for linear programming                |
+!     ----------------------------------------------
 
    USE GALAHAD_KINDS_precision
 !$ USE omp_lib
@@ -27,21 +27,17 @@
    USE GALAHAD_RAND_precision
    USE GALAHAD_QPT_precision
    USE GALAHAD_RPD_precision
-   USE GALAHAD_SMT_precision, only: SMT_put
-   USE GALAHAD_LPB_precision
-   USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+   USE GALAHAD_SMT_precision, ONLY: SMT_put
+   USE GALAHAD_DLP_precision
+   USE GALAHAD_SORT_precision, ONLY: SORT_reorder_by_rows
    USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
    USE GALAHAD_SLS_precision
    USE GALAHAD_PRESOLVE_precision
    USE GALAHAD_SPECFILE_precision
    USE GALAHAD_STRING, ONLY: STRING_upper_word
    USE GALAHAD_COPYRIGHT
-   USE GALAHAD_SYMBOLS,                                                        &
-       ACTIVE                => GALAHAD_ACTIVE,                                &
-       TRACE                 => GALAHAD_TRACE,                                 &
-       DEBUG                 => GALAHAD_DEBUG,                                 &
-       GENERAL               => GALAHAD_GENERAL,                               &
-       ALL_ZEROS             => GALAHAD_ALL_ZEROS
+   USE GALAHAD_SYMBOLS, ACTIVE => GALAHAD_ACTIVE, TRACE => GALAHAD_TRACE,      &
+                        DEBUG  => GALAHAD_DEBUG
    USE GALAHAD_SCALE_precision
 
 !  Problem input characteristics
@@ -57,7 +53,7 @@
 !     subject to     c_l <= A x <= c_u
 !                    x_l <=  x <= x_u
 !
-!  using the GALAHAD package GALAHAD_LPB
+!  using the GALAHAD package GALAHAD_DLP
 !
 !  --------------------------------------------
 
@@ -141,15 +137,15 @@
 
       INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
       INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 26
-      CHARACTER ( LEN = 16 ) :: specname = 'RUNLPB'
+      CHARACTER ( LEN = 16 ) :: specname = 'RUNDLP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
-      CHARACTER ( LEN = 16 ) :: runspec = 'RUNLPB.SPC'
+      CHARACTER ( LEN = 16 ) :: runspec = 'RUNDLP.SPC'
 
-!  The default values for LPB could have been set as:
+!  The default values for DLP could have been set as:
 
-! BEGIN RUNLPB SPECIFICATIONS (DEFAULT)
+! BEGIN RUNDLP SPECIFICATIONS (DEFAULT)
 !  write-problem-data                        NO
-!  problem-data-file-name                    LPB.data
+!  problem-data-file-name                    DLP.data
 !  problem-data-file-device                  26
 !  write-initial-sif                         NO
 !  initial-sif-file-name                     INITIAL.SIF
@@ -166,13 +162,13 @@
 !  solve-problem                             YES
 !  print-full-solution                       NO
 !  write-solution                            NO
-!  solution-file-name                        LPBSOL.d
+!  solution-file-name                        DLPSOL.d
 !  solution-file-device                      62
 !  write-result-summary                      NO
-!  result-summary-file-name                  LPBRES.d
+!  result-summary-file-name                  DLPRES.d
 !  result-summary-file-device                47
 !  perturb-bounds-by                         0.0
-! END RUNLPB SPECIFICATIONS
+! END RUNDLP SPECIFICATIONS
 
 !  Default values for specfile-defined parameters
 
@@ -189,12 +185,12 @@
       LOGICAL :: write_scaled_sif     = .FALSE.
       LOGICAL :: write_solution       = .FALSE.
       LOGICAL :: write_result_summary = .FALSE.
-      CHARACTER ( LEN = 30 ) :: dfilename = 'LPB.data'
+      CHARACTER ( LEN = 30 ) :: dfilename = 'DLP.data'
       CHARACTER ( LEN = 30 ) :: ifilename = 'INITIAL.SIF'
       CHARACTER ( LEN = 30 ) :: pfilename = 'PRESOLVE.SIF'
       CHARACTER ( LEN = 30 ) :: qfilename = 'SCALED.SIF'
-      CHARACTER ( LEN = 30 ) :: rfilename = 'LPBRES.d'
-      CHARACTER ( LEN = 30 ) :: sfilename = 'LPBSOL.d'
+      CHARACTER ( LEN = 30 ) :: rfilename = 'DLPRES.d'
+      CHARACTER ( LEN = 30 ) :: sfilename = 'DLPSOL.d'
       LOGICAL :: do_presolve = .FALSE.
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE.
@@ -212,9 +208,9 @@
 
       TYPE ( RPD_control_type ) :: RPD_control
       TYPE ( RPD_inform_type ) :: RPD_inform
-      TYPE ( LPB_data_type ) :: data
-      TYPE ( LPB_control_type ) :: LPB_control
-      TYPE ( LPB_inform_type ) :: LPB_inform
+      TYPE ( DLP_data_type ) :: data
+      TYPE ( DLP_control_type ) :: DLP_control
+      TYPE ( DLP_inform_type ) :: DLP_inform
       TYPE ( QPT_problem_type ) :: prob
       TYPE ( PRESOLVE_control_type ) :: PRE_control
       TYPE ( PRESOLVE_inform_type )  :: PRE_inform
@@ -336,7 +332,7 @@
       DEALLOCATE( IW )
       ALLOCATE( prob%A%row( 0 ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
-        WRITE( out, "( ' whoa there - allocate error ', i6 )" ) alloc_stat; STOP
+        WRITE( out, "( ' stop - allocate error ', i6 )" ) alloc_stat; STOP
       END IF
 
       prob%new_problem_structure = .TRUE.
@@ -353,7 +349,7 @@
 
       CALL CPU_TIME( times ) ; CALL CLOCK_time( clocks )
 
-!  ------------------ Open the specfile for LPB ----------------
+!  ------------------ Open the specfile for DLP ----------------
 
       INQUIRE( FILE = runspec, EXIST = is_specfile )
       IF ( is_specfile ) THEN
@@ -490,11 +486,11 @@
 
 !  Set all default values, and override defaults if requested
 
-      CALL LPB_initialize( data, LPB_control, LPB_inform )
-      CALL LPB_read_specfile( LPB_control, input_specfile )
+      CALL DLP_initialize( data, DLP_control, DLP_inform )
+      CALL DLP_read_specfile( DLP_control, input_specfile )
 
-      printo = out > 0 .AND. LPB_control%print_level > 0
-      printe = out > 0 .AND. LPB_control%print_level >= 0
+      printo = out > 0 .AND. DLP_control%print_level > 0
+      printe = out > 0 .AND. DLP_control%print_level >= 0
 
       WRITE( out, 2020 ) pname
       WRITE( out, 2200 ) n, m, A_ne
@@ -585,9 +581,9 @@
 
 !       Overide some defaults
 
-        PRE_control%infinity = LPB_control%infinity
-        PRE_control%c_accuracy = ten * LPB_control%stop_abs_p
-        PRE_control%z_accuracy = ten * LPB_control%stop_abs_d
+        PRE_control%infinity = DLP_control%infinity
+        PRE_control%c_accuracy = ten * DLP_control%stop_abs_p
+        PRE_control%z_accuracy = ten * DLP_control%stop_abs_d
 
 !  Call the presolver
 
@@ -608,7 +604,7 @@
 
         IF ( write_presolved_sif ) THEN
           CALL QPT_write_to_sif( prob, pname, pfilename, pfiledevice,          &
-                                 .FALSE., .FALSE., LPB_control%infinity )
+                                 .FALSE., .FALSE., DLP_control%infinity )
         END IF
       END IF
 
@@ -657,21 +653,21 @@
 !       WRITE( 6, "( ' y ', /, (5ES12.4) )" ) prob%Y
 !       WRITE( 6, "( ' z ', /, (5ES12.4) )" ) prob%Z
 
-        solv = ' LPB'
-        IF ( printo ) WRITE( out, " ( ' ** LPB solver used ** ' ) " )
-        CALL LPB_solve( prob, data, LPB_control, LPB_inform, C_stat, B_stat )
+        solv = ' DLP'
+        IF ( printo ) WRITE( out, " ( ' ** DLP solver used ** ' ) " )
+        CALL DLP_solve( prob, data, DLP_control, DLP_inform, C_stat, B_stat )
 
-        IF ( printo ) WRITE( out, " ( /, ' ** LPB solver used ** ' ) " )
-        qfval = LPB_inform%obj ; newton = 0
+        IF ( printo ) WRITE( out, " ( /, ' ** DLP solver used ** ' ) " )
+        qfval = DLP_inform%obj ; newton = 0
 
         CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
 !  Deallocate arrays from the minimization
 
-        status = LPB_inform%status
-        iter = LPB_inform%iter
-        stopr = LPB_control%stop_abs_d
-        CALL LPB_terminate( data, LPB_control, LPB_inform )
+        status = DLP_inform%status
+        iter = DLP_inform%iter
+        stopr = DLP_control%stop_abs_d
+        CALL DLP_terminate( data, DLP_control, DLP_inform )
 
 !  If the problem was scaled, unscale it.
 
@@ -690,7 +686,7 @@
         iter  = 0
         solv   = ' NONE'
         status = 0
-        stopr  = LPB_control%stop_abs_d
+        stopr  = DLP_control%stop_abs_d
         newton = 0
         qfval  = prob%f
       END IF
@@ -949,33 +945,33 @@
         END IF
       END IF
 
-      sls_solv = LPB_control%SBLS_control%symmetric_linear_solver
+      sls_solv = DLP_control%SBLS_control%symmetric_linear_solver
       CALL STRING_upper_word( sls_solv )
       WRITE( out, "( /, 1X, A, ' symmetric equation solver used' )" )          &
         TRIM( sls_solv )
       WRITE( out, "( ' - typically ', I0, ', ', I0,                            &
     &                ' entries in matrix, factors' )" )                        &
-        LPB_inform%SBLS_inform%SLS_inform%entries,                             &
-        LPB_inform%SBLS_inform%SLS_inform%entries_in_factors
-      sls_solv = LPB_control%SBLS_control%definite_linear_solver
+        DLP_inform%SBLS_inform%SLS_inform%entries,                             &
+        DLP_inform%SBLS_inform%SLS_inform%entries_in_factors
+      sls_solv = DLP_control%definite_linear_solver
       CALL STRING_upper_word( sls_solv )
       WRITE( out, "( 1X, A, ' definite equation solver used' )" )              &
         TRIM( sls_solv )
       WRITE( out, "( ' - typically ', I0, ', ', I0,                            &
     &                ' entries in matrix, factors' )" )                        &
-        LPB_inform%SBLS_inform%SLS_inform%entries,                             &
-        LPB_inform%SBLS_inform%SLS_inform%entries_in_factors
+        DLP_inform%SLS_inform%entries,                                         &
+        DLP_inform%SLS_inform%entries_in_factors
       WRITE( out, "( ' Analyse, factorize & solve CPU   times =',              &
      &  3( 1X, F8.3 ), /, ' Analyse, factorize & solve clock times =',         &
-     &  3( 1X, F8.3 ) )" ) LPB_inform%time%analyse, LPB_inform%time%factorize, &
-        LPB_inform%time%solve, LPB_inform%time%clock_analyse,                  &
-        LPB_inform%time%clock_factorize, LPB_inform%time%clock_solve
+     &  3( 1X, F8.3 ) )" ) DLP_inform%time%analyse, DLP_inform%time%factorize, &
+        DLP_inform%time%solve, DLP_inform%time%clock_analyse,                  &
+        DLP_inform%time%clock_factorize, DLP_inform%time%clock_solve
 
       times = times - time ; timet = timet - timeo
       clocks = clocks - clock ; clockt = clockt - clocko
       WRITE( out, "( /, ' Total CPU, clock times = ', F8.3, ', ', F8.3 )" )    &
         times + timet, clocks + clockt
-      WRITE( out, "( ' number of threads = ', I0 )" ) LPB_inform%threads
+      WRITE( out, "( ' number of threads = ', I0 )" ) DLP_inform%threads
       WRITE( out, 2070 ) pname
 
 !  Compare the variants used so far
@@ -1017,7 +1013,7 @@
                  ' Maximum constraint violation    ', ES22.14, /,              &
                  ' Maximum dual infeasibility      ', ES22.14, /,              &
                  ' Maximum complementary slackness ', ES22.14, //,             &
-       ' Number of LPB iterations = ', I0 )
+       ' Number of DLP iterations = ', I0 )
  2040 FORMAT( /, ' Constraints : ', /, '                             ',        &
                  '        <------ Bounds ------> ', /                          &
                  '      # name       state    value   ',                       &
@@ -1056,6 +1052,6 @@
  2250 FORMAT( /, ' Problem:    ', A10, /, ' Solver :   ', A5,                  &
               /, ' Objective:', ES24.16 )
 
-!  End of RUNLPB_DATA_precision
+!  End of RUNDLP_QPLIB_precision
 
-   END PROGRAM RUNLPB_DATA_precision
+   END PROGRAM RUNDLP_QPLIB_precision
