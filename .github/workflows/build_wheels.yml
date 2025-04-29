@@ -44,7 +44,7 @@ jobs:
         #   CIBW_SOME_OPTION: value
         env:
           # List of python versions and platforms to build on
-          CIBW_BUILD: cp3{13}-manylinux_x86_64 cp3{13}-macosx_x86_64 cp3{13}-macosx_arm64 cp3{13}-win_amd64
+          CIBW_BUILD: cp3{12,13}-manylinux_x86_64 cp3{12,13}-macosx_x86_64 cp3{12,13}-macosx_arm64 cp3{12,13}-win_amd64
 
           # cibuildwheel doesn't yet ship a default repair command for Windows
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
