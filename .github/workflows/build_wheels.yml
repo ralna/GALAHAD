@@ -15,7 +15,8 @@ jobs:
     strategy:
       matrix:
         # Note: builds on these are backward compatible
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # macos-13 is an intel runner, macos-14 is apple silicon
+        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
 
     steps:
       - uses: actions/checkout@v4
@@ -23,11 +24,17 @@ jobs:
       - name: Fix GCC on macOS runners
         shell: bash
         run: |
-          if [[ "${{matrix.os}}" == "macos-latest" ]]; then
+          if [[ "${{matrix.os}}" == "macos-14" ]]; then
             sudo ln -s /opt/homebrew/bin/gfortran-13 /opt/homebrew/bin/gfortran
             sudo ln -s /opt/homebrew/bin/gcc-13 /opt/homebrew/bin/cc
             sudo ln -s /opt/homebrew/bin/g++-13 /opt/homebrew/bin/c++
             sudo ln -s /opt/homebrew/Cellar/gcc/13.*/lib/gcc/13/*.dylib /opt/homebrew/lib/
+          fi
+          if [[ "${{matrix.os}}" == "macos-13" ]]; then
+            sudo ln -s /usr/local/bin/gfortran-13 /usr/local/bin/gfortran
+            sudo ln -s /usr/local/bin/gcc-13 /usr/local/bin/cc
+            sudo ln -s /usr/local/bin/g++-13 /usr/local/bin/c++
+            sudo ln -s /usr/local/Cellar/gcc/13.*/lib/gcc/13/*.dylib /usr/local/lib/
           fi
 
       - name: Build wheels
@@ -36,8 +43,8 @@ jobs:
         # env:
         #   CIBW_SOME_OPTION: value
         env:
-          # List of platforms to build on
-          CIBW_BUILD: cp3{9,10,11,12,13}-manylinux_x86_64 cp3{9,10,11,12,13}-macosx_arm64 cp3{9,10,11,12,13}-win_amd64
+          # List of python versions and platforms to build on
+          CIBW_BUILD: cp3{13}-manylinux_x86_64 cp3{13}-macosx_x86_64 cp3{13}-macosx_arm64 cp3{13}-win_amd64
 
           # cibuildwheel doesn't yet ship a default repair command for Windows
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
