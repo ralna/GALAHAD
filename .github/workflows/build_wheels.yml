@@ -28,9 +28,6 @@ jobs:
             sudo ln -s /opt/homebrew/bin/gcc-13 /opt/homebrew/bin/gcc
             sudo ln -s /opt/homebrew/bin/g++-13 /opt/homebrew/bin/g++
             sudo ln -s /opt/homebrew/Cellar/gcc/13.*/lib/gcc/13/*.dylib /opt/homebrew/lib/
-            export FC=gfortran
-            export CC=gcc
-            export CXX=g++
           fi
 
       - name: Build wheels
@@ -41,6 +38,9 @@ jobs:
         env:
           # List of platforms to build on
           CIBW_BUILD: cp3{9,10,11,12,13}-manylinux_x86_64 cp3{9,10,11,12,13}-macosx_arm64 cp3{9,10,11,12,13}-win_amd64
+
+          # Use GCC to compile on macOS
+          CIBW_BEFORE_BUILD_MACOS: export CC=gcc && export CXX=g++ && export FC=gfortran
 
           # cibuildwheel doesn't yet ship a default repair command for Windows
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
