@@ -702,6 +702,7 @@ if build_binaries
       binfile = binary[1]
       executable(binname, binfile,
                  fortran_args : pp_flag + extra_args_double,
+                 link_with : libgalahad_double,
                  link_language : 'fortran',
                  include_directories: libgalahad_include,
                  install : true)
