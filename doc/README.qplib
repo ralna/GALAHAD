@@ -1,5 +1,5 @@
-PROBLEM-DATA-FILE INPUT FOR LINEAR AND QUADRATIC PROGRAMMING
-------------------------------------------------------------
+QPLIB PROBLEM-DATA-FILE INPUT FOR LINEAR AND QUADRATIC PROGRAMMING
+------------------------------------------------------------------
 
 A new feature for problems that may be described entirely in terns
 of matrix, vector and scalar data (primarily quadratic and linear
@@ -12,16 +12,16 @@ USING A PROBLEM-DATA FILE
 -------------------------
 
 The user will need to prepare a properly-formatted problem-data file
-and then to call the appropriate GALAHAD solver via the dgal command. 
+and then to call the appropriate GALAHAD solver via the qgal command. 
 Options may be passed to the solver using the normal GALAHAD specfile
 mechanism. For example, to use the GALAHAD package QPB, compiled under
 Linux using the NAG f95 compiler, to solve a problem specified in the 
 file example.qplib, the user should issue the command
 
-  dgal pc.lnx.n95 qpb example.qplib
+  qgal pc.lnx.n95 qpb example.qplib
 
 from the directory containing the problem-data file. For details on the
-dgal command, see the its man page.
+qgal command, see the its man page.
 
 PROBLEM-DATA FILE SYNTAX
 ------------------------
