@@ -1,4 +1,4 @@
-export galahad_linear_solver
+export galahad_linear_solver, run_sif
 
 function galahad_linear_solver(solver::String)
   nchar = length(solver)
@@ -14,3 +14,8 @@ function galahad_linear_solver(solver::String)
 
   return ntuple(i -> result[i], 31)
 end
+
+"""
+    run_sif(::Val{:solver}, ::Val{:precision}, path_libsif::String, path_outsdif::String)
+"""
+function run_sif end

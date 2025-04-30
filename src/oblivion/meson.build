@@ -5,7 +5,7 @@
 # subdir('funnel')
 # subdir('funnel_equality')
 # subdir('gsm')
-subdir('ism')
+# subdir('ism')
 # subdir('lcf')
 # subdir('lpqpa')
 # subdir('lpqpab')
