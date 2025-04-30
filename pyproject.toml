@@ -3,7 +3,7 @@ build-backend = 'mesonpy'
 requires = ['meson-python', 'numpy']
 
 [tool.meson-python.args]
-setup = ['-Dpythoniface=true', '-Dpython.install_env=auto', '--default-library=static', '-Dtests=false']
+setup = ['-Dpythoniface=true', '-Dpython.install_env=auto', '-Dtests=false']
 install = ['--tags=runtime,python-runtime']
 
 [project]
