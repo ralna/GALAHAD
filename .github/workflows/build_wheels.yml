@@ -21,21 +21,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fix GCC on macOS runners
-        shell: bash
-        run: |
-          if [[ "${{matrix.os}}" == "macos-14" ]]; then
-            sudo ln -s /opt/homebrew/bin/gfortran-13 /opt/homebrew/bin/gfortran
-            sudo ln -s /opt/homebrew/bin/gcc-13 /opt/homebrew/bin/cc
-            sudo ln -s /opt/homebrew/bin/g++-13 /opt/homebrew/bin/c++
-            sudo ln -s /opt/homebrew/Cellar/gcc/13.*/lib/gcc/13/*.dylib /opt/homebrew/lib/
-          fi
-          if [[ "${{matrix.os}}" == "macos-13" ]]; then
-            sudo ln -s /usr/local/bin/gfortran-13 /usr/local/bin/gfortran
-            sudo ln -s /usr/local/bin/gcc-13 /usr/local/bin/cc
-            sudo ln -s /usr/local/bin/g++-13 /usr/local/bin/c++
-            sudo ln -s /usr/local/Cellar/gcc/13.*/lib/gcc/13/*.dylib /usr/local/lib/
-          fi
+      #- name: Fix GCC on macOS runners
+      #  shell: bash
+      #  run: |
+      #    if [[ "${{matrix.os}}" == "macos-14" ]]; then
+      #      sudo ln -s /opt/homebrew/bin/gfortran-13 /opt/homebrew/bin/gfortran
+      #      sudo ln -s /opt/homebrew/bin/gcc-13 /opt/homebrew/bin/cc
+      #      sudo ln -s /opt/homebrew/bin/g++-13 /opt/homebrew/bin/c++
+      #      sudo ln -s /opt/homebrew/Cellar/gcc/13.*/lib/gcc/13/*.dylib /opt/homebrew/lib/
+      #    fi
+      #    if [[ "${{matrix.os}}" == "macos-13" ]]; then
+      #      sudo ln -s /usr/local/bin/gfortran-13 /usr/local/bin/gfortran
+      #      sudo ln -s /usr/local/bin/gcc-13 /usr/local/bin/cc
+      #      sudo ln -s /usr/local/bin/g++-13 /usr/local/bin/c++
+      #      sudo ln -s /usr/local/Cellar/gcc/13.*/lib/gcc/13/*.dylib /usr/local/lib/
+      #    fi
 
       - name: Build wheels
         run: pipx run cibuildwheel==2.23.3
@@ -47,7 +47,7 @@ jobs:
           CIBW_BUILD: cp3{12,13}-manylinux_x86_64 cp3{12,13}-macosx_x86_64 cp3{12,13}-macosx_arm64 cp3{12,13}-win_amd64
 
           # set correct macOS deployment target
-          MACOSX_DEPLOYMENT_TARGET: 13.0
+          CIBW_ENVIRONMENT_MACOS: CC="gcc-13" CXX="g++-13" FC="gfortran-13" MACOSX_DEPLOYMENT_TARGET="13.0"
 
           # cibuildwheel doesn't yet ship a default repair command for Windows
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
