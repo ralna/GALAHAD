@@ -510,3 +510,21 @@ function trs_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
                                                                              Int64}},
                                                inform::Ptr{trs_inform_type{Float128,Int64}})::Cvoid
 end
+
+const runtrs_sif_single = joinpath(galahad_bindir, "runtrs_sif_single$(exeext)")
+
+function run_sif(::Val{:trs}, ::Val{:single}, path_libsif::String, path_outsdif::String)
+  return run(`$runtrs_sif_single $path_libsif $path_outsdif`)
+end
+
+const runtrs_sif_double = joinpath(galahad_bindir, "runtrs_sif_double$(exeext)")
+
+function run_sif(::Val{:trs}, ::Val{:double}, path_libsif::String, path_outsdif::String)
+  return run(`$runtrs_sif_double $path_libsif $path_outsdif`)
+end
+
+const runtrs_sif_quadruple = joinpath(galahad_bindir, "runtrs_sif_quadruple$(exeext)")
+
+function run_sif(::Val{:trs}, ::Val{:quadruple}, path_libsif::String, path_outsdif::String)
+  return run(`$runtrs_sif_quadruple $path_libsif $path_outsdif`)
+end

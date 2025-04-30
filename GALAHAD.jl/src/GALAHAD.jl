@@ -7,24 +7,25 @@ using Quadmath
 import Quadmath.Cfloat128
 
 if haskey(ENV, "JULIA_GALAHAD_LIBRARY_PATH")
-  const libgalahad_single = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_single.$dlext")
-  const libgalahad_double = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_double.$dlext")
-  const libgalahad_quadruple = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_quadruple.$dlext")
-  const libgalahad_single_64 = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_single_64.$dlext")
-  const libgalahad_double_64 = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_double_64.$dlext")
-  const libgalahad_quadruple_64 = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_quadruple_64.$dlext")
+  const galahad_libdir = ENV["JULIA_GALAHAD_LIBRARY_PATH"]
+  const galahad_bindir = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "..", "bin") |> normpath
   const GALAHAD_INSTALLATION = "CUSTOM"
 else
   import OpenBLAS32_jll
   import GALAHAD_jll
+  const galahad_libdir = Sys.iswindows() ? joinpath(GALAHAD_jll.artifact_dir, "bin") : joinpath(GALAHAD_jll.artifact_dir, "lib")
+  const galahad_bindir = joinpath(GALAHAD_jll.artifact_dir, "bin")
   const GALAHAD_INSTALLATION = "YGGDRASIL"
-  const libgalahad_single = GALAHAD_jll.libgalahad_single
-  const libgalahad_double = GALAHAD_jll.libgalahad_double
-  const libgalahad_quadruple = replace(libgalahad_double, "double" => "quadruple")
-  const libgalahad_single_64 = GALAHAD_jll.libgalahad_single_64
-  const libgalahad_double_64 = GALAHAD_jll.libgalahad_double_64
-  const libgalahad_quadruple_64 = replace(libgalahad_double_64, "double" => "quadruple")
 end
+const exeext = Sys.iswindows() ? ".exe" : ""
+
+# Shared libraries of GALAHAD
+const libgalahad_single = joinpath(galahad_libdir, "libgalahad_single.$dlext")
+const libgalahad_double = joinpath(galahad_libdir, "libgalahad_double.$dlext")
+const libgalahad_quadruple = joinpath(galahad_libdir, "libgalahad_quadruple.$dlext")
+const libgalahad_single_64 = joinpath(galahad_libdir, "libgalahad_single_64.$dlext")
+const libgalahad_double_64 = joinpath(galahad_libdir, "libgalahad_double_64.$dlext")
+const libgalahad_quadruple_64 = joinpath(galahad_libdir, "libgalahad_quadruple_64.$dlext")
 
 function __init__()
   if GALAHAD_INSTALLATION == "YGGDRASIL"
@@ -64,6 +65,23 @@ include("wrappers/sils.jl")
 include("wrappers/ugo.jl")
 include("wrappers/ssids.jl")
 include("wrappers/version.jl")
+
+# packages without a C interface -- only binaries run_sif.
+include("wrappers/cdqp.jl")
+include("wrappers/demo.jl")
+include("wrappers/dlp.jl")
+include("wrappers/fdh.jl")
+include("wrappers/filtrane.jl")
+include("wrappers/l1qp.jl")
+include("wrappers/lancelot.jl")
+include("wrappers/lls.jl")
+include("wrappers/lpqp.jl")
+include("wrappers/lqr.jl")
+include("wrappers/lqt.jl")
+include("wrappers/miqr.jl")
+include("wrappers/qp.jl")
+include("wrappers/qpc.jl")
+include("wrappers/warm.jl")
 
 # sls requires sils.
 include("wrappers/sls.jl")

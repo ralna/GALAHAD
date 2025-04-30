@@ -340,3 +340,21 @@ function sils_finalize(::Type{Float128}, ::Type{Int64}, data, control, status)
                                                                               Int64}},
                                                status::Ptr{Int64})::Cvoid
 end
+
+const runsils_sif_single = joinpath(galahad_bindir, "runsils_sif_single$(exeext)")
+
+function run_sif(::Val{:sils}, ::Val{:single}, path_libsif::String, path_outsdif::String)
+  return run(`$runsils_sif_single $path_libsif $path_outsdif`)
+end
+
+const runsils_sif_double = joinpath(galahad_bindir, "runsils_sif_double$(exeext)")
+
+function run_sif(::Val{:sils}, ::Val{:double}, path_libsif::String, path_outsdif::String)
+  return run(`$runsils_sif_double $path_libsif $path_outsdif`)
+end
+
+const runsils_sif_quadruple = joinpath(galahad_bindir, "runsils_sif_quadruple$(exeext)")
+
+function run_sif(::Val{:sils}, ::Val{:quadruple}, path_libsif::String, path_outsdif::String)
+  return run(`$runsils_sif_quadruple $path_libsif $path_outsdif`)
+end

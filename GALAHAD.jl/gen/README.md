@@ -42,37 +42,51 @@ The possible values for `library` are:
 - `"bqpb"`;
 - `"bsc"`;
 - `"ccqp"`;
+- `"cdqp"`;
 - `"clls"`;
 - `"convert"`;
 - `"cqp"`;
 - `"cro"`;
+- `"demo"`;
 - `"dgo"`;
+- `"dlp"`;
 - `"dps"`;
 - `"dqp"`;
 - `"eqp"`;
 - `"fdc"`;
+- `"fdh"`;
+- `"filtrane"`;
 - `"fit"`;
 - `"glrt"`;
 - `"gls"`;
 - `"gltr"`;
 - `"hash"`;
 - `"ir"`;
+- `"l1qp"`;
 - `"l2rt"`;
+- `"lancelot"`;
 - `"lhs"`;
+- `"lls"`;
 - `"llsr"`;
 - `"llst"`;
 - `"lms"`;
 - `"lpa"`;
 - `"lpb"`;
+- `"lpqp"`;
+- `"lqr"`;
+- `"lpt"`;
 - `"lsqp"`;
 - `"lsrt"`;
+- `"miqr"`;
 - `"lstr"`;
 - `"nls"`;
 - `"nodend"`;
 - `"presolve"`;
 - `"psls"`;
+- `"qp"`;
 - `"qpa"`;
 - `"qpb"`;
+- `"qpc"`;
 - `"roots"`;
 - `"rpd"`;
 - `"rqs"`;
@@ -88,6 +102,7 @@ The possible values for `library` are:
 - `"tru"`;
 - `"ugo"`;
 - `"uls"`;
+- `"warm"`;
 - `"wcp"`;
 - `"ssids"`;
 - `"hsl"`.
@@ -106,7 +121,7 @@ the `main` function of `wrapper.jl`, in the variable `packages` of
 package is named `abcd`, insert the following line in `wrapper.jl`:
 
 ```julia
-(name == "all" || name == "abcd") && wrapper("abcd", ["$galahad/galahad_abcd.h"], optimized)
+(name == "all" || name == "abcd") && wrapper("abcd", ["$galahad/galahad_abcd.h"], optimized, run_sif=bool)
 ```
 
 Please also check the variables `nonparametric_structures_float` and

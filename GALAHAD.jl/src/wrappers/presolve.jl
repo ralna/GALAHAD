@@ -588,3 +588,25 @@ function presolve_terminate(::Type{Float128}, ::Type{Int64}, data, control, info
                                                                                        Int64}},
                                                     inform::Ptr{presolve_inform_type{Int64}})::Cvoid
 end
+
+const runpresolve_sif_single = joinpath(galahad_bindir, "runpresolve_sif_single$(exeext)")
+
+function run_sif(::Val{:presolve}, ::Val{:single}, path_libsif::String,
+                 path_outsdif::String)
+  return run(`$runpresolve_sif_single $path_libsif $path_outsdif`)
+end
+
+const runpresolve_sif_double = joinpath(galahad_bindir, "runpresolve_sif_double$(exeext)")
+
+function run_sif(::Val{:presolve}, ::Val{:double}, path_libsif::String,
+                 path_outsdif::String)
+  return run(`$runpresolve_sif_double $path_libsif $path_outsdif`)
+end
+
+const runpresolve_sif_quadruple = joinpath(galahad_bindir,
+                                           "runpresolve_sif_quadruple$(exeext)")
+
+function run_sif(::Val{:presolve}, ::Val{:quadruple}, path_libsif::String,
+                 path_outsdif::String)
+  return run(`$runpresolve_sif_quadruple $path_libsif $path_outsdif`)
+end

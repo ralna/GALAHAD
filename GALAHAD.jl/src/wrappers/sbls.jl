@@ -477,3 +477,21 @@ function sbls_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
                                                 inform::Ptr{sbls_inform_type{Float128,
                                                                              Int64}})::Cvoid
 end
+
+const runsbls_sif_single = joinpath(galahad_bindir, "runsbls_sif_single$(exeext)")
+
+function run_sif(::Val{:sbls}, ::Val{:single}, path_libsif::String, path_outsdif::String)
+  return run(`$runsbls_sif_single $path_libsif $path_outsdif`)
+end
+
+const runsbls_sif_double = joinpath(galahad_bindir, "runsbls_sif_double$(exeext)")
+
+function run_sif(::Val{:sbls}, ::Val{:double}, path_libsif::String, path_outsdif::String)
+  return run(`$runsbls_sif_double $path_libsif $path_outsdif`)
+end
+
+const runsbls_sif_quadruple = joinpath(galahad_bindir, "runsbls_sif_quadruple$(exeext)")
+
+function run_sif(::Val{:sbls}, ::Val{:quadruple}, path_libsif::String, path_outsdif::String)
+  return run(`$runsbls_sif_quadruple $path_libsif $path_outsdif`)
+end

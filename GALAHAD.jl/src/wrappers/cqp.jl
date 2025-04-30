@@ -557,3 +557,21 @@ function cqp_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
                                                                              Int64}},
                                                inform::Ptr{cqp_inform_type{Float128,Int64}})::Cvoid
 end
+
+const runcqp_sif_single = joinpath(galahad_bindir, "runcqp_sif_single$(exeext)")
+
+function run_sif(::Val{:cqp}, ::Val{:single}, path_libsif::String, path_outsdif::String)
+  return run(`$runcqp_sif_single $path_libsif $path_outsdif`)
+end
+
+const runcqp_sif_double = joinpath(galahad_bindir, "runcqp_sif_double$(exeext)")
+
+function run_sif(::Val{:cqp}, ::Val{:double}, path_libsif::String, path_outsdif::String)
+  return run(`$runcqp_sif_double $path_libsif $path_outsdif`)
+end
+
+const runcqp_sif_quadruple = joinpath(galahad_bindir, "runcqp_sif_quadruple$(exeext)")
+
+function run_sif(::Val{:cqp}, ::Val{:quadruple}, path_libsif::String, path_outsdif::String)
+  return run(`$runcqp_sif_quadruple $path_libsif $path_outsdif`)
+end
