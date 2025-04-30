@@ -51,8 +51,9 @@ meson setup builddir_int32 --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
                            -Ddouble=true \
                            -Dquadruple=true \
                            -Dint64=false \
-                           -Dlibhsl= \
+                           -Dlibhsl=hsl_subset \
                            -Dtests=false \
+                           -Dbinaries=true \
                            -Dlibhsl_modules=$prefix/modules \
                            -Dlibcutest_modules=$prefix/modules
 
@@ -70,8 +71,9 @@ meson setup builddir_int64 --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
                            -Ddouble=true \
                            -Dquadruple=true \
                            -Dint64=true \
-                           -Dlibhsl= \
+                           -Dlibhsl=hsl_subset_64 \
                            -Dtests=false \
+                           -Dbinaries=false \
                            -Dlibhsl_modules=$prefix/modules \
                            -Dlibcutest_modules=$prefix/modules
 
