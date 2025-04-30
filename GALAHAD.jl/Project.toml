@@ -19,7 +19,7 @@ GALAHADCUTEstExt = "CUTEst"
 
 [compat]
 Accessors = "0.1.42"
-CUTEst = "1.2.0"
+CUTEst = "1.2.1"
 GALAHAD_jll = "=5.2.0"
 Quadmath = "0.5.10"
 julia = "1.9"
