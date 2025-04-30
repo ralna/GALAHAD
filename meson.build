@@ -216,8 +216,11 @@ libgalahad_quadruple_src = []
 # Fortran files *.f
 libgalahad_f_src = []
 
-# Fortran files that contain programs
+# Fortran files that contain programs and are precision dependent
 galahad_binaries = []
+
+# Fortran files that contain programs and are precision independent
+galahad_multi_binaries = []
 
 # Header files to install
 galahad_headers = []
@@ -694,6 +697,17 @@ if build_binaries
   endif
 
   if build_double
+    foreach binary: galahad_multi_binaries
+      binname = binary[0]
+      binfile = binary[1]
+      executable(binname, binfile,
+                 fortran_args : pp_flag + extra_args_double,
+                 link_with : libgalahad_double,
+                 link_language : 'fortran',
+                 include_directories: libgalahad_include,
+                 install : true)
+    endforeach
+
     foreach binary: galahad_binaries_double
       binname = binary[0]
       binfile = binary[1]
