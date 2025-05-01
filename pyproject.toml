@@ -7,7 +7,7 @@ setup = ['-Dpythoniface=true', '-Dpython.install_env=auto', '-Dtests=false']
 install = ['--tags=runtime,python-runtime']
 
 [project]
-name = 'galahad-solvers'
+name = 'galahad-optrove'
 dynamic = ['version']
 dependencies = [
     "numpy"
