@@ -1,12 +1,12 @@
 name: Build and upload to PyPI
 
 # Build on every branch push, tag push, and pull request change:
-on: [pull_request]
+#on: [pull_request]
 # Alternatively, to publish when a (published) GitHub Release is created, use the following:
-#on:
-#  release:
-#    types:
-#      - published
+on:
+  release:
+    types:
+      - published
 
 jobs:
   build_wheels:
@@ -42,7 +42,7 @@ jobs:
         #   CIBW_SOME_OPTION: value
         env:
           # list of python versions and platforms to build on
-          CIBW_BUILD: cp3{12,13}-manylinux_x86_64 cp3{12,13}-macosx_x86_64 cp3{12,13}-macosx_arm64 cp3{12,13}-win_amd64
+          CIBW_BUILD: cp3{10,11,12,13}-manylinux_x86_64 cp3{10,11,12,13}-macosx_x86_64 cp3{10,11,12,13}-macosx_arm64 cp3{10,11,12,13}-win_amd64
 
           # build with gcc/gfortran on macOS
           CIBW_ENVIRONMENT_MACOS: CC="gcc-14" CXX="g++-14" FC="gfortran-14"
