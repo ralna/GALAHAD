@@ -575,3 +575,21 @@ const runcqp_sif_quadruple = joinpath(galahad_bindir, "runcqp_sif_quadruple$(exe
 function run_sif(::Val{:cqp}, ::Val{:quadruple}, path_libsif::String, path_outsdif::String)
   return run(`$runcqp_sif_quadruple $path_libsif $path_outsdif`)
 end
+
+const runcqp_qplib_single = joinpath(galahad_bindir, "runcqp_qplib_single$(exeext)")
+
+function run_qplib(::Val{:cqp}, ::Val{:single}, path_qplib::String)
+  return run(`$runcqp_qplib_single $path_qplib`)
+end
+
+const runcqp_qplib_double = joinpath(galahad_bindir, "runcqp_qplib_double$(exeext)")
+
+function run_qplib(::Val{:cqp}, ::Val{:double}, path_qplib::String)
+  return run(`$runcqp_qplib_double $path_qplib`)
+end
+
+const runcqp_qplib_quadruple = joinpath(galahad_bindir, "runcqp_qplib_quadruple$(exeext)")
+
+function run_qplib(::Val{:cqp}, ::Val{:quadruple}, path_qplib::String)
+  return run(`$runcqp_qplib_quadruple $path_qplib`)
+end
