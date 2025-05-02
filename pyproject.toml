@@ -1,0 +1,52 @@
+[build-system]
+build-backend = 'mesonpy'
+requires = ['meson-python', 'numpy']
+
+[tool.meson-python.args]
+setup = ['-Dpythoniface=true', '-Dpython.install_env=auto', '-Dsingle=false', '-Dtests=false']
+install = ['--tags=runtime,python-runtime']
+
+[project]
+name = 'galahad-optrove'
+dynamic = ['version']
+dependencies = [
+    "numpy"
+]
+requires-python = ">=3.10"
+authors = [
+    {name = "Nick Gould", email = "nick.gould@stfc.ac.uk"},
+    {name = "Jaroslav Fowkes", email = "jaroslav.fowkes@stfc.ac.uk"}
+]
+maintainers = [
+    {name = "Nick Gould", email = "nick.gould@stfc.ac.uk"},
+    {name = "Jaroslav Fowkes", email = "jaroslav.fowkes@stfc.ac.uk"}
+]
+description = 'A library of modern Fortran modules for nonlinear optimization'
+readme = 'README.md'
+license = {file = 'LICENSE'}
+keywords = ["mathematics", "optimization"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Framework :: IPython",
+    "Framework :: Jupyter",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: MacOS",
+    "Operating System :: Unix",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics"
+]
+
+[project.urls]
+Homepage = "https://www.galahad.rl.ac.uk/"
+Download = "https://github.com/ralna/galahad//releases/"
+"Bug Tracker" = "https://github.com/ralna/galahad//issues/"
+Documentation = "https://www.galahad.rl.ac.uk/"
+"Source Code" = "https://github.com/ralna/galahad/"
