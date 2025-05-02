@@ -10,13 +10,8 @@ on: [pull_request]
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        # Note: builds on these are backward compatible
-        # macos-13 is an intel runner, macos-14 is apple silicon
-        os: [windows-latest]
+    name: Build wheels on windows-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -65,7 +60,7 @@ jobs:
           path: ./wheelhouse/*.whl
 
   upload_pypi:
-    needs: [build_wheels]
+    needs: build_wheels
     runs-on: ubuntu-latest
     # To publish when a GitHub Release is created, use the following rule:
     if: github.event_name == 'release' && github.event.action == 'published'
