@@ -472,3 +472,21 @@ const runlpb_sif_quadruple = joinpath(galahad_bindir, "runlpb_sif_quadruple$(exe
 function run_sif(::Val{:lpb}, ::Val{:quadruple}, path_libsif::String, path_outsdif::String)
   return run(`$runlpb_sif_quadruple $path_libsif $path_outsdif`)
 end
+
+const runlpb_qplib_single = joinpath(galahad_bindir, "runlpb_qplib_single$(exeext)")
+
+function run_qplib(::Val{:lpb}, ::Val{:single}, path_qplib::String)
+  return run(`$runlpb_qplib_single $path_qplib`)
+end
+
+const runlpb_qplib_double = joinpath(galahad_bindir, "runlpb_qplib_double$(exeext)")
+
+function run_qplib(::Val{:lpb}, ::Val{:double}, path_qplib::String)
+  return run(`$runlpb_qplib_double $path_qplib`)
+end
+
+const runlpb_qplib_quadruple = joinpath(galahad_bindir, "runlpb_qplib_quadruple$(exeext)")
+
+function run_qplib(::Val{:lpb}, ::Val{:quadruple}, path_qplib::String)
+  return run(`$runlpb_qplib_quadruple $path_qplib`)
+end

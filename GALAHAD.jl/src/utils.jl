@@ -16,6 +16,21 @@ function galahad_linear_solver(solver::String)
 end
 
 """
-    run_sif(::Val{:solver}, ::Val{:precision}, path_libsif::String, path_outsdif::String)
+    run_sif(solver, precision, path_libsif::String, path_outsdif::String)
+    run_sif(Val(solver), Val(precision), path_libsif::String, path_outsdif::String)
+
+In both calls, `solver` and `precision` are symbols.
 """
 function run_sif end
+
+run_sif(solver::Symbol, precision::Symbol, path_libsif::String, path_outsdif::String) = run_sif(Val(solver), Val(precision), path_libsif, path_outsdif)
+
+"""
+    run_qplib(solver, precision, path_qplib::String)
+    run_qplib(Val(solver), Val(precision), path_qplib::String)
+
+In both calls, `solver` and `precision` are symbols.
+"""
+function run_qplib end
+
+run_qplib(solver::Symbol, precision::Symbol, path_qplib::String) = run_qplib(Val(solver), Val(precision), path_qplib)
