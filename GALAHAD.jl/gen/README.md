@@ -121,7 +121,7 @@ the `main` function of `wrapper.jl`, in the variable `packages` of
 package is named `abcd`, insert the following line in `wrapper.jl`:
 
 ```julia
-(name == "all" || name == "abcd") && wrapper("abcd", ["$galahad/galahad_abcd.h"], optimized, run_sif=bool)
+(name == "all" || name == "abcd") && wrapper("abcd", ["$galahad/galahad_abcd.h"], optimized, run_sif=bool, run_qplib=bool)
 ```
 
 Please also check the variables `nonparametric_structures_float` and
