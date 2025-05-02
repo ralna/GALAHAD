@@ -76,7 +76,11 @@ meson test -C builddir --suite=C
 ```
 
 ### Python Interface
-To install the Python interface using the [Meson build system](https://mesonbuild.com):
+The precompiled Python interface for Linux and macOS can be installed from PyPI:
+```
+pip install galahad-optrove
+```
+Alternatively, to install the Python interface using the [Meson build system](https://mesonbuild.com):
 ```
 meson setup builddir -Dpythoniface=true -Dpython.install_env=auto
 meson compile -C builddir
