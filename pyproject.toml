@@ -5,6 +5,7 @@ requires = ['meson-python', 'numpy']
 [tool.meson-python.args]
 setup = ['-Dpythoniface=true', '-Dpython.install_env=auto', '-Dsingle=false', '-Dtests=false']
 install = ['--tags=runtime,python-runtime']
+allow-windows-internal-shared-libs = true
 
 [project]
 name = 'galahad-optrove'
