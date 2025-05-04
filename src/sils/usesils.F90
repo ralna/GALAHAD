@@ -642,7 +642,7 @@
 
 !  Print details of the primal and dual variables
 
-          WRITE( out, 2000 ) TRIM( solv )
+          WRITE( out, 2000 ) 'SILS'
           DO j = 1, 2
             IF ( j == 1 ) THEN
               ir = 1 ; ic = MIN( l, n )
@@ -695,7 +695,7 @@
             END IF
 
             WRITE( sfiledevice, "( /, ' Problem:    ', A10 )" ) pname
-            WRITE( sfiledevice, 2000 ) TRIM( solv )
+            WRITE( sfiledevice, 2000 ) 'SILS'
 
             DO i = 1, n
               WRITE( sfiledevice, 2040 ) i, VNAME( i ), prob%X( i )
