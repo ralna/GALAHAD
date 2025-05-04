@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 11:50 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -879,7 +879,7 @@
 
 !  Print details of the primal and dual variables
 
-        WRITE( out, 2090 )
+        WRITE( out, 2090 ) TRIM( solv )
         DO j = 1, 2
           IF ( j == 1 ) THEN
             ir = 1 ; ic = MIN( l, n )
@@ -992,7 +992,7 @@
           END IF
 
           WRITE( sfiledevice, 2250 ) pname, solv, fval
-          WRITE( sfiledevice, 2090 )
+          WRITE( sfiledevice, 2090 ) TRIM( solv )
 
           DO i = 1, n
             state = ' FREE'
@@ -1121,7 +1121,8 @@
                  '   status setup   solve   total', /,                         &
                  ' ------  ----------   -------   ',                           &
                  ' ------ -----    ----   -----  ' )
- 2090 FORMAT( /, ' Solution : ', /, '                              ',          &
+ 2090 FORMAT( /, ' Solver: ', A, /, ' Solution:', /,                           &
+                 '                              ',                             &
                  '        <------ Bounds ------> ', /                          &
                  '      # name       state    value   ',                       &
                  '    Lower       Upper       Dual ' )

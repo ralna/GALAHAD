@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-01 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-04-30 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -105,6 +105,7 @@
 
      INTEGER ( KIND = ip_ ) :: out  = 6
      INTEGER ( KIND = ip_ ) :: errout = 6
+     CHARACTER ( LEN =  6 ) :: solv = 'UGO   '
 
 !  ------------------ Open the specfile for ugo ----------------
 
@@ -259,9 +260,8 @@
 
 !  If required, write the solution
 
-     WRITE( errout, "( /, 'name              x             f             g ',  &
-    &  '         #f     time stat' )" )
-
+     WRITE( errout, "( /, 'SOLVER: ', A, //, 'name              x           ', &
+    &  '  f            g           #f     time stat' )" ) TRIM( solv )
      IF ( inform%status == GALAHAD_ok .OR.                                     &
           inform%status == GALAHAD_error_unbounded ) THEN
        WRITE( errout, 2020 ) nlp%pname, x, f, g,                               &

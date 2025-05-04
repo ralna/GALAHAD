@@ -1,4 +1,5 @@
-! THIS VERSION: GALAHAD 4.2 - 2024-01-19 AT 11:40 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 14:20 GMT.
+
 #include "galahad_modules.h"
 #include "cutest_routines.h"
 
@@ -512,7 +513,7 @@
 
 !  Print details of the primal and dual variables
 
-        WRITE( out, 2090 )
+        WRITE( out, 2090 ) 'EEQP'
         DO j = 1, 2
           IF ( j == 1 ) THEN
             ir = 1 ; ic = MIN( l, n )
@@ -640,8 +641,8 @@
                  '      # name          value     Multiplier ' )
  2050 FORMAT( I7, 1X, A10, 2ES12.4 )
  2060 FORMAT( '      . .           .......... ' )
- 2090 FORMAT( /, ' Solution: ', /,                                             &
-                 '      # name          value   ' )
+ 2090 FORMAT( ' Solver: ', A, /, ' Solution: ', /,                             &
+               '      # name          value   ' )
  2110 FORMAT( A10, 2( 0P, F8.2 ), 1( I6, 0P, F8.2 ), I6, 2ES8.1, I3 )
  2150 FORMAT( ' Allocation error, variable ', A8, ' status = ', I6 )
  2160 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )

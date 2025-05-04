@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-08-08 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-04-20 AT 14:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -72,6 +72,8 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: iter_advanced_max = 5
      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: exp_arg_tiny = LOG( TINY( one ) )
+     REAL ( KIND = rp_ ), PARAMETER :: exp_arg_huge = LOG( HUGE( one ) )
 
 !--------------------------------------
 !   G l o b a l   P a r a m e t e r s
@@ -365,7 +367,7 @@
        INTEGER ( KIND = ip_ ) :: branch = 1
        INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print
        INTEGER ( KIND = ip_ ) :: print_level, print_gap, jumpto, iter_advanced
-       INTEGER ( KIND = ip_ ) :: h_ne, j_ne, jtdzj_ne, np1, npm
+       INTEGER ( KIND = ip_ ) :: h_ne, j_ne, jtdzj_ne, np1, npm, npma
        INTEGER ( KIND = ip_ ) :: n_c_l, n_c_u, n_x_l, n_x_u, n_c
        INTEGER ( KIND = ip_ ) :: n_j_l, n_j_u, n_i_l, n_i_u, n_b
 
@@ -1123,7 +1125,7 @@
 !-----------------------------------------------
 
      INTEGER ( KIND = ip_ ) :: i, ii, ic, ir, j, k, l
-     REAL ( KIND = rp_ ) :: penalty_term
+     REAL ( KIND = rp_ ) :: penalty_term, exp_arg
      LOGICAL :: alive
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -2225,8 +2227,12 @@ stop
            penalty_term = zero
            DO j = 1, nlp%n
              IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-               data%Z_l( j ) = data%V_l( j ) *                                 &
-                 EXP( ( nlp%X_l( j ) - data%epf%X( j ) ) / data%NU_l( j ) )
+               exp_arg = ( nlp%X_l( j ) - data%epf%X( j ) ) / data%NU_l( j )
+               IF ( exp_arg > exp_arg_tiny ) THEN
+                 data%Z_l( j ) = data%V_l( j ) * EXP( exp_arg )
+               ELSE
+                 data%Z_l( j ) = zero
+               END IF
                nlp%Z( j ) = - data%Z_l( j )
                data%Dz( j ) = data%Z_l( j ) / data%NU_l( j )
                penalty_term = penalty_term + data%NU_l( j ) * data%Z_l( j )
@@ -2235,8 +2241,12 @@ stop
                data%Dz( j ) = zero
              END IF
              IF ( nlp%X_u( j ) <= control%infinity ) THEN
-               data%Z_u( j ) = data%V_u( j ) *                                 &
-                 EXP( ( data%epf%X( j ) - nlp%X_u( j ) ) / data%NU_u( j ) )
+               exp_arg = ( data%epf%X( j ) - nlp%X_u( j ) ) / data%NU_u( j )
+               IF ( exp_arg > exp_arg_tiny ) THEN
+                 data%Z_u( j ) = data%V_u( j ) * EXP( exp_arg )
+               ELSE
+                 data%Z_u( j ) = zero
+               END IF
                nlp%Z( j ) = nlp%Z( j ) + data%Z_u( j )
                data%Dz( j ) = data%Dz( j ) + data%Z_u( j ) / data%NU_u( j )
                penalty_term = penalty_term + data%NU_u( j ) * data%Z_u( j )
@@ -2247,8 +2257,12 @@ stop
 
            DO i = 1, nlp%m
              IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-               data%Y_l( i ) = data%W_l( i ) *                                 &
-                 EXP( ( nlp%C_l( i ) - nlp%C( i ) ) / data%MU_l( i ) )
+               exp_arg = ( nlp%C_l( i ) - nlp%C( i ) ) / data%MU_l( i )
+               IF ( exp_arg > exp_arg_tiny ) THEN
+                 data%Y_l( i ) = data%W_l( i ) * EXP( exp_arg )
+               ELSE
+                 data%Y_l( i ) = zero
+               END IF
                nlp%Y( i ) = - data%Y_l( i )
                data%Dy( i ) = data%Y_l( i ) / data%MU_l( i )
                penalty_term = penalty_term + data%MU_l( i ) * data%Y_l( i )
@@ -2257,8 +2271,12 @@ stop
                data%Dy( i ) = zero
              END IF
              IF ( nlp%C_u( i ) <= control%infinity ) THEN
-               data%Y_u( i ) = data%W_u( i ) *                                 &
-                 EXP( ( nlp%C( i ) - nlp%C_u( i ) ) / data%MU_u( i ) )
+               exp_arg = ( nlp%C( i ) - nlp%C_u( i ) ) / data%MU_u( i )
+               IF ( exp_arg > exp_arg_tiny ) THEN
+                 data%Y_u( i ) = data%W_u( i ) * EXP( exp_arg )
+               ELSE
+                 data%Y_u( i ) = zero
+               END IF
                nlp%Y( i ) = nlp%Y( i ) + data%Y_u( i )
                data%Dy( i ) = data%Dy( i ) + data%Y_u( i ) / data%MU_u( i )
                penalty_term = penalty_term + data%MU_u( i ) * data%Y_u( i )
@@ -2557,51 +2575,66 @@ stop
 !  compute minus the new residuals, - r(x,y,z)
 
        data%R( : nlp%n ) = - nlp%Gl( : nlp%n )
-       k = nlp%n + 1
+       data%npma = nlp%n
        DO i = 1, nlp%m
+
+!  only consider the active constraints, i.e., those for which y_l >= mu_l
+!  or y_u >= mu_u
+
          IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-           data%R( k ) = nlp%C( i ) - nlp%C_l( i ) +                           &
-             data%MU_l( i ) * ( LOG( data%Y_l( i ) ) - LOG( data%W_l( i ) ) )
-!write(6,*) k,  data%R( k ), 'c_l'
+           IF ( data%Y_l( i ) >= data%MU_l( i ) ) THEN
+             data%npma = data%npma + 1
+             data%R( data%npma ) = nlp%C( i ) - nlp%C_l( i ) +                 &
+               data%MU_l( i ) * ( LOG( data%Y_l( i ) ) - LOG( data%W_l( i ) ) )
+!write(6,*)   data%npma,  data%R( data%npma ), 'c_l'
 
-write(6,"( 'c-c_l, mu(logy-logw)', 2ES12.4 )") nlp%C( i ) - nlp%C_l( i ), &
-             data%MU_l( i ) * ( LOG( data%Y_l( i ) ) - LOG( data%W_l( i ) ) )
+write(6,"(   'c-c_l, mu(logy-logw)', 2ES12.4 )") nlp%C( i ) - nlp%C_l( i ), &
+               data%MU_l( i ) * ( LOG( data%Y_l( i ) ) - LOG( data%W_l( i ) ) )
 
-           k = k + 1
+           END IF
          END IF
          IF ( nlp%C_u( i ) <= control%infinity ) THEN
-           data%R( k ) = nlp%C_u( i ) - nlp%C( i ) +                           &
-             data%MU_u( i ) * ( LOG( data%Y_u( i ) ) - LOG( data%W_u( i ) ) )
-!write(6,*) k,  data%R( k ), 'c_u'
-           k = k + 1
+           IF ( data%Y_u( i ) >= data%MU_u( i ) ) THEN
+           data%npma = data%npma + 1
+             data%R( data%npma ) = nlp%C_u( i ) - nlp%C( i ) +                 &
+               data%MU_u( i ) * ( LOG( data%Y_u( i ) ) - LOG( data%W_u( i ) ) )
+!write(6,*) data%npma,  data%R( data%npma ), 'c_u'
+           END IF
          END IF
        END DO
 
        DO j = 1, nlp%n
+
+!  only consider the active bounds, i.e., those for which z_l >= nu_l
+!  or z_u >= nu_u
+
          IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-           data%R( k ) = nlp%X( j ) - nlp%X_l( j ) +                           &
-            data%NU_l( j ) * ( LOG( data%Z_l( j ) ) - LOG( data%V_l( j ) ) )
-!write(6,*) k,  data%R( k ), 'x_l'
+           IF ( data%Z_l( j ) >= data%NU_l( j ) ) THEN
+             data%npma = data%npma + 1
+             data%R( data%npma ) = nlp%X( j ) - nlp%X_l( j ) +                 &
+               data%NU_l( j ) * ( LOG( data%Z_l( j ) ) - LOG( data%V_l( j ) ) )
+!write(6,*) data%npma,  data%R( data%npma ), 'x_l'
 !write(6,*) nlp%X( j ), nlp%X_l( j ), &
 !            data%NU_l( j ), LOG( data%Z_l( j ) ), LOG( data%V_l( j ) ), &
 !            data%Z_l( j ), data%V_l( j )
-
-
 write(6,"( 'x-x_l, mu(logz-logv)', 2ES12.4 )") nlp%X( j ) - nlp%X_l( j ), &
             data%NU_l( j ) * ( LOG( data%Z_l( j ) ) - LOG( data%V_l( j ) ) )
 write(6,"( 'z_l, ve^(-x/mu), z_l/mu', 3ES12.4 )") data%Z_l( j ), &
             data%V_l( j ) * EXP( - (nlp%X( j ) - nlp%X_l( j ) )/data%NU_l(j)), &
             data%Z_l( j ) / data%NU_l( j )
-           k = k + 1
+           END IF
          END IF
          IF ( nlp%X_u( j ) <= control%infinity ) THEN
-           data%R( k ) = nlp%X_u( j )  - nlp%X( j ) +                          &
-            data%NU_u( j ) * ( LOG( data%Z_u( j ) ) - LOG( data%V_u( j ) ) )
-!write(6,*) k,  data%R( k ), 'x_u'
-           k = k + 1
+           IF ( data%Z_u( j ) >= data%NU_u( j ) ) THEN
+             data%npma = data%npma + 1
+             data%R( data%npma ) = nlp%X_u( j )  - nlp%X( j ) +                &
+               data%NU_u( j ) * ( LOG( data%Z_u( j ) ) - LOG( data%V_u( j ) ) )
+!write(6,*) data%npma,  data%R( data%npma ), 'x_u'
+           END IF
          END IF
        END DO
-       data%rnorm = TWO_NORM( data%R( : data%npm ) )
+       data%rnorm = TWO_NORM( data%R( : data%npma ) )
+
 write(6,"( ' ||r(n+m)|| ||r(n)|| start = ', 3ES11.4 )" ) data%rnorm, &
   TWO_NORM( data%R( : nlp%n ) ), data%control%advanced_start
 
@@ -2617,6 +2650,7 @@ write(6,"( ' ||r(n+m)|| ||r(n)|| start = ', 3ES11.4 )" ) data%rnorm, &
        data%iter_advanced = 0
   410  CONTINUE
 !write(6,*) ' iter = ', data%iter_advanced
+
 !  obtain the Hessian of the Lagrangian H(x,y)
 
        IF ( data%reverse_hl ) THEN

@@ -724,6 +724,15 @@ elif [[ $2 == 'tr2a' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec tr2a update
   [[ ! -L RUNTR2A.SPC ]] && ln -s ~/.galahad/specs/RUNTR2A.SPC RUNTR2A.SPC
 
+# agd
+
+elif [[ $2 == 'agd' ]]; then
+  RUNMAIN=$GALOBJ/runagd_sif_$PRECIS.o
+# PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNAGD.SPC ]] && $GALOBJ/buildspec agd
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec agd update
+  [[ ! -L RUNAGD.SPC ]] && ln -s ~/.galahad/specs/RUNAGD.SPC RUNAGD.SPC
+
 # bgo
 
 elif [[ $2 == 'bgo' ]]; then

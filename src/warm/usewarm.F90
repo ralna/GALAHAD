@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 14:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -737,7 +737,7 @@
 
         IF ( printm ) THEN
 !       IF ( .TRUE. ) THEN
-          WRITE( out, 2090 )
+          WRITE( out, 2090 ) TRIM( solv )
           DO i = 1, n
             state = ' FREE'
             IF ( ABS( prob%X  ( i ) - prob%X_l( i ) ) < ten * stopr )          &
@@ -819,7 +819,7 @@
 
           IF ( printm ) THEN
 !         IF ( .TRUE. ) THEN
-            WRITE( out, 2090 )
+            WRITE( out, 2090 ) TRIM( solv )
             DO i = 1, n
               state = ' FREE'
               IF ( ABS( prob%X  ( i ) - prob%X_l( i ) ) < ten * stopr )        &
@@ -910,7 +910,7 @@
 
           IF ( printm ) THEN
 !         IF ( .TRUE. ) THEN
-            WRITE( out, 2090 )
+            WRITE( out, 2090 ) TRIM( solv )
             DO i = 1, n
               state = ' FREE'
               IF ( ABS( prob%X  ( i ) - prob%X_l( i ) ) < ten * stopr )        &
@@ -1109,7 +1109,7 @@
 
 !  Print details of the primal and dual variables
 
-        WRITE( out, 2090 )
+        WRITE( out, 2090 ) TRIM( solv )
         DO j = 1, 2
           IF ( j == 1 ) THEN
             ir = 1 ; ic = MIN( l, n )
@@ -1212,7 +1212,7 @@
           END IF
 
           WRITE( sfiledevice, 2250 ) p_name, solv, qfval
-          WRITE( sfiledevice, 2090 )
+          WRITE( sfiledevice, 2090 ) TRIM( solv )
 
           DO i = 1, n
             state = ' FREE'
@@ -1347,7 +1347,8 @@
                  ' -------     ------  ---------- --     ---',                 &
                  2( ' --  ------    ---' ) )
  2080 FORMAT( A10, ES10.2, ES11.3, I3, 0P, F8.2, 2( I3, I7, F8.2 ) )
- 2090 FORMAT( /, ' Solution : ', /, '                              ',          &
+ 2090 FORMAT( /, ' Solver: ', A, /, ' Solution:', /,                           &
+                 '                              ',                             &
                  '        <------ Bounds ------> ', /                          &
                  '      # name       state    value   ',                       &
                  '    Lower       Upper       Dual ' )

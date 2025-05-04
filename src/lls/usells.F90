@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 12:50 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -411,7 +411,7 @@
 
 !  Print details of the primal and dual variables
 
-        WRITE( out, 2050 )
+        WRITE( out, 2050 ) 'LLS'
         DO j = 1, 2
           IF ( j == 1 ) THEN
             ir = 1 ; ic = MIN( l, n )
@@ -444,7 +444,7 @@
             pname, LLS_inform%obj, SQRT( DOT_PRODUCT(  prob%X, prob%X ) ),     &
            LLS_control%preconditioner, LLS_inform%time%total, LLS_inform%cg_iter
 
-          WRITE( sfiledevice, 2050 )
+          WRITE( sfiledevice, 2050 ) 'LLS'
 
           DO i = 1, n
             WRITE( sfiledevice, 2030 ) i, VNAME( i ), prob%X( i )
@@ -503,12 +503,11 @@
                  ' Iterations     = ', I0 )
  2010 FORMAT( A10, 2( 0P, F8.2 ), I6, 0P, F8.2, I6, 2ES8.1, I3 )
  2020 FORMAT( A10, '       -       -', 2( '     -       -' ), I6 )
-
  2030 FORMAT( I7, 1X, A10, ES12.4 )
  2040 FORMAT( '      . .           ..........' )
- 2050 FORMAT( /, ' Solution : ', /, '      # name          value   ' )
+ 2050 FORMAT( /, ' Solver: ', A, /, ' Solution: ', /,                          &
+               '      # name          value   ' )
  2060 FORMAT( ' Exit status = ', I0 )
-
  2150 FORMAT( ' Allocation error, variable ', A8, ' status = ', I6 )
  2160 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 13:55 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -265,7 +265,7 @@
        IF ( fulsol ) l = n
        IF ( control%print_level >= 10 ) l = n
 
-       WRITE( errout, 2000 )
+       WRITE( errout, 2000 ) TRIM( solv )
        DO j = 1, 2
          IF ( j == 1 ) THEN
            ir = 1 ; ic = MIN( l, n )
@@ -304,7 +304,7 @@
          write( out, 2030 ) iores, glrt_sfilename ; STOP ; END IF
        WRITE( glrt_sfiledevice, "( /, ' Problem:    ', A10, /,' Solver :   ',  &
       &       A, /, ' Objective:', ES24.16 )" ) pname, solv, f
-       WRITE( glrt_sfiledevice, 2000 )
+       WRITE( glrt_sfiledevice, 2000 ) TRIM( solv )
        DO i = 1, n
          WRITE( glrt_sfiledevice, 2020 ) i, VNAMES( i ), X( i )
        END DO
@@ -322,7 +322,8 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( /, ' Solution: ', /, '      # name          value   ' )
+ 2000 FORMAT( ' Solver: ', A, /, ' Solution: ', /,                             &
+               '      # name          value   ' )
  2010 FORMAT( 6X, '. .', 9X, ( 2X, 10( '.' ) ) )
  2020 FORMAT( I7, 1X, A10, ES12.4 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )

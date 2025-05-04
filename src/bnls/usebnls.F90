@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-07-14 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 14:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -405,7 +405,7 @@
       IF ( fulsol ) l = nlp%n
       IF ( control%print_level >= 10 ) l = nlp%n
 
-      WRITE( errout, 2000 )
+      WRITE( errout, 2000 ) TRIM( solv )
       DO j = 1, 2
         IF ( j == 1 ) THEN
           ir = 1 ; ic = MIN( l, nlp%n )
@@ -527,7 +527,8 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( ' Solution: ', /,'                        ',                     &
+ 2000 FORMAT( ' Solver: ', A, /,                                               &
+              ' Solution: ', /, '                        ',                    &
               '        <------ Bounds ------> ', /                             &
               '      # name          value   ',                                &
               '    Lower       Upper       Dual ' )

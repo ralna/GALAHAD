@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2025-01-08 AT 15:40 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 14:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -705,7 +705,7 @@
 
 !  print details of the primal and dual variables
 
-          WRITE( out, 2000 )
+          WRITE( out, 2000 ) 'SLS'
           DO j = 1, 2
             IF ( j == 1 ) THEN
               ir = 1 ; ic = MIN( l, n )
@@ -758,7 +758,7 @@
             END IF
 
             WRITE( sfiledevice, "( /, ' Problem:    ', A10 )" ) pname
-            WRITE( sfiledevice, 2000 )
+            WRITE( sfiledevice, 2000 ) 'SLS'
 
             DO i = 1, n
               WRITE( sfiledevice, 2040 ) i, VNAME( i ), prob%X( i )
@@ -812,8 +812,8 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( /, ' Solution : ', /,                                            &
-                 '      # name          value   ' )
+ 2000 FORMAT( ' Solver: ', A, /, ' Solution: ', /,                             &
+               '      # name          value   ' )
  2010 FORMAT( '      . .           ..........' )
  2020 FORMAT( /, ' Constraints : ', /,                                         &
                  '      # name          value   ' )

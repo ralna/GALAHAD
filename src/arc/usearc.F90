@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-01 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-04-30 AT 09:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -313,7 +313,7 @@
       IF ( fulsol ) l = nlp%n
       IF ( control%print_level >= 10 ) l = nlp%n
 
-      WRITE( errout, 2000 )
+      WRITE( errout, 2000 ) TRIM( solv )
       DO j = 1, 2
         IF ( j == 1 ) THEN
           ir = 1 ; ic = MIN( l, nlp%n )
@@ -375,7 +375,7 @@
         WRITE( sfiledevice, "( /, ' Problem:    ', A10, /, ' Solver :   ', A,  &
        &       /, ' Objective:', ES24.16 )" ) nlp%pname, solv, inform%obj
 
-        WRITE( sfiledevice, 2000 )
+        WRITE( sfiledevice, 2000 ) TRIM( solv )
         DO i = 1, nlp%n
           WRITE( sfiledevice, 2020 ) i, nlp%VNAMES( i ), nlp%X( i ),           &
             nlp%X_l( i ), nlp%X_u( i ), nlp%G( i )
@@ -429,7 +429,8 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( ' Solution: ', /,'                        ',                     &
+ 2000 FORMAT( ' Solver: ', A, /,                                               &
+              ' Solution: ', /, '                        ',                    &
               '        <------ Bounds ------> ', /                             &
               '      # name          value   ',                                &
               '    Lower       Upper       Dual ' )
