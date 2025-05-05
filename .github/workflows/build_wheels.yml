@@ -51,7 +51,7 @@ jobs:
 
           # test built wheels
           CIBW_TEST_REQUIRES: numpy
-          CIBW_TEST_COMMAND: python -c 'from galahad import ugo; options = ugo.initialize(); ugo.terminate()'
+          CIBW_TEST_COMMAND: python -c "from galahad import ugo; options = ugo.initialize(); ugo.terminate()"
 
       - uses: actions/upload-artifact@v4
         with:
