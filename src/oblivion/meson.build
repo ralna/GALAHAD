@@ -23,3 +23,4 @@
 # subdir('tr2a')
 # subdir('trimsqp')
 # subdir('trtn')
+# subdir('agd')

@@ -3,7 +3,7 @@ PRESOLVE
 
 .. module:: galahad.presolve
 
-.. include:: presolve_intro.rst
+.. include:: presolve_intro_python.rst
 
 functions
 ---------

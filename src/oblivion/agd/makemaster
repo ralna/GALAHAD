@@ -1,0 +1,68 @@
+#  Main body of the installation makefile for the GALAHAD AGD package
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2023-01-29
+
+#  include standard GALAHAD makefile defaults before package-specifics
+
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = agd
+PACKAGE = AGD
+
+#  auxililiary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 make_smt \
+               make_space make_roots make_norms make_rand make_sha \
+               make_userdata
+
+#  other packages that depend on package
+
+DEPENDS =
+
+#  auxiliary packages that the C interface to the current package depends
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = make_ciface_common
+
+#  other C interface packages that depend on current interface package
+
+CDEPENDS =
+
+#  auxililiary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test_)
+
+TESTS = test_full test_cutest
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = ALLINITU.SIF
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+
+include $(GALAHAD)/src/makedefs/intermediaries

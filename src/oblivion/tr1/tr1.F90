@@ -1476,7 +1476,7 @@ data%control%SHA_control%print_level = 0
 !  print one-line summary
 
        IF ( data%printi ) THEN
-          IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
+         IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
            WRITE( data%out, 2090 ) prefix
            WRITE( data%out, 2100 ) prefix
          END IF

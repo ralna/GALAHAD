@@ -31,10 +31,6 @@ $y^u$, as well as the $n$-dimensional vectors $x^l$ and $x^u$
 are given.  Any component of $c^l$, $c^u$, $x^l$, $x^u$,
 $y^l$, $y^u$, $z^l$ or $z^u$ may be infinite.
 
-**Currently only the options and inform dictionaries are exposed**; these are 
-provided and used by other GALAHAD packages with Python interfaces.
-Please contact us if you would like full functionality!
-
 See Section 4 of $GALAHAD/doc/presolve.pdf for additional details.
 
 method

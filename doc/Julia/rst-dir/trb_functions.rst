@@ -321,7 +321,7 @@ function calls.
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of ``g``, j = 1, ... , n, contains $g_j$.
+		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of ``g``, j = 1, ... , n, contains $g_j$. On successful termination, ``g`` will equivalently hold the optimal dual variables, $z$.
 
 	*
 		- ne
@@ -518,7 +518,7 @@ information is available by function calls.
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of ``g``, j = 1, ... , n, contains $g_j$.
+		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of ``g``, j = 1, ... , n, contains $g_j$. On successful termination, ``g`` will equivalently hold the optimal dual variables, $z$.
 
 	*
 		- eval_f
@@ -789,7 +789,7 @@ returning to the calling procedure
 	*
 		- g
 
-		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of ``g``, j = 1, ... , n, contains $g_j$.
+		- is a one-dimensional array of size n and type T that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of ``g``, j = 1, ... , n, contains $g_j$. On successful termination, ``g`` will equivalently hold the optimal dual variables, $z$.
 
 	*
 		- ne
