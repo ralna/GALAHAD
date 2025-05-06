@@ -46,12 +46,12 @@ jobs:
           CIBW_BEFORE_ALL_MACOS: brew install openblas
 
           # cibuildwheel doesn't yet ship a default repair command for Windows
-          #CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
-          #CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w {dest_dir} {wheel}"
+          CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -v --ignore-existing -w {dest_dir} {wheel}"
 
           # test built wheels
-          #CIBW_TEST_REQUIRES: numpy
-          #CIBW_TEST_COMMAND: python -c "from galahad import ugo; options = ugo.initialize(); ugo.terminate()"
+          CIBW_TEST_REQUIRES: numpy
+          CIBW_TEST_COMMAND: python -c "from galahad import ugo; options = ugo.initialize(); ugo.terminate()"
 
       - uses: actions/upload-artifact@v4
         with:
