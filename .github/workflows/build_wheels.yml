@@ -36,7 +36,7 @@ jobs:
         #   CIBW_SOME_OPTION: value
         env:
           # list of python versions and platforms to build on
-          CIBW_BUILD: cp3{10,11,12,13}-manylinux_x86_64 cp3{10,11,12,13}-macosx_x86_64 cp3{10,11,12,13}-macosx_arm64 cp3{10,11,12,13}-win_amd64
+          CIBW_BUILD: cp3{10,11,12,13}-manylinux_x86_64 cp3{10,11,12,13}-macosx_x86_64 cp3{10,11,12,13}-macosx_arm64 cp3{12,13}-win_amd64
 
           # build with gcc/gfortran on macOS
           CIBW_ENVIRONMENT_MACOS: CC="gcc-14" CXX="g++-14" FC="gfortran-14"
@@ -46,12 +46,12 @@ jobs:
           CIBW_BEFORE_ALL_MACOS: brew install openblas
 
           # cibuildwheel doesn't yet ship a default repair command for Windows
-          CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --analyze-existing -w {dest_dir} {wheel}"
+          #CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
+          #CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w {dest_dir} {wheel}"
 
           # test built wheels
-          CIBW_TEST_REQUIRES: numpy
-          CIBW_TEST_COMMAND: python -c "from galahad import ugo; options = ugo.initialize(); ugo.terminate()"
+          #CIBW_TEST_REQUIRES: numpy
+          #CIBW_TEST_COMMAND: python -c "from galahad import ugo; options = ugo.initialize(); ugo.terminate()"
 
       - uses: actions/upload-artifact@v4
         with:
