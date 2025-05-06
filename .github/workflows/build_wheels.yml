@@ -47,7 +47,7 @@ jobs:
 
           # cibuildwheel doesn't yet ship a default repair command for Windows
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --add-path {libdir} -w {dest_dir} {wheel}"
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --analyze-existing -w {dest_dir} {wheel}"
 
           # test built wheels
           CIBW_TEST_REQUIRES: numpy
