@@ -36,7 +36,7 @@ jobs:
         #   CIBW_SOME_OPTION: value
         env:
           # list of python versions and platforms to build on
-          CIBW_BUILD: cp3{10,11,12,13}-manylinux_x86_64 cp3{10,11,12,13}-macosx_x86_64 cp3{10,11,12,13}-macosx_arm64 cp3{12,13}-win_amd64
+          CIBW_BUILD: cp3{10,11,12,13}-manylinux_x86_64 cp3{10,11,12,13}-macosx_x86_64 cp3{10,11,12,13}-macosx_arm64 cp3{10,11,12,13}-win_amd64
 
           # build with gcc/gfortran on macOS
           CIBW_ENVIRONMENT_MACOS: CC="gcc-14" CXX="g++-14" FC="gfortran-14"
@@ -47,7 +47,7 @@ jobs:
 
           # cibuildwheel doesn't yet ship a default repair command for Windows
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -v --ignore-existing -w {dest_dir} {wheel}"
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --ignore-existing -w {dest_dir} {wheel}"
 
           # test built wheels
           CIBW_TEST_REQUIRES: numpy
@@ -62,7 +62,7 @@ jobs:
     needs: build_wheels
     runs-on: ubuntu-latest
     # To publish when a GitHub Release is created, use the following rule:
-    if: github.event_name == 'release' && github.event.action == 'published'
+    #if: github.event_name == 'release' && github.event.action == 'published'
     steps:
       - uses: actions/download-artifact@v4
         with:
