@@ -1,3 +1,10 @@
+# SPDX-FileCopyrightText: 2024 The meson-python developers
+#
+# SPDX-License-Identifier: MIT
+
+import os
+import sys
+
 def _append_to_sharedlib_load_path():
     """Ensure the shared libraries in this package can be loaded on Windows.
 
