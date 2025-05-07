@@ -643,8 +643,10 @@ if build_pythoniface and build_ciface and build_double and (not int64)
     check : true
   ).stdout().strip()
 
-  # install python metadata
-  install_data(files('doc/PYTHON_METADATA'), install_dir : join_paths(py.get_install_dir(),'galahad-'+meson.project_version()+'.dist-info'))
+  # patch PATH on windows to allow libgalahad_double.dll to be found
+  install_sources(files('__init__.py'),
+                  subdir : 'galahad',                
+                  pure: true)
 
   # compile and install python interfaces
   foreach interface: libgalahad_python_src
