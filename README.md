@@ -15,8 +15,17 @@ Help files are provided for MATLAB functions.
 
 ## Installation
 
-### Precompiled library
-We provide a precompiled GALAHAD library in the [releases tab](https://github.com/ralna/galahad/releases/latest/) for Linux, macOS (Intel & Silicon) and Windows. 
+### Precompiled Fortran/C library
+We provide a precompiled GALAHAD library in the [releases tab](https://github.com/ralna/galahad/releases/latest/) for Linux, macOS (Intel & Silicon), and Windows. 
+
+### Precompiled Julia Interface
+We provide a precompiled Julia interface for most platforms, please see [GALAHAD.jl](https://github.com/ralna/GALAHAD/tree/master/GALAHAD.jl) and the associated documentation.
+
+### Precompiled Python Interface
+We provide a precompiled Python interface for Linux, macOS (Intel & Silicon), and Windows that [can be installed from PyPI](https://pypi.org/project/galahad-optrove/):
+```
+pip install galahad-optrove
+```
 
 ### Installation from source 
 GALAHAD can be installed from source using the [Meson build system](https://mesonbuild.com) (all commands below are to be run from the top of the source tree):
@@ -66,7 +75,7 @@ For more details, refer to the file [meson_options.txt](https://github.com/ralna
 **Note:** only the shared libraries of CUTEst are supported when compiling GALAHAD with Meson.
 Please follow the [instructions](https://github.com/ralna/CUTEst?tab=readme-ov-file#new-approach-with-shared-libraries-and-trampolines) to set up CUTEst accordingly.
 
-### C Interface
+#### C Interface
 To install the C interface using the [Meson build system](https://mesonbuild.com):
 ```
 meson setup builddir -Dciface=true
@@ -75,12 +84,8 @@ meson install -C builddir
 meson test -C builddir --suite=C
 ```
 
-### Python Interface
-The precompiled Python interface for Linux and macOS can be installed from PyPI:
-```
-pip install galahad-optrove
-```
-Alternatively, to install the Python interface using the [Meson build system](https://mesonbuild.com):
+#### Python Interface
+To install the Python interface using the [Meson build system](https://mesonbuild.com):
 ```
 meson setup builddir -Dpythoniface=true -Dpython.install_env=auto
 meson compile -C builddir
@@ -88,15 +93,15 @@ meson install -C builddir
 meson test -C builddir --suite=Python
 ```
 
-### Julia Interface
+#### Julia Interface
 Please see [GALAHAD.jl](https://github.com/ralna/GALAHAD/tree/master/GALAHAD.jl) and the associated documentation.
 
-### MATLAB Interface
+#### MATLAB Interface
 Please see [README.matlab](https://github.com/ralna/GALAHAD/blob/master/doc/README.matlab) and the instructions provided there.
 
 ## Integrated installation via make
 
-GALAHAD can also be installed via the "make" command as part of the Optrove 
+GALAHAD can also be installed via the `make` command as part of the Optrove 
 optimization eco-system that also includes 
 [CUTEst](https://github.com/ralna/CUTEst), 
 [SIFDecode](https://github.com/ralna/SIFDecode) and
