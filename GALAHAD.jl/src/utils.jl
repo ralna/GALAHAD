@@ -30,6 +30,11 @@ run_sif(solver::Symbol, precision::Symbol, path_libsif::String, path_outsdif::St
     run_qplib(Val(solver), Val(precision), path_qplib::String)
 
 In both calls, `solver` and `precision` are symbols.
+
+The supported solvers are: `:bqp`, `:bqpb`, `:ccqp`, `:cdqp`, `:cqp`, `:dlp`, `:dqp`,
+`:lpa`, `:lpb`, `:qp`, `:qpa`, `:qpb`, and `:qpc`.
+
+The supported precisions are: `:single`, `:double`, and `:quadruple`.
 """
 function run_qplib end
 
