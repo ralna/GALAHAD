@@ -204,7 +204,7 @@ runs:
         fi
 
     - name: Install MUMPS
-      if: inputs.os != 'windows-latest' && inputs.compiler == 'gcc'
+      if: inputs.os != 'windows-latest' && inputs.os !='self-hosted' && inputs.compiler == 'gcc'
       shell: bash
       run: |
         cd ..
