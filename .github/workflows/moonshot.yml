@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['self-hosted']
+        os: ['ubuntu-latest']
         arch: ['x64']
         compiler: ['gcc']
         version: ['13']
