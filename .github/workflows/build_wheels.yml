@@ -16,7 +16,7 @@ jobs:
       matrix:
         # Note: builds on these are backward compatible
         # macos-13 is an intel runner, macos-14 is apple silicon
-        os: [ubuntu-latest, macos-13, macos-14]
+        os: [ubuntu-latest, macos-13, macos-14, windows-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -53,11 +53,11 @@ jobs:
 
           # cibuildwheel doesn't yet ship a default repair command for Windows
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w {dest_dir} {wheel}"
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --ignore-existing -w {dest_dir} {wheel}"
 
           # test built wheels
           CIBW_TEST_REQUIRES: numpy
-          CIBW_TEST_COMMAND: python -c 'from galahad import ugo; options = ugo.initialize(); ugo.terminate()'
+          CIBW_TEST_COMMAND: python -c "from galahad import ugo; options = ugo.initialize(); ugo.terminate()"
 
       - uses: actions/upload-artifact@v4
         with:
