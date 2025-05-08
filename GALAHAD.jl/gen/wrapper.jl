@@ -19,7 +19,9 @@ function run_qplib_wrapper(name::String, precision::String)
 str = "const run$(name)_qplib_$(precision) = joinpath(galahad_bindir, \"run$(name)_qplib_$(precision)\$(exeext)\")
 
 function run_qplib(::Val{:$name}, ::Val{:$precision}, path_qplib::String)
-  run(`\$run$(name)_qplib_$precision \$path_qplib`)
+  open(path_qplib, \"r\") do io
+    run(`\$run$(name)_qplib_$precision`, stdin = io)
+  end
 end
 "
 return str
