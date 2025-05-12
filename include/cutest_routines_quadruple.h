@@ -265,3 +265,5 @@
 #define CUTEST_uvartype_threadsafe_r CUTEST_uvartype_threadsafe_q
 #define CUTEST_varnames_r CUTEST_varnames_q
 #define CUTEST_varnames_threadsafe_r CUTEST_varnames_threadsafe_q
+#define CUTEST_load_routines_r CUTEST_load_routines_q
+#define CUTEST_unload_routines_r CUTEST_unload_routines_q
