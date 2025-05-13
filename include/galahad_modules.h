@@ -33,6 +33,17 @@
 #endif
 
 #ifdef REAL_32
+#define GALAHAD_load_routines_r galahad_load_routines_s
+#define GALAHAD_unload_routines_r galahad_unload_routines_s
+#elif REAL_128
+#define GALAHAD_load_routines_r galahad_load_routines_q
+#define GALAHAD_unload_routines_r galahad_unload_routines_q
+#else
+#define GALAHAD_load_routines_r galahad_load_routines
+#define GALAHAD_unload_routines_r galahad_unload_routines
+#endif
+
+#ifdef REAL_32
 #define mumps_struc smumps_struc
 #define MUMPS_STRUC SMUMPS_STRUC
 #ifdef INTEGER_64
