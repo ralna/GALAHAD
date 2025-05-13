@@ -106,7 +106,7 @@ dependencies = [
     # Dependency(PackageSpec(name="MUMPS_seq_jll", uuid="d7ed1dd3-d0ae-5e8e-bfb4-87a502085b8d"), compat="=5.4.1"),
     Dependency(PackageSpec(url="https://github.com/amontoison/MUMPS_seq_jll.jl", rev="main")),
     Dependency(PackageSpec(name="HSL_jll", uuid="017b0a0e-03f4-516a-9b91-836bbd1904dd")),
-    Dependency(PackageSpec(name="CUTEst_jll", uuid="1b53aba6-35b6-5f92-a507-53c67d53f819"), compat="2.5.1"),
+    Dependency(PackageSpec(name="CUTEst_jll", uuid="1b53aba6-35b6-5f92-a507-53c67d53f819"), compat="2.5.2"),
 ]
 
 # Build the tarballs, and possibly a `build.jl` as well.
