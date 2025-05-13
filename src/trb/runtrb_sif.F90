@@ -2,17 +2,6 @@
 
 #include "galahad_modules.h"
 
-#ifdef REAL_32
-#define galahad_load_routines_r galahad_load_routines_s
-#define galahad_unload_routines_r galahad_unload_routines_s
-#elif REAL_128
-#define galahad_load_routines_r galahad_load_routines_q
-#define galahad_unload_routines_r galahad_unload_routines_q
-#else
-#define galahad_load_routines_r galahad_load_routines
-#define galahad_unload_routines_r galahad_unload_routines
-#endif
-
 !-*-*-*-*-*-*-  G A L A H A D   R U N T R B _ S I F  *-*-*-*-*-*-*-*-
 
 !  Nick Gould, Dominique Orban and Philippe Toint, for GALAHAD productions
@@ -53,7 +42,7 @@
       WRITE(*,*) 'Using OUTSDIF file:', prbdat
    END IF
 
-   CALL galahad_load_routines_r(TRIM(libsif_path) // C_NULL_CHAR)
+   CALL GALAHAD_load_routines_r(TRIM(libsif_path) // C_NULL_CHAR)
 #endif
 
 !  Open the data input file
@@ -78,7 +67,7 @@
 !  Unload the shared library
 
 #ifdef CUTEST_SHARED
-   CALL galahad_unload_routines_r()
+   CALL GALAHAD_unload_routines_r()
 #endif
 
    STOP
