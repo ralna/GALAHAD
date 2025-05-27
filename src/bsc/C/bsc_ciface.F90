@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-05-25 AT 09:00 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -23,8 +23,9 @@
         f_bsc_full_data_type => BSC_full_data_type,                            &
         f_bsc_initialize => BSC_initialize,                                    &
         f_bsc_read_specfile => BSC_read_specfile,                              &
-!       f_bsc_import => BSC_import,                                            &
-!       f_bsc_reset_control => BSC_reset_control,                              &
+        f_bsc_import => BSC_import,                                            &
+        f_bsc_reset_control => BSC_reset_control,                              &
+        f_bsc_form_s => BSC_form_s,                                            &
         f_bsc_information => BSC_information,                                  &
         f_bsc_terminate => BSC_terminate
 
@@ -277,6 +278,138 @@
   RETURN
 
   END SUBROUTINE bsc_read_specfile
+
+!  ---------------------------------
+!  C interface to fortran bsc_inport
+!  ---------------------------------
+
+  SUBROUTINE bsc_import( ccontrol, cdata, status, m, n,                        &
+                         catype, ane, arow, acol, aptr, sne ) BIND( C )
+  USE GALAHAD_BSC_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+  TYPE ( bsc_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: sne
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
+
+!  local variables
+
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
+  TYPE ( f_bsc_control_type ) :: fcontrol
+  TYPE ( f_bsc_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
+
+!  copy control and inform in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  convert C string to Fortran string
+
+  fatype = cstr_to_fchar( catype )
+
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
+!  import the problem data into the required BSC structure
+
+  CALL f_bsc_import( fcontrol, fdata, status, m, n,                            &
+                     fatype, ane, arow, acol, aptr, sne )
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+  RETURN
+
+  END SUBROUTINE bsc_import
+
+!  ----------------------------------------
+!  C interface to fortran bsc_reset_control
+!  ----------------------------------------
+
+  SUBROUTINE bsc_reset_control( ccontrol, cdata, status ) BIND( C )
+  USE GALAHAD_BSC_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+  TYPE ( bsc_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_bsc_control_type ) :: fcontrol
+  TYPE ( f_bsc_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
+!  import the control parameters into the required structure
+
+  CALL f_bsc_reset_control( fcontrol, fdata, status )
+  RETURN
+
+  END SUBROUTINE bsc_reset_control
+
+!  ---------------------------------
+!  C interface to fortran bsc_form_s
+!  ---------------------------------
+
+  SUBROUTINE bsc_form_s( cdata, status, m, n, ane, aval,                       &
+                         sne, srow, scol, sptr, sval, d ) BIND( C )
+  USE GALAHAD_BSC_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane, sne
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( sne ) :: srow
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( sne ) :: scol
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), OPTIONAL, DIMENSION( m + 1 ) :: sptr
+  REAL ( KIND = rpc_ ), INTENT( OUT ), OPTIONAL, DIMENSION( sne ) :: sval
+  REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( n ) :: d
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_bsc_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the qp
+
+  CALL f_bsc_form_s( fdata, status, aval, srow, scol, sval,                    &
+                     D = d, S_ptr = sptr )
+  RETURN
+
+  END SUBROUTINE bsc_form_s
 
 !  --------------------------------------
 !  C interface to fortran bsc_information

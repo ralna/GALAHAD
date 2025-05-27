@@ -1003,7 +1003,6 @@
 !  Obtain the scaled norm of the residual
 
   200 CONTINUE
-      write(6,*) ' r ', r
       data%rminvr = DOT_PRODUCT( R, VECTOR )
       IF ( ABS( data%rminvr ) < control%rminvr_zero ) data%rminvr = zero
       IF ( data%rminvr < zero ) THEN
@@ -1428,7 +1427,6 @@
 
 !  Update the residual
 
-write(6,*) ' alpha ', data%alpha
       R = R + data%alpha * VECTOR
 
 !  =========================

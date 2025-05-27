@@ -1,7 +1,7 @@
 #  GALAHAD makefile intermediaries
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-11-19
+#  This version: 2025-05-27
 
 ########################
 #  basic packages alone
@@ -183,6 +183,12 @@ make_dummy:
 	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummys_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
+
+make_epf:
+	( cd $(GALAHAD)/src/forthcoming/epf ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) epf.o \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/forthcoming/epf )
 
 make_eqp:
 	( cd $(GALAHAD)/src/eqp ; \
@@ -454,6 +460,12 @@ make_qpd:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpd.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpd )
 
+make_qpf:
+	( cd $(GALAHAD)/src/forthcoming/qpf ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpf.o \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/forthcoming/qpf )
+
 make_qpp:
 	( cd $(GALAHAD)/src/qpp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpp.o \
@@ -599,6 +611,12 @@ make_trb:
 	( cd $(GALAHAD)/src/trb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trb.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trb )
+
+make_trek:
+	( cd $(GALAHAD)/src/forthcoming/trek ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trek.o \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/forthcoming/trek )
 
 make_trs:
 	( cd $(GALAHAD)/src/trs ; \
@@ -923,6 +941,12 @@ make_all_dummy:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummy_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
+make_all_epf:
+	( cd $(GALAHAD)/src/forthcoming/epf ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) epf_silent \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/forthcoming/epf )
+
 make_all_eqp:
 	( cd $(GALAHAD)/src/eqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) eqp_silent \
@@ -1124,6 +1148,12 @@ make_all_qpd:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpd_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpd )
 
+make_all_qpf:
+	( cd $(GALAHAD)/src/forthcoming/qpf ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpf_silent \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/forthcoming/qpf )
+
 make_all_qpp:
 	( cd $(GALAHAD)/src/qpp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpp_silent \
@@ -1248,6 +1278,12 @@ make_all_trb:
 	( cd $(GALAHAD)/src/trb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trb_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trb )
+
+make_all_trek:
+	( cd $(GALAHAD)/src/forthcoming/trek ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trek_silent \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/forthcoming/trek )
 
 make_all_trs:
 	( cd $(GALAHAD)/src/trs ; \
@@ -1495,6 +1531,12 @@ make_ciface_dummy:
 	( cd $(GALAHAD)/src/general ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummys_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
+
+make_ciface_epf:
+	( cd $(GALAHAD)/src/forthcoming/epf ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) epf_ciface.o \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/forthcoming/epf )
 
 make_ciface_eqp:
 	( cd $(GALAHAD)/src/eqp ; \
@@ -1754,6 +1796,12 @@ make_ciface_qpd:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpd_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpd )
 
+make_ciface_qpf:
+	( cd $(GALAHAD)/src/forthcoming/qpf ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpf_ciface.o \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/forthcoming/qpf )
+
 make_ciface_qpp:
 	( cd $(GALAHAD)/src/qpp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpp_ciface.o \
@@ -1895,6 +1943,12 @@ make_ciface_trb:
 	( cd $(GALAHAD)/src/trb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trb_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trb )
+
+make_ciface_trek:
+	( cd $(GALAHAD)/src/forthcoming/trek ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trek_ciface.o \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/forthcoming/trek )
 
 make_ciface_trs:
 	( cd $(GALAHAD)/src/trs ; \
@@ -2182,6 +2236,12 @@ make_pyiface_dummy:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummys_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
+make_pyiface_epf:
+	( cd $(GALAHAD)/src/forthcoming/epf ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) epf_pyiface.o \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/forthcoming/epf )
+
 make_pyiface_eqp:
 	( cd $(GALAHAD)/src/eqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) eqp_pyiface.o \
@@ -2370,6 +2430,11 @@ make_pyiface_nls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nls_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nls )
 
+make_pyiface_nodend:
+	( cd $(GALAHAD)/src/nodend ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nodend_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nodend )
+
 make_pyiface_norms:
 	( cd $(GALAHAD)/src/norms ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms_pyiface.o \
@@ -2430,6 +2495,12 @@ make_pyiface_qpd:
 	( cd $(GALAHAD)/src/qpd ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpd_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpd )
+
+make_pyiface_qpf:
+	( cd $(GALAHAD)/src/forthcoming/qpf ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpf_pyiface.o \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/forthcoming/qpf )
 
 make_pyiface_qpp:
 	( cd $(GALAHAD)/src/qpp ; \
@@ -2502,7 +2573,7 @@ make_pyiface_sils:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sils_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sils )
 
-make_pyiface_sls_deps: make_pyiface_sils
+make_pyiface_sls_deps: make_pyiface_sils make_pyiface_nodend
 
 make_pyiface_sls:
 	( cd $(GALAHAD)/src/sls ; \
@@ -2563,6 +2634,12 @@ make_pyiface_trb:
 	( cd $(GALAHAD)/src/trb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trb_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trb )
+
+make_pyiface_trek:
+	( cd $(GALAHAD)/src/forthcoming/trek ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trek_pyiface.o \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/forthcoming/trek )
 
 make_pyiface_trs:
 	( cd $(GALAHAD)/src/trs ; \

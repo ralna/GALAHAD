@@ -1,7 +1,7 @@
 //* \file sbls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 5.3 - 2025-05-26 AT 14:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SBLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -667,12 +667,17 @@ static PyObject* py_sbls_factorize_matrix(PyObject *self, PyObject *args, PyObje
     H_val = (double *) PyArray_DATA(py_H_val);
     A_val = (double *) PyArray_DATA(py_A_val);
     C_val = (double *) PyArray_DATA(py_C_val);
-    if(py_D != NULL) D = (double *) PyArray_DATA(py_D);
 
     // Call sbls_factorize_matrix
-    sbls_factorize_matrix(&data, &status, n, H_ne, H_val, A_ne, A_val,
-                          C_ne, C_val, D );
-
+    //if(py_D != NULL) D = (double *) PyArray_DATA(py_D);
+    if (py_D == NULL) {
+      sbls_factorize_matrix(&data, &status, n, H_ne, H_val, A_ne, A_val,
+                            C_ne, C_val, NULL);
+    } else {
+      D = (double *) PyArray_DATA(py_D);
+      sbls_factorize_matrix(&data, &status, n, H_ne, H_val, A_ne, A_val,
+                            C_ne, C_val, D);
+    }
     // Raise any status errors
     if(!check_error_codes(status))
         return NULL;

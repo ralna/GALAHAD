@@ -32,7 +32,7 @@
 #  History -
 #   originally released pre GALAHAD Version 1.0. August 20th, 1999 (for csh)
 #   update released with GALAHAD Version 2.0. May 11th 2006 (for sh)
-#   this version 2025-03-11
+#   this version 2025-05-20
 
 if [[ -z $GALAHAD ]]; then
   echo ' You have not set the GALAHAD environment variable. '
@@ -679,6 +679,14 @@ elif [[ $2 == 'trs' ]]; then
   [[ ! -e ~/.galahad/specs/RUNTRS.SPC ]] && $GALOBJ/buildspec trs
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec trs update
   [[ ! -L RUNTRS.SPC ]] && ln -s ~/.galahad/specs/RUNTRS.SPC RUNTRS.SPC
+
+# trek
+
+elif [[ $2 == 'trek' ]]; then
+  RUNMAIN=$GALOBJ/runtrek_sif_$PRECIS.o
+  [[ ! -e ~/.galahad/specs/RUNTREK.SPC ]] && $GALOBJ/buildspec trek
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec trek update
+  [[ ! -L RUNTREK.SPC ]] && ln -s ~/.galahad/specs/RUNTREK.SPC RUNTREK.SPC
 
 # dps
 

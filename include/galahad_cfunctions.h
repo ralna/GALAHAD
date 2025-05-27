@@ -103,6 +103,9 @@
 #define bqp_terminate bqp_terminate_s_64
 #define bsc_initialize bsc_initialize_s_64
 #define bsc_read_specfile bsc_read_specfile_s_64
+#define bsc_import bsc_import_s_64
+#define bsc_reset_control bsc_reset_control_s_64
+#define bsc_form_s bsc_form_s_s_64
 #define bsc_information bsc_information_s_64
 #define bsc_terminate bsc_terminate_s_64
 #define ccqp_initialize ccqp_initialize_s_64
@@ -653,6 +656,9 @@
 #define bqp_terminate bqp_terminate_q_64
 #define bsc_initialize bsc_initialize_q_64
 #define bsc_read_specfile bsc_read_specfile_q_64
+#define bsc_import bsc_import_q_64
+#define bsc_reset_control bsc_reset_control_q_64
+#define bsc_form_s bsc_form_s_q_64
 #define bsc_information bsc_information_q_64
 #define bsc_terminate bsc_terminate_q_64
 #define ccqp_initialize ccqp_initialize_q_64
@@ -1203,6 +1209,9 @@
 #define bqp_terminate bqp_terminate_64
 #define bsc_initialize bsc_initialize_64
 #define bsc_read_specfile bsc_read_specfile_64
+#define bsc_import bsc_import_64
+#define bsc_reset_control bsc_reset_control_64
+#define bsc_form_s bsc_form_s_64
 #define bsc_information bsc_information_64
 #define bsc_terminate bsc_terminate_64
 #define ccqp_initialize ccqp_initialize_64
@@ -1755,6 +1764,9 @@
 #define bqp_terminate bqp_terminate_s
 #define bsc_initialize bsc_initialize_s
 #define bsc_read_specfile bsc_read_specfile_s
+#define bsc_import bsc_import_s
+#define bsc_reset_control bsc_reset_control_s
+#define bsc_form_s bsc_form_s_s
 #define bsc_information bsc_information_s
 #define bsc_terminate bsc_terminate_s
 #define ccqp_initialize ccqp_initialize_s
@@ -2305,6 +2317,9 @@
 #define bqp_terminate bqp_terminate_q
 #define bsc_initialize bsc_initialize_q
 #define bsc_read_specfile bsc_read_specfile_q
+#define bsc_import bsc_import_q
+#define bsc_reset_control bsc_reset_control_q
+#define bsc_form_s bsc_form_s_q
 #define bsc_information bsc_information_q
 #define bsc_terminate bsc_terminate_q
 #define ccqp_initialize ccqp_initialize_q

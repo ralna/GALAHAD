@@ -1,7 +1,7 @@
 //* \file galahad_bsc.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 5.3 - 2025-05-25 AT 11:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BSC C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -26,9 +26,6 @@
   \f$S  =  A D A^T\f$</b> in sparse co-ordinate (and optionally sparse column)
   format(s). Full advantage is taken of any zero coefficients in the matrix
   \f$A\f$.
-
-  Currently, only the control and inform parameters are exposed;
-  these are provided and used by other GALAHAD packages with C interfaces.
 
   \subsection bsc_authors Authors
 
@@ -279,6 +276,170 @@ void bsc_initialize( void **data,
   @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The initialization was succesful.
+*/
+
+// *-*-*-*-*-*-*-*-*-   B S C _ I M P O R T _ P R O B L E M  -*-*-*-*-*-*-*-*-
+
+void bsc_import( struct bsc_control_type *control,
+                        void **data,
+                        ipc_ *status,
+                        ipc_ m,
+                        ipc_ n,
+                        const char A_type[],
+                        ipc_ A_ne,
+                        const ipc_ A_row[],
+                        const ipc_ A_col[],
+                        const ipc_ A_ptr[],
+                        ipc_ *S_ne );
+
+/*!<
+ Import the initial data, and apply the presolve algorithm to report
+ crucial characteristics of the transformed variant
+
+ @param[in] control is a struct whose members provide control
+  paramters for the remaining prcedures (see presolve_control_type)
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type ipc_, that gives
+    the exit status from the package. Possible values are:
+  \li  0. The import was succesful
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
+       inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
+       returned allocation status and a string containing the
+       name of the offending array are held in
+       inform.alloc_status and inform.bad_alloc respectively.
+  \li -3. The restrictions n > 0 or m > 0 or requirement that a type contains
+       its relevant string 'dense', 'coordinate', 'sparse_by_rows' or
+       'diagonal' has been violated.
+
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
+    rows of \f$A\f$
+
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
+    columns of \f$A\f$
+
+ @param[in]  A_type is a one-dimensional array of type char that specifies the
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
+   used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate',
+  'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
+
+ @param[in]  A_ne is a scalar variable of type ipc_, that holds the number of
+   entries in \f$A\f$ in the sparse co-ordinate storage scheme.
+   It need not be set for any of the other schemes.
+
+ @param[in]  A_row is a one-dimensional array of size A_ne and type ipc_, that
+   holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme.
+   It need not be set for any of the other schemes,
+   and in this case can be NULL.
+
+ @param[in]  A_col is a one-dimensional array of size A_ne and type ipc_,
+   that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
+   or the sparse row-wise storage scheme. It need not be set when the
+   dense or diagonal storage schemes are used, and in this case can be NULL.
+
+ @param[in]  A_ptr is a one-dimensional array of size n+1 and type ipc_,
+   that holds the starting position of each row of \f$A\f$, as well as the
+   total number of entries, in the sparse row-wise storage scheme.
+   It need not be set when the other schemes are used,
+   and in this case can be NULL.
+
+ @param[out] S_ne is a scalar variable of type ipc_, that holds the number
+   of entries in the lower triangle of the Schur complement \f$S\f$.
+
+*/
+
+//  *-*-*-*-*-*-*-*-*-   B S C _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
+
+void bsc_reset_control( struct bsc_control_type *control,
+                        void **data,
+                        ipc_ *status );
+
+/*!<
+ Reset control parameters after import if required.
+
+ @param[in] control is a struct whose members provide control
+  paramters for the remaining prcedures (see cqp_control_type)
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type ipc_, that gives
+    the exit status from the package. Possible values are:
+  \li  0. The import was succesful.
+ */
+
+// *-*-*-*-*-*-*-*-*-*-*-   B S C _ F O R M _ S  -*-*-*-*-*-*-*-*-*-*-*-
+
+void bsc_form_s( void **data,
+                 ipc_ *status,
+                 ipc_ m,
+                 ipc_ n,
+                 ipc_ a_ne,
+                 const rpc_ A_val[],
+                 ipc_ s_ne,
+                 ipc_ S_row[],
+                 ipc_ S_col[],
+                 ipc_ S_ptr[],
+                 rpc_ S_val[],
+                 const rpc_ D[] );
+
+/*!<
+ Forms the Schur complement, S = A D A^T
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type ipc_, that gives
+    the exit status from the package. Possible values are:
+  \li  0. The import was succesful
+
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
+    rows of \f$A\f$.
+
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
+    columns of \f$A\f$.
+
+ @param[in]  a_ne is a scalar variable of type ipc_, that holds the number of
+   entries in the lower triangle of \f$A\f$.
+
+ @param[in] A_val is a one-dimensional array of size A_ne 
+    (see bsc_import) and type rpc_, that holds the values of the entries of 
+    the  matrix \f$A\f$ in any of the available storage schemes.
+
+ @param[in] s_ne is a scalar variable of type ipc_, that holds the number of
+   entries in the lower triangular part of the Schur omplement matrix \f$S\f$.
+
+ @param[out] S_row is a one-dimensional array of size S_ne 
+   (see bsc_import) and type ipc_, that holds the row indices of the 
+   lower triangular part of the Schur complement \f$S\f$ in the 
+   sparse co-ordinate storage scheme.
+
+ @param[out] S_col is a one-dimensional array of size S_ne 
+   (see bsc_import) and type ipc_, that holds the column indices of the 
+   lower triangular part of the Schur complement \f$S\f$ in the 
+   sparse co-ordinate storage scheme.
+
+ @param[out] S_ptr is a one-dimensional array of size m+1 
+   (see bsc_import) and type ipc_, that holds the starting position of 
+   each row of the lower triangular part of the Schur complement \f$S\f$ in
+   the sparse row-wise storage scheme; in this case S_col and S_val are
+   compatible with this scheme. It will not be set if the array is NULL.
+
+  @param[out] S_val is a one-dimensional array of size S_ne 
+    (see bsc_import) and type rpc_,  that holds the values of the entries of 
+    the lower triangular part of the the Schur complement \f$S\f$ in
+    the sparse row-wise storage scheme.
+
+ @param[in] D is a one-dimensional array of size n
+   (see bsc_import) and type rpc_, that holds the values of the 
+   diagonal entries of  the  matrix \f$D\f$.
+   It need not be set when \f$D\f$ is the identity matrix,
+   and in this case can be NULL.
+
 */
 
 // *-*-*-*-*-*-*-*-*-   B S C  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-

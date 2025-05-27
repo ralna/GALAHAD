@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2023-05-26 AT 08:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -13,16 +13,16 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNBLLS_SIF_precision
+   PROGRAM RUNSLLS_SIF_precision
 
 !     --------------------------------------------------------
-!    | Main program for the SIF/CUTEst interface to BLLS,     |
+!    | Main program for the SIF/CUTEst interface to SLLS,     |
 !    | a preconditiond projected conjugate-gradient algorithm |
 !    | simplex-constrained linear least-squares minimization  |
 !     --------------------------------------------------------
 
    USE GALAHAD_KINDS_precision
-   USE GALAHAD_USEBLLS_precision
+   USE GALAHAD_USESLLS_precision
 
 !  Problem input characteristics
 
@@ -36,13 +36,13 @@
 
 !  Call the CUTEst interface
 
-   CALL USE_BLLS( input )
+   CALL USE_SLLS( input )
 
 !  Close the data input file
 
    CLOSE( input  )
    STOP
 
-!  End of RUNBLLS_SIF_precision
+!  End of RUNSLLS_SIF_precision
 
-   END PROGRAM RUNBLLS_SIF_precision
+   END PROGRAM RUNSLLS_SIF_precision

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-05-12 AT 08:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -577,8 +577,6 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VECTOR
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHO
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ALPHA
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D_hist
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: F_hist
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VAL_est
@@ -3957,18 +3955,6 @@
 
      array_name = 'tru: data%V'
      CALL SPACE_dealloc_array( data%V,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'tru: data%RHO'
-     CALL SPACE_dealloc_array( data%RHO,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'tru: data%ALPHA'
-     CALL SPACE_dealloc_array( data%ALPHA,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

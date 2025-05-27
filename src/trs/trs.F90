@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-06-23 AT 09:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -3519,7 +3519,14 @@
         lambda_u = MIN( control%upper,                                         &
                         MAX( zero, c_norm_over_radius - lambda_min ) )
       END IF
-      lambda = lambda_l
+
+!  set the initial lambda
+
+      IF ( control%use_initial_multiplier ) THEN
+        lambda = MAX( lambda_l, control%initial_multiplier )
+      ELSE
+        lambda = lambda_l
+      END IF
 
 !  check for the "hard case"
 

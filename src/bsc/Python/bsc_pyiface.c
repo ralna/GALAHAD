@@ -186,6 +186,160 @@ static PyObject* py_bsc_initialize(PyObject *self){
     return Py_BuildValue("O", py_options);
 }
 
+//  *-*-*-*-*-*-*-*-*-*-*-*-   BSC_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_bsc_load(PyObject *self, PyObject *args, PyObject *keywds){
+    PyArrayObject *py_A_row, *py_A_col, *py_A_ptr;
+    PyObject *py_options = NULL;
+    int *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
+    const char *A_type;
+    int n, m, A_ne, S_ne;
+
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
+
+    // Parse positional and keyword arguments
+    static char *kwlist[] = {"n","m",
+                             "A_type","A_ne","A_row","A_col","A_ptr",
+                             "options",NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|O",
+                                    kwlist, &n, &m,
+                                    &A_type, &A_ne, &py_A_row,
+                                    &py_A_col, &py_A_ptr,
+                                    &py_options))
+        return NULL;
+
+    // Check that array inputs are of correct type, size, and shape
+
+    if(!(
+        check_array_int("A_row", py_A_row, A_ne) &&
+        check_array_int("A_col", py_A_col, A_ne) &&
+        check_array_int("A_ptr", py_A_ptr, m+1)
+        ))
+        return NULL;
+
+    // Convert 64bit integer A_row array to 32bit
+    if((PyObject *) py_A_row != Py_None){
+        A_row = malloc(A_ne * sizeof(int));
+        long int *A_row_long = (long int *) PyArray_DATA(py_A_row);
+        for(int i = 0; i < A_ne; i++) A_row[i] = (int) A_row_long[i];
+    }
+
+    // Convert 64bit integer A_col array to 32bit
+    if((PyObject *) py_A_col != Py_None){
+        A_col = malloc(A_ne * sizeof(int));
+        long int *A_col_long = (long int *) PyArray_DATA(py_A_col);
+        for(int i = 0; i < A_ne; i++) A_col[i] = (int) A_col_long[i];
+    }
+
+    // Convert 64bit integer A_ptr array to 32bit
+    if((PyObject *) py_A_ptr != Py_None){
+        A_ptr = malloc((m+1) * sizeof(int));
+        long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
+        for(int i = 0; i < m+1; i++) A_ptr[i] = (int) A_ptr_long[i];
+    }
+
+    // Reset control options
+    bsc_reset_control(&control, &data, &status);
+
+    // Update BSC control options
+    if(!bsc_update_control(&control, py_options))
+        return NULL;
+
+    // Call bsc_import
+    bsc_import(&control, &data, &status, n, m,
+               A_type, A_ne, A_row, A_col, A_ptr, &S_ne);
+
+    // Free allocated memory
+    if(A_row != NULL) free(A_row);
+    if(A_col != NULL) free(A_col);
+    if(A_ptr != NULL) free(A_ptr);
+
+    // Raise any status errors
+    if(!check_error_codes(status))
+        return NULL;
+
+    // Return S_ne
+    PyObject *import_bsc_return;
+
+    import_bsc_return = Py_BuildValue("i", S_ne );
+    Py_INCREF(import_bsc_return);
+    return import_bsc_return;
+}
+
+//  *-*-*-*-*-*-*-*-*-*-*-*-*-*-   BSC_FORM   -*-*-*-*-*-*-*-*-*-*-*-*
+
+static PyObject* py_bsc_form(PyObject *self, PyObject *args, PyObject *keywds){
+    PyArrayObject *py_A_val, *py_D;
+    double *A_val, *D;
+    int m, n, A_ne, S_ne;
+
+    // Check that package has been initialised
+    if(!check_init(init_called))
+        return NULL;
+
+    // Parse positional arguments
+    static char *kwlist[] = {"m", "n", "A_ne", "A_val", "S_ne", "D", NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOiO", kwlist, 
+                                    &m, &n, &A_ne, &py_A_val, &S_ne, &py_D))
+        return NULL;
+
+    // Check that array inputs are of correct type, size, and shape
+    if(!check_array_double("A_val", py_A_val, A_ne))
+        return NULL;
+    if(!check_array_double("D", py_D, n))
+        return NULL;
+
+    // Get array data pointer
+    A_val = (double *) PyArray_DATA(py_A_val);
+    D = (double *) PyArray_DATA(py_D);
+
+   // Create NumPy output arrays
+    npy_intp sdim[] = {S_ne}; // size of S_row, S_col an S_val
+    npy_intp pdim[] = {m+1}; // size of S_ptr
+    PyArrayObject *py_s_row =
+      (PyArrayObject *) PyArray_SimpleNew(1, sdim, NPY_INT);
+    int *S_row = (int *) PyArray_DATA(py_s_row);
+    PyArrayObject *py_s_col =
+      (PyArrayObject *) PyArray_SimpleNew(1, sdim, NPY_INT);
+    int *S_col = (int *) PyArray_DATA(py_s_col);
+    PyArrayObject *py_s_ptr =
+      (PyArrayObject *) PyArray_SimpleNew(1, pdim, NPY_INT);
+    int *S_ptr = (int *) PyArray_DATA(py_s_ptr);
+    PyArrayObject *py_s_val =
+      (PyArrayObject *) PyArray_SimpleNew(1, sdim, NPY_DOUBLE);
+    double *S_val = (double *) PyArray_DATA(py_s_val);
+
+    // Call bsc_solve_direct
+    status = 1; // set status to 1 on entry
+    bsc_form_s(&data, &status, m, n, A_ne, A_val, 
+               S_ne, S_row, S_col, S_ptr, S_val, D);
+    // for( int i = 0; i < S_ne; i++) printf("S_row %i\n", S_row[i]);
+    // for( int i = 0; i < S_ne; i++) printf("S_col %i\n", S_col[i]);
+    // for( int i = 0; i < m+1; i++) printf("S_ptr %i\n", S_ptr[i]);
+    // for( int i = 0; i < S_ne; i++) printf("S_val %f\n", S_val[i]);
+
+    // Propagate any errors with the callback function
+    if(PyErr_Occurred())
+        return NULL;
+
+    // Raise any status errors
+    if(!check_error_codes(status))
+        return NULL;
+
+    // Return S_row, S_col,S_ptr and S_val
+    PyObject *form_bsc_return;
+    form_bsc_return = Py_BuildValue("OOOO", 
+                                     py_s_row, py_s_col, py_s_ptr, py_s_val);
+    Py_INCREF(form_bsc_return);
+    return form_bsc_return;
+
+}
+
+
 //  *-*-*-*-*-*-*-*-*-*-   BSC_INFORMATION   -*-*-*-*-*-*-*-*
 
 static PyObject* py_bsc_information(PyObject *self){
@@ -223,6 +377,8 @@ static PyObject* py_bsc_terminate(PyObject *self){
 /* bsc python module method table */
 static PyMethodDef bsc_module_methods[] = {
     {"initialize", (PyCFunction) py_bsc_initialize, METH_NOARGS,NULL},
+    {"load", (PyCFunction) py_bsc_load, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"form", (PyCFunction) py_bsc_form, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_bsc_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_bsc_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

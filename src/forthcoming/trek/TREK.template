@@ -1,0 +1,13 @@
+!  error-printout-device                             6
+!  printout-device                                   6
+!  print-level                                       0
+!  maximum-number-of-iterations                      -1
+!  start-error-search                                0
+!  radius-reduction-factor                           0.5E+0
+!  residual-accuracy                                 1.0E-8
+!  reorthogonalize-vectors                           F
+!  exact-shift                                       F
+!  space-critical                                    F
+!  deallocate-error-fatal                            F
+!  symmetric-linear-equation-solver                  ssids
+!  output-line-prefix                                ""

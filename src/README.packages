@@ -28,7 +28,6 @@ dps         | ok     | regularized quadratic subproblem in a diagonalising norm
 dqp         | ok     | strictly-convex QP, dual projection
 dum         | ok     | replacement no-use packages for unsupplied externals
 eks         | alpha  | build an extended Krylov space
-ektr        | alpha  | minimize a quadratic within a trust region using eks
 environment | alpha  | set environment variables
 eqp         | ok     | equality-constrained QP
 fdc         | ok     | find dependent equality linear constraints
@@ -103,13 +102,14 @@ string      | ok     | manipulate strings (no doc)
 sym         | ok     | associate symbols with numerical values
 tools       | ok     | simple tools (like in auxiliary, no doc)
 trans       | ok     | apply scale factors (no doc)
+trek        | alpha  | minimize a quadratic within a trust region using eks
 trimsqp     | old    | successor to s2qp
 trs         | ok     | minimize a quadratic within a trust region via sbls
 tru         | ok     | unconstrained optimization, trust-region method
 ugo         | ok     | deterministic univariate global optimization
 uls         | ok     | unsymmetric linear solver, multiple interfaces
 warm        | beta   | test warmstart capabilities
-wcp         | ok     | find a 'well-centred' point in a polyhedron
+wcp         | ok     | find a 'well-centred' point within a polyhedron
 zd11        | ok     | HSL archive sparse-matrix structure
 
 External packages lie in external/

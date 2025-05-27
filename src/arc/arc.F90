@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2025-05-12 AT 08:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -573,8 +573,6 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VECTOR
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHO
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ALPHA
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D_hist
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: F_hist
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VAL_est
@@ -1808,22 +1806,6 @@
 
        array_name = 'arc: data%DG'
        CALL SPACE_resize_array( nlp%n, data%DG, inform%status,                 &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'arc: data%RHO'
-       CALL SPACE_resize_array( data%lbfgs_mem, data%RHO, inform%status,       &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'arc: data%ALPHA'
-       CALL SPACE_resize_array( data%lbfgs_mem, data%ALPHA, inform%status,     &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -3761,18 +3743,6 @@
 
      array_name = 'arc: data%V'
      CALL SPACE_dealloc_array( data%V,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'arc: data%RHO'
-     CALL SPACE_dealloc_array( data%RHO,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'arc: data%ALPHA'
-     CALL SPACE_dealloc_array( data%ALPHA,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

@@ -52,14 +52,13 @@ int main(void) {
       for( ipc_ d=1; d <= 7; d++){
 
         // Initialize CQP
-    printf("initialize\n");
         cqp_initialize( &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
-        control.print_level = 3;
-//        strcpy(control.fdc_control.symmetric_linear_solver, "sytr ");
-        control.fdc_control.print_level = 3;
+//      control.print_level = 3;
+//      strcpy(control.fdc_control.symmetric_linear_solver, "sytr ");
+//      control.fdc_control.print_level = 3;
         // Start from 0
         rpc_ x[] = {0.0,0.0,0.0};
         rpc_ y[] = {0.0,0.0};
@@ -68,11 +67,9 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
-    printf("import\n");
                 cqp_import( &control, &data, &status, n, m,
                            "coordinate", H_ne, H_row, H_col, NULL,
                            "coordinate", A_ne, A_row, A_col, NULL );
-    printf("solve\n");
                 cqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                               x_stat, c_stat );
@@ -141,7 +138,6 @@ int main(void) {
 
 
             }
-    printf("info\n");
         cqp_information( &data, &inform, &status );
 
         if(inform.status == 0){

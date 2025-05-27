@@ -1,0 +1,64 @@
+#  Main body of the installation makefile for the GALAHAD QPF package
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2024-10-28
+
+#  include standard GALAHAD makefile defaults before package-specifics
+
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = qpf
+PACKAGE = QPF
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_ssls_deps make_ssls make_roots make_norms \
+               make_lmt make_qpt make_lms make_rand \
+               make_gltr make_tools make_scu make_mi28 \
+               make_mop make_ir make_trs make_rqs \
+               make_userdata make_nlpt make_dps make_icfs \
+               make_lancelot_psls make_psls make_sec make_sha \
+               make_tru make_bsc
+
+#  other packages that depend on package
+
+DEPENDS =
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test)
+
+TESTS = test_full test_cutest
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = ALLINITC.SIF
+#CUTEST_EXAMPLE = S2QPTOY.SIF
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+
+include $(GALAHAD)/src/makedefs/intermediaries

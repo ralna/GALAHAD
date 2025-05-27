@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-09 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-05-25 AT 09:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -38,7 +38,8 @@
       PRIVATE
       PUBLIC :: BSC_initialize, BSC_read_specfile, BSC_form,                   &
                 BSC_terminate, BSC_full_initialize, BSC_full_terminate,        &
-                BSC_information, SMT_type, SMT_put, SMT_get
+                BSC_information, BSC_import, BSC_reset_control, BSC_form_s,    &
+                SMT_type, SMT_put, SMT_get
 
 !----------------------
 !   I n t e r f a c e s
@@ -168,7 +169,8 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: BSC_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
+        INTEGER ( KIND = ip_ ) :: m, n, s_ne
         TYPE ( BSC_data_type ) :: BSC_data
         TYPE ( BSC_control_type ) :: BSC_control
         TYPE ( BSC_inform_type ) :: BSC_inform
@@ -1477,6 +1479,360 @@
 ! -----------------------------------------------------------------------------
 ! =============================================================================
 ! -----------------------------------------------------------------------------
+
+!-*-*-*-*-  G A L A H A D -  B S C _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+
+     SUBROUTINE BSC_import( control, data, status, m, n,                       &
+                            A_type, A_ne, A_row, A_col, A_ptr, S_ne )
+
+!  import fixed problem data into internal storage prior to forming S,
+!  and return the number of nonzeros in S. Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to BSC_solve
+!
+!  data is a scalar variable of type BSC_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that type contains
+!       its relevant string 'DENSE', 'COORDINATE', or 'SPARSE_BY_ROWS'
+!       has been violated.
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   rows of A
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   columns of A
+!
+!  A_type is a character string that specifies the Jacobian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   or 'absent', the latter if m = 0; lower or upper case variants are allowed
+!
+!  A_ne is a scalar variable of type default integer, that holds the number of
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!  for any of the other schemes.
+!
+!  A_row is a rank-one array of type default integer, that holds the row
+!   indices A in the sparse co-ordinate storage scheme. It need not be set
+!   for any of the other schemes, and in this case can be of length 0
+!
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of A in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
+!   in this case can be of length 0
+!
+!  A_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of A, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
+!   can be of length 0
+!
+!  S_ne is a scalar variable of type default integer, that on output holds 
+!   the number of entries in the lower triangle of S, stored in coordinate
+!   format
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BSC_control_type ), INTENT( INOUT ) :: control
+     TYPE ( BSC_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, A_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: S_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+
+!  local variables
+
+     INTEGER ( KIND = ip_ ) :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+     TYPE ( BSC_control_type ) :: bsc_control
+
+!  copy control to data
+
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     data%bsc_control = control
+
+     error = data%bsc_control%error
+     space_critical = data%bsc_control%space_critical
+     deallocate_error_fatal = data%bsc_control%space_critical
+
+     data%n = n ; data%m = m
+
+!  set A appropriately in the smt storage type
+
+     SELECT CASE ( A_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( A_row ) .AND. PRESENT( A_col ) ) ) THEN
+         data%bsc_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%A%type, 'COORDINATE',                           &
+                     data%bsc_inform%alloc_status )
+       data%A%n = n ; data%A%m = m
+       data%A%ne = A_ne
+
+       array_name = 'bsc: data%A%row'
+       CALL SPACE_resize_array( data%A%ne, data%A%row,               &
+              data%bsc_inform%status, data%bsc_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bsc_inform%bad_alloc, out = error )
+       IF ( data%bsc_inform%status /= 0 ) GO TO 900
+
+       array_name = 'bsc: data%A%col'
+       CALL SPACE_resize_array( data%A%ne, data%A%col,               &
+              data%bsc_inform%status, data%bsc_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bsc_inform%bad_alloc, out = error )
+       IF ( data%bsc_inform%status /= 0 ) GO TO 900
+
+       array_name = 'bsc: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,               &
+              data%bsc_inform%status, data%bsc_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bsc_inform%bad_alloc, out = error )
+       IF ( data%bsc_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%A%row( : data%A%ne ) = A_row( : data%A%ne )
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+       ELSE
+         data%A%row( : data%A%ne ) = A_row( : data%A%ne ) + 1
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne ) + 1
+       END IF
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
+         data%bsc_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%A%type, 'SPARSE_BY_ROWS',                            &
+                     data%bsc_inform%alloc_status )
+       data%A%n = n ; data%A%m = m
+       IF ( data%f_indexing ) THEN
+         data%A%ne = A_ptr( m + 1 ) - 1
+       ELSE
+         data%A%ne = A_ptr( m + 1 )
+       END IF
+       array_name = 'bsc: data%A%ptr'
+       CALL SPACE_resize_array( m + 1, data%A%ptr,                             &
+              data%bsc_inform%status, data%bsc_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bsc_inform%bad_alloc, out = error )
+       IF ( data%bsc_inform%status /= 0 ) GO TO 900
+
+       array_name = 'bsc: data%A%col'
+       CALL SPACE_resize_array( data%A%ne, data%A%col,                         &
+              data%bsc_inform%status, data%bsc_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bsc_inform%bad_alloc, out = error )
+       IF ( data%bsc_inform%status /= 0 ) GO TO 900
+
+       array_name = 'bsc: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%bsc_inform%status, data%bsc_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bsc_inform%bad_alloc, out = error )
+       IF ( data%bsc_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+       ELSE
+         data%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne ) + 1
+       END IF
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%A%type, 'DENSE',                                     &
+                     data%bsc_inform%alloc_status )
+       data%A%n = n ; data%A%m = m
+       data%A%ne = m * n
+
+       array_name = 'bsc: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%bsc_inform%status, data%bsc_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bsc_inform%bad_alloc, out = error )
+       IF ( data%bsc_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%bsc_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+!  find the structure of the Schur complement
+
+     bsc_control = data%bsc_control
+     bsc_control%new_a = 3
+     bsc_control%s_also_by_column = .TRUE.
+     CALL BSC_form( m, n, data%A, data%S, data%bsc_data, bsc_control,          &
+                    data%bsc_inform )
+
+!  record the number of nonzeros in S
+
+     S_ne = data%S%ne
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%bsc_inform%status
+     RETURN
+
+!  End of subroutine BSC_import
+
+     END SUBROUTINE BSC_import
+
+!-  G A L A H A D -  B S C _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE BSC_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See BSC_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BSC_control_type ), INTENT( IN ) :: control
+     TYPE ( BSC_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%bsc_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine BSC_reset_control
+
+     END SUBROUTINE BSC_reset_control
+
+!-*-*-*-*-  G A L A H A D -  B S C _ f o r m _ s  S U B R O U T I N E  -*-*-*-*-
+
+     SUBROUTINE BSC_form_s( data, status, A_val, S_row, S_col, S_val, D, S_ptr )
+
+!  find the Schur complement matrix S = A D A^T from the matrix A, and optional 
+!  diagonal D, whose structure was previously imported. See BSC_form for a 
+!  description of the required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type BSC_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, bsc_solve above.
+!
+!  S_row is a rank-one array of type default integer, that will be set to hold
+!   the row indices of the lower triangle of S in the sparse co-ordinate 
+!   storage scheme. S_row must be of length at least S_ne (see BSC_import)
+!
+!  S_col is a rank-one array of type default integer, that will be set to hold
+!   the column indices of the lower triangle of S in the sparse co-ordinate 
+!   storage scheme. S_col must be of length at least S_ne (see BSC_import)
+!
+!  S_val is a rank-one array of type default real, that will be set to hold
+!   the values of the lower triangle of S in the sparse co-ordinate 
+!   storage scheme. S_col must be of length at least S_ne (see BSC_import)
+!
+!  D is an optional rank-one array of type default real, that holds the 
+!   values of the diagonals of the matrix D. It need not be set when D is 
+!   the identity matrix, and in this case can be of length 0
+!   
+!  S_ptr is a rank-one array of dimension m+1 and type default integer,
+!   that, if present, holds the starting position of each row of S, as well 
+!   as the total number of entries plus one, in the sparse row-wise storage 
+!   scheme (and in this case S_col and S_val are also compatible with this 
+!   scheme).
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     TYPE ( BSC_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: S_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: S_col
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: S_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ), OPTIONAL :: D
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: S_ptr
+
+!  local variables
+
+     INTEGER ( KIND = ip_ ) :: m, n, s_ne
+     TYPE ( BSC_control_type ) :: bsc_control
+
+!  recover the dimensions
+
+     m = data%m ; n = data%n ; s_ne = data%S%ne
+
+!  save the constraint Jacobian entries
+
+     IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
+
+!  form the Schur complement, S
+
+     bsc_control = data%bsc_control
+     bsc_control%new_a = 1
+     bsc_control%s_also_by_column = .TRUE.
+     CALL BSC_form( m, n, data%A, data%S, data%bsc_data, bsc_control,          &
+                    data%bsc_inform, D )
+
+!  recover the pattern and values of S
+
+     IF ( data%f_indexing ) THEN
+       S_row( : s_ne ) = data%S%row( : s_ne )
+       S_col( : s_ne ) = data%S%col( : s_ne )
+       IF ( PRESENT( S_ptr ) ) S_ptr( : m + 1 ) = data%S%ptr( : m + 1 )
+     ELSE
+       S_row( : s_ne ) = data%S%row( : s_ne ) - 1
+       S_col( : s_ne ) = data%S%col( : s_ne ) - 1
+       IF ( PRESENT( S_ptr ) ) S_ptr( : m + 1 ) = data%S%ptr( : m + 1 ) - 1
+     END IF
+     S_val( : s_ne ) = data%S%val( : s_ne )
+
+     status = data%bsc_inform%status
+     RETURN
+
+!  End of subroutine BSC_form_s
+
+     END SUBROUTINE BSC_form_s
 
 !-*-  G A L A H A D - B S C _ i n f o r m a t i o n  S U B R O U T I N E -*-
 

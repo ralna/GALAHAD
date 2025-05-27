@@ -1,41 +1,45 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-04-20 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-04 AT 13:20 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D _ E P F   M O D U L E  *-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D _ Q P F   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
-!  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+!  Copyright reserved, Fowkes/Gould/Montoison/Orban, for GALAHAD productions
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released GALAHAD Version 5.1. May 9th 2024
+!   originally released GALAHAD Version 5.1. October 28th 2024
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_EPF_precision
+   MODULE GALAHAD_QPF_precision
 
-!     --------------------------------------------------------------------
-!    |                                                                    |
-!    | EPF, an exponential penalty function algorithm for                 |
-!    |       nonlinearly-constrained optimization                         |
-!    |                                                                    |
-!    |   Aim: find a (local) minimizer of the objective f(x)              |
-!    |        subject to x^l <= x <= x^u and c^l <= c(x) <= c^u           |
-!    |                                                                    |
-!    |   by minimizing the exponential penalty/multiplier function        |
-!    |                                                                    |
-!    |    phi(x,mu) = f(x) + mu sum_j=1^n [ z_j^l(x,mu) + z_j^u(x,mu) ] + |
-!    |                     + mu sum_i=1^m [ w_i^l(x,mu) + w_i^u(x,mu) ]   |
-!    |                                                                    |
-!    |   where z_j^l(x,mu) = v_j^l e^((x_j^l-x_j)/mu)                     |
-!    |         z_j^u(x,mu) = v_j^u e^((x_j-x_j^u)/mu)                     |
-!    |         y_i^l(x,mu) = w_i^l e^((c_i^l-c_i(x))/mu)                  |
-!    |   and   y_i^u(x,mu) = w_i^u e^((c_i(x)-c_i^u)/mu)                  |
-!    |                                                                    |
-!    |   for a suitable sequence of (mu,v^l,v^u,w^l,w^u) > 0              |
-!    |                                                                    |
-!     --------------------------------------------------------------------
+!     ------------------------------------------------------------------------
+!    |                                                                        |
+!    | QPF, a quadratic penalty/augmented Lagrangian function algorithm       |
+!    |       for nonlinearly-constrained optimization                         |
+!    |                                                                        |
+!    |   Aim: find a (local) minimizer of the objective f(x)                  |
+!    |        subject to x^l <= x <= x^u and c^l <= c(x) <= c^u               |
+!    |                                                                        |
+!    |   by minimizing the quadratic penalty/augmented Lagrangian function    |
+!    |                                                                        |
+!    |     phi(x,y,mu,nu) = f(x)                                              |
+!    |        + 1/2mu [ sum_{i in C_l(x,y,mu)} (c_i(x) - c^l_i - mu y_i)^2 +  |
+!    |                  sum_{i in C_u(x,y,mu)} (c_i(x) - c^u_i - mu y_i)^2 ]  |
+!    |        + 1/2mu [ sum_{i in X_l(x,y,nu)} (  x_i  - x^l_i - nu z_i)^2 +  |
+!    |                  sum_{i in X_u(x,y,nu)} (  x_i  - x^u_i - nu z_i)^2 ]  |
+!    |                                                                        |
+!    |   where  C_l(x,y,mu) = {i : c_i(x) - c^l_i <= mu y_i}                  |
+!    |          C_u(x,y,mu) = {i : c_i(x) - c^u_i >= mu y_i}                  |
+!    |          X_l(x,y,nu) = {i :   x_i  - x^l_i <= nu z_i}                  |
+!    |   and    X_u(x,y,nu) = {i :   x_i  - x^u_i >= nu z_i}                  |
+!    |                                                                        |
+!    |   for given sequences of Lagrange multipliers y and dual variables z   |
+!    |   and a sequence of decreasing penalty paramters mu > 0                |
+!    |                                                                        |
+!     ------------------------------------------------------------------------
 
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
@@ -55,8 +59,8 @@
      IMPLICIT NONE
 
      PRIVATE
-     PUBLIC :: EPF_initialize, EPF_read_specfile, EPF_solve,                   &
-               EPF_terminate, NLPT_problem_type, GALAHAD_userdata_type,        &
+     PUBLIC :: QPF_initialize, QPF_read_specfile, QPF_solve,                   &
+               QPF_terminate, NLPT_problem_type, GALAHAD_userdata_type,        &
                SMT_type, SMT_put
 
 !----------------------
@@ -70,22 +74,14 @@
      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
 
      INTEGER ( KIND = ip_ ), PARAMETER :: iter_advanced_max = 5
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
-     REAL ( KIND = rp_ ), PARAMETER :: teeny = TINY( one )
-     REAL ( KIND = rp_ ), PARAMETER :: giant = HUGE( one )
-     REAL ( KIND = rp_ ), PARAMETER :: exp_arg_tiny = LOG( teeny )
-     REAL ( KIND = rp_ ), PARAMETER :: exp_arg_huge = LOG( giant )
-     REAL ( KIND = rp_ ), PARAMETER :: infinity = giant
-
-     LOGICAL :: use_cosh = .FALSE.
-!    LOGICAL :: use_cosh = .TRUE.
-!    LOGICAL :: DEBUG = .FALSE.
 
 !--------------------------------------
 !   G l o b a l   P a r a m e t e r s
 !--------------------------------------
 
-     LOGICAL, PUBLIC, PARAMETER :: EPF_available = .TRUE.
+     LOGICAL, PUBLIC, PARAMETER :: QPF_available = .TRUE.
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -95,7 +91,7 @@
 !   control derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
-     TYPE, PUBLIC :: EPF_control_type
+     TYPE, PUBLIC :: QPF_control_type
 
 !   error and warning diagnostics occur on stream error
 
@@ -149,17 +145,17 @@
 
 !   the required absolute and relative accuracies for the primal infeasibility
 
-        REAL ( KIND = rp_ ) :: stop_abs_p = epsmch
+        REAL ( KIND = rp_ ) :: stop_abs_p = epsmch ** 0.33
         REAL ( KIND = rp_ ) :: stop_rel_p = epsmch
 
 !   the required absolute and relative accuracies for the dual infeasibility
 
-        REAL ( KIND = rp_ ) :: stop_abs_d = epsmch
+        REAL ( KIND = rp_ ) :: stop_abs_d = epsmch ** 0.33
         REAL ( KIND = rp_ ) :: stop_rel_d = epsmch
 
 !   the required absolute and relative accuracies for the complementarity
 
-        REAL ( KIND = rp_ ) :: stop_abs_c = epsmch
+        REAL ( KIND = rp_ ) :: stop_abs_c = epsmch ** 0.33
         REAL ( KIND = rp_ ) :: stop_rel_c = epsmch
 
 !   the smallest the step can be before termination
@@ -169,11 +165,12 @@
 !   the initial value of the penalty parameter (non-positive sets automatically)
 
 !      REAL ( KIND = rp_ ) :: initial_mu = point1
-       REAL ( KIND = rp_ ) :: initial_mu = - one
+!      REAL ( KIND = rp_ ) :: initial_mu = - one
+       REAL ( KIND = rp_ ) :: initial_mu = one
 
 !   the amount by which the penalty parameter is decreased
 
-       REAL ( KIND = rp_ ) :: mu_reduce = half
+       REAL ( KIND = rp_ ) :: mu_reduce = point1
 
 !   the smallest value the objective function may take before the problem
 !    is marked as unbounded
@@ -181,16 +178,11 @@
        REAL ( KIND = rp_ ) :: obj_unbounded = - epsmch ** ( - 2 )
 
 !   perform an advanced start at the end of every iteration when the KKT
-!    residuals are smaller than %advanced_start (-ve means never)
+!   residuals are smaller than %advanced_start (-ve means never)
 
        REAL ( KIND = rp_ ) :: advanced_start = ten ** ( - 2 )
 
-!   perform an advanced SQP start at the end of every iteration when the KKT
-!    residuals are smaller than %sqp_start (-ve means never)
-
-       REAL ( KIND = rp_ ) :: sqp_start = ten ** ( - 4 )
-
-!  stop the advanced start search once the residuals are sufficientl small
+!  stop the advanced start search once the residuals sufficientl small
 
        REAL ( KIND = rp_ ) :: advanced_stop = ten ** ( - 8 )
 
@@ -207,6 +199,11 @@
 
        LOGICAL :: hessian_available = .TRUE.
 
+!   should the augmented-Lagrangian function be used rather than the
+!    quadratic-penalty function?
+
+       LOGICAL :: augmented_lagrangian = .TRUE.
+
 !   use a direct (factorization) or (preconditioned) iterative method to
 !    find the search direction
 
@@ -218,7 +215,7 @@
        LOGICAL :: space_critical = .FALSE.
 
 !   if %deallocate_error_fatal is true, any array/pointer deallocation error
-!    will terminate execution. Otherwise, computation will continue
+!     will terminate execution. Otherwise, computation will continue
 
        LOGICAL :: deallocate_error_fatal = .FALSE.
 
@@ -240,13 +237,13 @@
 
        TYPE ( SSLS_control_type ) :: SSLS_control
 
-     END TYPE EPF_control_type
+     END TYPE QPF_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
 !   time derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - -
 
-     TYPE, PUBLIC :: EPF_time_type
+     TYPE, PUBLIC :: QPF_time_type
 
 !  the total CPU time spent in the package
 
@@ -294,9 +291,9 @@
 !   inform derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
-     TYPE, PUBLIC :: EPF_inform_type
+     TYPE, PUBLIC :: QPF_inform_type
 
-!  return status. See EPF_solve for details
+!  return status. See QPF_solve for details
 
        INTEGER ( KIND = ip_ ) :: status = 0
 
@@ -329,22 +326,22 @@
        INTEGER ( KIND = ip_ ) :: n_free = - 1
 
 !  the value of the objective function at the best estimate of the solution
-!   determined by EPF_solve
+!   determined by QPF_solve
 
        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  the norm of the primal infeasibility at the best estimate of the solution
-!    determined by EPF_solve
+!    determined by QPF_solve
 
        REAL ( KIND = rp_ ) :: primal_infeasibility = HUGE( one )
 
 !  the norm of the dual infeasibility at the best estimate of the solution
-!    determined by EPF_solve
+!    determined by QPF_solve
 
        REAL ( KIND = rp_ ) :: dual_infeasibility = HUGE( one )
 
 !  the norm of the complementary slackness at the best estimate of the solution
-!    determined by EPF_solve
+!    determined by QPF_solve
 
        REAL ( KIND = rp_ ) :: complementary_slackness = HUGE( one )
 
@@ -354,7 +351,7 @@
 
 !  timings (see above)
 
-       TYPE ( EPF_time_type ) :: time
+       TYPE ( QPF_time_type ) :: time
 
 !  inform parameters for BSC
 
@@ -368,24 +365,23 @@
 
        TYPE ( SSLS_inform_type ) :: SSLS_inform
 
-     END TYPE EPF_inform_type
+     END TYPE QPF_inform_type
 
 !  - - - - - - - - - -
 !   data derived type
 !  - - - - - - - - - -
 
-     TYPE, PUBLIC :: EPF_data_type
+     TYPE, PUBLIC :: QPF_data_type
        INTEGER ( KIND = ip_ ) :: branch = 1
        INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print
        INTEGER ( KIND = ip_ ) :: print_level, print_gap, jumpto, iter_advanced
-       INTEGER ( KIND = ip_ ) :: h_ne, j_ne, jtdzj_ne, np1, npm, npma
-       INTEGER ( KIND = ip_ ) :: ne_b, ne_c
+       INTEGER ( KIND = ip_ ) :: h_ne, j_ne, jtdzj_ne, np1, npm
        INTEGER ( KIND = ip_ ) :: n_c_l, n_c_u, n_x_l, n_x_u, n_c
        INTEGER ( KIND = ip_ ) :: n_j_l, n_j_u, n_i_l, n_i_u, n_b
 
        REAL :: time_start, time_record, time_now
        REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
-       REAL ( KIND = rp_ ) :: mu, max_mu, stop_p, stop_d, stop_c, f_old
+       REAL ( KIND = rp_ ) :: max_mu, stop_p, stop_d, stop_c, f_old
        REAL ( KIND = rp_ ) :: old_primal_infeasibility, rnorm, rnorm_old
 
        LOGICAL :: printi, printt, printm, printw, printd
@@ -395,52 +391,41 @@
        LOGICAL :: reverse_hprod, reverse_prec
        LOGICAL :: constrained, map_h_to_jtj, no_bounds, header, update_vw
        LOGICAL :: eval_fc, eval_gj, eval_hl, initialize_munu, update_munu
-       LOGICAL :: use_advanced, try_sqp, use_sqp
 
-       CHARACTER ( LEN = 1 ) :: negcur, bndry, perturb, hard, adv
+       CHARACTER ( LEN = 1 ) :: negcur, bndry, perturb, hard
 
 !  workspace arrays
 
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_status
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_status
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_index
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_index
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_status
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_map
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Dz_map
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Dy
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Dz
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Dx_map
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: B_rows
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Dc
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Dx
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V_l
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V_u
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W_l
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W_u
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_l
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_u
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_l
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_u
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MU_l
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MU_u
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: NU_l
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: NU_u
+
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MU
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: NU
 
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_old
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_old
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_old
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_l_old
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_u_old
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_l_old
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_u_old
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_old
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_old
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: J_old
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_old
 
 !  local copy of control parameters
 
-       TYPE ( EPF_control_type ) :: control
+       TYPE ( QPF_control_type ) :: control
 
 !  penalty-function problem data
 
-       TYPE ( NLPT_problem_type ) :: epf
+       TYPE ( NLPT_problem_type ) :: qpf
 
 !  J(transpose) if required
 
@@ -460,17 +445,17 @@
        TYPE ( SMT_type ) :: C_ssls
        TYPE ( SSLS_data_type ) :: SSLS_data
 
-     END TYPE EPF_data_type
+     END TYPE QPF_data_type
 
    CONTAINS
 
-!-*-*-  G A L A H A D -  E P F _ I N I T I A L I Z E  S U B R O U T I N E  -*-
+!-*-*-  G A L A H A D -  Q P F _ I N I T I A L I Z E  S U B R O U T I N E  -*-
 
-     SUBROUTINE EPF_initialize( data, control, inform )
+     SUBROUTINE QPF_initialize( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!   Provide default values for EPF controls
+!   Provide default values for QPF controls
 
 !   Arguments:
 
@@ -484,9 +469,9 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( EPF_data_type ), INTENT( INOUT ) :: data
-     TYPE ( EPF_control_type ), INTENT( OUT ) :: control
-     TYPE ( EPF_inform_type ), INTENT( OUT ) :: inform
+     TYPE ( QPF_data_type ), INTENT( INOUT ) :: data
+     TYPE ( QPF_control_type ), INTENT( OUT ) :: control
+     TYPE ( QPF_inform_type ), INTENT( OUT ) :: inform
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -512,21 +497,21 @@
 
      RETURN
 
-!  End of subroutine EPF_initialize
+!  End of subroutine QPF_initialize
 
-     END SUBROUTINE EPF_initialize
+     END SUBROUTINE QPF_initialize
 
-!-*-*-*-*-   E P F _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-*-*-*-
+!-*-*-*-*-   Q P F _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-*-*-*-
 
-     SUBROUTINE EPF_read_specfile( control, device, alt_specname )
+     SUBROUTINE QPF_read_specfile( control, device, alt_specname )
 
 !  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by EPF_initialize could (roughly)
+!  The default values as given by QPF_initialize could (roughly)
 !  have been set as:
 
-! BEGIN EPF SPECIFICATIONS (DEFAULT)
+! BEGIN QPF SPECIFICATIONS (DEFAULT)
 !  error-printout-device                           6
 !  printout-device                                 6
 !  alive-device                                    40
@@ -550,22 +535,22 @@
 !  update-multipliers-feasibility-tolerance        1.0D+20
 !  minimum-objective-before-unbounded              -1.0D+32
 !  advanced-start                                   1.0D-2
-!  sqp-start                                        1.0D-4
 !  advanced-stop                                    1.0D-8
 !  maximum-cpu-time-limit                          -1.0
 !  maximum-clock-time-limit                        -1.0
 !  hessian-available                               yes
+!  use-augmented-lagrangian                        yes
 !  sub-problem-direct                              no
 !  space-critical                                  no
 !  deallocate-error-fatal                          no
 !  alive-filename                                  ALIVE.d
-! END EPF SPECIFICATIONS
+! END QPF SPECIFICATIONS
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( EPF_control_type ), INTENT( INOUT ) :: control
+     TYPE ( QPF_control_type ), INTENT( INOUT ) :: control
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -603,14 +588,15 @@
                                             = update_multipliers_tol + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: advanced_start                       &
                                             = obj_unbounded + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: sqp_start = advanced_start + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: advanced_stop = sqp_start + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: advanced_stop = advanced_start + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = advanced_stop + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: hessian_available                    &
                                             = clock_time_limit + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: subproblem_direct                    &
+     INTEGER ( KIND = ip_ ), PARAMETER :: augmented_lagrangian                 &
                                             = hessian_available + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: subproblem_direct                    &
+                                            = augmented_lagrangian + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = subproblem_direct + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
                                             = space_critical + 1
@@ -618,7 +604,7 @@
                                             = deallocate_error_fatal + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = alive_file + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
-     CHARACTER( LEN = 4 ), PARAMETER :: specname = 'EPF '
+     CHARACTER( LEN = 4 ), PARAMETER :: specname = 'QPF '
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
 !  Define the keywords
@@ -655,7 +641,6 @@
        = 'update-multipliers-feasibility-tolerance'
      spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
      spec( advanced_start )%keyword = 'advanced-start'
-     spec( sqp_start )%keyword = 'sqp-start'
      spec( advanced_stop )%keyword = 'advanced-stop'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
@@ -663,6 +648,7 @@
 !  Logical key-words
 
      spec( hessian_available )%keyword = 'hessian-available'
+     spec( augmented_lagrangian )%keyword = 'use-augmented-lagrangian'
      spec( subproblem_direct )%keyword = 'sub-problem-direct'
      spec( space_critical )%keyword = 'space-critical'
      spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
@@ -756,9 +742,6 @@
      CALL SPECFILE_assign_value( spec( advanced_start ),                       &
                                  control%advanced_start,                       &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( sqp_start ),                            &
-                                 control%sqp_start,                            &
-                                 control%error )
      CALL SPECFILE_assign_value( spec( advanced_stop ),                        &
                                  control%advanced_stop,                        &
                                  control%error )
@@ -773,6 +756,9 @@
 
      CALL SPECFILE_assign_value( spec( hessian_available ),                    &
                                  control%hessian_available,                    &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( augmented_lagrangian ),                 &
+                                 control%augmented_lagrangian,                 &
                                  control%error )
      CALL SPECFILE_assign_value( spec( subproblem_direct ),                    &
                                  control%subproblem_direct,                    &
@@ -810,27 +796,27 @@
 
      RETURN
 
-!  End of subroutine EPF_read_specfile
+!  End of subroutine QPF_read_specfile
 
-     END SUBROUTINE EPF_read_specfile
+     END SUBROUTINE QPF_read_specfile
 
-!-*-*-*-  G A L A H A D -  E P F _ s o l v e  S U B R O U T I N E  -*-*-*-
+!-*-*-*-  G A L A H A D -  Q P F _ s o l v e  S U B R O U T I N E  -*-*-*-
 
-     SUBROUTINE EPF_solve( nlp, control, inform, data, userdata,               &
+     SUBROUTINE QPF_solve( nlp, control, inform, data, userdata,               &
                            eval_FC, eval_GJ, eval_HL, eval_HLPROD, eval_PREC )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  EPF_solve, an exponential penalty function algorithm to find a local
-!    minimizer of a given objective where the variables are required to
-!    satisfy (nonlinear) constraints
+!  QPF_solve, a quadratic-penalty/augmented_Lagrangian function algorithm
+!    to find a local minimizer of a given objective where the variables
+!    are required to satisfy (nonlinear) constraints
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!  For full details see the specification sheet for GALAHAD_EPF.
+!  For full details see the specification sheet for GALAHAD_QPF.
 !
 !  ** NB. default real/complex means double precision real/complex in
-!  ** GALAHAD_EPF_precision
+!  ** GALAHAD_QPF_precision
 !
 ! nlp is a scalar variable of type NLPT_problem_type that is used to
 !  hold data about the objective function. Relevant components are
@@ -913,10 +899,10 @@
 !   control%print_level > 4) is requested, and will be ignored if the array is
 !   not allocated.
 !
-! control is a scalar variable of type EPF_control_type. See EPF_control_type
+! control is a scalar variable of type QPF_control_type. See QPF_control_type
 !  in the module specification statements above for details
 !
-! inform is a scalar variable of type EPF_inform_type. See EPF_inform_type
+! inform is a scalar variable of type QPF_inform_type. See QPF_inform_type
 !  in the module specification statements above for details.
 !
 !  On initial entry, inform%status should be set to 1. On exit, the following
@@ -1011,7 +997,7 @@
 !        undefined at x - the user need not set data%U, but should then set
 !        data%eval_status to a non-zero value. *** IGNORE - NOT IMPLEMENTED ***]
 !
-!  data is a scalar variable of type EPF_data_type used for internal data.
+!  data is a scalar variable of type QPF_data_type used for internal data.
 !
 !  userdata is a scalar variable of type GALAHAD_userdata_type which may be
 !   used to pass user data to and from the eval_* subroutines (see below)
@@ -1034,7 +1020,7 @@
 !   variable set to 0. If C is present, the values of the constraint functions
 !   c(x) evaluated at x=X must be returned in C, and the status variable set
 !   to 0. If the evaluation is impossible at X, status should
-!   be set to a nonzero value. If eval_FC is not present, EPF_solve will
+!   be set to a nonzero value. If eval_FC is not present, QPF_solve will
 !   return to the user with inform%status = 2 each time an evaluation is
 !   required.
 !
@@ -1045,7 +1031,7 @@
 !   nabla_x c(x) evaluated at x=X must be returned in J_val in the same
 !   order as presented in nlp%J, and the status variable set to 0.
 !   If the evaluation is impossible at x=X, status should be set to a
-!   nonzero value. If eval_GJ is not present, EPF_solve will return to the
+!   nonzero value. If eval_GJ is not present, QPF_solve will return to the
 !   user with inform%status = 3 or 5 each time an evaluation is required.
 !
 !  eval_HL is an optional subroutine which if present must have the arguments
@@ -1054,7 +1040,7 @@
 !   at x=X and y=Y must be returned in H_val in the same order as presented in
 !   nlp%H, and the status variable set to 0. If the evaluation is impossible
 !   at X, status should be set to a nonzero value. If eval_HL is not present,
-!   EPF_solve will return to the user with inform%status = 4 or 5 each time
+!   QPF_solve will return to the user with inform%status = 4 or 5 each time
 !   an evaluation is required.
 !
 !  eval_HLPROD is an optional subroutine which if present must have
@@ -1064,7 +1050,7 @@
 !   at x=X and y=Y with the vector v=V and the vector u=U must be returned in U,
 !   and the status variable set to 0. If the evaluation is impossible at X,
 !   status should be set to a nonzero value. If eval_HPROD is not present,
-!   EPF_solve will return to the user with inform%status = 6 each time an
+!   QPF_solve will return to the user with inform%status = 6 each time an
 !   evaluation is required.
 !
 !  eval_PREC is an optional subroutine which if present must have the arguments
@@ -1072,7 +1058,7 @@
 !   user's preconditioner P(x) evaluated at x=X with the vector v=V, the result
 !   u must be retured in U, and the status variable set to 0. If the evaluation
 !   is impossible at X, status should be set to a nonzero value. If eval_PREC
-!   is not present, EPF_solve will return to the user with inform%status = 7
+!   is not present, QPF_solve will return to the user with inform%status = 7
 !   each time an evaluation is required.
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1082,9 +1068,9 @@
 !-----------------------------------------------
 
      TYPE ( NLPT_problem_type ), INTENT( INOUT ) :: nlp
-     TYPE ( EPF_control_type ), INTENT( IN ) :: control
-     TYPE ( EPF_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( EPF_data_type ), INTENT( INOUT ) :: data
+     TYPE ( QPF_control_type ), INTENT( IN ) :: control
+     TYPE ( QPF_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( QPF_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_FC, eval_GJ, eval_HL, eval_HLPROD, eval_PREC
 
@@ -1145,10 +1131,8 @@
 !-----------------------------------------------
 
      INTEGER ( KIND = ip_ ) :: i, ii, ic, ir, j, k, l
-     REAL ( KIND = rp_ ) :: penalty_term, arg, exp_arg, vcosh, wcosh
-     REAL ( KIND = rp_ ) :: primal, dual, primal_infeasibility
-     REAL ( KIND = rp_ ) :: dual_infeasibility, complementary_slackness
-     LOGICAL :: alive, negval
+     REAL ( KIND = rp_ ) :: penalty_term, viol8n, multiplier
+     LOGICAL :: alive
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -1196,13 +1180,17 @@
 
      data%constrained = nlp%m > 0
 
-!  check that the simple bounds are consistent
+!  check that the lower and upper bounds are consistent, and that any
+!  components of x that have essentially equal bounds is fixed at those values
 
      DO i = 1, nlp%n
        IF ( nlp%X_l( i ) > nlp%X_u( i ) ) THEN
          inform%status = GALAHAD_error_bad_bounds
          GO TO 990
        END IF
+       IF ( nlp%X_u( i ) * ( one - SIGN( epsmch, nlp%X_u( i ) ) ) <=           &
+            nlp%X_l( i ) * ( one + SIGN( epsmch, nlp%X_l( i ) ) ) )            &
+         nlp%X( i ) = half * ( nlp%X_l( i ) + nlp%X_u( i ) )
      END DO
 
      IF ( data%constrained ) THEN
@@ -1213,10 +1201,6 @@
          END IF
        END DO
      END IF
-
-!  set the initial penalty parameter
-
-     data%mu = MAX( control%initial_mu, epsmch )
 
 !  has the problem bounds?
 
@@ -1230,60 +1214,56 @@
 
 !  allocate workspace for the problem:
 
-     data%epf%n = nlp%n
-     data%epf%pname = 'EPF       '
+     data%qpf%n = nlp%n
+     data%qpf%pname = 'QPF       '
+
+!  set up the initial Lagrange multipliers and dual variables if the
+!  augmented-Lagrangian objective is selected. If nlp%y & z are allocated
+!  use these values, otherwise initialize as zeros
+
+     array_name = 'QPF: data%Y'
+     CALL SPACE_resize_array( nlp%m, data%Y, inform%status,                    &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'QPF: data%Z'
+     CALL SPACE_resize_array( nlp%n, data%Z, inform%status,                    &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     IF ( control%augmented_lagrangian ) THEN
+       IF ( ALLOCATED( nlp%Y ) ) THEN
+         data%Y( : nlp%m ) = nlp%Y( : nlp%m )
+       ELSE
+         data%Y( : nlp%m ) = zero
+       END IF
+       IF ( ALLOCATED( nlp%Z ) ) THEN
+         data%Z( : nlp%n ) = nlp%Z( : nlp%n )
+       ELSE
+         data%Z( : nlp%n ) = zero
+       END IF
+     ELSE
+       data%Y( : nlp%m ) = zero
+       data%Z( : nlp%n ) = zero
+     END IF
 
 !  dual variable estimates for the simple-bound constraints
 
-     array_name = 'EPF: data%Z_l'
-     CALL SPACE_resize_array( nlp%n, data%Z_l, inform%status,                  &
+     array_name = 'QPF: data%NU'
+     CALL SPACE_resize_array( nlp%n, data%NU, inform%status,                   &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%Z_u'
-     CALL SPACE_resize_array( nlp%n, data%Z_u, inform%status,                  &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'EPF: data%NU_l'
-     CALL SPACE_resize_array( nlp%n, data%NU_l, inform%status,                 &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'EPF: data%NU_u'
-     CALL SPACE_resize_array( nlp%n, data%NU_u, inform%status,                 &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'EPF: data%V_l'
-     CALL SPACE_resize_array( nlp%n, data%V_l, inform%status,                  &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'EPF: data%V_u'
-     CALL SPACE_resize_array( nlp%n, data%V_u, inform%status,                  &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'EPF: nlp%Z'
+     array_name = 'QPF: nlp%Z'
      CALL SPACE_resize_array( nlp%n, nlp%Z, inform%status,                     &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1291,8 +1271,8 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%Dz'
-     CALL SPACE_resize_array( nlp%n, data%Dz, inform%status,                   &
+     array_name = 'QPF: data%Dx'
+     CALL SPACE_resize_array( nlp%n, data%Dx, inform%status,                   &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -1301,55 +1281,23 @@
 
 !  Lagrange multiplier estimates for the general constraints
 
-     array_name = 'EPF: data%Y_l'
-     CALL SPACE_resize_array( nlp%m, data%Y_l, inform%status,                  &
+     array_name = 'QPF: data%Y'
+     CALL SPACE_resize_array( nlp%m, data%Y, inform%status,                    &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%Y_u'
-     CALL SPACE_resize_array( nlp%m, data%Y_u, inform%status,                  &
+     array_name = 'QPF: data%MU'
+     CALL SPACE_resize_array( nlp%m, data%MU, inform%status,                   &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%MU_l'
-     CALL SPACE_resize_array( nlp%m, data%MU_l, inform%status,                 &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'EPF: data%MU_u'
-     CALL SPACE_resize_array( nlp%m, data%MU_u, inform%status,                 &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'EPF: data%W_l'
-     CALL SPACE_resize_array( nlp%m, data%W_l, inform%status,                  &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'EPF: data%W_u'
-     CALL SPACE_resize_array( nlp%m, data%W_u, inform%status,                  &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'EPF: nlp%Y'
+     array_name = 'QPF: nlp%Y'
      CALL SPACE_resize_array( nlp%m, nlp%Y, inform%status,                     &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1357,45 +1305,57 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%Dy'
-     CALL SPACE_resize_array( nlp%m, data%Dy, inform%status,                   &
+     array_name = 'QPF: data%Dc'
+     CALL SPACE_resize_array( nlp%m, data%Dc, inform%status,                   &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%epf%X'
-     CALL SPACE_resize_array( nlp%n, data%epf%X, inform%status,                &
+     array_name = 'QPF: data%qpf%X'
+     CALL SPACE_resize_array( nlp%n, data%qpf%X, inform%status,                &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%epf%G'
-     CALL SPACE_resize_array( nlp%n, data%epf%G, inform%status,                &
+     array_name = 'QPF: data%qpf%G'
+     CALL SPACE_resize_array( nlp%n, data%qpf%G, inform%status,                &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: nlp%gL'
+     array_name = 'QPF: nlp%gL'
      CALL SPACE_resize_array( nlp%n, nlp%gL, inform%status,                    &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
+     IF ( inform%status /= 0 ) GO TO 900
 
-!  X_status( j ), j = 1, ..., n, will contain the status of the
-!  j-th variable as the current iteration progresses. Possible values
-!  are 0 if the variable lies away from its bounds, 1 and 2 if it lies
+!  X_status( j ), j = 1, ..., n, and C_status( i ), i = 1, ..., m,
+!  will contain the status of the j-th variable and i-th constraint
+!  as the current iteration progresses. Possible values are 0 if the
+!  variable/constraint lies away from its bounds, 1 and 2 if it lies
 !  on its lower or upper bounds (respectively) - these may be problem
 !  bounds or trust-region bounds, and 3 or 4 if the variable is fixed
+!  or constraint is an equality. Specifically
+!
+!  X_status( j ) = 1 if x_j - x^l_i <= nu z_j
+!                  2 if x_j - x^u_i >= nu z_j
+!                  3 if x^l_j = x^u_j
+!                  0 otherwise, and
+!
+!  C_status( j ) = 1 if c_i(x) - c^l_i <= mu y_i
+!                  2 if c_i(x( - c^u_i >= mu y_i
+!                  3 if c^l_i = c^u_i
+!                  0 otherwise
 
-     array_name = 'EPF: data%X_status'
+     array_name = 'QPF: data%X_status'
      CALL SPACE_resize_array( nlp%n, data%X_status, inform%status,             &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1403,25 +1363,13 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-!  C_status( i ), i = 1, ..., m, will contain the status of the
-!  i-th constraiunt as the current iteration progresses. Possible values
-!  are 0 if the constraint lies away from its bounds, 1 and 2 if it lies
-!  on its lower or upper bounds (respectively), and 3 if the constraint 
-!  is fixed
-
-     array_name = 'EPF: data%C_status'
+     array_name = 'QPF: data%C_status'
      CALL SPACE_resize_array( nlp%m, data%C_status, inform%status,             &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
-
-!  choose starting values for the dual variables and Lagrange multipliers
-!  (to do properly!)
-
-     data%Z_l( : nlp%n ) = one ; data%Z_u( : nlp%n ) = one
-     data%Y_l( : nlp%m ) = one ; data%Y_u( : nlp%m ) = one
 
 !  ensure that the data is consistent
 
@@ -1514,12 +1462,6 @@
          CLOSE( control%alive_unit )
        END IF
      END IF
-
-!  make sure that the supplied sqp start control is no larger than the
-!  advanced start one
-
-     data%control%sqp_start = MIN( data%control%sqp_start,                     &
-                                   data%control%advanced_start )
 
 !  record the number of nonzeos in the upper triangle of the Hessian
 
@@ -1615,22 +1557,22 @@
          END DO
        END SELECT
 
-!  record the sparsity pattern of J^T D_y J in data%epf%H
+!  record the sparsity pattern of J^T D_y J in data%qpf%H
 
        data%control%BSC_control%new_a = 3
        data%control%BSC_control%extra_space_s = 0
        data%control%BSC_control%s_also_by_column = data%map_h_to_jtj
-       CALL BSC_form( nlp%n, nlp%m, data%JT, data%epf%H, data%BSC_data,        &
+       CALL BSC_form( nlp%n, nlp%m, data%JT, data%qpf%H, data%BSC_data,        &
                       data%control%BSC_control, inform%BSC_inform )
        data%control%BSC_control%new_a = 1
-       data%jtdzj_ne = data%epf%H%ne
+       data%jtdzj_ne = data%qpf%H%ne
 
 !   if required, find a mapping for the entries of H(x,y) and D_z into the
-!   existing structure in data%epf%H for J^T D_y J, expanding the structure
+!   existing structure in data%qpf%H for J^T D_y J, expanding the structure
 !   as necessary
 
        IF ( data%map_h_to_jtj ) THEN
-         array_name = 'epf: data%H_map'
+         array_name = 'qpf: data%H_map'
          CALL SPACE_resize_array( data%h_ne, data%H_map, inform%status,        &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = data%control%deallocate_error_fatal,  &
@@ -1638,8 +1580,8 @@
                 bad_alloc = inform%bad_alloc, out = data%control%error )
          IF ( inform%status /= 0 ) GO TO 980
 
-         array_name = 'epf: data%Dz_map'
-         CALL SPACE_resize_array( nlp%n, data%Dz_map, inform%status,           &
+         array_name = 'qpf: data%Dx_map'
+         CALL SPACE_resize_array( nlp%n, data%Dx_map, inform%status,           &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = data%control%deallocate_error_fatal,  &
                 exact_size = data%control%space_critical,                      &
@@ -1649,87 +1591,36 @@
          DO j = 1, nlp%n
            IF ( nlp%X_l( j ) >= - control%infinity .OR.                        &
                 nlp%X_u( j ) <= control%infinity ) THEN
-             data%Dz_map( j ) = 1
+             data%Dx_map( j ) = 1
            ELSE
-             data%Dz_map( j ) = 0
+             data%Dx_map( j ) = 0
            END IF
          END DO
-         CALL EPF_map_set( data%epf%H, nlp%H, data%Dz_map, data%H_map,         &
+         CALL QPF_map_set( data%qpf%H, nlp%H, data%Dx_map, data%H_map,         &
                            inform%status, inform%alloc_status )
          IF ( inform%status /= 0 ) GO TO 980
        END IF
      ELSE
-write(data%out,*) ' No indirect subproblem option as yet'
+write(6,*) ' No indirect subproblem option as yet'
 stop
      END IF
 
 !  ensure that the initial point is feasible
 
-     nlp%X( : nlp%n ) = EPF_projection( nlp%n, nlp%X, nlp%X_l, nlp%X_u )
-
-!  find the initial active set for x
-
-     DO i = 1, nlp%n
-       IF ( nlp%X_u( i ) * ( one - SIGN( epsmch, nlp%X_u( i ) ) ) <=           &
-            nlp%X_l( i ) * ( one + SIGN( epsmch, nlp%X_l( i ) ) ) ) THEN
-         data%X_status( i ) = 3
-         nlp%X( i ) = half * ( nlp%X_l( i ) + nlp%X_u( i ) )
-       ELSE IF ( nlp%X( i ) <=                                                 &
-                 nlp%X_l( i ) * ( one + SIGN( epsmch, nlp%X_l( i ) ) ) ) THEN
-         data%X_status( i ) = 1
-       ELSE IF ( nlp%X( i ) >=                                                 &
-                 nlp%X_u( i ) * ( one - SIGN( epsmch, nlp%X_u( i ) ) ) ) THEN
-         data%X_status( i ) = 2
-       ELSE
-         data%X_status( i ) = 0
-       END IF
-     END DO
-
-!  set initial estimates of the dual variables ...
-
-     data%V_l = zero ; data%V_u = zero
-     DO j = 1, nlp%n
-       IF ( nlp%X_l( j ) >= - control%infinity ) data%V_l( j ) = one
-       IF ( nlp%X_u( j ) <= control%infinity )  data%V_u( j ) = one
-     END DO
-
-!  ... and Lagrange multipliers
-
-     data%W_l = zero ; data%W_u = zero
-     DO i = 1, nlp%m
-       IF ( nlp%C_l( i ) >= - control%infinity ) data%W_l( i ) = one
-       IF ( nlp%C_u( i ) <= control%infinity ) data%W_u( i ) = one
-     END DO
+     nlp%X( : nlp%n ) = QPF_projection( nlp%n, nlp%X, nlp%X_l, nlp%X_u )
 
 !  set space for matrices and vectors required for advanced start if necessary
 
      IF ( data%control%advanced_start > zero ) THEN
-       data%use_advanced = .FALSE.
 !      data%np1 = nlp%n + 1 ; data%npm = nlp%n + nlp%m
 
-!  assign row numbers in B for J(x) block. For i = 1,...,m,
-!    C_index( i ) =  l row i of J(x) occurs in row l of B (single sided bound)
-!                      or in rows l and l+1 of B (double bounds)
-
-       array_name = 'colt: data%C_index'
-       CALL SPACE_resize_array( nlp%m, data%C_index,                           &
+       array_name = 'colt: data%B_rows'
+       CALL SPACE_resize_array( nlp%m, data%B_rows,                            &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-!  assign row numbers in B for I block. For j = 1,...,n,
-!    X_index( j ) =  l row j of I occurs in row l of B (single sided bound)
-!                      or in rows l and l+1 of B (double bounds)
-
-       array_name = 'colt: data%X_index'
-       CALL SPACE_resize_array( nlp%n, data%X_index,                           &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( inform%status /= 0 ) GO TO 900
 
        array_name = 'colt: data%R'
        CALL SPACE_resize_array( data%npm, data%R,                              &
@@ -1737,7 +1628,7 @@ stop
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( inform%status /= 0 ) GO TO 900
 
        array_name = 'colt: data%X_old'
        CALL SPACE_resize_array( nlp%n, data%X_old,                             &
@@ -1745,39 +1636,23 @@ stop
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( inform%status /= 0 ) GO TO 900
 
-       array_name = 'colt: data%Y_l_old'
-       CALL SPACE_resize_array( nlp%m, data%Y_l_old,                           &
+       array_name = 'colt: data%Y_old'
+       CALL SPACE_resize_array( nlp%m, data%Y_old,                             &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( inform%status /= 0 ) GO TO 900
 
-       array_name = 'colt: data%Y_u_old'
-       CALL SPACE_resize_array( nlp%m, data%Y_u_old,                           &
+       array_name = 'colt: data%Z_old'
+       CALL SPACE_resize_array( nlp%m, data%Z_old,                             &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'colt: data%Z_l_old'
-       CALL SPACE_resize_array( nlp%n, data%Z_l_old,                           &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'colt: data%Z_u_old'
-       CALL SPACE_resize_array( nlp%n, data%Z_u_old,                           &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( inform%status /= 0 ) GO TO 900
 
        array_name = 'colt: data%C_old'
        CALL SPACE_resize_array( nlp%m, data%C_old,                             &
@@ -1785,7 +1660,7 @@ stop
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( inform%status /= 0 ) GO TO 900
 
        array_name = 'colt: data%G_old'
        CALL SPACE_resize_array( nlp%n, data%G_old,                             &
@@ -1793,7 +1668,7 @@ stop
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( inform%status /= 0 ) GO TO 900
 
        array_name = 'colt: data%J_old'
        CALL SPACE_resize_array( data%J_ne, data%J_old,                         &
@@ -1801,7 +1676,7 @@ stop
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( inform%status /= 0 ) GO TO 900
 
        array_name = 'colt: data%H_old'
        CALL SPACE_resize_array( data%H_ne, data%H_old,                         &
@@ -1809,7 +1684,7 @@ stop
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( inform%status /= 0 ) GO TO 900
 
 !  advanced starts will require access to the matrices
 !
@@ -1819,6 +1694,17 @@ stop
 !       (    I   )
 !
 !   C = diag( - mu Y_l^-1  - mu Y_u^-1  - mu Z_l^-1  - mu Z_u^-1 )
+
+!  assign row numbers for B. For i = 1,...,m,
+!    B_rows( i ) =  l row i of c occurs in row l of B (single sided bound) or
+!                   in rows l and l+1 of B (double bounds)
+
+       ii = 1
+       DO i = 1, nlp%m
+         data%B_rows( i ) = ii
+         IF ( nlp%C_l( i ) >= - control%infinity ) ii = ii + 1
+         IF ( nlp%C_u( i ) <= control%infinity ) ii = ii + 1
+       END DO
 
 !  discover how much space is needed for the B block
 
@@ -1854,7 +1740,7 @@ stop
 
 !  set space for the B block
 
-       data%B_ssls%m = data%n_c ; data%B_ssls%n = nlp%n
+       data%B_ssls%n = data%n_c ; data%C_ssls%m = nlp%n
        data%B_ssls%ne = data%n_b
        CALL SMT_put( data%B_ssls%type, 'COORDINATE', inform%alloc_status )
 
@@ -1864,7 +1750,7 @@ stop
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( inform%status /= 0 ) GO TO 900
 
        array_name = 'colt: data%B%col'
        CALL SPACE_resize_array( data%B_ssls%ne, data%B_ssls%col,               &
@@ -1872,7 +1758,7 @@ stop
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( inform%status /= 0 ) GO TO 900
 
        array_name = 'colt: data%B%val'
        CALL SPACE_resize_array( data%B_ssls%ne, data%B_ssls%val,               &
@@ -1880,11 +1766,7 @@ stop
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-!  [--------------- not needed ------------
-
-       IF ( .FALSE. ) THEN
+       IF ( inform%status /= 0 ) GO TO 900
 
 !  set up the structure of the B block. First insert the J(x) blocks
 
@@ -1892,7 +1774,7 @@ stop
        SELECT CASE ( SMT_get( nlp%J%type ) )
        CASE ( 'DENSE' )
          DO i = 1, nlp%m
-           ir = data%C_index( i )
+           ir = data%B_rows( i )
            DO j = 1, nlp%n
              ii = ir
              IF ( nlp%C_l( i ) >= - control%infinity ) THEN
@@ -1907,7 +1789,7 @@ stop
          END DO
        CASE ( 'SPARSE_BY_ROWS' )
          DO i = 1, nlp%m
-           ir = data%C_index( i )
+           ir = data%B_rows( i )
            DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
              j = nlp%J%col( l ) ; ii = ir
              IF ( nlp%C_l( i ) >= - control%infinity ) THEN
@@ -1922,7 +1804,7 @@ stop
          END DO
        CASE ( 'COORDINATE' )
          DO l = 1, nlp%J%ne
-           i = nlp%J%row( l ) ; ii = data%C_index( i ) ; j = nlp%J%col( l )
+           i = nlp%J%row( l ) ; ii = data%B_rows( i ) ; j = nlp%J%col( l )
            IF ( nlp%C_l( i ) >= - control%infinity ) THEN
              data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
              k = k + 1 ; ii = ii + 1
@@ -1949,18 +1831,6 @@ stop
            k = k + 1
          END IF
        END DO
-!write(data%out,"( ' B ' )" )
-!do l = 1, data%B_ssls%ne
-!write(data%out,"( ' row, col ', 2i7 )" ) data%B_ssls%row( l ), data%B_ssls%col( l )
-!end do
-
-!  --------------- end of not needed ------------ ]
-
-       END IF
-
-!  record whether an advanced SQP start will be attempted
-
-     data%try_sqp = data%control%sqp_start > zero
 
 !  set space for the C block
 
@@ -1974,12 +1844,11 @@ stop
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( inform%status /= 0 ) GO TO 900
 
 !  set up and analyse the data structures for the matrix required for the
 !  advanced start
 
-       IF ( .FALSE. )                                                          &
        CALL SSLS_analyse( nlp%n, data%n_c, nlp%H, data%B_ssls, data%C_ssls,    &
                           data%SSLS_data, data%control%SSLS_control,           &
                           inform%SSLS_inform )
@@ -1998,7 +1867,7 @@ stop
     IF ( data%control%update_multipliers_itmin < 0 )                           &
       data%control%update_multipliers_itmin = data%control%max_it + 1
 
-    data%epf%X( : nlp%n ) = nlp%X( : nlp%n )
+    data%qpf%X( : nlp%n ) = nlp%X( : nlp%n )
     inform%iter = 0
 
 !  compute stopping tolerances
@@ -2042,20 +1911,6 @@ stop
          inform%status = GALAHAD_error_max_iterations ; GO TO 800
        END IF
 
-!  check to see if the time limit has been exceeded
-
-       CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-       data%time_now = data%time_now - data%time_start
-       data%clock_now = data%clock_now - data%clock_start
-       IF ( data%printt ) WRITE( data%out, "( /, A, ' Time so far = ', 0P,     &
-      &    F12.2,  ' seconds' )" ) prefix, data%clock_now
-       IF ( ( data%control%cpu_time_limit >= zero .AND.                        &
-              data%time_now > data%control%cpu_time_limit ) .OR.               &
-            ( data%control%clock_time_limit >= zero .AND.                      &
-              data%clock_now > data%control%clock_time_limit ) ) THEN
-         inform%status = GALAHAD_error_cpu_limit ; GO TO 800
-       END IF
-
 !  control printing
 
        IF ( inform%iter >= data%start_print .AND.                              &
@@ -2093,7 +1948,7 @@ stop
 
 !  solve the problem using a trust-region method
 
-         CALL TRU_solve( data%epf, data%control%tru_control,                   &
+         CALL TRU_solve( data%qpf, data%control%tru_control,                   &
                          inform%tru_inform, data%tru_data, userdata )
 
 !  reverse communication request for more information
@@ -2106,10 +1961,10 @@ stop
          CASE ( 2 )
            IF ( data%eval_fc ) THEN
              IF ( data%reverse_fc ) THEN
-               nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+               nlp%X( : nlp%n ) = data%qpf%X( : nlp%n )
                data%branch = 210 ; inform%status = 2 ; RETURN
              ELSE
-               CALL eval_FC( data%eval_status, data%epf%X( : nlp%n ),          &
+               CALL eval_FC( data%eval_status, data%qpf%X( : nlp%n ),          &
                              userdata, nlp%f, nlp%C( : nlp%m ) )
              END IF
            END IF
@@ -2120,10 +1975,10 @@ stop
          CASE ( 3 )
            IF ( data%eval_gj ) THEN
              IF ( data%reverse_gj ) THEN
-               nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+               nlp%X( : nlp%n ) = data%qpf%X( : nlp%n )
                data%branch = 210 ; inform%status = 3 ; RETURN
              ELSE
-               CALL eval_GJ( data%eval_status, data%epf%X( : nlp%n ),          &
+               CALL eval_GJ( data%eval_status, data%qpf%X( : nlp%n ),          &
                              userdata, nlp%G( : nlp%n ),                       &
                              nlp%J%val( 1 : nlp%J%ne ) )
              END IF
@@ -2135,11 +1990,11 @@ stop
          CASE ( 4 )
            IF ( data%eval_hl .AND. data%control%subproblem_direct ) THEN
              IF ( data%reverse_hl ) THEN
-               nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+               nlp%X( : nlp%n ) = data%qpf%X( : nlp%n )
                data%branch = 210 ; inform%status = 4 ; RETURN
              ELSE
-               CALL eval_HL( data%eval_status, data%epf%X( : nlp%n ),          &
-                             - nlp%Y( : nlp%m ), userdata,                     &
+               CALL eval_HL( data%eval_status, data%qpf%X( : nlp%n ),          &
+                             nlp%Y( : nlp%m ), userdata,                       &
                              nlp%H%val( : nlp%H%ne ) )
              END IF
            END IF
@@ -2148,14 +2003,14 @@ stop
 !  ....................................
 
          CASE ( : - 1 )
-           nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+           nlp%X( : nlp%n ) = data%qpf%X( : nlp%n )
            GO TO 300
 
 !  terminal exit from inner-iteration loop
 !  .......................................
 
          CASE DEFAULT
-           nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+           nlp%X( : nlp%n ) = data%qpf%X( : nlp%n )
 
 !  note that the function and first derivatives have been recorded at
 !  the terminating point
@@ -2183,15 +2038,15 @@ stop
 !  compute the (infinity-) norm of the infeasibility
 
              inform%primal_infeasibility                                       &
-               = MAX( EPF_infeasibility( nlp%n, data%epf%X, nlp%X_l, nlp%X_u,  &
+               = MAX( QPF_infeasibility( nlp%n, data%qpf%X, nlp%X_l, nlp%X_u,  &
                                          control%infinity ),                   &
-                      EPF_infeasibility( nlp%m, nlp%C, nlp%C_l, nlp%C_u,       &
+                      QPF_infeasibility( nlp%m, nlp%C, nlp%C_l, nlp%C_u,       &
                                          control%infinity ) )
            ELSE
              data%eval_fc = .TRUE.
            END IF
-!          WRITE( data%out, "( ' f, ||c|| = ', 2ES12.4 )" )                    &
-!            inform%obj, inform%primal_infeasibility
+
+!          WRITE( 6, * ) ' f, ||c|| = ', inform%obj, inform%primal_infeasibility
 
 !  initialize the penalty parameters at the start of the first major iteration
 
@@ -2206,16 +2061,14 @@ stop
 
                DO j = 1, nlp%n
                  IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-                   data%NU_l( j )                                              &
-                     = MAX( one, ( nlp%X_l( j ) - data%epf%X( j ) ) )
+                   data%NU( j )                                                &
+                     = MAX( one, ( nlp%X_l( j ) - data%qpf%X( j ) ) )
                  ELSE
-                   data%NU_l( j ) = zero
+                   data%NU( j ) = zero
                  END IF
                  IF ( nlp%X_u( j ) <= control%infinity ) THEN
-                   data%NU_u( j )                                              &
-                     = MAX( one, ( nlp%X_u( j ) - data%epf%X( j ) ) )
-                 ELSE
-                   data%NU_u( j ) = zero
+                   data%NU( j )                                              &
+                     = MAX( data%NU( j ), ( nlp%X_u( j ) - data%qpf%X( j ) ) )
                  END IF
                END DO
 
@@ -2223,14 +2076,13 @@ stop
 
                DO i = 1, nlp%m
                  IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-                   data%MU_l( i ) = MAX( one, ABS( nlp%C_l( i ) - nlp%C( i ) ) )
+                   data%MU( i ) = MAX( one, ABS( nlp%C_l( i ) - nlp%C( i ) ) )
                  ELSE
-                   data%MU_l( i ) = zero
+                   data%MU( i ) = zero
                  END IF
                  IF ( nlp%C_u( i ) <= control%infinity ) THEN
-                   data%MU_u( i ) = MAX( one, ABS( nlp%C_u( i ) - nlp%C( i ) ) )
-                 ELSE
-                   data%MU_u( i ) = zero
+                   data%MU( i ) = MAX(  data%MU( i ),                          &
+                                        ABS( nlp%C_u( i ) - nlp%C( i ) ) )
                  END IF
                END DO
 
@@ -2241,182 +2093,137 @@ stop
 !  for the simple bound constraints
 
                DO j = 1, nlp%n
-                 IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-                   data%NU_l( j ) = control%initial_mu
+                 IF ( nlp%X_l( j ) >= - control%infinity .OR.                  &
+                      nlp%X_u( j ) <= control%infinity ) THEN
+                   data%NU( j ) = MAX( control%initial_mu, epsmch )
                  ELSE
-                   data%NU_l( j ) = zero
-                 END IF
-                 IF ( nlp%X_u( j ) <= control%infinity ) THEN
-                   data%NU_u( j ) = control%initial_mu
-                 ELSE
-                   data%NU_u( j ) = zero
+                   data%NU( j ) = zero
                  END IF
                END DO
 
 !  for the general constraints
 
                DO i = 1, nlp%m
-                 IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-                   data%MU_l( i ) = control%initial_mu
+                 IF ( nlp%C_l( i ) >= - control%infinity .OR.                  &
+                      nlp%C_u( i ) <= control%infinity ) THEN
+                   data%MU( i ) = MAX( control%initial_mu, epsmch )
                  ELSE
-                   data%MU_l( i ) = zero
-                 END IF
-                 IF ( nlp%C_u( i ) <= control%infinity ) THEN
-                   data%MU_u( i ) = control%initial_mu
-                 ELSE
-                   data%MU_u( i ) = zero
+                   data%MU( i ) = zero
                  END IF
                END DO
              END IF
 
 !  record the largest value
 
-             data%max_mu = MAX( MAXVAL( data%NU_l( : nlp%n ) ),                &
-                                MAXVAL( data%NU_u( : nlp%n ) ) )
+             data%max_mu = MAXVAL( data%NU( : nlp%n ) )
              IF ( nlp%m > 0 ) data%max_mu = MAX( data%max_mu,                  &
-                                MAXVAL( data%MU_l( : nlp%m ) ),                &
-                                MAXVAL( data%MU_u( : nlp%m ) ) )
+                                                 MAXVAL( data%MU( : nlp%m ) ) )
            END IF
 
-!  compute the individual and combined dual-variable
-
-!    z_j^l(x,nu) = v_j^l e^((x_j^l-x_j)/nu^l_j)
-!    z_j^u(x,uu) = v_j^u e^((x_j-x_j^u)/nu^u_j)
-!    z_j(x,nu) = - z_j^l(x,nu^l_j) + z_j^u(x,nu^u_j)
-!    Dz_jj(x,nu) = z_j^l(x,nu^l_j)/nu^l_j + z_j^u(x,nu^u_j)/nu^u_j
-
-!  & Lagrange-multiplier estimates,
-
-!    y_i^l(x,mu) = w_i^l e^((c_i^l-c_i(x))/mu^l_i)
-!    y_i^u(x,mu) = w_i^u e^((c_i(x)-c_i^u)/mu^u_i)
-!    y_i(x,mu) = - y_i^l(x,mu^l_i) + y_i^u(x,mu^u_i)
-!    Dy_ii(x,mu) = y_i^l(x,mu^l_i)/mu^l_i + y_i^u(x,mu^u_i)/mu^u_i
-
-!  and the total penalty term
-
-!    sum_j=1^n [z_j^l(x,nu^l_j) + z_j^u(x,nu^u_j)] +
-!    sum_i=1^m [y_i^l(x,mu^l_i) + y_i^u(x,mu^u_i)]
-
-!  N.B. for fixed variables, i.e., those for which x_j^l = x_j^u, use instead
-
-!    vcosh =  v_j^l cosh((x_j^l-x_j)/nu^l_j)
-!    z_j^l(x,nu) = v_j^l sinh((x_j^l-x_j)/nu^l_j)
-!    z_j(x,nu) = z_j^l(x,nu^l_j)
-!    Dz_jj(x,nu) = vcosh/nu^l_j)
-
-!  and equality constraints, i.e., those for which c_i^l = c_i^u,
-
-!    wcosh = w_i^l cosh((c_i^l-c_i(x))/mu^l_i)
-!    y_i^l(x,mu) = w_i^l sinh((c_i^l-c_i(x))/mu^l_i)
-!    y_i(x,mu) = y_i^l(x,mu^l_i)
-!    Dy_ii(x,mu) = wcosh/mu^l_i
-
-!  and the penalty term includes
-
-!    vcosh * nu^l_j + wcosh * mu^l_i
-
-!  (the z_j^u and y_i^u are not used in this case)
+!  find the current estimates of the active sets X_l(x,nu) and X_u(x,nu)
+!  (see intro) for x and the corresponding dual variable estimates
+!
+!                 /  z_i - 1/nu (x_i - x^l_i) if i in X_l(x,nu)
+!   z_i(x,z,nu) = |  z_i - 1/nu (x_i - x^u_i) if i in X_u(x,nu)
+!                 \  0 otherwise
 
            penalty_term = zero
            DO j = 1, nlp%n
-             IF ( use_cosh .AND. nlp%X_l( j ) == nlp%X_u( j ) ) THEN
-               arg = ( data%epf%X( j ) - nlp%X_l( j ) ) / data%NU_l( j )
-               vcosh = data%V_l( j ) * COSH( arg )
-               data%Z_l( j ) = data%V_l( j ) * SINH( arg )
-!data%Z_u( j ) = data%V_l( j ) * EXP( arg )
-               nlp%Z( j ) = data%Z_l( j )
-               data%Dz( j ) = vcosh / data%NU_l( j )
-               penalty_term = penalty_term + vcosh * data%NU_l( j )
-               CYCLE
-             END IF
-             IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-               exp_arg = ( nlp%X_l( j ) - data%epf%X( j ) ) / data%NU_l( j )
-               IF ( exp_arg > exp_arg_tiny ) THEN
-                 data%Z_l( j ) = data%V_l( j ) * EXP( exp_arg )
-               ELSE
-                 data%Z_l( j ) = zero
-               END IF
-               nlp%Z( j ) = - data%Z_l( j )
-               data%Dz( j ) = data%Z_l( j ) / data%NU_l( j )
-               penalty_term = penalty_term + data%NU_l( j ) * data%Z_l( j )
+             IF ( nlp%X_u( j ) * ( one - SIGN( epsmch, nlp%X_u( j ) ) ) <=     &
+                  nlp%X_l( j ) * ( one + SIGN( epsmch, nlp%X_l( j ) ) ) ) THEN
+               viol8n =                                                        &
+                 data%qpf%X( j ) - nlp%X_l( j ) - data%NU( j ) * data%Z( j )
+               multiplier = viol8n / data%NU( j )
+               penalty_term = penalty_term + viol8n * multiplier
+               nlp%Z( j ) = - multiplier
+               data%X_status( j ) = 3
+             ELSE IF ( nlp%X_l( j ) >= - control%infinity .AND.                &
+                       data%qpf%X( j ) - nlp%X_l( j ) <=                       &
+                         data%NU( j ) * data%Z( j ) ) THEN
+               viol8n =                                                        &
+                 data%qpf%X( j ) - nlp%X_l( j ) - data%NU( j ) * data%Z( j )
+               multiplier = viol8n / data%NU( j )
+               penalty_term = penalty_term + viol8n * multiplier
+               nlp%Z( j ) = - multiplier
+               data%X_status( j ) = 1
+             ELSE IF ( nlp%X_u( j ) <= control%infinity .AND.                  &
+                       data%qpf%X( j ) - nlp%X_u( j ) >=                       &
+                         data%NU( j ) * data%Z( j ) ) THEN
+               viol8n =                                                        &
+                 data%qpf%X( j ) - nlp%X_u( j ) - data%NU( j ) * data%Z( j )
+               multiplier = viol8n / data%NU( j )
+               penalty_term = penalty_term + viol8n * multiplier
+               nlp%Z( j ) = - multiplier
+               data%X_status( j ) = 2
              ELSE
                nlp%Z( j ) = zero
-               data%Dz( j ) = zero
-             END IF
-             IF ( nlp%X_u( j ) <= control%infinity ) THEN
-               exp_arg = ( data%epf%X( j ) - nlp%X_u( j ) ) / data%NU_u( j )
-               IF ( exp_arg > exp_arg_tiny ) THEN
-                 data%Z_u( j ) = data%V_u( j ) * EXP( exp_arg )
-               ELSE
-                 data%Z_u( j ) = zero
-               END IF
-               nlp%Z( j ) = nlp%Z( j ) + data%Z_u( j )
-               data%Dz( j ) = data%Dz( j ) + data%Z_u( j ) / data%NU_u( j )
-               penalty_term = penalty_term + data%NU_u( j ) * data%Z_u( j )
+               data%X_status( j ) = 0
              END IF
            END DO
 
-!  for the Lagrange multipliers:
+!  find the current estimates of the active sets C_l(x,nu) and C_u(x,nu)
+!  (see intro) for c(x) and the corresponding Lagrange multiplier estimates
+!
+!                 /  y_i - 1/mu (c_i(x) - c^l_i) if i in C_l(x,mu)
+!   y_i(x,y,mu) = |  y_i - 1/mu (c_i(x) - c^u_i) if i in C_u(x,mu)
+!                 \  0 otherwise
 
            DO i = 1, nlp%m
-             IF ( use_cosh .AND. nlp%C_l( i ) == nlp%C_u( i ) ) THEN
-               arg = ( nlp%C( i ) - nlp%C_l( i ) ) / data%MU_l( i )
-               wcosh = data%W_l( i )  * COSH( arg )
-               data%Y_l( i ) = data%W_l( i ) * SINH( arg )
-!data%Y_u( i ) = data%W_l( i ) * EXP( arg )
-               nlp%Y( i ) = data%Y_l( i )
-               data%Dy( i ) = wcosh / data%MU_l( i )
-               penalty_term = penalty_term + wcosh * data%MU_l( i )
-               CYCLE
-             END IF
-             IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-               exp_arg = ( nlp%C_l( i ) - nlp%C( i ) ) / data%MU_l( i )
-               IF ( exp_arg > exp_arg_tiny ) THEN
-                 data%Y_l( i ) = data%W_l( i ) * EXP( exp_arg )
-               ELSE
-                 data%Y_l( i ) = zero
-               END IF
-               nlp%Y( i ) = - data%Y_l( i )
-               data%Dy( i ) = data%Y_l( i ) / data%MU_l( i )
-               penalty_term = penalty_term + data%MU_l( i ) * data%Y_l( i )
+             IF ( nlp%C_u( i ) * ( one - SIGN( epsmch, nlp%C_u( i ) ) ) <=     &
+                  nlp%C_l( i ) * ( one + SIGN( epsmch, nlp%C_l( i ) ) ) ) THEN
+               viol8n = nlp%C( i ) - nlp%C_l( i ) - data%MU( i ) * data%Y( i )
+               multiplier = viol8n / data%MU( i )
+               penalty_term = penalty_term + viol8n * multiplier
+               nlp%Y( i ) = - multiplier
+!              nlp%Y( i ) = multiplier
+               data%C_status( i ) = 3
+             ELSE IF ( nlp%C_l( i ) >= - control%infinity .AND.                &
+                       nlp%C(i ) - nlp%C_l( i ) <=                             &
+                         data%MU( i ) * data%Y( i ) ) THEN
+               viol8n = nlp%C( i ) - nlp%C_l( i ) - data%MU( i ) * data%Y( i )
+               multiplier = viol8n / data%MU( i )
+               penalty_term = penalty_term + viol8n * multiplier
+               nlp%Y( i ) = - multiplier
+               data%C_status( i ) = 1
+             ELSE IF ( nlp%C_u( i ) <= control%infinity .AND.                  &
+                       nlp%C( i ) - nlp%C_u( i ) >=                            &
+                         data%MU( i ) * data%Y( i ) ) THEN
+               viol8n = nlp%C( i ) - nlp%C_u( i ) - data%MU( i ) * data%Y( i )
+               multiplier = viol8n / data%MU( i )
+               penalty_term = penalty_term + viol8n * multiplier
+               nlp%Y( i ) = - multiplier
+               data%C_status( i ) = 2
              ELSE
                nlp%Y( i ) = zero
-               data%Dy( i ) = zero
-             END IF
-             IF ( nlp%C_u( i ) <= control%infinity ) THEN
-               exp_arg = ( nlp%C( i ) - nlp%C_u( i ) ) / data%MU_u( i )
-               IF ( exp_arg > exp_arg_tiny ) THEN
-                 data%Y_u( i ) = data%W_u( i ) * EXP( exp_arg )
-               ELSE
-                 data%Y_u( i ) = zero
-               END IF
-               nlp%Y( i ) = nlp%Y( i ) + data%Y_u( i )
-               data%Dy( i ) = data%Dy( i ) + data%Y_u( i ) / data%MU_u( i )
-               penalty_term = penalty_term + data%MU_u( i ) * data%Y_u( i )
+               data%C_status( i ) = 0
              END IF
            END DO
+           penalty_term = half * penalty_term
 
-           IF ( data%printd ) THEN
-             WRITE( data%out, "( ' new x ', 3ES22.14, :/, ( 4X, 3ES22.14 ) )") &
-               data%epf%X( : nlp%n )
-             IF ( nlp%m > 0 ) WRITE( data%out, "( ' new y ', 3ES22.14,         &
-            &  :/, ( 4X, 3ES22.14 ) )" )  nlp%Y( : nlp%m )
-             WRITE( data%out, "( ' new z ', 3ES22.14, :/, ( 4X, 3ES22.14 ) )") &
-               nlp%Z( : nlp%n )
-           END IF
+!  compute the value of the penalty function phi(x,y,mu,nu (see intro)
+!
+!    phi(x,y,mu,nu) = f(x)
+!       + 1/2mu [ sum_{i in C_e} (c_i(x) - c^l_i - mu y_i)^2 +
+!                 sum_{i in C_l(x,y,mu)} (c_i(x) - c^l_i - mu y_i)^2 +
+!                 sum_{i in C_u(x,y,mu)} (c_i(x) - c^u_i - mu y_i)^2 ]
+!       + 1/2mu [ sum_{i in X_e} (x_i - x^l_i - nu z_i)^2 +
+!                 sum_{i in X_l(x,z,nu)} (  x_i  - x^l_i - nu z_i)^2 +
+!                 sum_{i in X_u(x,z,nu)} (  x_i  - x^u_i - nu z_i)^2 ]
+!
+!  where  C_e = {i : c^l_i = c^u_i}
+!         C_l(x,y,mu) = {i : c_i(x) - c^l_i <= mu y_i}
+!         C_u(x,y,mu) = {i : c_i(x) - c^u_i >= mu y_i}
+!         X_e = {i : x^l_i = x^u_i}
+!         X_l(x,z,nu) = {i : x_i- x^l_i <= nu z_i}
+!  and    X_u(x,z,nu) = {i : x_i- x^u_i >= nu z_i}
 
-!  compute the value of the penalty function
-
-!    phi(x,mu) = f(x) + sum_j=1^n [ nu^y_i z_j^l(x,nu) + nu^u_i z_j^u(x,nu) ] +
-!                     + sum_i=1^m [ mu^l_i w_i^l(x,mu) + mu^u_i w_i^u(x,mu) ]
-
-           data%epf%f = nlp%f + penalty_term
+           data%qpf%f = nlp%f + penalty_term
            IF ( data%printd )                                                  &
-             WRITE( data%out, "( ' penalty value =', ES22.14 )" ) data%epf%f
+             WRITE( data%out, "( ' penalty value =', ES22.14 )" ) data%qpf%f
 
 !  test to see if the penalty function appears to be unbounded from below
 
-           IF ( data%epf%f < control%obj_unbounded ) THEN
+           IF ( data%qpf%f < control%obj_unbounded ) THEN
              inform%status = GALAHAD_error_unbounded ; GO TO 990
            END IF
 
@@ -2431,15 +2238,18 @@ stop
            END IF
 
 !  compute the gradient of the penalty function:
+!
+!    grad phi(x,y,mu,nu) = g(x) - J^T(x) y(x,y,mu) - z(x,z,nu),
+!
+!  where y_i(x,y,mu) and z_i(x,z,nu) are as above, g(x) is the gradient of
+!  f(x) and J(x) is the Jacobian of c(x)
 
-!    nabla phi(x,mu,nu) = g(x) - z(x,nu) - J^T(x) y(x,mu)
-
-           data%epf%G( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
-           CALL MOP_Ax( one, nlp%J, nlp%Y( : nlp%m ), one,                     &
-                        data%epf%G( : nlp%n ), transpose = .TRUE.,             &
+           data%qpf%G( : nlp%n ) = nlp%G( : nlp%n ) - nlp%Z( : nlp%n )
+           CALL MOP_Ax( - one, nlp%J, nlp%Y( : nlp%m ), one,                   &
+                        data%qpf%G( : nlp%n ), transpose = .TRUE.,             &
                         m_matrix = nlp%m, n_matrix = nlp%n )
            IF ( data%printd ) WRITE( data%out,                                 &
-             "( ' penalty gradient =', /, ( 4ES20.12 ) )" ) data%epf%G( : nlp%n)
+             "( ' penalty gradient =', /, ( 4ES20.12 ) )" ) data%qpf%G( : nlp%n)
 
 !  if required, print details of the current point
 
@@ -2447,7 +2257,7 @@ stop
 !            WRITE ( data%out, 2210 ) prefix
 !            DO i = 1, nlp%n
 !              WRITE( data%out, 2230 ) prefix, i,                              &
-!                nlp%X_l( i ), data%epf%X( i ), nlp%X_u( i ), nlp%G( i )
+!                nlp%X_l( i ), data%qpf%X( i ), nlp%X_u( i ), nlp%G( i )
 !            END DO
 !          END IF
 
@@ -2458,9 +2268,33 @@ stop
 
 !  if required, form the Hessian of the penalty function
 !
-!    Hess phi = H(x,y(x,mu,nu)) + J^T(x) Dy(x,mu) J(x) + Dx(x,nu)
+!    Hess phi(x,y,mu,nu) = H(x,y(x,y,mu)) + J^T(x) D_y(x,mu) J(x) + D_z(x,nu),
 !
-!  where H(x,y) is the Hessian of the Lagrangian
+!  where D_c(x,mu) and D_x(x,nu) are diagonal matrices with entries
+!
+!    D_c_ii = 1/mu if i in C_e U C_l(x,mu) U C_u(x,mu)
+!              0   otherwise
+
+           DO i = 1, nlp%m
+             IF ( data%C_status( i ) > 0 ) THEN
+               data%Dc( i ) = one / data%MU( i )
+             ELSE
+               data%Dc( i ) = zero
+             END IF
+           END DO
+
+!  and D_z_jj = 1/nu if j in X_e U X_l(x,mu) U X_u(x,mu)
+!                0   otherwise
+
+           DO j = 1, nlp%n
+             IF ( data%X_status( j ) > 0 ) THEN
+               data%Dx( j ) = one / data%NU( j )
+             ELSE
+               data%Dx( j ) = zero
+             END IF
+           END DO
+
+!  and where H(x,y) is the Hessian of the Lagrangian
 
            IF ( data%control%subproblem_direct ) THEN
              IF ( data%eval_hl ) THEN
@@ -2473,28 +2307,28 @@ stop
 
              data%JT%val( : data%JT%ne ) = nlp%J%val( : data%JT%ne )
 
-!  insert the values of J(x)^T D(x,mu) J(x) into Hess_phi
+!  insert the values of J(x)^T D_c(x,mu) J(x) into Hess_phi
 
-             CALL BSC_form( nlp%n, nlp%m, data%JT, data%epf%H, data%BSC_data,  &
+             CALL BSC_form( nlp%n, nlp%m, data%JT, data%qpf%H, data%BSC_data,  &
                             data%control%BSC_control, inform%BSC_inform,       &
-                            D = data%Dy( : nlp%m ) )
+                            D = data%Dc( : nlp%m ) )
 
-             data%epf%H%val( data%jtdzj_ne + 1 : data%epf%H%ne ) = zero
+             data%qpf%H%val( data%jtdzj_ne + 1 : data%qpf%H%ne ) = zero
 
 !  append the values of H(x,y(x,mu)) if they are required
 
              DO l = 1, nlp%H%ne
                j = data%H_map( l )
-               data%epf%H%val( j ) = data%epf%H%val( j ) + nlp%H%val( l )
+               data%qpf%H%val( j ) = data%qpf%H%val( j ) + nlp%H%val( l )
              END DO
 
-!  and those from Dz(x,mu)
+!  and those from D_x(x,nu)
 
              DO j = 1, nlp%n
                IF ( nlp%X_l( j ) >= - control%infinity .OR.                    &
                     nlp%X_u( j ) <= control%infinity ) THEN
-                 i = data%Dz_map( j )
-                 data%epf%H%val( i ) = data%epf%H%val( i ) + data%Dz( j )
+                 i = data%Dx_map( j )
+                 data%qpf%H%val( i ) = data%qpf%H%val( i ) + data%Dx( j )
                END IF
              END DO
 
@@ -2504,9 +2338,9 @@ stop
 !            IF ( data%printi ) THEN
                WRITE( data%out, "( A, ' penalty Hessian =' )" ) prefix
                WRITE( data%out, "( SS, ( A, : , 2( 2I7, ES20.12, : ) ) )" )    &
-                 ( prefix, ( data%epf%H%row( l + j ), data%epf%H%col( l + j ), &
-                    data%epf%H%val( l + j ), j = 0,                            &
-                      MIN( 1, data%epf%H%ne - l ) ), l = 1, data%epf%H%ne, 2 )
+                 ( prefix, ( data%qpf%H%row( l + j ), data%qpf%H%col( l + j ), &
+                    data%qpf%H%val( l + j ), j = 0,                            &
+                      MIN( 1, data%qpf%H%ne - l ) ), l = 1, data%qpf%H%ne, 2 )
              END IF
            END IF
          END SELECT
@@ -2524,77 +2358,26 @@ stop
 
 !  compute the dual infeasibility
 
-       inform%dual_infeasibility = TWO_NORM( data%epf%G( : nlp%n ) )
+       inform%dual_infeasibility = TWO_NORM( data%qpf%G( : nlp%n ) )
 
-!      IF ( inform%iter > 2 ) WRITE(data%out, "( ' feas / old_feas =', ES12.4 ) ")    &
+!      IF ( inform%iter > 2 ) WRITE(6, "( ' feas / old_feas =', ES12.4 ) ")    &
 !        inform%primal_infeasibility /  data%old_primal_infeasibility
        data%old_primal_infeasibility = inform%primal_infeasibility
-
-!  update the Lagrange multipliers and dual variables
-
-       data%update_vw =                                                        &
-         inform%primal_infeasibility <= data%control%update_multipliers_tol    &
-         .AND. inform%iter > data%control%update_multipliers_itmin
-
-!      data%update_vw = .TRUE.
-!      data%update_vw = .FALSE.
-       IF ( data%update_vw ) THEN
-
-!  for the dual variables:
-
-         DO j = 1, nlp%n
-           IF ( use_cosh .AND. nlp%X_l( j ) == nlp%X_u( j ) ) THEN
-!            data%V_l( j ) = ABS( data%Z_l( j ) )
-!data%V_l( j ) = ABS( data%Z_u( j ) )
-             CYCLE
-           END IF
-           IF ( nlp%X_l( j ) >= - control%infinity )                           &
-             data%V_l( j ) = data%Z_l( j )
-           IF ( nlp%X_u( j ) <= control%infinity )                             &
-             data%V_u( j ) = data%Z_u( j )
-         END DO
-
-!  for the Lagrange multipliers:
-
-         DO i = 1, nlp%m
-           IF ( use_cosh .AND. nlp%C_l( i ) == nlp%C_u( i ) ) THEN
-!            data%W_l( i ) = ABS( data%Y_l( i ) )
-!data%W_l( i ) = ABS( data%Y_u( i ) )
-             CYCLE
-           END IF
-           IF ( nlp%C_l( i ) >= - control%infinity )                           &
-             data%W_l( i ) = data%Y_l( i )
-           IF ( nlp%C_u( i ) <= control%infinity )                             &
-             data%W_u( i ) = data%Y_u( i )
-         END DO
-
-!  if required, print the new Lagrange multiplier and dual variable estimates
-
-         IF ( data%printd ) THEN
-           WRITE( data%out, 2250 ) 'X  ', nlp%X
-           WRITE( data%out, 2250 ) 'V_l', data%V_l
-           WRITE( data%out, 2250 ) 'V_u', data%V_u
-           IF ( nlp%m > 0 ) THEN
-             WRITE( data%out, 2250 ) 'W_l', data%W_l
-             WRITE( data%out, 2250 ) 'W_u', data%W_u
-           END IF
-         END IF
-       END IF
 
 !  compute the complemntary slackness
 
        inform%complementary_slackness                                          &
-         = MAX( EPF_complementarity( nlp%n, nlp%X, nlp%X_l, nlp%X_u,           &
-                                     data%Z_l, data%Z_u, control%infinity ),   &
-                EPF_complementarity( nlp%m, nlp%C, nlp%C_l, nlp%C_u,           &
-                                     data%Y_l, data%Y_u, control%infinity ) )
+         = MAX( QPF_complementarity( nlp%n, nlp%X, nlp%X_l, nlp%X_u,           &
+                                     data%Z, control%infinity ),               &
+                QPF_complementarity( nlp%m, nlp%C, nlp%C_l, nlp%C_u,           &
+                                     data%Y, control%infinity ) )
 
 !  if required, print details of the latest major iteration
 
        IF ( data%printi ) THEN
          IF ( inform%iter == 1 )                                               &
            WRITE( data%out, "( /, A, '  Problem: ', A, ' (n = ', I0, ', m = ', &
-          &  I0, '): EPF stopping tolerance =', ES11.4 )" )                    &
+          &  I0, '): QPF stopping tolerance =', ES11.4 )" )                    &
              prefix, TRIM( nlp%pname ), nlp%n, nlp%m, data%stop_d
          IF ( data%print_iteration_header ) THEN
            WRITE( data%out, 2010 ) prefix
@@ -2604,7 +2387,7 @@ stop
          CALL CLOCK_time( data%clock_now )
          data%clock_now = data%clock_now - data%clock_start
          IF ( data%printi ) WRITE( data%out,                                   &
-           "( A, I6, ES16.8, 4ES9.1, 2I6, F9.2 )" )                            &
+           "( A, I6, ES16.8, 4ES9.1, I6, I5, F9.2 )" )                         &
              prefix, inform%iter, inform%obj, inform%primal_infeasibility,     &
              inform%dual_infeasibility, inform%complementary_slackness,        &
              data%max_mu, inform%tru_inform%iter, inform%tru_inform%status,    &
@@ -2636,35 +2419,36 @@ stop
 !  for the simple-bound constraints:
 
          DO j = 1, nlp%n
-           IF ( nlp%X_l( j ) >= - control%infinity )                           &
-             data%NU_l( j ) = control%mu_reduce * data%NU_l( j )
-           IF ( nlp%X_u( j ) <= control%infinity )                             &
-             data%NU_u( j ) = control%mu_reduce * data%NU_u( j )
+           IF ( nlp%X_l( j ) >= - control%infinity .OR.                        &
+                nlp%X_u( j ) <= control%infinity )                             &
+             data%NU( j ) = control%mu_reduce * data%NU( j )
          END DO
 
 !  for the general constraints:
 
          DO i = 1, nlp%m
-           IF ( nlp%C_l( i ) >= - control%infinity )                           &
-             data%MU_l( i ) = control%mu_reduce * data%MU_l( i )
-           IF ( nlp%C_u( i ) <= control%infinity )                             &
-             data%MU_u( i ) = control%mu_reduce * data%MU_u( i )
+           IF ( nlp%C_l( i ) >= - control%infinity .OR.                        &
+                nlp%C_u( i ) <= control%infinity )                             &
+             data%MU( i ) = control%mu_reduce * data%MU( i )
          END DO
 
 !  record the largest value
 
-         data%max_mu = MAX( MAXVAL( data%NU_l( : nlp%n ) ),                    &
-                            MAXVAL( data%NU_u( : nlp%n ) ) )
+         data%max_mu = MAXVAL( data%NU( : nlp%n ) )
          IF ( nlp%m > 0 ) data%max_mu = MAX( data%max_mu,                      &
-                            MAXVAL( data%MU_l( : nlp%m ) ),                    &
-                            MAXVAL( data%MU_u( : nlp%m ) ) )
+                                             MAXVAL( data%MU( : nlp%m ) ) )
        END IF
 
-       IF ( data%control%advanced_start <= zero ) GO TO 500
+!  if the augmented-Lagrangian function is used, and the penalty parameter
+!  is small enough, update the Lagrange multipliers and dual variables
 
-!  -----------------------------------------------
-!  3. Find an advanced starting point when needed
-!  -----------------------------------------------
+       IF ( control%augmented_lagrangian .AND.                                 &
+            data%max_mu < control%update_multipliers_tol ) THEN
+         data%Y( : nlp%m ) = nlp%Y( : nlp%m )
+         data%Z( : nlp%n ) = nlp%Z( : nlp%n )
+       END IF
+
+       IF ( data%rnorm <= zero ) GO TO 500
 
 !  To find an "advanced" starting point for the next major iteration, let
 
@@ -2703,904 +2487,246 @@ stop
        CALL mop_AX( one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,        &
                     m_matrix = nlp%m, n_matrix = nlp%n )
 
-!  for each constraint, record its status (0=free,1=lower,2=upper,3=both)
-!  and its index (position in r, 0=not present). Consider a constraint 
-!  active if y_l >= mu_l or y_u >= mu_u
-
-       data%n_c = 0
-       DO i = 1, nlp%m
-         data%C_status( i ) = 0 ; data%C_index( i ) = 0
-         IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-           IF ( data%Y_l( i ) >= data%MU_l( i ) ) THEN
-             data%n_c = data%n_c + 1
-             data%C_status( i ) = data%C_status( i ) + 1
-             data%C_index( i ) = data%n_c
-           END IF
-         END IF
-         IF ( nlp%C_u( i ) <= control%infinity ) THEN
-           IF ( data%Y_u( i ) >= data%MU_u( i ) ) THEN
-             data%n_c = data%n_c + 1
-             data%C_status( i ) = data%C_status( i ) + 2
-             IF ( data%C_index( i ) == 0 ) data%C_index( i ) = data%n_c
-           END IF
-         END IF
-       END DO
-
-!  for each variable, record its status (0=free,1=lower,2=upper,3=both)
-!  and its index (position in r, 0=not present). Consider a bound
-!  active if z_l >= nu_l or z_u >= nu_u
-
-       DO j = 1, nlp%n
-         data%X_status( j ) = 0 ; data%X_index( j ) = 0
-         IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-           IF ( data%Z_l( j ) >= data%NU_l( j ) ) THEN
-             data%n_c = data%n_c + 1
-             data%X_status( j ) = data%X_status( j ) + 1
-             data%X_index( j ) = data%n_c
-           END IF
-         END IF
-         IF ( nlp%X_u( j ) <= control%infinity ) THEN
-           IF ( data%Z_u( j ) >= data%NU_u( j ) ) THEN
-             data%n_c = data%n_c + 1
-             data%X_status( j ) = data%X_status( j ) + 2
-             IF ( data%X_index( j ) == 0 ) data%X_index( j ) = data%n_c
-           END IF
-         END IF
-       END DO
-
-!  compute minus the new residuals, - r(x,y,z). Start with the gradient term ...
+!  compute minus the new residuals, - r(x,y,z)
 
        data%R( : nlp%n ) = - nlp%Gl( : nlp%n )
+       data%R( nlp%n + 1 : data%npm ) = zero
+       data%rnorm = TWO_NORM( data%R( : data%npm ) )
+write(6,"( ' ||r|| = ', ES11.4 )" ) data%rnorm, TWO_NORM( data%R( : nlp%n ) )
 
-!  see if it is prudent to use an advanced start based on the SQP residuals
-
-       IF ( data%try_sqp ) THEN
-
-!  ... add the terms corresponding to the genmeral constraints ...
-
-         data%npma = nlp%n
-         DO i = 1, nlp%m
-           IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-             IF ( data%Y_l( i ) >= data%MU_l( i ) ) THEN
-               data%npma = data%npma + 1
-               data%R( data%npma ) = nlp%C( i ) - nlp%C_l( i )
-             END IF
-           END IF
-           IF ( nlp%C_u( i ) <= control%infinity ) THEN
-             IF ( data%Y_u( i ) >= data%MU_u( i ) ) THEN
-               data%npma = data%npma + 1
-               data%R( data%npma ) = nlp%C_u( i ) - nlp%C( i )
-             END IF
-           END IF
-         END DO
-
-!  ... and the simple bound constraints
-
-         DO j = 1, nlp%n
-           IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-             IF ( data%Z_l( j ) >= data%NU_l( j ) ) THEN
-               data%npma = data%npma + 1
-               data%R( data%npma ) = nlp%X( j ) - nlp%X_l( j )
-             END IF
-           END IF
-           IF ( nlp%X_u( j ) <= control%infinity ) THEN
-             IF ( data%Z_u( j ) >= data%NU_u( j ) ) THEN
-               data%npma = data%npma + 1
-               data%R( data%npma ) = nlp%X_u( j ) - nlp%X( j )
-             END IF
-           END IF
-         END DO
-
-!  compute the norm of the residual
-
-         data%rnorm = TWO_NORM( data%R( : data%npma ) )
-         IF ( data%printd )                                                    &
-           WRITE( data%out, "( ' ||r(n+m)_sqp|| =', ES11.4 )" ) data%rnorm
-
-!  flag whether to start an advanced SQP search
-
-         data%use_sqp = data%rnorm <= data%control%sqp_start
-       ELSE
-         data%use_sqp = .FALSE.
-       END IF
-
-!  an advanced SQP search will be attempted
-
-       IF ( data%use_sqp ) THEN
-         data%adv = 'q'
-
-!  an advanced SQP search is not yet advised. See if a search using the 
-!  penalty function residuals is warranted
-
-       ELSE
-         data%adv = 'a'
-
-!  replace the terms corresponding to the genmeral constraints ...
-
-         data%npma = nlp%n
-         DO i = 1, nlp%m
-           IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-             IF ( data%Y_l( i ) >= data%MU_l( i ) ) THEN
-               data%npma = data%npma + 1
-               data%R( data%npma ) = data%R( data%npma ) +                     &
-                 data%MU_l( i ) * ( LOG( data%Y_l( i ) ) - LOG( data%W_l( i ) ))
-             END IF
-           END IF
-           IF ( nlp%C_u( i ) <= control%infinity ) THEN
-             IF ( data%Y_u( i ) >= data%MU_u( i ) ) THEN
-               data%npma = data%npma + 1
-               data%R( data%npma ) = data%R( data%npma ) +                     &
-                 data%MU_u( i ) * ( LOG( data%Y_u( i ) ) - LOG( data%W_u( i ) ))
-             END IF
-           END IF
-         END DO
-
-!  ... and the simple bound constraints
-
-         DO j = 1, nlp%n
-           IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-             IF ( data%Z_l( j ) >= data%NU_l( j ) ) THEN
-               data%npma = data%npma + 1
-               data%R( data%npma ) = data%R( data%npma ) +                     &
-                 data%NU_l( j ) * ( LOG( data%Z_l( j ) ) - LOG( data%V_l( j ) ))
-             END IF
-           END IF
-           IF ( nlp%X_u( j ) <= control%infinity ) THEN
-             IF ( data%Z_u( j ) >= data%NU_u( j ) ) THEN
-               data%npma = data%npma + 1
-               data%R( data%npma ) = data%R( data%npma ) +                     &
-                 data%NU_u( j ) * ( LOG( data%Z_u( j ) ) - LOG( data%V_u( j ) ))
-             END IF
-           END IF
-         END DO
-       END IF
-
-!  ---------------------------------------------------------------
-!  find an advanced starting point if the residual is small enough
-!  ---------------------------------------------------------------
-
-!write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
        IF ( data%rnorm > data%control%advanced_start ) GO TO 500
-       IF ( .NOT. data%use_advanced ) THEN
-         IF ( data%printt ) WRITE( data%out, "( 10( ' - ' ),                   &
-        &  ' advanced start', 10( ' - ' ) )" )
-         data%use_advanced = .TRUE.
+
+!  loop to search for an advanced starting point
+
+       data%iter_advanced = 0
+  410  CONTINUE
+!write(6,*) ' iter = ', data%iter_advanced
+!  obtain the Hessian of the Lagrangian H(x,y)
+
+       IF ( data%reverse_hl ) THEN
+         data%branch = 420 ; inform%status = 9 ; RETURN
+       ELSE
+         CALL eval_HL( data%eval_status, nlp%X, - nlp%Y, userdata, nlp%H%val )
+         IF ( data%printd ) WRITE(6,"( ' nls%H', / ( 3( 2I6, ES12.4 )))" )     &
+          ( nlp%H%row( i ), nlp%H%col( i ), nlp%H%val( i ), i = 1, nlp%H%ne )
        END IF
 
-!  set up the structures for the matrices B and C. First, discover how much 
-!  space is needed for the B and C blocks
+!  insert the latest values into B and C
 
-!      data%n_j_l = 0 ; data%n_j_u = 0 ; data%n_i_l = 0 ; data%n_i_u = 0
-       data%ne_b = 0
+  420  CONTINUE
 
-       SELECT CASE ( SMT_get( nlp%J%type ) )
-       CASE ( 'DENSE' )
-         l = 0
-         DO i = 1, nlp%m
-           IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 )         &
-             data%ne_b = data%ne_b + nlp%n
-           IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 )         &
-             data%ne_b = data%ne_b + nlp%n
-         END DO
-       CASE ( 'SPARSE_BY_ROWS' )
-         DO i = 1, nlp%m
-           IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 )         &
-             data%ne_b = data%ne_b + nlp%J%ptr( i + 1 ) - nlp%J%ptr( i )
-           IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 )         &
-             data%ne_b = data%ne_b + nlp%J%ptr( i + 1 ) - nlp%J%ptr( i )
-         END DO
-       CASE ( 'COORDINATE' )
-         DO l = 1, nlp%J%ne
-           i = nlp%J%row( l )
-           IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 )         &
-             data%ne_b = data%ne_b + 1
-           IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 )         &
-             data%ne_b = data%ne_b + 1
-         END DO
-       END SELECT
-
-       data%ne_c = 0
-       DO i = 1, nlp%m
-         IF ( data%printd ) WRITE( data%out,                                   &
-           "(' C_status(', I0, ') = ', I0 )" ) i, data%C_status( i )
-         IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 )           &
-           data%ne_c = data%ne_c + 1
-         IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 )           &
-           data%ne_c = data%ne_c + 1
-       END DO
-
-       DO j = 1, nlp%n
-         IF ( data%printd ) WRITE( data%out,                                   &
-           "(' X_status(', I0, ') = ', I0 )" ) j , data%X_status( j )
-         IF ( data%X_status( j ) == 1 .OR. data%X_status( j ) == 3 ) THEN      
-           data%ne_b = data%ne_b + 1 ; data%ne_c = data%ne_c + 1
-         END IF
-         IF ( data%X_status( j ) == 2 .OR. data%X_status( j ) == 3 ) THEN
-           data%ne_b = data%ne_b + 1 ; data%ne_c = data%ne_c + 1
-         END IF
-       END DO
-
-!  set space for the B block
-
-       data%B_ssls%m = data%n_c ; data%B_ssls%n = nlp%n
-       data%B_ssls%ne = data%ne_b
-       IF ( data%printd ) WRITE( data%out, "(' B_ne = ', I0 )" ) data%B_ssls%ne
-       CALL SMT_put( data%B_ssls%type, 'COORDINATE', inform%alloc_status )
-
-       array_name = 'colt: data%B%row'
-       CALL SPACE_resize_array( data%B_ssls%ne, data%B_ssls%row,               &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'colt: data%B%col'
-       CALL SPACE_resize_array( data%B_ssls%ne, data%B_ssls%col,               &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'colt: data%B%val'
-       CALL SPACE_resize_array( data%B_ssls%ne, data%B_ssls%val,               &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-!  set up the structure of the B block. First insert the J(x) blocks
+!  first insert the values from J(x) into the C block
 
        k = 1
        SELECT CASE ( SMT_get( nlp%J%type ) )
        CASE ( 'DENSE' )
+         l = 1
          DO i = 1, nlp%m
-           ir = data%C_index( i )
            DO j = 1, nlp%n
-             ii = ir
-             IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-               data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
-               k = k + 1 ; ii = ii + 1
-             END IF
-             IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-               data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
+             IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+               data%B_ssls%val( k ) = - nlp%J%col( l )
                k = k + 1
              END IF
+             IF ( nlp%C_u( i ) <= control%infinity ) THEN
+               data%B_ssls%val( k ) = nlp%J%col( l )
+               k = k + 1
+             END IF
+             l = l + 1
            END DO
          END DO
        CASE ( 'SPARSE_BY_ROWS' )
          DO i = 1, nlp%m
-           ir = data%C_index( i )
+           ir = data%B_rows( i )
            DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
              j = nlp%J%col( l ) ; ii = ir
-             IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-               data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
-               k = k + 1 ; ii = ii + 1
+             IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+               data%B_ssls%val( k ) = - nlp%J%col( l )
+               k = k + 1
              END IF
-             IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-               data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
+             IF ( nlp%C_u( i ) <= control%infinity ) THEN
+               data%B_ssls%val( k ) = nlp%J%col( l )
                k = k + 1
              END IF
            END DO
          END DO
        CASE ( 'COORDINATE' )
          DO l = 1, nlp%J%ne
-           i = nlp%J%row( l ) ; ii = data%C_index( i ) ; j = nlp%J%col( l )
-           IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-             data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
-             k = k + 1 ; ii = ii + 1
+           i = nlp%J%row( l )
+           IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+             data%B_ssls%val( k ) = - nlp%J%col( l )
+             k = k + 1
            END IF
-           IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-             data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
+           IF ( nlp%C_u( i ) <= control%infinity ) THEN
+             data%B_ssls%val( k ) = nlp%J%col( l )
              k = k + 1
            END IF
          END DO
        END SELECT
 
-!  now insert the I blocks, including their (constant) values
+!  now insert the values into the C block
 
-       DO j = 1, nlp%n
-         ii = data%X_index( j )
-         IF ( data%X_status( j ) == 1 .OR. data%X_status( j ) == 3 ) THEN
-           data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
-           data%B_ssls%val( k ) = - one
-           k = k + 1 ; ii = ii + 1
+       k = 1
+       DO j = 1, nlp%m
+         IF ( nlp%C_l( j ) >= - control%infinity ) THEN
+           data%C_ssls%val( k ) = data%MU( j )
+           k = k + 1
          END IF
-         IF ( data%X_status( j ) == 2 .OR. data%X_status( j ) == 3 ) THEN
-           data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
-           data%B_ssls%val( k ) = one
+         IF ( nlp%C_u( j ) <= control%infinity ) THEN
+           data%C_ssls%val( k ) = data%MU( j )
+           k = k + 1
+         END IF
+       END DO
+       DO j = 1, nlp%n
+         IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+           data%C_ssls%val( k ) = data%NU( j )
+           k = k + 1
+         END IF
+         IF ( nlp%X_u( j ) <= control%infinity ) THEN
+           data%C_ssls%val( k ) = data%NU( j )
            k = k + 1
          END IF
        END DO
 
-!  set space for the C block. In the SQP case, set C to be zero
-
-       IF ( data%use_sqp ) THEN
-         CALL SMT_put( data%C_ssls%type, 'ZERO', inform%alloc_status )
-       ELSE
-         data%C_ssls%n = data%n_c ; data%C_ssls%m = data%n_c
-         data%C_ssls%ne = data%n_c
-         CALL SMT_put( data%C_ssls%type, 'DIAGONAL', inform%alloc_status )
-
-         array_name = 'colt: data%C%val'
-         CALL SPACE_resize_array( data%C_ssls%ne, data%C_ssls%val,             &
-                inform%status, inform%alloc_status, array_name = array_name,   &
-                deallocate_error_fatal = data%control%deallocate_error_fatal,  &
-                exact_size = data%control%space_critical,                      &
-                bad_alloc = inform%bad_alloc, out = data%control%error )
-         IF ( inform%status /= 0 ) GO TO 980
-       END IF
-
-!  set up and analyse the data structures for the matrix required for the
-!  advanced start
-
-       CALL SSLS_analyse( nlp%n, data%n_c, nlp%H, data%B_ssls, data%C_ssls,    &
-                          data%SSLS_data, data%control%SSLS_control,           &
-                          inform%SSLS_inform )
-
-!  ---------------------------------------------
-!  loop to search for an advanced starting point
-!  ---------------------------------------------
-
-       IF ( data%printd ) THEN
-         WRITE( data%out, "( ' x ', 3ES22.14, :/, ( 4X, 3ES22.14 ) )" )        &
-           nlp%X( : nlp%n )
-         IF ( nlp%m > 0 ) WRITE( data%out, "( ' y ', 3ES22.14,                 &
-        &  :/, ( 4X, 3ES22.14 ) )" )  nlp%Y( : nlp%m )
-         WRITE( data%out, "( ' z ', 3ES22.14, :/, ( 4X, 3ES22.14 ) )" )        &
-           nlp%Z( : nlp%n )
-       END IF
-
-       data%iter_advanced = 1
-  410  CONTINUE
-
-!IF ( data%printd ) write(data%out,*) ' iter = ', data%iter_advanced
-
-!  obtain the Hessian of the Lagrangian H(x,y)
-
-         IF ( data%reverse_hl ) THEN
-           data%branch = 420 ; inform%status = 4 ; RETURN
-         ELSE
-           CALL eval_HL( data%eval_status, nlp%X, - nlp%Y, userdata, nlp%H%val )
-           IF ( data%printd )                                                  &
-             WRITE( data%out,"( ' nls%H', / ( 3( 2I6, ES12.4 ) ) )" )          &
-            ( nlp%H%row( i ), nlp%H%col( i ), nlp%H%val( i ), i = 1, nlp%H%ne )
-         END IF
-
-!  insert the latest values into B and C
-
-  420    CONTINUE
-
-!  first insert the values from J(x) into the B block
-
-         k = 1
-         SELECT CASE ( SMT_get( nlp%J%type ) )
-         CASE ( 'DENSE' )
-           l = 1
-           DO i = 1, nlp%m
-             ir = data%C_index( i )
-             DO j = 1, nlp%n
-               IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-                 data%B_ssls%val( k ) = - nlp%J%col( l )
-                 k = k + 1
-               END IF
-               IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-                 data%B_ssls%val( k ) = nlp%J%col( l )
-                 k = k + 1
-               END IF
-               l = l + 1
-             END DO
-           END DO
-         CASE ( 'SPARSE_BY_ROWS' )
-           DO i = 1, nlp%m
-             DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
-               j = nlp%J%col( l ) ; ii = ir
-               IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-                 data%B_ssls%row( k ) = - nlp%J%col( l )
-                 k = k + 1
-               END IF
-               IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-                 data%B_ssls%row( k ) = nlp%J%col( l )
-                 k = k + 1
-               END IF
-             END DO
-           END DO
-         CASE ( 'COORDINATE' )
-         DO l = 1, nlp%J%ne
-             i = nlp%J%row( l )
-             IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-               data%B_ssls%row( k ) = - nlp%J%col( l )
-               k = k + 1
-             END IF
-             IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-               data%B_ssls%row( k ) = nlp%J%col( l )
-               k = k + 1
-             END IF
-           END DO
-         END SELECT
-
-!  now insert the values into the C block, if necessary
-
-         IF ( .NOT. data%use_sqp ) THEN
-           k = 1
-           DO i = 1, nlp%m
-             IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-               data%C_ssls%val( k ) = data%MU_l( i ) / data%Y_l( i )
-               k = k + 1
-             END IF
-             IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-               data%C_ssls%val( k ) = data%MU_u( i ) / data%Y_u( i )
-               k = k + 1
-             END IF
-           END DO
-           DO j = 1, nlp%n
-             IF ( data%X_status( j ) == 1 .OR. data%X_status( j ) == 3 ) THEN
-               data%C_ssls%val( k ) = data%NU_l( j ) / data%Z_l( j )
-               k = k + 1
-             END IF
-             IF ( data%X_status( j ) == 2 .OR. data%X_status( j ) == 3 ) THEN
-               data%C_ssls%val( k ) = data%NU_u( j ) / data%Z_u( j )
-               k = k + 1
-             END IF
-           END DO
-         END IF
-
 !  form and factorize the matrix
 
 !    ( H(x,y)  B^T(x) )
-!    (  B(x)   - C(x) )
+!    (  B(x)  - C(x) )
 
-         CALL SSLS_factorize( nlp%n, data%n_c, nlp%H, data%B_ssls,             &
-                              data%C_ssls, data%SSLS_data,                     &
-                              data%control%SSLS_control, inform%SSLS_inform )
-         IF ( inform%SSLS_inform%status < 0 ) THEN
-           WRITE( data%out, "( ' ** warning ** ssls status = ', I0 )" )        &
-             inform%SSLS_inform%status
-         END IF
+       CALL SSLS_factorize( nlp%n, data%n_c, nlp%H, data%B_ssls, data%C_ssls,  &
+                            data%SSLS_data, data%control%SSLS_control,         &
+                            inform%SSLS_inform )
+!write(6,*) ' ssls status ', inform%SSLS_inform%status
 
-         IF ( data%printd ) THEN
-           WRITE( data%out, "( ' H = ')" )
-           WRITE( data%out,"( 3( 2I7, ES12.4, : ) )" )                         &
-             ( nlp%H%row( i ), nlp%H%col( i ), nlp%H%val( i ), i = 1, nlp%H%ne )
-           WRITE( data%out, "( ' B = ')" )
-           WRITE( data%out,"( 3( 2I7, ES12.4, : ) )" )                         &
-             ( data%B_ssls%row( i ), data%B_ssls%col( i ),                     &
-               data%B_ssls%val( i ), i = 1, data%B_ssls%ne )
-           IF ( data%use_sqp ) THEN
-             WRITE( data%out, "( ' C = 0')" )
-           ELSE
-             WRITE( data%out, "( ' C = ')" )
-             WRITE( data%out,"( 4( I7, ES12.4, : ) )" )                        &
-               ( i, data%C_ssls%val( i ), i = 1, data%C_ssls%n )
-           END IF
-         END IF
+!write(6,"( 'K = ')" )
+!do i = 1, data%SSLS_data%K%ne
+! write(6,"( 2I7, ES12.4 )" ) data%SSLS_data%K%row(i),data%SSLS_data%K%col(i), &
+!                             data%SSLS_data%K%val(i)
+!end do
 
-!  solve the system ( H(x,y)  B^T(x) ) ( dx ) = r, where
-!                   (  B(x)   - C(x) ) ( dy )
-!  ( dx, dy ) are returned in r
+!  find r = ( dx, dy )
 
-         IF ( data%printd ) THEN
-           WRITE( data%out, "( ' n_c = ',  I0, ', npma = ',  I0 )" )           &
-             data%n_c, data%npma
-           WRITE( data%out, "( ' ||r|| =', ES12.4 )" )                         &
-             TWO_NORM( data%R( : data%npma ) )
-           WRITE( data%out, "( ' rhs ', 3ES22.14, :, /, ( 5X, 3ES22.14 ) )" )  &
-             data%R( : data%npma )
-         END IF
-
-         CALL SSLS_solve( nlp%n, data%n_c, data%R, data%SSLS_data,             &
-                          data%control%SSLS_control,inform%SSLS_inform )
-
-         IF ( data%printd ) THEN
-           WRITE( data%out, "( ' sol ', 3ES22.14, :, /, ( 5X, 3ES22.14 ) )" )  &
-             data%R( : data%npma )
-           WRITE( data%out, "( ' ||dz||, ||v||, ||g|| =', 3ES11.4 )" )         &
-             TWO_NORM( data%R( : data%npma ) ), TWO_NORM( data%R( : nlp%n ) ), &
-             TWO_NORM( nlp%G( : nlp%n ) )
-         END IF
+write(6,*) ' r ', data%R
+stop
+write(6,*) ' ||r|| ', TWO_NORM( data%R )
+       CALL SSLS_solve( nlp%n, data%n_c, data%R, data%SSLS_data,               &
+                        data%control%SSLS_control,inform%SSLS_inform )
+write(6,*) ' ||r|| ', TWO_NORM( data%R )
+!write(6,*) ' ||v|| ', TWO_NORM( data%R( : nlp%n ) )
+!write(6,*) ' ||g|| ', TWO_NORM( nlp%G( : nlp%n ) )
 
 !  make a copy of x, y, z, c, g, J and H in case the advanced starting point
 !  is poor
 
-         data%f_old = nlp%f
-         data%X_old( : nlp%n ) = nlp%X( : nlp%n )
-         data%Y_l_old( : nlp%m ) = data%Y_l( : nlp%m )
-         data%Y_u_old( : nlp%m ) = data%Y_u( : nlp%m )
-         data%Z_l_old( : nlp%n ) = data%Z_l( : nlp%n )
-         data%Z_u_old( : nlp%n ) = data%Z_u( : nlp%n )
-         data%C_old( : nlp%m ) = nlp%C( : nlp%m )
-         data%G_old( : nlp%n ) = nlp%G( : nlp%n )
-         data%J_old( : data%J_ne ) = nlp%J%val( : data%J_ne )
-         data%H_old( : data%H_ne ) = nlp%H%val( : data%H_ne )
+       data%f_old = nlp%f
+       data%X_old( : nlp%n ) = nlp%X( : nlp%n )
+       data%Y_old( : nlp%m ) = data%Y( : nlp%m )
+       data%Z_old( : nlp%n ) = data%Z( : nlp%n )
+       data%C_old( : nlp%m ) = nlp%C( : nlp%m )
+       data%G_old( : nlp%n ) = nlp%G( : nlp%n )
+       data%J_old( : data%J_ne ) = nlp%J%val( : data%J_ne )
+       data%H_old( : data%H_ne ) = nlp%H%val( : data%H_ne )
 
-!  compute the trial ( x, y ) <- ( x + dx, y + dy )
+!  compute the trial x and y
 
-         nlp%X( : nlp%n ) = nlp%X( : nlp%n ) + data%R( : nlp%n )
+       nlp%X( : nlp%n ) = nlp%X( : nlp%n ) + data%R( : nlp%n )
 
-         negval = .FALSE.
-         k = nlp%n + 1
-         DO i = 1, nlp%m
-           IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-             data%Y_l( i ) = data%Y_l( i ) + data%R( k )
-             IF ( data%Y_l( i ) <= zero ) THEN
-               IF ( data%printd ) write( data%out,                             &
-                 "(' warning - new y_l(', I0, ') = ', ES12.4, ' <= 0' )" )     &
-                   i, data%Y_l( i )
-!              data%Y_l( i ) = teeny
-               negval = .TRUE. ; EXIT
-             END IF
-             nlp%Y( i ) = - data%Y_l( i )
-             k = k + 1
-           ELSE
-             nlp%Y( i ) = zero
-           END IF
-           IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-             data%Y_u( i ) = data%Y_u( i ) + data%R( k )
-             IF ( data%Y_u( i ) <= zero ) THEN
-               IF ( data%printd ) write( data%out,                             &
-                 "(' warning - new y_u(', I0, ') = ', ES12.4, ' <= 0' )" )     &
-                   i, data%Y_u( i )
-!              data%Y_u( i ) = teeny
-               negval = .TRUE. ; EXIT
-             END IF
-             nlp%Y( i ) = nlp%Y( i ) + data%Y_u( i )
-             k = k + 1
-           END IF
-         END DO
-         DO j = 1, nlp%n
-           IF ( data%X_status( j ) == 1 .OR. data%X_status( j ) == 3 ) THEN
-             data%Z_l( j ) = data%Z_l( j ) + data%R( k )
-             IF ( data%Z_l( i ) <= zero ) THEN
-               IF ( data%printd ) write( data%out,                             &
-                 "(' warning - new z_u(', I0, ') = ', ES12.4, ' <= 0' )" )     &
-                   i, data%Z_l( i )
-!              data%Z_l( j ) = teeny
-               negval = .TRUE. ; EXIT
-             END IF
-             nlp%Z( j ) = - data%Z_l( j )
-             k = k + 1
-           ELSE
-             nlp%Z( j ) = zero
-           END IF
-           IF ( data%X_status( j ) == 2 .OR. data%X_status( j ) == 3 ) THEN
-             data%Z_u( j ) = data%Z_u( j ) + data%R( k )
-             IF ( data%Z_u( i ) <= zero ) THEN
-               IF ( data%printd ) write( data%out,                             &
-                 "(' warning - new z_u(', I0, ') = ', ES12.4, ' <= 0' )" )     &
-                   i, data%Z_u( i )
-!              data%Z_u( j ) = teeny
-               negval = .TRUE. ; EXIT
-             END IF
-             nlp%Z( j ) = nlp%Z( j ) + data%Z_u( j )
-             k = k + 1
-           END IF
-         END DO
-
-!  if any new Lagrane multiplier or dual variable is negative, exit
-
-         IF ( negval ) THEN
-           nlp%X( : nlp%n )  = data%X_old( : nlp%n )  
-           data%Y_l( : nlp%m ) = data%Y_l_old( : nlp%m )
-           data%Y_u( : nlp%m ) = data%Y_u_old( : nlp%m )
-           data%Z_l( : nlp%n ) = data%Z_l_old( : nlp%n )
-           data%Z_u( : nlp%n ) = data%Z_u_old( : nlp%n )
-           GO TO 500
+       k = nlp%n + 1
+       DO i = 1, nlp%m
+         IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+!           data%Y( i ) = one
+!           nlp%Y( i ) = - data%Y_l( i )
+           k = k + 1
+         ELSE
+           nlp%Y( i ) = zero
          END IF
-
-         IF ( data%printd ) THEN
-           WRITE( data%out, "( ' new x ', 3ES22.14, :/, ( 4X, 3ES22.14 ) )" )  &
-             nlp%X( : nlp%n )
-           IF ( nlp%m > 0 ) WRITE( data%out, "( ' new y ', 3ES22.14,           &
-          &  :/, ( 4X, 3ES22.14 ) )" )  nlp%Y( : nlp%m )
-           WRITE( data%out, "( ' new z ', 3ES22.14, :/, ( 4X, 3ES22.14 ) )" )  &
-             nlp%Z( : nlp%n )
+         IF ( nlp%C_u( i ) <= control%infinity ) THEN
+!           data%Y( i ) = data%Y_u( i ) + data%R( k )
+!           nlp%Y( i ) = one
+           k = k + 1
          END IF
+       END DO
+
+       DO j = 1, nlp%n
+         IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+!           data%Z( j ) = data%Z_l( j ) + data%R( k )
+!           nlp%Z( j ) = - data%Z_l( j )
+           k = k + 1
+         ELSE
+           nlp%Z( j ) = zero
+         END IF
+         IF ( nlp%X_u( j ) <= control%infinity ) THEN
+!           data%Z( j ) = data%Z_u( j ) + data%R( k )
+!           nlp%Z( j ) = nlp%Z( j ) + data%Z_u( j )
+           k = k + 1
+         END IF
+       END DO
+
+!write(6,*) ' new x ',  nlp%X( : nlp%n )
+!write(6,*) ' new y ',  nlp%Y( : nlp%m )
+!write(6,*) ' new z ',  nlp%Z( : nlp%n )
 
 !  compute the new objective and constraint values
 
-         IF ( data%reverse_fc ) THEN
-           data%branch = 430 ; inform%status = 2 ; RETURN
-         ELSE
-           CALL eval_FC( data%eval_status, nlp%X, userdata, nlp%f, nlp%C )
-         END IF
+       IF ( data%reverse_fc ) THEN
+         data%branch = 430 ; inform%status = 2 ; RETURN
+       ELSE
+         CALL eval_FC( data%eval_status, nlp%X, userdata, nlp%f, nlp%C )
+       END IF
 
 !  compute the new gradient and Jacobian values
 
-  430    CONTINUE
-         IF ( data%reverse_gj ) THEN
-           data%branch = 440 ; inform%status = 3 ; RETURN
-         ELSE
-           CALL eval_GJ( data%eval_status, nlp%X, userdata, nlp%G, nlp%J%val )
-         END IF
+  430  CONTINUE
+       IF ( data%reverse_gj ) THEN
+         data%branch = 440 ; inform%status = 4 ; RETURN
+       ELSE
+         CALL eval_GJ( data%eval_status, nlp%X, userdata,                     &
+                       nlp%G, nlp%J%val )
+       END IF
 
-!  compute the gradient gL of the Lagrangian
+!  compute the gradient of the Lagrangian
 
-  440    CONTINUE
-         nlp%gL( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
-         CALL mop_AX( one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,      &
-                      m_matrix = nlp%m, n_matrix = nlp%n )
+  440  CONTINUE
+       nlp%gL( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
+       CALL mop_AX( one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,        &
+                    m_matrix = nlp%m, n_matrix = nlp%n )
 
 !  compute minus the new residuals, - r(x,y,z)
 
-         data%R( : nlp%n ) = - nlp%gL( : nlp%n )
-
-!  compute the SQP residuals
-
-         IF ( data%use_sqp ) THEN
-           data%npma = nlp%n
-           DO i = 1, nlp%m
-             IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-               data%npma = data%npma + 1
-               data%R( data%npma ) = nlp%C( i ) - nlp%C_l( i )
-             END IF
-             IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-               data%npma = data%npma + 1 
-               data%R( data%npma ) = nlp%C_u( i ) - nlp%C( i )
-             END IF
-           END DO
-           DO j = 1, nlp%n
-             IF ( data%X_status( j ) == 1 .OR. data%X_status( j ) == 3 ) THEN   
-               data%npma = data%npma + 1
-               data%R( data%npma ) = nlp%X( j ) - nlp%X_l( j )
-             END IF
-             IF ( data%X_status( j ) == 2 .OR. data%X_status( j ) == 3 ) THEN
-               data%npma = data%npma + 1
-               data%R( data%npma ) = nlp%X_u( j )  - nlp%X( j )
-             END IF
-           END DO
-
-!  record the norm of the residuals
-
-           data%rnorm_old = data%rnorm
-           data%rnorm = TWO_NORM( data%R( : data%npma ) )
-!write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
-
-!  compute the primal infeasibility & complementary_slackness after the SQP step
-
-           primal_infeasibility = zero
-           complementary_slackness = zero
-           DO j = 1, nlp%n
-             IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-               primal = nlp%X_l( j ) - nlp%X( j )
-               dual = data%Z_l( j )
-               primal_infeasibility = MAX( primal_infeasibility, primal )
-               complementary_slackness                                         &
-                 = MAX( complementary_slackness, ABS( primal * dual ) )
-             END IF
-             IF ( nlp%X_u( j ) <= control%infinity ) THEN
-               primal = nlp%X( j ) - nlp%X_u( j )
-               dual = data%Z_u( j )
-               primal_infeasibility = MAX( primal_infeasibility, primal )
-               complementary_slackness                                         &
-                 = MAX( complementary_slackness, ABS( primal * dual ) )
-             END IF
-           END DO
-           DO i = 1, nlp%m
-             IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-               primal = nlp%C_l( i ) - nlp%C( i )
-               dual = data%Y_l( i )
-               primal_infeasibility = MAX( primal_infeasibility, primal )
-               complementary_slackness                                         &
-                 = MAX( complementary_slackness, ABS( primal * dual ) )
-             END IF
-             IF ( nlp%C_u( i ) <= control%infinity ) THEN
-               primal = nlp%C( i ) - nlp%C_u( i )
-               dual = data%Y_u( i )
-               primal_infeasibility = MAX( primal_infeasibility, primal )
-               complementary_slackness                                         &
-                 = MAX( complementary_slackness, ABS( primal * dual ) )
-             END IF
-           END DO
-           dual_infeasibility = TWO_NORM( nlp%gL( : nlp%n ) )
-           IF ( data%printd )                                                  &
-             WRITE( data%out,"( ' primal, dual, comp =', 3ES11.4 )" )          &
-               primal_infeasibility, dual_infeasibility, complementary_slackness
-
-!  check for termination of the SQP iteration
-
-           IF ( primal_infeasibility <= data%stop_p .AND.                      &
-                dual_infeasibility <= data%stop_d .AND.                        &
-                complementary_slackness <= data%stop_c ) THEN
-             inform%obj = nlp%f
-             inform%primal_infeasibility = primal_infeasibility
-             inform%dual_infeasibility = dual_infeasibility
-             inform%complementary_slackness = complementary_slackness
-
-!  if required, print details of the SQP advanced start
-
-             IF ( data%printi ) THEN
-!              IF ( data%print_iteration_header ) THEN
-!                WRITE( data%out, 2010 ) prefix
-!                data%print_1st_header = .FALSE.
-!              END IF
-               CALL CLOCK_time( data%clock_now )
-               data%clock_now = data%clock_now - data%clock_start
-               IF ( data%printi ) WRITE( data%out,                             &
-                 "( A, I6, A1, ES15.8, 4ES9.1, 2I6, F9.2 )" ) prefix,          &
-                   inform%iter + 1, data%adv, nlp%f, primal_infeasibility,     &
-                   dual_infeasibility, complementary_slackness,                &
-                   data%max_mu, data%iter_advanced, 0, data%clock_now
-             END IF
-             GO TO 800
-           END IF
-
-!  compute the advanced-start residuals
-
-         ELSE
-           data%npma = nlp%n
-           DO i = 1, nlp%m
-             IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-               data%npma = data%npma + 1
-               data%R( data%npma ) = nlp%C( i ) - nlp%C_l( i ) +               &
-                 data%MU_l( i ) * ( LOG( data%Y_l( i ) ) - LOG( data%W_l( i ) ))
-             END IF
-             IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-               data%npma = data%npma + 1 
-               data%R( data%npma ) = nlp%C_u( i ) - nlp%C( i ) +               &
-                 data%MU_u( i ) * ( LOG( data%Y_u( i ) ) - LOG( data%W_u( i ) ))
-             END IF
-           END DO
-           DO j = 1, nlp%n
-             IF ( data%X_status( j ) == 1 .OR. data%X_status( j ) == 3 ) THEN   
-               data%npma = data%npma + 1
-               data%R( data%npma ) = nlp%X( j ) - nlp%X_l( j ) +               &
-                 data%NU_l( j ) * ( LOG( data%Z_l( j ) ) - LOG( data%V_l( j ) ))
-             END IF
-             IF ( data%X_status( j ) == 2 .OR. data%X_status( j ) == 3 ) THEN
-               data%npma = data%npma + 1
-               data%R( data%npma ) = nlp%X_u( j )  - nlp%X( j ) +              &
-                 data%NU_u( j ) * ( LOG( data%Z_u( j ) ) - LOG( data%V_u( j ) ))
-             END IF
-           END DO
-
-!  record the norm of the residuals
-
-           data%rnorm_old = data%rnorm
-           data%rnorm = TWO_NORM( data%R( : data%npma ) )
-!          WRITE( data%out, "( ' r_new ', 3ES22.14, :, /, ( 5X, 3ES22.14 ) )" )&
-!            data%R( : data%npma )
-write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
-
-!  compute the primal infeasibility & complementary_slackness after the 
-!  advanced-starting step, and the exponential-penalty dual variables and
-!  Lagrange multipliers
-
-           primal_infeasibility = zero
-           complementary_slackness = zero
-           DO j = 1, nlp%n
-             data%DZ( j ) = zero
-             IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-               primal = nlp%X_l( j ) - nlp%X( j )
-               primal_infeasibility = MAX( primal_infeasibility, primal )
-               exp_arg = primal / data%NU_l( j )
-               IF ( exp_arg > exp_arg_tiny ) THEN
-                 dual = - data%V_l( j ) * EXP( exp_arg )
-                 data%DZ( j ) = dual
-                 complementary_slackness                                       &
-                   = MAX( complementary_slackness, ABS( primal * dual ) )
-               END IF
-             END IF
-             IF ( nlp%X_u( j ) <= control%infinity ) THEN
-               primal = nlp%X( j ) - nlp%X_u( j )
-               primal_infeasibility = MAX( primal_infeasibility, primal )
-               exp_arg = primal / data%NU_u( j )
-               IF ( exp_arg > exp_arg_tiny ) THEN
-                 dual = data%V_u( j ) * EXP( exp_arg )
-                 data%DZ( j ) = data%DZ( j ) + dual
-                 complementary_slackness                                       &
-                   = MAX( complementary_slackness, ABS( primal * dual ) )
-               END IF
-             END IF
-           END DO
-           DO i = 1, nlp%m
-             data%DY( i ) = zero
-             IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-               primal = nlp%C_l( i ) - nlp%C( i )
-               primal_infeasibility = MAX( primal_infeasibility, primal )
-               exp_arg = primal / data%MU_l( i )
-               IF ( exp_arg > exp_arg_tiny ) THEN
-                 dual = - data%W_l( i ) * EXP( exp_arg )
-                 data%DY( i ) = dual
-                 complementary_slackness                                       &
-                   = MAX( complementary_slackness, ABS( primal * dual ) )
-               END IF
-             END IF
-             IF ( nlp%C_u( i ) <= control%infinity ) THEN
-               primal = nlp%C( i ) - nlp%C_u( i )
-               primal_infeasibility = MAX( primal_infeasibility, primal )
-               exp_arg = primal / data%MU_u( i )
-               IF ( exp_arg > exp_arg_tiny ) THEN
-                 dual = data%W_u( i ) * EXP( exp_arg )
-                 data%DY( i ) = data%DY( i ) + dual
-                 complementary_slackness                                       &
-                   = MAX( complementary_slackness, ABS( primal * dual ) )
-               END IF
-             END IF
-           END DO
-
-!  compute the gradient of the penalty function:
-
-           data%epf%G( : nlp%n ) = nlp%G( : nlp%n ) + data%DZ( : nlp%n )
-           CALL MOP_Ax( one, nlp%J, data%DY( : nlp%m ), one,                   &
-                        data%epf%G( : nlp%n ), transpose = .TRUE.,             &
-                        m_matrix = nlp%m, n_matrix = nlp%n )
-           dual_infeasibility = TWO_NORM( data%epf%G( : nlp%n ) )
-!          IF ( data%printd ) WRITE( data%out,                                 &
-           WRITE( data%out,                                 &
-             "( ' primal, dual, comp = ', 3ES11.4 )" ) primal_infeasibility,   &
-             dual_infeasibility, complementary_slackness
+       data%R( : nlp%n ) = - nlp%Gl( : nlp%n )
+       data%R( nlp%n : data%npm ) = zero
+       data%rnorm_old = data%rnorm
+       data%rnorm = TWO_NORM( data%R( : data%npm ) )
+!write(6,*) ' ||r|| = ', data%rnorm
 
 !  check to see if the residuals are sufficiently small
 
-           IF ( data%rnorm < data%control%advanced_stop ) THEN
-             IF ( data%printd ) write( data%out, "( ' converged ' )" )   
-             data%epf%X( : nlp%n ) = nlp%X( : nlp%n )
-             inform%obj = nlp%f
-             inform%primal_infeasibility = primal_infeasibility
-             inform%dual_infeasibility = dual_infeasibility
-             inform%complementary_slackness = complementary_slackness
-             GO TO 490
-           END IF
-         END IF  
-
-         IF ( data%printd ) THEN
-           WRITE( data%out, "( ' ||r|| =', ES11.4 )" ) data%rnorm
-           WRITE( data%out, "( ' ||r||, old, stop =', 3ES11.4 )" )             &
-             data%rnorm, data%rnorm_old, data%control%advanced_stop 
-         end if
+       IF ( data%rnorm < data%control%advanced_stop ) GO TO 500
 
 !  check to see if the residuals have increased
 
-         IF ( data%rnorm_old < data%rnorm ) THEN
+       IF ( data%rnorm_old < data%rnorm ) THEN
 
 !  make a copy of f, x, y, c, g & J in case the advanced starting point is poor
 
-           nlp%f = data%f_old
-           nlp%X( : nlp%n ) = data%X_old( : nlp%n )
-           data%Y_l( : nlp%m ) = data%Y_l_old( : nlp%m )
-           data%Y_u( : nlp%m ) = data%Y_u_old( : nlp%m )
-           data%Z_l( : nlp%n ) = data%Z_l_old( : nlp%n )
-           data%Z_u( : nlp%n ) = data%Z_u_old( : nlp%n )
-           nlp%C( : nlp%m ) = data%C_old( : nlp%m )
-           nlp%G( : nlp%n ) = data%G_old( : nlp%n )
-           nlp%J%val( : data%J_ne ) = data%J_old( : data%J_ne )
-           nlp%H%val( : data%H_ne ) = data%H_old( : data%H_ne )
-           GO TO 490
+         nlp%f = data%f_old
+         nlp%X( : nlp%n ) = data%X_old( : nlp%n )
+         data%Y( : nlp%m ) = data%Y_old( : nlp%m )
+         data%Z( : nlp%n ) = data%Z_old( : nlp%n )
+         nlp%C( : nlp%m ) = data%C_old( : nlp%m )
+         nlp%G( : nlp%n ) = data%G_old( : nlp%n )
+         nlp%J%val( : data%J_ne ) = data%J_old( : data%J_ne )
+         nlp%H%val( : data%H_ne ) = data%H_old( : data%H_ne )
+         GO TO 500
 
 !  check to see if the advanced start iteration limit has been reasched
 
-         ELSE
-           IF ( data%iter_advanced > iter_advanced_max ) GO TO 490
-         END IF
-
-!  perform another iteration of the loop
-
-         data%iter_advanced = data%iter_advanced + 1
-         GO TO 410
-
-  490  CONTINUE
-
-!  if required, print details of the advanced start
-
-       IF ( data%printi ) THEN
-!        IF ( data%print_iteration_header ) THEN
-!          WRITE( data%out, 2010 ) prefix
-!          data%print_1st_header = .FALSE.
-!        END IF
-         CALL CLOCK_time( data%clock_now )
-         data%clock_now = data%clock_now - data%clock_start
-         IF ( data%printi ) WRITE( data%out,                                   &
-           "( A, I6, A1, ES15.8, 4ES9.1, 2I6, F9.2 )" ) prefix,                &
-             inform%iter + 1, data%adv, nlp%f, primal_infeasibility,           &
-             dual_infeasibility, complementary_slackness,                      &
-             data%max_mu, data%iter_advanced, 0, data%clock_now
+       ELSE
+          IF ( data%iter_advanced > iter_advanced_max ) GO TO 500
        END IF
+       data%iter_advanced = data%iter_advanced + 1
+       GO TO 410
 
-!  ------------------------------------------
-!  end of advanced starting point search loop
-!  ------------------------------------------
+!  end of advanced starting point search
 
   500  CONTINUE
 
@@ -3611,17 +2737,19 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
        inform%tru_inform%status = 1
        GO TO 100
 
-!  prepare to exit
-
  800 CONTINUE
+
+!  compute the norm of the projected gradient
+
+    inform%dual_infeasibility = TWO_NORM( data%qpf%G( : nlp%n ) )
 
 !  debug printing for X and G
 
      IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
        WRITE ( data%out, 2000 ) prefix, TRIM( nlp%pname ), nlp%n
        WRITE ( data%out, 2200 ) prefix, inform%f_eval, prefix, inform%g_eval,  &
-         prefix, inform%h_eval, prefix, inform%iter, prefix, inform%obj,       &
-         prefix, inform%dual_infeasibility
+         prefix, inform%h_eval, prefix, inform%iter, prefix,                   &
+         prefix, inform%obj, prefix, inform%dual_infeasibility
        WRITE ( data%out, 2210 ) prefix
 !      l = nlp%n
        l = 2
@@ -3635,29 +2763,55 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
           IF ( ALLOCATED( nlp%vnames ) ) THEN
             DO i = ir, ic
                WRITE( data%out, 2220 ) prefix, nlp%vnames( i ),                &
-                 nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), data%epf%G( i )
+                 nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), data%qpf%G( i )
             END DO
           ELSE
             DO i = ir, ic
                WRITE( data%out, 2230 ) prefix, i,                              &
-                 nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), data%epf%G( i )
+                 nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), data%qpf%G( i )
             END DO
           END IF
        END DO
      END IF
 
-!  record the time
+!  record the clock time
+
+     CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+     data%time_now = data%time_now - data%time_start
+     data%clock_now = data%clock_now - data%clock_start
+     IF ( data%printt ) WRITE( data%out, "( /, A, ' Time so far = ', 0P,       &
+    &    F12.2,  ' seconds' )" ) prefix, data%clock_now
+     IF ( ( data%control%cpu_time_limit >= zero .AND.                          &
+            data%time_now > data%control%cpu_time_limit ) .OR.                 &
+          ( data%control%clock_time_limit >= zero .AND.                        &
+            data%clock_now > data%control%clock_time_limit ) ) THEN
+       inform%status = GALAHAD_error_cpu_limit ; GO TO 900
+     END IF
+
+!  =========================
+!  End of the main iteration
+!  =========================
+
+ 900 CONTINUE
+
+!  print details of solution
 
      CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
 
      IF ( data%printi ) THEN
-!      WRITE ( data%out, 2000 ) nlp%pname, nlp%n
-       WRITE ( data%out, 2200 ) prefix, inform%f_eval, prefix, inform%g_eval,  &
-                                prefix, inform%h_eval, prefix, inform%iter,    &
-                                prefix, inform%obj, prefix,                    &
-                                inform%dual_infeasibility
+       WRITE( data%out, "( '' )" )
+       IF ( data%control%augmented_lagrangian ) THEN
+         WRITE( data%out, "( A, ' Augmented-Lagrangian function used' )") prefix
+       ELSE
+         WRITE( data%out, "( A, ' Quadratic-penalty function used' )" ) prefix
+       END IF
+!      WRITE( data%out, 2000 ) nlp%pname, nlp%n
+       WRITE( data%out, 2200 ) prefix, inform%f_eval, prefix, inform%g_eval,   &
+                               prefix, inform%h_eval, prefix, inform%iter,     &
+                               prefix, inform%obj, prefix,                     &
+                               inform%dual_infeasibility
 !      WRITE ( data%out, 2210 )
 !      IF ( data%print_level > 3 ) THEN
 !         l = nlp%n
@@ -3673,7 +2827,7 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 !         END IF
 !         DO i = ir, ic
 !            WRITE ( data%out, 2220 ) nlp%vnames( i ), nlp%X_l( i ),
-!              nlp%X( i ), nlp%X_u( i ), data%epf%G( i )
+!              nlp%X( i ), nlp%X_u( i ), data%qpf%G( i )
 !         END DO
 !      END DO
 !!$    IF ( .NOT. data%monotone ) WRITE( data%out,                             &
@@ -3772,7 +2926,7 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 !!$      IF ( data%control%renormalize_radius ) WRITE( data%out,               &
 !!$         "( A, '  Radius renormalized' )" ) prefix
        END IF
-       WRITE ( data%out, "( A, ' Total time = ', 0P, F0.2, ' seconds', / )" )  &
+       WRITE ( data%out, "( /, A, ' Total time = ', 0P, F0.2, ' seconds', / )")&
          prefix, inform%time%clock_total
      END IF
      IF ( inform%status /= GALAHAD_OK ) GO TO 990
@@ -3793,7 +2947,7 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
      IF ( data%printi ) THEN
-       CALL SYMBOLS_status( inform%status, data%out, prefix, 'EPF_solve' )
+       CALL SYMBOLS_status( inform%status, data%out, prefix, 'QPF_solve' )
        WRITE( data%out, "( ' ' )" )
      END IF
      RETURN
@@ -3802,26 +2956,25 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
  2000 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
  2010 FORMAT( A, '  iter  f               pr-feas  du-feas  cmp-slk  ',        &
-              ' max mu inner  stop cpu time' )
- 2200 FORMAT( /, A, ' # function evaluations  = ', I0,                         &
-              /, A, ' # gradient evaluations  = ', I0,                         &
-              /, A, ' # Hessian evaluations   = ', I0,                         &
-              /, A, ' # major iterations      = ', I0,                         &
+              ' max mu inner stop cpu time' )
+ 2200 FORMAT( /, A, ' # function evaluations = ', I0,                          &
+              /, A, ' # gradient evaluations = ', I0,                          &
+              /, A, ' # Hessian evaluations  = ', I0,                          &
+              /, A, ' # major iterations     = ', I0,                          &
              //, A, ' Terminal objective value =', ES22.14,                    &
               /, A, ' Terminal gradient norm   =', ES12.4 )
  2210 FORMAT( /, A, ' name             X_l        X         X_u         G ' )
  2220 FORMAT(  A, 1X, A10, 4ES12.4 )
  2230 FORMAT(  A, 1X, I10, 4ES12.4 )
  2240 FORMAT( A, ' .          ........... ...........' )
- 2250 FORMAT( ' ', A3, ' =      ', 5ES12.4, :/ ( 6ES12.4, : ) )
 
- !  End of subroutine EPF_solve
+ !  End of subroutine QPF_solve
 
-     END SUBROUTINE EPF_solve
+     END SUBROUTINE QPF_solve
 
-!-*-*-  G A L A H A D -  E P F _ t e r m i n a t e  S U B R O U T I N E -*-*-
+!-*-*-  G A L A H A D -  Q P F _ t e r m i n a t e  S U B R O U T I N E -*-*-
 
-     SUBROUTINE EPF_terminate( data, control, inform )
+     SUBROUTINE QPF_terminate( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -3833,9 +2986,9 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( EPF_data_type ), INTENT( INOUT ) :: data
-     TYPE ( EPF_control_type ), INTENT( IN ) :: control
-     TYPE ( EPF_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( QPF_data_type ), INTENT( INOUT ) :: data
+     TYPE ( QPF_control_type ), INTENT( IN ) :: control
+     TYPE ( QPF_inform_type ), INTENT( INOUT ) :: inform
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -3846,217 +2999,145 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
 !  Deallocate all remaining allocated arrays
 
-     array_name = 'EPF: data%C_status'
-     CALL SPACE_dealloc_array( data%C_status,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%X_status'
+     array_name = 'QPF: data%X_status'
      CALL SPACE_dealloc_array( data%X_status,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%C_index'
-     CALL SPACE_dealloc_array( data%C_index,                                  &
+     array_name = 'QPF: data%C_status'
+     CALL SPACE_dealloc_array( data%C_status,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%X_index'
-     CALL SPACE_dealloc_array( data%X_index,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%H_map'
+     array_name = 'QPF: data%H_map'
      CALL SPACE_dealloc_array( data%H_map,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Dz_map'
-     CALL SPACE_dealloc_array( data%Dz_map,                                    &
+     array_name = 'QPF: data%Dx_map'
+     CALL SPACE_dealloc_array( data%Dx_map,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Dy'
-     CALL SPACE_dealloc_array( data%Dy,                                        &
+     array_name = 'QPF: data%Dc'
+     CALL SPACE_dealloc_array( data%Dc,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Dz'
-     CALL SPACE_dealloc_array( data%Dz,                                        &
+     array_name = 'QPF: data%Dx'
+     CALL SPACE_dealloc_array( data%Dx,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%V_l'
-     CALL SPACE_dealloc_array( data%V_l,                                       &
+     array_name = 'QPF: data%Y'
+     CALL SPACE_dealloc_array( data%Y,                                         &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%V_u'
-     CALL SPACE_dealloc_array( data%V_u,                                       &
+     array_name = 'QPF: data%Z'
+     CALL SPACE_dealloc_array( data%Z,                                         &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%W_l'
-     CALL SPACE_dealloc_array( data%W_l,                                       &
+     array_name = 'QPF: data%MU'
+     CALL SPACE_dealloc_array( data%MU,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%W_u'
-     CALL SPACE_dealloc_array( data%W_u,                                       &
+     array_name = 'QPF: data%NU'
+     CALL SPACE_dealloc_array( data%NU,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Y_l'
-     CALL SPACE_dealloc_array( data%Y_l,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%Y_u'
-     CALL SPACE_dealloc_array( data%Y_u,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%Z_l'
-     CALL SPACE_dealloc_array( data%Z_l,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%Z_u'
-     CALL SPACE_dealloc_array( data%Z_u,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%MU_l'
-     CALL SPACE_dealloc_array( data%MU_l,                                      &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%MU_u'
-     CALL SPACE_dealloc_array( data%MU_u,                                      &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%NU_l'
-     CALL SPACE_dealloc_array( data%NU_l,                                      &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%NU_u'
-     CALL SPACE_dealloc_array( data%NU_u,                                      &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%JT%row'
+     array_name = 'QPF: data%JT%row'
      CALL SPACE_dealloc_array( data%JT%row,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%JT%col'
+     array_name = 'QPF: data%JT%col'
      CALL SPACE_dealloc_array( data%JT%col,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%JT%val'
+     array_name = 'QPF: data%JT%val'
      CALL SPACE_dealloc_array( data%JT%val,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%epf%G'
-     CALL SPACE_dealloc_array( data%epf%G,                                     &
+     array_name = 'QPF: data%qpf%G'
+     CALL SPACE_dealloc_array( data%qpf%G,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%epf%H%row'
-     CALL SPACE_dealloc_array( data%epf%H%row,                                 &
+     array_name = 'QPF: data%qpf%H%row'
+     CALL SPACE_dealloc_array( data%qpf%H%row,                                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%epf%H%col'
-     CALL SPACE_dealloc_array( data%epf%H%col,                                 &
+     array_name = 'QPF: data%qpf%H%col'
+     CALL SPACE_dealloc_array( data%qpf%H%col,                                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%epf%H%val'
-     CALL SPACE_dealloc_array( data%epf%H%val,                                 &
+     array_name = 'QPF: data%qpf%H%val'
+     CALL SPACE_dealloc_array( data%qpf%H%val,                                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%X_old'
+     array_name = 'QPF: data%X_old'
      CALL SPACE_dealloc_array( data%X_old,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Y_l_old'
-     CALL SPACE_dealloc_array( data%Y_l_old,                                   &
+     array_name = 'QPF: data%Y_old'
+     CALL SPACE_dealloc_array( data%Y_old,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Y_u_old'
-     CALL SPACE_dealloc_array( data%Y_u_old,                                   &
+     array_name = 'QPF: data%Z_old'
+     CALL SPACE_dealloc_array( data%Z_old,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Z_l_old'
-     CALL SPACE_dealloc_array( data%Z_l_old,                                   &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%Z_u_old'
-     CALL SPACE_dealloc_array( data%Z_u_old,                                   &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%G_old'
+     array_name = 'QPF: data%G_old'
      CALL SPACE_dealloc_array( data%G_old,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%C_old'
+     array_name = 'QPF: data%C_old'
      CALL SPACE_dealloc_array( data%C_old,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%J_old'
+     array_name = 'QPF: data%J_old'
      CALL SPACE_dealloc_array( data%J_old,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%H_old'
+     array_name = 'QPF: data%H_old'
      CALL SPACE_dealloc_array( data%H_old,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
@@ -4087,13 +3168,13 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
      RETURN
 
-!  End of subroutine EPF_terminate
+!  End of subroutine QPF_terminate
 
-     END SUBROUTINE EPF_terminate
+     END SUBROUTINE QPF_terminate
 
-!-*-*-*-  G A L A H A D -  E P F _ p r o j e c t i o n   F U N C T I O N -*-*-
+!-*-*-*-  G A L A H A D -  Q P F _ p r o j e c t i o n   F U N C T I O N -*-*-
 
-     FUNCTION EPF_projection( n, X, X_l, X_u )
+     FUNCTION QPF_projection( n, X, X_l, X_u )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -4107,21 +3188,21 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u
-     REAL ( KIND = rp_ ), DIMENSION( n ) :: EPF_projection
+     REAL ( KIND = rp_ ), DIMENSION( n ) :: QPF_projection
 
 !  compute the projection
 
-     EPF_projection = MAX( X_l, MIN( X, X_u ) )
+     QPF_projection = MAX( X_l, MIN( X, X_u ) )
      RETURN
 
- !  End of function EPF_projection
+ !  End of function QPF_projection
 
-     END FUNCTION EPF_projection
+     END FUNCTION QPF_projection
 
-!-*-  G A L A H A D -  E P F _ i n f e a s i b i l i t y   F U N C T I O N -*-
+!-*-  G A L A H A D -  Q P F _ i n f e a s i b i l i t y   F U N C T I O N -*-
 
-     FUNCTION EPF_infeasibility( n, X, X_l, X_u, infinity )
-     REAL ( KIND = rp_ ) :: EPF_infeasibility
+     FUNCTION QPF_infeasibility( n, X, X_l, X_u, infinity )
+     REAL ( KIND = rp_ ) :: QPF_infeasibility
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -4146,23 +3227,23 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
 !  compute the infeasibility
 
-     EPF_infeasibility = zero
+     QPF_infeasibility = zero
      DO j = 1, n
        IF ( X_l( j ) >= - infinity )                                           &
-         EPF_infeasibility = MAX( EPF_infeasibility, X_l( j ) - X( j ) )
+         QPF_infeasibility = MAX( QPF_infeasibility, X_l( j ) - X( j ) )
        IF ( X_u( j ) <= infinity )                                             &
-         EPF_infeasibility = MAX( EPF_infeasibility, X( j ) - X_u( j ) )
+         QPF_infeasibility = MAX( QPF_infeasibility, X( j ) - X_u( j ) )
      END DO
      RETURN
 
- !  End of function EPF_infeasibility
+ !  End of function QPF_infeasibility
 
-     END FUNCTION EPF_infeasibility
+     END FUNCTION QPF_infeasibility
 
-!-  G A L A H A D -  E P F _ c o m p l e m e n t a r i t y   F U N C T I O N -
+!-  G A L A H A D -  Q P F _ c o m p l e m e n t a r i t y   F U N C T I O N -
 
-     FUNCTION EPF_complementarity( n, X, X_l, X_u, Z_l, Z_u, infinity )
-     REAL ( KIND = rp_ ) :: EPF_complementarity
+     FUNCTION QPF_complementarity( n, X, X_l, X_u, Z, infinity )
+     REAL ( KIND = rp_ ) :: QPF_complementarity
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -4178,7 +3259,7 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
      REAL ( KIND = rp_ ), INTENT( IN ) :: infinity
      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u
-     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: Z_l, Z_u
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: Z
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -4188,25 +3269,22 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
 !  compute the infeasibility
 
-     EPF_complementarity = zero
+     QPF_complementarity = zero
      DO j = 1, n
-       IF ( X_l( j ) >= - infinity )                                           &
-         EPF_complementarity = MAX( EPF_complementarity,                       &
-                                    ( X( j ) - X_l( j ) ) * Z_l( j ) )
-       IF ( X_u( j ) <= infinity )                                             &
-         EPF_complementarity = MAX( EPF_complementarity,                       &
-                                    - ( X( j ) - X_u( j ) ) * Z_u( j ) )
+       QPF_complementarity = MAX( QPF_complementarity, ABS( Z( j ) ) *         &
+                                    MIN( ABS( X( j ) - X_l( j ) ),             &
+                                         ABS( X( j ) - X_u( j ) ) ) )
      END DO
      RETURN
 
- !  End of function EPF_complementarity
+ !  End of function QPF_complementarity
 
-     END FUNCTION EPF_complementarity
+     END FUNCTION QPF_complementarity
 
-!-*-*-  E P F _ r e d u c e d  _ g r a d i e n t _ n o r m  F U C T I O N  -*-
+!-*-*-  Q P F _ r e d u c e d  _ g r a d i e n t _ n o r m  F U C T I O N  -*-
 
-     FUNCTION EPF_reduced_gradient_norm( n, X, G, X_l, X_u )
-     REAL ( KIND = rp_ ) :: EPF_reduced_gradient_norm
+     FUNCTION QPF_reduced_gradient_norm( n, X, G, X_l, X_u )
+     REAL ( KIND = rp_ ) :: QPF_reduced_gradient_norm
 
 !  Compute the norm of the reduced gradient in the feasible box
 
@@ -4238,18 +3316,18 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
        END IF
        reduced_gradient_norm = MAX( reduced_gradient_norm, ABS( gi ) )
      END DO
-     EPF_reduced_gradient_norm = reduced_gradient_norm
+     QPF_reduced_gradient_norm = reduced_gradient_norm
 
      RETURN
 
-!  End of EPF_reduced_gradient_norm
+!  End of QPF_reduced_gradient_norm
 
-     END FUNCTION EPF_reduced_gradient_norm
+     END FUNCTION QPF_reduced_gradient_norm
 
-!-*-*-*-*-*-*-*-*-*-*-  E P F _ a c t i v e  F U C T I O N  -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-*-  Q P F _ a c t i v e  F U C T I O N  -*-*-*-*-*-*-*-*-
 
-     FUNCTION EPF_active( n, X, X_l, X_u )
-     INTEGER ( KIND = ip_ ) :: EPF_active
+     FUNCTION QPF_active( n, X, X_l, X_u )
+     INTEGER ( KIND = ip_ ) :: QPF_active
 
 !  Count the number of active bounds
 
@@ -4274,17 +3352,17 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
          n_active = n_active + 1
        END IF
      END DO
-     EPF_active = n_active
+     QPF_active = n_active
 
      RETURN
 
-!  End of EPF_active
+!  End of QPF_active
 
-     END FUNCTION EPF_active
+     END FUNCTION QPF_active
 
-!-*-*-*-  G A L A H A D -  E P F _ m a p _ s e t   S U B R O U T I N E  -*-*-*-
+!-*-*-*-  G A L A H A D -  Q P F _ m a p _ s e t   S U B R O U T I N E  -*-*-*-
 
-     SUBROUTINE EPF_map_set( A, B, MAP_D, MAP_B, status, alloc_status )
+     SUBROUTINE QPF_map_set( A, B, MAP_D, MAP_B, status, alloc_status )
 
 !  find a mapping of the entries of the matrix B and the diagonal matrix D
 !  into A. A should be stored by columns (either as a sparse or dense matrix)
@@ -4484,7 +3562,7 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
            IW( A%row( l ) ) = l
          END DO
          diagonal = MAP_D( j ) == 1
-!if(DEBUG) write(6,*) j, diagonal, ' MAP_D', MAP_D( j )
+!write(6,*) j, diagonal, ' MAP_D', MAP_D( j )
 
 !  march through the entries in the j-th column of B and D processing those
 !  that do not occur in A
@@ -4496,15 +3574,15 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
            ELSE
              new_entries = new_entries + 1
              a_ne = a_ne + 1
-!if(DEBUG) write(6,*) ' a a_ne ', a_ne
+!write(6,*) ' a a_ne ', a_ne
              A%row( a_ne ) = ROW( l )
              A%col( a_ne ) = j
-!if(DEBUG) write(6,*) ' row, col ', A%row( a_ne ), A%col( a_ne )
+!write(6,*) ' row, col ', A%row( a_ne ), A%col( a_ne )
              MAP_B( ORDER( l ) ) = a_ne
-!if(DEBUG) write(6,*) '  MAP_B(', ORDER( l ), ') = ', a_ne
+!write(6,*) '  MAP_B(', ORDER( l ), ') = ', a_ne
              IF ( diagonal .AND. i == j ) THEN
                diagonal = .FALSE.
-!if(DEBUG) write(6,*) '  MAP_D(', j, ') = ', a_ne
+!write(6,*) '  MAP_D(', j, ') = ', a_ne
                MAP_D( j ) = a_ne
              END IF
            END IF
@@ -4514,8 +3592,8 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
            a_ne = a_ne + 1
            A%row( a_ne ) = j
            A%col( a_ne ) = j
-!if(DEBUG) write(6,*) ' row, col ', A%row( a_ne ), A%col( a_ne )
-!if(DEBUG) write(6,*) '  MAP_D(', j, ') = ', a_ne
+!write(6,*) ' row, col ', A%row( a_ne ), A%col( a_ne )
+!write(6,*) '  MAP_D(', j, ') = ', a_ne
            MAP_D( j ) = a_ne
          END IF
 
@@ -4530,14 +3608,10 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
      status = GALAHAD_ok
      RETURN
 
-!  end of subroutine EPF_map_set
+!  end of subroutine QPF_map_set
 
-     END SUBROUTINE EPF_map_set
+     END SUBROUTINE QPF_map_set
 
-!  End of module GALAHAD_EPF
+!  End of module GALAHAD_QPF
 
-   END MODULE GALAHAD_EPF_precision
-
-
-
-
+   END MODULE GALAHAD_QPF_precision

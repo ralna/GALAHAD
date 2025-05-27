@@ -1,0 +1,21 @@
+MAIN
+! write-problem-data                                no
+! write-result-summary                              yes
+! trek-result-summary-file-name                     TREKRES.d
+! trek-result-summary-file-device                   47
+! print-full-solution                               no
+! write-solution                                    yes
+! trek-solution-file-name                           TREKSOL.d
+! trek-solution-file-device                         62
+! radius                                            1.0
+! use-more-sorensen                                 no
+! use-trek                                          yes
+! number-of-radii                                   1
+
+INCLUDE TREK
+
+INCLUDE SLS
+
+INCLUDE IR
+
+INCLUDE TRS

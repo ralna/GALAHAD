@@ -34,7 +34,7 @@
 #define GALAHAD_DPS_precision GALAHAD_DPS_single_64
 #define GALAHAD_DQP_precision GALAHAD_DQP_single_64
 #define GALAHAD_EKS_precision GALAHAD_EKS_single_64
-#define GALAHAD_EKTR_precision GALAHAD_EKTR_single_64
+#define GALAHAD_TREK_precision GALAHAD_TREK_single_64
 #define GALAHAD_EKRT_precision GALAHAD_EKRT_single_64
 #define GALAHAD_EPF_precision GALAHAD_EPF_single_64
 #define GALAHAD_EQP_precision GALAHAD_EQP_single_64
@@ -162,7 +162,7 @@
 #define GALAHAD_USEDPS_precision GALAHAD_USEDPS_single_64
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_single_64
 #define GALAHAD_USEEKS_precision GALAHAD_USEEKS_single_64
-#define GALAHAD_USEEKTR_precision GALAHAD_USEEKTR_single_64
+#define GALAHAD_USETREK_precision GALAHAD_USETREK_single_64
 #define GALAHAD_USEEKRT_precision GALAHAD_USEEKRT_single_64
 #define GALAHAD_USEEPF_precision GALAHAD_USEEPF_single_64
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_single_64
@@ -372,7 +372,7 @@
 #define RUNTRACE_SIF_precision RUNTRACE_SIF_single_64
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_single_64
 #define RUNEKS_SIF_precision RUNEKS_SIF_single_64
-#define RUNEKTR_SIF_precision RUNEKTR_SIF_single_64
+#define RUNTREK_SIF_precision RUNTREK_SIF_single_64
 #define RUNEKRT_SIF_precision RUNEKRT_SIF_single_64
 #define RUNEPF_SIF_precision RUNEPF_SIF_single_64
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_single_64
@@ -447,7 +447,7 @@
 #define GALAHAD_DPS_precision GALAHAD_DPS_single
 #define GALAHAD_DQP_precision GALAHAD_DQP_single
 #define GALAHAD_EKS_precision GALAHAD_EKS_single
-#define GALAHAD_EKTR_precision GALAHAD_EKTR_single
+#define GALAHAD_TREK_precision GALAHAD_TREK_single
 #define GALAHAD_EKRT_precision GALAHAD_EKRT_single
 #define GALAHAD_EPF_precision GALAHAD_EPF_single
 #define GALAHAD_EQP_precision GALAHAD_EQP_single
@@ -575,7 +575,7 @@
 #define GALAHAD_USEDPS_precision GALAHAD_USEDPS_single
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_single
 #define GALAHAD_USEEKS_precision GALAHAD_USEEKS_single
-#define GALAHAD_USEEKTR_precision GALAHAD_USEEKTR_single
+#define GALAHAD_USETREK_precision GALAHAD_USETREK_single
 #define GALAHAD_USEEKRT_precision GALAHAD_USEEKRT_single
 #define GALAHAD_USEEPF_precision GALAHAD_USEEPF_single
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_single
@@ -785,7 +785,7 @@
 #define RUNTRACE_SIF_precision RUNTRACE_SIF_single
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_single
 #define RUNEKS_SIF_precision RUNEKS_SIF_single
-#define RUNEKTR_SIF_precision RUNEKTR_SIF_single
+#define RUNTREK_SIF_precision RUNTREK_SIF_single
 #define RUNEKRT_SIF_precision RUNEKRT_SIF_single
 #define RUNEPF_SIF_precision RUNEPF_SIF_single
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_single

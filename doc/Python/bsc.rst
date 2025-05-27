@@ -5,6 +5,8 @@ BSC
 
 .. include:: bsc_intro.rst
 
+.. include:: bsc_storage.rst
+
 functions
 ---------
 
@@ -62,6 +64,81 @@ functions
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
 
+   .. function:: bsc.load(m, n, A_type, A_ne, A_row, A_col, A_ptr, options=None)
+
+      Import the structure of $A$ to build that of $S$.
+
+      **Parameters:**
+
+      m : int
+          holds the number of rows of $A$.
+      n : int
+          holds the number of columns of $A$.
+      A_type : string
+          specifies the unsymmetric storage scheme used for the matrix $A$.
+          It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
+          lower or upper case variants are allowed.
+      A_ne : int
+          holds the number of entries in $A$ in the sparse co-ordinate storage 
+          scheme. It need not be set for any of the other two schemes.
+      A_row : ndarray(A_ne)
+          holds the row indices of $A$
+          in the sparse co-ordinate storage scheme. It need not be set for
+          any of the other two schemes, and in this case can be None.
+      A_col : ndarray(A_ne)
+          holds the column indices of $A$ in either the sparse co-ordinate, 
+          or the sparse row-wise storage scheme. It need not be set when the 
+          dense storage scheme is used, and in this case can be None.
+      A_ptr : ndarray(m+1)
+          holds the starting position of each row of $A$, as well as the 
+          total number of entries, in the sparse row-wise storage 
+          scheme. It need not be set when the other schemes are used, and in 
+          this case can be None.
+      options : dict, optional
+          dictionary of control options (see ``bsc.initialize``).
+
+      **Returns:**
+
+      S_ne : int
+          holds the number of entries in $S$.
+
+   .. function:: bsc.form(m, n, A_ne, A_val, S_ne, D)
+
+      Form the Schur complement matrix $S = A D A^T$.
+
+      **Parameters:**
+
+      m : int
+          holds the number of rows of $A$.
+      n : int
+          holds the number of columns of $A$.
+      A_ne : int
+          holds the number of entries in the matrix $A$.
+      A_val : ndarray(A_ne)
+          holds the values of the nonzeros in the matrix $A$ in the same 
+          order as specified in the sparsity pattern in ``bsc.load``.
+      S_ne : int
+          holds the number of entries in the matrix $S$, as returned by
+          ``bsc.load``.
+      D : ndarray(n)
+          holds the values of diagonal matrix $D$. If $D$ is the identity
+          matrix, it can take the value None to save storage.
+
+      **Returns:**
+
+      S_row : ndarray(S_ne)
+          holds the row indices of $S$
+          in the sparse co-ordinate storage scheme.
+      S_col : ndarray(S_ne)
+          holds the column indices of $S$ in either the sparse co-ordinate, 
+          or the sparse row-wise storage scheme.
+      S_ptr : ndarray(n+1)
+          holds the starting position of each row of $S$, as well as the 
+          total number of entries, in the sparse row-wise storage 
+          scheme.
+      S_val : ndarray(S_ne)
+          holds the values of the nonzeros in the matrix $S$.
+
    .. function:: [optional] bsc.information()
 
       Provide optional output information.
@@ -116,3 +193,11 @@ functions
    .. function:: bsc.finalize()
 
      Deallocate all internal private storage.
+
+example code
+------------
+
+.. include:: ../../src/bsc/Python/test_bsc.py
+   :code: python
+
+This example code is available in $GALAHAD/src/bsc/Python/test_bsc.py .

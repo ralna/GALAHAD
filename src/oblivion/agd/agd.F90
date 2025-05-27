@@ -332,7 +332,6 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DX
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_x
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_y
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_x_old
 
@@ -949,14 +948,6 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'agd: data%G_x'
-     CALL SPACE_resize_array( nlp%n, data%G_x, inform%status,                  &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
      array_name = 'agd: data%G_y'
      CALL SPACE_resize_array( nlp%n, data%G_y, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
@@ -992,35 +983,30 @@
      IF ( data%reverse_f ) THEN
        data%branch = 20 ; inform%status = 2 ; RETURN
      ELSE
-       CALL eval_F( data%eval_status, nlp%X( : nlp%n ), userdata, data%f_0 )
+       CALL eval_F( data%eval_status, nlp%X( : nlp%n ), userdata, data%f_xk )
      END IF
 
 !  return from reverse communication to obtain the objective value
 
   20 CONTINUE
      inform%f_eval = inform%f_eval + 1
-     IF ( data%reverse_f ) data%f_0 = nlp%f
-     data%f_xk = data%f_0
+     IF ( data%reverse_f ) data%f_xk = nlp%f
+     data%f_0 = data%f_xk
 
 !  evaluate the gradient of the objective function at the initial point
 
      IF ( data%reverse_g ) THEN
-!      data%X( : nlp%n ) = nlp%X(  : nlp%n )
-!      nlp%X(  : nlp%n ) = data%Y( : nlp%n )
        data%branch = 30 ; inform%status = 3 ; RETURN
      ELSE
        CALL eval_G( data%eval_status, nlp%X( : nlp%n ), userdata,              &
-                    data%G_x( : nlp%n ) )
+                    nlp%G( : nlp%n ) )
      END IF
 
 !  return from reverse communication to obtain the gradient
 
   30 CONTINUE
      inform%g_eval = inform%g_eval + 1
-!    IF ( data%reverse_g ) nlp%X(  : nlp%n ) = data%X( : nlp%n )
-     IF ( data%reverse_g ) data%G_x( : nlp%n ) = nlp%G( : nlp%n )
-!    data%G_y( : nlp%n ) = nlp%G( : nlp%n )
-     data%G_y( : nlp%n ) = data%G_x( : nlp%n )
+     data%G_y( : nlp%n ) = nlp%G( : nlp%n )
 
 !  initialize counters and scalars
 
@@ -1029,8 +1015,8 @@
      inform%l_g = control%l_g_initial ! l_g <- l_g_init
      inform%l_h = control%l_h_initial ! l_h <- l_h_init
      data%s = zero
-     data%f_xkm1 = data%f_0
-     inform%norm_g = TWO_NORM( data%G_x( : nlp%n ) )
+     data%f_xkm1 = data%f_xk
+     inform%norm_g = TWO_NORM( nlp%G( : nlp%n ) )
 
 !  compute the stopping tolerance
 
@@ -1142,6 +1128,7 @@
 
 !  evaluate the objective function at x_k
 
+       data%f_xkm1 = data%f_xk
        IF ( data%reverse_f ) THEN
          data%branch = 110 ; inform%status = 2 ; RETURN
        ELSE
@@ -1159,15 +1146,15 @@
        IF ( data%f_xk > data%f_0                                               &
              - half * inform%l_g * data%s / data%rkp1 ) THEN
          inform%l_g = control%l_g_increase * inform%l_g
+         data%k = 0
          data%f_0 = data%f_xkm1
          data%f_xk = data%f_xkm1
          nlp%X( : nlp%n ) =  data%X_old( : nlp%n )
          data%Y( : nlp%n ) =  data%X_old( : nlp%n ) 
-         data%G_y( : nlp%n ) = data%G_x( : nlp%n ) 
+         data%G_y( : nlp%n ) = nlp%G( : nlp%n ) 
          data%Z( : nlp%n ) = data%Y( : nlp%n )
          data%s = zero
          data%zeta = one
-         data%k = 0
          data%epoch = 'u'
          GO TO 100
        END IF
@@ -1199,7 +1186,6 @@
 
 !  evaluate the gradient of the objective function at y_k
 
-       data%G_x( : nlp%n ) = nlp%G( : nlp%n )
        IF ( data%reverse_g ) THEN
          data%branch = 130 ; inform%status = 3 ; RETURN
        ELSE
@@ -1218,43 +1204,42 @@
 
 !  evaluate the gradient of the objective function at x_k
 
-       data%G_x_old( : nlp%n ) = data%G_x( : nlp%n )
+       data%G_x_old( : nlp%n ) = nlp%G( : nlp%n )
        IF ( data%reverse_g ) THEN
          data%branch = 140 ; inform%status = 3 ; RETURN
        ELSE
          CALL eval_G( data%eval_status, nlp%X( : nlp%n ), userdata,            &
-                      data%G_x( : nlp%n ) )
+                      nlp%G( : nlp%n ) )
        END IF
 
 !  return from reverse communication to obtain the gradient
 
  140   CONTINUE
        inform%g_eval = inform%g_eval + 1
-       IF ( data%reverse_g ) data%G_x( : nlp%n ) = nlp%G( : nlp%n )
-       inform%norm_g = TWO_NORM( data%G_x( : nlp%n ) )
+       inform%norm_g = TWO_NORM( nlp%G( : nlp%n ) )
 
 !  improve the estimate of the Hessian Lipschitz constant (M+H (4.9))
 
        inform%l_h = MAX( inform%l_h,                                           &
           twelve * ( data%f_yk - data%f_xk - half *                            &
-          DOT_PRODUCT( data%G_y( : nlp%n ) + data%G_x( : nlp%n ),              &
+          DOT_PRODUCT( data%G_y( : nlp%n ) + nlp%G( : nlp%n ),                 &
                        data%Y( : nlp%n ) - nlp%X( : nlp%n ) ) )                &
             / data%norm_ykmxk ** 3,                                            &
           TWO_NORM( data%G_y( : nlp%n )                                        &
                     + data%theta * data%G_x_old( : nlp%n )                     &
-                    - ( one +  data%theta ) * data%G_x( : nlp%n ) )            &
+                    - ( one +  data%theta ) * nlp%G( : nlp%n ) )               &
             / ( data%theta * data%norm_xkmxkm1 ** 2 ) )
 
 !  check for a very successful epoch, and restart if so
 
        IF ( data%rkp1 ** 5 * inform%l_h ** 2 * data%s > inform%l_g ** 2 ) THEN
          inform%l_g = control%l_g_decrease * inform%l_g
+         data%k = 0
          data%f_0 = data%f_xk
          data%f_xkm1 = data%f_0
          data%Y( : nlp%n ) =  nlp%X( : nlp%n ) 
-         data%G_y( : nlp%n ) = data%G_x( : nlp%n ) 
+         data%G_y( : nlp%n ) = nlp%G( : nlp%n ) 
          data%Z( : nlp%n ) = data%Y( : nlp%n )
-         data%k = 0
          data%s = zero
          data%zeta = one
          data%epoch = 'v'
@@ -1277,7 +1262,6 @@
 
  800 CONTINUE
      inform%obj = data%f_xk
-     nlp%G( : nlp%n ) = data%G_x( : nlp%n )
      CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
@@ -1302,7 +1286,6 @@
 
  990 CONTINUE
      inform%obj = data%f_xk
-     nlp%G( : nlp%n ) = data%G_x( : nlp%n )
      CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
@@ -1376,12 +1359,6 @@
 
      array_name = 'agd: data%Z'
      CALL SPACE_dealloc_array( data%Z,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'agd: data%G_x'
-     CALL SPACE_dealloc_array( data%G_x,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
