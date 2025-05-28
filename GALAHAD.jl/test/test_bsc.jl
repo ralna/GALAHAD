@@ -64,18 +64,18 @@ function test_bsc(::Type{T}, ::Type{INT}) where {T,INT}
       if ptr == 0
         if d == 3
           bsc_form_s(T, INT, data, status, m, n, A_dense_ne, A_dense, 
-                     S_ne, S_row, S_col, C_NULL, S_val, C_NULL)
+                     S_ne[], S_row, S_col, C_NULL, S_val, C_NULL)
         else
           bsc_form_s(T, INT, data, status, m, n, A_ne, A_val, 
-                     S_ne, S_row, S_col, C_NULL, S_val, C_NULL)
+                     S_ne[], S_row, S_col, C_NULL, S_val, C_NULL)
         end
       else
         if d == 3
           bsc_form_s(T, INT, data, status, m, n, A_dense_ne, A_dense, 
-                     S_ne, S_row, S_col, S_ptr, S_val, D)
+                     S_ne[], S_row, S_col, S_ptr, S_val, D)
         else
           bsc_form_s(T, INT, data, status, m, n, A_ne, A_val, 
-                     S_ne, S_row, S_col, S_ptr, S_val, D)
+                     S_ne[], S_row, S_col, S_ptr, S_val, D)
         end
       end
 
