@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Printf
 using Quadmath
 
 function test_bsc(::Type{T}, ::Type{INT}) where {T,INT}
