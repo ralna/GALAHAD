@@ -37,14 +37,14 @@ function test_bsc(::Type{T}, ::Type{INT}) where {T,INT}
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      bsc_import(T, INT, control, data, status, n, m,
+      bsc_import(T, INT, control, data, status, m, n,
                  "coordinate", A_ne, A_row, A_col, C_NULL, S_ne)
     end
 
     # sparse by rows
     if d == 2
       st = 'R'
-      bsc_import(T, INT, control, data, status, n, m,
+      bsc_import(T, INT, control, data, status, m, n,
                  "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr, S_ne)
     end
 
@@ -53,7 +53,7 @@ function test_bsc(::Type{T}, ::Type{INT}) where {T,INT}
       st = 'D'
       A_dense = T[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
 
-      bsc_import(T, INT, control, data, status, n, m,
+      bsc_import(T, INT, control, data, status, m, n,
                  "dense", A_ne, C_NULL, C_NULL, C_NULL, S_ne)
     end
 
@@ -65,18 +65,18 @@ function test_bsc(::Type{T}, ::Type{INT}) where {T,INT}
     for ptr in 0:1
       if ptr == 0
         if d == 3
-          bsc_form_s(T, INT, data, status, n, m, A_dense_ne, A_dense, 
+          bsc_form_s(T, INT, data, status, m, n, A_dense_ne, A_dense, 
                      S_ne, S_row, S_col, C_NULL, S_val, C_NULL)
         else
-          bsc_form_s(T, INT, data, status, n, m, A_ne, A_val, 
+          bsc_form_s(T, INT, data, status, m, n, A_ne, A_val, 
                      S_ne, S_row, S_col, C_NULL, S_val, C_NULL)
         end
       else
         if d == 3
-          bsc_form_s(T, INT, data, status, n, m, A_dense_ne, A_dense, 
+          bsc_form_s(T, INT, data, status, m, n, A_dense_ne, A_dense, 
                      S_ne, S_row, S_col, S_ptr, S_val, D)
         else
-          bsc_form_s(T, INT, data, status, n, m, A_ne, A_val, 
+          bsc_form_s(T, INT, data, status, m, n, A_ne, A_val, 
                      S_ne, S_row, S_col, S_ptr, S_val, D)
         end
       end
