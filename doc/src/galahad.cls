@@ -967,6 +967,7 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\bmzero}{{\mathbf{0}}}
 %\newcommand{\bmmu}{\mbox{\boldmath$\mu$}}
 \newcommand{\bmmu}{\bm \mu}
+\newcommand{\bmnu}{\bm \nu}
 \newcommand{\bmtheta}{\bm \theta}
 
 % error codes (see symbols module)
