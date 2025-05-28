@@ -294,7 +294,7 @@ function bsc_form_s(::Type{Float64}, ::Type{Int64}, data, status, m, n,
                                          D::Ptr{Float64})::Cvoid
 end
 
-function bsc_form_s(::Type{Float128}, ::Type{Int32}, data, status, m, n
+function bsc_form_s(::Type{Float128}, ::Type{Int32}, data, status, m, n,
                     A_ne, A_val, S_ne, S_row, S_col, S_ptr, S_val, D)
   @ccall libgalahad_quadruple.bsc_form_s(data::Ptr{Ptr{Cvoid}}, 
                                          status::Ptr{Int32},
