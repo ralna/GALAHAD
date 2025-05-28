@@ -148,7 +148,7 @@ export bsc_import
 
 function bsc_import(::Type{Float32}, ::Type{Int32}, control, data, status, 
                     m, n, A_type, A_ne, A_row, A_col, A_ptr, S_ne)
-  @ccall libgalahad_single.bsc_import(control::Ptr{bsc_control_type{Float32,Int32}},
+  @ccall libgalahad_single.bsc_import(control::Ptr{bsc_control_type{Int32}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
                                       m::Int32, n::Int32, A_type::Ptr{Cchar}, 
                                       A_ne::Int32, A_row::Ptr{Int32}, 
@@ -158,7 +158,7 @@ end
 
 function bsc_import(::Type{Float32}, ::Type{Int64}, control, data, status, 
                     m, n, A_type, A_ne, A_row, A_col, A_ptr, S_ne)
-  @ccall libgalahad_single_64.bsc_import(control::Ptr{bsc_control_type{Float32,Int64}},
+  @ccall libgalahad_single_64.bsc_import(control::Ptr{bsc_control_type{Int64}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
                                          m::Int64, n::Int64, A_type::Ptr{Cchar},
                                          A_ne::Int64, A_row::Ptr{Int64}, 
@@ -168,7 +168,7 @@ end
 
 function bsc_import(::Type{Float64}, ::Type{Int32}, control, data, status,
                     m, n, A_type, A_ne, A_row, A_col, A_ptr, S_ne)
-  @ccall libgalahad_double.bsc_import(control::Ptr{bsc_control_type{Float64,Int32}},
+  @ccall libgalahad_double.bsc_import(control::Ptr{bsc_control_type{Int32}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
                                       m::Int32, n::Int32, A_type::Ptr{Cchar}, 
                                       A_ne::Int32, A_row::Ptr{Int32}, 
@@ -178,7 +178,7 @@ end
 
 function bsc_import(::Type{Float64}, ::Type{Int64}, control, data, status,
                     m, n, A_type, A_ne, A_row, A_col, A_ptr, S_ne)
-  @ccall libgalahad_double_64.bsc_import(control::Ptr{bsc_control_type{Float64,Int64}},
+  @ccall libgalahad_double_64.bsc_import(control::Ptr{bsc_control_type{Int64}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
                                          m::Int64, n::Int64, A_type::Ptr{Cchar},
                                          A_ne::Int64, A_row::Ptr{Int64}, 
@@ -188,7 +188,7 @@ end
 
 function bsc_import(::Type{Float128}, ::Type{Int32}, control, data, status,
                     m, n, A_type, A_ne, A_row, A_col, A_ptr, S_ne)
-  @ccall libgalahad_quadruple.bsc_import(control::Ptr{bsc_control_type{Float128,Int32}},
+  @ccall libgalahad_quadruple.bsc_import(control::Ptr{bsc_control_type{Int32}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
                                          m::Int32, n::Int32, A_type::Ptr{Cchar},
                                          A_ne::Int32, A_row::Ptr{Int32}, 
@@ -199,7 +199,7 @@ end
 
 function bsc_import(::Type{Float128}, ::Type{Int64}, control, data, status,
                     m, n, A_type, A_ne, A_row, A_col, A_ptr, S_ne)
-  @ccall libgalahad_quadruple_64.bsc_import(control::Ptr{bsc_control_type{Float128,Int64}},
+  @ccall libgalahad_quadruple_64.bsc_import(control::Ptr{bsc_control_type{Int64}},
                                             data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
                                             m::Int64, n::Int64, A_type::Ptr{Cchar},
                                             A_ne::Int64, A_row::Ptr{Int64}, 
@@ -210,41 +210,37 @@ end
 export bsc_reset_control
 
 function bsc_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_single.bsc_reset_control(control::Ptr{bsc_control_type{Float32,Int32}},
+  @ccall libgalahad_single.bsc_reset_control(control::Ptr{bsc_control_type{Int32}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Int32})::Cvoid
 end
 
 function bsc_reset_control(::Type{Float32}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_single_64.bsc_reset_control(control::Ptr{bsc_control_type{Float32,
-                                                                              Int64}},
+  @ccall libgalahad_single_64.bsc_reset_control(control::Ptr{bsc_control_type{Int64}},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Int64})::Cvoid
 end
 
 function bsc_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_double.bsc_reset_control(control::Ptr{bsc_control_type{Float64,Int32}},
+  @ccall libgalahad_double.bsc_reset_control(control::Ptr{bsc_control_type{Int32}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Int32})::Cvoid
 end
 
 function bsc_reset_control(::Type{Float64}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_double_64.bsc_reset_control(control::Ptr{bsc_control_type{Float64,
-                                                                              Int64}},
+  @ccall libgalahad_double_64.bsc_reset_control(control::Ptr{bsc_control_type{Int64}},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Int64})::Cvoid
 end
 
 function bsc_reset_control(::Type{Float128}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_quadruple.bsc_reset_control(control::Ptr{bsc_control_type{Float128,
-                                                                              Int32}},
+  @ccall libgalahad_quadruple.bsc_reset_control(control::Ptr{bsc_control_type{Int32}},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Int32})::Cvoid
 end
 
 function bsc_reset_control(::Type{Float128}, ::Type{Int64}, control, data, status)
-  @ccall libgalahad_quadruple_64.bsc_reset_control(control::Ptr{bsc_control_type{Float128,
-                                                                                 Int64}},
+  @ccall libgalahad_quadruple_64.bsc_reset_control(control::Ptr{bsc_control_type{Int64}},
                                                    data::Ptr{Ptr{Cvoid}},
                                                    status::Ptr{Int64})::Cvoid
 end
