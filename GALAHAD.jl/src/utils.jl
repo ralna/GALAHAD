@@ -20,6 +20,19 @@ end
     run_sif(Val(solver), Val(precision), path_libsif::String, path_outsdif::String)
 
 In both calls, `solver` and `precision` are symbols.
+If `CUTEst.jl` is installed, you can also provide the path to the `SIF` file, and decoding
+and compilation will be handled automatically for the user:
+
+    run_sif(solver, precision, sif::String)
+
+The supported solvers are: `:arc`, `:bgo`, `:blls`, `:bllsb`, `:bnls`, `:bqp`, `:bqpb`,
+`:ccqp`, `:cdqp`, `:clls`, `:cqp`, `:demo`, `:dgo`, `:dlp`, `:dps`, `:dqp`, `:eqp`,
+`:fdh`, `:filtrane`, `:grlt`, `:gltr`, `:l1qp`, `:l2rt`, `:lancelot`, `:lls`, `:lpa`,
+`:lpb`, `:lpqp`, `:lqr`, `:lqt`, `:lsrt`, `:lstr`, `:miqr`, `:nls`, `:nodend`,
+`:presolve`, `:qp`, `:qpa`, `:qpb`, `:qpc`, `:rqs`, `:sbls`, `:sha`, `:sils`,
+`:slls`, `:sls`, `:trb`, `:trs`, `:tru`, `:ugo`, `:warm`, and `:wcp`.
+
+The supported precisions are: `:single`, `:double`, and `:quadruple`.
 """
 function run_sif end
 
