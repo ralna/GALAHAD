@@ -102,7 +102,7 @@ function test_bsc(::Type{T}, ::Type{INT}) where {T,INT}
       for i = 1:S_ne[]
         @printf("%.2f ", S_val[i])
       end
-      printf("\n")
+      @printf("\n")
       if ptr == 1
         @printf("S_ptr: ")
         for i = 1:m+1
