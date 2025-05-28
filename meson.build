@@ -341,6 +341,15 @@ if not libhsl.found()
   extra_args_double += '-DDUMMY_HSL'
   extra_args_quadruple += '-DDUMMY_HSL'
 endif
+if libcutest_single.found()
+  extra_args_single += '-DCUTEST_SHARED'
+endif
+if libcutest_double.found()
+  extra_args_double += '-DCUTEST_SHARED'
+endif
+if libcutest_quadruple.found()
+  extra_args_quadruple += '-DCUTEST_SHARED'
+endif
 
 # MPI
 extra_args_single += '-DDUMMY_MPI'

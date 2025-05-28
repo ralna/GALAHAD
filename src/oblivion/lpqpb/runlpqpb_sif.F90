@@ -68,7 +68,7 @@
 !  Problem input characteristics
 
       INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
-      CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
+      CHARACTER ( LEN = 256 ) :: prbdat = 'OUTSDIF.d'
 
 !  Specfile characteristics
 
