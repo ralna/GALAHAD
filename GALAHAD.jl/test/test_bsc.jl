@@ -51,15 +51,13 @@ function test_bsc(::Type{T}, ::Type{INT}) where {T,INT}
     # dense
     if d == 3
       st = 'D'
-      A_dense = T[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
-
       bsc_import(T, INT, control, data, status, m, n,
                  "dense", A_ne, C_NULL, C_NULL, C_NULL, S_ne)
     end
 
     S_row = Vector{INT}(undef, S_ne)
     S_col = Vector{INT}(undef, S_ne)
-    S_ptr = Vector{INT}(undef, m+1)
+    S_ptr = Vector{INT}(undef, n+1)
     S_val = Vector{T}(undef, S_ne)
 
     for ptr in 0:1
