@@ -90,7 +90,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
 
         # Set the option for 1-based indexing by default
         both_indexing_packages = ("ugo", "sils", "sha", "sec", "scu", "roots", "lstr", "lsrt", "lms", "lhs",
-                                  "l2rt", "ir", "hash", "gltr", "gls", "glrt", "fit", "convert", "bsc")
+                                  "l2rt", "ir", "hash", "gltr", "gls", "glrt", "fit", "convert")
         if endswith(fname, "initialize") && !(name in both_indexing_packages)
           end_routine = "  new_control = @set control[].f_indexing = true\n  control[] = new_control[]\n  return Cvoid\nend\n"
         else

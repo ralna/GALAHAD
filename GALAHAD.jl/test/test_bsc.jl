@@ -3,6 +3,7 @@
 
 using GALAHAD
 using Test
+using Printf
 using Quadmath
 
 function test_bsc(::Type{T}, ::Type{INT}) where {T,INT}
@@ -55,27 +56,27 @@ function test_bsc(::Type{T}, ::Type{INT}) where {T,INT}
                  "dense", A_ne, C_NULL, C_NULL, C_NULL, S_ne)
     end
 
-    S_row = Vector{INT}(undef, S_ne)
-    S_col = Vector{INT}(undef, S_ne)
+    S_row = Vector{INT}(undef, S_ne[])
+    S_col = Vector{INT}(undef, S_ne[])
     S_ptr = Vector{INT}(undef, n+1)
-    S_val = Vector{T}(undef, S_ne)
+    S_val = Vector{T}(undef, S_ne[])
 
     for ptr in 0:1
       if ptr == 0
         if d == 3
           bsc_form_s(T, INT, data, status, m, n, A_dense_ne, A_dense, 
-                     S_ne, S_row, S_col, C_NULL, S_val, C_NULL)
+                     S_ne[], S_row, S_col, C_NULL, S_val, C_NULL)
         else
           bsc_form_s(T, INT, data, status, m, n, A_ne, A_val, 
-                     S_ne, S_row, S_col, C_NULL, S_val, C_NULL)
+                     S_ne[], S_row, S_col, C_NULL, S_val, C_NULL)
         end
       else
         if d == 3
           bsc_form_s(T, INT, data, status, m, n, A_dense_ne, A_dense, 
-                     S_ne, S_row, S_col, S_ptr, S_val, D)
+                     S_ne[], S_row, S_col, S_ptr, S_val, D)
         else
           bsc_form_s(T, INT, data, status, m, n, A_ne, A_val, 
-                     S_ne, S_row, S_col, S_ptr, S_val, D)
+                     S_ne[], S_row, S_col, S_ptr, S_val, D)
         end
       end
 
@@ -88,17 +89,17 @@ function test_bsc(::Type{T}, ::Type{INT}) where {T,INT}
       end
 
       @printf("S_row: ")
-      for i = 1:S_ne
+      for i = 1:S_ne[]
         @printf("%1i ", S_row[i])
       end
       @printf("\n");
       @printf("S_col: ")
-      for i = 1:S_ne
+      for i = 1:S_ne[]
         @printf("%1i ", S_col[i])
       end
       @printf("\n")
       @printf("S_val: ")
-      for i = 1:S_ne
+      for i = 1:S_ne[]
         @printf("%.2f ", S_val[i])
       end
       printf("\n")
