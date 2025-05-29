@@ -1183,11 +1183,11 @@
 !----------------------------------
 
      INTERFACE
-       SUBROUTINE eval_FC( status, X, userdata, F, C )
+       SUBROUTINE eval_FC( status, X, userdata, f, C )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( kind = rp_ ), OPTIONAL, INTENT( OUT ) :: F
+       REAL ( kind = rp_ ), OPTIONAL, INTENT( OUT ) :: f
        REAL ( kind = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FC
@@ -1205,7 +1205,7 @@
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) ::H_val
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        END SUBROUTINE eval_HL

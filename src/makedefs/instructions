@@ -919,9 +919,9 @@ $(package)ds: $($(PACKAGE)DS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)DS)
 	$(RMOOC)
-	- ./run_$(package)
-#	- ./run_$(package) > $(package)ds.output 2>&1
-#	cat $(package)ds.output
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)ds.output 2>&1
+	cat $(package)ds.output
 	rm ./run_$(package)
 
 $(package)ds_valgrind: $($(PACKAGE)DS)
