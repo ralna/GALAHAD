@@ -253,6 +253,7 @@ runs:
         SHARED_STATIC="shared"
         CUTEST_SINGLE="cutest_single"
         CUTEST_DOUBLE="cutest_double"
+        CUTEST_QUADRUPLE="cutest_quadruple"
         MUMPS_SINGLE="smumps"
         MUMPS_DOUBLE="dmumps"
         HSL="hsl_subset"
