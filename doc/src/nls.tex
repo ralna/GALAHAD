@@ -269,7 +269,7 @@ and dimension at least {\tt ne}, that may hold the column indices of the entries
 (see \S\ref{coordinate}--\ref{rowwise}).
 
 \ittf{ptr} is a rank-one allocatable array of type \integer,
-and dimension at least {\tt n + 1}, that may hold the pointers to
+and dimension at least {\tt m + 1}, that may hold the pointers to
 the first entry in each row (see \S\ref{rowwise}--\ref{columnwise}).
 
 \end{description}
@@ -349,7 +349,7 @@ for further details on the use of {\tt SMT\_put}.
 \itt{J\%ne} is a scalar variable of type \integer, that
 holds the number of entries in $\bmJ$
 in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
-It need not be set for any of the other three schemes.
+It need not be set for any of the other two schemes.
 
 \itt{J\%val} is a rank-one allocatable array of type \realdp, that holds
 the values of the entries of the Jacobian matrix $\bmJ$ in any of the
@@ -358,17 +358,16 @@ storage schemes discussed in Section~\ref{galmatrix}.
 \itt{J\%row} is a rank-one allocatable array of type \integer,
 that holds the row indices of $\bmJ$ in the sparse co-ordinate storage
 scheme (see Section~\ref{coordinate}).
-It need not be allocated for any of the other three schemes.
+It need not be allocated for any of the other two schemes.
 
 \itt{J\%col} is a rank-one allocatable array variable of type \integer,
 that holds the column indices of $\bmJ$ in either the sparse co-ordinate
 (see Section~\ref{coordinate}), or the sparse row-wise
 (see Section~\ref{rowwise}) storage scheme.
-It need not be allocated when the dense or diagonal storage schemes are used.
+It need not be allocated when the dense storage scheme is used.
 
-\itt{J\%ptr} is a rank-one allocatable array of dimension {\tt n+1} and type
-\integer, that holds the starting position of
-each row of $\bmJ$, as well
+\itt{J\%ptr} is a rank-one allocatable array of dimension {\tt m+1} and type
+\integer, that holds the starting position of each row of $\bmJ$, as well
 as the total number of entries plus one, in the sparse row-wise storage
 scheme (see Section~\ref{rowwise}). It need not be allocated when the
 other schemes are used.

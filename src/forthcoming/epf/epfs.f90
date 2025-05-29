@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_EPF_EXAMPLE  !  GALAHAD 5.1 - 2024-07-08 AT 10:00 GMT.
+   PROGRAM GALAHAD_EPF_EXAMPLE  !  GALAHAD 5.3 - 2025-05-29 AT 16:45 GMT.
    USE GALAHAD_EPF_double                       ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )    ! set precision

@@ -42,7 +42,7 @@
 
 \newcommand{\libraryname}{GA\-LA\-H\-AD}
 %\newcommand{\releasename}{GALAHAD Optimization Library version $2.\epsilon$}
-\newcommand{\releasename}{GALAHAD Optimization Library version $5.2$}
+\newcommand{\releasename}{GALAHAD Optimization Library version $5.3$}
 
 \newcommand\@ptsize{}
 \newif\if@restonecol
@@ -891,6 +891,11 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\req}[1]{(\ref{#1})}
 \newcommand{\rim}[1]{\;\;\; \mbox{#1} \;\;\;}
 \newcommand{\tim}[1]{\;\; \mbox{#1} \;\;}
+
+\newcommand{\bngap}{\hspace*{-3mm}}
+\newcommand{\ngap}{\hspace*{-2mm}}
+\newcommand{\gap}{\hspace*{2mm}}
+\newcommand{\bgap}{\hspace*{3mm}}
 
 \newcommand{\tbtable}[1]{\begin{table}[tb]
                          \begin{center}

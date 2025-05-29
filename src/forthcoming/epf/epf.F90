@@ -180,19 +180,19 @@
 
        REAL ( KIND = rp_ ) :: obj_unbounded = - epsmch ** ( - 2 )
 
-!   perform an advanced start at the end of every iteration when the KKT
-!    residuals are smaller than %advanced_start (-ve means never)
+!   try an advanced start at the end of every iteration when the KKT
+!    residuals are smaller than %try_advanced_start (-ve means never)
 
-       REAL ( KIND = rp_ ) :: advanced_start = ten ** ( - 2 )
+       REAL ( KIND = rp_ ) :: try_advanced_start = ten ** ( - 2 )
 
-!   perform an advanced SQP start at the end of every iteration when the KKT
-!    residuals are smaller than %sqp_start (-ve means never)
+!   try an advanced SQP start at the end of every iteration when the KKT
+!    residuals are smaller than %try_sqp_start (-ve means never)
 
-       REAL ( KIND = rp_ ) :: sqp_start = ten ** ( - 4 )
+       REAL ( KIND = rp_ ) :: try_sqp_start = ten ** ( - 4 )
 
 !  stop the advanced start search once the residuals are sufficientl small
 
-       REAL ( KIND = rp_ ) :: advanced_stop = ten ** ( - 8 )
+       REAL ( KIND = rp_ ) :: stop_advance_start = ten ** ( - 8 )
 
 !   the maximum CPU time allowed (-ve means infinite)
 
@@ -549,9 +549,9 @@
 !  penalty-parameter-reduction-factor              0.5
 !  update-multipliers-feasibility-tolerance        1.0D+20
 !  minimum-objective-before-unbounded              -1.0D+32
-!  advanced-start                                   1.0D-2
-!  sqp-start                                        1.0D-4
-!  advanced-stop                                    1.0D-8
+!  try-advanced-start -tolerance                   1.0D-2
+!  try-sqp-start-tolerance                         1.0D-4
+!  stop-advanced-start-tolerance                   1.0D-8
 !  maximum-cpu-time-limit                          -1.0
 !  maximum-clock-time-limit                        -1.0
 !  hessian-available                               yes
@@ -601,11 +601,12 @@
                                             = mu_reduce + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: obj_unbounded                        &
                                             = update_multipliers_tol + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: advanced_start                       &
+     INTEGER ( KIND = ip_ ), PARAMETER :: try_advanced_start                   &
                                             = obj_unbounded + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: sqp_start = advanced_start + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: advanced_stop = sqp_start + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = advanced_stop + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: try_sqp_start = try_advanced_start + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_advance_start = try_sqp_start + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                       &
+                                            = stop_advance_start + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: hessian_available                    &
                                             = clock_time_limit + 1
@@ -654,9 +655,9 @@
      spec( update_multipliers_tol )%keyword                                    &
        = 'update-multipliers-feasibility-tolerance'
      spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
-     spec( advanced_start )%keyword = 'advanced-start'
-     spec( sqp_start )%keyword = 'sqp-start'
-     spec( advanced_stop )%keyword = 'advanced-stop'
+     spec( try_advanced_start )%keyword = 'try-advanced-start-tolerance'
+     spec( try_sqp_start )%keyword = 'try-sqp-start-tolerance'
+     spec( stop_advance_start )%keyword = 'stop-advanced-start-tolerance'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
 
@@ -753,14 +754,14 @@
      CALL SPECFILE_assign_value( spec( obj_unbounded ),                        &
                                  control%obj_unbounded,                        &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( advanced_start ),                       &
-                                 control%advanced_start,                       &
+     CALL SPECFILE_assign_value( spec( try_advanced_start ),                   &
+                                 control%try_advanced_start,                   &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( sqp_start ),                            &
-                                 control%sqp_start,                            &
+     CALL SPECFILE_assign_value( spec( try_sqp_start ),                        &
+                                 control%try_sqp_start,                        &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( advanced_stop ),                        &
-                                 control%advanced_stop,                        &
+     CALL SPECFILE_assign_value( spec( stop_advance_start ),                        &
+                                 control%stop_advance_start,                        &
                                  control%error )
      CALL SPECFILE_assign_value( spec( cpu_time_limit ),                       &
                                  control%cpu_time_limit,                       &
@@ -838,8 +839,12 @@
 !  n is a scalar variable of type default integer, that holds the number of
 !   variables
 !
-!  H is scalar variable of type SMT_TYPE that holds the Hessian matrix H. The
-!   following components are used here:
+!  m is a scalar variable of type default integer, that holds the number of
+!   general constraints
+!
+!  H is scalar variable of type SMT_TYPE that holds the Hessian matrix H
+!   of the Lagrangian, H(x) - sum_{i=1}^m y_i H_i(x) fof given x and y.
+!   The following components are used here:
 !
 !   H%type is an allocatable array of rank one and type default character, that
 !    is used to indicate the storage scheme used. If the dense storage scheme
@@ -891,6 +896,55 @@
 !  f is a scalar variable of type default real, that holds the value of
 !   the objective function.
 !
+!  J is scalar variable of type SMT_TYPE that holds the Jacobian matrix
+!   J(x) = nabla c(x), i.e., J_i,j(x) = d r_i(x) / d x_j. The following
+!   components are used here:
+!
+!   J%type is an allocatable array of rank one and type default character, that
+!    is used to indicate the storage scheme used. If the dense storage scheme
+!    is used, the first five components of J%type must contain the string DENSE.
+!    For the sparse co-ordinate scheme, the first ten components of J%type must
+!    contain the string COORDINATE, and for the sparse row-wise storage scheme,
+!    the first fourteen components of J%type must contain the string
+!    SPARSE_BY_ROWS.
+!
+!    For convenience, the procedure SMT_put may be used to allocate sufficient
+!    space and insert the required keyword into J%type. For example, if nlp is
+!    of derived type packagename_problem_type and involves a Jacobian we wish
+!    to store using the co-ordinate scheme, we may simply
+!
+!         CALL SMT_put( nlp%J%type, 'COORDINATE', stat )
+!
+!    See the documentation for the galahad package SMT for further details on
+!    the use of SMT_put.
+
+!   J%ne is a scalar variable of type default integer, that holds the number
+!    of entries in the Jacobian J(x) in the sparse co-ordinate storage scheme.
+!    It need not be set for any of the other two schemes.
+!
+!   J%val is a rank-one allocatable array of type default real, that holds
+!    the values of the entries in the Jacobian J(x) in any of the available
+!    storage schemes.
+!
+!   J%row is a rank-one allocatable array of type default integer, that holds
+!    the row indices in the Jacobian J(x) in the sparse co-ordinate storage
+!    scheme. It need not be allocated for any of the other two schemes.
+!
+!   J%col is a rank-one allocatable array variable of type default integer,
+!    that holds the column indices of the Jacobian J(x) in either
+!    the sparse co-ordinate, or the sparse row-wise storage scheme.
+!    It need not be allocated when the dense scheme is used.
+!
+!   J%ptr is a rank-one allocatable array of dimension m+1 and type default
+!    integer, that holds the starting position of each row of Jacobian J(x),
+!    as well as J%ptr(m+1) = the total number of entries plus one, in the
+!    sparse row-wise storage scheme. It need not be allocated when the other
+!    schemes are used.
+!
+!  C is a rank-one allocatable array of dimension m and type default real, that
+!   holds the values c(x) of the constraints. The i-th component of
+!   C, i = 1, ... , m, contains c_i(x).
+!
 !  X is a rank-one allocatable array of dimension n and type default real, that
 !   holds the values x of the optimization variables. The j-th component of
 !   X, j = 1, ... , n, contains x_j.
@@ -903,6 +957,18 @@
 !   that holds the values x_u of the upper bounds on the optimization
 !   variables x. The j-th component of X_u, j = 1, ... , n, contains (x_u)j.
 !
+!  C_l is a rank-one allocatable array of dimension m and type default real,
+!   that holds the values c_l of the lower bounds on the constraint functions
+!   c(x). The i-th component of C_l, i = 1, ... , m, contains (c_l)i.
+!
+!  C_u is a rank-one allocatable array of dimension m and type default real,
+!   that holds the values c_u of the upper bounds on the constraint functions
+!   c(x). The i-th component of C_u, i = 1, ... , m, contains (c_u)i.
+!
+!  GL is a rank-one allocatable array of dimension n and type default real,
+!   that holds the gradient gL of the Lagrangian function. The j-th component 
+!   of GL, j = 1,  ... ,  n, contains gL_j.
+!
 !  pname is a scalar variable of type default character and length 10, which
 !   contains the ``name'' of the problem for printing. The default ``empty''
 !   string is provided.
@@ -910,6 +976,12 @@
 !  VNAMES is a rank-one allocatable array of dimension n and type default
 !   character and length 10, whose j-th entry contains the ``name'' of the j-th
 !   variable for printing. This is only used  if ``debug''printing
+!   control%print_level > 4) is requested, and will be ignored if the array is
+!   not allocated.
+!
+!  CNAMES is a rank-one allocatable array of dimension m and type default
+!   character and length 10, whose i-th entry contains the ``name'' of the i-th
+!   constraint for printing. This is only used  if ``debug''printing
 !   control%print_level > 4) is requested, and will be ignored if the array is
 !   not allocated.
 !
@@ -1053,9 +1125,27 @@
 !   nabla_xx f(x) - sum_i=1^m y_i c_i(x) of the Lagrangian function evaluated
 !   at x=X and y=Y must be returned in H_val in the same order as presented in
 !   nlp%H, and the status variable set to 0. If the evaluation is impossible
-!   at X, status should be set to a nonzero value. If eval_HL is not present,
-!   EPF_solve will return to the user with inform%status = 4 or 5 each time
-!   an evaluation is required.
+!   at X and Y, status should be set to a nonzero value. If eval_HL is not 
+!   present, EPF_solve will return to the user with inform%status = 4 or 5 
+!   each time an evaluation is required.
+!
+!  eval_GL is an optional subroutine which if present must have the arguments
+!   given below (see the interface blocks). The gradient 
+!   nabla_x f(x) - sum_i=1^m y_i c_i(x) of the Lagrangian function evaluated
+!   at x=X and y=Y must be returned in GL, and the status variable set to 0. 
+!   If the evaluation is impossible at X, status should be set to a nonzero 
+!   value. If eval_GL is not present, EPF_solve will return to the user with 
+!   inform%status = xx or yy each time an evaluation is required.
+!
+!  eval_JPROD is an optional subroutine which if present must have the
+!   arguments given below (see the interface blocks). The sum u + J(x) v,
+!   (when transpose=.FALSE.) or u + J^T(x) v (when transpose=.TRUE.)
+!   of the Jacobian (or its transpose) evaluated  at x=X with the vector v=V
+!   and the vector u=U must be returned in U, and the status variable set to 0.
+!   If the evaluation is impossible at X, status should be set to a nonzero
+!   value. If eval_JPROD is not present, NLS_solve will return to the user
+!   with inform%status = zz each time an evaluation is required. The Jacobian
+!   has already been evaluated or used at x=X if got_j is .TRUE.
 !
 !  eval_HLPROD is an optional subroutine which if present must have
 !   the arguments given below (see the interface blocks). The sum
@@ -1518,8 +1608,8 @@
 !  make sure that the supplied sqp start control is no larger than the
 !  advanced start one
 
-     data%control%sqp_start = MIN( data%control%sqp_start,                     &
-                                   data%control%advanced_start )
+     data%control%try_sqp_start = MIN( data%control%try_sqp_start,                     &
+                                   data%control%try_advanced_start )
 
 !  record the number of nonzeos in the upper triangle of the Hessian
 
@@ -1703,7 +1793,7 @@ stop
 
 !  set space for matrices and vectors required for advanced start if necessary
 
-     IF ( data%control%advanced_start > zero ) THEN
+     IF ( data%control%try_advanced_start > zero ) THEN
        data%use_advanced = .FALSE.
 !      data%np1 = nlp%n + 1 ; data%npm = nlp%n + nlp%m
 
@@ -1960,7 +2050,7 @@ stop
 
 !  record whether an advanced SQP start will be attempted
 
-     data%try_sqp = data%control%sqp_start > zero
+     data%try_sqp = data%control%try_sqp_start > zero
 
 !  set space for the C block
 
@@ -2660,7 +2750,7 @@ stop
                             MAXVAL( data%MU_u( : nlp%m ) ) )
        END IF
 
-       IF ( data%control%advanced_start <= zero ) GO TO 500
+       IF ( data%control%try_advanced_start <= zero ) GO TO 500
 
 !  -----------------------------------------------
 !  3. Find an advanced starting point when needed
@@ -2799,7 +2889,7 @@ stop
 
 !  flag whether to start an advanced SQP search
 
-         data%use_sqp = data%rnorm <= data%control%sqp_start
+         data%use_sqp = data%rnorm <= data%control%try_sqp_start
        ELSE
          data%use_sqp = .FALSE.
        END IF
@@ -2860,7 +2950,7 @@ stop
 !  ---------------------------------------------------------------
 
 !write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
-       IF ( data%rnorm > data%control%advanced_start ) GO TO 500
+       IF ( data%rnorm > data%control%try_advanced_start ) GO TO 500
        IF ( .NOT. data%use_advanced ) THEN
          IF ( data%printt ) WRITE( data%out, "( 10( ' - ' ),                   &
         &  ' advanced start', 10( ' - ' ) )" )
@@ -3528,13 +3618,13 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
                         m_matrix = nlp%m, n_matrix = nlp%n )
            dual_infeasibility = TWO_NORM( data%epf%G( : nlp%n ) )
 !          IF ( data%printd ) WRITE( data%out,                                 &
-           WRITE( data%out,                                 &
+           WRITE( data%out,                                                    &
              "( ' primal, dual, comp = ', 3ES11.4 )" ) primal_infeasibility,   &
              dual_infeasibility, complementary_slackness
 
 !  check to see if the residuals are sufficiently small
 
-           IF ( data%rnorm < data%control%advanced_stop ) THEN
+           IF ( data%rnorm < data%control%stop_advance_start ) THEN
              IF ( data%printd ) write( data%out, "( ' converged ' )" )   
              data%epf%X( : nlp%n ) = nlp%X( : nlp%n )
              inform%obj = nlp%f
@@ -3548,7 +3638,7 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
          IF ( data%printd ) THEN
            WRITE( data%out, "( ' ||r|| =', ES11.4 )" ) data%rnorm
            WRITE( data%out, "( ' ||r||, old, stop =', 3ES11.4 )" )             &
-             data%rnorm, data%rnorm_old, data%control%advanced_stop 
+             data%rnorm, data%rnorm_old, data%control%stop_advance_start 
          end if
 
 !  check to see if the residuals have increased
