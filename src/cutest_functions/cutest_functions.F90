@@ -21,6 +21,10 @@
      USE GALAHAD_USERDATA_precision
      USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type, NLPT_cleanup
      USE CUTEST_INTERFACE_precision
+#ifdef CUTEST_SHARED
+     USE ISO_C_BINDING, ONLY : C_CHAR
+     USE CUTEST_TRAMPOLINE_precision
+#endif
 
      IMPLICIT NONE
 
@@ -39,6 +43,10 @@
                CUTEst_eval_SHLCPROD, CUTEst_eval_HCPRODS,                      &
                CUTEst_eval_HOCPRODS, CUTEst_start_timing, CUTEst_timing,       &
                CUTEst_terminate, NLPT_problem_type, GALAHAD_userdata_type
+
+#ifdef CUTEST_SHARED
+     PUBLIC :: GALAHAD_load_routines, GALAHAD_unload_routines
+#endif
 
 !------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n
@@ -2167,5 +2175,16 @@
 !  End of subroutine CUTEst_timing
 
      END SUBROUTINE CUTEst_timing
+
+#ifdef CUTEST_SHARED
+     SUBROUTINE GALAHAD_load_routines(libname)
+     CHARACTER ( KIND = C_CHAR ), DIMENSION( * ), INTENT( IN ) :: libname
+     CALL CUTEST_load_routines(libname)
+     END SUBROUTINE GALAHAD_load_routines
+
+     SUBROUTINE GALAHAD_unload_routines()
+     CALL CUTEST_unload_routines()
+     END SUBROUTINE GALAHAD_unload_routines
+#endif
 
    END MODULE GALAHAD_CUTEST_precision
