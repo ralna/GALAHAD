@@ -1836,13 +1836,12 @@ Suppose we wish to minimize the objective function
 $f(\bmx) = x_1^2 + x_2^2$ subject to the constraints
 \disp{\arr{rl}{x_1 + x_2 \ngap & \geq 1 \\
 x_1^2 + x_2^2 & \geq 1 \\
-9x_1^2 + x_2^2 & \geq 9 \\
+p x_1^2 + x_2^2 & \geq 9 \\
 x_1^2 - x_2 & \geq 0 \\
 x_2^2 - x_1 & \geq 0 \;\;\mbox{and} \\
 -50 \leq x_1, x_2 & \leq 50
 }}
-%when the parameter $p$ takes the value 4, and $x$ is required to satisfy 
-%the  bounds $x_1 \leq -1.1$, $x_2 \leq -1.1$ and $0 \leq x_3 \leq -1.1$. 
+when the parameter $p$ takes the value 9.
 Starting from the initial guess $\bmx = (3,1)$, we may use the following code:
 
 \renewcommand{\packagedir}{\galahaddir/src/forthcoming/\package}
@@ -1850,9 +1849,9 @@ Starting from the initial guess $\bmx = (3,1)$, we may use the following code:
 \VerbatimInput{\packageexample}
 }
 \noindent
-%Notice how the parameter $p$ is passed to the function evaluation
-%routines via the {\tt real} component of the derived type {\tt userdata}.
-%The code produces the following output:
+Notice how the parameter $p$ is passed to the function evaluation
+routines via the {\tt real} component of the derived type {\tt userdata}.
+The code produces the following output:
 {\tt \small
 \VerbatimInput{\packageresults}
 }
