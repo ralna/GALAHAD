@@ -20,7 +20,8 @@ str = "const run$(name)_qplib_$(precision) = joinpath(galahad_bindir, \"run$(nam
 
 function run_qplib(::Val{:$name}, ::Val{:$precision}, path_qplib::String)
   open(path_qplib, \"r\") do io
-    run(`\$run$(name)_qplib_$precision`, stdin = io)
+    process = pipeline(`\$run$(name)_qplib_$precision`, stdin=io)
+    run(process)
   end
 end
 "
