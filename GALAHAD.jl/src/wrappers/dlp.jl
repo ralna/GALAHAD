@@ -20,7 +20,8 @@ const rundlp_qplib_single = joinpath(galahad_bindir, "rundlp_qplib_single$(exeex
 
 function run_qplib(::Val{:dlp}, ::Val{:single}, path_qplib::String)
   open(path_qplib, "r") do io
-    return run(`$rundlp_qplib_single`; stdin=io)
+    process = pipeline(`$rundlp_qplib_single`; stdin=io)
+    return run(process)
   end
 end
 
@@ -28,7 +29,8 @@ const rundlp_qplib_double = joinpath(galahad_bindir, "rundlp_qplib_double$(exeex
 
 function run_qplib(::Val{:dlp}, ::Val{:double}, path_qplib::String)
   open(path_qplib, "r") do io
-    return run(`$rundlp_qplib_double`; stdin=io)
+    process = pipeline(`$rundlp_qplib_double`; stdin=io)
+    return run(process)
   end
 end
 
@@ -36,6 +38,7 @@ const rundlp_qplib_quadruple = joinpath(galahad_bindir, "rundlp_qplib_quadruple$
 
 function run_qplib(::Val{:dlp}, ::Val{:quadruple}, path_qplib::String)
   open(path_qplib, "r") do io
-    return run(`$rundlp_qplib_quadruple`; stdin=io)
+    process = pipeline(`$rundlp_qplib_quadruple`; stdin=io)
+    return run(process)
   end
 end

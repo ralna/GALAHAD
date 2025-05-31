@@ -1,4 +1,4 @@
-export galahad_linear_solver, run_sif
+export galahad_linear_solver, run_sif, run_qplib
 
 function galahad_linear_solver(solver::String)
   nchar = length(solver)
@@ -33,6 +33,7 @@ The supported solvers are: `:arc`, `:bgo`, `:blls`, `:bllsb`, `:bnls`, `:bqp`, `
 `:slls`, `:sls`, `:trb`, `:trs`, `:tru`, `:ugo`, `:warm`, and `:wcp`.
 
 The supported precisions are: `:single`, `:double`, and `:quadruple`.
+Note that the precision `:quadruple` is not available with the precompiled artifacts.
 """
 function run_sif end
 
@@ -44,10 +45,11 @@ run_sif(solver::Symbol, precision::Symbol, path_libsif::String, path_outsdif::St
 
 In both calls, `solver` and `precision` are symbols.
 
-The supported solvers are: `:bqp`, `:bqpb`, `:ccqp`, `:cdqp`, `:cqp`, `:dlp`, `:dqp`,
-`:lpa`, `:lpb`, `:qp`, `:qpa`, `:qpb`, and `:qpc`.
+The supported solvers are: `:bqp`, `:bqpb`, `:ccqp`, `:cdqp`, `:cqp`,
+`:dlp`, `:dqp`, `:lpa`, `:lpb`, `:qp`, `:qpa`, `:qpb`, and `:qpc`.
 
 The supported precisions are: `:single`, `:double`, and `:quadruple`.
+Note that the precision `:quadruple` is not available with the precompiled artifacts.
 """
 function run_qplib end
 
