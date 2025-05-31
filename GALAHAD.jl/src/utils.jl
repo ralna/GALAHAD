@@ -16,21 +16,20 @@ function galahad_linear_solver(solver::String)
 end
 
 """
-    run_sif(solver, precision, path_libsif::String, path_outsdif::String)
-    run_sif(Val(solver), Val(precision), path_libsif::String, path_outsdif::String)
+    run_sif(solver::Symbol, precision::Symbol, path_libsif::String, path_outsdif::String)
 
-In both calls, `solver` and `precision` are symbols.
 If `CUTEst.jl` is installed, you can also provide the path to the `SIF` file, and decoding
 and compilation will be handled automatically for the user:
 
-    run_sif(solver, precision, sif::String)
+    run_sif(solver::Symbol, precision::Symbol, path_sif::String)
 
-The supported solvers are: `:arc`, `:bgo`, `:blls`, `:bllsb`, `:bnls`, `:bqp`, `:bqpb`,
-`:ccqp`, `:cdqp`, `:clls`, `:cqp`, `:demo`, `:dgo`, `:dlp`, `:dps`, `:dqp`, `:eqp`,
-`:fdh`, `:filtrane`, `:grlt`, `:gltr`, `:l1qp`, `:l2rt`, `:lancelot`, `:lls`, `:lpa`,
-`:lpb`, `:lpqp`, `:lqr`, `:lqt`, `:lsrt`, `:lstr`, `:miqr`, `:nls`, `:nodend`,
-`:presolve`, `:qp`, `:qpa`, `:qpb`, `:qpc`, `:rqs`, `:sbls`, `:sha`, `:sils`,
-`:slls`, `:sls`, `:trb`, `:trs`, `:tru`, `:ugo`, `:warm`, and `:wcp`.
+The supported solvers are: `:arc`, `:bgo`, `:blls`, `:bllsb`, `:bnls`,
+`:bqp`, `:bqpb`, `:ccqp`, `:cdqp`, `:clls`, `:cqp`, `:demo`, `:dgo`, `:dlp`,
+`:dps`, `:dqp`, `:eqp`, `:fdh`, `:filtrane`, `:glrt`, `:gltr`, `:l1qp`,
+`:l2rt`, `:lancelot`, `:lls`, `:lpa`, `:lpb`, `:lpqp`, `:lqr`, `:lqt`, `:lsrt`,
+`:lstr`, `:miqr`, `:nls`, `:nodend`, `:presolve`, `:qp`, `:qpa`, `:qpb`,
+`:qpc`, `:rqs`, `:sbls`, `:sha`, `:sils`, `:slls`, `:sls`, `:trb`, `:trs`,
+`:tru`, `:ugo`, `:warm`, and `:wcp`.
 
 The supported precisions are: `:single`, `:double`, and `:quadruple`.
 Note that the precision `:quadruple` is not available with the precompiled artifacts.
@@ -40,10 +39,7 @@ function run_sif end
 run_sif(solver::Symbol, precision::Symbol, path_libsif::String, path_outsdif::String) = run_sif(Val(solver), Val(precision), path_libsif, path_outsdif)
 
 """
-    run_qplib(solver, precision, path_qplib::String)
-    run_qplib(Val(solver), Val(precision), path_qplib::String)
-
-In both calls, `solver` and `precision` are symbols.
+    run_qplib(solver::Symbol, precision::Symbol, path_qplib::String)
 
 The supported solvers are: `:bqp`, `:bqpb`, `:ccqp`, `:cdqp`, `:cqp`,
 `:dlp`, `:dqp`, `:lpa`, `:lpb`, `:qp`, `:qpa`, `:qpb`, and `:qpc`.

@@ -124,6 +124,8 @@ package is named `abcd`, insert the following line in `wrapper.jl`:
 (name == "all" || name == "abcd") && wrapper("abcd", ["$galahad/galahad_abcd.h"], optimized, run_sif=bool, run_qplib=bool)
 ```
 
+If binaries are available for the new package, you also need to update the docstrings of `run_qplib` and `run_sif` in `GALAHAD/GALAHAD.jl/src/utils.jl` to add the symbol `:abcd` as an available solver.
+
 Please also check the variables `nonparametric_structures_float` and
 `nonparametric_structures_int` in `rewriter.jl` to specify whether a structure should be
 parameterized to support various precisions (`Float32` / `Float64` / `Float128`)
