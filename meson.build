@@ -640,15 +640,15 @@ if build_quadruple
   endif
 
   libgalahad_quadruple = library(libgalahad_quadruple_name,
-                              sources : sources_quadruple,
-                              dependencies : libgalahad_quadruple_deps,
-                              fortran_args : extra_args_quadruple,
-                              c_args : extra_args_quadruple,
-                              cpp_args : extra_args_quadruple,
-                              link_language : 'fortran',
-                              link_args : lstdcpp,
-                              include_directories: libgalahad_include,
-                              install : true)
+                                 sources : sources_quadruple,
+                                 dependencies : libgalahad_quadruple_deps,
+                                 fortran_args : extra_args_quadruple,
+                                 c_args : extra_args_quadruple,
+                                 cpp_args : extra_args_quadruple,
+                                 link_language : 'fortran',
+                                 link_args : lstdcpp,
+                                 include_directories: libgalahad_include,
+                                 install : true)
 endif
 
 # Python interface
@@ -698,7 +698,7 @@ if build_binaries
       binname = binary[0]
       binfile = binary[1]
       executable(binname+'_single', binfile,
-                 dependencies : libgalahad_single_deps,
+                 dependencies : libhsl,
                  fortran_args : pp_flag + extra_args_single,
                  link_with : libgalahad_single,
                  link_language : 'fortran',
@@ -723,7 +723,7 @@ if build_binaries
       binname = binary[0]
       binfile = binary[1]
       executable(binname+'_double', binfile,
-                 dependencies : libgalahad_double_deps,
+                 dependencies : libhsl,
                  fortran_args : pp_flag + extra_args_double,
                  link_with : libgalahad_double,
                  link_language : 'fortran',
@@ -737,7 +737,7 @@ if build_binaries
       binname = binary[0]
       binfile = binary[1]
       executable(binname+'_quadruple', binfile,
-                 dependencies : libgalahad_quadruple_deps,
+                 dependencies : libhsl,
                  fortran_args : pp_flag + extra_args_quadruple,
                  link_with : libgalahad_quadruple,
                  link_language : 'fortran',
