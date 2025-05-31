@@ -122,7 +122,7 @@ runs:
       if: inputs.os != 'windows-latest' && inputs.compiler != 'nvidia-hpc'
       shell: bash
       run: |
-        VERSION_CUTEST="2.5.1"
+        VERSION_CUTEST="2.5.3"
         INT64="false"
         if [[ "${{ inputs.int }}" == "64" ]]; then
           INT64="true"
