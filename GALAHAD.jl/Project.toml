@@ -1,7 +1,7 @@
 name = "GALAHAD"
 uuid = "c591611e-c43e-4808-98fb-ce4cafe3a717"
 authors = ["Alexis Montoison <alexis.montoison@polymtl.ca>", "Dominique Orban <dominique.orban@polymtl.ca>"]
-version = "0.4.1"
+version = "0.4.2"
 
 [deps]
 Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
