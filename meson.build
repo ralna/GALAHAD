@@ -698,7 +698,6 @@ if build_binaries
       binname = binary[0]
       binfile = binary[1]
       executable(binname+'_single', binfile,
-                 dependencies : libgalahad_single_deps,
                  fortran_args : pp_flag + extra_args_single,
                  link_with : libgalahad_single,
                  link_language : 'fortran',
@@ -723,7 +722,6 @@ if build_binaries
       binname = binary[0]
       binfile = binary[1]
       executable(binname+'_double', binfile,
-                 dependencies : libgalahad_double_deps,
                  fortran_args : pp_flag + extra_args_double,
                  link_with : libgalahad_double,
                  link_language : 'fortran',
@@ -737,7 +735,6 @@ if build_binaries
       binname = binary[0]
       binfile = binary[1]
       executable(binname+'_quadruple', binfile,
-                 dependencies : libgalahad_quadruple_deps,
                  fortran_args : pp_flag + extra_args_quadruple,
                  link_with : libgalahad_quadruple,
                  link_language : 'fortran',
