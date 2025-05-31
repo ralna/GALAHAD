@@ -145,6 +145,7 @@ runs:
                              --prefix=$CUTEST \
                              -Ddefault_library=shared \
                              -Dquadruple=${QUADRUPLE} \
+                             -Dtests=false \
                              -Dint64=${INT64}
         meson compile -C builddir
         meson install -C builddir
