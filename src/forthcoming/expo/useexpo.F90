@@ -1,22 +1,22 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-05-09 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2024-06-15 AT 11:00 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ E P F  -*-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ E X P O  -*-*-*-*-*-*-*-*-*-*-
 
 !  Nick Gould, for GALAHAD productions
 !  Copyright reserved
-!  June 25th 2012
+!  June 15th 2025
 
-   MODULE GALAHAD_USEEPF_precision
+   MODULE GALAHAD_USEEXPO_precision
 
-!  This is the driver program for running EPF for a variety of computing
+!  This is the driver program for running EXPO for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
      USE GALAHAD_KINDS_precision
 !    USE GALAHAD_CLOCK
-     USE GALAHAD_EPF_precision
+     USE GALAHAD_EXPO_precision
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_precision
@@ -26,13 +26,13 @@
      IMPLICIT NONE
 
      PRIVATE
-     PUBLIC :: USE_EPF
+     PUBLIC :: USE_EXPO
 
    CONTAINS
 
-!-*-*-*-*-*-*-*-*-*-  U S E _ E P F   S U B R O U T I N E  -*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-  U S E _ E X P O   S U B R O U T I N E  -*-*-*-*-*-*-*-
 
-     SUBROUTINE USE_EPF( input )
+     SUBROUTINE USE_EXPO( input )
 
 !  Dummy argument
 
@@ -42,9 +42,9 @@
 !   D e r i v e d   T y p e s
 !-------------------------------
 
-     TYPE ( EPF_control_type ) :: control
-     TYPE ( EPF_inform_type ) :: inform
-     TYPE ( EPF_data_type ) :: data
+     TYPE ( EXPO_control_type ) :: control
+     TYPE ( EXPO_inform_type ) :: inform
+     TYPE ( EXPO_data_type ) :: data
      TYPE ( NLPT_problem_type ) :: nlp
      TYPE ( GALAHAD_userdata_type ) :: userdata
      TYPE ( CUTEST_control_type ) :: cutest_control
@@ -69,9 +69,9 @@
 
      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 29
-     CHARACTER ( LEN = 16 ) :: specname = 'RUNEPF'
+     CHARACTER ( LEN = 16 ) :: specname = 'RUNEXPO'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
-     CHARACTER ( LEN = 16 ) :: runspec = 'RUNEPF.SPC'
+     CHARACTER ( LEN = 16 ) :: runspec = 'RUNEXPO.SPC'
 
 !  Default values for specfile-defined parameters
 
@@ -84,10 +84,10 @@
      LOGICAL :: write_solution       = .FALSE.
 !    LOGICAL :: write_result_summary = .FALSE.
      LOGICAL :: write_result_summary = .TRUE.
-     CHARACTER ( LEN = 30 ) :: dfilename = 'EPF.data'
-     CHARACTER ( LEN = 30 ) :: rfilename = 'EPFRES.d'
-     CHARACTER ( LEN = 30 ) :: sfilename = 'EPFSOL.d'
-     CHARACTER ( LEN = 30 ) :: wfilename = 'EPFSAVE.d'
+     CHARACTER ( LEN = 30 ) :: dfilename = 'EXPO.data'
+     CHARACTER ( LEN = 30 ) :: rfilename = 'EXPORES.d'
+     CHARACTER ( LEN = 30 ) :: sfilename = 'EXPOSOL.d'
+     CHARACTER ( LEN = 30 ) :: wfilename = 'EXPOSAVE.d'
      LOGICAL :: testal = .FALSE.
      LOGICAL :: dechk  = .FALSE.
      LOGICAL :: dechke = .FALSE.
@@ -108,11 +108,11 @@
 
      INTEGER ( KIND = ip_ ) :: out  = 6
      INTEGER ( KIND = ip_ ) :: errout = 6
-     CHARACTER ( LEN =  6 ) :: solv = 'EPF   '
+     CHARACTER ( LEN =  6 ) :: solv = 'EXPO  '
 
-     write(6, * ) ' EPF_available = ', EPF_available
+     write(6, * ) ' EXPO_available = ', EXPO_available
 
-!  ------------------ Open the specfile for EPF ----------------
+!  ------------------ Open the specfile for EXPO ----------------
 
      INQUIRE( FILE = runspec, EXIST = is_specfile )
      IF ( is_specfile ) THEN
@@ -215,8 +215,8 @@
 
 !  Set up control parameters prior to the next solution
 
-     CALL EPF_initialize( data, control, inform )
-     IF ( is_specfile ) CALL EPF_read_specfile( control, input_specfile )
+     CALL EXPO_initialize( data, control, inform )
+     IF ( is_specfile ) CALL EXPO_read_specfile( control, input_specfile )
 
 !  Initialize the problem data
 
@@ -227,11 +227,11 @@
 
      inform%status = 1
 !    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
-     CALL EPF_solve( nlp, control, inform, data, userdata,                     &
-                     eval_FC = CUTEST_eval_FC,                                 &
-                     eval_GJ = CUTEST_eval_GJ,                                 &
-                     eval_HL = CUTEST_eval_HL,                                 &
-                     eval_HLPROD = CUTEST_eval_HLPROD )
+     CALL EXPO_solve( nlp, control, inform, data, userdata,                    &
+                      eval_FC = CUTEST_eval_FC,                                &
+                      eval_GJ = CUTEST_eval_GJ,                                &
+                      eval_HL = CUTEST_eval_HL,                                &
+                      eval_HLPROD = CUTEST_eval_HLPROD )
 !    CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
 !$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
@@ -363,12 +363,10 @@
               '      # name          value   ',                                &
               '    Lower       Upper     Multiplier' )
 
+!  End of subroutine USE_EXPO
 
+     END SUBROUTINE USE_EXPO
 
-!  End of subroutine USE_EPF
+!  End of module USEEXPO
 
-     END SUBROUTINE USE_EPF
-
-!  End of module USEEPF
-
-   END MODULE GALAHAD_USEEPF_precision
+   END MODULE GALAHAD_USEEXPO_precision

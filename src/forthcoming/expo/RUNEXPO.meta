@@ -1,13 +1,13 @@
 MAIN
 ! write-problem-data                                no
-! problem-data-file-name                            EPF.data
+! problem-data-file-name                            EXPO.data
 ! problem-data-file-device                          26
 ! print-full-solution                               no
 ! write-solution                                    yes
-! solution-file-name                                EPFSOL.d
+! solution-file-name                                EXPOSOL.d
 ! solution-file-device                              62
 ! write-result-summary                              yes
-! result-summary-file-name                          EPFRES.d
+! result-summary-file-name                          EXPORES.d
 ! result-summary-file-device                        47
 ! check-all-derivatives                             no
 ! check-derivatives                                 yes
@@ -23,11 +23,11 @@ MAIN
 ! use-variable-scaling-factors                      no
 ! maximizer-sought                                  no
 ! restart-from-previous-point                       no
-! restart-data-file-name                            EPFSAVE.d
+! restart-data-file-name                            EXPOSAVE.d
 ! restart-data-file-device                          59
 ! save-data-for-restart-every                       0
 
-INCLUDE EPF
+INCLUDE EXPO
 
 INCLUDE TRU
 

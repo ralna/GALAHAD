@@ -1,24 +1,25 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-04-20 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-06-15 AT 11:20 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D _ E P F   M O D U L E  *-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D _ E X P O   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
-!  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+!  Copyright reserved, Fowkes/Gould/Montoison/Orban, for GALAHAD productions
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released GALAHAD Version 5.1. May 9th 2024
+!   originally released as EPF, GALAHAD Version 5.1. May 9th 2024
+!   renamed EXPO, GALAHAD Version 5.3. June 15th 2025
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_EPF_precision
+   MODULE GALAHAD_EXPO_precision
 
 !     --------------------------------------------------------------------
 !    |                                                                    |
-!    | EPF, an exponential penalty function algorithm for                 |
-!    |       nonlinearly-constrained optimization                         |
+!    | EXPO, an EXponential Penalty function algorithm for                |
+!    |       nonlinearly-constrained Optimization                         |
 !    |                                                                    |
 !    |   Aim: find a (local) minimizer of the objective f(x)              |
 !    |        subject to x^l <= x <= x^u and c^l <= c(x) <= c^u           |
@@ -55,8 +56,8 @@
      IMPLICIT NONE
 
      PRIVATE
-     PUBLIC :: EPF_initialize, EPF_read_specfile, EPF_solve,                   &
-               EPF_terminate, NLPT_problem_type, GALAHAD_userdata_type,        &
+     PUBLIC :: EXPO_initialize, EXPO_read_specfile, EXPO_solve,                &
+               EXPO_terminate, NLPT_problem_type, GALAHAD_userdata_type,       &
                SMT_type, SMT_put
 
 !----------------------
@@ -85,7 +86,7 @@
 !   G l o b a l   P a r a m e t e r s
 !--------------------------------------
 
-     LOGICAL, PUBLIC, PARAMETER :: EPF_available = .TRUE.
+     LOGICAL, PUBLIC, PARAMETER :: EXPO_available = .TRUE.
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -95,7 +96,7 @@
 !   control derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
-     TYPE, PUBLIC :: EPF_control_type
+     TYPE, PUBLIC :: EXPO_control_type
 
 !   error and warning diagnostics occur on stream error
 
@@ -240,13 +241,13 @@
 
        TYPE ( SSLS_control_type ) :: SSLS_control
 
-     END TYPE EPF_control_type
+     END TYPE EXPO_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
 !   time derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - -
 
-     TYPE, PUBLIC :: EPF_time_type
+     TYPE, PUBLIC :: EXPO_time_type
 
 !  the total CPU time spent in the package
 
@@ -294,9 +295,9 @@
 !   inform derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
-     TYPE, PUBLIC :: EPF_inform_type
+     TYPE, PUBLIC :: EXPO_inform_type
 
-!  return status. See EPF_solve for details
+!  return status. See EXPO_solve for details
 
        INTEGER ( KIND = ip_ ) :: status = 0
 
@@ -329,22 +330,22 @@
        INTEGER ( KIND = ip_ ) :: n_free = - 1
 
 !  the value of the objective function at the best estimate of the solution
-!   determined by EPF_solve
+!   determined by EXPO_solve
 
        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  the norm of the primal infeasibility at the best estimate of the solution
-!    determined by EPF_solve
+!    determined by EXPO_solve
 
        REAL ( KIND = rp_ ) :: primal_infeasibility = HUGE( one )
 
 !  the norm of the dual infeasibility at the best estimate of the solution
-!    determined by EPF_solve
+!    determined by EXPO_solve
 
        REAL ( KIND = rp_ ) :: dual_infeasibility = HUGE( one )
 
 !  the norm of the complementary slackness at the best estimate of the solution
-!    determined by EPF_solve
+!    determined by EXPO_solve
 
        REAL ( KIND = rp_ ) :: complementary_slackness = HUGE( one )
 
@@ -354,7 +355,7 @@
 
 !  timings (see above)
 
-       TYPE ( EPF_time_type ) :: time
+       TYPE ( EXPO_time_type ) :: time
 
 !  inform parameters for BSC
 
@@ -368,13 +369,13 @@
 
        TYPE ( SSLS_inform_type ) :: SSLS_inform
 
-     END TYPE EPF_inform_type
+     END TYPE EXPO_inform_type
 
 !  - - - - - - - - - -
 !   data derived type
 !  - - - - - - - - - -
 
-     TYPE, PUBLIC :: EPF_data_type
+     TYPE, PUBLIC :: EXPO_data_type
        INTEGER ( KIND = ip_ ) :: branch = 1
        INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print
        INTEGER ( KIND = ip_ ) :: print_level, print_gap, jumpto, iter_advanced
@@ -436,11 +437,11 @@
 
 !  local copy of control parameters
 
-       TYPE ( EPF_control_type ) :: control
+       TYPE ( EXPO_control_type ) :: control
 
 !  penalty-function problem data
 
-       TYPE ( NLPT_problem_type ) :: epf
+       TYPE ( NLPT_problem_type ) :: expo
 
 !  J(transpose) if required
 
@@ -460,17 +461,17 @@
        TYPE ( SMT_type ) :: C_ssls
        TYPE ( SSLS_data_type ) :: SSLS_data
 
-     END TYPE EPF_data_type
+     END TYPE EXPO_data_type
 
    CONTAINS
 
-!-*-*-  G A L A H A D -  E P F _ I N I T I A L I Z E  S U B R O U T I N E  -*-
+!-*-*-  G A L A H A D -  E X P O _ I N I T I A L I Z E  S U B R O U T I N E  -*-
 
-     SUBROUTINE EPF_initialize( data, control, inform )
+     SUBROUTINE EXPO_initialize( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!   Provide default values for EPF controls
+!   Provide default values for EXPO controls
 
 !   Arguments:
 
@@ -484,9 +485,9 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( EPF_data_type ), INTENT( INOUT ) :: data
-     TYPE ( EPF_control_type ), INTENT( OUT ) :: control
-     TYPE ( EPF_inform_type ), INTENT( OUT ) :: inform
+     TYPE ( EXPO_data_type ), INTENT( INOUT ) :: data
+     TYPE ( EXPO_control_type ), INTENT( OUT ) :: control
+     TYPE ( EXPO_inform_type ), INTENT( OUT ) :: inform
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -512,21 +513,21 @@
 
      RETURN
 
-!  End of subroutine EPF_initialize
+!  End of subroutine EXPO_initialize
 
-     END SUBROUTINE EPF_initialize
+     END SUBROUTINE EXPO_initialize
 
-!-*-*-*-*-   E P F _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-*-*-*-
+!-*-*-*-*-   E X P O _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-*-*-*-
 
-     SUBROUTINE EPF_read_specfile( control, device, alt_specname )
+     SUBROUTINE EXPO_read_specfile( control, device, alt_specname )
 
 !  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by EPF_initialize could (roughly)
+!  The default values as given by EXPO_initialize could (roughly)
 !  have been set as:
 
-! BEGIN EPF SPECIFICATIONS (DEFAULT)
+! BEGIN EXPO SPECIFICATIONS (DEFAULT)
 !  error-printout-device                           6
 !  printout-device                                 6
 !  alive-device                                    40
@@ -559,13 +560,13 @@
 !  space-critical                                  no
 !  deallocate-error-fatal                          no
 !  alive-filename                                  ALIVE.d
-! END EPF SPECIFICATIONS
+! END EXPO SPECIFICATIONS
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( EPF_control_type ), INTENT( INOUT ) :: control
+     TYPE ( EXPO_control_type ), INTENT( INOUT ) :: control
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -619,7 +620,7 @@
                                             = deallocate_error_fatal + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = alive_file + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
-     CHARACTER( LEN = 4 ), PARAMETER :: specname = 'EPF '
+     CHARACTER( LEN = 4 ), PARAMETER :: specname = 'EXPO'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
 !  Define the keywords
@@ -811,27 +812,27 @@
 
      RETURN
 
-!  End of subroutine EPF_read_specfile
+!  End of subroutine EXPO_read_specfile
 
-     END SUBROUTINE EPF_read_specfile
+     END SUBROUTINE EXPO_read_specfile
 
-!-*-*-*-  G A L A H A D -  E P F _ s o l v e  S U B R O U T I N E  -*-*-*-
+!-*-*-*-  G A L A H A D -  E X P O _ s o l v e  S U B R O U T I N E  -*-*-*-
 
-     SUBROUTINE EPF_solve( nlp, control, inform, data, userdata,               &
+     SUBROUTINE EXPO_solve( nlp, control, inform, data, userdata,              &
                            eval_FC, eval_GJ, eval_HL, eval_HLPROD, eval_PREC )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  EPF_solve, an exponential penalty function algorithm to find a local
+!  EXPO_solve, an exponential penalty function algorithm to find a local
 !    minimizer of a given objective where the variables are required to
 !    satisfy (nonlinear) constraints
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!  For full details see the specification sheet for GALAHAD_EPF.
+!  For full details see the specification sheet for GALAHAD_EXPO.
 !
 !  ** NB. default real/complex means double precision real/complex in
-!  ** GALAHAD_EPF_precision
+!  ** GALAHAD_EXPO_precision
 !
 ! nlp is a scalar variable of type NLPT_problem_type that is used to
 !  hold data about the objective function. Relevant components are
@@ -985,10 +986,10 @@
 !   control%print_level > 4) is requested, and will be ignored if the array is
 !   not allocated.
 !
-! control is a scalar variable of type EPF_control_type. See EPF_control_type
+! control is a scalar variable of type EXPO_control_type. See EXPO_control_type
 !  in the module specification statements above for details
 !
-! inform is a scalar variable of type EPF_inform_type. See EPF_inform_type
+! inform is a scalar variable of type EXPO_inform_type. See EXPO_inform_type
 !  in the module specification statements above for details.
 !
 !  On initial entry, inform%status should be set to 1. On exit, the following
@@ -1083,7 +1084,7 @@
 !        undefined at x - the user need not set data%U, but should then set
 !        data%eval_status to a non-zero value. *** IGNORE - NOT IMPLEMENTED ***]
 !
-!  data is a scalar variable of type EPF_data_type used for internal data.
+!  data is a scalar variable of type EXPO_data_type used for internal data.
 !
 !  userdata is a scalar variable of type GALAHAD_userdata_type which may be
 !   used to pass user data to and from the eval_* subroutines (see below)
@@ -1106,7 +1107,7 @@
 !   variable set to 0. If C is present, the values of the constraint functions
 !   c(x) evaluated at x=X must be returned in C, and the status variable set
 !   to 0. If the evaluation is impossible at X, status should
-!   be set to a nonzero value. If eval_FC is not present, EPF_solve will
+!   be set to a nonzero value. If eval_FC is not present, EXPO_solve will
 !   return to the user with inform%status = 2 each time an evaluation is
 !   required.
 !
@@ -1117,7 +1118,7 @@
 !   nabla_x c(x) evaluated at x=X must be returned in J_val in the same
 !   order as presented in nlp%J, and the status variable set to 0.
 !   If the evaluation is impossible at x=X, status should be set to a
-!   nonzero value. If eval_GJ is not present, EPF_solve will return to the
+!   nonzero value. If eval_GJ is not present, EXPO_solve will return to the
 !   user with inform%status = 3 or 5 each time an evaluation is required.
 !
 !  eval_HL is an optional subroutine which if present must have the arguments
@@ -1126,15 +1127,18 @@
 !   at x=X and y=Y must be returned in H_val in the same order as presented in
 !   nlp%H, and the status variable set to 0. If the evaluation is impossible
 !   at X and Y, status should be set to a nonzero value. If eval_HL is not 
-!   present, EPF_solve will return to the user with inform%status = 4 or 5 
-!   each time an evaluation is required.
+!   present, EXPO_solve will return to the user with inform%status = 4 or 5 
+!   each time an evaluation is required. If the optional argument no_f is
+!   PRESENT and .TRUE., the nonzeros of the Hessian of the objective function
+!   should not be included, i.e., only - sum_i=1^m y_i nabla_xx c_i(x) should
+!   be included
 !
 !  eval_GL is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The gradient 
 !   nabla_x f(x) - sum_i=1^m y_i c_i(x) of the Lagrangian function evaluated
 !   at x=X and y=Y must be returned in GL, and the status variable set to 0. 
 !   If the evaluation is impossible at X, status should be set to a nonzero 
-!   value. If eval_GL is not present, EPF_solve will return to the user with 
+!   value. If eval_GL is not present, EXPO_solve will return to the user with 
 !   inform%status = xx or yy each time an evaluation is required.
 !
 !  eval_JPROD is an optional subroutine which if present must have the
@@ -1154,7 +1158,7 @@
 !   at x=X and y=Y with the vector v=V and the vector u=U must be returned in U,
 !   and the status variable set to 0. If the evaluation is impossible at X,
 !   status should be set to a nonzero value. If eval_HPROD is not present,
-!   EPF_solve will return to the user with inform%status = 6 each time an
+!   EXPO_solve will return to the user with inform%status = 6 each time an
 !   evaluation is required.
 !
 !  eval_PREC is an optional subroutine which if present must have the arguments
@@ -1162,7 +1166,7 @@
 !   user's preconditioner P(x) evaluated at x=X with the vector v=V, the result
 !   u must be retured in U, and the status variable set to 0. If the evaluation
 !   is impossible at X, status should be set to a nonzero value. If eval_PREC
-!   is not present, EPF_solve will return to the user with inform%status = 7
+!   is not present, EXPO_solve will return to the user with inform%status = 7
 !   each time an evaluation is required.
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1172,9 +1176,9 @@
 !-----------------------------------------------
 
      TYPE ( NLPT_problem_type ), INTENT( INOUT ) :: nlp
-     TYPE ( EPF_control_type ), INTENT( IN ) :: control
-     TYPE ( EPF_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( EPF_data_type ), INTENT( INOUT ) :: data
+     TYPE ( EXPO_control_type ), INTENT( IN ) :: control
+     TYPE ( EXPO_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( EXPO_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_FC, eval_GJ, eval_HL, eval_HLPROD, eval_PREC
 
@@ -1320,12 +1324,12 @@
 
 !  allocate workspace for the problem:
 
-     data%epf%n = nlp%n
-     data%epf%pname = 'EPF       '
+     data%expo%n = nlp%n
+     data%expo%pname = 'EXPO      '
 
 !  dual variable estimates for the simple-bound constraints
 
-     array_name = 'EPF: data%Z_l'
+     array_name = 'EXPO: data%Z_l'
      CALL SPACE_resize_array( nlp%n, data%Z_l, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1333,7 +1337,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%Z_u'
+     array_name = 'EXPO: data%Z_u'
      CALL SPACE_resize_array( nlp%n, data%Z_u, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1341,7 +1345,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%NU_l'
+     array_name = 'EXPO: data%NU_l'
      CALL SPACE_resize_array( nlp%n, data%NU_l, inform%status,                 &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1349,7 +1353,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%NU_u'
+     array_name = 'EXPO: data%NU_u'
      CALL SPACE_resize_array( nlp%n, data%NU_u, inform%status,                 &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1357,7 +1361,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%V_l'
+     array_name = 'EXPO: data%V_l'
      CALL SPACE_resize_array( nlp%n, data%V_l, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1365,7 +1369,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%V_u'
+     array_name = 'EXPO: data%V_u'
      CALL SPACE_resize_array( nlp%n, data%V_u, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1373,7 +1377,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: nlp%Z'
+     array_name = 'EXPO: nlp%Z'
      CALL SPACE_resize_array( nlp%n, nlp%Z, inform%status,                     &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1381,7 +1385,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%Dz'
+     array_name = 'EXPO: data%Dz'
      CALL SPACE_resize_array( nlp%n, data%Dz, inform%status,                   &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1391,7 +1395,7 @@
 
 !  Lagrange multiplier estimates for the general constraints
 
-     array_name = 'EPF: data%Y_l'
+     array_name = 'EXPO: data%Y_l'
      CALL SPACE_resize_array( nlp%m, data%Y_l, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1399,7 +1403,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%Y_u'
+     array_name = 'EXPO: data%Y_u'
      CALL SPACE_resize_array( nlp%m, data%Y_u, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1407,7 +1411,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%MU_l'
+     array_name = 'EXPO: data%MU_l'
      CALL SPACE_resize_array( nlp%m, data%MU_l, inform%status,                 &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1415,7 +1419,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%MU_u'
+     array_name = 'EXPO: data%MU_u'
      CALL SPACE_resize_array( nlp%m, data%MU_u, inform%status,                 &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1423,7 +1427,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%W_l'
+     array_name = 'EXPO: data%W_l'
      CALL SPACE_resize_array( nlp%m, data%W_l, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1431,7 +1435,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%W_u'
+     array_name = 'EXPO: data%W_u'
      CALL SPACE_resize_array( nlp%m, data%W_u, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1439,7 +1443,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: nlp%Y'
+     array_name = 'EXPO: nlp%Y'
      CALL SPACE_resize_array( nlp%m, nlp%Y, inform%status,                     &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1447,7 +1451,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%Dy'
+     array_name = 'EXPO: data%Dy'
      CALL SPACE_resize_array( nlp%m, data%Dy, inform%status,                   &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1455,23 +1459,23 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%epf%X'
-     CALL SPACE_resize_array( nlp%n, data%epf%X, inform%status,                &
+     array_name = 'EXPO: data%expo%X'
+     CALL SPACE_resize_array( nlp%n, data%expo%X, inform%status,               &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%epf%G'
-     CALL SPACE_resize_array( nlp%n, data%epf%G, inform%status,                &
+     array_name = 'EXPO: data%expo%G'
+     CALL SPACE_resize_array( nlp%n, data%expo%G, inform%status,               &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: nlp%gL'
+     array_name = 'EXPO: nlp%gL'
      CALL SPACE_resize_array( nlp%n, nlp%gL, inform%status,                    &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1485,7 +1489,7 @@
 !  on its lower or upper bounds (respectively) - these may be problem
 !  bounds or trust-region bounds, and 3 or 4 if the variable is fixed
 
-     array_name = 'EPF: data%X_status'
+     array_name = 'EXPO: data%X_status'
      CALL SPACE_resize_array( nlp%n, data%X_status, inform%status,             &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1499,7 +1503,7 @@
 !  on its lower or upper bounds (respectively), and 3 if the constraint 
 !  is fixed
 
-     array_name = 'EPF: data%C_status'
+     array_name = 'EXPO: data%C_status'
      CALL SPACE_resize_array( nlp%m, data%C_status, inform%status,             &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -1705,22 +1709,22 @@
          END DO
        END SELECT
 
-!  record the sparsity pattern of J^T D_y J in data%epf%H
+!  record the sparsity pattern of J^T D_y J in data%expo%H
 
        data%control%BSC_control%new_a = 3
        data%control%BSC_control%extra_space_s = 0
        data%control%BSC_control%s_also_by_column = data%map_h_to_jtj
-       CALL BSC_form( nlp%n, nlp%m, data%JT, data%epf%H, data%BSC_data,        &
+       CALL BSC_form( nlp%n, nlp%m, data%JT, data%expo%H, data%BSC_data,        &
                       data%control%BSC_control, inform%BSC_inform )
        data%control%BSC_control%new_a = 1
-       data%jtdzj_ne = data%epf%H%ne
+       data%jtdzj_ne = data%expo%H%ne
 
 !   if required, find a mapping for the entries of H(x,y) and D_z into the
-!   existing structure in data%epf%H for J^T D_y J, expanding the structure
+!   existing structure in data%expo%H for J^T D_y J, expanding the structure
 !   as necessary
 
        IF ( data%map_h_to_jtj ) THEN
-         array_name = 'epf: data%H_map'
+         array_name = 'expo: data%H_map'
          CALL SPACE_resize_array( data%h_ne, data%H_map, inform%status,        &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = data%control%deallocate_error_fatal,  &
@@ -1728,7 +1732,7 @@
                 bad_alloc = inform%bad_alloc, out = data%control%error )
          IF ( inform%status /= 0 ) GO TO 980
 
-         array_name = 'epf: data%Dz_map'
+         array_name = 'expo: data%Dz_map'
          CALL SPACE_resize_array( nlp%n, data%Dz_map, inform%status,           &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = data%control%deallocate_error_fatal,  &
@@ -1744,7 +1748,7 @@
              data%Dz_map( j ) = 0
            END IF
          END DO
-         CALL EPF_map_set( data%epf%H, nlp%H, data%Dz_map, data%H_map,         &
+         CALL EXPO_map_set( data%expo%H, nlp%H, data%Dz_map, data%H_map,       &
                            inform%status, inform%alloc_status )
          IF ( inform%status /= 0 ) GO TO 980
        END IF
@@ -1755,7 +1759,7 @@ stop
 
 !  ensure that the initial point is feasible
 
-     nlp%X( : nlp%n ) = EPF_projection( nlp%n, nlp%X, nlp%X_l, nlp%X_u )
+     nlp%X( : nlp%n ) = EXPO_projection( nlp%n, nlp%X, nlp%X_l, nlp%X_u )
 
 !  find the initial active set for x
 
@@ -2088,7 +2092,7 @@ stop
     IF ( data%control%update_multipliers_itmin < 0 )                           &
       data%control%update_multipliers_itmin = data%control%max_it + 1
 
-    data%epf%X( : nlp%n ) = nlp%X( : nlp%n )
+    data%expo%X( : nlp%n ) = nlp%X( : nlp%n )
     inform%iter = 0
 
 !  compute stopping tolerances
@@ -2183,7 +2187,7 @@ stop
 
 !  solve the problem using a trust-region method
 
-         CALL TRU_solve( data%epf, data%control%tru_control,                   &
+         CALL TRU_solve( data%expo, data%control%tru_control,                  &
                          inform%tru_inform, data%tru_data, userdata )
 
 !  reverse communication request for more information
@@ -2196,10 +2200,10 @@ stop
          CASE ( 2 )
            IF ( data%eval_fc ) THEN
              IF ( data%reverse_fc ) THEN
-               nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+               nlp%X( : nlp%n ) = data%expo%X( : nlp%n )
                data%branch = 210 ; inform%status = 2 ; RETURN
              ELSE
-               CALL eval_FC( data%eval_status, data%epf%X( : nlp%n ),          &
+               CALL eval_FC( data%eval_status, data%expo%X( : nlp%n ),         &
                              userdata, nlp%f, nlp%C( : nlp%m ) )
              END IF
            END IF
@@ -2210,10 +2214,10 @@ stop
          CASE ( 3 )
            IF ( data%eval_gj ) THEN
              IF ( data%reverse_gj ) THEN
-               nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+               nlp%X( : nlp%n ) = data%expo%X( : nlp%n )
                data%branch = 210 ; inform%status = 3 ; RETURN
              ELSE
-               CALL eval_GJ( data%eval_status, data%epf%X( : nlp%n ),          &
+               CALL eval_GJ( data%eval_status, data%expo%X( : nlp%n ),         &
                              userdata, nlp%G( : nlp%n ),                       &
                              nlp%J%val( 1 : nlp%J%ne ) )
              END IF
@@ -2225,10 +2229,10 @@ stop
          CASE ( 4 )
            IF ( data%eval_hl .AND. data%control%subproblem_direct ) THEN
              IF ( data%reverse_hl ) THEN
-               nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+               nlp%X( : nlp%n ) = data%expo%X( : nlp%n )
                data%branch = 210 ; inform%status = 4 ; RETURN
              ELSE
-               CALL eval_HL( data%eval_status, data%epf%X( : nlp%n ),          &
+               CALL eval_HL( data%eval_status, data%expo%X( : nlp%n ),         &
                              - nlp%Y( : nlp%m ), userdata,                     &
                              nlp%H%val( : nlp%H%ne ) )
              END IF
@@ -2238,14 +2242,14 @@ stop
 !  ....................................
 
          CASE ( : - 1 )
-           nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+           nlp%X( : nlp%n ) = data%expo%X( : nlp%n )
            GO TO 300
 
 !  terminal exit from inner-iteration loop
 !  .......................................
 
          CASE DEFAULT
-           nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+           nlp%X( : nlp%n ) = data%expo%X( : nlp%n )
 
 !  note that the function and first derivatives have been recorded at
 !  the terminating point
@@ -2273,9 +2277,9 @@ stop
 !  compute the (infinity-) norm of the infeasibility
 
              inform%primal_infeasibility                                       &
-               = MAX( EPF_infeasibility( nlp%n, data%epf%X, nlp%X_l, nlp%X_u,  &
+               = MAX( EXPO_infeasibility( nlp%n, data%expo%X, nlp%X_l, nlp%X_u,&
                                          control%infinity ),                   &
-                      EPF_infeasibility( nlp%m, nlp%C, nlp%C_l, nlp%C_u,       &
+                      EXPO_infeasibility( nlp%m, nlp%C, nlp%C_l, nlp%C_u,      &
                                          control%infinity ) )
            ELSE
              data%eval_fc = .TRUE.
@@ -2297,13 +2301,13 @@ stop
                DO j = 1, nlp%n
                  IF ( nlp%X_l( j ) >= - control%infinity ) THEN
                    data%NU_l( j )                                              &
-                     = MAX( one, ( nlp%X_l( j ) - data%epf%X( j ) ) )
+                     = MAX( one, ( nlp%X_l( j ) - data%expo%X( j ) ) )
                  ELSE
                    data%NU_l( j ) = zero
                  END IF
                  IF ( nlp%X_u( j ) <= control%infinity ) THEN
                    data%NU_u( j )                                              &
-                     = MAX( one, ( nlp%X_u( j ) - data%epf%X( j ) ) )
+                     = MAX( one, ( nlp%X_u( j ) - data%expo%X( j ) ) )
                  ELSE
                    data%NU_u( j ) = zero
                  END IF
@@ -2410,7 +2414,7 @@ stop
            penalty_term = zero
            DO j = 1, nlp%n
              IF ( use_cosh .AND. nlp%X_l( j ) == nlp%X_u( j ) ) THEN
-               arg = ( data%epf%X( j ) - nlp%X_l( j ) ) / data%NU_l( j )
+               arg = ( data%expo%X( j ) - nlp%X_l( j ) ) / data%NU_l( j )
                vcosh = data%V_l( j ) * COSH( arg )
                data%Z_l( j ) = data%V_l( j ) * SINH( arg )
 !data%Z_u( j ) = data%V_l( j ) * EXP( arg )
@@ -2420,7 +2424,7 @@ stop
                CYCLE
              END IF
              IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-               exp_arg = ( nlp%X_l( j ) - data%epf%X( j ) ) / data%NU_l( j )
+               exp_arg = ( nlp%X_l( j ) - data%expo%X( j ) ) / data%NU_l( j )
                IF ( exp_arg > exp_arg_tiny ) THEN
                  data%Z_l( j ) = data%V_l( j ) * EXP( exp_arg )
                ELSE
@@ -2434,7 +2438,7 @@ stop
                data%Dz( j ) = zero
              END IF
              IF ( nlp%X_u( j ) <= control%infinity ) THEN
-               exp_arg = ( data%epf%X( j ) - nlp%X_u( j ) ) / data%NU_u( j )
+               exp_arg = ( data%expo%X( j ) - nlp%X_u( j ) ) / data%NU_u( j )
                IF ( exp_arg > exp_arg_tiny ) THEN
                  data%Z_u( j ) = data%V_u( j ) * EXP( exp_arg )
                ELSE
@@ -2488,7 +2492,7 @@ stop
 
            IF ( data%printd ) THEN
              WRITE( data%out, "( ' new x ', 3ES22.14, :/, ( 4X, 3ES22.14 ) )") &
-               data%epf%X( : nlp%n )
+               data%expo%X( : nlp%n )
              IF ( nlp%m > 0 ) WRITE( data%out, "( ' new y ', 3ES22.14,         &
             &  :/, ( 4X, 3ES22.14 ) )" )  nlp%Y( : nlp%m )
              WRITE( data%out, "( ' new z ', 3ES22.14, :/, ( 4X, 3ES22.14 ) )") &
@@ -2500,13 +2504,13 @@ stop
 !    phi(x,mu) = f(x) + sum_j=1^n [ nu^y_i z_j^l(x,nu) + nu^u_i z_j^u(x,nu) ] +
 !                     + sum_i=1^m [ mu^l_i w_i^l(x,mu) + mu^u_i w_i^u(x,mu) ]
 
-           data%epf%f = nlp%f + penalty_term
+           data%expo%f = nlp%f + penalty_term
            IF ( data%printd )                                                  &
-             WRITE( data%out, "( ' penalty value =', ES22.14 )" ) data%epf%f
+             WRITE( data%out, "( ' penalty value =', ES22.14 )" ) data%expo%f
 
 !  test to see if the penalty function appears to be unbounded from below
 
-           IF ( data%epf%f < control%obj_unbounded ) THEN
+           IF ( data%expo%f < control%obj_unbounded ) THEN
              inform%status = GALAHAD_error_unbounded ; GO TO 990
            END IF
 
@@ -2524,12 +2528,13 @@ stop
 
 !    nabla phi(x,mu,nu) = g(x) - z(x,nu) - J^T(x) y(x,mu)
 
-           data%epf%G( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
+           data%expo%G( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
            CALL MOP_Ax( one, nlp%J, nlp%Y( : nlp%m ), one,                     &
-                        data%epf%G( : nlp%n ), transpose = .TRUE.,             &
+                        data%expo%G( : nlp%n ), transpose = .TRUE.,            &
                         m_matrix = nlp%m, n_matrix = nlp%n )
            IF ( data%printd ) WRITE( data%out,                                 &
-             "( ' penalty gradient =', /, ( 4ES20.12 ) )" ) data%epf%G( : nlp%n)
+             "( ' penalty gradient =', /, ( 4ES20.12 ) )" )                    &
+               data%expo%G( : nlp%n )
 
 !  if required, print details of the current point
 
@@ -2537,7 +2542,7 @@ stop
 !            WRITE ( data%out, 2210 ) prefix
 !            DO i = 1, nlp%n
 !              WRITE( data%out, 2230 ) prefix, i,                              &
-!                nlp%X_l( i ), data%epf%X( i ), nlp%X_u( i ), nlp%G( i )
+!                nlp%X_l( i ), data%expo%X( i ), nlp%X_u( i ), nlp%G( i )
 !            END DO
 !          END IF
 
@@ -2565,17 +2570,17 @@ stop
 
 !  insert the values of J(x)^T D(x,mu) J(x) into Hess_phi
 
-             CALL BSC_form( nlp%n, nlp%m, data%JT, data%epf%H, data%BSC_data,  &
+             CALL BSC_form( nlp%n, nlp%m, data%JT, data%expo%H, data%BSC_data, &
                             data%control%BSC_control, inform%BSC_inform,       &
                             D = data%Dy( : nlp%m ) )
 
-             data%epf%H%val( data%jtdzj_ne + 1 : data%epf%H%ne ) = zero
+             data%expo%H%val( data%jtdzj_ne + 1 : data%expo%H%ne ) = zero
 
 !  append the values of H(x,y(x,mu)) if they are required
 
              DO l = 1, nlp%H%ne
                j = data%H_map( l )
-               data%epf%H%val( j ) = data%epf%H%val( j ) + nlp%H%val( l )
+               data%expo%H%val( j ) = data%expo%H%val( j ) + nlp%H%val( l )
              END DO
 
 !  and those from Dz(x,mu)
@@ -2584,7 +2589,7 @@ stop
                IF ( nlp%X_l( j ) >= - control%infinity .OR.                    &
                     nlp%X_u( j ) <= control%infinity ) THEN
                  i = data%Dz_map( j )
-                 data%epf%H%val( i ) = data%epf%H%val( i ) + data%Dz( j )
+                 data%expo%H%val( i ) = data%expo%H%val( i ) + data%Dz( j )
                END IF
              END DO
 
@@ -2594,9 +2599,9 @@ stop
 !            IF ( data%printi ) THEN
                WRITE( data%out, "( A, ' penalty Hessian =' )" ) prefix
                WRITE( data%out, "( SS, ( A, : , 2( 2I7, ES20.12, : ) ) )" )    &
-                 ( prefix, ( data%epf%H%row( l + j ), data%epf%H%col( l + j ), &
-                    data%epf%H%val( l + j ), j = 0,                            &
-                      MIN( 1, data%epf%H%ne - l ) ), l = 1, data%epf%H%ne, 2 )
+                 ( prefix, ( data%expo%H%row( l + j ), data%expo%H%col( l + j ), &
+                    data%expo%H%val( l + j ), j = 0,                            &
+                      MIN( 1, data%expo%H%ne - l ) ), l = 1, data%expo%H%ne, 2 )
              END IF
            END IF
          END SELECT
@@ -2614,9 +2619,10 @@ stop
 
 !  compute the dual infeasibility
 
-       inform%dual_infeasibility = TWO_NORM( data%epf%G( : nlp%n ) )
+       inform%dual_infeasibility = TWO_NORM( data%expo%G( : nlp%n ) )
 
-!      IF ( inform%iter > 2 ) WRITE(data%out, "( ' feas / old_feas =', ES12.4 ) ")    &
+!      IF ( inform%iter > 2 )                                                  &
+!        WRITE(data%out, "( ' feas / old_feas =', ES12.4 ) ")                  &
 !        inform%primal_infeasibility /  data%old_primal_infeasibility
        data%old_primal_infeasibility = inform%primal_infeasibility
 
@@ -2674,9 +2680,9 @@ stop
 !  compute the complemntary slackness
 
        inform%complementary_slackness                                          &
-         = MAX( EPF_complementarity( nlp%n, nlp%X, nlp%X_l, nlp%X_u,           &
+         = MAX( EXPO_complementarity( nlp%n, nlp%X, nlp%X_l, nlp%X_u,          &
                                      data%Z_l, data%Z_u, control%infinity ),   &
-                EPF_complementarity( nlp%m, nlp%C, nlp%C_l, nlp%C_u,           &
+                EXPO_complementarity( nlp%m, nlp%C, nlp%C_l, nlp%C_u,          &
                                      data%Y_l, data%Y_u, control%infinity ) )
 
 !  if required, print details of the latest major iteration
@@ -2684,7 +2690,7 @@ stop
        IF ( data%printi ) THEN
          IF ( inform%iter == 1 )                                               &
            WRITE( data%out, "( /, A, '  Problem: ', A, ' (n = ', I0, ', m = ', &
-          &  I0, '): EPF stopping tolerance =', ES11.4 )" )                    &
+          &  I0, '): EXPO stopping tolerance =', ES11.4 )" )                   &
              prefix, TRIM( nlp%pname ), nlp%n, nlp%m, data%stop_d
          IF ( data%print_iteration_header ) THEN
            WRITE( data%out, 2010 ) prefix
@@ -3551,7 +3557,7 @@ stop
            data%rnorm = TWO_NORM( data%R( : data%npma ) )
 !          WRITE( data%out, "( ' r_new ', 3ES22.14, :, /, ( 5X, 3ES22.14 ) )" )&
 !            data%R( : data%npma )
-write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
+! write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
 !  compute the primal infeasibility & complementary_slackness after the 
 !  advanced-starting step, and the exponential-penalty dual variables and
@@ -3612,13 +3618,13 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
 !  compute the gradient of the penalty function:
 
-           data%epf%G( : nlp%n ) = nlp%G( : nlp%n ) + data%DZ( : nlp%n )
+           data%expo%G( : nlp%n ) = nlp%G( : nlp%n ) + data%DZ( : nlp%n )
            CALL MOP_Ax( one, nlp%J, data%DY( : nlp%m ), one,                   &
-                        data%epf%G( : nlp%n ), transpose = .TRUE.,             &
+                        data%expo%G( : nlp%n ), transpose = .TRUE.,            &
                         m_matrix = nlp%m, n_matrix = nlp%n )
-           dual_infeasibility = TWO_NORM( data%epf%G( : nlp%n ) )
-!          IF ( data%printd ) WRITE( data%out,                                 &
-           WRITE( data%out,                                                    &
+           dual_infeasibility = TWO_NORM( data%expo%G( : nlp%n ) )
+!          WRITE( data%out,                                                    &
+           IF ( data%printd ) WRITE( data%out,                                 &
              "( ' primal, dual, comp = ', 3ES11.4 )" ) primal_infeasibility,   &
              dual_infeasibility, complementary_slackness
 
@@ -3626,7 +3632,7 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
            IF ( data%rnorm < data%control%stop_advance_start ) THEN
              IF ( data%printd ) write( data%out, "( ' converged ' )" )   
-             data%epf%X( : nlp%n ) = nlp%X( : nlp%n )
+             data%expo%X( : nlp%n ) = nlp%X( : nlp%n )
              inform%obj = nlp%f
              inform%primal_infeasibility = primal_infeasibility
              inform%dual_infeasibility = dual_infeasibility
@@ -3725,12 +3731,12 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
           IF ( ALLOCATED( nlp%vnames ) ) THEN
             DO i = ir, ic
                WRITE( data%out, 2220 ) prefix, nlp%vnames( i ),                &
-                 nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), data%epf%G( i )
+                 nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), data%expo%G( i )
             END DO
           ELSE
             DO i = ir, ic
                WRITE( data%out, 2230 ) prefix, i,                              &
-                 nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), data%epf%G( i )
+                 nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), data%expo%G( i )
             END DO
           END IF
        END DO
@@ -3763,7 +3769,7 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 !         END IF
 !         DO i = ir, ic
 !            WRITE ( data%out, 2220 ) nlp%vnames( i ), nlp%X_l( i ),
-!              nlp%X( i ), nlp%X_u( i ), data%epf%G( i )
+!              nlp%X( i ), nlp%X_u( i ), data%expo%G( i )
 !         END DO
 !      END DO
 !!$    IF ( .NOT. data%monotone ) WRITE( data%out,                             &
@@ -3883,7 +3889,7 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
      IF ( data%printi ) THEN
-       CALL SYMBOLS_status( inform%status, data%out, prefix, 'EPF_solve' )
+       CALL SYMBOLS_status( inform%status, data%out, prefix, 'EXPO_solve' )
        WRITE( data%out, "( ' ' )" )
      END IF
      RETURN
@@ -3905,13 +3911,13 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
  2240 FORMAT( A, ' .          ........... ...........' )
  2250 FORMAT( ' ', A3, ' =      ', 5ES12.4, :/ ( 6ES12.4, : ) )
 
- !  End of subroutine EPF_solve
+ !  End of subroutine EXPO_solve
 
-     END SUBROUTINE EPF_solve
+     END SUBROUTINE EXPO_solve
 
-!-*-*-  G A L A H A D -  E P F _ t e r m i n a t e  S U B R O U T I N E -*-*-
+!-*-*-  G A L A H A D -  E X P O _ t e r m i n a t e  S U B R O U T I N E -*-*-
 
-     SUBROUTINE EPF_terminate( data, control, inform )
+     SUBROUTINE EXPO_terminate( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -3923,9 +3929,9 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( EPF_data_type ), INTENT( INOUT ) :: data
-     TYPE ( EPF_control_type ), INTENT( IN ) :: control
-     TYPE ( EPF_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( EXPO_data_type ), INTENT( INOUT ) :: data
+     TYPE ( EXPO_control_type ), INTENT( IN ) :: control
+     TYPE ( EXPO_inform_type ), INTENT( INOUT ) :: inform
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -3936,217 +3942,217 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
 !  Deallocate all remaining allocated arrays
 
-     array_name = 'EPF: data%C_status'
+     array_name = 'EXPO: data%C_status'
      CALL SPACE_dealloc_array( data%C_status,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%X_status'
+     array_name = 'EXPO: data%X_status'
      CALL SPACE_dealloc_array( data%X_status,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%C_index'
-     CALL SPACE_dealloc_array( data%C_index,                                  &
+     array_name = 'EXPO: data%C_index'
+     CALL SPACE_dealloc_array( data%C_index,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%X_index'
-     CALL SPACE_dealloc_array( data%X_index,                                  &
+     array_name = 'EXPO: data%X_index'
+     CALL SPACE_dealloc_array( data%X_index,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%H_map'
+     array_name = 'EXPO: data%H_map'
      CALL SPACE_dealloc_array( data%H_map,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Dz_map'
+     array_name = 'EXPO: data%Dz_map'
      CALL SPACE_dealloc_array( data%Dz_map,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Dy'
+     array_name = 'EXPO: data%Dy'
      CALL SPACE_dealloc_array( data%Dy,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Dz'
+     array_name = 'EXPO: data%Dz'
      CALL SPACE_dealloc_array( data%Dz,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%V_l'
+     array_name = 'EXPO: data%V_l'
      CALL SPACE_dealloc_array( data%V_l,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%V_u'
+     array_name = 'EXPO: data%V_u'
      CALL SPACE_dealloc_array( data%V_u,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%W_l'
+     array_name = 'EXPO: data%W_l'
      CALL SPACE_dealloc_array( data%W_l,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%W_u'
+     array_name = 'EXPO: data%W_u'
      CALL SPACE_dealloc_array( data%W_u,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Y_l'
+     array_name = 'EXPO: data%Y_l'
      CALL SPACE_dealloc_array( data%Y_l,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Y_u'
+     array_name = 'EXPO: data%Y_u'
      CALL SPACE_dealloc_array( data%Y_u,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Z_l'
+     array_name = 'EXPO: data%Z_l'
      CALL SPACE_dealloc_array( data%Z_l,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Z_u'
+     array_name = 'EXPO: data%Z_u'
      CALL SPACE_dealloc_array( data%Z_u,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%MU_l'
+     array_name = 'EXPO: data%MU_l'
      CALL SPACE_dealloc_array( data%MU_l,                                      &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%MU_u'
+     array_name = 'EXPO: data%MU_u'
      CALL SPACE_dealloc_array( data%MU_u,                                      &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%NU_l'
+     array_name = 'EXPO: data%NU_l'
      CALL SPACE_dealloc_array( data%NU_l,                                      &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%NU_u'
+     array_name = 'EXPO: data%NU_u'
      CALL SPACE_dealloc_array( data%NU_u,                                      &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%JT%row'
+     array_name = 'EXPO: data%JT%row'
      CALL SPACE_dealloc_array( data%JT%row,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%JT%col'
+     array_name = 'EXPO: data%JT%col'
      CALL SPACE_dealloc_array( data%JT%col,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%JT%val'
+     array_name = 'EXPO: data%JT%val'
      CALL SPACE_dealloc_array( data%JT%val,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%epf%G'
-     CALL SPACE_dealloc_array( data%epf%G,                                     &
+     array_name = 'EXPO: data%expo%G'
+     CALL SPACE_dealloc_array( data%expo%G,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%epf%H%row'
-     CALL SPACE_dealloc_array( data%epf%H%row,                                 &
+     array_name = 'EXPO: data%expo%H%row'
+     CALL SPACE_dealloc_array( data%expo%H%row,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%epf%H%col'
-     CALL SPACE_dealloc_array( data%epf%H%col,                                 &
+     array_name = 'EXPO: data%expo%H%col'
+     CALL SPACE_dealloc_array( data%expo%H%col,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%epf%H%val'
-     CALL SPACE_dealloc_array( data%epf%H%val,                                 &
+     array_name = 'EXPO: data%expo%H%val'
+     CALL SPACE_dealloc_array( data%expo%H%val,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%X_old'
+     array_name = 'EXPO: data%X_old'
      CALL SPACE_dealloc_array( data%X_old,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Y_l_old'
+     array_name = 'EXPO: data%Y_l_old'
      CALL SPACE_dealloc_array( data%Y_l_old,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Y_u_old'
+     array_name = 'EXPO: data%Y_u_old'
      CALL SPACE_dealloc_array( data%Y_u_old,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Z_l_old'
+     array_name = 'EXPO: data%Z_l_old'
      CALL SPACE_dealloc_array( data%Z_l_old,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%Z_u_old'
+     array_name = 'EXPO: data%Z_u_old'
      CALL SPACE_dealloc_array( data%Z_u_old,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%G_old'
+     array_name = 'EXPO: data%G_old'
      CALL SPACE_dealloc_array( data%G_old,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%C_old'
+     array_name = 'EXPO: data%C_old'
      CALL SPACE_dealloc_array( data%C_old,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%J_old'
+     array_name = 'EXPO: data%J_old'
      CALL SPACE_dealloc_array( data%J_old,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'EPF: data%H_old'
+     array_name = 'EXPO: data%H_old'
      CALL SPACE_dealloc_array( data%H_old,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
@@ -4177,13 +4183,13 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
      RETURN
 
-!  End of subroutine EPF_terminate
+!  End of subroutine EXPO_terminate
 
-     END SUBROUTINE EPF_terminate
+     END SUBROUTINE EXPO_terminate
 
-!-*-*-*-  G A L A H A D -  E P F _ p r o j e c t i o n   F U N C T I O N -*-*-
+!-*-*-*-  G A L A H A D -  E X P O _ p r o j e c t i o n   F U N C T I O N -*-*-
 
-     FUNCTION EPF_projection( n, X, X_l, X_u )
+     FUNCTION EXPO_projection( n, X, X_l, X_u )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -4197,21 +4203,21 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u
-     REAL ( KIND = rp_ ), DIMENSION( n ) :: EPF_projection
+     REAL ( KIND = rp_ ), DIMENSION( n ) :: EXPO_projection
 
 !  compute the projection
 
-     EPF_projection = MAX( X_l, MIN( X, X_u ) )
+     EXPO_projection = MAX( X_l, MIN( X, X_u ) )
      RETURN
 
- !  End of function EPF_projection
+ !  End of function EXPO_projection
 
-     END FUNCTION EPF_projection
+     END FUNCTION EXPO_projection
 
-!-*-  G A L A H A D -  E P F _ i n f e a s i b i l i t y   F U N C T I O N -*-
+!-*-  G A L A H A D -  E X P O _ i n f e a s i b i l i t y   F U N C T I O N -*-
 
-     FUNCTION EPF_infeasibility( n, X, X_l, X_u, infinity )
-     REAL ( KIND = rp_ ) :: EPF_infeasibility
+     FUNCTION EXPO_infeasibility( n, X, X_l, X_u, infinity )
+     REAL ( KIND = rp_ ) :: EXPO_infeasibility
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -4236,23 +4242,23 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
 !  compute the infeasibility
 
-     EPF_infeasibility = zero
+     EXPO_infeasibility = zero
      DO j = 1, n
        IF ( X_l( j ) >= - infinity )                                           &
-         EPF_infeasibility = MAX( EPF_infeasibility, X_l( j ) - X( j ) )
+         EXPO_infeasibility = MAX( EXPO_infeasibility, X_l( j ) - X( j ) )
        IF ( X_u( j ) <= infinity )                                             &
-         EPF_infeasibility = MAX( EPF_infeasibility, X( j ) - X_u( j ) )
+         EXPO_infeasibility = MAX( EXPO_infeasibility, X( j ) - X_u( j ) )
      END DO
      RETURN
 
- !  End of function EPF_infeasibility
+ !  End of function EXPO_infeasibility
 
-     END FUNCTION EPF_infeasibility
+     END FUNCTION EXPO_infeasibility
 
-!-  G A L A H A D -  E P F _ c o m p l e m e n t a r i t y   F U N C T I O N -
+!-  G A L A H A D -  E X P O _ c o m p l e m e n t a r i t y   F U N C T I O N -
 
-     FUNCTION EPF_complementarity( n, X, X_l, X_u, Z_l, Z_u, infinity )
-     REAL ( KIND = rp_ ) :: EPF_complementarity
+     FUNCTION EXPO_complementarity( n, X, X_l, X_u, Z_l, Z_u, infinity )
+     REAL ( KIND = rp_ ) :: EXPO_complementarity
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -4278,25 +4284,25 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
 
 !  compute the infeasibility
 
-     EPF_complementarity = zero
+     EXPO_complementarity = zero
      DO j = 1, n
        IF ( X_l( j ) >= - infinity )                                           &
-         EPF_complementarity = MAX( EPF_complementarity,                       &
+         EXPO_complementarity = MAX( EXPO_complementarity,                     &
                                     ( X( j ) - X_l( j ) ) * Z_l( j ) )
        IF ( X_u( j ) <= infinity )                                             &
-         EPF_complementarity = MAX( EPF_complementarity,                       &
+         EXPO_complementarity = MAX( EXPO_complementarity,                     &
                                     - ( X( j ) - X_u( j ) ) * Z_u( j ) )
      END DO
      RETURN
 
- !  End of function EPF_complementarity
+ !  End of function EXPO_complementarity
 
-     END FUNCTION EPF_complementarity
+     END FUNCTION EXPO_complementarity
 
-!-*-*-  E P F _ r e d u c e d  _ g r a d i e n t _ n o r m  F U C T I O N  -*-
+!-*-*-  E X P O _ r e d u c e d  _ g r a d i e n t _ n o r m  F U C T I O N  -*-
 
-     FUNCTION EPF_reduced_gradient_norm( n, X, G, X_l, X_u )
-     REAL ( KIND = rp_ ) :: EPF_reduced_gradient_norm
+     FUNCTION EXPO_reduced_gradient_norm( n, X, G, X_l, X_u )
+     REAL ( KIND = rp_ ) :: EXPO_reduced_gradient_norm
 
 !  Compute the norm of the reduced gradient in the feasible box
 
@@ -4328,18 +4334,18 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
        END IF
        reduced_gradient_norm = MAX( reduced_gradient_norm, ABS( gi ) )
      END DO
-     EPF_reduced_gradient_norm = reduced_gradient_norm
+     EXPO_reduced_gradient_norm = reduced_gradient_norm
 
      RETURN
 
-!  End of EPF_reduced_gradient_norm
+!  End of EXPO_reduced_gradient_norm
 
-     END FUNCTION EPF_reduced_gradient_norm
+     END FUNCTION EXPO_reduced_gradient_norm
 
-!-*-*-*-*-*-*-*-*-*-*-  E P F _ a c t i v e  F U C T I O N  -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-*-  E X P O _ a c t i v e  F U C T I O N  -*-*-*-*-*-*-*-*-
 
-     FUNCTION EPF_active( n, X, X_l, X_u )
-     INTEGER ( KIND = ip_ ) :: EPF_active
+     FUNCTION EXPO_active( n, X, X_l, X_u )
+     INTEGER ( KIND = ip_ ) :: EXPO_active
 
 !  Count the number of active bounds
 
@@ -4364,17 +4370,17 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
          n_active = n_active + 1
        END IF
      END DO
-     EPF_active = n_active
+     EXPO_active = n_active
 
      RETURN
 
-!  End of EPF_active
+!  End of EXPO_active
 
-     END FUNCTION EPF_active
+     END FUNCTION EXPO_active
 
-!-*-*-*-  G A L A H A D -  E P F _ m a p _ s e t   S U B R O U T I N E  -*-*-*-
+!-*-*-*-  G A L A H A D -  E X P O _ m a p _ s e t   S U B R O U T I N E  -*-*-*
 
-     SUBROUTINE EPF_map_set( A, B, MAP_D, MAP_B, status, alloc_status )
+     SUBROUTINE EXPO_map_set( A, B, MAP_D, MAP_B, status, alloc_status )
 
 !  find a mapping of the entries of the matrix B and the diagonal matrix D
 !  into A. A should be stored by columns (either as a sparse or dense matrix)
@@ -4620,13 +4626,13 @@ write(6, "(' ||r|| = ', ES12.4 )" ) data%rnorm
      status = GALAHAD_ok
      RETURN
 
-!  end of subroutine EPF_map_set
+!  end of subroutine EXPO_map_set
 
-     END SUBROUTINE EPF_map_set
+     END SUBROUTINE EXPO_map_set
 
-!  End of module GALAHAD_EPF
+!  End of module GALAHAD_EXPO
 
-   END MODULE GALAHAD_EPF_precision
+   END MODULE GALAHAD_EXPO_precision
 
 
 

@@ -1,14 +1,14 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-05-09 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2024-06-15 AT 11:00 GMT.
 #include "galahad_modules.h"
-   PROGRAM GALAHAD_EPF_test_program
+   PROGRAM GALAHAD_EXPO_test_program
    USE GALAHAD_USERDATA_precision
-   USE GALAHAD_EPF_precision
+   USE GALAHAD_EXPO_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
    TYPE ( NLPT_problem_type ):: nlp
-   TYPE ( EPF_control_type ) :: control
-   TYPE ( EPF_inform_type ) :: inform
-   TYPE ( EPF_data_type ) :: data
+   TYPE ( EXPO_control_type ) :: control
+   TYPE ( EXPO_inform_type ) :: inform
+   TYPE ( EXPO_data_type ) :: data
    TYPE ( GALAHAD_userdata_type ) :: userdata
    EXTERNAL :: FUN, GRAD, HESS, HESSPROD, PREC
    INTEGER ( KIND = ip_ ) :: i, s, scratch_out = 56
@@ -61,7 +61,7 @@
      IF ( s == - GALAHAD_error_upper_entry ) CYCLE
      IF ( s == - GALAHAD_error_sort ) CYCLE
      IF ( s > 24 .AND. s < 40 ) CYCLE
-     CALL EPF_initialize( data, control, inform )  ! Initialize controls
+     CALL EXPO_initialize( data, control, inform )  ! Initialize controls
 !    control%print_level = 1
      inform%status = 1                           ! set for initial entry
      nlp%n = 1
@@ -81,7 +81,7 @@
        control%cpu_time_limit = 0.0_rp_
      END IF
      DO                                           ! Loop to solve problem
-       CALL EPF_solve( nlp, control, inform, data, userdata )
+       CALL EXPO_solve( nlp, control, inform, data, userdata )
        SELECT CASE ( inform%status )              ! reverse communication
        CASE ( 2 )                                 ! Obtain the objective
          nlp%f = - nlp%X( 1 ) ** 2
@@ -118,14 +118,14 @@
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &     F6.1, ' status = ', I6 )" ) i, inform%iter, inform%obj, inform%status
      ELSE
-       WRITE( 6, "( I2, ': EPF_solve exit status = ', I6 ) " ) s, inform%status
+       WRITE( 6, "( I2, ': EXPO_solve exit status = ', I6 ) " ) s, inform%status
      END IF
 
-     CALL EPF_terminate( data, control, inform )  ! delete internal workspace
+     CALL EXPO_terminate( data, control, inform )  ! delete internal workspace
    END DO
 
    control%subproblem_direct = .TRUE.         ! Use a direct method
-   CALL EPF_solve( nlp, control, inform, data, userdata,                      &
+   CALL EXPO_solve( nlp, control, inform, data, userdata,                      &
                     eval_F = FUN, eval_G = GRAD, eval_H = HESS )
 
    DEALLOCATE( nlp%X, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u, nlp%G,               &
@@ -153,7 +153,7 @@
    WRITE( 6, "( /, ' test of availible options ', / )" )
 
    DO i = 1, 7
-     CALL EPF_initialize( data, control, inform )     ! Initialize controls
+     CALL EXPO_initialize( data, control, inform )     ! Initialize controls
 !    control%print_level = 1
      inform%status = 1                        ! set for initial entry
      nlp%X = 1.0_rp_                          ! start from one
@@ -175,7 +175,7 @@
        control%trs_control%print_level = 1
        OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.         ! Use a direct method
-       CALL EPF_solve( nlp, control, inform, data, userdata,                  &
+       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
        CLOSE( UNIT = scratch_out )
        DEALLOCATE( nlp%VNAMES )
@@ -193,40 +193,40 @@
        control%trs_control%error = scratch_out
        control%trs_control%print_level = 1
        OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-       CALL EPF_solve( nlp, control, inform, data, userdata,                   &
+       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
                         eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 3 ) THEN
        control%preconditioner = 3
-       CALL EPF_solve( nlp, control, inform, data, userdata,                   &
+       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
                         eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 4 ) THEN
        control%preconditioner = 5
-       CALL EPF_solve( nlp, control, inform, data, userdata,                   &
+       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
                         eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 5 ) THEN
        control%preconditioner = - 2
-       CALL EPF_solve( nlp, control, inform, data, userdata,                   &
+       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
                         eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 6 ) THEN
        control%model = 1
        control%max_it = 1000
-       CALL EPF_solve( nlp, control, inform, data, userdata,                   &
+       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
                         eval_F = FUN, eval_G = GRAD )
      ELSE IF ( i == 7 ) THEN
        control%model = 3
        control%max_it = 1000
-       CALL EPF_solve( nlp, control, inform, data, userdata,                   &
+       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
                         eval_F = FUN, eval_G = GRAD )
      END IF
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &    F6.1, ' status = ', I6 )" ) i, inform%iter, inform%obj, inform%status
      ELSE
-       WRITE( 6, "( I2, ': EPF_solve exit status = ', I6 ) " ) i, inform%status
+       WRITE( 6, "( I2, ': EXPO_solve exit status = ', I6 ) " ) i, inform%status
      END IF
 
-     CALL EPF_terminate( data, control, inform )  ! delete internal workspace
+     CALL EXPO_terminate( data, control, inform )  ! delete internal workspace
    END DO
    DEALLOCATE( nlp%X, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u, nlp%G,               &
                nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
@@ -252,7 +252,7 @@
    WRITE( 6, "( /, ' full test of generic problems ', / )" )
 
    DO i = 1, 6
-     CALL EPF_initialize( data, control, inform )     ! Initialize controls
+     CALL EXPO_initialize( data, control, inform )     ! Initialize controls
 !    control%print_level = 1
      inform%status = 1                          ! set for initial entry
      nlp%X = 1.0_rp_                             ! start from one
@@ -260,16 +260,16 @@
      nlp%C_l = - 3.0_rp_ ; nlp%C_l = 3.0_rp_
      IF ( i == 1 ) THEN
        control%subproblem_direct = .TRUE.       ! Use a direct method
-       CALL EPF_solve( nlp, control, inform, data, userdata,                  &
+       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 2 ) THEN
        control%hessian_available = .FALSE.      ! Hessian products will be used
-       CALL EPF_solve( nlp, control, inform, data, userdata,                  &
+       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
                        eval_F = FUN, eval_G = GRAD,  eval_HPROD = HESSPROD )
      ELSE IF ( i == 3 ) THEN
        control%hessian_available = .FALSE.      ! Hessian products will be used
        control%preconditioner = - 3             ! User's preconditioner
-       CALL EPF_solve( nlp, control, inform, data, userdata, eval_F = FUN,    &
+       CALL EXPO_solve( nlp, control, inform, data, userdata, eval_F = FUN,    &
               eval_G = GRAD, eval_HPROD = HESSPROD, eval_PREC = PREC )
      ELSE IF ( i == 4 .OR. i == 5 .OR. i == 6 ) THEN
        IF ( i == 4 ) THEN
@@ -279,7 +279,7 @@
        END IF
        IF ( i == 6 ) control%preconditioner = - 3   ! User's preconditioner
        DO                                           ! Loop to solve problem
-         CALL EPF_solve( nlp, control, inform, data, userdata )
+         CALL EXPO_solve( nlp, control, inform, data, userdata )
          SELECT CASE ( inform%status )              ! reverse communication
          CASE ( 2 )                                 ! Obtain the objective
            nlp%f = ( nlp%X( 1 ) + nlp%X( 3 ) + p ) ** 2 +                      &
@@ -321,17 +321,17 @@
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &     F6.1, ' status = ', I6 )" ) i, inform%iter, inform%obj, inform%status
      ELSE
-       WRITE( 6, "( I2, ': EPF_solve exit status = ', I6 ) " ) i, inform%status
+       WRITE( 6, "( I2, ': EXPO_solve exit status = ', I6 ) " ) i, inform%status
      END IF
 
-     CALL EPF_terminate( data, control, inform )  ! delete internal workspace
+     CALL EXPO_terminate( data, control, inform )  ! delete internal workspace
    END DO
    DEALLOCATE( nlp%X, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u, nlp%G,               &
                nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
    WRITE( 6, "( /, ' tests completed' )" )
    WRITE( 6, "( /, ' ***  This package needs much more work!!' )" )
 
-   END PROGRAM GALAHAD_EPF_test_program
+   END PROGRAM GALAHAD_EXPO_test_program
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
    USE GALAHAD_USERDATA_precision

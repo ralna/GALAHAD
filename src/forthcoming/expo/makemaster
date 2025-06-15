@@ -1,4 +1,4 @@
-#  Main body of the installation makefile for the GALAHAD EPF package
+#  Main body of the installation makefile for the GALAHAD EXPO package
 
 #  Nick Gould, for GALAHAD productions
 #  This version: 2024-06-19
@@ -13,8 +13,8 @@ include $(GALAHAD)/src/makedefs/defaults
 
 #  package name
 
-package = epf
-PACKAGE = EPF
+package = expo
+PACKAGE = EXPO
 
 #  auxiliary packages that current package depends on (prepend with make_)
 

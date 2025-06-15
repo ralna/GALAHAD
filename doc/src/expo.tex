@@ -1202,7 +1202,7 @@ The routine must be specified as
 \def\baselinestretch{0.8}
 {\tt
 \begin{verbatim}
-      SUBROUTINE eval_FC( status, X, userdata, f, C )
+      SUBROUTINE eval_FC( status, X, userdata[, f, C] )
 \end{verbatim}
 }
 \def\baselinestretch{1.0}
@@ -1226,12 +1226,12 @@ subroutines {\tt eval\_FC}, {\tt eval\_GJ},
 
 \ittf{f} is an \optional\ scalar \intentout\ argument of type \realdp,
 that should be set to the value of the objective function $f(\bmx)$
-evaluated at the vector $\bmx$ input in {\tt X} if {\tt f} is present.
+evaluated at the vector $\bmx$ input in {\tt X} if {\tt f} is \present.
 
-\itt{C} is an optional rank-one \intentout\ argument of type \realdp,
+\itt{C} is an \optional\ rank-one \intentout\ argument of type \realdp,
 whose components should be set to the values of the constraints
 $\bmc(\bmx)$ evaluated at the vector $\bmx$ input in {\tt X} 
-if {\tt C} is present.
+if {\tt C} is \present.
 
 \end{description}
 
@@ -1247,7 +1247,7 @@ The routine must be specified as
 \def\baselinestretch{0.8}
 {\tt
 \begin{verbatim}
-       SUBROUTINE eval_GJ( status, X, userdata, G, J\_val )
+       SUBROUTINE eval_GJ( status, X, userdata[, G, J_val] )
 \end{verbatim} }
 \def\baselinestretch{1.0}
 \noindent whose arguments are as follows:
@@ -1268,14 +1268,14 @@ subroutines {\tt eval\_FC}, {\tt eval\_GJ},
 {\tt eval\_HL} and {\tt eval\_HLPROD}
 (see Section~\ref{typeuserdata}).
 
-\itt{G} is a rank-one \intentout\ argument of type \realdp,
+\itt{G} is an \optional\ rank-one \intentout\ argument of type \realdp,
 whose components should be set to the values of the gradient
 of the objective function $\nabla_x f(\bmx)$
-evaluated at the vector $\bmx$ input in {\tt X} if {\tt G} is present.
+evaluated at the vector $\bmx$ input in {\tt X} if {\tt G} is \present.
 
-\itt{J\_val} is a scalar \intentout\ argument of type \realdp,
+\itt{J\_val} is an \optional\ scalar \intentout\ argument of type \realdp,
 whose components should be set to the values of the Jacobian $\bmJ(\bmx)$
-evaluated at the vector $\bmx$ input in {\tt X} if {\tt J\_val} is present.
+evaluated at the vector $\bmx$ input in {\tt X} if {\tt J\_val} is \present.
 The values should be input in the same order as that in which the array 
 indices were given in {\tt nlp\%J}.
 
@@ -1293,7 +1293,7 @@ The routine must be specified as
 \def\baselinestretch{0.8}
 {\tt
 \begin{verbatim}
-       SUBROUTINE eval_HL( status, X, Y, userdata, H\_val )
+       SUBROUTINE eval_HL( status, X, Y, userdata, H_val[, no_f] )
 \end{verbatim} }
 \def\baselinestretch{1.0}
 \noindent whose arguments are as follows:
@@ -1323,6 +1323,13 @@ of the Lagrangian function $\bmHL(\bmx,\bmy)$ in \req{gHL}
 evaluated at the vectors $\bmx$ and $\bmy$  input in {\tt X} and {\tt Y}. 
 The Hessian values should be input in the same order as that in which 
 the array indices were given in {\tt nlp\%H}.
+
+\itt{no\_f} is a scalar \intentin\, \optional\ argument of type \logical,
+that, if \present\ and \true, indicates that the Hessian of the Lagrangian
+should not include terms from the objective function, i.e., the Hessian
+returned in {\tt H\_val} should be that of 
+$- \bigsum_{i} y_i \nabla^2 c_i(\bmx)$.
+Currently this possibility cannot arise, but may in the future.
 
 \end{description}
 

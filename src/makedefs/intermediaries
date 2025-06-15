@@ -184,11 +184,11 @@ make_dummy:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummys_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
-make_epf:
-	( cd $(GALAHAD)/src/forthcoming/epf ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) epf.o \
+make_expo:
+	( cd $(GALAHAD)/src/forthcoming/expo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) expo.o \
           PRECIS=$(PRECIS) \
-          PWD=$(GALAHAD)/src/forthcoming/epf )
+          PWD=$(GALAHAD)/src/forthcoming/expo )
 
 make_eqp:
 	( cd $(GALAHAD)/src/eqp ; \
@@ -941,11 +941,11 @@ make_all_dummy:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummy_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
-make_all_epf:
-	( cd $(GALAHAD)/src/forthcoming/epf ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) epf_silent \
+make_all_expo:
+	( cd $(GALAHAD)/src/forthcoming/expo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) expo_silent \
           PRECIS=$(PRECIS) \
-          PWD=$(GALAHAD)/src/forthcoming/epf )
+          PWD=$(GALAHAD)/src/forthcoming/expo )
 
 make_all_eqp:
 	( cd $(GALAHAD)/src/eqp ; \
@@ -1532,11 +1532,11 @@ make_ciface_dummy:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummys_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
-make_ciface_epf:
-	( cd $(GALAHAD)/src/forthcoming/epf ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) epf_ciface.o \
+make_ciface_expo:
+	( cd $(GALAHAD)/src/forthcoming/expo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) expo_ciface.o \
           PRECIS=$(PRECIS) \
-          PWD=$(GALAHAD)/src/forthcoming/epf )
+          PWD=$(GALAHAD)/src/forthcoming/expo )
 
 make_ciface_eqp:
 	( cd $(GALAHAD)/src/eqp ; \
@@ -2236,11 +2236,11 @@ make_pyiface_dummy:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummys_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
-make_pyiface_epf:
-	( cd $(GALAHAD)/src/forthcoming/epf ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) epf_pyiface.o \
+make_pyiface_expo:
+	( cd $(GALAHAD)/src/forthcoming/expo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) expo_pyiface.o \
           PRECIS=$(PRECIS) \
-          PWD=$(GALAHAD)/src/forthcoming/epf )
+          PWD=$(GALAHAD)/src/forthcoming/expo )
 
 make_pyiface_eqp:
 	( cd $(GALAHAD)/src/eqp ; \

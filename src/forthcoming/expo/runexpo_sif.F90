@@ -1,20 +1,20 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-05-09 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2024-06-15 AT 11:00 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-  G A L A H A D   R U N E P F _ S I F  *-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-  G A L A H A D   R U N E X P O _ S I F  *-*-*-*-*-*-*-*-
 
-!  Nick Gould, Dominique Orban and Philippe Toint, for GALAHAD productions
+!  Nick Gould and Alexis Montoison, for GALAHAD productions
 !  Copyright reserved
-!  June 25th 2012
+!  June 15th 2025
 
-   PROGRAM RUNEPF_SIF_precision
+   PROGRAM RUNEXPO_SIF_precision
    USE GALAHAD_KINDS_precision
-   USE GALAHAD_USEEPF_precision
+   USE GALAHAD_USEEXPO_precision
    USE GALAHAD_CUTEST_precision
    USE ISO_C_BINDING, ONLY : C_NULL_CHAR
 
-!  Main program for the SIF interface to EPF, an exponential penalty function
+!  Main program for the SIF interface to EXPO, an exponential penalty function
 !  algorithm for constrained optimization
 
 !  Problem insif characteristics
@@ -59,7 +59,7 @@
 
 !  Call the SIF interface
 
-   CALL USE_EPF( insif )
+   CALL USE_EXPO( insif )
 
 !  Close the data input file
 
@@ -73,6 +73,6 @@
 
    STOP
 
-!  End of RUNEPF_SIF_precision
+!  End of RUNEXPO_SIF_precision
 
-   END PROGRAM RUNEPF_SIF_precision
+   END PROGRAM RUNEXPO_SIF_precision

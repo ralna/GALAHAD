@@ -908,14 +908,14 @@ elif [[ $2 == 'qpf' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpf update
   [[ ! -L RUNQPF.SPC ]] && ln -s ~/.galahad/specs/RUNQPF.SPC RUNQPF.SPC
 
-# epf
+# expo
 
-elif [[ $2 == 'epf' ]]; then
-  RUNMAIN=$GALOBJ/runepf_sif_$PRECIS.o
+elif [[ $2 == 'expo' ]]; then
+  RUNMAIN=$GALOBJ/runexpo_sif_$PRECIS.o
 # PROBLIB="-lgalahad_problem"
-  [[ ! -e ~/.galahad/specs/RUNEPF.SPC ]] && $GALOBJ/buildspec epf
-  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec epf update
-  [[ ! -L RUNEPF.SPC ]] && ln -s ~/.galahad/specs/RUNEPF.SPC RUNEPF.SPC
+  [[ ! -e ~/.galahad/specs/RUNEXPO.SPC ]] && $GALOBJ/buildspec expo
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec expo update
+  [[ ! -L RUNEXPO.SPC ]] && ln -s ~/.galahad/specs/RUNEXPO.SPC RUNEXPO.SPC
 
 # funnel
 

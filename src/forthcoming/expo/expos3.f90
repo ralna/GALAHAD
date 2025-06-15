@@ -1,11 +1,11 @@
-   PROGRAM GALAHAD_EPF3_EXAMPLE  !  GALAHAD 5.1 - 2024-05-09 AT 13:00 GMT.
-   USE GALAHAD_EPF_double                       ! double precision version
+   PROGRAM GALAHAD_EXPO3_EXAMPLE  !  GALAHAD 5.3 - 2025-06-15 AT 11:15 GMT
+   USE GALAHAD_EXPO_double                      ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
    TYPE ( NLPT_problem_type ):: nlp
-   TYPE ( EPF_control_type ) :: control
-   TYPE ( EPF_inform_type ) :: inform
-   TYPE ( EPF_data_type ) :: data
+   TYPE ( EXPO_control_type ) :: control
+   TYPE ( EXPO_inform_type ) :: inform
+   TYPE ( EXPO_data_type ) :: data
    TYPE ( GALAHAD_userdata_type ) :: userdata
    EXTERNAL :: FUN, GRAD, HESS
    INTEGER :: s
@@ -16,12 +16,12 @@
    ALLOCATE( nlp%X( n ), nlp%G( n ) )
    nlp%X = 1.0_wp                               ! start from one
 ! problem data complete
-   CALL EPF_initialize( data, control, inform ) ! Initialize control parameters
+   CALL EXPO_initialize( data, control, inform ) ! Initialize control parameters
    control%hessian_available = .FALSE.          ! Hessian products will be used
 !  control%psls_control%preconditioner = - 3    ! Apply uesr's preconditioner
    inform%status = 1                            ! Set for initial entry
    DO                                           ! Loop to solve problem
-     CALL EPF_solve( nlp, control, inform, data, userdata )
+     CALL EXPO_solve( nlp, control, inform, data, userdata )
      SELECT CASE ( inform%status )              ! reverse communication
      CASE ( 2 )                                 ! Obtain the objective function
        nlp%f = ( nlp%X( 1 ) + nlp%X( 3 ) + p ) ** 2 +                          &
@@ -50,12 +50,12 @@
      END SELECT
    END DO
    IF ( inform%status == 0 ) THEN               ! Successful return
-     WRITE( 6, "( ' EPF: ', I0, ' iterations -',                               &
+     WRITE( 6, "( ' EXPO: ', I0, ' iterations -',                              &
     &     ' optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
      inform%iter, inform%obj, nlp%X
    ELSE                                         ! Error returns
-     WRITE( 6, "( ' EPF_solve exit status = ', I6 ) " ) inform%status
+     WRITE( 6, "( ' EXPO_solve exit status = ', I6 ) " ) inform%status
    END IF
-   CALL EPF_terminate( data, control, inform )  ! Delete internal workspace
-   END PROGRAM GALAHAD_EPF3_EXAMPLE
+   CALL EXPO_terminate( data, control, inform )  ! Delete internal workspace
+   END PROGRAM GALAHAD_EXPO3_EXAMPLE

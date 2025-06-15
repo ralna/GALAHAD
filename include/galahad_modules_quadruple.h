@@ -36,7 +36,7 @@
 #define GALAHAD_EKS_precision GALAHAD_EKS_quadruple_64
 #define GALAHAD_TREK_precision GALAHAD_TREK_quadruple_64
 #define GALAHAD_EKRT_precision GALAHAD_EKRT_quadruple_64
-#define GALAHAD_EPF_precision GALAHAD_EPF_quadruple_64
+#define GALAHAD_EXPO_precision GALAHAD_EXPO_quadruple_64
 #define GALAHAD_EQP_precision GALAHAD_EQP_quadruple_64
 #define GALAHAD_ERMO_precision GALAHAD_ERMO_quadruple_64
 #define GALAHAD_EXTEND_precision GALAHAD_EXTEND_quadruple_64
@@ -164,7 +164,7 @@
 #define GALAHAD_USEEKS_precision GALAHAD_USEEKS_quadruple_64
 #define GALAHAD_USETREK_precision GALAHAD_USETREK_quadruple_64
 #define GALAHAD_USEEKRT_precision GALAHAD_USEEKRT_quadruple_64
-#define GALAHAD_USEEPF_precision GALAHAD_USEEPF_quadruple_64
+#define GALAHAD_USEEXPO_precision GALAHAD_USEEXPO_quadruple_64
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_quadruple_64
 #define GALAHAD_USEERMO_precision GALAHAD_USEERMO_quadruple_64
 #define GALAHAD_USEFASTR_precision GALAHAD_USEFASTR_quadruple_64
@@ -375,7 +375,7 @@
 #define RUNEKS_SIF_precision RUNEKS_SIF_quadruple_64
 #define RUNTREK_SIF_precision RUNTREK_SIF_quadruple_64
 #define RUNEKRT_SIF_precision RUNEKRT_SIF_quadruple_64
-#define RUNEPF_SIF_precision RUNEPF_SIF_quadruple_64
+#define RUNEXPO_SIF_precision RUNEXPO_SIF_quadruple_64
 #define RUNERMO_SIF_precision RUNERMO_SIF_quadruple_64
 #define RUNFASTR_SIF_precision RUNFASTR_SIF_quadruple_64
 #define RUNFUNNELEQ_SIF_precision RUNFUNNELEQ_SIF_quadruple_64
@@ -449,7 +449,7 @@
 #define GALAHAD_EKS_precision GALAHAD_EKS_quadruple
 #define GALAHAD_TREK_precision GALAHAD_TREK_quadruple
 #define GALAHAD_EKRT_precision GALAHAD_EKRT_quadruple
-#define GALAHAD_EPF_precision GALAHAD_EPF_quadruple
+#define GALAHAD_EXPO_precision GALAHAD_EXPO_quadruple
 #define GALAHAD_EQP_precision GALAHAD_EQP_quadruple
 #define GALAHAD_ERMO_precision GALAHAD_ERMO_quadruple
 #define GALAHAD_EXTEND_precision GALAHAD_EXTEND_quadruple
@@ -577,7 +577,7 @@
 #define GALAHAD_USEEKS_precision GALAHAD_USEEKS_quadruple
 #define GALAHAD_USETREK_precision GALAHAD_USETREK_quadruple
 #define GALAHAD_USEEKRT_precision GALAHAD_USEEKRT_quadruple
-#define GALAHAD_USEEPF_precision GALAHAD_USEEPF_quadruple
+#define GALAHAD_USEEXPO_precision GALAHAD_USEEXPO_quadruple
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_quadruple
 #define GALAHAD_USEERMO_precision GALAHAD_USEERMO_quadruple
 #define GALAHAD_USEFASTR_precision GALAHAD_USEFASTR_quadruple
@@ -788,7 +788,7 @@
 #define RUNEKS_SIF_precision RUNEKS_SIF_quadruple
 #define RUNTREK_SIF_precision RUNTREK_SIF_quadruple
 #define RUNEKRT_SIF_precision RUNEKRT_SIF_quadruple
-#define RUNEPF_SIF_precision RUNEPF_SIF_quadruple
+#define RUNEXPO_SIF_precision RUNEXPO_SIF_quadruple
 #define RUNERMO_SIF_precision RUNERMO_SIF_quadruple
 #define RUNFASTR_SIF_precision RUNFASTR_SIF_quadruple
 #define RUNFUNNELEQ_SIF_precision RUNFUNNELEQ_SIF_quadruple

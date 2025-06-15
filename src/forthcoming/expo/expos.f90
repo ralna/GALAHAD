@@ -1,11 +1,11 @@
-   PROGRAM GALAHAD_EPF_EXAMPLE  !  GALAHAD 5.3 - 2025-05-29 AT 16:45 GMT.
-   USE GALAHAD_EPF_double                       ! double precision version
+   PROGRAM GALAHAD_EXPO_EXAMPLE  !  GALAHAD 5.3 - 2025-06-15 AT 11:15 GMT.
+   USE GALAHAD_EXPO_double                      ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )    ! set precision
    TYPE ( NLPT_problem_type ):: nlp
-   TYPE ( EPF_control_type ) :: control
-   TYPE ( EPF_inform_type ) :: inform
-   TYPE ( EPF_data_type ) :: data
+   TYPE ( EXPO_control_type ) :: control
+   TYPE ( EXPO_inform_type ) :: inform
+   TYPE ( EXPO_data_type ) :: data
    TYPE ( GALAHAD_userdata_type ) :: userdata
    EXTERNAL :: FC, GJ, HL
    INTEGER :: s
@@ -33,7 +33,7 @@
 ! problem data complete
    ALLOCATE( userdata%real( 1 ) )               ! Allocate space for parameter
    userdata%real( 1 ) = p                       ! Record parameter, p
-   CALL EPF_initialize( data, control, inform ) ! Initialize control parameters
+   CALL EXPO_initialize( data, control, inform ) ! Initialize control parameters
    control%subproblem_direct = .TRUE.
    control%max_it = 20
    control%max_eval = 100
@@ -44,21 +44,21 @@
 
 !  control%tru_control%print_level = 1
    inform%status = 1                            ! set for initial entry
-   CALL EPF_solve( nlp, control, inform, data, userdata, eval_FC = FC,         &
-                   eval_GJ = GJ, eval_HL = HL ) ! Solve problem
+   CALL EXPO_solve( nlp, control, inform, data, userdata, eval_FC = FC,        &
+                    eval_GJ = GJ, eval_HL = HL ) ! Solve problem
    IF ( inform%status == 0 ) THEN               ! Successful return
-     WRITE( 6, "( ' EPF: ', I0, ' major iterations -',                         &
+     WRITE( 6, "( ' EXPO: ', I0, ' major iterations -',                        &
     &     ' optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
      inform%iter, inform%obj, nlp%X
    ELSE                                         ! Error returns
-     WRITE( 6, "( ' EPF_solve exit status = ', I6 ) " ) inform%status
+     WRITE( 6, "( ' EXPO_solve exit status = ', I6 ) " ) inform%status
    END IF
-   CALL EPF_terminate( data, control, inform )  ! delete internal workspace
+   CALL EXPO_terminate( data, control, inform )  ! delete internal workspace
    DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
    DEALLOCATE( nlp%J%val, nlp%J%col, nlp%J%ptr )
    DEALLOCATE( nlp%C, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u )
-   END PROGRAM GALAHAD_EPF_EXAMPLE
+   END PROGRAM GALAHAD_EXPO_EXAMPLE
 
    SUBROUTINE FC( status, X, userdata, F, C )
    USE GALAHAD_USERDATA_double
@@ -103,15 +103,27 @@
    J_val( 10 ) = 2.0_rp * X( 2 )
    END SUBROUTINE GJ
 
-   SUBROUTINE HL( status, X, Y, userdata, H_val )
+   SUBROUTINE HL( status, X, Y, userdata, H_val, no_f )
    USE GALAHAD_USERDATA_double
    INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-   REAL ( KIND = rp ), DIMENSION( : ), INTENT( OUT ) ::H_val
+   REAL ( KIND = rp ), DIMENSION( : ), INTENT( OUT ) :: H_val
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
    REAL ( kind = rp ) :: r
+   LOGICAL :: is_f
    r = userdata%real( 1 )
-   H_val( 1 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) +  Y( 4 ) )
-   H_val( 2 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
+   IF ( PRESENT( no_f ) ) THEN
+     is_f = .NOT. no_f
+   ELSE
+     is_f = .TRUE.
+   END IF
+   IF ( is_f ) THEN
+     H_val( 1 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) +  Y( 4 ) )
+     H_val( 2 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
+   ELSE
+     H_val( 1 ) = - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) +  Y( 4 ) )
+     H_val( 2 ) = - 2.0_rp * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
+   END IF
    END SUBROUTINE HL
