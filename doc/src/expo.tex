@@ -2,8 +2,8 @@
 
 % set the package name
 
-\newcommand{\package}{epf}
-\newcommand{\packagename}{EPF}
+\newcommand{\package}{expo}
+\newcommand{\packagename}{EXPO}
 \newcommand{\fullpackagename}{\libraryname\_\packagename}
 \newcommand{\solver}{{\tt \fullpackagename\_solve}}
 
@@ -1563,24 +1563,24 @@ must start
 with a "{\tt BEGIN \packagename}" command and end with an
 "{\tt END}" command.  The syntax of the specfile is thus defined as follows:
 \begin{verbatim}
-  ( .. lines ignored by EPF_read_specfile .. )
-    BEGIN EPF
+  ( .. lines ignored by EXPO_read_specfile .. )
+    BEGIN EXPO
        keyword    value
        .......    .....
        keyword    value
     END
-  ( .. lines ignored by EPF_read_specfile .. )
+  ( .. lines ignored by EXPO_read_specfile .. )
 \end{verbatim}
 where keyword and value are two strings separated by (at least) one blank.
 The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
 may contain additional (trailing) strings so long as such strings are
 separated by one or more blanks, so that lines such as
 \begin{verbatim}
-    BEGIN EPF SPECIFICATION
+    BEGIN EXPO SPECIFICATION
 \end{verbatim}
 and
 \begin{verbatim}
-    END EPF SPECIFICATION
+    END EXPO SPECIFICATION
 \end{verbatim}
 are acceptable. Furthermore,
 between the
@@ -1620,7 +1620,7 @@ Control parameters may be read from a file as follows:
 \hskip0.5in
 \def\baselinestretch{0.8} {\tt
 \begin{verbatim}
-     CALL EPF_read_specfile( control, device )
+     CALL EXPO_read_specfile( control, device )
 \end{verbatim}
 }
 \def\baselinestretch{1.0}
