@@ -223,8 +223,8 @@ runs:
         tar -xzvf OpenBLAS32.v${VERSION_OPENBLAS32}.$PLATFORM-libgfortran5.tar.gz -C deps
         wget https://github.com/JuliaBinaryWrappers/METIS_jll.jl/releases/download/METIS-v${VERSION_METIS}%2B0/METIS.v${VERSION_METIS}.$PLATFORM.tar.gz
         tar -xzvf METIS.v${VERSION_METIS}.$PLATFORM.tar.gz -C deps
-        wget https://github.com/JuliaBinaryWrappers/CompilerSupportLibraries_jll.jl/releases/download/CompilerSupportLibraries-v${VERSION_CSL}%2B0/CompilerSupportLibraries.v${VERSION_CSL}.$PLATFORM.tar.gz
-        tar -xzvf CompilerSupportLibraries.v${VERSION_CSL}.$PLATFORM.tar.gz -C deps
+        wget https://github.com/JuliaBinaryWrappers/CompilerSupportLibraries_jll.jl/releases/download/CompilerSupportLibraries-v${VERSION_CSL}%2B0/CompilerSupportLibraries.v${VERSION_CSL}.$PLATFORM-libgfortran5.tar.gz
+        tar -xzvf CompilerSupportLibraries.v${VERSION_CSL}.$PLATFORM-libgfortran5.tar.gz -C deps
 
     - name: Install MKL
       if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'intel'
