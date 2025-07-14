@@ -342,9 +342,13 @@ function sils_finalize(::Type{Float128}, ::Type{Int64}, data, control, status)
 end
 
 function run_sif(::Val{:sils}, ::Val{:single}, path_libsif::String, path_outsdif::String)
-  return run(`$(GALAHAD_jll.runsils_sif_single()) $path_libsif $path_outsdif`)
+  cmd = setup_env_lbt(`$(GALAHAD_jll.runsils_sif_single()) $path_libsif $path_outsdif`)
+  run(cmd)
+  return nothing
 end
 
 function run_sif(::Val{:sils}, ::Val{:double}, path_libsif::String, path_outsdif::String)
-  return run(`$(GALAHAD_jll.runsils_sif_double()) $path_libsif $path_outsdif`)
+  cmd = setup_env_lbt(`$(GALAHAD_jll.runsils_sif_double()) $path_libsif $path_outsdif`)
+  run(cmd)
+  return nothing
 end

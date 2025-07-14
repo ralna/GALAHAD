@@ -481,23 +481,31 @@ function qpb_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
 end
 
 function run_sif(::Val{:qpb}, ::Val{:single}, path_libsif::String, path_outsdif::String)
-  return run(`$(GALAHAD_jll.runqpb_sif_single()) $path_libsif $path_outsdif`)
+  cmd = setup_env_lbt(`$(GALAHAD_jll.runqpb_sif_single()) $path_libsif $path_outsdif`)
+  run(cmd)
+  return nothing
 end
 
 function run_sif(::Val{:qpb}, ::Val{:double}, path_libsif::String, path_outsdif::String)
-  return run(`$(GALAHAD_jll.runqpb_sif_double()) $path_libsif $path_outsdif`)
+  cmd = setup_env_lbt(`$(GALAHAD_jll.runqpb_sif_double()) $path_libsif $path_outsdif`)
+  run(cmd)
+  return nothing
 end
 
 function run_qplib(::Val{:qpb}, ::Val{:single}, path_qplib::String)
+  cmd = setup_env_lbt(`$(GALAHAD_jll.runqpb_qplib_single())`)
   open(path_qplib, "r") do io
-    process = pipeline(`$(GALAHAD_jll.runqpb_qplib_single())`; stdin=io)
+    process = pipeline(cmd; stdin=io)
     return run(process)
   end
+  return nothing
 end
 
 function run_qplib(::Val{:qpb}, ::Val{:double}, path_qplib::String)
+  cmd = setup_env_lbt(`$(GALAHAD_jll.runqpb_qplib_double())`)
   open(path_qplib, "r") do io
-    process = pipeline(`$(GALAHAD_jll.runqpb_qplib_double())`; stdin=io)
+    process = pipeline(cmd; stdin=io)
     return run(process)
   end
+  return nothing
 end
