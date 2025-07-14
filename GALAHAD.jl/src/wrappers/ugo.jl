@@ -390,9 +390,13 @@ function ugo_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
 end
 
 function run_sif(::Val{:ugo}, ::Val{:single}, path_libsif::String, path_outsdif::String)
-  return run(`$(GALAHAD_jll.runugo_sif_single()) $path_libsif $path_outsdif`)
+  cmd = setup_env_lbt(`$(GALAHAD_jll.runugo_sif_single()) $path_libsif $path_outsdif`)
+  run(cmd)
+  return nothing
 end
 
 function run_sif(::Val{:ugo}, ::Val{:double}, path_libsif::String, path_outsdif::String)
-  return run(`$(GALAHAD_jll.runugo_sif_double()) $path_libsif $path_outsdif`)
+  cmd = setup_env_lbt(`$(GALAHAD_jll.runugo_sif_double()) $path_libsif $path_outsdif`)
+  run(cmd)
+  return nothing
 end

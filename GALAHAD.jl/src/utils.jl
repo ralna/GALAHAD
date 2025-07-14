@@ -15,6 +15,13 @@ function galahad_linear_solver(solver::String)
   return ntuple(i -> result[i], 31)
 end
 
+function setup_env_lbt(command::Cmd)
+  config = LinearAlgebra.BLAS.lbt_get_config()
+  lbt_default_libs = get(ENV, "LBT_DEFAULT_LIBS", join([lib.libname for lib in config.loaded_libs], ";"))
+  command = addenv(command, "LBT_DEFAULT_LIBS" => lbt_default_libs)
+  return command
+end
+
 """
     run_sif(solver::Symbol, precision::Symbol, path_libsif::String, path_outsdif::String)
 

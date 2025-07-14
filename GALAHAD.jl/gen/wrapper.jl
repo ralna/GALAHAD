@@ -7,7 +7,9 @@ include("rewriter.jl")
 
 function run_sif_wrapper(name::String, precision::String)
 str = "function run_sif(::Val{:$name}, ::Val{:$precision}, path_libsif::String, path_outsdif::String)
-  run(`\$(GALAHAD_jll.run$(name)_sif_$precision()) \$path_libsif \$path_outsdif`)
+  cmd = setup_env_lbt(`\$(GALAHAD_jll.run$(name)_sif_$precision()) \$path_libsif \$path_outsdif`)
+  run(cmd)
+  return nothing
 end
 "
 return str
@@ -15,10 +17,12 @@ end
 
 function run_qplib_wrapper(name::String, precision::String)
 str = "function run_qplib(::Val{:$name}, ::Val{:$precision}, path_qplib::String)
+  cmd = setup_env_lbt(`\$(GALAHAD_jll.run$(name)_qplib_$precision())`)
   open(path_qplib, \"r\") do io
-    process = pipeline(`\$(GALAHAD_jll.run$(name)_qplib_$precision())`, stdin=io)
+    process = pipeline(cmd, stdin=io)
     run(process)
   end
+  return nothing
 end
 "
 return str
