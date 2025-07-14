@@ -532,47 +532,24 @@ function bqp_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
                                                inform::Ptr{bqp_inform_type{Float128,Int64}})::Cvoid
 end
 
-const runbqp_sif_single = joinpath(galahad_bindir, "runbqp_sif_single$(exeext)")
-
 function run_sif(::Val{:bqp}, ::Val{:single}, path_libsif::String, path_outsdif::String)
-  return run(`$runbqp_sif_single $path_libsif $path_outsdif`)
+  return run(`$(GALAHAD_jll.runbqp_sif_single()) $path_libsif $path_outsdif`)
 end
-
-const runbqp_sif_double = joinpath(galahad_bindir, "runbqp_sif_double$(exeext)")
 
 function run_sif(::Val{:bqp}, ::Val{:double}, path_libsif::String, path_outsdif::String)
-  return run(`$runbqp_sif_double $path_libsif $path_outsdif`)
+  return run(`$(GALAHAD_jll.runbqp_sif_double()) $path_libsif $path_outsdif`)
 end
-
-const runbqp_sif_quadruple = joinpath(galahad_bindir, "runbqp_sif_quadruple$(exeext)")
-
-function run_sif(::Val{:bqp}, ::Val{:quadruple}, path_libsif::String, path_outsdif::String)
-  return run(`$runbqp_sif_quadruple $path_libsif $path_outsdif`)
-end
-
-const runbqp_qplib_single = joinpath(galahad_bindir, "runbqp_qplib_single$(exeext)")
 
 function run_qplib(::Val{:bqp}, ::Val{:single}, path_qplib::String)
   open(path_qplib, "r") do io
-    process = pipeline(`$runbqp_qplib_single`; stdin=io)
+    process = pipeline(`$(GALAHAD_jll.runbqp_qplib_single())`; stdin=io)
     return run(process)
   end
 end
-
-const runbqp_qplib_double = joinpath(galahad_bindir, "runbqp_qplib_double$(exeext)")
 
 function run_qplib(::Val{:bqp}, ::Val{:double}, path_qplib::String)
   open(path_qplib, "r") do io
-    process = pipeline(`$runbqp_qplib_double`; stdin=io)
-    return run(process)
-  end
-end
-
-const runbqp_qplib_quadruple = joinpath(galahad_bindir, "runbqp_qplib_quadruple$(exeext)")
-
-function run_qplib(::Val{:bqp}, ::Val{:quadruple}, path_qplib::String)
-  open(path_qplib, "r") do io
-    process = pipeline(`$runbqp_qplib_quadruple`; stdin=io)
+    process = pipeline(`$(GALAHAD_jll.runbqp_qplib_double())`; stdin=io)
     return run(process)
   end
 end

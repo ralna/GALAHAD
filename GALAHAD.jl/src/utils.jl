@@ -25,14 +25,13 @@ and compilation will be handled automatically for the user:
 
 The supported solvers are: `:arc`, `:bgo`, `:blls`, `:bllsb`, `:bnls`,
 `:bqp`, `:bqpb`, `:ccqp`, `:cdqp`, `:clls`, `:cqp`, `:demo`, `:dgo`, `:dlp`,
-`:dps`, `:dqp`, `:eqp`, `:fdh`, `:filtrane`, `:glrt`, `:gltr`, `:l1qp`,
+`:dps`, `:dqp`, `:eqp`, `:expo`, `:fdh`, `:filtrane`, `:glrt`, `:gltr`, `:l1qp`,
 `:l2rt`, `:lancelot`, `:lls`, `:lpa`, `:lpb`, `:lpqp`, `:lqr`, `:lqt`, `:lsrt`,
 `:lstr`, `:miqr`, `:nls`, `:nodend`, `:presolve`, `:qp`, `:qpa`, `:qpb`,
 `:qpc`, `:rqs`, `:sbls`, `:sha`, `:sils`, `:slls`, `:sls`, `:trb`, `:trs`,
 `:tru`, `:ugo`, `:warm`, and `:wcp`.
 
-The supported precisions are: `:single`, `:double`, and `:quadruple`.
-Note that the precision `:quadruple` is not available with the precompiled artifacts.
+The supported precisions are: `:single` and `:double`.
 """
 function run_sif end
 
@@ -44,8 +43,7 @@ run_sif(solver::Symbol, precision::Symbol, path_libsif::String, path_outsdif::St
 The supported solvers are: `:bqp`, `:bqpb`, `:ccqp`, `:cdqp`, `:cqp`,
 `:dlp`, `:dqp`, `:lpa`, `:lpb`, `:qp`, `:qpa`, `:qpb`, and `:qpc`.
 
-The supported precisions are: `:single`, `:double`, and `:quadruple`.
-Note that the precision `:quadruple` is not available with the precompiled artifacts.
+The supported precisions are: `:single` and `:double`
 """
 function run_qplib end
 

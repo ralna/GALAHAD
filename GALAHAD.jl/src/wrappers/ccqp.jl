@@ -564,47 +564,24 @@ function ccqp_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
                                                                              Int64}})::Cvoid
 end
 
-const runccqp_sif_single = joinpath(galahad_bindir, "runccqp_sif_single$(exeext)")
-
 function run_sif(::Val{:ccqp}, ::Val{:single}, path_libsif::String, path_outsdif::String)
-  return run(`$runccqp_sif_single $path_libsif $path_outsdif`)
+  return run(`$(GALAHAD_jll.runccqp_sif_single()) $path_libsif $path_outsdif`)
 end
-
-const runccqp_sif_double = joinpath(galahad_bindir, "runccqp_sif_double$(exeext)")
 
 function run_sif(::Val{:ccqp}, ::Val{:double}, path_libsif::String, path_outsdif::String)
-  return run(`$runccqp_sif_double $path_libsif $path_outsdif`)
+  return run(`$(GALAHAD_jll.runccqp_sif_double()) $path_libsif $path_outsdif`)
 end
-
-const runccqp_sif_quadruple = joinpath(galahad_bindir, "runccqp_sif_quadruple$(exeext)")
-
-function run_sif(::Val{:ccqp}, ::Val{:quadruple}, path_libsif::String, path_outsdif::String)
-  return run(`$runccqp_sif_quadruple $path_libsif $path_outsdif`)
-end
-
-const runccqp_qplib_single = joinpath(galahad_bindir, "runccqp_qplib_single$(exeext)")
 
 function run_qplib(::Val{:ccqp}, ::Val{:single}, path_qplib::String)
   open(path_qplib, "r") do io
-    process = pipeline(`$runccqp_qplib_single`; stdin=io)
+    process = pipeline(`$(GALAHAD_jll.runccqp_qplib_single())`; stdin=io)
     return run(process)
   end
 end
-
-const runccqp_qplib_double = joinpath(galahad_bindir, "runccqp_qplib_double$(exeext)")
 
 function run_qplib(::Val{:ccqp}, ::Val{:double}, path_qplib::String)
   open(path_qplib, "r") do io
-    process = pipeline(`$runccqp_qplib_double`; stdin=io)
-    return run(process)
-  end
-end
-
-const runccqp_qplib_quadruple = joinpath(galahad_bindir, "runccqp_qplib_quadruple$(exeext)")
-
-function run_qplib(::Val{:ccqp}, ::Val{:quadruple}, path_qplib::String)
-  open(path_qplib, "r") do io
-    process = pipeline(`$runccqp_qplib_quadruple`; stdin=io)
+    process = pipeline(`$(GALAHAD_jll.runccqp_qplib_double())`; stdin=io)
     return run(process)
   end
 end

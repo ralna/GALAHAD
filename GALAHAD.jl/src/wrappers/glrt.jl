@@ -292,20 +292,10 @@ function glrt_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
                                                                              Int64}})::Cvoid
 end
 
-const runglrt_sif_single = joinpath(galahad_bindir, "runglrt_sif_single$(exeext)")
-
 function run_sif(::Val{:glrt}, ::Val{:single}, path_libsif::String, path_outsdif::String)
-  return run(`$runglrt_sif_single $path_libsif $path_outsdif`)
+  return run(`$(GALAHAD_jll.runglrt_sif_single()) $path_libsif $path_outsdif`)
 end
-
-const runglrt_sif_double = joinpath(galahad_bindir, "runglrt_sif_double$(exeext)")
 
 function run_sif(::Val{:glrt}, ::Val{:double}, path_libsif::String, path_outsdif::String)
-  return run(`$runglrt_sif_double $path_libsif $path_outsdif`)
-end
-
-const runglrt_sif_quadruple = joinpath(galahad_bindir, "runglrt_sif_quadruple$(exeext)")
-
-function run_sif(::Val{:glrt}, ::Val{:quadruple}, path_libsif::String, path_outsdif::String)
-  return run(`$runglrt_sif_quadruple $path_libsif $path_outsdif`)
+  return run(`$(GALAHAD_jll.runglrt_sif_double()) $path_libsif $path_outsdif`)
 end
