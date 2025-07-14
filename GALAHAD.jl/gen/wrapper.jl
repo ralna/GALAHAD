@@ -1,4 +1,4 @@
-# Script to parse HSL headers and generate Julia wrappers.
+# Script to parse GALAHAD headers and generate Julia wrappers.
 using Clang
 using Clang.Generators
 using JuliaFormatter
@@ -6,21 +6,17 @@ using JuliaFormatter
 include("rewriter.jl")
 
 function run_sif_wrapper(name::String, precision::String)
-str = "const run$(name)_sif_$(precision) = joinpath(galahad_bindir, \"run$(name)_sif_$(precision)\$(exeext)\")
-
-function run_sif(::Val{:$name}, ::Val{:$precision}, path_libsif::String, path_outsdif::String)
-  run(`\$run$(name)_sif_$precision \$path_libsif \$path_outsdif`)
+str = "function run_sif(::Val{:$name}, ::Val{:$precision}, path_libsif::String, path_outsdif::String)
+  run(`\$(GALAHAD_jll.run$(name)_sif_$precision()) \$path_libsif \$path_outsdif`)
 end
 "
 return str
 end
 
 function run_qplib_wrapper(name::String, precision::String)
-str = "const run$(name)_qplib_$(precision) = joinpath(galahad_bindir, \"run$(name)_qplib_$(precision)\$(exeext)\")
-
-function run_qplib(::Val{:$name}, ::Val{:$precision}, path_qplib::String)
+str = "function run_qplib(::Val{:$name}, ::Val{:$precision}, path_qplib::String)
   open(path_qplib, \"r\") do io
-    process = pipeline(`\$run$(name)_qplib_$precision`, stdin=io)
+    process = pipeline(`\$(GALAHAD_jll.run$(name)_qplib_$precision())`, stdin=io)
     run(process)
   end
 end
@@ -70,8 +66,8 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool; targets
     path = options["general"]["output_file_path"]
     text = !isempty(headers) ? read(path, String) * "\n" : ""
     text = text * run_sif_wrapper(name, "single") * "\n\n"
-    text = text * run_sif_wrapper(name, "double") * "\n\n"
-    text = text * run_sif_wrapper(name, "quadruple")
+    text = text * run_sif_wrapper(name, "double") # * "\n\n"
+    # text = text * run_sif_wrapper(name, "quadruple")
     write(path, text)
     format_file(path, YASStyle(), indent=2)
   end
@@ -80,8 +76,8 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool; targets
     path = options["general"]["output_file_path"]
     text = read(path, String) * "\n"
     text = text * run_qplib_wrapper(name, "single") * "\n\n"
-    text = text * run_qplib_wrapper(name, "double") * "\n\n"
-    text = text * run_qplib_wrapper(name, "quadruple")
+    text = text * run_qplib_wrapper(name, "double") # * "\n\n"
+    # text = text * run_qplib_wrapper(name, "quadruple")
     write(path, text)
     format_file(path, YASStyle(), indent=2)
   end
@@ -127,6 +123,7 @@ function main(name::String="all"; optimized::Bool=true)
   (name == "all" || name == "dps")      && wrapper("dps", ["$galahad/galahad_dps.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "dqp")      && wrapper("dqp", ["$galahad/galahad_dqp.h"], optimized, run_sif=true, run_qplib=true)
   (name == "all" || name == "eqp")      && wrapper("eqp", ["$galahad/galahad_eqp.h"], optimized, run_sif=true, run_qplib=false)
+  (name == "all" || name == "expo")     && wrapper("expo", String[], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "fdc")      && wrapper("fdc", ["$galahad/galahad_fdc.h"], optimized, run_sif=false, run_qplib=false)
   (name == "all" || name == "fdh")      && wrapper("fdh", String[], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "filtrane") && wrapper("filtrane", String[], optimized, run_sif=true, run_qplib=false)

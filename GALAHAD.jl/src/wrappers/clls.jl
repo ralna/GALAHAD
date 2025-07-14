@@ -507,20 +507,10 @@ function clls_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
                                                                              Int64}})::Cvoid
 end
 
-const runclls_sif_single = joinpath(galahad_bindir, "runclls_sif_single$(exeext)")
-
 function run_sif(::Val{:clls}, ::Val{:single}, path_libsif::String, path_outsdif::String)
-  return run(`$runclls_sif_single $path_libsif $path_outsdif`)
+  return run(`$(GALAHAD_jll.runclls_sif_single()) $path_libsif $path_outsdif`)
 end
-
-const runclls_sif_double = joinpath(galahad_bindir, "runclls_sif_double$(exeext)")
 
 function run_sif(::Val{:clls}, ::Val{:double}, path_libsif::String, path_outsdif::String)
-  return run(`$runclls_sif_double $path_libsif $path_outsdif`)
-end
-
-const runclls_sif_quadruple = joinpath(galahad_bindir, "runclls_sif_quadruple$(exeext)")
-
-function run_sif(::Val{:clls}, ::Val{:quadruple}, path_libsif::String, path_outsdif::String)
-  return run(`$runclls_sif_quadruple $path_libsif $path_outsdif`)
+  return run(`$(GALAHAD_jll.runclls_sif_double()) $path_libsif $path_outsdif`)
 end
