@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_dps(::Type{T}, ::Type{INT}; sls::String="styr") where {T,INT}
+function test_dps(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{dps_control_type{T,INT}}()

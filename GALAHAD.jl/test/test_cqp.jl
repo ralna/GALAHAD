@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_cqp(::Type{T}, ::Type{INT}; sls::String="styr", dls::String="potr") where {T,INT}
+function test_cqp(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{cqp_control_type{T,INT}}()

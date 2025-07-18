@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_qpa(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
+function test_qpa(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{qpa_control_type{T,INT}}()
@@ -51,7 +51,6 @@ function test_qpa(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
 
     # Linear solvers
     @reset control[].symmetric_linear_solver = galahad_linear_solver(sls)
-    @reset control[].definite_linear_solver = galahad_linear_solver(dls)
 
     # Start from 0
     x = T[0.0, 0.0, 0.0]
