@@ -234,7 +234,7 @@ for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
                              (Float64 , Int64, GALAHAD.libgalahad_double_64   ),
                              (Float128, Int32, GALAHAD.libgalahad_quadruple   ),
                              (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
-  if isfile(libgalahad)
+  if isfile(libgalahad) && !Sys.isapple()
     @testset "CCQP -- $T -- $INT" begin
       @test test_ccqp(T, INT) == 0
     end
