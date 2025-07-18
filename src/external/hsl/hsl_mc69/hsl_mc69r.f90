@@ -3,7 +3,7 @@
 #include "hsl_subset.h"
 
     MODULE hsl_mc69_real
-      LOGICAL, PUBLIC :: mc69_available = .FALSE.
+      LOGICAL, PUBLIC, PROTECTED :: mc69_available = .FALSE.
     CONTAINS
       SUBROUTINE mc69r( )
       END SUBROUTINE mc69r

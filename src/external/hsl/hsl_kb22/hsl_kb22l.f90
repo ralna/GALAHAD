@@ -5,7 +5,7 @@
     MODULE hsl_kb22_long_integer
       PRIVATE
       PUBLIC :: KB22_build_heap, KB22_get_smallest
-      LOGICAL, PUBLIC :: kb22_available = .FALSE.
+      LOGICAL, PUBLIC, PROTECTED :: kb22_available = .FALSE.
     CONTAINS
       SUBROUTINE KB22_build_heap( )
       END SUBROUTINE KB22_build_heap

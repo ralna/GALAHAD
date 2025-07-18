@@ -21,7 +21,7 @@ module hsl_ma87_real
    public :: ma87_analyse, ma87_factor, ma87_factor_solve, ma87_solve,         &
              ma87_sparse_fwd_solve, ma87_finalise
    public :: ma87_get_n__
-   LOGICAL, PUBLIC :: ma87_available = .FALSE.
+   LOGICAL, PUBLIC, PROTECTED :: ma87_available = .FALSE.
    private :: ip_, long_, lp_, rp_
 
    ! Parameters (all private)

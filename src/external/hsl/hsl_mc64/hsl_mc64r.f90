@@ -18,7 +18,7 @@ MODULE hsl_mc64_real
 
    private
    public :: mc64_control, mc64_info, mc64_initialize, mc64_matching
-   LOGICAL, PUBLIC :: mc64_available = .FALSE.
+   LOGICAL, PUBLIC, PROTECTED :: mc64_available = .FALSE.
 
    TYPE mc64_control
 !     real(rp_) :: relax = 0.0_rp_   ! Relaxes matching

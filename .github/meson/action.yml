@@ -182,7 +182,7 @@ runs:
           meson compile -C builddir
           meson install -C builddir
         else
-          VERSION_LIBHSL="4.0.3"
+          VERSION_LIBHSL="4.0.4"
           cd ..
           if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
             wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.zip

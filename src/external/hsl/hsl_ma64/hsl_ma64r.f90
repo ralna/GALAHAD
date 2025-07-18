@@ -3,7 +3,7 @@
 #include "hsl_subset.h"
 
     MODULE hsl_ma64_real
-      LOGICAL, PUBLIC :: ma64_available = .FALSE.
+      LOGICAL, PUBLIC, PROTECTED :: ma64_available = .FALSE.
     CONTAINS
       SUBROUTINE ma64r( )
       END SUBROUTINE ma64r

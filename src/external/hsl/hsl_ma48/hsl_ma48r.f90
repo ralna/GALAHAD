@@ -19,7 +19,7 @@ module hsl_ma48_real
              ma48_initialize,ma48_analyse,ma48_factorize,ma48_solve,           &
              ma48_finalize, ma48_get_perm,ma48_special_rows_and_cols,          &
              ma48_determinant
-   LOGICAL, PUBLIC :: ma48_available = .FALSE.
+   LOGICAL, PUBLIC, PROTECTED :: ma48_available = .FALSE.
 
    interface ma48_initialize
       module procedure ma48_initialize_real

@@ -5,7 +5,7 @@
     MODULE hsl_of01_real
       use hsl_kinds, only: ip_, long_, lp_
       private :: ip_, long_, lp_
-      LOGICAL, PUBLIC :: of01_available = .FALSE.
+      LOGICAL, PUBLIC, PROTECTED :: of01_available = .FALSE.
       integer(ip_), parameter  :: maxpath = 400
       integer(ip_), parameter  :: maxname = 400
       type of01_data_private
