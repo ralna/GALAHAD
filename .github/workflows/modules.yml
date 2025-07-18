@@ -30,8 +30,8 @@ jobs:
       - name: Setup GALAHAD
         shell: bash
         run: |
-          meson setup builddir_int32 --buildtype=debug -Dquadruple=true -Dint64=false -Dssids=false -Dexamples=false -Dtests=false -Dlibblas= -Dliblapack=
-          meson setup builddir_int64 --buildtype=debug -Dquadruple=true -Dint64=true -Dssids=false -Dexamples=false -Dtests=false -Dlibblas= -Dliblapack=
+          meson setup builddir_int32 --buildtype=debug -Dquadruple=true -Dint64=false -Dssids=true -Dexamples=false -Dtests=false -Dlibblas= -Dliblapack=
+          meson setup builddir_int64 --buildtype=debug -Dquadruple=true -Dint64=true -Dssids=true -Dexamples=false -Dtests=false -Dlibblas= -Dliblapack=
 
       - name: Build GALAHAD
         shell: bash
