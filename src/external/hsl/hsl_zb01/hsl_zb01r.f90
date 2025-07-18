@@ -3,8 +3,12 @@
 #include "hsl_subset.h"
 
     MODULE hsl_zb01_real
-      LOGICAL, PUBLIC, PARAMETER :: zb01_available = .FALSE.
+      PUBLIC :: zb01_available
     CONTAINS
+      logical function zb01_available()
+        zb01_available = .FALSE.
+      end function
+
       SUBROUTINE zb01r( )
       END SUBROUTINE zb01r
     END MODULE hsl_zb01_real

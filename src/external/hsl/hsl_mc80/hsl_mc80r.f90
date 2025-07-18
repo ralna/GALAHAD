@@ -3,8 +3,12 @@
 #include "hsl_subset.h"
 
     MODULE hsl_mc80_real
-      LOGICAL, PUBLIC, PARAMETER :: mc80_available = .FALSE.
+      PUBLIC :: mc80_available
     CONTAINS
+      logical function mc80_available()
+        mc80_available = .FALSE.
+      end function
+
       SUBROUTINE mc80r( )
       END SUBROUTINE mc80r
     END MODULE hsl_mc80_real

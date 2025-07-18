@@ -3,8 +3,12 @@
 #include "hsl_subset.h"
 
     MODULE hsl_mc69_real
-      LOGICAL, PUBLIC, PARAMETER :: mc69_available = .FALSE.
+      PUBLIC :: mc69_available
     CONTAINS
+      logical function mc69_available()
+        mc69_available = .FALSE.
+      end function
+
       SUBROUTINE mc69r( )
       END SUBROUTINE mc69r
     END MODULE hsl_mc69_real

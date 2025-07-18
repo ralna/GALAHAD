@@ -15,7 +15,7 @@ module hsl_ma57_real
 #endif
    implicit none
    private :: ip_, rp_
-   LOGICAL, PUBLIC, PARAMETER :: ma57_available = .FALSE.
+   PUBLIC :: ma57_available
 
    type ma57_factors
      private
@@ -165,6 +165,10 @@ module hsl_ma57_real
 !  end interface ma57_get_n__
 
 contains
+
+    logical function ma57_available()
+      ma57_available = .FALSE.
+    end function
 
    subroutine ma57_initialize(factors,control)
       type(ma57_factors), intent(out), optional :: factors

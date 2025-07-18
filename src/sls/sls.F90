@@ -1181,31 +1181,31 @@
 ! - G A L A H A D - S L S _ M A 5 7 _ A V A I L A B L E  F U N C T I O N -
 
       LOGICAL FUNCTION SLS_ma57_available( )
-      SLS_ma57_available = ma57_available
+      SLS_ma57_available = ma57_available( )
       END FUNCTION SLS_ma57_available
 
 ! - G A L A H A D - S L S _ M A 7 7 _ A V A I L A B L E  F U N C T I O N -
 
       LOGICAL FUNCTION SLS_ma77_available( )
-      SLS_ma77_available = ma77_available
+      SLS_ma77_available = ma77_available( )
       END FUNCTION SLS_ma77_available
 
 ! - G A L A H A D - S L S _ M A 8 6 _ A V A I L A B L E  F U N C T I O N -
 
       LOGICAL FUNCTION SLS_ma86_available( )
-      SLS_ma86_available = ma86_available
+      SLS_ma86_available = ma86_available( )
       END FUNCTION SLS_ma86_available
 
 ! - G A L A H A D - S L S _ M A 8 7 _ A V A I L A B L E  F U N C T I O N -
 
       LOGICAL FUNCTION SLS_ma87_available( )
-      SLS_ma87_available = ma87_available
+      SLS_ma87_available = ma87_available( )
       END FUNCTION SLS_ma87_available
 
 ! - G A L A H A D - S L S _ M A 9 7 _ A V A I L A B L E  F U N C T I O N -
 
       LOGICAL FUNCTION SLS_ma97_available( )
-      SLS_ma97_available = ma97_available
+      SLS_ma97_available = ma97_available( )
       END FUNCTION SLS_ma97_available
 
 ! - G A L A H A D - S L S _ S S I D S _ A V A I L A B L E  F U N C T ION -

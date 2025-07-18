@@ -17,7 +17,7 @@
    private
    public :: mi28_keep, mi28_control, mi28_info
    public :: mi28_factorize, mi28_finalise, mi28_precondition, mi28_solve
-   LOGICAL, PUBLIC, PARAMETER :: mi28_available = .FALSE.
+   PUBLIC :: mi28_available
 
   real(rp_), parameter :: zero = 0.0_rp_
   real(rp_), parameter :: one = 1.0_rp_
@@ -88,6 +88,10 @@
   end type mi28_info
 
  contains
+
+  logical function mi28_available()
+    mi28_available = .FALSE.
+  end function
 
   subroutine mi28_factorize_real(n, ptr, row, val, lsize, rsize, keep,       &
       control, info, scale, invp)

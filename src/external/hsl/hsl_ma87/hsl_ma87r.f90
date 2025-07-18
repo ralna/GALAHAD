@@ -21,7 +21,7 @@ module hsl_ma87_real
    public :: ma87_analyse, ma87_factor, ma87_factor_solve, ma87_solve,         &
              ma87_sparse_fwd_solve, ma87_finalise
    public :: ma87_get_n__
-   LOGICAL, PUBLIC, PARAMETER :: ma87_available = .FALSE.
+   PUBLIC :: ma87_available
    private :: ip_, long_, lp_, rp_
 
    ! Parameters (all private)
@@ -315,6 +315,10 @@ module hsl_ma87_real
    end type taskstack
 
 contains
+
+logical function ma87_available()
+   ma87_available = .FALSE.
+end function
 
 subroutine MA87_analyse_real(n, ptr, row, order, keep, control, info)
    integer(ip_),  intent(in) :: n ! order of A
