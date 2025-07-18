@@ -173,6 +173,9 @@ function test_qpa(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
   @printf("\n basic tests of l_1 qp storage formats\n\n")
   qpa_initialize(T, INT, data, control, status)
 
+  # Linear solvers
+  @reset control[].symmetric_linear_solver = galahad_linear_solver(sls)
+
   # Start from 0
   x = T[0.0, 0.0, 0.0]
   y = T[0.0, 0.0]
