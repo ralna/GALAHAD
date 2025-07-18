@@ -13,6 +13,14 @@ pkg> test GALAHAD
 If you launch Julia from within the folder `GALAHAD.jl`, you can
 directly run `pkg> dev .`.
 
+## Environment variables
+
+Note that the following environment variables must be set before starting Julia for the default sparse linear solver `SSIDS`:
+```raw
+export OMP_CANCELLATION=TRUE
+export OMP_PROC_BIND=TRUE
+```
+
 ## libHSL
 
 We highly recommend to download [libHSL](https://licences.stfc.ac.uk/products/Software/HSL/LibHSL) and install the official version of `HSL_jll.jl`.
