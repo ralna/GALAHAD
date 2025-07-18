@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_qpa(::Type{T}, ::Type{INT}) where {T,INT}
+function test_qpa(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{qpa_control_type{T,INT}}()
@@ -48,6 +48,9 @@ function test_qpa(::Type{T}, ::Type{INT}) where {T,INT}
   for d in 1:7
     # Initialize QPA
     qpa_initialize(T, INT, data, control, status)
+
+    # Linear solvers
+    @reset control[].symmetric_linear_solver = galahad_linear_solver(sls)
 
     # Start from 0
     x = T[0.0, 0.0, 0.0]
@@ -169,6 +172,9 @@ function test_qpa(::Type{T}, ::Type{INT}) where {T,INT}
 
   @printf("\n basic tests of l_1 qp storage formats\n\n")
   qpa_initialize(T, INT, data, control, status)
+
+  # Linear solvers
+  @reset control[].symmetric_linear_solver = galahad_linear_solver(sls)
 
   # Start from 0
   x = T[0.0, 0.0, 0.0]

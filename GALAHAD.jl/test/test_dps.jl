@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_dps(::Type{T}, ::Type{INT}) where {T,INT}
+function test_dps(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{dps_control_type{T,INT}}()
@@ -40,7 +40,7 @@ function test_dps(::Type{T}, ::Type{INT}) where {T,INT}
     dps_initialize(T, INT, data, control, status)
 
     # Set user-defined control options
-    @reset control[].symmetric_linear_solver = galahad_linear_solver("sytr")
+    @reset control[].symmetric_linear_solver = galahad_linear_solver(sls)
 
     # sparse co-ordinate storage
     if storage_type == 1

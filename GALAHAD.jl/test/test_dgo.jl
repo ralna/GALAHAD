@@ -247,7 +247,7 @@ function test_dgo(::Type{T}, ::Type{INT}) where {T,INT}
 
     # Set user-defined control options
     @reset control[].maxit = INT(2500)
-    # @reset control[].trb_control[].maxit = INT(100)
+    # @reset control[].trb_control.maxit = INT(100)
     # @reset control[].print_level = INT(1)
 
     # Start from 0

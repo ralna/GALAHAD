@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_llst(::Type{T}, ::Type{INT}) where {T,INT}
+function test_llst(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{llst_control_type{T,INT}}()
@@ -98,9 +98,11 @@ function test_llst(::Type{T}, ::Type{INT}) where {T,INT}
 
     # Initialize LLST
     llst_initialize(T, INT, data, control, status)
-    @reset control[].definite_linear_solver = galahad_linear_solver("potr")
-    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
-    @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("potr")
+
+    # Linear solvers
+    @reset control[].definite_linear_solver = galahad_linear_solver(dls)
+    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver(dls)
     # @reset control[].print_level = INT(1)
 
     # use s or not (1 or 0)

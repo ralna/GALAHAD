@@ -12,7 +12,7 @@ mutable struct userdata_slls{T}
   scale::T
 end
 
-function test_slls(::Type{T}, ::Type{INT}) where {T,INT}
+function test_slls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Apply preconditioner
   function prec(n::INT, x::Vector{T}, p::Vector{T}, userdata::userdata_slls)
@@ -141,6 +141,10 @@ function test_slls(::Type{T}, ::Type{INT}) where {T,INT}
 
   # Initialize SLLS
   slls_initialize(T, INT, data, control, status)
+
+  # Linear solvers
+  @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+  @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver(dls)
 
   # Start from 0
   for i in 1:n

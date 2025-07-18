@@ -33,7 +33,7 @@ function test_l2rt(::Type{T}, ::Type{INT}) where {T,INT}
   l2rt_import_control(T, INT, control, data, status)
 
   for i in 1:m
-    u[i] = 1.0 # b = 1
+    u[i] = one(T)  # b = 1
   end
 
   # iteration loop to find the minimizer with A^T = (I:diag(1:n))
@@ -55,7 +55,7 @@ function test_l2rt(::Type{T}, ::Type{INT}) where {T,INT}
       end
     elseif status[] == 4 # restart
       for i in 1:m
-        u[i] = 1.0
+        u[i] = one(T)
       end
     else
       @printf(" the value %1i of status should not occur\n", status)

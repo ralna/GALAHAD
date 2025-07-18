@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_eqp(::Type{T}, ::Type{INT}) where {T,INT}
+function test_eqp(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{eqp_control_type{T,INT}}()
@@ -43,11 +43,11 @@ function test_eqp(::Type{T}, ::Type{INT}) where {T,INT}
     # Initialize EQP
     eqp_initialize(T, INT, data, control, status)
 
-    # Set user-defined control options
+    # Linear solvers
     @reset control[].fdc_control.use_sls = true
-    @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("sytr")
-    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
-    @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("sytr")
+    @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver(dls)
 
     # Start from 0
     x = T[0.0, 0.0, 0.0]
