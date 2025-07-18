@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_ccqp(::Type{T}, ::Type{INT}) where {T,INT}
+function test_ccqp(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{ccqp_control_type{T,INT}}()
@@ -46,6 +46,14 @@ function test_ccqp(::Type{T}, ::Type{INT}) where {T,INT}
   for d in 1:7
     # Initialize CCQP
     ccqp_initialize(T, INT, data, control, status)
+
+    # Linear solvers
+    @reset control[].fdc_control.use_sls = true
+    @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver(dls)
+    # @reset control[].sbls_pounce_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    # @reset control[].sbls_pounce_control.definite_linear_solver = galahad_linear_solver(dls)
 
     # Start from 0
     x = T[0.0, 0.0, 0.0]
