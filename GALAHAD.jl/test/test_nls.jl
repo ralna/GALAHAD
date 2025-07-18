@@ -12,7 +12,7 @@ struct userdata_nls{T}
   p::T
 end
 
-function test_nls(::Type{T}, ::Type{INT}) where {T,INT}
+function test_nls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
 
   # compute the residuals
   function res(x::Vector{T}, c::Vector{T}, userdata::userdata_nls)
@@ -162,6 +162,11 @@ function test_nls(::Type{T}, ::Type{INT}) where {T,INT}
   for d in 1:5
     # Initialize NLS
     nls_initialize(T, INT, data, control, inform)
+
+    # Linear solvers
+    @reset control[].psls_control.definite_linear_solver = galahad_linear_solver(dls)
+    @reset control[].rqs_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].rqs_control.definite_linear_solver = galahad_linear_solver(dls)
 
     # Set user-defined control options
     # @reset control[].print_level = INT(1)

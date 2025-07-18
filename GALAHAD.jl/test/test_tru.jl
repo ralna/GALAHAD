@@ -12,7 +12,7 @@ mutable struct userdata_tru{T}
   p::T
 end
 
-function test_tru(::Type{T}, ::Type{INT}) where {T,INT}
+function test_tru(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Objective function
   function fun(x::Vector{T}, f::Ref{T}, userdata::userdata_tru{T})
@@ -139,6 +139,12 @@ function test_tru(::Type{T}, ::Type{INT}) where {T,INT}
   for d in 1:5
     # Initialize TRU
     tru_initialize(T, INT, data, control, status)
+
+    # Linear solvers
+    @reset control[].trs_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].trs_control.definite_linear_solver = galahad_linear_solver(dls)
+    @reset control[].psls_control.definite_linear_solver = galahad_linear_solver(dls)
+    @reset control[].dps_control.symmetric_linear_solver = galahad_linear_solver(sls)
 
     # Set user-defined control options
     # @reset control[].print_level = INT(1)

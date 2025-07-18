@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_fdc(::Type{T}, ::Type{INT}) where {T,INT}
+function test_fdc(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{fdc_control_type{T,INT}}()
@@ -31,6 +31,10 @@ function test_fdc(::Type{T}, ::Type{INT}) where {T,INT}
 
   # Initialize FDC
   fdc_initialize(T, INT, data, control, status)
+
+  # Linear solvers
+  @reset control[].use_sls = true
+  @reset control[].symmetric_linear_solver = galahad_linear_solver(sls)
 
   # Start from 0
   fdc_find_dependent_rows(T, INT, control, data, inform, status, m, n, A_ne, A_col, A_ptr, A_val, b,

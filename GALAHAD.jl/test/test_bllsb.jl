@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_bllsb(::Type{T}, ::Type{INT}) where {T,INT}
+function test_bllsb(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{bllsb_control_type{T,INT}}()
@@ -36,8 +36,8 @@ function test_bllsb(::Type{T}, ::Type{INT}) where {T,INT}
     bllsb_initialize(T, INT, data, control, status)
 
     # Set user-defined control options
-    @reset control[].symmetric_linear_solver = galahad_linear_solver("potr")
-    @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("potr")
+    @reset control[].symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver(sls)
     @reset control[].fdc_control.use_sls = true
 
     # Start from 0

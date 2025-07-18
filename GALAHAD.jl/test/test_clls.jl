@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_clls(::Type{T}, ::Type{INT}) where {T,INT}
+function test_clls(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{clls_control_type{T,INT}}()
@@ -41,8 +41,8 @@ function test_clls(::Type{T}, ::Type{INT}) where {T,INT}
     clls_initialize(T, INT, data, control, status)
 
     # Set user-defined control options
-    @reset control[].symmetric_linear_solver = galahad_linear_solver("potr")
-    @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("potr")
+    @reset control[].symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver(sls)
     @reset control[].fdc_control.use_sls = true
 
     # Start from 0

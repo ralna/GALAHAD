@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_psls(::Type{T}, ::Type{INT}) where {T,INT}
+function test_psls(::Type{T}, ::Type{INT}; dls::String="potr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{psls_control_type{T,INT}}()
@@ -36,7 +36,9 @@ function test_psls(::Type{T}, ::Type{INT}) where {T,INT}
     psls_initialize(T, INT, data, control, status)
     @reset control[].preconditioner = INT(2) # band preconditioner
     @reset control[].semi_bandwidth = INT(1) # semibandwidth
-    @reset control[].definite_linear_solver = galahad_linear_solver("sils")
+
+    # Linear solvers
+    @reset control[].definite_linear_solver = galahad_linear_solver(dls)
 
     # sparse co-ordinate storage
     if d == 1

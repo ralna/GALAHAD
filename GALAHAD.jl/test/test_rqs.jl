@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_rqs(::Type{T}, ::Type{INT}) where {T,INT}
+function test_rqs(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{rqs_control_type{T,INT}}()
@@ -64,6 +64,10 @@ function test_rqs(::Type{T}, ::Type{INT}) where {T,INT}
       for storage_type in 1:4
         # Initialize RQS
         rqs_initialize(T, INT, data, control, status)
+
+        # Linear solvers
+        @reset control[].symmetric_linear_solver = galahad_linear_solver(sls)
+        @reset control[].definite_linear_solver = galahad_linear_solver(dls)
 
         # sparse co-ordinate storage
         if storage_type == 1

@@ -12,7 +12,7 @@ struct userdata_arc{T}
   p::T
 end
 
-function test_arc(::Type{T}, ::Type{INT}) where {T,INT}
+function test_arc(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Objective function
   function fun(x::Vector{T}, f::Ref{T}, userdata::userdata_arc)
@@ -146,6 +146,12 @@ function test_arc(::Type{T}, ::Type{INT}) where {T,INT}
 
     # Set user-defined control options
     # @reset control[].print_level = INT(1)
+
+    # Linear solvers
+    @reset control[].rqs_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].rqs_control.definite_linear_solver = galahad_linear_solver(dls)
+    @reset control[].psls_control.definite_linear_solver = galahad_linear_solver(dls)
+    @reset control[].dps_control.symmetric_linear_solver = galahad_linear_solver(sls)
 
     # Start from 1.5
     x = T[1.5, 1.5, 1.5]

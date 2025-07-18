@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_sbls(::Type{T}, ::Type{INT}) where {T,INT}
+function test_sbls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{sbls_control_type{T,INT}}()
@@ -55,8 +55,10 @@ function test_sbls(::Type{T}, ::Type{INT}) where {T,INT}
     @reset control[].preconditioner = INT(2)
     @reset control[].factorization = INT(2)
     @reset control[].get_norm_residual = true
-    @reset control[].symmetric_linear_solver = galahad_linear_solver("sytr")
-    @reset control[].definite_linear_solver = galahad_linear_solver("sytr")
+
+    # Linear solvers
+    @reset control[].symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].definite_linear_solver = galahad_linear_solver(dls)
 
     # sparse co-ordinate storage
     if d == 1
