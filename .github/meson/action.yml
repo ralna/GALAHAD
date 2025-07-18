@@ -151,7 +151,7 @@ runs:
         meson install -C builddir
 
     - name: Install libHSL
-      if: inputs.os != 'windows-latest'
+      if: inputs.os == 'freebsd-latest'
       shell: bash
       run: |
         # self-hosted runner

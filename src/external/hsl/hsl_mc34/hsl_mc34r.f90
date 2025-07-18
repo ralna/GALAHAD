@@ -11,7 +11,7 @@
          module procedure mc34_expand_real
       end interface
     CONTAINS
-      logical function ma34_available()
+      logical function mc34_available()
         mc34_available = .FALSE.
       end function
 
