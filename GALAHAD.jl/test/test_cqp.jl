@@ -175,6 +175,12 @@ function test_cqp(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
     # Initialize CQP
     cqp_initialize(T, INT, data, control, status)
 
+    # Linear solvers
+    @reset control[].fdc_control.use_sls = true
+    @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver(dls)
+
     # Start from 0
     x = T[0.0, 0.0, 0.0]
     y = T[0.0, 0.0]
