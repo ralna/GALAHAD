@@ -18,7 +18,7 @@ module hsl_ma77_real
   implicit none
 
   private :: ip_, long_, lp_, rp_
-  PUBLIC :: ma77_available
+  LOGICAL, PUBLIC :: ma77_available = .FALSE.
 
   real (rp_), parameter, private :: one = 1.0_rp_
   real (rp_), parameter, private :: zero = 0.0_rp_
@@ -238,10 +238,6 @@ module hsl_ma77_real
   end type MA77_keep
 
 contains
-
-  logical function ma77_available()
-    ma77_available = .FALSE.
-  end function
 
   subroutine MA77_open_real(n,filename,keep,control,info,nelt,path)
     integer(ip_), intent (in) :: n

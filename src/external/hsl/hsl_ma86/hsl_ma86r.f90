@@ -21,7 +21,7 @@ module hsl_ma86_real
    public :: ma86_analyse, ma86_factor, ma86_factor_solve, ma86_solve, &
              ma86_finalise
    public :: ma86_get_n__
-   PUBLIC :: ma86_available
+   LOGICAL, PUBLIC :: ma86_available = .FALSE.
    private :: ip_, long_, lp_, rp_
 
    ! Numerical constants
@@ -349,10 +349,6 @@ module hsl_ma86_real
    end type taskstack
 
 contains
-
-logical function ma86_available()
-   ma86_available = .FALSE.
-end function
 
 subroutine MA86_analyse_real(n, ptr, row, order, keep, control, info)
    integer(ip_),  intent(in) :: n ! order of A

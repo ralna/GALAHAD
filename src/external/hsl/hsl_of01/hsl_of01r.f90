@@ -5,7 +5,7 @@
     MODULE hsl_of01_real
       use hsl_kinds, only: ip_, long_, lp_
       private :: ip_, long_, lp_
-      PUBLIC :: of01_available
+      LOGICAL, PUBLIC :: of01_available = .FALSE.
       integer(ip_), parameter  :: maxpath = 400
       integer(ip_), parameter  :: maxname = 400
       type of01_data_private
@@ -50,10 +50,6 @@
         integer(ip_) :: stat ! Fortran stat parameter.
       end type of01_data
     CONTAINS
-      logical function of01_available()
-        of01_available = .FALSE.
-      end function
-
       SUBROUTINE of01r( )
       END SUBROUTINE of01r
     END MODULE hsl_of01_real

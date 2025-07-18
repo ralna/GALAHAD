@@ -19,7 +19,7 @@ module hsl_ma48_real
              ma48_initialize,ma48_analyse,ma48_factorize,ma48_solve,           &
              ma48_finalize, ma48_get_perm,ma48_special_rows_and_cols,          &
              ma48_determinant
-   PUBLIC :: ma48_available
+   LOGICAL, PUBLIC :: ma48_available = .FALSE.
 
    interface ma48_initialize
       module procedure ma48_initialize_real
@@ -135,10 +135,6 @@ module hsl_ma48_real
    end type ma48_sinfo
 
 contains
-
-   logical function ma48_available()
-      ma48_available = .FALSE.
-   end function
 
    subroutine ma48_initialize_real(factors,control)
       type(ma48_factors), optional :: factors

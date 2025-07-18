@@ -18,7 +18,7 @@
 
      implicit none
      private :: ip_, lp_, rp_
-     PUBLIC :: mi20_available
+     LOGICAL, PUBLIC :: mi20_available = .FALSE.
 
      type mi20_control
        integer(ip_) :: aggressive = 1
@@ -97,10 +97,6 @@
      end type mi20_solve_control
 
    contains
-
-     logical function mi20_available()
-       mi20_available = .FALSE.
-     end function
 
      subroutine mi20_setup(matrix, coarse_data, keep, control, info)
      type(zd11_type), intent(inout) :: matrix

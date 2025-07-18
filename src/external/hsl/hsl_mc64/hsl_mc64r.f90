@@ -18,7 +18,7 @@ MODULE hsl_mc64_real
 
    private
    public :: mc64_control, mc64_info, mc64_initialize, mc64_matching
-   PUBLIC :: mc64_available
+   LOGICAL, PUBLIC :: mc64_available = .FALSE.
 
    TYPE mc64_control
 !     real(rp_) :: relax = 0.0_rp_   ! Relaxes matching
@@ -43,10 +43,6 @@ MODULE hsl_mc64_real
    end interface mc64_matching
 
 CONTAINS
-
-   logical function mc64_available()
-      mc64_available = .FALSE.
-   end function
 
    SUBROUTINE mc64_initialize(control)
       type(mc64_control), intent(out) :: control

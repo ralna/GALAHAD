@@ -3,12 +3,8 @@
 #include "hsl_subset.h"
 
     MODULE hsl_ma54_real
-      PUBLIC :: ma54_available
+      LOGICAL, PUBLIC :: ma54_available = .FALSE.
     CONTAINS
-      logical function ma54_available()
-        ma54_available = .FALSE.
-      end function
-
       SUBROUTINE ma54r( )
       END SUBROUTINE ma54r
     END MODULE hsl_ma54_real
