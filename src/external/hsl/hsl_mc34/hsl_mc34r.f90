@@ -6,7 +6,7 @@
       implicit none
       private
       public mc34_expand
-      LOGICAL, PUBLIC, PARAMETER :: mc34_available = .FALSE.
+      LOGICAL, PUBLIC, PROTECTED :: mc34_available = .FALSE.
       interface mc34_expand
          module procedure mc34_expand_real
       end interface

@@ -21,7 +21,7 @@ module hsl_ma86_real
    public :: ma86_analyse, ma86_factor, ma86_factor_solve, ma86_solve, &
              ma86_finalise
    public :: ma86_get_n__
-   LOGICAL, PUBLIC, PARAMETER :: ma86_available = .FALSE.
+   LOGICAL, PUBLIC, PROTECTED :: ma86_available = .FALSE.
    private :: ip_, long_, lp_, rp_
 
    ! Numerical constants

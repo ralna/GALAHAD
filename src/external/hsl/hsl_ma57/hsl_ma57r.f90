@@ -15,7 +15,7 @@ module hsl_ma57_real
 #endif
    implicit none
    private :: ip_, rp_
-   LOGICAL, PUBLIC, PARAMETER :: ma57_available = .FALSE.
+   LOGICAL, PUBLIC, PROTECTED :: ma57_available = .FALSE.
 
    type ma57_factors
      private

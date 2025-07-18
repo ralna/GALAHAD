@@ -3,7 +3,7 @@
 #include "hsl_subset.h"
 
     MODULE hsl_zb01_real
-      LOGICAL, PUBLIC, PARAMETER :: zb01_available = .FALSE.
+      LOGICAL, PUBLIC, PROTECTED :: zb01_available = .FALSE.
     CONTAINS
       SUBROUTINE zb01r( )
       END SUBROUTINE zb01r

@@ -20,7 +20,7 @@ module hsl_ma97_real
              ma97_enquire_posdef, ma97_enquire_indef, ma97_alter, &
              ma97_lmultiply, ma97_sparse_fwd_solve
    public :: ma97_get_n__, ma97_get_nz__
-   LOGICAL, PUBLIC, PARAMETER :: ma97_available = .FALSE.
+   LOGICAL, PUBLIC, PROTECTED :: ma97_available = .FALSE.
    private :: ip_, long_, lp_, rp_
 
 ! Parameters (all private)

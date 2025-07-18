@@ -18,7 +18,7 @@
     public :: mi35_keep, mi35_control, mi35_info
     public :: mi35_factorize, mi35_finalise, mi35_precondition, mi35_solve
     public :: mi35_check_matrix, mi35_factorizeC, mi35_formC
-    LOGICAL, PUBLIC, PARAMETER :: mi35_available = .FALSE.
+    LOGICAL, PUBLIC, PROTECTED :: mi35_available = .FALSE.
 
     real(rp_), parameter :: zero = 0.0_rp_
     real(rp_), parameter :: one = 1.0_rp_

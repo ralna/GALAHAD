@@ -18,7 +18,7 @@ module hsl_ma77_real
   implicit none
 
   private :: ip_, long_, lp_, rp_
-  LOGICAL, PUBLIC, PARAMETER :: ma77_available = .FALSE.
+  LOGICAL, PUBLIC, PROTECTED :: ma77_available = .FALSE.
 
   real (rp_), parameter, private :: one = 1.0_rp_
   real (rp_), parameter, private :: zero = 0.0_rp_
