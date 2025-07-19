@@ -103,27 +103,15 @@
    J_val( 10 ) = 2.0_rp * X( 2 )
    END SUBROUTINE GJ
 
-   SUBROUTINE HL( status, X, Y, userdata, H_val, no_f )
+   SUBROUTINE HL( status, X, Y, userdata, H_val )
    USE GALAHAD_USERDATA_double
    INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X, Y
    REAL ( KIND = rp ), DIMENSION( : ), INTENT( OUT ) :: H_val
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
    REAL ( kind = rp ) :: r
-   LOGICAL :: is_f
    r = userdata%real( 1 )
-   IF ( PRESENT( no_f ) ) THEN
-     is_f = .NOT. no_f
-   ELSE
-     is_f = .TRUE.
-   END IF
-   IF ( is_f ) THEN
-     H_val( 1 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) +  Y( 4 ) )
-     H_val( 2 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
-   ELSE
-     H_val( 1 ) = - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) +  Y( 4 ) )
-     H_val( 2 ) = - 2.0_rp * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
-   END IF
+   H_val( 1 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) +  Y( 4 ) )
+   H_val( 2 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
    END SUBROUTINE HL

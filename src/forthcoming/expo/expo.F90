@@ -550,7 +550,7 @@
 !  penalty-parameter-reduction-factor              0.5
 !  update-multipliers-feasibility-tolerance        1.0D+20
 !  minimum-objective-before-unbounded              -1.0D+32
-!  try-advanced-start -tolerance                   1.0D-2
+!  try-advanced-start-tolerance                    1.0D-2
 !  try-sqp-start-tolerance                         1.0D-4
 !  stop-advanced-start-tolerance                   1.0D-8
 !  maximum-cpu-time-limit                          -1.0
@@ -1205,23 +1205,21 @@
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_GJ
 
-       SUBROUTINE eval_HL( status, X, Y, userdata, H_val, no_f )
+       SUBROUTINE eval_HL( status, X, Y, userdata, H_val )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        END SUBROUTINE eval_HL
 
-       SUBROUTINE eval_HLPROD( status, X, Y, userdata, U, V, no_f, got_h )
+       SUBROUTINE eval_HLPROD( status, X, Y, userdata, U, V, got_h )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
        END SUBROUTINE eval_HLPROD
 
@@ -2690,7 +2688,7 @@ stop
        IF ( data%printi ) THEN
          IF ( inform%iter == 1 )                                               &
            WRITE( data%out, "( /, A, '  Problem: ', A, ' (n = ', I0, ', m = ', &
-          &  I0, '): EXPO stopping tolerance =', ES11.4 )" )                   &
+          &  I0, '):', /, '  EXPO stopping tolerance =', ES11.4, / )" )        &
              prefix, TRIM( nlp%pname ), nlp%n, nlp%m, data%stop_d
          IF ( data%print_iteration_header ) THEN
            WRITE( data%out, 2010 ) prefix

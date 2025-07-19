@@ -1234,13 +1234,12 @@
      END INTERFACE
 
      INTERFACE
-       SUBROUTINE eval_HL( status, X, Y, userdata, Hval, no_f )
+       SUBROUTINE eval_HL( status, X, Y, userdata, Hval )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        END SUBROUTINE eval_HL
      END INTERFACE
 

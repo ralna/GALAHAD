@@ -110,7 +110,10 @@
      INTEGER ( KIND = ip_ ) :: errout = 6
      CHARACTER ( LEN =  6 ) :: solv = 'EXPO  '
 
-     write(6, * ) ' EXPO_available = ', EXPO_available
+     IF ( .NOT. EXPO_available ) THEN
+       WRITE(6, "( ' EXPO package is not available, stopping' )" )
+       STOP
+     END IF
 
 !  ------------------ Open the specfile for EXPO ----------------
 
@@ -236,6 +239,10 @@
 
 !$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
 
+      WRITE( out, "( ' linear solvers: ', A, ' (ssls), ', A, ' (tru)' )" )     &
+        TRIM( inform%SSLS_inform%SLS_inform%solver ),                          &
+        TRIM( inform%TRU_inform%TRS_inform%SLS_inform%solver )
+
 !  If required, append results to a file,
 
       IF ( write_result_summary ) THEN
@@ -293,7 +300,7 @@
         END DO
       END IF
 
-      WRITE( errout, "( /, 'name           n  f        pr-feas  du-feas ',    &
+      WRITE( errout, "( /, 'name             n  f       pr-feas du-feas',      &
      &  ' cmp-slk    its     #g     time stat' )" )
       IF ( inform%status == 0 ) THEN
         WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj,                    &
@@ -356,7 +363,7 @@
  2010 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
- 2040 FORMAT( A10, I6, 4ES9.1, bn, 2I7, F9.2, I5 )
+ 2040 FORMAT( A10, 1X, I7, ES9.1, 3ES8.1 bn, 2I7, F9.2, I5 )
  2050 FORMAT( /, ' Objective value: ', ES16.8 )
  2060 FORMAT( /, ' Constraints: ', /, '                        ',              &
               '        <------ Bounds ------> ', /                             &

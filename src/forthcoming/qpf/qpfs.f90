@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_EPF_EXAMPLE  !  GALAHAD 5.1 - 2024-10-28 AT 08:20 GMT.
+   PROGRAM GALAHAD_QPF_EXAMPLE  !  GALAHAD 5.1 - 2024-10-28 AT 08:20 GMT.
    USE GALAHAD_QPF_double                       ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )    ! set precision
@@ -68,7 +68,7 @@
    REAL ( kind = rp ), OPTIONAL, INTENT( OUT ) :: F
    REAL ( kind = rp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   REAL ( kind = rp ) :: r
+   REAL ( KIND = rp ) :: r
    r = userdata%real( 1 )
    f = X( 1 ) ** 2 + X( 2 ) ** 2
    C( 1 ) = X( 1 ) + X( 2 ) - 1.0_rp
@@ -87,7 +87,7 @@
    REAL ( KIND = rp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G
    REAL ( KIND = rp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: J_val
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   REAL ( kind = rp ) :: r
+   REAL ( KIND = rp ) :: r
    r = userdata%real( 1 )
    G( 1 ) = 2.0_rp * X( 1 )
    G( 2 ) = 2.0_rp * X( 2 )
@@ -103,7 +103,7 @@
    J_val( 10 ) = 2.0_rp * X( 2 )
    END SUBROUTINE GJ
 
-   SUBROUTINE HL( status, X, Y, userdata, H_val, no_f )
+   SUBROUTINE HL( status, X, Y, userdata, H_val )
    USE GALAHAD_USERDATA_double
    INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
@@ -111,19 +111,8 @@
    REAL ( KIND = rp ), DIMENSION( : ), INTENT( OUT ) ::H_val
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
-   REAL ( kind = rp ) :: r
-   LOGICAL :: skip_f
-   IF ( PRESENT( no_f ) ) THEN
-     skip_f = no_f
-   ELSE
-     skip_f = .FALSE.
-   END IF
+   REAL ( KIND = rp ) :: r
    r = userdata%real( 1 )
-   IF ( skip_f ) THEN
-     H_val( 1 ) = - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) +  Y( 4 ) )
-     H_val( 2 ) = - 2.0_rp * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
-   ELSE
-     H_val( 1 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) +  Y( 4 ) )
-     H_val( 2 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
-   END IF
+   H_val( 1 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) +  Y( 4 ) )
+   H_val( 2 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
    END SUBROUTINE HL

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 13:55 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-07-08 AT 12:35 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -57,7 +57,7 @@
 !   L o c a l   V a r i a b l e s
 !----------------------------------
 
-     INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, l, status, cutest_status
+     INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, l, cutest_status
      REAL :: time_now, time_start
      REAL ( KIND = rp_ ) :: clock_now, clock_start
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R, VECTOR, H_vector
@@ -220,7 +220,7 @@
        SELECT CASE( inform%status ) ! Branch as a result of inform%status
        CASE( 2 )         ! Form the preconditioned gradient
        CASE( 3 )         ! Form the matrix-vector product
-         CALL CUTEST_uhprod_r( status, n, goth, X, VECTOR, H_vector )
+         CALL CUTEST_uhprod_r( cutest_status, n, goth, X, VECTOR, H_vector )
          VECTOR = H_vector
          goth = .TRUE.
        CASE ( 4 )        !  Restart

@@ -3,19 +3,32 @@ MAIN
 ! write-result-summary                              yes
 ! trek-result-summary-file-name                     TREKRES.d
 ! trek-result-summary-file-device                   47
+! trs-result-summary-file-name                      TRSRES.d
+! trs-result-summary-file-device                    48
+! gltr-result-summary-file-name                     GLTRRES.d
+! gltr-result-summary-file-device                   49
 ! print-full-solution                               no
 ! write-solution                                    yes
 ! trek-solution-file-name                           TREKSOL.d
 ! trek-solution-file-device                         62
+! trs-solution-file-name                            TRSSOL.d
+! trs-solution-file-device                          63
+! gltr-solution-file-name                           GLTRSOL.d
+! gltr-solution-file-device                         64
 ! radius                                            1.0
-! use-more-sorensen                                 no
-! use-trek                                          yes
 ! number-of-radii                                   1
+! compare-with-trs                                  no
+! compare-with-gltr                                 no
 
 INCLUDE TREK
+
+INCLUDE TRS
+
+INCLUDE GLTR
 
 INCLUDE SLS
 
 INCLUDE IR
 
 INCLUDE TRS
+

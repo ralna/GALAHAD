@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 13:55 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-07-08 AT 12:35 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -57,7 +57,7 @@
 !   L o c a l   V a r i a b l e s
 !----------------------------------
 
-     INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, l, status, cutest_status
+     INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, l, cutest_status
      REAL :: time_now, time_start
      REAL ( KIND = rp_ ) :: clock_now, clock_start
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R, VECTOR, H_vector
@@ -114,15 +114,15 @@
        spec( 1 )%keyword  = 'write-problem-data'
        spec( 2 )%keyword  = 'write-result-summary'
        spec( 3 )%keyword  = 'gltr-result-summary-file-name'
-       spec( 4 )%keyword = 'gltr-result-summary-file-device'
+       spec( 4 )%keyword  = 'gltr-result-summary-file-device'
        spec( 5 )%keyword  = ''
-       spec( 6 )%keyword = ''
+       spec( 6 )%keyword  = ''
        spec( 7 )%keyword  = 'print-full-solution'
        spec( 8 )%keyword  = 'write-solution'
        spec( 9 )%keyword  = 'gltr-solution-file-name'
-       spec( 10 )%keyword  = 'gltr-solution-file-device'
-       spec( 11 )%keyword  = ''
-       spec( 12 )%keyword  = ''
+       spec( 10 )%keyword = 'gltr-solution-file-device'
+       spec( 11 )%keyword = ''
+       spec( 12 )%keyword = ''
        spec( 13 )%keyword = 'radius'
        spec( 14 )%keyword = ''
        spec( 15 )%keyword = ''
@@ -218,7 +218,7 @@
        SELECT CASE( inform%status ) ! Branch as a result of inform%status
        CASE( 2 )         ! Form the preconditioned gradient
        CASE( 3 )         ! Form the matrix-vector product
-         CALL CUTEST_uhprod_r( status, n, goth, X, VECTOR, H_vector )
+         CALL CUTEST_uhprod_r( cutest_status, n, goth, X, VECTOR, H_vector )
          VECTOR = H_vector
          goth = .TRUE.
        CASE ( 5 )        !  Restart

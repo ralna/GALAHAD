@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-01 AT 16:20 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-06-18 AT 11:45 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -38,7 +38,8 @@
                CUTEst_eval_GJ, CUTEst_eval_SGJ,                                &
                CUTEst_eval_H, CUTEst_eval_HPROD, CUTEst_eval_SHPROD,           &
                CUTEst_eval_JPROD, CUTEst_eval_SJPROD, CUTEst_eval_HL,          &
-               CUTEst_eval_HJ, CUTEst_eval_HLC, CUTEst_eval_HLPROD,            &
+               CUTEst_eval_HL_alt, CUTEst_eval_HJ, CUTEst_eval_HLC,            &
+               CUTEst_eval_HLPROD, CUTEst_eval_HLPROD_alt,                     &
                CUTEst_eval_SHLPROD, CUTEst_eval_HLCPROD,                       &
                CUTEst_eval_SHLCPROD, CUTEst_eval_HCPRODS,                      &
                CUTEst_eval_HOCPRODS, CUTEst_start_timing, CUTEst_timing,       &
@@ -1301,7 +1302,47 @@
 
 !-*-*-*-*-*-*-*-  C U T E S T _ e v a l _ H L   S U B R O U T I N E  -*-*-*-*-*-
 
-     SUBROUTINE CUTEst_eval_HL( status, X, Y, userdata, H_val, no_f )
+     SUBROUTINE CUTEst_eval_HL( status, X, Y, userdata, H_val )
+
+!  Evaluate the values of the Herssian of the Lagrangian function Hval(X,Y)
+!  for the nonzeros corresponding to the sparse coordinate format set in
+!  CUTEst_initialize. By convention, the Lagrangian function is f - sum c_i y_i
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+
+! Local variables
+
+     INTEGER ( KIND = ip_ ) :: m, m_a, n, nnzh, irnh, icnh, lh
+     REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: Y_full
+
+!  Extract scalar and array addresses
+
+     m    = userdata%integer( loc_m )
+     m_a  = userdata%integer( loc_m_a )
+     n    = userdata%integer( loc_n )
+     nnzh = userdata%integer( loc_nnzh )
+     irnh = userdata%integer( loc_irnh )
+     icnh = userdata%integer( loc_icnh )
+
+! Evaluate the Hessian
+
+     Y_full                = zero
+     Y_full( m_a + 1 : m ) = - Y
+
+     lh = nnzh
+     CALL CUTEST_csh_r( status, n, m, X, Y_full, nnzh, lh, H_val,              &
+                        userdata%integer( irnh + 1 : irnh + nnzh ),            &
+                        userdata%integer( icnh + 1 : icnh + nnzh ) )
+     RETURN
+
+     END SUBROUTINE CUTEst_eval_HL
+
+!-*-*-*-*-  C U T E S T _ e v a l _ H L _ a l t   S U B R O U T I N E  -*-*-*-*-
+
+     SUBROUTINE CUTEst_eval_HL_alt( status, X, Y, userdata, H_val, no_f )
 
 !  Evaluate the values of the Herssian of the Lagrangian function Hval(X,Y)
 !  for the nonzeros corresponding to the sparse coordinate format set in
@@ -1353,7 +1394,7 @@
      END IF
      RETURN
 
-     END SUBROUTINE CUTEst_eval_HL
+     END SUBROUTINE CUTEst_eval_HL_alt
 
 !-*-*-*-*-*-*-*-  C U T E S T _ e v a l _ H J   S U B R O U T I N E  -*-*-*-*-*-
 
@@ -1661,7 +1702,59 @@
 
 !-*-*-*-*-  C U T E S T _ e v a l _ H L P R O D    S U B R O U T I N E  -*-*-*-
 
-     SUBROUTINE CUTEst_eval_HLPROD( status, X, Y, userdata, U, V, no_f, got_h )
+     SUBROUTINE CUTEst_eval_HLPROD( status, X, Y, userdata, U, V, got_h )
+
+!  Compute the product U = U + H(X,Y) * V involving the Hessian of the
+!  Lagrangian H(X,Y). If got_h is PRESENT and TRUE, the Hessian is as
+!  recorded at the last point at which it was evaluated. By convention, the
+!  Lagrangian function is f - sum c_i y_i, unless no_f is is PRESENT and TRUE
+!  in which case the Lagrangian function is - sum c_i y_i
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
+
+! Local variables
+
+     INTEGER ( KIND = ip_ ) :: m, m_a, n
+     REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: full_Y
+     LOGICAL :: got_h_value
+
+     IF ( PRESENT( got_h ) ) THEN
+       got_h_value = got_h
+     ELSE
+       got_h_value = .FALSE.
+     END IF
+
+!  Extract scalar and array addresses
+
+     m   = userdata%integer( loc_m )
+     m_a = userdata%integer( loc_m_a )
+     n   = userdata%integer( loc_n )
+
+     IF ( got_h_value ) THEN
+       CALL CUTEST_chprod_r( status, n, m, .TRUE., X, - full_Y, V,             &
+                             userdata%real( : n ) )
+     ELSE
+       full_Y( 1 : m_a ) = zero
+       full_Y( m_a + 1 : m  ) = Y
+       CALL CUTEST_chprod_r( status, n, m, .FALSE., X, - full_Y, V,            &
+                             userdata%real( : n ) )
+     END IF
+     IF ( status /= 0 ) RETURN
+
+     U( : n ) = U( : n ) + userdata%real( : n )
+     RETURN
+
+     END SUBROUTINE CUTEst_eval_HLPROD
+
+!-*-*-*-*-  C U T E S T _ e v a l _ H L P R O D S   S U B R O U T I N E  -*-*-*-
+
+     SUBROUTINE CUTEst_eval_HLPROD_alt( status, X, Y, userdata, U, V,          &
+                                        no_f, got_h )
 
 !  Compute the product U = U + H(X,Y) * V involving the Hessian of the
 !  Lagrangian H(X,Y). If got_h is PRESENT and TRUE, the Hessian is as
@@ -1727,7 +1820,7 @@
      U( : n ) = U( : n ) + userdata%real( : n )
      RETURN
 
-     END SUBROUTINE CUTEst_eval_HLPROD
+     END SUBROUTINE CUTEst_eval_HLPROD_alt
 
 !-*-*-*-  C U T E S T _ e v a l _ S H L P R O D    S U B R O U T I N E  -*-*-*-
 

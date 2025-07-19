@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-01 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-06-18 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -37,8 +37,9 @@
                CUTEst_eval_C, CUTEst_eval_G, CUTEst_eval_GJ, CUTEst_eval_J,    &
                CUTEst_eval_H, CUTEst_eval_HPROD, CUTEst_eval_SHPROD,           &
                CUTEst_eval_JPROD, CUTEst_eval_SJPROD, CUTEst_eval_HL,          &
-               CUTEst_eval_HLC, CUTEst_eval_HLPROD, CUTEst_eval_SHLPROD,       &
+               CUTEst_eval_HL_alt, CUTEst_eval_HLC, CUTEst_eval_SHLPROD,      &
                CUTEst_eval_HLCPROD, CUTEst_eval_SHLCPROD, CUTEst_eval_HCPRODS, &
+               CUTEst_eval_HLPROD, CUTEst_eval_HLPROD_alt,                     &
                CUTEst_start_timing, CUTEst_timing,                             &
                CUTEst_terminate
 
@@ -71,6 +72,9 @@
      SUBROUTINE CUTEst_eval_HL( )
      END SUBROUTINE CUTEst_eval_HL
 
+     SUBROUTINE CUTEst_eval_HL_alt( )
+     END SUBROUTINE CUTEst_eval_HL_alt
+
      SUBROUTINE CUTEst_eval_HLC( )
      END SUBROUTINE CUTEst_eval_HLC
 
@@ -88,6 +92,9 @@
 
      SUBROUTINE CUTEst_eval_HLPROD( )
      END SUBROUTINE CUTEst_eval_HLPROD
+
+     SUBROUTINE CUTEst_eval_HLPROD_alt( )
+     END SUBROUTINE CUTEst_eval_HLPROD_alt
 
      SUBROUTINE CUTEst_eval_SHLPROD( )
      END SUBROUTINE CUTEst_eval_SHLPROD

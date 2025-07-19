@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2024-01-31 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-06-18 AT 13:30 GMT.
 #include "galahad_modules.h"
 PROGRAM GALAHAD_check_test
   USE GALAHAD_KINDS_precision   ! double precision version
@@ -966,13 +966,12 @@ SUBROUTINE funJ2(status, X, userdata, Jval)
   RETURN
 END SUBROUTINE funJ2
 
-SUBROUTINE funH(status, X, Y, userdata, Hval,no_f)
+SUBROUTINE funH(status, X, Y, userdata, Hval)
   USE GALAHAD_USERDATA_precision
   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
   REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
   REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: Y
   REAL ( kind = rp_ ), DIMENSION( : ), INTENT( OUT ) ::Hval
-  LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
   Hval(1) =  2.0_rp_ * ( X(2) - Y(1) - Y(1)*X(3) + 6.0_rp_*Y(2)*X(2)**2 )
   Hval(2) = -2.0_rp_ * Y(1) * X(2)

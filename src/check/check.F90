@@ -467,13 +467,12 @@
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_Jv
-    SUBROUTINE eval_HL(status, X, Y, userdata, Hval,no_f)
+    SUBROUTINE eval_HL(status, X, Y, userdata, Hval)
       USE GALAHAD_USERDATA_precision
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
       REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
       REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: Y
       REAL ( kind = rp_ ), DIMENSION( : ), INTENT( OUT ) ::Hval
-      LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_HL
     SUBROUTINE eval_Hv(status, X, Y, userdata, U, V )

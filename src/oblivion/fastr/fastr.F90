@@ -1286,7 +1286,7 @@
      TYPE ( FASTR_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( FASTR_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     OPTIONAL :: eval_FC, eval_GJ, eval_HL, eval_HLPROD
+     OPTIONAL :: eval_FC, eval_GJ, eval_HL, eval_HLPRODS
 
 !----------------------------------
 !   I n t e r f a c e   B l o c k s

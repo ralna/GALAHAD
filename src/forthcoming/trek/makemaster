@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD TREK package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2025-02-15
+#  This version: 2025-07-08
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -18,7 +18,8 @@ PACKAGE = TREK
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_sls_deps make_sls make_norms make_mop make_trs
+DEPENDENCIES = make_sls_deps make_sls make_ir make_norms make_mop \
+               make_trs make_gltr
 
 #  other packages that depend on package
 

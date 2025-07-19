@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-06-16 AT 13:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -870,13 +870,12 @@ CONTAINS
          TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_J
 
-       SUBROUTINE eval_HL(status, X, Y, userdata, Hval, no_f )
+       SUBROUTINE eval_HL(status, X, Y, userdata, Hval )
          USE GALAHAD_USERDATA_precision
          INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
          REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
          REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
          TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-         LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        END SUBROUTINE eval_HL
 
     END INTERFACE

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-04 AT 13:20 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-06-18 AT 13:25 GMT.
 
 #include "galahad_modules.h"
 
@@ -1097,23 +1097,21 @@
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_GJ
 
-       SUBROUTINE eval_HL( status, X, Y, userdata, H_val, no_f )
+       SUBROUTINE eval_HL( status, X, Y, userdata, H_val )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) ::H_val
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        END SUBROUTINE eval_HL
 
-       SUBROUTINE eval_HLPROD( status, X, Y, userdata, U, V, no_f, got_h )
+       SUBROUTINE eval_HLPROD( status, X, Y, userdata, U, V, got_h )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
        END SUBROUTINE eval_HLPROD
 

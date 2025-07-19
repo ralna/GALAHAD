@@ -529,10 +529,10 @@ if [[ "$METISVERSION" == "" ]]; then
   METISVERSION="52"
 fi
 if [[ "$METIS" == "" ]]; then
-  METIS="-lmetis_nodend"
+  METIS="-lmetis4_nodend -lmetis5_nodend"
 fi
 if [[ "$METIS64" == "" ]]; then
-  METIS64="-lmetis64_nodend"
+  METIS64="-lmetis464_nodend -lmetis564_nodend"
 fi
 if [[ "$PARDISO" == "" ]]; then
   PARDISO="-lgalahad_pardiso"

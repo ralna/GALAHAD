@@ -1293,7 +1293,7 @@ The routine must be specified as
 \def\baselinestretch{0.8}
 {\tt
 \begin{verbatim}
-       SUBROUTINE eval_HL( status, X, Y, userdata, H_val[, no_f] )
+       SUBROUTINE eval_HL( status, X, Y, userdata, H_val )
 \end{verbatim} }
 \def\baselinestretch{1.0}
 \noindent whose arguments are as follows:
@@ -1324,12 +1324,12 @@ evaluated at the vectors $\bmx$ and $\bmy$  input in {\tt X} and {\tt Y}.
 The Hessian values should be input in the same order as that in which 
 the array indices were given in {\tt nlp\%H}.
 
-\itt{no\_f} is a scalar \intentin\, \optional\ argument of type \logical,
-that, if \present\ and \true, indicates that the Hessian of the Lagrangian
-should not include terms from the objective function, i.e., the Hessian
-returned in {\tt H\_val} should be that of 
-$- \bigsum_{i} y_i \nabla^2 c_i(\bmx)$.
-Currently this possibility cannot arise, but may in the future.
+%\itt{no\_f} is a scalar \intentin\, \optional\ argument of type \logical,
+%that, if \present\ and \true, indicates that the Hessian of the Lagrangian
+%should not include terms from the objective function, i.e., the Hessian
+%returned in {\tt H\_val} should be that of 
+%$- \bigsum_{i} y_i \nabla^2 c_i(\bmx)$.
+%Currently this possibility cannot arise, but may in the future.
 
 \end{description}
 

@@ -227,8 +227,8 @@
      CALL FASTR_solve( nlp, control, inform, data, userdata,                   &
                        eval_FC = CUTEST_eval_FC,                               &
                        eval_GJ = CUTEST_eval_GJ,                               &
-                       eval_HL = CUTEST_eval_HL,                               &
-                       eval_HLPROD = CUTEST_eval_HLPROD )
+                       eval_HL = CUTEST_eval_HL_alt,                           &
+                       eval_HLPROD = CUTEST_eval_HLPROD_alt )
 
 !  If required, append results to a file
 
