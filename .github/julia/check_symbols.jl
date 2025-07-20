@@ -9,6 +9,7 @@ function exported_symbols(path::String)
   for line in lines
     tab = split(line, " ", keepempty=false)
     symbol = tab[1]
+    symbol = readchomp(`c++filt -t $symbol`)
     push!(symbols, symbol)
   end
   return symbols
