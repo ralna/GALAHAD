@@ -21,6 +21,9 @@ jobs:
       - name: Install Meson and Ninja
         run: pip install meson ninja
 
+      - name: Install binutils
+        run: sudo apt install binutils
+
       - name: Install compilers
         uses: fortran-lang/setup-fortran@main
         with:
