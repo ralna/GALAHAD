@@ -1,1 +1,1 @@
-    CHARACTER ( len = 5 ) :: definite_linear_solver = 'potr '
+    CHARACTER ( len = 5 ) :: definite_linear_solver = 'ma27 '
