@@ -12,10 +12,11 @@
 
 #include "ssids_rip.hxx"
 
-/**/
+/*
 #ifdef INTEGER_64
 #define ThreadStats ThreadStats_64
 #endif
+*/
 
 namespace spral { namespace ssids { namespace cpu {
 

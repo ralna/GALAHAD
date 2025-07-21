@@ -14,12 +14,12 @@
 #include "ssids_cpu_SmallLeafSymbolicSubtree.hxx"
 #include "ssids_cpu_SymbolicNode.hxx"
 
-/**/
+/*
 #ifdef INTEGER_64
 #define SymbolicSubtree SymbolicSubtree_64
 #define NumericSubtree NumericSubtree_64
 #endif
-
+*/
 namespace spral { namespace ssids { namespace cpu {
 
 /** Symbolic factorization of a subtree to be factored on the CPU */

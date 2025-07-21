@@ -38,11 +38,11 @@
 #define ldlt_app_solve_bwd ldlt_app_solve_bwd_dbl
 #endif
 
-/**/
+/*
 #ifdef INTEGER_64
 #define NumericSubtree NumericSubtree_64
 #endif
-
+*/
 namespace spral { namespace ssids { namespace cpu {
 
 /** \brief Represents a submatrix (subtree) factorized on the CPU.
