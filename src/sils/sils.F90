@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-01-15 AT 10:00 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-07-20 AT 09:00 GMT
 
 #include "galahad_modules.h"
 
@@ -41,7 +41,7 @@
                SILS_reset_control, SILS_information,                           &
                SMT_type
 
-     LOGICAL, PUBLIC, PARAMETER :: sils_available = .TRUE.
+     LOGICAL, PUBLIC, PROTECTED :: sils_available = .TRUE.
 
 !----------------------
 !   I n t e r f a c e s

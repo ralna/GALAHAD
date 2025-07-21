@@ -13,6 +13,11 @@
 #include "spral_omp.hxx"
 #include "ssids_rip.hxx"
 
+/**/
+#ifdef INTEGER_64
+#define BuddyAllocator BuddyAllocator_64
+#endif
+
 namespace spral { namespace ssids { namespace cpu {
 
 namespace buddy_alloc_internal {

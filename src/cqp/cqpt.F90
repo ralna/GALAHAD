@@ -911,5 +911,8 @@
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%definite_linear_solver = definite_linear_solver
+!control%FDC_control%symmetric_linear_solver = 'ma97 '
+!control%SBLS_control%symmetric_linear_solver = 'ma97 '
+!control%SBLS_control%definite_linear_solver = 'ma97 '
      END SUBROUTINE WHICH_sls
    END PROGRAM GALAHAD_CQP_EXAMPLE

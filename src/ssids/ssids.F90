@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-01-24 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-07-20 AT 09:00 GMT
 ! (consistent with SPRAL up to issue #150)
 
 #include "spral_procedures.h"
@@ -47,7 +47,7 @@ module spral_ssids_precision
             ssids_enquire_indef,   & ! Pivot information in indef case
             ssids_alter              ! Alter diagonal
 
-   LOGICAL, PUBLIC, PARAMETER :: ssids_available = .TRUE.
+   LOGICAL, PUBLIC, PROTECTED :: ssids_available = .TRUE.
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

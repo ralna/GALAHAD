@@ -32,6 +32,15 @@ extern "C" {
 #include "spral_guess_topology.hxx"
 #include "spral_omp.hxx"
 
+/**/
+#ifdef INTEGER_64
+#define now now_64
+#define end end_64
+#define guess_core guess_core_64
+#define Task Task_64
+#define setState setState_64
+#endif
+
 namespace spral { namespace ssids {
 
 /**

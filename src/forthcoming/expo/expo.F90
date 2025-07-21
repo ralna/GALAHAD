@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-06-15 AT 11:20 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-06-19 AT 13:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -58,7 +58,21 @@
      PRIVATE
      PUBLIC :: EXPO_initialize, EXPO_read_specfile, EXPO_solve,                &
                EXPO_terminate, NLPT_problem_type, GALAHAD_userdata_type,       &
+               EXPO_full_initialize, EXPO_full_terminate, EXPO_import,         &
+               EXPO_information, EXPO_solve_with_mat, EXPO_reset_control,      &
                SMT_type, SMT_put
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE EXPO_initialize
+       MODULE PROCEDURE EXPO_initialize, EXPO_full_initialize
+     END INTERFACE EXPO_initialize
+
+     INTERFACE EXPO_terminate
+       MODULE PROCEDURE EXPO_terminate, EXPO_full_terminate
+     END INTERFACE EXPO_terminate
 
 !----------------------
 !   P a r a m e t e r s
@@ -86,7 +100,7 @@
 !   G l o b a l   P a r a m e t e r s
 !--------------------------------------
 
-     LOGICAL, PUBLIC, PARAMETER :: EXPO_available = .TRUE.
+     LOGICAL, PUBLIC, PROTECTED :: EXPO_available = .TRUE.
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -463,6 +477,15 @@
 
      END TYPE EXPO_data_type
 
+     TYPE, PUBLIC :: EXPO_full_data_type
+       LOGICAL :: f_indexing = .TRUE.
+       TYPE ( EXPO_data_type ) :: EXPO_data
+       TYPE ( EXPO_control_type ) :: EXPO_control
+       TYPE ( EXPO_inform_type ) :: EXPO_inform
+       TYPE ( NLPT_problem_type ) :: nlp
+       TYPE ( GALAHAD_userdata_type ) :: userdata
+     END TYPE EXPO_full_data_type
+
    CONTAINS
 
 !-*-*-  G A L A H A D -  E X P O _ I N I T I A L I Z E  S U B R O U T I N E  -*-
@@ -516,6 +539,38 @@
 !  End of subroutine EXPO_initialize
 
      END SUBROUTINE EXPO_initialize
+
+!- G A L A H A D -  E X P O _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE EXPO_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for EXPO controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( EXPO_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( EXPO_control_type ), INTENT( OUT ) :: control
+     TYPE ( EXPO_inform_type ), INTENT( OUT ) :: inform
+
+     CALL EXPO_initialize( data%expo_data, control, inform )
+
+     RETURN
+
+!  End of subroutine EXPO_full_initialize
+
+     END SUBROUTINE EXPO_full_initialize
 
 !-*-*-*-*-   E X P O _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-*-*-*-
 
@@ -819,7 +874,7 @@
 !-*-*-*-  G A L A H A D -  E X P O _ s o l v e  S U B R O U T I N E  -*-*-*-
 
      SUBROUTINE EXPO_solve( nlp, control, inform, data, userdata,              &
-                           eval_FC, eval_GJ, eval_HL, eval_HLPROD, eval_PREC )
+                            eval_FC, eval_GJ, eval_HL, eval_HLPROD, eval_PREC )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -942,14 +997,6 @@
 !    sparse row-wise storage scheme. It need not be allocated when the other
 !    schemes are used.
 !
-!  C is a rank-one allocatable array of dimension m and type default real, that
-!   holds the values c(x) of the constraints. The i-th component of
-!   C, i = 1, ... , m, contains c_i(x).
-!
-!  X is a rank-one allocatable array of dimension n and type default real, that
-!   holds the values x of the optimization variables. The j-th component of
-!   X, j = 1, ... , n, contains x_j.
-!
 !  X_l is a rank-one allocatable array of dimension n and type default real,
 !   that holds the values x_l of the lower bounds on the optimization
 !   variables x. The j-th component of X_l, j = 1, ... , n, contains (x_l)j.
@@ -965,6 +1012,22 @@
 !  C_u is a rank-one allocatable array of dimension m and type default real,
 !   that holds the values c_u of the upper bounds on the constraint functions
 !   c(x). The i-th component of C_u, i = 1, ... , m, contains (c_u)i.
+!
+!  C is a rank-one allocatable array of dimension m and type default real,
+!   that holds the values c(x) of the constraints. 
+!   The i-th component of C, i = 1, ... , m, contains c_i(x).
+!
+!  X is a rank-one allocatable array of dimension n and type default real,
+!   that holds the values x of the optimization variables. 
+!   The j-th component of X, j = 1, ... , n, contains x_j.
+!
+!  Y is a rank-one allocatable array of dimension m and type default real,
+!   that holds the values y of the Lagrange multipliers. 
+!   The i-th component of Y, i = 1, ... , m, contains y_i.
+!
+!  Z is a rank-one allocatable array of dimension n and type default real,
+!   that holds the values z of the duall optimization variables. 
+!   The j-th component of Z, j = 1, ... , n, contains z_j.
 !
 !  GL is a rank-one allocatable array of dimension n and type default real,
 !   that holds the gradient gL of the Lagrangian function. The j-th component 
@@ -1147,7 +1210,7 @@
 !   of the Jacobian (or its transpose) evaluated  at x=X with the vector v=V
 !   and the vector u=U must be returned in U, and the status variable set to 0.
 !   If the evaluation is impossible at X, status should be set to a nonzero
-!   value. If eval_JPROD is not present, NLS_solve will return to the user
+!   value. If eval_JPROD is not present, EXPO_solve will return to the user
 !   with inform%status = zz each time an evaluation is required. The Jacobian
 !   has already been evaluated or used at x=X if got_j is .TRUE.
 !
@@ -1658,7 +1721,7 @@
        IF ( inform%alloc_status /= 0 ) THEN
          inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
 
-       array_name = 'nls: data%JT%row'
+       array_name = 'expo: data%JT%row'
        CALL SPACE_resize_array( data%JT%ne, data%JT%row, inform%status,        &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
@@ -1666,7 +1729,7 @@
               bad_alloc = inform%bad_alloc, out = data%control%error )
        IF ( inform%status /= 0 ) GO TO 980
 
-       array_name = 'nls: data%JT%col'
+       array_name = 'expo: data%JT%col'
        CALL SPACE_resize_array( data%JT%ne, data%JT%col, inform%status,        &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
@@ -1674,7 +1737,7 @@
               bad_alloc = inform%bad_alloc, out = data%control%error )
        IF ( inform%status /= 0 ) GO TO 980
 
-       array_name = 'nls: data%JT%val'
+       array_name = 'expo: data%JT%val'
        CALL SPACE_resize_array( data%JT%ne, data%JT%val, inform%status,        &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
@@ -3159,7 +3222,7 @@ stop
          ELSE
            CALL eval_HL( data%eval_status, nlp%X, - nlp%Y, userdata, nlp%H%val )
            IF ( data%printd )                                                  &
-             WRITE( data%out,"( ' nls%H', / ( 3( 2I6, ES12.4 ) ) )" )          &
+             WRITE( data%out,"( ' expo%H', / ( 3( 2I6, ES12.4 ) ) )" )         &
             ( nlp%H%row( i ), nlp%H%col( i ), nlp%H%val( i ), i = 1, nlp%H%ne )
          END IF
 
@@ -3177,11 +3240,11 @@ stop
              ir = data%C_index( i )
              DO j = 1, nlp%n
                IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-                 data%B_ssls%val( k ) = - nlp%J%col( l )
+                 data%B_ssls%val( k ) = - nlp%J%val( l )
                  k = k + 1
                END IF
                IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-                 data%B_ssls%val( k ) = nlp%J%col( l )
+                 data%B_ssls%val( k ) = nlp%J%val( l )
                  k = k + 1
                END IF
                l = l + 1
@@ -3192,24 +3255,24 @@ stop
              DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
                j = nlp%J%col( l ) ; ii = ir
                IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-                 data%B_ssls%row( k ) = - nlp%J%col( l )
+                 data%B_ssls%val( k ) = - nlp%J%val( l )
                  k = k + 1
                END IF
                IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-                 data%B_ssls%row( k ) = nlp%J%col( l )
+                 data%B_ssls%val( k ) = nlp%J%val( l )
                  k = k + 1
                END IF
              END DO
            END DO
          CASE ( 'COORDINATE' )
-         DO l = 1, nlp%J%ne
+           DO l = 1, nlp%J%ne
              i = nlp%J%row( l )
              IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
-               data%B_ssls%row( k ) = - nlp%J%col( l )
+               data%B_ssls%val( k ) = - nlp%J%val( l )
                k = k + 1
              END IF
              IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
-               data%B_ssls%row( k ) = nlp%J%col( l )
+               data%B_ssls%val( k ) = nlp%J%val( l )
                k = k + 1
              END IF
            END DO
@@ -3913,278 +3976,6 @@ stop
 
      END SUBROUTINE EXPO_solve
 
-!-*-*-  G A L A H A D -  E X P O _ t e r m i n a t e  S U B R O U T I N E -*-*-
-
-     SUBROUTINE EXPO_terminate( data, control, inform )
-
-!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-
-!   Deallocate all private storage
-
-!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-
-!-----------------------------------------------
-!   D u m m y   A r g u m e n t s
-!-----------------------------------------------
-
-     TYPE ( EXPO_data_type ), INTENT( INOUT ) :: data
-     TYPE ( EXPO_control_type ), INTENT( IN ) :: control
-     TYPE ( EXPO_inform_type ), INTENT( INOUT ) :: inform
-
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     LOGICAL :: alive
-     CHARACTER ( LEN = 80 ) :: array_name
-
-!  Deallocate all remaining allocated arrays
-
-     array_name = 'EXPO: data%C_status'
-     CALL SPACE_dealloc_array( data%C_status,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%X_status'
-     CALL SPACE_dealloc_array( data%X_status,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%C_index'
-     CALL SPACE_dealloc_array( data%C_index,                                   &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%X_index'
-     CALL SPACE_dealloc_array( data%X_index,                                   &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%H_map'
-     CALL SPACE_dealloc_array( data%H_map,                                     &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%Dz_map'
-     CALL SPACE_dealloc_array( data%Dz_map,                                    &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%Dy'
-     CALL SPACE_dealloc_array( data%Dy,                                        &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%Dz'
-     CALL SPACE_dealloc_array( data%Dz,                                        &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%V_l'
-     CALL SPACE_dealloc_array( data%V_l,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%V_u'
-     CALL SPACE_dealloc_array( data%V_u,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%W_l'
-     CALL SPACE_dealloc_array( data%W_l,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%W_u'
-     CALL SPACE_dealloc_array( data%W_u,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%Y_l'
-     CALL SPACE_dealloc_array( data%Y_l,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%Y_u'
-     CALL SPACE_dealloc_array( data%Y_u,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%Z_l'
-     CALL SPACE_dealloc_array( data%Z_l,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%Z_u'
-     CALL SPACE_dealloc_array( data%Z_u,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%MU_l'
-     CALL SPACE_dealloc_array( data%MU_l,                                      &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%MU_u'
-     CALL SPACE_dealloc_array( data%MU_u,                                      &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%NU_l'
-     CALL SPACE_dealloc_array( data%NU_l,                                      &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%NU_u'
-     CALL SPACE_dealloc_array( data%NU_u,                                      &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%JT%row'
-     CALL SPACE_dealloc_array( data%JT%row,                                    &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%JT%col'
-     CALL SPACE_dealloc_array( data%JT%col,                                    &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%JT%val'
-     CALL SPACE_dealloc_array( data%JT%val,                                    &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%expo%G'
-     CALL SPACE_dealloc_array( data%expo%G,                                    &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%expo%H%row'
-     CALL SPACE_dealloc_array( data%expo%H%row,                                &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%expo%H%col'
-     CALL SPACE_dealloc_array( data%expo%H%col,                                &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%expo%H%val'
-     CALL SPACE_dealloc_array( data%expo%H%val,                                &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%X_old'
-     CALL SPACE_dealloc_array( data%X_old,                                     &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%Y_l_old'
-     CALL SPACE_dealloc_array( data%Y_l_old,                                   &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%Y_u_old'
-     CALL SPACE_dealloc_array( data%Y_u_old,                                   &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%Z_l_old'
-     CALL SPACE_dealloc_array( data%Z_l_old,                                   &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%Z_u_old'
-     CALL SPACE_dealloc_array( data%Z_u_old,                                   &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%G_old'
-     CALL SPACE_dealloc_array( data%G_old,                                     &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%C_old'
-     CALL SPACE_dealloc_array( data%C_old,                                     &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%J_old'
-     CALL SPACE_dealloc_array( data%J_old,                                     &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EXPO: data%H_old'
-     CALL SPACE_dealloc_array( data%H_old,                                     &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-!  Deallocate all arrays allocated within BSC
-
-     CALL BSC_terminate( data%BSC_data, data%control%BSC_control,              &
-                          inform%BSC_inform )
-     inform%status = inform%BSC_inform%status
-     IF ( inform%status /= 0 ) THEN
-       inform%alloc_status = inform%BSC_inform%alloc_status
-       inform%bad_alloc = inform%BSC_inform%bad_alloc
-       IF ( control%deallocate_error_fatal ) RETURN
-     END IF
-
-!  Close and delete 'alive' file
-
-     IF ( control%alive_unit > 0 ) THEN
-       INQUIRE( FILE = control%alive_file, EXIST = alive )
-       IF ( alive .AND. control%alive_unit > 0 ) THEN
-         OPEN( control%alive_unit, FILE = control%alive_file,                  &
-               FORM = 'FORMATTED', STATUS = 'UNKNOWN' )
-         REWIND control%alive_unit
-         CLOSE( control%alive_unit, STATUS = 'DELETE' )
-       END IF
-     END IF
-
-     RETURN
-
-!  End of subroutine EXPO_terminate
-
-     END SUBROUTINE EXPO_terminate
-
 !-*-*-*-  G A L A H A D -  E X P O _ p r o j e c t i o n   F U N C T I O N -*-*-
 
      FUNCTION EXPO_projection( n, X, X_l, X_u )
@@ -4627,6 +4418,1051 @@ stop
 !  end of subroutine EXPO_map_set
 
      END SUBROUTINE EXPO_map_set
+
+!-*-*-  G A L A H A D -  E X P O _ t e r m i n a t e  S U B R O U T I N E -*-*-
+
+     SUBROUTINE EXPO_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( EXPO_data_type ), INTENT( INOUT ) :: data
+     TYPE ( EXPO_control_type ), INTENT( IN ) :: control
+     TYPE ( EXPO_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     LOGICAL :: alive
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  Deallocate all remaining allocated arrays
+
+     array_name = 'EXPO: data%C_status'
+     CALL SPACE_dealloc_array( data%C_status,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%X_status'
+     CALL SPACE_dealloc_array( data%X_status,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%C_index'
+     CALL SPACE_dealloc_array( data%C_index,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%X_index'
+     CALL SPACE_dealloc_array( data%X_index,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%H_map'
+     CALL SPACE_dealloc_array( data%H_map,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%Dz_map'
+     CALL SPACE_dealloc_array( data%Dz_map,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%Dy'
+     CALL SPACE_dealloc_array( data%Dy,                                        &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%Dz'
+     CALL SPACE_dealloc_array( data%Dz,                                        &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%V_l'
+     CALL SPACE_dealloc_array( data%V_l,                                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%V_u'
+     CALL SPACE_dealloc_array( data%V_u,                                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%W_l'
+     CALL SPACE_dealloc_array( data%W_l,                                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%W_u'
+     CALL SPACE_dealloc_array( data%W_u,                                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%Y_l'
+     CALL SPACE_dealloc_array( data%Y_l,                                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%Y_u'
+     CALL SPACE_dealloc_array( data%Y_u,                                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%Z_l'
+     CALL SPACE_dealloc_array( data%Z_l,                                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%Z_u'
+     CALL SPACE_dealloc_array( data%Z_u,                                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%MU_l'
+     CALL SPACE_dealloc_array( data%MU_l,                                      &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%MU_u'
+     CALL SPACE_dealloc_array( data%MU_u,                                      &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%NU_l'
+     CALL SPACE_dealloc_array( data%NU_l,                                      &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%NU_u'
+     CALL SPACE_dealloc_array( data%NU_u,                                      &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%JT%row'
+     CALL SPACE_dealloc_array( data%JT%row,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%JT%col'
+     CALL SPACE_dealloc_array( data%JT%col,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%JT%val'
+     CALL SPACE_dealloc_array( data%JT%val,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%expo%G'
+     CALL SPACE_dealloc_array( data%expo%G,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%expo%H%row'
+     CALL SPACE_dealloc_array( data%expo%H%row,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%expo%H%col'
+     CALL SPACE_dealloc_array( data%expo%H%col,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%expo%H%val'
+     CALL SPACE_dealloc_array( data%expo%H%val,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%X_old'
+     CALL SPACE_dealloc_array( data%X_old,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%Y_l_old'
+     CALL SPACE_dealloc_array( data%Y_l_old,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%Y_u_old'
+     CALL SPACE_dealloc_array( data%Y_u_old,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%Z_l_old'
+     CALL SPACE_dealloc_array( data%Z_l_old,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%Z_u_old'
+     CALL SPACE_dealloc_array( data%Z_u_old,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%G_old'
+     CALL SPACE_dealloc_array( data%G_old,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%C_old'
+     CALL SPACE_dealloc_array( data%C_old,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%J_old'
+     CALL SPACE_dealloc_array( data%J_old,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EXPO: data%H_old'
+     CALL SPACE_dealloc_array( data%H_old,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+!  Deallocate all arrays allocated within BSC
+
+     CALL BSC_terminate( data%BSC_data, data%control%BSC_control,              &
+                          inform%BSC_inform )
+     inform%status = inform%BSC_inform%status
+     IF ( inform%status /= 0 ) THEN
+       inform%alloc_status = inform%BSC_inform%alloc_status
+       inform%bad_alloc = inform%BSC_inform%bad_alloc
+       IF ( control%deallocate_error_fatal ) RETURN
+     END IF
+
+!  Close and delete 'alive' file
+
+     IF ( control%alive_unit > 0 ) THEN
+       INQUIRE( FILE = control%alive_file, EXIST = alive )
+       IF ( alive .AND. control%alive_unit > 0 ) THEN
+         OPEN( control%alive_unit, FILE = control%alive_file,                  &
+               FORM = 'FORMATTED', STATUS = 'UNKNOWN' )
+         REWIND control%alive_unit
+         CLOSE( control%alive_unit, STATUS = 'DELETE' )
+       END IF
+     END IF
+
+     RETURN
+
+!  End of subroutine EXPO_terminate
+
+     END SUBROUTINE EXPO_terminate
+
+! - G A L A H A D -  E X P O _ f u l l _ t e r m i n a t e  S U B R O U T I N E-
+
+     SUBROUTINE EXPO_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( EXPO_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( EXPO_control_type ), INTENT( IN ) :: control
+     TYPE ( EXPO_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL EXPO_terminate( data%expo_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     array_name = 'expo: data%nlp%X'
+     CALL SPACE_dealloc_array( data%nlp%X,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%Y'
+     CALL SPACE_dealloc_array( data%nlp%Y,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%Z'
+     CALL SPACE_dealloc_array( data%nlp%Z,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%C'
+     CALL SPACE_dealloc_array( data%nlp%C,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%G'
+     CALL SPACE_dealloc_array( data%nlp%G,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%X_l'
+     CALL SPACE_dealloc_array( data%nlp%X_l,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%X_u'
+     CALL SPACE_dealloc_array( data%nlp%X_u,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%C_l'
+     CALL SPACE_dealloc_array( data%nlp%C_l,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%C_u'
+     CALL SPACE_dealloc_array( data%nlp%C_u,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%GL'
+     CALL SPACE_dealloc_array( data%nlp%GL,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%J%row'
+     CALL SPACE_dealloc_array( data%nlp%J%row,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%J%col'
+     CALL SPACE_dealloc_array( data%nlp%J%col,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%J%ptr'
+     CALL SPACE_dealloc_array( data%nlp%J%ptr,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%J%val'
+     CALL SPACE_dealloc_array( data%nlp%J%val,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%J%type'
+     CALL SPACE_dealloc_array( data%nlp%J%type,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%H%row'
+     CALL SPACE_dealloc_array( data%nlp%H%row,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%H%col'
+     CALL SPACE_dealloc_array( data%nlp%H%col,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%H%ptr'
+     CALL SPACE_dealloc_array( data%nlp%H%ptr,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%H%val'
+     CALL SPACE_dealloc_array( data%nlp%H%val,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'expo: data%nlp%H%type'
+     CALL SPACE_dealloc_array( data%nlp%H%type,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     RETURN
+
+!  End of subroutine EXPO_full_terminate
+
+     END SUBROUTINE EXPO_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-  G A L A H A D -  E X P O _ i m p o r t _ S U B R O U T I N E -*-*-*-
+
+     SUBROUTINE EXPO_import( control, data, status, n, m,                      &
+                             X_l, X_u, C_l, C_u,                               &
+                             J_type, J_ne, J_row, J_col, J_ptr,                &
+                             H_type, H_ne, H_row, H_col, H_ptr )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to EXPO_solve
+!
+!  data is a scalar variable of type EXPO_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0 or requirement that type contains
+!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'ABSENT' has been violated.
+!  -79. An optional array required by storage type H_type or P_type is missing
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   residuals
+!
+!  X_l is a rank-one array of dimension n and type default real, that holds 
+!   the values x_l of the lower bounds on the optimization variables x. 
+!   The j-th component of X_l, j = 1, ... , n, contains (x_l)j.
+!
+!  X_u is a rank-one array of dimension n and type default real, that holds
+!   the values x_u of the upper bounds on the optimization variables x. 
+!   The j-th component of X_u, j = 1, ... , n, contains (x_u)j.
+!
+!  C_l is a rank-one array of dimension m and type default real, that holds
+!   the values c_l of the lower bounds on the optimization constraints c(x). 
+!   The i-th component of C_l, i = 1, ... , m, contains (c_l)j.
+!
+!  C_u is a rank-one array of dimension m and type default real, that holds
+!   the values c_u of the lower bounds on the optimization constraints c(x). 
+!   The i-th component of C_u, i = 1, ... , m, contains (c_u)j.
+!
+!  C_u is a rank-one array of dimension m and type default real,
+!   that holds the values c_u of the upper bounds on the optimization
+!   variables x. The j-th component of C_u, j = 1, ... , n, contains (x_u)j.
+!
+!  J_type is a character string that specifies the Jacobian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   or 'absent', the latter if access to the Jacobian is via matrix-vector
+!   products; lower or upper case variants are allowed
+!
+!  J_ne is a scalar variable of type default integer, that holds the number of
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!  for any of the other schemes.
+!
+!  J_row is a rank-one array of type default integer, that holds the row
+!   indices J in the sparse co-ordinate storage scheme. It need not be set
+!   for any of the other schemes, and in this case can be of length 0
+!
+!  J_col is a rank-one array of type default integer, that holds the column
+!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
+!   in this case can be of length 0
+!
+!  J_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of J, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
+!   can be of length 0
+!
+!  H_type is a character string that specifies the Hessian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   'diagonal' or 'absent', the latter if access to the Hessian is via
+!   matrix-vector products; lower or upper case variants are allowed.
+!
+!  H_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other three schemes.
+!
+!  H_row is a rank-one array of type default integer, that holds
+!   the row indices of the lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  H_col is a rank-one array of type default integer,
+!   that holds the column indices of the lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense or diagonal storage schemes are used, and in this
+!   case can be of length 0
+!
+!  H_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( EXPO_control_type ), INTENT( INOUT ) :: control
+     TYPE ( EXPO_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, J_ne, H_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+     CHARACTER ( LEN = * ), INTENT( IN ) :: J_type, H_type
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: J_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: J_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: J_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+
+!  local variables
+
+     INTEGER ( KIND = ip_ ) :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     data%expo_control = control
+
+     error = data%expo_control%error
+     space_critical = data%expo_control%space_critical
+     deallocate_error_fatal = data%expo_control%deallocate_error_fatal
+
+!  allocate space if required
+
+     array_name = 'expo: data%nlp%X_l'
+     CALL SPACE_resize_array( n, data%nlp%X_l,                                 &
+            data%expo_inform%status, data%expo_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%expo_inform%bad_alloc, out = error )
+     IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+     array_name = 'expo: data%nlp%X_u'
+     CALL SPACE_resize_array( n, data%nlp%X_u,                                 &
+            data%expo_inform%status, data%expo_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%expo_inform%bad_alloc, out = error )
+     IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+     array_name = 'expo: data%nlp%C_l'
+     CALL SPACE_resize_array( m, data%nlp%C_l,                                 &
+            data%expo_inform%status, data%expo_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%expo_inform%bad_alloc, out = error )
+     IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+     array_name = 'expo: data%nlp%C_u'
+     CALL SPACE_resize_array( m, data%nlp%C_u,                                 &
+            data%expo_inform%status, data%expo_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%expo_inform%bad_alloc, out = error )
+     IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+     array_name = 'expo: data%nlp%X'
+     CALL SPACE_resize_array( n, data%nlp%X,                                   &
+            data%expo_inform%status, data%expo_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%expo_inform%bad_alloc, out = error )
+     IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+     array_name = 'expo: data%nlp%Y'
+     CALL SPACE_resize_array( m, data%nlp%Y,                                   &
+            data%expo_inform%status, data%expo_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%expo_inform%bad_alloc, out = error )
+     IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+     array_name = 'expo: data%nlp%Z'
+     CALL SPACE_resize_array( n, data%nlp%Z,                                   &
+            data%expo_inform%status, data%expo_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%expo_inform%bad_alloc, out = error )
+     IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+     array_name = 'expo: data%nlp%C'
+     CALL SPACE_resize_array( m, data%nlp%C,                                   &
+            data%expo_inform%status, data%expo_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%expo_inform%bad_alloc, out = error )
+     IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+     array_name = 'expo: data%nlp%G'
+     CALL SPACE_resize_array( n, data%nlp%G,                                   &
+            data%expo_inform%status, data%expo_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%expo_inform%bad_alloc, out = error )
+     IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+     array_name = 'expo: data%nlp%GL'
+     CALL SPACE_resize_array( n, data%nlp%GL,                                  &
+            data%expo_inform%status, data%expo_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%expo_inform%bad_alloc, out = error )
+     IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+!  put data into the required components of the nlpt storage type
+
+     data%nlp%n = n ; data%nlp%m = m
+     data%nlp%X_l( : n ) = X_l( : n )
+     data%nlp%X_u( : n ) = X_u( : n )
+     data%nlp%C_l( : m ) = C_l( : m )
+     data%nlp%C_u( : m ) = C_u( : m )
+
+!  set J appropriately in the nlpt storage type
+
+     SELECT CASE ( J_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( J_row ) .AND. PRESENT( J_col ) ) ) THEN
+         data%expo_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%nlp%J%type, 'COORDINATE',                            &
+                     data%expo_inform%alloc_status )
+       data%nlp%J%n = n ; data%nlp%J%m = m
+       data%nlp%J%ne = J_ne
+
+       array_name = 'expo: data%nlp%J%row'
+       CALL SPACE_resize_array( data%nlp%J%ne, data%nlp%J%row,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+       array_name = 'expo: data%nlp%J%col'
+       CALL SPACE_resize_array( data%nlp%J%ne, data%nlp%J%col,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+       array_name = 'expo: data%nlp%J%val'
+       CALL SPACE_resize_array( data%nlp%J%ne, data%nlp%J%val,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%nlp%J%row( : data%nlp%J%ne ) = J_row( : data%nlp%J%ne )
+         data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne )
+       ELSE
+         data%nlp%J%row( : data%nlp%J%ne ) = J_row( : data%nlp%J%ne ) + 1
+         data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne ) + 1
+       END IF
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( J_col ) .AND. PRESENT( J_ptr ) ) ) THEN
+         data%expo_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%nlp%J%type, 'SPARSE_BY_ROWS',                        &
+                     data%expo_inform%alloc_status )
+       data%nlp%J%n = n ; data%nlp%J%m = m
+       IF ( data%f_indexing ) THEN
+         data%nlp%J%ne = J_ptr( m + 1 ) - 1
+       ELSE
+         data%nlp%J%ne = J_ptr( m + 1 )
+       END IF
+
+       array_name = 'expo: data%nlp%J%ptr'
+       CALL SPACE_resize_array( m + 1, data%nlp%J%ptr,                         &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+       array_name = 'expo: data%nlp%J%col'
+       CALL SPACE_resize_array( data%nlp%J%ne, data%nlp%J%col,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+       array_name = 'expo: data%nlp%J%val'
+       CALL SPACE_resize_array( data%nlp%J%ne, data%nlp%J%val,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%nlp%J%ptr( : m + 1 ) = J_ptr( : m + 1 )
+         data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne )
+       ELSE
+         data%nlp%J%ptr( : m + 1 ) = J_ptr( : m + 1 ) + 1
+         data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne ) + 1
+       END IF
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%nlp%J%type, 'DENSE',                                 &
+                     data%expo_inform%alloc_status )
+       data%nlp%J%n = n ; data%nlp%J%m = m
+       data%nlp%J%ne = m * n
+
+       array_name = 'expo: data%nlp%J%val'
+       CALL SPACE_resize_array( data%nlp%J%ne, data%nlp%J%val,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%expo_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+!  set H appropriately in the nlpt storage type
+
+     SELECT CASE ( H_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( H_row ) .AND. PRESENT( H_col ) ) ) THEN
+         data%expo_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%nlp%H%type, 'COORDINATE',                            &
+                     data%expo_inform%alloc_status )
+       data%nlp%H%n = n
+       data%nlp%H%ne = H_ne
+
+       array_name = 'expo: data%nlp%H%row'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%row,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+       array_name = 'expo: data%nlp%H%col'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%col,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+       array_name = 'expo: data%nlp%H%val'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%nlp%H%row( : data%nlp%H%ne ) = H_row( : data%nlp%H%ne )
+         data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
+       ELSE
+         data%nlp%H%row( : data%nlp%H%ne ) = H_row( : data%nlp%H%ne ) + 1
+         data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne ) + 1
+       END IF
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
+         data%expo_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%nlp%H%type, 'SPARSE_BY_ROWS',                        &
+                     data%expo_inform%alloc_status )
+       data%nlp%H%n = n
+       IF ( data%f_indexing ) THEN
+         data%nlp%H%ne = H_ptr( n + 1 ) - 1
+       ELSE
+         data%nlp%H%ne = H_ptr( n + 1 )
+       END IF
+
+       array_name = 'expo: data%nlp%H%ptr'
+       CALL SPACE_resize_array( n + 1, data%nlp%H%ptr,                         &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+       array_name = 'expo: data%nlp%H%col'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%col,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+       array_name = 'expo: data%nlp%H%val'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+         data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
+       ELSE
+         data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 ) + 1
+         data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne ) + 1
+       END IF
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%nlp%H%type, 'DENSE',                                 &
+                     data%expo_inform%alloc_status )
+       data%nlp%H%n = n
+       data%nlp%H%ne = ( n * ( n + 1 ) ) / 2
+
+       array_name = 'expo: data%nlp%H%val'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%nlp%H%type, 'DIAGONAL',                              &
+                     data%expo_inform%alloc_status )
+       data%nlp%H%n = n
+       data%nlp%H%ne = n
+
+       array_name = 'expo: data%nlp%H%val'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,                 &
+              data%expo_inform%status, data%expo_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%expo_inform%bad_alloc, out = error )
+       IF ( data%expo_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%expo_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%expo_inform%status
+     RETURN
+
+!  End of subroutine EXPO_import
+
+     END SUBROUTINE EXPO_import
+
+!-  G A L A H A D -  E X P O _ r e s e t _ c o n t r o l   S U B R O U T I N E -
+
+     SUBROUTINE EXPO_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See EXPO_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( EXPO_control_type ), INTENT( IN ) :: control
+     TYPE ( EXPO_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%expo_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  end of subroutine EXPO_reset_control
+
+     END SUBROUTINE EXPO_reset_control
+
+!- G A L A H A D -  E X P O _ s o l v e _ w i t h _ m a t  S U B R O U T I N E -
+
+     SUBROUTINE EXPO_solve_with_mat( data, userdata, status, X, Y, Z, C, GL,   &
+                                     eval_FC, eval_GJ, eval_HL, eval_HLPROD )
+
+!  solve the constrained optimization problem previously imported when access
+!  to function, Jacobian, and Hessian operations are available via subroutine 
+!  calls. See EXPO_solve for a  description of the required arguments. 
+!  The variable status is a proxy for inform%status
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+     TYPE ( EXPO_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Z
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: GL
+     EXTERNAL :: eval_FC, eval_GJ, eval_HL, eval_HLPROD
+     OPTIONAL :: eval_HLPROD
+
+     data%expo_inform%status = status
+     IF ( data%expo_inform%status == 1 )                                       &
+       data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+
+!  call the solver
+
+     CALL EXPO_solve( data%nlp, data%expo_control, data%expo_inform,           &
+                      data%expo_data, userdata, eval_FC = eval_FC,             &
+                      eval_GJ = eval_GJ, eval_HL = eval_HL,                    &
+                      eval_HLPROD = eval_HLPROD )
+
+     X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
+     Y( : data%nlp%m ) = data%nlp%Y( : data%nlp%m )
+     Z( : data%nlp%n ) = data%nlp%Z( : data%nlp%n )
+     C( : data%nlp%m ) = data%nlp%C( : data%nlp%m )
+     GL( : data%nlp%n ) = data%nlp%GL( : data%nlp%n )
+     status = data%expo_inform%status
+
+     RETURN
+
+!  end of subroutine EXPO_solve_with_mat
+
+     END SUBROUTINE EXPO_solve_with_mat
+
+!-  G A L A H A D -  E X P O _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE EXPO_information( data, inform, status )
+
+!  return solver information during or after solution by EXPO
+!  See EXPO_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( EXPO_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( EXPO_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%expo_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine EXPO_information
+
+     END SUBROUTINE EXPO_information
 
 !  End of module GALAHAD_EXPO
 

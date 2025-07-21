@@ -17,7 +17,7 @@ MODULE SPRAL_SSIDS_double
              SSIDS_solve, SSIDS_free, SSIDS_enquire_posdef,                    &
              SSIDS_enquire_indef, SSIDS_alter
 
-   LOGICAL, PUBLIC, PARAMETER :: ssids_available = .FALSE.
+   LOGICAL, PUBLIC, PROTECTED :: ssids_available = .FALSE.
 
  ! Parameters
 

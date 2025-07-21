@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-04-05 AT 11:10 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-07-21 AT 16:00 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -7851,8 +7851,6 @@
      CALL SPACE_dealloc_array( data%matrix_scale%VAL, inform%status,           &
                                inform%alloc_status )
 
-     CALL SPACE_dealloc_array( data%INVP, inform%status, inform%alloc_status )
-     CALL SPACE_dealloc_array( data%MRP, inform%status, inform%alloc_status )
      CALL SPACE_dealloc_array( data%MAP, inform%status, inform%alloc_status )
      CALL SPACE_dealloc_array( data%MAPS, inform%status, inform%alloc_status )
      CALL SPACE_dealloc_array( data%MRP, inform%status, inform%alloc_status )
@@ -7870,7 +7868,7 @@
 !  next line sometimes causes segfault under nvcc
      CALL SPACE_dealloc_array( data%SCALE, inform%status, inform%alloc_status )
      CALL SPACE_dealloc_array( data%X2, inform%status, inform%alloc_status )
-     CALL SPACE_dealloc_array( data%D, inform%status, inform%alloc_status )
+!    CALL SPACE_dealloc_array( data%D, inform%status, inform%alloc_status )
      CALL SPACE_dealloc_array( data%RESIDUALS, inform%status,                  &
                                inform%alloc_status )
      CALL SPACE_dealloc_array( data%RESIDUALS_zero, inform%status,             &
@@ -8017,21 +8015,23 @@
      CASE ( 'ma77' )
 
        IF ( PRESENT( PERM ) ) PERM = data%ORDER( : data%n )
+       IF ( PRESENT( PIVOTS ) ) THEN
+         CALL SPACE_resize_array( data%n, data%INVP,                         &
+                                  inform%status, inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%INVP' ; RETURN
+         END IF
+       END IF
        IF ( PRESENT( D ) ) THEN
          IF ( data%must_be_definite ) THEN
            CALL MA77_enquire_posdef( D( 1, : ), data%ma77_keep,                &
                                      data%ma77_control, data%ma77_info )
            IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
          ELSE IF ( PRESENT( PIVOTS ) ) THEN
-           CALL MA77_enquire_indef( PIVOTS, D, data%ma77_keep,                 &
+           CALL MA77_enquire_indef( data%INVP, D, data%ma77_keep,              &
                                     data%ma77_control, data%ma77_info)
-         ELSE
-           CALL SPACE_resize_array( data%n, data%PIVOTS,                       &
-                                    inform%status, inform%alloc_status )
-           IF ( inform%status /= GALAHAD_ok ) GO TO 900
-           CALL MA77_enquire_indef( data%PIVOTS, D, data%ma77_keep,            &
-                                    data%ma77_control, data%ma77_info )
          END IF
+         CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
        ELSE
          IF ( PRESENT( PIVOTS ) ) THEN
            IF ( data%must_be_definite ) THEN
@@ -8040,13 +8040,23 @@
              CALL SPACE_resize_array( 2_ip_, data%n, data%D, inform%status,    &
                                       inform%alloc_status )
              IF ( inform%status /= GALAHAD_ok ) GO TO 900
-             CALL MA77_enquire_indef( PIVOTS, data%D, data%ma77_keep,          &
+             CALL MA77_enquire_indef( data%INVP, data%D, data%ma77_keep,       &
                                       data%ma77_control, data%ma77_info )
+             CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            END IF
          END IF
        END IF
-       CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+       IF ( PRESENT( PIVOTS ) ) THEN
+         DO i = 1, data%n
+           ip = data%INVP( i )
+           IF ( ip > 0 ) THEN
+             PIVOTS( ip ) = i
+           ELSE
+             PIVOTS( - ip ) = - i
+           END IF
+         END DO
+       END IF
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
 
 !  = MA86 =
@@ -8080,27 +8090,38 @@
                                    data%ma97_control, data%ma97_info, D( 1, :) )
          D( 2, : ) = 0.0_rp_
        ELSE
+         IF ( PRESENT( PIVOTS ) ) THEN
+           CALL SPACE_resize_array( data%n, data%INVP,                         &
+                                    inform%status, inform%alloc_status )
+           IF ( inform%status /= GALAHAD_ok ) THEN
+             inform%bad_alloc = 'sls: data%INVP' ; RETURN
+           END IF
+         END IF
          IF ( PRESENT( D ) ) THEN
            IF ( PRESENT( PIVOTS ) ) THEN
              CALL MA97_enquire_indef( data%ma97_akeep, data%ma97_fkeep,        &
                                       data%ma97_control, data%ma97_info,       &
-                                      piv_order = PIVOTS, d = D )
+                                      piv_order = data%INVP, d = D )
            ELSE
-             CALL SPACE_resize_array( data%n, data%PIVOTS,                     &
-                                      inform%status, inform%alloc_status )
-             IF ( inform%status /= GALAHAD_ok ) GO TO 900
              CALL MA97_enquire_indef( data%ma97_akeep, data%ma97_fkeep,        &
                                       data%ma97_control, data%ma97_info, d = D )
            END IF
          ELSE
-           CALL SPACE_resize_array( 2_ip_, data%n, data%D, inform%status,      &
-                                    inform%alloc_status )
-           IF ( inform%status /= GALAHAD_ok ) GO TO 900
            IF ( PRESENT( PIVOTS ) ) THEN
              CALL MA97_enquire_indef( data%ma97_akeep, data%ma97_fkeep,        &
                                       data%ma97_control, data%ma97_info,       &
-                                      piv_order = PIVOTS )
+                                      piv_order = data%INVP )
            END IF
+         END IF
+         IF ( PRESENT( PIVOTS ) ) THEN
+           DO i = 1, data%n
+             ip = data%INVP( i )
+             IF ( ip > 0 ) THEN
+               PIVOTS( ip ) = i
+             ELSE
+               PIVOTS( - ip ) = - i
+             END IF
+           END DO
          END IF
        END IF
 
@@ -8116,7 +8137,6 @@
                                     D( 1, : ) )
          D( 2, : ) = 0.0_rp_
        ELSE
-
          IF ( PRESENT( PIVOTS ) ) THEN
            CALL SPACE_resize_array( data%n, data%INVP,                         &
                                     inform%status, inform%alloc_status )
@@ -8124,36 +8144,31 @@
              inform%bad_alloc = 'sls: data%INVP' ; RETURN
            END IF
          END IF
-
          IF ( PRESENT( D ) ) THEN
            IF ( PRESENT( PIVOTS ) ) THEN
              CALL SSIDS_enquire_indef( data%ssids_akeep, data%ssids_fkeep,     &
                                        data%ssids_options, data%ssids_inform,  &
                                        piv_order = data%INVP, d = D )
            ELSE
-             CALL SPACE_resize_array( data%n, data%PIVOTS,                     &
-                                      inform%status, inform%alloc_status )
-             IF ( inform%status /= GALAHAD_ok ) GO TO 900
              CALL SSIDS_enquire_indef( data%ssids_akeep, data%ssids_fkeep,     &
                                        data%ssids_options, data%ssids_inform,  &
                                        d = D )
            END IF
          ELSE
-           CALL SPACE_resize_array( 2_ip_, data%n, data%D, inform%status,      &
-                                    inform%alloc_status )
-           IF ( inform%status /= GALAHAD_ok ) GO TO 900
            IF ( PRESENT( PIVOTS ) ) THEN
              CALL SSIDS_enquire_indef( data%ssids_akeep, data%ssids_fkeep,     &
                                        data%ssids_options, data%ssids_inform,  &
                                        piv_order = data%INVP )
            END IF
          END IF
+         IF ( inform%status /= GALAHAD_ok ) GO TO 900
          IF ( PRESENT( PIVOTS ) ) THEN
            DO i = 1, data%n
-             IF ( data%INVP( i ) > 0 ) THEN
-               PIVOTS( data%INVP( i ) ) = i
+             ip = data%INVP( i )
+             IF ( ip > 0 ) THEN
+               PIVOTS( ip ) = i
              ELSE
-               PIVOTS( - data%INVP( i ) ) = - i
+               PIVOTS( - ip ) = - i
              END IF
            END DO
          END IF

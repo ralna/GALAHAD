@@ -141,6 +141,8 @@
          CALL EQP_initialize( data, control, info )
          CALL WHICH_sls( control )
 !        control%print_level = 1
+!        control%print_level = 2
+!        control%fdc_control%print_level = 10
          control%sbls_control%preconditioner = preconditioner
          control%SBLS_control%factorization = factorization
          p%new_problem_structure = .TRUE.
@@ -618,6 +620,9 @@
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%definite_linear_solver = definite_linear_solver
+!control%FDC_control%symmetric_linear_solver = 'ma97 '
+!control%SBLS_control%symmetric_linear_solver = 'ma97 '
+!control%SBLS_control%definite_linear_solver = 'ma97 '
      END SUBROUTINE WHICH_sls
    END PROGRAM GALAHAD_EQP_EXAMPLE
 

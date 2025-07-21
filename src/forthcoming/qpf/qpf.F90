@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-06-18 AT 13:25 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-07-20 AT 09:00 GMT
 
 #include "galahad_modules.h"
 
@@ -81,7 +81,7 @@
 !   G l o b a l   P a r a m e t e r s
 !--------------------------------------
 
-     LOGICAL, PUBLIC, PARAMETER :: QPF_available = .TRUE.
+     LOGICAL, PUBLIC, PROTECTED :: QPF_available = .TRUE.
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s

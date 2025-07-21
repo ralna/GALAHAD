@@ -8,6 +8,14 @@
  */
 #pragma once
 
+#ifdef INTEGER_64
+#define AcquiredLock AcquiredLock_64
+#define Lock Lock_64
+#define unset unset_64
+#define set set_64
+#define get_global_thread_num get_global_thread_num_64
+#endif
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif /* _OPENMP */

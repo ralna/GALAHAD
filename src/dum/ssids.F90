@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-15 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-07-20 AT 09:00 GMT
 
 #include "spral_procedures.h"
 
@@ -18,7 +18,7 @@ MODULE SPRAL_SSIDS_precision
              SSIDS_solve, SSIDS_free, SSIDS_enquire_posdef,                    &
              SSIDS_enquire_indef, SSIDS_alter
 
-   LOGICAL, PUBLIC, PARAMETER :: ssids_available = .FALSE.
+   LOGICAL, PUBLIC, PROTECTED :: ssids_available = .FALSE.
 
  ! Parameters
 

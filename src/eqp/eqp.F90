@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-16 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-07-21 AT 16:00 GMT
 
 #include "galahad_modules.h"
 
@@ -1175,7 +1175,7 @@
               data%A_eqp%col( l ) = j
               data%A_eqp%val( l ) = prob%A%val( l )
             END DO
-            data%A_eqp%ptr( i + 1 ) = data%A_eqp%ptr( i ) +  prob%n
+            data%A_eqp%ptr( i + 1 ) = data%A_eqp%ptr( i ) + prob%n
           END DO
         CASE ( 'SPARSE_BY_ROWS' )
           data%A_eqp%val( : data%A_eqp%ne ) = prob%A%val( : data%A_eqp%ne )

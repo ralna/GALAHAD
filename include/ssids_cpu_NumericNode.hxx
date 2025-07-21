@@ -9,6 +9,13 @@
 
 #include "ssids_rip.hxx"
 
+/**/
+#ifdef INTEGER_64
+#define SymbolicNode SymbolicNode_64
+#define NumericNode NumericNode_64
+#endif
+
+
 namespace spral { namespace ssids { namespace cpu {
 
 class SymbolicNode;
