@@ -15,6 +15,7 @@
 /*
 #ifdef INTEGER_64
 #define ThreadStats ThreadStats_64
+#define SingularError SingularError_64
 #endif
 */
 

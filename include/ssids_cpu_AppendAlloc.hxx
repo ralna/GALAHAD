@@ -14,6 +14,13 @@
 #include "spral_compat.hxx" // for std::align if required
 #include "ssids_rip.hxx"
 
+/**/
+#ifdef INTEGER_64
+#define AppendAlloc AppendAlloc_64
+#define Page Page_64
+#define Pool Pool_64
+#endif
+
 namespace spral { namespace ssids { namespace cpu {
 
 namespace append_alloc_internal {

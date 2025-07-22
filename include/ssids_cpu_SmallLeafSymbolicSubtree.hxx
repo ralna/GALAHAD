@@ -17,6 +17,7 @@
 #ifdef INTEGER_64
 #define SymbolicSubtree SymbolicSubtree_64
 #define SmallLeafSymbolicSubtree SmallLeafSymbolicSubtree_64
+#define SmallLeafNumericSubtree SmallLeafNumericSubtree_64
 #endif
 */
 namespace spral { namespace ssids { namespace cpu {

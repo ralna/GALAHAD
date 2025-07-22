@@ -16,6 +16,8 @@
 /*
 #ifdef INTEGER_64
 #define BuddyAllocator BuddyAllocator_64
+#define Page Page_64
+#define Table Table_64
 #endif
 */
 namespace spral { namespace ssids { namespace cpu {
