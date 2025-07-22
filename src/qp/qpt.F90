@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-07-22 AT 10:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_QP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -258,6 +258,10 @@
      CALL WHICH_sls( control )
      control%infinity = infty
 !    control%out = 6 ; control%print_level = 11
+!    control%out = 6 ; control%print_level = 1
+!    control%QPC_control%print_level = 1
+!    control%QPC_control%QPB_control%print_level = 1
+!    control%QPC_control%QPB_control%SBLS_control%print_level = 1
      p%new_problem_structure = .TRUE.
      IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
        st = 'C'
@@ -378,16 +382,16 @@
    tests = 18
    DO i = 0, tests
 
-   p%n = n ; p%m = m ; p%f = 0.05_rp_
-   p%G = (/ 0.0_rp_, 0.0_rp_ /)
-   p%C_l = (/ 1.0_rp_ /)
-   p%C_u = (/ 1.0_rp_ /)
-   p%X_l = (/ 0.0_rp_, 0.0_rp_ /)
-   p%X_u = (/ 2.0_rp_, 3.0_rp_ /)
-   p%H%col = (/ 1, 2 /)
-   p%H%ptr = (/ 1, 2, 3 /)
-   p%A%col = (/ 1, 2 /)
-   p%A%ptr = (/ 1, 3 /)
+     p%n = n ; p%m = m ; p%f = 0.05_rp_
+     p%G = (/ 0.0_rp_, 0.0_rp_ /)
+     p%C_l = (/ 1.0_rp_ /)
+     p%C_u = (/ 1.0_rp_ /)
+     p%X_l = (/ 0.0_rp_, 0.0_rp_ /)
+     p%X_u = (/ 2.0_rp_, 3.0_rp_ /)
+     p%H%col = (/ 1, 2 /)
+     p%H%ptr = (/ 1, 2, 3 /)
+     p%A%col = (/ 1, 2 /)
+     p%A%ptr = (/ 1, 3 /)
 
      IF ( i == 0 ) THEN
        control%quadratic_programming_solver = "qpa" // REPEAT( ' ', 27 )
@@ -869,6 +873,8 @@
      SUBROUTINE WHICH_sls( control )
      TYPE ( QP_control_type ) :: control
 #include "galahad_sls_defaults.h"
+!symmetric_linear_solver = 'ma86 '
+!definite_linear_solver = 'ma86 '
      control%QPA_control%symmetric_linear_solver = symmetric_linear_solver
      control%QPB_control%FDC_control%use_sls = use_sls
      control%QPB_control%FDC_control%symmetric_linear_solver                   &

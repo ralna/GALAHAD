@@ -32,9 +32,11 @@
 --------------------------------------------------------------------------*/
 #ifdef INTEGER_64
   #define IDXTYPEWIDTH 64
+/*
   #define METIS_NodeND METIS_NodeND_64
-  #define METIS_Free METIS_Free_64
   #define METIS_SetDefaultOptions METIS_SetDefaultOptions_64
+*/
+  #define METIS_Free METIS_Free_64
 #else
   #define IDXTYPEWIDTH 32
 #endif

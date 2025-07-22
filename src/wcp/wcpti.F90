@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-07-22 AT 07:50 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_WCP_interface_test
    USE GALAHAD_KINDS_precision
@@ -11,7 +11,6 @@
    TYPE ( WCP_full_data_type ) :: data
    INTEGER ( KIND = ip_ ) :: n, m, A_ne, A_dense_ne
    INTEGER ( KIND = ip_ ) :: data_storage_type, status
-   REAL ( KIND = rp_ ) :: f
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u, Z_l, Z_u, G
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C, C_l, C_u, Y_l, Y_u
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
@@ -49,6 +48,8 @@
    DO data_storage_type = 1, 3
      CALL WCP_initialize( data, control, inform )
      CALL WHICH_sls( control )
+!    control%print_level = 1
+!    control%sbls_control%print_level = 1
      X = 0.0_rp_ ; Y_l = 0.0_rp_ ; Y_u = 0.0_rp_
      Z_l = 0.0_rp_ ; Z_u = 0.0_rp_
      SELECT CASE ( data_storage_type )
@@ -93,6 +94,9 @@
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%definite_linear_solver = definite_linear_solver
+!control%FDC_control%symmetric_linear_solver = 'ma97 '
+!control%SBLS_control%symmetric_linear_solver = 'ma97 '
+!control%SBLS_control%definite_linear_solver = 'ma97 '
      END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_WCP_interface_test

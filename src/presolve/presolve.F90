@@ -2162,9 +2162,9 @@
 !     Initialize the exit status and the exit message to that corresponding
 !     to a successful exit, unless the dimensions of the problem are silly.
 
-      inform%message( 1 ) = ''
-      inform%message( 2 ) = ''
-      inform%message( 3 ) = ''
+      inform%message( 1 ) = REPEAT( ' ', 80 )
+      inform%message( 2 ) = REPEAT( ' ', 80 )
+      inform%message( 3 ) = REPEAT( ' ', 80 )
       inform%nbr_transforms = 0
       inform%status = OK
       WRITE( inform%message( 1 ), * ) ' PRESOLVE: successful exit'
@@ -2660,8 +2660,7 @@
       ALLOCATE( spec( lspec ), STAT = ios )
       IF ( ios /= 0 ) THEN
          inform%status = MEMORY_FULL
-         WRITE( inform%message( 1 ), * )                                       &
-            ' PRESOLVE ERROR: no memory left for allocating spec(',  lspec, ')'
+         WRITE( inform%message( 1 ), 2000 ) 'spec', lspec
          RETURN
       END IF
 
@@ -2877,6 +2876,8 @@
       DEALLOCATE( spec )
 
       RETURN
+ 2000 FORMAT( ' PRESOLVE ERROR: no memory left for allocating ',               &
+              A, '(', I0, ')' )  
 
       END SUBROUTINE PRESOLVE_read_specfile
 
@@ -3010,9 +3011,7 @@
             ALLOCATE( prob%G( prob%n ) , STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating g(',         &
-               prob%n, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'g', prob%n
                RETURN
             END IF
          END IF
@@ -3024,9 +3023,7 @@
             ALLOCATE( prob%G( prob%n ) , STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating g(',         &
-               prob%n, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'g', prob%n
                RETURN
             END IF
          END IF
@@ -3067,9 +3064,7 @@
          ALLOCATE( prob%X_status( prob%n ) , STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating x_status(',     &
-               prob%n, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'x_status', prob%n
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -3093,9 +3088,7 @@
          ALLOCATE( prob%X_l( prob%n ) , STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating x_l(',          &
-               prob%n, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'x_l', prob%n
             RETURN
          END IF
          prob%X_l = - control%infinity
@@ -3116,9 +3109,7 @@
          ALLOCATE( prob%X_u( prob%n ) , STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating x_u(',          &
-               prob%n, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'x_u', prob%n
             RETURN
          END IF
          prob%X_u = control%infinity
@@ -3140,9 +3131,7 @@
          ALLOCATE( prob%X( prob%n ) , STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating x(',            &
-               prob%n, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'x', prob%n
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -3168,9 +3157,7 @@
          ALLOCATE( prob%Z_l( prob%n ) , STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating z_l(',          &
-               prob%n, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'z_l', prob%n
             RETURN
          END IF
          prob%Z_l = - control%infinity
@@ -3191,9 +3178,7 @@
          ALLOCATE( prob%Z_u( prob%n ) , STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating z_u(',          &
-               prob%n, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'z_u', prob%n
             RETURN
          END IF
          prob%Z_u = control%infinity
@@ -3214,9 +3199,7 @@
          ALLOCATE( prob%Z( prob%n ) , STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating z(',            &
-               prob%n, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'z', prob%n
             RETURN
          END IF
          prob%Z = ZERO
@@ -3242,9 +3225,7 @@
             ALLOCATE( prob%C( prob%m ) , STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating c(',         &
-                  prob%m, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'c', prob%m
                RETURN
             END IF
             IF ( s%level >= DEBUG ) WRITE( s%out, * )                          &
@@ -3268,9 +3249,7 @@
             ALLOCATE( prob%C_status( prob%m ) , STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating c_status(',  &
-                  prob%m, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'c_status', prob%m
                RETURN
             END IF
             IF ( s%level >= DEBUG ) WRITE( s%out, * )                          &
@@ -3295,9 +3274,7 @@
             ALLOCATE( prob%C_l( prob%m ) , STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating c_l(',       &
-                  prob%m, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'c_l', prob%m
                RETURN
             END IF
             prob%C_l = - control%infinity
@@ -3319,9 +3296,7 @@
             ALLOCATE( prob%C_l( prob%m ) , STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating c_u(',       &
-                  prob%m, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'c_u', prob%m
                RETURN
             END IF
             prob%C_u = control%infinity
@@ -3343,9 +3318,7 @@
             ALLOCATE( prob%Y( prob%m ) , STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating y(',         &
-                  prob%m, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'y', prob%m
                RETURN
             END IF
             prob%Y = ZERO
@@ -3367,9 +3340,7 @@
             ALLOCATE( prob%Y_l( prob%m ) , STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating y_l(',       &
-                  prob%m, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'y_l', prob%m
                RETURN
             END IF
             prob%Y_l = - control%infinity
@@ -3391,9 +3362,7 @@
             ALLOCATE( prob%Y_u( prob%m ) , STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating y_u(',       &
-                  prob%m, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'y_u', prob%m
                RETURN
             END IF
             prob%Y_u = control%infinity
@@ -3696,9 +3665,8 @@
          ALLOCATE( s%hist_type( control%transf_buffer_size ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating hist_type(',    &
-               control%transf_buffer_size, ')'
+            WRITE( inform%message( 1 ), 2000 )                                 &
+              'hist_type', control%transf_buffer_size
             RETURN
          END IF
          IF ( s%level >= DEBUG )WRITE( s%out, * )                              &
@@ -3711,9 +3679,8 @@
          ALLOCATE( s%hist_i( control%transf_buffer_size ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating hist_i(',       &
-               control%transf_buffer_size, ')'
+            WRITE( inform%message( 1 ), 2000 )                                 &
+              'hist_i', control%transf_buffer_size
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -3726,9 +3693,8 @@
          ALLOCATE( s%hist_j( control%transf_buffer_size ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating hist_j(',       &
-               control%transf_buffer_size, ')'
+            WRITE( inform%message( 1 ), 2000 )                                 &
+              'hist_j', control%transf_buffer_size
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -3745,9 +3711,7 @@
          ALLOCATE( s%hist_r( dim ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating hist_r(',       &
-               dim, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'hist_r', dim
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -3771,9 +3735,8 @@
       dim     = MAX( a_ne, s%maxmn )
       ALLOCATE( s%a_perm( dim ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
-      inform%status = MEMORY_FULL
-         WRITE( inform%message( 1 ), * )                                       &
-            ' PRESOLVE ERROR: no memory left for allocating a_perm(', dim, ')'
+         inform%status = MEMORY_FULL
+         WRITE( inform%message( 1 ), 2000 ) 'a_perm', dim
          RETURN
       END IF
       IF ( s%level >= DEBUG ) WRITE( s%out, * ) '    a_perm(', dim,') allocated'
@@ -3786,8 +3749,7 @@
       ALLOCATE( s%h_perm( dim ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
          inform%status = MEMORY_FULL
-         WRITE( inform%message( 1 ), * )                                       &
-            ' PRESOLVE ERROR: no memory left for allocating h_perm(', dim, ')'
+         WRITE( inform%message( 1 ), 2000 ) 'h_perm', dim
          RETURN
       END IF
       IF ( s%level >= DEBUG ) WRITE( s%out, * ) '    h_perm(', dim,') allocated'
@@ -3817,8 +3779,7 @@
       ALLOCATE( s%w_mn( dim ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
          inform%status = MEMORY_FULL
-         WRITE( inform%message( 1 ), * )                                       &
-            ' PRESOLVE ERROR: no memory left for allocating w_mn(', dim, ')'
+         WRITE( inform%message( 1 ), 2000 ) 'w_mn', dim
          RETURN
       END IF
       IF ( s%level >= DEBUG ) WRITE( s%out, * ) '    w_mn(', dim,') allocated'
@@ -3828,8 +3789,7 @@
       ALLOCATE( s%w_n( prob%n ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
          inform%status = MEMORY_FULL
-         WRITE( inform%message( 1 ), * )                                       &
-            ' PRESOLVE ERROR: no memory left for allocating w_n(', prob%n,')'
+         WRITE( inform%message( 1 ), 2000 ) 'w_n', prob%n
          RETURN
       END IF
       IF ( s%level >= DEBUG ) WRITE( s%out, * )                                &
@@ -3843,8 +3803,7 @@
          ALLOCATE( s%w_m( dim ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating w_m(', dim, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'w_m', dim
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -3856,8 +3815,7 @@
          ALLOCATE( s%conc( prob%m ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-            ' PRESOLVE ERROR: no memory left for allocating conc(',prob%m,')'
+            WRITE( inform%message( 1 ), 2000 ) 'conc', prob%m
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -3877,9 +3835,7 @@
          ALLOCATE( s%A_col_s( dim ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating A_col_s(',      &
-               dim, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'A_col_s', dim
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -3908,9 +3864,7 @@
          ALLOCATE( s%A_row_s( prob%m ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating A_row_s(',      &
-               prob%m, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'A_row_s', prob%m
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -3924,9 +3878,7 @@
          ALLOCATE( s%A_col_f( prob%n ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating A_col_f(',      &
-               prob%n, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'A_col_f', prob%n
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -3939,9 +3891,7 @@
          ALLOCATE( s%A_col_n( a_ne ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating A_col_n(',      &
-               a_ne, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'A_col_n', a_ne
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out,* )                              &
@@ -3955,9 +3905,7 @@
             ALLOCATE( s%A_row( a_ne ), STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating A_row(',     &
-                  a_ne, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'A_row', a_ne
                RETURN
             END IF
             IF ( s%level >= DEBUG ) WRITE( s%out, * )                          &
@@ -3977,9 +3925,7 @@
          ALLOCATE( s%H_str( prob%n ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating H_str(',        &
-               prob%n, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'H_str', prob%n
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -3994,9 +3940,7 @@
          ALLOCATE( s%H_col_f( prob%n ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating H_col_f(',      &
-               prob%n, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'H_col_f', prob%n
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -4009,9 +3953,7 @@
          ALLOCATE( s%H_col_n( h_ne ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating H_col_n(',      &
-               h_ne, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'H_col_n', h_ne
             RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -4023,10 +3965,8 @@
          ALLOCATE( s%H_row( h_ne ),  STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
-            WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: no memory left for allocating H_row(',        &
-               h_ne, ')'
-               RETURN
+            WRITE( inform%message( 1 ), 2000 ) 'H_row', h_ne
+            RETURN
          END IF
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
             '    H_row(', h_ne , ') allocated'
@@ -4072,6 +4012,8 @@
       CALL RANDOM_NUMBER( s%rcheck )
 
       RETURN
+ 2000 FORMAT( ' PRESOLVE ERROR: no memory left for allocating ',               &
+              A, '(', I0, ')' )  
 
       END SUBROUTINE PRESOLVE_check_consistency
 
@@ -15338,9 +15280,7 @@ lic:  DO
 
          ALLOCATE( s%ztmp( prob%n ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
-            WRITE( s%out, * )                                                  &
-                 ' PRESOLVE WARNING: no memory left for allocating ztmp(',     &
-                  prob%n, ')'
+            WRITE( inform%message( 1 ), 2000 ) 'ztmp', prob%n
             WRITE( s%out, * )                                                  &
                  '                   Skipping dual feasibility check.'
          ELSE
@@ -17519,9 +17459,7 @@ lic:  DO
             CALL QPT_A_from_S_to_C( prob, inform%status )
             IF ( inform%status /= OK ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating a_row(',     &
-                  prob%A%ne, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'a_row', prob%A%ne
                RETURN
             END IF
             IF( s%level >= DETAILS ) WRITE( s%out, * )                         &
@@ -17530,9 +17468,7 @@ lic:  DO
             CALL QPT_A_from_S_to_D( prob, inform%status )
             IF ( inform%status /= OK ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating a_row(',     &
-                  prob%A%ne, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'a_row', prob%A%ne
                RETURN
             END IF
             IF( s%level >= DETAILS ) WRITE( s%out, * )                         &
@@ -17550,9 +17486,7 @@ lic:  DO
             CALL QPT_H_from_S_to_C( prob, inform%status )
             IF ( inform%status /= OK ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating h_row(',     &
-                  prob%H%ne, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'h_row', prob%H%ne
                RETURN
             END IF
             IF( s%level >= DETAILS ) WRITE( s%out, * )                         &
@@ -17561,9 +17495,7 @@ lic:  DO
             CALL QPT_H_from_S_to_D( prob, inform%status )
             IF ( inform%status /= OK ) THEN
                inform%status = MEMORY_FULL
-               WRITE( inform%message( 1 ), * )                                 &
-                  ' PRESOLVE ERROR: no memory left for allocating h_row(',     &
-                  prob%H%ne, ')'
+               WRITE( inform%message( 1 ), 2000 ) 'h_row', prob%H%ne
                RETURN
             END IF
             IF( s%level >= DETAILS ) WRITE( s%out, * )                         &
@@ -17591,10 +17523,12 @@ lic:  DO
 
 !     Formats
 
-1000  FORMAT( '      A_val  =', 5 ( ES12.4, 1x ), /, ( 12x, 5 ( 1x,ES12.4) ) )
-1001  FORMAT( '      H_val  =', 5 ( ES12.4, 1x ), /, ( 12x, 5 ( 1x,ES12.4) ) )
-1003  FORMAT( '     ', i4, ' = ', i4, 1x, i4, 3x, a7, '   --> ', i4, 1x, i4 )
-1007  FORMAT( '     ', i4, 4( 2x, ES12.4 ) )
+ 1000 FORMAT( '      A_val  =', 5 ( ES12.4, 1x ), /, ( 12x, 5 ( 1x,ES12.4) ) )
+ 1001 FORMAT( '      H_val  =', 5 ( ES12.4, 1x ), /, ( 12x, 5 ( 1x,ES12.4) ) )
+ 1003 FORMAT( '     ', i4, ' = ', i4, 1x, i4, 3x, a7, '   --> ', i4, 1x, i4 )
+ 1007 FORMAT( '     ', i4, 4( 2x, ES12.4 ) )
+ 2000 FORMAT( ' PRESOLVE ERROR: no memory left for allocating ',               &
+              A, '(', I0, ')' )  
 
 !==============================================================================
 !==============================================================================
@@ -20778,9 +20712,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%x_l2( prob%n ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating x_l2(', &
-                       prob%n, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'x_l2', prob%n
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -20792,9 +20724,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%x_u2( prob%n ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating x_u2(', &
-                       prob%n, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'x_u2', prob%n
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -20816,9 +20746,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%x_l2( prob%n ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating x_l2(', &
-                       prob%n, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'x_l2', prob%n
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -20830,9 +20758,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%x_u2( prob%n ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating x_u2(', &
-                       prob%n, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'x_u2', prob%n
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -20975,9 +20901,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%z_l2( prob%n ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating z_l2(', &
-                       prob%n, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'z_l2', prob%n
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -20989,9 +20913,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%z_u2( prob%n ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating z_u2(', &
-                       prob%n, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'z_u2', prob%n
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -21014,9 +20936,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%z_l2( prob%n ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating z_l2(', &
-                       prob%n, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'z_l2', prob%n
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -21028,9 +20948,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%z_u2( prob%n ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating z_u2(', &
-                       prob%n, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'z_u2', prob%n
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -21191,9 +21109,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%c_l2( prob%m ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating c_l2(', &
-                       prob%m, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'c_l2', prob%m
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -21205,9 +21121,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%c_u2( prob%m ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating c_u2(', &
-                       prob%m, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'c_u2', prob%m
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -21230,9 +21144,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%c_l2( prob%m ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating c_l2(', &
-                       prob%m, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'c_l2', prob%m
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -21244,9 +21156,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%c_u2( prob%m ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating c_u2(', &
-                       prob%m, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'c_u2', prob%m
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -21392,9 +21302,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%y_l2( prob%m ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating y_l2(', &
-                       prob%m, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'y_l2', prob%m
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -21406,9 +21314,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%y_u2( prob%m ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating y_u2(', &
-                       prob%m, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'y_u2', prob%m
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -21431,9 +21337,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%y_l2( prob%m ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating y_l2(', &
-                       prob%m, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'y_l2', prob%m
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -21445,9 +21349,7 @@ sli:     DO ii = 1, prob%m
                ALLOCATE( s%y_u2( prob%m ), STAT = iostat )
                IF ( iostat /= 0 ) THEN
                   inform%status = MEMORY_FULL
-                  WRITE( inform%message( 1 ), * )                              &
-                       ' PRESOLVE ERROR: no memory left for allocating y_u2(', &
-                       prob%m, ')'
+                  WRITE( inform%message( 1 ), 2000 ) 'y_u2', prob%m
                   RETURN
                END IF
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
@@ -21567,6 +21469,8 @@ sli:     DO ii = 1, prob%m
       END IF
 
       RETURN
+ 2000 FORMAT( ' PRESOLVE ERROR: no memory left for allocating ',               &
+              A, '(', I0, ')' )  
 
       END SUBROUTINE PRESOLVE_revise_control
 
