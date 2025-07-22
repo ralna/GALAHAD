@@ -169,15 +169,29 @@ runs:
           cp /scratch/github-actions/actions_runner_galahad/lib/* $DEPS/deps/$LIBDIR
           if [[ "${{ inputs.int }}" == "64" ]]; then
             INT64="true"
+            INDEX64="ON"
             BLAS="openblas64_"
             LAPACK="openblas64_"
           else
             INT64="false"
+            INDEX64="OFF"
             BLAS="openblas"
             LAPACK="openblas"
           fi
-          BLAS_PATH="$DEPS/deps/$LIBDIR"
-          LAPACK_PATH="$DEPS/deps/$LIBDIR"
+          BLAS="blas"
+          LAPACK="lapack"
+          cd /scratch/github-actions/actions_runner_galahad/lapack
+          rm -rf builddir
+          mkdir builddir && cd builddir
+          cmake .. \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DBUILD_INDEX64_EXT_API=${INDEX64} \
+            -DTEST_FORTRAN_COMPILER=OFF
+          make -j4
+          make install
+          BLAS_PATH="/scratch/github-actions/actions_runner_galahad/lapack/builddir"
+          LAPACK_PATH="/scratch/github-actions/actions_runner_galahad/lapack/builddir"
           cd /scratch/github-actions/actions_runner_galahad/hsl_subset
           rm -rf builddir
           meson setup builddir --buildtype=debug \
