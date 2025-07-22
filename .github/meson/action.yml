@@ -170,13 +170,9 @@ runs:
           if [[ "${{ inputs.int }}" == "64" ]]; then
             INT64="true"
             INDEX64="ON"
-            BLAS="openblas64_"
-            LAPACK="openblas64_"
           else
             INT64="false"
             INDEX64="OFF"
-            BLAS="openblas"
-            LAPACK="openblas"
           fi
           BLAS="blas"
           LAPACK="lapack"
@@ -189,9 +185,8 @@ runs:
             -DBUILD_INDEX64_EXT_API=${INDEX64} \
             -DTEST_FORTRAN_COMPILER=OFF
           make -j4
-          make install
-          BLAS_PATH="/scratch/github-actions/actions_runner_galahad/lapack/builddir"
-          LAPACK_PATH="/scratch/github-actions/actions_runner_galahad/lapack/builddir"
+          BLAS_PATH="/scratch/github-actions/actions_runner_galahad/lapack/builddir/lib"
+          LAPACK_PATH="/scratch/github-actions/actions_runner_galahad/lapack/builddir/lib"
           cd /scratch/github-actions/actions_runner_galahad/hsl_subset
           rm -rf builddir
           meson setup builddir --buildtype=debug \
