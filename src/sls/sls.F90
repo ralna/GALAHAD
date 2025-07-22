@@ -8065,6 +8065,7 @@
        IF ( PRESENT( PERM ) ) PERM = data%ORDER( : data%n )
        IF ( PRESENT( D ) ) THEN
          D( 1, : ) = 1.0_rp_ ; D( 2, : ) = 0.0_rp_
+         inform%status = GALAHAD_error_access_diagonal
        END IF
        IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
@@ -8075,6 +8076,7 @@
        IF ( PRESENT( PERM ) ) PERM = data%ORDER( : data%n )
        IF ( PRESENT( D ) ) THEN
          D( 1, : ) = 1.0_rp_ ; D( 2, : ) = 0.0_rp_
+         inform%status = GALAHAD_error_access_diagonal
        END IF
        IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
@@ -8183,7 +8185,7 @@
                                        permtab = data%PERMTAB )
          PERM = data%PERMTAB( : data%n ) + 1
        END IF
-       IF ( PRESENT( D ) )  inform%status = GALAHAD_error_access_diagonal
+       IF ( PRESENT( D ) ) inform%status = GALAHAD_error_access_diagonal
        IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
 
@@ -8193,7 +8195,7 @@
        IF ( PRESENT( PERM ) ) THEN
          PERM = data%mumps_par%SYM_PERM( : data%n )
        END IF
-       IF ( PRESENT( D ) )  inform%status = GALAHAD_error_access_diagonal
+       IF ( PRESENT( D ) ) inform%status = GALAHAD_error_access_diagonal
        IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
 
