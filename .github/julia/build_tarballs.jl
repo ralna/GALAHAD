@@ -2,13 +2,14 @@ using BinaryBuilder, Pkg
 
 haskey(ENV, "GALAHAD_RELEASE") || error("The environment variable GALAHAD_RELEASE is not defined.")
 haskey(ENV, "GALAHAD_COMMIT") || error("The environment variable GALAHAD_COMMIT is not defined.")
+haskey(ENV, "GALAHAD_URL") || error("The environment variable GALAHAD_URL is not defined.")
 
 name = "GALAHAD"
 version = VersionNumber(ENV["GALAHAD_RELEASE"])
 
 # Collection of sources required to complete build
 sources = [
-    GitSource("https://github.com/ralna/GALAHAD.git", ENV["GALAHAD_COMMIT"])
+    GitSource(ENV["GALAHAD_URL"], ENV["GALAHAD_COMMIT"])
 ]
 
 # Bash recipe for building across all platforms

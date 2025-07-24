@@ -8,7 +8,7 @@ platforms = [
    ("aarch64-apple-darwin-libgfortran5"  , "lib", "dylib"),
 #  ("aarch64-linux-gnu-libgfortran3"     , "lib", "so"   ),
 #  ("aarch64-linux-gnu-libgfortran4"     , "lib", "so"   ),
-#  ("aarch64-linux-gnu-libgfortran5"     , "lib", "so"   ),
+   ("aarch64-linux-gnu-libgfortran5"     , "lib", "so"   ),
 #  ("aarch64-linux-musl-libgfortran3"    , "lib", "so"   ),
 #  ("aarch64-linux-musl-libgfortran4"    , "lib", "so"   ),
 #  ("aarch64-linux-musl-libgfortran5"    , "lib", "so"   ),
