@@ -10,32 +10,10 @@
 #include <algorithm>
 #include <cstdio> // FIXME: remove as only used for debug
 
+#include "ssids_routines.hxx"
 #include "ssids_rip.hxx"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_kernels_wrappers.hxx"
-
-#ifdef REAL_32
-#define cholesky_factor cholesky_factor_sgl
-#define cholesky_solve_fwd cholesky_solve_fwd_sgl
-#define cholesky_solve_bwd cholesky_solve_bwd_sgl
-#elif REAL_128
-#define cholesky_factor cholesky_factor_qul
-#define cholesky_solve_fwd cholesky_solve_fwd_qul
-#define cholesky_solve_bwd cholesky_solve_bwd_qul
-#else
-#define cholesky_factor cholesky_factor_dbl
-#define cholesky_solve_fwd cholesky_solve_fwd_dbl
-#define cholesky_solve_bwd cholesky_solve_bwd_dbl
-#endif
-
-#ifdef INTEGER_64
-#define host_gemm host_gemm_64
-#define lapack_potrf lapack_potrf_64
-#define host_syrk host_syrk_64
-#define host_trsv host_trsv_64
-#define host_trsm host_trsm_64
-#define gemv gemv_64
-#endif
 
 namespace spral { namespace ssids { namespace cpu {
 

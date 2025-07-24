@@ -5,22 +5,15 @@
  *  \version   GALAHAD 5.1 - 2024-11-26 AT 11:40 GMT
  */
 
-#include "ssids_cpu_kernels_ldlt_tpp.hxx"
-
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <utility>
 
+#include "ssids_routines.hxx"
+#include "ssids_cpu_kernels_ldlt_tpp.hxx"
 #include "ssids_cpu_ThreadStats.hxx"
 #include "ssids_cpu_kernels_wrappers.hxx"
-
-#ifdef INTEGER_64
-#define host_gemm host_gemm_64
-#define host_trsv host_trsv_64
-#define host_trsm host_trsm_64
-#define gemv gemv_64
-#endif
 
 namespace spral { namespace ssids { namespace cpu {
 

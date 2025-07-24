@@ -5,6 +5,7 @@
  *  \version   GALAHAD 4.3 - 2024-02-03 AT 16:00 GMT
  */
 
+#include "ssids_routines.hxx"
 #include "ssids_rip.hxx"
 #include "ssids_cpu_SymbolicSubtree.hxx"
 

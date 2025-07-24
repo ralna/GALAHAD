@@ -21,6 +21,7 @@
 #endif /* _OPENMP */
 
 #include "spral_compat.hxx"
+#include "ssids_routines.hxx"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_BlockPool.hxx"
 #include "ssids_cpu_BuddyAllocator.hxx"
@@ -31,25 +32,6 @@
 #include "ssids_cpu_kernels_ldlt_tpp.hxx"
 #include "ssids_cpu_kernels_common.hxx"
 #include "ssids_cpu_kernels_wrappers.hxx"
-
-#ifdef REAL_32
-#define ldlt_app_internal ldlt_app_internal_sgl
-#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_sgl
-#elif REAL_128
-#include <quadmath.h>
-#define ldlt_app_internal ldlt_app_internal_qul
-#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_qul
-#else
-#define ldlt_app_internal ldlt_app_internal_dbl
-#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_dbl
-#endif
-
-#ifdef INTEGER_64
-#define host_gemm host_gemm_64
-#define host_trsv host_trsv_64
-#define host_trsm host_trsm_64
-#define gemv gemv_64
-#endif
 
 #ifdef INTEGER_64
 #define d_ipc_ "ld"

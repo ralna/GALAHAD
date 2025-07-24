@@ -29,6 +29,8 @@
 #define spral_ssids_cpu_subtree_alter spral_ssids_cpu_subtree_alter_sgl_64
 #define spral_ssids_cpu_subtree_get_contrib spral_ssids_cpu_subtree_get_contrib_sgl_64
 #define spral_ssids_cpu_subtree_free_contrib spral_ssids_cpu_subtree_free_contrib_sgl_64
+#define ldlt_app_internal ldlt_app_internal_sgl_64
+#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_sgl_64
 #elif REAL_128
 #include <quadmath.h>
 #define ldlt_app_factor ldlt_app_factor_qul_64
@@ -60,6 +62,8 @@
 #define spral_ssids_cpu_subtree_alter spral_ssids_cpu_subtree_alter_qul_64
 #define spral_ssids_cpu_subtree_get_contrib spral_ssids_cpu_subtree_get_contrib_qul_64
 #define spral_ssids_cpu_subtree_free_contrib spral_ssids_cpu_subtree_free_contrib_qul_64
+#define ldlt_app_internal ldlt_app_internal_qul_64
+#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_qul_64
 #else
 #define ldlt_app_factor ldlt_app_factor_dbl_64
 #define ldlt_app_solve_fwd ldlt_app_solve_fwd_dbl_64
@@ -90,6 +94,8 @@
 #define spral_ssids_cpu_subtree_alter spral_ssids_cpu_subtree_alter_dbl_64
 #define spral_ssids_cpu_subtree_get_contrib spral_ssids_cpu_subtree_get_contrib_dbl_64
 #define spral_ssids_cpu_subtree_free_contrib spral_ssids_cpu_subtree_free_contrib_dbl_64
+#define ldlt_app_internal ldlt_app_internal_dbl_64
+#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_dbl_64
 #endif
 #else
 #ifdef REAL_32
@@ -122,6 +128,8 @@
 #define spral_ssids_cpu_subtree_alter spral_ssids_cpu_subtree_alter_sgl
 #define spral_ssids_cpu_subtree_get_contrib spral_ssids_cpu_subtree_get_contrib_sgl
 #define spral_ssids_cpu_subtree_free_contrib spral_ssids_cpu_subtree_free_contrib_sgl
+#define ldlt_app_internal ldlt_app_internal_sgl
+#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_sgl
 #elif REAL_128
 #include <quadmath.h>
 #define ldlt_app_factor ldlt_app_factor_qul
@@ -153,6 +161,8 @@
 #define spral_ssids_cpu_subtree_alter spral_ssids_cpu_subtree_alter_qul
 #define spral_ssids_cpu_subtree_get_contrib spral_ssids_cpu_subtree_get_contrib_qul
 #define spral_ssids_cpu_subtree_free_contrib spral_ssids_cpu_subtree_free_contrib_qul
+#define ldlt_app_internal ldlt_app_internal_qul
+#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_qul
 #else
 #define ldlt_app_factor ldlt_app_factor_dbl
 #define ldlt_app_solve_fwd ldlt_app_solve_fwd_dbl
@@ -183,11 +193,18 @@
 #define spral_ssids_cpu_subtree_alter spral_ssids_cpu_subtree_alter_dbl
 #define spral_ssids_cpu_subtree_get_contrib spral_ssids_cpu_subtree_get_contrib_dbl
 #define spral_ssids_cpu_subtree_free_contrib spral_ssids_cpu_subtree_free_contrib_dbl
+#define ldlt_app_internal ldlt_app_internal_dbl
+#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_dbl
 #endif
 #endif
 
 #ifdef INTEGER_64
 #define host_gemm host_gemm_64
+#define lapack_potrf lapack_potrf_64
+#define host_syrk host_syrk_64
+#define host_trsv host_trsv_64
+#define host_trsm host_trsm_64
+#define gemv gemv_64
 #endif
 
 /*
