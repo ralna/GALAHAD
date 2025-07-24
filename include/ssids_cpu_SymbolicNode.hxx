@@ -7,13 +7,9 @@
 #pragma once
 
 #include <vector>
+#include "ssids_routines.hxx"
 #include "ssids_rip.hxx"
 
-/*
-#ifdef INTEGER_64
-#define SymbolicNode SymbolicNode_64
-#endif
-*/
 namespace spral { namespace ssids { namespace cpu {
 
 /** Symbolic representation of a node */

@@ -10,16 +10,10 @@
 
 #include <memory>
 
+#include "ssids_routines.hxx"
 #include "spral_omp.hxx"
 #include "ssids_rip.hxx"
 
-/*
-#ifdef INTEGER_64
-#define BuddyAllocator BuddyAllocator_64
-#define Page Page_64
-#define Table Table_64
-#endif
-*/
 namespace spral { namespace ssids { namespace cpu {
 
 namespace buddy_alloc_internal {

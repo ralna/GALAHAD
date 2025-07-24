@@ -1,0 +1,159 @@
+#ifdef INTEGER_64
+#ifdef REAL_32
+#define ldlt_app_factor ldlt_app_factor_sgl_64
+#define ldlt_app_solve_fwd ldlt_app_solve_fwd_sgl_64
+#define ldlt_app_solve_diag ldlt_app_solve_diag_sgl_64
+#define ldlt_app_solve_bwd ldlt_app_solve_bwd_sgl_64
+#define ldlt_tpp_factor ldlt_tpp_factor_sgl_64
+#define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_sgl_64
+#define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_sgl_64
+#define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_sgl_64
+#define ldlt_nopiv_factor ldlt_nopiv_factor_sgl_64
+#define ldlt_nopiv_solve_fwd ldlt_nopiv_solve_fwd_sgl_64
+#define ldlt_nopiv_solve_diag ldlt_nopiv_solve_diag_sgl_64
+#define ldlt_nopiv_solve_bwd ldlt_nopiv_solve_bwd_sgl_64
+#define cholesky_factor cholesky_factor_sgl_64
+#define cholesky_solve_fwd cholesky_solve_fwd_sgl_64
+#define cholesky_solve_bwd cholesky_solve_bwd_sgl_64
+#define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_single_64
+#define spral_ssids_contrib_free spral_ssids_contrib_free_sgl_64
+#define FAPrecisionTraits FASingleTraits_64
+#define factor_alloc_precision factor_alloc_single_64
+#elif REAL_128
+#include <quadmath.h>
+#define ldlt_app_factor ldlt_app_factor_qul_64
+#define ldlt_app_solve_fwd ldlt_app_solve_fwd_qul_64
+#define ldlt_app_solve_diag ldlt_app_solve_diag_qul_64
+#define ldlt_app_solve_bwd ldlt_app_solve_bwd_qul_64
+#define ldlt_tpp_factor ldlt_tpp_factor_qul_64
+#define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_qul_64
+#define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_qul_64
+#define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_qul_64
+#define ldlt_nopiv_factor ldlt_nopiv_factor_qul_64
+#define ldlt_nopiv_solve_fwd ldlt_nopiv_solve_fwd_qul_64
+#define ldlt_nopiv_solve_diag ldlt_nopiv_solve_diag_qul_64
+#define ldlt_nopiv_solve_bwd ldlt_nopiv_solve_bwd_qul_64
+#define cholesky_factor cholesky_factor_qul_64
+#define cholesky_solve_fwd cholesky_solve_fwd_qul_64
+#define cholesky_solve_bwd cholesky_solve_bwd_qul_64
+#define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_quadruple_64
+#define spral_ssids_contrib_free spral_ssids_contrib_free_qul_64
+#define FAPrecisionTraits FAQuadrupleTraits_64
+#define factor_alloc_precision factor_alloc_quadruple_64
+#else
+#define ldlt_app_factor ldlt_app_factor_dbl_64
+#define ldlt_app_solve_fwd ldlt_app_solve_fwd_dbl_64
+#define ldlt_app_solve_diag ldlt_app_solve_diag_dbl_64
+#define ldlt_app_solve_bwd ldlt_app_solve_bwd_dbl_64
+#define ldlt_tpp_factor ldlt_tpp_factor_dbl_64
+#define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_dbl_64
+#define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_dbl_64
+#define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_dbl_64
+#define ldlt_nopiv_factor ldlt_nopiv_factor_dbl_64
+#define ldlt_nopiv_solve_fwd ldlt_nopiv_solve_fwd_dbl_64
+#define ldlt_nopiv_solve_diag ldlt_nopiv_solve_diag_dbl_64
+#define ldlt_nopiv_solve_bwd ldlt_nopiv_solve_bwd_dbl_64
+#define cholesky_factor cholesky_factor_dbl_64
+#define cholesky_solve_fwd cholesky_solve_fwd_dbl_64
+#define cholesky_solve_bwd cholesky_solve_bwd_dbl_64
+#define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_double_64
+#define spral_ssids_contrib_free spral_ssids_contrib_free_dbl_64
+#define FAPrecisionTraits FADoubleTraits_64
+#define factor_alloc_precision factor_alloc_double_64
+#endif
+#else
+#ifdef REAL_32
+#define ldlt_app_factor ldlt_app_factor_sgl
+#define ldlt_app_solve_fwd ldlt_app_solve_fwd_sgl
+#define ldlt_app_solve_diag ldlt_app_solve_diag_sgl
+#define ldlt_app_solve_bwd ldlt_app_solve_bwd_sgl
+#define ldlt_tpp_factor ldlt_tpp_factor_sgl
+#define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_sgl
+#define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_sgl
+#define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_sgl
+#define ldlt_nopiv_factor ldlt_nopiv_factor_sgl
+#define ldlt_nopiv_solve_fwd ldlt_nopiv_solve_fwd_sgl
+#define ldlt_nopiv_solve_diag ldlt_nopiv_solve_diag_sgl
+#define ldlt_nopiv_solve_bwd ldlt_nopiv_solve_bwd_sgl
+#define cholesky_factor cholesky_factor_sgl
+#define cholesky_solve_fwd cholesky_solve_fwd_sgl
+#define cholesky_solve_bwd cholesky_solve_bwd_sgl
+#define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_single
+#define spral_ssids_contrib_free spral_ssids_contrib_free_sgl
+#define FAPrecisionTraits FASingleTraits
+#define factor_alloc_precision factor_alloc_single
+#elif REAL_128
+#include <quadmath.h>
+#define ldlt_app_factor ldlt_app_factor_qul
+#define ldlt_app_solve_fwd ldlt_app_solve_fwd_qul
+#define ldlt_app_solve_diag ldlt_app_solve_diag_qul
+#define ldlt_app_solve_bwd ldlt_app_solve_bwd_qul
+#define ldlt_tpp_factor ldlt_tpp_factor_qul
+#define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_qul
+#define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_qul
+#define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_qul
+#define ldlt_nopiv_factor ldlt_nopiv_factor_qul
+#define ldlt_nopiv_solve_fwd ldlt_nopiv_solve_fwd_qul
+#define ldlt_nopiv_solve_diag ldlt_nopiv_solve_diag_qul
+#define ldlt_nopiv_solve_bwd ldlt_nopiv_solve_bwd_qul
+#define cholesky_factor cholesky_factor_qul
+#define cholesky_solve_fwd cholesky_solve_fwd_qul
+#define cholesky_solve_bwd cholesky_solve_bwd_qul
+#define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_quadruple
+#define spral_ssids_contrib_free spral_ssids_contrib_free_qul
+#define FAPrecisionTraits FAQuadrupleTraits
+#define factor_alloc_precision factor_alloc_quadruple
+#else
+#define ldlt_app_factor ldlt_app_factor_dbl
+#define ldlt_app_solve_fwd ldlt_app_solve_fwd_dbl
+#define ldlt_app_solve_diag ldlt_app_solve_diag_dbl
+#define ldlt_app_solve_bwd ldlt_app_solve_bwd_dbl
+#define ldlt_tpp_factor ldlt_tpp_factor_dbl
+#define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_dbl
+#define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_dbl
+#define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_dbl
+#define ldlt_nopiv_factor ldlt_nopiv_factor_dbl
+#define ldlt_nopiv_solve_fwd ldlt_nopiv_solve_fwd_dbl
+#define ldlt_nopiv_solve_diag ldlt_nopiv_solve_diag_dbl
+#define ldlt_nopiv_solve_bwd ldlt_nopiv_solve_bwd_dbl
+#define cholesky_factor cholesky_factor_dbl
+#define cholesky_solve_fwd cholesky_solve_fwd_dbl
+#define cholesky_solve_bwd cholesky_solve_bwd_dbl
+#define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_double
+#define spral_ssids_contrib_free spral_ssids_contrib_free_dbl
+#define FAPrecisionTraits FADoubleTraits
+#define factor_alloc_precision factor_alloc_double
+#endif
+#endif
+
+#ifdef INTEGER_64
+#define host_gemm host_gemm_64
+#endif
+
+/*
+#ifdef INTEGER_64
+#define SymbolicSubtree SymbolicSubtree_64
+#define SmallLeafSymbolicSubtree SmallLeafSymbolicSubtree_64
+#define SmallLeafNumericSubtree SmallLeafNumericSubtree_64
+#define SymbolicNode SymbolicNode_64
+#define BuddyAllocator BuddyAllocator_64
+#define Page Page_64
+#define Table Table_64
+#define NumericSubtree NumericSubtree_64
+#define now now_64
+#define end end_64
+#define guess_core guess_core_64
+#define Task Task_64
+#define setState setState_64
+#define Workspace Workspace_64
+#define ThreadStats ThreadStats_64
+#define SingularError SingularError_64
+#define SymbolicSubtree SymbolicSubtree_64
+#define NumericSubtree NumericSubtree_64
+#define SymbolicNode SymbolicNode_64
+#define NumericNode NumericNode_64
+#define AppendAlloc AppendAlloc_64
+#define Page Page_64
+#define Pool Pool_64
+#endif
+*/

@@ -15,6 +15,7 @@
 #include <quadmath.h>
 #endif
 
+#include "ssids_routines.hxx"
 #include "ssids_rip.hxx"
 
 #if defined(__AVX2__) || defined(__AVX__)
