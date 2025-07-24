@@ -1,3 +1,7 @@
+/* include guard */
+#ifndef SSIDS_ROUTINES_H
+#define SSIDS_ROUTINES_H
+
 #ifdef INTEGER_64
 #ifdef REAL_32
 #define ldlt_app_factor ldlt_app_factor_sgl_64
@@ -234,3 +238,6 @@
 #define Pool Pool_64
 #endif
 */
+
+/* end include guard */
+#endif
