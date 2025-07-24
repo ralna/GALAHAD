@@ -11,74 +11,10 @@
 #include <cstdio>
 #include <memory>
 
+#include "ssids_routines.hxx"
+#include "ssids_rip.hxx"
 #include "spral_omp.hxx"
 #include "ssids_cpu_AppendAlloc.hxx"
-#include "ssids_rip.hxx"
-
-#ifdef REAL_32
-#define spral_ssids_cpu_create_num_subtree \
-        spral_ssids_cpu_create_num_subtree_sgl
-#define spral_ssids_cpu_destroy_num_subtree \
-        spral_ssids_cpu_destroy_num_subtree_sgl
-#define spral_ssids_cpu_subtree_solve_fwd \
-        spral_ssids_cpu_subtree_solve_fwd_sgl
-#define spral_ssids_cpu_subtree_solve_diag \
-        spral_ssids_cpu_subtree_solve_diag_sgl
-#define spral_ssids_cpu_subtree_solve_diag_bwd \
-        spral_ssids_cpu_subtree_solve_diag_bwd_sgl
-#define spral_ssids_cpu_subtree_solve_bwd \
-        spral_ssids_cpu_subtree_solve_bwd_sgl
-#define spral_ssids_cpu_subtree_enquire \
-        spral_ssids_cpu_subtree_enquire_sgl
-#define spral_ssids_cpu_subtree_alter \
-        spral_ssids_cpu_subtree_alter_sgl
-#define spral_ssids_cpu_subtree_get_contrib \
-        spral_ssids_cpu_subtree_get_contrib_sgl
-#define spral_ssids_cpu_subtree_free_contrib \
-        spral_ssids_cpu_subtree_free_contrib_sgl
-#elif REAL_128
-#define spral_ssids_cpu_create_num_subtree \
-        spral_ssids_cpu_create_num_subtree_qul
-#define spral_ssids_cpu_destroy_num_subtree \
-        spral_ssids_cpu_destroy_num_subtree_qul
-#define spral_ssids_cpu_subtree_solve_fwd \
-        spral_ssids_cpu_subtree_solve_fwd_qul
-#define spral_ssids_cpu_subtree_solve_diag \
-        spral_ssids_cpu_subtree_solve_diag_qul
-#define spral_ssids_cpu_subtree_solve_diag_bwd \
-        spral_ssids_cpu_subtree_solve_diag_bwd_qul
-#define spral_ssids_cpu_subtree_solve_bwd \
-        spral_ssids_cpu_subtree_solve_bwd_qul
-#define spral_ssids_cpu_subtree_enquire \
-        spral_ssids_cpu_subtree_enquire_qul
-#define spral_ssids_cpu_subtree_alter \
-        spral_ssids_cpu_subtree_alter_qul
-#define spral_ssids_cpu_subtree_get_contrib \
-        spral_ssids_cpu_subtree_get_contrib_qul
-#define spral_ssids_cpu_subtree_free_contrib \
-        spral_ssids_cpu_subtree_free_contrib_qul
-#else
-#define spral_ssids_cpu_create_num_subtree \
-        spral_ssids_cpu_create_num_subtree_dbl
-#define spral_ssids_cpu_destroy_num_subtree \
-        spral_ssids_cpu_destroy_num_subtree_dbl
-#define spral_ssids_cpu_subtree_solve_fwd \
-        spral_ssids_cpu_subtree_solve_fwd_dbl
-#define spral_ssids_cpu_subtree_solve_diag \
-        spral_ssids_cpu_subtree_solve_diag_dbl
-#define spral_ssids_cpu_subtree_solve_diag_bwd \
-        spral_ssids_cpu_subtree_solve_diag_bwd_dbl
-#define spral_ssids_cpu_subtree_solve_bwd \
-        spral_ssids_cpu_subtree_solve_bwd_dbl
-#define spral_ssids_cpu_subtree_enquire \
-        spral_ssids_cpu_subtree_enquire_dbl
-#define spral_ssids_cpu_subtree_alter \
-        spral_ssids_cpu_subtree_alter_dbl
-#define spral_ssids_cpu_subtree_get_contrib \
-        spral_ssids_cpu_subtree_get_contrib_dbl
-#define spral_ssids_cpu_subtree_free_contrib \
-        spral_ssids_cpu_subtree_free_contrib_dbl
-#endif
 
 using namespace spral::ssids::cpu;
 
