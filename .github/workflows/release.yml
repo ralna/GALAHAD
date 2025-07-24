@@ -61,6 +61,7 @@ jobs:
           echo "BINARYBUILDER_AUTOMATIC_APPLE=true" >> $GITHUB_ENV
           echo "GALAHAD_RELEASE=${{ github.ref_name }}" >> $GITHUB_ENV
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
+          echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
 
       - name: Cross-compilation of GALAHAD -- aarch64-linux-gnu-libgfortran5
         run: |
@@ -95,6 +96,7 @@ jobs:
           echo "BINARYBUILDER_AUTOMATIC_APPLE=true" >> $GITHUB_ENV
           echo "GALAHAD_RELEASE=${{ github.ref_name }}" >> $GITHUB_ENV
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
+          echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
 
       - name: Cross-compilation of GALAHAD -- x86_64-w64-mingw32-libgfortran5
         run: |
@@ -128,6 +130,7 @@ jobs:
           echo "BINARYBUILDER_AUTOMATIC_APPLE=true" >> $GITHUB_ENV
           echo "GALAHAD_RELEASE=${{ github.ref_name }}" >> $GITHUB_ENV
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
+          echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
 
       - name: Cross-compilation of GALAHAD -- x86_64-apple-darwin-libgfortran5
         run: |
@@ -162,6 +165,7 @@ jobs:
           echo "BINARYBUILDER_AUTOMATIC_APPLE=true" >> $GITHUB_ENV
           echo "GALAHAD_RELEASE=${{ github.ref_name }}" >> $GITHUB_ENV
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
+          echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
 
       - name: Cross-compilation of GALAHAD -- aarch64-apple-darwin-libgfortran5
         run: |
