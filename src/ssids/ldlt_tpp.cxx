@@ -10,6 +10,7 @@
 #include <limits>
 #include <utility>
 
+#include "spral_procedures.h"
 #include "ssids_routines.h"
 #include "ssids_cpu_kernels_ldlt_tpp.hxx"
 #include "ssids_cpu_ThreadStats.hxx"

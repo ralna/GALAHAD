@@ -1,8 +1,85 @@
 ! THIS VERSION: GALAHAD 5.1 - 2024-11-21 AT 09:40 GMT.
 
 #include "galahad_blas.h"
-#include "ssids_routines.h"
 #include "spral_procedures.h"
+
+#ifdef GALAHAD_BLAS
+#ifdef REAL_32
+#ifdef INTEGER_64
+#define trsm galahad_strsm_64
+#define trsv galahad_strsv_64
+#define gemm galahad_sgemm_64
+#define gemv galahad_sgemv_64
+#else
+#define trsm galahad_strsm
+#define trsv galahad_strsv
+#define gemm galahad_sgemm
+#define gemv galahad_sgemv
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define trsm galahad_qtrsm_64
+#define trsv galahad_qtrsv_64
+#define gemm galahad_qgemm_64
+#define gemv galahad_qgemv_64
+#else
+#define trsm galahad_qtrsm
+#define trsv galahad_qtrsv
+#define gemm galahad_qgemm
+#define gemv galahad_qgemv
+#endif
+#else
+#ifdef INTEGER_64
+#define trsm galahad_dtrsm_64
+#define trsv galahad_dtrsv_64
+#define gemm galahad_dgemm_64
+#define gemv galahad_dgemv_64
+#else
+#define trsm galahad_dtrsm
+#define trsv galahad_dtrsv
+#define gemm galahad_dgemm
+#define gemv galahad_dgemv
+#endif
+#endif
+#else
+#ifdef REAL_32
+#ifdef INTEGER_64
+#define trsm strsm_64
+#define trsv strsv_64
+#define gemm sgemm_64
+#define gemv sgemv_64
+#else
+#define trsm strsm
+#define trsv strsv
+#define gemm sgemm
+#define gemv sgemv
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define trsm qtrsm_64
+#define trsv qtrsv_64
+#define gemm qgemm_64
+#define gemv qgemv_64
+#else
+#define trsm qtrsm
+#define trsv qtrsv
+#define gemm qgemm
+#define gemv qgemv
+#endif
+#else
+#ifdef INTEGER_64
+#define trsm dtrsm_64
+#define trsv dtrsv_64
+#define gemm dgemm_64
+#define gemv dgemv_64
+#else
+#define trsm dtrsm
+#define trsv dtrsv
+#define gemm dgemm
+#define gemv dgemv
+#endif
+#endif
+#endif
 
 ! This module provides a way of doing solve on CPU using GPU data structures
 module spral_ssids_gpu_cpu_solve_precision

@@ -1,8 +1,75 @@
 ! THIS VERSION: GALAHAD 5.1 - 2024-21-18 AT 09:30 GMT.
 
 #include "galahad_lapack.h"
-#include "ssids_routines.h"
 #include "spral_procedures.h"
+
+#ifdef REAL_32
+#ifdef INTEGER_64
+#define spral_c_gemv  spral_c_sgemv_64
+#define spral_c_trsv  spral_c_strsv_64
+#define spral_c_syrk  spral_c_ssyrk_64
+#define spral_c_trsm  spral_c_strsm_64
+#define spral_c_sytrf spral_c_ssytrf_64
+#define spral_c_potrf spral_c_spotrf_64
+#define spral_c_gemm  spral_c_sgemm_64
+#define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_single_64
+#define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_single_64
+#else
+#define spral_c_gemv  spral_c_sgemv
+#define spral_c_trsv  spral_c_strsv
+#define spral_c_syrk  spral_c_ssyrk
+#define spral_c_trsm  spral_c_strsm
+#define spral_c_sytrf spral_c_ssytrf
+#define spral_c_potrf spral_c_spotrf
+#define spral_c_gemm  spral_c_sgemm
+#define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_single
+#define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_single
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define spral_c_gemv  spral_c_qgemv_64
+#define spral_c_trsv  spral_c_qtrsv_64
+#define spral_c_syrk  spral_c_qsyrk_64
+#define spral_c_trsm  spral_c_qtrsm_64
+#define spral_c_sytrf spral_c_qsytrf_64
+#define spral_c_potrf spral_c_qpotrf_64
+#define spral_c_gemm  spral_c_qgemm_64
+#define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_quadruple_64
+#define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_quadruple_64
+#else
+#define spral_c_gemv  spral_c_qgemv
+#define spral_c_trsv  spral_c_qtrsv
+#define spral_c_syrk  spral_c_qsyrk
+#define spral_c_trsm  spral_c_qtrsm
+#define spral_c_sytrf spral_c_qsytrf
+#define spral_c_potrf spral_c_qpotrf
+#define spral_c_gemm  spral_c_qgemm
+#define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_quadruple
+#define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_quadruple
+#endif
+#else
+#ifdef INTEGER_64
+#define spral_c_gemv  spral_c_dgemv_64
+#define spral_c_trsv  spral_c_dtrsv_64
+#define spral_c_syrk  spral_c_dsyrk_64
+#define spral_c_trsm  spral_c_dtrsm_64
+#define spral_c_sytrf spral_c_dsytrf_64
+#define spral_c_potrf spral_c_dpotrf_64
+#define spral_c_gemm  spral_c_dgemm_64
+#define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_double_64
+#define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_double_64
+#else
+#define spral_c_gemv  spral_c_dgemv
+#define spral_c_trsv  spral_c_dtrsv
+#define spral_c_syrk  spral_c_dsyrk
+#define spral_c_trsm  spral_c_dtrsm
+#define spral_c_sytrf spral_c_dsytrf
+#define spral_c_potrf spral_c_dpotrf
+#define spral_c_gemm  spral_c_dgemm
+#define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_double
+#define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_double
+#endif
+#endif
 
 !> \file
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
