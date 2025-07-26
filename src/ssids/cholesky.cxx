@@ -5,13 +5,12 @@
  *  \version   GALAHAD 5.0 - 2024-11-21 AT 10:20 GMT
  */
 
-#include "ssids_cpu_kernels_cholesky.hxx"
+
 
 #include <algorithm>
 #include <cstdio> // FIXME: remove as only used for debug
 
-#include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "ssids_cpu_kernels_cholesky.hxx"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_kernels_wrappers.hxx"
 
@@ -204,10 +203,11 @@ void cholesky_solve_fwd(ipc_ m, ipc_ n, rpc_ const* a, ipc_ lda,
                         ipc_ nrhs, rpc_* x, ipc_ ldx) {
    rpc_ one_val = 1.0;
    rpc_ minus_one_val = - 1.0;
-   if(nrhs==1) {
-      host_trsv(FILL_MODE_LWR, OP_N, DIAG_NON_UNIT, n, a, lda, x, 1);
+   ipc_ one_integer = 1;
+   if(nrhs==one_integer) {
+      host_trsv(FILL_MODE_LWR, OP_N, DIAG_NON_UNIT, n, a, lda, x, one_integer);
       if(m > n)
-         gemv(OP_N, m-n, n, minus_one_val, &a[n], lda, x, 1, one_val, &x[n], 1);
+         gemv(OP_N, m-n, n, minus_one_val, &a[n], lda, x, one_integer, one_val, &x[n], one_integer);
    } else {
       host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_NON_UNIT, n, nrhs,
                 one_val, a, lda, x, ldx);
@@ -222,10 +222,11 @@ void cholesky_solve_bwd(ipc_ m, ipc_ n, rpc_ const* a, ipc_ lda,
                         ipc_ nrhs, rpc_* x, ipc_ ldx) {
    rpc_ one_val = 1.0;
    rpc_ minus_one_val = - 1.0;
-   if(nrhs==1) {
+   ipc_ one_integer = 1;
+   if(nrhs==one_integer) {
       if(m > n)
-         gemv(OP_T, m-n, n, minus_one_val, &a[n], lda, &x[n], 1, one_val, x, 1);
-      host_trsv(FILL_MODE_LWR, OP_T, DIAG_NON_UNIT, n, a, lda, x, 1);
+         gemv(OP_T, m-n, n, minus_one_val, &a[n], lda, &x[n], one_integer, one_val, x, one_integer);
+      host_trsv(FILL_MODE_LWR, OP_T, DIAG_NON_UNIT, n, a, lda, x, one_integer);
    } else {
       if(m > n)
          host_gemm(OP_T, OP_N, n, nrhs, m-n, minus_one_val, &a[n], lda, &x[n],

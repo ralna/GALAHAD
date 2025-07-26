@@ -1,3 +1,7 @@
+/* include guard */
+#ifndef SSIDS_ROUTINES_H
+#define SSIDS_ROUTINES_H
+
 #ifdef INTEGER_64
 #ifdef REAL_32
 #define ldlt_app_factor ldlt_app_factor_sgl_64
@@ -204,7 +208,6 @@
 #define host_syrk host_syrk_64
 #define host_trsv host_trsv_64
 #define host_trsm host_trsm_64
-#define gemv gemv_64
 #endif
 
 #ifdef GALAHAD_BLAS
@@ -379,4 +382,7 @@
 #define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_double
 #define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_double
 #endif
+#endif
+
+/* end include guard */
 #endif

@@ -367,6 +367,7 @@ if int64
   extra_args_single += '-DINTEGER_64'
   extra_args_double += '-DINTEGER_64'
   extra_args_quadruple += '-DINTEGER_64'
+  add_global_arguments('-fpermissive', language : 'cpp')
 endif
 
 # Sources

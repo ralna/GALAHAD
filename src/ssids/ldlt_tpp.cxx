@@ -200,6 +200,8 @@ ipc_ ldlt_tpp_factor(ipc_ m, ipc_ n, ipc_* perm, rpc_* a, ipc_ lda,
    ipc_ nelim = 0; // Number of eliminated variables
    rpc_ one_val = 1.0;
    rpc_ minus_one_val = - 1.0;
+   ipc_ one_integer = 1;
+   ipc_ two_integer = 2;
    while(nelim<n) {
       /*printf("nelim = %d\n", nelim);
       for(ipc_ r=0; r<m; ++r) {
@@ -246,7 +248,7 @@ ipc_ ldlt_tpp_factor(ipc_ m, ipc_ n, ipc_* perm, rpc_* a, ipc_ lda,
             swap_cols(t, nelim, m, n, perm, a, lda, nleft, aleft, ldleft);
             swap_cols(p, nelim+1, m, n, perm, a, lda, nleft, aleft, ldleft);
             apply_2x2(nelim, m, a, lda, ld, ldld, d);
-            host_gemm(OP_N, OP_T, m-nelim-2, n-nelim-2, 2, minus_one_val,
+            host_gemm(OP_N, OP_T, m-nelim-2, n-nelim-2, two_integer, minus_one_val,
                   &a[nelim*lda+nelim+2], lda, &ld[nelim+2], ldld, one_val,
                   &a[(nelim+2)*lda+nelim+2], lda); // update trailing mat
             nelim += 2;
@@ -261,7 +263,7 @@ ipc_ ldlt_tpp_factor(ipc_ m, ipc_ n, ipc_* perm, rpc_* a, ipc_ lda,
             d[2*nelim] = 1 / a[nelim*lda+nelim];
             d[2*nelim+1] = 0.0;
             apply_1x1(nelim, m, a, lda, ld, ldld, d);
-            host_gemm(OP_N, OP_T, m-nelim-1, n-nelim-1, 1, minus_one_val,
+            host_gemm(OP_N, OP_T, m-nelim-1, n-nelim-1, one_integer, minus_one_val,
                   &a[nelim*lda+nelim+1], lda, &ld[nelim+1], ldld, one_val,
                   &a[(nelim+1)*lda+nelim+1], lda); // update trailing mat
             nelim += 1;
@@ -280,7 +282,7 @@ ipc_ ldlt_tpp_factor(ipc_ m, ipc_ n, ipc_* perm, rpc_* a, ipc_ lda,
             d[2*nelim] = 1 / a[nelim*lda+nelim];
             d[2*nelim+1] = 0.0;
             apply_1x1(nelim, m, a, lda, ld, ldld, d);
-            host_gemm(OP_N, OP_T, m-nelim-1, n-nelim-1, 1, minus_one_val,
+            host_gemm(OP_N, OP_T, m-nelim-1, n-nelim-1, one_integer, minus_one_val,
                   &a[nelim*lda+nelim+1], lda, &ld[nelim+1], ldld, one_val,
                   &a[(nelim+1)*lda+nelim+1], lda); // update trailing mat
             nelim += 1;
@@ -305,10 +307,11 @@ void ldlt_tpp_solve_fwd(ipc_ m, ipc_ n, rpc_ const* l, ipc_ ldl, ipc_ nrhs,
                         rpc_* x, ipc_ ldx) {
    rpc_ one_val = 1.0;
    rpc_ minus_one_val = - 1.0;
-   if(nrhs==1) {
-      host_trsv(FILL_MODE_LWR, OP_N, DIAG_UNIT, n, l, ldl, x, 1);
+   ipc_ one_integer = 1;
+   if(nrhs==one_integer) {
+      host_trsv(FILL_MODE_LWR, OP_N, DIAG_UNIT, n, l, ldl, x, one_integer);
       if(m > n)
-         gemv(OP_N, m-n, n, minus_one_val, &l[n], ldl, x, 1, one_val, &x[n], 1);
+         gemv(OP_N, m-n, n, minus_one_val, &l[n], ldl, x, one_integer, one_val, &x[n], one_integer);
    } else {
       host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_UNIT, n, nrhs,
                 one_val, l, ldl, x, ldx);
@@ -347,10 +350,11 @@ void ldlt_tpp_solve_bwd(ipc_ m, ipc_ n, rpc_ const* l, ipc_ ldl, ipc_ nrhs,
                         rpc_* x, ipc_ ldx) {
    rpc_ one_val = 1.0;
    rpc_ minus_one_val = - 1.0;
-   if(nrhs==1) {
+   ipc_ one_integer = 1;
+   if(nrhs==one_integer) {
       if(m > n)
-         gemv(OP_T, m-n, n, minus_one_val, &l[n], ldl, &x[n], 1, one_val, x, 1);
-      host_trsv(FILL_MODE_LWR, OP_T, DIAG_UNIT, n, l, ldl, x, 1);
+         gemv(OP_T, m-n, n, minus_one_val, &l[n], ldl, &x[n], one_integer, one_val, x, one_integer);
+      host_trsv(FILL_MODE_LWR, OP_T, DIAG_UNIT, n, l, ldl, x, one_integer);
    } else {
       if(m > n)
          host_gemm(OP_T, OP_N, n, nrhs, m-n, minus_one_val, &l[n], ldl,
