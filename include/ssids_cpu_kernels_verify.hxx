@@ -9,8 +9,9 @@
 
 #include <vector>
 
-#include "ssids_cpu_kernels_wrappers.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
+#include "ssids_cpu_kernels_wrappers.hxx"
 
 namespace spral { namespace ssids { namespace cpu {
 

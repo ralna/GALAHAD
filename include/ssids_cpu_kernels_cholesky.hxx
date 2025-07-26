@@ -5,21 +5,8 @@
  *  \version   GALAHAD 5.1 - 2024-11-21 AT 10:30 GMT
  */
 
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
-
-#ifdef REAL_32
-#define cholesky_factor cholesky_factor_sgl
-#define cholesky_solve_fwd cholesky_solve_fwd_sgl
-#define cholesky_solve_bwd cholesky_solve_bwd_sgl
-#elif REAL_128
-#define cholesky_factor cholesky_factor_qul
-#define cholesky_solve_fwd cholesky_solve_fwd_qul
-#define cholesky_solve_bwd cholesky_solve_bwd_qul
-#else
-#define cholesky_factor cholesky_factor_dbl
-#define cholesky_solve_fwd cholesky_solve_fwd_dbl
-#define cholesky_solve_bwd cholesky_solve_bwd_dbl
-#endif
 
 namespace spral { namespace ssids { namespace cpu {
 

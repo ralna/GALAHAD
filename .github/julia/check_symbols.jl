@@ -9,6 +9,7 @@ function exported_symbols(path::String)
   for line in lines
     tab = split(line, " ", keepempty=false)
     symbol = tab[1]
+    symbol = readchomp(`c++filt -t $symbol`)
     push!(symbols, symbol)
   end
   return symbols
@@ -73,7 +74,7 @@ for (symbols1, symbols2, int1, int2, name) in symbols_combinations
     flag2 = startswith(symbol, "galahad_") && endswith(symbol, "64_") && (int1 == int2 == 64)
     flag3 = startswith(symbol, "cutest_") && endswith(symbol, "_")
     flag4 = mapreduce(x -> contains(symbol, x), |, single_double_quadruple_modules) && (int1 == int2)
-    flag5 = startswith(symbol, "_Z") || startswith(symbol, "gk_") || startswith(symbol, "galmetis__") || startswith(symbol, "libmetis__")
+    flag5 = startswith(symbol, "gk_") || startswith(symbol, "galmetis__") || startswith(symbol, "libmetis__")
     flag6 = mapreduce(x -> startswith(symbol, x), |, ["galahad_pardiso", "galahad_pastix", "galahad_spm", "galahad_metis", "galahad_mpi", "galahad_wsmp", "galahad_mkl_pardiso", "galahad_ws"])
     flag7 = mapreduce(x -> symbol == x, |, ["fun_", "grad_", "hprod_", "jprod_", "hess_"]) || mapreduce(x -> startswith(symbol, x), |, ["elfun", "group", "range"])
     flag8 = mapreduce(x -> symbol == x, |, ["version_galahad", "METIS_Free", "METIS_NodeND", "METIS_SetDefaultOptions", "gal_kb07ai_"]) && (int1 == int2 == 32)

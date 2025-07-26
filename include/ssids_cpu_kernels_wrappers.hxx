@@ -9,8 +9,9 @@
 
 #include <stdint.h>
 
-#include "ssids_cpu_kernels_common.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
+#include "ssids_cpu_kernels_common.hxx"
 
 namespace spral { namespace ssids { namespace cpu {
 

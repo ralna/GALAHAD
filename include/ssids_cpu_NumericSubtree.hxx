@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
@@ -17,32 +18,6 @@
 #include "ssids_cpu_SmallLeafNumericSubtree.hxx"
 #include "ssids_cpu_ThreadStats.hxx"
 
-#ifdef REAL_32
-#define cholesky_solve_fwd cholesky_solve_fwd_sgl
-#define cholesky_solve_bwd cholesky_solve_bwd_sgl
-#define ldlt_app_solve_fwd ldlt_app_solve_fwd_sgl
-#define ldlt_app_solve_diag ldlt_app_solve_diag_sgl
-#define ldlt_app_solve_bwd ldlt_app_solve_bwd_sgl
-#elif REAL_128
-#include <quadmath.h>
-#define cholesky_solve_fwd cholesky_solve_fwd_qul
-#define cholesky_solve_bwd cholesky_solve_bwd_qul
-#define ldlt_app_solve_fwd ldlt_app_solve_fwd_qul
-#define ldlt_app_solve_diag ldlt_app_solve_diag_qul
-#define ldlt_app_solve_bwd ldlt_app_solve_bwd_qul
-#else
-#define cholesky_solve_fwd cholesky_solve_fwd_dbl
-#define cholesky_solve_bwd cholesky_solve_bwd_dbl
-#define ldlt_app_solve_fwd ldlt_app_solve_fwd_dbl
-#define ldlt_app_solve_diag ldlt_app_solve_diag_dbl
-#define ldlt_app_solve_bwd ldlt_app_solve_bwd_dbl
-#endif
-
-/*
-#ifdef INTEGER_64
-#define NumericSubtree NumericSubtree_64
-#endif
-*/
 namespace spral { namespace ssids { namespace cpu {
 
 /** \brief Represents a submatrix (subtree) factorized on the CPU.

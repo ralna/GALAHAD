@@ -9,16 +9,11 @@
 
 #include <memory>
 
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
 #include "ssids_cpu_SymbolicNode.hxx"
 
-/*
-#ifdef INTEGER_64
-#define SymbolicSubtree SymbolicSubtree_64
-#define SmallLeafSymbolicSubtree SmallLeafSymbolicSubtree_64
-#endif
-*/
 namespace spral { namespace ssids { namespace cpu {
 
 class SymbolicSubtree;

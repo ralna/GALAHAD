@@ -7,24 +7,8 @@
 
 #pragma once
 
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
-
-#ifdef REAL_32
-#define ldlt_tpp_factor ldlt_tpp_factor_sgl
-#define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_sgl
-#define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_sgl
-#define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_sgl
-#elif REAL_128
-#define ldlt_tpp_factor ldlt_tpp_factor_qul
-#define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_qul
-#define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_qul
-#define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_qul
-#else
-#define ldlt_tpp_factor ldlt_tpp_factor_dbl
-#define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_dbl
-#define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_dbl
-#define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_dbl
-#endif
 
 namespace spral { namespace ssids { namespace cpu {
 
