@@ -215,7 +215,6 @@
 #define gemv gemv_64
 #endif
 
-/*
 #ifdef INTEGER_64
 #define SymbolicSubtree SymbolicSubtree_64
 #define SmallLeafSymbolicSubtree SmallLeafSymbolicSubtree_64
@@ -226,7 +225,6 @@
 #define Table Table_64
 #define NumericSubtree NumericSubtree_64
 #define now now_64
-#define end end_64
 #define guess_core guess_core_64
 #define Task Task_64
 #define setState setState_64
@@ -241,4 +239,3 @@
 #define Page Page_64
 #define Pool Pool_64
 #endif
-*/
