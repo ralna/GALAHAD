@@ -10,7 +10,7 @@
 #include <vector>
 #include <stdio.h>
 
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "ssids_cpu_SmallLeafSymbolicSubtree.hxx"
 #include "ssids_cpu_SymbolicNode.hxx"

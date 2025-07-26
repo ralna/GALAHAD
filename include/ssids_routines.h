@@ -1,7 +1,3 @@
-/* include guard */
-#ifndef SSIDS_ROUTINES_H
-#define SSIDS_ROUTINES_H
-
 #ifdef INTEGER_64
 #ifdef REAL_32
 #define ldlt_app_factor ldlt_app_factor_sgl_64
@@ -211,6 +207,84 @@
 #define gemv gemv_64
 #endif
 
+#ifdef GALAHAD_BLAS
+#ifdef REAL_32
+#ifdef INTEGER_64
+#define trsm galahad_strsm_64
+#define trsv galahad_strsv_64
+#define gemm galahad_sgemm_64
+#define gemv galahad_sgemv_64
+#else
+#define trsm galahad_strsm
+#define trsv galahad_strsv
+#define gemm galahad_sgemm
+#define gemv galahad_sgemv
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define trsm galahad_qtrsm_64
+#define trsv galahad_qtrsv_64
+#define gemm galahad_qgemm_64
+#define gemv galahad_qgemv_64
+#else
+#define trsm galahad_qtrsm
+#define trsv galahad_qtrsv
+#define gemm galahad_qgemm
+#define gemv galahad_qgemv
+#endif
+#else
+#ifdef INTEGER_64
+#define trsm galahad_dtrsm_64
+#define trsv galahad_dtrsv_64
+#define gemm galahad_dgemm_64
+#define gemv galahad_dgemv_64
+#else
+#define trsm galahad_dtrsm
+#define trsv galahad_dtrsv
+#define gemm galahad_dgemm
+#define gemv galahad_dgemv
+#endif
+#endif
+#else
+#ifdef REAL_32
+#ifdef INTEGER_64
+#define trsm strsm_64
+#define trsv strsv_64
+#define gemm sgemm_64
+#define gemv sgemv_64
+#else
+#define trsm strsm
+#define trsv strsv
+#define gemm sgemm
+#define gemv sgemv
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define trsm qtrsm_64
+#define trsv qtrsv_64
+#define gemm qgemm_64
+#define gemv qgemv_64
+#else
+#define trsm qtrsm
+#define trsv qtrsv
+#define gemm qgemm
+#define gemv qgemv
+#endif
+#else
+#ifdef INTEGER_64
+#define trsm dtrsm_64
+#define trsv dtrsv_64
+#define gemm dgemm_64
+#define gemv dgemv_64
+#else
+#define trsm dtrsm
+#define trsv dtrsv
+#define gemm dgemm
+#define gemv dgemv
+#endif
+#endif
+#endif
+
 /*
 #ifdef INTEGER_64
 #define SymbolicSubtree SymbolicSubtree_64
@@ -239,5 +313,70 @@
 #endif
 */
 
-/* end include guard */
+#ifdef REAL_32
+#ifdef INTEGER_64
+#define spral_c_gemv  spral_c_sgemv_64
+#define spral_c_trsv  spral_c_strsv_64
+#define spral_c_syrk  spral_c_ssyrk_64
+#define spral_c_trsm  spral_c_strsm_64
+#define spral_c_sytrf spral_c_ssytrf_64
+#define spral_c_potrf spral_c_spotrf_64
+#define spral_c_gemm  spral_c_sgemm_64
+#define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_single_64
+#define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_single_64
+#else
+#define spral_c_gemv  spral_c_sgemv
+#define spral_c_trsv  spral_c_strsv
+#define spral_c_syrk  spral_c_ssyrk
+#define spral_c_trsm  spral_c_strsm
+#define spral_c_sytrf spral_c_ssytrf
+#define spral_c_potrf spral_c_spotrf
+#define spral_c_gemm  spral_c_sgemm
+#define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_single
+#define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_single
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define spral_c_gemv  spral_c_qgemv_64
+#define spral_c_trsv  spral_c_qtrsv_64
+#define spral_c_syrk  spral_c_qsyrk_64
+#define spral_c_trsm  spral_c_qtrsm_64
+#define spral_c_sytrf spral_c_qsytrf_64
+#define spral_c_potrf spral_c_qpotrf_64
+#define spral_c_gemm  spral_c_qgemm_64
+#define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_quadruple_64
+#define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_quadruple_64
+#else
+#define spral_c_gemv  spral_c_qgemv
+#define spral_c_trsv  spral_c_qtrsv
+#define spral_c_syrk  spral_c_qsyrk
+#define spral_c_trsm  spral_c_qtrsm
+#define spral_c_sytrf spral_c_qsytrf
+#define spral_c_potrf spral_c_qpotrf
+#define spral_c_gemm  spral_c_qgemm
+#define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_quadruple
+#define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_quadruple
+#endif
+#else
+#ifdef INTEGER_64
+#define spral_c_gemv  spral_c_dgemv_64
+#define spral_c_trsv  spral_c_dtrsv_64
+#define spral_c_syrk  spral_c_dsyrk_64
+#define spral_c_trsm  spral_c_dtrsm_64
+#define spral_c_sytrf spral_c_dsytrf_64
+#define spral_c_potrf spral_c_dpotrf_64
+#define spral_c_gemm  spral_c_dgemm_64
+#define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_double_64
+#define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_double_64
+#else
+#define spral_c_gemv  spral_c_dgemv
+#define spral_c_trsv  spral_c_dtrsv
+#define spral_c_syrk  spral_c_dsyrk
+#define spral_c_trsm  spral_c_dtrsm
+#define spral_c_sytrf spral_c_dsytrf
+#define spral_c_potrf spral_c_dpotrf
+#define spral_c_gemm  spral_c_dgemm
+#define GALAHAD_BLAS_inter_precision GALAHAD_BLAS_inter_double
+#define GALAHAD_LAPACK_inter_precision GALAHAD_LAPACK_inter_double
+#endif
 #endif

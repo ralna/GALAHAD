@@ -9,7 +9,7 @@
 
 #include <cstddef>
 
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 
 namespace spral { namespace ssids { namespace cpu {

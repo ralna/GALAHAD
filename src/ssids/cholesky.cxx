@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <cstdio> // FIXME: remove as only used for debug
 
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_kernels_wrappers.hxx"

@@ -11,7 +11,7 @@
 #include <cstdio>
 #include <memory>
 
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "spral_omp.hxx"
 #include "ssids_cpu_AppendAlloc.hxx"

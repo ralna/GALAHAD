@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "spral_compat.hxx" // in case std::align not defined
 

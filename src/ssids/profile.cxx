@@ -5,7 +5,7 @@
  *  \author    Florent Lopez
  */
 
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "ssids_profile.hxx"
 

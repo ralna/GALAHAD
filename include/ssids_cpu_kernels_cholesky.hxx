@@ -5,7 +5,7 @@
  *  \version   GALAHAD 5.1 - 2024-11-21 AT 10:30 GMT
  */
 
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 
 namespace spral { namespace ssids { namespace cpu {

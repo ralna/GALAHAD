@@ -21,7 +21,7 @@
 #endif /* _OPENMP */
 
 #include "spral_compat.hxx"
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_BlockPool.hxx"
 #include "ssids_cpu_BuddyAllocator.hxx"

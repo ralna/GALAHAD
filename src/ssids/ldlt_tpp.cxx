@@ -10,7 +10,7 @@
 #include <limits>
 #include <utility>
 
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_cpu_kernels_ldlt_tpp.hxx"
 #include "ssids_cpu_ThreadStats.hxx"
 #include "ssids_cpu_kernels_wrappers.hxx"

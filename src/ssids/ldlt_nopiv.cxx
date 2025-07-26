@@ -5,7 +5,7 @@
  *  \version   GALAHAD 4.3 - 2024-02-03 AT 09:50 GMT
  */
 
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_cpu_kernels_ldlt_nopiv.hxx"
 
 namespace spral { namespace ssids { namespace cpu {

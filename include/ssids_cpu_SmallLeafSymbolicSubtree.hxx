@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
 #include "ssids_cpu_SymbolicNode.hxx"

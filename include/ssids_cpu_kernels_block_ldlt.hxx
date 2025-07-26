@@ -9,7 +9,7 @@
 #include <cstdlib> // FIXME: remove debug?
 #include <limits>
 
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "ssids_cpu_ThreadStats.hxx"
 #include "ssids_cpu_kernels_SimdVec.hxx"

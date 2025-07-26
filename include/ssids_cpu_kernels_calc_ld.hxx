@@ -10,7 +10,7 @@
 #include <cmath>
 #include <limits>
 
-#include "ssids_routines.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "ssids_cpu_kernels_common.hxx"
 #include "ssids_cpu_kernels_SimdVec.hxx"
