@@ -1,7 +1,3 @@
-/* include guard */
-#ifndef SSIDS_ROUTINES_H
-#define SSIDS_ROUTINES_H
-
 #ifdef INTEGER_64
 #define spral_ssids_blas_iface spral_ssids_blas_iface_64
 #define spral_kinds spral_kinds_64
@@ -46,7 +42,6 @@
 #define ldlt_app_internal ldlt_app_internal_sgl_64
 #define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_sgl_64
 #elif REAL_128
-#include <quadmath.h>
 #define ldlt_app_factor ldlt_app_factor_qul_64
 #define ldlt_app_solve_fwd ldlt_app_solve_fwd_qul_64
 #define ldlt_app_solve_diag ldlt_app_solve_diag_qul_64
@@ -145,7 +140,6 @@
 #define ldlt_app_internal ldlt_app_internal_sgl
 #define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_sgl
 #elif REAL_128
-#include <quadmath.h>
 #define ldlt_app_factor ldlt_app_factor_qul
 #define ldlt_app_solve_fwd ldlt_app_solve_fwd_qul
 #define ldlt_app_solve_diag ldlt_app_solve_diag_qul
@@ -218,6 +212,7 @@
 #define host_syrk host_syrk_64
 #define host_trsv host_trsv_64
 #define host_trsm host_trsm_64
+#define gemv gemv_64
 #endif
 
 /*
@@ -247,6 +242,3 @@
 #define Pool Pool_64
 #endif
 */
-
-/* end include guard */
-#endif
