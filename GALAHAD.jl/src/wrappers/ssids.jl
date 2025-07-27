@@ -55,3 +55,15 @@ struct spral_ssids_inform{T,INT}
   cpu_flops::Int64
   gpu_flops::Int64
 end
+
+function run_sif(::Val{:ssids}, ::Val{:single}, path_libsif::String, path_outsdif::String)
+  cmd = setup_env_lbt(`$(GALAHAD_jll.runssids_sif_single()) $path_libsif $path_outsdif`)
+  run(cmd)
+  return nothing
+end
+
+function run_sif(::Val{:ssids}, ::Val{:double}, path_libsif::String, path_outsdif::String)
+  cmd = setup_env_lbt(`$(GALAHAD_jll.runssids_sif_double()) $path_libsif $path_outsdif`)
+  run(cmd)
+  return nothing
+end

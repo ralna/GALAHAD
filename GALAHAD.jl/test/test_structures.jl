@@ -289,6 +289,23 @@ Ref{eqp_inform_type{Float64,Int64}}()[]
 Ref{eqp_inform_type{Float128,Int32}}()[]
 Ref{eqp_inform_type{Float128,Int64}}()[]
 
+# Structures for expo
+Ref{expo_control_type{Float32,Int32}}()[]
+Ref{expo_control_type{Float32,Int64}}()[]
+Ref{expo_control_type{Float64,Int32}}()[]
+Ref{expo_control_type{Float64,Int64}}()[]
+Ref{expo_control_type{Float128,Int32}}()[]
+Ref{expo_control_type{Float128,Int64}}()[]
+Ref{expo_time_type{Float32}}()[]
+Ref{expo_time_type{Float64}}()[]
+Ref{expo_time_type{Float128}}()[]
+Ref{expo_inform_type{Float32,Int32}}()[]
+Ref{expo_inform_type{Float32,Int64}}()[]
+Ref{expo_inform_type{Float64,Int32}}()[]
+Ref{expo_inform_type{Float64,Int64}}()[]
+Ref{expo_inform_type{Float128,Int32}}()[]
+Ref{expo_inform_type{Float128,Int64}}()[]
+
 # Structures for fdc
 Ref{fdc_control_type{Float32,Int32}}()[]
 Ref{fdc_control_type{Float32,Int64}}()[]
@@ -918,6 +935,19 @@ Ref{spral_ssids_inform{Float64,Int32}}()[]
 Ref{spral_ssids_inform{Float64,Int64}}()[]
 Ref{spral_ssids_inform{Float128,Int32}}()[]
 Ref{spral_ssids_inform{Float128,Int64}}()[]
+
+# Structures for ssls
+Ref{ssls_control_type{Int32}}()[]
+Ref{ssls_control_type{Int64}}()[]
+Ref{ssls_time_type{Float32}}()[]
+Ref{ssls_time_type{Float64}}()[]
+Ref{ssls_time_type{Float128}}()[]
+Ref{ssls_inform_type{Float32,Int32}}()[]
+Ref{ssls_inform_type{Float32,Int64}}()[]
+Ref{ssls_inform_type{Float64,Int32}}()[]
+Ref{ssls_inform_type{Float64,Int64}}()[]
+Ref{ssls_inform_type{Float128,Int32}}()[]
+Ref{ssls_inform_type{Float128,Int64}}()[]
 
 # Structures for trb
 Ref{trb_control_type{Float32,Int32}}()[]

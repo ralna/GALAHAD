@@ -70,7 +70,6 @@ include("wrappers/version.jl")
 include("wrappers/cdqp.jl")
 include("wrappers/demo.jl")
 include("wrappers/dlp.jl")
-include("wrappers/expo.jl")
 include("wrappers/fdh.jl")
 include("wrappers/filtrane.jl")
 include("wrappers/l1qp.jl")
@@ -185,5 +184,11 @@ include("wrappers/bllsb.jl")
 
 # bnls requires rqs, sls, sils, ir, glrt, psls, bsc, roots.
 include("wrappers/bnls.jl")
+
+# ssls requires sls
+include("wrappers/ssls.jl")
+
+# expo requires bsc, tru, ssls
+include("wrappers/expo.jl")
 
 end # module GALAHAD
