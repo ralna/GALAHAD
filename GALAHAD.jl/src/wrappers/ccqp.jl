@@ -50,6 +50,7 @@ struct ccqp_control_type{T,INT}
   feasol::Bool
   balance_initial_complentarity::Bool
   crossover::Bool
+  reduced_pounce_system::Bool
   space_critical::Bool
   deallocate_error_fatal::Bool
   generate_sif_file::Bool
@@ -59,6 +60,7 @@ struct ccqp_control_type{T,INT}
   prefix::NTuple{31,Cchar}
   fdc_control::fdc_control_type{T,INT}
   sbls_control::sbls_control_type{T,INT}
+  sbls_pounce_control::sbls_control_type{T,INT}
   fit_control::fit_control_type{INT}
   roots_control::roots_control_type{T,INT}
   cro_control::cro_control_type{T,INT}
@@ -109,6 +111,7 @@ struct ccqp_inform_type{T,INT}
   time::ccqp_time_type{T}
   fdc_inform::fdc_inform_type{T,INT}
   sbls_inform::sbls_inform_type{T,INT}
+  sbls_pounce_inform::sbls_inform_type{T,INT}
   fit_inform::fit_inform_type{INT}
   roots_inform::roots_inform_type{INT}
   cro_inform::cro_inform_type{T,INT}

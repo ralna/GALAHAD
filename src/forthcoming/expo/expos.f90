@@ -111,6 +111,6 @@
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    REAL ( kind = rp ) :: r
    r = userdata%real( 1 )
-   H_val( 1 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) +  Y( 4 ) )
+   H_val( 1 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) + Y( 4 ) )
    H_val( 2 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
    END SUBROUTINE HL

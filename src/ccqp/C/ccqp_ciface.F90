@@ -135,6 +135,7 @@
       LOGICAL ( KIND = C_BOOL ) :: feasol
       LOGICAL ( KIND = C_BOOL ) :: balance_initial_complentarity
       LOGICAL ( KIND = C_BOOL ) :: crossover
+      LOGICAL ( KIND = C_BOOL ) :: reduced_pounce_system
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       LOGICAL ( KIND = C_BOOL ) :: generate_sif_file
@@ -144,6 +145,7 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
       TYPE ( fdc_control_type ) :: fdc_control
       TYPE ( sbls_control_type ) :: sbls_control
+      TYPE ( sbls_control_type ) :: sbls_pounce_control
       TYPE ( fit_control_type ) :: fit_control
       TYPE ( roots_control_type ) :: roots_control
       TYPE ( cro_control_type ) :: cro_control
@@ -190,6 +192,7 @@
       TYPE ( ccqp_time_type ) :: time
       TYPE ( fdc_inform_type ) :: fdc_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
+      TYPE ( sbls_inform_type ) :: sbls_pounce_inform
       TYPE ( fit_inform_type ) :: fit_inform
       TYPE ( roots_inform_type ) :: roots_inform
       TYPE ( cro_inform_type ) :: cro_inform
@@ -268,6 +271,7 @@
     fcontrol%balance_initial_complentarity                                     &
       = ccontrol%balance_initial_complentarity
     fcontrol%crossover = ccontrol%crossover
+    fcontrol%reduced_pounce_system = ccontrol%reduced_pounce_system
     fcontrol%space_critical = ccontrol%space_critical
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
     fcontrol%generate_sif_file = ccontrol%generate_sif_file
@@ -276,6 +280,8 @@
     ! Derived types
     CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
     CALL copy_sbls_control_in( ccontrol%sbls_control, fcontrol%sbls_control )
+    CALL copy_sbls_control_in( ccontrol%sbls_pounce_control,                   &
+                               fcontrol%sbls_pounce_control )
     CALL copy_fit_control_in( ccontrol%fit_control, fcontrol%fit_control )
     CALL copy_roots_control_in( ccontrol%roots_control, fcontrol%roots_control )
     CALL copy_cro_control_in( ccontrol%cro_control, fcontrol%cro_control )
@@ -363,6 +369,7 @@
     ccontrol%balance_initial_complentarity                                     &
       = fcontrol%balance_initial_complentarity
     ccontrol%crossover = fcontrol%crossover
+    ccontrol%reduced_pounce_system = fcontrol%reduced_pounce_system
     ccontrol%space_critical = fcontrol%space_critical
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
     ccontrol%generate_sif_file = fcontrol%generate_sif_file
@@ -371,6 +378,8 @@
     ! Derived types
     CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
     CALL copy_sbls_control_out( fcontrol%sbls_control, ccontrol%sbls_control )
+    CALL copy_sbls_control_out( fcontrol%sbls_pounce_control,                  &
+                                ccontrol%sbls_pounce_control )
     CALL copy_fit_control_out( fcontrol%fit_control, ccontrol%fit_control )
     CALL copy_roots_control_out( fcontrol%roots_control, ccontrol%roots_control)
     CALL copy_cro_control_out( fcontrol%cro_control, ccontrol%cro_control )
@@ -479,6 +488,8 @@
     CALL copy_time_in( cinform%time, finform%time )
     CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
     CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
+    CALL copy_sbls_inform_in( cinform%sbls_pounce_inform,                      &
+                              finform%sbls_pounce_inform )
     CALL copy_fit_inform_in( cinform%fit_inform, finform%fit_inform )
     CALL copy_roots_inform_in( cinform%roots_inform, finform%roots_inform )
     CALL copy_cro_inform_in( cinform%cro_inform, finform%cro_inform )
@@ -531,6 +542,8 @@
     CALL copy_time_out( finform%time, cinform%time )
     CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
     CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
+    CALL copy_sbls_inform_out( finform%sbls_pounce_inform,                     &
+                               cinform%sbls_pounce_inform )
     CALL copy_fit_inform_out( finform%fit_inform, cinform%fit_inform )
     CALL copy_roots_inform_out( finform%roots_inform, cinform%roots_inform )
     CALL copy_cro_inform_out( finform%cro_inform, cinform%cro_inform )

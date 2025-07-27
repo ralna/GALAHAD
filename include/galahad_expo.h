@@ -528,7 +528,7 @@ struct expo_control_type {
     rpc_ try_sqp_start;
 
     /// \brief
-    /// stop the advanced start search once the residuals small tham
+    /// stop the advanced start search once the residuals small than
     /// .stop_advance_start
     rpc_ stop_advance_start;
 
@@ -862,7 +862,7 @@ void expo_reset_control( struct expo_control_type *control,
   \li  1. The import was succesful, and the package is ready for the solve phase
  */
 
-//  *-*-*-*-*-*-*-*-   E X P O _ S O L V E _ W I T H _ M A T   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-   E X P O _ S O L V E _ H E S S I A N _D I R E C T   -*-*-*-*-
 
 void expo_solve_hessian_direct( void **data,
                                 void *userdata,
@@ -870,7 +870,7 @@ void expo_solve_hessian_direct( void **data,
                                 ipc_ n,
                                 ipc_ m,
                                 ipc_ J_ne,
-                                 ipc_ H_ne,
+                                ipc_ H_ne,
                                 const rpc_ c_l[],
                                 const rpc_ c_u[],
                                 const rpc_ x_l[],

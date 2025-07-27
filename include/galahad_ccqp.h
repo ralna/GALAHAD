@@ -624,6 +624,14 @@ struct ccqp_control_type {
     bool crossover;
 
     /// \brief
+    ///
+    /// if .reduced_pounce_system is true, eliminate fixed variables when
+    /// solving the linear system required by the attempted pounce to 
+    /// the solution
+    ///
+    bool reduced_pounce_system;
+
+    /// \brief
     /// if .space_critical true, every effort will be made to use as little
     /// space as possible. This may result in longer computation time
     bool space_critical;
@@ -664,6 +672,10 @@ struct ccqp_control_type {
     /// \brief
     /// control parameters for SBLS
     struct sbls_control_type sbls_control;
+
+    /// \brief
+    /// control parameters for SBLS_pounce
+    struct sbls_control_type sbls_pounce_control;
 
     /// \brief
     /// control parameters for FIT
@@ -837,6 +849,10 @@ struct ccqp_inform_type {
     /// \brief
     /// inform parameters for SBLS
     struct sbls_inform_type sbls_inform;
+
+    /// \brief
+    /// inform parameters for SBLS_pounce
+    struct sbls_inform_type sbls_pounce_inform;
 
     /// \brief
     /// return information from FIT
