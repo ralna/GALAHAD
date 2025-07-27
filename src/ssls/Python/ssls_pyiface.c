@@ -23,10 +23,6 @@ bool sls_update_control(struct sls_control_type *control,
                         PyObject *py_options);
 PyObject* sls_make_options_dict(const struct sls_control_type *control);
 PyObject* sls_make_inform_dict(const struct sls_inform_type *inform);
-bool uls_update_control(struct uls_control_type *control,
-                        PyObject *py_options);
-PyObject* uls_make_options_dict(const struct uls_control_type *control);
-PyObject* uls_make_inform_dict(const struct uls_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -365,18 +361,18 @@ static PyObject* py_ssls_load(PyObject *self, PyObject *args, PyObject *keywds){
 static PyObject* py_ssls_factorize_matrix(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_H_val, *py_A_val, *py_C_val;
     double *H_val, *A_val, *C_val;
-    int n, m, H_ne, A_ne, C_ne;
+    int H_ne, A_ne, C_ne;
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","m","H_ne","H_val","A_ne","A_val",
+    static char *kwlist[] = {"H_ne","H_val","A_ne","A_val",
                              "C_ne","C_val",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOiOiO",
-                                    kwlist, &n, &m, &H_ne, &py_H_val, &A_ne,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iOiOiO",
+                                    kwlist, &H_ne, &py_H_val, &A_ne,
                                     &py_A_val, &C_ne, &py_C_val ))
         return NULL;
 

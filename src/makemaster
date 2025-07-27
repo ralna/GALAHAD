@@ -35,6 +35,8 @@ all_cutest_single:
                          wcp_cutest $(S32) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          bsc $(S32) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         ssls $(S32) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          fdh_cutest $(S32) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -61,6 +63,8 @@ all_cutest_double:
                           wcp_cutest $(D32) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           bsc $(D32) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls $(D32) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           fdh_cutest $(D32) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -87,6 +91,8 @@ all_cutest_quadruple:
                           wcp_cutest $(Q32) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           bsc $(Q32) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls $(Q32) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           fdh_cutest $(Q32) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -113,6 +119,8 @@ all_cutest_single_64:
                          wcp_cutest $(S64) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          bsc $(S64) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         ssls $(S64) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          fdh_cutest $(S64) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -139,6 +147,8 @@ all_cutest_double_64:
                           wcp_cutest $(D64) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           bsc $(D64) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls $(D64) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           fdh_cutest $(D64) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -165,6 +175,8 @@ all_cutest_quadruple_64:
                           wcp_cutest $(Q64) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           bsc $(Q64) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls $(Q64) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           fdh_cutest $(Q64) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -239,6 +251,8 @@ all_ciface_single:
                          all_ciface $(S32) PWD=$(PWD)/all_rq )
 	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          wcp_ciface $(S32) PWD=$(PWD)/wcp )
+	( cd ssls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         ssls_ciface $(S32) PWD=$(PWD)/ssls )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          tru_ciface $(S32) PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -257,6 +271,8 @@ all_ciface_double:
                         all_ciface $(D32) PWD=$(PWD)/all_rq )
 	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           wcp_ciface $(D32) PWD=$(PWD)/wcp )
+	( cd ssls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls_ciface $(D32) PWD=$(PWD)/ssls )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           tru_ciface $(D32) PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -275,6 +291,8 @@ all_ciface_quadruple:
                         all_ciface $(Q32) PWD=$(PWD)/all_rq )
 	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           wcp_ciface $(Q32) PWD=$(PWD)/wcp )
+	( cd ssls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls_ciface $(Q32) PWD=$(PWD)/ssls )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           tru_ciface $(Q32) PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -293,6 +311,8 @@ all_ciface_single_64:
                          all_ciface $(S64) PWD=$(PWD)/all_rq )
 	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          wcp_ciface $(S64) PWD=$(PWD)/wcp )
+	( cd ssls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         ssls_ciface $(S64) PWD=$(PWD)/ssls )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          tru_ciface $(S64) PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -311,6 +331,8 @@ all_ciface_double_64:
                         all_ciface $(D64) PWD=$(PWD)/all_rq )
 	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           wcp_ciface $(D64) PWD=$(PWD)/wcp )
+	( cd ssls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls_ciface $(D64) PWD=$(PWD)/ssls )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           tru_ciface $(D64) PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -329,6 +351,8 @@ all_ciface_quadruple_64:
                         all_ciface $(Q64) PWD=$(PWD)/all_rq )
 	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           wcp_ciface $(Q64) PWD=$(PWD)/wcp )
+	( cd ssls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls_ciface $(Q64) PWD=$(PWD)/ssls )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           tru_ciface $(Q64) PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -353,6 +377,8 @@ all_pyiface_single: all_ciface_single
                          all_rq_pyiface $(S32) PWD=$(PWD)/all_rq )
 	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          wcp_pyiface $(S32) PWD=$(PWD)/wcp )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         ssls_pyiface $(S32) PWD=$(PWD)/ssls )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          tru_pyiface $(S32) PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -371,6 +397,8 @@ all_pyiface_double: all_ciface_double
                          all_rq_pyiface $(D32) PWD=$(PWD)/all_rq )
 	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          wcp_pyiface $(D32) PWD=$(PWD)/wcp )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         ssls_pyiface $(D32) PWD=$(PWD)/ssls )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          tru_pyiface $(D32) PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -389,6 +417,8 @@ all_pyiface_quadruple: all_ciface_quadruple
                          all_rq_pyiface $(D64) PWD=$(PWD)/all_rq )
 	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          wcp_pyiface $(D64) PWD=$(PWD)/wcp )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         ssls_pyiface $(D64) PWD=$(PWD)/ssls )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          tru_pyiface $(D64) PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -407,6 +437,8 @@ all_pyiface_single_64: all_ciface_single_64
                          all_rq_pyiface $(S64) PWD=$(PWD)/all_rq )
 	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          wcp_pyiface $(S64) PWD=$(PWD)/wcp )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         ssls_pyiface $(S64) PWD=$(PWD)/ssls )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          tru_pyiface $(S64) PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -425,6 +457,8 @@ all_pyiface_double_64: all_ciface_double_64
                          all_rq_pyiface $(D64) PWD=$(PWD)/all_rq )
 	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          wcp_pyiface $(D64) PWD=$(PWD)/wcp )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         ssls_pyiface $(D64) PWD=$(PWD)/ssls )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          tru_pyiface $(D64) PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -443,6 +477,8 @@ all_pyiface_quadruple_64: all_ciface_quadruple_64
                          all_rq_pyiface $(Q64) PWD=$(PWD)/all_rq )
 	( cd wcp      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          wcp_pyiface $(Q64) PWD=$(PWD)/wcp )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         ssls_pyiface $(Q64) PWD=$(PWD)/ssls )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          tru_pyiface $(Q64) PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -499,6 +535,8 @@ all_standalone_single:
                           wcp $(S32) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           bsc $(S32) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls $(S32) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           fdh $(S32) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -525,6 +563,8 @@ all_standalone_double:
                           wcp $(D32) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           bsc $(D32) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls $(D32) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           fdh $(D32) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -551,6 +591,8 @@ all_standalone_quadruple:
                           wcp $(Q32) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           bsc $(Q32) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls $(Q32) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           fdh $(Q32) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -577,6 +619,8 @@ all_standalone_single_64:
                           wcp $(S64) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           bsc $(S64) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls $(S64) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           fdh $(S64) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -603,6 +647,8 @@ all_standalone_double_64:
                           wcp $(D64) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           bsc $(D64) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls $(D64) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           fdh $(D64) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -629,6 +675,8 @@ all_standalone_quadruple_64:
                           wcp $(Q64) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           bsc $(Q64) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          ssls $(Q64) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           fdh $(Q64) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -983,6 +1031,8 @@ test_single:
                       $(S32) PWD=$(PWD)/wcp )
 	( cd bsc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
                       $(S32) PWD=$(PWD)/bsc )
+	( cd ssls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+                      $(S32) PWD=$(PWD)/ssls )
 #	( cd fdh  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
 #                      $(S32) PWD=$(PWD)/fdh )
 	( cd tru  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
@@ -1014,6 +1064,8 @@ test_double:
                       $(D32) PWD=$(PWD)/wcp )
 	( cd bsc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
                       $(D32) PWD=$(PWD)/bsc )
+	( cd ssls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+                      $(D32) PWD=$(PWD)/ssls )
 #	( cd fdh  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
 #                      $(D32) PWD=$(PWD)/fdh )
 	( cd tru  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
@@ -1045,6 +1097,8 @@ test_quadruple:
                       $(Q32) PWD=$(PWD)/wcp )
 	( cd bsc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
                       $(Q32) PWD=$(PWD)/bsc )
+	( cd ssls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+                      $(Q32) PWD=$(PWD)/ssls )
 #	( cd fdh  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
 #                      $(Q32) PWD=$(PWD)/fdh )
 	( cd tru  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
@@ -1076,6 +1130,8 @@ test_single_64:
                       $(S64) PWD=$(PWD)/wcp )
 	( cd bsc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
                       $(S64) PWD=$(PWD)/bsc )
+	( cd ssls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+                      $(Q32) PWD=$(PWD)/ssls )
 #	( cd fdh  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
 #                      $(S64) PWD=$(PWD)/fdh )
 	( cd tru  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
@@ -1107,6 +1163,8 @@ test_double_64:
                       $(D64) PWD=$(PWD)/wcp )
 	( cd bsc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
                       $(D64) PWD=$(PWD)/bsc )
+	( cd ssls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+                      $(D64) PWD=$(PWD)/ssls )
 #	( cd fdh  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
 #                      $(D64) PWD=$(PWD)/fdh )
 	( cd tru  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
@@ -1138,6 +1196,8 @@ test_quadruple_64:
                       $(Q64) PWD=$(PWD)/wcp )
 	( cd bsc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
                       $(Q64) PWD=$(PWD)/bsc )
+	( cd ssls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+                      $(Q64) PWD=$(PWD)/ssls )
 #	( cd fdh  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
 #                      $(Q64) PWD=$(PWD)/fdh )
 	( cd tru  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
@@ -1176,6 +1236,8 @@ tests_single:
                       $(S32) PWD=$(PWD)/wcp )
 	( cd bsc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
                       $(S32) PWD=$(PWD)/bsc )
+	( cd ssls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+                      $(S32) PWD=$(PWD)/ssls )
 #	( cd fdh  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
 #                      $(S32) PWD=$(PWD)/fdh )
 	( cd tru  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
@@ -1207,6 +1269,8 @@ tests_double:
                       $(D32) PWD=$(PWD)/wcp )
 	( cd bsc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
                       $(D32) PWD=$(PWD)/bsc )
+	( cd ssls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+                      $(D32) PWD=$(PWD)/ssls )
 #	( cd fdh  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
 #                      $(D32) PWD=$(PWD)/fdh )
 	( cd tru  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
@@ -1238,6 +1302,8 @@ tests_quadruple:
                       $(Q32) PWD=$(PWD)/wcp )
 	( cd bsc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
                       $(Q32) PWD=$(PWD)/bsc )
+	( cd ssls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+                      $(Q32) PWD=$(PWD)/ssls )
 #	( cd fdh  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
 #                      $(Q32) PWD=$(PWD)/fdh )
 	( cd tru  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
@@ -1269,6 +1335,8 @@ tests_single_64:
                       $(S64) PWD=$(PWD)/wcp )
 	( cd bsc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
                       $(S64) PWD=$(PWD)/bsc )
+	( cd ssls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+                      $(S64) PWD=$(PWD)/ssls )
 #	( cd fdh  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
 #                      $(S64) PWD=$(PWD)/fdh )
 	( cd tru  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
@@ -1300,6 +1368,8 @@ tests_double_64:
                       $(D64) PWD=$(PWD)/wcp )
 	( cd bsc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
                       $(D64) PWD=$(PWD)/bsc )
+	( cd ssls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+                      $(D64) PWD=$(PWD)/ssls )
 #	( cd fdh  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
 #                      $(D64) PWD=$(PWD)/fdh )
 	( cd tru  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
@@ -1331,6 +1401,8 @@ tests_quadruple_64:
                       $(Q64) PWD=$(PWD)/wcp )
 	( cd bsc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
                       $(Q64) PWD=$(PWD)/bsc )
+	( cd ssls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+                      $(Q64) PWD=$(PWD)/ssls )
 #	( cd fdh  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
 #                      $(Q64) PWD=$(PWD)/fdh )
 	( cd tru  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
@@ -1371,6 +1443,8 @@ tests_full_single:
                             test_full  $(S32) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                             test_full  $(S32) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                            test_full  $(S32) PWD=$(PWD)/ssls )
 #	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
 #                           test_full   $(S32) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1402,6 +1476,8 @@ tests_full_double:
                             test_full  $(D32) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                             test_full  $(D32) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                            test_full  $(D32) PWD=$(PWD)/ssls )
 #	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
 #                           test_full  $(D32) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1433,6 +1509,8 @@ tests_full_quadruple:
                             test_full  $(Q32) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                             test_full  $(Q32) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                            test_full  $(Q32) PWD=$(PWD)/ssls )
 #	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
 #                           test_full  $(Q32) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1464,6 +1542,8 @@ tests_full_single_64:
                             test_full  $(S64) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                             test_full  $(S64) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                            test_full  $(S64) PWD=$(PWD)/ssls )
 #	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
 #                           test_full   $(S64) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1495,6 +1575,8 @@ tests_full_double_64:
                             test_full  $(D64) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                             test_full  $(D64) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                            test_full  $(D64) PWD=$(PWD)/ssls )
 #	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
 #                           test_full  $(D64) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1526,6 +1608,8 @@ tests_full_quadruple_64:
                             test_full  $(Q64) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                             test_full  $(Q64) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                            test_full  $(Q64) PWD=$(PWD)/ssls )
 #	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
 #                           test_full  $(Q64) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1564,6 +1648,8 @@ test_spec_single:
                           $(S32) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           $(S32) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+                          $(S32) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           $(S32) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
@@ -1599,6 +1685,8 @@ test_spec_double:
                           $(D32) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           $(D32) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+                          $(D32) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           $(D32) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
@@ -1634,6 +1722,8 @@ test_spec_quadruple:
                           $(Q32) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           $(Q32) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+                          $(Q32) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           $(Q32) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
@@ -1669,6 +1759,8 @@ test_spec_single_64:
                           $(S64) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           $(S64) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+                          $(S64) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           $(S64) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
@@ -1704,6 +1796,8 @@ test_spec_double_64:
                           $(D64) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           $(D64) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+                          $(D64) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           $(D64) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
@@ -1739,6 +1833,8 @@ test_spec_quadruple_64:
                           $(Q64) PWD=$(PWD)/wcp )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           $(Q64) PWD=$(PWD)/bsc )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+                          $(Q64) PWD=$(PWD)/ssls )
 	( cd fdh      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           $(Q64) PWD=$(PWD)/fdh )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
@@ -1777,6 +1873,8 @@ test_all_ciface_single:
                           test_cifaces $(S32) PWD=$(PWD)/sbls )
 	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(S32) PWD=$(PWD)/psls )
+	( cd ssls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces $(S32) PWD=$(PWD)/ssls )
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          test_ciface $(S32) PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1800,6 +1898,8 @@ test_all_ciface_double:
                           test_cifaces $(D32) PWD=$(PWD)/sbls )
 	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(D32) PWD=$(PWD)/psls )
+	( cd ssls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces $(D32) PWD=$(PWD)/ssls )
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          test_ciface $(D32) PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1823,6 +1923,8 @@ test_all_ciface_quadruple:
                           test_cifaces $(Q32) PWD=$(PWD)/sbls )
 	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(Q32) PWD=$(PWD)/psls )
+	( cd ssls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces $(Q32) PWD=$(PWD)/ssls )
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          test_ciface $(Q32) PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1846,6 +1948,8 @@ test_all_ciface_single_64:
                           test_cifaces $(S64) PWD=$(PWD)/sbls )
 	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(S64) PWD=$(PWD)/psls )
+	( cd ssls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces $(S64) PWD=$(PWD)/ssls )
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          test_ciface $(S64) PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1869,6 +1973,8 @@ test_all_ciface_double_64:
                           test_cifaces $(D64) PWD=$(PWD)/sbls )
 	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(D64) PWD=$(PWD)/psls )
+	( cd ssls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces $(D64) PWD=$(PWD)/ssls )
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          test_ciface $(D64) PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1892,6 +1998,8 @@ test_all_ciface_quadruple_64:
                           test_cifaces $(Q64) PWD=$(PWD)/sbls )
 	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(Q64) PWD=$(PWD)/psls )
+	( cd ssls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces $(Q64) PWD=$(PWD)/ssls )
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          test_ciface $(Q64) PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1922,6 +2030,8 @@ test_all_pyiface_single:
                           test_pyiface $(S32) PWD=$(PWD)/sbls )
 	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(S32) PWD=$(PWD)/psls )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface $(S32) PWD=$(PWD)/ssls )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(S32) PWD=$(PWD)/bsc )
 	( cd convert   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1969,6 +2079,8 @@ test_all_pyiface_double:
                           test_pyiface $(D32) PWD=$(PWD)/sbls )
 	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(D32) PWD=$(PWD)/psls )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface $(D32) PWD=$(PWD)/ssls )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(D32) PWD=$(PWD)/bsc )
 	( cd convert   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2016,6 +2128,8 @@ test_all_pyiface_quadruple:
                           test_pyiface $(Q32) PWD=$(PWD)/sbls )
 	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(Q32) PWD=$(PWD)/psls )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface $(Q32) PWD=$(PWD)/ssls )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(Q32) PWD=$(PWD)/bsc )
 	( cd convert   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2063,6 +2177,8 @@ test_all_pyiface_single_64:
                           test_pyiface $(S64) PWD=$(PWD)/sbls )
 	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(S64) PWD=$(PWD)/psls )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface $(S64) PWD=$(PWD)/ssls )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(S64) PWD=$(PWD)/bsc )
 	( cd convert   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2110,6 +2226,8 @@ test_all_pyiface_double_64:
                           test_pyiface $(D64) PWD=$(PWD)/sbls )
 	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(D64) PWD=$(PWD)/psls )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface $(D64) PWD=$(PWD)/ssls )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(D64) PWD=$(PWD)/bsc )
 	( cd convert   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2157,6 +2275,8 @@ test_all_pyiface_quadruple_64:
                           test_pyiface $(Q64) PWD=$(PWD)/sbls )
 	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(Q64) PWD=$(PWD)/psls )
+	( cd ssls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface $(Q64) PWD=$(PWD)/ssls )
 	( cd bsc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(Q64) PWD=$(PWD)/bsc )
 	( cd convert   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \

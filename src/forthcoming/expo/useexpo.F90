@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2024-06-15 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2024-07-27 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -250,12 +250,12 @@
         IF ( inform%status == 0 ) THEN
           WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,             &
             inform%primal_infeasibility, inform%dual_infeasibility,            &
-            inform%complementary_slackness, inform%iter, inform%g_eval,        &
+            inform%complementary_slackness, inform%iter, inform%fc_eval,       &
             inform%time%clock_total, inform%status
         ELSE
           WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,             &
             inform%primal_infeasibility, inform%dual_infeasibility,            &
-            inform%complementary_slackness, - inform%iter, - inform%g_eval,    &
+            inform%complementary_slackness, - inform%iter, - inform%fc_eval,   &
             - inform%time%clock_total, inform%status
         END IF
       END IF
@@ -301,16 +301,16 @@
       END IF
 
       WRITE( errout, "( /, 'name             n  f       pr-feas du-feas',      &
-     &  ' cmp-slk    its     #g     time stat' )" )
+     &  ' cmp-slk    its     #f     time stat' )" )
       IF ( inform%status == 0 ) THEN
         WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj,                    &
           inform%primal_infeasibility, inform%dual_infeasibility,              &
-          inform%complementary_slackness, inform%iter, inform%g_eval,          &
+          inform%complementary_slackness, inform%iter, inform%fc_eval,         &
           inform%time%clock_total, inform%status
       ELSE
         WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj,                    &
           inform%primal_infeasibility, inform%dual_infeasibility,              &
-          inform%complementary_slackness, - inform%iter, - inform%g_eval,      &
+          inform%complementary_slackness, - inform%iter, - inform%fc_eval,     &
           - inform%time%clock_total, inform%status
       END IF
 

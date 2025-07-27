@@ -71,7 +71,7 @@ if the preprocessor variable ``SINGLE`` is defined. Similarly, the integer
 type ``ipc_`` from ``galahad_precision.h`` is set to ``int`` by default, 
 but to ``int64_t`` if the preprocessor variable ``INTEGER_64`` is defined.
 
-.. include :: ../../../src/forthcoming/ssls/C/sslst.c
+.. include :: ../../../src/ssls/C/sslst.c
    :code: C
 
 This is the same example, but now fortran-style indexing is used;

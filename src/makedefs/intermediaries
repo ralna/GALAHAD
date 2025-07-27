@@ -2,7 +2,6 @@
 
 #  Nick Gould, for GALAHAD production
 #  This version: 2025-05-27
-
 ########################
 #  basic packages alone
 ########################
@@ -512,9 +511,9 @@ make_slls:
 make_ssls_deps: make_sls_deps make_sls
 
 make_ssls:
-	( cd $(GALAHAD)/src/forthcoming/ssls ; \
+	( cd $(GALAHAD)/src/ssls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssls.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ssls )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssls )
 
 make_scale:
 	( cd $(GALAHAD)/src/scale ; \
@@ -1195,9 +1194,9 @@ make_all_slls:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
 
 make_all_ssls:
-	( cd $(GALAHAD)/src/forthcoming/ssls ; \
+	( cd $(GALAHAD)/src/ssls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssls_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ssls )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssls )
 
 make_all_scale:
 	( cd $(GALAHAD)/src/scale ; \
@@ -1844,9 +1843,9 @@ make_ciface_sbls:
 make_ciface_ssls_deps: make_ciface_sls_deps make_ciface_sls
 
 make_ciface_ssls:
-	( cd $(GALAHAD)/src/forthcoming/ssls ; \
+	( cd $(GALAHAD)/src/ssls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssls_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ssls )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssls )
 
 make_ciface_scale:
 	( cd $(GALAHAD)/src/scale ; \
@@ -2544,9 +2543,9 @@ make_pyiface_sbls:
 make_pyiface_ssls_deps: make_pyiface_sls_deps make_pyiface_sls
 
 make_pyiface_ssls:
-	( cd $(GALAHAD)/src/forthcoming/ssls ; \
+	( cd $(GALAHAD)/src/ssls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssls_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ssls )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssls )
 
 make_pyiface_scale:
 	( cd $(GALAHAD)/src/scale ; \
