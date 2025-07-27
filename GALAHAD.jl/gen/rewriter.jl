@@ -1,43 +1,9 @@
 packages = ("arc", "bgo", "blls", "bllsb", "bnls", "bqp", "bqpb", "bsc", "ccqp", "clls",
             "convert", "cqp", "cro", "dgo", "dps", "dqp", "eqp", "expo", "fdc", "fit",
-"glrt",
-"gls",
-"gltr",
-"hash",
-"ir",
-"l2rt",
-"lhs",
-"llsr",
-"llst",
-"lms",
-"lpa",
-"lpb",
-"lsqp",
-"lsrt",
-"lstr",
-"nls",
-"nodend",
-"presolve",
-"psls",
-"qpa",
-"qpb",
-"roots",
-"rpd",
-"rqs",
-"sbls",
-"scu",
-"sec",
-"sha",
-"sils",
-"slls",
-"sls",
-"ssls",
-"trb",
-"trs",
-"tru",
-"ugo",
-"uls",
-"wcp")
+            "glrt", "gls", "gltr", "hash", "ir", "l2rt", "lhs", "llsr", "llst", "lms",
+            "lpa", "lpb", "lsqp", "lsrt", "lstr", "nls", "nodend", "presolve", "psls",
+            "qpa", "qpb", "roots", "rpd", "rqs", "sbls", "scu", "sec", "sha", "sils",
+            "slls", "sls", "ssls", "trb", "trs", "tru", "ugo", "uls", "wcp")
 
 types = ("control", "time", "inform", "history", "subproblem_control", "subproblem_inform", "ainfo", "finfo", "sinfo")
 
@@ -59,11 +25,12 @@ nonparametric_structures_float = ("bqp_time_type", "bsc_control_type", "convert_
                                   "mc64_control", "mc64_info", "mc68_control", "mc68_info", "nodend_control_type",
                                   "presolve_inform_type", "roots_inform_type", "rpd_control_type", "rpd_inform_type",
                                   "scu_control_type", "scu_inform_type", "sec_inform_type", "sha_control_type",
-                                  "slls_time_type", "ssls_control_type")
+                                  "slls_time_type")
 
 # Structures that don't have a field with rpc_ but have an inner structure with rpc_ as a field.
 special_structures_float = ("convert_inform_type", "cro_inform_type", "lms_inform_type", "ugo_inform_type",
-                            "uls_inform_type", "nodend_inform_type", "spral_ssids_inform", "ssls_inform_type")
+                            "uls_inform_type", "nodend_inform_type", "spral_ssids_inform", "ssls_inform_type",
+                            "ssls_control_type")
 
 function rewrite!(path::String, name::String, optimized::Bool)
   structures = "# Structures for $name\n"

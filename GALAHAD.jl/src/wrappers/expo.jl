@@ -37,7 +37,7 @@ struct expo_control_type{T,INT}
   prefix::NTuple{31,Cchar}
   bsc_control::bsc_control_type{INT}
   tru_control::tru_control_type{T,INT}
-  ssls_control::ssls_control_type{INT}
+  ssls_control::ssls_control_type{T,INT}
 end
 
 export expo_time_type
