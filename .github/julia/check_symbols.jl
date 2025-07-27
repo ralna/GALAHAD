@@ -83,9 +83,13 @@ for (symbols1, symbols2, int1, int2, name) in symbols_combinations
     flag11 = mapreduce(x -> symbol == x, |, unknown_symbols)
     flag12 = mapreduce(x -> symbol == x || symbol == x * "_64", |, metis_adapters)
     flag13 = mapreduce(x -> symbol == x * "_51" || symbol == x * "_51_64" || symbol == x * "_52" || symbol == x * "_52_64", |, metis_symbols)
-    if !flag1 && !flag2 && !flag3 && !flag4 && !flag5 && !flag6 && !flag7 && !flag8 && !flag9 && !flag10 && !flag11 && !flag12 && !flag13
-      println(symbol)
-      global n = n+1
+    flag14 = mapreduce(x -> contains(symbol, x), |, ["::", "<", ">"]) && (int1 == int2)
+    flag15 = contains(symbol, "std::") || contains(symbol, "__gnu_cxx::")
+    if !flag1 && !flag2 && !flag3 && !flag4 && !flag5 && !flag6 && !flag7 && !flag8 && !flag9 && !flag10
+      if !flag11 && !flag12 && !flag13 && !flag14 && !flag15
+        println(symbol)
+        global n = n+1
+      end
     end
   end
   println("---------------------------------------------------------------------------------------------------------------------------")

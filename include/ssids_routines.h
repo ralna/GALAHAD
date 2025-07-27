@@ -238,4 +238,5 @@
 #define AppendAlloc AppendAlloc_64
 #define Page Page_64
 #define Pool Pool_64
+#define SimdVec SimdVec_64
 #endif
