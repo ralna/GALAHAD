@@ -4,11 +4,6 @@
 #endif
 
 #ifdef INTEGER_64
-#define spral_ssids_cpu_create_symbolic_subtree spral_ssids_cpu_create_symbolic_subtree_64
-#define spral_ssids_cpu_destroy_symbolic_subtree spral_ssids_cpu_destroy_symbolic_subtree_64
-#endif
-
-#ifdef INTEGER_64
 #ifdef REAL_32
 #define ldlt_app_factor ldlt_app_factor_sgl_64
 #define ldlt_app_solve_fwd ldlt_app_solve_fwd_sgl_64
@@ -216,6 +211,9 @@
 #endif
 
 #ifdef INTEGER_64
+#define spral_ssids_cpu_create_symbolic_subtree spral_ssids_cpu_create_symbolic_subtree_64
+#define spral_ssids_cpu_destroy_symbolic_subtree spral_ssids_cpu_destroy_symbolic_subtree_64
+#define align_lda align_lda_64
 #define SymbolicSubtree SymbolicSubtree_64
 #define SmallLeafSymbolicSubtree SmallLeafSymbolicSubtree_64
 #define SmallLeafNumericSubtree SmallLeafNumericSubtree_64
@@ -223,6 +221,7 @@
 #define BuddyAllocator BuddyAllocator_64
 #define Page Page_64
 #define Table Table_64
+#define Profile Profile_64
 #define NumericSubtree NumericSubtree_64
 #define now now_64
 #define guess_core guess_core_64
@@ -239,4 +238,10 @@
 #define Page Page_64
 #define Pool Pool_64
 #define SimdVec SimdVec_64
+#define spral_ssids_profile_begin spral_ssids_profile_begin_64
+#define spral_ssids_profile_end spral_ssids_profile_end_64
+#define spral_ssids_profile_create_task spral_ssids_profile_create_task_64
+#define spral_ssids_profile_end_task spral_ssids_profile_end_task_64
+#define spral_ssids_profile_set_state spral_ssids_profile_set_state_64
+#define spral_ssids_profile_add_event spral_ssids_profile_add_event_64
 #endif
