@@ -238,6 +238,7 @@
 #define Page Page_64
 #define Pool Pool_64
 #define SimdVec SimdVec_64
+#define block_ldlt_internal block_ldlt_internal_64
 #define spral_ssids_profile_begin spral_ssids_profile_begin_64
 #define spral_ssids_profile_end spral_ssids_profile_end_64
 #define spral_ssids_profile_create_task spral_ssids_profile_create_task_64
