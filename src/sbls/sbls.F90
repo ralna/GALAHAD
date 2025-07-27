@@ -4604,7 +4604,7 @@
       IF ( printi ) WRITE( out,                                                &
          "( A, ' time to form and factorize explicit preconditioner ', F6.2 )")&
         prefix, time_now - time_start
-      inform%time%factorize =inform%time%factorize + time_now - time
+      inform%time%factorize = inform%time%factorize + time_now - time
       inform%time%clock_factorize =                                            &
         inform%time%clock_factorize + clock_now - clock
       RETURN

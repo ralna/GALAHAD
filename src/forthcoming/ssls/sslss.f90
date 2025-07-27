@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-09-10 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-07-24 AT 10:30 GMT.
    PROGRAM GALAHAD_SSLS_EXAMPLE
    USE GALAHAD_SSLS_double         ! double precision version
    IMPLICIT NONE
@@ -35,7 +35,6 @@
    control%symmetric_linear_solver = "sytr "
 ! factorize matrix
    CALL SSLS_analyse( n, m, H, A, C, data, control, inform )
-   CALL SSLS_factorize( n, m, H, A, C, data, control, inform )
    IF ( inform%status < 0 ) THEN                 ! Unsuccessful call
      WRITE( 6, "( ' SSLS_analyse exit status = ', I0 )" ) inform%status
      STOP

@@ -78,6 +78,7 @@ and
 (\S\ref{galtypes})
 and the subroutines
 {\tt \packagename\_initialize},
+{\tt \packagename\_\-form\_and\_factorize},
 {\tt \packagename\_\-solve},
 {\tt \packagename\_terminate},
 (\S\ref{galarguments})
@@ -519,7 +520,7 @@ choices are
 although only {\tt 'sils'}, {\tt 'sytr'}  and, for OMP 4.0-compliant compilers,
 {\tt 'ssids'} are installed by default.
 See the documentation for the \galahad\ package {\tt SLS} for further details.
-The default is {\tt symmetric\_linear\_solver = 'sils'}.
+The default is {\tt symmetric\_linear\_solver = 'ssids'}.
 
 \itt{definite\_linear\_solver} is a scalar variable of type default \character\
 and length 30, that specifies the external package to be used to
@@ -542,7 +543,7 @@ although only {\tt 'sils'},  {\tt 'potr'}, {\tt 'pbtr'}
 and, for OMP 4.0-compliant compilers,
 {\tt 'ssids'} are installed by default.
 See the documentation for the \galahad\ package {\tt SLS} for further details.
-The default is {\tt definite\_linear\_solver = 'sils'}.
+The default is {\tt definite\_linear\_solver = 'ssids'}.
 
 \itt{unsymmetric\_linear\_solver} is a scalar variable of type default
 \character\

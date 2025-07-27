@@ -40,7 +40,7 @@ and simple bounds $\bmx\sL \leq \bmx \leq \bmx\sU$ on the variables.}
 Here, any of the components of the vectors of bounds 
 $\bmc\sL$, $\bmc\sU$, $\bmx\sL$ and $\bmx\sU$ may be infinite. 
 The method offers the choice of direct
-and iterative solution of the key trust-region subproblems, and
+and iterative solution of the key unconstrained-optimization subproblems, and
 is most suitable for large problems. First derivatives are required,
 and if second derivatives can be calculated, they will be exploited---if
 the product of second derivatives with a vector may be found but
@@ -91,7 +91,7 @@ and
 {\tt NLPT\_problem\_type},
 (Section~\ref{galtypes})
 and the subroutines
-{\tt \packagename\_initialize},
+{\tt \packagename\_\-initialize},
 {\tt \packagename\_\-solve},
 {\tt \packagename\_terminate},
 (Section~\ref{galarguments})
@@ -105,7 +105,7 @@ must be renamed on one of the {\tt USE} statements.
 \galterminology
 
 The exponential penalty function is defined to be
-\eqn{gemf}{\arr{rl}{\psi(\bmx,\bmw,\bmmu,\bmv,\bmnu) \!\! & = f(x) 
+\eqn{gemf}{\arr{rl}{\phi(\bmx,\bmw,\bmmu,\bmv,\bmnu) \!\! & = f(x) 
  + \bigsum_{i} \muL_i \wL_i \exp[(c\sL_i-c_i(\bmx))/\muL_i]
  + \bigsum_{i} \muU_i \wU_i \exp[(c_i(\bmx) - c\sU_i)/\muU_i] \\
  & \;\;\;\;\;\;\;\;\;\;\;\;\; 
@@ -120,10 +120,10 @@ are separate {\bf penalty parameters} for each lower and upper,
 general  and simple-bound constraint, respectively,
 while those of $\bmw\sL$, $\bmw\sU$, $\bmv\sL$, $\bmv\sU$
 are likewise separate {\bf weights} for the same. The algorithm iterates by
-approximately minimizing $\psi(\bmx,\bmw,\bmmu,\bmv,\bmnu)$
+approximately minimizing $\phi(\bmx,\bmw,\bmmu,\bmv,\bmnu)$
 for a fixed set of penalty parameters and weights, and then adjusting 
 these parameters and weights. The adjustments are designed so the
-sequence of approximate minimizers of $\psi$ converge
+sequence of approximate minimizers of $\phi$ converge
 to that of the specified constrained optimization problem.
 
 Key constructs are the {\bf gradient} of the objective function
@@ -150,14 +150,14 @@ where
  \bmz = \bmz\sL - \bmz\sU, \,\, \mbox{and} \;\;
  (\bmy\sL, \bmy\sU, \bmz\sL,  \bmz\sU) \geq 0 ,}
 and the complementary slackness conditions
-\eqn{4.3}{
+\eqn{cs}{
 ( \bmc(\bmx) - \bmc\sL )^{T} \bmy\sL = 0  ,\;\;
 ( \bmc(\bmx) - \bmc\sU )^{T} \bmy\sU = 0  ,\;\;
 (\bmx -\bmx\sL )^{T} \bmz\sL = 0   \tim{and}
 (\bmx -\bmx\sU )^{T} \bmz\sU = 0 ,}
 where the vectors $\bmy$ and $\bmz$ are
 known as the Lagrange multipliers for
-the general linear constraints, and the dual variables for the bounds,
+the general constraints, and the dual variables for the simple bounds,
 respectively, and where the vector inequalities hold component-wise.
 
 %%%%%%%%%%%%%%%%%%%%%% matrix storage formats %%%%%%%%%%%%%%%%%%%%%%%%
@@ -569,7 +569,8 @@ printing will be permitted on every iteration.
 The default is {\tt print\_gap = 1}.
 
 \itt{max\_it} is a scalar variable of type \integer, that holds the
-maximum number of iterations which that be allowed in {\tt \packagename\_solve}.
+maximum number of iterations which that will be allowed in 
+{\tt \packagename\_solve}.
 The default is {\tt max\_it = 100}.
 
 \itt{max\_eval} is a scalar variable of type \integer, that holds the
@@ -696,14 +697,16 @@ that should be set \true\ if the user will provide second derivatives
 (either by providing an appropriate evaluation routine to the solver
 or by reverse communication, see Section~\ref{reverse}), and
 \false\ if the second derivatives are not explicitly available.
-The default is {\tt hessian\_available = .TRUE.}.
+The default is {\tt hessian\_available = .TRUE.}. 
+{\bf N.B.\ {\tt .FALSE.} is not yet implemented.}
 
 \itt{subproblem\_direct}
 is a scalar variable of type default \logical,
 that should be set \true\ if a direct (factorization) method is
 desired when solving for the step, and \false\ if an iterative
 method suffices.
-The default is {\tt subproblem\_direct = .FALSE.}.
+The default is {\tt subproblem\_direct = .TRUE.}.
+{\bf N.B.\ {\tt .FALSE.} is not yet implemented.}
 
 \itt{space\_critical} is a scalar variable of type default \logical,
 that must be set \true\ if space is critical when allocating arrays
@@ -739,27 +742,6 @@ See the specification sheet for the package
 {\tt \libraryname\_BSC}
 for details, and appropriate default values.
 
-\itt{SSLS\_control} is a scalar variable of type
-{\tt SSLS\_control\_type}
-whose components are used to control the linear solve
-aspects of the calculation, as performed by the package
-{\tt \libraryname\_SSLS}.
-See the specification sheet for the package
-{\tt \libraryname\_SSLS}
-for details, and appropriate default values.
-
-{\tt GLTR\_control\_type}
-whose components are used to control the
-iterative trust-region step calculation (if any),
-performed by the package
-{\tt \libraryname\_GLTR}.
-See the specification sheet for the package
-{\tt \libraryname\_GLTR}
-for details, and appropriate default values
-(but note that value of
-{\tt GLTR\_control\%unitm}
-may be changed by \solver).
-
 \itt{TRU\_control} is a scalar variable of type
 {\tt TRU\_control\_type}
 whose components are used to control the
@@ -772,6 +754,15 @@ for details, and appropriate default values
 (but note that value for
 {\tt TRU\_control\%hessian\_available},
 will be overridden by \solver).
+
+\itt{SSLS\_control} is a scalar variable of type
+{\tt SSLS\_control\_type}
+whose components are used to control the linear solve
+aspects of the calculation, as performed by the package
+{\tt \libraryname\_SSLS}.
+See the specification sheet for the package
+{\tt \libraryname\_SSLS}
+for details, and appropriate default values.
 
 \end{description}
 
@@ -854,31 +845,13 @@ number of variables that are free from their bounds.
 \ittf{iter} is a scalar variable of type \integer, that holds the
 number of iterations performed.
 
-\itt{factorization\_status} is a scalar variable of type \integer, that
-gives the return status from the matrix factorization.
-
-\itt{max\_entries\_factors} is a scalar variable of type \longinteger, that
-gives the maximum number of entries in any of the matrix factorizations
-performed during the calculation.
-
-\itt{factorization\_max} is a scalar variable of type \integer, that
-gives the largest number of factorizations required during a subproblem
-solution.
-
-\itt{factorization\_integer} is a scalar variable of type default
-\integer, that gives the amount of integer storage used for the matrix
-factorization.
-
-\itt{factorization\_real} is a scalar variable of type \integer,
-that gives the amount of real storage used for the matrix factorization.
-
-\itt{f\_eval} is a scalar variable of type \integer, that gives the
+\itt{fc\_eval} is a scalar variable of type \integer, that gives the
 total number of objective function evaluations performed.
 
-\itt{g\_eval} is a scalar variable of type \integer, that gives the
+\itt{gj\_eval} is a scalar variable of type \integer, that gives the
 total number of objective function gradient evaluations performed.
 
-\itt{h\_eval} is a scalar variable of type \integer, that gives the
+\itt{hl\_eval} is a scalar variable of type \integer, that gives the
 total number of objective function Hessian evaluations performed.
 
 \ittf{obj} is a scalar variable of type \realdp, that holds the
@@ -897,12 +870,6 @@ is a scalar variable of type \realdp,
 that holds the norm of the violation of complementary slackness
 (see Section~\ref{typetime}) at the best estimate of the solution found.
 
-\itt{mu} is a scalar variable of type \realdp, that holds
-the current value of the penalty parameter.
-
-\itt{factorization\_average} is a scalar variable of type \realdp, that
-gives the average number of factorizations per subproblem solved.
-
 \ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
 whose components are used to hold elapsed elapsed CPU and system clock
 times for the various parts of the calculation (see Section~\ref{typetime}).
@@ -916,24 +883,6 @@ See the specification sheet for the package
 {\tt \libraryname\_BSC}
 for details.
 
-\itt{SSLS\_inform} is a scalar variable of type
-{\tt SSLS\_inform\_type}
-whose components give information about the progress and needs
-of the linear-solve stages of the algorithm performed by the package
-{\tt \libraryname\_SSLS}.
-See the specification sheet for the package
-{\tt \libraryname\_SSLS}
-for details.
-
-\itt{GLTR\_inform} is a scalar variable of type
-{\tt GLTR\_inform\_type}
-whose components give information about the progress and needs
-of the iterative solution stages of the algorithm performed by the package
-{\tt \libraryname\_GLTR}.
-See the specification sheet for the package
-{\tt \libraryname\_GLTR}
-for details.
-
 \itt{TRU\_inform} is a scalar variable of type
 {\tt TRU\_inform\_type}
 whose components give information about the progress and needs
@@ -942,6 +891,15 @@ by the package
 {\tt \libraryname\_TRU}.
 See the specification sheet for the package
 {\tt \libraryname\_TRU}
+for details.
+
+\itt{SSLS\_inform} is a scalar variable of type
+{\tt SSLS\_inform\_type}
+whose components give information about the progress and needs
+of the linear-solve stages of the algorithm performed by the package
+{\tt \libraryname\_SSLS}.
+See the specification sheet for the package
+{\tt \libraryname\_SSLS}
 for details.
 
 \end{description}
@@ -1079,7 +1037,7 @@ estimates of the dual variables $\bmz$.
 (see Section~\ref{typecontrol}). Default values may be assigned by calling
 {\tt \packagename\_initialize} prior to the first call to
 {\tt \packagename\_solve}. 
-Note that value for {\tt TRU\_control\%hessian\_available},
+Note that value for {\tt TRU\_control\%\-hessian\_available},
 will be overridden by \solver.
 
 \itt{inform} is a scalar \intentinout\ argument of type
@@ -1337,6 +1295,7 @@ the array indices were given in {\tt nlp\%H}.
 
 \subsubsection{Hessian-vector products via internal evaluation\label{hvfv}}
 
+{\bf N.B.\ not yet implemented.}
 If the argument {\tt eval\_HLPROD} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
 sum $\bmu + \bmHL(\bmx,\bmy) \bmv$ involving the
@@ -1393,6 +1352,7 @@ $\bmx$ to speed up subsequent products.
 
 \subsection{\label{reverse}Reverse Communication Information}
 
+{\bf N.B.\ not yet implemented.}
 A positive value of {\tt inform\%status} on exit from
 {\tt \packagename\_solve}
 indicates that
@@ -1762,79 +1722,43 @@ The package is thread-safe.
 %%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galmethod
-To be updated \ldots
-A trust-region method is used. In this, an improvement to a current
-estimate of the required minimizer, $\bmx_k$ is sought by computing a
-step $\bms_k$. The step is chosen to approximately minimize a model $m_k(\bms)$
-of $f(\bmx_k + \bms)$ within the intersection of the bound constraints
-$\bmx\sL \leq \bmx \leq \bmx\sU$ and a trust region $\|\bms_k\| \leq \Delta_k$
-for some specified positive "radius" $\Delta_k$. The quality of the
-resulting step $\bms_k$ is assessed by computing the "ratio"
-$(f(\bmx_k) - f(\bmx_k + \bms_k))/ (m_k(\bmzero) - m_k(\bms_k))$.
-The step is deemed to have succeeded if the ratio exceeds a given $\eta_s > 0$,
-and in this case $\bmx_{k+1} = \bmx_k + \bms_k$. Otherwise
-$\bmx_{k+1} = \bmx_k$, and the radius is reduced by powers of a given
-reduction factor until it is smaller than $\|\bms_k\|$. If the ratio
-is larger than  $\eta_v \geq \eta_d$, the radius will be increased so that
-it exceeds $\|\bms_k\|$ by a given increase factor. The method will terminate
-as soon as $\|\nabla_x f(\bmx_k)\|$ is smaller than a specified value.
-
-Either linear or quadratic models $m_k(\bms)$ may be used. The former will be
-taken as the first two terms $f(\bmx_k) + \bms^T \nabla_x f(\bmx_k)$
-of a Taylor series about $\bmx_k$, while the latter uses an
-approximation to the first three terms
-$f(\bmx_k) + \bms^T \nabla_x f(\bmx_k) + \half
-\bms^T \bmB_k \bms$,
-for which $\bmB_k$ is a symmetric approximation to the Hessian
-$\nabla_{xx} f(\bmx_k)$; possible approximations include the true Hessian,
-limited-memory secant and sparsity approximations and a scaled identity matrix.
-Normally a two-norm trust region will be used, but this may change
-if preconditioning is employed.
-
-The model minimization is carried out in two stages.
-Firstly, the so-called generalized Cauchy point for the quadratic
-subproblem is found---the purpose of this point is to ensure that the
-algorithm converges and that the set of bounds which are satisfied as
-equations at the solution is rapidly identified.  Thereafter an
-improvement to the quadratic model on the face of variables predicted
-to be active by the Cauchy point is sought using either a
-direct approach involving factorization or an
-iterative (conjugate-gradient/Lanczos) approach based on approximations
-to the required solution from a so-called Krlov subspace. The direct
-approach is based on the knowledge that the required solution
-satisfies the linear system of equations $(\bmB_k + \lambda_k \bmI) \bms_k
-= - \nabla_x f(\bmx_k)$, involving a scalar Lagrange multiplier $\lambda_k$,
-on the space of inactive variables.
-This multiplier is found by uni-variate root finding, using a safeguarded
-Newton-like process, by {\tt \libraryname\_TRS} or {\tt \libraryname\_DPS}
-(depending on the norm chosen). The iterative approach
-uses {\tt \libraryname\_GLTR}, and is best accelerated by preconditioning
-with good approximations to $\bmB_k$ using {\tt \libraryname\_PSLS}. The
-iterative approach has the advantage that only matrix-vector products
-$\bmB_k \bmv$ are required, and thus $\bmB_k$ is not required explicitly.
-However when factorizations of $\bmB_k$ are possible, the direct approach
-is often more efficient.
+The method employed involves a sequential minimization of the exponential
+penalty function \req{gemf} for a sequence of positive penalty parameters
+$(\bmmu\sL_k, \bmmu\sU_k, \bmnu\sL_k, \bmnu\sU_k)$ 
+and weights
+$(\bmw\sL_k, \bmw\sU_k, \bmv\sL_k, \bmv\sU_k)$,
+for increasing $k \geq 0$. Convergence is ensured if the
+penalty parameters are forced to zero, and may be accelerated
+by adjusting the weights. The minimization of \req{gemf} is 
+accomplished using the trust-region unconstrained solver 
+{\tt \libraryname\_TRU}. Although critical points $\{x_k\}$ of 
+$\phi(\bmx,\bmw_k,\bmmu_k,\bmv_k,\bmnu_k)$ converge to a local solution $x_*$
+of the underlying problem, the reduction of the penalty parameters to
+zero often results in $x_k$ being a poor starting point for the minimization 
+of $\phi(\bmx,\bmw_{k+1},\bmmu_{k+1},\bmv_{k+1},\bmnu_{k+1})$. Consequently, 
+a careful extrapolated starting point from $x_k$ is used instead. Moreover,
+once the algorithm is confident that it is sufficiently close to $x_*$,
+it switches to Newton's method to accelerate the convergence. Both the
+extrapolation and the Newton iteration rely on the block-linear-system
+solver {\tt \libraryname\_SSLS}.
 \vspace*{1mm}
 
-The iteration is terminated as soon as the Euclidean norm of the 
-projected gradient,
-\disp{\|\min(\max( \bmx_k - \nabla_x f(\bmx_k), \bmx\sL), \bmx\sU) -\bmx_k\|_2,}
-is sufficiently small. At such a point, $\nabla_x f(\bmx_k) = \bmz_k$, 
-where the $i$-th dual variable $z_i$ is non-negative if $x_i$ is on its
-lower bound $x\sL_i$, non-positive if $x_i$ is on its upper bound $x\sU_i$,
-and zero if $x_i$ lies strictly between its bounds.
+The iteration is terminated as soon as residuals to the
+optimality conditions \req{po}--\req{cs} are sufficiently small. For 
+infeasible problems, this will not be possible, and instead the
+residuals to  \req{po} will be made as small as possible.
 
 \galreferences
 \vspace*{1mm}
 
 \noindent
-The generic bound-constrained trust-region method is described in detail in
+The method is described in detail in
 \vspace*{1mm}
 
 \noindent
-A. R. Conn, N. I. M. Gould and Ph. L. Toint (2000).
-Trust-region methods.
-SIAM/MPS Series on Optimization.
+N.\ Gould, S.\ Leyffer, A.\ Montoison and C.\ Vanaret (2025)
+The exponential multiplier method in the 21st century.
+RAL Technical Report, in preparation.
 
 %%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1843,7 +1767,7 @@ Suppose we wish to minimize the objective function
 $f(\bmx) = x_1^2 + x_2^2$ subject to the constraints
 \disp{\arr{rl}{x_1 + x_2 \ngap & \geq 1 \\
 x_1^2 + x_2^2 & \geq 1 \\
-p x_1^2 + x_2^2 & \geq 9 \\
+p x_1^2 + x_2^2 & \geq p \\
 x_1^2 - x_2 & \geq 0 \\
 x_2^2 - x_1 & \geq 0 \;\;\mbox{and} \\
 -50 \leq x_1, x_2 & \leq 50

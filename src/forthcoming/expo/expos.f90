@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_EXPO_EXAMPLE  !  GALAHAD 5.3 - 2025-06-15 AT 11:15 GMT.
+   PROGRAM GALAHAD_EXPO_EXAMPLE  !  GALAHAD 5.3 - 2025-07-25 AT 11:15 GMT.
    USE GALAHAD_EXPO_double                      ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )    ! set precision
@@ -21,37 +21,36 @@
    nlp%X_l = - 50.0_rp ; nlp%X_u = 50.0_rp      ! variable bounds
    nlp%C_l = 0.0_rp ; nlp%C_u = infinity        ! constraint bounds
 !  sparse row-wise storage format for the Jacobian
-   CALL SMT_put( nlp%J%type, 'SPARSE_BY_ROWS', s ) ! Specify sparse row storage
+   CALL SMT_put( nlp%J%type, 'SPARSE_BY_ROWS', s ) ! specify sparse row storage
    ALLOCATE( nlp%J%val( j_ne ), nlp%J%col( j_ne ), nlp%H%ptr( m + 1 ) )
    nlp%J%col = (/ 1, 2, 1, 2, 1, 2, 1, 2, 1, 2 /)  ! Jacobian J
    nlp%J%ptr = (/ 1, 3, 5, 7, 9, 11 /)
 !  sparse co-ordinate storage format for the Hessian
-   CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
+   CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! specify co-ordinate storage
    ALLOCATE( nlp%H%val( h_ne ), nlp%H%row( h_ne ), nlp%H%col( h_ne ) )
    nlp%H%row = (/ 1, 2 /)              ! Hessian H
    nlp%H%col = (/ 1, 2 /)              ! NB lower triangle
 ! problem data complete
-   ALLOCATE( userdata%real( 1 ) )               ! Allocate space for parameter
-   userdata%real( 1 ) = p                       ! Record parameter, p
-   CALL EXPO_initialize( data, control, inform ) ! Initialize control parameters
+   ALLOCATE( userdata%real( 1 ) )                ! allocate space for parameter
+   userdata%real( 1 ) = p                        ! record parameter, p
+   CALL EXPO_initialize( data, control, inform ) ! initialize control parameters
    control%subproblem_direct = .TRUE.
    control%max_it = 20
    control%max_eval = 100
-   control%print_level = 1
+!  control%print_level = 1
+!  control%tru_control%print_level = 1
    control%stop_abs_p = 1.0D-5
    control%stop_abs_d = 1.0D-5
    control%stop_abs_c = 1.0D-5
-
-!  control%tru_control%print_level = 1
-   inform%status = 1                            ! set for initial entry
+   inform%status = 1                             ! set for initial entry
    CALL EXPO_solve( nlp, control, inform, data, userdata, eval_FC = FC,        &
-                    eval_GJ = GJ, eval_HL = HL ) ! Solve problem
-   IF ( inform%status == 0 ) THEN               ! Successful return
+                    eval_GJ = GJ, eval_HL = HL ) ! solve problem
+   IF ( inform%status == 0 ) THEN                ! successful return
      WRITE( 6, "( ' EXPO: ', I0, ' major iterations -',                        &
     &     ' optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
      inform%iter, inform%obj, nlp%X
-   ELSE                                         ! Error returns
+   ELSE                                          ! error returns
      WRITE( 6, "( ' EXPO_solve exit status = ', I6 ) " ) inform%status
    END IF
    CALL EXPO_terminate( data, control, inform )  ! delete internal workspace

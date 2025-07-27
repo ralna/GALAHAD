@@ -1,0 +1,1 @@
+../../../GALAHAD.jl/src/test/test_ssls.jl

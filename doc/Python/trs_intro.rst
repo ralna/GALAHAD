@@ -38,8 +38,7 @@ $H x_* + \lambda_* M x_* + A^T y_* + g = 0$ and
 $A x_* = 0$, where $\lambda_* \geq 0$ is a Lagrange
 multiplier corresponding to the constraint $\|x\|_M  \leq  \Delta$
 and $y_*$ are Lagrange multipliers for the linear constraints $A x = 0$,
-if any;
-for the equality-constrained problem $\|x\|_M = \Delta$,
+if any; for the equality-constrained problem $\|x\|_M = \Delta$,
 the multiplier is unconstrained.
 In addition in all cases, the matrix $H + \lambda_* M$ will be positive
 semi-definite on the null-space of $A$; in most instances it will actually
@@ -81,8 +80,9 @@ rather than a Cholesky factorization.
 
 reference
 ---------
+
 The method is described in detail in
 
   H. S. Dollar, N. I. M. Gould and D. P. Robinson.
-  ``On solving trust-region and other regularised subproblems in optimization''.
+  "On solving trust-region and other regularised subproblems in optimization".
   *Mathematical Programming Computation* **2(1)** (2010) 21--57.

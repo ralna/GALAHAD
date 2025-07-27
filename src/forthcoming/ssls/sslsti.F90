@@ -26,7 +26,7 @@
 !  =====================================
 
    WRITE( 6, "( /, ' basic tests of storage formats', //,                      &
-  &                ' scheme          precon factor status residual' )" )
+  &                ' scheme          status  ok' )" )
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 3 ; c_ne = 3
    ALLOCATE( H_ptr( n + 1 ), A_ptr( m + 1 ), C_ptr( m + 1 ), SOL( n + m ) )
@@ -34,8 +34,6 @@
      CALL SSLS_initialize( data, control, inform )
      CALL WHICH_sls( control )
 !    control%print_level = 1
-     control%preconditioner = 2 ; control%factorization = 2
-     control%get_norm_residual = .TRUE.
 
 !  set up data for the appropriate storage type
 
@@ -123,8 +121,7 @@
      END IF
      IF ( status < 0 ) THEN
        CALL SSLS_information( data, inform, status )
-       WRITE( 6, "( 1X, A15, 3I7 )" ) scheme( data_storage_type ),             &
-         control%preconditioner, control%factorization, inform%status
+       WRITE( 6, "( 1X, A15, I7 )" ) scheme( data_storage_type ), inform%status
        GO TO 90
      END IF
 
@@ -133,24 +130,37 @@
      CALL SSLS_factorize_matrix( data, status, H_val, A_val, C_val )
      IF ( status < 0 ) THEN
        CALL SSLS_information( data, inform, status )
-       WRITE( 6, "( 1X, A15, 3I7 )" ) scheme( data_storage_type ),             &
-         control%preconditioner, control%factorization, inform%status
+       WRITE( 6, "( 1X, A15, I7 )" ) scheme( data_storage_type ), inform%status
        GO TO 90
      END IF
 
-!  solve the block linear system
+!  solve the block linear system; pick the rhs so that the solution is vec(1.0)
 
-     SOL( : n ) = (/ 3.0_rp_, 2.0_rp_, 4.0_rp_ /)
-     SOL( n + 1 : ) = (/ 2.0_rp_, 0.0_rp_ /)
+     IF ( data_storage_type == 4 ) THEN ! diagonal storage
+       SOL( : n ) = (/ 3.0_rp_, 2.0_rp_, 3.0_rp_ /)
+       SOL( n + 1 : ) = (/ - 1.0_rp_, - 1.0_rp_ /)
+     ELSE IF ( data_storage_type == 5 ) THEN ! scaled identity storage
+       SOL( : n ) = (/ 4.0_rp_, 3.0_rp_, 3.0_rp_ /)
+       SOL( n + 1 : ) = (/ 1.0_rp_, - 1.0_rp_ /)
+     ELSE IF ( data_storage_type == 6 ) THEN ! identity storage
+       SOL( : n ) = (/ 3.0_rp_, 2.0_rp_, 2.0_rp_ /)
+       SOL( n + 1 : ) = (/ 2.0_rp_, 0.0_rp_ /)
+     ELSE IF ( data_storage_type == 7 ) THEN ! zero storage
+       SOL( : n ) = (/ 3.0_rp_, 2.0_rp_, 2.0_rp_ /)
+       SOL( n + 1 : ) = (/ 3.0_rp_, 1.0_rp_ /)
+     ELSE
+       SOL( : n ) = (/ 4.0_rp_, 3.0_rp_, 5.0_rp_ /)
+       SOL( n + 1 : ) = (/ - 2.0_rp_, - 2.0_rp_ /)
+     END IF
      CALL SSLS_solve_system( data, status, SOL )
      CALL SSLS_information( data, inform, status )
-     IF ( status == 0 ) THEN
-       WRITE( 6, "( 1X, A15, 3I7, ES9.1 )" ) scheme( data_storage_type ),     &
-         control%preconditioner, control%factorization,                        &
-         inform%status, inform%norm_residual
+     SOL = SOL - 1.0_rp_
+     IF ( MAXVAL( ABS( SOL ) ) <= 10.0_rp_ * EPSILON( 1.0_rp_ ) ) THEN
+       WRITE( 6, "( 1X, A15, I7, A4 )" ) scheme( data_storage_type ),          &
+         inform%status, ' yes'
      ELSE
-       WRITE( 6, "( 1X, A15, 3I7 )" ) scheme( data_storage_type ),             &
-         control%preconditioner, control%factorization, inform%status
+       WRITE( 6, "( 1X, A15, I7, A4 )" ) scheme( data_storage_type ),          &
+         inform%status, '  no'
      END IF
  90  CONTINUE
      CALL SSLS_terminate( data, control, inform )
@@ -162,9 +172,8 @@
   CONTAINS
      SUBROUTINE WHICH_sls( control )
      TYPE ( SSLS_control_type ) :: control
-#include "galahad_sls_defaults.h"
+#include "galahad_sls_defaults_sls.h"
      control%symmetric_linear_solver = symmetric_linear_solver
-     control%definite_linear_solver = definite_linear_solver
      END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_SSLS_interface_test

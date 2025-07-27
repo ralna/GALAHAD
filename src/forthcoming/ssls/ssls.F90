@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-10-23 AT 10:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -39,6 +39,8 @@
       PUBLIC :: SSLS_initialize, SSLS_read_specfile, SSLS_analyse,             &
                 SSLS_factorize, SSLS_solve, SSLS_terminate,                    &
                 SSLS_full_initialize, SSLS_full_terminate,                     &
+                SSLS_import, SSLS_factorize_matrix, SSLS_solve_system,         &
+                SSLS_reset_control, SSLS_information,                          &
                 SMT_type, SMT_put, SMT_get
 
 !----------------------
@@ -121,11 +123,11 @@
 
         REAL ( KIND = rp_ ) :: total = 0.0
 
-!  cpu time spent forming the preconditioner K
+!  cpu time spent analysing K
 
-        REAL ( KIND = rp_ ) :: form = 0.0
+        REAL ( KIND = rp_ ) :: analyse = 0.0
 
-!  cpu time spent factorizing K_G
+!  cpu time spent factorizing K
 
         REAL ( KIND = rp_ ) :: factorize = 0.0
 
@@ -137,15 +139,15 @@
 
         REAL ( KIND = rp_ ) :: clock_total = 0.0
 
-!  clock time spent forming the preconditioner K
+!  clock time spent analysing K
 
-        REAL ( KIND = rp_ ) :: clock_form = 0.0
+        REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
-!  clock time spent factorizing K_G
+!  clock time spent factorizing K
 
         REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
-!  clock time spent solving linear systems inolving K_G
+!  clock time spent solving linear systems inolving K
 
         REAL ( KIND = rp_ ) :: clock_solve = 0.0
 
@@ -177,25 +179,13 @@
 
         INTEGER ( KIND = long_ ) :: factorization_real = - 1
 
-!  how many of the diagonals in the factorization are positive
-
-        INTEGER ( KIND = ip_ ) :: d_plus = - 1
-
-!  the computed rank of A
+!  the computed rank of K
 
         INTEGER ( KIND = ip_ ) :: rank = - 1
 
-!  is the matrix A rank defficient?
+!  is the matrix K rank defficient?
 
         LOGICAL :: rank_def = .FALSE.
-
-!  has the used preconditioner been perturbed to guarantee correct inertia?
-
-        LOGICAL :: perturbed = .FALSE.
-
-!  the norm of the residual
-
-        REAL ( KIND = rp_ ) :: norm_residual = - 1.0_rp_
 
 !  timings (see above)
 
@@ -257,7 +247,7 @@
 
 !  initalize SLS components
 
-      CALL SLS_INITIALIZE( control%symmetric_linear_solver,                    &
+      CALL SLS_initialize( control%symmetric_linear_solver,                    &
                            data%sls_data, control%SLS_control,                 &
                            inform%SLS_inform, check = .TRUE. )
       control%symmetric_linear_solver = inform%SLS_inform%solver
@@ -439,7 +429,19 @@
 !  local variables
 
       INTEGER ( KIND = ip_ ) :: i, j, l
+      REAL :: time_start, time_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
       CHARACTER ( LEN = 80 ) :: array_name
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  start timimg
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
 
 !  find the number of nonzeros in A
 
@@ -616,6 +618,18 @@
         inform%status = GALAHAD_error_analysis
       END IF
 
+!  record times
+
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      IF ( control%print_level >= 1 ) WRITE( control%out,                      &
+         "( A, ' time to analyse K ', F6.2 )") prefix, time_now - time_start
+      inform%time%factorize = inform%time%factorize + time_now - time_start
+      inform%time%clock_analyse =                                              &
+        inform%time%clock_analyse + clock_now - clock_start
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total =                                                &
+        inform%time%clock_total + clock_now - clock_start
+
       RETURN
 
 !  end of subroutine SSLS_analyse
@@ -638,6 +652,21 @@
       TYPE ( SSLS_data_type ), INTENT( INOUT ) :: data
       TYPE ( SSLS_control_type ), INTENT( IN ) :: control
       TYPE ( SSLS_inform_type ), INTENT( INOUT ) :: inform
+
+!  Local variables
+
+      REAL :: time_start, time_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  start timimg
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
 
 !  insert the values of A into K
 
@@ -662,6 +691,7 @@
         data%K%val( data%k_c + 1 : data%K%ne ) = - C%val( 1 )
       CASE ( 'IDENTITY' )
         data%K%val( data%k_c + 1 : data%K%ne ) = - one
+      CASE ( 'ZERO', 'NONE' )
       CASE DEFAULT
         data%K%val( data%k_c + 1 : data%K%ne ) = - C%val( : data%c_ne )
       END SELECT
@@ -672,9 +702,25 @@
                           inform%SLS_inform )
       IF ( inform%SLS_inform%status == GALAHAD_ok ) THEN
         inform%status = GALAHAD_ok
+        inform%factorization_integer = inform%SLS_inform%integer_size_factors
+        inform%factorization_real = inform%SLS_inform%real_size_factors
+        inform%rank = inform%SLS_inform%rank
+        inform%rank_def = inform%SLS_inform%rank /= n + m
       ELSE
         inform%status = GALAHAD_error_factorization
       END IF
+
+!  record times
+
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      IF ( control%print_level >= 1 ) WRITE( control%out,                      &
+         "( A, ' time to factorize K ', F6.2 )") prefix, time_now - time_start
+      inform%time%factorize = inform%time%factorize + time_now - time_start
+      inform%time%clock_factorize =                                            &
+        inform%time%clock_factorize + clock_now - clock_start
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total =                                                &
+        inform%time%clock_total + clock_now - clock_start
 
       RETURN
 
@@ -701,6 +747,21 @@
       TYPE ( SSLS_control_type ), INTENT( IN ) :: control
       TYPE ( SSLS_inform_type ), INTENT( INOUT ) :: inform
 
+!  Local variables
+
+      REAL :: time_start, time_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  start timimg
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
+
       CALL SLS_solve( data%K, SOL, data%SLS_data, control%SLS_control,         &
                       inform%SLS_inform )
       IF ( inform%SLS_inform%status == GALAHAD_ok ) THEN
@@ -709,6 +770,17 @@
         inform%status = GALAHAD_error_solve
       END IF
 
+!  record times
+
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      IF ( control%print_level >= 1 ) WRITE( control%out,                      &
+         "( A, ' time to solve with K ', F6.2 )") prefix, time_now - time_start
+      inform%time%solve = inform%time%solve + time_now - time_start
+      inform%time%clock_solve =                                                &
+        inform%time%clock_solve + clock_now - clock_start
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total =                                                &
+        inform%time%clock_total + clock_now - clock_start
       RETURN
 
 !  end of subroutine SSLS_solve
@@ -823,6 +895,723 @@
 !  End of subroutine SSLS_full_terminate
 
      END SUBROUTINE SSLS_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-  G A L A H A D -  S B L S _ i m p o r t _ S U B R O U T I N E -*-*-*-
+
+     SUBROUTINE SSLS_import( control, data, status, n, m,                      &
+                             H_type, H_ne, H_row, H_col, H_ptr,                &
+                             A_type, A_ne, A_row, A_col, A_ptr,                &
+                             C_type, C_ne, C_row, C_col, C_ptr )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to SSLS_solve
+!
+!  data is a scalar variable of type SSLS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that type contains
+!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' 'SCALED_IDENTITY', 'IDENTITY', 'ZERO', or 'NONE'
+!       has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   rows and columns in the 1,1 block
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   rows and columns in the 2,2 block
+!
+!  H_type is a character string that specifies the storage scheme used for H.
+!   It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   'diagonal' 'scaled_identity', 'identity', 'zero' or 'none';
+!   lower or upper case variants are allowed.
+!
+!  H_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  H_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  H_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  H_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!  A_type is a character string that specifies the storage scheme used for A.
+!   It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   or 'absent', the latter if m = 0; lower or upper case variants are allowed
+!
+!  A_ne is a scalar variable of type default integer, that holds the number of
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!  for any of the other schemes.
+!
+!  A_row is a rank-one array of type default integer, that holds the row
+!   indices J in the sparse co-ordinate storage scheme. It need not be set
+!   for any of the other schemes, and in this case can be of length 0
+!
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
+!   in this case can be of length 0
+!
+!  A_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of J, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
+!   can be of length 0
+!
+!  C_type is a character string that specifies the Hessian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   'diagonal' 'scaled_identity', 'identity', 'zero' or 'none';
+!   lower or upper case variants are allowed.
+!
+!  C_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  C_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  C_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  C_ptr is a rank-one array of dimension m+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SSLS_control_type ), INTENT( INOUT ) :: control
+     TYPE ( SSLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, A_ne, H_ne, C_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+     CHARACTER ( LEN = * ), INTENT( IN ) :: C_type
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: C_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: C_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: C_ptr
+
+!  local variables
+
+     INTEGER ( KIND = ip_ ) :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     data%SSLS_control = control
+
+     error = data%ssls_control%error
+     space_critical = data%ssls_control%space_critical
+     deallocate_error_fatal = data%ssls_control%space_critical
+
+!  set H appropriately in the smt storage type
+
+     data%H%n = n ; data%H%m = n
+     SELECT CASE ( H_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+      IF ( .NOT. ( PRESENT( H_row ) .AND. PRESENT( H_col ) ) ) THEN
+         data%ssls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%H%type, 'COORDINATE',                                &
+                     data%ssls_inform%alloc_status )
+       data%H%ne = H_ne
+
+       array_name = 'ssls: data%H%row'
+       CALL SPACE_resize_array( data%H%ne, data%H%row,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%H%col'
+       CALL SPACE_resize_array( data%H%ne, data%H%col,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%H%row( : data%H%ne ) = H_row( : data%H%ne )
+         data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+       ELSE
+         data%H%row( : data%H%ne ) = H_row( : data%H%ne ) + 1
+         data%H%col( : data%H%ne ) = H_col( : data%H%ne ) + 1
+       END IF
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+      IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
+         data%ssls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%H%type, 'SPARSE_BY_ROWS',                            &
+                     data%ssls_inform%alloc_status )
+       IF ( data%f_indexing ) THEN
+         data%H%ne = H_ptr( n + 1 ) - 1
+       ELSE
+         data%H%ne = H_ptr( n + 1 )
+       END IF
+
+       array_name = 'ssls: data%H%ptr'
+       CALL SPACE_resize_array( n + 1, data%H%ptr,                             &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%H%col'
+       CALL SPACE_resize_array( data%H%ne, data%H%col,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+         data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+       ELSE
+         data%H%ptr( : n + 1 ) = H_ptr( : n + 1 ) + 1
+         data%H%col( : data%H%ne ) = H_col( : data%H%ne ) + 1
+       END IF
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%H%type, 'DENSE',                                     &
+                     data%ssls_inform%alloc_status )
+       data%H%ne = ( n * ( n + 1 ) ) / 2
+
+       array_name = 'ssls: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%H%type, 'DIAGONAL',                                  &
+                     data%ssls_inform%alloc_status )
+       data%H%ne = n
+
+       array_name = 'ssls: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%H%type, 'SCALED_IDENTITY',                           &
+                     data%ssls_inform%alloc_status )
+       data%H%ne = 1
+
+       array_name = 'ssls: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%H%type, 'IDENTITY',                                  &
+                     data%ssls_inform%alloc_status )
+       data%H%ne = 0
+
+     CASE ( 'zero', 'ZERO', 'none', 'NONE' )
+       CALL SMT_put( data%H%type, 'ZERO',                                      &
+                     data%ssls_inform%alloc_status )
+       data%H%ne = 0
+
+     CASE DEFAULT
+       data%ssls_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+!  set A appropriately in the smt storage type
+
+     data%A%n = n ; data%A%m = m
+     SELECT CASE ( A_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( A_row ) .AND. PRESENT( A_col ) ) ) THEN
+         data%ssls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%A%type, 'COORDINATE',                                &
+                     data%ssls_inform%alloc_status )
+       data%A%ne = A_ne
+
+       array_name = 'ssls: data%A%row'
+       CALL SPACE_resize_array( data%A%ne, data%A%row,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%A%col'
+       CALL SPACE_resize_array( data%A%ne, data%A%col,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%A%row( : data%A%ne ) = A_row( : data%A%ne )
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+       ELSE
+         data%A%row( : data%A%ne ) = A_row( : data%A%ne ) + 1
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne ) + 1
+       END IF
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
+         data%ssls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%A%type, 'SPARSE_BY_ROWS',                            &
+                     data%ssls_inform%alloc_status )
+       IF ( data%f_indexing ) THEN
+         data%A%ne = A_ptr( m + 1 ) - 1
+       ELSE
+         data%A%ne = A_ptr( m + 1 )
+       END IF
+
+       array_name = 'ssls: data%A%ptr'
+       CALL SPACE_resize_array( m + 1, data%A%ptr,                             &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%A%col'
+       CALL SPACE_resize_array( data%A%ne, data%A%col,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+       ELSE
+         data%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne ) + 1
+       END IF
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%A%type, 'DENSE',                                     &
+                     data%ssls_inform%alloc_status )
+       data%A%ne = m * n
+
+       array_name = 'ssls: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%ssls_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+!  set C appropriately in the smt storage type
+
+     data%C%m = m ;  data%C%n = m
+     SELECT CASE ( C_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( C_row ) .AND. PRESENT( C_col ) ) ) THEN
+         data%ssls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%C%type, 'COORDINATE',                                &
+                     data%ssls_inform%alloc_status )
+       data%C%ne = C_ne
+
+       array_name = 'ssls: data%C%row'
+       CALL SPACE_resize_array( data%C%ne, data%C%row,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%C%col'
+       CALL SPACE_resize_array( data%C%ne, data%C%col,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%C%val'
+       CALL SPACE_resize_array( data%C%ne, data%C%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%C%row( : data%C%ne ) = C_row( : data%C%ne )
+         data%C%col( : data%C%ne ) = C_col( : data%C%ne )
+       ELSE
+         data%C%row( : data%C%ne ) = C_row( : data%C%ne ) + 1
+         data%C%col( : data%C%ne ) = C_col( : data%C%ne ) + 1
+       END IF
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( C_ptr ) .AND. PRESENT( C_col ) ) ) THEN
+         data%ssls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%C%type, 'SPARSE_BY_ROWS',                            &
+                     data%ssls_inform%alloc_status )
+       IF ( data%f_indexing ) THEN
+         data%C%ne = C_ptr( m + 1 ) - 1
+       ELSE
+         data%C%ne = C_ptr( m + 1 )
+       END IF
+
+       array_name = 'ssls: data%C%ptr'
+       CALL SPACE_resize_array( m + 1, data%C%ptr,                             &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%C%col'
+       CALL SPACE_resize_array( data%C%ne, data%C%col,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'ssls: data%C%val'
+       CALL SPACE_resize_array( data%C%ne, data%C%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%C%ptr( : m + 1 ) = C_ptr( : m + 1 )
+         data%C%col( : data%C%ne ) = C_col( : data%C%ne )
+       ELSE
+         data%C%ptr( : m + 1 ) = C_ptr( : m + 1 ) + 1
+         data%C%col( : data%C%ne ) = C_col( : data%C%ne ) + 1
+       END IF
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%C%type, 'DENSE',                                     &
+                     data%ssls_inform%alloc_status )
+       data%C%ne = ( m * ( m + 1 ) ) / 2
+
+       array_name = 'ssls: data%C%val'
+       CALL SPACE_resize_array( data%C%ne, data%C%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%C%type, 'DIAGONAL',                                  &
+                     data%ssls_inform%alloc_status )
+       data%C%ne = m
+
+       array_name = 'ssls: data%C%val'
+       CALL SPACE_resize_array( data%C%ne, data%C%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%C%type, 'SCALED_IDENTITY',                           &
+                     data%ssls_inform%alloc_status )
+       data%C%ne = 1
+
+       array_name = 'ssls: data%C%val'
+       CALL SPACE_resize_array( data%C%ne, data%C%val,                         &
+              data%ssls_inform%status, data%ssls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%ssls_inform%bad_alloc, out = error )
+       IF ( data%ssls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%C%type, 'IDENTITY',                                  &
+                     data%ssls_inform%alloc_status )
+       data%C%ne = 0
+
+     CASE ( 'zero', 'ZERO', 'none', 'NONE' )
+       CALL SMT_put( data%C%type, 'ZERO',                                      &
+                     data%ssls_inform%alloc_status )
+       data%C%ne = 0
+
+     CASE DEFAULT
+       data%ssls_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+!  analyse the structure of the matrix
+
+     CALL SSLS_analyse( data%H%n, data%C%m, data%H, data%A, data%C,            &
+                        data%ssls_data, data%ssls_control, data%ssls_inform )
+
+     status = data%ssls_inform%status
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%ssls_inform%status
+     RETURN
+
+!  End of subroutine SSLS_import
+
+     END SUBROUTINE SSLS_import
+
+!-  G A L A H A D -  S B L S _ r e s e t _ c o n t r o l   S U B R O U T I N E -
+
+     SUBROUTINE SSLS_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See SSLS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SSLS_control_type ), INTENT( IN ) :: control
+     TYPE ( SSLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%ssls_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine SSLS_reset_control
+
+     END SUBROUTINE SSLS_reset_control
+
+! G A L A H A D - S B L S _ f a c t o r i z e _ m a t r i x  S U B R O U T I N E
+
+     SUBROUTINE SSLS_factorize_matrix( data, status, H_val, A_val, C_val )
+
+!  form and factorize the block matrix ( H A^T ).
+!                                      ( A -C  )
+!  See SSLS_form_and_factorize for a description of the required arguments
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     TYPE ( SSLS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C_val
+
+!  save the values of H, A and C
+
+     IF ( data%H%ne > 0 ) data%H%val( : data%H%ne ) = H_val( : data%H%ne )
+     IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
+     IF ( data%C%ne > 0 ) data%C%val( : data%C%ne ) = C_val( : data%C%ne )
+
+!  form and factorize the block matrix
+
+     CALL SSLS_factorize( data%H%n, data%C%m, data%H, data%A, data%C,          &
+                          data%ssls_data, data%ssls_control, data%ssls_inform )
+
+     status = data%ssls_inform%status
+     RETURN
+
+!  end of subroutine SSLS_factorize_matrix
+
+     END SUBROUTINE SSLS_factorize_matrix
+
+!--  G A L A H A D -  S B L S _ s o l v e _ s y s t e m   S U B R O U T I N E  -
+
+     SUBROUTINE SSLS_solve_system( data, status, SOL )
+
+!  solve the linear system ( H A^T ) ( x ) = ( a ),
+!                          ( A -C  ) ( y )   ( b )
+!  where SOL holds the right-hand side on input, and the solution on output.
+!  See SSLS_solve for a description of the required arguments
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     TYPE ( SSLS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: SOL
+
+!  solve the block linear system
+
+     CALL SSLS_solve( data%H%n, data%C%m, SOL,                                 &
+                      data%ssls_data, data%ssls_control, data%ssls_inform )
+
+     status = data%ssls_inform%status
+     RETURN
+
+!  end of subroutine SSLS_solve_system
+
+     END SUBROUTINE SSLS_solve_system
+
+!-  G A L A H A D -  S B L S _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE SSLS_information( data, inform, status )
+
+!  return solver information during or after solution by SSLS
+!  See SSLS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SSLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SSLS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%ssls_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine SSLS_information
+
+     END SUBROUTINE SSLS_information
 
 !  End of module SSLS
 

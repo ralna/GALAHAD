@@ -307,16 +307,6 @@ Import problem data into internal storage prior to solution.
 		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables.
 
 	*
-		- x_l
-
-		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x^l$ of the lower bounds on the optimization variables $x$. The j-th component of x_l, $j = 0, \ldots, n-1$, contains $x^l_j$.
-
-	*
-		- x_u
-
-		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x^u$ of the upper bounds on the optimization variables $x$. The j-th component of x_u, $j = 0, \ldots, n-1$, contains $x^u_j$.
-
-	*
 		- H_type
 
 		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed.

@@ -59,7 +59,9 @@
      PUBLIC :: EXPO_initialize, EXPO_read_specfile, EXPO_solve,                &
                EXPO_terminate, NLPT_problem_type, GALAHAD_userdata_type,       &
                EXPO_full_initialize, EXPO_full_terminate, EXPO_import,         &
-               EXPO_information, EXPO_solve_with_mat, EXPO_reset_control,      &
+               EXPO_information, EXPO_solve_hessian_direct, EXPO_reset_control,&
+!              EXPO_solve_hessprod_direct, EXPO_solve_hessian_reverse,         &
+!              EXPO_solve_hessprod_reverse,                                    &
                SMT_type, SMT_put
 
 !----------------------
@@ -160,24 +162,24 @@
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
-        REAL ( KIND = rp_ ) :: infinity = ten ** 19
+       REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !   the required absolute and relative accuracies for the primal infeasibility
 
-        REAL ( KIND = rp_ ) :: stop_abs_p = epsmch
-        REAL ( KIND = rp_ ) :: stop_rel_p = epsmch
+       REAL ( KIND = rp_ ) :: stop_abs_p = epsmch
+       REAL ( KIND = rp_ ) :: stop_rel_p = epsmch
 
 !   the required absolute and relative accuracies for the dual infeasibility
 
-        REAL ( KIND = rp_ ) :: stop_abs_d = epsmch
-        REAL ( KIND = rp_ ) :: stop_rel_d = epsmch
+       REAL ( KIND = rp_ ) :: stop_abs_d = epsmch
+       REAL ( KIND = rp_ ) :: stop_rel_d = epsmch
 
 !   the required absolute and relative accuracies for the complementarity
 
-        REAL ( KIND = rp_ ) :: stop_abs_c = epsmch
-        REAL ( KIND = rp_ ) :: stop_rel_c = epsmch
+       REAL ( KIND = rp_ ) :: stop_abs_c = epsmch
+       REAL ( KIND = rp_ ) :: stop_rel_c = epsmch
 
-!   the smallest the step can be before termination
+!   the smallest the norm of the step can be before termination
 
        REAL ( KIND = rp_ ) :: stop_s = epsmch
 
@@ -218,12 +220,12 @@
        REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
 !   is the Hessian matrix of second derivatives available or is access only
-!    via matrix-vector products?
+!    via matrix-vector products (coming soon)?
 
        LOGICAL :: hessian_available = .TRUE.
 
-!   use a direct (factorization) or (preconditioned) iterative method to
-!    find the search direction
+!   use a direct (factorization) or (preconditioned) iterative method
+!    (coming soon) to find the search direction
 
        LOGICAL :: subproblem_direct = .TRUE.
 
@@ -313,35 +315,35 @@
 
 !  return status. See EXPO_solve for details
 
-       INTEGER ( KIND = ip_ ) :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = GALAHAD_ok
 
 !  the status of the last attempted allocation/deallocation
 
-       INTEGER ( KIND = ip_ ) :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = GALAHAD_ok
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
        CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
 
+!  the name of the user-supplied evaluation routine for which an error ocurred
+
+       CHARACTER ( LEN = 12 ) :: bad_eval = REPEAT( ' ', 12 )
+
 !  the total number of iterations performed
 
        INTEGER ( KIND = ip_ ) :: iter = 0
 
-!  the total number of evaluations of the objection function
+!  the total number of evaluations of the objective/constraint functions
 
-       INTEGER ( KIND = ip_ ) :: f_eval = 0
+       INTEGER ( KIND = ip_ ) :: fc_eval = 0
 
-!  the total number of evaluations of the gradient of the objection function
+!  the total number of evaluations of the gradients of the objective/constraints
 
-       INTEGER ( KIND = ip_ ) :: g_eval = 0
+       INTEGER ( KIND = ip_ ) :: gj_eval = 0
 
-!  the total number of evaluations of the Hessian of the objection function
+!  the total number of evaluations of the Hessian of the Lagrangian function
 
-       INTEGER ( KIND = ip_ ) :: h_eval = 0
-
-!  the number of free variables
-
-       INTEGER ( KIND = ip_ ) :: n_free = - 1
+       INTEGER ( KIND = ip_ ) :: hl_eval = 0
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by EXPO_solve
@@ -362,10 +364,6 @@
 !    determined by EXPO_solve
 
        REAL ( KIND = rp_ ) :: complementary_slackness = HUGE( one )
-
-!  the current value of the penalty parameter
-
-       REAL ( KIND = rp_ ) :: mu = zero
 
 !  timings (see above)
 
@@ -516,7 +514,11 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     inform%status = GALAHAD_ok
+     TYPE ( EXPO_inform_type ) :: inform_initial
+
+!  initialize inform
+
+     inform = inform_initial
 
 !  initalize BSC components
 
@@ -540,7 +542,7 @@
 
      END SUBROUTINE EXPO_initialize
 
-!- G A L A H A D -  E X P O _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+!- G A L A H A D -  E X P O _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
 
      SUBROUTINE EXPO_full_initialize( data, control, inform )
 
@@ -565,6 +567,10 @@
      TYPE ( EXPO_inform_type ), INTENT( OUT ) :: inform
 
      CALL EXPO_initialize( data%expo_data, control, inform )
+
+!  copy inform to data
+
+     data%expo_inform = inform
 
      RETURN
 
@@ -2241,7 +2247,7 @@ stop
        inform%tru_inform%status = 1
        inform%tru_inform%iter = 0
        data%control%tru_control%maxit = MIN( control%tru_control%maxit,        &
-         data%control%max_eval - inform%f_eval )
+         data%control%max_eval - inform%fc_eval )
        IF (data%printi .AND.  data%control%TRU_control%print_level > 0 )       &
          WRITE( data%out, "( '' )" )
  200   CONTINUE
@@ -2333,7 +2339,7 @@ stop
 
            IF ( data%eval_fc ) THEN
              inform%obj = nlp%f
-             inform%f_eval = inform%f_eval + 1
+             inform%fc_eval = inform%fc_eval + 1
 
 !  compute the (infinity-) norm of the infeasibility
 
@@ -2580,7 +2586,7 @@ stop
 
          CASE ( 3 )
            IF ( data%eval_gj ) THEN
-             inform%g_eval = inform%g_eval + 1
+             inform%gj_eval = inform%gj_eval + 1
            ELSE
              data%eval_gj = .TRUE.
            END IF
@@ -2620,7 +2626,7 @@ stop
 
            IF ( data%control%subproblem_direct ) THEN
              IF ( data%eval_hl ) THEN
-               inform%h_eval = inform%h_eval + 1
+               inform%hl_eval = inform%hl_eval + 1
              ELSE
                data%eval_hl = .TRUE.
              END IF
@@ -3776,9 +3782,9 @@ stop
 
      IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
        WRITE ( data%out, 2000 ) prefix, TRIM( nlp%pname ), nlp%n
-       WRITE ( data%out, 2200 ) prefix, inform%f_eval, prefix, inform%g_eval,  &
-         prefix, inform%h_eval, prefix, inform%iter, prefix, inform%obj,       &
-         prefix, inform%dual_infeasibility
+       WRITE ( data%out, 2200 ) prefix, inform%fc_eval,                       &
+         prefix, inform%gj_eval, prefix, inform%hl_eval, prefix, inform%iter, &
+         prefix, inform%obj, prefix, inform%dual_infeasibility
        WRITE ( data%out, 2210 ) prefix
 !      l = nlp%n
        l = 2
@@ -3811,10 +3817,10 @@ stop
 
      IF ( data%printi ) THEN
 !      WRITE ( data%out, 2000 ) nlp%pname, nlp%n
-       WRITE ( data%out, 2200 ) prefix, inform%f_eval, prefix, inform%g_eval,  &
-                                prefix, inform%h_eval, prefix, inform%iter,    &
-                                prefix, inform%obj, prefix,                    &
-                                inform%dual_infeasibility
+       WRITE ( data%out, 2200 ) prefix, inform%fc_eval, prefix,                &
+                                inform%gj_eval, prefix, inform%hl_eval,        &
+                                prefix, inform%iter, prefix, inform%obj,       &
+                                prefix, inform%dual_infeasibility
 !      WRITE ( data%out, 2210 )
 !      IF ( data%print_level > 3 ) THEN
 !         l = nlp%n
@@ -4858,7 +4864,6 @@ stop
 !-*-*-*-  G A L A H A D -  E X P O _ i m p o r t _ S U B R O U T I N E -*-*-*-
 
      SUBROUTINE EXPO_import( control, data, status, n, m,                      &
-                             X_l, X_u, C_l, C_u,                               &
                              J_type, J_ne, J_row, J_col, J_ptr,                &
                              H_type, H_ne, H_row, H_col, H_ptr )
 
@@ -4893,26 +4898,6 @@ stop
 !
 !  m is a scalar variable of type default integer, that holds the number of
 !   residuals
-!
-!  X_l is a rank-one array of dimension n and type default real, that holds 
-!   the values x_l of the lower bounds on the optimization variables x. 
-!   The j-th component of X_l, j = 1, ... , n, contains (x_l)j.
-!
-!  X_u is a rank-one array of dimension n and type default real, that holds
-!   the values x_u of the upper bounds on the optimization variables x. 
-!   The j-th component of X_u, j = 1, ... , n, contains (x_u)j.
-!
-!  C_l is a rank-one array of dimension m and type default real, that holds
-!   the values c_l of the lower bounds on the optimization constraints c(x). 
-!   The i-th component of C_l, i = 1, ... , m, contains (c_l)j.
-!
-!  C_u is a rank-one array of dimension m and type default real, that holds
-!   the values c_u of the lower bounds on the optimization constraints c(x). 
-!   The i-th component of C_u, i = 1, ... , m, contains (c_u)j.
-!
-!  C_u is a rank-one array of dimension m and type default real,
-!   that holds the values c_u of the upper bounds on the optimization
-!   variables x. The j-th component of C_u, j = 1, ... , n, contains (x_u)j.
 !
 !  J_type is a character string that specifies the Jacobian storage scheme
 !   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
@@ -4972,8 +4957,6 @@ stop
      TYPE ( EXPO_full_data_type ), INTENT( INOUT ) :: data
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, J_ne, H_ne
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
      CHARACTER ( LEN = * ), INTENT( IN ) :: J_type, H_type
      INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: J_row
      INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: J_col
@@ -5091,10 +5074,6 @@ stop
 !  put data into the required components of the nlpt storage type
 
      data%nlp%n = n ; data%nlp%m = m
-     data%nlp%X_l( : n ) = X_l( : n )
-     data%nlp%X_u( : n ) = X_u( : n )
-     data%nlp%C_l( : m ) = C_l( : m )
-     data%nlp%C_u( : m ) = C_u( : m )
 
 !  set J appropriately in the nlpt storage type
 
@@ -5387,16 +5366,65 @@ stop
 
      END SUBROUTINE EXPO_reset_control
 
-!- G A L A H A D -  E X P O _ s o l v e _ w i t h _ m a t  S U B R O U T I N E -
+!- G A L A H A D -  E X P O _ s o l v e _ h e s s i a n _ d i r e c t  S U B -
 
-     SUBROUTINE EXPO_solve_with_mat( data, userdata, status, X, Y, Z, C, GL,   &
-                                     eval_FC, eval_GJ, eval_HL, eval_HLPROD )
+     SUBROUTINE EXPO_solve_hessian_direct( data, userdata, status,             &
+                                           C_l, C_u, X_l, X_u, X, Y, Z, C, GL, &
+                                           eval_FC, eval_GJ, eval_HL )
 
 !  solve the constrained optimization problem previously imported when access
-!  to function, Jacobian, and Hessian operations are available via subroutine 
+!  to function, gradient, and Hessian operations are available via subroutine 
 !  calls. See EXPO_solve for a  description of the required arguments. 
 !  The variable status is a proxy for inform%status
-
+!
+!  Arguments are as follows:
+!
+!  C_l is a rank-one array of dimension m and type default real, that holds
+!   the values c_l of the lower bounds on the optimization constraints c(x). 
+!   The i-th component of C_l, i = 1, ... , m, contains (c_l)j.
+!
+!  C_u is a rank-one array of dimension m and type default real, that holds
+!   the values c_u of the lower bounds on the optimization constraints c(x). 
+!   The i-th component of C_u, i = 1, ... , m, contains (c_u)j.
+!
+!  X_l is a rank-one array of dimension n and type default real, that holds 
+!   the values x_l of the lower bounds on the optimization variables x. 
+!   The j-th component of X_l, j = 1, ... , n, contains (x_l)j.
+!
+!  X_u is a rank-one array of dimension n and type default real, that holds
+!   the values x_u of the upper bounds on the optimization variables x. 
+!   The j-th component of X_u, j = 1, ... , n, contains (x_u)j.
+!
+!  X is a rank-one array of dimension n and type default real, that holds 
+!   the values x of the optimization variables x. It should be set to
+!   an initial estimate of the minimizer on entry, and will return an
+!   approximation of the minimizer on a successful exit.
+!   The j-th component of X, j = 1, ... , n, contains (x)j.
+!
+!  Y is a rank-one array of dimension m and type default real, that holds the
+!   values y of the Lagrange multiliers y. It need not be set on initial entry,
+!   but will return an approximation of the Lagrange multiplers on a 
+!   successful exit. The i-th component of Y, i = 1, ... , m, contains (y)i,
+!   the multiplier for the i-th general constraint.
+!
+!  Z is a rank-one array of dimension n and type default real, that holds the
+!   values y of the dual variables z. It need not be set on initial entry,
+!   but will return an approximation of the dual variables on a 
+!   successful exit. The j-th component of Z, j = 1, ... , m, contains (z)j,
+!   the multiplier for the j-th simple-bound constraint.
+!
+!  C is a rank-one array of dimension m and type default real, that holds the
+!   values c(x) of the constraints. It need not be set on initial entry,
+!   but will return an approximation of c(x) at the approximation of the
+!   minimizer x on a successful exit. 
+!   The i-th component of C, i = 1, ... , m, contains (c(x))i.
+!
+!  GL is a rank-one array of dimension n and type default real, that holds the
+!   values gl(x,y,z) of the gradient of the Lagrangian. It need not be set on 
+!   initial entry,  but will return an approximation of the gradient of the
+!   Lagrangian on a successful exit. 
+!   The j-th component of GL, j = 1, ... , m, contains (gl)j.
+!
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
@@ -5404,37 +5432,47 @@ stop
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( EXPO_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Y
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Z
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: GL
-     EXTERNAL :: eval_FC, eval_GJ, eval_HL, eval_HLPROD
-     OPTIONAL :: eval_HLPROD
+     EXTERNAL :: eval_FC, eval_GJ, eval_HL
 
      data%expo_inform%status = status
-     IF ( data%expo_inform%status == 1 )                                       &
+
+!  copy input data
+
+     IF ( data%expo_inform%status == 1 ) THEN
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+       data%nlp%X_l( : data%nlp%n ) = X_l( : data%nlp%n )
+       data%nlp%X_u( : data%nlp%n ) = X_u( : data%nlp%n )
+       data%nlp%C_l( : data%nlp%m ) = C_l( : data%nlp%m )
+       data%nlp%C_u( : data%nlp%m ) = C_u( : data%nlp%m )
+     END IF
 
 !  call the solver
 
      CALL EXPO_solve( data%nlp, data%expo_control, data%expo_inform,           &
                       data%expo_data, userdata, eval_FC = eval_FC,             &
-                      eval_GJ = eval_GJ, eval_HL = eval_HL,                    &
-                      eval_HLPROD = eval_HLPROD )
+                      eval_GJ = eval_GJ, eval_HL = eval_HL )
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
      Y( : data%nlp%m ) = data%nlp%Y( : data%nlp%m )
      Z( : data%nlp%n ) = data%nlp%Z( : data%nlp%n )
      C( : data%nlp%m ) = data%nlp%C( : data%nlp%m )
      GL( : data%nlp%n ) = data%nlp%GL( : data%nlp%n )
-     status = data%expo_inform%status
 
+!  record return status
+
+     status = data%expo_inform%status
      RETURN
 
-!  end of subroutine EXPO_solve_with_mat
+!  end of subroutine EXPO_solve_hessian_direct
 
-     END SUBROUTINE EXPO_solve_with_mat
+     END SUBROUTINE EXPO_solve_hessian_direct
 
 !-  G A L A H A D -  E X P O _ i n f o r m a t i o n   S U B R O U T I N E  -
 

@@ -111,4 +111,4 @@ The *identity matrix* format:
 If $H$ is the identity matrix, no values need be stored.
 
 The *zero matrix* format:
-The same is true if $H$7 is the zero matrix.
+The same is true if $H$ is the zero matrix.

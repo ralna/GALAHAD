@@ -5,7 +5,7 @@
 GALAHAD C Interfaces
 ====================
 
-**Release:** 1.0
+**Release:** 1.1
 
 **Date:** |today|
 
@@ -22,6 +22,7 @@ transparently to the underlying fortran.
 
    uco
    bco
+   nlp
    ls
    lp
    qp

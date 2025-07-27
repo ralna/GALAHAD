@@ -435,11 +435,11 @@
 
 !  return status. See TRU_solve for details
 
-       INTEGER ( KIND = ip_ ) :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = GALAHAD_ok
 
 !  the status of the last attempted allocation/deallocation
 
-       INTEGER ( KIND = ip_ ) :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = GALAHAD_ok
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -663,7 +663,11 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     inform%status = GALAHAD_ok
+     TYPE ( TRU_inform_type ) :: inform_initial
+
+!  initialize inform
+
+     inform = inform_initial
 
 !  initalize TRS components
 

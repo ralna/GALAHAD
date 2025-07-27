@@ -5,7 +5,7 @@
 GALAHAD Julia Interfaces
 ========================
 
-**Release:** 0.4.0
+**Release:** 0.5.0
 
 **Date:** |today|
 
@@ -22,6 +22,7 @@ transparently to the underlying fortran.
 
    uco
    bco
+   nlp
    ls
    lp
    qp

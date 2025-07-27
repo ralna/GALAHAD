@@ -12,7 +12,7 @@ Linear Systems
 **Author:** `Jaroslav Fowkes <jaroslav.fowkes@stfc.ac.uk>`_ and `Nick Gould <nick.gould@stfc.ac.uk>`_
 
 GALAHAD [1]_ is a suite of open-source routines for large-scale continuous
-optimization.  Currently there are seven packages designed to provide 
+optimization.  Currently there are eight packages designed to provide 
 preconditioners and solve linear systems of equations.
 
 .. toctree::
@@ -22,6 +22,7 @@ preconditioners and solve linear systems of equations.
 
    SLS - solve symmetric systems of linear equations (übersolver) <sls>
    ULS - solve unsymmetric systems of linear equations (übersolver) <uls>
+   SSLS - solve block symmetric systems of linear equations <ssls>
    SBLS - precondition and solve block symmetric systems of linear equations <sbls>
    PSLS - precondition symmetric, positive-definite systems of linear equations (übersolver) <psls>
    SILS - solve symmetric systems of linear equations <sils>

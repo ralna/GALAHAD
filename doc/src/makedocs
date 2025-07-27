@@ -1,6 +1,6 @@
 #!/bin/csh
 
-#foreach pack ( arc bgo blls bllsb bqp bqpb bsc check clls cro ccqp cqp dgo dps dqp expo eqp fdc fdh filtrane fisqp glrt gls gltr hash icfs ir lancelot lancelot_simple lpa lpb lsp lsqp l2rt lsrt lstr llsr llst lms miqr mop nls nlpt nodend presolve psls qpa qpb qpc qpp qpt rand roots rpd rqs sbls scale scu sha sils sls slls smt sort symbols trb trs tru ugo uls wcp )
+#foreach pack ( arc bgo blls bllsb bqp bqpb bsc check clls cro ccqp cqp dgo dps dqp expo eqp fdc fdh filtrane fisqp glrt gls gltr hash icfs ir lancelot lancelot_simple lpa lpb lsp lsqp l2rt lsrt lstr llsr llst lms miqr mop nls nlpt nodend presolve psls qpa qpb qpc qpp qpt rand roots rpd rqs sbls scale scu sha sils sls slls smt sort ssls symbols trb trs tru ugo uls wcp )
 #foreach pack ( filtrane )
 #foreach pack ( sils )
 #foreach pack ( sort )
@@ -62,11 +62,12 @@
 #foreach pack ( scale )
 #foreach pack ( gls )
 #foreach pack ( uls )
-foreach pack ( sls )
+#foreach pack ( sls )
 #foreach pack ( psls )
 #foreach pack ( nodend )
-#foreach pack ( expo )
+foreach pack ( expo )
 #foreach pack ( sbls )
+#foreach pack ( ssls )
 #foreach pack ( icfs )
 #foreach pack ( smt )
 #foreach pack ( trs rqs )

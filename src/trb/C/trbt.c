@@ -336,7 +336,7 @@ int main(void) {
 
 // Objective function
 ipc_ fun( ipc_ n, const rpc_ x[], rpc_ *f, const void *userdata ){
-         struct userdata_type *myuserdata = (struct userdata_type *) userdata;
+    struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     rpc_ p = myuserdata->p;
 
     *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) + cos(x[0]);

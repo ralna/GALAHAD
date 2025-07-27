@@ -43,6 +43,7 @@ Set default control values and initialize private data
 	:class: doxyrest-title-code-block
 
         function wcp_read_specfile(T, INT, control, specfile)
+
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
 in-depth discussion of specification files is
