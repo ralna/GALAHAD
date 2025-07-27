@@ -6,6 +6,9 @@
  */
 
 #include <stdint.h>
+#ifdef REAL_128
+#include <quadmath.h>
+#endif
 
 /* include guard */
 #ifndef SSIDS_RIP_H

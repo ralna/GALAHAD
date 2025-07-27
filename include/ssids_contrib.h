@@ -8,6 +8,7 @@
  *         spral_ssids_contrib_free modules.
  */
 
+#include "spral_procedures.h"
 #include "ssids_rip.hxx"
 
 #ifndef SPRAL_SSIDS_CONTRIB_H
@@ -17,28 +18,13 @@
 extern "C" {
 #endif
 
-#ifdef REAL_32
-void spral_ssids_contrib_get_data_single(const void *const contrib,
-      ipc_ *const n, const float* *const val, ipc_ *const ldval,
+void spral_ssids_contrib_get_data(const void *const contrib,
+      ipc_ *const n, const rpc_* *const val, ipc_ *const ldval,
       const ipc_* *const rlist, ipc_ *const ndelay, 
       const ipc_* *const delay_perm,
-      const float* *const delay_val, ipc_ *const lddelay);
-void spral_ssids_contrib_free_sgl(void *const contrib);
-#elif REAL_128
-void spral_ssids_contrib_get_data_quadruple(const void *const contrib,
-      ipc_ *const n, const __float128* *const val, ipc_ *const ldval,
-      const ipc_* *const rlist, ipc_ *const ndelay, 
-      const ipc_* *const delay_perm,
-      const __float128* *const delay_val, ipc_ *const lddelay);
-void spral_ssids_contrib_free_qul(void *const contrib);
-#else
-void spral_ssids_contrib_get_data_double(const void *const contrib,
-      ipc_ *const n, const double* *const val, ipc_ *const ldval,
-      const ipc_* *const rlist, ipc_ *const ndelay, 
-      const ipc_* *const delay_perm,
-      const double* *const delay_val, ipc_ *const lddelay);
-void spral_ssids_contrib_free_dbl(void *const contrib);
-#endif
+      const rpc_* *const delay_val, ipc_ *const lddelay);
+
+void spral_ssids_contrib_free(void *const contrib);
 
 #ifdef __cplusplus
 }

@@ -9,14 +9,10 @@
 
 #include <memory>
 
-#include "spral_compat.hxx" // in case std::align not defined
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
+#include "spral_compat.hxx" // in case std::align not defined
 
-/*
-#ifdef INTEGER_64
-#define Workspace Workspace_64
-#endif
-*/
 namespace spral { namespace ssids { namespace cpu {
 
 /** A Workspace is a chunk of memory that can be reused. The get_ptr<T>(len)

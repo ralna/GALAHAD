@@ -9,30 +9,13 @@
 
 #include <memory>
 
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
 #include "ssids_cpu_factor.hxx"
 #include "ssids_cpu_NumericNode.hxx"
 #include "ssids_cpu_SmallLeafSymbolicSubtree.hxx"
 #include "ssids_cpu_ThreadStats.hxx"
-
-#ifdef REAL_32
-#define FAPrecisionTraits FASingleTraits
-#define factor_alloc_precision factor_alloc_single
-#define ldlt_tpp_factor ldlt_tpp_factor_sgl
-#elif REAL_128
-#define FAPrecisionTraits FAQuadrupleTraits
-#define factor_alloc_precision factor_alloc_quadruple
-#define ldlt_tpp_factor ldlt_tpp_factor_qul
-#else
-#define FAPrecisionTraits FADoubleTraits
-#define factor_alloc_precision factor_alloc_double
-#define ldlt_tpp_factor ldlt_tpp_factor_dbl
-#endif
-
-#ifdef INTEGER_64
-#define host_gemm host_gemm_64
-#endif
 
 /* SPRAL headers */
 

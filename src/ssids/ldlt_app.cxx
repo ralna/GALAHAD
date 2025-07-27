@@ -20,7 +20,9 @@
 #include <omp.h>
 #endif /* _OPENMP */
 
+#include "spral_procedures.h"
 #include "spral_compat.hxx"
+#include "ssids_routines.h"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_BlockPool.hxx"
 #include "ssids_cpu_BuddyAllocator.hxx"
@@ -31,25 +33,6 @@
 #include "ssids_cpu_kernels_ldlt_tpp.hxx"
 #include "ssids_cpu_kernels_common.hxx"
 #include "ssids_cpu_kernels_wrappers.hxx"
-
-#ifdef REAL_32
-#define ldlt_app_internal ldlt_app_internal_sgl
-#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_sgl
-#elif REAL_128
-#include <quadmath.h>
-#define ldlt_app_internal ldlt_app_internal_qul
-#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_qul
-#else
-#define ldlt_app_internal ldlt_app_internal_dbl
-#define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_dbl
-#endif
-
-#ifdef INTEGER_64
-#define host_gemm host_gemm_64
-#define host_trsv host_trsv_64
-#define host_trsm host_trsm_64
-#define gemv gemv_64
-#endif
 
 #ifdef INTEGER_64
 #define d_ipc_ "ld"
@@ -2641,10 +2624,11 @@ void ldlt_app_solve_fwd(ipc_ m, ipc_ n, T const* l, ipc_ ldl, ipc_ nrhs, T* x,
                         ipc_ ldx) {
    rpc_ one_val = 1.0;
    rpc_ minus_one_val = - 1.0;
-   if(nrhs==1) {
-      host_trsv(FILL_MODE_LWR, OP_N, DIAG_UNIT, n, l, ldl, x, 1);
+   ipc_ one_integer = 1;
+   if(nrhs==one_integer) {
+      host_trsv(FILL_MODE_LWR, OP_N, DIAG_UNIT, n, l, ldl, x, one_integer);
       if(m > n)
-         gemv(OP_N, m-n, n, minus_one_val, &l[n], ldl, x, 1, one_val, &x[n], 1);
+         gemv(OP_N, m-n, n, minus_one_val, &l[n], ldl, x, one_integer, one_val, &x[n], one_integer);
    } else {
       host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_UNIT, n, nrhs,
                 one_val, l, ldl, x, ldx);
@@ -2692,10 +2676,11 @@ void ldlt_app_solve_bwd(ipc_ m, ipc_ n, T const* l, ipc_ ldl, ipc_ nrhs, T* x,
                         ipc_ ldx) {
    rpc_ one_val = 1.0;
    rpc_ minus_one_val = - 1.0;
-   if(nrhs==1) {
+   ipc_ one_integer = 1;
+   if(nrhs==one_integer) {
       if(m > n)
-         gemv(OP_T, m-n, n, minus_one_val, &l[n], ldl, &x[n], 1, one_val, x, 1);
-      host_trsv(FILL_MODE_LWR, OP_T, DIAG_UNIT, n, l, ldl, x, 1);
+         gemv(OP_T, m-n, n, minus_one_val, &l[n], ldl, &x[n], one_integer, one_val, x, one_integer);
+      host_trsv(FILL_MODE_LWR, OP_T, DIAG_UNIT, n, l, ldl, x, one_integer);
    } else {
       if(m > n)
          host_gemm(OP_T, OP_N, n, nrhs, m-n, minus_one_val, &l[n], ldl,

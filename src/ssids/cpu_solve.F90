@@ -81,10 +81,6 @@
 #endif
 #endif
 
-#ifdef INTEGER_64
-#define host_gemm host_gemm_64
-#endif
-
 ! This module provides a way of doing solve on CPU using GPU data structures
 module spral_ssids_gpu_cpu_solve_precision
   use spral_kinds_precision

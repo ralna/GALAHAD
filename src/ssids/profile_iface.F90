@@ -1,5 +1,6 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 14:40 GMT.
 
+#include "ssids_routines.h"
 #include "spral_procedures.h"
 
 !> \file
@@ -22,43 +23,38 @@ module spral_ssids_profile
       procedure :: end_task
    end type profile_task_type
 
+#ifdef INTEGER_64
    interface
       subroutine c_begin(nregions, regions) &
-            bind(C, name="spral_ssids_profile_begin")
-!           bind(C, name="spral_ssids_profile_precision_begin")
+            bind(C, name="spral_ssids_profile_begin_64")
         use, intrinsic :: iso_c_binding
         implicit none
         integer(c_int), value :: nregions
         type(c_ptr), value, intent(in) :: regions
       end subroutine c_begin
       subroutine profile_end() &
-            bind(C, name="spral_ssids_profile_end")
-!           bind(C, name="spral_ssids_profile_precision_end")
+            bind(C, name="spral_ssids_profile_end_64")
       end subroutine profile_end
       type(C_PTR) function c_create_task(name, thread) &
-            bind(C, name="spral_ssids_profile_create_task")
-!           bind(C, name="spral_ssids_profile_precision_create_task")
+            bind(C, name="spral_ssids_profile_create_task_64")
          use, intrinsic :: iso_c_binding
          character(C_CHAR), dimension(*), intent(in) :: name
          integer(C_INT), value :: thread
       end function c_create_task
       subroutine c_end_task(task) &
-            bind(C, name="spral_ssids_profile_end_task")
-!           bind(C, name="spral_ssids_profile_precision_end_task")
+            bind(C, name="spral_ssids_profile_end_task_64")
          use, intrinsic :: iso_c_binding
          type(C_PTR), value :: task
       end subroutine c_end_task
       subroutine c_set_state(container, type, name) &
-            bind(C, name="spral_ssids_profile_set_state")
-!           bind(C, name="spral_ssids_profile_precision_set_state")
+            bind(C, name="spral_ssids_profile_set_state_64")
          use, intrinsic :: iso_c_binding
          character(C_CHAR), dimension(*), intent(in) :: container
          character(C_CHAR), dimension(*), intent(in) :: type
          character(C_CHAR), dimension(*), intent(in) :: name
       end subroutine c_set_state
       subroutine c_add_event(type, val, thread) &
-        bind(C, name="spral_ssids_profile_add_event")
-!       bind(C, name="spral_ssids_profile_precision_add_event")
+        bind(C, name="spral_ssids_profile_add_event_64")
         use, intrinsic :: iso_c_binding
         implicit none
         character(C_CHAR), dimension(*), intent(in) :: type
@@ -66,6 +62,46 @@ module spral_ssids_profile
         integer(C_INT), value :: thread
       end subroutine c_add_event
    end interface
+#else
+   interface
+      subroutine c_begin(nregions, regions) &
+            bind(C, name="spral_ssids_profile_begin")
+        use, intrinsic :: iso_c_binding
+        implicit none
+        integer(c_int), value :: nregions
+        type(c_ptr), value, intent(in) :: regions
+      end subroutine c_begin
+      subroutine profile_end() &
+            bind(C, name="spral_ssids_profile_end")
+      end subroutine profile_end
+      type(C_PTR) function c_create_task(name, thread) &
+            bind(C, name="spral_ssids_profile_create_task")
+         use, intrinsic :: iso_c_binding
+         character(C_CHAR), dimension(*), intent(in) :: name
+         integer(C_INT), value :: thread
+      end function c_create_task
+      subroutine c_end_task(task) &
+            bind(C, name="spral_ssids_profile_end_task")
+         use, intrinsic :: iso_c_binding
+         type(C_PTR), value :: task
+      end subroutine c_end_task
+      subroutine c_set_state(container, type, name) &
+            bind(C, name="spral_ssids_profile_set_state")
+         use, intrinsic :: iso_c_binding
+         character(C_CHAR), dimension(*), intent(in) :: container
+         character(C_CHAR), dimension(*), intent(in) :: type
+         character(C_CHAR), dimension(*), intent(in) :: name
+      end subroutine c_set_state
+      subroutine c_add_event(type, val, thread) &
+        bind(C, name="spral_ssids_profile_add_event")
+        use, intrinsic :: iso_c_binding
+        implicit none
+        character(C_CHAR), dimension(*), intent(in) :: type
+        character(C_CHAR), dimension(*), intent(in) :: val
+        integer(C_INT), value :: thread
+      end subroutine c_add_event
+   end interface
+#endif
 
 contains
 

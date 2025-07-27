@@ -10,29 +10,13 @@
 #include<memory>
 #include<vector>
 
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "ssids_contrib.h"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_NumericNode.hxx"
 #include "ssids_cpu_SymbolicNode.hxx"
 #include "ssids_cpu_Workspace.hxx"
-
-#ifdef REAL_32
-#define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_single
-#define spral_ssids_contrib_free spral_ssids_contrib_free_sgl
-#define FAPrecisionTraits FASingleTraits
-#define factor_alloc_precision factor_alloc_single
-#elif REAL_128
-#define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_quadruple
-#define spral_ssids_contrib_free spral_ssids_contrib_free_qul
-#define FAPrecisionTraits FAQuadrupleTraits
-#define factor_alloc_precision factor_alloc_quadruple
-#else
-#define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_double
-#define spral_ssids_contrib_free spral_ssids_contrib_free_dbl
-#define FAPrecisionTraits FADoubleTraits
-#define factor_alloc_precision factor_alloc_double
-#endif
 
 namespace spral { namespace ssids { namespace cpu {
 

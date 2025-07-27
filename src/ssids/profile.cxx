@@ -5,8 +5,9 @@
  *  \author    Florent Lopez
  */
 
-#include "ssids_profile.hxx"
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
+#include "ssids_profile.hxx"
 
 #ifdef PROFILE
 struct timespec spral::ssids::Profile::tstart;

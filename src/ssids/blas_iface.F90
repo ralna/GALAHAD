@@ -2,10 +2,7 @@
 
 ! Define BLAS API in Fortran module
 
-#ifdef INTEGER_64
-#define spral_ssids_blas_iface spral_ssids_blas_iface_64
-#define spral_kinds spral_kinds_64
-#endif
+#include "ssids_routines.h"
 
 module spral_ssids_blas_iface
   implicit none

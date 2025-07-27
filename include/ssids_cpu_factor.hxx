@@ -18,6 +18,7 @@
 
 /* SPRAL headers */
 
+#include "ssids_routines.h"
 #include "ssids_rip.hxx"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
@@ -32,24 +33,6 @@
 #include "ssids_cpu_kernels_wrappers.hxx"
 
 //#include "ssids_cpu_kernels_verify.hxx" // FIXME: remove debug
-
-#ifdef REAL_32
-#define cholesky_factor cholesky_factor_sgl
-#define ldlt_app_factor ldlt_app_factor_sgl
-#define ldlt_tpp_factor ldlt_tpp_factor_sgl
-#elif REAL_128
-#define cholesky_factor cholesky_factor_qul
-#define ldlt_app_factor ldlt_app_factor_qul
-#define ldlt_tpp_factor ldlt_tpp_factor_qul
-#else
-#define cholesky_factor cholesky_factor_dbl
-#define ldlt_app_factor ldlt_app_factor_dbl
-#define ldlt_tpp_factor ldlt_tpp_factor_dbl
-#endif
-
-#ifdef INTEGER_64
-#define host_gemm host_gemm_64
-#endif
 
 namespace spral { namespace ssids { namespace cpu {
 
