@@ -182,7 +182,7 @@
 
    DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
    DEALLOCATE( nlp%J%val, nlp%J%col, nlp%J%ptr )
-   DEALLOCATE( nlp%C, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u )
+   DEALLOCATE( nlp%C, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u, nlp%G )
    END PROGRAM GALAHAD_EXPO_test_program
 
    SUBROUTINE WHICH_sls( control )

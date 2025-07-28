@@ -43,7 +43,6 @@ options = ssls.initialize()
 # set some non-default options
 #options['print_level'] = 1
 options['symmetric_linear_solver'] = 'sytr '
-options['definite_linear_solver'] = 'sytr '
 #print("options:", options)
 
 # load data (and optionally non-default options), and analyse matrix structure
@@ -52,7 +51,7 @@ ssls.load(n, m, H_type, H_ne, H_row, H_col, H_ptr,
                 C_type, C_ne, C_row, C_col, C_ptr, options)
 
 # factorize matrix
-ssls.factorize_matrix(n, m, H_ne, H_val, A_ne, A_val, C_ne, C_val)
+ssls.factorize_matrix(H_ne, H_val, A_ne, A_val, C_ne, C_val)
 
 # solve system
 rhs = np.array([3.0,5.0,5.0,3.0-t,2.0-t])

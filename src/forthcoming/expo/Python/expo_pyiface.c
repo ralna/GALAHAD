@@ -786,7 +786,7 @@ static PyObject* py_expo_solve(PyObject *self, PyObject *args, PyObject *keywds)
 
     // Call expo_solve_direct
     status = 1; // set status to 1 on entry
-    expo_solve_with_mat(&data, NULL, &status, n, m, J_ne, H_ne,
+    expo_solve_hessian_direct(&data, NULL, &status, n, m, J_ne, H_ne,
                         c_l, c_u, x_l, x_u, x, y, z, c, gl,
                         eval_fc, eval_gj, eval_hl);
 

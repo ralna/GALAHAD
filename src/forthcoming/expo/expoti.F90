@@ -110,7 +110,7 @@
      CALL EXPO_terminate( data, control, inform )  ! delete internal workspace
    END DO
 
-   DEALLOCATE( X, Y, Z, C, GL )
+   DEALLOCATE( C_l, C_u, X_l, X_u, X, Y, Z, C, GL )
    DEALLOCATE( J_val, J_row, J_col, J_ptr, J_dense )
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, userdata%real )
 
