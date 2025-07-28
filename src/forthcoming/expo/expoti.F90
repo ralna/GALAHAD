@@ -57,9 +57,16 @@
      control%max_eval = 100
 !    control%print_level = 1
 !    control%tru_control%print_level = 1
-     control%stop_abs_p = 1.0D-5
-     control%stop_abs_d = 1.0D-5
-     control%stop_abs_c = 1.0D-5
+#ifdef REAL_32
+     control%stop_abs_p = 0.001_rp_
+     control%stop_abs_d = 0.001_rp_
+     control%stop_abs_c = 0.001_rp_
+     control%tru_control%error = 0
+#else
+     control%stop_abs_p = 0.00001_rp_
+     control%stop_abs_d = 0.00001_rp_
+     control%stop_abs_c = 0.00001_rp_
+#endif
      CALL WHICH_sls( control )
      X( 1 ) = 3.0_rp_ ; X( 2 ) = 1.0_rp_
      SELECT CASE ( data_storage_type )
@@ -120,97 +127,101 @@ CONTAINS
      END SUBROUTINE WHICH_sls
 
      SUBROUTINE FC( status, X, userdata, F, C )
+     USE GALAHAD_KINDS_precision
      USE GALAHAD_USERDATA_precision
-     INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-     REAL ( kind = rp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( kind = rp ), OPTIONAL, INTENT( OUT ) :: F
-     REAL ( kind = rp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
+     REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( kind = rp_ ), OPTIONAL, INTENT( OUT ) :: F
+     REAL ( kind = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( kind = rp ) :: r
-     r = userdata%real( 1 )
+     REAL ( kind = rp_ ) :: p
+     p = userdata%real( 1 )
      f = X( 1 ) ** 2 + X( 2 ) ** 2
-     C( 1 ) = X( 1 ) + X( 2 ) - 1.0_rp
-     C( 2 ) = X( 1 ) ** 2 + X( 2 ) ** 2 - 1.0_rp
-     C( 3 ) = r * X( 1 ) ** 2 + X( 2 ) ** 2 - r
+     C( 1 ) = X( 1 ) + X( 2 ) - 1.0_rp_
+     C( 2 ) = X( 1 ) ** 2 + X( 2 ) ** 2 - 1.0_rp_
+     C( 3 ) = p * X( 1 ) ** 2 + X( 2 ) ** 2 - p
      C( 4 ) = X( 1 ) ** 2 - X( 2 )
      C( 5 ) = X( 2 ) ** 2 - X( 1 )
      status = 0
      END SUBROUTINE FC
 
      SUBROUTINE GJ( status, X, userdata, G, J_val )
+     USE GALAHAD_KINDS_precision
      USE GALAHAD_USERDATA_precision
-     INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = rp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G
-     REAL ( KIND = rp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: J_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G
+     REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: J_val
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( kind = rp ) :: r
-     r = userdata%real( 1 )
-     G( 1 ) = 2.0_rp * X( 1 )
-     G( 2 ) = 2.0_rp * X( 2 )
-     J_val( 1 ) = 1.0_rp
-     J_val( 2 ) = 1.0_rp
-     J_val( 3 ) = 2.0_rp * X( 1 )
-     J_val( 4 ) = 2.0_rp * X( 2 )
-     J_val( 5 ) = 2.0_rp * r * X( 1 )
-     J_val( 6 ) = 2.0_rp * X( 2 )
-     J_val( 7 ) = 2.0_rp * X( 1 )
-     J_val( 8 ) = - 1.0_rp
-     J_val( 9 ) = - 1.0_rp
-     J_val( 10 ) = 2.0_rp * X( 2 )
+     REAL ( kind = rp_ ) :: p
+     p = userdata%real( 1 )
+     G( 1 ) = 2.0_rp_ * X( 1 )
+     G( 2 ) = 2.0_rp_ * X( 2 )
+     J_val( 1 ) = 1.0_rp_
+     J_val( 2 ) = 1.0_rp_
+     J_val( 3 ) = 2.0_rp_ * X( 1 )
+     J_val( 4 ) = 2.0_rp_ * X( 2 )
+     J_val( 5 ) = 2.0_rp_ * p * X( 1 )
+     J_val( 6 ) = 2.0_rp_ * X( 2 )
+     J_val( 7 ) = 2.0_rp_ * X( 1 )
+     J_val( 8 ) = - 1.0_rp_
+     J_val( 9 ) = - 1.0_rp_
+     J_val( 10 ) = 2.0_rp_ * X( 2 )
+     status = 0
      END SUBROUTINE GJ
 
      SUBROUTINE HL( status, X, Y, userdata, H_val )
+     USE GALAHAD_KINDS_precision
      USE GALAHAD_USERDATA_precision
-     INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = rp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( kind = rp ) :: r
-     r = userdata%real( 1 )
-     H_val( 1 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) + Y( 4 ) )
-     H_val( 2 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
+     REAL ( kind = rp_ ) :: p
+     p = userdata%real( 1 )
+     H_val( 1 ) = 2.0_rp_ - 2.0_rp_ * ( Y( 2 ) + p * Y( 3 ) + Y( 4 ) )
+     H_val( 2 ) = 2.0_rp_ - 2.0_rp_ * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
+     status = 0
      END SUBROUTINE HL
 
      SUBROUTINE GJ_dense( status, X, userdata, G, J_val )
+     USE GALAHAD_KINDS_precision
      USE GALAHAD_USERDATA_precision
-     INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = rp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G
-     REAL ( KIND = rp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: J_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G
+     REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: J_val
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( kind = rp ) :: r
-     r = userdata%real( 1 )
-     G( 1 ) = 2.0_rp * X( 1 )
-     G( 2 ) = 2.0_rp * X( 2 )
-     J_val( 1 ) = 1.0_rp
-     J_val( 2 ) = 1.0_rp
-     J_val( 3 ) = 2.0_rp * X( 1 )
-     J_val( 4 ) = 2.0_rp * X( 2 )
-     J_val( 5 ) = 2.0_rp * r * X( 1 )
-     J_val( 6 ) = 2.0_rp * X( 2 )
-     J_val( 7 ) = 2.0_rp * X( 1 )
-     J_val( 8 ) = - 1.0_rp
-     J_val( 9 ) = - 1.0_rp
-     J_val( 10 ) = 2.0_rp * X( 2 )
+     REAL ( kind = rp_ ) :: p
+     p = userdata%real( 1 )
+     G( 1 ) = 2.0_rp_ * X( 1 )
+     G( 2 ) = 2.0_rp_ * X( 2 )
+     J_val( 1 ) = 1.0_rp_
+     J_val( 2 ) = 1.0_rp_
+     J_val( 3 ) = 2.0_rp_ * X( 1 )
+     J_val( 4 ) = 2.0_rp_ * X( 2 )
+     J_val( 5 ) = 2.0_rp_ * p * X( 1 )
+     J_val( 6 ) = 2.0_rp_ * X( 2 )
+     J_val( 7 ) = 2.0_rp_ * X( 1 )
+     J_val( 8 ) = - 1.0_rp_
+     J_val( 9 ) = - 1.0_rp_
+     J_val( 10 ) = 2.0_rp_ * X( 2 )
+     status = 0
      END SUBROUTINE GJ_dense
 
      SUBROUTINE HL_dense( status, X, Y, userdata, H_val )
+     USE GALAHAD_KINDS_precision
      USE GALAHAD_USERDATA_precision
-     INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = rp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( kind = rp ) :: r
-     r = userdata%real( 1 )
-     H_val( 1 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + r * Y( 3 ) + Y( 4 ) )
-     H_val( 2 ) = 0.0_rp
-     H_val( 3 ) = 2.0_rp - 2.0_rp * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
+     REAL ( kind = rp_ ) :: p
+     p = userdata%real( 1 )
+     H_val( 1 ) = 2.0_rp_ - 2.0_rp_ * ( Y( 2 ) + p * Y( 3 ) + Y( 4 ) )
+     H_val( 2 ) = 0.0_rp_
+     H_val( 3 ) = 2.0_rp_ - 2.0_rp_ * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
+     status = 0
      END SUBROUTINE HL_dense
 
    END PROGRAM GALAHAD_EXPO_interface_test

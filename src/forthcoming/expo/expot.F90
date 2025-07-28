@@ -1,7 +1,7 @@
 ! THIS VERSION: GALAHAD 5.3 - 2024-06-15 AT 11:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_EXPO_test_program
-   USE GALAHAD_USERDATA_precision
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_EXPO_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
@@ -10,22 +10,33 @@
    TYPE ( EXPO_inform_type ) :: inform
    TYPE ( EXPO_data_type ) :: data
    TYPE ( GALAHAD_userdata_type ) :: userdata
-   EXTERNAL :: FUN, GRAD, HESS, HESSPROD, PREC
-   INTEGER ( KIND = ip_ ) :: i, s, scratch_out = 56
-   logical :: alive
-   REAL ( KIND = rp_ ), PARAMETER :: p = 4.0_rp_
-   REAL ( KIND = rp_ ) :: dum
+   EXTERNAL :: FC, GJ, HL, GJ_dense, HL_dense
+   INTEGER :: i, s, data_storage_type
+   CHARACTER ( LEN = 2 ) :: st
+   INTEGER, PARAMETER :: n = 2, m = 5, j_ne = 10, h_ne = 2
+   INTEGER, PARAMETER :: j_ne_dense = 10, h_ne_dense = 3
+   REAL ( KIND = rp_ ), PARAMETER :: p = 9.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
 ! start problem data
-   nlp%n = 1 ; nlp%m = 1 ; nlp%H%ne = 1                     ! dimensions
-   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ),               &
-             nlp%C_l( nlp%m ), nlp%C_u( nlp%m ), nlp%G( nlp%n ) )
-!  sparse co-ordinate storage format
-   CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
-   ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
-             nlp%H%col( nlp%H%ne ) )
-   nlp%H%row = (/ 1 /) ; nlp%H%col = (/ 1 /)
+   nlp%pname = 'HS23'                           ! name
+   nlp%n = n ; nlp%m = m ; nlp%J%ne = j_ne ; nlp%H%ne = h_ne
+   ALLOCATE( nlp%X( n ), nlp%G( n ), nlp%X_l( n ), nlp%X_u( n ) )
+   ALLOCATE( nlp%C( m ), nlp%C_l( m ), nlp%C_u( m ) )
+   nlp%X_l = - 50.0_rp_ ; nlp%X_u = 50.0_rp_
+   nlp%C_l = 0.0_rp_ ; nlp%C_u = infinity
+!  sparse row-wise storage format for the Jacobian
+   ALLOCATE( nlp%J%val( j_ne ), nlp%J%col( j_ne ), nlp%H%ptr( m + 1 ) )
+   nlp%J%row = (/ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5 /)
+   nlp%J%col = (/ 1, 2, 1, 2, 1, 2, 1, 2, 1, 2 /)
+   nlp%J%ptr = (/ 1, 3, 5, 7, 9, 11 /)
+!  sparse co-ordinate storage format for the Hessian (lower triangle part)
+   ALLOCATE( nlp%H%val( h_ne ), nlp%H%row( h_ne ), nlp%H%col( h_ne ) )
+   nlp%H%row = (/ 1, 2 /)              ! Hessian H
+   nlp%H%col = (/ 1, 2 /)              ! NB 
+   nlp%H%ptr = (/ 1, 2, 3 /)
 ! problem data complete
-
+   ALLOCATE( userdata%real( 1 ) )                ! allocate space for parameter
+   userdata%real( 1 ) = p                        ! record parameter, p
 !  ================
 !  error exit tests
 !  ================
@@ -34,7 +45,7 @@
 
 !  tests for s = - 1 ... - 40
 
-   DO s = 1, 40
+   DO s = 1, 24
 
      IF ( s == - GALAHAD_error_allocate ) CYCLE
      IF ( s == - GALAHAD_error_deallocate ) CYCLE
@@ -42,7 +53,7 @@
      IF ( s == - GALAHAD_error_bad_bounds ) CYCLE
      IF ( s == - GALAHAD_error_primal_infeasible ) CYCLE
      IF ( s == - GALAHAD_error_dual_infeasible ) CYCLE
-!    IF ( s == - GALAHAD_error_unbounded ) CYCLE
+     IF ( s == - GALAHAD_error_unbounded ) CYCLE
      IF ( s == - GALAHAD_error_no_center ) CYCLE
      IF ( s == - GALAHAD_error_analysis ) CYCLE
      IF ( s == - GALAHAD_error_factorization ) CYCLE
@@ -50,7 +61,7 @@
      IF ( s == - GALAHAD_error_uls_analysis ) CYCLE
      IF ( s == - GALAHAD_error_uls_factorization ) CYCLE
      IF ( s == - GALAHAD_error_uls_solve ) CYCLE
-!    IF ( s == - GALAHAD_error_preconditioner ) CYCLE
+     IF ( s == - GALAHAD_error_preconditioner ) CYCLE
      IF ( s == - GALAHAD_error_ill_conditioned ) CYCLE
      IF ( s == - GALAHAD_error_tiny_step ) CYCLE
 !    IF ( s == - GALAHAD_error_max_iterations ) CYCLE
@@ -60,342 +71,225 @@
      IF ( s == - GALAHAD_error_io ) CYCLE
      IF ( s == - GALAHAD_error_upper_entry ) CYCLE
      IF ( s == - GALAHAD_error_sort ) CYCLE
-     IF ( s > 24 .AND. s < 40 ) CYCLE
      CALL EXPO_initialize( data, control, inform )  ! Initialize controls
+     control%subproblem_direct = .TRUE.
+     control%max_it = 20
+     control%max_eval = 100
 !    control%print_level = 1
-     inform%status = 1                           ! set for initial entry
-     nlp%n = 1
-     nlp%X = 1.0_rp_                             ! start from one
-     nlp%X_l = - 3.0_rp_ ; nlp%X_l = 3.0_rp_
-     nlp%C_l = - 3.0_rp_ ; nlp%C_l = 3.0_rp_
-     control%hessian_available = .FALSE.         ! Hessian prods will be used
-
+!    control%tru_control%print_level = 1
+#ifdef REAL_32
+     control%stop_abs_p = 0.001_rp_
+     control%stop_abs_d = 0.001_rp_
+     control%stop_abs_c = 0.001_rp_
+     control%tru_control%error = 0
+#else
+     control%stop_abs_p = 0.00001_rp_
+     control%stop_abs_d = 0.00001_rp_
+     control%stop_abs_c = 0.00001_rp_
+#endif
+!    control%print_level = 1
+     nlp%n = n
+     nlp%X( 1 ) = 3.0_rp_ ; nlp%X( 2 ) = 1.0_rp_
      IF ( s == - GALAHAD_error_restrictions ) THEN
        nlp%n = 0
-     ELSE IF ( s == - GALAHAD_error_preconditioner ) THEN
-       control%preconditioner = - 3               ! User's preconditioner
      ELSE IF ( s == - GALAHAD_error_unbounded ) THEN
      ELSE IF ( s == - GALAHAD_error_max_iterations ) THEN
        control%max_it = 0
      ELSE IF ( s == - GALAHAD_error_cpu_limit ) THEN
        control%cpu_time_limit = 0.0_rp_
      END IF
-     DO                                           ! Loop to solve problem
-       CALL EXPO_solve( nlp, control, inform, data, userdata )
-       SELECT CASE ( inform%status )              ! reverse communication
-       CASE ( 2 )                                 ! Obtain the objective
-         nlp%f = - nlp%X( 1 ) ** 2
-         data%eval_status = 0                     ! record successful evaluation
-         IF ( control%alive_unit > 0 .AND. s == 40 ) THEN
-           INQUIRE( FILE = control%alive_file, EXIST = alive )
-           IF ( alive .AND. control%alive_unit > 0 ) THEN
-             OPEN( control%alive_unit, FILE = control%alive_file,              &
-                   FORM = 'FORMATTED', STATUS = 'UNKNOWN' )
-             REWIND control%alive_unit
-             CLOSE( control%alive_unit, STATUS = 'DELETE' )
-           END IF
-         END IF
-         IF ( s == - GALAHAD_error_cpu_limit ) THEN
-           dum = 0.0_rp_
-           DO i = 1, 10000000
-             dum = dum + 0.0000001_rp_ * i / ( i + 1 )
-           END DO
-           nlp%f = ( nlp%f + dum ) - dum
-         END IF
-       CASE ( 3 )                                 ! Obtain the gradient
-         nlp%G( 1 ) = - 2.0_rp_ * nlp%X( 1 )
-         data%eval_status = 0                     ! record successful evaluation
-       CASE ( 5 )                                 ! Obtain Hessian-vector prod
-         data%U( 1 ) = data%U( 1 ) - 2.0_rp_ * data%V( 1 )
-         data%eval_status = 0                     ! record successful evaluation
-       CASE ( 6 )                                 ! Apply the preconditioner
-         data%U( 1 ) = - data%V( 1 )
-       CASE DEFAULT                               ! Terminal exit from loop
-         EXIT
-       END SELECT
-     END DO
+     inform%status = 1                             
+     CALL SMT_put( nlp%J%type, 'COORDINATE', i )
+     CALL SMT_put( nlp%H%type, 'COORDINATE', i )
+     CALL EXPO_solve( nlp, control, inform, data, userdata, eval_FC = FC,      &
+                      eval_GJ = GJ, eval_HL = HL )
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &     F6.1, ' status = ', I6 )" ) i, inform%iter, inform%obj, inform%status
+     &     F6.1, ' status = ', I6 )" ) s, inform%iter, inform%obj, inform%status
      ELSE
        WRITE( 6, "( I2, ': EXPO_solve exit status = ', I6 ) " ) s, inform%status
      END IF
-
      CALL EXPO_terminate( data, control, inform )  ! delete internal workspace
+     DEALLOCATE( nlp%J%type, nlp%H%type )
    END DO
 
-   control%subproblem_direct = .TRUE.         ! Use a direct method
-   CALL EXPO_solve( nlp, control, inform, data, userdata,                      &
-                    eval_F = FUN, eval_G = GRAD, eval_H = HESS )
+!  =====================================
+!  basic test of various storage formats
+!  =====================================
 
-   DEALLOCATE( nlp%X, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u, nlp%G,               &
-               nlp%H%val, nlp%H%row, nlp%H%col )
+   WRITE( 6, "( /, ' basic tests of storage formats', / )" )
 
-!  =========================
-!  test of available options
-!  =========================
+   DO data_storage_type = 1, 3
 
-! start problem data
-   nlp%n = 3 ; nlp%m = 1 ; nlp%H%ne = 5                  ! dimensions
-   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ),               &
-             nlp%C_l( nlp%m ), nlp%C_u( nlp%m ), nlp%G( nlp%n ) )
+ ! initialize control parameters
 
-!  sparse co-ordinate storage format
-   CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
-   ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
-             nlp%H%col( nlp%H%ne ) )
-   nlp%H%row = (/ 1, 3, 2, 3, 3 /)           ! Hessian H
-   nlp%H%col = (/ 1, 1, 2, 2, 3 /)           ! NB lower triangle
-! problem data complete
-   ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
-   userdata%real( 1 ) = p                     ! Record parameter, p
-
-   WRITE( 6, "( /, ' test of availible options ', / )" )
-
-   DO i = 1, 7
-     CALL EXPO_initialize( data, control, inform )     ! Initialize controls
+     CALL EXPO_initialize( data, control, inform )
+     control%subproblem_direct = .TRUE.
+     control%max_it = 20
+     control%max_eval = 100
 !    control%print_level = 1
-     inform%status = 1                        ! set for initial entry
-     nlp%X = 1.0_rp_                          ! start from one
-     nlp%X_l = - 3.0_rp_ ; nlp%X_l = 3.0_rp_
-     nlp%C_l = - 3.0_rp_ ; nlp%C_l = 3.0_rp_
-     IF ( i == 1 ) THEN
-       ALLOCATE( nlp%VNAMES( nlp%n ) )
-       nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 1 ) = 'X2' ; nlp%VNAMES( 1 ) = 'X3'
-       control%out = scratch_out
-       control%error = scratch_out
-       control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
-       control%psls_control%out = scratch_out
-       control%psls_control%error = scratch_out
-       control%psls_control%print_level = 1
-       control%trs_control%out = scratch_out
-       control%trs_control%error = scratch_out
-       control%trs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-       control%subproblem_direct = .TRUE.         ! Use a direct method
-       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
-                       eval_F = FUN, eval_G = GRAD, eval_H = HESS )
-       CLOSE( UNIT = scratch_out )
-       DEALLOCATE( nlp%VNAMES )
-     ELSE IF ( i == 2 ) THEN
-       control%preconditioner = 2
-       control%out = scratch_out
-       control%error = scratch_out
-       control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
-       control%psls_control%out = scratch_out
-       control%psls_control%error = scratch_out
-       control%psls_control%print_level = 1
-       control%trs_control%out = scratch_out
-       control%trs_control%error = scratch_out
-       control%trs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
-                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
-       CLOSE( UNIT = scratch_out )
-     ELSE IF ( i == 3 ) THEN
-       control%preconditioner = 3
-       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
-                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
-     ELSE IF ( i == 4 ) THEN
-       control%preconditioner = 5
-       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
-                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
-     ELSE IF ( i == 5 ) THEN
-       control%preconditioner = - 2
-       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
-                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
-     ELSE IF ( i == 6 ) THEN
-       control%model = 1
-       control%max_it = 1000
-       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
-                        eval_F = FUN, eval_G = GRAD )
-     ELSE IF ( i == 7 ) THEN
-       control%model = 3
-       control%max_it = 1000
-       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
-                        eval_F = FUN, eval_G = GRAD )
-     END IF
+!    control%tru_control%print_level = 1
+#ifdef REAL_32
+     control%stop_abs_p = 0.001_rp_
+     control%stop_abs_d = 0.001_rp_
+     control%stop_abs_c = 0.001_rp_
+     control%tru_control%error = 0
+#else
+     control%stop_abs_p = 0.00001_rp_
+     control%stop_abs_d = 0.00001_rp_
+     control%stop_abs_c = 0.00001_rp_
+#endif
+
+!  solve the problem
+
+     inform%status = 1                             
+     nlp%X( 1 ) = 3.0_rp_ ; nlp%X( 2 ) = 1.0_rp_
+     SELECT CASE ( data_storage_type )
+     CASE ( 1 ) ! sparse co-ordinate storage
+       st = ' C'
+       CALL SMT_put( nlp%J%type, 'COORDINATE', s )
+       CALL SMT_put( nlp%H%type, 'COORDINATE', s )
+       CALL EXPO_solve( nlp, control, inform, data, userdata, eval_FC = FC,    &
+                        eval_GJ = GJ, eval_HL = HL )
+     CASE ( 2 ) ! sparse by rows
+       st = ' R'
+       CALL SMT_put( nlp%J%type, 'SPARSE_BY_ROWS', s )
+       CALL SMT_put( nlp%H%type, 'SPARSE_BY_ROWS', s )
+       CALL EXPO_solve( nlp, control, inform, data, userdata, eval_FC = FC,    &
+                        eval_GJ = GJ, eval_HL = HL )
+     CASE ( 3 ) ! dense
+       st = ' D'
+       CALL SMT_put( nlp%J%type, 'DENSE', s )
+       CALL SMT_put( nlp%H%type, 'DENSE', s )
+       DEALLOCATE( nlp%J%val, nlp%H%val )
+       ALLOCATE( nlp%J%val( j_ne_dense ), nlp%H%val( h_ne_dense ) )
+       nlp%J%ne = j_ne_dense ; nlp%H%ne = h_ne_dense
+       CALL EXPO_solve( nlp, control, inform, data, userdata, eval_FC = FC,    &
+                        eval_GJ = GJ_dense, eval_HL = HL_dense )
+     END SELECT
+
      IF ( inform%status == 0 ) THEN
-       WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &    F6.1, ' status = ', I6 )" ) i, inform%iter, inform%obj, inform%status
+       WRITE( 6, "( A2, ':', I6, ' iterations. Optimal objective value = ',    &
+     &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
      ELSE
-       WRITE( 6, "( I2, ': EXPO_solve exit status = ', I6 ) " ) i, inform%status
+       WRITE( 6, "( A2, ': EXPO_solve exit status = ', I0 )" ) st, inform%status
      END IF
-
+!    WRITE( 6, "( ' X ', 3ES12.5 )" ) X
+!    WRITE( 6, "( ' G ', 3ES12.5 )" ) G
      CALL EXPO_terminate( data, control, inform )  ! delete internal workspace
+     DEALLOCATE( nlp%J%type, nlp%H%type )
    END DO
-   DEALLOCATE( nlp%X, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u, nlp%G,               &
-               nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
 
-!  ============================
-!  full test of generic problem
-!  ============================
-
-! start problem data
-   nlp%n = 3 ; nlp%m = 1 ; nlp%H%ne = 5                  ! dimensions
-   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ),               &
-             nlp%C_l( nlp%m ), nlp%C_u( nlp%m ), nlp%G( nlp%n ) )
-!  sparse co-ordinate storage format
-   CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
-   ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
-                        nlp%H%col( nlp%H%ne ) )
-   nlp%H%row = (/ 1, 3, 2, 3, 3 /)            ! Hessian H
-   nlp%H%col = (/ 1, 1, 2, 2, 3 /)            ! NB lower triangle
-! problem data complete
-   ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
-   userdata%real( 1 ) = p                     ! Record parameter, p
-
-   WRITE( 6, "( /, ' full test of generic problems ', / )" )
-
-   DO i = 1, 6
-     CALL EXPO_initialize( data, control, inform )     ! Initialize controls
-!    control%print_level = 1
-     inform%status = 1                          ! set for initial entry
-     nlp%X = 1.0_rp_                             ! start from one
-     nlp%X_l = - 3.0_rp_ ; nlp%X_l = 3.0_rp_
-     nlp%C_l = - 3.0_rp_ ; nlp%C_l = 3.0_rp_
-     IF ( i == 1 ) THEN
-       control%subproblem_direct = .TRUE.       ! Use a direct method
-       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
-                       eval_F = FUN, eval_G = GRAD, eval_H = HESS )
-     ELSE IF ( i == 2 ) THEN
-       control%hessian_available = .FALSE.      ! Hessian products will be used
-       CALL EXPO_solve( nlp, control, inform, data, userdata,                  &
-                       eval_F = FUN, eval_G = GRAD,  eval_HPROD = HESSPROD )
-     ELSE IF ( i == 3 ) THEN
-       control%hessian_available = .FALSE.      ! Hessian products will be used
-       control%preconditioner = - 3             ! User's preconditioner
-       CALL EXPO_solve( nlp, control, inform, data, userdata, eval_F = FUN,    &
-              eval_G = GRAD, eval_HPROD = HESSPROD, eval_PREC = PREC )
-     ELSE IF ( i == 4 .OR. i == 5 .OR. i == 6 ) THEN
-       IF ( i == 4 ) THEN
-         control%subproblem_direct = .TRUE.         ! Use a direct method
-       ELSE
-         control%hessian_available = .FALSE.        ! Hessian prods will be used
-       END IF
-       IF ( i == 6 ) control%preconditioner = - 3   ! User's preconditioner
-       DO                                           ! Loop to solve problem
-         CALL EXPO_solve( nlp, control, inform, data, userdata )
-         SELECT CASE ( inform%status )              ! reverse communication
-         CASE ( 2 )                                 ! Obtain the objective
-           nlp%f = ( nlp%X( 1 ) + nlp%X( 3 ) + p ) ** 2 +                      &
-                   ( nlp%X( 2 ) + nlp%X( 3 ) ) ** 2 + COS( nlp%X( 1 ) )
-           data%eval_status = 0                   ! record successful evaluation
-         CASE ( 3 )                               ! Obtain the gradient
-           nlp%G( 1 ) = 2.0_rp_ * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) -            &
-                        SIN( nlp%X( 1 ) )
-           nlp%G( 2 ) = 2.0_rp_ * ( nlp%X( 2 ) + nlp%X( 3 ) )
-           nlp%G( 3 ) = 2.0_rp_ * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) +            &
-                        2.0_rp_ * ( nlp%X( 2 ) + nlp%X( 3 ) )
-           data%eval_status = 0                   ! record successful evaluation
-         CASE ( 4 )                               ! Obtain the Hessian
-           nlp%H%val( 1 ) = 2.0_rp_ - COS( nlp%X( 1 ) )
-           nlp%H%val( 2 ) = 2.0_rp_
-           nlp%H%val( 3 ) = 2.0_rp_
-           nlp%H%val( 4 ) = 2.0_rp_
-           nlp%H%val( 5 ) = 4.0_rp_
-           data%eval_status = 0                  ! record successful evaluation
-         CASE ( 5 )                              ! Obtain Hessian-vector prod
-           data%U( 1 ) = data%U( 1 ) + 2.0_rp_ * ( data%V( 1 ) + data%V( 3 ) ) &
-                           - COS( nlp%X( 1 ) ) * data%V( 1 )
-           data%U( 2 ) = data%U( 2 ) + 2.0_rp_ * ( data%V( 2 ) + data%V( 3 ) )
-           data%U( 3 ) = data%U( 3 ) + 2.0_rp_ * ( data%V( 1 ) + data%V( 2 ) + &
-                         2.0_rp_ * data%V( 3 ) )
-           data%eval_status = 0                  ! record successful evaluation
-         CASE ( 6 )                              ! Apply the preconditioner
-           data%U( 1 ) = 0.5_rp_ * data%V( 1 )
-           data%U( 2 ) = 0.5_rp_ * data%V( 2 )
-           data%U( 3 ) = 0.25_rp_ * data%V( 3 )
-           data%eval_status = 0                  ! record successful evaluation
-         CASE DEFAULT                            ! Terminal exit from loop
-           EXIT
-         END SELECT
-       END DO
-     ELSE
-     END IF
-     IF ( inform%status == 0 ) THEN
-       WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &     F6.1, ' status = ', I6 )" ) i, inform%iter, inform%obj, inform%status
-     ELSE
-       WRITE( 6, "( I2, ': EXPO_solve exit status = ', I6 ) " ) i, inform%status
-     END IF
-
-     CALL EXPO_terminate( data, control, inform )  ! delete internal workspace
-   END DO
-   DEALLOCATE( nlp%X, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u, nlp%G,               &
-               nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
-   WRITE( 6, "( /, ' tests completed' )" )
-   WRITE( 6, "( /, ' ***  This package needs much more work!!' )" )
-
+   DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+   DEALLOCATE( nlp%J%val, nlp%J%col, nlp%J%ptr )
+   DEALLOCATE( nlp%C, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u )
    END PROGRAM GALAHAD_EXPO_test_program
 
-   SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
+   SUBROUTINE WHICH_sls( control )
+   USE GALAHAD_EXPO_precision, ONLY: EXPO_control_type
+   TYPE ( EXPO_control_type ) :: control
+#include "galahad_sls_defaults_ls.h"
+   control%SSLS_control%symmetric_linear_solver = symmetric_linear_solver
+   control%TRU_control%TRS_control%definite_linear_solver                      &
+     = definite_linear_solver
+   control%TRU_control%TRS_control%symmetric_linear_solver                     &
+     = symmetric_linear_solver
+   END SUBROUTINE WHICH_sls
+
+   SUBROUTINE FC( status, X, userdata, F, C )
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-   REAL ( KIND = rp_ ), INTENT( OUT ) :: f
-   REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+   REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( kind = rp_ ), OPTIONAL, INTENT( OUT ) :: F
+   REAL ( kind = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   f = ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) ** 2 +                         &
-       ( X( 2 ) + X( 3 ) ) ** 2 + COS( X( 1 ) )
+   REAL ( kind = rp_ ) :: p
+   p = userdata%real( 1 )
+   f = X( 1 ) ** 2 + X( 2 ) ** 2
+   C( 1 ) = X( 1 ) + X( 2 ) - 1.0_rp_
+   C( 2 ) = X( 1 ) ** 2 + X( 2 ) ** 2 - 1.0_rp_
+   C( 3 ) = p * X( 1 ) ** 2 + X( 2 ) ** 2 - p
+   C( 4 ) = X( 1 ) ** 2 - X( 2 )
+   C( 5 ) = X( 2 ) ** 2 - X( 1 )
    status = 0
-   RETURN
-   END SUBROUTINE FUN
+   END SUBROUTINE FC
 
-   SUBROUTINE GRAD( status, X, userdata, G )    ! gradient of the objective
+   SUBROUTINE GJ( status, X, userdata, G, J_val )
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+   REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G
+   REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: J_val
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   G( 1 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) - SIN( X( 1 ) )
-   G( 2 ) = 2.0_rp_ * ( X( 2 ) + X( 3 ) )
-   G( 3 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +               &
-            2.0_rp_ * ( X( 2 ) + X( 3 ) )
+   REAL ( kind = rp_ ) :: p
+   p = userdata%real( 1 )
+   G( 1 ) = 2.0_rp_ * X( 1 )
+   G( 2 ) = 2.0_rp_ * X( 2 )
+   J_val( 1 ) = 1.0_rp_
+   J_val( 2 ) = 1.0_rp_
+   J_val( 3 ) = 2.0_rp_ * X( 1 )
+   J_val( 4 ) = 2.0_rp_ * X( 2 )
+   J_val( 5 ) = 2.0_rp_ * p * X( 1 )
+   J_val( 6 ) = 2.0_rp_ * X( 2 )
+   J_val( 7 ) = 2.0_rp_ * X( 1 )
+   J_val( 8 ) = - 1.0_rp_
+   J_val( 9 ) = - 1.0_rp_
+   J_val( 10 ) = 2.0_rp_ * X( 2 )
    status = 0
-   RETURN
-   END SUBROUTINE GRAD
+   END SUBROUTINE GJ
 
-   SUBROUTINE HESS( status, X, userdata, Hval ) ! Hessian of the objective
+   SUBROUTINE HL( status, X, Y, userdata, H_val )
+   USE GALAHAD_KINDS_precision
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   REAL ( kind = rp_ ) :: p
+   p = userdata%real( 1 )
+   H_val( 1 ) = 2.0_rp_ - 2.0_rp_ * ( Y( 2 ) + p * Y( 3 ) + Y( 4 ) )
+   H_val( 2 ) = 2.0_rp_ - 2.0_rp_ * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
+   status = 0
+   END SUBROUTINE HL
+
+   SUBROUTINE GJ_dense( status, X, userdata, G, J_val )
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
+   REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G
+   REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: J_val
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   Hval( 1 ) = 2.0_rp_ - COS( X( 1 ) )
-   Hval( 2 ) = 2.0_rp_
-   Hval( 3 ) = 2.0_rp_
-   Hval( 4 ) = 2.0_rp_
-   Hval( 5 ) = 4.0_rp_
+   REAL ( kind = rp_ ) :: p
+   p = userdata%real( 1 )
+   G( 1 ) = 2.0_rp_ * X( 1 )
+   G( 2 ) = 2.0_rp_ * X( 2 )
+   J_val( 1 ) = 1.0_rp_
+   J_val( 2 ) = 1.0_rp_
+   J_val( 3 ) = 2.0_rp_ * X( 1 )
+   J_val( 4 ) = 2.0_rp_ * X( 2 )
+   J_val( 5 ) = 2.0_rp_ * p * X( 1 )
+   J_val( 6 ) = 2.0_rp_ * X( 2 )
+   J_val( 7 ) = 2.0_rp_ * X( 1 )
+   J_val( 8 ) = - 1.0_rp_
+   J_val( 9 ) = - 1.0_rp_
+   J_val( 10 ) = 2.0_rp_ * X( 2 )
    status = 0
-   RETURN
-   END SUBROUTINE HESS
+   END SUBROUTINE GJ_dense
 
-   SUBROUTINE HESSPROD( status, X, userdata, U, V ) ! Hessian-vector product
+   SUBROUTINE HL_dense( status, X, Y, userdata, H_val )
+   USE GALAHAD_KINDS_precision
    USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   U( 1 ) = U( 1 ) + 2.0_rp_ * ( V( 1 ) + V( 3 ) ) - COS( X( 1 ) ) * V( 1 )
-   U( 2 ) = U( 2 ) + 2.0_rp_ * ( V( 2 ) + V( 3 ) )
-   U( 3 ) = U( 3 ) + 2.0_rp_ * ( V( 1 ) + V( 2 ) + 2.0_rp_ * V( 3 ) )
+   REAL ( kind = rp_ ) :: p
+   p = userdata%real( 1 )
+   H_val( 1 ) = 2.0_rp_ - 2.0_rp_ * ( Y( 2 ) + p * Y( 3 ) + Y( 4 ) )
+   H_val( 2 ) = 0.0_rp_
+   H_val( 3 ) = 2.0_rp_ - 2.0_rp_ * ( Y( 2 ) + Y( 3 ) + Y( 5 ) )
    status = 0
-   RETURN
-   END SUBROUTINE HESSPROD
-
-   SUBROUTINE PREC( status, X, userdata, U, V ) ! apply preconditioner
-   USE GALAHAD_USERDATA_precision
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   U( 1 ) = 0.5_rp_ * V( 1 )
-   U( 2 ) = 0.5_rp_ * V( 2 )
-   U( 3 ) = 0.25_rp_ * V( 3 )
-   status = 0
-   RETURN
-   END SUBROUTINE PREC
+   END SUBROUTINE HL_dense
