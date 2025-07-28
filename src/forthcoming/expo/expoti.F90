@@ -120,7 +120,7 @@ CONTAINS
      END SUBROUTINE WHICH_sls
 
      SUBROUTINE FC( status, X, userdata, F, C )
-     USE GALAHAD_USERDATA_double
+     USE GALAHAD_USERDATA_precision
      INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( kind = rp ), DIMENSION( : ), INTENT( IN ) :: X
@@ -139,7 +139,7 @@ CONTAINS
      END SUBROUTINE FC
 
      SUBROUTINE GJ( status, X, userdata, G, J_val )
-     USE GALAHAD_USERDATA_double
+     USE GALAHAD_USERDATA_precision
      INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X
@@ -163,7 +163,7 @@ CONTAINS
      END SUBROUTINE GJ
 
      SUBROUTINE HL( status, X, Y, userdata, H_val )
-     USE GALAHAD_USERDATA_double
+     USE GALAHAD_USERDATA_precision
      INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X, Y
@@ -176,7 +176,7 @@ CONTAINS
      END SUBROUTINE HL
 
      SUBROUTINE GJ_dense( status, X, userdata, G, J_val )
-     USE GALAHAD_USERDATA_double
+     USE GALAHAD_USERDATA_precision
      INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X
@@ -200,7 +200,7 @@ CONTAINS
      END SUBROUTINE GJ_dense
 
      SUBROUTINE HL_dense( status, X, Y, userdata, H_val )
-     USE GALAHAD_USERDATA_double
+     USE GALAHAD_USERDATA_precision
      INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X, Y
