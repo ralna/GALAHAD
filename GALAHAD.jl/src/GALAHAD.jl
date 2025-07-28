@@ -167,7 +167,7 @@ include("wrappers/qpb.jl")
 # slls requires sbls, sls, sils, uls, gls, convert.
 include("wrappers/slls.jl")
 
-# tru requires trs, sls, sils, ir, gltr, dps, psls, lms, sec, sha.
+# tru requires trs, sls, sils, ir, gltr, dps, psls, lms, sec, sha, nodend.
 include("wrappers/tru.jl")
 
 # wcp requires fdc, sls, sils, uls, gls, sbls.
@@ -188,7 +188,7 @@ include("wrappers/bnls.jl")
 # ssls requires sls, sils, nodend.
 include("wrappers/ssls.jl")
 
-# expo requires bsc, tru, ssls.
+# expo requires bsc, tru, ssls, sls, sils, trs, ir, gltr, dps, psls, lms, sec, sha, nodend.
 include("wrappers/expo.jl")
 
 end # module GALAHAD
