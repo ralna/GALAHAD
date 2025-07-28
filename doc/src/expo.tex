@@ -676,10 +676,10 @@ specifies the largest value of the KKT residuals before an advanced SQP start
 will be attempted.
 The default is {\tt try\_sqp\_start =} $10^{-4}$.
 
-\itt{stop\_advance\_start} is a scalar variable of type default \realdp, that 
+\itt{stop\_advanced\_start} is a scalar variable of type default \realdp, that 
 specifies the smallest value of the KKT residuals that an advanced start 
 will be attempted.
-The default is {\tt stop\_advance\_start =} $10^{-8}$.
+The default is {\tt stop\_advanced\_start =} $10^{-8}$.
 
 \itt{cpu\_time\_limit} is a scalar variable of type \realdp,
 that is used to specify the maximum permitted CPU time. Any negative
@@ -1631,7 +1631,7 @@ that each affects are given in Table~\vref{specfile}.
   {\tt minimum-objective-before-unbounded} & {\tt obj\_unbounded } & real \\
   {\tt try-advanced-start-tolerance} & {\tt     try\_advanced\_start } & real \\
   {\tt try-sqp-start-tolerance} & {\tt try\_sqp\_start } & real \\
-  {\tt stop-advanced-start-tolerance} & {\tt stop\_advance\_start } & real \\
+  {\tt stop-advanced-start-tolerance} & {\tt stop\_advanced\_start } & real \\
   {\tt maximum-cpu-time-limit} & {\tt \%cpu\_time\_limit} & real \\
   {\tt maximum-clock-time-limit} & {\tt \%clock\_time\_limit} & real \\
   {\tt hessian-available}  & {\tt \%hessian\_available} & logical \\

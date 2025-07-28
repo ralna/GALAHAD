@@ -340,7 +340,7 @@ try an advanced SQP start at the end of every iteration when the KKT residuals a
 
 	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_advanced_start
 
-stop the advanced start search once the residuals small tham .stop_advance_start
+stop the advanced start search once the residuals small tham .stop_advanced_start
 
 .. index:: pair: variable; cpu_time_limit
 .. _doxid-structexpo__control__type_cpu_time_limit:

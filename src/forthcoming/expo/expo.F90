@@ -209,7 +209,7 @@
 
 !  stop the advanced start search once the residuals are sufficientl small
 
-       REAL ( KIND = rp_ ) :: stop_advance_start = ten ** ( - 8 )
+       REAL ( KIND = rp_ ) :: stop_advanced_start = ten ** ( - 8 )
 
 !   the maximum CPU time allowed (-ve means infinite)
 
@@ -666,9 +666,10 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: try_advanced_start                   &
                                             = obj_unbounded + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: try_sqp_start = try_advanced_start + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: stop_advance_start = try_sqp_start + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_advanced_start                  &
+                                            = try_sqp_start + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                       &
-                                            = stop_advance_start + 1
+                                            = stop_advanced_start + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: hessian_available                    &
                                             = clock_time_limit + 1
@@ -719,7 +720,7 @@
      spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
      spec( try_advanced_start )%keyword = 'try-advanced-start-tolerance'
      spec( try_sqp_start )%keyword = 'try-sqp-start-tolerance'
-     spec( stop_advance_start )%keyword = 'stop-advanced-start-tolerance'
+     spec( stop_advanced_start )%keyword = 'stop-advanced-start-tolerance'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
 
@@ -822,8 +823,8 @@
      CALL SPECFILE_assign_value( spec( try_sqp_start ),                        &
                                  control%try_sqp_start,                        &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( stop_advance_start ),                   &
-                                 control%stop_advance_start,                   &
+     CALL SPECFILE_assign_value( spec( stop_advanced_start ),                  &
+                                 control%stop_advanced_start,                  &
                                  control%error )
      CALL SPECFILE_assign_value( spec( cpu_time_limit ),                       &
                                  control%cpu_time_limit,                       &
@@ -3697,7 +3698,7 @@ stop
 
 !  check to see if the residuals are sufficiently small
 
-           IF ( data%rnorm < data%control%stop_advance_start ) THEN
+           IF ( data%rnorm < data%control%stop_advanced_start ) THEN
              IF ( data%printd ) write( data%out, "( ' converged ' )" )   
              data%expo%X( : nlp%n ) = nlp%X( : nlp%n )
              inform%obj = nlp%f
@@ -3711,7 +3712,7 @@ stop
          IF ( data%printd ) THEN
            WRITE( data%out, "( ' ||r|| =', ES11.4 )" ) data%rnorm
            WRITE( data%out, "( ' ||r||, old, stop =', 3ES11.4 )" )             &
-             data%rnorm, data%rnorm_old, data%control%stop_advance_start 
+             data%rnorm, data%rnorm_old, data%control%stop_advanced_start 
          end if
 
 !  check to see if the residuals have increased

@@ -95,7 +95,7 @@ functions
             KKT residuals are smaller than .try_sqp_start (-ve means never)
           stop_advanced_start : float
             stop the advanced start search once the residuals small than
-            .stop_advance_start
+            .stop_advanced_start
           cpu_time_limit : float
              the maximum CPU time allowed (-ve means infinite).
           clock_time_limit : float

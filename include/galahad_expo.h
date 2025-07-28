@@ -529,8 +529,8 @@ struct expo_control_type {
 
     /// \brief
     /// stop the advanced start search once the residuals small than
-    /// .stop_advance_start
-    rpc_ stop_advance_start;
+    /// .stop_advanced_start
+    rpc_ stop_advanced_start;
 
     /// \brief
     /// the maximum CPU time allowed (-ve means infinite)

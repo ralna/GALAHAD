@@ -27,7 +27,7 @@ struct expo_control_type{T,INT}
   obj_unbounded::T
   try_advanced_start::T
   try_sqp_start::T
-  stop_advance_start::T
+  stop_advanced_start::T
   cpu_time_limit::T
   clock_time_limit::T
   hessian_available::Bool

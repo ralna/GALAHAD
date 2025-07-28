@@ -89,7 +89,7 @@
       REAL ( KIND = rpc_ ) :: obj_unbounded
       REAL ( KIND = rpc_ ) :: try_advanced_start
       REAL ( KIND = rpc_ ) :: try_sqp_start
-      REAL ( KIND = rpc_ ) :: stop_advance_start
+      REAL ( KIND = rpc_ ) :: stop_advanced_start
       REAL ( KIND = rpc_ ) :: cpu_time_limit
       REAL ( KIND = rpc_ ) :: clock_time_limit
       LOGICAL ( KIND = C_BOOL ) :: hessian_available
@@ -220,7 +220,7 @@
     fcontrol%obj_unbounded = ccontrol%obj_unbounded
     fcontrol%try_advanced_start = ccontrol%try_advanced_start
     fcontrol%try_sqp_start = ccontrol%try_sqp_start
-    fcontrol%stop_advance_start = ccontrol%stop_advance_start
+    fcontrol%stop_advanced_start = ccontrol%stop_advanced_start
     fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
     fcontrol%clock_time_limit = ccontrol%clock_time_limit
 
@@ -287,7 +287,7 @@
     ccontrol%obj_unbounded = fcontrol%obj_unbounded
     ccontrol%try_advanced_start = fcontrol%try_advanced_start
     ccontrol%try_sqp_start = fcontrol%try_sqp_start
-    ccontrol%stop_advance_start = fcontrol%stop_advance_start
+    ccontrol%stop_advanced_start = fcontrol%stop_advanced_start
     ccontrol%cpu_time_limit = fcontrol%cpu_time_limit
     ccontrol%clock_time_limit = fcontrol%clock_time_limit
 
