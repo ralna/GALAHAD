@@ -116,6 +116,8 @@ src/slls/sllst.F90
 src/slls/sllsti.F90
 src/sls/slst.F90
 src/sls/slsti.F90
+src/ssls/sslst.F90
+src/ssls/sslsti.F90
 src/smt/smtt.F90
 src/sort/sortt.F90
 src/ssids/ssidst.F90
@@ -312,6 +314,8 @@ src/slls/C/sllst.c
 src/slls/C/sllstf.c
 src/sls/C/slst.c
 src/sls/C/slstf.c
+src/ssls/C/slst.c
+src/ssls/C/slstf.c
 src/trb/C/trbt.c
 src/trb/C/trbtf.c
 src/trs/C/trst.c
