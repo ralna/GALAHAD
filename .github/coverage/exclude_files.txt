@@ -45,6 +45,8 @@ src/fdc/fdcti.F90
 src/fdh/fdht.F90
 src/filtrane/filtranet.F90
 src/fit/fitt.F90
+src/forthcoming/expo/expot.F90
+src/forthcoming/expo/expoti.F90
 src/glrt/glrtt.F90
 src/glrt/glrtti.F90
 src/gls/glst.F90
@@ -197,6 +199,8 @@ src/external/metis4/timing.c
 src/external/metis4/util.c
 src/fdc/C/fdct.c
 src/fdc/C/fdctf.c
+src/forthcoming/expo/C/expot.c
+src/forthcoming/expo/C/expotf.c
 src/glrt/C/glrtt.c
 src/gltr/C/gltrt.c
 src/l2rt/C/l2rtt.c
