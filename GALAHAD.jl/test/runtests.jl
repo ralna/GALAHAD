@@ -2,7 +2,7 @@ using GALAHAD
 using Quadmath
 
 @info("GALAHAD_INSTALLATION : $(GALAHAD.GALAHAD_INSTALLATION)")
-# @info("GALAHAD_VERSION : $(version_galahad())")
+
 include("test_structures.jl")
 
 include("test_arc.jl")
@@ -62,4 +62,5 @@ include("test_trs.jl")
 include("test_tru.jl")
 include("test_ugo.jl")
 include("test_uls.jl")
+include("test_version.jl")
 include("test_wcp.jl")
