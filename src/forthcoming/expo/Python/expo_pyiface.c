@@ -395,11 +395,11 @@ static bool expo_update_control(struct expo_control_type *control,
                                   sizeof(control->prefix)))
                 return false;
             continue;
+        }
         if(strcmp(key_name, "bsc_options") == 0){
             if(!bsc_update_control(&control->bsc_control, value))
                 return false;
             continue;
-        }
         }
         if(strcmp(key_name, "tru_options") == 0){
             if(!tru_update_control(&control->tru_control, value))
