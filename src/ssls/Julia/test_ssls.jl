@@ -1,1 +1,1 @@
-../../../GALAHAD.jl/src/test/test_ssls.jl
+../../../GALAHAD.jl/test/test_ssls.jl
