@@ -185,10 +185,10 @@ include("wrappers/bllsb.jl")
 # bnls requires rqs, sls, sils, ir, glrt, psls, bsc, roots.
 include("wrappers/bnls.jl")
 
-# ssls requires sls
+# ssls requires sls, sils.
 include("wrappers/ssls.jl")
 
-# expo requires bsc, tru, ssls
+# expo requires bsc, tru, ssls.
 include("wrappers/expo.jl")
 
 end # module GALAHAD
