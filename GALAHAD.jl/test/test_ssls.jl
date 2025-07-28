@@ -52,9 +52,6 @@ function test_ssls(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
 
     # Initialize SSLS
     ssls_initialize(T, INT, data, control, status)
-    @reset control[].preconditioner = INT(2)
-    @reset control[].factorization = INT(2)
-    @reset control[].get_norm_residual = true
 
     # Linear solvers
     @reset control[].symmetric_linear_solver = galahad_linear_solver(sls)
@@ -165,23 +162,37 @@ function test_ssls(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
     end
 
     # Set right-hand side (a, b)
-    sol = T[3.0, 2.0, 4.0, 2.0, 0.0]  # values
+    if d == 4
+      sol = T[3.0, 2.0, 3.0, -1.0, -1.0]
+    elseif d == 5
+      sol = T[4.0, 3.0, 3.0, 1.0, -1.0]
+    elseif d == 6
+      sol = T[3.0, 2.0, 2.0, 2.0, 0.0]
+    elseif d == 7
+      sol = T[3.0, 2.0, 2.0, 3.0, 1.0]
+    else
+      sol = T[4.0, 3.0, 5.0, -2.0, -2.0]
+    end
 
     ssls_solve_system(T, INT, data, status, n, m, sol)
+
+    if status[] != 0
+      ssls_information(T, INT, data, inform, status)
+      @printf("%c: SSLS_solve exit status = %i\n", st, inform[].status)
+      continue
+    end
 
     ssls_information(T, INT, data, inform, status)
 
     if inform[].status == 0
-      @printf("%c: residual = %9.1e status = %1i\n",
-              st, inform[].norm_residual, inform[].status)
+      @printf("%c: status = %1i\n", st, inform[].status)
+      # @printf("sol: ")
+      # for i = 1:n+m
+      #  @printf("%f ", x[i])
+      # end
     else
       @printf("%c: SSLS_solve exit status = %1i\n", st, inform[].status)
     end
-
-    # @printf("sol: ")
-    # for i = 1:n+m
-    #  @printf("%f ", x[i])
-    # end
 
     # Delete internal workspace
     ssls_terminate(T, INT, data, control, inform)
