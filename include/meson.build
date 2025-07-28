@@ -1,7 +1,4 @@
-galahad_headers += files('spral_config.h',
-                         'spral_procedures.h',
-                         'spral_ssids.h',
-                         'galahad_modules.h',
+galahad_headers += files('galahad_modules.h',
                          'galahad_modules_single.h',
                          'galahad_modules_double.h',
                          'galahad_modules_quadruple.h')
@@ -24,6 +21,7 @@ if build_ciface
                            'galahad_dps.h',
                            'galahad_dqp.h',
                            'galahad_eqp.h',
+                           'galahad_expo.h',
                            'galahad_fdc.h',
                            'galahad_fit.h',
                            'galahad_glrt.h',
@@ -58,14 +56,16 @@ if build_ciface
                            'galahad_sha.h',
                            'galahad_sils.h',
                            'galahad_slls.h',
-                           'galahad_sls_defaults.h',
                            'galahad_sls.h',
+                           'galahad_ssls.h',
                            'galahad_trb.h',
                            'galahad_trs.h',
                            'galahad_tru.h',
                            'galahad_ugo.h',
                            'galahad_uls.h',
                            'galahad_wcp.h')
+
+  galahad_headers += files('ssids_rip.hxx', 'spral_ssids.h')
 endif
 # 'galahad_icfs.h'
 
