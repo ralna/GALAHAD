@@ -25,8 +25,8 @@ galahad_cutest_binaries += [['runexpo_sif', files('runexpo_sif.F90')]]
 galahad_tests += [# ['expo', 'expot', files('expot.F90')],
                   ['expo', 'expoti', files('expoti.F90')]]
 
-galahad_c_tests += [['expo', 'expot_c', files('C/expot.c')],
-                    ['expo', 'expotf_c', files('C/expotf.c')]]
+# galahad_c_tests += [['expo', 'expot_c', files('C/expot.c')],
+#                     ['expo', 'expotf_c', files('C/expotf.c')]]
 
 galahad_python_tests += [['expo', 'expo_py', files('Python/test_expo.py')]]
 

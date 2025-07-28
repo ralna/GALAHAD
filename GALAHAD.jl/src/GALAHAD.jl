@@ -86,103 +86,103 @@ include("wrappers/warm.jl")
 # sls requires sils, nodend.
 include("wrappers/sls.jl")
 
-# rqs requires sls, sils, ir.
+# rqs requires sls, sils, ir, nodend.
 include("wrappers/rqs.jl")
 
-# dps requires sls, sils.
+# dps requires sls, sils, nodend.
 include("wrappers/dps.jl")
 
-# psls requires sls, sils.
+# psls requires sls, sils, nodend.
 include("wrappers/psls.jl")
 
-# arc requires rqs, sls, sils, ir, glrt, dps, psls, lms, sha.
+# arc requires rqs, sls, sils, ir, glrt, dps, psls, lms, sha, nodend.
 include("wrappers/arc.jl")
 
-# trs requires sls, sils, ir.
+# trs requires sls, sils, ir, nodend.
 include("wrappers/trs.jl")
 
-# trb requires trs, sls, sils, ir, gltr, psls, lms, sha.
+# trb requires trs, sls, sils, ir, gltr, psls, lms, sha, nodend.
 include("wrappers/trb.jl")
 
-# bgo requires trb, trs, sls, sils, ir, gltr, psls, lms, sha, ugo, lhs.
+# bgo requires trb, trs, sls, sils, ir, gltr, psls, lms, sha, ugo, lhs, nodend.
 include("wrappers/bgo.jl")
 
 # uls requires gls.
 include("wrappers/uls.jl")
 
-# sbls requires sls, sils, uls, gls.
+# sbls requires sls, sils, uls, gls, nodend.
 include("wrappers/sbls.jl")
 
-# blls requires sbls, sls, sils, uls, gls, convert.
+# blls requires sbls, sls, sils, uls, gls, convert, nodend.
 include("wrappers/blls.jl")
 
-# bqp requires sbls, sls, sils, uls, gls.
+# bqp requires sbls, sls, sils, uls, gls, nodend.
 include("wrappers/bqp.jl")
 
-# fdc requires sls, sils, uls, gls.
+# fdc requires sls, sils, uls, gls, nodend.
 include("wrappers/fdc.jl")
 
-# cro requires sls, sils, sbls, uls, gls, ir, scu.
+# cro requires sls, sils, sbls, uls, gls, ir, scu, nodend.
 include("wrappers/cro.jl")
 
-# bqpb requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd.
+# bqpb requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd, nodend.
 include("wrappers/bqpb.jl")
 
 # ccqp requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd.
 include("wrappers/ccqp.jl")
 
-# cqp requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd.
+# cqp requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd, nodend.
 include("wrappers/cqp.jl")
 
-# clls requires fdc, sls, sils, uls, gls, fit, roots, cro, ir, scu, rpd.
+# clls requires fdc, sls, sils, uls, gls, fit, roots, cro, ir, scu, rpd, nodend.
 include("wrappers/clls.jl")
 
-# dgo requires trb, trs, sls, sils, ir, gltr, psls, lms, sha, ugo, hash.
+# dgo requires trb, trs, sls, sils, ir, gltr, psls, lms, sha, ugo, hash, nodend.
 include("wrappers/dgo.jl")
 
-# dqp requires fdc, sls, sils, uls, gls, sbls, gltr, scu, rpd.
+# dqp requires fdc, sls, sils, uls, gls, sbls, gltr, scu, rpd, nodend.
 include("wrappers/dqp.jl")
 
-# eqp requires fdc, sls, sils, uls, gls, sbls, gltr.
+# eqp requires fdc, sls, sils, uls, gls, sbls, gltr, nodend.
 include("wrappers/eqp.jl")
 
 # lpa requires rpd.
 include("wrappers/lpa.jl")
 
-# lpb requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd.
+# lpb requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd, nodend.
 include("wrappers/lpb.jl")
 
-# lsqp requires fdc, sls, sils, uls, gls, sbls.
+# lsqp requires fdc, sls, sils, uls, gls, sbls, nodend.
 include("wrappers/lsqp.jl")
 
-# nls requires rqs, sls, sils, ir, glrt, psls, bsc, roots.
+# nls requires rqs, sls, sils, ir, glrt, psls, bsc, roots, nodend.
 include("wrappers/nls.jl")
 
-# qpa requires sls, sils.
+# qpa requires sls, sils, nodend.
 include("wrappers/qpa.jl")
 
-# qpb requires lsqp, fdc, sls, sils, uls, gls, sbls, gltr, fit.
+# qpb requires lsqp, fdc, sls, sils, uls, gls, sbls, gltr, fit, nodend.
 include("wrappers/qpb.jl")
 
-# slls requires sbls, sls, sils, uls, gls, convert.
+# slls requires sbls, sls, sils, uls, gls, convert, nodend.
 include("wrappers/slls.jl")
 
 # tru requires trs, sls, sils, ir, gltr, dps, psls, lms, sec, sha, nodend.
 include("wrappers/tru.jl")
 
-# wcp requires fdc, sls, sils, uls, gls, sbls.
+# wcp requires fdc, sls, sils, uls, gls, sbls, nodend.
 include("wrappers/wcp.jl")
 
-# llsr requires sbls, sls, sils, uls, gls, ir.
+# llsr requires sbls, sls, sils, uls, gls, ir, nodend.
 include("wrappers/llsr.jl")
 
-# llst requires sbls, sls, sils, uls, gls, ir.
+# llst requires sbls, sls, sils, uls, gls, ir, nodend.
 include("wrappers/llst.jl")
 
-# bllsb requires fdc, sbls, sls, sils, uls, gls, fit, roots, cro, rpd, ir.
+# bllsb requires fdc, sbls, sls, sils, uls, gls, fit, roots, cro, rpd, ir, nodend.
 include("wrappers/bllsb.jl")
 
-# bnls requires rqs, sls, sils, ir, glrt, psls, bsc, roots.
+# bnls requires rqs, sls, sils, ir, glrt, psls, bsc, roots, nodend.
 include("wrappers/bnls.jl")
 
 # ssls requires sls, sils, nodend.
