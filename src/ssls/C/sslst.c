@@ -210,7 +210,11 @@ int main(void) {
             printf("%c: status = %1" i_ipc_ "", st, inform.status);
           printf(" sol = ");
           for(int loop = 0; loop < n+m; loop++)
+#ifdef REAL_128
+             printf("%f ", (double)sol[loop]);
+#else
              printf("%f ", sol[loop]);
+#endif
            printf("\n");
         }else{
             printf("%c: SSLS_solve exit status = %1" i_ipc_ "\n", 
