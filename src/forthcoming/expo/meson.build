@@ -19,6 +19,8 @@ galahad_tests += [#['expo', 'expot', files('expot.F90')],
 
 galahad_python_tests += [['expo', 'expo_py', files('Python/test_expo.py')]]
 
-galahad_examples += [['expos', files('expos.f90')],
-                     ['expos2', files('expos2.f90')],
-                     ['expos3', files('expos3.f90')]]
+galahad_examples += [['expos', files('expos.f90')]]
+
+#galahad_examples += [['expos', files('expos.f90')],
+#                     ['expos2', files('expos2.f90')],
+#                     ['expos3', files('expos3.f90')]]
