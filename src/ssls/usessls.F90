@@ -609,8 +609,8 @@
 
         CALL CPU_TIME( t1 ) ; CALL CLOCK_time( c1 )
         IF ( SSLS_inform%status >= 0 ) THEN
-          CALL SSLS_solve( prob%n, prob%m, prob%A, C,                          &
-                           data, SSLS_control, SSLS_inform, SOL )
+          CALL SSLS_solve( prob%n, prob%m, SOL,                                &
+                           data, SSLS_control, SSLS_inform )
 
           prob%X( : prob%n ) = SOL( : prob%n )
           prob%Y( : prob%m ) = SOL( prob%n + 1 : prob%n + prob%m )
@@ -629,13 +629,8 @@
         status = 0
       END IF
 
-      IF ( SSLS_inform%factorization == 1 ) THEN
-        WRITE( out, "( /, ' Solver: ', A )" )                                  &
-          TRIM( SSLS_control%definite_linear_solver )
-      ELSE
-        WRITE( out, "( /, ' Solver: ', A )" )                                  &
-          TRIM( SSLS_control%symmetric_linear_solver )
-      END IF
+      WRITE( out, "( /, ' Solver: ', A )" )                                    &
+        TRIM( SSLS_control%symmetric_linear_solver )
       WRITE( out, "(  ' Stopping with inform%status = ', I0 )" ) status
 
 !  Compute maximum contraint residual
@@ -763,7 +758,6 @@
       clocks = clocks - clock ; clockt = clockt - clocko
       WRITE( out, "( /, ' Total time, clock = ', F0.2, ', ', F0.2 )" )         &
         times + timet, clocks + clockt
-      WRITE( out, "( ' factorization used = ', I0 )" ) SSLS_inform%factorization
 !$    n_threads = OMP_GET_MAX_THREADS( )
       WRITE( out, "( ' number of threads = ', I0 )" ) n_threads
       WRITE( out, "( /, ' Problem: ', A10, //,                                 &
@@ -783,38 +777,19 @@
         BACKSPACE( rfiledevice )
 !       WRITE( rfiledevice, 2190 )                                             &
 !          pname, n, m, iter, qfval, status, clockt
-        IF ( SSLS_inform%factorization == 1 ) THEN
-          IF ( status >= 0 ) THEN
-            WRITE( rfiledevice, "( A10, 2I8, A10, I11, ES9.2, 2F10.2,          &
-          &                        I4, I8, 2I3 )" )                            &
-              pname, m, n_total, TRIM( SSLS_control%definite_linear_solver ),  &
-              SSLS_inform%SLS_inform%entries_in_factors, res_k,                &
-              clockf, clockfps, status, prob%m - SSLS_inform%rank,             &
-              SSLS_inform%factorization, n_threads
-          ELSE
-            WRITE( rfiledevice, "( A10, 2I8, A10, I11, '    -    ', 2F10.2,    &
-           &                       I4, I8, 2I3 )")                             &
-              pname, m, n_total, TRIM( SSLS_control%definite_linear_solver ),  &
-              - SSLS_inform%SLS_inform%entries_in_factors,                     &
-              - clockf, - clockfps, status, prob%m                             &
-              - SSLS_inform%rank, SSLS_inform%factorization, n_threads
-          END IF
+        IF ( status >= 0 ) THEN
+          WRITE( rfiledevice, "( A10, 2I8, A10, I11, ES9.2, 2F10.2,            &
+        &                        I4, I8, I3 )" )                               &
+            pname, m, n_total, TRIM( SSLS_control%symmetric_linear_solver ),   &
+            SSLS_inform%SLS_inform%entries_in_factors, res_k,                  &
+            clockf, clockfps, status, prob%m - SSLS_inform%rank, n_threads
+            
         ELSE
-          IF ( status >= 0 ) THEN
-            WRITE( rfiledevice, "( A10, 2I8, A10, I11, ES9.2, 2F10.2,          &
-          &                        I4, I8, 2I3 )" )                            &
-              pname, m, n_total, TRIM( SSLS_control%symmetric_linear_solver ), &
-              SSLS_inform%SLS_inform%entries_in_factors, res_k,                &
-              clockf, clockfps, status, prob%m - SSLS_inform%rank,             &
-              SSLS_inform%factorization, n_threads
-          ELSE
-            WRITE( rfiledevice, "( A10, 2I8, A10, I11, '    -    ', 2F10.2,    &
-           &                       I4, I8, 2I3 )")                             &
-              pname, m, n_total, TRIM( SSLS_control%symmetric_linear_solver ), &
-              - SSLS_inform%SLS_inform%entries_in_factors,                     &
-              - clockf, - clockfps, status, prob%m                             &
-              - SSLS_inform%rank, SSLS_inform%factorization, n_threads
-          END IF
+          WRITE( rfiledevice, "( A10, 2I8, A10, I11, '    -    ', 2F10.2,      &
+         &                       I4, I8, I3 )")                                &
+            pname, m, n_total, TRIM( SSLS_control%symmetric_linear_solver ),   &
+            - SSLS_inform%SLS_inform%entries_in_factors,                       &
+            - clockf, - clockfps, status, prob%m - SSLS_inform%rank, n_threads
         END IF
       END IF
 
