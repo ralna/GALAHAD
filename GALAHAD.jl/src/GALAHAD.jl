@@ -83,7 +83,7 @@ include("wrappers/qp.jl")
 include("wrappers/qpc.jl")
 include("wrappers/warm.jl")
 
-# sls requires sils.
+# sls requires sils, nodend.
 include("wrappers/sls.jl")
 
 # rqs requires sls, sils, ir.
@@ -185,7 +185,7 @@ include("wrappers/bllsb.jl")
 # bnls requires rqs, sls, sils, ir, glrt, psls, bsc, roots.
 include("wrappers/bnls.jl")
 
-# ssls requires sls, sils.
+# ssls requires sls, sils, nodend.
 include("wrappers/ssls.jl")
 
 # expo requires bsc, tru, ssls.
