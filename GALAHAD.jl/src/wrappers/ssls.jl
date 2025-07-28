@@ -430,3 +430,15 @@ function ssls_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
                                                 inform::Ptr{ssls_inform_type{Float128,
                                                                              Int64}})::Cvoid
 end
+
+function run_sif(::Val{:ssls}, ::Val{:single}, path_libsif::String, path_outsdif::String)
+  cmd = setup_env_lbt(`$(GALAHAD_jll.runssls_sif_single()) $path_libsif $path_outsdif`)
+  run(cmd)
+  return nothing
+end
+
+function run_sif(::Val{:ssls}, ::Val{:double}, path_libsif::String, path_outsdif::String)
+  cmd = setup_env_lbt(`$(GALAHAD_jll.runssls_sif_double()) $path_libsif $path_outsdif`)
+  run(cmd)
+  return nothing
+end

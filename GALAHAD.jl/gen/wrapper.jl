@@ -174,7 +174,7 @@ function main(name::String="all"; optimized::Bool=true)
   (name == "all" || name == "slls")     && wrapper("slls", ["$galahad/galahad_slls.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "sls")      && wrapper("sls", ["$galahad/galahad_sls.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "ssids")    && wrapper("ssids", ["$galahad/spral_ssids.h"], optimized, run_sif=true, run_qplib=false)
-  (name == "all" || name == "ssls")     && wrapper("ssls", ["$galahad/galahad_ssls.h"], optimized, run_sif=false, run_qplib=false)
+  (name == "all" || name == "ssls")     && wrapper("ssls", ["$galahad/galahad_ssls.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "trb")      && wrapper("trb", ["$galahad/galahad_trb.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "trs")      && wrapper("trs", ["$galahad/galahad_trs.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "tru")      && wrapper("tru", ["$galahad/galahad_tru.h"], optimized, run_sif=true, run_qplib=false)
@@ -182,16 +182,10 @@ function main(name::String="all"; optimized::Bool=true)
   (name == "all" || name == "uls")      && wrapper("uls", ["$galahad/galahad_uls.h"], optimized, run_sif=false, run_qplib=false)
   (name == "all" || name == "warm")     && wrapper("warm", String[], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "wcp")      && wrapper("wcp", ["$galahad/galahad_wcp.h"], optimized, run_sif=true, run_qplib=false)
+  return nothing
 end
 
 # If we want to use the file as a script with `julia wrapper.jl`
 if abspath(PROGRAM_FILE) == @__FILE__
   main()
 end
-
-# galahad = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "..", "include")
-# headers = readdir(galahad)
-# for header in sort(headers)
-#   res = split(header, ['_', '.'])
-#   println("(name == \"all\" || name == \"$(res[2])\") && wrapper(\"$(res[2])\", [\"\$galahad/$(header)\"], optimized)")
-# end

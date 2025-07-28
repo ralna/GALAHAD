@@ -53,6 +53,7 @@ The possible values for `library` are:
 - `"dps"`;
 - `"dqp"`;
 - `"eqp"`;
+- `"expo"`;
 - `"fdc"`;
 - `"fdh"`;
 - `"filtrane"`;
@@ -61,6 +62,7 @@ The possible values for `library` are:
 - `"gls"`;
 - `"gltr"`;
 - `"hash"`;
+- `"hsl"`;
 - `"ir"`;
 - `"l1qp"`;
 - `"l2rt"`;
@@ -97,6 +99,8 @@ The possible values for `library` are:
 - `"sils"`;
 - `"slls"`;
 - `"sls"`;
+- `"ssids`;
+- `"ssls`;
 - `"trb"`;
 - `"trs"`;
 - `"tru"`;
