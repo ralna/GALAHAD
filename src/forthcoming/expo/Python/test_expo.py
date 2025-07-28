@@ -36,10 +36,10 @@ H_col = np.array([0,1])
 H_ptr = None
 
 # set upper and lower bounds
-x_l = [-50.0, -50.0] # lower variable bounds
-x_u = [50.0, 50.0] # upper variable bounds
-c_l = [0.0, 0.0, 0.0, 0.0, 0.0] # lower constraint bounds
-c_u = [np.inf, np.inf, np.inf, np.inf, np.inf] # upper constraint bounds
+x_l = np.array([-50.0, -50.0]) # lower variable bounds
+x_u = np.array([50.0, 50.0]) # upper variable bounds
+c_l = np.array([0.0, 0.0, 0.0, 0.0, 0.0]) # lower constraint bounds
+c_u = np.array([np.inf, np.inf, np.inf, np.inf, np.inf]) # upper constraint bounds
 
 # load data (and optionally non-default options)
 expo.load(n, m,
