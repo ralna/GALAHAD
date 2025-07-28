@@ -22,7 +22,7 @@
   \subsection expo_purpose Purpose
 
   This package uses a <b>regularization method to find a (local)
-  minimizer of a objective \f$f(x)\f$, where the 
+  minimizer of a objective \f$f(x)\f$, where the
   variables \f$x\f$ are required to satisfy the general constraints
   \f[c_i^l  \leq  c_i(x)  \leq c_i^u, \;\;\; i = 1, \ldots , m,\f]
 \manonly
@@ -45,10 +45,10 @@
   Lagrangian \f$H(x,y) = \nabla^2 f(x) - \sum_{i=1}^m y_i  \nabla^2 c_i(x)\f$.
   The method offers the choice of direct and iterative solution of the key
   regularization subproblems, and is most suitable for large problems.
-  First derivatives (the gradient, Jacobian) of the <i>objective and 
-  constraint function</i> \f$f(x)\f$ and  \f$c(x)\f$  are required, 
-  and if second derivatives of the \f$c_i(x)\f$ can be calculated, 
-  they may be exploited---if suitable products of the first or second 
+  First derivatives (the gradient, Jacobian) of the <i>objective and
+  constraint function</i> \f$f(x)\f$ and  \f$c(x)\f$  are required,
+  and if second derivatives of the \f$c_i(x)\f$ can be calculated,
+  they may be exploited---if suitable products of the first or second
   derivatives with a vector may be found but not the
   derivatives themselves, that can also be used to advantage (forthcoming).
 
@@ -546,7 +546,7 @@ struct expo_control_type {
     bool hessian_available;
 
     /// \brief
-    /// use a direct (factorization) or (preconditioned) iterative method 
+    /// use a direct (factorization) or (preconditioned) iterative method
     /// (coming soon) to find the search direction
     bool subproblem_direct;
 
@@ -656,7 +656,7 @@ struct expo_inform_type {
     ipc_ iter;
 
     /// \brief
-    /// the total number of evaluations of the objective f(x)  and constraint 
+    /// the total number of evaluations of the objective f(x)  and constraint
     /// c(x) functions
     ipc_ fc_eval;
 
@@ -881,10 +881,10 @@ void expo_solve_hessian_direct( void **data,
                                 rpc_ c[],
                                 rpc_ gl[],
                                 ipc_ (*eval_fc)(
-                                  ipc_, ipc_, const rpc_[], 
+                                  ipc_, ipc_, const rpc_[],
                                   rpc_, rpc_[], const void * ),
                                 ipc_ (*eval_gj)(
-                                  ipc_, ipc_, ipc_, const rpc_[], 
+                                  ipc_, ipc_, ipc_, const rpc_[],
                                   rpc_[], rpc_[], const void * ),
                                 ipc_ (*eval_hl)(
                                   ipc_, ipc_, ipc_, const rpc_[], const rpc_[],
@@ -992,10 +992,10 @@ void expo_solve_hessian_direct( void **data,
  @param eval_fc is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_c( ipc_ n, const rpc_ x[], rpc_ f, rpc_ c[], 
+        ipc_ eval_fc( ipc_ n, ipc_ m, const rpc_ x[], rpc_ f, rpc_ c[],
                      const void *userdata )
    \endcode
-   The value of the objective function \f$f(x)\f$ and components of the 
+   The value of the objective function \f$f(x)\f$ and components of the
    constraint functions \f$c(x)\f$ evaluated at x=\f$x\f$
    must be assigned to f and c, and the function return value set to 0. If the
    evaluation is impossible at x, return should be set to a nonzero value.
@@ -1004,11 +1004,11 @@ void expo_solve_hessian_direct( void **data,
  @param eval_gj is a user-supplied function that must have the following
    signature:
    \code
-      ipc_ eval_j( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ g[],
+      ipc_ eval_gj( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ g[],
                    rpc_ j[], const void *userdata )
    \endcode
-   The components of the gradient \f$g = \nabla_x f(x\f$) and of the 
-   constraint Jacobian \f$J = \nabla_x c(x\f$) must  be assigned to g 
+   The components of the gradient \f$g = \nabla_x f(x\f$) and of the
+   constraint Jacobian \f$J = \nabla_x c(x\f$) must  be assigned to g
    and j in the same order as presented to expo_import, and the
    function return value set to 0. If the evaluation is impossible at x,
    return should be set to a nonzero value.
@@ -1020,7 +1020,7 @@ void expo_solve_hessian_direct( void **data,
         ipc_ eval_hl( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
                     rpc_ h[], const void *userdata )
    \endcode
-   The nonzeros of the matrix \f$H = \nabla_{xx}f(x)\ 
+   The nonzeros of the matrix \f$H = \nabla_{xx}f(x)\
    - \sum_{i=1}^m y_i  \nabla_{xx}c_i(x)\f$
    of the Hessian of the Lagrangian evaluated at x=\f$x\f$ and y=\f$y\f$ must
    be assigned to h in the same order as presented to expo_import, and the

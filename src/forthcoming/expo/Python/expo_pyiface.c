@@ -48,8 +48,8 @@ static PyObject *py_eval_hl = NULL;
 static PyObject *expo_solve_return = NULL;
 
 /* C eval_* function wrappers */
-static int eval_fc(int n, int m, const double x[], double c[],
-                  const void *userdata){
+static int eval_fc(int n, int m, const double x[], double f, double c[],
+                   const void *userdata){
 
     // Wrap input array as NumPy array
     npy_intp xdim[] = {n};
@@ -67,8 +67,17 @@ static int eval_fc(int n, int m, const double x[], double c[],
     if(!result)
         return -1;
 
-    // Get return value data pointer and copy data intoc
-    const double *cval = (double *) PyArray_DATA((PyArrayObject*) result);
+    // Extract eval_fc return values (one double and one array)
+    PyObject *py_c;
+    if(!PyArg_ParseTuple(result, "dO", f, py_c)){
+        PyErr_SetString(PyExc_TypeError,
+        "unable to parse eval_fc return values");
+        Py_DECREF(result); // Free result memory
+        return -1;
+    }
+
+    // Copy data into c
+    const double *cval = (double *) PyArray_DATA((PyArrayObject*) py_c);
     for(int i=0; i<m; i++) {
         c[i] = cval[i];
     }
@@ -79,7 +88,7 @@ static int eval_fc(int n, int m, const double x[], double c[],
     return 0;
 }
 
-static int eval_gj(int n, int m, int jne, const double x[], 
+static int eval_gj(int n, int m, int jne, const double x[],
                    double g[], double jval[], const void *userdata){
 
     // Wrap input array as NumPy array
@@ -99,15 +108,21 @@ static int eval_gj(int n, int m, int jne, const double x[],
     if(!result)
         return -1;
 
-    // Check return value is of correct type, size, and shape
-    if(!check_array_double("eval_gj return value",
-                           (PyArrayObject*) result, jne)){
+     // Extract eval_gj return values (two arrays)
+    PyObject *py_g, *py_j;
+    if(!PyArg_ParseTuple(result, "OO", py_g, py_j)){
+        PyErr_SetString(PyExc_TypeError,
+        "unable to parse eval_gj return values");
         Py_DECREF(result); // Free result memory
         return -1;
     }
 
-    // Get return value data pointer and copy data into jval
-    const double *val = (double *) PyArray_DATA((PyArrayObject*) result);
+    // Copy data into g and j
+    const double *gval = (double *) PyArray_DATA((PyArrayObject*) py_g);
+    for(int i=0; i<n; i++) {
+        g[i] = gval[i];
+    }
+    const double *val = (double *) PyArray_DATA((PyArrayObject*) py_j);
     for(int i=0; i<jne; i++) {
         jval[i] = val[i];
     }
@@ -472,7 +487,6 @@ static PyObject* expo_make_options_dict(const struct expo_control_type *control)
                          PyBool_FromLong(control->hessian_available));
     PyDict_SetItemString(py_options, "subproblem_direct",
                          PyBool_FromLong(control->subproblem_direct));
-                         PyBool_FromLong(control->print_obj));
     PyDict_SetItemString(py_options, "space_critical",
                          PyBool_FromLong(control->space_critical));
     PyDict_SetItemString(py_options, "deallocate_error_fatal",
@@ -707,13 +721,13 @@ static PyObject* py_expo_solve(PyObject *self, PyObject *args, PyObject *keywds)
         return NULL;
 
     // Parse positional arguments
-    static char *kwlist[] = {"n", "m", "J_ne", "H_ne", 
-                             "c_l", "c_u", "x_l", "x_u", "x", 
+    static char *kwlist[] = {"n", "m", "J_ne", "H_ne",
+                             "c_l", "c_u", "x_l", "x_u", "x",
                              "eval_fc", "eval_gj", "eval_hl", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOOOOOOOO", kwlist, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOOOOOOOO", kwlist,
                                     &n, &m, &J_ne, &H_ne,
-                                    &py_c_l, &py_c_u, &py_x_l, &py_x_u, &py_x, 
-                                    &temp_fc, &temp_gj, &temp_hl)
+                                    &py_c_l, &py_c_u, &py_x_l, &py_x_u, &py_x,
+                                    &temp_fc, &temp_gj, &temp_hl))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -773,7 +787,7 @@ static PyObject* py_expo_solve(PyObject *self, PyObject *args, PyObject *keywds)
     // Call expo_solve_direct
     status = 1; // set status to 1 on entry
     expo_solve_with_mat(&data, NULL, &status, n, m, J_ne, H_ne,
-                        c_l, c_u, x_l, x_u, x, y, z, c, gl, 
+                        c_l, c_u, x_l, x_u, x, y, z, c, gl,
                         eval_fc, eval_gj, eval_hl);
 
     // Propagate any errors with the callback function
