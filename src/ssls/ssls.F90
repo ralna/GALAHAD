@@ -30,6 +30,7 @@
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_precision
       USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision, ONLY: QPT_keyword_H, QPT_keyword_A
       USE GALAHAD_SLS_precision
       USE GALAHAD_SPECFILE_precision
 
@@ -95,7 +96,7 @@
 
         LOGICAL :: deallocate_error_fatal  = .FALSE.
 
-!  indefinite linear equation solver
+!  symmetric indefinite linear equation solver
 
         CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "ssids" //         &
                                                              REPEAT( ' ', 25 )
@@ -443,6 +444,17 @@
 
       CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
 
+!  Check for faulty dimensions
+
+      IF ( n <= 0 .OR. m < 0 .OR.                                              &
+           .NOT. QPT_keyword_H( H%type ) .OR.                                  &
+           .NOT. QPT_keyword_A( A%type ) ) THEN
+        inform%status = GALAHAD_error_restrictions
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, 2000 ) prefix, inform%status
+        GO TO 900
+      END IF
+
 !  find the number of nonzeros in A
 
       IF ( SMT_get( A%type ) == 'DENSE' ) THEN
@@ -616,10 +628,13 @@
         inform%status = GALAHAD_ok
       ELSE
         inform%status = GALAHAD_error_analysis
+        IF ( control%error > 0 .AND. control%print_level > 0 )                 &
+          WRITE( control%error, 2000 ) prefix, inform%status
       END IF
 
 !  record times
 
+  900 CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       IF ( control%print_level >= 1 ) WRITE( control%out,                      &
          "( A, ' time to analyse K ', F6.2 )") prefix, time_now - time_start
@@ -631,6 +646,10 @@
         inform%time%clock_total + clock_now - clock_start
 
       RETURN
+
+!  Non-executable statements
+
+ 2000 FORMAT( ' ', /, A, '   **  Error return ', I0,' from SSLS ' )
 
 !  end of subroutine SSLS_analyse
 

@@ -49,12 +49,12 @@ expo.load(n, m,
 
 # define residual function and its derivatives
 def eval_fc(x):
-    f = x[0]^2 + x[1]^2
+    f = x[0]**2 + x[1]**2
     c = np.array([x[0] + x[1] - 1.0,
-                  x[0]^2 + x[1]^2 - 1.0,
-                  p * x[0]^2 + x[1]^2 - p,
-                  x[0]^2 - x[1],
-                  x[1]^2 - x[0]])
+                  x[0]**2 + x[1]**2 - 1.0,
+                  p * x[0]**2 + x[1]**2 - p,
+                  x[0]**2 - x[1],
+                  x[1]**2 - x[0]])
     return f, c
 
 def eval_gj(x):

@@ -1,27 +1,20 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-09-10 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-07-29 AT 14:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SSLS_EXAMPLE
    USE GALAHAD_KINDS_precision
    USE GALAHAD_SSLS_precision
-   USE GALAHAD_LMS_precision
    IMPLICIT NONE
    TYPE ( SMT_type ) :: H, A, C
    TYPE ( SSLS_data_type ) :: data
    TYPE ( SSLS_control_type ) :: control
-   TYPE ( SSLS_inform_type ) :: info
-   TYPE ( LMS_data_type ) :: H_lm, H_lmr
-   TYPE ( LMS_control_type ) :: LMS_control
-   TYPE ( LMS_inform_type ) :: LMS_inform
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL
+   TYPE ( SSLS_inform_type ) :: inform
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL, R
 !  REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL1
    INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, c_ne
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, l, tests, status, solvers
-   INTEGER ( KIND = ip_ ) :: smt_stat, factorization
+   INTEGER ( KIND = ip_ ) :: smt_stat
    INTEGER ( KIND = ip_ ) :: scratch_out = 56
-   REAL ( KIND = rp_ ) :: delta
+   REAL ( KIND = rp_ ) :: norm_residual
 !  LOGICAL :: all_generic_tests = .FALSE.
    LOGICAL :: all_generic_tests = .TRUE.
 
@@ -39,18 +32,16 @@
    WRITE( 6, "( /, ' error exit tests ' )" )
    WRITE( 6, "( /, ' test   status' )" )
 
-   CALL SSLS_initialize( data, control, info )
+   CALL SSLS_initialize( data, control, inform )
    CALL WHICH_sls( control )
+!  control%print_level = 1
    control%print_level = 0
    control%sls_control%warning = - 1
    control%sls_control%out = - 1
-   control%uls_control%warning = - 1
-!  control%print_level = 1
-! write(6,*) control%unsymmetric_linear_solver
 
 !  tests for status = - 3 and - 15
 
-   DO l = 1, 2
+   DO l = 1, 1
      IF ( l == 1 ) THEN
        status = 3
      ELSE
@@ -76,15 +67,15 @@
        A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        A%col = (/ 1, 2, 1, 2 /)
      END IF
-
-     CALL SSLS_analyse( n, m, H, A, C, data, control, info )
-     CALL SSLS_factorize( n, m, H, A, C, data, control, info )
-     WRITE( 6, "( I5, I9 )" ) status, info%status
+     CALL SSLS_analyse( n, m, H, A, C, data, control, inform )
+     IF ( inform%status == 0 )                                                 &
+       CALL SSLS_factorize( n, m, H, A, C, data, control, inform )
+     WRITE( 6, "( I5, I9 )" ) status, inform%status
      DEALLOCATE( H%val, H%col )
      DEALLOCATE( A%val, A%col )
    END DO
 
-   CALL SSLS_terminate( data, control, info )
+   CALL SSLS_terminate( data, control, inform )
    DEALLOCATE( H%ptr, A%ptr )
    DEALLOCATE( C%val, C%row, C%col )
 
@@ -93,245 +84,172 @@
 !  =====================================
 
    WRITE( 6, "( /, ' basic tests of storage formats ' )" )
+   WRITE( 6, "( /, 8X, 'storage   status residual' )" )
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 3 ; c_ne = 3
-   ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ), C%ptr( m + 1 ), SOL( n + m ) )
-   ALLOCATE( D( n ), S( n ), Y( n ) )
-   D = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_ /)
-! set up limited-memory matrices
-   CALL LMS_initialize( H_lm, LMS_control, LMS_inform )
-   LMS_control%memory_length = 2
-   LMS_control%method = 1
-   CALL LMS_setup( n, H_lm, LMS_control, LMS_inform )
-   DO i = 1, 5
-     S = 1.0_rp_
-     S( 1 ) = REAL( MOD( i, 3 ) + 1, KIND = rp_ )
-     Y = S
-     delta = 1.0_rp_ / S( 1 )
-!     S = 0.0_rp_
-!     S( MOD( i - 1, 3 ) + 1 ) = 1.0_rp_
-!     Y = S
-!     delta = REAL( MOD( i, 3 ) + 1, KIND = rp_ )
-     CALL LMS_form( S, Y, delta, H_lm, LMS_control, LMS_inform )
-   END DO
-! H_lm%restricted = 0
-! H_lm%n = n
-! H_lm%n_restriction = n
-!  WRITE(6,*) delta
-!  DO i = 1, 3
-!    S = 0.0_rp_
-!    S( MOD( i - 1, 3 ) + 1 ) = 1.0_rp_
-!    CALL LMS_apply( S, Y, H_lm, LMS_control, LMS_inform )
-!    write(6,"( 3ES12.4 )" ) Y
-!  END DO
-   DEALLOCATE( S, Y )
-   ALLOCATE( S( n + 1 ), Y( n + 1 ) )
-   CALL LMS_initialize( H_lmr, LMS_control, LMS_inform )
-   LMS_control%memory_length = 2
-   LMS_control%method = 1
-   CALL LMS_setup( n + 1, H_lmr, LMS_control, LMS_inform )
-   DO i = 1, 5
-     S = 1.0_rp_
-     S( 1 ) = REAL( MOD( i, 3 ) + 1, KIND = rp_ )
-     Y = S
-     delta = 1.0_rp_ / S( 1 )
-!     S = 0.0_rp_
-!     S( MOD( i - 1, 3 ) + 1 ) = 1.0_rp_
-!     Y = S
-!     delta = REAL( MOD( i, 3 ) + 1, KIND = rp_ )
-     CALL LMS_form( S, Y, delta, H_lmr, LMS_control, LMS_inform )
-   END DO
-   H_lmr%restricted = 1
-   H_lmr%n = n + 1
-   H_lmr%n_restriction = n
-   ALLOCATE( H_lmr%RESTRICTION( n ) )
-   DO i = 1, n
-     H_lmr%RESTRICTION( i ) = n + 1 - i
-   END DO
-!  WRITE(6,*) delta
-!  DO i = 1, 3
-!    S = 0.0_rp_
-!    S( MOD( i - 1, 3 ) + 1 ) = 1.0_rp_
-!    CALL LMS_apply( S, Y, H_lmr, LMS_control, LMS_inform )
-!    write(6,"( 3ES12.4 )" ) Y
-!  END DO
-   DEALLOCATE( S, Y )
+   ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ), C%ptr( m + 1 ) )
+   ALLOCATE( SOL( n + m ), R( n + m ) )
 
-     DO factorization = 1, 2
-!    DO factorization = 2, 2
-       DO data_storage_type = - 5, 0
-         CALL SSLS_initialize( data, control, info )
-         CALL WHICH_sls( control )
-!        control%print_level = 1
-         IF ( data_storage_type == 0 ) THEN   ! sparse co-ordinate storage
-           IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
-           CALL SMT_put( H%type, 'COORDINATE', smt_stat )  ; H%ne = h_ne
-           ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
-           H%row = (/ 1, 2, 3, 3 /)
-           H%col = (/ 1, 2, 3, 1 /)
-           IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
-           CALL SMT_put( A%type, 'COORDINATE', smt_stat )  ; A%ne = a_ne
-           ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
-           A%row = (/ 1, 1, 2 /)
-           A%col = (/ 1, 2, 3 /)
-           IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
-           CALL SMT_put( C%type, 'COORDINATE', smt_stat ) ; C%ne = c_ne
-           ALLOCATE( C%val( c_ne ), C%row( c_ne ), C%col( c_ne ) )
-           C%row = (/ 1, 2, 2 /)
-           C%col = (/ 1, 1, 2 /)
-         ELSE IF ( data_storage_type == - 1 ) THEN ! sparse row-wise storage
-           IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
-           CALL SMT_put( H%type, 'SPARSE_BY_ROWS', smt_stat )
-           IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
-           CALL SMT_put( A%type, 'SPARSE_BY_ROWS', smt_stat )
-           ALLOCATE( H%val( h_ne ), H%col( h_ne ) )
-           ALLOCATE( A%val( a_ne ), A%col( a_ne ) )
-           H%col = (/ 1, 2, 3, 1 /)
-           H%ptr = (/ 1, 2, 3, 5 /)
-           A%col = (/ 1, 2, 3 /)
-           A%ptr = (/ 1, 3, 4 /)
-           IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
-           CALL SMT_put( C%type, 'SPARSE_BY_ROWS', smt_stat )
-           ALLOCATE( C%val( c_ne ), C%col( c_ne ) )
-           C%col = (/ 1, 1, 2 /)
-           C%ptr = (/ 1, 2, 4 /)
-         ELSE IF ( data_storage_type == - 2 ) THEN ! dense storage
-           IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
-           CALL SMT_put( H%type, 'DENSE', smt_stat )
-           IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
-           CALL SMT_put( A%type, 'DENSE', smt_stat )
-           ALLOCATE( H%val( n * ( n + 1 ) / 2 ) )
-           ALLOCATE( A%val( n * m ) )
-           IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
-           CALL SMT_put( C%type, 'DENSE', smt_stat )
-           ALLOCATE( C%val( m * ( m + 1 ) / 2 ) )
-         ELSE IF ( data_storage_type == - 3 ) THEN ! diagonal storage
-           IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
-           CALL SMT_put( H%type, 'DIAGONAL', smt_stat )
-           IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
-           CALL SMT_put( A%type, 'DENSE', smt_stat )
-           ALLOCATE( H%val( n ) )
-           ALLOCATE( A%val( n * m ) )
-           IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
-           CALL SMT_put( C%type, 'DIAGONAL', smt_stat )
-           ALLOCATE( C%val( m ) )
-         ELSE IF ( data_storage_type == - 4 ) THEN ! scaled identity storage
-           IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
-           CALL SMT_put( H%type, 'SCALED_IDENTITY', smt_stat )
-           IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
-           CALL SMT_put( A%type, 'DENSE', smt_stat )
-           ALLOCATE( H%val( 1 ) )
-           ALLOCATE( A%val( n * m ) )
-           IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
-           CALL SMT_put( C%type, 'SCALED_IDENTITY', smt_stat )
-           ALLOCATE( C%val( 1 ) )
-         ELSE IF ( data_storage_type == - 5 ) THEN ! identity storage
-           IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
-           CALL SMT_put( H%type, 'IDENTITY', smt_stat )
-           IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
-           CALL SMT_put( A%type, 'DENSE', smt_stat )
-           ALLOCATE( A%val( n * m ) )
-           IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
-           CALL SMT_put( C%type, 'IDENTITY', smt_stat )
-         END IF
-
-!  test with new and existing data
-
-         DO i = 0, 2
-           control%new_a = 2 - i
-           control%new_h = 2 - i
-           control%new_c = 2 - i
-           IF ( data_storage_type == 0 ) THEN     ! sparse co-ordinate storage
-             H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 1.0_rp_ /)
-             A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_ /)
-             C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
-           ELSE IF ( data_storage_type == - 1 ) THEN  !  sparse row-wise storage
-             H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 1.0_rp_ /)
-             A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_ /)
-             C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
-           ELSE IF ( data_storage_type == - 2 ) THEN    !  dense storage
-             H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 1.0_rp_, 0.0_rp_, 3.0_rp_ /)
-             A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
-             C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
-           ELSE IF ( data_storage_type == - 3 ) THEN    !  dense storage
-             H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_ /)
-             A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
-             C%val = (/ 4.0_rp_, 2.0_rp_ /)
-           ELSE IF ( data_storage_type == - 4 ) THEN    !  scaled identity
-             H%val = (/ 2.0_rp_ /)
-             A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
-             C%val = (/ 2.0_rp_ /)
-           ELSE IF ( data_storage_type == - 5 ) THEN    !  identity
-             A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
-           END IF
-           CALL SSLS_analyse( n, m, H, A, C, data, control, info )
-           CALL SSLS_factorize( n, m, H, A, C, data, control, info )
-           IF ( info%status < 0 ) THEN
-             WRITE( 6, "( A15, I9 )" ) SMT_get( H%type ), info%status
-             CYCLE
-           END IF
-!          SOL( : n ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
-!          SOL( n + 1 : ) = (/ 2.0_rp_, 1.0_rp_ /)
-!          SOL( : n ) = (/ 7.0_rp_, 0.0_rp_, 4.0_rp_ /)
-           SOL( : n ) = (/ 3.0_rp_, 2.0_rp_, 4.0_rp_ /)
-           SOL( n + 1 : ) = (/ 2.0_rp_, 0.0_rp_ /)
-           CALL SSLS_solve( n, m, SOL, data, control, info )
-           IF ( info%status == 0 ) THEN
-             WRITE( 6, "( A15, I9, A9 )" ) SMT_get( H%type ),                  &
-               info%status, type_residual( info%norm_residual )
-!              type_residual( info%norm_residual ), info%norm_residual
-           ELSE
-             WRITE( 6, "( A15, I9 )" ) SMT_get( H%type ), info%status
-           END IF
-         END DO
-         CALL SSLS_terminate( data, control, info )
-         IF ( data_storage_type == 0 ) THEN
-           DEALLOCATE( H%val, H%row, H%col )
-           DEALLOCATE( A%val, A%row, A%col )
-         ELSE IF ( data_storage_type == - 1 ) THEN
-           DEALLOCATE( H%val, H%col )
-           DEALLOCATE( A%val, A%col )
-         ELSE IF ( data_storage_type == - 2 ) THEN
-           DEALLOCATE( H%val )
-           DEALLOCATE( A%val )
-         ELSE IF ( data_storage_type == - 3 ) THEN
-           DEALLOCATE( H%val )
-           DEALLOCATE( A%val )
-         ELSE IF ( data_storage_type == - 4 ) THEN
-           DEALLOCATE( H%val )
-           DEALLOCATE( A%val )
-         ELSE IF ( data_storage_type == - 5 ) THEN
-           DEALLOCATE( A%val )
-         END IF
-         IF ( data_storage_type == 0 ) THEN
-           DEALLOCATE( C%val, C%row, C%col )
-         ELSE IF ( data_storage_type == - 1 ) THEN
-           DEALLOCATE( C%val, C%col )
-         ELSE IF ( data_storage_type == - 2 .OR.                               &
-                   data_storage_type == - 3 .OR.                               &
-                   data_storage_type == - 4 ) THEN
-           DEALLOCATE( C%val )
-         END IF
-       END DO
-     END DO
+   DO data_storage_type = - 5, 0
+     CALL SSLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
+!    control%print_level = 1
+     IF ( data_storage_type == 0 ) THEN   ! sparse co-ordinate storage
+       IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
+       CALL SMT_put( H%type, 'COORDINATE', smt_stat )  ; H%ne = h_ne
+       ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
+       H%row = (/ 1, 2, 3, 3 /)
+       H%col = (/ 1, 2, 3, 1 /)
+       IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
+       CALL SMT_put( A%type, 'COORDINATE', smt_stat )  ; A%ne = a_ne
+       ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
+       A%row = (/ 1, 1, 2 /)
+       A%col = (/ 1, 2, 3 /)
+       IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
+       CALL SMT_put( C%type, 'COORDINATE', smt_stat ) ; C%ne = c_ne
+       ALLOCATE( C%val( c_ne ), C%row( c_ne ), C%col( c_ne ) )
+       C%row = (/ 1, 2, 2 /)
+       C%col = (/ 1, 1, 2 /)
+     ELSE IF ( data_storage_type == - 1 ) THEN ! sparse row-wise storage
+       IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
+       CALL SMT_put( H%type, 'SPARSE_BY_ROWS', smt_stat )
+       IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
+       CALL SMT_put( A%type, 'SPARSE_BY_ROWS', smt_stat )
+       ALLOCATE( H%val( h_ne ), H%col( h_ne ) )
+       ALLOCATE( A%val( a_ne ), A%col( a_ne ) )
+       H%col = (/ 1, 2, 3, 1 /)
+       H%ptr = (/ 1, 2, 3, 5 /)
+       A%col = (/ 1, 2, 3 /)
+       A%ptr = (/ 1, 3, 4 /)
+       IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
+       CALL SMT_put( C%type, 'SPARSE_BY_ROWS', smt_stat )
+       ALLOCATE( C%val( c_ne ), C%col( c_ne ) )
+       C%col = (/ 1, 1, 2 /)
+       C%ptr = (/ 1, 2, 4 /)
+     ELSE IF ( data_storage_type == - 2 ) THEN ! dense storage
+       IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
+       CALL SMT_put( H%type, 'DENSE', smt_stat )
+       IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
+       CALL SMT_put( A%type, 'DENSE', smt_stat )
+       ALLOCATE( H%val( n * ( n + 1 ) / 2 ) )
+       ALLOCATE( A%val( n * m ) )
+       IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
+       CALL SMT_put( C%type, 'DENSE', smt_stat )
+       ALLOCATE( C%val( m * ( m + 1 ) / 2 ) )
+     ELSE IF ( data_storage_type == - 3 ) THEN ! diagonal storage
+       IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
+       CALL SMT_put( H%type, 'DIAGONAL', smt_stat )
+       IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
+       CALL SMT_put( A%type, 'DENSE', smt_stat )
+       ALLOCATE( H%val( n ) )
+       ALLOCATE( A%val( n * m ) )
+       IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
+       CALL SMT_put( C%type, 'DIAGONAL', smt_stat )
+       ALLOCATE( C%val( m ) )
+     ELSE IF ( data_storage_type == - 4 ) THEN ! scaled identity storage
+       IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
+       CALL SMT_put( H%type, 'SCALED_IDENTITY', smt_stat )
+       IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
+       CALL SMT_put( A%type, 'DENSE', smt_stat )
+       ALLOCATE( H%val( 1 ) )
+       ALLOCATE( A%val( n * m ) )
+       IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
+       CALL SMT_put( C%type, 'SCALED_IDENTITY', smt_stat )
+       ALLOCATE( C%val( 1 ) )
+     ELSE IF ( data_storage_type == - 5 ) THEN ! identity storage
+       IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
+       CALL SMT_put( H%type, 'IDENTITY', smt_stat )
+       IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
+       CALL SMT_put( A%type, 'DENSE', smt_stat )
+       ALLOCATE( A%val( n * m ) )
+       IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
+       CALL SMT_put( C%type, 'IDENTITY', smt_stat )
+     END IF
+     IF ( data_storage_type == 0 ) THEN     ! sparse co-ordinate storage
+       H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 1.0_rp_ /)
+       A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_ /)
+       C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
+     ELSE IF ( data_storage_type == - 1 ) THEN  !  sparse row-wise storage
+       H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 1.0_rp_ /)
+       A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_ /)
+       C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
+     ELSE IF ( data_storage_type == - 2 ) THEN    !  dense storage
+       H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 1.0_rp_, 0.0_rp_, 3.0_rp_ /)
+       A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
+       C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
+     ELSE IF ( data_storage_type == - 3 ) THEN    !  dense storage
+       H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_ /)
+       A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
+       C%val = (/ 4.0_rp_, 2.0_rp_ /)
+     ELSE IF ( data_storage_type == - 4 ) THEN    !  scaled identity
+       H%val = (/ 2.0_rp_ /)
+       A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
+       C%val = (/ 2.0_rp_ /)
+     ELSE IF ( data_storage_type == - 5 ) THEN    !  identity
+       A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
+     END IF
+     CALL SSLS_analyse( n, m, H, A, C, data, control, inform )
+     CALL SSLS_factorize( n, m, H, A, C, data, control, inform )
+     IF ( inform%status < 0 ) THEN
+       WRITE( 6, "( A15, I9 )" ) SMT_get( H%type ), inform%status
+       CYCLE
+     END IF
+     SOL( : n ) = (/ 3.0_rp_, 2.0_rp_, 4.0_rp_ /)
+     SOL( n + 1 : ) = (/ 2.0_rp_, 0.0_rp_ /)
+     R = SOL
+     CALL SSLS_solve( n, m, SOL, data, control, inform )
+     IF ( inform%status == 0 ) THEN
+       CALL RESIDUAL( n, m, H, A, C, SOL, R )
+       norm_residual = MAXVAL( ABS( R ) )
+       WRITE( 6, "( A15, I9, A9 )" ) SMT_get( H%type ),                        &
+         inform%status, type_residual( norm_residual )
+     ELSE
+       WRITE( 6, "( A15, I9 )" ) SMT_get( H%type ), inform%status
+     END IF
+     CALL SSLS_terminate( data, control, inform )
+     IF ( data_storage_type == 0 ) THEN
+       DEALLOCATE( H%val, H%row, H%col )
+       DEALLOCATE( A%val, A%row, A%col )
+     ELSE IF ( data_storage_type == - 1 ) THEN
+       DEALLOCATE( H%val, H%col )
+       DEALLOCATE( A%val, A%col )
+     ELSE IF ( data_storage_type == - 2 ) THEN
+       DEALLOCATE( H%val )
+       DEALLOCATE( A%val )
+     ELSE IF ( data_storage_type == - 3 ) THEN
+       DEALLOCATE( H%val )
+       DEALLOCATE( A%val )
+     ELSE IF ( data_storage_type == - 4 ) THEN
+       DEALLOCATE( H%val )
+       DEALLOCATE( A%val )
+     ELSE IF ( data_storage_type == - 5 ) THEN
+       DEALLOCATE( A%val )
+     END IF
+     IF ( data_storage_type == 0 ) THEN
+       DEALLOCATE( C%val, C%row, C%col )
+     ELSE IF ( data_storage_type == - 1 ) THEN
+       DEALLOCATE( C%val, C%col )
+     ELSE IF ( data_storage_type == - 2 .OR.                                   &
+               data_storage_type == - 3 .OR.                                   &
+               data_storage_type == - 4 ) THEN
+       DEALLOCATE( C%val )
+     END IF
    END DO
-   DEALLOCATE( SOL, D )
+   DEALLOCATE( SOL, R )
    DEALLOCATE( H%ptr, A%ptr, C%ptr )
-   CALL LMS_terminate( H_lm, LMS_control, LMS_inform )
-   CALL LMS_terminate( H_lmr, LMS_control, LMS_inform )
 
 !  ==============================================
 !  basic test of various symmetric linear solvers
 !  ==============================================
 
    WRITE( 6, "( /, ' basic tests of symmetric linear solvers ' )" )
-   WRITE( 6, "( /, 4X, '<---  solver  --->', /,                                &
-  &                4X, 'definite  symmetric  status residual' )" )
+   WRITE( 6, "( /, 4X, 'solver   status residual' )" )
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 3 ; c_ne = 3
-   ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ), C%ptr( m + 1 ), SOL( n + m ) )
+   ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ), C%ptr( m + 1 ) )
+   ALLOCATE( SOL( n + m ), R( n + m ) )
    DO solvers = 1, 14
-     CALL SSLS_initialize( data, control, info )
+     CALL SSLS_initialize( data, control, inform )
      CALL WHICH_sls( control )
      control%error = - 1
      control%sls_control%error = - 1
@@ -339,45 +257,32 @@
      SELECT CASE( solvers )
      CASE ( 1 )
        control%symmetric_linear_solver = 'sils'
-       control%definite_linear_solver = 'sils'
      CASE ( 2 )
        control%symmetric_linear_solver = 'ma57'
-       control%definite_linear_solver = 'ma57'
      CASE ( 3 )
        control%symmetric_linear_solver = 'ma77'
-       control%definite_linear_solver = 'ma77'
      CASE ( 4 )
        control%symmetric_linear_solver = 'ma86'
-       control%definite_linear_solver = 'ma86'
      CASE ( 5 )
        control%symmetric_linear_solver = 'ssids'
-       control%definite_linear_solver = 'ma87'
      CASE ( 6 )
        control%symmetric_linear_solver = 'ma97'
-       control%definite_linear_solver = 'ma97'
      CASE ( 7 )
        control%symmetric_linear_solver = 'pardiso'
-       control%definite_linear_solver = 'pardiso'
      CASE ( 8 )
        control%symmetric_linear_solver = 'mkl_pardiso'
-       control%definite_linear_solver = 'mkl_pardiso'
      CASE ( 9 )
        control%symmetric_linear_solver = 'wsmp'
-       control%definite_linear_solver = 'wsmp'
      CASE ( 10 )
        control%symmetric_linear_solver = 'pastix'
-       control%definite_linear_solver = 'pastix'
      CASE ( 11 )
        control%symmetric_linear_solver = 'sytr'
-       control%definite_linear_solver = 'potr'
      CASE ( 12 )
        control%symmetric_linear_solver = 'sytr'
-       control%definite_linear_solver = 'sytr'
      CASE ( 13 )
        CYCLE
      CASE ( 14 )
        control%symmetric_linear_solver = 'ssids'
-       control%definite_linear_solver = 'ssids'
      END SELECT
      IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
      CALL SMT_put( H%type, 'COORDINATE', smt_stat )  ; H%ne = h_ne
@@ -397,42 +302,39 @@
 
 !  test with new and existing data
 
-     control%new_a = 2
-     control%new_h = 2
-     control%new_c = 2
      H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 1.0_rp_ /)
      A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_ /)
      C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
-     CALL SSLS_analyse( n, m, H, A, C, data, control, info )
-     CALL SSLS_factorize( n, m, H, A, C, data, control, info )
-     IF ( info%status < 0 ) THEN
-       WRITE( 6, "( 2A10, I9 )" )                                              &
-         ADJUSTR( control%definite_linear_solver( 1 : 10 ) ),                  &
+     CALL SSLS_analyse( n, m, H, A, C, data, control, inform )
+     CALL SSLS_factorize( n, m, H, A, C, data, control, inform )
+     IF ( inform%status < 0 ) THEN
+       WRITE( 6, "( A10, I9 )" )                                               &
          ADJUSTR( control%symmetric_linear_solver( 1 : 10 ) ),                 &
-         info%status
+         inform%status
      ELSE
        SOL( : n ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
        SOL( n + 1 : ) = (/ 2.0_rp_, 1.0_rp_ /)
-       CALL SSLS_solve( n, m, SOL, data, control, info )
-       IF ( info%status == 0 ) THEN
-         WRITE( 6, "( 2A10, I9, A9 )" )                                        &
-           ADJUSTR( control%definite_linear_solver( 1 : 10 ) ),                &
+       R = SOL
+       CALL SSLS_solve( n, m, SOL, data, control, inform )
+       IF ( inform%status == 0 ) THEN
+         CALL RESIDUAL( n, m, H, A, C, SOL, R )
+         norm_residual = MAXVAL( ABS( R ) )
+         WRITE( 6, "( A10, I9, A9 )" )                                         &
            ADJUSTR( control%symmetric_linear_solver( 1 : 10 ) ),               &
-           info%status, type_residual( info%norm_residual )
+           inform%status, type_residual( norm_residual )
        ELSE
-         WRITE( 6, "( 2A10, I9 )" )                                            &
-           ADJUSTR( control%definite_linear_solver( 1 : 10 ) ),                &
+         WRITE( 6, "( A10, I9 )" )                                             &
            ADJUSTR( control%symmetric_linear_solver( 1 : 10 ) ),               &
-           info%status
+           inform%status
        END IF
      END IF
 
-     CALL SSLS_terminate( data, control, info )
+     CALL SSLS_terminate( data, control, inform )
      DEALLOCATE( H%val, H%row, H%col )
      DEALLOCATE( A%val, A%row, A%col )
      DEALLOCATE( C%val, C%row, C%col )
    END DO
-   DEALLOCATE( SOL )
+   DEALLOCATE( SOL, R )
    DEALLOCATE( H%ptr, A%ptr, C%ptr )
 
 !  =============================
@@ -443,14 +345,11 @@
 
    n = 2 ; m = 1 ; h_ne = 2 ; a_ne = 2
    ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ) )
-   ALLOCATE( SOL( n + m ) )
+   ALLOCATE( SOL( n + m ), R( n + m ) )
 
    IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
    CALL SMT_put( C%type, 'COORDINATE', smt_stat ) ; C%ne = 0
    ALLOCATE( C%val( C%ne ), C%row( C%ne ), C%col( C%ne ) )
-
-   SOL( : n ) = (/ 0.0_rp_, 0.0_rp_ /)
-   SOL( n + 1 : ) = (/ 1.0_rp_ /)
 
    ALLOCATE( H%val( h_ne ), H%row( 0 ), H%col( h_ne ) )
    ALLOCATE( A%val( a_ne ), A%row( 0 ), A%col( a_ne ) )
@@ -462,9 +361,8 @@
    CALL SMT_put( A%type, 'SPARSE_BY_ROWS', smt_stat )
    A%col = (/ 1, 2 /)
    A%ptr = (/ 1, 3 /)
-   CALL SSLS_initialize( data, control, info )
+   CALL SSLS_initialize( data, control, inform )
    CALL WHICH_sls( control )
-   control%get_norm_residual = .TRUE.
 
 !  test with new and existing data
 
@@ -476,22 +374,29 @@
      A%val = (/ 1.0_rp_, 1.0_rp_ /)
 
 !    control%print_level = 4
-     CALL SSLS_analyse( n, m, H, A, C, data, control, info )
-     CALL SSLS_factorize( n, m, H, A, C, data, control, info )
-     IF ( info%status == 0 ) CALL SSLS_solve( n, m, SOL, data, control, info )
+     CALL SSLS_analyse( n, m, H, A, C, data, control, inform )
+     CALL SSLS_factorize( n, m, H, A, C, data, control, inform )
+     IF ( inform%status == 0 ) THEN
+       SOL( : n ) = (/ 0.0_rp_, 0.0_rp_ /)
+       SOL( n + 1 : ) = (/ 1.0_rp_ /)
+       R = SOL
+     END IF
+     CALL SSLS_solve( n, m, SOL, data, control, inform )
 !    write(6,"('x=', 2ES12.4)") X
-     IF ( info%status == 0 ) THEN
+     IF ( inform%status == 0 ) THEN
+       CALL RESIDUAL( n, m, H, A, C, SOL, R )
+       norm_residual = MAXVAL( ABS( R ) )
        WRITE( 6, "( I5, I9, A9 )" )                                            &
-         i, info%status, type_residual( info%norm_residual )
+         i, inform%status, type_residual( norm_residual )
      ELSE
-       WRITE( 6, "( I5, I9 )" ) i, info%status
+       WRITE( 6, "( I5, I9 )" ) i, inform%status
      END IF
    END DO
-   CALL SSLS_terminate( data, control, info )
+   CALL SSLS_terminate( data, control, inform )
 
    DEALLOCATE( H%val, H%row, H%col, H%ptr, H%type )
    DEALLOCATE( A%val, A%row, A%col, A%ptr, A%type )
-   DEALLOCATE( SOL )
+   DEALLOCATE( SOL, R )
 
 !  ============================
 !  full test of generic problem
@@ -501,7 +406,7 @@
    WRITE( 6, "( /, ' test   status residual' )" )
 
    n = 14 ; m = 8 ; h_ne = 28 ; a_ne = 27
-   ALLOCATE( SOL( n + m ) )
+   ALLOCATE( SOL( n + m ) , R( n + m ) )
    ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
    ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
    IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
@@ -514,6 +419,7 @@
                    0.0_rp_, 2.0_rp_ /)
    SOL( n + 1 : ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,   &
                        1.0_rp_, 2.0_rp_ /)
+   R = SOL
    H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_, 2.0_rp_, 3.0_rp_, 3.0_rp_,            &
               4.0_rp_, 4.0_rp_, 5.0_rp_, 5.0_rp_, 6.0_rp_, 6.0_rp_,            &
               7.0_rp_, 7.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_,        &
@@ -533,37 +439,36 @@
    A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                  &
               8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
 
-   CALL SSLS_initialize( data, control, info )
+   CALL SSLS_initialize( data, control, inform )
    CALL WHICH_sls( control )
-   control%get_norm_residual = .TRUE.
-   control%itref_max = 3
    control%print_level = 101
    control%out = scratch_out ;  control%error = scratch_out
 !  control%print_level = 1 ; control%out = 6 ; control%error = 6
 !  control%symmetric_linear_solver = 'ma57'
-!  control%definite_linear_solver = 'ma57'
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-   CALL SSLS_analyse( n, m, H, A, C, data, control, info )
-   CALL SSLS_factorize( n, m, H, A, C, data, control, info )
-   IF ( info%status == 0 )                                                     &
-     CALL SSLS_solve( n, m, SOL, data, control, info )
+   CALL SSLS_analyse( n, m, H, A, C, data, control, inform )
+   CALL SSLS_factorize( n, m, H, A, C, data, control, inform )
+   IF ( inform%status == 0 )                                                   &
+     CALL SSLS_solve( n, m, SOL, data, control, inform )
    CLOSE( UNIT = scratch_out )
-   IF ( info%status == 0 ) THEN
+   IF ( inform%status == 0 ) THEN
+     CALL RESIDUAL( n, m, H, A, C, SOL, R )
+     norm_residual = MAXVAL( ABS( R ) )
      WRITE( 6, "( I5, I9, A9 )" )                                              &
-       1, info%status, type_residual( info%norm_residual )
+       1, inform%status, type_residual( norm_residual )
    ELSE
-     WRITE( 6, "( I5, I9 )" ) 1, info%status
+     WRITE( 6, "( I5, I9 )" ) 1, inform%status
    END IF
-   CALL SSLS_terminate( data, control, info )
+   CALL SSLS_terminate( data, control, inform )
    DEALLOCATE( H%val, H%row, H%col, H%type )
    DEALLOCATE( A%val, A%row, A%col, A%type )
-   DEALLOCATE( SOL )
+   DEALLOCATE( SOL, R )
 
 !  Second problem
 
    IF ( .NOT. all_generic_tests ) GO TO 30
    n = 14 ; m = 8 ; h_ne = 14 ; a_ne = 27
-   ALLOCATE( SOL( n + m ) )
+   ALLOCATE( SOL( n + m ) , R( n + m ) )
    ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
    ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
    IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
@@ -576,6 +481,7 @@
                    0.0_rp_, 2.0_rp_ /)
    SOL( n + 1 : ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_,                     &
                        0.0_rp_, 0.0_rp_, 1.0_rp_, 2.0_rp_ /)
+   R = SOL
    H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_, 2.0_rp_, 3.0_rp_, 3.0_rp_,            &
               4.0_rp_, 4.0_rp_, 5.0_rp_, 5.0_rp_, 6.0_rp_, 6.0_rp_,            &
               7.0_rp_, 7.0_rp_ /)
@@ -590,26 +496,26 @@
               6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8 /)
    A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                  &
               8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
-   CALL SSLS_initialize( data, control, info )
+   CALL SSLS_initialize( data, control, inform )
    CALL WHICH_sls( control )
-!  control%print_level = 1
 !  control%print_level = 1 ; control%out = 6 ; control%error = 6
 !  control%sls_control%ordering = 7
-!  control%unsymmetric_linear_solver = 'getr'
-   CALL SSLS_analyse( n, m, H, A, C, data, control, info )
-   CALL SSLS_factorize( n, m, H, A, C, data, control, info )
-   IF ( info%status == 0 )                                                     &
-     CALL SSLS_solve( n, m, SOL, data, control, info )
-   IF ( info%status == 0 ) THEN
+   CALL SSLS_analyse( n, m, H, A, C, data, control, inform )
+   CALL SSLS_factorize( n, m, H, A, C, data, control, inform )
+   IF ( inform%status == 0 )                                                   &
+     CALL SSLS_solve( n, m, SOL, data, control, inform )
+   IF ( inform%status == 0 ) THEN
+     CALL RESIDUAL( n, m, H, A, C, SOL, R )
+     norm_residual = MAXVAL( ABS( R ) )
      WRITE( 6, "( I5, I9, A9 )" )                                              &
-       2, info%status, type_residual( info%norm_residual )
+       2, inform%status, type_residual( norm_residual )
    ELSE
-     WRITE( 6, "( I5, I9 )" ) 2, info%status
+     WRITE( 6, "( I5, I9 )" ) 2, inform%status
    END IF
-   CALL SSLS_terminate( data, control, info )
+   CALL SSLS_terminate( data, control, inform )
    DEALLOCATE( H%val, H%row, H%col, H%type )
    DEALLOCATE( A%val, A%row, A%col, A%type )
-   DEALLOCATE( SOL )
+   DEALLOCATE( SOL, R )
 
 !  Third problem
 
@@ -617,7 +523,7 @@
 !  IF ( .NOT. all_generic_tests ) GO TO 40
 !  WRITE( 25, "( /, ' third problem ', / )" )
    n = 14 ; m = 8 ; h_ne = 14 ; a_ne = 26
-   ALLOCATE( SOL( n + m ) )
+   ALLOCATE( SOL( n + m ) , R( n + m ) )
    ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
    ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
    IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
@@ -630,6 +536,7 @@
                    0.0_rp_, 2.0_rp_ /)
    SOL( n + 1 : ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,            &
                        0.0_rp_, 1.0_rp_, 2.0_rp_ /)
+   R = SOL
    A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
               1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
               1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
@@ -658,26 +565,28 @@
 !    SOL( i ) = SOL( i ) + val
 !    IF ( i /= j ) SOL( j ) = SOL( j ) + val
 !  END DO
-   CALL SSLS_initialize( data, control, info )
+   CALL SSLS_initialize( data, control, inform )
    CALL WHICH_sls( control )
-   CALL SSLS_analyse( n, m, H, A, C, data, control, info )
-   CALL SSLS_factorize( n, m, H, A, C, data, control, info )
-   IF ( info%status == 0 )                                                     &
-     CALL SSLS_solve( n, m, SOL, data, control, info )
+   CALL SSLS_analyse( n, m, H, A, C, data, control, inform )
+   CALL SSLS_factorize( n, m, H, A, C, data, control, inform )
+   IF ( inform%status == 0 )                                                   &
+     CALL SSLS_solve( n, m, SOL, data, control, inform )
 !  ALLOCATE( SOL1( n + m ) )
 !  SOL1 = SOL
 !  WRITE( 6, "( ' solution ', /, ( 3ES24.16 ) )" ) SOL
 !     WRITE( 25,"( ' solution ', /, ( 5ES24.16 ) )" ) SOL
-   IF ( info%status == 0 ) THEN
+   IF ( inform%status == 0 ) THEN
+     CALL RESIDUAL( n, m, H, A, C, SOL, R )
+     norm_residual = MAXVAL( ABS( R ) )
      WRITE( 6, "( I5, I9, A9 )" )                                              &
-       3, info%status, type_residual( info%norm_residual )
+       3, inform%status, type_residual( norm_residual )
    ELSE
-     WRITE( 6, "( I5, I9 )" ) 3, info%status
+     WRITE( 6, "( I5, I9 )" ) 3, inform%status
    END IF
-   CALL SSLS_terminate( data, control, info )
+   CALL SSLS_terminate( data, control, inform )
    DEALLOCATE( H%val, H%row, H%col, H%type )
    DEALLOCATE( A%val, A%row, A%col, A%type )
-   DEALLOCATE( SOL )
+   DEALLOCATE( SOL, R )
 
 !  Forth problem
 
@@ -685,7 +594,7 @@
    IF ( .NOT. all_generic_tests ) GO TO 50
 !  WRITE( 25, "( /, ' forth problem ', / )" )
    n = 14 ; m = 8 ; h_ne = 14 ; a_ne = 26
-   ALLOCATE( SOL( n + m ) )
+   ALLOCATE( SOL( n + m ) , R( n + m ) )
    ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
    ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
    IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
@@ -698,6 +607,7 @@
                    0.0_rp_, 2.0_rp_ /)
    SOL( n + 1 : ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,            &
                        0.0_rp_, 1.0_rp_, 2.0_rp_ /)
+   R = SOL
    A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
               1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
               1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
@@ -711,26 +621,28 @@
               1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 7.0_rp_ /)
    H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
-   CALL SSLS_initialize( data, control, info )
+   CALL SSLS_initialize( data, control, inform )
    CALL WHICH_sls( control )
 !  control%print_level = 2 ; control%out = 6 ; control%error = 6
-   CALL SSLS_analyse( n, m, H, A, C, data, control, info )
-   CALL SSLS_factorize( n, m, H, A, C, data, control, info )
-   IF ( info%status == 0 )                                                     &
-     CALL SSLS_solve( n, m, SOL, data, control, info )
+   CALL SSLS_analyse( n, m, H, A, C, data, control, inform )
+   CALL SSLS_factorize( n, m, H, A, C, data, control, inform )
+   IF ( inform%status == 0 )                                                   &
+     CALL SSLS_solve( n, m, SOL, data, control, inform )
 !  WRITE( 6, "( ' solution ', /, ( 3ES24.16 ) )" ) SOL
 !  WRITE(6,*) ' diff ', MAXVAL( ABS( SOL - SOL1 ) )
 !     WRITE( 25,"( ' solution ', /, ( 5ES24.16 ) )" ) SOL
-   IF ( info%status == 0 ) THEN
-     WRITE( 6, "( I5, I9, A9 )" )                                             &
-       4, info%status, type_residual( info%norm_residual )
+   IF ( inform%status == 0 ) THEN
+     CALL RESIDUAL( n, m, H, A, C, SOL, R )
+     norm_residual = MAXVAL( ABS( R ) )
+     WRITE( 6, "( I5, I9, A9 )" )                                              &
+        4, inform%status, type_residual( norm_residual )
    ELSE
-     WRITE( 6, "( I5, I9 )" ) 3, info%status
+     WRITE( 6, "( I5, I9 )" ) 4, inform%status
    END IF
-   CALL SSLS_terminate( data, control, info )
+   CALL SSLS_terminate( data, control, inform )
    DEALLOCATE( H%val, H%row, H%col, H%type )
    DEALLOCATE( A%val, A%row, A%col, A%type )
-   DEALLOCATE( SOL )
+   DEALLOCATE( SOL, R )
 !  DEALLOCATE( SOL1 )
 
 50 CONTINUE
@@ -767,11 +679,133 @@
 
      SUBROUTINE WHICH_sls( control )
      TYPE ( SSLS_control_type ) :: control
-#include "galahad_sls_defaults.h"
+#include "galahad_sls_defaults_sls.h"
      control%symmetric_linear_solver = symmetric_linear_solver
-     control%definite_linear_solver = definite_linear_solver
      END SUBROUTINE WHICH_sls
 
+     SUBROUTINE RESIDUAL( n, m, H, A, C, SOL, R )
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+     TYPE ( SMT_type ), INTENT( IN ) :: H, A, C
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n + m ) :: SOL
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n + m ) :: R
+     INTEGER ( KIND = ip_ ) :: i, ii, j, l, np1, npm
+     np1 = n + 1 ; npm = n + m
+
+!  compute the residual r <- r - K sol
+
+     SELECT CASE ( SMT_get( H%type ) )
+     CASE ( 'IDENTITY' )
+       R( : n ) = R( : n ) - SOL( : n )
+     CASE ( 'SCALED_IDENTITY' )
+       R( : n ) = R( : n ) - H%val( 1 ) * SOL( : n )
+     CASE ( 'DIAGONAL' )
+       R( : n ) = R( : n ) - H%val( : n ) * SOL( : n )
+     CASE ( 'DENSE' )
+       l = 0
+       DO i = 1, n
+         DO j = 1, i - 1
+           l = l + 1
+           R( i ) = R( i ) - H%val( l ) * SOL( j )
+           R( j ) = R( j ) - H%val( l ) * SOL( i )
+         END DO
+         l = l + 1
+         R( i ) = R( i ) - H%val( l ) * SOL( i )
+       END DO
+     CASE ( 'SPARSE_BY_ROWS' )
+       DO i = 1, n
+         DO l = H%ptr( i ), H%ptr( i + 1 ) - 1
+           j = H%col( l )
+           IF ( i /= j ) THEN
+             R( i ) = R( i ) - H%val( l ) * SOL( j )
+             R( j ) = R( j ) - H%val( l ) * SOL( i )
+           ELSE
+             R( i ) = R( i ) - H%val( l ) * SOL( i )
+           END IF
+         END DO
+       END DO
+     CASE ( 'COORDINATE' )
+       DO l = 1, H%ne
+         i = H%row( l ) ; j = H%col( l )
+         IF ( i /= j ) THEN
+           R( i ) = R( i ) - H%val( l ) * SOL( j )
+           R( j ) = R( j ) - H%val( l ) * SOL( i )
+         ELSE
+           R( i ) = R( i ) - H%val( l ) * SOL( i )
+         END IF
+       END DO
+     END SELECT
+
+     SELECT CASE ( SMT_get( A%type ) )
+     CASE ( 'DENSE' )
+       l = 0
+       DO ii = 1, m
+         i = n + ii
+         DO j = 1, n
+           l = l + 1
+           R( i ) = R( i ) - A%val( l ) * SOL( j )
+           R( j ) = R( j ) - A%val( l ) * SOL( i )
+         END DO
+       END DO
+     CASE ( 'SPARSE_BY_ROWS' )
+       DO ii = 1, m
+         i = n + ii
+         DO l = A%ptr( ii ), A%ptr( ii + 1 ) - 1
+           j = A%col( l )
+           R( i ) = R( i ) - A%val( l ) * SOL( j )
+           R( j ) = R( j ) - A%val( l ) * SOL( i )
+         END DO
+       END DO
+     CASE ( 'COORDINATE' )
+       DO l = 1, A%ne
+         i = n + A%row( l ) ; j = A%col( l )
+         R( i ) = R( i ) - A%val( l ) * SOL( j )
+         R( j ) = R( j ) - A%val( l ) * SOL( i )
+       END DO
+     END SELECT
+
+     SELECT CASE ( SMT_get( C%type ) )
+     CASE ( 'IDENTITY' )
+       R( np1 : npm ) = R( np1 : npm ) + SOL( np1 : npm ) 
+     CASE ( 'SCALED_IDENTITY' )
+       R( np1 : npm ) = R( np1 : npm ) + C%val( 1 ) * SOL( np1 : npm ) 
+     CASE ( 'DIAGONAL' )
+       R( np1 : npm ) = R( np1 : npm ) + C%val( 1 : m ) * SOL( np1 : npm ) 
+     CASE ( 'DENSE' )
+       l = 0
+       DO i = n + 1, n + m
+         DO j = n + 1, i - 1
+           l = l + 1
+           R( i ) = R( i ) + C%val( l ) * SOL( j )
+           R( j ) = R( j ) + C%val( l ) * SOL( i )
+         END DO
+         l = l + 1
+         R( i ) = R( i ) + C%val( l ) * SOL( i )
+       END DO
+     CASE ( 'SPARSE_BY_ROWS' )
+       DO ii = 1, m
+         i = n + ii
+         DO l = C%ptr( ii ), C%ptr( ii + 1 ) - 1
+           j = n + C%col( l )
+           IF ( i /= j ) THEN
+             R( i ) = R( i ) + C%val( l ) * SOL( j )
+             R( j ) = R( j ) + C%val( l ) * SOL( i )
+           ELSE
+             R( i ) = R( i ) + C%val( l ) * SOL( i )
+           END IF
+         END DO
+       END DO
+     CASE ( 'COORDINATE' )
+       DO l = 1, C%ne
+         i = n + C%row( l ) ; j = n + C%col( l )
+         IF ( i /= j ) THEN
+           R( i ) = R( i ) + C%val( l ) * SOL( j )
+           R( j ) = R( j ) + C%val( l ) * SOL( i )
+         ELSE
+           R( i ) = R( i ) + C%val( l ) * SOL( i )
+         END IF
+       END DO
+     END SELECT
+     END SUBROUTINE RESIDUAL
    END PROGRAM GALAHAD_SSLS_EXAMPLE
 
 

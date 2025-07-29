@@ -1936,7 +1936,7 @@
            .NOT. QPT_keyword_A( A%type ) ) THEN
         inform%status = GALAHAD_error_restrictions
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, 2010 ) prefix, inform%status
+          WRITE( control%error, 2000 ) prefix, inform%status
         GO TO 900
       END IF
 
@@ -2048,7 +2048,7 @@
 
 !  Non-executable statements
 
- 2010 FORMAT( ' ', /, A, '   **  Error return ',I0,' from SBLS ' )
+ 2000 FORMAT( ' ', /, A, '   **  Error return ', I0,' from SBLS ' )
 
 !  End of subroutine SBLS_form_and_factorize
 
