@@ -51,7 +51,6 @@ runs:
           echo "LIBDIR=lib" >> $GITHUB_ENV
           echo "DLEXT=so" >> $GITHUB_ENV
           echo "PLATFORM=x86_64-linux-gnu" >> $GITHUB_ENV
-          echo "JULIA_GALAHAD_LIBRARY_PATH=/scratch/github-actions/actions_runner_galahad/_work/GALAHAD/GALAHAD/galahad/lib" >> $GITHUB_ENV
         fi
         if [[ "${{ inputs.os }}" == "ubuntu-latest" ]]; then
           echo "LIBDIR=lib" >> $GITHUB_ENV
@@ -114,7 +113,7 @@ runs:
       run: |
         echo "CUDA_VISIBLE_DEVICES=1" >> $GITHUB_ENV
         echo "JULIA_DEPOT_PATH=/scratch/github-actions/julia_depot_galahad" >> $GITHUB_ENV
-        echo "JULIA_GALAHAD_LIBRARY_PATH=/scratch/github-actions/actions_runner_alexis/_work/GALAHAD/GALAHAD/galahad/lib" >> $GITHUB_ENV
+        echo "JULIA_GALAHAD_LIBRARY_PATH=/scratch/github-actions/actions_runner_galahad/_work/GALAHAD/GALAHAD/galahad/lib" >> $GITHUB_ENV
 
     - name: Install compilers
       if: inputs.os != 'self-hosted'
