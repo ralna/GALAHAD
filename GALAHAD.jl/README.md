@@ -21,10 +21,11 @@ export OMP_CANCELLATION=TRUE
 export OMP_PROC_BIND=TRUE
 ```
 
-## libHSL
+## LibHSL
 
 We highly recommend to download [libHSL](https://licences.stfc.ac.uk/products/Software/HSL/LibHSL) and install the official version of `HSL_jll.jl`.
-This optional dependency gives you access to more reliable and powerful linear solvers.
+This optional dependency provides access to more reliable and powerful linear solvers in `GALAHAD.jl`.
+Note that this requires at least version `5.3.0` of `GALAHAD` and version `2025.7.21` of `libHSL`, both of which are provided via `GALAHAD_jll.jl` and `HSL_jll.jl`.
 
 ## Documentation
 
