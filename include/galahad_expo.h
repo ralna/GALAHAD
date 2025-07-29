@@ -882,7 +882,7 @@ void expo_solve_hessian_direct( void **data,
                                 rpc_ gl[],
                                 ipc_ (*eval_fc)(
                                   ipc_, ipc_, const rpc_[],
-                                  rpc_, rpc_[], const void * ),
+                                  rpc_ *, rpc_[], const void * ),
                                 ipc_ (*eval_gj)(
                                   ipc_, ipc_, ipc_, const rpc_[],
                                   rpc_[], rpc_[], const void * ),
