@@ -508,7 +508,7 @@ make_slls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
 
-make_ssls_deps: make_sls_deps make_sls
+make_ssls_deps: make_sls_deps make_sls make_lmt make_qpt
 
 make_ssls:
 	( cd $(GALAHAD)/src/ssls ; \

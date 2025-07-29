@@ -47,10 +47,11 @@ CDEPENDS =
 #  auxiliary packages that the python interface to the current package depends
 #  on (prepend with make_pyiface_)
 
-PYDEPENDENCIES = make_pyiface_sls make_pyiface_ir make_pyiface_trs \
-                 make_pyiface_gltr make_pyiface_psls make_pyiface_lms \
-                 make_pyiface_sha make_pyiface_tru  make_pyiface_dps \
-                 make_pyiface_sec make_pyiface_tru make_pyiface_ssls
+PYDEPENDENCIES = make_pyiface_sls_deps make_pyiface_sls make_pyiface_ir \
+                 make_pyiface_trs make_pyiface_gltr make_pyiface_psls \
+                 make_pyiface_lms make_pyiface_bsc make_pyiface_sha \
+                 make_pyiface_tru make_pyiface_dps make_pyiface_sec \
+                 make_pyiface_tru make_pyiface_ssls_deps make_pyiface_ssls
 
 #  other python interface packages that depend on current interface package
 

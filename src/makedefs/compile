@@ -33,7 +33,7 @@ $(LG)($(package)_$(PRECIS).o): ../$(package)/$(package).F90
 #  package C interface compilation
 
 $(package)_ciface.o: $(LG)($(package)_$(PRECIS).o) \
-                       $(CLG)($(package)_ciface_$(PRECIS).o)
+                     $(CLG)($(package)_ciface_$(PRECIS).o)
 
 $(CLG)($(package)_ciface_$(PRECIS).o): ../$(package)/C/$(package)_ciface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_ciface"
@@ -55,8 +55,8 @@ $(CLG)($(package)_ciface_$(PRECIS).o): ../$(package)/C/$(package)_ciface.F90
 #  package python interface compilation
 
 $(package)_pyiface.o: $(LG)($(package)_$(PRECIS).o) \
-                        $(CLG)($(package)_ciface_$(PRECIS).o) \
-                        $(PYLG)($(package)_pyiface.o)
+                      $(CLG)($(package)_ciface_$(PRECIS).o) \
+                      $(PYLG)($(package)_pyiface.o)
 
 $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_pyiface"
@@ -80,7 +80,8 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
 	$(MKDIR) -p  $(PYSITEPACKDIR)/galahad
 	cd $(OBJ) ; $(CC) $(SHARED) $(OPTIMIZATION) -pthread \
           -Wl,-O1  -Wl,-Bsymbolic-functions $(OBJ)/$(package)_pyiface.o \
-          -L$(OBJ)/shared -lgalahad_py -lgalahad_c -lhsl_c \
+          -L$(OBJ)/shared \
+          -lgalahad_py -lgalahad_c -lhsl_c \
           -lgalahad -lgalahad_cutest_dummy $(HSL) $(SPRAL) $(MKL_PARDISO) \
           $(PARDISO) $(WSMP) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(METIS) \
           $(LAPACK) $(BLAS) -lgfortran \
@@ -88,6 +89,8 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
           -Wl,-rpath=$(OBJ)/shared $(MOMP)
 	cd $(OBJ); $(RM) $(package)_pyiface.o
 	@printf '[ OK ]\n'
+#          -Wl,--whole-archive \
+#          -Wl,--no-whole-archive \
 
 #  package coverage compilation
 

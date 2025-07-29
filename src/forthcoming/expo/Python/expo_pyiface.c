@@ -110,7 +110,7 @@ static int eval_gj(int n, int m, int jne, const double x[],
 
      // Extract eval_gj return values (two arrays)
     PyObject *py_g, *py_j;
-    if(!PyArg_ParseTuple(result, "OO", py_g, py_j)){
+    if(!PyArg_ParseTuple(result, "OO", &py_g, &py_j)){
         PyErr_SetString(PyExc_TypeError,
         "unable to parse eval_gj return values");
         Py_DECREF(result); // Free result memory

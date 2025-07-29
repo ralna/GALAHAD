@@ -7,7 +7,7 @@ print("\n** python test: expo")
 options = expo.initialize()
 
 # set some non-default options
-#options['print_level'] = 0
+#options['print_level'] = 1
 options['max_it'] = 20
 options['max_eval'] = 100
 options['stop_abs_p'] = 0.00001
@@ -43,9 +43,9 @@ c_u = np.array([np.inf, np.inf, np.inf, np.inf, np.inf]) # upper constraint boun
 
 # load data (and optionally non-default options)
 expo.load(n, m,
-         J_type, J_ne, J_row, J_col, J_ptr,
-         H_type, H_ne, H_row, H_col, H_ptr,
-         options)
+          J_type, J_ne, J_row, J_col, J_ptr,
+          H_type, H_ne, H_row, H_col, H_ptr,
+          options)
 
 # define residual function and its derivatives
 def eval_fc(x):
@@ -68,7 +68,7 @@ def eval_gj(x):
 
 def eval_hl(x,y):
     hval =  np.array([2.0 - 2.0 * (y[1] + p * y[2] + y[3]),
-                       2.0 - 2.0 * (y[1] + y[2] + y[4])])
+                      2.0 - 2.0 * (y[1] + y[2] + y[4])])
     return hval
 
 # set starting point
