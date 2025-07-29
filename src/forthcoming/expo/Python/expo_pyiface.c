@@ -48,7 +48,7 @@ static PyObject *py_eval_hl = NULL;
 static PyObject *expo_solve_return = NULL;
 
 /* C eval_* function wrappers */
-static int eval_fc(int n, int m, const double x[], double f, double c[],
+static int eval_fc(int n, int m, const double x[], double *f, double c[],
                    const void *userdata){
 
     // Wrap input array as NumPy array
@@ -69,7 +69,7 @@ static int eval_fc(int n, int m, const double x[], double f, double c[],
 
     // Extract eval_fc return values (one double and one array)
     PyObject *py_c;
-    if(!PyArg_ParseTuple(result, "dO", f, py_c)){
+    if(!PyArg_ParseTuple(result, "dO", f, &py_c)){
         PyErr_SetString(PyExc_TypeError,
         "unable to parse eval_fc return values");
         Py_DECREF(result); // Free result memory
