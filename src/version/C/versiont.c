@@ -12,5 +12,5 @@ int main(void) {
     ipc_ patch;
 
     version_galahad( &major, &minor, &patch );
-    printf( " GALAHAD version: %d.%d.%d\n", major, minor, patch );
+    printf( " GALAHAD version: %1" i_ipc_ ".%1" i_ipc_ ".%1" i_ipc_ "\n", major, minor, patch );
 }
