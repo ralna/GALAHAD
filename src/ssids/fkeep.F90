@@ -123,7 +123,7 @@ subroutine inner_factor_cpu(fkeep, akeep, val, options, inform)
      nth = 1
   endif
 
-  !$ call omp_set_num_threads(nth)
+  !$ call omp_set_num_threads(int(nth))
   ! Split into threads for this NUMA region (unless we're running a GPU)
   exec_loc = -1 ! avoid compiler warning re uninitialized
   abort = .false.
