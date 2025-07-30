@@ -29,23 +29,6 @@ else
   HWLOC="hwloc"
 fi
 
-meson setup builddir_int32 --cross-file=${MESON_TARGET_TOOLCHAIN} \
-                           --prefix=$prefix \
-                           --buildtype=debug \
-                           -Dint64=false \
-                           -Dlibhwloc=$HWLOC \
-                           -Dlibblas=$LBT \
-                           -Dliblapack=$LBT \
-                           -Dlibsmumps=smumps \
-                           -Dlibdmumps=dmumps \
-                           -Dsingle=true \
-                           -Ddouble=true \
-                           -Dquadruple=true \
-                           -Dlibhsl=hsl_subset \
-                           -Dlibhsl_modules=$prefix/modules
-
-meson compile -C builddir_int32
-
 meson setup builddir_int64 --cross-file=${MESON_TARGET_TOOLCHAIN} \
                            --prefix=$prefix \
                            --buildtype=debug \
@@ -57,14 +40,30 @@ meson setup builddir_int64 --cross-file=${MESON_TARGET_TOOLCHAIN} \
                            -Dlibdmumps= \
                            -Dsingle=true \
                            -Ddouble=true \
-                           -Dquadruple=true \
+                           -Dquadruple=false \
                            -Dlibhsl=hsl_subset_64 \
                            -Dlibhsl_modules=$prefix/modules
 
 meson compile -C builddir_int64
-
-meson install -C builddir_int32
 meson install -C builddir_int64
+
+meson setup builddir_int32 --cross-file=${MESON_TARGET_TOOLCHAIN} \
+                           --prefix=$prefix \
+                           --buildtype=debug \
+                           -Dint64=false \
+                           -Dlibhwloc=$HWLOC \
+                           -Dlibblas=$LBT \
+                           -Dliblapack=$LBT \
+                           -Dlibsmumps=smumps \
+                           -Dlibdmumps=dmumps \
+                           -Dsingle=true \
+                           -Ddouble=true \
+                           -Dquadruple=false \
+                           -Dlibhsl=hsl_subset \
+                           -Dlibhsl_modules=$prefix/modules
+
+meson compile -C builddir_int32
+meson install -C builddir_int32
 """
 
 # These are the platforms we will build for by default, unless further
@@ -75,10 +74,10 @@ platforms = supported_platforms()
 products = [
     LibraryProduct("libgalahad_single", :libgalahad_single),
     LibraryProduct("libgalahad_double", :libgalahad_double),
-    LibraryProduct("libgalahad_quadruple", :libgalahad_quadruple),
+    # LibraryProduct("libgalahad_quadruple", :libgalahad_quadruple),
     LibraryProduct("libgalahad_single_64", :libgalahad_single_64),
     LibraryProduct("libgalahad_double_64", :libgalahad_double_64),
-    LibraryProduct("libgalahad_quadruple_64", :libgalahad_quadruple_64),
+    # LibraryProduct("libgalahad_quadruple_64", :libgalahad_quadruple_64),
 ]
 
 # Dependencies that must be installed before this package can be built
