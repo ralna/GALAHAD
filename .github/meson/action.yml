@@ -250,7 +250,7 @@ runs:
       run: |
         cd ..
         mkdir -p deps
-        VERSION_MKL="2025.0.1"
+        VERSION_MKL="2025.2.0"
         wget https://github.com/JuliaBinaryWrappers/MKL_jll.jl/releases/download/MKL-v${VERSION_MKL}%2B0/MKL.v${VERSION_MKL}.$PLATFORM.tar.gz
         tar -xzvf MKL.v${VERSION_MKL}.$PLATFORM.tar.gz -C deps
         # wget https://github.com/JuliaBinaryWrappers/IntelOpenMP_jll.jl/releases/download/IntelOpenMP-v${VERSION_MKL}%2B0/IntelOpenMP.v${VERSION_MKL}.$PLATFORM.tar.gz
