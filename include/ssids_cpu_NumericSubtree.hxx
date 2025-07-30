@@ -76,7 +76,7 @@ public:
       }
 
       /* Allocate workspaces */
-      ipc_ num_threads = omp_get_num_threads();
+      int num_threads = omp_get_num_threads();
       std::vector<ThreadStats> thread_stats(num_threads);
       std::vector<Workspace> work;
       work.reserve(num_threads);
@@ -110,7 +110,7 @@ public:
               if (!my_abort) {
                // #pragma omp cancellation point taskgroup
                try {
-                  ipc_ this_thread = omp_get_thread_num();
+                  int this_thread = omp_get_thread_num();
 #ifdef PROFILE
                   Profile::Task task_subtree("TA_SUBTREE");
 #endif
@@ -132,7 +132,8 @@ public:
                   task_subtree.done();
 #endif
                } catch (std::bad_alloc const&) {
-                  thread_stats[omp_get_thread_num()].flag =
+                  int thread_num = omp_get_thread_num();
+                  thread_stats[thread_num].flag =
                      Flag::ERROR_ALLOCATION;
 #ifdef _OPENMP
                   #pragma omp atomic write
@@ -143,7 +144,8 @@ public:
                   return;
 #endif /* _OPENMP */
                } catch (SingularError const&) {
-                  thread_stats[omp_get_thread_num()].flag =
+                  int thread_num = omp_get_thread_num();
+                  thread_stats[thread_num].flag =
                      Flag::ERROR_SINGULAR;
 #ifdef _OPENMP
                   #pragma omp atomic write
@@ -178,7 +180,7 @@ public:
                   // printf("%d: Node %d parent %d (of %d) size %d x %d\n",
                   //       omp_get_thread_num(), ni, symb_[ni].parent,
                   //       symb_.nnodes_, symb_[ni].nrow, symb_[ni].ncol);
-                  ipc_ this_thread = omp_get_thread_num();
+                  int this_thread = omp_get_thread_num();
                   // Assembly of node (not of contribution block)
                   assemble_pre
                      (posdef, symb_.n, symb_[ni], child_contrib, nodes_[ni],
@@ -214,7 +216,8 @@ public:
                      assemble_post(symb_.n, symb_[ni], child_contrib,
                            nodes_[ni], pool_alloc_, work);
                } catch (std::bad_alloc const&) {
-                  thread_stats[omp_get_thread_num()].flag =
+                  int thread_num = omp_get_thread_num();
+                  thread_stats[thread_num].flag =
                      Flag::ERROR_ALLOCATION;
 #ifdef _OPENMP
                   #pragma omp atomic write
@@ -225,7 +228,8 @@ public:
                   return;
 #endif /* _OPENMP */
                } catch (SingularError const&) {
-                  thread_stats[omp_get_thread_num()].flag =
+                  int thread_num = omp_get_thread_num();
+                  thread_stats[thread_num].flag =
                      Flag::ERROR_SINGULAR;
 #ifdef _OPENMP
                   #pragma omp atomic write
