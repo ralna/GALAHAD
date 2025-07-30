@@ -1546,7 +1546,7 @@ contains
 !!$  if (.not. user_settings%nested) call omp_set_nested(user_settings%nested)
 !$  if (user_settings%dynamic) call omp_set_dynamic(user_settings%dynamic)
 !$  if (user_settings%max_active_levels .lt. 2) &
-!$       call omp_set_max_active_levels(user_settings%max_active_levels)
+!$       call omp_set_max_active_levels(int(user_settings%max_active_levels))
   end subroutine pop_omp_settings
 
 end module spral_ssids_precision
