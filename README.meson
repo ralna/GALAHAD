@@ -214,7 +214,8 @@ Currently supported suites:
 * `C`;
 * `Python`;
 * `single`;
-* `double`.
+* `double`;
+* `quadruple`.
 
 # Meson build tips for developers
 
@@ -281,6 +282,9 @@ value.
 The last step is to update the file `meson.build` in the subfolder
 `include` of GALAHAD if the new package has a C interface.  You need to
 add a line `'galahad_abcd.h'` so that this new header can be installed.
+
+Please also check that a new line `#include "galahad_abcd.h"` has been
+added to `galahad.h`.
 
 ## Create a new release of GALAHAD
 
