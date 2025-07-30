@@ -1,12 +1,10 @@
 name: Build and upload to PyPI
 
-# Build on every branch push, tag push, and pull request change:
-#on: [pull_request]
-# Alternatively, to publish when a (published) GitHub Release is created, use the following:
+# Publish when a new GitHub version is tagged:
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   build_wheels:
