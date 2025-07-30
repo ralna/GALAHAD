@@ -1520,7 +1520,7 @@ private:
 #endif
                   if (debug) printf("UpdateT(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
                                              ")\n", iblk, jblk, blk);
-                  ipc_ thread_num = omp_get_thread_num();
+                  int thread_num = omp_get_thread_num();
                   BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                   ipc_ isrc_row = (blk<=iblk) ? iblk : blk;
                   ipc_ isrc_col = (blk<=iblk) ? blk : iblk;
@@ -1558,7 +1558,7 @@ private:
 #endif
                    if (debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_
                                      ")\n", iblk, jblk, blk);
-                   ipc_ thread_num = omp_get_thread_num();
+                   int thread_num = omp_get_thread_num();
                    BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                    BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
                    BlockSpec jsrc(jblk, blk, m, n, cdata, a, lda, block_size);
@@ -1599,7 +1599,7 @@ private:
 #endif
                     if (debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ 
                                       ",%" d_ipc_ ")\n", iblk,jblk,blk);
-                    ipc_ thread_num = omp_get_thread_num();
+                    int thread_num = omp_get_thread_num();
                     BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                     BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
                     BlockSpec jsrc(jblk, blk, m, n, cdata, a, lda, block_size);
@@ -1709,7 +1709,7 @@ private:
                for(ipc_ iblk=jblk; iblk<mblk; iblk++) {
                   if(debug) printf("UpdateT(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
                                    ")\n", iblk, jblk, blk);
-                  ipc_ thread_num = omp_get_thread_num();
+                  int thread_num = omp_get_thread_num();
                   BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                   ipc_ isrc_row = (blk<=iblk) ? iblk : blk;
                   ipc_ isrc_col = (blk<=iblk) ? blk : iblk;
@@ -1727,7 +1727,7 @@ private:
                for(ipc_ iblk=jblk; iblk<mblk; iblk++) {
                   if(debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
                                    ")\n", iblk, jblk, blk);
-                  ipc_ thread_num = omp_get_thread_num();
+                  int thread_num = omp_get_thread_num();
                   BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                   BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
                   BlockSpec jsrc(jblk, blk, m, n, cdata, a, lda, block_size);
@@ -1751,7 +1751,7 @@ private:
                   {
                      if(debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ 
                                        ",%" d_ipc_ ")\n", iblk, jblk, blk);
-                     ipc_ thread_num = omp_get_thread_num();
+                     int thread_num = omp_get_thread_num();
                      BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda,block_size);
                      BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
                      BlockSpec jsrc(jblk, blk, m, n, cdata, a, lda, block_size);
@@ -1889,7 +1889,7 @@ private:
 #endif
                 if (debug) printf("ApplyT(%" d_ipc_ ",%" d_ipc_ ")\n", 
                                   blk, jblk);
-                ipc_ thread_num = omp_get_thread_num();
+                int thread_num = omp_get_thread_num();
                 BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                 BlockSpec cblk(blk, jblk, m, n, cdata, a, lda, block_size);
                 // Record block state as assuming we've done up to col blk
@@ -1920,7 +1920,7 @@ private:
 #endif
                 if (debug) printf("ApplyN(%" d_ipc_ ",%" d_ipc_ ")\n", 
                                   iblk, blk);
-                ipc_ thread_num = omp_get_thread_num();
+                int thread_num = omp_get_thread_num();
                 BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                 BlockSpec rblk(iblk, blk, m, n, cdata, a, lda, block_size);
                 // On first access to this block, store copy in case of failure
@@ -1970,7 +1970,7 @@ private:
 #endif
                    if (debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_
                                      ")\n", iblk, jblk, blk);
-                   ipc_ thread_num = omp_get_thread_num();
+                   int thread_num = omp_get_thread_num();
                    BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                    BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
                    BlockSpec jsrc(jblk, blk, m, n, cdata, a, lda, block_size);
@@ -2011,7 +2011,7 @@ private:
 #endif
                    if (debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ 
                                      ",%" d_ipc_ ")\n", iblk, jblk,blk);
-                   ipc_ thread_num = omp_get_thread_num();
+                   int thread_num = omp_get_thread_num();
                    BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                    BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
                    BlockSpec jsrc(jblk, blk, m, n, cdata, a, lda, block_size);
@@ -2093,7 +2093,7 @@ private:
          // Loop over off-diagonal blocks applying pivot
          for(ipc_ jblk=0; jblk<blk; jblk++) {
             if(debug) printf("ApplyT(%" d_ipc_ ",%" d_ipc_ ")\n", blk, jblk);
-            ipc_ thread_num = omp_get_thread_num();
+            int thread_num = omp_get_thread_num();
             BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
             BlockSpec cblk(blk, jblk, m, n, cdata, a, lda, block_size);
             // Record block state as assuming we've done up to col blk
@@ -2105,7 +2105,7 @@ private:
          }
          for(ipc_ iblk=blk+1; iblk<mblk; iblk++) {
             if(debug) printf("ApplyN(%" d_ipc_ ",%" d_ipc_ ")\n", iblk, blk);
-            ipc_ thread_num = omp_get_thread_num();
+            int thread_num = omp_get_thread_num();
             BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
             BlockSpec rblk(iblk, blk, m, n, cdata, a, lda, block_size);
             // On first access to this block, store copy in case of failure
@@ -2129,7 +2129,7 @@ private:
             for(ipc_ iblk=jblk; iblk<mblk; iblk++) {
                if(debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
                                 ")\n", iblk, jblk, blk);
-               ipc_ thread_num = omp_get_thread_num();
+               int thread_num = omp_get_thread_num();
                BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
                BlockSpec jsrc(jblk, blk, m, n, cdata, a, lda, block_size);
@@ -2152,7 +2152,7 @@ private:
                               (iblk-nblk)*block_size];
                if(debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
                                 ")\n", iblk, jblk, blk);
-               ipc_ thread_num = omp_get_thread_num();
+               int thread_num = omp_get_thread_num();
                BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
                BlockSpec jsrc(jblk, blk, m, n, cdata, a, lda, block_size);
@@ -2215,7 +2215,7 @@ private:
                   shared(a, cdata, work) \
                   depend(inout: a[jblk*block_size*lda+iblk*block_size:1])
                {
-                  ipc_ thread_num = omp_get_thread_num();
+                  int thread_num = omp_get_thread_num();
                   BlockSpec rblk(iblk, jblk, m, n, cdata, a, lda, block_size);
                   rblk.apply_inv_rperm(work[thread_num]);
                }
@@ -2247,7 +2247,7 @@ private:
                   depend(in: a[kblk*block_size*lda+iblk*block_size:1]) \
                   depend(in: a[kblk*block_size*lda+jblk*block_size:1])
                {
-                  ipc_ thread_num = omp_get_thread_num();
+                  int thread_num = omp_get_thread_num();
                   BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                   BlockSpec isrc(iblk, kblk, m, n, cdata, a, lda, block_size);
                   BlockSpec jsrc(jblk, kblk, m, n, cdata, a, lda, block_size);
@@ -2273,7 +2273,7 @@ private:
                   shared(a, cdata, work) \
                   depend(inout: upd_ij[0:1])
                {
-                  ipc_ thread_num = omp_get_thread_num();
+                  int thread_num = omp_get_thread_num();
                   BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                   BlockSpec isrc(iblk, kblk, m, n, cdata, a, lda, block_size);
                   BlockSpec jsrc(jblk, kblk, m, n, cdata, a, lda, block_size);
