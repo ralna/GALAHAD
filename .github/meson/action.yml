@@ -360,7 +360,11 @@ runs:
     - name: Build GALAHAD
       shell: bash
       run: |
-        meson compile -C builddir
+        if [[ "${{ inputs.compiler }}" == "intel" ]]; then
+          meson compile -C builddir -j4
+        else
+          meson compile -C builddir
+        fi
 
     - uses: actions/upload-artifact@v4
       if: failure()
