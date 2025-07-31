@@ -307,6 +307,9 @@ runs:
         if [[ ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
           SHARED_STATIC="static"
         fi
+        if [[ ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "ubuntu-latest" ) ]]; then
+          SHARED_STATIC="static"
+        fi
         if [[ "${{inputs.sanitizers}}" == "true" || ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
           PYTHON_INTERFACE="false"
         fi
@@ -359,7 +362,12 @@ runs:
 
     - name: Build GALAHAD
       shell: bash
-      run: meson compile -C builddir
+      run: |
+        if [[ "${{ inputs.compiler }}" == "intel" ]]; then
+          meson compile -C builddir -j4
+        else
+          meson compile -C builddir
+        fi
 
     - uses: actions/upload-artifact@v4
       if: failure()
