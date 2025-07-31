@@ -13,6 +13,10 @@ pkg> test GALAHAD
 If you launch Julia from within the folder `GALAHAD.jl`, you can
 directly run `pkg> dev .`.
 
+## Documentation
+
+Documentation is available online from [https://ralna.github.io/galahad_docs/html/Julia](https://ralna.github.io/galahad_docs/html/Julia).
+
 ## Environment variables
 
 Note that the following environment variables must be set before starting Julia for the default sparse linear solver `SSIDS`:
@@ -27,9 +31,49 @@ We highly recommend to download [libHSL](https://licences.stfc.ac.uk/products/So
 This optional dependency provides access to more reliable and powerful linear solvers in `GALAHAD.jl`.
 Note that this requires at least version `5.3.0` of `GALAHAD` and version `2025.7.21` of `libHSL`, both of which are provided via `GALAHAD_jll.jl` and `HSL_jll.jl`.
 
-## Documentation
+## BLAS and LAPACK demuxer
 
-Documentation is available online from [https://ralna.github.io/galahad_docs/html/Julia](https://ralna.github.io/galahad_docs/html/Julia).
+`GALAHAD_jll.jl` is compiled with [libblastrampoline](https://github.com/JuliaLinearAlgebra/libblastrampoline) (LBT), a library that can change between BLAS and LAPACK backends at runtime such as OpenBLAS, Intel MKL, BLIS, and Apple Accelerate.
+The default BLAS and LAPACK backend used in the Julia interface `GALAHAD.jl` is [OpenBLAS](https://github.com/OpenMathLib/OpenBLAS).
+
+### Display backends
+
+Check what backends are loaded using:
+```julia
+import LinearAlgebra
+LinearAlgebra.BLAS.lbt_get_config()
+```
+
+### Sequential BLAS and LAPACK
+
+If you have both the LP64 and ILP64 [reference versions of BLAS and LAPACK](https://github.com/Reference-LAPACK/lapack) installed, you can switch to the sequential backends by running:
+```julia
+using ReferenceBLAS32_jll, ReferenceBLAS_jll, LAPACK32_jll, LAPACK_jll
+LinearAlgebra.BLAS.lbt_forward(libblas32, clear=true)
+LinearAlgebra.BLAS.lbt_forward(liblapack32)
+LinearAlgebra.BLAS.lbt_forward(libblas, suffix_hint="64_")
+LinearAlgebra.BLAS.lbt_forward(liblapack, suffix_hint="64_")
+using GALAHAD
+```
+
+### MKL
+
+If you have [MKL.jl](https://github.com/JuliaLinearAlgebra/MKL.jl) installed,
+switch to MKL by adding `using MKL` to your code:
+
+```julia
+using MKL
+using GALAHAD
+```
+
+### AppleAccelerate
+
+If you are using macOS ≥ v13.4 and you have [AppleAccelerate.jl](https://github.com/JuliaLinearAlgebra/AppleAccelerate.jl) installed, add `using AppleAccelerate` to your code:
+
+```julia
+using AppleAccelerate
+using GALAHAD
+```
 
 ## Custom shared libraries
 
