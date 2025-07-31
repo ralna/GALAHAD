@@ -15,8 +15,18 @@ Help files are provided for MATLAB functions.
 
 ## Installation
 
-### Precompiled Fortran/C library
-We provide a precompiled GALAHAD library in the [releases tab](https://github.com/ralna/galahad/releases/latest/) for Linux, macOS (Intel & Silicon), and Windows. 
+### Precompiled Fortran/C libraries and executables
+We provide precompiled GALAHAD libraries and executables in the [releases tab](https://github.com/ralna/galahad/releases/latest/) for Linux (x64 and aarch64), macOS (x64 and aarch64), and Windows (x64).
+
+On some platforms, the dynamic linker needs to know where to look for libraries at runtime.
+You might need to set the following environment variables:
+
+- `LD_LIBRARY_PATH` on Linux
+- `DYLD_LIBRARY_PATH` or `DYLD_FALLBACK_LIBRARY_PATH` on macOS
+- `PATH` on Windows
+
+These variables should include the directory where you extracted the libraries.
+For all platforms, the environment variable `PATH` is needed to locate the executables.
 
 ### Precompiled Julia Interface
 We provide a precompiled Julia interface for most platforms, please see [GALAHAD.jl](https://github.com/ralna/GALAHAD/tree/master/GALAHAD.jl) and the associated documentation.
