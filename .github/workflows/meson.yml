@@ -109,10 +109,10 @@ jobs:
   #   strategy:
   #     fail-fast: false
   #     matrix:
-  #       os: [windows-latest, ubuntu-latest]
+  #       os: [ubuntu-latest]
   #       compiler: ['intel']
   #       arch: ['x64']
-  #       version: ['2023.2']
+  #       version: ['2025.2']
   #       int: ['32', '64']
   #       sanitizers: ['false']
   #   steps:
