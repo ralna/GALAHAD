@@ -363,7 +363,7 @@
  2010 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
- 2040 FORMAT( A10, 1X, I7, ES9.1, 3ES8.1 bn, 2I7, F9.2, I5 )
+ 2040 FORMAT( A10, 1X, I7, ES9.1, 3ES8.1, bn, 2I7, F9.2, I5 )
  2050 FORMAT( /, ' Objective value: ', ES16.8 )
  2060 FORMAT( /, ' Constraints: ', /, '                        ',              &
               '        <------ Bounds ------> ', /                             &
