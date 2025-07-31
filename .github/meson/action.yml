@@ -93,7 +93,7 @@ runs:
           echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
-          echo "DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/intel/oneapi/compiler/2023.2.0/mac/compiler/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
+          echo "DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
         fi
         if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
           echo "$GITHUB_WORKSPACE/../deps/bin" >> "$GITHUB_PATH"
@@ -122,11 +122,6 @@ runs:
         compiler: ${{ inputs.compiler }}
         version: ${{ inputs.version }}
 
-    - name: Update Intel compilers
-      if: inputs.compiler == 'intel'
-      shell: bash
-      run: echo "FC=ifort" >> $GITHUB_ENV
-
     - name: Install CUTEst
       if: inputs.os != 'windows-latest' && inputs.compiler != 'nvidia-hpc'
       shell: bash
@@ -137,7 +132,7 @@ runs:
           INT64="true"
         fi
         QUADRUPLE="true"
-        if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || "${{ inputs.compiler }}" == "intel" ]]; then
+        if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel" ]]; then
           QUADRUPLE="false"
         fi
         cd ..
@@ -210,7 +205,7 @@ runs:
             tar -xzvf v${VERSION_LIBHSL}.tar.gz
           fi
           QUADRUPLE="true"
-          if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || "${{ inputs.compiler }}" == "intel" ]]; then
+          if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel" ]]; then
             QUADRUPLE="false"
           fi
           cd libHSL-${VERSION_LIBHSL}/hsl_subset
@@ -315,10 +310,10 @@ runs:
         if [[ "${{inputs.sanitizers}}" == "true" || ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
           PYTHON_INTERFACE="false"
         fi
-        if [[ "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
+        if [[ "${{ inputs.compiler }}" == "nvidia-hpc" || ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
           SSIDS="false"
         fi
-        if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel-classic" || "${{ inputs.compiler }}" == "intel" ]]; then
+        if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel" ]]; then
           QUADRUPLE="false"
         fi
         SANITIZER="none"
