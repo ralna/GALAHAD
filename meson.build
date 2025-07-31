@@ -812,6 +812,7 @@ if build_tests
                         link_with : libgalahad_precision,
                         dependencies : deps_tests,
                         link_language : 'fortran',
+                        link_args : lstdcpp,
                         include_directories: libgalahad_include,
                         install : true,
                         install_dir : fortran_tests_folder),
@@ -841,6 +842,7 @@ if build_tests and build_ciface
                       link_with : libgalahad_precision,
                       dependencies : [lm, libquadmath],
                       link_language : 'c',
+                      link_args : lstdcpp,
                       include_directories : libgalahad_include,
                       install : true,
                       install_dir : c_tests_folder),
@@ -878,6 +880,7 @@ if build_examples and build_double and (not int64)
                link_with : libgalahad_double,
                dependencies : libgalahad_double_deps,
                link_language : 'fortran',
+               link_args : lstdcpp,
                include_directories : libgalahad_include,
                install : true,
                install_dir : fortran_examples_folder)
@@ -901,6 +904,7 @@ if build_examples and build_ciface
                  link_with : libgalahad_precision,
                  dependencies : [lm, libquadmath],
                  link_language : 'c',
+                 link_args : lstdcpp,
                  include_directories : libgalahad_include,
                  install : true,
                  install_dir : c_examples_folder)
