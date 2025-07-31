@@ -614,6 +614,7 @@
    control%treat_zero_bounds_as_general = .TRUE.
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    CALL QPB_solve( p, data, control, info )
+!write(6,*) ' solver ', info%sbls_inform%sls_inform%solver
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &       F6.1, ' status = ', I6 )" ) 2, info%iter, info%obj, info%status
@@ -635,6 +636,8 @@
      SUBROUTINE WHICH_sls( control )
      TYPE ( QPB_control_type ) :: control
 #include "galahad_sls_defaults.h"
+symmetric_linear_solver = 'ssids'
+definite_linear_solver = 'ssids'
      control%FDC_control%use_sls = use_sls
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver

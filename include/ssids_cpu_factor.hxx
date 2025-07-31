@@ -48,6 +48,24 @@ void factor_node_indef(
       PoolAlloc& pool_alloc
       ) {
    /* Extract useful information about node */
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
+printf("in factorize\n");
    ipc_ m = snode.nrow + node.ndelay_in;
    ipc_ n = snode.ncol + node.ndelay_in;
    size_t ldl = align_lda<T>(m);
@@ -57,14 +75,17 @@ void factor_node_indef(
    T *contrib = node.contrib;
 
    /* Perform factorization */
+printf("factorize\n");
    //Verify<T> verifier(m, n, perm, lcol, ldl);
    if(options.pivot_method != PivotMethod::tpp) {
       // Use an APP based pivot method
       T zero_val = 0.0;
+printf("m, n = %i, %i\n", m, n);
       node.nelim = ldlt_app_factor(
             m, n, perm, lcol, ldl, d, zero_val, contrib, m-n, options, work,
             pool_alloc
             );
+printf("past\n");
       if(node.nelim < 0) {
          stats.flag = static_cast<Flag>(node.nelim);
          return;
@@ -73,6 +94,7 @@ void factor_node_indef(
       // Otherwise, force use of TPP
       node.nelim = 0;
    }
+//printf("past\n");
    //verifier.verify(node.nelim, perm, lcol, ldl, d);
 
    /* Finish factorization worth simplistic code */

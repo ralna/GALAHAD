@@ -1,5 +1,5 @@
 ! THIS VERSION: GALAHAD 5.3 - 2025-07-20 AT 09:00 GMT
-! (consistent with SPRAL up to issue #150)
+! (consistent with SPRAL up to issue #250)
 
 #include "spral_procedures.h"
 
