@@ -32,7 +32,7 @@ runs:
     - name: Install Meson and Ninja
       shell: bash
       run: |
-        pip install meson==1.7.1
+        pip install meson
         pip install ninja numpy
 
     - name: Set the environment variables
@@ -359,12 +359,7 @@ runs:
 
     - name: Build GALAHAD
       shell: bash
-      run: |
-        if [[ "${{ inputs.compiler }}" == "intel" ]]; then
-          meson compile -C builddir -j4
-        else
-          meson compile -C builddir
-        fi
+      run: meson compile -C builddir
 
     - uses: actions/upload-artifact@v4
       if: failure()
