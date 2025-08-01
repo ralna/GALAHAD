@@ -215,6 +215,7 @@
        CALL TRB_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 4 ) THEN
+!      control%print_level = 1
        control%norm = 5
        control%error = - 1
        CALL TRB_solve( nlp, control, inform, data, userdata,                   &
@@ -342,6 +343,9 @@ CONTAINS
    SUBROUTINE WHICH_sls( control )
    TYPE ( TRB_control_type ) :: control
 #include "galahad_sls_defaults_ls.h"
+!symmetric_linear_solver = 'ssids'
+!definite_linear_solver = 'ssids'
+definite_linear_solver = 'sytr '
    control%TRS_control%symmetric_linear_solver = symmetric_linear_solver
    control%TRS_control%definite_linear_solver = definite_linear_solver
    control%PSLS_control%definite_linear_solver = definite_linear_solver

@@ -50,33 +50,33 @@
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = 'C'
-       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n,                              &
                         'coordinate', ne, H_row, H_col, H_ptr )
-       CALL TRB_solve_with_mat( data, userdata, status, X, G,                  &
+       CALL TRB_solve_with_mat( data, userdata, status, X_l, X_u, X, G,        &
                                 FUN, GRAD, HESS, PREC )
      CASE ( 2 ) ! sparse by rows
        st = 'R'
-       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n,                              &
                         'sparse_by_rows', ne, H_row, H_col, H_ptr )
-       CALL TRB_solve_with_mat( data, userdata, status, X, G,                  &
+       CALL TRB_solve_with_mat( data, userdata, status, X_l, X_u, X, G,        &
                                 FUN, GRAD, HESS, PREC )
      CASE ( 3 ) ! dense
        st = 'D'
-       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n,                              &
                         'dense', ne, H_row, H_col, H_ptr )
-       CALL TRB_solve_with_mat( data, userdata, status, X, G,                  &
+       CALL TRB_solve_with_mat( data, userdata, status, X_l, X_u, X, G,        &
                                 FUN, GRAD, HESS_dense, PREC )
      CASE ( 4 ) ! diagonal
        st = 'I'
-       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n,                              &
                         'diagonal', ne, H_row, H_col, H_ptr )
-       CALL TRB_solve_with_mat( data, userdata, status, X, G,                  &
+       CALL TRB_solve_with_mat( data, userdata, status, X_l, X_u, X, G,        &
                                 FUN_diag, GRAD_diag, HESS_diag, PREC )
      CASE ( 5 ) ! access by products
        st = 'P'
-       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n,                              &
                         'absent', ne, H_row, H_col, H_ptr )
-       CALL TRB_solve_without_mat( data, userdata, status, X, G,               &
+       CALL TRB_solve_without_mat( data, userdata, status, X_l, X_u, X, G,     &
                                    FUN, GRAD, HESSPROD, SHESSPROD, PREC )
      END SELECT
      CALL TRB_information( data, inform, status )
@@ -104,11 +104,11 @@
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = 'C'
-       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n,                              &
                         'coordinate', ne, H_row, H_col, H_ptr )
        DO ! reverse-communication loop
          CALL TRB_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, f, G, H_val, U, V )
+                                          X_l, X_u, X, f, G, H_val, U, V )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -130,11 +130,11 @@
        END DO
      CASE ( 2 ) ! sparse by rows
        st = 'R'
-       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n,                              &
                         'sparse_by_rows', ne, H_row, H_col, H_ptr )
        DO ! reverse-communication loop
          CALL TRB_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, f, G, H_val, U, V )
+                                          X_l, X_u, X, f, G, H_val, U, V )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -156,11 +156,11 @@
        END DO
      CASE ( 3 ) ! dense
        st = 'D'
-       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n,                              &
                         'dense', ne, H_row, H_col, H_ptr )
        DO ! reverse-communication loop
          CALL TRB_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, f, G, H_dense, U, V )
+                                          X_l, X_u, X, f, G, H_dense, U, V )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -182,11 +182,11 @@
        END DO
      CASE ( 4 ) ! diagonal
        st = 'I'
-       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n,                              &
                         'diagonal', ne, H_row, H_col, H_ptr )
        DO ! reverse-communication loop
          CALL TRB_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, f, G, H_diag, U, V )
+                                          X_l, X_u, X, f, G, H_diag, U, V )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -208,11 +208,12 @@
        END DO
      CASE ( 5 ) ! access by products
        st = 'P'
-       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n,                              &
                         'absent', ne, H_row, H_col, H_ptr )
        DO ! reverse-communication loop
          CALL TRB_solve_reverse_without_mat( data, status, eval_status,        &
-                                             X, f, G, U, V, INDEX_nz_v, nnz_v, &
+                                             X_l, X_u, X, f, G, U, V,          &
+                                             INDEX_nz_v, nnz_v,                &
                                              INDEX_nz_u, nnz_u )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
@@ -256,7 +257,7 @@ CONTAINS
 
    SUBROUTINE WHICH_sls( control )
    TYPE ( TRB_control_type ) :: control
-#include "galahad_sls_defaults.h"
+#include "galahad_sls_defaults_ls.h"
    control%TRS_control%symmetric_linear_solver = symmetric_linear_solver
    control%TRS_control%definite_linear_solver = definite_linear_solver
    control%PSLS_control%definite_linear_solver = definite_linear_solver
@@ -435,62 +436,62 @@ CONTAINS
    RETURN
    END SUBROUTINE HESS_diag
 
-   SUBROUTINE HESSPROD_diag( status, X, userdata, U, V, got_h ) ! Hess-vect prod
-   USE GALAHAD_USERDATA_precision
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, V
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-   U( 1 ) = U( 1 ) - COS( X( 1 ) ) * V( 1 )
-   U( 2 ) = U( 2 ) + 2.0_rp_ * V( 2 )
-   U( 3 ) = U( 3 ) + 2.0_rp_ * V( 3 )
-   status = 0
-   RETURN
-   END SUBROUTINE HESSPROD_diag
+!  SUBROUTINE HESSPROD_diag( status, X, userdata, U, V, got_h ) ! Hess-vect prod
+!  USE GALAHAD_USERDATA_precision
+!  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+!  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+!  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, V
+!  TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+!  LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
+!  U( 1 ) = U( 1 ) - COS( X( 1 ) ) * V( 1 )
+!  U( 2 ) = U( 2 ) + 2.0_rp_ * V( 2 )
+!  U( 3 ) = U( 3 ) + 2.0_rp_ * V( 3 )
+!  status = 0
+!  RETURN
+!  END SUBROUTINE HESSPROD_diag
 
-   SUBROUTINE SHESSPROD_diag( status, X, userdata, nnz_v, INDEX_nz_v, V,       &
-                              nnz_u, INDEX_nz_u, U, got_h ) ! sprse Hes-vec prod
-   USE GALAHAD_USERDATA_precision
-   INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_v
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnz_u
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-   INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
-   INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-   INTEGER ( KIND = ip_ ) :: i, j
-   REAL ( KIND = rp_ ), DIMENSION( 3 ) :: P
-   LOGICAL, DIMENSION( 3 ) :: USED
-   P = 0.0_rp_
-   USED = .FALSE.
-   DO i = 1, nnz_v
-     j = INDEX_nz_v( i )
-     SELECT CASE( j )
-     CASE( 1 )
-       P( 1 ) = P( 1 ) - COS( X( 1 ) ) * V( 1 )
-       USED( 1 ) = .TRUE.
-     CASE( 2 )
-       P( 2 ) = P( 2 ) + 2.0_rp_ * V( 2 )
-       USED( 2 ) = .TRUE.
-     CASE( 3 )
-       P( 3 ) = P( 3 ) + 2.0_rp_ * V( 3 )
-       USED( 3 ) = .TRUE.
-     END SELECT
-   END DO
-   nnz_u = 0
-   DO j = 1, 3
-     IF ( USED( j ) ) THEN
-       U( j ) = P( j )
-       nnz_u = nnz_u + 1
-       INDEX_nz_u( nnz_u ) = j
-     END IF
-   END DO
-   status = 0
-   RETURN
-   END SUBROUTINE SHESSPROD_diag
+!  SUBROUTINE SHESSPROD_diag( status, X, userdata, nnz_v, INDEX_nz_v, V,       &
+!                             nnz_u, INDEX_nz_u, U, got_h ) ! sprse Hes-vec prod
+!  USE GALAHAD_USERDATA_precision
+!  INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_v
+!  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnz_u
+!  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+!  INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
+!  INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
+!  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+!  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
+!  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+!  TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+!  LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
+!  INTEGER ( KIND = ip_ ) :: i, j
+!  REAL ( KIND = rp_ ), DIMENSION( 3 ) :: P
+!  LOGICAL, DIMENSION( 3 ) :: USED
+!  P = 0.0_rp_
+!  USED = .FALSE.
+!  DO i = 1, nnz_v
+!    j = INDEX_nz_v( i )
+!    SELECT CASE( j )
+!    CASE( 1 )
+!      P( 1 ) = P( 1 ) - COS( X( 1 ) ) * V( 1 )
+!      USED( 1 ) = .TRUE.
+!    CASE( 2 )
+!      P( 2 ) = P( 2 ) + 2.0_rp_ * V( 2 )
+!      USED( 2 ) = .TRUE.
+!    CASE( 3 )
+!      P( 3 ) = P( 3 ) + 2.0_rp_ * V( 3 )
+!      USED( 3 ) = .TRUE.
+!    END SELECT
+!  END DO
+!  nnz_u = 0
+!  DO j = 1, 3
+!    IF ( USED( j ) ) THEN
+!      U( j ) = P( j )
+!      nnz_u = nnz_u + 1
+!      INDEX_nz_u( nnz_u ) = j
+!    END IF
+!  END DO
+!  status = 0
+!  RETURN
+!  END SUBROUTINE SHESSPROD_diag
 
    END PROGRAM GALAHAD_TRB_interface_test

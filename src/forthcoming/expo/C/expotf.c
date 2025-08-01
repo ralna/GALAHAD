@@ -11,11 +11,6 @@
 #include <quadmath.h>
 #endif
 
-// Define imax
-ipc_ imax(ipc_ a, ipc_ b) {
-    return (a > b) ? a : b;
-};
-
 // Custom userdata struct
 struct userdata_type {
    rpc_ p;

@@ -559,7 +559,7 @@ Solve the bound-constrained quadratic program when the Hessian $H$ is available.
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^u_j$.
 
 	*
 		- x

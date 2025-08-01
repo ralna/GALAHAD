@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_import(T, INT, control, data, status, n, x_l, x_u,
+        function trb_import(T, INT, control, data, status, n, 
                             H_type, ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -132,16 +132,6 @@ Import problem data into internal storage prior to solution.
 		- n
 
 		- is a scalar variable of type INT that holds the number of variables.
-
-	*
-		- x_l
-
-		- is a one-dimensional array of size n and type T that holds the values $x^l$ of the lower bounds on the optimization variables $x$. The j-th component of ``x_l``, $j = 1, \ldots, n$, contains $x^l_j$.
-
-	*
-		- x_u
-
-		- is a one-dimensional array of size n and type T that holds the values $x^u$ of the upper bounds on the optimization variables $x$. The j-th component of ``x_u``, $j = 1, \ldots, n$, contains $x^u_j$.
 
 	*
 		- H_type
@@ -209,7 +199,8 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_solve_with_mat(T, INT, data, userdata, status, n, x, g, ne,
+        function trb_solve_with_mat(T, INT, data, userdata, status, 
+                                    n, x_l, x_u, x, g, ne,
                                     eval_f, eval_g, eval_h, eval_prec)
 
 Find a local minimizer of a given function subject to simple bounds on
@@ -314,6 +305,16 @@ function calls.
 		- is a scalar variable of type INT that holds the number of variables
 
 	*
+		- x_l
+
+		- is a one-dimensional array of size n and type T that holds the values $x^l$ of the lower bounds on the optimization variables $x$. The j-th component of ``x_l``, $j = 1, \ldots, n$, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type T that holds the values $x^u$ of the upper bounds on the optimization variables $x$. The j-th component of ``x_u``, $j = 1, \ldots, n$, contains $x^u_j$.
+
+	*
 		- x
 
 		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
@@ -405,7 +406,8 @@ function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_solve_without_mat(T, INT, data, userdata, status, n, x, g,
+        function trb_solve_without_mat(T, INT, data, userdata, status, 
+                                       n, x_l, x_u, x, g,
                                        eval_f, eval_g, eval_hprod,
                                        eval_shprod, eval_prec)
 
@@ -509,6 +511,16 @@ information is available by function calls.
 		- n
 
 		- is a scalar variable of type INT that holds the number of variables
+
+	*
+		- x_l
+
+		- is a one-dimensional array of size n and type T that holds the values $x^l$ of the lower bounds on the optimization variables $x$. The j-th component of ``x_l``, $j = 1, \ldots, n$, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type T that holds the values $x^u$ of the upper bounds on the optimization variables $x$. The j-th component of ``x_u``, $j = 1, \ldots, n$, contains $x^u_j$.
 
 	*
 		- x
@@ -625,8 +637,9 @@ information is available by function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_solve_reverse_with_mat(T, INT, data, status, eval_status, n, x,
-                                            f, g, ne, H_val, u, v)
+        function trb_solve_reverse_with_mat(T, INT, data, status, eval_status, 
+                                            n, x_l, x_u, x, f, g,
+                                            ne, H_val, u, v)
 
 Find a local minimizer of a given function subject to simple bounds on
 the variables using a trust-region method.
@@ -777,6 +790,16 @@ returning to the calling procedure
 		- is a scalar variable of type INT that holds the number of variables
 
 	*
+		- x_l
+
+		- is a one-dimensional array of size n and type T that holds the values $x^l$ of the lower bounds on the optimization variables $x$. The j-th component of ``x_l``, $j = 1, \ldots, n$, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type T that holds the values $x^u$ of the upper bounds on the optimization variables $x$. The j-th component of ``x_u``, $j = 1, \ldots, n$, contains $x^u_j$.
+
+	*
 		- x
 
 		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
@@ -817,8 +840,10 @@ returning to the calling procedure
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_solve_reverse_without_mat(T, INT, data, status, eval_status,
-                                               n, x, f, g, u, v, index_nz_v,
+        function trb_solve_reverse_without_mat(T, INT, data, 
+                                               status, eval_status,
+                                               n, x_l, x_u, x, f, g, 
+                                               u, v, index_nz_v,
                                                nnz_v, index_nz_u, nnz_u)
 
 Find a local minimizer of a given function subject to simple bounds on
@@ -985,6 +1010,16 @@ is only available by returning to the calling procedure.
 		- n
 
 		- is a scalar variable of type INT that holds the number of variables
+
+	*
+		- x_l
+
+		- is a one-dimensional array of size n and type T that holds the values $x^l$ of the lower bounds on the optimization variables $x$. The j-th component of ``x_l``, $j = 1, \ldots, n$, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type T that holds the values $x^u$ of the upper bounds on the optimization variables $x$. The j-th component of ``x_u``, $j = 1, \ldots, n$, contains $x^u_j$.
 
 	*
 		- x

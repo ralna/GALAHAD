@@ -48,7 +48,7 @@ print(" g:",g)
 inform = tru.information()
 #print(inform)
 print(" f: %.4f" % inform['obj'])
-print('** trb exit status:', inform['status'])
+print('** tru exit status:', inform['status'])
 
 # deallocate internal data
 tru.terminate()

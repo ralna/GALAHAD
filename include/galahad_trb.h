@@ -719,8 +719,6 @@ void trb_import( struct trb_control_type *control,
                  void **data,
                  ipc_ *status,
                  ipc_ n,
-                 const rpc_ x_l[],
-                 const rpc_ x_u[],
                  const char H_type[],
                  ipc_ ne,
                  const ipc_ H_row[],
@@ -752,16 +750,6 @@ void trb_import( struct trb_control_type *control,
 
  @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
-
- @param[in] x_l is a one-dimensional array of size n and type rpc_,
-    that holds the values \f$x^l\f$ of the lower bounds on the optimization
-    variables \f$x\f$. The j-th component of x_l, \f$j = 0, \ldots, n-1\f$,
-    contains \f$x^l_j\f$.
-
- @param[in] x_u is a one-dimensional array of size n and type rpc_,
-    that holds the values \f$x^u\f$ of the upper bounds on the optimization
-    variables \f$x\f$. The j-th component of x_u, \f$j = 0, \ldots, n-1\f$,
-    contains \f$x^u_j\f$.
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
    \link main_symmetric_matrices symmetric storage scheme \endlink
@@ -816,6 +804,8 @@ void trb_solve_with_mat( void **data,
                          void *userdata,
                          ipc_ *status,
                          ipc_ n,
+                         const rpc_ x_l[],
+                         const rpc_ x_u[],
                          rpc_ x[],
                          rpc_ g[],
                          ipc_ ne,
@@ -883,6 +873,16 @@ void trb_solve_with_mat( void **data,
  @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
+ @param[in] x_l is a one-dimensional array of size n and type rpc_,
+    that holds the values \f$x^l\f$ of the lower bounds on the optimization
+    variables \f$x\f$. The j-th component of x_l, \f$j = 0, \ldots, n-1\f$,
+    contains \f$x^l_j\f$.
+
+ @param[in] x_u is a one-dimensional array of size n and type rpc_,
+    that holds the values \f$x^u\f$ of the upper bounds on the optimization
+    variables \f$x\f$. The j-th component of x_u, \f$j = 0, \ldots, n-1\f$,
+    contains \f$x^u_j\f$.
+
  @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
@@ -947,6 +947,8 @@ void trb_solve_without_mat( void **data,
                             void *userdata,
                             ipc_ *status,
                             ipc_ n,
+                            const rpc_ x_l[],
+                            const rpc_ x_u[],
                             rpc_ x[],
                             rpc_ g[],
                             ipc_ (*eval_f)(
@@ -1017,6 +1019,16 @@ void trb_solve_without_mat( void **data,
 
  @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
+
+ @param[in] x_l is a one-dimensional array of size n and type rpc_,
+    that holds the values \f$x^l\f$ of the lower bounds on the optimization
+    variables \f$x\f$. The j-th component of x_l, \f$j = 0, \ldots, n-1\f$,
+    contains \f$x^l_j\f$.
+
+ @param[in] x_u is a one-dimensional array of size n and type rpc_,
+    that holds the values \f$x^u\f$ of the upper bounds on the optimization
+    variables \f$x\f$. The j-th component of x_u, \f$j = 0, \ldots, n-1\f$,
+    contains \f$x^u_j\f$.
 
  @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
@@ -1100,6 +1112,8 @@ void trb_solve_reverse_with_mat( void **data,
                                  ipc_ *status,
                                  ipc_ *eval_status,
                                  ipc_ n,
+                                 const rpc_ x_l[],
+                                 const rpc_ x_u[],
                                  rpc_ x[],
                                  rpc_ f,
                                  rpc_ g[],
@@ -1195,13 +1209,22 @@ void trb_solve_reverse_with_mat( void **data,
  @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
+ @param[in] x_l is a one-dimensional array of size n and type rpc_,
+    that holds the values \f$x^l\f$ of the lower bounds on the optimization
+    variables \f$x\f$. The j-th component of x_l, \f$j = 0, \ldots, n-1\f$,
+    contains \f$x^l_j\f$.
+
+ @param[in] x_u is a one-dimensional array of size n and type rpc_,
+    that holds the values \f$x^u\f$ of the upper bounds on the optimization
+    variables \f$x\f$. The j-th component of x_u, \f$j = 0, \ldots, n-1\f$,
+    contains \f$x^u_j\f$.
+
  @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in]
-   f is a scalar variable pointer of type rpc_, that holds the value of the
-    objective function.
+ @param[in] f is a scalar variable pointer of type rpc_, that holds the value 
+    of the objective function.
 
  @param[in,out] g is a one-dimensional array of size n and type rpc_, that
     holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
@@ -1228,6 +1251,8 @@ void trb_solve_reverse_without_mat( void **data,
                                     ipc_ *status,
                                     ipc_ *eval_status,
                                     ipc_ n,
+                                    const rpc_ x_l[],
+                                    const rpc_ x_u[],
                                     rpc_ x[],
                                     rpc_ f,
                                     rpc_ g[],
@@ -1339,13 +1364,22 @@ void trb_solve_reverse_without_mat( void **data,
  @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
+ @param[in] x_l is a one-dimensional array of size n and type rpc_,
+    that holds the values \f$x^l\f$ of the lower bounds on the optimization
+    variables \f$x\f$. The j-th component of x_l, \f$j = 0, \ldots, n-1\f$,
+    contains \f$x^l_j\f$.
+
+ @param[in] x_u is a one-dimensional array of size n and type rpc_,
+    that holds the values \f$x^u\f$ of the upper bounds on the optimization
+    variables \f$x\f$. The j-th component of x_u, \f$j = 0, \ldots, n-1\f$,
+    contains \f$x^u_j\f$.
+
  @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in]
-   f is a scalar variable pointer of type rpc_, that holds the value of the
-    objective function.
+ @param[in] f is a scalar variable pointer of type rpc_, that holds the value
+    of the objective function.
 
  @param[in,out] g is a one-dimensional array of size n and type rpc_, that
     holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.

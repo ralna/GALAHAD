@@ -745,9 +745,8 @@ static PyObject* py_trb_initialize(PyObject *self){
 //  *-*-*-*-*-*-*-*-*-*-*-*-   TRB_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
 
 static PyObject* py_trb_load(PyObject *self, PyObject *args, PyObject *keywds){
-    PyArrayObject *py_x_l, *py_x_u, *py_H_row, *py_H_col, *py_H_ptr;
+    PyArrayObject *py_H_row, *py_H_col, *py_H_ptr;
     PyObject *py_options = NULL;
-    double *x_l, *x_u;
     int *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
     const char *H_type;
     int n, H_ne;
@@ -757,27 +756,20 @@ static PyObject* py_trb_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","x_l","x_u","H_type","H_ne",
+    static char *kwlist[] = {"n","H_type","H_ne",
                              "H_row","H_col","H_ptr","options",NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iOOsiOOO|O", kwlist, &n,
-                                    &py_x_l, &py_x_u, &H_type, &H_ne, &py_H_row,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &n,
+                                    &H_type, &H_ne, &py_H_row,
                                     &py_H_col, &py_H_ptr, &py_options))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-//    if((
     if(!(
-        check_array_double("x_l", py_x_l, n) &&
-        check_array_double("x_u", py_x_u, n) &&
         check_array_int("H_row", py_H_row, H_ne) &&
         check_array_int("H_col", py_H_col, H_ne) &&
         check_array_int("H_ptr", py_H_ptr, n+1)
         ))
         return NULL;
-
-    // Get array data pointers
-    x_l = (double *) PyArray_DATA(py_x_l);
-    x_u = (double *) PyArray_DATA(py_x_u);
 
     // Convert 64bit integer H_row array to 32bit
     if((PyObject *) py_H_row != Py_None){
@@ -808,7 +800,7 @@ static PyObject* py_trb_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Call trb_import
-    trb_import(&control, &data, &status, n, x_l, x_u, H_type, H_ne,
+    trb_import(&control, &data, &status, n, H_type, H_ne,
                H_row, H_col, H_ptr);
 
     // Free allocated memory
@@ -828,9 +820,9 @@ static PyObject* py_trb_load(PyObject *self, PyObject *args, PyObject *keywds){
 //  *-*-*-*-*-*-*-*-*-*-   TRB_SOLVE   -*-*-*-*-*-*-*-*
 
 static PyObject* py_trb_solve(PyObject *self, PyObject *args, PyObject *keywds){
-    PyArrayObject *py_x;
+    PyArrayObject *py_x_l, *py_x_u, *py_x;
     PyObject *temp_f, *temp_g, *temp_h;
-    double *x;
+    double *x_l, *x_u, *x;
     int n, H_ne;
 
     // Check that package has been initialised
@@ -838,16 +830,24 @@ static PyObject* py_trb_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Parse positional arguments
-    static char *kwlist[] = {"n", "H_ne", "x", "eval_f", "eval_g", "eval_h", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOOOO", kwlist, &n, &H_ne, &py_x,
+    static char *kwlist[] = {"n", "H_ne", "x_l", "x_u", "x", 
+                             "eval_f", "eval_g", "eval_h", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOOOOOO", kwlist, &n, 
+                                    &H_ne, &py_x_l, &py_x_u, &py_x,
                                     &temp_f, &temp_g, &temp_h))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-    if(!check_array_double("x", py_x, n))
+    if(!(
+        check_array_double("x_l", py_x_l, n) &&
+        check_array_double("x_u", py_x_u, n) &&
+        check_array_double("x", py_x, n)
+        ))
         return NULL;
 
     // Get array data pointers
+    x_l = (double *) PyArray_DATA(py_x_l);
+    x_u = (double *) PyArray_DATA(py_x_u);
     x = (double *) PyArray_DATA(py_x);
     // g = (double *) PyArray_DATA(py_g);
 
@@ -878,8 +878,8 @@ static PyObject* py_trb_solve(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Call trb_solve_direct
     status = 1; // set status to 1 on entry
-    trb_solve_with_mat(&data, NULL, &status, n, x, g, H_ne, eval_f, eval_g,
-                       eval_h, NULL);
+    trb_solve_with_mat(&data, NULL, &status, n, x_l, x_u, x, g, H_ne, 
+                       eval_f, eval_g, eval_h, NULL);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())

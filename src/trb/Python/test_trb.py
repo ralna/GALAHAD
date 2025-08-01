@@ -26,7 +26,7 @@ H_col = np.array([0,0,1,1,2])
 H_ptr = None
 
 # load data (and optionally non-default options)
-trb.load(n, x_l, x_u, H_type, H_ne, H_row, H_col, H_ptr, options=options)
+trb.load(n, H_type, H_ne, H_row, H_col, H_ptr, options=options)
 
 # define objective function and its derivatives
 def eval_f(x):
@@ -42,7 +42,7 @@ def eval_h(x):
 x = np.array([1.,1.,1.])
 
 # find optimum
-x, g = trb.solve(n, H_ne, x, eval_f, eval_g, eval_h)
+x, g = trb.solve(n, H_ne, x_l, x_u, x, eval_f, eval_g, eval_h)
 print(" x:",x)
 print(" g:",g)
 

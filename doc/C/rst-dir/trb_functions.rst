@@ -38,8 +38,6 @@ overview of functions provided
 		void **data,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
-		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
-		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		const char H_type[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
 		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_row[],
@@ -58,6 +56,8 @@ overview of functions provided
 		void *userdata,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
@@ -72,6 +72,8 @@ overview of functions provided
 		void *userdata,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`*, const void*) eval_f,
@@ -86,6 +88,8 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
@@ -100,6 +104,8 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
@@ -241,8 +247,6 @@ relate to the components of the control structure.
 		void **data,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
-		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
-		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		const char H_type[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
 		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_row[],
@@ -383,6 +387,8 @@ Reset control parameters after import if required.
 		void *userdata,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
@@ -493,6 +499,16 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
+		- x_l
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^u_j$.
+
+	*
 		- x
 
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
@@ -568,6 +584,8 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 		void *userdata,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`*, const void*) eval_f,
@@ -684,6 +702,16 @@ The components of the gradient $g = \nabla_x f(x$) of the objective function eva
 		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
+		- x_l
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^u_j$.
+
+	*
 		- x
 
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
@@ -762,6 +790,8 @@ The components of the gradient $g = \nabla_x f(x$) of the objective function eva
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
@@ -921,6 +951,16 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
+		- x_l
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^u_j$.
+
+	*
 		- x
 
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
@@ -966,6 +1006,8 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
@@ -1143,6 +1185,16 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 		- n
 
 		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
+
+	*
+		- x_l
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^u_j$.
 
 	*
 		- x
