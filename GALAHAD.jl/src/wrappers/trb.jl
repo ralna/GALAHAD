@@ -571,7 +571,7 @@ function trb_solve_reverse_with_mat(::Type{Float64}, ::Type{Int64}, data, status
 end
 
 function trb_solve_reverse_with_mat(::Type{Float128}, ::Type{Int32}, data, status,
-                                    eval_status, n, f, x_l, x_u, x, g, ne, H_val, u, v)
+                                    eval_status, n, x_l, x_u, x, f, g, ne, H_val, u, v)
   @ccall libgalahad_quadruple.trb_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
                                                          status::Ptr{Int32},
                                                          eval_status::Ptr{Int32}, 
@@ -627,7 +627,7 @@ function trb_solve_reverse_without_mat(::Type{Float32}, ::Type{Int32}, data, sta
 end
 
 function trb_solve_reverse_without_mat(::Type{Float32}, ::Type{Int64}, data, status,
-                                       eval_status, n, f, x_l, x_u, x, g, u, v, index_nz_v, nnz_v,
+                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v, nnz_v,
                                        index_nz_u, nnz_u)
   @ccall libgalahad_single_64.trb_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
                                                             status::Ptr{Int64},
