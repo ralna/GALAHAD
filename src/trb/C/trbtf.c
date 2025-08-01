@@ -83,37 +83,42 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
-                trb_import( &control, &data, &status, n, x_l, x_u,
+                trb_import( &control, &data, &status, n,
                             "coordinate", ne, H_row, H_col, NULL );
-                trb_solve_with_mat( &data, &userdata, &status, n, x, g, ne,
+                trb_solve_with_mat( &data, &userdata, &status,
+                                    n, x_l, x_u, x, g, ne,
                                     fun, grad, hess, prec );
                 break;
             case 2: // sparse by rows
                 st = 'R';
-                trb_import( &control, &data, &status, n, x_l, x_u,
+                trb_import( &control, &data, &status, n,
                             "sparse_by_rows", ne, NULL, H_col, H_ptr );
-                trb_solve_with_mat( &data, &userdata, &status, n, x, g, ne,
+                trb_solve_with_mat( &data, &userdata, &status, 
+                                    n, x_l, x_u, x, g, ne,
                                     fun, grad, hess, prec );
                 break;
             case 3: // dense
                 st = 'D';
-                trb_import( &control, &data, &status, n, x_l, x_u,
+                trb_import( &control, &data, &status, n,
                             "dense", ne, NULL, NULL, NULL );
-                trb_solve_with_mat( &data, &userdata, &status, n, x, g, ne,
+                trb_solve_with_mat( &data, &userdata, &status, 
+                                    n, x_l, x_u, x, g, ne,
                                     fun, grad, hess_dense, prec );
                 break;
             case 4: // diagonal
                 st = 'I';
-                trb_import( &control, &data, &status, n, x_l, x_u,
+                trb_import( &control, &data, &status, n,
                             "diagonal", ne, NULL, NULL, NULL );
-                trb_solve_with_mat (&data, &userdata, &status, n, x, g, ne,
+                trb_solve_with_mat (&data, &userdata, &status, 
+                                    n, x_l, x_u, x, g, ne,
                                     fun_diag, grad_diag, hess_diag, prec );
                 break;
             case 5: // access by products
                 st = 'P';
-                trb_import( &control, &data, &status, n, x_l, x_u,
+                trb_import( &control, &data, &status, n,
                             "absent", ne, NULL, NULL, NULL );
-                trb_solve_without_mat( &data, &userdata, &status, n, x, g,
+                trb_solve_without_mat( &data, &userdata, &status, 
+                                       n, x_l, x_u, x, g,
                                        fun, grad, hessprod, shessprod, prec );
                 break;
         }
@@ -171,11 +176,12 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
-                trb_import( &control, &data, &status, n, x_l, x_u,
+                trb_import( &control, &data, &status, n,
                             "coordinate", ne, H_row, H_col, NULL );
                 while(true){ // reverse-communication loop
                     trb_solve_reverse_with_mat( &data, &status, &eval_status,
-                                                n, x, f, g, ne, H_val, u, v );
+                                                n, x_l, x_u, 
+                                                x, f, g, ne, H_val, u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
@@ -196,11 +202,12 @@ int main(void) {
                 break;
             case 2: // sparse by rows
                 st = 'R';
-                trb_import( &control, &data, &status, n, x_l, x_u,
+                trb_import( &control, &data, &status, n,
                             "sparse_by_rows", ne, NULL, H_col, H_ptr );
                 while(true){ // reverse-communication loop
                     trb_solve_reverse_with_mat( &data, &status, &eval_status,
-                                                n, x, f, g, ne, H_val, u, v );
+                                                n, x_l, x_u,
+                                                x, f, g, ne, H_val, u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
@@ -221,11 +228,12 @@ int main(void) {
                 break;
             case 3: // dense
                 st = 'D';
-                trb_import( &control, &data, &status, n, x_l, x_u,
+                trb_import( &control, &data, &status, n,
                             "dense", ne, NULL, NULL, NULL );
                 while(true){ // reverse-communication loop
                     trb_solve_reverse_with_mat( &data, &status, &eval_status,
-                                                n, x, f, g, n*(n+1)/2, H_dense,
+                                                n, x_l, x_u, 
+                                                x, f, g, n*(n+1)/2, H_dense,
                                                 u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -248,11 +256,12 @@ int main(void) {
                 break;
             case 4: // diagonal
                 st = 'I';
-                trb_import( &control, &data, &status, n, x_l, x_u,
+                trb_import( &control, &data, &status, n,
                             "diagonal", ne, NULL, NULL, NULL );
                 while(true){ // reverse-communication loop
                     trb_solve_reverse_with_mat( &data, &status, &eval_status,
-                                                n, x, f, g, n, H_diag, u, v );
+                                                n, x_l, x_u, 
+                                                x, f, g, n, H_diag, u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
@@ -273,12 +282,13 @@ int main(void) {
                 break;
             case 5: // access by products
                 st = 'P';
-                trb_import( &control, &data, &status, n, x_l, x_u,
+                trb_import( &control, &data, &status, n,
                             "absent", ne, NULL, NULL, NULL );
                 nnz_u = 0;
                 while(true){ // reverse-communication loop
                     trb_solve_reverse_without_mat( &data, &status, &eval_status,
-                                                   n, x, f, g, u, v, index_nz_v,
+                                                   n, x_l, x_u, 
+                                                   x, f, g, u, v, index_nz_v,
                                                    &nnz_v, index_nz_u, nnz_u );
                     if(status == 0){ // successful termination
                         break;

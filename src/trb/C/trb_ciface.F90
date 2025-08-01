@@ -669,7 +669,7 @@
 !  C interface to fortran trb_inport
 !  ---------------------------------
 
-  SUBROUTINE trb_import( ccontrol, cdata, status, n, xl, xu, ctype,            &
+  SUBROUTINE trb_import( ccontrol, cdata, status, n, ctype,                    &
                          ne, row, col, ptr ) BIND( C )
   USE GALAHAD_TRB_precision_ciface
   IMPLICIT NONE
@@ -680,7 +680,6 @@
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: row, col
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: ptr
-  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: ctype
   TYPE ( trb_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
@@ -710,8 +709,7 @@
 
 !  import the problem data into the required BGO structure
 
-  CALL f_trb_import( fcontrol, fdata, status, n, xl, xu, ftype, ne,            &
-                     row, col, ptr )
+  CALL f_trb_import( fcontrol, fdata, status, n, ftype, ne, row, col, ptr )
 
 !  copy control out
 
@@ -763,7 +761,8 @@
 !  C interface to fortran trb_solve_with_mat
 !  -----------------------------------------
 
-  SUBROUTINE trb_solve_with_mat( cdata, cuserdata, status, n, x, g, ne,        &
+  SUBROUTINE trb_solve_with_mat( cdata, cuserdata, status,                     &
+                                 n, xl, xu, x, g, ne,                          &
                                  ceval_f, ceval_g, ceval_h,                    &
                                  ceval_prec ) BIND( C )
   USE GALAHAD_TRB_precision_ciface
@@ -773,6 +772,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, ne
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
   REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, g
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
@@ -810,11 +810,11 @@
 !  solve the problem when the Hessian is explicitly available
 
   IF ( ASSOCIATED( feval_prec ) ) THEN
-    CALL f_trb_solve_with_mat( fdata, fuserdata, status, x, g,                 &
+    CALL f_trb_solve_with_mat( fdata, fuserdata, status, xl, xu, x, g,         &
                                wrap_eval_f, wrap_eval_g, wrap_eval_h,          &
                                eval_PREC = wrap_eval_prec )
   ELSE
-    CALL f_trb_solve_with_mat( fdata, fuserdata, status, x, g,                 &
+    CALL f_trb_solve_with_mat( fdata, fuserdata, status, xl, xu, x, g,         &
                                wrap_eval_f, wrap_eval_g, wrap_eval_h )
   END IF
 
@@ -889,7 +889,8 @@
 !  C interface to fortran trb_solve_without_mat
 !  --------------------------------------------
 
-  SUBROUTINE trb_solve_without_mat( cdata, cuserdata, status, n, x, g, ceval_f,&
+  SUBROUTINE trb_solve_without_mat( cdata, cuserdata, status,                  &
+                                    n, xl, xu, x, g, ceval_f,                  &
                                     ceval_g, ceval_hprod, ceval_shprod,        &
                                     ceval_prec ) BIND( C )
   USE GALAHAD_TRB_precision_ciface
@@ -899,6 +900,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
   REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, g
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
@@ -944,11 +946,11 @@
 !  solve the problem when the Hessian is only available via products
 
   IF ( ASSOCIATED( feval_prec ) ) THEN
-    CALL f_trb_solve_without_mat( fdata, fuserdata, status, x, g,              &
+    CALL f_trb_solve_without_mat( fdata, fuserdata, status, xl, xu, x, g,      &
                                   wrap_eval_f, wrap_eval_g, wrap_eval_hprod,   &
                                   wrap_eval_shprod, eval_PREC = wrap_eval_prec )
   ELSE
-    CALL f_trb_solve_without_mat( fdata, fuserdata, status, x, g,              &
+    CALL f_trb_solve_without_mat( fdata, fuserdata, status, xl, xu, x, g,      &
                                   wrap_eval_f, wrap_eval_g, wrap_eval_hprod,   &
                                   wrap_eval_shprod )
   END IF
@@ -1069,8 +1071,9 @@
 !  C interface to fortran trb_solve_reverse_with_mat
 !  -------------------------------------------------
 
-  SUBROUTINE trb_solve_reverse_with_mat( cdata, status, eval_status,           &
-                                         n, x, f, g, ne, val, u, v ) BIND( C )
+  SUBROUTINE trb_solve_reverse_with_mat( cdata, status, eval_status, n,        &
+                                         xl, xu, x, f, g, ne, val,             &
+                                         u, v ) BIND( C )
   USE GALAHAD_TRB_precision_ciface
   IMPLICIT NONE
 
@@ -1079,6 +1082,7 @@
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, ne
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
   REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
   REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, g
   REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( ne ) :: val
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: u
@@ -1095,8 +1099,8 @@
 
 !  solve the problem when the Hessian is available by reverse communication
 
-  CALL f_trb_solve_reverse_with_mat( fdata, status, eval_status, x, f, g, val, &
-                                      u, v )
+  CALL f_trb_solve_reverse_with_mat( fdata, status, eval_status,               &
+                                     xl, xu, x, f, g, val, u, v )
   RETURN
 
   END SUBROUTINE trb_solve_reverse_with_mat
@@ -1106,7 +1110,8 @@
 !  ----------------------------------------------------
 
   SUBROUTINE trb_solve_reverse_without_mat( cdata, status, eval_status, n,     &
-                                             x, f, g, u, v, index_nz_v, nnz_v, &
+                                             xl, xu, x, f, g, u, v,            &
+                                             index_nz_v, nnz_v,                &
                                              index_nz_u, nnz_u ) BIND( C )
   USE GALAHAD_TRB_precision_ciface
   IMPLICIT NONE
@@ -1117,6 +1122,7 @@
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: nnz_v
   REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
   REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, g, u, v
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n ) :: index_nz_u
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: index_nz_v
@@ -1139,11 +1145,13 @@
 !  communication
 
   IF ( f_indexing ) THEN
-    CALL f_trb_solve_reverse_without_mat( fdata, status, eval_status, x, f, g, &
+    CALL f_trb_solve_reverse_without_mat( fdata, status, eval_status,          &
+                                          xl, xu, x, f, g,                     &
                                           u, v, index_nz_v, nnz_v,             &
                                           index_nz_u, nnz_u )
   ELSE
-    CALL f_trb_solve_reverse_without_mat( fdata, status, eval_status, x, f, g, &
+    CALL f_trb_solve_reverse_without_mat( fdata, status, eval_status,          &
+                                          xl, xu, x, f, g,                     &
                                           u, v, index_nz_v, nnz_v,             &
                                           index_nz_u + 1, nnz_u )
 

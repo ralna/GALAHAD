@@ -279,7 +279,7 @@ functions
           sha_options : dict
             default control options for SHA (see ``sha.initialize``).
 
-   .. function:: trb.load(n, x_l, x_u, H_type, H_ne, H_row, H_col, H_ptr, options=None)
+   .. function:: trb.load(n, H_type, H_ne, H_row, H_col, H_ptr, options=None)
 
       Import problem data into internal storage prior to solution.
 
@@ -287,12 +287,6 @@ functions
 
       n : int
           holds the number of variables.
-      x_l : ndarray(n)
-          holds the values $x^l$ of the lower bounds on the
-          optimization variables $x$.
-      x_u : ndarray(n)
-          holds the values $x^u$ of the upper bounds on the
-          optimization variables $x$.
       H_type : string
           specifies the symmetric storage scheme used for the Hessian.
           It should be one of 'coordinate', 'sparse_by_rows', 'dense',
@@ -320,7 +314,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``trb.initialize``).
 
-   .. function:: trb.solve(n, H_ne, x, g, eval_f, eval_g, eval_h))
+   .. function:: trb.solve(n, H_ne, x_l, x_u, x, g, eval_f, eval_g, eval_h))
 
       Find an approximate local minimizer of a given function subject
       to simple bounds on the variables using a trust-region method.
@@ -331,6 +325,12 @@ functions
           holds the number of variables.
       H_ne : int
           holds the number of entries in the lower triangular part of $H$.
+      x_l : ndarray(n)
+          holds the values $x^l$ of the lower bounds on the
+          optimization variables $x$.
+      x_u : ndarray(n)
+          holds the values $x^u$ of the upper bounds on the
+          optimization variables $x$.
       x : ndarray(n)
           holds the values of optimization variables $x$.
       eval_f : callable

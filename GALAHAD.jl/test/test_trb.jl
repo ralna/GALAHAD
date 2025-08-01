@@ -230,13 +230,13 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      trb_import(T, INT, control, data, status, n, x_l, x_u, "coordinate", 
+      trb_import(T, INT, control, data, status, n, "coordinate", 
                  ne, H_row, H_col, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
         trb_solve_reverse_with_mat(T, INT, data, status, eval_status, 
-                                   n, x, f[], g, ne, H_val, u, v)
+                                   n, x_l, x_u, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -258,13 +258,13 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
     # sparse by rows
     if d == 2
       st = 'R'
-      trb_import(T, INT, control, data, status, n, x_l, x_u, 
+      trb_import(T, INT, control, data, status, n,
                  "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
 
       terminated = false
       while !terminated # reverse-communication loop
         trb_solve_reverse_with_mat(T, INT, data, status, eval_status, 
-                                   n, x, f[], g, ne, H_val, u, v)
+                                   n, x_l, x_u, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -286,13 +286,14 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
     # dense
     if d == 3
       st = 'D'
-      trb_import(T, INT, control, data, status, n, x_l, x_u,
+      trb_import(T, INT, control, data, status, n,
                  "dense", ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(T, INT, data, status, eval_status, n, x, 
-                                   f[], g, div(n * (n + 1), 2), H_dense, u, v)
+        trb_solve_reverse_with_mat(T, INT, data, status, eval_status, n,
+                                   x_l, x_u, x, f[], g, 
+                                   div(n * (n + 1), 2), H_dense, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -314,13 +315,13 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
     # diagonal
     if d == 4
       st = 'I'
-      trb_import(T, INT, control, data, status, n, x_l, x_u, 
+      trb_import(T, INT, control, data, status, n,
                  "diagonal", ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
         trb_solve_reverse_with_mat(T, INT, data, status, eval_status, 
-                                   n, x, f[], g, n, H_diag, u, v)
+                                   n, x_l, x_u, x, f[], g, n, H_diag, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -342,14 +343,15 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
     # access by products
     if d == 5
       st = 'P'
-      trb_import(T, INT, control, data, status, n, x_l, x_u, "absent", 
+      trb_import(T, INT, control, data, status, n, "absent", 
                  ne, C_NULL, C_NULL, C_NULL)
       nnz_u = Ref{INT}(0)
 
       terminated = false
       while !terminated # reverse-communication loop
         trb_solve_reverse_without_mat(T, INT, data, status, eval_status, 
-                                      n, x, f[], g, u, v, index_nz_v, nnz_v, 
+                                      n, x_l, x_u, x, f[], g, u, v, 
+                                      index_nz_v, nnz_v, 
                                       index_nz_u, nnz_u[])
         if status[] == 0 # successful termination
           terminated = true

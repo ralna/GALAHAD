@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-05-12 AT 08:20 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-07-31 AT 12:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -5810,7 +5810,7 @@
 
 !-*-*-*-*-  G A L A H A D -  T R B _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
 
-     SUBROUTINE TRB_import( control, data, status, n, X_l, X_u,                &
+     SUBROUTINE TRB_import( control, data, status, n,                          &
                             H_type, ne, H_row, H_col, H_ptr )
 
 !  import fixed problem data into internal storage prior to solution.
@@ -5840,14 +5840,6 @@
 !
 !  n is a scalar variable of type default integer, that holds the number of
 !   variables
-!
-!  X_l is a rank-one array of dimension n and type default real,
-!   that holds the values x_l of the lower bounds on the optimization
-!   variables x. The j-th component of X_l, j = 1, ... , n, contains (x_l)j.
-!
-!  X_u is a rank-one array of dimension n and type default real,
-!   that holds the values x_u of the upper bounds on the optimization
-!   variables x. The j-th component of X_u, j = 1, ... , n, contains (x_u)j.
 !
 !  H_type is a character string that specifies the Hessian storage scheme
 !   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
@@ -5887,7 +5879,6 @@
      INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
      INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
      INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
-     REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( n ) :: X_l, X_u
 
 !  local variables
 
@@ -5944,8 +5935,6 @@
 !  put data into the required components of the nlpt storage type
 
      data%nlp%n = n
-     data%nlp%X_l( : n ) = X_l( : n )
-     data%nlp%X_u( : n ) = X_u( : n )
 
 !  set H appropriately in the nlpt storage type
 
@@ -6116,7 +6105,7 @@
 
 !-  G A L A H A D -  T R B _ s o l v e _ w i t h _ m a t  S U B R O U T I N E  -
 
-     SUBROUTINE TRB_solve_with_mat( data, userdata, status, X, G,              &
+     SUBROUTINE TRB_solve_with_mat( data, userdata, status, X_l, X_u, X, G,    &
                                     eval_F, eval_G, eval_H, eval_PREC )
 
 !  solve the bound-constrained problem previously imported when access
@@ -6131,14 +6120,18 @@
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN  ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_F, eval_G, eval_H, eval_PREC
      OPTIONAL :: eval_PREC
 
      data%trb_inform%status = status
-     IF ( data%trb_inform%status == 1 )                                        &
+     IF ( data%trb_inform%status == 1 ) THEN
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+       data%nlp%X_l( : data%nlp%n ) = X_l( : data%nlp%n )
+       data%nlp%X_u( : data%nlp%n ) = X_u( : data%nlp%n )
+     END IF
 
 !  call the solver
 
@@ -6159,7 +6152,7 @@
 
 !  G A L A H A D -  T R B _ s o l v e _ without _ m a t  S U B R O U T I N E
 
-     SUBROUTINE TRB_solve_without_mat( data, userdata, status, X, G,           &
+     SUBROUTINE TRB_solve_without_mat( data, userdata, status, X_l, X_u, X, G, &
                                        eval_F, eval_G, eval_HPROD,             &
                                        eval_SHPROD, eval_PREC )
 
@@ -6175,14 +6168,18 @@
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN  ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_F, eval_G, eval_HPROD, eval_SHPROD, eval_PREC
      OPTIONAL :: eval_PREC
 
      data%trb_inform%status = status
-     IF ( data%trb_inform%status == 1 )                                        &
+     IF ( data%trb_inform%status == 1 ) THEN
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+       data%nlp%X_l( : data%nlp%n ) = X_l( : data%nlp%n )
+       data%nlp%X_u( : data%nlp%n ) = X_u( : data%nlp%n )
+     END IF
 
 !  call the solver
 
@@ -6205,7 +6202,7 @@
 !-  G A L A H A D -  T R B _ s o l v e _ reverse _ m a t  S U B R O U T I N E -
 
      SUBROUTINE TRB_solve_reverse_with_mat( data, status, eval_status,         &
-                                            X, f, G, H_val, U, V )
+                                            X_l, X_u, X, f, G, H_val, U, V )
 
 !  solve the bound-constrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
@@ -6220,6 +6217,7 @@
      TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: eval_status
      REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: G
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: H_val
@@ -6234,6 +6232,8 @@
      SELECT CASE ( data%trb_inform%status )
      CASE ( 1 )
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+       data%nlp%X_l( : data%nlp%n ) = X_l( : data%nlp%n )
+       data%nlp%X_u( : data%nlp%n ) = X_u( : data%nlp%n )
      CASE ( 2 )
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%f = f
@@ -6278,7 +6278,7 @@
 !-  G A L A H A D -  T R B _ s o l v e _ reverse _ no _ mat  S U B R O U T I N E
 
      SUBROUTINE TRB_solve_reverse_without_mat( data, status, eval_status,      &
-                                               X, f, G, U, V,                  &
+                                               X_l, X_u, X, f, G, U, V,        &
                                                INDEX_nz_v, nnz_v,              &
                                                INDEX_nz_u, nnz_u )
 
@@ -6296,6 +6296,7 @@
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_u
      TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
      REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ) , INTENT( IN ) :: X_l, X_u
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_v
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: INDEX_nz_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
@@ -6311,6 +6312,8 @@
      SELECT CASE ( data%trb_inform%status )
      CASE ( 1 )
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+       data%nlp%X_l( : data%nlp%n ) = X_l( : data%nlp%n )
+       data%nlp%X_u( : data%nlp%n ) = X_u( : data%nlp%n )
      CASE ( 2 )
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%f = f
