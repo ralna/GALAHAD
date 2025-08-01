@@ -50,12 +50,12 @@ int main(void) {
     rpc_ g[n]; // gradient
 
     // Set Hessian storage format, structure and problem bounds
-    trb_import( &control, &data, &status, n, x_l, x_u,
+    trb_import( &control, &data, &status, n,
                 H_type, ne, H_row, H_col, NULL );
 
     // Call TRB_solve
     trb_solve_with_mat( &data, &userdata, &status,
-                        n, x, g, ne, fun, grad, hess, NULL );
+                        n,  x_l, x_u, x, g, ne, fun, grad, hess, NULL );
 
     // Record solution information
     trb_information( &data, &inform, &status );

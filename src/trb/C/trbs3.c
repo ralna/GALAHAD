@@ -40,7 +40,7 @@ int main(void) {
     rpc_ H_val[ne];
 
     // Set Hessian storage format, structure and problem bounds
-    trb_import( &control, &data, &status, n, x_l, x_u,
+    trb_import( &control, &data, &status, n, 
                 H_type, ne, H_row, H_col, NULL );
 
     // Solve the problem
@@ -48,7 +48,7 @@ int main(void) {
 
         // Call TRB_solve
         trb_solve_reverse_with_mat( &data, &status, &eval_status,
-                                    n, x, f, g, ne, H_val, u, v );
+                                    n, x_l, x_u, x, f, g, ne, H_val, u, v );
 
         // Evaluate f(x) and its derivatives as required
         if(status == 0){ // successful termination
