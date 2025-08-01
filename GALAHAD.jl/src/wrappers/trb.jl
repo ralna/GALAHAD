@@ -196,57 +196,55 @@ end
 
 export trb_import
 
-function trb_import(::Type{Float32}, ::Type{Int32}, control, data, status, n, 
-                    H_type, ne, H_row, H_col, H_ptr)
+function trb_import(::Type{Float32}, ::Type{Int32}, control, data, status, n, H_type, ne,
+                    H_row, H_col, H_ptr)
   @ccall libgalahad_single.trb_import(control::Ptr{trb_control_type{Float32,Int32}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
                                       H_type::Ptr{Cchar}, ne::Int32, H_row::Ptr{Int32},
                                       H_col::Ptr{Int32}, H_ptr::Ptr{Int32})::Cvoid
 end
 
-function trb_import(::Type{Float32}, ::Type{Int64}, control, data, status, n, 
-                    H_type, ne, H_row, H_col, H_ptr)
+function trb_import(::Type{Float32}, ::Type{Int64}, control, data, status, n, H_type, ne,
+                    H_row, H_col, H_ptr)
   @ccall libgalahad_single_64.trb_import(control::Ptr{trb_control_type{Float32,Int64}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                         n::Int64, 
-                                         H_type::Ptr{Cchar}, ne::Int64, H_row::Ptr{Int64},
-                                         H_col::Ptr{Int64}, H_ptr::Ptr{Int64})::Cvoid
+                                         n::Int64, H_type::Ptr{Cchar}, ne::Int64,
+                                         H_row::Ptr{Int64}, H_col::Ptr{Int64},
+                                         H_ptr::Ptr{Int64})::Cvoid
 end
 
-function trb_import(::Type{Float64}, ::Type{Int32}, control, data, status, n, 
-                    H_type, ne, H_row, H_col, H_ptr)
+function trb_import(::Type{Float64}, ::Type{Int32}, control, data, status, n, H_type, ne,
+                    H_row, H_col, H_ptr)
   @ccall libgalahad_double.trb_import(control::Ptr{trb_control_type{Float64,Int32}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
                                       H_type::Ptr{Cchar}, ne::Int32, H_row::Ptr{Int32},
                                       H_col::Ptr{Int32}, H_ptr::Ptr{Int32})::Cvoid
 end
 
-function trb_import(::Type{Float64}, ::Type{Int64}, control, data, status, n, 
-                    H_type, ne, H_row, H_col, H_ptr)
+function trb_import(::Type{Float64}, ::Type{Int64}, control, data, status, n, H_type, ne,
+                    H_row, H_col, H_ptr)
   @ccall libgalahad_double_64.trb_import(control::Ptr{trb_control_type{Float64,Int64}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                         n::Int64, 
-                                         H_type::Ptr{Cchar}, ne::Int64, H_row::Ptr{Int64},
-                                         H_col::Ptr{Int64}, H_ptr::Ptr{Int64})::Cvoid
+                                         n::Int64, H_type::Ptr{Cchar}, ne::Int64,
+                                         H_row::Ptr{Int64}, H_col::Ptr{Int64},
+                                         H_ptr::Ptr{Int64})::Cvoid
 end
 
-function trb_import(::Type{Float128}, ::Type{Int32}, control, data, status, n, 
-                    H_type, ne, H_row, H_col, H_ptr)
+function trb_import(::Type{Float128}, ::Type{Int32}, control, data, status, n, H_type, ne,
+                    H_row, H_col, H_ptr)
   @ccall libgalahad_quadruple.trb_import(control::Ptr{trb_control_type{Float128,Int32}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                         n::Int32, 
-                                         H_type::Ptr{Cchar}, ne::Int32, H_row::Ptr{Int32},
-                                         H_col::Ptr{Int32}, H_ptr::Ptr{Int32})::Cvoid
+                                         n::Int32, H_type::Ptr{Cchar}, ne::Int32,
+                                         H_row::Ptr{Int32}, H_col::Ptr{Int32},
+                                         H_ptr::Ptr{Int32})::Cvoid
 end
 
-function trb_import(::Type{Float128}, ::Type{Int64}, control, data, status, n, 
-                    H_type, ne, H_row, H_col, H_ptr)
+function trb_import(::Type{Float128}, ::Type{Int64}, control, data, status, n, H_type, ne,
+                    H_row, H_col, H_ptr)
   @ccall libgalahad_quadruple_64.trb_import(control::Ptr{trb_control_type{Float128,Int64}},
-                                            data::Ptr{Ptr{Cvoid}}, 
-                                            status::Ptr{Int64},
-                                            n::Int64, H_type::Ptr{Cchar},
-                                            ne::Int64, H_row::Ptr{Int64}, 
-                                            H_col::Ptr{Int64},
+                                            data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+                                            n::Int64, H_type::Ptr{Cchar}, ne::Int64,
+                                            H_row::Ptr{Int64}, H_col::Ptr{Int64},
                                             H_ptr::Ptr{Int64})::Cvoid
 end
 
@@ -294,207 +292,155 @@ end
 
 export trb_solve_with_mat
 
-function trb_solve_with_mat(::Type{Float32}, ::Type{Int32}, data, userdata, 
-                            status, n, x_l, x_u, x, g,
-                            ne, eval_f, eval_g, eval_h, eval_prec)
-  @ccall libgalahad_single.trb_solve_with_mat(data::Ptr{Ptr{Cvoid}}, 
-                                              userdata::Ptr{Cvoid},
-                                              status::Ptr{Int32}, 
-                                              n::Int32, 
-                                              x_l::Ptr{Float32}, 
-                                              x_u::Ptr{Float32},
-                                              x::Ptr{Float32},
-                                              g::Ptr{Float32}, 
-                                              ne::Int32,
-                                              eval_f::Ptr{Cvoid}, 
-                                              eval_g::Ptr{Cvoid},
+function trb_solve_with_mat(::Type{Float32}, ::Type{Int32}, data, userdata, status, n, x_l,
+                            x_u, x, g, ne, eval_f, eval_g, eval_h, eval_prec)
+  @ccall libgalahad_single.trb_solve_with_mat(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
+                                              status::Ptr{Int32}, n::Int32,
+                                              x_l::Ptr{Float32}, x_u::Ptr{Float32},
+                                              x::Ptr{Float32}, g::Ptr{Float32}, ne::Int32,
+                                              eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                               eval_h::Ptr{Cvoid},
                                               eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function trb_solve_with_mat(::Type{Float32}, ::Type{Int64}, data, userdata, 
-                            status, n, x_l, x_u, x, g,
-                            ne, eval_f, eval_g, eval_h, eval_prec)
+function trb_solve_with_mat(::Type{Float32}, ::Type{Int64}, data, userdata, status, n, x_l,
+                            x_u, x, g, ne, eval_f, eval_g, eval_h, eval_prec)
   @ccall libgalahad_single_64.trb_solve_with_mat(data::Ptr{Ptr{Cvoid}},
-                                                 userdata::Ptr{Cvoid}, 
-                                                 status::Ptr{Int64},
-                                                 n::Int64, 
-                                                 x_l::Ptr{Float32}, 
-                                                 x_u::Ptr{Float32},
-                                                 x::Ptr{Float32}, 
-                                                 g::Ptr{Float32},
-                                                 ne::Int64, 
-                                                 eval_f::Ptr{Cvoid},
-                                                 eval_g::Ptr{Cvoid}, 
+                                                 userdata::Ptr{Cvoid}, status::Ptr{Int64},
+                                                 n::Int64, x_l::Ptr{Float32},
+                                                 x_u::Ptr{Float32}, x::Ptr{Float32},
+                                                 g::Ptr{Float32}, ne::Int64,
+                                                 eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                                  eval_h::Ptr{Cvoid},
                                                  eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function trb_solve_with_mat(::Type{Float64}, ::Type{Int32}, data, userdata, 
-                            status, n, x_l, x_u, x, g,
-                            ne, eval_f, eval_g, eval_h, eval_prec)
+function trb_solve_with_mat(::Type{Float64}, ::Type{Int32}, data, userdata, status, n, x_l,
+                            x_u, x, g, ne, eval_f, eval_g, eval_h, eval_prec)
   @ccall libgalahad_double.trb_solve_with_mat(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
-                                              status::Ptr{Int32}, 
-                                              n::Int32, 
-                                              x_l::Ptr{Float64}, 
-                                              x_u::Ptr{Float64},
-                                              x::Ptr{Float64},
-                                              g::Ptr{Float64}, 
-                                              ne::Int32,
-                                              eval_f::Ptr{Cvoid}, 
-                                              eval_g::Ptr{Cvoid},
+                                              status::Ptr{Int32}, n::Int32,
+                                              x_l::Ptr{Float64}, x_u::Ptr{Float64},
+                                              x::Ptr{Float64}, g::Ptr{Float64}, ne::Int32,
+                                              eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                               eval_h::Ptr{Cvoid},
                                               eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function trb_solve_with_mat(::Type{Float64}, ::Type{Int64}, data, userdata, 
-                            status, n, x_l, x_u, x, g,
-                            ne, eval_f, eval_g, eval_h, eval_prec)
+function trb_solve_with_mat(::Type{Float64}, ::Type{Int64}, data, userdata, status, n, x_l,
+                            x_u, x, g, ne, eval_f, eval_g, eval_h, eval_prec)
   @ccall libgalahad_double_64.trb_solve_with_mat(data::Ptr{Ptr{Cvoid}},
-                                                 userdata::Ptr{Cvoid}, 
-                                                 status::Ptr{Int64},
-                                                 n::Int64, 
-                                                 x_l::Ptr{Float64}, 
-                                                 x_u::Ptr{Float64},
-                                                 x::Ptr{Float64}, 
-                                                 g::Ptr{Float64},
-                                                 ne::Int64, 
-                                                 eval_f::Ptr{Cvoid},
-                                                 eval_g::Ptr{Cvoid}, 
+                                                 userdata::Ptr{Cvoid}, status::Ptr{Int64},
+                                                 n::Int64, x_l::Ptr{Float64},
+                                                 x_u::Ptr{Float64}, x::Ptr{Float64},
+                                                 g::Ptr{Float64}, ne::Int64,
+                                                 eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                                  eval_h::Ptr{Cvoid},
                                                  eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function trb_solve_with_mat(::Type{Float128}, ::Type{Int32}, data, userdata, 
-                            status, n, x_l, x_u, x,
-                            g, ne, eval_f, eval_g, eval_h, eval_prec)
+function trb_solve_with_mat(::Type{Float128}, ::Type{Int32}, data, userdata, status, n, x_l,
+                            x_u, x, g, ne, eval_f, eval_g, eval_h, eval_prec)
   @ccall libgalahad_quadruple.trb_solve_with_mat(data::Ptr{Ptr{Cvoid}},
-                                                 userdata::Ptr{Cvoid}, 
-                                                 status::Ptr{Int32},
-                                                 n::Int32, 
-                                                 x_l::Ptr{Float128}, 
-                                                 x_u::Ptr{Float128},
-                                                 x::Ptr{Float128},
+                                                 userdata::Ptr{Cvoid}, status::Ptr{Int32},
+                                                 n::Int32, x_l::Ptr{Float128},
+                                                 x_u::Ptr{Float128}, x::Ptr{Float128},
                                                  g::Ptr{Float128}, ne::Int32,
-                                                 eval_f::Ptr{Cvoid}, 
-                                                 eval_g::Ptr{Cvoid},
+                                                 eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                                  eval_h::Ptr{Cvoid},
                                                  eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function trb_solve_with_mat(::Type{Float128}, ::Type{Int64}, data, userdata, 
-                            status, n, x_l, x_u, x,
-                            g, ne, eval_f, eval_g, eval_h, eval_prec)
+function trb_solve_with_mat(::Type{Float128}, ::Type{Int64}, data, userdata, status, n, x_l,
+                            x_u, x, g, ne, eval_f, eval_g, eval_h, eval_prec)
   @ccall libgalahad_quadruple_64.trb_solve_with_mat(data::Ptr{Ptr{Cvoid}},
                                                     userdata::Ptr{Cvoid},
-                                                    status::Ptr{Int64}, 
-                                                    n::Int64,
-                                                    x_l::Ptr{Float128}, 
-                                                    x_u::Ptr{Float128},
-                                                    x::Ptr{Float128}, 
-                                                    g::Ptr{Float128},
-                                                    ne::Int64, 
-                                                    eval_f::Ptr{Cvoid},
-                                                    eval_g::Ptr{Cvoid}, 
-                                                    eval_h::Ptr{Cvoid},
+                                                    status::Ptr{Int64}, n::Int64,
+                                                    x_l::Ptr{Float128}, x_u::Ptr{Float128},
+                                                    x::Ptr{Float128}, g::Ptr{Float128},
+                                                    ne::Int64, eval_f::Ptr{Cvoid},
+                                                    eval_g::Ptr{Cvoid}, eval_h::Ptr{Cvoid},
                                                     eval_prec::Ptr{Cvoid})::Cvoid
 end
 
 export trb_solve_without_mat
 
-function trb_solve_without_mat(::Type{Float32}, ::Type{Int32}, data, userdata, 
-                               status, n, x_l, x_u, x, g,
-                               eval_f, eval_g, eval_hprod, eval_shprod, eval_prec)
+function trb_solve_without_mat(::Type{Float32}, ::Type{Int32}, data, userdata, status, n,
+                               x_l, x_u, x, g, eval_f, eval_g, eval_hprod, eval_shprod,
+                               eval_prec)
   @ccall libgalahad_single.trb_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                  userdata::Ptr{Cvoid}, status::Ptr{Int32},
-                                                 n::Int32, 
-                                                 x_l::Ptr{Float32}, 
-                                                 x_u::Ptr{Float32},
-                                                 x::Ptr{Float32}, 
-                                                 g::Ptr{Float32},
-                                                 eval_f::Ptr{Cvoid}, 
-                                                 eval_g::Ptr{Cvoid},
-                                                 eval_hprod::Ptr{Cvoid},
+                                                 n::Int32, x_l::Ptr{Float32},
+                                                 x_u::Ptr{Float32}, x::Ptr{Float32},
+                                                 g::Ptr{Float32}, eval_f::Ptr{Cvoid},
+                                                 eval_g::Ptr{Cvoid}, eval_hprod::Ptr{Cvoid},
                                                  eval_shprod::Ptr{Cvoid},
                                                  eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function trb_solve_without_mat(::Type{Float32}, ::Type{Int64}, data, userdata, status, n, x_l, x_u, x, 
-                               g, eval_f, eval_g, eval_hprod, eval_shprod, eval_prec)
+function trb_solve_without_mat(::Type{Float32}, ::Type{Int64}, data, userdata, status, n,
+                               x_l, x_u, x, g, eval_f, eval_g, eval_hprod, eval_shprod,
+                               eval_prec)
   @ccall libgalahad_single_64.trb_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                     userdata::Ptr{Cvoid},
-                                                    status::Ptr{Int64}, 
-                                                    n::Int64,
-                                                    x_l::Ptr{Float32}, 
-                                                    x_u::Ptr{Float32},
-                                                    x::Ptr{Float32}, 
-                                                    g::Ptr{Float32},
-                                                    eval_f::Ptr{Cvoid}, 
-                                                    eval_g::Ptr{Cvoid},
+                                                    status::Ptr{Int64}, n::Int64,
+                                                    x_l::Ptr{Float32}, x_u::Ptr{Float32},
+                                                    x::Ptr{Float32}, g::Ptr{Float32},
+                                                    eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                                     eval_hprod::Ptr{Cvoid},
                                                     eval_shprod::Ptr{Cvoid},
                                                     eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function trb_solve_without_mat(::Type{Float64}, ::Type{Int32}, data, userdata, status, n, x_l, x_u, x,
-                               g, eval_f, eval_g, eval_hprod, eval_shprod, eval_prec)
+function trb_solve_without_mat(::Type{Float64}, ::Type{Int32}, data, userdata, status, n,
+                               x_l, x_u, x, g, eval_f, eval_g, eval_hprod, eval_shprod,
+                               eval_prec)
   @ccall libgalahad_double.trb_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                  userdata::Ptr{Cvoid}, status::Ptr{Int32},
-                                                 n::Int32, 
-                                                 x_l::Ptr{Float64}, 
-                                                 x_u::Ptr{Float64},
-                                                 x::Ptr{Float64}, 
-                                                 g::Ptr{Float64},
-                                                 eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
-                                                 eval_hprod::Ptr{Cvoid},
+                                                 n::Int32, x_l::Ptr{Float64},
+                                                 x_u::Ptr{Float64}, x::Ptr{Float64},
+                                                 g::Ptr{Float64}, eval_f::Ptr{Cvoid},
+                                                 eval_g::Ptr{Cvoid}, eval_hprod::Ptr{Cvoid},
                                                  eval_shprod::Ptr{Cvoid},
                                                  eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-function trb_solve_without_mat(::Type{Float64}, ::Type{Int64}, data, userdata, status, n, x_l, x_u, x,
-                               g, eval_f, eval_g, eval_hprod, eval_shprod, eval_prec)
+function trb_solve_without_mat(::Type{Float64}, ::Type{Int64}, data, userdata, status, n,
+                               x_l, x_u, x, g, eval_f, eval_g, eval_hprod, eval_shprod,
+                               eval_prec)
   @ccall libgalahad_double_64.trb_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                     userdata::Ptr{Cvoid},
                                                     status::Ptr{Int64}, n::Int64,
-                                                    x_l::Ptr{Float64}, 
-                                                    x_u::Ptr{Float64},
-                                                    x::Ptr{Float64}, 
-                                                    g::Ptr{Float64},
-                                                    eval_f::Ptr{Cvoid}, 
-                                                    eval_g::Ptr{Cvoid},
+                                                    x_l::Ptr{Float64}, x_u::Ptr{Float64},
+                                                    x::Ptr{Float64}, g::Ptr{Float64},
+                                                    eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                                     eval_hprod::Ptr{Cvoid},
                                                     eval_shprod::Ptr{Cvoid},
                                                     eval_prec::Ptr{Cvoid})::Cvoid
 end
 
 function trb_solve_without_mat(::Type{Float128}, ::Type{Int32}, data, userdata, status, n,
-                               x_l, x_u, x, g, eval_f, eval_g, eval_hprod, eval_shprod, eval_prec)
+                               x_l, x_u, x, g, eval_f, eval_g, eval_hprod, eval_shprod,
+                               eval_prec)
   @ccall libgalahad_quadruple.trb_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                     userdata::Ptr{Cvoid},
-                                                    status::Ptr{Int32}, 
-                                                    n::Int32,
-                                                    x_l::Ptr{Float128}, 
-                                                    x_u::Ptr{Float128},
-                                                    x::Ptr{Float128}, 
-                                                    g::Ptr{Float128},
-                                                    eval_f::Ptr{Cvoid}, 
-                                                    eval_g::Ptr{Cvoid},
+                                                    status::Ptr{Int32}, n::Int32,
+                                                    x_l::Ptr{Float128}, x_u::Ptr{Float128},
+                                                    x::Ptr{Float128}, g::Ptr{Float128},
+                                                    eval_f::Ptr{Cvoid}, eval_g::Ptr{Cvoid},
                                                     eval_hprod::Ptr{Cvoid},
                                                     eval_shprod::Ptr{Cvoid},
                                                     eval_prec::Ptr{Cvoid})::Cvoid
 end
 
 function trb_solve_without_mat(::Type{Float128}, ::Type{Int64}, data, userdata, status, n,
-                               x_l, x_u, x, g, eval_f, eval_g, eval_hprod, eval_shprod, eval_prec)
+                               x_l, x_u, x, g, eval_f, eval_g, eval_hprod, eval_shprod,
+                               eval_prec)
   @ccall libgalahad_quadruple_64.trb_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                        userdata::Ptr{Cvoid},
-                                                       status::Ptr{Int64}, 
-                                                       n::Int64,
-                                                       x_l::Ptr{Float128}, 
-                                                       x_u::Ptr{Float128},
-                                                       x::Ptr{Float128}, 
-                                                       g::Ptr{Float128},
-                                                       eval_f::Ptr{Cvoid},
+                                                       status::Ptr{Int64}, n::Int64,
+                                                       x_l::Ptr{Float128},
+                                                       x_u::Ptr{Float128}, x::Ptr{Float128},
+                                                       g::Ptr{Float128}, eval_f::Ptr{Cvoid},
                                                        eval_g::Ptr{Cvoid},
                                                        eval_hprod::Ptr{Cvoid},
                                                        eval_shprod::Ptr{Cvoid},
@@ -507,16 +453,11 @@ function trb_solve_reverse_with_mat(::Type{Float32}, ::Type{Int32}, data, status
                                     eval_status, n, x_l, x_u, x, f, g, ne, H_val, u, v)
   @ccall libgalahad_single.trb_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
                                                       status::Ptr{Int32},
-                                                      eval_status::Ptr{Int32}, 
-                                                      n::Int32,
-                                                      x_l::Ptr{Float32}, 
-                                                      x_u::Ptr{Float32}, 
-                                                      x::Ptr{Float32}, 
-                                                      f::Float32,
-                                                      g::Ptr{Float32}, 
-                                                      ne::Int32,
-                                                      H_val::Ptr{Float32}, 
-                                                      u::Ptr{Float32},
+                                                      eval_status::Ptr{Int32}, n::Int32,
+                                                      x_l::Ptr{Float32}, x_u::Ptr{Float32},
+                                                      x::Ptr{Float32}, f::Float32,
+                                                      g::Ptr{Float32}, ne::Int32,
+                                                      H_val::Ptr{Float32}, u::Ptr{Float32},
                                                       v::Ptr{Float32})::Cvoid
 end
 
@@ -524,15 +465,11 @@ function trb_solve_reverse_with_mat(::Type{Float32}, ::Type{Int64}, data, status
                                     eval_status, n, x_l, x_u, x, f, g, ne, H_val, u, v)
   @ccall libgalahad_single_64.trb_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
                                                          status::Ptr{Int64},
-                                                         eval_status::Ptr{Int64},
-                                                         n::Int64,
-                                                         x_l::Ptr{Float32}, 
-                                                         x_u::Ptr{Float32}, 
-                                                         x::Ptr{Float32}, 
-                                                         f::Float32,
-                                                         g::Ptr{Float32}, 
-                                                         ne::Int64,
-                                                         H_val::Ptr{Float32},
+                                                         eval_status::Ptr{Int64}, n::Int64,
+                                                         x_l::Ptr{Float32},
+                                                         x_u::Ptr{Float32}, x::Ptr{Float32},
+                                                         f::Float32, g::Ptr{Float32},
+                                                         ne::Int64, H_val::Ptr{Float32},
                                                          u::Ptr{Float32},
                                                          v::Ptr{Float32})::Cvoid
 end
@@ -541,16 +478,11 @@ function trb_solve_reverse_with_mat(::Type{Float64}, ::Type{Int32}, data, status
                                     eval_status, n, x_l, x_u, x, f, g, ne, H_val, u, v)
   @ccall libgalahad_double.trb_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
                                                       status::Ptr{Int32},
-                                                      eval_status::Ptr{Int32}, 
-                                                      n::Int32,
-                                                      x_l::Ptr{Float64}, 
-                                                      x_u::Ptr{Float64}, 
-                                                      x::Ptr{Float64}, 
-                                                      f::Float64,
-                                                      g::Ptr{Float64}, 
-                                                      ne::Int32,
-                                                      H_val::Ptr{Float64}, 
-                                                      u::Ptr{Float64},
+                                                      eval_status::Ptr{Int32}, n::Int32,
+                                                      x_l::Ptr{Float64}, x_u::Ptr{Float64},
+                                                      x::Ptr{Float64}, f::Float64,
+                                                      g::Ptr{Float64}, ne::Int32,
+                                                      H_val::Ptr{Float64}, u::Ptr{Float64},
                                                       v::Ptr{Float64})::Cvoid
 end
 
@@ -558,15 +490,11 @@ function trb_solve_reverse_with_mat(::Type{Float64}, ::Type{Int64}, data, status
                                     eval_status, n, x_l, x_u, x, f, g, ne, H_val, u, v)
   @ccall libgalahad_double_64.trb_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
                                                          status::Ptr{Int64},
-                                                         eval_status::Ptr{Int64}, 
-                                                         n::Int64,
-                                                         x_l::Ptr{Float64}, 
-                                                         x_u::Ptr{Float64}, 
-                                                         x::Ptr{Float64}, 
-                                                         f::Float64,
-                                                         g::Ptr{Float64}, 
-                                                         ne::Int64,
-                                                         H_val::Ptr{Float64},
+                                                         eval_status::Ptr{Int64}, n::Int64,
+                                                         x_l::Ptr{Float64},
+                                                         x_u::Ptr{Float64}, x::Ptr{Float64},
+                                                         f::Float64, g::Ptr{Float64},
+                                                         ne::Int64, H_val::Ptr{Float64},
                                                          u::Ptr{Float64},
                                                          v::Ptr{Float64})::Cvoid
 end
@@ -575,14 +503,11 @@ function trb_solve_reverse_with_mat(::Type{Float128}, ::Type{Int32}, data, statu
                                     eval_status, n, x_l, x_u, x, f, g, ne, H_val, u, v)
   @ccall libgalahad_quadruple.trb_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
                                                          status::Ptr{Int32},
-                                                         eval_status::Ptr{Int32}, 
-                                                         n::Int32,
-                                                         x_l::Ptr{Float128}, 
-                                                         x_u::Ptr{Float128}, 
-                                                         x::Ptr{Float128}, 
-                                                         f::Cfloat128,
-                                                         g::Ptr{Float128}, 
-                                                         ne::Int32,
+                                                         eval_status::Ptr{Int32}, n::Int32,
+                                                         x_l::Ptr{Float128},
+                                                         x_u::Ptr{Float128},
+                                                         x::Ptr{Float128}, f::Cfloat128,
+                                                         g::Ptr{Float128}, ne::Int32,
                                                          H_val::Ptr{Float128},
                                                          u::Ptr{Float128},
                                                          v::Ptr{Float128})::Cvoid
@@ -593,13 +518,10 @@ function trb_solve_reverse_with_mat(::Type{Float128}, ::Type{Int64}, data, statu
   @ccall libgalahad_quadruple_64.trb_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
                                                             status::Ptr{Int64},
                                                             eval_status::Ptr{Int64},
-                                                            n::Int64, 
-                                                            x_l::Ptr{Float128}, 
-                                                            x_u::Ptr{Float128}, 
-                                                            x::Ptr{Float128},
-                                                            f::Cfloat128, 
-                                                            g::Ptr{Float128},
-                                                            ne::Int64, 
+                                                            n::Int64, x_l::Ptr{Float128},
+                                                            x_u::Ptr{Float128},
+                                                            x::Ptr{Float128}, f::Cfloat128,
+                                                            g::Ptr{Float128}, ne::Int64,
                                                             H_val::Ptr{Float128},
                                                             u::Ptr{Float128},
                                                             v::Ptr{Float128})::Cvoid
@@ -608,19 +530,15 @@ end
 export trb_solve_reverse_without_mat
 
 function trb_solve_reverse_without_mat(::Type{Float32}, ::Type{Int32}, data, status,
-                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v, nnz_v,
-                                       index_nz_u, nnz_u)
+                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v,
+                                       nnz_v, index_nz_u, nnz_u)
   @ccall libgalahad_single.trb_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
                                                          status::Ptr{Int32},
-                                                         eval_status::Ptr{Int32}, 
-                                                         n::Int32,
-                                                         x_l::Ptr{Float32}, 
-                                                         x_u::Ptr{Float32}, 
-                                                         x::Ptr{Float32}, 
-                                                         f::Float32,
-                                                         g::Ptr{Float32}, 
-                                                         u::Ptr{Float32},
-                                                         v::Ptr{Float32},
+                                                         eval_status::Ptr{Int32}, n::Int32,
+                                                         x_l::Ptr{Float32},
+                                                         x_u::Ptr{Float32}, x::Ptr{Float32},
+                                                         f::Float32, g::Ptr{Float32},
+                                                         u::Ptr{Float32}, v::Ptr{Float32},
                                                          index_nz_v::Ptr{Int32},
                                                          nnz_v::Ptr{Int32},
                                                          index_nz_u::Ptr{Int32},
@@ -628,16 +546,14 @@ function trb_solve_reverse_without_mat(::Type{Float32}, ::Type{Int32}, data, sta
 end
 
 function trb_solve_reverse_without_mat(::Type{Float32}, ::Type{Int64}, data, status,
-                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v, nnz_v,
-                                       index_nz_u, nnz_u)
+                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v,
+                                       nnz_v, index_nz_u, nnz_u)
   @ccall libgalahad_single_64.trb_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
                                                             status::Ptr{Int64},
                                                             eval_status::Ptr{Int64},
-                                                            n::Int64, 
-                                                            x_l::Ptr{Float32}, 
-                                                            x_u::Ptr{Float32}, 
-                                                            x::Ptr{Float32},
-                                                            f::Float32, 
+                                                            n::Int64, x_l::Ptr{Float32},
+                                                            x_u::Ptr{Float32},
+                                                            x::Ptr{Float32}, f::Float32,
                                                             g::Ptr{Float32},
                                                             u::Ptr{Float32},
                                                             v::Ptr{Float32},
@@ -648,18 +564,15 @@ function trb_solve_reverse_without_mat(::Type{Float32}, ::Type{Int64}, data, sta
 end
 
 function trb_solve_reverse_without_mat(::Type{Float64}, ::Type{Int32}, data, status,
-                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v, nnz_v,
-                                       index_nz_u, nnz_u)
+                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v,
+                                       nnz_v, index_nz_u, nnz_u)
   @ccall libgalahad_double.trb_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
                                                          status::Ptr{Int32},
                                                          eval_status::Ptr{Int32}, n::Int32,
-                                                         x_l::Ptr{Float64}, 
-                                                         x_u::Ptr{Float64}, 
-                                                         x::Ptr{Float64}, 
-                                                         f::Float64,
-                                                         g::Ptr{Float64}, 
-                                                         u::Ptr{Float64},
-                                                         v::Ptr{Float64},
+                                                         x_l::Ptr{Float64},
+                                                         x_u::Ptr{Float64}, x::Ptr{Float64},
+                                                         f::Float64, g::Ptr{Float64},
+                                                         u::Ptr{Float64}, v::Ptr{Float64},
                                                          index_nz_v::Ptr{Int32},
                                                          nnz_v::Ptr{Int32},
                                                          index_nz_u::Ptr{Int32},
@@ -667,16 +580,14 @@ function trb_solve_reverse_without_mat(::Type{Float64}, ::Type{Int32}, data, sta
 end
 
 function trb_solve_reverse_without_mat(::Type{Float64}, ::Type{Int64}, data, status,
-                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v, nnz_v,
-                                       index_nz_u, nnz_u)
+                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v,
+                                       nnz_v, index_nz_u, nnz_u)
   @ccall libgalahad_double_64.trb_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
                                                             status::Ptr{Int64},
                                                             eval_status::Ptr{Int64},
-                                                            n::Int64, 
-                                                            x_l::Ptr{Float64}, 
-                                                            x_u::Ptr{Float64}, 
-                                                            x::Ptr{Float64},
-                                                            f::Float64, 
+                                                            n::Int64, x_l::Ptr{Float64},
+                                                            x_u::Ptr{Float64},
+                                                            x::Ptr{Float64}, f::Float64,
                                                             g::Ptr{Float64},
                                                             u::Ptr{Float64},
                                                             v::Ptr{Float64},
@@ -687,16 +598,14 @@ function trb_solve_reverse_without_mat(::Type{Float64}, ::Type{Int64}, data, sta
 end
 
 function trb_solve_reverse_without_mat(::Type{Float128}, ::Type{Int32}, data, status,
-                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v, nnz_v,
-                                       index_nz_u, nnz_u)
+                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v,
+                                       nnz_v, index_nz_u, nnz_u)
   @ccall libgalahad_quadruple.trb_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
                                                             status::Ptr{Int32},
                                                             eval_status::Ptr{Int32},
-                                                            n::Int32, 
-                                                            x_l::Ptr{Float128}, 
-                                                            x_u::Ptr{Float128}, 
-                                                            x::Ptr{Float128},
-                                                            f::Cfloat128, 
+                                                            n::Int32, x_l::Ptr{Float128},
+                                                            x_u::Ptr{Float128},
+                                                            x::Ptr{Float128}, f::Cfloat128,
                                                             g::Ptr{Float128},
                                                             u::Ptr{Float128},
                                                             v::Ptr{Float128},
@@ -707,14 +616,13 @@ function trb_solve_reverse_without_mat(::Type{Float128}, ::Type{Int32}, data, st
 end
 
 function trb_solve_reverse_without_mat(::Type{Float128}, ::Type{Int64}, data, status,
-                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v, nnz_v,
-                                       index_nz_u, nnz_u)
+                                       eval_status, n, x_l, x_u, x, f, g, u, v, index_nz_v,
+                                       nnz_v, index_nz_u, nnz_u)
   @ccall libgalahad_quadruple_64.trb_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
                                                                status::Ptr{Int64},
                                                                eval_status::Ptr{Int64},
-                                                               n::Int64, 
-                                                               x_l::Ptr{Float128}, 
-                                                               x_u::Ptr{Float128}, 
+                                                               n::Int64, x_l::Ptr{Float128},
+                                                               x_u::Ptr{Float128},
                                                                x::Ptr{Float128},
                                                                f::Cfloat128,
                                                                g::Ptr{Float128},
