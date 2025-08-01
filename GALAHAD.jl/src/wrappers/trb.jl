@@ -242,10 +242,11 @@ end
 function trb_import(::Type{Float128}, ::Type{Int64}, control, data, status, n, 
                     H_type, ne, H_row, H_col, H_ptr)
   @ccall libgalahad_quadruple_64.trb_import(control::Ptr{trb_control_type{Float128,Int64}},
-                                            data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                            n::Int64, x_u::Ptr{Float128}, 
-H_type::Ptr{Cchar},
-                                            ne::Int64, H_row::Ptr{Int64}, H_col::Ptr{Int64},
+                                            data::Ptr{Ptr{Cvoid}}, 
+                                            status::Ptr{Int64},
+                                            n::Int64, H_type::Ptr{Cchar},
+                                            ne::Int64, H_row::Ptr{Int64}, 
+                                            H_col::Ptr{Int64},
                                             H_ptr::Ptr{Int64})::Cvoid
 end
 
