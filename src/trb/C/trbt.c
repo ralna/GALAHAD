@@ -1,5 +1,6 @@
 /* trbt.c */
 /* Full test for the TRB C interface using C sparse matrix indexing */
+/* Jari Fowkes & Nick Gould, STFC-Rutherford Appleton Laboratory, 2021 */
 
 #include <stdio.h>
 #include <math.h>
@@ -53,6 +54,7 @@ int main(void) {
     // Set problem data
     ipc_ n = 3; // dimension
     ipc_ ne = 5; // Hesssian elements
+    ipc_ ne_dense = 6; // dense Hesssian elements
     rpc_ x_l[] = {-10,-10,-10};
     rpc_ x_u[] = {0.5,0.5,0.5};
     ipc_ H_row[] = {0, 1, 2, 2, 2}; // Hessian H
@@ -100,17 +102,17 @@ int main(void) {
             case 3: // dense
                 st = 'D';
                 trb_import( &control, &data, &status, n,
-                            "dense", ne, NULL, NULL, NULL );
+                            "dense", ne_dense, NULL, NULL, NULL );
                 trb_solve_with_mat( &data, &userdata, &status, 
-                                    n, x_l, x_u, x, g, ne,
+                                    n, x_l, x_u, x, g, ne_dense,
                                     fun, grad, hess_dense, prec );
                 break;
             case 4: // diagonal
                 st = 'I';
                 trb_import( &control, &data, &status, n,
-                            "diagonal", ne, NULL, NULL, NULL );
+                            "diagonal", n, NULL, NULL, NULL );
                 trb_solve_with_mat (&data, &userdata, &status, 
-                                    n, x_l, x_u, x, g, ne,
+                                    n, x_l, x_u, x, g, n,
                                     fun_diag, grad_diag, hess_diag, prec );
                 break;
             case 5: // access by products

@@ -1,5 +1,6 @@
 /* trut.c */
 /* Full test for the TRU C interface using C sparse matrix indexing */
+/* Jari Fowkes & Nick Gould, STFC-Rutherford Appleton Laboratory, 2021 */
 
 #include <stdio.h>
 #include <math.h>
@@ -43,6 +44,7 @@ int main(void) {
     // Set problem data
     ipc_ n = 3; // dimension
     ipc_ ne = 5; // Hesssian elements
+    ipc_ ne_dense = 6; // dense Hesssian elements
     ipc_ H_row[] = {0, 1, 2, 2, 2}; // Hessian H
     ipc_ H_col[] = {0, 1, 0, 1, 2}; // NB lower triangle
     ipc_ H_ptr[] = {0, 1, 2, 5};    // row pointers
@@ -87,16 +89,16 @@ int main(void) {
             case 3: // dense
                 st = 'D';
                 tru_import( &control, &data, &status, n, "dense",
-                            ne, NULL, NULL, NULL );
-                tru_solve_with_mat( &data, &userdata, &status,
-                                    n, x, g, ne, fun, grad, hess_dense, prec );
+                            ne_dense, NULL, NULL, NULL );
+                tru_solve_with_mat( &data, &userdata, &status, n, x, g,
+                                    ne_dense, fun, grad, hess_dense, prec );
                 break;
             case 4: // diagonal
                 st = 'I';
                 tru_import( &control, &data, &status, n, "diagonal",
-                            ne, NULL, NULL, NULL );
+                            n, NULL, NULL, NULL );
                 tru_solve_with_mat( &data, &userdata, &status, n, x, g,
-                                    ne, fun_diag, grad_diag, hess_diag, prec );
+                                    n, fun_diag, grad_diag, hess_diag, prec );
                 break;
             case 5: // access by products
                 st = 'P';

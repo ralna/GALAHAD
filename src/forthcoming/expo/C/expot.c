@@ -43,6 +43,8 @@ int main(void) {
     ipc_ m = 5; // # constraints
     ipc_ j_ne = 10; // Jacobian elements
     ipc_ h_ne = 2; // Hesssian elements
+    ipc_ j_ne_dense = 10; // Jacobian elements
+    ipc_ h_ne_dense = 3; // dense Hesssian elements
     // 0-based indices
     ipc_ J_row[] = {0, 0, 1, 1, 2, 2, 3, 3, 4, 4}; // Jacobian J
     ipc_ J_col[] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1}; //
@@ -109,10 +111,10 @@ int main(void) {
             case 3: // dense
                 st = 'D';
                 expo_import( &control, &data, &status, n, m,
-                             "dense", j_ne, NULL, NULL, NULL,
-                             "dense", h_ne, NULL, NULL, NULL );
+                             "dense", j_ne_dense, NULL, NULL, NULL,
+                             "dense", h_ne_dense, NULL, NULL, NULL );
                 expo_solve_hessian_direct( &data, &userdata, &status,
-                                           n, m, j_ne, h_ne,
+                                           n, m, j_ne_dense, h_ne_dense,
                                            cl, cu, xl, xu, x, y, z, c, gl,
                                            fc, gj_dense, hl_dense );
                 break;
@@ -120,9 +122,9 @@ int main(void) {
                 st = 'I';
                 expo_import( &control, &data, &status, n, m, 
                              "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
-                             "diagonal", h_ne, NULL, NULL, NULL );
+                             "diagonal", n, NULL, NULL, NULL );
                 expo_solve_hessian_direct( &data, &userdata, &status, 
-                                           n, m, j_ne, h_ne,
+                                           n, m, j_ne, n,
                                            cl, cu, xl, xu, x, y, z, c, gl, 
                                            fc, gj, hl );
                 break;

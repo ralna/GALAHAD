@@ -60,6 +60,9 @@ int main(void) {
     ipc_ j_ne = 5; // Jacobian elements
     ipc_ h_ne = 2; // Hesssian elements
     ipc_ p_ne = 2; // residual-Hessians-vector products elements
+    ipc_ j_ne_dense = 6; // dense Jacobian elements
+    ipc_ h_ne_dense = 3; // dense Hesssian elements
+    ipc_ p_ne_dense = 6; // dense residual-Hessians-vector products elements
     ipc_ J_row[] = {0, 1, 1, 2, 2}; // Jacobian J
     ipc_ J_col[] = {0, 0, 1, 0, 1}; //
     ipc_ J_ptr[] = {0, 1, 3, 5};    // row pointers
@@ -119,22 +122,23 @@ int main(void) {
             case 3: // dense
                 st = 'D';
                 nls_import( &control, &data, &status, n, m,
-                            "dense", j_ne, NULL, NULL, NULL,
-                            "dense", h_ne, NULL, NULL, NULL,
-                            "dense", p_ne, NULL, NULL, NULL, W );
+                            "dense", j_ne_dense, NULL, NULL, NULL,
+                            "dense", h_ne_dense, NULL, NULL, NULL,
+                            "dense", p_ne_dense, NULL, NULL, NULL, W );
                 nls_solve_with_mat( &data, &userdata, &status,
-                                    n, m, x, c, g, res, j_ne, jac_dense,
-                                    h_ne, hess_dense, p_ne, rhessprods_dense );
+                                    n, m, x, c, g, res, j_ne_dense, jac_dense,
+                                    h_ne_dense, hess_dense, 
+                                    p_ne_dense, rhessprods_dense );
                 break;
             case 4: // diagonal
                 st = 'I';
                 nls_import( &control, &data, &status, n, m,
                             "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
-                            "diagonal", h_ne, NULL, NULL, NULL,
+                            "diagonal", n, NULL, NULL, NULL,
                             "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
                 nls_solve_with_mat( &data, &userdata, &status,
                                     n, m, x, c, g, res, j_ne, jac,
-                                    h_ne, hess, p_ne, rhessprods );
+                                    n, hess, p_ne, rhessprods );
                 break;
             case 5: // access by products
                 st = 'P';
@@ -258,9 +262,9 @@ int main(void) {
             case 3: // dense
                 st = 'D';
                 nls_import( &control, &data, &status, n, m,
-                            "dense", j_ne, NULL, NULL, NULL,
-                            "dense", h_ne, NULL, NULL, NULL,
-                            "dense", p_ne, NULL, NULL, NULL, W );
+                            "dense", j_ne_dense, NULL, NULL, NULL,
+                            "dense", h_ne_dense, NULL, NULL, NULL,
+                            "dense", p_ne_dense, NULL, NULL, NULL, W );
                 while(true){ // reverse-communication loop
                   nls_solve_reverse_with_mat( &data, &status, &eval_status,
                                               n, m, x, c, g, m*n, J_dense, y,
