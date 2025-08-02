@@ -12,10 +12,10 @@ mutable struct userdata_expo{T}
   p::T
 end
 
-function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="sytr", dls::String="potr") where {T,INT}
+function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="sytr") where {T,INT}
 
   # compute the objective and constraints
-  function eval_fc(n::INT, m::INT, x::Ptr{T}, f::Ptr{T}, c::Ptr{T}, userdata::Ptr{Cvoid})::INT
+  function eval_fc(n::INT, m::INT, x::Ptr{T}, f::Ptr{T}, c::Ptr{T}, userdata::Ptr{Cvoid})
     _x = unsafe_wrap(Vector{T}, x, n)
     _c = unsafe_wrap(Vector{T}, c, m)
     _f = unsafe_wrap(Vector{T}, f, 1)
@@ -34,7 +34,7 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
 
   # compute the gradient and Jacobian
   function eval_gj(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
-                   jval::Ptr{T}, userdata::Ptr{Cvoid})::INT
+                   jval::Ptr{T}, userdata::Ptr{Cvoid})
     _x = unsafe_wrap(Vector{T}, x, n)
     _g = unsafe_wrap(Vector{T}, g, n)
     _jval = unsafe_wrap(Vector{T}, jval, J_ne)
@@ -59,7 +59,7 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
 
   # compute the gradient and dense Jacobian
   function eval_gj_dense(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
-                         jval::Ptr{T}, userdata::Ptr{Cvoid})::INT
+                         jval::Ptr{T}, userdata::Ptr{Cvoid})
     _x = unsafe_wrap(Vector{T}, x, n)
     _g = unsafe_wrap(Vector{T}, g, n)
     _jval = unsafe_wrap(Vector{T}, jval, J_ne)
@@ -84,7 +84,7 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
 
   # compute the Hessian
   function eval_hl(n::INT, m::INT, H_ne::INT, x::Ptr{T}, y::Ptr{T},
-                   hval::Ptr{T}, userdata::Ptr{Cvoid})::INT
+                   hval::Ptr{T}, userdata::Ptr{Cvoid})
     _x = unsafe_wrap(Vector{T}, x, n)
     _y = unsafe_wrap(Vector{T}, y, m)
     _hval = unsafe_wrap(Vector{T}, hval, H_ne)
@@ -99,7 +99,7 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
 
   # compute the dense Hessian
   function eval_hl_dense(n::INT, m::INT, H_ne::INT, x::Ptr{T}, y::Ptr{T},
-                         hval::Ptr{T}, userdata::Ptr{Cvoid})::INT
+                         hval::Ptr{T}, userdata::Ptr{Cvoid})
     _x = unsafe_wrap(Vector{T}, x, n)
     _y = unsafe_wrap(Vector{T}, y, m)
     _hval = unsafe_wrap(Vector{T}, hval, H_ne)
@@ -156,6 +156,9 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
     for d in 1:4
       # Initialize EXPO
       expo_initialize(T, INT, data, control, inform)
+
+      # Set linear solvers
+      @reset control[].ssls_control.symmetric_linear_solver = galahad_linear_solver(sls)
 
       # Set user-defined control options
       # @reset control[].print_level = INT(1)
