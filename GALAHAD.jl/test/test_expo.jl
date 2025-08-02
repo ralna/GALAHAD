@@ -16,18 +16,16 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
 
   # compute the objective and constraints
   function eval_fc(x::Vector{T}, f::Vector{T}, c::Vector{T}, userdata::userdata_expo{T})
-    _f[1] = _x[1]^2 + _x[2]^2
-    _c[1] = _x[1] + _x[2] - 1
-    _c[2] = _x[1]^2 + _x[2]^2 - 1
-    _c[3] = _userdata.p * _x[1]^2 + _x[2]^2 - _userdata.p
-    _c[4] = _x[1]^2 - _x[2]
-    _c[5] = _x[2]^2 - _x[1]
+    f[1] = x[1]^2 + x[2]^2
+    c[1] = x[1] + x[2] - 1
+    c[2] = x[1]^2 + x[2]^2 - 1
+    c[3] = userdata.p * x[1]^2 + x[2]^2 - userdata.p
+    c[4] = x[1]^2 - x[2]
+    c[5] = x[2]^2 - x[1]
     return INT(0)
   end
 
   function eval_fc_c(n::INT, m::INT, x::Ptr{T}, f::Ptr{T}, c::Ptr{T}, userdata::Ptr{Cvoid})
-    @assert n == INT(2)
-    @assert m == INT(5)
     _x = unsafe_wrap(Vector{T}, x, n)
     _c = unsafe_wrap(Vector{T}, c, m)
     _f = unsafe_wrap(Vector{T}, f, 1)
@@ -39,18 +37,18 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
 
   # compute the gradient and Jacobian
   function eval_gj(x::Vector{T}, g::Vector{T}, jval::Vector{T}, userdata::userdata_expo{T})
-    _g[1] = 2 * _x[1]
-    _g[2] = 2 * _x[2]
-    _jval[1] = 1
-    _jval[2] = 1
-    _jval[3] = 2 * _x[1]
-    _jval[4] = 2 * _x[2]
-    _jval[5] = 2 * _userdata.p * _x[1]
-    _jval[6] = 2 * _x[2]
-    _jval[7] = 2 * _x[1]
-    _jval[8] = -1
-    _jval[9] = -1
-    _jval[10] = 2 * _x[2]
+    g[1] = 2 * x[1]
+    g[2] = 2 * x[2]
+    jval[1] = 1
+    jval[2] = 1
+    jval[3] = 2 * x[1]
+    jval[4] = 2 * x[2]
+    jval[5] = 2 * userdata.p * x[1]
+    jval[6] = 2 * x[2]
+    jval[7] = 2 * x[1]
+    jval[8] = -1
+    jval[9] = -1
+    jval[10] = 2 * x[2]
     return INT(0)
   end
 
@@ -67,18 +65,18 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
 
   # compute the gradient and dense Jacobian
   function eval_gj_dense(x::Vector{T}, g::Vector{T}, jval::Vector{T}, userdata::userdata_expo{T})
-    _g[1] = 2 * _x[1]
-    _g[2] = 2 * _x[2]
-    _jval[1] = 1
-    _jval[2] = 1
-    _jval[3] = 2 * _x[1]
-    _jval[4] = 2 * _x[2]
-    _jval[5] = 2 * _userdata.p * _x[1]
-    _jval[6] = 2 * _x[2]
-    _jval[7] = 2 * _x[1]
-    _jval[8] = -1
-    _jval[9] = -1
-    _jval[10] = 2 * _x[2]
+    g[1] = 2 * x[1]
+    g[2] = 2 * x[2]
+    jval[1] = 1
+    jval[2] = 1
+    jval[3] = 2 * x[1]
+    jval[4] = 2 * x[2]
+    jval[5] = 2 * userdata.p * x[1]
+    jval[6] = 2 * x[2]
+    jval[7] = 2 * x[1]
+    jval[8] = -1
+    jval[9] = -1
+    jval[10] = 2 * x[2]
     return INT(0)
   end
 
@@ -95,8 +93,8 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
 
   # compute the Hessian
   function eval_hl(x::Vector{T}, y::Vector{T}, hval::Vector{T}, userdata::userdata_expo{T})
-    _hval[1] = 2 - 2 * (_y[2] + _userdata.p * _y[3] + _y[4])
-    _hval[2] = 2 - 2 * (_y[2] + _y[3] + _y[5])
+    hval[1] = 2 - 2 * (y[2] + userdata.p * y[3] + y[4])
+    hval[2] = 2 - 2 * (y[2] + y[3] + y[5])
     return INT(0)
   end
 
@@ -113,9 +111,9 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
 
   # compute the dense Hessian
   function eval_hl_dense_c(x::Vector{T}, y::Vector{T}, hval::Vector{T}, userdata::userdata_expo{T})
-    _hval[1] = 2 - 2 * (_y[2] + _userdata.p * _y[3] + _y[4])
-    _hval[2] = 0
-    _hval[3] = 2 - 2* (_y[2] + _y[3] + _y[5])
+    hval[1] = 2 - 2 * (y[2] + userdata.p * y[3] + y[4])
+    hval[2] = 0
+    hval[3] = 2 - 2* (y[2] + y[3] + y[5])
     return INT(0)
   end
 
