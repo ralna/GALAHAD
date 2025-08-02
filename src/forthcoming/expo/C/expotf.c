@@ -43,7 +43,7 @@ int main(void) {
     ipc_ m = 5; // # constraints
     ipc_ j_ne = 10; // Jacobian elements
     ipc_ h_ne = 2; // Hesssian elements
-    ipc_ j_ne_dense = 10; // Jacobian elements
+    ipc_ j_ne_dense = 10; // dense Jacobian elements
     ipc_ h_ne_dense = 3; // dense Hesssian elements
     // 1-based indices
     ipc_ J_row[] = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5}; // Jacobian J
