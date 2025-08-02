@@ -15,14 +15,14 @@ end
 function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Objective function
-  function fun(x::Vector{T}, f::Ref{T}, userdata::userdata_trb)
+  function fun(x::Vector{T}, f::Vector{T}, userdata::userdata_trb{T})
     p = userdata.p
     f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + cos(x[1])
     return 0
   end
 
   # Gradient of the objective
-  function grad(x::Vector{T}, g::Vector{T}, userdata::userdata_trb)
+  function grad(x::Vector{T}, g::Vector{T}, userdata::userdata_trb{T})
     p = userdata.p
     g[1] = 2.0 * (x[1] + x[3] + p) - sin(x[1])
     g[2] = 2.0 * (x[2] + x[3])
@@ -31,7 +31,7 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
   end
 
   # Hessian of the objective
-  function hess(x::Vector{T}, hval::Vector{T}, userdata::userdata_trb)
+  function hess(x::Vector{T}, hval::Vector{T}, userdata::userdata_trb{T})
     hval[1] = 2.0 - cos(x[1])
     hval[2] = 2.0
     hval[3] = 2.0
@@ -41,7 +41,7 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
   end
 
   # Dense Hessian
-  function hess_dense(x::Vector{T}, hval::Vector{T}, userdata::userdata_trb)
+  function hess_dense(x::Vector{T}, hval::Vector{T}, userdata::userdata_trb{T})
     hval[1] = 2.0 - cos(x[1])
     hval[2] = 0.0
     hval[3] = 2.0
@@ -53,7 +53,7 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
 
   # Hessian-vector product
   function hessprod(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
-                    got_h::Bool, userdata::userdata_trb)
+                    got_h::Bool, userdata::userdata_trb{T})
     u[1] = u[1] + 2.0 * (v[1] + v[3]) - cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * (v[2] + v[3])
     u[3] = u[3] + 2.0 * (v[1] + v[2] + 2.0 * v[3])
@@ -63,7 +63,7 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
   # Sparse Hessian-vector product
   function shessprod(x::Vector{T}, nnz_v::INT, index_nz_v::Vector{INT},
                      v::Vector{T}, nnz_u::Ref{INT}, index_nz_u::Vector{INT},
-                     u::Vector{T}, got_h::Bool, userdata::userdata_trb)
+                     u::Vector{T}, got_h::Bool, userdata::userdata_trb{T})
     p = zeros(T, 3)
     used = falses(3)
     for i in 1:nnz_v
@@ -101,7 +101,7 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
 
   # Apply preconditioner
   function prec(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
-                userdata::userdata_trb)
+                userdata::userdata_trb{T})
     u[1] = 0.5 * v[1]
     u[2] = 0.5 * v[2]
     u[3] = 0.25 * v[3]
@@ -109,14 +109,14 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
   end
 
   # Objective function
-  function fun_diag(x::Vector{T}, f::Ref{T}, userdata::userdata_trb)
+  function fun_diag(x::Vector{T}, f::Vector{T}, userdata::userdata_trb{T})
     p = userdata.p
     f[] = (x[3] + p)^2 + x[2]^2 + cos(x[1])
     return 0
   end
 
   # Gradient of the objective
-  function grad_diag(x::Vector{T}, g::Vector{T}, userdata::userdata_trb)
+  function grad_diag(x::Vector{T}, g::Vector{T}, userdata::userdata_trb{T})
     p = userdata.p
     g[1] = -sin(x[1])
     g[2] = 2.0 * x[2]
@@ -125,7 +125,7 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
   end
 
   # Hessian of the objective
-  function hess_diag(x::Vector{T}, hval::Vector{T}, userdata::userdata_trb)
+  function hess_diag(x::Vector{T}, hval::Vector{T}, userdata::userdata_trb{T})
     hval[1] = -cos(x[1])
     hval[2] = 2.0
     hval[3] = 2.0
@@ -134,7 +134,7 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
 
   # Hessian-vector product
   function hessprod_diag(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
-                         got_h::Bool, userdata::userdata_trb)
+                         got_h::Bool, userdata::userdata_trb{T})
     u[1] = u[1] + -cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * v[2]
     u[3] = u[3] + 2.0 * v[3]
@@ -146,7 +146,7 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
                           index_nz_v::Vector{INT}, v::Vector{T}, 
                           nnz_u::Ref{INT}, index_nz_u::Vector{INT}, 
                           u::Vector{T}, got_h::Bool,
-                          userdata::userdata_trb)
+                          userdata::userdata_trb{T})
     p = zeros(T, 3)
     used = falses(3)
     for i in 1:nnz_v
@@ -180,7 +180,7 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
   inform = Ref{trb_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_trb(4.0)
+  userdata = userdata_trb{T}(4)
 
   # Set problem data
   n = INT(3)  # dimension
@@ -203,7 +203,7 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
   eval_status = Ref{INT}()
   nnz_v = Ref{INT}()
   nnz_u = Ref{INT}()
-  f = Ref{T}(0.0)
+  f = zeros(T, 1)
   u = zeros(T, n)
   v = zeros(T, n)
   index_nz_u = zeros(INT, n)
@@ -384,17 +384,6 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
     else
       @printf("%c: TRB_solve exit status = %1i\n", st, inform[].status)
     end
-
-    # @printf("x: ")
-    # for i = 1:n
-    #   @printf("%f ", x[i])
-    # end
-    # @printf("\n")
-    # @printf("gradient: ")
-    # for i = 1:n
-    #   @printf("%f ", g[i])
-    # end
-    # @printf("\n")
 
     # Delete internal workspace
     trb_terminate(T, INT, data, control, inform)

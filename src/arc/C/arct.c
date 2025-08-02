@@ -43,6 +43,7 @@ int main(void) {
     // Set problem data
     ipc_ n = 3; // dimension
     ipc_ ne = 5; // Hesssian elements
+    ipc_ ne_dense = 6 // Dense Hessian elements
     ipc_ H_row[] = {0, 1, 2, 2, 2}; // Hessian H
     ipc_ H_col[] = {0, 1, 0, 1, 2}; // NB lower triangle
     ipc_ H_ptr[] = {0, 1, 2, 5};    // row pointers
@@ -88,7 +89,7 @@ int main(void) {
                 arc_import( &control, &data, &status, n, "dense",
                            ne, NULL, NULL, NULL );
                 arc_solve_with_mat( &data, &userdata, &status,
-                                    n, x, g, ne, fun, grad, hess_dense, prec );
+                                    n, x, g, ne_dense, fun, grad, hess_dense, prec );
                 break;
             case 4: // diagonal
                 st = 'I';
@@ -137,7 +138,7 @@ int main(void) {
     ipc_ eval_status;
     rpc_ f = 0.0;
     rpc_ u[n], v[n];
-    rpc_ H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
+    rpc_ H_val[ne], H_dense[ne_dense], H_diag[n];
 
     for( ipc_ d=1; d <= 5; d++){
 
@@ -210,7 +211,7 @@ int main(void) {
                            ne, NULL, NULL, NULL );
                 while(true){ // reverse-communication loop
                     arc_solve_reverse_with_mat( &data, &status, &eval_status,
-                                         n, x, f, g, n*(n+1)/2, H_dense, u, v );
+                                         n, x, f, g, ne_dense, H_dense, u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
@@ -220,7 +221,7 @@ int main(void) {
                     }else if(status == 3){ // evaluate g
                         eval_status = grad( n, x, g, &userdata );
                     }else if(status == 4){ // evaluate H
-                        eval_status = hess_dense( n, n*(n+1)/2, x, H_dense,
+                        eval_status = hess_dense( n, ne_dense, x, H_dense,
                                                  &userdata );
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );

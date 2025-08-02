@@ -17,17 +17,17 @@ end
 function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
 
   # Objective function
-  function fun(x::Vector{T}, f::Ref{T}, userdata::userdata_bgo)
+  function fun(x::Vector{T}, f::Vector{T}, userdata::userdata_bgo{T,INT})
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
-    f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + 
-           mag * cos(freq * x[1]) + sum(x)
+    f[1] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + 
+            mag * cos(freq * x[1]) + sum(x)
     return 0
   end
 
   # Gradient of the objective
-  function grad(x::Vector{T}, g::Vector{T}, userdata::userdata_bgo)
+  function grad(x::Vector{T}, g::Vector{T}, userdata::userdata_bgo{T,INT})
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -38,7 +38,7 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # Hessian of the objective
-  function hess(x::Vector{T}, hval::Vector{T}, userdata::userdata_bgo)
+  function hess(x::Vector{T}, hval::Vector{T}, userdata::userdata_bgo{T,INT})
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -50,7 +50,7 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # Dense Hessian
-  function hess_dense(x::Vector{T}, hval::Vector{T}, userdata::userdata_bgo)
+  function hess_dense(x::Vector{T}, hval::Vector{T}, userdata::userdata_bgo{T,INT})
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -64,7 +64,7 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
 
   # Hessian-vector product
   function hessprod(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
-                    got_h::Bool, userdata::userdata_bgo)
+                    got_h::Bool, userdata::userdata_bgo{T,INT})
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -77,7 +77,7 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
   # Sparse Hessian-vector product
   function shessprod(x::Vector{T}, nnz_v::INT, index_nz_v::Vector{INT},
                      v::Vector{T}, nnz_u::Ref{INT}, index_nz_u::Vector{INT},
-                     u::Vector{T}, got_h::Bool, userdata::userdata_bgo)
+                     u::Vector{T}, got_h::Bool, userdata::userdata_bgo{T,INT})
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -118,7 +118,7 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
 
   # Apply preconditioner
   function prec(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
-                   userdata::userdata_bgo)
+                   userdata::userdata_bgo{T,INT})
     u[1] = 0.5 * v[1]
     u[2] = 0.5 * v[2]
     u[3] = 0.25 * v[3]
@@ -126,17 +126,17 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # Objective function
-  function fun_diag(x::Vector{T}, f::Ref{T}, userdata::userdata_bgo)
+  function fun_diag(x::Vector{T}, f::Vector{T}, userdata::userdata_bgo{T,INT})
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
 
-    f[] = (x[3] + p)^2 + x[2]^2 + mag * cos(freq * x[1]) + x[1] + x[2] + x[3]
+    f[1] = (x[3] + p)^2 + x[2]^2 + mag * cos(freq * x[1]) + x[1] + x[2] + x[3]
     return 0
   end
 
   # Gradient of the objective
-  function grad_diag(x::Vector{T}, g::Vector{T}, userdata::userdata_bgo)
+  function grad_diag(x::Vector{T}, g::Vector{T}, userdata::userdata_bgo{T,INT})
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -148,7 +148,7 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # Hessian of the objective
-  function hess_diag(x::Vector{T}, hval::Vector{T}, userdata::userdata_bgo)
+  function hess_diag(x::Vector{T}, hval::Vector{T}, userdata::userdata_bgo{T,INT})
     freq = userdata.freq
     mag = userdata.mag
 
@@ -160,7 +160,7 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
 
   # Hessian-vector product
   function hessprod_diag(x::Vector{T}, u::Vector{T}, v::Vector{T}, 
-                    got_h::Bool, userdata::userdata_bgo)
+                    got_h::Bool, userdata::userdata_bgo{T,INT})
     freq = userdata.freq
     mag = userdata.mag
 
@@ -174,7 +174,7 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
   function shessprod_diag(x::Vector{T}, nnz_v::INT, index_nz_v::Vector{INT},
                           v::Vector{T}, nnz_u::Ref{INT}, 
                           index_nz_u::Vector{INT}, u::Vector{T}, 
-                          got_h::Bool, userdata::userdata_bgo)
+                          got_h::Bool, userdata::userdata_bgo{T,INT})
     freq = userdata.freq
     mag = userdata.mag
 
@@ -210,7 +210,7 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
   inform = Ref{bgo_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_bgo(4.0, 10, 1000)
+  userdata = userdata_bgo{T,INT}(4, 10, 1000)
 
   # Set problem data
   n = INT(3) # dimension
@@ -233,7 +233,7 @@ function test_bgo(::Type{T}, ::Type{INT}) where {T,INT}
   eval_status = Ref{INT}()
   nnz_u = Ref{INT}()
   nnz_v = Ref{INT}()
-  f = Ref{T}(0.0)
+  f = zeros(T, 1)
   u = zeros(T, n)
   v = zeros(T, n)
   index_nz_u = zeros(INT, n)

@@ -15,9 +15,9 @@ end
 function test_tru(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Objective function
-  function fun(x::Vector{T}, f::Ref{T}, userdata::userdata_tru{T})
+  function fun(x::Vector{T}, f::Vector{T}, userdata::userdata_tru{T})
     p = userdata.p
-    f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + cos(x[1])
+    f[1] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + cos(x[1])
     return 0
   end
 
@@ -70,9 +70,9 @@ function test_tru(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
   end
 
   # Objective function
-  function fun_diag(x::Vector{T}, f::Ref{T}, userdata::userdata_tru{T})
+  function fun_diag(x::Vector{T}, f::Vector{T}, userdata::userdata_tru{T})
     p = userdata.p
-    f[] = (x[3] + p)^2 + x[2]^2 + cos(x[1])
+    f[1] = (x[3] + p)^2 + x[2]^2 + cos(x[1])
     return 0
   end
 
@@ -127,7 +127,7 @@ function test_tru(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
 
   # reverse-communication input/output
   eval_status = Ref{INT}()
-  f = Ref{T}(0.0)
+  f = zeros(T, 1)
   u = zeros(T, n)
   v = zeros(T, n)
   index_nz_u = zeros(INT, n)
