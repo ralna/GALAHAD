@@ -46,7 +46,7 @@ int main(void) {
     // Set problem data
     ipc_ n = 3; // dimension
     ipc_ ne = 5; // Hesssian elements
-    ipc_ ne_dense = 6 // Dense Hessian elements
+    ipc_ ne_dense = 6; // Dense Hessian elements
     ipc_ H_row[] = {1, 2, 3, 3, 3}; // Hessian H
     ipc_ H_col[] = {1, 2, 1, 2, 3}; // NB lower triangle
     ipc_ H_ptr[] = {1, 2, 3, 6};    // row pointers
