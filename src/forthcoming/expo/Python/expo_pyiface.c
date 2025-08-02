@@ -773,13 +773,13 @@ static PyObject* py_expo_solve(PyObject *self, PyObject *args, PyObject *keywds)
     PyArrayObject *py_y =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *y = (double *) PyArray_DATA(py_y);
+    PyArrayObject *py_c =
+      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
+    double *c = (double *) PyArray_DATA(py_c);
     npy_intp ndim[] = {n}; // size of z and gl
     PyArrayObject *py_z =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *z = (double *) PyArray_DATA(py_z);
-    PyArrayObject *py_c =
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
-    double *c = (double *) PyArray_DATA(py_c);
     PyArrayObject *py_gl =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *gl = (double *) PyArray_DATA(py_gl);
