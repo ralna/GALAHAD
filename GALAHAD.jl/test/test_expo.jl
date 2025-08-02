@@ -15,12 +15,7 @@ end
 function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="sytr") where {T,INT}
 
   # compute the objective and constraints
-  function eval_fc(n::INT, m::INT, x::Ptr{T}, f::Ptr{T}, c::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _c = unsafe_wrap(Vector{T}, c, m)
-    _f = unsafe_wrap(Vector{T}, f, 1)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
-
+  function eval_fc(x::Vector{T}, f::Vector{T}, c::Vector{T}, userdata::userdata_expo{T})
     _f[1] = _x[1]^2 + _x[2]^2
     _c[1] = _x[1] + _x[2] - 1
     _c[2] = _x[1]^2 + _x[2]^2 - 1
@@ -30,16 +25,20 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
     return INT(0)
   end
 
-  eval_fc_ptr = @eval @cfunction($eval_fc, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+  function eval_fc_c(n::INT, m::INT, x::Ptr{T}, f::Ptr{T}, c::Ptr{T}, userdata::Ptr{Cvoid})
+    @assert n == INT(2)
+    @assert m == INT(5)
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _c = unsafe_wrap(Vector{T}, c, m)
+    _f = unsafe_wrap(Vector{T}, f, 1)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
+    eval_fc(_x, _f, _c, _userdata)
+  end
+
+  eval_fc_ptr = @eval @cfunction($eval_fc_c, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the gradient and Jacobian
-  function eval_gj(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
-                   jval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _g = unsafe_wrap(Vector{T}, g, n)
-    _jval = unsafe_wrap(Vector{T}, jval, J_ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
-
+  function eval_gj(x::Vector{T}, g::Vector{T}, jval::Vector{T}, userdata::userdata_expo{T})
     _g[1] = 2 * _x[1]
     _g[2] = 2 * _x[2]
     _jval[1] = 1
@@ -55,16 +54,19 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
     return INT(0)
   end
 
-  eval_gj_ptr = @eval @cfunction($eval_gj, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+  function eval_gj_c(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
+                     jval::Ptr{T}, userdata::Ptr{Cvoid})
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _g = unsafe_wrap(Vector{T}, g, n)
+    _jval = unsafe_wrap(Vector{T}, jval, J_ne)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
+    eval_gj(_x, _g, _jval, _userdata)
+  end
+
+  eval_gj_ptr = @eval @cfunction($eval_gj_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the gradient and dense Jacobian
-  function eval_gj_dense(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
-                         jval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _g = unsafe_wrap(Vector{T}, g, n)
-    _jval = unsafe_wrap(Vector{T}, jval, J_ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
-
+  function eval_gj_dense(x::Vector{T}, g::Vector{T}, jval::Vector{T}, userdata::userdata_expo{T})
     _g[1] = 2 * _x[1]
     _g[2] = 2 * _x[2]
     _jval[1] = 1
@@ -80,38 +82,53 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
     return INT(0)
   end
 
-  eval_gj_dense_ptr = @eval @cfunction($eval_gj_dense, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+  function eval_gj_dense_c(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
+                           jval::Ptr{T}, userdata::Ptr{Cvoid})
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _g = unsafe_wrap(Vector{T}, g, n)
+    _jval = unsafe_wrap(Vector{T}, jval, J_ne)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
+    eval_gj_dense(_x, _g, _jval, _userdata)
+  end
+
+  eval_gj_dense_ptr = @eval @cfunction($eval_gj_dense_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the Hessian
-  function eval_hl(n::INT, m::INT, H_ne::INT, x::Ptr{T}, y::Ptr{T},
-                   hval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _y = unsafe_wrap(Vector{T}, y, m)
-    _hval = unsafe_wrap(Vector{T}, hval, H_ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
-
+  function eval_hl(x::Vector{T}, y::Vector{T}, hval::Vector{T}, userdata::userdata_expo{T})
     _hval[1] = 2 - 2 * (_y[2] + _userdata.p * _y[3] + _y[4])
     _hval[2] = 2 - 2 * (_y[2] + _y[3] + _y[5])
     return INT(0)
   end
 
-  eval_hl_ptr = @eval @cfunction($eval_hl, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
-  # compute the dense Hessian
-  function eval_hl_dense(n::INT, m::INT, H_ne::INT, x::Ptr{T}, y::Ptr{T},
-                         hval::Ptr{T}, userdata::Ptr{Cvoid})
+  function eval_hl_c(n::INT, m::INT, H_ne::INT, x::Ptr{T}, y::Ptr{T},
+                     hval::Ptr{T}, userdata::Ptr{Cvoid})
     _x = unsafe_wrap(Vector{T}, x, n)
     _y = unsafe_wrap(Vector{T}, y, m)
     _hval = unsafe_wrap(Vector{T}, hval, H_ne)
     _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
+    eval_hl(_x, _y, _hval, _userdata)
+  end
 
+  eval_hl_ptr = @eval @cfunction($eval_hl_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+
+  # compute the dense Hessian
+  function eval_hl_dense_c(x::Vector{T}, y::Vector{T}, hval::Vector{T}, userdata::userdata_expo{T})
     _hval[1] = 2 - 2 * (_y[2] + _userdata.p * _y[3] + _y[4])
     _hval[2] = 0
     _hval[3] = 2 - 2* (_y[2] + _y[3] + _y[5])
     return INT(0)
   end
 
-  eval_hl_dense_ptr = @eval @cfunction($eval_hl_dense, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+  function eval_hl_dense_c(n::INT, m::INT, H_ne::INT, x::Ptr{T}, y::Ptr{T},
+                           hval::Ptr{T}, userdata::Ptr{Cvoid})
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _y = unsafe_wrap(Vector{T}, y, m)
+    _hval = unsafe_wrap(Vector{T}, hval, H_ne)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
+    eval_hl_dense(_x, _y, _hval, _userdata)
+  end
+
+  eval_hl_dense_ptr = @eval @cfunction($eval_hl_dense_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
