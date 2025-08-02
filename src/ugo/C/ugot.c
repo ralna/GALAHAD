@@ -11,6 +11,10 @@
 #include <quadmath.h>
 #endif
 
+// Custom userdata struct
+struct userdata_type {
+};
+
 // Test problem objective
 rpc_ objf(rpc_ x){
     rpc_ a = 10.0;
@@ -30,12 +34,26 @@ rpc_ hessf(rpc_ x){
             + 2.0 * cos( a*x );
 }
 
+/*ipc_ fgh( rpc_ x, rpc_ *f, , rpc_ *g, rpc_ *h, const void * );*/
+
+
+// Test problem all values
+ipc_ fgh( rpc_ x, rpc_ *f, rpc_ *g, rpc_ *h, const void *userdata ){
+   *f = objf(x);
+   *g = gradf(x);
+   *h = hessf(x);
+    return 0;
+}
+
 int main(void) {
 
     // Derived types
     void *data;
     struct ugo_control_type control;
     struct ugo_inform_type inform;
+
+    // Set user data
+    struct userdata_type userdata;
 
     // Initialize UGO
     ipc_ status, eval_status;
@@ -60,6 +78,30 @@ int main(void) {
 
     // import problem data
     ugo_import( &control, &data, &status, &x_l, &x_u );
+
+    // Set for initial entry
+    status = 1;
+
+    // Solve the problem: min f(x), x_l <= x <= x_u
+
+    // Call UGO_solve
+    ugo_solve_direct(&data, &userdata, &status, &x, &f, &g, &h, fgh );
+
+    // Record solution information
+    ugo_information( &data, &inform, &status );
+
+    if(inform.status == 0){
+#ifdef REAL_128
+// interim replacement for quad output: $GALAHAD/include/galahad_pquad_ef.h
+#include "galahad_pquad_ef.h"
+#else
+       printf("direct:  %" i_ipc_ " evaluations. Optimal objective value = %.2f"
+         " status = %1" i_ipc_ "\n", inform.f_eval, f, inform.status);
+#endif
+    }else{
+       printf("direct: UGO_solve exit status = %1" i_ipc_ "\n", inform.status);
+    }
+
 
     // Set for initial entry
     status = 1;
@@ -91,11 +133,11 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_ef.h
 #include "galahad_pquad_ef.h"
 #else
-        printf("%" i_ipc_ " evaluations. Optimal objective value = %.2f"
+       printf("reverse: %" i_ipc_ " evaluations. Optimal objective value = %.2f"
           " status = %1" i_ipc_ "\n", inform.f_eval, f, inform.status);
 #endif
     }else{
-        printf("UGO_solve exit status = %1" i_ipc_ "\n", inform.status);
+       printf("reverse: UGO_solve exit status = %1" i_ipc_ "\n", inform.status);
     }
 
     // Delete internal workspace
