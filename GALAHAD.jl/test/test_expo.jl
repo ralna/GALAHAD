@@ -141,10 +141,10 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
   z = zeros(T, n)  # dual variables
   c = zeros(T, m)  # constraints
   gl = zeros(T, n) # gradient
-  c_l = T[0.0, 0.0, 0.0, 0.0, 0.0]  # constraint lower bound
-  c_u = T[Inf, Inf, Inf, Inf, Inf]  # constraint upper bound
   x_l = T[-50.0, -50.0]  # variable lower bound
   x_u = T[50.0, 50.0]  # variable upper bound
+  c_l = T[0.0, 0.0, 0.0, 0.0, 0.0]  # constraint lower bound
+  c_u = T[Inf, Inf, Inf, Inf, Inf]  # constraint upper bound
   st = ' '
   status = Ref{INT}()
 
@@ -156,9 +156,6 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
     for d in 1:4
       # Initialize EXPO
       expo_initialize(T, INT, data, control, inform)
-
-      # Linear solvers
-      @reset control[].ssls_control.symmetric_linear_solver = galahad_linear_solver(sls)
 
       # Set user-defined control options
       # @reset control[].print_level = INT(1)
