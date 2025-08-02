@@ -21,7 +21,7 @@ function test_dgo(::Type{T}, ::Type{INT}) where {T,INT}
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
-    f[é] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + 
+    f[1] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 +
             mag * cos(freq * x[1]) + x[1] + x[2] + x[3]
     return 0
   end
@@ -209,7 +209,7 @@ function test_dgo(::Type{T}, ::Type{INT}) where {T,INT}
   inform = Ref{dgo_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_dgo(4.0, 10.0, 1000.0)
+  userdata = userdata_dgo{T}(4.0, 10.0, 1000.0)
 
   # Set problem data
   n = INT(3)  # dimension
@@ -485,17 +485,6 @@ function test_dgo(::Type{T}, ::Type{INT}) where {T,INT}
     else
       @printf("%c: DGO_solve exit status = %1i\n", st, inform[].status)
     end
-
-    # @printf("x: ")
-    # for i in 1:n
-    #   @printf("%f ", x[i])
-    # end
-    # @printf("\n")
-    # @printf("gradient: ")
-    # for i in 1:n
-    #   @printf("%f ", g[i])
-    # end
-    # @printf("\n")
 
     # Delete internal workspace
     dgo_terminate(T, INT, data, control, inform)
