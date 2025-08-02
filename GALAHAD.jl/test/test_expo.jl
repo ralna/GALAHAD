@@ -127,8 +127,8 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
   m = INT(5)  # constraints
   j_ne = INT(10) # Jacobian elements
   h_ne = INT(2)  # Hesssian elements
-  j_ne_dense = INT(10) # Dense Jacobian elements
-  h_ne_dense = INT(3) # Dense Jacobian elements
+  j_ne_dense = INT(10) # dense Jacobian elements
+  h_ne_dense = INT(3) # dense Jacobian elements
   J_row = INT[1, 2, 2, 3, 3]  # Jacobian J
   J_col = INT[1, 1, 2, 1, 2]  #
   J_ptr = INT[1, 2, 4, 6]  # row pointers
@@ -141,9 +141,9 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
   x_u = T[50.0, 50.0]  # variable upper bound
 
   # Set storage
-  y = zeros(T, m) # multipliers
-  z = zeros(T, m) # dual variables
-  c = zeros(T, m) # constraints
+  y = zeros(T, m)  # multipliers
+  z = zeros(T, n)  # dual variables
+  c = zeros(T, m)  # constraints
   gl = zeros(T, n) # gradient
   st = ' '
   status = Ref{INT}()
@@ -201,8 +201,8 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
       if d == 3
         st = 'D'
         expo_import(T, INT, control, data, status, n, m,
-                    "dense", j_ne, C_NULL, C_NULL, C_NULL,
-                    "dense", h_ne, C_NULL, C_NULL, C_NULL )
+                    "dense", j_ne_dense, C_NULL, C_NULL, C_NULL,
+                    "dense", h_ne_dense, C_NULL, C_NULL, C_NULL )
 
         expo_solve_hessian_direct(T, INT, data,
                                   userdata_ptr, status, n, m, j_ne_dense, h_ne_dense,
@@ -215,10 +215,10 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
         st = 'I'
         expo_import(T, INT, control, data, status, n, m,
                     "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
-                    "diagonal", h_ne, C_NULL, C_NULL, C_NULL )
+                    "diagonal", n, C_NULL, C_NULL, C_NULL )
 
         expo_solve_hessian_direct(T, INT, data,
-                                  userdata_ptr, status, n, m, j_ne, h_ne,
+                                  userdata_ptr, status, n, m, j_ne, n,
                                   c_l, c_u, x_l, x_u, x, y, z, c, gl,
                                   eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
       end
