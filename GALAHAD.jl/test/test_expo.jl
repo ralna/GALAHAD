@@ -8,57 +8,109 @@ using Accessors
 using Quadmath
 
 # Custom userdata struct
-struct userdata_expo{T}
+mutable struct userdata_expo{T}
   p::T
 end
 
 function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
 
   # compute the objective and constraints
-  function eval_fc(x::Vector{T}, f::T, c::Vector{T}, userdata::userdata_expo)
-    f = x[1]^2 + x[2]^2
-    c[1] = x[1] + x[2] - 1.0
-    c[2] = x[1]^2 + x[2]^2 - 1.0
-    c[3] = userdata.p * x[1]^2 + x[2]^2 - userdata.p
-    c[4] = x[1]^2 - x[2]
-    c[5] = x[2]^2 - x[1]
-    return 0
+  function eval_fc(n::INT, m::INT, x::Ptr{T}, f::Ref{T}, c::Ptr{T}, userdata::Ptr{Cvoid})::INT
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _c = unsafe_wrap(Vector{T}, c, m)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
+
+    f[] = _x[1]^2 + _x[2]^2
+    _c[1] = _x[1] + _x[2] - 1
+    _c[2] = _x[1]^2 + _x[2]^2 - 1
+    _c[3] = _userdata.p * _x[1]^2 + _x[2]^2 - _userdata.p
+    _c[4] = _x[1]^2 - _x[2]
+    _c[5] = _x[2]^2 - _x[1]
+    return INT(0)
   end
+
+  eval_fc_ptr = @eval @cfunction($eval_fc, $INT, ($INT, $INT, Ptr{$T}, Ref{$T}, Ptr{$T}, Ptr{$T}))
 
   # compute the gradient and Jacobian
-  function eval_gj(x::Vector{T}, g::Vector{T}, jval::Vector{T}, 
-                   userdata::userdata_expo)
-    g[1] = 2.0 * x[1]
-    g[2] = 2.0 * x[2]
-    jval[1] = 1.0
-    jval[2] = 1.0
-    jval[3] = 2.0 * x[1]
-    jval[4] = 2.0 * x[2]
-    jval[5] = 2.0 * userdata.p * x[1]
-    jval[6] = 2.0 * x[2]
-    jval[7] = 2.0 * x[1]
-    jval[8] = -1.0
-    Jval[9] = -1.0
-    jval[10] = 2.0 * x[2]
-    return 0
+  function eval_gj(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
+                   jval::Ptr{T}, userdata::Ptr{Cvoid})::INT
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _g = unsafe_wrap(Vector{T}, g, n)
+    _jval = unsafe_wrap(Vector{T}, jval, J_ne)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
+
+    _g[1] = 2 * _x[1]
+    _g[2] = 2 * _x[2]
+    _jval[1] = 1
+    _jval[2] = 1
+    _jval[3] = 2 * _x[1]
+    _jval[4] = 2 * _x[2]
+    _jval[5] = 2 * _userdata.p * _x[1]
+    _jval[6] = 2 * _x[2]
+    _jval[7] = 2 * _x[1]
+    _jval[8] = -1
+    _jval[9] = -1
+    _jval[10] = 2 * _x[2]
+    return INT(0)
   end
+
+  eval_gj_ptr = @eval @cfunction($eval_gj, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+
+  # compute the gradient and dense Jacobian
+  function eval_gj_dense(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
+                   jval::Ptr{T}, userdata::Ptr{Cvoid})::INT
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _g = unsafe_wrap(Vector{T}, g, n)
+    _jval = unsafe_wrap(Vector{T}, jval, J_ne)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
+
+    _g[1] = 2 * _x[1]
+    _g[2] = 2 * _x[2]
+    _jval[1] = 1
+    _jval[2] = 1
+    _jval[3] = 2 * _x[1]
+    _jval[4] = 2 * _x[2]
+    _jval[5] = 2 * _userdata.p * _x[1]
+    _jval[6] = 2 * _x[2]
+    _jval[7] = 2 * _x[1]
+    _jval[8] = -1
+    _jval[9] = -1
+    _jval[10] = 2 * _x[2]
+    return INT(0)
+  end
+
+  eval_gj_dense_ptr = @eval @cfunction($eval_gj_dense, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the Hessian
-  function eval_hl(x::Vector{T}, y::Vector{T}, hval::Vector{T}, 
-                   userdata::userdata_expo)
-    hval[1] = 2.0 - 2.0 * (y[2] + userdata.p * y[3] + y[4])
-    hval[2] = 2.0 - 2.0 * (y[2] + y[3] + y[5])
-    return 0
+  function eval_hl(n::INT, m::INT, H_ne::INT, x::Ptr{T}, y::Ptr{T},
+                   hval::Ptr{T}, userdata::Ptr{Cvoid})::INT
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _y = unsafe_wrap(Vector{T}, y, m)
+    _hval = unsafe_wrap(Vector{T}, hval, H_ne)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
+
+    _hval[1] = 2 - 2 * (_y[2] + _userdata.p * _y[3] + _y[4])
+    _hval[2] = 2 - 2 * (_y[2] + _y[3] + _y[5])
+    return INT(0)
   end
 
+  eval_hl_ptr = @eval @cfunction($eval_hl, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+
   # compute the dense Hessian
-  function eval_hl_dense(x::Vector{T}, y::Vector{T}, hval::Vector{T}, 
-                         userdata::userdata_expo)
-    hval[1] = 2.0 - 2.0 * (y[2] + userdata.p * y[3] + y[4])
-    hval[2] = 0.0
-    hval[3] = 2.0 - 2.0 * (y[2] + y[3] + y[5])
-    return 0
+  function eval_hl_dense(n::INT, m::INT, H_ne::INT, x::Ptr{T}, y::Ptr{T},
+                         hval::Ptr{T}, userdata::Ptr{Cvoid})::INT
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _y = unsafe_wrap(Vector{T}, y, m)
+    _hval = unsafe_wrap(Vector{T}, hval, H_ne)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
+
+    _hval[1] = 2 - 2 * (_y[2] + _userdata.p * _y[3] + _y[4])
+    _hval[2] = 0
+    _hval[3] = 2 - 2* (_y[2] + _y[3] + _y[5])
+    return INT(0)
   end
+
+  eval_hl_dense_ptr = @eval @cfunction($eval_hl_dense, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -66,7 +118,8 @@ function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   inform = Ref{expo_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_expo(1.0)
+  userdata = userdata_expo{T}(9)
+  userdata_ptr = pointer_from_objref(userdata)
 
   # Set problem data
   n = INT(2)  # variables
@@ -91,7 +144,6 @@ function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   gl = zeros(T, n) # gradient
   st = ' '
   status = Ref{INT}()
-  @reset userdata[].p = T(9.0)
 
   @printf(" Fortran sparse matrix indexing\n\n")
   @printf(" test direct-communication options\n\n")
@@ -101,9 +153,7 @@ function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
     expo_initialize(T, INT, data, control, inform)
 
     # Linear solvers
-    @reset control[].ssls_control.definite_linear_solver = galahad_linear_solver(dls)
-    @reset control[].tru_control.symmetric_linear_solver = galahad_linear_solver(sls)
-    @reset control[].tru_control.definite_linear_solver = galahad_linear_solver(dls)
+    @reset control[].ssls_control.symmetric_linear_solver = galahad_linear_solver(sls)
 
     # Set user-defined control options
     # @reset control[].print_level = INT(1)
@@ -124,9 +174,9 @@ function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
                   "coordinate", h_ne, H_row, H_col, C_NULL )
 
       expo_solve_hessian_direct(T, INT, data, 
-                                userdata, status, n, m, j_ne, h_ne,
+                                userdata_ptr, status, n, m, j_ne, h_ne,
                                 c_l, c_u, x_l, x_u, x, y, z, c, gl,
-                                eval_fc, eval_gj, eval_hl)
+                                eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
     end
 
     # sparse by rows
@@ -137,9 +187,9 @@ function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
                   "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr )
 
       expo_solve_hessian_direct(T, INT, data, 
-                                userdata, status, n, m, j_ne, h_ne,
+                                userdata_ptr, status, n, m, j_ne, h_ne,
                                 c_l, c_u, x_l, x_u, x, y, z, c, gl,
-                                eval_fc, eval_gj, eval_hl)
+                                eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
     end
 
     # dense
@@ -150,9 +200,9 @@ function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
                   "dense", h_ne, C_NULL, C_NULL, C_NULL )
 
       expo_solve_hessian_direct(T, INT, data, 
-                                userdata, status, n, m, j_ne, h_ne,
+                                userdata_ptr, status, n, m, j_ne, h_ne,
                                 c_l, c_u, x_l, x_u, x, y, z, c, gl,
-                                eval_fc, eval_gj, eval_hl_dense)
+                                eval_fc_ptr, eval_gj_dense_ptr, eval_hl_dense_ptr)
     end
 
     # diagonal
@@ -163,9 +213,9 @@ function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
                   "diagonal", h_ne, C_NULL, C_NULL, C_NULL )
 
       expo_solve_hessian_direct(T, INT, data, 
-                                userdata, status, n, m, j_ne, h_ne,
+                                userdata_ptr, status, n, m, j_ne, h_ne,
                                 c_l, c_u, x_l, x_u, x, y, z, c, gl,
-                                eval_fc, eval_gj, eval_hl)
+                                eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
     end
 
     expo_information(T, INT, data, inform, status)
