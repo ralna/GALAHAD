@@ -12,10 +12,10 @@ mutable struct userdata_slls{T}
   scale::T
 end
 
-function test_slls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
+function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Apply preconditioner
-  function prec(n::INT, x::Vector{T}, p::Vector{T}, userdata::userdata_slls)
+  function prec(n::INT, x::Vector{T}, p::Vector{T}, userdata::userdata_slls{T})
     scale = userdata.scale
     for i in 1:n
       p[i] = scale * x[i]
@@ -29,7 +29,7 @@ function test_slls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   inform = Ref{slls_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_slls(1.0)
+  userdata = userdata_slls{T}(1)
 
   # Set problem data
   n = INT(10)  # dimension
@@ -124,129 +124,121 @@ function test_slls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   end
 
   @printf(" fortran sparse matrix indexing\n\n")
-  @printf(" tests reverse-communication options\n\n")
 
-  # reverse-communication input/output
-  on = max(o, n)
-  eval_status = Ref{INT}()
-  nz_v_start = Ref{INT}()
-  nz_v_end = Ref{INT}()
-  nz_p_end = Ref{INT}()
-  nz_v = zeros(INT, on)
-  nz_p = zeros(INT, o)
-  mask = zeros(INT, o)
-  v = zeros(T, on)
-  p = zeros(T, on)
-  nz_p_end = INT(1)
+  if mode == "reverse"
+    @printf(" tests reverse-communication options\n\n")
 
-  # Initialize SLLS
-  slls_initialize(T, INT, data, control, status)
+    # reverse-communication input/output
+    on = max(o, n)
+    eval_status = Ref{INT}()
+    nz_v_start = Ref{INT}()
+    nz_v_end = Ref{INT}()
+    nz_p_end = Ref{INT}()
+    nz_v = zeros(INT, on)
+    nz_p = zeros(INT, o)
+    mask = zeros(INT, o)
+    v = zeros(T, on)
+    p = zeros(T, on)
+    nz_p_end = INT(1)
 
-  # Linear solvers
-  @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
-  @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver(dls)
+    # Initialize SLLS
+    slls_initialize(T, INT, data, control, status)
 
-  # Start from 0
-  for i in 1:n
-    x[i] = 0.0
-    z[i] = 0.0
-  end
+    # Linear solvers
+    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver(dls)
 
-  st = "RC"
-  for i in 1:o
-    mask[i] = 0
-  end
-
-  slls_import_without_a(T, INT, control, data, status, n, o)
-
-  terminated = false
-  while !terminated # reverse-communication loop
-    slls_solve_reverse_a_prod(T, INT, data, status, eval_status, n, o, b,
-                              x, z, r, g, x_stat, v, p,
-                              nz_v, nz_v_start, nz_v_end,
-                              nz_p, nz_p_end)
-    if status[] == 0 # successful termination
-      terminated = true
-    elseif status[] < 0 # error exit
-      terminated = true
-    elseif status[] == 2 # evaluate p = Av
-      p[o] = 0.0
-      for i in 1:n
-        p[i] = v[i]
-        p[o] = p[o] + v[i]
-      end
-    elseif status[] == 3 # evaluate p = A^Tv
-      for i in 1:n
-        p[i] = v[i] + v[o]
-      end
-    elseif status[] == 4 # evaluate p = Av for sparse v
-      for i in 1:o
-        p[i] = 0.0
-      end
-      for l in nz_v_start[]:nz_v_end[]
-        i = nz_v[l]
-        p[i] = v[i]
-        p[o] = p[o] + v[i]
-      end
-    elseif status[] == 5 # evaluate p = sparse Av for sparse v
-      nz_p_end = 0
-      for l in nz_v_start[]:nz_v_end[]
-        i = nz_v[l]
-        nz_p_end = nz_p_end + 1
-        nz_p[nz_p_end] = i
-        p[i] = v[i]
-        if mask[i] == 0
-          mask[i] = 1
-          nz_p_end = nz_p_end + 1
-          nz_p[nz_p_end] = o
-          p[o] = v[i]
-        else
-          p[o] = p[o] + v[i]
-        end
-      end
-      for l in 1:nz_p_end
-        mask[nz_p[l]] = 0
-      end
-    elseif status[] == 6 # evaluate p = sparse A^Tv
-      for l in nz_v_start[]:nz_v_end[]
-        i = nz_v[l]
-        p[i] = v[i] + v[o]
-      end
-    elseif status[] == 7 # evaluate p = P^{-}v
-      for i in 1:n
-        p[i] = userdata.scale * v[i]
-      end
-    else
-      @printf(" the value %1i of status should not occur\n", status)
+    # Start from 0
+    for i in 1:n
+      x[i] = 0.0
+      z[i] = 0.0
     end
 
-    eval_status[] = 0
+    st = "RC"
+    for i in 1:o
+      mask[i] = 0
+    end
+
+    slls_import_without_a(T, INT, control, data, status, n, o)
+
+    terminated = false
+    while !terminated # reverse-communication loop
+      slls_solve_reverse_a_prod(T, INT, data, status, eval_status, n, o, b,
+                                x, z, r, g, x_stat, v, p,
+                                nz_v, nz_v_start, nz_v_end,
+                                nz_p, nz_p_end)
+      if status[] == 0 # successful termination
+        terminated = true
+      elseif status[] < 0 # error exit
+        terminated = true
+      elseif status[] == 2 # evaluate p = Av
+        p[o] = 0.0
+        for i in 1:n
+          p[i] = v[i]
+          p[o] = p[o] + v[i]
+        end
+      elseif status[] == 3 # evaluate p = A^Tv
+        for i in 1:n
+          p[i] = v[i] + v[o]
+        end
+      elseif status[] == 4 # evaluate p = Av for sparse v
+        for i in 1:o
+          p[i] = 0.0
+        end
+        for l in nz_v_start[]:nz_v_end[]
+          i = nz_v[l]
+          p[i] = v[i]
+          p[o] = p[o] + v[i]
+        end
+      elseif status[] == 5 # evaluate p = sparse Av for sparse v
+        nz_p_end = 0
+        for l in nz_v_start[]:nz_v_end[]
+          i = nz_v[l]
+          nz_p_end = nz_p_end + 1
+          nz_p[nz_p_end] = i
+          p[i] = v[i]
+          if mask[i] == 0
+            mask[i] = 1
+            nz_p_end = nz_p_end + 1
+            nz_p[nz_p_end] = o
+            p[o] = v[i]
+          else
+            p[o] = p[o] + v[i]
+          end
+        end
+        for l in 1:nz_p_end
+          mask[nz_p[l]] = 0
+        end
+      elseif status[] == 6 # evaluate p = sparse A^Tv
+        for l in nz_v_start[]:nz_v_end[]
+          i = nz_v[l]
+          p[i] = v[i] + v[o]
+        end
+      elseif status[] == 7 # evaluate p = P^{-}v
+        for i in 1:n
+          p[i] = userdata.scale * v[i]
+        end
+      else
+        @printf(" the value %1i of status should not occur\n", status)
+      end
+
+      eval_status[] = 0
+    end
+
+    # Record solution information
+    slls_information(T, INT, data, inform, status)
+
+    # Print solution details
+    if inform[].status == 0
+      @printf("%s:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
+              st, inform[].iter, inform[].obj, inform[].status)
+    else
+      @printf("%s: SLLS_solve exit status = %1i\n", st, inform[].status)
+    end
+
+    # Delete internal workspace
+    slls_terminate(T, INT, data, control, inform)
   end
-
-  # Record solution information
-  slls_information(T, INT, data, inform, status)
-
-  # Print solution details
-  if inform[].status == 0
-    @printf("%s:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
-            st, inform[].iter, inform[].obj, inform[].status)
-  else
-    @printf("%s: SLLS_solve exit status = %1i\n", st, inform[].status)
-  end
-
-  # @printf("x: ")
-  # for i = 1:n
-  #   @printf("%f ", x[i])
-  # end
-  # @printf("\n")
-  # @printf("gradient: ")
-  # for i = 1:n
-  #   @printf("%f ", g[i])
-  # end
-  # @printf("\n")
-
-  # Delete internal workspace
-  slls_terminate(T, INT, data, control, inform)
 
   return 0
 end
@@ -259,7 +251,7 @@ for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
                              (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
   if isfile(libgalahad)
     @testset "SLLS -- $T -- $INT" begin
-      @test test_slls(T, INT) == 0
+      @test test_slls(T, INT, mode="reverse") == 0
     end
   end
 end

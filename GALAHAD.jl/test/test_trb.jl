@@ -12,7 +12,7 @@ struct userdata_trb{T}
   p::T
 end
 
-function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
+function test_trb(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Objective function
   function fun(x::Vector{T}, f::Vector{T}, userdata::userdata_trb{T})
@@ -197,197 +197,201 @@ function test_trb(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
   status = Ref{INT}()
 
   @printf(" Fortran sparse matrix indexing\n\n")
-  @printf(" tests reverse-communication options\n\n")
 
-  # reverse-communication input/output
-  eval_status = Ref{INT}()
-  nnz_v = Ref{INT}()
-  nnz_u = Ref{INT}()
-  f = zeros(T, 1)
-  u = zeros(T, n)
-  v = zeros(T, n)
-  index_nz_u = zeros(INT, n)
-  index_nz_v = zeros(INT, n)
-  H_val = zeros(T, ne)
-  H_dense = zeros(T, div(n * (n + 1), 2))
-  H_diag = zeros(T, n)
+  if mode == "reverse"
+    @printf(" tests reverse-communication options\n\n")
 
-  for d in 1:5
-    # Initialize TRB
-    trb_initialize(T, INT, data, control, status)
+    # reverse-communication input/output
+    eval_status = Ref{INT}()
+    nnz_v = Ref{INT}()
+    nnz_u = Ref{INT}()
+    f = zeros(T, 1)
+    u = zeros(T, n)
+    v = zeros(T, n)
+    index_nz_u = zeros(INT, n)
+    index_nz_v = zeros(INT, n)
+    H_val = zeros(T, ne)
+    H_dense = zeros(T, div(n * (n + 1), 2))
+    H_diag = zeros(T, n)
 
-    # Linear solvers
-    @reset control[].trs_control.symmetric_linear_solver = galahad_linear_solver(sls)
-    @reset control[].trs_control.definite_linear_solver = galahad_linear_solver(dls)
-    @reset control[].psls_control.definite_linear_solver = galahad_linear_solver(dls)
+    for d in 1:5
+      # Initialize TRB
+      trb_initialize(T, INT, data, control, status)
 
-    # Set user-defined control options
-    # @reset control[].print_level = 1
+      # Linear solvers
+      @reset control[].trs_control.symmetric_linear_solver = galahad_linear_solver(sls)
+      @reset control[].trs_control.definite_linear_solver = galahad_linear_solver(dls)
+      @reset control[].psls_control.definite_linear_solver = galahad_linear_solver(dls)
 
-    # Start from 1.5
-    x = T[1.5, 1.5, 1.5]
+      # Set user-defined control options
+      # @reset control[].print_level = 1
 
-    # sparse co-ordinate storage
-    if d == 1
-      st = 'C'
-      trb_import(T, INT, control, data, status, n, "coordinate", 
-                 ne, H_row, H_col, C_NULL)
+      # Start from 1.5
+      x = T[1.5, 1.5, 1.5]
 
-      terminated = false
-      while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(T, INT, data, status, eval_status, 
-                                   n, x_l, x_u, x, f[], g, ne, H_val, u, v)
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0 # error exit
-          terminated = true
-        elseif status[] == 2 # evaluate f
-          eval_status[] = fun(x, f, userdata)
-        elseif status[] == 3 # evaluate g
-          eval_status[] = grad(x, g, userdata)
-        elseif status[] == 4 # evaluate H
-          eval_status[] = hess(x, H_val, userdata)
-        elseif status[] == 6 # evaluate the product with P
-          eval_status[] = prec(x, u, v, userdata)
-        else
-          @printf(" the value %1i of status should not occur\n", status)
+      # sparse co-ordinate storage
+      if d == 1
+        st = 'C'
+        trb_import(T, INT, control, data, status, n, "coordinate", 
+                   ne, H_row, H_col, C_NULL)
+
+        terminated = false
+        while !terminated # reverse-communication loop
+          trb_solve_reverse_with_mat(T, INT, data, status, eval_status, 
+                                     n, x_l, x_u, x, f[], g, ne, H_val, u, v)
+          if status[] == 0 # successful termination
+            terminated = true
+          elseif status[] < 0 # error exit
+            terminated = true
+          elseif status[] == 2 # evaluate f
+            eval_status[] = fun(x, f, userdata)
+          elseif status[] == 3 # evaluate g
+            eval_status[] = grad(x, g, userdata)
+          elseif status[] == 4 # evaluate H
+            eval_status[] = hess(x, H_val, userdata)
+          elseif status[] == 6 # evaluate the product with P
+            eval_status[] = prec(x, u, v, userdata)
+          else
+            @printf(" the value %1i of status should not occur\n", status)
+          end
         end
       end
-    end
 
-    # sparse by rows
-    if d == 2
-      st = 'R'
-      trb_import(T, INT, control, data, status, n,
-                 "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
+      # sparse by rows
+      if d == 2
+        st = 'R'
+        trb_import(T, INT, control, data, status, n,
+                   "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
 
-      terminated = false
-      while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(T, INT, data, status, eval_status, 
-                                   n, x_l, x_u, x, f[], g, ne, H_val, u, v)
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0 # error exit
-          terminated = true
-        elseif status[] == 2 # evaluate f
-          eval_status[] = fun(x, f, userdata)
-        elseif status[] == 3 # evaluate g
-          eval_status[] = grad(x, g, userdata)
-        elseif status[] == 4 # evaluate H
-          eval_status[] = hess(x, H_val, userdata)
-        elseif status[] == 6 # evaluate the product with P
-          eval_status[] = prec(x, u, v, userdata)
-        else
-          @printf(" the value %1i of status should not occur\n", status)
+        terminated = false
+        while !terminated # reverse-communication loop
+          trb_solve_reverse_with_mat(T, INT, data, status, eval_status, 
+                                     n, x_l, x_u, x, f[], g, ne, H_val, u, v)
+          if status[] == 0 # successful termination
+            terminated = true
+          elseif status[] < 0 # error exit
+            terminated = true
+          elseif status[] == 2 # evaluate f
+            eval_status[] = fun(x, f, userdata)
+          elseif status[] == 3 # evaluate g
+            eval_status[] = grad(x, g, userdata)
+          elseif status[] == 4 # evaluate H
+            eval_status[] = hess(x, H_val, userdata)
+          elseif status[] == 6 # evaluate the product with P
+            eval_status[] = prec(x, u, v, userdata)
+          else
+            @printf(" the value %1i of status should not occur\n", status)
+          end
         end
       end
-    end
 
-    # dense
-    if d == 3
-      st = 'D'
-      trb_import(T, INT, control, data, status, n,
-                 "dense", ne, C_NULL, C_NULL, C_NULL)
+      # dense
+      if d == 3
+        st = 'D'
+        trb_import(T, INT, control, data, status, n,
+                   "dense", ne, C_NULL, C_NULL, C_NULL)
 
-      terminated = false
-      while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(T, INT, data, status, eval_status, n,
-                                   x_l, x_u, x, f[], g, 
-                                   div(n * (n + 1), 2), H_dense, u, v)
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0 # error exit
-          terminated = true
-        elseif status[] == 2 # evaluate f
-          eval_status[] = fun(x, f, userdata)
-        elseif status[] == 3 # evaluate g
-          eval_status[] = grad(x, g, userdata)
-        elseif status[] == 4 # evaluate H
-          eval_status[] = hess_dense(x, H_dense, userdata)
-        elseif status[] == 6 # evaluate the product with P
-          eval_status[] = prec(x, u, v, userdata)
-        else
-          @printf(" the value %1i of status should not occur\n", status)
+        terminated = false
+        while !terminated # reverse-communication loop
+          trb_solve_reverse_with_mat(T, INT, data, status, eval_status, n,
+                                     x_l, x_u, x, f[], g, 
+                                     div(n * (n + 1), 2), H_dense, u, v)
+          if status[] == 0 # successful termination
+            terminated = true
+          elseif status[] < 0 # error exit
+            terminated = true
+          elseif status[] == 2 # evaluate f
+            eval_status[] = fun(x, f, userdata)
+          elseif status[] == 3 # evaluate g
+            eval_status[] = grad(x, g, userdata)
+          elseif status[] == 4 # evaluate H
+            eval_status[] = hess_dense(x, H_dense, userdata)
+          elseif status[] == 6 # evaluate the product with P
+            eval_status[] = prec(x, u, v, userdata)
+          else
+            @printf(" the value %1i of status should not occur\n", status)
+          end
         end
       end
-    end
 
-    # diagonal
-    if d == 4
-      st = 'I'
-      trb_import(T, INT, control, data, status, n,
-                 "diagonal", ne, C_NULL, C_NULL, C_NULL)
+      # diagonal
+      if d == 4
+        st = 'I'
+        trb_import(T, INT, control, data, status, n,
+                   "diagonal", ne, C_NULL, C_NULL, C_NULL)
 
-      terminated = false
-      while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(T, INT, data, status, eval_status, 
-                                   n, x_l, x_u, x, f[], g, n, H_diag, u, v)
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0 # error exit
-          terminated = true
-        elseif status[] == 2 # evaluate f
-          eval_status[] = fun_diag(x, f, userdata)
-        elseif status[] == 3 # evaluate g
-          eval_status[] = grad_diag(x, g, userdata)
-        elseif status[] == 4 # evaluate H
-          eval_status[] = hess_diag(x, H_diag, userdata)
-        elseif status[] == 6 # evaluate the product with P
-          eval_status[] = prec(x, u, v, userdata)
-        else
-          @printf(" the value %1i of status should not occur\n", status)
+        terminated = false
+        while !terminated # reverse-communication loop
+          trb_solve_reverse_with_mat(T, INT, data, status, eval_status, 
+                                     n, x_l, x_u, x, f[], g, n, H_diag, u, v)
+          if status[] == 0 # successful termination
+            terminated = true
+          elseif status[] < 0 # error exit
+            terminated = true
+          elseif status[] == 2 # evaluate f
+            eval_status[] = fun_diag(x, f, userdata)
+          elseif status[] == 3 # evaluate g
+            eval_status[] = grad_diag(x, g, userdata)
+          elseif status[] == 4 # evaluate H
+            eval_status[] = hess_diag(x, H_diag, userdata)
+          elseif status[] == 6 # evaluate the product with P
+            eval_status[] = prec(x, u, v, userdata)
+          else
+            @printf(" the value %1i of status should not occur\n", status)
+          end
         end
       end
-    end
 
-    # access by products
-    if d == 5
-      st = 'P'
-      trb_import(T, INT, control, data, status, n, "absent", 
-                 ne, C_NULL, C_NULL, C_NULL)
-      nnz_u = Ref{INT}(0)
+      # access by products
+      if d == 5
+        st = 'P'
+        trb_import(T, INT, control, data, status, n, "absent", 
+                   ne, C_NULL, C_NULL, C_NULL)
+        nnz_u = Ref{INT}(0)
 
-      terminated = false
-      while !terminated # reverse-communication loop
-        trb_solve_reverse_without_mat(T, INT, data, status, eval_status, 
-                                      n, x_l, x_u, x, f[], g, u, v, 
-                                      index_nz_v, nnz_v, 
-                                      index_nz_u, nnz_u[])
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0 # error exit
-          terminated = true
-        elseif status[] == 2 # evaluate f
-          eval_status[] = fun(x, f, userdata)
-        elseif status[] == 3 # evaluate g
-          eval_status[] = grad(x, g, userdata)
-        elseif status[] == 5 # evaluate H
-          eval_status[] = hessprod(x, u, v, false, userdata)
-        elseif status[] == 6 # evaluate the product with P
-          eval_status[] = prec(x, u, v, userdata)
-        elseif status[] == 7 # evaluate sparse Hessian-vect prod
-          eval_status[] = shessprod(x, nnz_v[], index_nz_v, v, nnz_u, 
-                                    index_nz_u, u, false, userdata)
-        else
-          @printf(" the value %1i of status should not occur\n", status)
+        terminated = false
+        while !terminated # reverse-communication loop
+          trb_solve_reverse_without_mat(T, INT, data, status, eval_status, 
+                                        n, x_l, x_u, x, f[], g, u, v, 
+                                        index_nz_v, nnz_v, 
+                                        index_nz_u, nnz_u[])
+          if status[] == 0 # successful termination
+            terminated = true
+          elseif status[] < 0 # error exit
+            terminated = true
+          elseif status[] == 2 # evaluate f
+            eval_status[] = fun(x, f, userdata)
+          elseif status[] == 3 # evaluate g
+            eval_status[] = grad(x, g, userdata)
+          elseif status[] == 5 # evaluate H
+            eval_status[] = hessprod(x, u, v, false, userdata)
+          elseif status[] == 6 # evaluate the product with P
+            eval_status[] = prec(x, u, v, userdata)
+          elseif status[] == 7 # evaluate sparse Hessian-vect prod
+            eval_status[] = shessprod(x, nnz_v[], index_nz_v, v, nnz_u, 
+                                      index_nz_u, u, false, userdata)
+          else
+            @printf(" the value %1i of status should not occur\n", status)
+          end
         end
       end
+
+      # Record solution information
+      trb_information(T, INT, data, inform, status)
+
+      # Print solution details
+      if inform[].status[] == 0
+        @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
+                inform[].iter, inform[].obj, inform[].status)
+      else
+        @printf("%c: TRB_solve exit status = %1i\n", st, inform[].status)
+      end
+
+      # Delete internal workspace
+      trb_terminate(T, INT, data, control, inform)
     end
-
-    # Record solution information
-    trb_information(T, INT, data, inform, status)
-
-    # Print solution details
-    if inform[].status[] == 0
-      @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
-              inform[].iter, inform[].obj, inform[].status)
-    else
-      @printf("%c: TRB_solve exit status = %1i\n", st, inform[].status)
-    end
-
-    # Delete internal workspace
-    trb_terminate(T, INT, data, control, inform)
   end
+
   return 0
 end
 
@@ -399,7 +403,7 @@ for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
                              (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
   if isfile(libgalahad)
     @testset "TRB -- $T -- $INT" begin
-      @test test_trb(T, INT) == 0
+      @test test_trb(T, INT, mode="reverse") == 0
     end
   end
 end
