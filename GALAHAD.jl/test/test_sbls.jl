@@ -182,11 +182,6 @@ function test_sbls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
       @printf("%c: SBLS_solve exit status = %1i\n", st, inform[].status)
     end
 
-    # @printf("sol: ")
-    # for i = 1:n+m
-    #  @printf("%f ", x[i])
-    # end
-
     # Delete internal workspace
     sbls_terminate(T, INT, data, control, inform)
   end
