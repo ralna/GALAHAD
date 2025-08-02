@@ -30,7 +30,7 @@ function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
     return INT(0)
   end
 
-  eval_fc_ptr = @eval @cfunction($eval_fc, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+  eval_fc_ptr = @eval @cfunction($eval_fc, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the gradient and Jacobian
   function eval_gj(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
