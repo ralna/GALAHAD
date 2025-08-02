@@ -12,7 +12,7 @@ mutable struct userdata_expo{T}
   p::T
 end
 
-function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
+function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # compute the objective and constraints
   function eval_fc(n::INT, m::INT, x::Ptr{T}, f::Ptr{T}, c::Ptr{T}, userdata::Ptr{Cvoid})::INT
@@ -59,7 +59,7 @@ function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
 
   # compute the gradient and dense Jacobian
   function eval_gj_dense(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
-                   jval::Ptr{T}, userdata::Ptr{Cvoid})::INT
+                         jval::Ptr{T}, userdata::Ptr{Cvoid})::INT
     _x = unsafe_wrap(Vector{T}, x, n)
     _g = unsafe_wrap(Vector{T}, g, n)
     _jval = unsafe_wrap(Vector{T}, jval, J_ne)
@@ -127,6 +127,8 @@ function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   m = INT(5)  # constraints
   j_ne = INT(10) # Jacobian elements
   h_ne = INT(2)  # Hesssian elements
+  j_ne_dense = INT(10) # Dense Jacobian elements
+  h_ne_dense = INT(3) # Dense Jacobian elements
   J_row = INT[1, 2, 2, 3, 3]  # Jacobian J
   J_col = INT[1, 1, 2, 1, 2]  #
   J_ptr = INT[1, 2, 4, 6]  # row pointers
@@ -147,89 +149,92 @@ function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   status = Ref{INT}()
 
   @printf(" Fortran sparse matrix indexing\n\n")
-  @printf(" test direct-communication options\n\n")
 
-  for d in 1:4
-    # Initialize EXPO
-    expo_initialize(T, INT, data, control, inform)
+  if mode == "direct"
+    @printf(" test direct-communication options\n\n")
 
-    # Linear solvers
-    @reset control[].ssls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    for d in 1:4
+      # Initialize EXPO
+      expo_initialize(T, INT, data, control, inform)
 
-    # Set user-defined control options
-    # @reset control[].print_level = INT(1)
-    # @reset control[].tru_control.print_level = INT(1)
-    @reset control[].max_it = INT(20)
-    @reset control[].max_eval = INT(100)
-    @reset control[].stop_abs_p = T(0.00001)
-    @reset control[].stop_abs_d = T(0.00001)
-    @reset control[].stop_abs_c = T(0.00001)
+      # Linear solvers
+      @reset control[].ssls_control.symmetric_linear_solver = galahad_linear_solver(sls)
 
-    x = T[3.0, 1.0]  # starting point
+      # Set user-defined control options
+      # @reset control[].print_level = INT(1)
+      # @reset control[].tru_control.print_level = INT(1)
+      @reset control[].max_it = INT(20)
+      @reset control[].max_eval = INT(100)
+      @reset control[].stop_abs_p = T(0.00001)
+      @reset control[].stop_abs_d = T(0.00001)
+      @reset control[].stop_abs_c = T(0.00001)
 
-    # sparse co-ordinate storage
-    if d == 1
-      st = 'C'
-      expo_import(T, INT, control, data, status, n, m,
-                  "coordinate", j_ne, J_row, J_col, C_NULL,
-                  "coordinate", h_ne, H_row, H_col, C_NULL )
+      x = T[3.0, 1.0]  # starting point
 
-      expo_solve_hessian_direct(T, INT, data, 
-                                userdata_ptr, status, n, m, j_ne, h_ne,
-                                c_l, c_u, x_l, x_u, x, y, z, c, gl,
-                                eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
+      # sparse co-ordinate storage
+      if d == 1
+        st = 'C'
+        expo_import(T, INT, control, data, status, n, m,
+                    "coordinate", j_ne, J_row, J_col, C_NULL,
+                    "coordinate", h_ne, H_row, H_col, C_NULL )
+
+        expo_solve_hessian_direct(T, INT, data,
+                                  userdata_ptr, status, n, m, j_ne, h_ne,
+                                  c_l, c_u, x_l, x_u, x, y, z, c, gl,
+                                  eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
+      end
+
+      # sparse by rows
+      if d == 2
+        st = 'R'
+        expo_import(T, INT, control, data, status, n, m,
+                    "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
+                    "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr )
+
+        expo_solve_hessian_direct(T, INT, data,
+                                  userdata_ptr, status, n, m, j_ne, h_ne,
+                                  c_l, c_u, x_l, x_u, x, y, z, c, gl,
+                                  eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
+      end
+
+      # dense
+      if d == 3
+        st = 'D'
+        expo_import(T, INT, control, data, status, n, m,
+                    "dense", j_ne, C_NULL, C_NULL, C_NULL,
+                    "dense", h_ne, C_NULL, C_NULL, C_NULL )
+
+        expo_solve_hessian_direct(T, INT, data,
+                                  userdata_ptr, status, n, m, j_ne_dense, h_ne_dense,
+                                  c_l, c_u, x_l, x_u, x, y, z, c, gl,
+                                  eval_fc_ptr, eval_gj_dense_ptr, eval_hl_dense_ptr)
+      end
+
+      # diagonal
+      if d == 4
+        st = 'I'
+        expo_import(T, INT, control, data, status, n, m,
+                    "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
+                    "diagonal", h_ne, C_NULL, C_NULL, C_NULL )
+
+        expo_solve_hessian_direct(T, INT, data,
+                                  userdata_ptr, status, n, m, j_ne, h_ne,
+                                  c_l, c_u, x_l, x_u, x, y, z, c, gl,
+                                  eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
+      end
+
+      expo_information(T, INT, data, inform, status)
+
+      if inform[].status == 0
+        @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
+                st, inform[].iter, inform[].obj, inform[].status)
+      else
+        @printf("%c: EXPO_solve exit status = %1i\n", st, inform[].status)
+      end
+
+      # Delete internal workspace
+      expo_terminate(T, INT, data, control, inform)
     end
-
-    # sparse by rows
-    if d == 2
-      st = 'R'
-      expo_import(T, INT, control, data, status, n, m,
-                  "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
-                  "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr )
-
-      expo_solve_hessian_direct(T, INT, data, 
-                                userdata_ptr, status, n, m, j_ne, h_ne,
-                                c_l, c_u, x_l, x_u, x, y, z, c, gl,
-                                eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
-    end
-
-    # dense
-    if d == 3
-      st = 'D'
-      expo_import(T, INT, control, data, status, n, m,
-                  "dense", j_ne, C_NULL, C_NULL, C_NULL,
-                  "dense", h_ne, C_NULL, C_NULL, C_NULL )
-
-      expo_solve_hessian_direct(T, INT, data, 
-                                userdata_ptr, status, n, m, j_ne, h_ne,
-                                c_l, c_u, x_l, x_u, x, y, z, c, gl,
-                                eval_fc_ptr, eval_gj_dense_ptr, eval_hl_dense_ptr)
-    end
-
-    # diagonal
-    if d == 4
-      st = 'I'
-      expo_import(T, INT, control, data, status, n, m,
-                  "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
-                  "diagonal", h_ne, C_NULL, C_NULL, C_NULL )
-
-      expo_solve_hessian_direct(T, INT, data, 
-                                userdata_ptr, status, n, m, j_ne, h_ne,
-                                c_l, c_u, x_l, x_u, x, y, z, c, gl,
-                                eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
-    end
-
-    expo_information(T, INT, data, inform, status)
-
-    if inform[].status == 0
-      @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
-              st, inform[].iter, inform[].obj, inform[].status)
-    else
-      @printf("%c: EXPO_solve exit status = %1i\n", st, inform[].status)
-    end
-
-    # Delete internal workspace
-    expo_terminate(T, INT, data, control, inform)
   end
 
   return 0
@@ -243,7 +248,7 @@ for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
                              (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
   if isfile(libgalahad)
     @testset "EXPO -- $T -- $INT" begin
-      @test test_expo(T, INT) == 0
+      @test test_expo(T, INT, mode="direct") == 0
     end
   end
 end
