@@ -129,22 +129,22 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
   h_ne = INT(2)  # Hesssian elements
   j_ne_dense = INT(10) # dense Jacobian elements
   h_ne_dense = INT(3) # dense Jacobian elements
-  J_row = INT[1, 2, 2, 3, 3]  # Jacobian J
-  J_col = INT[1, 1, 2, 1, 2]  #
-  J_ptr = INT[1, 2, 4, 6]  # row pointers
+  J_row = INT[1, 1, 2, 2, 3, 3, 4, 4, 5, 5]  # Jacobian J
+  J_col = INT[1, 2, 1, 2, 1, 2, 1, 2, 1, 2]  #
+  J_ptr = INT[1, 3, 5, 7, 9, 11]  # row pointers
   H_row = INT[1, 2]  # Hessian H
   H_col = INT[1, 2]  # NB lower triangle
   H_ptr = INT[1, 2, 3]  # row pointers
-  c_l = T[0.0, 0.0, 0.0, 0.0, 0.0]  # constraint lower bound
-  c_u = T[Inf, Inf, Inf, Inf, Inf]  # constraint upper bound
-  x_l = T[-50.0, -50.0]  # variable lower bound
-  x_u = T[50.0, 50.0]  # variable upper bound
 
   # Set storage
   y = zeros(T, m)  # multipliers
   z = zeros(T, n)  # dual variables
   c = zeros(T, m)  # constraints
   gl = zeros(T, n) # gradient
+  c_l = T[0.0, 0.0, 0.0, 0.0, 0.0]  # constraint lower bound
+  c_u = T[Inf, Inf, Inf, Inf, Inf]  # constraint upper bound
+  x_l = T[-50.0, -50.0]  # variable lower bound
+  x_u = T[50.0, 50.0]  # variable upper bound
   st = ' '
   status = Ref{INT}()
 
