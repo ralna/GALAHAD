@@ -15,12 +15,13 @@ end
 function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
 
   # compute the objective and constraints
-  function eval_fc(n::INT, m::INT, x::Ptr{T}, f::Ref{T}, c::Ptr{T}, userdata::Ptr{Cvoid})::INT
+  function eval_fc(n::INT, m::INT, x::Ptr{T}, f::Ptr{T}, c::Ptr{T}, userdata::Ptr{Cvoid})::INT
     _x = unsafe_wrap(Vector{T}, x, n)
     _c = unsafe_wrap(Vector{T}, c, m)
+    _f = unsafe_wrap(Vector{T}, f, 1)
     _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
 
-    f[] = _x[1]^2 + _x[2]^2
+    _f[1] = _x[1]^2 + _x[2]^2
     _c[1] = _x[1] + _x[2] - 1
     _c[2] = _x[1]^2 + _x[2]^2 - 1
     _c[3] = _userdata.p * _x[1]^2 + _x[2]^2 - _userdata.p
@@ -29,7 +30,7 @@ function test_expo(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
     return INT(0)
   end
 
-  eval_fc_ptr = @eval @cfunction($eval_fc, $INT, ($INT, $INT, Ptr{$T}, Ref{$T}, Ptr{$T}, Ptr{$T}))
+  eval_fc_ptr = @eval @cfunction($eval_fc, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the gradient and Jacobian
   function eval_gj(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
