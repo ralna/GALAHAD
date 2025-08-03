@@ -38,7 +38,7 @@ function test_l2rt(::Type{T}, ::Type{INT}) where {T,INT}
 
   # iteration loop to find the minimizer with A^T = (I:diag(1:n))
   terminated = false
-  while !terminated # reverse-communication loop
+  while !terminated  # reverse-communication loop
     l2rt_solve_problem(T, INT, data, status, m, n, power, weight, shift, x, u, v)
     if status[] == 0 # successful termination
       terminated = true

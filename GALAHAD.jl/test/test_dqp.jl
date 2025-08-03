@@ -147,17 +147,6 @@ function test_dqp(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
       @printf("%c: DQP_solve exit status = %1i\n", st, inform[].status)
     end
 
-    # @printf("x: ")
-    # for i = 1:n
-    #   @printf("%f ", x[i])
-    # end
-    # @printf("\n")
-    # @printf("gradient: ")
-    # for i = 1:n
-    #   @printf("%f ", g[i])
-    # end
-    # @printf("\n")
-
     # Delete internal workspace
     dqp_terminate(T, INT, data, control, inform)
   end
@@ -206,17 +195,6 @@ function test_dqp(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
     else
       @printf("%c: DQP_solve exit status = %1i\n", st, inform[].status)
     end
-
-    # @printf("x: ")
-    # for i = 1:n
-    #   @printf("%f ", x[i])
-    # end
-    # @printf("\n")
-    # @printf("gradient: ")
-    # for i = 1:n
-    #   @printf("%f ", g[i])
-    # end
-    # @printf("\n")
 
     # Delete internal workspace
     dqp_terminate(T, INT, data, control, inform)

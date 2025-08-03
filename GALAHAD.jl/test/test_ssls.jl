@@ -186,10 +186,6 @@ function test_ssls(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
 
     if inform[].status == 0
       @printf("%c: status = %1i\n", st, inform[].status)
-      # @printf("sol: ")
-      # for i = 1:n+m
-      #  @printf("%f ", x[i])
-      # end
     else
       @printf("%c: SSLS_solve exit status = %1i\n", st, inform[].status)
     end

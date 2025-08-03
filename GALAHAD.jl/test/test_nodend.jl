@@ -51,21 +51,21 @@ function test_nodend(::Type{T}, ::Type{INT}) where {T,INT}
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      nodend_order(T, INT, control, data, status, n, perm, 
+      nodend_order(T, INT, control, data, status, n, perm,
                    "coordinate", A_ne, A_row, A_col, C_NULL)
     end
 
     # sparse by rows
     if d == 2
       st = 'R'
-      nodend_order(T, INT, control, data, status, n, perm, 
+      nodend_order(T, INT, control, data, status, n, perm,
                    "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
     end
 
     # dense
     if d == 3
       st = 'D'
-      nodend_order(T, INT, control, data, status, n, perm, 
+      nodend_order(T, INT, control, data, status, n, perm,
                    "dense", A_dense_ne, C_NULL, C_NULL, C_NULL)
     end
     nodend_information(T, INT, data, inform, status)

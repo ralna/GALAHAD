@@ -263,7 +263,9 @@ for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
                              (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
   if isfile(libgalahad)
     @testset "EXPO -- $T -- $INT" begin
-      @test test_expo(T, INT, mode="direct") == 0
+      @testset "$mode communication" for mode in ("direct",)
+        @test test_expo(T, INT; mode) == 0
+      end
     end
   end
 end

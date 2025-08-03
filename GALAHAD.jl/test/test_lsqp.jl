@@ -99,14 +99,6 @@ function test_lsqp(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
     else
       @printf("%c: LSQP_solve exit status = %1i\n", st, inform[].status)
     end
-    # @printf("x: ")
-    # for i = 1:n
-    #   @printf("%f ", x[i])
-    # @printf("\n")
-    # @printf("gradient: ")
-    # for i = 1:n
-    #   @printf("%f ", g[i])
-    # @printf("\n")
 
     # Delete internal workspace
     lsqp_terminate(T, INT, data, control, inform)

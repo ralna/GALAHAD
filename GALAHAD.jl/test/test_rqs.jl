@@ -215,11 +215,6 @@ function test_rqs(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
         @printf("format %c%s: RQS_solve_problem exit status = %1i, f = %.2f\n", st, ma,
                 inform[].status, inform[].obj_regularized)
 
-        # @printf("x: ")
-        # for i in 1:n+m
-        #   @printf("%f ", x[i])
-        # end
-
         # Delete internal workspace
         rqs_terminate(T, INT, data, control, inform)
       end

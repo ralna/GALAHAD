@@ -193,12 +193,6 @@ function test_llst(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
       end
     end
 
-    # @printf("x: ")
-    # for i = 1:n
-    #   @printf("%f ", x[i])
-    # end
-    # @printf("\n")
-
     # Delete internal workspace
     llst_terminate(T, INT, data, control, inform)
   end

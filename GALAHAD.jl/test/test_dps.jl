@@ -106,11 +106,6 @@ function test_dps(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
     @printf("format %c: DPS_resolve_problem exit status = %1i, f = %.2f\n",
             st, inform[].status, inform[].obj)
 
-    # @printf("x: ")
-    # for i = 1:n+m
-    #   @printf("%f ", x[i])
-    # end
-
     # Delete internal workspace
     dps_terminate(T, INT, data, control, inform)
   end
