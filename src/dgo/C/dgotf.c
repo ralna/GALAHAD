@@ -85,7 +85,7 @@ int main(void) {
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
-        control.maxit = 2500;
+        control.maxit = 100;
         // control.trb_control.maxit = 100;
         //control.print_level = 1;
 
@@ -187,7 +187,7 @@ int main(void) {
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
-        control.maxit = 2500;
+        control.maxit = 100;
         // control.trb_control.maxit = 100;
         //control.print_level = 1;
 
