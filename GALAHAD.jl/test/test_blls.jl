@@ -12,16 +12,22 @@ mutable struct userdata_blls{T}
   scale::T
 end
 
-function test_blls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
+function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Apply preconditioner
-  function prec(n::INT, x::Vector{T}, p::Vector{T}, userdata::userdata_blls)
-    scale = userdata.scale
-    for i in 1:n
-      p[i] = scale * x[i]
-    end
-    return 0
+  function prec(v::Vector{T}, p::Vector{T}, userdata::userdata_blls{T})
+    p .= userdata.scale .* v
+    return INT(0)
   end
+
+  function prec_c(n::INT, v::Ptr{T}, p::Ptr{T}, userdata::Ptr{Cvoid})
+    _v = unsafe_wrap(Vector{T}, v, n)
+    _p = unsafe_wrap(Vector{T}, p, n)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_blls{T}
+    prec(_v, _p, _userdata)
+  end
+
+  prec_ptr = @eval @cfunction($prec_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -29,7 +35,8 @@ function test_blls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   inform = Ref{blls_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_blls(1.0)
+  userdata = userdata_blls{T}(1)
+  userdata_ptr = pointer_from_objref(userdata)
 
   # Set problem data
   n = INT(10)  # dimension
@@ -144,125 +151,192 @@ function test_blls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   end
 
   @printf(" fortran sparse matrix indexing\n\n")
-  @printf(" tests reverse-communication options\n\n")
 
-  # reverse-communication input/output
-  on = max(o, n)
-  eval_status = Ref{INT}()
-  nz_v_start = Ref{INT}()
-  nz_v_end = Ref{INT}()
-  nz_v = zeros(INT, on)
-  nz_p = zeros(INT, o)
-  mask = zeros(INT, o)
-  v = zeros(T, on)
-  p = zeros(T, on)
-  nz_p_end = 1
+  if mode == "direct"
+    @printf(" basic tests of blls storage formats\n\n")
 
-  # Initialize BLLS
-  blls_initialize(T, INT, data, control, status)
+    for d in 1:6
+      # Initialize SLLS
+      blls_initialize(T, INT, data, control, status)
 
-  # Linear solvers
-  @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
-  @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver(dls)
+      # Linear solvers
+      @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+      @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver(dls)
 
-  # Start from 0
-  for i in 1:n
-    x[i] = 0.0
-    z[i] = 0.0
+      # Start from 0
+      for i = 1:n
+        x[i] = zero(T)
+        z[i] = zero(T)
+      end
+
+      # sparse co-ordinate storage
+      if d == 1
+        st = "CO"
+        blls_import(T, INT, control, data, status, n, o, "coordinate", Ao_ne, Ao_row, Ao_col, INT(0), C_NULL)
+        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_ne, Ao_val, b, x_l, x_u, x, z, r, g, x_stat, w, prec_ptr)
+      end
+
+      # sparse by rows
+      if d == 2
+        st = "SR"
+        blls_import(T, INT, control, data, status, n, o, "sparse_by_rows", Ao_ne, C_NULL, Ao_col, Ao_ptr_ne, Ao_ptr)
+        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_ne, Ao_val, b, x_l, x_u, x, z, r, g, x_stat, w, prec_ptr)
+      end
+
+      # dense
+      if d == 3
+        st = "DD"
+        blls_import(T, INT, control, data, status, n, o, "dense", Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
+        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_dense_ne, Ao_dense, b, x_l, x_u, x, z, r, g, x_stat, w, prec_ptr)
+      end
+
+      # dense by rows
+      if d == 4
+        st = "DR"
+        blls_import(T, INT, control, data, status, n, o, "dense_by_rows", Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
+        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_dense_ne, Ao_dense, b, x_l, x_u, x, z, r, g, x_stat, w, prec_ptr)
+      end
+
+      # sparse by columns
+      if d == 5
+        st = "SC"
+        blls_import(T, INT, control, data, status, n, o, "sparse_by_columns", Ao_ne, Ao_by_col_row, C_NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr)
+        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_ne, Ao_by_col_val, b, x_l, x_u, x, z, r, g, x_stat, w, prec_ptr)
+      end
+
+      # dense by columns
+      if d == 6
+        st = "DC"
+        blls_import(T, INT, control, data, status, n, o, "dense_by_columns", Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
+        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_dense_ne, Ao_by_col_dense, b, x_l, x_u, x, z, r, g, x_stat, w, prec_ptr)
+      end
+
+      blls_information(T, INT, data, inform, status)
+
+      if inform[].status == 0
+        @printf("%s:%6i iterations. Optimal objective value = %.2f, status = %1i\n",
+                st, inform[].iter, inform[].obj, inform[].status)
+      else
+        @printf("%s: BLLS_solve exit status = %1i\n", st, inform[].status)
+      end
+
+      # Delete internal workspace
+      blls_terminate(T, INT, data, control, inform)
+    end
   end
 
-  st = "RC"
-  for i in 1:o
-    mask[i] = 0
-  end
-  blls_import_without_a(T, INT, control, data, status, n, o)
+  if mode == "reverse"
+    @printf(" tests reverse-communication options\n\n")
 
-  terminated = false
-  while !terminated # reverse-communication loop
-    blls_solve_reverse_a_prod(T, INT, data, status, eval_status, n, o, b,
-                              x_l, x_u, x, z, r, g, x_stat, v, p,
-                              nz_v, nz_v_start, nz_v_end,
-                              nz_p, nz_p_end, w)
+    # reverse-communication input/output
+    on = max(o, n)
+    eval_status = Ref{INT}()
+    nz_v_start = Ref{INT}()
+    nz_v_end = Ref{INT}()
+    nz_v = zeros(INT, on)
+    nz_p = zeros(INT, o)
+    mask = zeros(INT, o)
+    v = zeros(T, on)
+    p = zeros(T, on)
+    nz_p_end = 1
 
-    if status[] == 0 # successful termination
-      terminated = true
-    elseif status[] < 0 # error exit
-      terminated = true
-    elseif status[] == 2 # evaluate p = Av
-      p[o] = 0.0
-      for i in 1:n
-        p[i] = v[i]
-        p[o] = p[o] + v[i]
-      end
-    elseif status[] == 3 # evaluate p = A^Tv
-      for i in 1:n
-        p[i] = v[i] + v[o]
-      end
-    elseif status[] == 4 # evaluate p = Av for sparse v
-      for i in 1:o
-        p[i] = 0.0
-      end
-      for l in nz_v_start[]:nz_v_end[]
-        i = nz_v[l]
-        p[i] = v[i]
-        p[o] = p[o] + v[i]
-      end
-    elseif status[] == 5 # evaluate p = sparse Av for sparse v
-      nz_p_end = 0
-      for l in nz_v_start[]:nz_v_end[]
-        i = nz_v[l]
-        nz_p_end = nz_p_end + 1
-        nz_p[nz_p_end] = i
-        p[i] = v[i]
-        if mask[i] == 0
-          mask[i] = 1
-          nz_p_end = nz_p_end + 1
-          nz_p[nz_p_end] = o
-          p[o] = v[i]
-        else
+    # Initialize BLLS
+    blls_initialize(T, INT, data, control, status)
+
+    # Linear solvers
+    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+    @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver(dls)
+
+    # Start from 0
+    for i in 1:n
+      x[i] = 0.0
+      z[i] = 0.0
+    end
+
+    st = "RC"
+    for i in 1:o
+      mask[i] = 0
+    end
+    blls_import_without_a(T, INT, control, data, status, n, o)
+
+    terminated = false
+    while !terminated # reverse-communication loop
+      blls_solve_reverse_a_prod(T, INT, data, status, eval_status, n, o, b,
+                                x_l, x_u, x, z, r, g, x_stat, v, p,
+                                nz_v, nz_v_start, nz_v_end,
+                                nz_p, nz_p_end, w)
+
+      if status[] == 0 # successful termination
+        terminated = true
+      elseif status[] < 0 # error exit
+        terminated = true
+      elseif status[] == 2 # evaluate p = Av
+        p[o] = 0.0
+        for i in 1:n
+          p[i] = v[i]
           p[o] = p[o] + v[i]
         end
+      elseif status[] == 3 # evaluate p = A^Tv
+        for i in 1:n
+          p[i] = v[i] + v[o]
+        end
+      elseif status[] == 4 # evaluate p = Av for sparse v
+        for i in 1:o
+          p[i] = 0.0
+        end
+        for l in nz_v_start[]:nz_v_end[]
+          i = nz_v[l]
+          p[i] = v[i]
+          p[o] = p[o] + v[i]
+        end
+      elseif status[] == 5 # evaluate p = sparse Av for sparse v
+        nz_p_end = 0
+        for l in nz_v_start[]:nz_v_end[]
+          i = nz_v[l]
+          nz_p_end = nz_p_end + 1
+          nz_p[nz_p_end] = i
+          p[i] = v[i]
+          if mask[i] == 0
+            mask[i] = 1
+            nz_p_end = nz_p_end + 1
+            nz_p[nz_p_end] = o
+            p[o] = v[i]
+          else
+            p[o] = p[o] + v[i]
+          end
+        end
+        for l in 1:nz_p_end
+          mask[nz_p[l]] = 0
+        end
+      elseif status[] == 6 # evaluate p = sparse A^Tv
+        for l in nz_v_start[]:nz_v_end[]
+          i = nz_v[l]
+          p[i] = v[i] + v[o]
+        end
+      elseif status[] == 7 # evaluate p = P^{-}v
+        for i in 1:n
+          p[i] = userdata.scale * v[i]
+        end
+      else
+        @printf(" the value %1i of status should not occur\n", status)
       end
-      for l in 1:nz_p_end
-        mask[nz_p[l]] = 0
-      end
-    elseif status[] == 6 # evaluate p = sparse A^Tv
-      for l in nz_v_start[]:nz_v_end[]
-        i = nz_v[l]
-        p[i] = v[i] + v[o]
-      end
-    elseif status[] == 7 # evaluate p = P^{-}v
-      for i in 1:n
-        p[i] = userdata.scale * v[i]
-      end
-    else
-      @printf(" the value %1i of status should not occur\n", status)
+      eval_status[] = 0
     end
-    eval_status[] = 0
+
+    # Record solution information
+    blls_information(T, INT, data, inform, status)
+
+    # Print solution details
+    if inform[].status == 0
+      @printf("%s:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
+              st, inform[].iter, inform[].obj, inform[].status)
+    else
+      @printf("%s: BLLS_solve exit status = %1i\n", st, inform[].status)
+    end
+
+    # Delete internal workspace
+    blls_terminate(T, INT, data, control, inform)
   end
-
-  # Record solution information
-  blls_information(T, INT, data, inform, status)
-
-  # Print solution details
-  if inform[].status == 0
-    @printf("%s:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
-            st, inform[].iter, inform[].obj, inform[].status)
-  else
-    @printf("%s: BLLS_solve exit status = %1i\n", st, inform[].status)
-  end
-
-  # @printf("x: ")
-  # for i = 1:n
-  #   @printf("%f ", x[i])
-  # @printf("\n")
-  # @printf("gradient: ")
-  # for i = 1:n
-  #   @printf("%f ", g[i])
-  # @printf("\n")
-
-  # Delete internal workspace
-  blls_terminate(T, INT, data, control, inform)
 
   return 0
 end
@@ -275,7 +349,9 @@ for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
                              (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
   if isfile(libgalahad)
     @testset "BLLS -- $T -- $INT" begin
-      @test test_blls(T, INT) == 0
+      @testset "$mode communication" for mode in ("reverse", "direct")
+        @test test_blls(T, INT; mode) == 0
+      end
     end
   end
 end
