@@ -139,7 +139,7 @@ int main(void) {
     ipc_ eval_status;
     rpc_ f = 0.0;
     rpc_ u[n], v[n];
-    rpc_ H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
+    rpc_ H_val[ne], H_dense[ne_dense], H_diag[n];
 
     for( ipc_ d=1; d <= 5; d++){
 
@@ -212,7 +212,7 @@ int main(void) {
                            ne, NULL, NULL, NULL );
                 while(true){ // reverse-communication loop
                     arc_solve_reverse_with_mat( &data, &status, &eval_status,
-                                         n, x, f, g, n*(n+1)/2, H_dense, u, v );
+                                         n, x, f, g, ne_dense, H_dense, u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
@@ -222,7 +222,7 @@ int main(void) {
                     }else if(status == 3){ // evaluate g
                         eval_status = grad( n, x, g, &userdata );
                     }else if(status == 4){ // evaluate H
-                        eval_status = hess_dense( n, n*(n+1)/2, x, H_dense,
+                        eval_status = hess_dense( n, ne_dense, x, H_dense,
                                                  &userdata );
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
