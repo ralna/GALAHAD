@@ -54,7 +54,7 @@ function test_bllsb(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
       Ao_val = T[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # vals
 
       bllsb_import(T, INT, control, data, status, n, o,
-                   "coordinate", Ao_ne, Ao_row, Ao_col, 0, C_NULL)
+                   "coordinate", Ao_ne, Ao_row, Ao_col, INT(0), C_NULL)
 
       bllsb_solve_blls(T, INT, data, status, n, o, Ao_ne, Ao_val, b,
                        sigma, x_l, x_u, x, r, z, x_stat, w)
@@ -101,7 +101,7 @@ function test_bllsb(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
       Ao_dense = T[1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0]
 
       bllsb_import(T, INT, control, data, status, n, o,
-                   "dense", Ao_ne, C_NULL, C_NULL, 0, C_NULL)
+                   "dense", Ao_ne, C_NULL, C_NULL, INT(0), C_NULL)
 
       bllsb_solve_blls(T, INT, data, status, n, o, Ao_ne, Ao_dense, b,
                        sigma, x_l, x_u, x, r, z, x_stat, w)
@@ -113,7 +113,7 @@ function test_bllsb(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
       Ao_dense = T[1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0]
 
       bllsb_import(T, INT, control, data, status, n, o,
-                   "dense_by_columns", Ao_ne, C_NULL, C_NULL, 0, C_NULL)
+                   "dense_by_columns", Ao_ne, C_NULL, C_NULL, INT(0), C_NULL)
 
       bllsb_solve_blls(T, INT, data, status, n, o, Ao_ne, Ao_dense, b,
                        sigma, x_l, x_u, x, r, z, x_stat, w)
@@ -127,17 +127,6 @@ function test_bllsb(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
     else
       @printf("%s: BLLSB_solve exit status = %1i\n", st, inform[].status)
     end
-
-    # @printf("x: ")
-    # for i = 1:n
-    #   @printf("%f ", x[i])
-    # end
-    # @printf("\n")
-    # @printf("gradient: ")
-    # for i = 1:n
-    #   @printf("%f ", g[i])
-    # end
-    # @printf("\n")
 
     # Delete internal workspace
     bllsb_terminate(T, INT, data, control, inform)

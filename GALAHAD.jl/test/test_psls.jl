@@ -83,11 +83,6 @@ function test_psls(::Type{T}, ::Type{INT}; dls::String="potr") where {T,INT}
     @printf("%c storage: status from form  factorize = %i apply = %i\n",
             st, status[], status_apply[])
 
-    # @printf("x: ")
-    # for i = 1:n
-    #   @printf("%f ", x[i])
-    # end
-
     # Delete internal workspace
     psls_terminate(T, INT, data, control, inform)
   end

@@ -223,11 +223,6 @@ function test_trs(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr"
         @printf("format %c%s: TRS_solve_problem exit status = %1i, f = %.2f\n", st, ma,
                 inform[].status, inform[].obj)
 
-        # @printf("x: ")
-        # for i = 1:n+m
-        #   @printf("%f ", x[i])
-        # end
-
         # Delete internal workspace
         trs_terminate(T, INT, data, control, inform)
       end
