@@ -183,7 +183,7 @@ include("wrappers/llst.jl")
 include("wrappers/bllsb.jl")
 
 # bnls requires rqs, sls, sils, ir, glrt, psls, bsc, roots, nodend.
-include("wrappers/bnls.jl")
+# include("wrappers/bnls.jl")
 
 # ssls requires sls, sils, nodend.
 include("wrappers/ssls.jl")
