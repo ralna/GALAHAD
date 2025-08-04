@@ -4,13 +4,15 @@ galahad_headers += files('galahad_modules.h',
                          'galahad_modules_quadruple.h')
 
 if build_ciface
-  galahad_headers += files('galahad_arc.h',
+  galahad_headers += files('galahad.h',
+                           'galahad_arc.h',
                            'galahad_bgo.h',
                            'galahad_blls.h',
                            'galahad_bllsb.h',
                            'galahad_bqpb.h',
                            'galahad_bqp.h',
                            'galahad_bsc.h',
+                           'galahad_callbacks.h',
                            'galahad_ccqp.h',
                            'galahad_cfunctions.h',
                            'galahad_clls.h',
@@ -27,7 +29,6 @@ if build_ciface
                            'galahad_glrt.h',
                            'galahad_gls.h',
                            'galahad_gltr.h',
-                           'galahad.h',
                            'galahad_hash.h',
                            'galahad_ir.h',
                            'galahad_l2rt.h',
@@ -67,7 +68,6 @@ if build_ciface
 
   galahad_headers += files('ssids_rip.hxx', 'spral_ssids.h')
 endif
-# 'galahad_icfs.h'
 
 if build_pythoniface
   galahad_headers += files('galahad_python.h')

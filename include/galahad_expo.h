@@ -414,6 +414,9 @@ extern "C" {
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 
+// callbacks
+#include "galahad_callbacks.h"
+
 // required packages
 #include "galahad_bsc.h"
 #include "galahad_tru.h"
@@ -880,15 +883,9 @@ void expo_solve_hessian_direct( void **data,
                                 rpc_ z[],
                                 rpc_ c[],
                                 rpc_ gl[],
-                                ipc_ (*eval_fc)(
-                                  ipc_, ipc_, const rpc_[],
-                                  rpc_ *, rpc_[], const void * ),
-                                ipc_ (*eval_gj)(
-                                  ipc_, ipc_, ipc_, const rpc_[],
-                                  rpc_[], rpc_[], const void * ),
-                                ipc_ (*eval_hl)(
-                                  ipc_, ipc_, ipc_, const rpc_[], const rpc_[],
-                                  rpc_[], const void * ) );
+                                galahad_fc *eval_fc,
+                                galahad_gj *eval_gj,
+                                galahad_hl *eval_hl );
 
 /*!<
  Find a local minimizer of the constrained optimization problem using the

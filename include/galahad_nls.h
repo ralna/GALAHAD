@@ -408,6 +408,9 @@ extern "C" {
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 
+// callbacks
+#include "galahad_callbacks.h"
+
 // required packages
 #include "galahad_rqs.h"
 #include "galahad_glrt.h"
@@ -1414,22 +1417,13 @@ void nls_solve_with_mat( void **data,
                          rpc_ x[],
                          rpc_ c[],
                          rpc_ g[],
-                         ipc_ (*eval_c)(
-                           ipc_, ipc_, const rpc_[], rpc_[],
-                           const void * ),
+                         galahad_r *eval_r,
                          ipc_ j_ne,
-                         ipc_ (*eval_j)(
-                           ipc_, ipc_, ipc_, const rpc_[], rpc_[],
-                           const void * ),
+                         galahad_jr *eval_jr,
                          ipc_ h_ne,
-                         ipc_ (*eval_h)(
-                           ipc_, ipc_, ipc_, const rpc_[], const rpc_[],
-                           rpc_[], const void * ),
+                         galahad_hr *eval_hr,
                          ipc_ p_ne,
-                         ipc_ (*eval_hprods)(
-                           ipc_, ipc_, ipc_, const rpc_[],
-                           const rpc_[], rpc_[], bool,
-                           const void * ) );
+                         galahad_shrprod *eval_shrprod );
 
 /*!<
  Find a local minimizer of a given function using a trust-region method.
@@ -1498,39 +1492,40 @@ void nls_solve_with_mat( void **data,
     holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param eval_c is a user-supplied function that must have the following
+ @param eval_r is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_c( ipc_ n, const rpc_ x[], rpc_ c[], const void *userdata )
+        ipc_ eval_r( ipc_ n, ipc_ m, const rpc_ x[], rpc_ c[],
+                   const void *userdata )
    \endcode
    The componnts of the residual function \f$c(x)\f$ evaluated at x=\f$x\f$
    must be assigned to c, and the function return value set to 0. If the
    evaluation is impossible at x, return should be set to a nonzero value.
-   Data may be passed into \c eval_c via the structure \c userdata.
+   Data may be passed into \c eval_r via the structure \c userdata.
 
  @param[in] j_ne is a scalar variable of type ipc_, that holds the number of
     entries in the Jacobian matrix \f$J\f$.
 
- @param eval_j is a user-supplied function that must have the following
+ @param eval_jr is a user-supplied function that must have the following
    signature:
    \code
-      ipc_ eval_j( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ j[],
+      ipc_ eval_jr( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ j[],
                   const void *userdata )
    \endcode
    The components of the Jacobian \f$J = \nabla_x c(x\f$) of the residuals must
    be assigned to j in the same order as presented to nls_import, and the
    function return value set to 0. If the evaluation is impossible at x,
    return should be set to a nonzero value.
-   Data may be passed into \c eval_j via the structure \c userdata.
+   Data may be passed into \c eval_jr via the structure \c userdata.
 
  @param[in] h_ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$
     if it is used.
 
- @param eval_h is a user-supplied function that must have the following
+ @param eval_hr is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_h( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
+        ipc_ eval_hr( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
                     rpc_ h[], const void *userdata )
    \endcode
    The nonzeros of the matrix \f$H = \sum_{i=1}^m y_i  \nabla_{xx}c_i(x)\f$
@@ -1538,17 +1533,17 @@ void nls_solve_with_mat( void **data,
    be assigned to h in the same order as presented to nls_import, and the
    function return value set to 0. If the evaluation is impossible at x,
    return should be set to a nonzero value.
-   Data may be passed into \c eval_h via the structure \c userdata.
+   Data may be passed into \c eval_hr via the structure \c userdata.
 
  @param[in] p_ne is a scalar variable of type ipc_, that holds the number of
     entries in the residual-Hessians-vector product matrix \f$P\f$ if it
     is used.
 
- @param  eval_hprods is an optional user-supplied function that may be NULL.
+ @param  eval_shrprod is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
 
-       ipc_ eval_hprods( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[],
+       ipc_ eval_shrprod( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[],
                            const rpc_ v[], rpc_ p[], bool got_h,
                            const void *userdata ) );
 
@@ -1558,7 +1553,7 @@ void nls_solve_with_mat( void **data,
    Hessian of the i-th component of the residual \f$c(x)\f$ at x=\f$x\f$, and
    v=\f$v\f$ must be returned in p and the function return value set to 0.
    If the evaluation is impossible at x, return should be set to a nonzero
-   value.   Data may be passed into \c eval_hprods via the structure
+   value.   Data may be passed into \c eval_shrprod via the structure
    \c userdata.
  */
 
@@ -1572,22 +1567,11 @@ void nls_solve_without_mat( void **data,
                             rpc_ x[],
                             rpc_ c[],
                             rpc_ g[],
-                            ipc_ (*eval_c)(
-                              ipc_, ipc_, const rpc_[], rpc_[],
-                              const void * ),
-                            ipc_ (*eval_jprod)(
-                              ipc_, ipc_, const rpc_[], const bool,
-                              rpc_[], const rpc_[], bool,
-                              const void * ),
-                            ipc_ (*eval_hprod)(
-                              ipc_, ipc_, const rpc_[], const rpc_[],
-                              rpc_[], const rpc_[], bool,
-                              const void * ),
+                            galahad_r *eval_r,
+                            galahad_jrprod *eval_jrprod,
+                            galahad_hrprod *eval_hrprod,
                             ipc_ p_ne,
-                            ipc_ (*eval_hprods)(
-                              ipc_, ipc_, ipc_, const rpc_[],
-                              const rpc_[], rpc_[], bool,
-                              const void * ) );
+                            galahad_shrprod *eval_shrprod );
 
 /*!<
  Find a local minimizer of a given function using a trust-region method.
@@ -1656,20 +1640,20 @@ void nls_solve_without_mat( void **data,
     holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param eval_c is a user-supplied function that must have the following
+ @param eval_r is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_c( ipc_ n, const rpc_ x[], rpc_ c[], const void *userdata )
+        ipc_ eval_r( ipc_ n, const rpc_ x[], rpc_ c[], const void *userdata )
    \endcode
    The componnts of the residual function \f$c(x)\f$ evaluated at x=\f$x\f$
    must be assigned to c, and the function return value set to 0. If the
    evaluation is impossible at x, return should be set to a nonzero value.
-   Data may be passed into \c eval_c via the structure \c userdata.
+   Data may be passed into \c eval_r via the structure \c userdata.
 
- @param eval_jprod is a user-supplied function that must have the following
+ @param eval_jrprod is a user-supplied function that must have the following
    signature:
    \code
-      ipc_ eval_jprod( ipc_ n, ipc_ m, const rpc_ x[], bool transpose,
+      ipc_ eval_jrprod( ipc_ n, ipc_ m, const rpc_ x[], bool transpose,
                       rpc_ u[], const rpc_ v[], bool got_j,
                       const void *userdata )
    \endcode
@@ -1679,12 +1663,12 @@ void nls_solve_without_mat( void **data,
    with the vector v=\f$v\f$ and the vector $\f$u\f$ must be returned in u,
    and the function return value set to 0. If the evaluation is impossible
    at x, return should be set to a nonzero value.
-   Data may be passed into \c eval_jprod via the structure \c userdata.
+   Data may be passed into \c eval_jrprod via the structure \c userdata.
 
- @param eval_hprod is a user-supplied function that must have the following
+ @param eval_hrprod is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_hprod( ipc_ n, ipc_ m, const rpc_ x[], const rpc_ y[],
+        ipc_ eval_hrprod( ipc_ n, ipc_ m, const rpc_ x[], const rpc_ y[],
                         rpc_ u[], const rpc_ v[], bool got_h,
                         const void *userdata )
    \endcode
@@ -1695,16 +1679,16 @@ void nls_solve_without_mat( void **data,
    set to 0. If the evaluation is impossible at x, return should be set to
    a nonzero value.
    The Hessians have already been evaluated or used at x if got_h is true.
-   Data may be passed into \c eval_hprod via the structure \c userdata.
+   Data may be passed into \c eval_hrprod via the structure \c userdata.
 
  @param[in] p_ne is a scalar variable of type ipc_, that holds the number of
     entries in the residual-Hessians-vector product matrix \f$P\f$ if it
     is used.
 
- @param  eval_hprods is an optional user-supplied function that may be NULL.
+ @param  eval_shrprod is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
-       ipc_ eval_hprods( ipc_ n, ipc_ m, ipc_ p_ne, const rpc_ x[],
+       ipc_ eval_shrprod( ipc_ n, ipc_ m, ipc_ p_ne, const rpc_ x[],
                         const rpc_ v[], rpc_ pval[], bool got_h,
                         const void *userdata )
    \endcode
@@ -1713,7 +1697,7 @@ void nls_solve_without_mat( void **data,
    Hessian of the i-th component of the residual \f$c(x)\f$ at x=\f$x\f$, and
    v=\f$v\f$ must be returned in pval and the function return value set to 0.
    If the evaluation is impossible at x, return should be set to a nonzero
-   value.   Data may be passed into \c eval_hprods via the structure
+   value.   Data may be passed into \c eval_shrprod via the structure
    \c userdata.
  */
 
