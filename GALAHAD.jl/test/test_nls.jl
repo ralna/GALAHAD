@@ -129,24 +129,6 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
 
   rhessprods_ptr = @eval @cfunction($rhessprods_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Bool, Ptr{Cvoid}))
 
-  # scale v
-  function scale(x::Vector{T}, u::Vector{T}, v::Vector{T},
-                 userdata::userdata_nls{T})
-    u[1] = v[1]
-    u[2] = v[2]
-    return INT(0)
-  end
-
-  function scale_c(n::INT, m::INT, x::Ptr{T}, u::Ptr{T}, v::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _u = unsafe_wrap(Vector{T}, u, n)
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_nls{T}
-    scale(_x, _u, _v, _userdata)
-  end
-
-  scale_ptr = @eval @cfunction($scale_c, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
   # compute the dense Jacobian
   function jac_dense(x::Vector{T}, jval::Vector{T}, userdata::userdata_nls{T})
     jval[1] = 2.0 * x[1]
