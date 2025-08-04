@@ -113,6 +113,9 @@ extern "C" {
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 
+// callbacks
+#include "galahad_callbacks.h"
+
 /*
  * control derived type as a C struct
  */
@@ -437,9 +440,7 @@ void ugo_solve_direct( void **data,
                        rpc_ *f,
                        rpc_ *g,
                        rpc_ *h,
-                       ipc_ (*eval_fgh)(
-                          rpc_, rpc_*, rpc_*, rpc_*,
-                          const void * ) );
+                       galahad_fgh *eval_fgh );
 
 /*!<
  Find an approximation to the global minimizer of a given univariate

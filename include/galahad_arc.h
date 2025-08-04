@@ -227,6 +227,9 @@ extern "C" {
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 
+// callbacks
+#include "galahad_callbacks.h"
+
 // required packages
 #include "galahad_rqs.h"
 #include "galahad_glrt.h"
@@ -792,16 +795,10 @@ void arc_solve_with_mat( void **data,
                          rpc_ x[],
                          rpc_ g[],
                          ipc_ ne,
-                         ipc_ (*eval_f)(
-                           ipc_, const rpc_[], rpc_*, const void * ),
-                         ipc_ (*eval_g)(
-                           ipc_, const rpc_[], rpc_[], const void * ),
-                         ipc_ (*eval_h)(
-                           ipc_, ipc_, const rpc_[], rpc_[],
-                           const void * ),
-                         ipc_ (*eval_prec)(
-                           ipc_, const rpc_[], rpc_[], const rpc_[],
-                           const void * ) );
+                         galahad_f *eval_f,
+                         galahad_g *eval_g,
+                         galahad_h *eval_h,
+                         galahad_prec *eval_prec );
 
 /*!<
  Find a local minimizer of a given function using a regularization method.
@@ -921,16 +918,10 @@ void arc_solve_without_mat( void **data,
                             ipc_ n,
                             rpc_ x[],
                             rpc_ g[],
-                            ipc_ (*eval_f)(
-                              ipc_, const rpc_[], rpc_*, const void * ),
-                            ipc_ (*eval_g)(
-                              ipc_, const rpc_[], rpc_[], const void * ),
-                            ipc_ (*eval_hprod)(
-                              ipc_, const rpc_[], rpc_[],
-                              const rpc_[], bool, const void * ),
-                            ipc_ (*eval_prec)(
-                              ipc_, const rpc_[], rpc_[],
-                               const rpc_[], const void * ) );
+                            galahad_f *eval_f,
+                            galahad_g *eval_g,
+                            galahad_hprod *eval_hprod,
+                            galahad_prec *eval_prec );
 
 /*!<
  Find a local minimizer of a given function using a regularization method.

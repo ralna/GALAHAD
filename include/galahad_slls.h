@@ -244,6 +244,9 @@ extern "C" {
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 
+// callbacks
+#include "galahad_callbacks.h"
+
 // required packages
 #include "galahad_sbls.h"
 #include "galahad_convert.h"
@@ -674,9 +677,7 @@ void slls_solve_given_a( void **data,
                          rpc_ r[],
                          rpc_ g[],
                          ipc_ x_stat[],
-                         ipc_ (*eval_prec)(
-                              ipc_, const rpc_[],
-                              rpc_[], const void * ) );
+                         galahad_constant_prec *eval_prec );
 
 /*!<
  Solve the bound-constrained linear least-squares problem when the
