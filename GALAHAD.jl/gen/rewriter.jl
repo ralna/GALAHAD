@@ -78,6 +78,14 @@ function rewrite!(path::String, name::String, optimized::Bool)
       end
     end
 
+    # Callbacks
+    for callback in ("galahad_f", "galahad_g", "galahad_h", "galahad_prec", "galahad_hprod",
+                     "galahad_shprod", "galahad_constant_prec", "galahad_r", "galahad_jr",
+                     "galahad_hr", "galahad_jrprod", "galahad_hrprod", "galahad_shrprod",
+                     "galahad_fc", "galahad_gj", "galahad_hl", "galahad_fgh")
+      text = replace(text, "::Ptr{$(callback)}" => "::Ptr{Cvoid}")
+    end
+
     # SSIDS
     text = replace(text, "::spral_ssids_options" => "::spral_ssids_options{T,INT}")
     text = replace(text, "::spral_ssids_inform" => "::spral_ssids_inform{T,INT}")

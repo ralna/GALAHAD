@@ -410,149 +410,157 @@ end
 export nls_solve_with_mat
 
 function nls_solve_with_mat(::Type{Float32}, ::Type{Int32}, data, userdata, status, n, m, x,
-                            c, g, eval_c, j_ne, eval_j, h_ne, eval_h, p_ne, eval_hprods)
+                            c, g, eval_r, j_ne, eval_jr, h_ne, eval_hr, p_ne, eval_shrprod)
   @ccall libgalahad_single.nls_solve_with_mat(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
                                               status::Ptr{Int32}, n::Int32, m::Int32,
                                               x::Ptr{Float32}, c::Ptr{Float32},
-                                              g::Ptr{Float32}, eval_c::Ptr{Cvoid},
-                                              j_ne::Int32, eval_j::Ptr{Cvoid}, h_ne::Int32,
-                                              eval_h::Ptr{Cvoid}, p_ne::Int32,
-                                              eval_hprods::Ptr{Cvoid})::Cvoid
+                                              g::Ptr{Float32}, eval_r::Ptr{Cvoid},
+                                              j_ne::Int32, eval_jr::Ptr{Cvoid}, h_ne::Int32,
+                                              eval_hr::Ptr{Cvoid}, p_ne::Int32,
+                                              eval_shrprod::Ptr{Cvoid})::Cvoid
 end
 
 function nls_solve_with_mat(::Type{Float32}, ::Type{Int64}, data, userdata, status, n, m, x,
-                            c, g, eval_c, j_ne, eval_j, h_ne, eval_h, p_ne, eval_hprods)
+                            c, g, eval_r, j_ne, eval_jr, h_ne, eval_hr, p_ne, eval_shrprod)
   @ccall libgalahad_single_64.nls_solve_with_mat(data::Ptr{Ptr{Cvoid}},
                                                  userdata::Ptr{Cvoid}, status::Ptr{Int64},
                                                  n::Int64, m::Int64, x::Ptr{Float32},
                                                  c::Ptr{Float32}, g::Ptr{Float32},
-                                                 eval_c::Ptr{Cvoid}, j_ne::Int64,
-                                                 eval_j::Ptr{Cvoid}, h_ne::Int64,
-                                                 eval_h::Ptr{Cvoid}, p_ne::Int64,
-                                                 eval_hprods::Ptr{Cvoid})::Cvoid
+                                                 eval_r::Ptr{Cvoid}, j_ne::Int64,
+                                                 eval_jr::Ptr{Cvoid}, h_ne::Int64,
+                                                 eval_hr::Ptr{Cvoid}, p_ne::Int64,
+                                                 eval_shrprod::Ptr{Cvoid})::Cvoid
 end
 
 function nls_solve_with_mat(::Type{Float64}, ::Type{Int32}, data, userdata, status, n, m, x,
-                            c, g, eval_c, j_ne, eval_j, h_ne, eval_h, p_ne, eval_hprods)
+                            c, g, eval_r, j_ne, eval_jr, h_ne, eval_hr, p_ne, eval_shrprod)
   @ccall libgalahad_double.nls_solve_with_mat(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
                                               status::Ptr{Int32}, n::Int32, m::Int32,
                                               x::Ptr{Float64}, c::Ptr{Float64},
-                                              g::Ptr{Float64}, eval_c::Ptr{Cvoid},
-                                              j_ne::Int32, eval_j::Ptr{Cvoid}, h_ne::Int32,
-                                              eval_h::Ptr{Cvoid}, p_ne::Int32,
-                                              eval_hprods::Ptr{Cvoid})::Cvoid
+                                              g::Ptr{Float64}, eval_r::Ptr{Cvoid},
+                                              j_ne::Int32, eval_jr::Ptr{Cvoid}, h_ne::Int32,
+                                              eval_hr::Ptr{Cvoid}, p_ne::Int32,
+                                              eval_shrprod::Ptr{Cvoid})::Cvoid
 end
 
 function nls_solve_with_mat(::Type{Float64}, ::Type{Int64}, data, userdata, status, n, m, x,
-                            c, g, eval_c, j_ne, eval_j, h_ne, eval_h, p_ne, eval_hprods)
+                            c, g, eval_r, j_ne, eval_jr, h_ne, eval_hr, p_ne, eval_shrprod)
   @ccall libgalahad_double_64.nls_solve_with_mat(data::Ptr{Ptr{Cvoid}},
                                                  userdata::Ptr{Cvoid}, status::Ptr{Int64},
                                                  n::Int64, m::Int64, x::Ptr{Float64},
                                                  c::Ptr{Float64}, g::Ptr{Float64},
-                                                 eval_c::Ptr{Cvoid}, j_ne::Int64,
-                                                 eval_j::Ptr{Cvoid}, h_ne::Int64,
-                                                 eval_h::Ptr{Cvoid}, p_ne::Int64,
-                                                 eval_hprods::Ptr{Cvoid})::Cvoid
+                                                 eval_r::Ptr{Cvoid}, j_ne::Int64,
+                                                 eval_jr::Ptr{Cvoid}, h_ne::Int64,
+                                                 eval_hr::Ptr{Cvoid}, p_ne::Int64,
+                                                 eval_shrprod::Ptr{Cvoid})::Cvoid
 end
 
 function nls_solve_with_mat(::Type{Float128}, ::Type{Int32}, data, userdata, status, n, m,
-                            x, c, g, eval_c, j_ne, eval_j, h_ne, eval_h, p_ne, eval_hprods)
+                            x, c, g, eval_r, j_ne, eval_jr, h_ne, eval_hr, p_ne,
+                            eval_shrprod)
   @ccall libgalahad_quadruple.nls_solve_with_mat(data::Ptr{Ptr{Cvoid}},
                                                  userdata::Ptr{Cvoid}, status::Ptr{Int32},
                                                  n::Int32, m::Int32, x::Ptr{Float128},
                                                  c::Ptr{Float128}, g::Ptr{Float128},
-                                                 eval_c::Ptr{Cvoid}, j_ne::Int32,
-                                                 eval_j::Ptr{Cvoid}, h_ne::Int32,
-                                                 eval_h::Ptr{Cvoid}, p_ne::Int32,
-                                                 eval_hprods::Ptr{Cvoid})::Cvoid
+                                                 eval_r::Ptr{Cvoid}, j_ne::Int32,
+                                                 eval_jr::Ptr{Cvoid}, h_ne::Int32,
+                                                 eval_hr::Ptr{Cvoid}, p_ne::Int32,
+                                                 eval_shrprod::Ptr{Cvoid})::Cvoid
 end
 
 function nls_solve_with_mat(::Type{Float128}, ::Type{Int64}, data, userdata, status, n, m,
-                            x, c, g, eval_c, j_ne, eval_j, h_ne, eval_h, p_ne, eval_hprods)
+                            x, c, g, eval_r, j_ne, eval_jr, h_ne, eval_hr, p_ne,
+                            eval_shrprod)
   @ccall libgalahad_quadruple_64.nls_solve_with_mat(data::Ptr{Ptr{Cvoid}},
                                                     userdata::Ptr{Cvoid},
                                                     status::Ptr{Int64}, n::Int64, m::Int64,
                                                     x::Ptr{Float128}, c::Ptr{Float128},
-                                                    g::Ptr{Float128}, eval_c::Ptr{Cvoid},
-                                                    j_ne::Int64, eval_j::Ptr{Cvoid},
-                                                    h_ne::Int64, eval_h::Ptr{Cvoid},
+                                                    g::Ptr{Float128}, eval_r::Ptr{Cvoid},
+                                                    j_ne::Int64, eval_jr::Ptr{Cvoid},
+                                                    h_ne::Int64, eval_hr::Ptr{Cvoid},
                                                     p_ne::Int64,
-                                                    eval_hprods::Ptr{Cvoid})::Cvoid
+                                                    eval_shrprod::Ptr{Cvoid})::Cvoid
 end
 
 export nls_solve_without_mat
 
 function nls_solve_without_mat(::Type{Float32}, ::Type{Int32}, data, userdata, status, n, m,
-                               x, c, g, eval_c, eval_jprod, eval_hprod, p_ne, eval_hprods)
+                               x, c, g, eval_r, eval_jrprod, eval_hrprod, p_ne,
+                               eval_shrprod)
   @ccall libgalahad_single.nls_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                  userdata::Ptr{Cvoid}, status::Ptr{Int32},
                                                  n::Int32, m::Int32, x::Ptr{Float32},
                                                  c::Ptr{Float32}, g::Ptr{Float32},
-                                                 eval_c::Ptr{Cvoid}, eval_jprod::Ptr{Cvoid},
-                                                 eval_hprod::Ptr{Cvoid}, p_ne::Int32,
-                                                 eval_hprods::Ptr{Cvoid})::Cvoid
+                                                 eval_r::Ptr{Cvoid},
+                                                 eval_jrprod::Ptr{Cvoid},
+                                                 eval_hrprod::Ptr{Cvoid}, p_ne::Int32,
+                                                 eval_shrprod::Ptr{Cvoid})::Cvoid
 end
 
 function nls_solve_without_mat(::Type{Float32}, ::Type{Int64}, data, userdata, status, n, m,
-                               x, c, g, eval_c, eval_jprod, eval_hprod, p_ne, eval_hprods)
+                               x, c, g, eval_r, eval_jrprod, eval_hrprod, p_ne,
+                               eval_shrprod)
   @ccall libgalahad_single_64.nls_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                     userdata::Ptr{Cvoid},
                                                     status::Ptr{Int64}, n::Int64, m::Int64,
                                                     x::Ptr{Float32}, c::Ptr{Float32},
-                                                    g::Ptr{Float32}, eval_c::Ptr{Cvoid},
-                                                    eval_jprod::Ptr{Cvoid},
-                                                    eval_hprod::Ptr{Cvoid}, p_ne::Int64,
-                                                    eval_hprods::Ptr{Cvoid})::Cvoid
+                                                    g::Ptr{Float32}, eval_r::Ptr{Cvoid},
+                                                    eval_jrprod::Ptr{Cvoid},
+                                                    eval_hrprod::Ptr{Cvoid}, p_ne::Int64,
+                                                    eval_shrprod::Ptr{Cvoid})::Cvoid
 end
 
 function nls_solve_without_mat(::Type{Float64}, ::Type{Int32}, data, userdata, status, n, m,
-                               x, c, g, eval_c, eval_jprod, eval_hprod, p_ne, eval_hprods)
+                               x, c, g, eval_r, eval_jrprod, eval_hrprod, p_ne,
+                               eval_shrprod)
   @ccall libgalahad_double.nls_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                  userdata::Ptr{Cvoid}, status::Ptr{Int32},
                                                  n::Int32, m::Int32, x::Ptr{Float64},
                                                  c::Ptr{Float64}, g::Ptr{Float64},
-                                                 eval_c::Ptr{Cvoid}, eval_jprod::Ptr{Cvoid},
-                                                 eval_hprod::Ptr{Cvoid}, p_ne::Int32,
-                                                 eval_hprods::Ptr{Cvoid})::Cvoid
+                                                 eval_r::Ptr{Cvoid},
+                                                 eval_jrprod::Ptr{Cvoid},
+                                                 eval_hrprod::Ptr{Cvoid}, p_ne::Int32,
+                                                 eval_shrprod::Ptr{Cvoid})::Cvoid
 end
 
 function nls_solve_without_mat(::Type{Float64}, ::Type{Int64}, data, userdata, status, n, m,
-                               x, c, g, eval_c, eval_jprod, eval_hprod, p_ne, eval_hprods)
+                               x, c, g, eval_r, eval_jrprod, eval_hrprod, p_ne,
+                               eval_shrprod)
   @ccall libgalahad_double_64.nls_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                     userdata::Ptr{Cvoid},
                                                     status::Ptr{Int64}, n::Int64, m::Int64,
                                                     x::Ptr{Float64}, c::Ptr{Float64},
-                                                    g::Ptr{Float64}, eval_c::Ptr{Cvoid},
-                                                    eval_jprod::Ptr{Cvoid},
-                                                    eval_hprod::Ptr{Cvoid}, p_ne::Int64,
-                                                    eval_hprods::Ptr{Cvoid})::Cvoid
+                                                    g::Ptr{Float64}, eval_r::Ptr{Cvoid},
+                                                    eval_jrprod::Ptr{Cvoid},
+                                                    eval_hrprod::Ptr{Cvoid}, p_ne::Int64,
+                                                    eval_shrprod::Ptr{Cvoid})::Cvoid
 end
 
 function nls_solve_without_mat(::Type{Float128}, ::Type{Int32}, data, userdata, status, n,
-                               m, x, c, g, eval_c, eval_jprod, eval_hprod, p_ne,
-                               eval_hprods)
+                               m, x, c, g, eval_r, eval_jrprod, eval_hrprod, p_ne,
+                               eval_shrprod)
   @ccall libgalahad_quadruple.nls_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                     userdata::Ptr{Cvoid},
                                                     status::Ptr{Int32}, n::Int32, m::Int32,
                                                     x::Ptr{Float128}, c::Ptr{Float128},
-                                                    g::Ptr{Float128}, eval_c::Ptr{Cvoid},
-                                                    eval_jprod::Ptr{Cvoid},
-                                                    eval_hprod::Ptr{Cvoid}, p_ne::Int32,
-                                                    eval_hprods::Ptr{Cvoid})::Cvoid
+                                                    g::Ptr{Float128}, eval_r::Ptr{Cvoid},
+                                                    eval_jrprod::Ptr{Cvoid},
+                                                    eval_hrprod::Ptr{Cvoid}, p_ne::Int32,
+                                                    eval_shrprod::Ptr{Cvoid})::Cvoid
 end
 
 function nls_solve_without_mat(::Type{Float128}, ::Type{Int64}, data, userdata, status, n,
-                               m, x, c, g, eval_c, eval_jprod, eval_hprod, p_ne,
-                               eval_hprods)
+                               m, x, c, g, eval_r, eval_jrprod, eval_hrprod, p_ne,
+                               eval_shrprod)
   @ccall libgalahad_quadruple_64.nls_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                        userdata::Ptr{Cvoid},
                                                        status::Ptr{Int64}, n::Int64,
                                                        m::Int64, x::Ptr{Float128},
                                                        c::Ptr{Float128}, g::Ptr{Float128},
-                                                       eval_c::Ptr{Cvoid},
-                                                       eval_jprod::Ptr{Cvoid},
-                                                       eval_hprod::Ptr{Cvoid}, p_ne::Int64,
-                                                       eval_hprods::Ptr{Cvoid})::Cvoid
+                                                       eval_r::Ptr{Cvoid},
+                                                       eval_jrprod::Ptr{Cvoid},
+                                                       eval_hrprod::Ptr{Cvoid}, p_ne::Int64,
+                                                       eval_shrprod::Ptr{Cvoid})::Cvoid
 end
 
 export nls_solve_reverse_with_mat
