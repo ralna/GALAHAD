@@ -45,6 +45,7 @@
       END INTERFACE
 
       PUBLIC mc68_order
+      LOGICAL, PUBLIC, PROTECTED :: mc68_available = .FALSE.
 
     CONTAINS
 

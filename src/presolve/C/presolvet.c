@@ -93,8 +93,9 @@ int main(void) {
                 break;
             case 4: // diagonal
                 st = 'L';
+                rpc_ H_diag[] = {1.0, 0.0, 0.0, 0.0, 0.0, 0.0};
                 presolve_import_problem( &control, &data, &status, n, m,
-                            "diagonal", n, NULL, NULL, NULL, H_val, g, f,
+                            "diagonal", n, NULL, NULL, NULL, H_diag, g, f,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr, A_val,
                             c_l, c_u, x_l, x_u,
                             &n_trans, &m_trans, &H_ne_trans, &A_ne_trans );
@@ -146,11 +147,11 @@ int main(void) {
         rpc_ z_u_trans[n_trans]; // transformed upper dual variable bounds
 
         presolve_transform_problem( &data, &status, n_trans, m_trans,
-                               H_ne_trans, H_col_trans, H_ptr_trans,
-                               H_val_trans, g_trans, &f_trans, A_ne_trans,
-                               A_col_trans, A_ptr_trans, A_val_trans,
-                               c_l_trans, c_u_trans, x_l_trans, x_u_trans,
-                               y_l_trans, y_u_trans, z_l_trans, z_u_trans );
+                                    H_ne_trans, H_col_trans, H_ptr_trans,
+                                    H_val_trans, g_trans, &f_trans, A_ne_trans,
+                                    A_col_trans, A_ptr_trans, A_val_trans,
+                                    c_l_trans, c_u_trans, x_l_trans, x_u_trans,
+                                    y_l_trans, y_u_trans, z_l_trans, z_u_trans);
 
         rpc_ x_trans[n_trans]; // transformed variables
         for( ipc_ i = 0; i < n_trans; i++) x_trans[i] = 0.0;

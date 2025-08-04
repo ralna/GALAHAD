@@ -285,6 +285,7 @@
     cinform%nbr_transforms = finform%nbr_transforms
 
     ! Strings
+
     DO j = 1, 3
       l = LEN( finform%message( j ) )
       DO i = 1, l
