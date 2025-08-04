@@ -2875,6 +2875,8 @@ stop
        DO i = 1, nlp%m
          data%C_status( i ) = 0 ; data%C_index( i ) = 0
          IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+!write(6, "( ' y_l, mu_l(', I0, ') = ', 2ES12.4 )" ) &
+! i, data%Y_l( i ), data%MU_l( i )
            IF ( data%Y_l( i ) >= data%MU_l( i ) ) THEN
              data%n_c = data%n_c + 1
              data%C_status( i ) = data%C_status( i ) + 1
@@ -2882,6 +2884,8 @@ stop
            END IF
          END IF
          IF ( nlp%C_u( i ) <= control%infinity ) THEN
+!write(6, "( ' y_u, mu_l(', I0, ') = ', 2ES12.4 )" ) &
+! i, data%Y_l( i ), data%MU_u( i )
            IF ( data%Y_u( i ) >= data%MU_u( i ) ) THEN
              data%n_c = data%n_c + 1
              data%C_status( i ) = data%C_status( i ) + 2
@@ -2897,6 +2901,8 @@ stop
        DO j = 1, nlp%n
          data%X_status( j ) = 0 ; data%X_index( j ) = 0
          IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+!write(6, "( ' z_l, nu_l(', I0, ') = ', 2ES12.4 )" ) &
+! j, data%Z_l( j ), data%NU_l( j )
            IF ( data%Z_l( j ) >= data%NU_l( j ) ) THEN
              data%n_c = data%n_c + 1
              data%X_status( j ) = data%X_status( j ) + 1
@@ -2904,6 +2910,8 @@ stop
            END IF
          END IF
          IF ( nlp%X_u( j ) <= control%infinity ) THEN
+!write(6, "( ' z_u, nu_u(', I0, ') = ', 2ES12.4 )" ) &
+! j, data%Z_u( j ), data%NU_u( j )
            IF ( data%Z_u( j ) >= data%NU_u( j ) ) THEN
              data%n_c = data%n_c + 1
              data%X_status( j ) = data%X_status( j ) + 2
@@ -3389,7 +3397,7 @@ stop
            IF ( data%C_status( i ) == 1 .OR. data%C_status( i ) == 3 ) THEN
              data%Y_l( i ) = data%Y_l( i ) + data%R( k )
              IF ( data%Y_l( i ) <= zero ) THEN
-               IF ( data%printd ) write( data%out,                             &
+               IF ( data%printd ) WRITE( data%out,                             &
                  "(' warning - new y_l(', I0, ') = ', ES12.4, ' <= 0' )" )     &
                    i, data%Y_l( i )
 !              data%Y_l( i ) = teeny
@@ -3403,7 +3411,7 @@ stop
            IF ( data%C_status( i ) == 2 .OR. data%C_status( i ) == 3 ) THEN
              data%Y_u( i ) = data%Y_u( i ) + data%R( k )
              IF ( data%Y_u( i ) <= zero ) THEN
-               IF ( data%printd ) write( data%out,                             &
+               IF ( data%printd ) WRITE( data%out,                             &
                  "(' warning - new y_u(', I0, ') = ', ES12.4, ' <= 0' )" )     &
                    i, data%Y_u( i )
 !              data%Y_u( i ) = teeny
@@ -3417,7 +3425,7 @@ stop
            IF ( data%X_status( j ) == 1 .OR. data%X_status( j ) == 3 ) THEN
              data%Z_l( j ) = data%Z_l( j ) + data%R( k )
              IF ( data%Z_l( i ) <= zero ) THEN
-               IF ( data%printd ) write( data%out,                             &
+               IF ( data%printd ) WRITE( data%out,                             &
                  "(' warning - new z_u(', I0, ') = ', ES12.4, ' <= 0' )" )     &
                    i, data%Z_l( i )
 !              data%Z_l( j ) = teeny
@@ -3431,7 +3439,7 @@ stop
            IF ( data%X_status( j ) == 2 .OR. data%X_status( j ) == 3 ) THEN
              data%Z_u( j ) = data%Z_u( j ) + data%R( k )
              IF ( data%Z_u( i ) <= zero ) THEN
-               IF ( data%printd ) write( data%out,                             &
+               IF ( data%printd ) WRITE( data%out,                             &
                  "(' warning - new z_u(', I0, ') = ', ES12.4, ' <= 0' )" )     &
                    i, data%Z_u( i )
 !              data%Z_u( j ) = teeny
@@ -3442,7 +3450,7 @@ stop
            END IF
          END DO
 
-!  if any new Lagrane multiplier or dual variable is negative, exit
+!  if any new Lagrange multiplier or dual variable is negative, exit
 
          IF ( negval ) THEN
            nlp%X( : nlp%n )  = data%X_old( : nlp%n )  
@@ -3485,6 +3493,8 @@ stop
          nlp%gL( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
          CALL mop_AX( one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,      &
                       m_matrix = nlp%m, n_matrix = nlp%n )
+         IF ( data%printd ) WRITE( data%out,                                 &
+             "( ' dual = ', ES11.4 )" ) TWO_NORM( nlp%gL( : nlp%n ) )
 
 !  compute minus the new residuals, - r(x,y,z)
 

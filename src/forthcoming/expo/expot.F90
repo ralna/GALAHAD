@@ -129,6 +129,7 @@
      control%max_eval = 100
 !    control%print_level = 1
 !    control%tru_control%print_level = 1
+!    control%ssls_control%print_level = 1
 #ifdef REAL_32
      control%stop_abs_p = 0.001_rp_
      control%stop_abs_d = 0.001_rp_
@@ -139,6 +140,7 @@
      control%stop_abs_d = 0.00001_rp_
      control%stop_abs_c = 0.00001_rp_
 #endif
+control%ssls_control%sls_control%generate_matrix_file = .TRUE.
 
 !  solve the problem
 
@@ -170,7 +172,8 @@
 
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( A2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
+     &    F5.2, ' status = ', I0, ' solver: ', A )" ) st, inform%iter,         &
+        inform%obj, inform%status, TRIM( inform%ssls_inform%sls_inform%solver )
      ELSE
        WRITE( 6, "( A2, ': EXPO_solve exit status = ', I0 )" ) st, inform%status
      END IF
@@ -182,13 +185,15 @@
 
    DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
    DEALLOCATE( nlp%J%val, nlp%J%col, nlp%J%ptr )
-   DEALLOCATE( nlp%C, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u, nlp%G )
+   DEALLOCATE( nlp%C, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u, nlp%Gl )
    END PROGRAM GALAHAD_EXPO_test_program
 
    SUBROUTINE WHICH_sls( control )
    USE GALAHAD_EXPO_precision, ONLY: EXPO_control_type
    TYPE ( EXPO_control_type ) :: control
 #include "galahad_sls_defaults_ls.h"
+!symmetric_linear_solver = 'ssids'
+!definite_linear_solver = 'ssids'
    control%SSLS_control%symmetric_linear_solver = symmetric_linear_solver
    control%TRU_control%TRS_control%definite_linear_solver                      &
      = definite_linear_solver
