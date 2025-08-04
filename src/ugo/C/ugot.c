@@ -34,9 +34,6 @@ rpc_ hessf(rpc_ x){
             + 2.0 * cos( a*x );
 }
 
-/*ipc_ fgh( rpc_ x, rpc_ *f, , rpc_ *g, rpc_ *h, const void * );*/
-
-
 // Test problem all values
 ipc_ fgh( rpc_ x, rpc_ *f, rpc_ *g, rpc_ *h, const void *userdata ){
    *f = objf(x);
