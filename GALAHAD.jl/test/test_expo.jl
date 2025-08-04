@@ -110,7 +110,7 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
   eval_hl_ptr = @eval @cfunction($eval_hl_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the dense Hessian
-  function eval_hl_dense_c(x::Vector{T}, y::Vector{T}, hval::Vector{T}, userdata::userdata_expo{T})
+  function eval_hl_dense(x::Vector{T}, y::Vector{T}, hval::Vector{T}, userdata::userdata_expo{T})
     hval[1] = 2 - 2 * (y[2] + userdata.p * y[3] + y[4])
     hval[2] = 0
     hval[3] = 2 - 2* (y[2] + y[3] + y[5])
@@ -176,8 +176,11 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
       @reset control[].ssls_control.symmetric_linear_solver = galahad_linear_solver(sls)
 
       # Set user-defined control options
-      # @reset control[].print_level = INT(1)
-      # @reset control[].tru_control.print_level = INT(1)
+      # @reset control[].print_level = INT(10)
+      # @reset control[].tru_control.print_level = INT(10)
+      # @reset control[].ssls_control.print_level = INT(10)
+      # @reset control[].ssls_control.sls_control.print_level = INT(10)
+
       @reset control[].max_it = INT(20)
       @reset control[].max_eval = INT(100)
       @reset control[].stop_abs_p = T(0.00001)
