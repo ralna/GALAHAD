@@ -21,6 +21,7 @@ function test_presolve(::Type{T}, ::Type{INT}) where {T,INT}
   H_col = INT[1]  # column indices, NB lower triangle
   H_ptr = INT[1, 2, 2, 2, 2, 2, 2]  # row pointers
   H_val = T[1.0]  # values
+  H_diag = T[1.0, 0.0, 0.0, 0.0, 0.0, 0.0]
   g = T[1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # linear term in the objective
   f = one(T)  # constant term in the objective
   A_ne = INT(8)  # Jacobian elements
@@ -89,7 +90,7 @@ function test_presolve(::Type{T}, ::Type{INT}) where {T,INT}
     if d == 4
       st = 'L'
       presolve_import_problem(T, INT, control, data, status, n, m,
-                              "diagonal", n, C_NULL, C_NULL, C_NULL, H_val, g, f,
+                              "diagonal", n, C_NULL, C_NULL, C_NULL, H_diag, g, f,
                               "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr, A_val,
                               c_l, c_u, x_l, x_u,
                               n_trans, m_trans, H_ne_trans, A_ne_trans)
