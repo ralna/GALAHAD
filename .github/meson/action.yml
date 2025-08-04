@@ -322,9 +322,9 @@ runs:
         SANITIZER="none"
         C_INTERFACE="true"
         if [[ "${{inputs.sanitizers}}" == "true" ]]; then
+          # C_INTERFACE="false"
           # SANITIZER="address,undefined"
           SANITIZER="address"
-          # C_INTERFACE="false"
         fi
 
         rm -rf builddir
@@ -394,7 +394,11 @@ runs:
     - name: Test GALAHAD
       shell: bash
       run: |
-        meson test -C builddir --timeout-multiplier 8
+        if [[ "${{inputs.sanitizers}}" == "true" ]]; then
+          meson test -C builddir --timeout-multiplier 8 --suite fortran
+        else
+          meson test -C builddir --timeout-multiplier 8
+        fi
 
     - uses: actions/upload-artifact@v4
       if: failure()
@@ -407,6 +411,6 @@ runs:
       uses: julia-actions/setup-julia@v2
 
     - name: Test GALAHAD.jl
-      if: (inputs.os != 'windows-latest' || inputs.compiler != 'intel') && (inputs.sanitizers == 'false')
+      if: (inputs.os != 'windows-latest' || inputs.compiler != 'intel')
       shell: bash
       run: julia --color=no -e 'using Pkg; Pkg.update(); Pkg.develop(path="GALAHAD.jl"); Base.compilecache(Base.identify_package("GALAHAD")); Pkg.test("GALAHAD")'
