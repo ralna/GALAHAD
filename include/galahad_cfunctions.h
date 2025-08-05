@@ -2936,5 +2936,91 @@
 #define wcp_time_type wcp_time_type_q
 #endif
 #endif
-#endif
 
+// Callbacks
+#ifdef INTEGER_64
+#ifdef REAL_32
+#define galahad_f galahad_f_s_64
+#define galahad_g galahad_g_s_64
+#define galahad_h galahad_h_s_64
+#define galahad_prec galahad_prec_s_64
+#define galahad_hprod galahad_hprod_s_64
+#define galahad_constant_prec galahad_constant_prec_s_64
+#define galahad_r galahad_r_s_64
+#define galahad_jr galahad_jr_s_64
+#define galahad_jrprod galahad_jrprod_s_64
+#define galahad_hrprod galahad_hrprod_s_64
+#define galahad_shrprod galahad_shrprod_s_64
+#define galahad_fc galahad_fc_s_64
+#define galahad_gj galahad_gj_s_64
+#define galahad_hl galahad_hl_s_64
+#define galahad_fgh galahad_fgh_s_64
+#elif REAL_128
+#define galahad_f galahad_f_q_64
+#define galahad_g galahad_g_q_64
+#define galahad_h galahad_h_q_64
+#define galahad_prec galahad_prec_q_64
+#define galahad_hprod galahad_hprod_q_64
+#define galahad_constant_prec galahad_constant_prec_q_64
+#define galahad_r galahad_r_q_64
+#define galahad_jr galahad_jr_q_64
+#define galahad_jrprod galahad_jrprod_q_64
+#define galahad_hrprod galahad_hrprod_q_64
+#define galahad_shrprod galahad_shrprod_q_64
+#define galahad_fc galahad_fc_q_64
+#define galahad_gj galahad_gj_q_64
+#define galahad_hl galahad_hl_q_64
+#define galahad_fgh galahad_fgh_q_64
+#else
+#define galahad_f galahad_f_64
+#define galahad_g galahad_g_64
+#define galahad_h galahad_h_64
+#define galahad_prec galahad_prec_64
+#define galahad_hprod galahad_hprod_64
+#define galahad_constant_prec galahad_constant_prec_64
+#define galahad_r galahad_r_64
+#define galahad_jr galahad_jr_64
+#define galahad_jrprod galahad_jrprod_64
+#define galahad_hrprod galahad_hrprod_64
+#define galahad_shrprod galahad_shrprod_64
+#define galahad_fc galahad_fc_64
+#define galahad_gj galahad_gj_64
+#define galahad_hl galahad_hl_64
+#define galahad_fgh galahad_fgh_64
+#endif
+#else
+#ifdef REAL_32
+#define galahad_f galahad_f_s
+#define galahad_g galahad_g_s
+#define galahad_h galahad_h_s
+#define galahad_prec galahad_prec_s
+#define galahad_hprod galahad_hprod_s
+#define galahad_constant_prec galahad_constant_prec_s
+#define galahad_r galahad_r_s
+#define galahad_jr galahad_jr_s
+#define galahad_jrprod galahad_jrprod_s
+#define galahad_hrprod galahad_hrprod_s
+#define galahad_shrprod galahad_shrprod_s
+#define galahad_fc galahad_fc_s
+#define galahad_gj galahad_gj_s
+#define galahad_hl galahad_hl_s
+#define galahad_fgh galahad_fgh_s
+#elif REAL_128
+#define galahad_f galahad_f_q
+#define galahad_g galahad_g_q
+#define galahad_h galahad_h_q
+#define galahad_prec galahad_prec_q
+#define galahad_hprod galahad_hprod_q
+#define galahad_constant_prec galahad_constant_prec_q
+#define galahad_r galahad_r_q
+#define galahad_jr galahad_jr_q
+#define galahad_jrprod galahad_jrprod_q
+#define galahad_hrprod galahad_hrprod_q
+#define galahad_shrprod galahad_shrprod_q
+#define galahad_fc galahad_fc_q
+#define galahad_gj galahad_gj_q
+#define galahad_hl galahad_hl_q
+#define galahad_fgh galahad_fgh_q
+#endif
+#endif
+#endif
