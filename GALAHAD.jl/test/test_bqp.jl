@@ -7,7 +7,7 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_bqp(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
+function test_bqp(::Type{T}, ::Type{INT}) where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{bqp_control_type{T,INT}}()
@@ -84,91 +84,11 @@ function test_bqp(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
   end
 
   @printf(" fortran sparse matrix indexing\n\n")
+  @printf(" basic tests of bqp storage formats\n\n")
 
-  if mode == "direct"
-    @printf(" basic tests of bqp storage formats\n\n")
-
-    for d in 1:4
-      # Initialize BQP
-      bqp_initialize(T, INT, data, control, status)
-
-      # Start from 0
-      for i in 1:n
-        x[i] = 0.0
-        z[i] = 0.0
-      end
-
-      # sparse co-ordinate storage
-      if d == 1
-        st = 'C'
-        bqp_import(T, INT, control, data, status, n,
-                   "coordinate", H_ne, H_row, H_col, C_NULL)
-
-        bqp_solve_given_h(T, INT, data, status, n, H_ne, H_val, g, f,
-                          x_l, x_u, x, z, x_stat)
-      end
-
-      # sparse by rows
-      if d == 2
-        st = 'R'
-        bqp_import(T, INT, control, data, status, n,
-                   "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr)
-
-        bqp_solve_given_h(T, INT, data, status, n, H_ne, H_val, g, f,
-                          x_l, x_u, x, z, x_stat)
-      end
-
-      # dense
-      if d == 3
-        st = 'D'
-        bqp_import(T, INT, control, data, status, n,
-                   "dense", H_dense_ne, C_NULL, C_NULL, C_NULL)
-
-        bqp_solve_given_h(T, INT, data, status, n, H_dense_ne, H_dense,
-                          g, f, x_l, x_u, x, z, x_stat)
-      end
-
-      # diagonal
-      if d == 4
-        st = 'L'
-        bqp_import(T, INT, control, data, status, n,
-                   "diagonal", H_ne, C_NULL, C_NULL, C_NULL)
-
-        bqp_solve_given_h(T, INT, data, status, n, n, H_diag, g, f,
-                          x_l, x_u, x, z, x_stat)
-      end
-
-      bqp_information(T, INT, data, inform, status)
-
-      if inform[].status == 0
-        @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
-                inform[].iter, inform[].obj, inform[].status)
-      else
-        @printf("%c: BQP_solve exit status = %1i\n", st, inform[].status)
-      end
-
-      # Delete internal workspace
-      bqp_terminate(T, INT, data, control, inform)
-    end
-  end
-
-  if mode == "reverse"
-    @printf("\n tests reverse-communication options\n\n")
-
-    # reverse-communication input/output
-    nz_v_start = Ref{INT}()
-    nz_v_end = Ref{INT}()
-    nz_v = zeros(INT, n)
-    nz_prod = zeros(INT, n)
-    mask = zeros(INT, n)
-    v = zeros(T, n)
-    prod = zeros(T, n)
-
-    nz_prod_end = 1
-
+  for d in 1:4
     # Initialize BQP
     bqp_initialize(T, INT, data, control, status)
-    # @reset control[].print_level = 1
 
     # Start from 0
     for i in 1:n
@@ -176,84 +96,48 @@ function test_bqp(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
       z[i] = 0.0
     end
 
-    st = 'I'
-    for i in 1:n
-      mask[i] = 0
-    end
-    bqp_import_without_h(T, INT, control, data, status, n)
+    # sparse co-ordinate storage
+    if d == 1
+      st = 'C'
+      bqp_import(T, INT, control, data, status, n,
+                 "coordinate", H_ne, H_row, H_col, C_NULL)
 
-    terminated = false
-    while !terminated # reverse-communication loop
-      bqp_solve_reverse_h_prod(T, INT, data, status, n, g, f, x_l, x_u, x, z, x_stat, v, prod, nz_v,
-                               nz_v_start, nz_v_end, nz_prod, nz_prod_end)
-
-      if status[] == 0 # successful termination
-        terminated = true
-      elseif status[] < 0 # error exit
-        terminated = true
-      elseif status[] == 2 # evaluate Hv
-        prod[1] = 2.0 * v[1] + v[2]
-        for i in 2:(n - 1)
-          prod[i] = 2.0 * v[i] + v[i - 1] + v[i + 1]
-        end
-        prod[n] = 2.0 * v[n] + v[n - 1]
-      elseif status[] == 3 # evaluate Hv for sparse v
-        for i in 1:n
-          prod[i] = 0.0
-        end
-        for l in nz_v_start[]:nz_v_end[]
-          i = nz_v[l]
-          if i > 1
-            prod[i - 1] = prod[i - 1] + v[i]
-          end
-          prod[i] = prod[i] + 2.0 * v[i]
-          if i < n
-            prod[i + 1] = prod[i + 1] + v[i]
-          end
-        end
-      elseif status[] == 4 # evaluate sarse Hv for sparse v
-        nz_prod_end = 1
-        for l in nz_v_start[]:nz_v_end[]
-          i = nz_v[l]
-          if i > 1
-            if mask[i - 1] == 0
-              mask[i - 1] = 1
-              nz_prod[nz_prod_end] = i - 1
-              nz_prod_end = nz_prod_end + 1
-              prod[i - 1] = v[i]
-            else
-              prod[i - 1] = prod[i - 1] + v[i]
-            end
-          end
-          if mask[i] == 0
-            mask[i] = 1
-            nz_prod[nz_prod_end] = i
-            nz_prod_end = nz_prod_end + 1
-            prod[i] = 2.0 * v[i]
-          else
-            prod[i] = prod[i] + 2.0 * v[i]
-          end
-          if i < n
-            if mask[i + 1] == 0
-              mask[i + 1] = 1
-              nz_prod[nz_prod_end] = i + 1
-              nz_prod_end = nz_prod_end + 1
-            end
-            prod[i + 1] = prod[i + 1] + v[i]
-          end
-          for l in 1:nz_prod_end
-            mask[nz_prod[l]] = 0
-          end
-        end
-      else
-        @printf(" the value %1i of status should not occur\n", status[])
-      end
+      bqp_solve_given_h(T, INT, data, status, n, H_ne, H_val, g, f,
+                        x_l, x_u, x, z, x_stat)
     end
 
-    # Record solution information
+    # sparse by rows
+    if d == 2
+      st = 'R'
+      bqp_import(T, INT, control, data, status, n,
+                 "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr)
+
+      bqp_solve_given_h(T, INT, data, status, n, H_ne, H_val, g, f,
+                        x_l, x_u, x, z, x_stat)
+    end
+
+    # dense
+    if d == 3
+      st = 'D'
+      bqp_import(T, INT, control, data, status, n,
+                 "dense", H_dense_ne, C_NULL, C_NULL, C_NULL)
+
+      bqp_solve_given_h(T, INT, data, status, n, H_dense_ne, H_dense,
+                        g, f, x_l, x_u, x, z, x_stat)
+    end
+
+    # diagonal
+    if d == 4
+      st = 'L'
+      bqp_import(T, INT, control, data, status, n,
+                 "diagonal", H_ne, C_NULL, C_NULL, C_NULL)
+
+      bqp_solve_given_h(T, INT, data, status, n, n, H_diag, g, f,
+                        x_l, x_u, x, z, x_stat)
+    end
+
     bqp_information(T, INT, data, inform, status)
 
-    # Print solution details
     if inform[].status == 0
       @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
               inform[].iter, inform[].obj, inform[].status)
@@ -264,6 +148,117 @@ function test_bqp(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
     # Delete internal workspace
     bqp_terminate(T, INT, data, control, inform)
   end
+
+  @printf("\n tests reverse-communication options\n\n")
+
+  # reverse-communication input/output
+  nz_v_start = Ref{INT}()
+  nz_v_end = Ref{INT}()
+  nz_v = zeros(INT, n)
+  nz_prod = zeros(INT, n)
+  mask = zeros(INT, n)
+  v = zeros(T, n)
+  prod = zeros(T, n)
+
+  nz_prod_end = 1
+
+  # Initialize BQP
+  bqp_initialize(T, INT, data, control, status)
+  # @reset control[].print_level = 1
+
+  # Start from 0
+  for i in 1:n
+    x[i] = 0.0
+    z[i] = 0.0
+  end
+
+  st = 'I'
+  for i in 1:n
+    mask[i] = 0
+  end
+  bqp_import_without_h(T, INT, control, data, status, n)
+
+  terminated = false
+  while !terminated # reverse-communication loop
+    bqp_solve_reverse_h_prod(T, INT, data, status, n, g, f, x_l, x_u, x, z, x_stat, v, prod, nz_v,
+                             nz_v_start, nz_v_end, nz_prod, nz_prod_end)
+
+    if status[] == 0 # successful termination
+      terminated = true
+    elseif status[] < 0 # error exit
+      terminated = true
+    elseif status[] == 2 # evaluate Hv
+      prod[1] = 2.0 * v[1] + v[2]
+      for i in 2:(n - 1)
+        prod[i] = 2.0 * v[i] + v[i - 1] + v[i + 1]
+      end
+      prod[n] = 2.0 * v[n] + v[n - 1]
+    elseif status[] == 3 # evaluate Hv for sparse v
+      for i in 1:n
+        prod[i] = 0.0
+      end
+      for l in nz_v_start[]:nz_v_end[]
+        i = nz_v[l]
+        if i > 1
+          prod[i - 1] = prod[i - 1] + v[i]
+        end
+        prod[i] = prod[i] + 2.0 * v[i]
+        if i < n
+          prod[i + 1] = prod[i + 1] + v[i]
+        end
+      end
+    elseif status[] == 4 # evaluate sarse Hv for sparse v
+      nz_prod_end = 1
+      for l in nz_v_start[]:nz_v_end[]
+        i = nz_v[l]
+        if i > 1
+          if mask[i - 1] == 0
+            mask[i - 1] = 1
+            nz_prod[nz_prod_end] = i - 1
+            nz_prod_end = nz_prod_end + 1
+            prod[i - 1] = v[i]
+          else
+            prod[i - 1] = prod[i - 1] + v[i]
+          end
+        end
+        if mask[i] == 0
+          mask[i] = 1
+          nz_prod[nz_prod_end] = i
+          nz_prod_end = nz_prod_end + 1
+          prod[i] = 2.0 * v[i]
+        else
+          prod[i] = prod[i] + 2.0 * v[i]
+        end
+        if i < n
+          if mask[i + 1] == 0
+            mask[i + 1] = 1
+            nz_prod[nz_prod_end] = i + 1
+            nz_prod_end = nz_prod_end + 1
+          end
+          prod[i + 1] = prod[i + 1] + v[i]
+        end
+        for l in 1:nz_prod_end
+          mask[nz_prod[l]] = 0
+        end
+      end
+    else
+      @printf(" the value %1i of status should not occur\n", status[])
+    end
+  end
+
+  # Record solution information
+  bqp_information(T, INT, data, inform, status)
+
+  # Print solution details
+  if inform[].status == 0
+    @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
+            inform[].iter, inform[].obj, inform[].status)
+  else
+    @printf("%c: BQP_solve exit status = %1i\n", st, inform[].status)
+  end
+
+  # Delete internal workspace
+  bqp_terminate(T, INT, data, control, inform)
 
   return 0
 end
@@ -276,9 +271,7 @@ for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
                              (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
   if isfile(libgalahad)
     @testset "BQP -- $T -- $INT" begin
-      @testset "$mode communication" for mode in ("direct", "reverse")
-        @test test_bqp(T, INT; mode) == 0
-      end
+      @test test_bqp(T, INT) == 0
     end
   end
 end

@@ -1,1 +1,1 @@
-../../../GALAHAD.jl/test/test_expo.jl
+../../../../GALAHAD.jl/test/test_expo.jl

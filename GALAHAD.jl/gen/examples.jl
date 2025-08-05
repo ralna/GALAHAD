@@ -144,11 +144,19 @@ end\n"
 
   # Generate a symbolic link for the Julia tests
   current_folder = pwd()
-  cd("../../src/$package")
+  if forthcoming
+    cd("../../src/forthcoming/$package")
+  else
+    cd("../../src/$package")
+  end
   !isdir("Julia") && mkdir("Julia")
   cd("Julia")
   rm("test_$package.jl", force=true)
-  symlink("../../../GALAHAD.jl/test/test_$package.jl", "test_$package.jl")
+  if forthcoming
+    symlink("../../../../GALAHAD.jl/test/test_$package.jl", "test_$package.jl")
+  else
+    symlink("../../../GALAHAD.jl/test/test_$package.jl", "test_$package.jl")
+  end
   cd(current_folder)
   return nothing
 end
@@ -158,7 +166,7 @@ function main(name::String)
   (name == "bgo")      && examples("bgo"     , "tf")
   (name == "blls")     && examples("blls"    , "tf")
   (name == "bllsb")    && examples("bllsb"   , "tf")
-  (name == "bnls")     && examples("bnls"    , "tf")
+  (name == "bnls")     && examples("bnls"    , "tf", forthcoming=true)
   (name == "bqp")      && examples("bqp"     , "tf")
   (name == "bqpb")     && examples("bqpb"    , "tf")
   (name == "bsc")      && examples("bsc"     , ""  )
@@ -171,7 +179,7 @@ function main(name::String)
   (name == "dps")      && examples("dps"     , "tf")
   (name == "dqp")      && examples("dqp"     , "tf")
   (name == "eqp")      && examples("eqp"     , "tf")
-  (name == "expo")     && examples("expo"    , "tf")
+  (name == "expo")     && examples("expo"    , "tf", forthcoming=true)
   (name == "fdc")      && examples("fdc"     , "tf")
   (name == "fit")      && examples("fit"     , ""  )
   (name == "glrt")     && examples("glrt"    , "t" )
