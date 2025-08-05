@@ -2937,7 +2937,6 @@
 #endif
 #endif
 
-// Callbacks
 #ifdef INTEGER_64
 #ifdef REAL_32
 #define galahad_f galahad_f_s_64
