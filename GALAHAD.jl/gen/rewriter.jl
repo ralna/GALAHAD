@@ -32,7 +32,14 @@ special_structures_float = ("convert_inform_type", "cro_inform_type", "lms_infor
                             "uls_inform_type", "nodend_inform_type", "spral_ssids_inform", "ssls_inform_type",
                             "ssls_control_type")
 
-function rewrite!(path::String, name::String, optimized::Bool)
+hsl_structures = ("ma48_control", "ma48_ainfo", "ma48_finfo", "ma48_sinfo", "ma57_control", "ma57_ainfo",
+                  "ma57_finfo", "ma57_sinfo", "ma77_control", "ma77_info", "ma86_control", "ma86_info", "ma87_control",
+                  "ma87_info", "ma97_control", "ma97_info", "mc64_control", "mc64_info", "mc68_control", "mc68_info",
+                  "mi20_control", "mi20_solve_control", "mi20_info", "mi28_control", "mi28_info")
+
+ssids_structures = ("spral_ssids_options", "spral_ssids_inform")
+
+function rewrite!(path::String, name::String, optimized::Bool, mp::Bool)
   structures = "# Structures for $name\n"
   text = read(path, String)
   if optimized
@@ -117,9 +124,11 @@ function rewrite!(path::String, name::String, optimized::Bool)
         routine_single_int32 = replace(routine_single_int32, "libgalahad_double" => "libgalahad_single")
         routine_quadruple_int32 = replace(routine_quadruple_int32, "libgalahad_double" => "libgalahad_quadruple")
 
-        # Uncomment if one day we compile GALAHAD with -DMULTIPRECISION
-        # routine_single_int32 = replace(routine_single_int32, "libgalahad_double.$fname(" => "libgalahad_single.$(fname)_s(")
-        # routine_quadruple_int32 = replace(routine_quadruple_int32, "libgalahad_double.$fname(" => "libgalahad_quadruple.$(fname)_q(")
+        # Use it only if GALAHAD is compiled with `-DMULTIPRECISION`
+        if mp
+          routine_single_int32 = replace(routine_single_int32, "libgalahad_single.$fname(" => "libgalahad_single.$(fname)_s(")
+          routine_quadruple_int32 = replace(routine_quadruple_int32, "libgalahad_quadruple.$fname(" => "libgalahad_quadruple.$(fname)_q(")
+        end
 
         routine_single_int32 = replace(routine_single_int32, "ipc_" => "Int32")
         routine_double_int32 = replace(routine_double_int32, "ipc_" => "Int32")
@@ -178,10 +187,12 @@ function rewrite!(path::String, name::String, optimized::Bool)
         routine_double_int64 = replace(routine_double_int64, "libgalahad_double" => "libgalahad_double_64")
         routine_quadruple_int64 = replace(routine_quadruple_int64, "libgalahad_quadruple" => "libgalahad_quadruple_64")
 
-        # Uncomment if one day we compile GALAHAD with -DMULTIPRECISION
-        # routine_single_int64 = replace(routine_single_int64, "libgalahad_single.$(fname)_s(" => "libgalahad_single_64.$(fname)_s_64(")
-        # routine_double_int64 = replace(routine_double_int64, "libgalahad_double.$(fname)(" => "libgalahad_double_64.$(fname)_64(")
-        # routine_quadruple_int64 = replace(routine_quadruple_int64, "libgalahad_quadruple.$(fname)_q(" => "libgalahad_quadruple_64.$(fname)_q_64(")
+        # Use it only if GALAHAD is compiled with `-DMULTIPRECISION`
+        if mp
+          routine_single_int64 = replace(routine_single_int64, "libgalahad_single_64.$(fname)_s(" => "libgalahad_single_64.$(fname)_s_64(")
+          routine_double_int64 = replace(routine_double_int64, "libgalahad_double_64.$(fname)(" => "libgalahad_double_64.$(fname)_64(")
+          routine_quadruple_int64 = replace(routine_quadruple_int64, "libgalahad_quadruple_64.$(fname)_q(" => "libgalahad_quadruple_64.$(fname)_q_64(")
+        end
 
         routine_single_int64 = replace(routine_single_int64, "Int32" => "Int64")
         routine_double_int64 = replace(routine_double_int64, "Int32" => "Int64")
@@ -201,6 +212,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
         !contains(structure, "ipc_") && (structure_name ∉ nonparametric_structures_int) && error("$structure_name should be in nonparametric_structures_int.")
         structure = replace(structure, "rpc_" => "T")
         structure = replace(structure, "ipc_" => "INT")
+
         if (structure_name ∉ nonparametric_structures_float) && (structure_name ∉ nonparametric_structures_int)
           structure = replace(structure, structure_name => structure_name * "{T,INT}")
           structures = structures * "Ref{$(structure_name){Float32,Int32}}()[]\n"
