@@ -377,6 +377,16 @@ $(OBJ)/$(package)ctf_$(PRECIS).o: ../$(package)/C/$(package)tf.c
 	rm $(OBJ)/*.c
 	@printf '[ OK ]\n'
 
+$(package)ctf.o: $(OBJ)/$(package)ctf_$(PRECIS).o
+
+$(OBJ)/$(package)ctm_$(PRECIS).o: ../$(package)/C/$(package)tm.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)ctm  "
+	$(CP) ../$(package)/C/$(package)tm.c $(OBJ)/$(package)ctm.c
+	cd $(OBJ) ; $(CC) -o $(package)ctm_$(PRECIS).o $(CFLAGS) \
+                      $(package)ctm.c -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
+	@printf '[ OK ]\n'
+
 #  CUTEst/AMPL interfaces
 
 use$(package).o: $(CULG)(use$(package)_$(PRECIS).o)

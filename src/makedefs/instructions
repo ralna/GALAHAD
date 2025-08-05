@@ -259,6 +259,8 @@ $(PACKAGE)CSTI = $($(PACKAGE)OBJECTSCS) $(TESTDEPS) \
                  $(OBJS)/$(package)cti_single.o
 $(PACKAGE)CSTF = $($(PACKAGE)OBJECTSCS) $(TESTDEPS) \
                  $(OBJS)/$(package)ctf_single.o
+$(PACKAGE)CSTM = $($(PACKAGE)OBJECTSCS) $(TESTDEPS) \
+                 $(OBJS)/$(package)ctm_single.o
 
 $(PACKAGE)CDS = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs_double.o
 $(PACKAGE)CDT = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) $(OBJD)/$(package)ct_double.o
@@ -276,6 +278,8 @@ $(PACKAGE)CDTI = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) \
                  $(OBJD)/$(package)cti_double.o
 $(PACKAGE)CDTF = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) \
                  $(OBJD)/$(package)ctf_double.o
+$(PACKAGE)CDTM = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) \
+                 $(OBJD)/$(package)ctm_double.o
 
 $(PACKAGE)CQS = $($(PACKAGE)OBJECTSCQ) $(OBJQ)/$(package)cs_quadruple.o
 $(PACKAGE)CQT = $($(PACKAGE)OBJECTSCQ) $(TESTDEPS) \
@@ -290,6 +294,8 @@ $(PACKAGE)CQTI = $($(PACKAGE)OBJECTSCQ) $(TESTDEPS) \
                  $(OBJQ)/$(package)cti_quadruple.o
 $(PACKAGE)CQTF = $($(PACKAGE)OBJECTSCQ) $(TESTDEPS) \
                  $(OBJQ)/$(package)ctf_quadruple.o
+$(PACKAGE)CQTM = $($(PACKAGE)OBJECTSCQ) $(TESTDEPS) \
+                 $(OBJQ)/$(package)ctm_quadruple.o
 
 $(PACKAGE)CSS64 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs_single_64.o
 $(PACKAGE)CST64 = $($(PACKAGE)OBJECTSCS64) \
@@ -304,6 +310,8 @@ $(PACKAGE)CSTI64 = $($(PACKAGE)OBJECTSCS64) $(TESTDEPS) \
                    $(OBJS64)/$(package)cti_single_64.o
 $(PACKAGE)CSTF64 = $($(PACKAGE)OBJECTSCS64) $(TESTDEPS) \
                    $(OBJS64)/$(package)ctf_single_64.o
+$(PACKAGE)CSTM64 = $($(PACKAGE)OBJECTSCS64) $(TESTDEPS) \
+                   $(OBJS64)/$(package)ctm_single_64.o
 
 $(PACKAGE)CDS64 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs_double_64.o
 $(PACKAGE)CDT64 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
@@ -322,6 +330,8 @@ $(PACKAGE)CDTI64 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
                    $(OBJD64)/$(package)cti_double_64.o
 $(PACKAGE)CDTF64 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
                    $(OBJD64)/$(package)ctf_double_64.o
+$(PACKAGE)CDTM64 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
+                   $(OBJD64)/$(package)ctm_double_64.o
 
 $(PACKAGE)CQS64 = $($(PACKAGE)OBJECTSCQ64) $(OBJQ64)/$(package)cs_quadruple_64.o
 $(PACKAGE)CQT64 = $($(PACKAGE)OBJECTSCQ64) \
@@ -342,6 +352,8 @@ $(PACKAGE)CQTI64 = $($(PACKAGE)OBJECTSCQ64) $(TESTDEPS) \
                    $(OBJQ64)/$(package)cti_quadruple_64.o
 $(PACKAGE)CQTF64 = $($(PACKAGE)OBJECTSCQ64) $(TESTDEPS) \
                    $(OBJQ64)/$(package)ctf_quadruple_64.o
+$(PACKAGE)CQTM64 = $($(PACKAGE)OBJECTSCQ64) $(TESTDEPS) \
+                   $(OBJQ64)/$(package)ctm_quadruple_64.o
 
 R$(PACKAGE)CSS = $(OBJS)/$(package)cs_single.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CST = $(OBJS)/$(package)ct_single.o -L$(OBJS) $(CLIBS)
@@ -354,6 +366,7 @@ R$(PACKAGE)CSS7 = $(OBJS)/$(package)cs7_single.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CTI = $(OBJS)/$(package)cti_single.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSTI = $(OBJS)/$(package)cti_single.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSTF = $(OBJS)/$(package)ctf_single.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSTM = $(OBJS)/$(package)ctm_single.o -L$(OBJS) $(CLIBS)
 
 R$(PACKAGE)CDS = $(OBJD)/$(package)cs_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDT = $(OBJD)/$(package)ct_double.o -L$(OBJD) $(CLIBS)
@@ -367,6 +380,7 @@ R$(PACKAGE)CDT2 = $(OBJD)/$(package)ct2_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDT3 = $(OBJD)/$(package)ct3_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDTI = $(OBJD)/$(package)cti_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDTF = $(OBJD)/$(package)ctf_double.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDTM = $(OBJD)/$(package)ctm_double.o -L$(OBJD) $(CLIBS)
 
 R$(PACKAGE)CQS = $(OBJQ)/$(package)cs_quadruple.o -L$(OBJQ) $(CLIBS)
 R$(PACKAGE)CQT = $(OBJQ)/$(package)ct_quadruple.o -L$(OBJQ) $(CLIBS)
@@ -378,6 +392,7 @@ R$(PACKAGE)CQS6 = $(OBJQ)/$(package)cs6_quadruple.o -L$(OBJQ) $(CLIBS)
 R$(PACKAGE)CQS7 = $(OBJQ)/$(package)cs7_quadruple.o -L$(OBJQ) $(CLIBS)
 R$(PACKAGE)CQTI = $(OBJQ)/$(package)cti_quadruple.o -L$(OBJQ) $(CLIBS)
 R$(PACKAGE)CQTF = $(OBJQ)/$(package)ctf_quadruple.o -L$(OBJQ) $(CLIBS)
+R$(PACKAGE)CQTM = $(OBJQ)/$(package)ctm_quadruple.o -L$(OBJQ) $(CLIBS)
 
 R$(PACKAGE)CSS64 = $(OBJS64)/$(package)cs_single_64.o -L$(OBJS64) $(CLIBS)
 R$(PACKAGE)CST64 = $(OBJS64)/$(package)ct_single_64.o -L$(OBJS64) $(CLIBS)
@@ -390,6 +405,7 @@ R$(PACKAGE)CSS764 = $(OBJS64)/$(package)cs7_single_64.o -L$(OBJS64) $(CLIBS)
 R$(PACKAGE)CTI64 = $(OBJS64)/$(package)cti_single_64.o -L$(OBJS64) $(CLIBS)
 R$(PACKAGE)CSTI64 = $(OBJS64)/$(package)cti_single_64.o -L$(OBJS64) $(CLIBS)
 R$(PACKAGE)CSTF64 = $(OBJS64)/$(package)ctf_single_64.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CSTM64 = $(OBJS64)/$(package)ctm_single_64.o -L$(OBJS64) $(CLIBS)
 
 R$(PACKAGE)CDS64 = $(OBJD64)/$(package)cs_double_64.o -L$(OBJD64) $(CLIBS)
 R$(PACKAGE)CDT64 = $(OBJD64)/$(package)ct_double_64.o -L$(OBJD64) $(CLIBS)
@@ -403,6 +419,7 @@ R$(PACKAGE)CDT264 = $(OBJD64)/$(package)ct2_double_64.o -L$(OBJD64) $(CLIBS)
 R$(PACKAGE)CDT364 = $(OBJD64)/$(package)ct3_double_64.o -L$(OBJD64) $(CLIBS)
 R$(PACKAGE)CDTI64 = $(OBJD64)/$(package)cti_double_64.o -L$(OBJD64) $(CLIBS)
 R$(PACKAGE)CDTF64 = $(OBJD64)/$(package)ctf_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDTM64 = $(OBJD64)/$(package)ctm_double_64.o -L$(OBJD64) $(CLIBS)
 
 R$(PACKAGE)CQS64 = $(OBJQ64)/$(package)cs_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 R$(PACKAGE)CQT64 = $(OBJQ64)/$(package)ct_quadruple_64.o -L$(OBJQ64) $(CLIBS)
@@ -414,6 +431,7 @@ R$(PACKAGE)CQS664 = $(OBJQ64)/$(package)cs6_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 R$(PACKAGE)CQS764 = $(OBJQ64)/$(package)cs7_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 R$(PACKAGE)CQTI64 = $(OBJQ64)/$(package)cti_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 R$(PACKAGE)CQTF64 = $(OBJQ64)/$(package)ctf_quadruple_64.o -L$(OBJQ64) $(CLIBS)
+R$(PACKAGE)CQTM64 = $(OBJQ64)/$(package)ctm_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 
 #  =========================================================================
 #  ========================== makefile stanza ==============================
@@ -1999,6 +2017,16 @@ $(package)cstf: $($(PACKAGE)CSTF)
 	cat $(package)cstf.output
 	rm ./run_$(package)
 
+$(package)cstm: $($(PACKAGE)CSTM)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSTM)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cstm.output 2>&1
+	cat $(package)cstm.output
+	rm ./run_$(package)
+
 $(package)cst_valgrind: $($(PACKAGE)CST)
 	echo ""
 	echo " Exhaustive valgrind test of C function interface to $(package)"
@@ -2068,6 +2096,16 @@ $(package)cdtf: $($(PACKAGE)CDTF)
 	cat $(package)dtf.output
 	rm ./run_$(package)
 
+$(package)cdtm: $($(PACKAGE)CDTM)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDTM)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dtm.output 2>&1
+	cat $(package)dtm.output
+	rm ./run_$(package)
+
 $(package)cdt_valgrind: $($(PACKAGE)CDT)
 	echo ""
 	echo " Exhaustive valgrind test of C function interface to $(package)"
@@ -2120,6 +2158,16 @@ $(package)cqtf: $($(PACKAGE)CQTF)
 	cat $(package)cqtf.output
 	rm ./run_$(package)
 
+$(package)cqtm: $($(PACKAGE)CQTM)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CQTM)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cqtm.output 2>&1
+	cat $(package)cqtm.output
+	rm ./run_$(package)
+
 $(package)cqt_valgrind: $($(PACKAGE)CQT)
 	echo ""
 	echo " Exhaustive valgrind test of C function interface to $(package)"
@@ -2168,6 +2216,16 @@ $(package)cstf_64: $($(PACKAGE)CSTF64)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cstf64.output 2>&1
 	cat $(package)cstf64.output
+	rm ./run_$(package)
+
+$(package)cstm_64: $($(PACKAGE)CSTM64)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSTM64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cstm64.output 2>&1
+	cat $(package)cstm64.output
 	rm ./run_$(package)
 
 $(package)cst_64_valgrind: $($(PACKAGE)CST64)
@@ -2239,6 +2297,16 @@ $(package)cdtf_64: $($(PACKAGE)CDTF64)
 	cat $(package)dtf64.output
 	rm ./run_$(package)
 
+$(package)cdtm_64: $($(PACKAGE)CDTM64)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDTM64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dtm64.output 2>&1
+	cat $(package)dtm64.output
+	rm ./run_$(package)
+
 $(package)cdt_64_valgrind: $($(PACKAGE)CDT64)
 	echo ""
 	echo " Exhaustive valgrind test of C function interface to $(package)"
@@ -2290,6 +2358,16 @@ $(package)cqtf_64: $($(PACKAGE)CQTF64)
 	cat $(package)cqtf64.output
 	rm ./run_$(package)
 
+$(package)cqtm_64: $($(PACKAGE)CQTM64)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CQTM64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cqtm64.output 2>&1
+	cat $(package)cqtm64.output
+	rm ./run_$(package)
+
 $(package)cqt_64_valgrind: $($(PACKAGE)CQT64)
 	echo ""
 	echo " Exhaustive valgrind test of C function interface to $(package)"
@@ -2308,6 +2386,50 @@ $(package)cqt_64_gdb: $($(PACKAGE)CQT64)
           $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CQT64)
 	$(RMOOC)
 	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
+
+$(package)ctm: $($(PACKAGE)CDTM) $($(PACKAGE)OBJECTSCS64)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) \
+          $(OBJD)/$(package)ctm_double.o \
+          $(OBJD)/libgalahad_c.a \
+          $(OBJD)/libhsl_c.a \
+          $(OBJD)/libgalahad.a \
+          $(OBJD)/libhsl.a \
+          $(OBJD)/libgalahad_spral.a \
+          $(OBJD)/libgalahad_mkl_pardiso.a \
+          $(OBJD)/libgalahad_pardiso.a \
+          $(OBJD)/libgalahad_wsmp.a \
+          $(OBJD)/libmetis4_nodend.a \
+          $(OBJD)/libmetis5_nodend.a \
+          $(OBJD)/libgalahad_pastix.a \
+          $(OBJD)/libgalahad_mumps.a \
+          $(OBJD)/libgalahad_mpi.a \
+          $(OBJD)/libgalahad_umfpack.a \
+          $(OBJD)/libgalahad_lapack.a \
+          $(OBJD)/libgalahad_blas.a \
+          $(OBJS64)/libgalahad_c.a \
+          $(OBJS64)/libhsl_c.a \
+          $(OBJS64)/libgalahad.a \
+          $(OBJS64)/libhsl.a \
+          $(OBJS64)/libgalahad_spral.a \
+          $(OBJS64)/libgalahad_mkl_pardiso.a \
+          $(OBJS64)/libgalahad_pardiso.a \
+          $(OBJS64)/libgalahad_wsmp.a \
+          $(OBJS64)/libmetis464_nodend.a \
+          $(OBJS64)/libmetis564_nodend.a \
+          $(OBJS64)/libgalahad_pastix.a \
+          $(OBJS64)/libgalahad_mumps.a \
+          $(OBJS64)/libgalahad_mpi.a \
+          $(OBJS64)/libgalahad_umfpack.a \
+          $(OBJS64)/libgalahad_lapack.a \
+          $(OBJS64)/libgalahad_blas.a \
+          -lstdc++ -lhwloc 
+	$(RMOOC)
+	- ./run_$(package) > $(package)dtm.output 2>&1
+	cat $(package)dtm.output
 	rm ./run_$(package)
 
 #  main program
