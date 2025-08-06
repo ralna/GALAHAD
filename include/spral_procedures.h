@@ -65,6 +65,7 @@
 #define spral_ssids_akeep_precision spral_ssids_akeep_single_64
 #define spral_ssids_subtree_precision spral_ssids_subtree_single_64
 #define spral_ssids_contrib_precision spral_ssids_contrib_single_64
+#define spral_ssids_inform_precision spral_ssids_inform_single_64
 #define spral_ssids_types_precision spral_ssids_types_single_64
 #define spral_match_order_precision spral_match_order_single_64
 #define spral_cuda_precision spral_cuda_single_64
@@ -86,6 +87,7 @@
 #define spral_ssids_akeep_precision spral_ssids_akeep_single
 #define spral_ssids_subtree_precision spral_ssids_subtree_single
 #define spral_ssids_contrib_precision spral_ssids_contrib_single
+#define spral_ssids_inform_precision spral_ssids_inform_single
 #define spral_ssids_types_precision spral_ssids_types_single
 #define spral_match_order_precision spral_match_order_single
 #define spral_cuda_precision spral_cuda_single
@@ -109,6 +111,7 @@
 #define spral_ssids_akeep_precision spral_ssids_akeep_quadruple_64
 #define spral_ssids_subtree_precision spral_ssids_subtree_quadruple_64
 #define spral_ssids_contrib_precision spral_ssids_contrib_quadruple_64
+#define spral_ssids_inform_precision spral_ssids_inform_quadruple_64
 #define spral_ssids_types_precision spral_ssids_types_quadruple_64
 #define spral_match_order_precision spral_match_order_quadruple_64
 #define spral_cuda_precision spral_cuda_quadruple_64
@@ -130,6 +133,7 @@
 #define spral_ssids_akeep_precision spral_ssids_akeep_quadruple
 #define spral_ssids_subtree_precision spral_ssids_subtree_quadruple
 #define spral_ssids_contrib_precision spral_ssids_contrib_quadruple
+#define spral_ssids_inform_precision spral_ssids_inform_quadruple
 #define spral_ssids_types_precision spral_ssids_types_quadruple
 #define spral_match_order_precision spral_match_order_quadruple
 #define spral_cuda_precision spral_cuda_quadruple
@@ -153,6 +157,7 @@
 #define spral_ssids_akeep_precision spral_ssids_akeep_double_64
 #define spral_ssids_subtree_precision spral_ssids_subtree_double_64
 #define spral_ssids_contrib_precision spral_ssids_contrib_double_64
+#define spral_ssids_inform_precision spral_ssids_inform_double_64
 #define spral_ssids_types_precision spral_ssids_types_double_64
 #define spral_match_order_precision spral_match_order_double_64
 #define spral_cuda_precision spral_cuda_double_64
@@ -174,6 +179,7 @@
 #define spral_ssids_akeep_precision spral_ssids_akeep_double
 #define spral_ssids_subtree_precision spral_ssids_subtree_double
 #define spral_ssids_contrib_precision spral_ssids_contrib_double
+#define spral_ssids_inform_precision spral_ssids_inform_double
 #define spral_ssids_types_precision spral_ssids_types_double
 #define spral_match_order_precision spral_match_order_double
 #define spral_cuda_precision spral_cuda_double
