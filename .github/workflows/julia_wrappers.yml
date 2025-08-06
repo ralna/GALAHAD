@@ -1,4 +1,4 @@
-name: Julia wrappers
+name: GALAHAD.jl
 on:
   push:
     branches:
@@ -7,11 +7,15 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: GALAHAD -- Check Julia wrappers
+    name: Check the Julia wrappers
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GALAHAD
         uses: actions/checkout@v4
+
+    - name: Set the environment variable GALAHAD
+      shell: bash
+      run: echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: Install Julia
         uses: julia-actions/setup-julia@v2
