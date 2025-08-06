@@ -3022,4 +3022,26 @@
 #define galahad_fgh galahad_fgh_q
 #endif
 #endif
+
+#ifdef INTEGER_64
+#ifdef REAL_32
+#define spral_ssids_options spral_ssids_options_s_64
+#define spral_ssids_inform spral_ssids_inform_s_64
+#elif REAL_128
+#define spral_ssids_options spral_ssids_options_q_64
+#define spral_ssids_inform spral_ssids_inform_q_64
+#else
+#define spral_ssids_options spral_ssids_options_64
+#define spral_ssids_inform spral_ssids_inform_64
+#endif
+#else
+#ifdef REAL_32
+#define spral_ssids_options spral_ssids_options_s
+#define spral_ssids_inform spral_ssids_inform_s
+#elif REAL_128
+#define spral_ssids_options spral_ssids_options_q
+#define spral_ssids_inform spral_ssids_inform_q
+#endif
+#endif
+
 #endif
