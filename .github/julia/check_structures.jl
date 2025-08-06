@@ -219,6 +219,7 @@ function H_structures()
   h_struct = ""
   for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "include"))
     for file in files
+      mapreduce(x -> file == x, |, ["galahad_c.h", "galahad_c_common.h", "galahad_c_single.h", "galahad_c_double.h", "galahad_c_quadruple.h"]) && continue
       path = joinpath(root, file) |> normpath
       if endswith(file, ".h")
         (file == "ssids_gpu_kernels_datatypes.h") && continue

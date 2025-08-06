@@ -29,8 +29,8 @@ jobs:
           cd GALAHAD.jl/gen
           julia --color=no --project -e 'using Pkg; Pkg.instantiate()'
           julia --color=no --project wrapper.jl
-          cd ..
-          git diff --quiet || {
+          cd ../..
+          git diff --quiet GALAHAD.jl || {
           echo "❌ The Julia wrappers are out of date. ❌";
           echo "Please run wrapper.jl in GALAHAD.jl/gen to regenerate them:";
           echo "";
