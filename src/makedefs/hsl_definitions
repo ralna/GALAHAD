@@ -6,7 +6,7 @@
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single_64"
-  DPREC = -DREAL_32 -DINTEGER_64
+  DPREC = -DREAL_32 -DINTEGER_64 $(QUADREAL)
   HSL_PRECIS = s64
   INTEGER = 64bit
 else ifeq "$(PRECIS)" "quadruple_64"
@@ -14,11 +14,11 @@ else ifeq "$(PRECIS)" "quadruple_64"
   HSL_PRECIS = q64
   INTEGER = 64bit
 else ifeq "$(PRECIS)" "double_64"
-  DPREC = -DINTEGER_64
+  DPREC = -DINTEGER_64 $(QUADREAL)
   HSL_PRECIS = d64
   INTEGER = 64bit
 else ifeq "$(PRECIS)" "single"
-  DPREC = -DREAL_32
+  DPREC = -DREAL_32 $(QUADREAL)
   HSL_PRECIS = s
   INTEGER = 32bit
 else ifeq "$(PRECIS)" "quadruple"
@@ -26,7 +26,7 @@ else ifeq "$(PRECIS)" "quadruple"
   HSL_PRECIS = q
   INTEGER = 32bit
 else
-  DPREC =
+  DPREC = $(QUADREAL)
   HSL_PRECIS = d
   INTEGER = 32bit
 endif

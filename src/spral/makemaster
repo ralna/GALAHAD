@@ -3,27 +3,27 @@
 #  available under a BSD licence as part of GALAHAD
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-12-12
+#  This version: 2025-08-05
 
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single_64"
-  DPREC = -DREAL_32 -DINTEGER_64
+  DPREC = -DREAL_32 -DINTEGER_64 $(QUADREAL)
   METIS_64 = _64
 else ifeq "$(PRECIS)" "quadruple_64"
-  DPREC = -DREAL_128 -DINTEGER_64
+  DPREC = -DREAL_128 -DINTEGER_64 $(QUADREAL)
   METIS_64 = _64
 else ifeq "$(PRECIS)" "double_64"
-  DPREC = -DINTEGER_64
+  DPREC = -DINTEGER_64 $(QUADREAL)
   METIS_64 = _64
 else ifeq "$(PRECIS)" "single"
-  DPREC = -DREAL_32
+  DPREC = -DREAL_32 $(QUADREAL)
   METIS_64 =
 else ifeq "$(PRECIS)" "quadruple"
-  DPREC = -DREAL_128
+  DPREC = -DREAL_128 $(QUADREAL)
   METIS_64 =
 else
-  DPREC =
+  DPREC = $(QUADREAL)
   METIS_64 =
 endif
 
@@ -39,31 +39,39 @@ else
  DGETCPU = -DSPRAL_HAVE_SCHED_GETCPU
 endif
 
+ifeq "$(MULTIVERSIONS)" "yes"
+  MULTI = -DMULTIPRECISION
+else
+  MULTI = 
+endif
+
+CPPDEFINES = $(DPREC) $(MULTI)
+
 GALINCLUDE = $(GALAHAD)/include
 
 #  compiler flags
 
 FFLAGS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-         $(DPREC) -I $(GALINCLUDE)
+         $(CPPDEFINES) -I $(GALINCLUDE)
 FFLAGSS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
-          $(DPREC) -I $(GALINCLUDE)
+          $(CPPDEFINES) -I $(GALINCLUDE)
 FFLAGSN = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
-          $(DPREC) -I $(GALINCLUDE)
+          $(CPPDEFINES) -I $(GALINCLUDE)
 FFLAGS77 = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
-           $(DPREC) -I $(GALINCLUDE)
+           $(CPPDEFINES) -I $(GALINCLUDE)
 FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
-            $(DPREC) -I $(GALINCLUDE)
+            $(CPPDEFINES) -I $(GALINCLUDE)
 FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-            $(SOMP) $(DPREC) -I $(GALINCLUDE)
+            $(SOMP) $(CPPDEFINES) -I $(GALINCLUDE)
 FFLAGSNOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
-             $(SOMP) $(DPREC) -I $(GALINCLUDE)
+             $(SOMP) $(CPPDEFINES) -I $(GALINCLUDE)
 
 #  C++ compiler flags
 
 CXXFLAGSOMP   = $(CXXBASIC) $(OPTIMIZATION) $(CXXDEBUG) $(SOMP) \
-                 $(DPREC) $(DHWLOC) $(DGETCPU) -I $(GALINCLUDE)
+                 $(CPPDEFINES) $(DHWLOC) $(DGETCPU) -I $(GALINCLUDE)
 CXXFLAGSNOMP  = $(CXXBASIC) $(NOOPTIMIZATION) $(CXXDEBUG) $(SOMP) \
-                 $(DPREC) $(DHWLOC) $(DGETCPU) -I $(GALINCLUDE)
+                 $(CPPDEFINES) $(DHWLOC) $(DGETCPU) -I $(GALINCLUDE)
 
 #  CUDA compiler flags
 

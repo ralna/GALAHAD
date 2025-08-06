@@ -554,7 +554,7 @@ if [[ "$UMFPACK" == "" ]]; then
 fi
 
 if [[ $QUADREAL == "yes" ]] ; then
-  QUADFLAG="-Dquad_reals_exist"
+  QUADFLAG="-DQUAD_REALS_EXIST"
 else
   QUADFLAG=""
 fi

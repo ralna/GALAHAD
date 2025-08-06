@@ -1,9 +1,11 @@
 #ifdef INTEGER_64
 #define hsl_metis galahad_metis_64
 #define HSL_METIS galahad_metis_64
+#define hsl_metis_setopt galahad_metis_setopt_64
 #else
 #define hsl_metis galahad_metis
 #define HSL_METIS galahad_metis
+#define hsl_metis_setopt galahad_metis_setopt
 #endif
 
 #ifdef INTEGER_64

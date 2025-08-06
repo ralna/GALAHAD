@@ -6,7 +6,7 @@
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single_64"
-  DPREC = -DREAL_32 -DINTEGER_64
+  DPREC = -DREAL_32 -DINTEGER_64 $(QUADREAL)
   HSL_64 = _64
   HSL_PRECIS = s_64
   HSL_IPRECIS = i_64
@@ -18,13 +18,13 @@ else ifeq "$(PRECIS)" "quadruple_64"
   HSL_IPRECIS = i_64
   HSL_LPRECIS = l_64
 else ifeq "$(PRECIS)" "double_64"
-  DPREC = -DINTEGER_64
+  DPREC = -DINTEGER_64 $(QUADREAL)
   HSL_64 = _64
   HSL_PRECIS = d_64
   HSL_IPRECIS = i_64
   HSL_LPRECIS = l_64
 else ifeq "$(PRECIS)" "single"
-  DPREC = -DREAL_32
+  DPREC = -DREAL_32 $(QUADREAL)
   HSL_64 =
   HSL_PRECIS = s
   HSL_IPRECIS = i
@@ -36,7 +36,7 @@ else ifeq "$(PRECIS)" "quadruple"
   HSL_IPRECIS = i
   HSL_LPRECIS = l
 else
-  DPREC =
+  DPREC = $(QUADREAL)
   HSL_64 =
   HSL_PRECIS = d
   HSL_IPRECIS = i
@@ -63,7 +63,13 @@ else
   USEMETIS =
 endif
 
-CPPDEFINES = $(DPREC) $(SUFF64) $(USEMETIS)
+ifeq "$(MULTIVERSIONS)" "yes"
+  MULTI = -DMULTIPRECISION
+else
+  MULTI = 
+endif
+
+CPPDEFINES = $(DPREC) $(SUFF64) $(USEMETIS) $(MULTI)
 
 #  source files for subset and archive subset
 
