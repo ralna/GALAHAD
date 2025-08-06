@@ -9,7 +9,8 @@ This is done using [Clang.jl](https://github.com/JuliaInterop/Clang.jl).
 Activate and instantiate the project environment in this folder
 to install the dependencies `Clang.jl` and `JuliaFormatter.jl`:
 ```julia
-julia --project
+shell> cd GALAHAD.jl/gen
+shell> julia --project
 julia> ]
 (gen) pkg> instantiate
 ```

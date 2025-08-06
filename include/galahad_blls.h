@@ -562,7 +562,7 @@ void blls_read_specfile( struct blls_control_type *control,
 
 void blls_import( struct blls_control_type *control,
                  void **data,
-                 ipc_ *status,
+                 ipc_ *status2,
                  ipc_ n,
                  ipc_ o,
                  const char Ao_type[],
