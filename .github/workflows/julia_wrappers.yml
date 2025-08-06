@@ -1,0 +1,44 @@
+name: Julia interface
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    name: Check the Julia wrappers in GALAHAD.jl
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GALAHAD
+        uses: actions/checkout@v4
+
+      - name: Set the environment variable GALAHAD
+        shell: bash
+        run: echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: 1
+          arch: x64
+
+      - name: Regenerate the Julia wrappers
+        shell: bash
+        run: |
+          cd GALAHAD.jl/gen
+          julia --color=no --project -e 'using Pkg; Pkg.instantiate()'
+          julia --color=no --project wrapper.jl
+          cd ..
+          git diff --quiet || {
+          echo "❌ The Julia wrappers are out of date. ❌";
+          echo "Please run wrapper.jl in GALAHAD.jl/gen to regenerate them:";
+          echo "";
+          echo "cd GALAHAD.jl/gen";
+          echo "julia --project -e 'using Pkg; Pkg.instantiate()'";
+          echo "julia --project wrapper.jl";
+          echo "";
+          echo "You can also find the instructions at:";
+          echo "https://github.com/ralna/GALAHAD/blob/master/GALAHAD.jl/gen/README.md";
+          exit 1;
+          }
