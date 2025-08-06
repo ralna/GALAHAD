@@ -1,4 +1,4 @@
-name: GALAHAD.jl
+name: Julia interface
 on:
   push:
     branches:
@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: Check the Julia wrappers
+    name: Check the Julia wrappers in GALAHAD.jl
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GALAHAD
