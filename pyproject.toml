@@ -6,7 +6,7 @@ requires = ['meson-python', 'numpy']
 allow-windows-internal-shared-libs = true
 
 [tool.meson-python.args]
-setup = ['-Dpythoniface=true', '-Dpython.install_env=auto', '-Dsingle=false', '-Dquadruple=false', '-Dtests=false']
+setup = ['-Dpythoniface=true', '-Dpython.install_env=auto', '-Dsingle=false', '-Ddouble=true', '-Dquadruple=false', '-Dtests=false']
 install = ['--tags=runtime,python-runtime']
 
 [project]
