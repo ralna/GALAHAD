@@ -37,6 +37,7 @@ expo_control_type structure
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_abs_c<doxid-structexpo__control__type_stop_abs_c>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_rel_c<doxid-structexpo__control__type_stop_rel_c>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_s<doxid-structexpo__control__type_stop_s>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_subproblem_rel<doxid-structexpo__control__type_stop_subproblem_rel>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`initial_mu<doxid-structexpo__control__type_initial_mu>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mu_reduce<doxid-structexpo__control__type_mu_reduce>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj_unbounded<doxid-structtrb__control__type_obj_unbounded>`;
@@ -281,6 +282,16 @@ see stop_abs_c
 	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_s
 
 the smallest the norm of the step can be before termination
+
+.. index:: pair: variable; stop_subproblem_rel
+.. _doxid-structexpo__control__type_stop_subproblem_rel:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_subproblem_rel
+
+the subproblem minimization that uses GALAHAD TRU will be stopped as soon as the relative decrease in the subproblem gradient falls below .stop_subproblem_rel. If .stop_subproblem_rel is 1.0 or bigger or 0.0 or smaller, this value will be ignored, and the choice of stopping rule delegated to .control_tru.stop_g_relative (see below)
 
 .. index:: pair: variable; initial_mu
 .. _doxid-structexpo__control__type_initial_mu:

@@ -74,6 +74,7 @@ MAT_SCALE = $(MAT_BASIC) $(MLG)(galahad_scale_matlab_types.o)
 MAT_PRESOLVE = $(MAT_BASIC) $(MLG)(galahad_presolve_matlab_types.o)
 MAT_PSLS = $(MAT_SLS) $(MLG)(galahad_psls_matlab_types.o)
 MAT_SBLS = $(MAT_SLS) $(MAT_ULS) $(MLG)(galahad_sbls_matlab_types.o)
+MAT_SSLS = $(MAT_SLS) $(MLG)(galahad_ssls_matlab_types.o)
 MAT_S = basic $(MLG)(galahad_matlab.o) $(MLG)(galahad_transfer_m.o)
 MAT_FDC = $(MAT_SLS) $(MAT_ULS) $(MLG)(galahad_fdc_matlab_types.o)
 MAT_IR = $(MAT_SLS) $(MLG)(galahad_ir_matlab_types.o)
@@ -171,6 +172,7 @@ USES_SILS = galahad_sils.$(MEXEXT)
 USES_SLLS = galahad_slls.$(MEXEXT)
 USES_SLS = galahad_sls.$(MEXEXT) galahad_clls.$(MEXEXT) galahad_fdc.$(MEXEXT) \
            galahad_ir.$(MEXEXT) galahad_psls.$(MEXEXT) galahad_sbls.$(MEXEXT)
+USES_SSLS = galahad_ssls.$(MEXEXT) galahad_expo.$(MEXEXT)
 USES_TRB = galahad_trb.$(MEXEXT) galahad_bgo.$(MEXEXT) galahad_dgo.$(MEXEXT)
 USES_TRS = galahad_trs.$(MEXEXT) galahad_trb.$(MEXEXT) galahad_tru.$(MEXEXT)
 USES_TRU = galahad_tru.$(MEXEXT)
@@ -192,7 +194,7 @@ all: all_$(PRECIS)
 #	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 all_single:
 	@printf ' %-21s\n' "$(PRECIS) $(NO_MATLAB)"
-all_double: basic_double sils sls sbls bqp bqpb blls slls clls bllsb \
+all_double: basic_double sils sls sbls ssls bqp bqpb blls slls clls bllsb \
             lpa lpb cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt \
             qpa qpb qpc qp rqs trs wcp tru arc trb nls ugo bgo dgo
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
@@ -655,6 +657,18 @@ galahad_sls.$(MEXEXT): galahad_sls.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_sls"
 	$(MEX) galahad_sls.F90 -output galahad_sls $(MEXFLAGS)
 	$(LN) -fs $(MEXOUTDIR)/galahad_sls.$(MEXEXT) .
+	@printf '[ OK ]\n'
+
+#  ssls
+
+ssls: $(MAT_SSLS) galahad_ssls.$(MEXEXT)
+
+galahad_ssls.$(MEXEXT): galahad_ssls.F90
+	( cd ../ssls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     ssls_silent PRECIS=double PWD=$(PWD)/../ssls )
+	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_ssls"
+	$(MEX) galahad_ssls.F90 -output galahad_ssls $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_ssls.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  trb
@@ -1569,6 +1583,23 @@ $(MLG)(galahad_sls_matlab_types.o): galahad_sls_matlab_types.F90
 	$(RM) $(USES_SLS)
 	@printf '[ OK ]\n'
 
+#  ssls
+
+galahad_ssls_matlab_types.o: $(MLG)(galahad_ssls_matlab_types.o)
+
+$(MLG)(galahad_ssls_matlab_types.o): galahad_ssls_matlab_types.F90
+	( cd ../ssls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     ssls_silent PRECIS=double PWD=$(PWD)/../ssls )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_ssls_matlab_types"
+	$(CP) galahad_ssls_matlab_types.F90 $(OBJ)/galahad_ssls_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_ssls_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_ssls_matlab_types.o
+	$(RM) $(OBJ)/galahad_ssls_matlab_types.o \
+              $(OBJ)/galahad_ssls_matlab_types.F90
+	$(MRMARFILE) galahad_expo_matlab_types.o
+	$(MVMODS)
+	$(RM) $(USES_SSLS)
+	@printf '[ OK ]\n'
 # trb
 
 galahad_trb_matlab_types.o: $(MLG)(galahad_trb_matlab_types.o)

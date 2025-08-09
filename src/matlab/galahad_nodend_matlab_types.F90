@@ -52,6 +52,7 @@
       TYPE, PUBLIC :: NODEND_pointer_type
         mwPointer :: pointer
         mwPointer :: status, alloc_status, bad_alloc, version
+        TYPE ( NODEND_time_pointer_type ) :: time_pointer
       END TYPE
 
     CONTAINS
@@ -374,8 +375,8 @@
 
       INTEGER * 4, PARAMETER :: t_ninform = 4
       CHARACTER ( LEN = 21 ), PARAMETER :: t_finform( t_ninform ) = (/         &
-           'total                ', 'metis               ',                    &
-           'clock_total          ', 'clock_metis         ' /)
+           'total                ', 'metis                ',                   &
+           'clock_total          ', 'clock_metis          ' /)
 
 !  create the structure
 

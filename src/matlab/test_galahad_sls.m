@@ -1,7 +1,7 @@
 % test galahad_sls
 % Nick Gould for GALAHAD productions 10/November/2020
 
-clear A SA control inform
+clear A SA b x control inform 
 
 n = 10 ;
 b(1:n,1)= 1.0 ;

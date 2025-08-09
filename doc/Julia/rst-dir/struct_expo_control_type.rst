@@ -32,6 +32,7 @@ expo_control_type structure
           stop_abs_c::T
           stop_rel_c::T
           stop_s::T
+          stop_subproblem_rel::T
           initial_mu::T
           mu_reduce::T
           minimum_weight::T
@@ -275,6 +276,16 @@ see stop_abs_c
 	T stop_s
 
 the smallest the norm of the step can be before termination
+
+.. index:: pair: variable; stop_subproblem_rel
+.. _doxid-structexpo__control__type_stop_subproblem_rel:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	T stop_subproblem_rel
+
+the subproblem minimization that uses GALAHAD TRU will be stopped as soon as the relative decrease in the subproblem gradient falls below .stop_subproblem_rel. If .stop_subproblem_rel is 1.0 or bigger or 0.0 or smaller, this value will be ignored, and the choice of stopping rule delegated to .control_tru.stop_g_relative (see below)
 
 .. index:: pair: variable; initial_mu
 .. _doxid-structexpo__control__type_initial_mu:

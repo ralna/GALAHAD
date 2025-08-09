@@ -84,6 +84,7 @@
       REAL ( KIND = rpc_ ) :: stop_abs_c
       REAL ( KIND = rpc_ ) :: stop_rel_c
       REAL ( KIND = rpc_ ) :: stop_s
+      REAL ( KIND = rpc_ ) :: stop_subproblem_rel
       REAL ( KIND = rpc_ ) :: initial_mu
       REAL ( KIND = rpc_ ) :: mu_reduce
       REAL ( KIND = rpc_ ) :: obj_unbounded
@@ -215,6 +216,7 @@
     fcontrol%stop_abs_c = ccontrol%stop_abs_c
     fcontrol%stop_rel_c = ccontrol%stop_rel_c
     fcontrol%stop_s = ccontrol%stop_s
+    fcontrol%stop_subproblem_rel = ccontrol%stop_subproblem_rel
     fcontrol%initial_mu = ccontrol%initial_mu
     fcontrol%mu_reduce = ccontrol%mu_reduce
     fcontrol%obj_unbounded = ccontrol%obj_unbounded
@@ -282,6 +284,7 @@
     ccontrol%stop_abs_c = fcontrol%stop_abs_c
     ccontrol%stop_rel_c = fcontrol%stop_rel_c
     ccontrol%stop_s = fcontrol%stop_s
+    ccontrol%stop_subproblem_rel = fcontrol%stop_subproblem_rel
     ccontrol%initial_mu = fcontrol%initial_mu
     ccontrol%mu_reduce = fcontrol%mu_reduce
     ccontrol%obj_unbounded = fcontrol%obj_unbounded

@@ -22,6 +22,7 @@ struct expo_control_type{T,INT}
   stop_abs_c::T
   stop_rel_c::T
   stop_s::T
+  stop_subproblem_rel::T
   initial_mu::T
   mu_reduce::T
   obj_unbounded::T

@@ -346,7 +346,7 @@
 
       IF ( TRIM( mode ) == 'solve' .OR. TRIM( mode ) == 'all' ) THEN
 
-!  check that initialize has been called
+!  check that factorize has been called
 
         IF ( .NOT. factorized )                                                &
           CALL mexErrMsgTxt( ' "factorize" must be called first' )

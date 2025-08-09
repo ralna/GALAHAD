@@ -1,0 +1,423 @@
+
+#include <fintrf.h>
+
+!  THIS VERSION: GALAHAD 5.3 - 2025-08-09 AT 13:40 GMT.
+
+! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+!
+!                 MEX INTERFACE TO GALAHAD_SSLS
+!
+! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+!
+!  Given a BLOCK, REAL SYMMETRIC MATRIX
+!
+!     K = ( H  A^T ),
+!         ( A  - C )
+!
+!  this package forms and factorizes K, and solves the block linear system
+!
+!       ( H  A^T ) ( x ) = ( b ).
+!       ( A  - C ) ( y )   ( d )
+!
+!  Full advantage is taken of any zero coefficients in the matrices H, A and C.
+!
+!  Simple usage -
+!
+!  to form and factorize the matrix K
+!   [ inform ]
+!     = galahad_ssls( 'form_and_factorize', H, A, C, control )
+!
+!  to solve the block linear system after factorizing K
+!
+!   [ x, y, inform ]
+!     = galahad_ssls( 'solve', b, d, control )
+!
+!  Sophisticated usage -
+!
+!  to initialize data and control structures prior to solution
+!   [ control ]
+!     = galahad_ssls( 'initial' )
+!
+!  to remove data structures after solution
+!  [ inform ]
+!    = galahad_ssls( 'final' )
+!
+!  Usual Input (form-and-factorize) -
+!          H: the real symmetric n by n matrix H
+!          A: the real m by n matrix A
+!          C: the real symmetric m by m matrix C
+!  or (solve) -
+!          b: the real m-vector b
+!          d: the real n-vector d
+!
+!  Optional Input -
+!    control: a structure containing control parameters.
+!            The components are of the form control.value, where
+!            value is the name of the corresponding component of
+!            the derived type SSLS_control_type as described in
+!            the manual for the fortran 90 package GALAHAD_SSLS.
+!            See: http://galahad.rl.ac.uk/galahad-www/doc/ssls.pdf
+!
+!  Optional Output -
+!   control: see above. Returned values are the defaults
+!   inform: a structure containing information parameters
+!      The components are of the form inform.value, where
+!      value is the name of the corresponding component of the
+!      derived type SSLS_inform_type as described in the manual
+!      for the fortran 90 package GALAHAD_SSLS.The component
+!      inform.SLS_inform is itself a structure, holding the 
+!      components of the derived type SLS_inform_type.
+!      See: http://galahad.rl.ac.uk/galahad-www/doc/ssls.pdf
+!
+! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+!  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+!  Principal author: Nick Gould
+
+!  History -
+!   originally released with GALAHAD Version 5.3 August 9th 2025
+
+!  For full documentation, see
+!   http://galahad.rl.ac.uk/galahad-www/specs.html
+
+      SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
+      USE GALAHAD_MATLAB
+      USE GALAHAD_TRANSFER_MATLAB
+      USE GALAHAD_SSLS_MATLAB_TYPES
+      USE GALAHAD_SPACE_double
+      USE GALAHAD_SSLS_double
+      IMPLICIT NONE
+      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+
+! ------------------------- Do not change -------------------------------
+
+!  Keep the above subroutine, argument, and function declarations for use
+!  in all your fortran mex files.
+!
+      INTEGER * 4 :: nlhs, nrhs
+      mwPointer :: plhs( * ), prhs( * )
+
+      INTEGER, PARAMETER :: slen = 30
+      LOGICAL :: mxIsChar, mxIsStruct
+      mwSize :: mxGetString, mxIsNumeric
+      mwPointer :: mxGetPr
+
+      INTEGER ::  mexPrintf
+      CHARACTER ( LEN = 200 ) :: str
+
+! -----------------------------------------------------------------------
+
+!  local variables
+
+      INTEGER :: i, info
+      INTEGER * 4 :: m, n, i4, status, alloc_status
+      mwSize :: s_len
+      mwSize :: h_arg, a_arg, c_arg, b_arg, d_arg, con_arg
+      mwSize :: x_arg, y_arg, i_arg
+
+      mwPointer :: h_in, a_in, c_in, b_in, d_in
+      mwPointer :: x_pr, y_pr, b_pr, d_pr
+
+      INTEGER, PARAMETER :: history_max = 100
+      CHARACTER ( len = 80 ) :: char_output_unit, filename
+      LOGICAL :: opened, initial_set = .FALSE., factorized = .FALSE.
+      INTEGER :: iores
+      CHARACTER ( len = 18 ) :: mode
+      TYPE ( SSLS_pointer_type ) :: SSLS_pointer
+      mwPointer, ALLOCATABLE :: col_ptr( : )
+!     CHARACTER ( len = 80 ) :: message
+
+!  arguments for SSLS
+
+      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
+      TYPE ( SMT_type ) :: H
+      TYPE ( SMT_type ), SAVE :: A, C
+      TYPE ( SSLS_data_type ), SAVE :: data
+      TYPE ( SSLS_control_type ), SAVE :: control
+      TYPE ( SSLS_inform_type ), SAVE :: inform
+
+!  Test input/output arguments
+
+      IF ( nrhs < 1 )                                                          &
+        CALL mexErrMsgTxt( ' galahad_ssls requires at least 1 input argument' )
+
+      IF ( .NOT. mxIsChar( prhs( 1 ) ) )                                       &
+        CALL mexErrMsgTxt( ' first argument must be a string' )
+
+!  interpret the first argument
+
+      info = mxGetString( prhs( 1 ), mode, 17 )
+
+!  initial entry
+
+      IF ( TRIM( mode ) == 'initial' ) THEN
+
+        c_arg = 1
+        IF ( nlhs > c_arg )                                                    &
+          CALL mexErrMsgTxt( ' too many output arguments required' )
+
+!  Initialize the internal structures for ssls
+
+        initial_set = .TRUE.
+        CALL SSLS_initialize( data, control, inform )
+
+!  If required, return the default control parameters
+
+        IF ( nlhs > 0 )                                                        &
+          CALL SSLS_matlab_control_get( plhs( c_arg ), control )
+        RETURN
+
+!  form_and_factorize entry
+
+      ELSE IF ( TRIM( mode ) == 'form_and_factorize' ) THEN
+
+!  check that initialize has been called
+
+        IF ( .NOT. initial_set )                                               &
+          CALL mexErrMsgTxt( ' "initial" must be called first' )
+
+        h_arg = 2 ; a_arg = 3 ; c_arg = 4 ; con_arg = 5
+        IF ( nrhs > con_arg )                                                  &
+          CALL mexErrMsgTxt( ' Too many input arguments to galahad_ssls' )
+        i_arg = 1
+        IF ( nlhs > i_arg )                                                    &
+          CALL mexErrMsgTxt( ' too many output arguments required' )
+
+!  Initialize the internal structures for ssls
+
+!       initial_set = .TRUE.
+!       CALL SSLS_initialize( data, control, inform )
+
+!  If the control argument is present, extract the input control data
+
+        s_len = slen
+        IF ( nrhs >= con_arg ) THEN
+          c_in = prhs( con_arg )
+          IF ( .NOT. mxIsStruct( c_in ) )                                      &
+            CALL mexErrMsgTxt( ' control input argument must be a structure' )
+          CALL SSLS_matlab_control_set( c_in, control, s_len )
+        END IF
+
+!  Open i/o units
+
+        IF ( control%error > 0 ) THEN
+          WRITE( char_output_unit, "( I0 )" ) control%error
+          filename = "output_ssls." // TRIM( char_output_unit )
+          OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
+                STATUS = 'REPLACE', IOSTAT = iores )
+        END IF
+
+        IF ( control%out > 0 ) THEN
+          INQUIRE( control%out, OPENED = opened )
+          IF ( .NOT. opened ) THEN
+            WRITE( char_output_unit, "( I0 )" ) control%out
+            filename = "output_ssls." // TRIM( char_output_unit )
+            OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
+                  STATUS = 'REPLACE', IOSTAT = iores )
+          END IF
+        END IF
+
+!  Create inform output structure
+
+        CALL SSLS_matlab_inform_create( plhs( i_arg ), SSLS_pointer )
+
+!  Import the problem data
+
+!  input H
+
+!       WRITE( message, "( ' input H' )" )
+!       i4 = mexPrintf( TRIM( message ) // achar( 10 ) )
+        h_in = prhs( h_arg )
+        IF ( mxIsNumeric( h_in ) == 0 )                                        &
+          CALL mexErrMsgTxt( ' There must be a matrix H ' )
+        CALL MATLAB_transfer_matrix( h_in, H, col_ptr, .TRUE. )
+
+        n = H%n
+
+!  input A
+
+!       WRITE( message, "( ' input A' )" )
+!       i4 = mexPrintf( TRIM( message ) // achar( 10 ) )
+
+        a_in = prhs( a_arg )
+        IF ( mxIsNumeric( a_in ) == 0 )                                        &
+          CALL mexErrMsgTxt( ' There must be a matrix A ' )
+        CALL MATLAB_transfer_matrix( a_in, A, col_ptr, .FALSE. )
+        IF ( A%n /= n )                                                        &
+          CALL mexErrMsgTxt( ' Column dimensions of H and A must agree' )
+        m = A%m
+
+!  input C
+
+!       WRITE( message, "( ' input C' )" )
+!       i4 = mexPrintf( TRIM( message ) // achar( 10 ) )
+
+        c_in = prhs( c_arg )
+        IF ( mxIsNumeric( c_in ) == 0 )                                        &
+          CALL mexErrMsgTxt( ' There must be a matrix M ' )
+        CALL MATLAB_transfer_matrix( c_in, C, col_ptr, .TRUE. )
+        IF ( C%n /= m )                                                        &
+          CALL mexErrMsgTxt( ' Dimensions of A and C must agree' )
+
+        IF ( ALLOCATED( col_ptr ) ) DEALLOCATE( col_ptr, STAT = info )
+
+!  analyse
+
+        CALL SSLS_analyse( n, m, H, A, C, data, control, inform )
+        IF ( inform%status < 0 ) THEN
+          CALL mexWarnMsgTxt( ' Call to SSLS_analyse failed ' )
+          WRITE( control%out, "( ' Error return from SSLS_analyse,',           &
+         &  ' status = ', I0 )" ) inform%status
+          GO TO 400
+        END IF
+
+!  factorize
+
+        CALL SSLS_factorize( n, m, H, A, C, data, control, inform )
+        IF ( inform%status < 0 ) THEN
+          CALL mexWarnMsgTxt( ' Call to SSLS_factorize failed ' )
+          WRITE( control%out, "( ' Error return from SSLS_factorize,',         &
+         &  ' status = ', I0 )" ) inform%status
+          GO TO 400
+        END IF
+        factorized = .TRUE.
+
+!  solve entry
+
+      ELSE IF ( TRIM( mode ) == 'solve' ) THEN
+
+        IF ( control%error > 0 ) REWIND( control%error )
+        IF ( control%out > 0 ) REWIND( control%out )
+         b_arg = 2 ; d_arg = 3 ; con_arg = 4
+         IF ( nrhs > con_arg )                                                 &
+           CALL mexErrMsgTxt( ' Too many input arguments to galahad_sls' )
+         x_arg = 1 ; y_arg = 2 ; i_arg = 3
+         IF ( nlhs > i_arg )                                                   &
+           CALL mexErrMsgTxt( ' too many output arguments required' )
+
+!  Check that SSLS_factorize has been called
+
+        IF ( .NOT. factorized )                                                &
+          CALL mexErrMsgTxt( ' "form_and_factorize" must be called first' )
+
+!  If the control argument is present, extract the input control data
+
+        s_len = slen
+        IF ( nrhs >= con_arg ) THEN
+          c_in = prhs( con_arg )
+          IF ( .NOT. mxIsStruct( c_in ) )                                      &
+            CALL mexErrMsgTxt( ' control input argument must be a structure' )
+          CALL SSLS_matlab_control_set( c_in, control, s_len )
+        END IF
+
+!  Create inform output structure
+
+        CALL SSLS_matlab_inform_create( plhs( i_arg ), SSLS_pointer )
+
+!  Allocate space for input vector (b,d) in SOL
+
+        m = A%m ; n = A%n
+
+        CALL SPACE_resize_array( n + m, SOL, status, alloc_status )
+        IF ( status /= 0 ) CALL mexErrMsgTxt( ' allocate error SOL' )
+
+!  Input b
+
+        b_in = prhs( b_arg )
+        IF ( mxIsNumeric( b_in ) == 0 )                                        &
+          CALL mexErrMsgTxt( ' There must be a vector b ' )
+        b_pr = mxGetPr( b_in )
+!       CALL mexWarnMsgTxt( ' here' )
+        CALL MATLAB_copy_from_ptr( b_pr, SOL( 1 : n ), n )
+
+!  Input d
+
+        d_in = prhs( d_arg )
+        IF ( mxIsNumeric( d_in ) == 0 )                                        &
+          CALL mexErrMsgTxt( ' There must be a vector d ' )
+        d_pr = mxGetPr( d_in )
+        CALL MATLAB_copy_from_ptr( d_pr, SOL( n + 1 : n + m ), m )
+
+!  Solve the system
+
+        CALL SSLS_solve( n, m, SOL, data, control, inform )
+
+!  Output solution
+
+         i4 = 1
+         plhs( x_arg ) = MATLAB_create_real( n, i4 )
+         x_pr = mxGetPr( plhs( x_arg ) )
+         CALL MATLAB_copy_to_ptr( SOL( : n ), x_pr, n )
+         plhs( y_arg ) = MATLAB_create_real( m, i4 )
+         y_pr = mxGetPr( plhs( y_arg ) )
+         CALL MATLAB_copy_to_ptr( SOL( n + 1 : n + m ), y_pr, m )
+
+!  final entry
+
+      ELSE IF ( TRIM( mode ) == 'final' ) THEN
+
+         i_arg = 1
+
+!  Create inform output structure
+
+        CALL SSLS_matlab_inform_create( plhs( i_arg ), SSLS_pointer )
+
+!  remove unwanted storage
+
+        CALL SPACE_dealloc_array( H%row, status, alloc_status )
+        CALL SPACE_dealloc_array( H%col, status, alloc_status )
+        CALL SPACE_dealloc_array( H%val, status, alloc_status )
+        CALL SPACE_dealloc_array( A%row, status, alloc_status )
+        CALL SPACE_dealloc_array( A%col, status, alloc_status )
+        CALL SPACE_dealloc_array( A%val, status, alloc_status )
+        CALL SPACE_dealloc_array( C%row, status, alloc_status )
+        CALL SPACE_dealloc_array( C%col, status, alloc_status )
+        CALL SPACE_dealloc_array( C%val, status, alloc_status )
+        CALL SPACE_dealloc_array( SOL, status, alloc_status )
+        CALL SSLS_terminate( data, control, inform )
+
+!  close any opened io units
+
+        IF ( control%error > 0 ) THEN
+          INQUIRE( control%error, OPENED = opened )
+          IF ( opened ) CLOSE( control%error )
+        END IF
+
+        IF ( control%out > 0 ) THEN
+          INQUIRE( control%out, OPENED = opened )
+          IF ( opened ) CLOSE( control%out )
+        END IF
+
+!  unknown entry
+
+      ELSE
+        CALL mexErrMsgTxt( ' Unrecognised first input string ' )
+      END IF
+
+!  Print details to Matlab window
+
+  400 CONTINUE
+      IF ( control%out > 0 ) THEN
+        REWIND( control%out, err = 500 )
+        DO
+          READ( control%out, "( A )", end = 500 ) str
+          i = mexPrintf( TRIM( str ) // ACHAR( 10 ) )
+        END DO
+       END IF
+  500 CONTINUE
+
+!  Record output information
+
+      CALL SSLS_matlab_inform_get( inform, SSLS_pointer )
+
+!  Check for errors
+
+      IF ( inform%status < 0 )                                                &
+         CALL mexErrMsgTxt( ' Call to SSLS_solve failed ' )
+
+!      WRITE( message, * ) 'here'
+!      i = MEXPRINTF( TRIM( message ) // char( 13 ) )
+
+      RETURN
+
+      END SUBROUTINE mexFunction

@@ -183,6 +183,14 @@
 
        REAL ( KIND = rp_ ) :: stop_s = epsmch
 
+!   the subproblem minimization that uses GALAHAD TRU will be stopped as 
+!    soon as the relative decrease in the subproblem gradient falls below 
+!    stop_subproblem_rel. If stop_subproblem_rel is 1.0 or bigger or 0.0 
+!    or smaller, this value will be ignored, and the choice of stopping 
+!    rule delegated to control_tru%stop_g_relative
+
+       REAL ( KIND = rp_ ) :: stop_subproblem_rel = - one
+
 !   the initial value of the penalty parameter (non-positive sets automatically)
 
 !      REAL ( KIND = rp_ ) :: initial_mu = point1
@@ -607,6 +615,7 @@
 !  absolute-complementary-slackness-accuracy       1.0D-5
 !  relative-complementary-slackness-accuracy       1.0D-5
 !  minimum-step-allowed                            2.0D-16
+!  relative-subproblem-accuracy                    -1.0
 !  initial-penalty-parameter                       1.0D-1
 !  penalty-parameter-reduction-factor              0.5
 !  update-multipliers-feasibility-tolerance        1.0D+20
@@ -657,7 +666,8 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_abs_c = stop_rel_d + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_c = stop_abs_c + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_s = stop_rel_c + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: initial_mu = stop_s + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_subproblem_rel = stop_s + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_mu = stop_subproblem_rel + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: mu_reduce = initial_mu + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: update_multipliers_tol               &
                                             = mu_reduce + 1
@@ -713,6 +723,7 @@
      spec( stop_abs_c )%keyword = 'absolute-complementary-slackness-accuracy'
      spec( stop_rel_c )%keyword = 'relative-complementary-slackness-accuracy'
      spec( stop_s )%keyword = 'minimum-steplength-allowed'
+     spec( stop_subproblem_rel )%keyword = 'relative-subproblem-accuracy'
      spec( initial_mu )%keyword = 'initial-penalty-parameter'
      spec( mu_reduce )%keyword = 'penalty-parameter-reduction-factor'
      spec( update_multipliers_tol )%keyword                                    &
@@ -804,6 +815,9 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( stop_s ),                               &
                                  control%stop_s,                               &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( stop_subproblem_rel ),                  &
+                                 control%stop_subproblem_rel,                  &
                                  control%error )
      CALL SPECFILE_assign_value( spec( initial_mu ),                           &
                                  control%initial_mu,                           &
@@ -2249,6 +2263,11 @@ stop
        inform%tru_inform%iter = 0
        data%control%tru_control%maxit = MIN( control%tru_control%maxit,        &
          data%control%max_eval - inform%fc_eval )
+
+       IF ( data%control%stop_subproblem_rel > zero .AND.                      &
+            data%control%stop_subproblem_rel < one )                           &
+         data%control%tru_control%stop_g_relative                              &
+           = data%control%stop_subproblem_rel
        IF (data%printi .AND.  data%control%TRU_control%print_level > 0 )       &
          WRITE( data%out, "( '' )" )
  200   CONTINUE

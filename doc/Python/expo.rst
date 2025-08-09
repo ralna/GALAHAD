@@ -79,6 +79,13 @@ functions
              the required relative accuracy for the complementarity.
           stop_s : float
              the smallest the norm of the step can be before termination.
+          stop_subproblem_rel : float
+              the subproblem minimization that uses GALAHAD TRU will be 
+              stopped as  soon as the relative decrease in the subproblem 
+              gradient falls below .stop_subproblem_rel. If 
+              .stop_subproblem_rel is 1.0 or bigger or 0.0 or smaller, 
+              this value will be ignored, and the choice of stopping 
+              rule delegated to .control_tru.stop_g_relative (see below)
           initial_mu : float
              initial value for the penalty parameter (<=0 means set
              automatically)

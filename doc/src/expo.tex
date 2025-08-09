@@ -646,6 +646,15 @@ The default is {\tt stop\_s =} $u$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
+\itt{stop\_subproblem\_rel} is a scalar variable of type \realdp, 
+that determines the required accuracy of the subproblem solver
+{\tt \libraryname\_TRU}. The subproblem minimization will be stopped as 
+soon as the relative decrease in the subproblem gradient falls below 
+{\tt stop\_subproblem\_rel}. If {\tt stop\_subproblem\_rel} is 1.0 or bigger 
+or 0.0 or smaller, this value will be ignored, and the choice of stopping 
+rule delegated to {\tt control\_tru\%stop\_g\_relative} (see below).
+The default is {\tt stop\_subproblem\_rel = -1.0}.
+
 \itt{initial\_mu} is a scalar variable of type \realdp, that holds
 the required initial value of the penalty parameter. If
 {\tt initial\_radius} $\leq 0$, the initial penalty parameter will be 
@@ -1626,7 +1635,8 @@ that each affects are given in Table~\vref{specfile}.
   {\tt absolute-complementary-slackness-accuracy} & {\tt \%stop\_abs\_c} & real \\
   {\tt relative-complementary-slackness-accuracy} & {\tt \%stop\_rel\_c} & real \\
   {\tt minimum-relative-step-allowed} & {\tt \%stop\_s} & real \\
-  {\tt initial-penalty-parameter} & {\tt     initial\_mu } & real \\
+  {\tt relative-subproblem-accuracy} & {\tt \%stop\_subproblem\_rel} & real \\
+  {\tt initial-penalty-parameter} & {\tt initial\_mu } & real \\
   {\tt penalty-parameter-reduction-factor} & {\tt mu\_reduce } & real \\
   {\tt minimum-objective-before-unbounded} & {\tt obj\_unbounded } & real \\
   {\tt try-advanced-start-tolerance} & {\tt     try\_advanced\_start } & real \\

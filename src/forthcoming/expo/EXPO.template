@@ -16,6 +16,7 @@
 ! absolute-complementary-slackness-accuracy       1.0D-5
 ! relative-complementary-slackness-accuracy       1.0D-5
 ! minimum-step-allowed                            2.0D-16
+! relative-subproblem-accuracy                    -1.0
 ! initial-penalty-parameter                       1.0D+1
 ! penalty-parameter-reduction-factor              0.5
 ! update-multipliers-feasibility-tolerance        1.0D+20

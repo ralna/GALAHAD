@@ -317,6 +317,12 @@ static bool expo_update_control(struct expo_control_type *control,
                 return false;
             continue;
         }
+        if(strcmp(key_name, "stop_subproblem_rel") == 0){
+            if(!parse_double_option(value, "stop_subproblem_rel",
+                                  &control->stop_subproblem_rel))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "initial_mu") == 0){
             if(!parse_double_option(value, "initial_mu",
                                   &control->initial_mu))
@@ -467,6 +473,8 @@ static PyObject* expo_make_options_dict(const struct expo_control_type *control)
                          PyFloat_FromDouble(control->stop_rel_c));
     PyDict_SetItemString(py_options, "stop_s",
                          PyFloat_FromDouble(control->stop_s));
+    PyDict_SetItemString(py_options, "stop_subproblem_rel",
+                         PyFloat_FromDouble(control->stop_subproblem_rel));
     PyDict_SetItemString(py_options, "initial_mu",
                          PyFloat_FromDouble(control->initial_mu));
     PyDict_SetItemString(py_options, "mu_reduce",
