@@ -193,11 +193,6 @@ option('int64',
        value : false,
        description : 'Compile GALAHAD with 64-bit integer')
 
-option('multiprecision',
-       type : 'boolean',
-       value : false,
-       description : 'Compile GALAHAD with -DMULTIPRECISION to have a different suffix for each C routine')
-
 option('openmp',
        type : 'boolean',
        value : true,

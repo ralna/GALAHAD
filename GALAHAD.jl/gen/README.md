@@ -126,7 +126,7 @@ the `main` function of `wrapper.jl`, in the variable `packages` of
 package is named `abcd`, insert the following line in `wrapper.jl`:
 
 ```julia
-(name == "all" || name == "abcd") && wrapper("abcd", ["$galahad/galahad_abcd.h"], optimized, mp, run_sif=bool, run_qplib=bool)
+(name == "all" || name == "abcd") && wrapper("abcd", ["$galahad/galahad_abcd.h"], optimized, run_sif=bool, run_qplib=bool)
 ```
 
 If binaries are available for the new package, you also need to update the docstrings of `run_qplib` and `run_sif` in `GALAHAD/GALAHAD.jl/src/utils.jl` to add the symbol `:abcd` as an available solver.

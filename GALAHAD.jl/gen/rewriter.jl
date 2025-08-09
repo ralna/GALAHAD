@@ -39,7 +39,7 @@ hsl_structures = ("ma48_control", "ma48_ainfo", "ma48_finfo", "ma48_sinfo", "ma5
 
 ssids_structures = ("spral_ssids_options", "spral_ssids_inform")
 
-function rewrite!(path::String, name::String, optimized::Bool, mp::Bool)
+function rewrite!(path::String, name::String, optimized::Bool)
   structures = "# Structures for $name\n"
   text = read(path, String)
   if optimized
@@ -124,11 +124,8 @@ function rewrite!(path::String, name::String, optimized::Bool, mp::Bool)
         routine_single_int32 = replace(routine_single_int32, "libgalahad_double" => "libgalahad_single")
         routine_quadruple_int32 = replace(routine_quadruple_int32, "libgalahad_double" => "libgalahad_quadruple")
 
-        # Use it only if GALAHAD is compiled with `-DMULTIPRECISION`
-        if mp
-          routine_single_int32 = replace(routine_single_int32, "libgalahad_single.$fname(" => "libgalahad_single.$(fname)_s(")
-          routine_quadruple_int32 = replace(routine_quadruple_int32, "libgalahad_quadruple.$fname(" => "libgalahad_quadruple.$(fname)_q(")
-        end
+        routine_single_int32 = replace(routine_single_int32, "libgalahad_single.$fname(" => "libgalahad_single.$(fname)_s(")
+        routine_quadruple_int32 = replace(routine_quadruple_int32, "libgalahad_quadruple.$fname(" => "libgalahad_quadruple.$(fname)_q(")
 
         routine_single_int32 = replace(routine_single_int32, "ipc_" => "Int32")
         routine_double_int32 = replace(routine_double_int32, "ipc_" => "Int32")
@@ -187,12 +184,9 @@ function rewrite!(path::String, name::String, optimized::Bool, mp::Bool)
         routine_double_int64 = replace(routine_double_int64, "libgalahad_double" => "libgalahad_double_64")
         routine_quadruple_int64 = replace(routine_quadruple_int64, "libgalahad_quadruple" => "libgalahad_quadruple_64")
 
-        # Use it only if GALAHAD is compiled with `-DMULTIPRECISION`
-        if mp
-          routine_single_int64 = replace(routine_single_int64, "libgalahad_single_64.$(fname)_s(" => "libgalahad_single_64.$(fname)_s_64(")
-          routine_double_int64 = replace(routine_double_int64, "libgalahad_double_64.$(fname)(" => "libgalahad_double_64.$(fname)_64(")
-          routine_quadruple_int64 = replace(routine_quadruple_int64, "libgalahad_quadruple_64.$(fname)_q(" => "libgalahad_quadruple_64.$(fname)_q_64(")
-        end
+        routine_single_int64 = replace(routine_single_int64, "libgalahad_single_64.$(fname)_s(" => "libgalahad_single_64.$(fname)_s_64(")
+        routine_double_int64 = replace(routine_double_int64, "libgalahad_double_64.$(fname)(" => "libgalahad_double_64.$(fname)_64(")
+        routine_quadruple_int64 = replace(routine_quadruple_int64, "libgalahad_quadruple_64.$(fname)_q(" => "libgalahad_quadruple_64.$(fname)_q_64(")
 
         routine_single_int64 = replace(routine_single_int64, "Int32" => "Int64")
         routine_double_int64 = replace(routine_double_int64, "Int32" => "Int64")
