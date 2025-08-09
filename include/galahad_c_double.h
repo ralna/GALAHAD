@@ -8150,6 +8150,7 @@ struct expo_control_type {
     double stop_abs_c;
     double stop_rel_c;
     double stop_s;
+    double stop_subproblem_rel;
     double initial_mu;
     double mu_reduce;
     double obj_unbounded;
@@ -8190,6 +8191,7 @@ struct expo_control_type_64 {
     double stop_abs_c;
     double stop_rel_c;
     double stop_s;
+    double stop_subproblem_rel;
     double initial_mu;
     double mu_reduce;
     double obj_unbounded;

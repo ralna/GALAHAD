@@ -38,7 +38,7 @@ typedef ipc_ galahad_gj( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ g[], rpc
 typedef ipc_ galahad_hl( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[], rpc_ h[], const void *userdata );
 
 // UGO
-typedef ipc_ galahad_fgh( rpc_ x, rpc_ *f, rpc_ *g, rpc_*h, const void *userdata );
+typedef ipc_ galahad_fgh( rpc_ x, rpc_ *f, rpc_ *g, rpc_ *h, const void *userdata );
 
 #ifdef __cplusplus
 }

@@ -3,6 +3,11 @@ using Clang
 using Clang.Generators
 using JuliaFormatter
 
+# Support for quadruple precision
+struct JuliaCfloat128 <: Clang.Generators.AbstractJuliaSIT end
+Clang.Generators.tojulia(x::CLFloat128) = JuliaCfloat128()
+Clang.Generators.translate(jlty::JuliaCfloat128, options = Dict()) = :Float128
+
 include("rewriter.jl")
 
 function run_sif_wrapper(name::String, precision::String)
@@ -37,12 +42,10 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool;
   include_dir = joinpath(ENV["GALAHAD"], "include")
   options = load_options(joinpath(@__DIR__, "galahad.toml"))
   options["general"]["library_name"] = "libgalahad_double"
-  # options["general"]["extract_c_comment_style"] = "doxygen"
   options["general"]["output_file_path"] = joinpath("..", "src", "wrappers", "$(name).jl")
   optimized && (options["general"]["output_ignorelist"] = ["real_wp_", "real_sp_", "rpc_", "ipc_"])
   args = get_default_args()
   push!(args, "-I$include_dir")
-  push!(args, "-DGALAHAD_DOUBLE")
 
   if !isempty(headers)
     ctx = create_context(headers, args, options)
@@ -110,9 +113,11 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool;
 end
 
 # Change the default value of `mp` to `true` if we want to regenerate `galahad_c.h`.
-function main(name::String="all"; optimized::Bool=true, mp::Bool=false)
+function main(name::String="all"; optimized::Bool=true)
   haskey(ENV, "GALAHAD") || error("The environment variable GALAHAD is not defined.")
   galahad = joinpath(ENV["GALAHAD"], "include")
+  global galahad_mp = Dict("common" => Dict{String, String}(), "single" => Dict{String, String}(),
+                           "double" => Dict{String, String}(), "quadruple" => Dict{String, String}())
 
   # Regenerate test_structures.jl
   (name == "all") && optimized && isfile("../test/test_structures.jl") && rm("../test/test_structures.jl")
@@ -190,8 +195,15 @@ function main(name::String="all"; optimized::Bool=true, mp::Bool=false)
   (name == "all" || name == "tru")      && wrapper("tru", ["$galahad/galahad_tru.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "ugo")      && wrapper("ugo", ["$galahad/galahad_ugo.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "uls")      && wrapper("uls", ["$galahad/galahad_uls.h"], optimized, run_sif=false, run_qplib=false)
+# (name == "all" || name == "version")  && wrapper("version", ["$galahad/galahad_version.h"], optimized, run_sif=false, run_qplib=false)
   (name == "all" || name == "warm")     && wrapper("warm", String[], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "wcp")      && wrapper("wcp", ["$galahad/galahad_wcp.h"], optimized, run_sif=true, run_qplib=false)
+
+  # Regenerate galahad_c_common.h, galahad_c_single.h, galahad_c_double.h and galahad_c_quadruple.h
+  if (name == "all") && optimized
+    generate_galahad_c()
+    check_galahad_c()
+  end
 
   return nothing
 end

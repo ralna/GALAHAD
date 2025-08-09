@@ -8150,6 +8150,7 @@ struct expo_control_type_q {
     __float128 stop_abs_c;
     __float128 stop_rel_c;
     __float128 stop_s;
+    __float128 stop_subproblem_rel;
     __float128 initial_mu;
     __float128 mu_reduce;
     __float128 obj_unbounded;
@@ -8190,6 +8191,7 @@ struct expo_control_type_q_64 {
     __float128 stop_abs_c;
     __float128 stop_rel_c;
     __float128 stop_s;
+    __float128 stop_subproblem_rel;
     __float128 initial_mu;
     __float128 mu_reduce;
     __float128 obj_unbounded;
