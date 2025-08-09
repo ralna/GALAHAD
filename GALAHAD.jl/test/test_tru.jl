@@ -10,6 +10,12 @@ using Quadmath
 # Custom userdata struct
 mutable struct userdata_tru{T}
   p::T
+  pass_userdata::Bool
+  eval_f::Function
+  eval_g::Function
+  eval_h::Union{Function, Nothing}
+  eval_hprod::Union{Function, Nothing}
+  eval_prec::Function
 end
 
 function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
@@ -21,15 +27,6 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function fun_c(n::INT, x::Ptr{T}, f::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _f = unsafe_wrap(Vector{T}, f, 1)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_tru{T}
-    fun(_x, _f, _userdata)
-  end
-
-  fun_ptr = @eval @cfunction($fun_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
   # Gradient of the objective
   function grad(x::Vector{T}, g::Vector{T}, userdata::userdata_tru{T})
     p = userdata.p
@@ -38,15 +35,6 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     g[3] = 2.0 * (x[1] + x[3] + p) + 2.0 * (x[2] + x[3])
     return INT(0)
   end
-
-  function grad_c(n::INT, x::Ptr{T}, g::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _g = unsafe_wrap(Vector{T}, g, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_tru{T}
-    grad(_x, _g, _userdata)
-  end
-
-  grad_ptr = @eval @cfunction($grad_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # Hessian of the objective
   function hess(x::Vector{T}, hval::Vector{T}, userdata::userdata_tru)
@@ -57,15 +45,6 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     hval[5] = 4.0
     return INT(0)
   end
-
-  function hess_c(n::INT, ne::INT, x::Ptr{T}, hval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _hval = unsafe_wrap(Vector{T}, hval, ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_tru{T}
-    hess(_x, _hval, _userdata)
-  end
-
-  hess_ptr = @eval @cfunction($hess_c, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # Dense Hessian
   function hess_dense(x::Vector{T}, hval::Vector{T}, userdata::userdata_tru{T})
@@ -78,15 +57,6 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function hess_dense_c(n::INT, ne::INT, x::Ptr{T}, hval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _hval = unsafe_wrap(Vector{T}, hval, ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_tru{T}
-    hess_dense(_x, _hval, _userdata)
-  end
-
-  hess_dense_ptr = @eval @cfunction($hess_dense_c, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
   # Hessian-vector product
   function hessprod(x::Vector{T}, u::Vector{T}, v::Vector{T}, got_h::Bool,
                     userdata::userdata_tru{T})
@@ -95,17 +65,6 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     u[3] = u[3] + 2.0 * (v[1] + v[2] + 2.0 * v[3])
     return INT(0)
   end
-
-  function hessprod_c(n::INT, x::Ptr{T}, u::Ptr{T}, v::Ptr{T},
-                      got_h::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _u = unsafe_wrap(Vector{T}, u, n)
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_tru{T}
-    hessprod(_x, _u, _v, got_h, _userdata)
-  end
-
-  hessprod_ptr = @eval @cfunction($hessprod_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Bool, Ptr{Cvoid}))
 
   # Apply preconditioner
   function prec(x::Vector{T}, u::Vector{T}, v::Vector{T},
@@ -116,31 +75,12 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function prec_c(n::INT, x::Ptr{T}, u::Ptr{T}, v::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _u = unsafe_wrap(Vector{T}, u, n)
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_tru{T}
-    prec(_x, _u, _v, _userdata)
-  end
-
-  prec_ptr = @eval @cfunction($prec_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
   # Objective function
   function fun_diag(x::Vector{T}, f::Vector{T}, userdata::userdata_tru{T})
     p = userdata.p
     f[1] = (x[3] + p)^2 + x[2]^2 + cos(x[1])
     return INT(0)
   end
-
-  function fun_diag_c(n::INT, x::Ptr{T}, f::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _f = unsafe_wrap(Vector{T}, f, 1)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_tru{T}
-    fun_diag(_x, _f, _userdata)
-  end
-
-  fun_diag_ptr = @eval @cfunction($fun_diag_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # Gradient of the objective
   function grad_diag(x::Vector{T}, g::Vector{T}, userdata::userdata_tru{T})
@@ -151,15 +91,6 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function grad_diag_c(n::INT, x::Ptr{T}, g::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _g = unsafe_wrap(Vector{T}, g, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_tru{T}
-    grad_diag(_x, _g, _userdata)
-  end
-
-  grad_diag_ptr = @eval @cfunction($grad_diag_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
   # Hessian of the objective
   function hess_diag(x::Vector{T}, hval::Vector{T}, userdata::userdata_tru{T})
     hval[1] = -cos(x[1])
@@ -168,14 +99,12 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function hess_diag_c(n::INT, ne::INT, x::Ptr{T}, hval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _hval = unsafe_wrap(Vector{T}, hval, ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_tru{T}
-    hess_diag(_x, _hval, _userdata)
-  end
-
-  hess_diag_ptr = @eval @cfunction($hess_diag_c, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+  # Pointer to C-compatible functions that wraps the Julia functions
+  obj_ptr = galahad_f(T, INT)
+  grad_ptr = galahad_g(T, INT)
+  hess_ptr = galahad_h(T, INT)
+  hessprod_ptr = galahad_hprod(T, INT)
+  prec_ptr = galahad_prec(T, INT)
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -183,13 +112,20 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
   inform = Ref{tru_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_tru{T}(4)
+  pass_userdata = true
+  userdata = userdata_tru{T}(4, pass_userdata, fun, grad, hess, nothing, prec)
   userdata_ptr = pointer_from_objref(userdata)
+  userdata_dense = userdata_tru{T}(4, pass_userdata, fun, grad, hess_dense, nothing, prec)
+  userdata_dense_ptr = pointer_from_objref(userdata_dense)
+  userdata_diag = userdata_tru{T}(4, pass_userdata, fun_diag, grad_diag, hess_diag, nothing, prec)
+  userdata_diag_ptr = pointer_from_objref(userdata_diag)
+  userdata_nh = userdata_tru{T}(4, pass_userdata, fun, grad, hess, hessprod, prec)
+  userdata_nh_ptr = pointer_from_objref(userdata_nh)
 
   # Set problem data
   n = INT(3)  # dimension
   ne = INT(5)  # Hesssian elements
-  ne_dense = div(n * (n + 1), 2)  # dense Hesssian elements
+  ne_dense = div(n * (n + 1), 2) |> INT  # dense Hesssian elements
   H_row = INT[1, 2, 3, 3, 3]  # Hessian H
   H_col = INT[1, 2, 1, 2, 3]  # NB lower triangle
   H_ptr = INT[1, 2, 3, 6]  # row pointers
@@ -225,35 +161,35 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         st = 'C'
         # @reset control[].print_level = INT(1)
         tru_import(T, INT, control, data, status, n, "coordinate", ne, H_row, H_col, C_NULL)
-        tru_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g, ne, fun_ptr, grad_ptr, hess_ptr, prec_ptr)
+        tru_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g, ne, obj_ptr, grad_ptr, hess_ptr, prec_ptr)
       end
 
       # sparse by rows
       if d == 2
         st = 'R'
         tru_import(T, INT, control, data, status, n, "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
-        tru_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g, ne, fun_ptr, grad_ptr, hess_ptr, prec_ptr)
+        tru_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g, ne, obj_ptr, grad_ptr, hess_ptr, prec_ptr)
       end
 
       # dense
       if d == 3
         st = 'D'
         tru_import(T, INT, control, data, status, n, "dense", ne_dense, C_NULL, C_NULL, C_NULL)
-        tru_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g, ne_dense, fun_ptr, grad_ptr, hess_dense_ptr, prec_ptr)
+        tru_solve_with_mat(T, INT, data, userdata_dense_ptr, status, n, x, g, ne_dense, obj_ptr, grad_ptr, hess_ptr, prec_ptr)
       end
 
       # diagonal
       if d == 4
         st = 'I'
         tru_import(T, INT, control, data, status, n, "diagonal", n, C_NULL, C_NULL, C_NULL)
-        tru_solve_with_mat(T, INT,  data, userdata_ptr, status, n, x, g, n, fun_diag_ptr, grad_diag_ptr, hess_diag_ptr, prec_ptr)
+        tru_solve_with_mat(T, INT,  data, userdata_diag_ptr, status, n, x, g, n, obj_ptr, grad_ptr, hess_ptr, prec_ptr)
       end
 
       # access by products
       if d == 5
         st = 'P'
         tru_import(T, INT, control, data, status, n, "absent", ne, C_NULL, C_NULL, C_NULL)
-        tru_solve_without_mat(T, INT, data, userdata_ptr, status, n, x, g, fun_ptr, grad_ptr, hessprod_ptr, prec_ptr)
+        tru_solve_without_mat(T, INT, data, userdata_nh_ptr, status, n, x, g, obj_ptr, grad_ptr, hessprod_ptr, prec_ptr)
       end
 
       tru_information(T, INT, data, inform, status)

@@ -10,6 +10,10 @@ using Quadmath
 # Custom userdata struct
 mutable struct userdata_ugo{T}
   a::T
+  pass_userdata::Bool
+  eval_f::Function
+  eval_g::Function
+  eval_h::Function
 end
 
 function test_ugo(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
@@ -34,28 +38,17 @@ function test_ugo(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
     return res
   end
 
-  # Evaluate test problem objective, first and second derivatives
-  function eval_fgh(x::T, f::Ptr{T}, g::Ptr{T}, h::Ptr{T}, userdata::Ptr{Cvoid})::INT
-    _f = unsafe_wrap(Vector{T}, f, 1)
-    _g = unsafe_wrap(Vector{T}, g, 1)
-    _h = unsafe_wrap(Vector{T}, h, 1)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_ugo{T}
-
-    _f[1] = objf(x, _userdata)
-    _g[1] = gradf(x, _userdata)
-    _h[1] = hessf(x, _userdata)
-    return INT(0)
-  end
-
-  eval_fgh_ptr = @eval @cfunction($eval_fgh, $INT, ($T, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+  # Pointer to a C-compatible function that wraps the Julia functions objf, gradf, and hessf
+  eval_fgh_ptr = galahad_fgh(T, INT)
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{ugo_control_type{T,INT}}()
   inform = Ref{ugo_inform_type{T,INT}}()
 
-  # Set user data
-  userdata = userdata_ugo{T}(10)
+  # Boolean indicating whether objf, gradf, and hessf should receive "userdata" as their last argument
+  use_userdata = true
+  userdata = userdata_ugo{T}(10, use_userdata, objf, gradf, hessf)
   userdata_ptr = pointer_from_objref(userdata)
 
   # Initialize UGO

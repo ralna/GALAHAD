@@ -10,6 +10,13 @@ using Quadmath
 # Custom userdata struct
 mutable struct userdata_expo{T}
   p::T
+  pass_userdata::Bool
+  eval_fc::Function
+  eval_gj::Function
+  eval_hl::Function
+  eval_fc_ptr::Ptr{Cvoid}
+  eval_gj_ptr::Ptr{Cvoid}
+  eval_hl_ptr::Ptr{Cvoid}
 end
 
 function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="sytr") where {T,INT}
@@ -22,18 +29,8 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
     c[3] = userdata.p * x[1]^2 + x[2]^2 - userdata.p
     c[4] = x[1]^2 - x[2]
     c[5] = x[2]^2 - x[1]
-    return INT(0)
+    return f, c
   end
-
-  function eval_fc_c(n::INT, m::INT, x::Ptr{T}, f::Ptr{T}, c::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _c = unsafe_wrap(Vector{T}, c, m)
-    _f = unsafe_wrap(Vector{T}, f, 1)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
-    eval_fc(_x, _f, _c, _userdata)
-  end
-
-  eval_fc_ptr = @eval @cfunction($eval_fc_c, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the gradient and Jacobian
   function eval_gj(x::Vector{T}, g::Vector{T}, jval::Vector{T}, userdata::userdata_expo{T})
@@ -49,19 +46,8 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
     jval[8] = -1
     jval[9] = -1
     jval[10] = 2 * x[2]
-    return INT(0)
+    return g, jval
   end
-
-  function eval_gj_c(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
-                     jval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _g = unsafe_wrap(Vector{T}, g, n)
-    _jval = unsafe_wrap(Vector{T}, jval, J_ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
-    eval_gj(_x, _g, _jval, _userdata)
-  end
-
-  eval_gj_ptr = @eval @cfunction($eval_gj_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the gradient and dense Jacobian
   function eval_gj_dense(x::Vector{T}, g::Vector{T}, jval::Vector{T}, userdata::userdata_expo{T})
@@ -77,56 +63,29 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
     jval[8] = -1
     jval[9] = -1
     jval[10] = 2 * x[2]
-    return INT(0)
+    return g, jval
   end
-
-  function eval_gj_dense_c(n::INT, m::INT, J_ne::INT, x::Ptr{T}, g::Ptr{T},
-                           jval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _g = unsafe_wrap(Vector{T}, g, n)
-    _jval = unsafe_wrap(Vector{T}, jval, J_ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
-    eval_gj_dense(_x, _g, _jval, _userdata)
-  end
-
-  eval_gj_dense_ptr = @eval @cfunction($eval_gj_dense_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the Hessian
   function eval_hl(x::Vector{T}, y::Vector{T}, hval::Vector{T}, userdata::userdata_expo{T})
     hval[1] = 2 - 2 * (y[2] + userdata.p * y[3] + y[4])
     hval[2] = 2 - 2 * (y[2] + y[3] + y[5])
-    return INT(0)
+    return hval
   end
-
-  function eval_hl_c(n::INT, m::INT, H_ne::INT, x::Ptr{T}, y::Ptr{T},
-                     hval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _y = unsafe_wrap(Vector{T}, y, m)
-    _hval = unsafe_wrap(Vector{T}, hval, H_ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
-    eval_hl(_x, _y, _hval, _userdata)
-  end
-
-  eval_hl_ptr = @eval @cfunction($eval_hl_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the dense Hessian
   function eval_hl_dense(x::Vector{T}, y::Vector{T}, hval::Vector{T}, userdata::userdata_expo{T})
     hval[1] = 2 - 2 * (y[2] + userdata.p * y[3] + y[4])
     hval[2] = 0
     hval[3] = 2 - 2* (y[2] + y[3] + y[5])
-    return INT(0)
+    return hval
   end
 
-  function eval_hl_dense_c(n::INT, m::INT, H_ne::INT, x::Ptr{T}, y::Ptr{T},
-                           hval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _y = unsafe_wrap(Vector{T}, y, m)
-    _hval = unsafe_wrap(Vector{T}, hval, H_ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
-    eval_hl_dense(_x, _y, _hval, _userdata)
-  end
-
-  eval_hl_dense_ptr = @eval @cfunction($eval_hl_dense_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+  # Pointer to C-compatible functions that wraps the Julia functions for
+  # objective, contraints, gradient, jacobian and hessian of the problem
+  eval_fc_ptr = galahad_fc(T, INT)
+  eval_gj_ptr = galahad_gj(T, INT)
+  eval_hl_ptr = galahad_hl(T, INT)
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -134,8 +93,11 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
   inform = Ref{expo_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_expo{T}(9)
+  use_userdata = true
+  userdata = userdata_expo{T}(9, use_userdata, eval_fc, eval_gj, eval_hl, eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
   userdata_ptr = pointer_from_objref(userdata)
+  userdata_dense = userdata_expo{T}(9, use_userdata, eval_fc, eval_gj_dense, eval_hl_dense, eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
+  userdata_dense_ptr = pointer_from_objref(userdata_dense)
 
   # Set problem data
   n = INT(2)  # variables
@@ -223,9 +185,9 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
                     "dense", h_ne_dense, C_NULL, C_NULL, C_NULL )
 
         expo_solve_hessian_direct(T, INT, data,
-                                  userdata_ptr, status, n, m, j_ne_dense, h_ne_dense,
+                                  userdata_dense_ptr, status, n, m, j_ne_dense, h_ne_dense,
                                   c_l, c_u, x_l, x_u, x, y, z, c, gl,
-                                  eval_fc_ptr, eval_gj_dense_ptr, eval_hl_dense_ptr)
+                                  eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
       end
 
       # diagonal
