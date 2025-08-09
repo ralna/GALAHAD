@@ -124,9 +124,9 @@ contains
     nregions = size(regions, 1)
     allocate(f_regions(nregions), stat=st)
     do i = 1, nregions
-       f_regions(i)%nproc = regions(i)%nproc
+       f_regions(i)%nproc = int(regions(i)%nproc,C_INT)
        ngpus = size(regions(i)%gpus, 1)
-       f_regions(i)%ngpu = ngpus
+       f_regions(i)%ngpu = int(ngpus,C_INT)
        if (ngpus .gt. 0) then
           allocate(gpus(ngpus), stat=st)
           gpus(:) = int(regions(i)%gpus,kind=c_int)

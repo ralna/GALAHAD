@@ -44,7 +44,6 @@
 #endif
 #endif
 
-#ifdef MULTIPRECISION
 #ifdef INTEGER_64
 #define version_galahad version_galahad_64
 #ifdef REAL_32
@@ -3025,23 +3024,91 @@
 
 #ifdef INTEGER_64
 #ifdef REAL_32
+#define spral_ssids_default_options spral_ssids_default_options_s_64
+#define spral_ssids_analyse spral_ssids_analyse_s_64
+#define spral_ssids_analyse_ptr32 spral_ssids_analyse_ptr32_s_64
+#define spral_ssids_analyse_coord spral_ssids_analyse_coord_s_64
+#define spral_ssids_factor spral_ssids_factor_s_64
+#define spral_ssids_factor_ptr32 spral_ssids_factor_ptr32_s_64
+#define spral_ssids_solve1 spral_ssids_solve1_s_64
+#define spral_ssids_solve spral_ssids_solve_s_64
+#define spral_ssids_free_akeep spral_ssids_free_akeep_s_64
+#define spral_ssids_free_fkeep spral_ssids_free_fkeep_s_64
+#define spral_ssids_free spral_ssids_free_s_64
+#define spral_ssids_enquire_posdef spral_ssids_enquire_posdef_s_64
+#define spral_ssids_enquire_indef spral_ssids_enquire_indef_s_64
+#define spral_ssids_alter spral_ssids_alter_s_64
 #define spral_ssids_options spral_ssids_options_s_64
 #define spral_ssids_inform spral_ssids_inform_s_64
 #elif REAL_128
+#define spral_ssids_default_options spral_ssids_default_options_q_64
+#define spral_ssids_analyse spral_ssids_analyse_q_64
+#define spral_ssids_analyse_ptr32 spral_ssids_analyse_ptr32_q_64
+#define spral_ssids_analyse_coord spral_ssids_analyse_coord_q_64
+#define spral_ssids_factor spral_ssids_factor_q_64
+#define spral_ssids_factor_ptr32 spral_ssids_factor_ptr32_q_64
+#define spral_ssids_solve1 spral_ssids_solve1_q_64
+#define spral_ssids_solve spral_ssids_solve_q_64
+#define spral_ssids_free_akeep spral_ssids_free_akeep_q_64
+#define spral_ssids_free_fkeep spral_ssids_free_fkeep_q_64
+#define spral_ssids_free spral_ssids_free_q_64
+#define spral_ssids_enquire_posdef spral_ssids_enquire_posdef_q_64
+#define spral_ssids_enquire_indef spral_ssids_enquire_indef_q_64
+#define spral_ssids_alter spral_ssids_alter_q_64
 #define spral_ssids_options spral_ssids_options_q_64
 #define spral_ssids_inform spral_ssids_inform_q_64
 #else
+#define spral_ssids_default_options spral_ssids_default_options_64
+#define spral_ssids_analyse spral_ssids_analyse_64
+#define spral_ssids_analyse_ptr32 spral_ssids_analyse_ptr32_64
+#define spral_ssids_analyse_coord spral_ssids_analyse_coord_64
+#define spral_ssids_factor spral_ssids_factor_64
+#define spral_ssids_factor_ptr32 spral_ssids_factor_ptr32_64
+#define spral_ssids_solve1 spral_ssids_solve1_64
+#define spral_ssids_solve spral_ssids_solve_64
+#define spral_ssids_free_akeep spral_ssids_free_akeep_64
+#define spral_ssids_free_fkeep spral_ssids_free_fkeep_64
+#define spral_ssids_free spral_ssids_free_64
+#define spral_ssids_enquire_posdef spral_ssids_enquire_posdef_64
+#define spral_ssids_enquire_indef spral_ssids_enquire_indef_64
+#define spral_ssids_alter spral_ssids_alter_64
 #define spral_ssids_options spral_ssids_options_64
 #define spral_ssids_inform spral_ssids_inform_64
 #endif
 #else
 #ifdef REAL_32
+#define spral_ssids_default_options spral_ssids_default_options_s
+#define spral_ssids_analyse spral_ssids_analyse_s
+#define spral_ssids_analyse_ptr32 spral_ssids_analyse_ptr32_s
+#define spral_ssids_analyse_coord spral_ssids_analyse_coord_s
+#define spral_ssids_factor spral_ssids_factor_s
+#define spral_ssids_factor_ptr32 spral_ssids_factor_ptr32_s
+#define spral_ssids_solve1 spral_ssids_solve1_s
+#define spral_ssids_solve spral_ssids_solve_s
+#define spral_ssids_free_akeep spral_ssids_free_akeep_s
+#define spral_ssids_free_fkeep spral_ssids_free_fkeep_s
+#define spral_ssids_free spral_ssids_free_s
+#define spral_ssids_enquire_posdef spral_ssids_enquire_posdef_s
+#define spral_ssids_enquire_indef spral_ssids_enquire_indef_s
+#define spral_ssids_alter spral_ssids_alter_s
 #define spral_ssids_options spral_ssids_options_s
 #define spral_ssids_inform spral_ssids_inform_s
 #elif REAL_128
+#define spral_ssids_default_options spral_ssids_default_options_q
+#define spral_ssids_analyse spral_ssids_analyse_q
+#define spral_ssids_analyse_ptr32 spral_ssids_analyse_ptr32_q
+#define spral_ssids_analyse_coord spral_ssids_analyse_coord_q
+#define spral_ssids_factor spral_ssids_factor_q
+#define spral_ssids_factor_ptr32 spral_ssids_factor_ptr32_q
+#define spral_ssids_solve1 spral_ssids_solve1_q
+#define spral_ssids_solve spral_ssids_solve_q
+#define spral_ssids_free_akeep spral_ssids_free_akeep_q
+#define spral_ssids_free_fkeep spral_ssids_free_fkeep_q
+#define spral_ssids_free spral_ssids_free_q
+#define spral_ssids_enquire_posdef spral_ssids_enquire_posdef_q
+#define spral_ssids_enquire_indef spral_ssids_enquire_indef_q
+#define spral_ssids_alter spral_ssids_alter_q
 #define spral_ssids_options spral_ssids_options_q
 #define spral_ssids_inform spral_ssids_inform_q
 #endif
-#endif
-
 #endif

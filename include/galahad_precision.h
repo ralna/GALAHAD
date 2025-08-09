@@ -35,12 +35,13 @@ typedef double real_wp_;  // working precision
 typedef double rpc_;  // working precision
 #endif
 
+typedef int64_t longc_;  // long integers
 #ifdef INTEGER_64
-typedef int64_t ipc_;  // integer precision
+typedef int64_t ipc_;  // integer type
 #define d_ipc_ "ld"
 #define i_ipc_ "li"
 #else
-typedef int ipc_;  // integer precision
+typedef int32_t ipc_;  // integer typen
 #define d_ipc_ "d"
 #define i_ipc_ "i"
 #endif

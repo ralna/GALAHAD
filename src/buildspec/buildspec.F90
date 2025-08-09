@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-07 AT 14:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -198,8 +198,10 @@
         CHARACTER ( LEN = 120 ) :: name, lower_template_name
         CHARACTER ( LEN = 120 ) :: upper_template_name, upper_section_name
         CHARACTER ( LEN = 120 ), DIMENSION( 3 ) :: dummy, old_dummy
-        CHARACTER ( LEN = 120 ), DIMENSION( 1000 ) :: SECTION
-        CHARACTER ( LEN = 120 ), DIMENSION( 10000 ) :: NEW_SPEC
+!       CHARACTER ( LEN = 120 ), DIMENSION( 1000 ) :: SECTION
+!       CHARACTER ( LEN = 120 ), DIMENSION( 10000 ) :: NEW_SPEC
+        CHARACTER ( LEN = 120 ), ALLOCATABLE, DIMENSION( : ) :: SECTION
+        CHARACTER ( LEN = 120 ), ALLOCATABLE, DIMENSION( : ) :: NEW_SPEC
         CHARACTER ( LEN = 1040 ) :: meta_file
         CHARACTER ( LEN = 1040 ) :: template_file
         CHARACTER ( LEN = 1040 ) :: spec_file
@@ -208,6 +210,13 @@
 !       write(6,*) package
 !       write(6,*) galahad
 !       write(6,*) home
+
+        ALLOCATE( SECTION( 1000 ), NEW_SPEC( 10000 ), STAT = i )
+        IF ( i /= 0  ) THEN
+          WRITE( error, "( ' error: allocation failed for package ', A )" )    &
+            lower_package
+          RETURN
+        END IF
 
 !  record the package name in upper case
 
@@ -754,6 +763,7 @@
 !  perpare to return
 
         CLOSE( meta )
+        DEALLOCATE( SECTION, NEW_SPEC, STAT = i )
         RETURN
 
 !  end of subroutine BUILDSPEC_sub

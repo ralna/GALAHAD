@@ -150,6 +150,44 @@ defining the  preprocessor variable ``REAL_32`` or (if supported) to
 ``ipc_`` is the default integer word length used, but may be changed to 
 ``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
+function and structure names
+----------------------------
+
+The function and structure names described below are appropriate for the
+default real working precision (``double``) and integer word length 
+(``int32_t``). To use the functions and structures with different precisions
+and integer word lengths, an additional suffix must be added to their names 
+(and the arguments set accordingly). The appropriate suffices are:
+
+``_s`` for single precision (``float``) reals and 
+standard 32-bit (``int32_t``) integers;
+
+``_q`` for quadruple precision (``__real128``) reals (if supported) and 
+standard 32-bit (``int32_t``) integers;
+
+``_64`` for standard precision (``double``) reals and 
+64-bit (``int64_t``) integers;
+
+``_s_64`` for single precision (``float``) reals and 
+64-bit (``int64_t``) integers; and
+
+``_q_64`` for quadruple precision (``__real128``) reals (if supported) and 
+64-bit (``int64_t``) integers.
+
+Thus a call to ``arc_initialize`` below will instead be
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	void arc_initialize_s_64(void **data, struct :ref:`arc_control_type_s_64<doxid-structarc__control__type>`* control, 
+                             int64_t *status)
+
+if single precision (``float``) reals and 64-bit (``int64_t``) integers are 
+required. Thus it is possible to call functions for this package 
+with more that one precision and/or integer word length at same time. An 
+:ref:`example<expo-multi-calls>` is provided for the package ``expo``,
+and the obvious modifications apply equally here.
+
 function calls
 --------------
 
@@ -194,6 +232,8 @@ Set default control values and initialize private data
 	:class: doxyrest-title-code-block
 
 	void arc_read_specfile(struct :ref:`arc_control_type<doxid-structarc__control__type>`* control, const char specfile[])
+
+.. |package| replace:: arc
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.

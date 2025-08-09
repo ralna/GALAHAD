@@ -10,11 +10,6 @@
 #include <quadmath.h>
 #endif
 
-// Define imax
-int imax(int a, int b) {
-    return (a > b) ? a : b;
-};
-
 // Custom userdata struct
 struct userdata_type {
    double p;
@@ -24,10 +19,11 @@ struct userdata_type_s_64 {
 };
 
 // Function prototypes
-int fc( int n, int m, const double x[], double *f, double c[], const void * );
-int gj( int n, int m, int jne, const double x[], double g[], 
+int fc( int32_t n, int32_t m, const double x[], double *f, double c[], 
+        const void * );
+int gj( int32_t n, int32_t m, int32_t jne, const double x[], double g[], 
          double jval[], const void * );
-int hl( int n, int m, int hne, const double x[], const double y[],
+int hl( int32_t n, int32_t m, int32_t hne, const double x[], const double y[],
          double hval[], const void * );
 int fc_s_64( int64_t n, int64_t m, const float x[], float *f, float c[], 
             const void * );
@@ -44,22 +40,22 @@ int main(void) {
     struct expo_control_type control;
     struct expo_inform_type inform;
 
-    printf(" tests double precision reals and 32-bit integers\n\n");
+    printf(" expo test with double precision reals and 32-bit integers\n\n");
 
     // Set user data
     struct userdata_type userdata;
     userdata.p = 9.0;
 
     // Set problem data
-    int n = 2; // # variables
-    int m = 5; // # constraints
-    int j_ne = 10; // Jacobian elements
-    int h_ne = 2; // Hesssian elements
+    int32_t n = 2; // # variables
+    int32_t m = 5; // # constraints
+    int32_t j_ne = 10; // Jacobian elements
+    int32_t h_ne = 2; // Hesssian (lower triangle) elements
     // 0-based indices
-    int J_row[] = {0, 0, 1, 1, 2, 2, 3, 3, 4, 4}; // Jacobian J
-    int J_col[] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1}; //
-    int H_row[] = {0, 1};     // Hessian H
-    int H_col[] = {0, 1};     // NB lower triangle
+    int32_t J_row[] = {0, 0, 1, 1, 2, 2, 3, 3, 4, 4}; // Jacobian J
+    int32_t J_col[] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1}; 
+    int32_t H_row[] = {0, 1}; // Hessian H, NB lower triangle
+    int32_t H_col[] = {0, 1};
 
     // Set storage
     double y[m]; // multipliers
@@ -72,7 +68,7 @@ int main(void) {
     double cu[] = {INFINITY, INFINITY, INFINITY, 
                    INFINITY, INFINITY}; // upper constraint bounds
     double x[] = {3.0,1.0}; // starting point
-    int status;
+    int32_t status;
 
     // Initialize EXPO
     expo_initialize( &data, &control, &inform );
@@ -124,9 +120,9 @@ int main(void) {
     int64_t h_ne_64 = 2; // Hesssian elements
     // 0-based indices
     int64_t J_row_64[] = {0, 0, 1, 1, 2, 2, 3, 3, 4, 4}; // Jacobian J
-    int64_t J_col_64[] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1}; //
-    int64_t H_row_64[] = {0, 1};     // Hessian H
-    int64_t H_col_64[] = {0, 1};     // NB lower triangle
+    int64_t J_col_64[] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
+    int64_t H_row_64[] = {0, 1}; // Hessian H, NB lower triangle
+    int64_t H_col_64[] = {0, 1}; 
 
     // Set storage
     float y_s[m]; // multipliers
@@ -177,7 +173,7 @@ int main(void) {
 }
 
 // compute the function and constraint values
-int fc( int n, int m, const double x[], double *f, double c[], 
+int fc( int32_t n, int32_t m, const double x[], double *f, double c[], 
          const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     double p = myuserdata->p;
@@ -191,8 +187,8 @@ int fc( int n, int m, const double x[], double *f, double c[],
 }
 
 // compute the gradient and Jacobian
-int gj( int n, int m, int jne, const double x[], double g[], double jval[],
-         const void *userdata ){
+int gj( int32_t n, int32_t m, int32_t jne, const double x[], double g[], 
+        double jval[], const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
     g[0] = 2.0 * x[0];
@@ -211,7 +207,7 @@ int gj( int n, int m, int jne, const double x[], double g[], double jval[],
 }
 
 // compute the Hessian of the Lagrangian
-int hl( int n, int m, int hne, const double x[], const double y[],
+int hl( int32_t n, int32_t m, int32_t hne, const double x[], const double y[],
          double hval[], const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;

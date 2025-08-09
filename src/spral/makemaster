@@ -66,6 +66,13 @@ FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
 FFLAGSNOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
              $(SOMP) $(CPPDEFINES) -I $(GALINCLUDE)
 
+#  C compiler flags
+
+CFLAGS     = $(CCBASIC) $(OPTIMIZATION) $(CCDEBUG) \
+              $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
+CFLAGSN    = $(CCBASIC) $(NOOPTIMIZATION) $(CCDEBUG) \
+              $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
+
 #  C++ compiler flags
 
 CXXFLAGSOMP   = $(CXXBASIC) $(OPTIMIZATION) $(CXXDEBUG) $(SOMP) \
@@ -119,12 +126,15 @@ RLGQ64 = $(OBJQ64)/libgalahad_spral.a
 
 ifeq "$(METIS_64)" "_64"
 # LIBS = -L$(OBJ) $(METIS64) $(LAPACK64) $(BLAS64) -lgalahad $(METIS64) $(HSL)
-  LIBS = -L$(OBJ) $(METIS64) $(LAPACK) $(BLAS) -lgalahad $(METIS64) $(HSL)
+  LIBS = -L$(OBJ) $(SPRAL) $(METIS64) $(LAPACK) $(BLAS) \
+          -lgalahad $(METIS64) $(HSL)
 else
-  LIBS = -L$(OBJ) $(METIS) $(LAPACK) $(BLAS) -lgalahad $(METIS) $(HSL)
+  LIBS = -L$(OBJ) $(SPRAL) $(METIS) $(LAPACK) $(BLAS) \
+         -lgalahad $(METIS) $(HSL)
 endif
 
 PLIBS = $(LIBS) -lgalahad_problem
+CLIBS = -lgalahad_c -lhsl_c $(LIBS)
 
 #  Archive manipulation strings
 
@@ -152,6 +162,7 @@ SSIDSDS = $(SSIDSD) $(OBJD)/ssidss_double.o
 SSIDSQS = $(SSIDSQ) $(OBJQ)/ssidss_quadruple.o
 SSIDSST = $(SSIDSS) $(OBJS)/ssidst_single.o
 SSIDSDT = $(SSIDSD) $(OBJD)/ssidst_double.o
+SSIDSDT2 = $(SSIDSD) $(OBJD)/ssidst2_double.o
 SSIDSQT = $(SSIDSQ) $(OBJQ)/ssidst_quadruple.o
 
 SSIDSSS64 = $(SSIDSS64) $(OBJS64)/ssidss_single_64.o
@@ -166,6 +177,7 @@ RSSIDSDS = $(OBJD)/ssidss_double.o -L$(OBJD) $(SPRAL) $(LIBS)
 RSSIDSQS = $(OBJQ)/ssidss_quadruple.o -L$(OBJQ) $(SPRAL) $(LIBS)
 RSSIDSST = $(OBJS)/ssidst_single.o -L$(OBJS) $(SPRAL) $(LIBS)
 RSSIDSDT = $(OBJD)/ssidst_double.o -L$(OBJD) $(SPRAL) $(LIBS)
+RSSIDSDT2 = $(OBJD)/ssidst2_double.o -L$(OBJD) $(SPRAL) $(LIBS)
 RSSIDSQT = $(OBJQ)/ssidst_quadruple.o -L$(OBJQ) $(SPRAL) $(LIBS)
 
 RSSIDSSS64 = $(OBJS64)/ssidss_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
@@ -174,6 +186,35 @@ RSSIDSQS64 = $(OBJQ64)/ssidss_quadruple_64.o -L$(OBJQ64) $(SPRAL) $(LIBS)
 RSSIDSST64 = $(OBJS64)/ssidst_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
 RSSIDSDT64 = $(OBJD64)/ssidst_double_64.o -L$(OBJD64) $(SPRAL) $(LIBS)
 RSSIDSQT64 = $(OBJQ64)/ssidst_quadruple_64.o -L$(OBJQ64) $(SPRAL) $(LIBS)
+
+#  test agenda for C interfaces
+
+SSIDSCST = $(SSIDSS) $(TESTDEPS) $(OBJS)/ssidsct_single.o
+SSIDSCDT = $(SSIDSD) $(TESTDEPS) $(OBJD)/ssidsct_double.o
+SSIDSCQT = $(SSIDSQ) $(TESTDEPS) $(OBJQ)/ssidsct_quadruple.o
+SSIDSCST64 = $(SSIDSS64) $(TESTDEPS) $(OBJS64)/ssidsct_single_64.o
+SSIDSCDT64 = $(SSIDSD64) $(TESTDEPS) $(OBJD64)/ssidsct_double_64.o
+SSIDSCQT64 = $(SSIDSQ64) $(TESTDEPS) $(OBJQ64)/ssidsct_quadruple_64.o
+
+SSIDSCSTF = $(SSIDSS) $(TESTDEPS) $(OBJS)/ssidsctf_single.o
+SSIDSCDTF = $(SSIDSD) $(TESTDEPS) $(OBJD)/ssidsctf_double.o
+SSIDSCQTF = $(SSIDSQ) $(TESTDEPS) $(OBJQ)/ssidsctf_quadruple.o
+SSIDSCSTF64 = $(SSIDSS64) $(TESTDEPS) $(OBJS64)/ssidsctf_single_64.o
+SSIDSCDTF64 = $(SSIDSD64) $(TESTDEPS) $(OBJD64)/ssidsctf_double_64.o
+SSIDSCQTF64 = $(SSIDCQ64) $(TESTDEPS) $(OBJQ64)/ssidsctf_quadruple_64.o
+
+RSSIDSCST = $(OBJS)/ssidsct_single.o -L$(OBJS) $(CLIBS)
+RSSIDSCSTF = $(OBJS)/ssidsctf_single.o -L$(OBJS) $(CLIBS)
+RSSIDSCDT = $(OBJD)/ssidsct_double.o -L$(OBJD) $(CLIBS)
+RSSIDSCDTF = $(OBJD)/ssidsctf_double.o -L$(OBJD) $(CLIBS)
+RSSIDSCQT = $(OBJQ)/ssidsct_quadruple.o -L$(OBJQ) $(CLIBS)
+RSSIDSCQTF = $(OBJQ)/ssidsctf_quadruple.o -L$(OBJQ) $(CLIBS)
+RSSIDSCST64 = $(OBJS64)/ssidsct_single_64.o -L$(OBJS64) $(CLIBS)
+RSSIDSCSTF64 = $(OBJS64)/ssidsctf_single_64.o -L$(OBJS64) $(CLIBS)
+RSSIDSCDT64 = $(OBJD64)/ssidsct_double_64.o -L$(OBJD64) $(CLIBS)
+RSSIDSCDTF64 = $(OBJD64)/ssidsctf_double_64.o -L$(OBJD64) $(CLIBS)
+RSSIDSCQT64 = $(OBJQ64)/ssidsct_quadruple_64.o -L$(OBJQ64) $(CLIBS)
+RSSIDSCQTF64 = $(OBJQ64)/ssidsctf_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 
 CUDAS = $(RLGS)(cuda_nocuda_single.o)
 CUDAD = $(RLGD)(cuda_nocuda_double.o)
@@ -605,6 +646,15 @@ ssidsdt: $(SSIDSDT)
 	cat ../ssids/ssidsdt.output
 	rm ../ssids/run_ssids
 
+ssidsdt2: $(SSIDSDT2)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids2 $(RSSIDSDT2)
+#	- ../ssids/run_ssids2
+	- ../ssids/run_ssids2  > ../ssids/ssidsdt2.output 2>&1
+	cat ../ssids/ssidsdt2.output
+	rm ../ssids/run_ssids2
+
 ssidsqt: $(SSIDSQT)
 	echo " Exhaustive test of subroutine interface to ssids"
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
@@ -703,6 +753,137 @@ ssidsdt_64_cuda_valgrind: $(SSIDSDT64)
 	- valgrind -v --tool=memcheck --leak-check=yes \
             --show-reachable=yes ../ssids/run_ssids
 	rm ../ssids/run_ssids
+
+#  run full (comprehensive) C example tests
+
+ssidscst: $(SSIDSCST)
+	echo ""
+	echo " Exhaustive test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCST)
+	- ./run_ssids > ssidscst.output 2>&1
+	cat ssidscst.output
+	rm ./run_ssids
+
+ssidscstf: $(SSIDSCSTF)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCSTF)
+	- ./run_ssids > ssidscstf.output 2>&1
+	cat ssidscstf.output
+	rm ./run_ssids
+
+ssidscst_valgrind: $(SSIDSCST)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCST)
+	- valgrind $(VALGRIND) ./run_ssids > \
+           ssidscst_valgrind.output 2>&1
+	cat ssidscst_valgrind.output
+	rm ./run_ssids
+
+ssidscst_gdb: $(SSIDSCST)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCST)
+	- gdb $(GDB) ./run_ssids
+	rm ./run_ssids
+
+ssidscdt: $(SSIDSCDT)
+	echo ""
+	echo " Exhaustive test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCDT)
+	- ./run_ssids > ssidsdt.output 2>&1
+	cat ssidsdt.output
+	rm ./run_ssids
+
+ssidscdtf: $(SSIDSCDTF)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCDTF)
+	- ./run_ssids
+#	- ./run_ssids > ssidsdtf.output 2>&1
+#	cat ssidsdtf.output
+	rm ./run_ssids
+
+ssidscdt_valgrind: $(SSIDSCDT)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCDT)
+	- ./run_ssids > ssidsdt.output 2>&1
+	- valgrind $(VALGRIND) ./run_ssids > \
+           ssidsdt_valgrind.output 2>&1
+	cat ssidsdt_valgrind.output
+	rm ./run_ssids
+
+ssidscdt_gdb: $(SSIDSCDT)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCDT)
+	$(RMOOC)
+	- gdb $(GDB) ./run_ssids
+	rm ./run_ssids
+
+ssidscqt: $(SSIDSCQT)
+	echo ""
+	echo " Exhaustive test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCQT)
+	- ./run_ssids > ssidscqt.output 2>&1
+	cat ssidscqt.output
+	rm ./run_ssids
+
+ssidscqtf: $(SSIDSCQTF)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCQTF)
+	- ./run_ssids > ssidscqtf.output 2>&1
+	cat ssidscqtf.output
+	rm ./run_ssids
+
+ssidscqt_valgrind: $(SSIDSCQT)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCQT)
+	- valgrind $(VALGRIND) ./run_ssids > \
+           ssidscqt_valgrind.output 2>&1
+	cat ssidscqt_valgrind.output
+	rm ./run_ssids
+
+ssidscqt_gdb: $(SSIDSCQT)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCQT)
+	- gdb $(GDB) ./run_ssids
+	rm ./run_ssids
+
+ssidscst_64: $(SSIDSCST64)
+	echo ""
+	echo " Exhaustive test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCST64)
+	- ./run_ssids > ssidscst64.output 2>&1
+	cat ssidscst64.output
+	rm ./run_ssids
+
+ssidscstf_64: $(SSIDSCSTF64)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCSTF64)
+	- ./run_ssids > ssidscstf64.output 2>&1
+	cat ssidscstf64.output
+	rm ./run_ssids
 
 #  basic packages
 
@@ -1567,6 +1748,37 @@ $(OBJ)/ssidst_$(PRECIS).o: ../ssids/ssidst.F90
 	$(CP) ../ssids/ssidst.F90 $(OBJ)/ssidst.F90
 	cd $(OBJ) ; $(FORTRAN) -o ssidst_$(PRECIS).o $(FFLAGSS) ssidst.F90
 	rm $(OBJ)/*.F90
+	@printf '[ OK ]\n'
+
+ssidst2.o: $(OBJ)/ssidst2_$(PRECIS).o
+
+$(OBJ)/ssidst2_$(PRECIS).o: ../ssids/ssidst2.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidst2  "
+	$(CP) ../ssids/ssidst2.F90 $(OBJ)/ssidst2.F90
+	cd $(OBJ) ; $(FORTRAN) -o ssidst2_$(PRECIS).o $(FFLAGSS) ssidst2.F90
+	rm $(OBJ)/*.F90
+	@printf '[ OK ]\n'
+
+#  test programs for C programs
+
+ssidsct.o: $(OBJ)/ssidsct_$(PRECIS).o
+
+$(OBJ)/ssidsct_$(PRECIS).o: ../ssids/C/ssidst.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidsct  "
+	$(CP) ../ssids/C/ssidst.c $(OBJ)/ssidsct.c
+	cd $(OBJ) ; $(CC) -o ssidsct_$(PRECIS).o $(CFLAGS) \
+                      ssidsct.c -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
+	@printf '[ OK ]\n'
+
+ssidsctf.o: $(OBJ)/ssidsctf_$(PRECIS).o
+
+$(OBJ)/ssidsctf_$(PRECIS).o: ../ssids/C/ssidstf.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidsctf  "
+	$(CP) ../ssids/C/ssidstf.c $(OBJ)/ssidsctf.c
+	cd $(OBJ) ; $(CC) -o ssidsctf_$(PRECIS).o $(CFLAGS) \
+                      ssidsctf.c -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
 	@printf '[ OK ]\n'
 
 #  book keeping

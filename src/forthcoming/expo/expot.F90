@@ -11,10 +11,10 @@
    TYPE ( EXPO_data_type ) :: data
    TYPE ( GALAHAD_userdata_type ) :: userdata
    EXTERNAL :: FC, GJ, HL, GJ_dense, HL_dense
-   INTEGER :: i, s, data_storage_type
+   INTEGER ( KIND = ip_ ) :: i, s, data_storage_type
    CHARACTER ( LEN = 2 ) :: st
-   INTEGER, PARAMETER :: n = 2, m = 5, j_ne = 10, h_ne = 2
-   INTEGER, PARAMETER :: j_ne_dense = 10, h_ne_dense = 3
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 2, m = 5, j_ne = 10, h_ne = 2
+   INTEGER ( KIND = ip_ ), PARAMETER :: j_ne_dense = 10, h_ne_dense = 3
    REAL ( KIND = rp_ ), PARAMETER :: p = 9.0_rp_
    REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
 ! start problem data

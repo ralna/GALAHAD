@@ -5,6 +5,9 @@
 control specification files
 ---------------------------
 
+.. |package| replace:: ``package``
+.. |begin-package| replace:: ``BEGIN package``
+
 It is possible to set components of the structure ``control``, of 
 type |package| _control_type, by reading an appropriate 
 **data specification file** 
@@ -26,40 +29,40 @@ specfile is limited to 80 characters, including the blanks separating
 keyword and value.
 
 The portion of the specification file used by |package| _read_specfile
-must start with a "``BEGIN |package|``" command and end with an
-"``END``" command.  The syntax of the specfile is thus defined as follows:
+must start with a |begin-package| command and end with an
+``END`` command.  The syntax of the specfile is thus defined as follows:
 
 .. ref-code-block:: 
 	:class: doxyrest-title-code-block
 
-        ( .. lines ignored by |package|_read_specfile .. )
-          BEGIN |package|
+        ( .. lines ignored by package_read_specfile .. )
+          BEGIN package
              keyword    value
              .......    .....
              keyword    value
           END
-        ( .. lines ignored by package|_read_specfile .. )
+        ( .. lines ignored by package_read_specfile .. )
 
 where keyword and value are two strings separated by (at least) one blank.
-The ``BEGIN |package|`` and ``END`` delimiter command lines
+The |begin-package| and ``END`` delimiter command lines
 may contain additional (trailing) strings so long as such strings are
 separated by one or more blanks, so that lines such as
 
 .. ref-code-block:: 
 	:class: doxyrest-title-code-block
 
-         BEGIN |package| SPECIFICATION
+         BEGIN package SPECIFICATION
 
 and
 
 .. ref-code-block:: 
 	:class: doxyrest-title-code-block
 
-        END |package| SPECIFICATION
+        END package SPECIFICATION
 
 are acceptable. Furthermore,
 between the
-``BEGIN |package|`` and ``END`` delimiters,
+|begin-package| and ``END`` delimiters,
 specification commands may occur in any order.  Blank lines and
 lines whose first non-blank character is ``!`` or ``*`` are ignored.
 The content of a line after a ``!`` or ``*`` character is also ignored

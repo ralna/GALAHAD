@@ -190,7 +190,6 @@ contains
     type(ssids_inform) :: inform_default
 
     ! Initialise
-
     context = 'ssids_analyse'
     inform = inform_default
     call ssids_free(akeep, free_flag)
@@ -340,6 +339,7 @@ contains
           if (inform%flag .lt. 0) go to 490
           call expand_pattern(n, nz, ptr, row, ptr2, row2)
        end if
+       flag = inform%flag
        if (flag .lt. 0) go to 490
     case(2)
        ! matching-based ordering required

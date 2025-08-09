@@ -60,8 +60,9 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to solve a nonlinear least-squares
-problem; the code is available in $GALAHAD/src/expo/C/expot.c .
+This is an example of how to use the package to solve a nonlinearly
+constrained optimization problem; the code is available in 
+$GALAHAD/src/expo/C/expot.c .
 A variety of supported Hessian and constraint matrix storage formats are shown.
 
 Notice that C-style indexing is used, and that this is flagged by setting 

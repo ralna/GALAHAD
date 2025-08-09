@@ -31,7 +31,7 @@ typedef int64_t ipc_;  // integer precision
 #define d_ipc_ "ld"
 #define i_ipc_ "li"
 #else
-typedef int ipc_;  // integer precision
+typedef int32_t ipc_;  // integer precision
 #define d_ipc_ "d"
 #define i_ipc_ "i"
 #endif

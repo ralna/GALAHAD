@@ -30,8 +30,9 @@ typedef double rpc_;
 typedef int64_t ipc_;
 typedef uint64_t uipc_;
 #else
-typedef int ipc_;
-typedef unsigned int uipc_;
+typedef int32_t ipc_;
+typedef uint32_t uipc_;
+/* typedef unsigned int uipc_; */
 #endif
 
 /* C long integer */
