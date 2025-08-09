@@ -1,9 +1,14 @@
+# Note: "hsl" and "ssids" are handled explicitly.
 packages = ("arc", "bgo", "blls", "bllsb", "bnls", "bqp", "bqpb", "bsc", "ccqp", "clls",
             "convert", "cqp", "cro", "dgo", "dps", "dqp", "eqp", "expo", "fdc", "fit",
             "glrt", "gls", "gltr", "hash", "ir", "l2rt", "lhs", "llsr", "llst", "lms",
             "lpa", "lpb", "lsqp", "lsrt", "lstr", "nls", "nodend", "presolve", "psls",
             "qpa", "qpb", "roots", "rpd", "rqs", "sbls", "scu", "sec", "sha", "sils",
             "slls", "sls", "ssls", "trb", "trs", "tru", "ugo", "uls", "wcp")
+
+callbacks = ("galahad_f", "galahad_g", "galahad_h", "galahad_prec", "galahad_hprod", "galahad_shprod",
+             "galahad_constant_prec", "galahad_r", "galahad_jr", "galahad_hr", "galahad_jrprod",
+             "galahad_hrprod", "galahad_shrprod", "galahad_fc", "galahad_gj", "galahad_hl", "galahad_fgh")
 
 types = ("control", "time", "inform", "history", "subproblem_control", "subproblem_inform", "ainfo", "finfo", "sinfo")
 
@@ -38,6 +43,8 @@ hsl_structures = ("ma48_control", "ma48_ainfo", "ma48_finfo", "ma48_sinfo", "ma5
                   "mi20_control", "mi20_solve_control", "mi20_info", "mi28_control", "mi28_info")
 
 ssids_structures = ("spral_ssids_options", "spral_ssids_inform")
+
+include("galahad_c.jl")
 
 function rewrite!(path::String, name::String, optimized::Bool)
   structures = "# Structures for $name\n"
@@ -85,20 +92,16 @@ function rewrite!(path::String, name::String, optimized::Bool)
       end
     end
 
-    # Callbacks
-    for callback in ("galahad_f", "galahad_g", "galahad_h", "galahad_prec", "galahad_hprod",
-                     "galahad_shprod", "galahad_constant_prec", "galahad_r", "galahad_jr",
-                     "galahad_hr", "galahad_jrprod", "galahad_hrprod", "galahad_shrprod",
-                     "galahad_fc", "galahad_gj", "galahad_hl", "galahad_fgh")
-      text = replace(text, "::Ptr{$(callback)}" => "::Ptr{Cvoid}")
-    end
-
     # SSIDS
     text = replace(text, "::spral_ssids_options" => "::spral_ssids_options{T,INT}")
     text = replace(text, "::spral_ssids_inform" => "::spral_ssids_inform{T,INT}")
 
     blocks = split(text, "end\n")
     text = ""
+
+    for variant in ("common", "single", "double", "quadruple")
+      global galahad_mp[variant][name] = "// C interface for $(uppercase(name))"
+    end
     for (index, code) in enumerate(blocks)
       if contains(code, "function")
         fname = split(split(code, "function ")[2], "(")[1]
@@ -197,6 +200,11 @@ function rewrite!(path::String, name::String, optimized::Bool)
                                                           routine_double_int32 * "\n" * routine_double_int64 * "\n" *
                                                           routine_quadruple_int32 * "\n" * routine_quadruple_int64
         end
+        if (name ≠ "hsl") && (name ≠ "ssids")
+          global galahad_mp["single"][name] = galahad_mp["single"][name] * "\n" * prototype(routine_single_int32, "_s") * "\n" * prototype(routine_single_int64, "_s_64")
+          global galahad_mp["double"][name] = galahad_mp["double"][name] * "\n" * prototype(routine_double_int32, "") * "\n" * prototype(routine_double_int64, "_64")
+          global galahad_mp["quadruple"][name] = galahad_mp["quadruple"][name] * "\n" * prototype(routine_quadruple_int32, "_q") * "\n" * prototype(routine_quadruple_int64, "_q_64")
+        end
       elseif contains(code, "struct ")
         structure = code * "end\n"
         structure_name = split(split(code, "struct ")[2], "\n")[1]
@@ -207,6 +215,8 @@ function rewrite!(path::String, name::String, optimized::Bool)
         structure = replace(structure, "rpc_" => "T")
         structure = replace(structure, "ipc_" => "INT")
 
+        local variant_INT
+        local variant_T
         if (structure_name ∉ nonparametric_structures_float) && (structure_name ∉ nonparametric_structures_int)
           structure = replace(structure, structure_name => structure_name * "{T,INT}")
           structures = structures * "Ref{$(structure_name){Float32,Int32}}()[]\n"
@@ -215,17 +225,29 @@ function rewrite!(path::String, name::String, optimized::Bool)
           structures = structures * "Ref{$(structure_name){Float64,Int64}}()[]\n"
           structures = structures * "Ref{$(structure_name){Float128,Int32}}()[]\n"
           structures = structures * "Ref{$(structure_name){Float128,Int64}}()[]\n"
+          global galahad_mp["single"][name] = galahad_mp["single"][name] * "\n" * galahad_c(structure, "single", true, true)
+          global galahad_mp["double"][name] = galahad_mp["double"][name] * "\n" * galahad_c(structure, "double", true, true)
+          global galahad_mp["quadruple"][name] = galahad_mp["quadruple"][name] * "\n" * galahad_c(structure, "quadruple", true, true)
+          variant_INT = true
+          variant_T = true
         elseif (structure_name ∈ nonparametric_structures_float) && (structure_name ∉ nonparametric_structures_int)
           structure = replace(structure, structure_name => structure_name * "{INT}")
           structures = structures * "Ref{$(structure_name){Int32}}()[]\n"
           structures = structures * "Ref{$(structure_name){Int64}}()[]\n"
+          global galahad_mp["common"][name] = galahad_mp["common"][name] * "\n" * galahad_c(structure, "common", true, false)
         elseif (structure_name ∉ nonparametric_structures_float) && (structure_name ∈ nonparametric_structures_int)
           structure = replace(structure, structure_name => structure_name * "{T}")
           structures = structures * "Ref{$(structure_name){Float32}}()[]\n"
           structures = structures * "Ref{$(structure_name){Float64}}()[]\n"
           structures = structures * "Ref{$(structure_name){Float128}}()[]\n"
+          global galahad_mp["single"][name] = galahad_mp["single"][name] * "\n" * galahad_c(structure, "single", false, true)
+          global galahad_mp["double"][name] = galahad_mp["double"][name] * "\n" * galahad_c(structure, "double", false, true)
+          global galahad_mp["quadruple"][name] = galahad_mp["quadruple"][name] * "\n" * galahad_c(structure, "quadruple", false, true)
         else
           structures = structures * "Ref{$(structure_name)}()[]\n"
+          global galahad_mp["common"][name] = galahad_mp["common"][name] * "\n" * galahad_c(structure, "common", false, false)
+          variant_INT = false
+          variant_T = false
         end
         if index == 1
           text = text * "export " * structure_name * "\n\n" * structure
@@ -242,6 +264,11 @@ function rewrite!(path::String, name::String, optimized::Bool)
     structures = structures * "\n"
     structures = replace(structures, "Ref{wcp_inform_type{Float128}}()\n" => "Ref{wcp_inform_type{Float128}}()")
     write("../test/test_structures.jl", test * structures)
+  end
+
+  # Callbacks
+  for callback in callbacks
+    text = replace(text, "::Ptr{$(callback)}" => "::Ptr{Cvoid}")
   end
 
   write(path, text)
