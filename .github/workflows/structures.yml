@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: GALAHAD -- Check macros
+    name: GALAHAD -- Check structures
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GALAHAD
