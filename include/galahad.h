@@ -321,7 +321,6 @@
 #include "galahad_bgo.h"
 #include "galahad_blls.h"
 #include "galahad_bllsb.h"
-#include "galahad_bnls.h"
 #include "galahad_bqp.h"
 #include "galahad_bqpb.h"
 #include "galahad_bsc.h"

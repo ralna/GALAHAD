@@ -4,6 +4,12 @@ galahad_headers += files('galahad_modules.h',
                          'galahad_modules_quadruple.h')
 
 if build_ciface
+  galahad_headers += files('galahad_c.h',
+                           'galahad_c_common.h',
+                           'galahad_c_single.h',
+                           'galahad_c_double.h',
+                           'galahad_c_quadruple.h')
+
   galahad_headers += files('galahad.h',
                            'galahad_arc.h',
                            'galahad_bgo.h',
