@@ -16,6 +16,9 @@ if build_ssids
 
   galahad_tests += [['ssids', 'ssidst', files('ssidst.F90')]]
 
+  galahad_c_tests += [['ssids', 'ssidst_c', files('C/ssidst.c')],
+                      ['ssids', 'ssidstf_c', files('C/ssidstf.c')]]
+
   galahad_examples += [['ssidss', files('ssidss.f90')]]
 endif
 

@@ -136,7 +136,7 @@ jobs:
   #       os: [ubuntu-latest]
   #       arch: ['x64']
   #       compiler: ['nvidia-hpc']
-  #       version: ['25.3']
+  #       version: ['25.7']
   #       int: ['32', '64']
   #       sanitizers: ['false']
   #   steps:
