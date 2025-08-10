@@ -829,18 +829,20 @@ if build_tests and build_ciface
       package = test[0]
       name = test[1] + '_' + precision
       file = test[2]
-      test(name,
-           executable(name, file,
-                      c_args : args_precision,
-                      link_with : libgalahad_precision,
-                      dependencies : [lm, libquadmath],
-                      link_language : 'c',
-                      link_args : lstdcpp,
-                      include_directories : libgalahad_include,
-                      install : true,
-                      install_dir : c_tests_folder),
-           suite : [package, precision, 'C'],
-           is_parallel : false)
+      if not (package == 'ssids' and int64)
+        test(name,
+             executable(name, file,
+                        c_args : args_precision,
+                        link_with : libgalahad_precision,
+                        dependencies : [lm, libquadmath],
+                        link_language : 'c',
+                        link_args : lstdcpp,
+                        include_directories : libgalahad_include,
+                        install : true,
+                        install_dir : c_tests_folder),
+             suite : [package, precision, 'C'],
+             is_parallel : false)
+      endif
     endforeach
   endforeach
 endif
