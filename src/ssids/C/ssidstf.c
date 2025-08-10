@@ -41,7 +41,7 @@ int main(void) {
    // The right-hand side with solution (1.0, 2.0, 3.0, 4.0, 5.0)
    rpc_ x[] = {4.0, 17.0, 19.0, 2.0, 12.0};
 
-   // perform analyis and factorization with data checking
+   // perform analysis and factorization with data checking
    bool check = true;
    spral_ssids_analyse(check, n, NULL, ptr, row, NULL, &akeep, &options,
                        &inform);
