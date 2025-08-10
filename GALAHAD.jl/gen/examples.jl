@@ -220,6 +220,7 @@ function main(name::String)
   (name == "tru")      && examples("tru"     , "tf")
   (name == "ugo")      && examples("ugo"     , "t" )
   (name == "uls")      && examples("uls"     , "tf")
+  (name == "version")  && examples("version" , "t" )
   (name == "wcp")      && examples("wcp"     , "tf")
   return nothing
 end

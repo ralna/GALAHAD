@@ -199,13 +199,12 @@ function galahad_c(structure::String, mode::String, variant_INT::Bool, variant_T
 end
 
 function generate_galahad_c()
-  # What to do with the package "version"?
   ordered_packages = ("bsc", "convert", "fit", "glrt", "gls", "gltr", "hash", "hsl", "ir", "l2rt",
                       "lhs", "lms", "lsrt", "lstr", "nodend", "presolve", "roots", "rpd", "scu", "sec",
                       "sha", "sils", "ugo", "ssids", "sls", "rqs", "dps", "psls", "arc", "trs",
                       "trb", "bgo", "uls", "sbls", "blls", "bqp", "fdc", "cro", "bqpb", "ccqp", "cqp",
                       "clls", "dgo", "dqp", "eqp", "lpa", "lpb", "lsqp", "nls", "qpa", "qpb", "slls",
-                      "tru", "wcp", "llsr", "llst", "bllsb", "ssls", "expo")
+                      "tru", "wcp", "llsr", "llst", "bllsb", "ssls", "expo", "version")
 
   for variant in ("common", "single", "double", "quadruple")
     @assert length(galahad_mp[variant]) == length(ordered_packages)
@@ -215,7 +214,7 @@ function generate_galahad_c()
       if index == 1
         text_c = text_c * val
       else
-        if variant != "common" || occursin("\n", val)
+        if occursin("\n", val)
           text_c = text_c * "\n\n" * val
         end
       end

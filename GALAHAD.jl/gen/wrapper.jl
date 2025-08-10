@@ -63,11 +63,13 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool;
         return node
     end
 
+    path = options["general"]["output_file_path"]
+    text_backup = isfile(path) ? read(path, String) : ""
     build!(ctx, BUILDSTAGE_PRINTING_ONLY)
 
-    path = options["general"]["output_file_path"]
     rewrite!(path, name, optimized)
     format_file(path, YASStyle(), indent=2)
+    (name == "version") && write(path, text_backup)
   end
 
   if run_sif
@@ -195,7 +197,7 @@ function main(name::String="all"; optimized::Bool=true)
   (name == "all" || name == "tru")      && wrapper("tru", ["$galahad/galahad_tru.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "ugo")      && wrapper("ugo", ["$galahad/galahad_ugo.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "uls")      && wrapper("uls", ["$galahad/galahad_uls.h"], optimized, run_sif=false, run_qplib=false)
-# (name == "all" || name == "version")  && wrapper("version", ["$galahad/galahad_version.h"], optimized, run_sif=false, run_qplib=false)
+  (name == "all" || name == "version")  && wrapper("version", ["$galahad/galahad_version.h"], optimized, run_sif=false, run_qplib=false)
   (name == "all" || name == "warm")     && wrapper("warm", String[], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "wcp")      && wrapper("wcp", ["$galahad/galahad_wcp.h"], optimized, run_sif=true, run_qplib=false)
 
