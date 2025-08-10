@@ -1,16 +1,16 @@
-# Note: "hsl" and "ssids" are handled explicitly.
+# Note: "hsl" is handled explicitly.
 packages = ("arc", "bgo", "blls", "bllsb", "bnls", "bqp", "bqpb", "bsc", "ccqp", "clls",
             "convert", "cqp", "cro", "dgo", "dps", "dqp", "eqp", "expo", "fdc", "fit",
             "glrt", "gls", "gltr", "hash", "ir", "l2rt", "lhs", "llsr", "llst", "lms",
             "lpa", "lpb", "lsqp", "lsrt", "lstr", "nls", "nodend", "presolve", "psls",
             "qpa", "qpb", "roots", "rpd", "rqs", "sbls", "scu", "sec", "sha", "sils",
-            "slls", "sls", "ssls", "trb", "trs", "tru", "ugo", "uls", "wcp")
+            "slls", "sls", "ssids", "ssls", "trb", "trs", "tru", "ugo", "uls", "wcp")
 
 callbacks = ("galahad_f", "galahad_g", "galahad_h", "galahad_prec", "galahad_hprod", "galahad_shprod",
              "galahad_constant_prec", "galahad_r", "galahad_jr", "galahad_hr", "galahad_jrprod",
              "galahad_hrprod", "galahad_shrprod", "galahad_fc", "galahad_gj", "galahad_hl", "galahad_fgh")
 
-types = ("control", "time", "inform", "history", "subproblem_control", "subproblem_inform", "ainfo", "finfo", "sinfo")
+types = ("control", "time", "inform", "history", "subproblem_control", "subproblem_inform", "ainfo", "finfo", "sinfo", "options")
 
 nonparametric_structures_int = ("arc_time_type", "bgo_time_type", "blls_time_type", "bllsb_time_type",
                                 "bnls_time_type", "bqp_time_type", "bqpb_time_type", "ccqp_time_type",
@@ -58,7 +58,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
     # GALAHAD
     for type in types
       for package in packages
-        type_name = "$(package)_$(type)_type"
+        type_name = (package == "ssids") ? "spral_$(package)_$(type)" : "$(package)_$(type)_type"
         if (type_name ∉ nonparametric_structures_float) && (type_name ∈ nonparametric_structures_int)
           text = replace(text, "::$(type_name)" => "::$(type_name){T}")
           text = replace(text, ", $(type_name)}" => ", $(type_name){T}}")
@@ -91,10 +91,6 @@ function rewrite!(path::String, name::String, optimized::Bool)
         end
       end
     end
-
-    # SSIDS
-    text = replace(text, "::spral_ssids_options" => "::spral_ssids_options{T,INT}")
-    text = replace(text, "::spral_ssids_inform" => "::spral_ssids_inform{T,INT}")
 
     blocks = split(text, "end\n")
     text = ""
@@ -138,16 +134,12 @@ function rewrite!(path::String, name::String, optimized::Bool)
         routine_double_int32 = replace(routine_double_int32, "rpc_" => "Float64")
         routine_quadruple_int32 = replace(routine_quadruple_int32, "rpc_" => "Float128")
 
-        routine_single_int32 = replace(routine_single_int32, "spral_ssids_options" => "spral_ssids_options{Float32}")
-        routine_double_int32 = replace(routine_double_int32, "spral_ssids_options" => "spral_ssids_options{Float64}")
-        routine_quadruple_int32 = replace(routine_quadruple_int32, "spral_ssids_options" => "spral_ssids_options{Float128}")
-
         # Float128 should be passed by value as a Cfloat128
         routine_quadruple_int32 = replace(routine_quadruple_int32, "::Float128" => "::Cfloat128")
 
         for type in types
           for package in packages
-            type_name = "$(package)_$(type)_type"
+            type_name = (package == "ssids") ? "spral_$(package)_$(type)" : "$(package)_$(type)_type"
             if (type_name ∉ nonparametric_structures_float) && (type_name ∈ nonparametric_structures_int)
               routine_single_int32 = replace(routine_single_int32, type_name => "$(type_name){Float32}")
               routine_double_int32 = replace(routine_double_int32, type_name => "$(type_name){Float64}")
@@ -195,12 +187,11 @@ function rewrite!(path::String, name::String, optimized::Bool)
         routine_double_int64 = replace(routine_double_int64, "Int32" => "Int64")
         routine_quadruple_int64 = replace(routine_quadruple_int64, "Int32" => "Int64")
 
-        if (name ≠ "hsl") && (name ≠ "ssids")
+        if (name ≠ "hsl")
           text = text * "\n" * "export " * fname * "\n" * routine_single_int32 * "\n" * routine_single_int64 * "\n" *
                                                           routine_double_int32 * "\n" * routine_double_int64 * "\n" *
                                                           routine_quadruple_int32 * "\n" * routine_quadruple_int64
-        end
-        if (name ≠ "hsl") && (name ≠ "ssids")
+
           global galahad_mp["single"][name] = galahad_mp["single"][name] * "\n" * prototype(routine_single_int32, "_s") * "\n" * prototype(routine_single_int64, "_s_64")
           global galahad_mp["double"][name] = galahad_mp["double"][name] * "\n" * prototype(routine_double_int32, "") * "\n" * prototype(routine_double_int64, "_64")
           global galahad_mp["quadruple"][name] = galahad_mp["quadruple"][name] * "\n" * prototype(routine_quadruple_int32, "_q") * "\n" * prototype(routine_quadruple_int64, "_q_64")

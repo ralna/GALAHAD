@@ -91,7 +91,7 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool;
   end
 
   # Generate a symbolic link for the Julia wrappers
-  if (name ≠ "hsl") && (name ≠ "ssids")
+  if name != "hsl"
     current_folder = pwd()
     if forthcoming
       cd("../../src/forthcoming/$name")
@@ -188,7 +188,7 @@ function main(name::String="all"; optimized::Bool=true)
   (name == "all" || name == "sils")     && wrapper("sils", ["$galahad/galahad_sils.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "slls")     && wrapper("slls", ["$galahad/galahad_slls.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "sls")      && wrapper("sls", ["$galahad/galahad_sls.h"], optimized, run_sif=true, run_qplib=false)
-  (name == "all" || name == "ssids")    && wrapper("ssids", ["$galahad/spral_ssids.h"], optimized, run_sif=true, run_qplib=false)
+  (name == "all" || name == "ssids")    && wrapper("ssids", ["$galahad/spral_ssids.h"], optimized, run_sif=false, run_qplib=false)
   (name == "all" || name == "ssls")     && wrapper("ssls", ["$galahad/galahad_ssls.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "trb")      && wrapper("trb", ["$galahad/galahad_trb.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "trs")      && wrapper("trs", ["$galahad/galahad_trs.h"], optimized, run_sif=true, run_qplib=false)

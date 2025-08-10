@@ -63,7 +63,6 @@ include("wrappers/sec.jl")
 include("wrappers/sha.jl")
 include("wrappers/sils.jl")
 include("wrappers/ugo.jl")
-include("wrappers/ssids.jl")
 include("wrappers/version.jl")
 
 # packages without a C interface -- only binaries run_sif.
@@ -82,6 +81,9 @@ include("wrappers/miqr.jl")
 include("wrappers/qp.jl")
 include("wrappers/qpc.jl")
 include("wrappers/warm.jl")
+
+# ssids requires nodend.
+include("wrappers/ssids.jl")
 
 # sls requires sils, nodend.
 include("wrappers/sls.jl")
