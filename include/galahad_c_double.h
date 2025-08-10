@@ -2331,6 +2331,35 @@ struct spral_ssids_inform_64 {
     int64_t gpu_flops;
 };
 
+void spral_ssids_default_options(struct spral_ssids_options *options);
+void spral_ssids_default_options_64(struct spral_ssids_options_64 *options);
+void spral_ssids_analyse(bool check, int32_t n, int32_t *order, int64_t *ptr, int32_t *row, double *val, void **akeep, struct spral_ssids_options *options, struct spral_ssids_inform *inform);
+void spral_ssids_analyse_64(bool check, int64_t n, int64_t *order, int64_t *ptr, int64_t *row, double *val, void **akeep, struct spral_ssids_options_64 *options, struct spral_ssids_inform_64 *inform);
+void spral_ssids_analyse_ptr32(bool check, int32_t n, int32_t *order, int32_t *ptr, int32_t *row, double *val, void **akeep, struct spral_ssids_options *options, struct spral_ssids_inform *inform);
+void spral_ssids_analyse_ptr32_64(bool check, int64_t n, int64_t *order, int64_t *ptr, int64_t *row, double *val, void **akeep, struct spral_ssids_options_64 *options, struct spral_ssids_inform_64 *inform);
+void spral_ssids_analyse_coord(int32_t n, int32_t *order, int64_t ne, int32_t *row, int32_t *col, double *val, void **akeep, struct spral_ssids_options *options, struct spral_ssids_inform *inform);
+void spral_ssids_analyse_coord_64(int64_t n, int64_t *order, int64_t ne, int64_t *row, int64_t *col, double *val, void **akeep, struct spral_ssids_options_64 *options, struct spral_ssids_inform_64 *inform);
+void spral_ssids_factor(bool posdef, int64_t *ptr, int32_t *row, double *val, double *scale, void *akeep, void **fkeep, struct spral_ssids_options *options, struct spral_ssids_inform *inform);
+void spral_ssids_factor_64(bool posdef, int64_t *ptr, int64_t *row, double *val, double *scale, void *akeep, void **fkeep, struct spral_ssids_options_64 *options, struct spral_ssids_inform_64 *inform);
+void spral_ssids_factor_ptr32(bool posdef, int32_t *ptr, int32_t *row, double *val, double *scale, void *akeep, void **fkeep, struct spral_ssids_options *options, struct spral_ssids_inform *inform);
+void spral_ssids_factor_ptr32_64(bool posdef, int64_t *ptr, int64_t *row, double *val, double *scale, void *akeep, void **fkeep, struct spral_ssids_options_64 *options, struct spral_ssids_inform_64 *inform);
+void spral_ssids_solve1(int32_t job, double *x1, void *akeep, void *fkeep, struct spral_ssids_options *options, struct spral_ssids_inform *inform);
+void spral_ssids_solve1_64(int64_t job, double *x1, void *akeep, void *fkeep, struct spral_ssids_options_64 *options, struct spral_ssids_inform_64 *inform);
+void spral_ssids_solve(int32_t job, int32_t nrhs, double *x, int32_t ldx, void *akeep, void *fkeep, struct spral_ssids_options *options, struct spral_ssids_inform *inform);
+void spral_ssids_solve_64(int64_t job, int64_t nrhs, double *x, int64_t ldx, void *akeep, void *fkeep, struct spral_ssids_options_64 *options, struct spral_ssids_inform_64 *inform);
+int32_t spral_ssids_free_akeep(void **akeep);
+int64_t spral_ssids_free_akeep_64(void **akeep);
+int32_t spral_ssids_free_fkeep(void **fkeep);
+int64_t spral_ssids_free_fkeep_64(void **fkeep);
+int32_t spral_ssids_free(void **akeep, void **fkeep);
+int64_t spral_ssids_free_64(void **akeep, void **fkeep);
+void spral_ssids_enquire_posdef(void *akeep, void *fkeep, struct spral_ssids_options *options, struct spral_ssids_inform *inform, double *d);
+void spral_ssids_enquire_posdef_64(void *akeep, void *fkeep, struct spral_ssids_options_64 *options, struct spral_ssids_inform_64 *inform, double *d);
+void spral_ssids_enquire_indef(void *akeep, void *fkeep, struct spral_ssids_options *options, struct spral_ssids_inform *inform, int32_t *piv_order, double *d);
+void spral_ssids_enquire_indef_64(void *akeep, void *fkeep, struct spral_ssids_options_64 *options, struct spral_ssids_inform_64 *inform, int64_t *piv_order, double *d);
+void spral_ssids_alter(double *d, void *akeep, void *fkeep, struct spral_ssids_options *options, struct spral_ssids_inform *inform);
+void spral_ssids_alter_64(double *d, void *akeep, void *fkeep, struct spral_ssids_options_64 *options, struct spral_ssids_inform_64 *inform);
+
 // C interface for SLS
 struct sls_control_type {
     bool f_indexing;

@@ -2331,6 +2331,35 @@ struct spral_ssids_inform_q_64 {
     int64_t gpu_flops;
 };
 
+void spral_ssids_default_options_q(struct spral_ssids_options_q *options);
+void spral_ssids_default_options_q_64(struct spral_ssids_options_q_64 *options);
+void spral_ssids_analyse_q(bool check, int32_t n, int32_t *order, int64_t *ptr, int32_t *row, __float128 *val, void **akeep, struct spral_ssids_options_q *options, struct spral_ssids_inform_q *inform);
+void spral_ssids_analyse_q_64(bool check, int64_t n, int64_t *order, int64_t *ptr, int64_t *row, __float128 *val, void **akeep, struct spral_ssids_options_q_64 *options, struct spral_ssids_inform_q_64 *inform);
+void spral_ssids_analyse_ptr32_q(bool check, int32_t n, int32_t *order, int32_t *ptr, int32_t *row, __float128 *val, void **akeep, struct spral_ssids_options_q *options, struct spral_ssids_inform_q *inform);
+void spral_ssids_analyse_ptr32_q_64(bool check, int64_t n, int64_t *order, int64_t *ptr, int64_t *row, __float128 *val, void **akeep, struct spral_ssids_options_q_64 *options, struct spral_ssids_inform_q_64 *inform);
+void spral_ssids_analyse_coord_q(int32_t n, int32_t *order, int64_t ne, int32_t *row, int32_t *col, __float128 *val, void **akeep, struct spral_ssids_options_q *options, struct spral_ssids_inform_q *inform);
+void spral_ssids_analyse_coord_q_64(int64_t n, int64_t *order, int64_t ne, int64_t *row, int64_t *col, __float128 *val, void **akeep, struct spral_ssids_options_q_64 *options, struct spral_ssids_inform_q_64 *inform);
+void spral_ssids_factor_q(bool posdef, int64_t *ptr, int32_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct spral_ssids_options_q *options, struct spral_ssids_inform_q *inform);
+void spral_ssids_factor_q_64(bool posdef, int64_t *ptr, int64_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct spral_ssids_options_q_64 *options, struct spral_ssids_inform_q_64 *inform);
+void spral_ssids_factor_ptr32_q(bool posdef, int32_t *ptr, int32_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct spral_ssids_options_q *options, struct spral_ssids_inform_q *inform);
+void spral_ssids_factor_ptr32_q_64(bool posdef, int64_t *ptr, int64_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct spral_ssids_options_q_64 *options, struct spral_ssids_inform_q_64 *inform);
+void spral_ssids_solve1_q(int32_t job, __float128 *x1, void *akeep, void *fkeep, struct spral_ssids_options_q *options, struct spral_ssids_inform_q *inform);
+void spral_ssids_solve1_q_64(int64_t job, __float128 *x1, void *akeep, void *fkeep, struct spral_ssids_options_q_64 *options, struct spral_ssids_inform_q_64 *inform);
+void spral_ssids_solve_q(int32_t job, int32_t nrhs, __float128 *x, int32_t ldx, void *akeep, void *fkeep, struct spral_ssids_options_q *options, struct spral_ssids_inform_q *inform);
+void spral_ssids_solve_q_64(int64_t job, int64_t nrhs, __float128 *x, int64_t ldx, void *akeep, void *fkeep, struct spral_ssids_options_q_64 *options, struct spral_ssids_inform_q_64 *inform);
+int32_t spral_ssids_free_akeep_q(void **akeep);
+int64_t spral_ssids_free_akeep_q_64(void **akeep);
+int32_t spral_ssids_free_fkeep_q(void **fkeep);
+int64_t spral_ssids_free_fkeep_q_64(void **fkeep);
+int32_t spral_ssids_free_q(void **akeep, void **fkeep);
+int64_t spral_ssids_free_q_64(void **akeep, void **fkeep);
+void spral_ssids_enquire_posdef_q(void *akeep, void *fkeep, struct spral_ssids_options_q *options, struct spral_ssids_inform_q *inform, __float128 *d);
+void spral_ssids_enquire_posdef_q_64(void *akeep, void *fkeep, struct spral_ssids_options_q_64 *options, struct spral_ssids_inform_q_64 *inform, __float128 *d);
+void spral_ssids_enquire_indef_q(void *akeep, void *fkeep, struct spral_ssids_options_q *options, struct spral_ssids_inform_q *inform, int32_t *piv_order, __float128 *d);
+void spral_ssids_enquire_indef_q_64(void *akeep, void *fkeep, struct spral_ssids_options_q_64 *options, struct spral_ssids_inform_q_64 *inform, int64_t *piv_order, __float128 *d);
+void spral_ssids_alter_q(__float128 *d, void *akeep, void *fkeep, struct spral_ssids_options_q *options, struct spral_ssids_inform_q *inform);
+void spral_ssids_alter_q_64(__float128 *d, void *akeep, void *fkeep, struct spral_ssids_options_q_64 *options, struct spral_ssids_inform_q_64 *inform);
+
 // C interface for SLS
 struct sls_control_type_q {
     bool f_indexing;

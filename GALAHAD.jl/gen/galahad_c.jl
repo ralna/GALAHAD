@@ -1,3 +1,6 @@
+mapping = Dict("Cvoid" => "void", "Cchar" => "char", "Bool" => "bool", "Int32" => "int32_t", "Int64" => "int64_t",
+               "Float32" => "float", "Float64" => "double", "Float128" => "__float128", "Cfloat128" => "__float128")
+
 function string_callbacks(ipc_::String, rpc_::String, integer_suffix::String, real_suffix::String)
 str = "typedef $ipc_ galahad_f$(real_suffix)$(integer_suffix)($ipc_ n, const $rpc_ x[], $rpc_ *f, const void *userdata);
 typedef $ipc_ galahad_g$(real_suffix)$(integer_suffix)($ipc_ n, const $rpc_ x[], $rpc_ g[], const void *userdata);
@@ -54,9 +57,8 @@ function prototype(wrapper::String, suffix::String)
           line = replace(line, "$T,$INT" => "$(T)_$(INT)")
         end
       end
-      if contains(line, "::Cvoid")
-        line = replace(line, "::Cvoid" => ";")
-        line = "void" * line
+      for type in ("Cvoid", "Int32", "Int64")
+        line = endswith(line, ")::$type") ? mapping[type] * replace(line, ")::$type" => ");") : line
       end
       args = split(line, '(')
       start_routine = args[1]
@@ -70,7 +72,7 @@ function prototype(wrapper::String, suffix::String)
         args[i] = strip(args[i])
         for type in types
           for package in packages
-            type_name = "$(package)_$(type)_type"
+            type_name = (package == "ssids") ? "spral_$(package)_$(type)" : "$(package)_$(type)_type"
             if (type_name ∉ nonparametric_structures_float) && (type_name ∈ nonparametric_structures_int)
               args[i] = endswith(args[i], "::Ptr{$(type_name){Float32}}") ? "struct $(type_name)_s *" * replace(args[i], "::Ptr{$(type_name){Float32}}" => "") : args[i]
               args[i] = endswith(args[i], "::Ptr{$(type_name){Float64}}") ? "struct $(type_name) *" * replace(args[i], "::Ptr{$(type_name){Float64}}" => "") : args[i]
@@ -91,9 +93,6 @@ function prototype(wrapper::String, suffix::String)
             args[i] = endswith(args[i], "::Ptr{$(type_name)}") ? "struct $(type_name) *" * replace(args[i], "::Ptr{$(type_name)}" => "") : args[i]
           end
         end
-
-        mapping = Dict("Cvoid" => "void", "Cchar" => "char", "Bool" => "bool", "Int32" => "int32_t", "Int64" => "int64_t",
-                       "Float32" => "float", "Float64" => "double", "Float128" => "__float128", "Cfloat128" => "__float128")
 
         for (Jtype, Ctype) in mapping
           args[i] = endswith(args[i], "::$Jtype") ? "$Ctype " * replace(args[i], "::$Jtype" => "") : args[i]
