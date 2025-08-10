@@ -519,5 +519,9 @@ struct slls_time_type {
     float solve;
 };
 
+// C interface for VERSION
+void version_galahad(int32_t *major, int32_t *minor, int32_t *patch);
+void version_galahad_64(int64_t *major, int64_t *minor, int64_t *patch);
+
 // end include guard
 #endif

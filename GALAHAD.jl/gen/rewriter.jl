@@ -4,7 +4,7 @@ packages = ("arc", "bgo", "blls", "bllsb", "bnls", "bqp", "bqpb", "bsc", "ccqp",
             "glrt", "gls", "gltr", "hash", "ir", "l2rt", "lhs", "llsr", "llst", "lms",
             "lpa", "lpb", "lsqp", "lsrt", "lstr", "nls", "nodend", "presolve", "psls",
             "qpa", "qpb", "roots", "rpd", "rqs", "sbls", "scu", "sec", "sha", "sils",
-            "slls", "sls", "ssids", "ssls", "trb", "trs", "tru", "ugo", "uls", "wcp")
+            "slls", "sls", "ssids", "ssls", "trb", "trs", "tru", "ugo", "uls", "version", "wcp")
 
 callbacks = ("galahad_f", "galahad_g", "galahad_h", "galahad_prec", "galahad_hprod", "galahad_shprod",
              "galahad_constant_prec", "galahad_r", "galahad_jr", "galahad_hr", "galahad_jrprod",
@@ -47,7 +47,7 @@ ssids_structures = ("spral_ssids_options", "spral_ssids_inform")
 include("galahad_c.jl")
 
 function rewrite!(path::String, name::String, optimized::Bool)
-  structures = "# Structures for $name\n"
+  structures = (name == "version") ? "" : "# Structures for $name\n"
   text = read(path, String)
   if optimized
     text = replace(text, "hsl_longc_" => "Int64")
@@ -192,9 +192,13 @@ function rewrite!(path::String, name::String, optimized::Bool)
                                                           routine_double_int32 * "\n" * routine_double_int64 * "\n" *
                                                           routine_quadruple_int32 * "\n" * routine_quadruple_int64
 
-          global galahad_mp["single"][name] = galahad_mp["single"][name] * "\n" * prototype(routine_single_int32, "_s") * "\n" * prototype(routine_single_int64, "_s_64")
-          global galahad_mp["double"][name] = galahad_mp["double"][name] * "\n" * prototype(routine_double_int32, "") * "\n" * prototype(routine_double_int64, "_64")
-          global galahad_mp["quadruple"][name] = galahad_mp["quadruple"][name] * "\n" * prototype(routine_quadruple_int32, "_q") * "\n" * prototype(routine_quadruple_int64, "_q_64")
+          if name == "version"
+            global galahad_mp["common"][name] = galahad_mp["common"][name] * "\n" * prototype(routine_double_int32, "") * "\n" * prototype(routine_double_int64, "_64")
+          else
+            global galahad_mp["single"][name] = galahad_mp["single"][name] * "\n" * prototype(routine_single_int32, "_s") * "\n" * prototype(routine_single_int64, "_s_64")
+            global galahad_mp["double"][name] = galahad_mp["double"][name] * "\n" * prototype(routine_double_int32, "") * "\n" * prototype(routine_double_int64, "_64")
+            global galahad_mp["quadruple"][name] = galahad_mp["quadruple"][name] * "\n" * prototype(routine_quadruple_int32, "_q") * "\n" * prototype(routine_quadruple_int64, "_q_64")
+          end
         end
       elseif contains(code, "struct ")
         structure = code * "end\n"
@@ -254,7 +258,9 @@ function rewrite!(path::String, name::String, optimized::Bool)
     test = read("../test/test_structures.jl", String)
     structures = structures * "\n"
     structures = replace(structures, "Ref{wcp_inform_type{Float128}}()\n" => "Ref{wcp_inform_type{Float128}}()")
-    write("../test/test_structures.jl", test * structures)
+    content = test * structures
+    content = replace(content, "\n\n\n" => "\n\n")
+    write("../test/test_structures.jl", content)
   end
 
   # Callbacks
