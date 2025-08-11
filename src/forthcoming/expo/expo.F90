@@ -2291,7 +2291,7 @@ stop
                data%branch = 210 ; inform%status = 2 ; RETURN
              ELSE
                CALL eval_FC( data%eval_status, data%expo%X( : nlp%n ),         &
-                             userdata, nlp%f, nlp%C( : nlp%m ) )
+                             userdata, f = nlp%f, C = nlp%C( : nlp%m ) )
              END IF
            END IF
 
@@ -2305,8 +2305,8 @@ stop
                data%branch = 210 ; inform%status = 3 ; RETURN
              ELSE
                CALL eval_GJ( data%eval_status, data%expo%X( : nlp%n ),         &
-                             userdata, nlp%G( : nlp%n ),                       &
-                             nlp%J%val( 1 : nlp%J%ne ) )
+                             userdata, G = nlp%G( : nlp%n ),                   &
+                             J_val = nlp%J%val( 1 : nlp%J%ne ) )
              END IF
            END IF
 
@@ -3494,7 +3494,8 @@ stop
          IF ( data%reverse_fc ) THEN
            data%branch = 430 ; inform%status = 2 ; RETURN
          ELSE
-           CALL eval_FC( data%eval_status, nlp%X, userdata, nlp%f, nlp%C )
+           CALL eval_FC( data%eval_status, nlp%X, userdata, f = nlp%f,         &
+                         C = nlp%C )
          END IF
 
 !  compute the new gradient and Jacobian values
@@ -3503,7 +3504,8 @@ stop
          IF ( data%reverse_gj ) THEN
            data%branch = 440 ; inform%status = 3 ; RETURN
          ELSE
-           CALL eval_GJ( data%eval_status, nlp%X, userdata, nlp%G, nlp%J%val )
+           CALL eval_GJ( data%eval_status, nlp%X, userdata, G = nlp%G,         &
+                         J_val = nlp%J%val )
          END IF
 
 !  compute the gradient gL of the Lagrangian
@@ -3512,7 +3514,7 @@ stop
          nlp%gL( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
          CALL mop_AX( one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,      &
                       m_matrix = nlp%m, n_matrix = nlp%n )
-         IF ( data%printd ) WRITE( data%out,                                 &
+         IF ( data%printd ) WRITE( data%out,                                   &
              "( ' dual = ', ES11.4 )" ) TWO_NORM( nlp%gL( : nlp%n ) )
 
 !  compute minus the new residuals, - r(x,y,z)
@@ -5438,9 +5440,9 @@ stop
 !   the multiplier for the i-th general constraint.
 !
 !  Z is a rank-one array of dimension n and type default real, that holds the
-!   values y of the dual variables z. It need not be set on initial entry,
+!   values z of the dual variables z. It need not be set on initial entry,
 !   but will return an approximation of the dual variables on a 
-!   successful exit. The j-th component of Z, j = 1, ... , m, contains (z)j,
+!   successful exit. The j-th component of Z, j = 1, ... , n, contains (z)j,
 !   the multiplier for the j-th simple-bound constraint.
 !
 !  C is a rank-one array of dimension m and type default real, that holds the
@@ -5453,7 +5455,7 @@ stop
 !   values gl(x,y,z) of the gradient of the Lagrangian. It need not be set on 
 !   initial entry,  but will return an approximation of the gradient of the
 !   Lagrangian on a successful exit. 
-!   The j-th component of GL, j = 1, ... , m, contains (gl)j.
+!   The j-th component of GL, j = 1, ... , n, contains (gl)j.
 !
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -5535,7 +5537,3 @@ stop
 !  End of module GALAHAD_EXPO
 
    END MODULE GALAHAD_EXPO_precision
-
-
-
-

@@ -27,8 +27,8 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
 
   function eval_fc_c(n::INT, m::INT, x::Ptr{T}, f::Ptr{T}, c::Ptr{T}, userdata::Ptr{Cvoid})
     _x = unsafe_wrap(Vector{T}, x, n)
-    _c = unsafe_wrap(Vector{T}, c, m)
     _f = unsafe_wrap(Vector{T}, f, 1)
+    _c = unsafe_wrap(Vector{T}, c, m)
     _userdata = unsafe_pointer_to_objref(userdata)::userdata_expo{T}
     eval_fc(_x, _f, _c, _userdata)
   end
