@@ -687,11 +687,7 @@
 
   CALL C_F_PROCPOINTER( ceval_fc, feval_fc )
   CALL C_F_PROCPOINTER( ceval_gj, feval_gj )
-  IF ( C_ASSOCIATED( ceval_hl ) ) THEN
-    CALL C_F_PROCPOINTER( ceval_hl, feval_hl )
-  ELSE
-    NULLIFY( feval_hl )
-  END IF
+  CALL C_F_PROCPOINTER( ceval_hl, feval_hl )
 
 !  solve the problem when the Hessian is explicitly available
 
@@ -713,9 +709,7 @@
     REAL ( KIND = rpc_ ), INTENT( OUT ) :: f
     REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: c
 
-!   write(6, "( ' X in wrap_eval_fc = ', 2ES12.4 )" ) x
-
-!  call C interoperable eval_fc
+!  Call C interoperable eval_fc
     status = feval_fc( n, m, x, f, c, cuserdata )
     RETURN
 
