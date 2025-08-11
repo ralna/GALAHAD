@@ -86,7 +86,6 @@ for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
                              (Float64 , Int64, GALAHAD.libgalahad_double_64   ),
                              (Float128, Int32, GALAHAD.libgalahad_quadruple   ),
                              (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
-  (INT == Int64) && continue
   if isfile(libgalahad)
     @testset "SSIDS -- $T -- $INT" begin
       @test test_ssids(T, INT) == 0
