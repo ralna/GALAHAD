@@ -10,6 +10,8 @@ using Quadmath
 # Custom userdata struct
 mutable struct userdata_blls{T}
   scale::T
+  pass_userdata::Bool
+  eval_prec::Function
 end
 
 function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
@@ -17,17 +19,11 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
   # Apply preconditioner
   function prec(v::Vector{T}, p::Vector{T}, userdata::userdata_blls{T})
     p .= userdata.scale .* v
-    return INT(0)
+    return p
   end
 
-  function prec_c(n::INT, v::Ptr{T}, p::Ptr{T}, userdata::Ptr{Cvoid})
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _p = unsafe_wrap(Vector{T}, p, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_blls{T}
-    prec(_v, _p, _userdata)
-  end
-
-  prec_ptr = @eval @cfunction($prec_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+  # Pointer to a C-compatible function that wraps the Julia prec
+  prec_ptr = galahad_constant_prec(T, INT)
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -35,7 +31,8 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
   inform = Ref{blls_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_blls{T}(1)
+  pass_userdata = true
+  userdata = userdata_blls{T}(1, pass_userdata, prec)
   userdata_ptr = pointer_from_objref(userdata)
 
   # Set problem data
