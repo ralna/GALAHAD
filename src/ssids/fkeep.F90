@@ -79,6 +79,11 @@ subroutine inner_factor_cpu(fkeep, akeep, val, options, inform)
   ! Begin profile trace (noop if not enabled)
   call profile_begin(akeep%topology)
 #endif
+!write(6,*) ' n ', akeep%n
+!write(6,*) ' ptr ', akeep%ptr( : akeep%n + 1 )
+!write(6,*) ' row ', akeep%row( : akeep%ptr( akeep%n + 1 ) - 1 )
+!write(6,*) ' val ', val( : akeep%ptr( akeep%n + 1 ) - 1 )
+!stop
 
   ! Allocate space for subtrees
   allocate(fkeep%subtree(akeep%nparts), stat=inform%stat)
@@ -173,11 +178,15 @@ subroutine inner_factor_cpu(fkeep, akeep, val, options, inform)
 
   end do
 
+!write(99,*) ' all_region ', all_region
+!stop
   !$omp end taskgroup
+
   !$omp end single
 
   !$omp end parallel
   !$omp end parallel
+
   do i = 1, size(thread_inform)
      call inform%reduce(thread_inform(i))
   end do

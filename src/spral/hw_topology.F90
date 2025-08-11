@@ -64,13 +64,14 @@ contains
     type(numa_region), dimension(:), allocatable, intent(out) :: regions
     integer(ip_), intent(out) :: st
 
-    integer(ip_) :: i
+    integer(C_INT) :: i
     integer(C_INT) :: nregions
     type(C_PTR) :: c_regions
     type(c_numa_region), dimension(:), pointer, contiguous :: f_regions
     integer(C_IP_), dimension(:), pointer, contiguous :: f_gpus
 
     ! Get regions from C
+!write(6,*) '  call spral_hw_topology_guess'
     call spral_hw_topology_guess(nregions, c_regions)
     if (c_associated(c_regions)) then
        call c_f_pointer(c_regions, f_regions, shape=(/ nregions /))
@@ -91,6 +92,7 @@ contains
     end if
 
     ! Free C version
+!write(6,*) '  call spral_hw_topology_free', nregions
     call spral_hw_topology_free(nregions, c_regions)
   end subroutine guess_topology
 

@@ -234,27 +234,31 @@
 
   TYPE ( f_ssids_options ) :: default_options
 
-  coptions%array_base        = 0 ! C
-  coptions%print_level       = default_options%print_level
-  coptions%unit_diagnostics  = default_options%unit_diagnostics
-  coptions%unit_error        = default_options%unit_error
-  coptions%unit_warning      = default_options%unit_warning
-  coptions%ordering          = default_options%ordering
-  coptions%nemin             = default_options%nemin
-  coptions%ignore_numa       = default_options%ignore_numa
-  coptions%use_gpu           = default_options%use_gpu
-  coptions%min_gpu_work      = default_options%min_gpu_work
-  coptions%max_load_inbalance= default_options%max_load_inbalance
-  coptions%gpu_perf_coeff    = default_options%gpu_perf_coeff
-  coptions%scaling           = default_options%scaling
+  coptions%array_base              = 0 ! C
+  coptions%print_level             = default_options%print_level
+  coptions%unit_diagnostics        = default_options%unit_diagnostics
+  coptions%unit_error              = default_options%unit_error
+  coptions%unit_warning            = default_options%unit_warning
+  coptions%ordering                = default_options%ordering
+  coptions%nemin                   = default_options%nemin
+  coptions%ignore_numa             = default_options%ignore_numa
+  coptions%use_gpu                 = default_options%use_gpu
+  coptions%min_gpu_work            = default_options%min_gpu_work
+  coptions%max_load_inbalance      = default_options%max_load_inbalance
+  coptions%gpu_perf_coeff          = default_options%gpu_perf_coeff
+  coptions%scaling                 = default_options%scaling
   coptions%small_subtree_threshold = default_options%small_subtree_threshold
-  coptions%cpu_block_size    = default_options%cpu_block_size
-  coptions%action            = default_options%action
-  coptions%pivot_method      = default_options%pivot_method
-  coptions%small             = default_options%small
-  coptions%u                 = default_options%u
+  coptions%cpu_block_size          = default_options%cpu_block_size
+  coptions%action                  = default_options%action
+  coptions%pivot_method            = default_options%pivot_method
+  coptions%small                   = default_options%small
+  coptions%u                       = default_options%u
   CALL copy_nodend_options_out( default_options%nodend_options,                &
                                 coptions%nodend_options )
+  coptions%nstream                 = default_options%nstream
+  coptions%multiplier              = default_options%multiplier
+  coptions%min_loadbalance         = default_options%min_loadbalance
+  coptions%failed_pivot_method     = default_options%failed_pivot_method
   END SUBROUTINE spral_ssids_default_options
 
 !  ------------------------------------
@@ -343,6 +347,10 @@
 
 !  call fortran routine
 
+write(99,*) ' n ', n
+write(99,*) ' fptr ', fptr( : n + 1 )
+write(99,*) ' frow ', frow( : fptr( n + 1 ) - 1 )
+close(99)
   IF ( ASSOCIATED( forder ) ) THEN
     IF ( ASSOCIATED( fval ) ) THEN
       CALL f_ssids_analyse( fcheck, n, fptr, frow, fakeep, foptions, finform,  &
@@ -675,22 +683,26 @@
 
 !  call fortran routine
 
+write(99, "( ' before factor ' )" )
+
   IF ( ASSOCIATED( fptr ) .AND. ASSOCIATED( frow ) ) THEN
     IF ( ASSOCIATED( fscale ) ) THEN
       CALL f_ssids_factor( fposdef, val, fakeep, ffkeep, foptions, finform,    &
-                         ptr = fptr, row = frow, scale = fscale )
+                           ptr = fptr, row = frow, scale = fscale )
     ELSE
       CALL f_ssids_factor( fposdef, val, fakeep, ffkeep, foptions, finform,    &
-                         ptr = fptr, row = frow )
+                           ptr = fptr, row = frow )
     END IF
   ELSE
     IF ( ASSOCIATED( fscale ) ) THEN
       CALL f_ssids_factor( fposdef, val, fakeep, ffkeep, foptions, finform,    &
-                         scale = fscale )
+                           scale = fscale )
     ELSE
       CALL f_ssids_factor( fposdef, val, fakeep, ffkeep, foptions, finform )
     END IF
-  END if
+  END IF
+write(99, "( ' after factor ' )" )
+close(99)
 
 !  copy arguments out
 

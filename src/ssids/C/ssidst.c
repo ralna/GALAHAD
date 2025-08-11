@@ -69,7 +69,7 @@ int main(void) {
    ipc_ piv_order[5];
    spral_ssids_enquire_indef(akeep, fkeep, &options, &inform, piv_order, NULL);
    printf("Pivot order:");
-   for(int i=0; i<n; i++) printf(" %3d", piv_order[i]);
+   for(int i=0; i<n; i++) printf(" %3d", (int) piv_order[i]);
    printf("\n");
 
    ipc_ cuda_error = spral_ssids_free(&akeep, &fkeep);

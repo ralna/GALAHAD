@@ -1104,6 +1104,7 @@ contains
        end if
        call inform%print_flag(options, context)
     end if
+write(99,*) ' c'
 
     if ((options%print_level .ge. 1) .and. &
         (options%unit_diagnostics .ge. 0)) then
