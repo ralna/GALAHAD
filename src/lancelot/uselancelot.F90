@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-13 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-12 AT 11:10 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_elgrra.h"
@@ -1660,20 +1660,24 @@
 
  1000  FORMAT( I10 )
  1010  FORMAT( ( 10I8 ) )
- 1020  FORMAT( ( 1P, 4D16.8 ) )
+!1020  FORMAT( ( 1P, 4D16.8 ) )
+ 1020  FORMAT( ( 1P, 4D18.10 ) )
  1030  FORMAT( ( 72L1 ) )
  1040  FORMAT( ( 8A10 ) )
  1050  FORMAT( 10I10 )
  1060  FORMAT( I2, A10, I2 )
  1070  FORMAT( I1 )
- 1080  FORMAT( 1P, 2D16.8 )
+!1080  FORMAT( 1P, 2D16.8 )
+ 1080  FORMAT( 1P, 2D18.10 )
  1090  FORMAT( A10, 12I8 )
  1100  FORMAT( A10, 3I8 )
  1110  FORMAT( 1X, A6, /, ( 1X, 12I6 ) )
- 1120  FORMAT( 1X, A6, /, ( 1X, 1P, 4D16.8 ) )
+!1120  FORMAT( 1X, A6, /, ( 1X, 1P, 4D16.8 ) )
+ 1120  FORMAT( 1X, A6, /, ( 1X, 1P, 4D18.10 ) )
  1130  FORMAT( 1X, A6, /, ( 1X, 72L1 ) )
  1140  FORMAT( 1X, A6, /, ( 1X, 8A10 ) )
- 1180  FORMAT( 1X, A6, /, 1P, 2D16.6 )
+!1180  FORMAT( 1X, A6, /, 1P, 2D16.6 )
+ 1180  FORMAT( 1X, A6, /, 1P, 2D18.10 )
  2000  FORMAT( /, ' inform             = ', I16,                               &
                   ' Number of iterations = ', I16, /,                          &
                   ' Time( LANCELOT B ) = ', 0P, F16.2,                         &
