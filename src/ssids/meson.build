@@ -18,8 +18,3 @@ if build_ssids
 
   galahad_examples += [['ssidss', files('ssidss.f90')]]
 endif
-
-# GPU: 'assemble.cu', 'dense_factor.cu', 'reorder.cu', 'solve.cu', 'syrk.cu'
-# 'gpu_alloc.F90', 'gpu_datatypes.F90',
-# 'gpu_dense_factor.F90', 'gpu_factor.F90', 'gpu_interfaces.F90',
-# 'gpu_smalloc.F90', 'gpu_solve.F90', 'gpu_subtree.F90'
