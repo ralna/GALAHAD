@@ -90,7 +90,7 @@ int main(void) {
             printf("  fail ");
           }
         }else{
-            printf(" SLS_solve exit status = %1" i_ipc_ "\n", inform.status);
+            printf(" SLS_solve exit status = %1" d_ipc_ "\n", inform.status);
         }
         //printf("sol: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -110,7 +110,7 @@ int main(void) {
             printf("   fail ");
           }
         }else{
-            printf(" SLS_solve exit status = %1" i_ipc_ "\n", inform.status);
+            printf(" SLS_solve exit status = %1" d_ipc_ "\n", inform.status);
         }
 
         // obtain the solution by part solves
@@ -131,7 +131,7 @@ int main(void) {
             printf("   fail ");
           }
         }else{
-            printf(" SLS_solve exit status = %1" i_ipc_ "\n", inform.status);
+            printf(" SLS_solve exit status = %1" d_ipc_ "\n", inform.status);
         }
 
         // Delete internal workspace

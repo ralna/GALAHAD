@@ -31,12 +31,10 @@ typedef double rpc_;
 typedef int64_t ipc_;
 typedef uint64_t uipc_;
 #define d_ipc_ PRId64
-#define i_ipc_ PRIu64
 #else
 typedef int32_t ipc_;
 typedef uint32_t uipc_;
 #define d_ipc_ PRId32
-#define i_ipc_ PRIu32
 #endif
 
 /* C long integer */

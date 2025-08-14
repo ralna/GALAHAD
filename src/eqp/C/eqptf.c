@@ -128,12 +128,12 @@ int main(void) {
 #ifdef REAL_128
 #include "galahad_pquad_if.h"
 #else
-            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%c:%6" d_ipc_ " cg iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.cg_iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("%c: EQP_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: EQP_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
         //printf("x: ");
@@ -186,12 +186,12 @@ int main(void) {
 #ifdef REAL_128
 #include "galahad_pquad_if.h"
 #else
-            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%c:%6" d_ipc_ " cg iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.cg_iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("%c: EQP_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: EQP_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
         //printf("x: ");

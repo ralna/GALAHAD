@@ -40,11 +40,9 @@ typedef int64_t longc_;  // long integers
 #ifdef INTEGER_64
 typedef int64_t ipc_;  // integer type
 #define d_ipc_ PRId64
-#define i_ipc_ PRIu64
 #else
 typedef int32_t ipc_;  // integer typen
 #define d_ipc_ PRId32
-#define i_ipc_ PRIu32
 #endif
 
 // end include guard

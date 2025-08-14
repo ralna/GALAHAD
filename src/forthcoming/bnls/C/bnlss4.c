@@ -121,7 +121,7 @@ int main(void) {
           eval_status = jacprod( n, m, x, transpose, u, v, got_j,
                                  &userdata );
       }else{
-          printf(" the value %1" i_ipc_ " of status should not occur\n",
+          printf(" the value %1" d_ipc_ " of status should not occur\n",
             status);
           break;
       }
@@ -130,11 +130,11 @@ int main(void) {
     bnls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %" i_ipc_ " Gauss-Newton iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
+        printf(" %" d_ipc_ " Gauss-Newton iterations. Optimal objective value = %5.2f"
+               " status = %1" d_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
     }else{
-        printf(" BNLS_solve exit status = %1" i_ipc_ "\n", inform.status);
+        printf(" BNLS_solve exit status = %1" d_ipc_ "\n", inform.status);
     }
     // Delete internal workspace
     bnls_terminate( &data, &control, &inform );
@@ -173,7 +173,7 @@ int main(void) {
           eval_status = hessprod( n, m, x, y, u, v, got_h,
                                   &userdata );
       }else{
-          printf(" the value %1" i_ipc_ " of status should not occur\n",
+          printf(" the value %1" d_ipc_ " of status should not occur\n",
             status);
           break;
       }
@@ -182,11 +182,11 @@ int main(void) {
     bnls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %" i_ipc_ " Newton iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
+        printf(" %" d_ipc_ " Newton iterations. Optimal objective value = %5.2f"
+               " status = %1" d_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
     }else{
-        printf(" BNLS_solve exit status = %1" i_ipc_ "\n", inform.status);
+        printf(" BNLS_solve exit status = %1" d_ipc_ "\n", inform.status);
     }
     // Delete internal workspace
     bnls_terminate( &data, &control, &inform );
@@ -228,7 +228,7 @@ int main(void) {
           eval_status = rhessprods( n, m, p_ne, x, v, P_val,
                                     got_h, &userdata );
       }else{
-          printf(" the value %1" i_ipc_ " of status should not occur\n",
+          printf(" the value %1" d_ipc_ " of status should not occur\n",
             status);
           break;
       }
@@ -237,11 +237,11 @@ int main(void) {
     bnls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %" i_ipc_ " tensor-Newton iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
+        printf(" %" d_ipc_ " tensor-Newton iterations. Optimal objective value = %5.2f"
+               " status = %1" d_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
     }else{
-        printf(" BNLS_solve exit status = %1" i_ipc_ "\n", inform.status);
+        printf(" BNLS_solve exit status = %1" d_ipc_ "\n", inform.status);
     }
     // Delete internal workspace
     bnls_terminate( &data, &control, &inform );

@@ -81,7 +81,7 @@ int main(void) {
                                        A_ne, A_val,
                                        C_ne, C_val, NULL );
                 break;
-            printf(" case %1" i_ipc_ " break\n",d);
+            printf(" case %1" d_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 sbls_import( &control, &data, &status, n, m,
@@ -157,7 +157,7 @@ int main(void) {
         // check that the factorization succeeded
         if(status != 0){
             sbls_information( &data, &inform, &status );
-            printf("%c: SBLS_solve factorization exit status = %1" i_ipc_ "\n", 
+            printf("%c: SBLS_solve factorization exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
             continue;
         } 
@@ -174,16 +174,16 @@ int main(void) {
             int nf = quadmath_snprintf(buff, sizeof buff,
                 "%*.1Qe", inform.norm_residual);
             if ((size_t) nf < sizeof buff) 
-             printf("%c: residual = %s status = %1" i_ipc_ "\n",
+             printf("%c: residual = %s status = %1" d_ipc_ "\n",
                      st, buff, inform.status);
-//          printf("%c: residual = %9.1Qe status = %1" i_ipc_ "\n",
+//          printf("%c: residual = %9.1Qe status = %1" d_ipc_ "\n",
 //                 st, inform.norm_residual, inform.status);
 #else
-            printf("%c: residual = %9.1e status = %1" i_ipc_ "\n",
+            printf("%c: residual = %9.1e status = %1" d_ipc_ "\n",
                    st, inform.norm_residual, inform.status);
 #endif
         }else{
-            printf("%c: SBLS_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: SBLS_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
         //printf("sol: ");

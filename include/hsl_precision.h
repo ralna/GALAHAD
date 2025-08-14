@@ -16,7 +16,7 @@
 
 #ifdef REAL_32
 typedef float rpc_;
-#define f_rpc_ "f" 
+#define f_rpc_ "f"
 #elif REAL_128
 typedef __float128 rpc_;
 #define f_rpc_ "Qf"
@@ -30,11 +30,9 @@ typedef double rpc_;
 #ifdef INTEGER_64
 typedef int64_t ipc_;  // integer precision
 #define d_ipc_ PRId64
-#define i_ipc_ PRIu64
 #else
 typedef int32_t ipc_;  // integer precision
 #define d_ipc_ PRId32
-#define i_ipc_ PRIu32
 #endif
 
 // C long integer
