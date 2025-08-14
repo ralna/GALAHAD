@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-03 AT 15:00 GMT
+ *  \version   GALAHAD 5.3 - 2025-08-14 AT 11:00 GMT
  */
 #pragma once
 
@@ -25,7 +25,7 @@ public:
                    ipc_ const* rlist, longc_ const* nptr, 
                    longc_ const* nlist, ipc_ ncontrib, 
                    ipc_ const* contrib_idx, 
-                   struct cpu_factor_options const& options)
+                   struct cpu_factor_control const& control)
    : n(n), nnodes_(en-sa), nodes_(nnodes_+1)
    {
       // Adjust sa to C indexing (en is not used except in nnodes_ init above)
@@ -69,7 +69,7 @@ public:
          for(ipc_ k=0; k<nodes_[ni].ncol; ++k)
             flops[ni] += (nodes_[ni].nrow - k)*(nodes_[ni].nrow - k);
          if(nodes_[ni].contrib.size() > 0) // not a leaf!
-            flops[ni] += options.small_subtree_threshold;
+            flops[ni] += control.small_subtree_threshold;
          ipc_ parent = std::min(nodes_[ni].parent, nnodes_);
          flops[parent] += flops[ni];
       }
@@ -78,7 +78,7 @@ public:
          if(nodes_[ni].first_child) { ++ni; continue; } // Not a leaf
          ipc_ last = ni;
          for(ipc_ current=ni; current<nnodes_; current=nodes_[current].parent) {
-            if(flops[current] >= options.small_subtree_threshold) break;
+            if(flops[current] >= control.small_subtree_threshold) break;
             last = current;
          }
          if(last==ni) { ++ni; continue; } // No point for a single node

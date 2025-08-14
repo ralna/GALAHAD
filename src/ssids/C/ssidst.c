@@ -1,13 +1,13 @@
-/* ssidst.c - Example code for SPRAL_SSIDS package, GALified by */
+/* ssidst.c - Example code for GALAHAD_SSIDS package, GALified by */
 /* Jari Fowkes, Nick Gould, STFC-Rutherford Appleton Laboratory, */
-/* and Alexis Montoison, Argone National Laboratory, 2025 */
+/* and Alexis Montoison, Argone National Laboratory, 2025-08-14 */
 #include <stdlib.h>
 /*#include <stdint.h>*/
 #include <stdio.h>
 #include <math.h>
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
-#include "spral_ssids.h"
+#include "galahad_ssids.h"
 #ifdef REAL_128
 #include <quadmath.h>
 #endif
@@ -15,13 +15,13 @@
 int main(void) {
    /* Derived types */
    void *akeep, *fkeep;
-   struct spral_ssids_options options;
-   struct spral_ssids_inform inform;
+   struct galahad_ssids_control_type control;
+   struct galahad_ssids_inform_type inform;
 
    // Initialize derived types
    akeep = NULL; fkeep = NULL; // Important that these are NULL to start with
-   spral_ssids_default_options(&options);
-   options.array_base = 0; // C sparse matrix indexing
+   galahad_ssids_default_control(&control);
+   control.array_base = 0; // C sparse matrix indexing
 
     printf(" C sparse matrix indexing\n\n");
 
@@ -42,23 +42,23 @@ int main(void) {
 
    // perform analysis and factorization with data checking
    bool check = true;
-   spral_ssids_analyse(check, n, NULL, ptr, row, NULL, &akeep, &options,
-                       &inform);
+   galahad_ssids_analyse(check, n, NULL, ptr, row, NULL, &akeep, &control,
+                         &inform);
    if(inform.flag<0) {
-      spral_ssids_free(&akeep, &fkeep);
+      galahad_ssids_free(&akeep, &fkeep);
       exit(1);
    }
-   spral_ssids_factor(posdef, NULL, NULL, val, NULL, akeep, &fkeep, &options,
-                      &inform);
+   galahad_ssids_factor(posdef, NULL, NULL, val, NULL, akeep, &fkeep, &control,
+                        &inform);
    if(inform.flag<0) {
-      spral_ssids_free( &akeep, &fkeep );
+      galahad_ssids_free( &akeep, &fkeep );
       exit(1);
    }
 
    // solve
-   spral_ssids_solve1(0, x, akeep, fkeep, &options, &inform);
+   galahad_ssids_solve1(0, x, akeep, fkeep, &control, &inform);
    if(inform.flag<0) {
-      spral_ssids_free(&akeep, &fkeep);
+      galahad_ssids_free(&akeep, &fkeep);
       exit(1);
    }
    printf("The computed solution is:");
@@ -67,12 +67,13 @@ int main(void) {
 
    /* Determine and print the pivot order */
    ipc_ piv_order[5];
-   spral_ssids_enquire_indef(akeep, fkeep, &options, &inform, piv_order, NULL);
+   galahad_ssids_enquire_indef(akeep, fkeep, &control, &inform, piv_order, 
+                               NULL);
    printf("Pivot order:");
    for(int i=0; i<n; i++) printf(" %3d", (int) piv_order[i]);
    printf("\n");
 
-   ipc_ cuda_error = spral_ssids_free(&akeep, &fkeep);
+   ipc_ cuda_error = galahad_ssids_free(&akeep, &fkeep);
    if(cuda_error!=0) exit(1);
 
    return 0;

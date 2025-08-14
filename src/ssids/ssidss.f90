@@ -1,11 +1,11 @@
-  PROGRAM SSIDS_EXAMPLE   !  GALAHAD 4.1 - 2022-01-03 AT 10:30 GMT.
-   USE SPRAL_ssids_double
+  PROGRAM SSIDS_EXAMPLE   !  GALAHAD 5.3 - 2025-08-14 AT 10:30 GMT.
+   USE GALAHAD_SSIDS_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   TYPE( ssids_inform ) :: inform
-   TYPE( ssids_akeep ) :: akeep
-   TYPE( ssids_fkeep ) :: fkeep
-   TYPE( ssids_options ) :: options
+   TYPE( ssids_inform_type ) :: inform
+   TYPE( ssids_akeep_type ) :: akeep
+   TYPE( ssids_fkeep_type ) :: fkeep
+   TYPE( ssids_control_type ) :: control
    INTEGER :: i, n, ne, cuda_error
 !  INTEGER :: j, l
    INTEGER, ALLOCATABLE :: ROW( : ), PTR( : ), ORDER( : )
@@ -27,14 +27,14 @@
 !write(6,*) ' b ', B
 ! Analyse
    IF ( .TRUE. ) THEN
-     options%ordering = 0
+     control%ordering = 0
      ALLOCATE( ORDER( n ) )
      DO i = 1, n ; ORDER( i ) = i ; END DO
-     CALL ssids_analyse( .FALSE., n, PTR, ROW, akeep, options, inform,         &
+     CALL ssids_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,         &
                          val = VAL, order = ORDER )
      DEALLOCATE( ORDER )
    ELSE
-     CALL ssids_analyse( .FALSE., n, PTR, ROW, akeep, options, inform,         &
+     CALL ssids_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,         &
                          val = VAL )
    END IF
    IF ( inform%flag < 0 ) THEN
@@ -43,7 +43,7 @@
      STOP
    END IF
 ! Factorize
-   CALL ssids_factor( .FALSE., VAL, akeep, fkeep, options, inform,             &
+   CALL ssids_factor( .FALSE., VAL, akeep, fkeep, control, inform,             &
                       ptr = PTR, row = ROW )
    IF ( inform%flag < 0 ) THEN
      WRITE( 6, '( A, I0 )' )                                                   &
@@ -52,7 +52,7 @@
    END IF
 ! Solve using iterative refinement and ask for high relative accuracy
    X = B
-   CALL ssids_solve( X, akeep, fkeep, options, inform )
+   CALL ssids_solve( X, akeep, fkeep, control, inform )
    IF ( inform%flag == 0 ) WRITE( 6, '( A, /, ( 3F20.16 ) )' )                 &
      ' Solution is', X
 !   DO j = 1, n

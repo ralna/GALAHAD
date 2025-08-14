@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.1 - 2024-11-21 AT 10:30 GMT
+ *  \version   GALAHAD 5.3 - 2025-08-14 AT 11:00 GMT
  */
 
 #pragma once
@@ -17,7 +17,7 @@ namespace spral { namespace ssids { namespace cpu {
 
 template<typename T, typename Allocator>
 ipc_ ldlt_app_factor(ipc_ m, ipc_ n, ipc_ *perm, T *a, ipc_ lda, T *d, T beta,
-   T* upd, ipc_ ldupd, struct cpu_factor_options const& options,
+   T* upd, ipc_ ldupd, struct cpu_factor_control const& control,
    std::vector<Workspace>& work, Allocator const& alloc);
 
 template <typename T>

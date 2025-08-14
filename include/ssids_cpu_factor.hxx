@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.1 - 2024-11-21 AT 11:00 GMT
+ *  \version   GALAHAD 5.3 - 2025-08-14 AT 11:00 GMT
  */
 #pragma once
 
@@ -42,7 +42,7 @@ void factor_node_indef(
       ipc_ ni, // FIXME: remove post debug
       SymbolicNode const& snode,
       NumericNode<T, PoolAlloc> &node,
-      struct cpu_factor_options const& options,
+      struct cpu_factor_control const& control,
       ThreadStats& stats,
       std::vector<Workspace>& work,
       PoolAlloc& pool_alloc
@@ -58,11 +58,11 @@ void factor_node_indef(
 
    /* Perform factorization */
    //Verify<T> verifier(m, n, perm, lcol, ldl);
-   if(options.pivot_method != PivotMethod::tpp) {
+   if(control.pivot_method != PivotMethod::tpp) {
       // Use an APP based pivot method
       T zero_val = 0.0;
       node.nelim = ldlt_app_factor(
-            m, n, perm, lcol, ldl, d, zero_val, contrib, m-n, options, work,
+            m, n, perm, lcol, ldl, d, zero_val, contrib, m-n, control, work,
             pool_alloc
             );
       if(node.nelim < 0) {
@@ -79,20 +79,20 @@ void factor_node_indef(
    /* Finish factorization worth simplistic code */
    if(node.nelim < n) {
       ipc_ nelim = node.nelim;
-      if(options.pivot_method!=PivotMethod::tpp)
+      if(control.pivot_method!=PivotMethod::tpp)
          stats.not_first_pass += n-nelim;
       // Only use TPP to finish off if we're a root node, it's not finishing
       // off but actually doing it, or failed_pivot_method says to do so
-      if(m==n || options.pivot_method==PivotMethod::tpp ||
-            options.failed_pivot_method==FailedPivotMethod::tpp) {
+      if(m==n || control.pivot_method==PivotMethod::tpp ||
+            control.failed_pivot_method==FailedPivotMethod::tpp) {
 #ifdef PROFILE
          Profile::Task task_tpp("TA_LDLT_TPP");
 #endif
          T *ld = work[omp_get_thread_num()].get_ptr<T>(2*(m-nelim));
          node.nelim += ldlt_tpp_factor(
                m-nelim, n-nelim, &perm[nelim], &lcol[nelim*(ldl+1)], ldl,
-               &d[2*nelim], ld, m-nelim, options.action, options.u,
-               options.small, nelim, &lcol[nelim], ldl
+               &d[2*nelim], ld, m-nelim, control.action, control.u,
+               control.small, nelim, &lcol[nelim], ldl
                );
          if(m-n>0 && node.nelim>nelim) {
             ipc_ nelim2 = node.nelim - nelim;
@@ -106,7 +106,7 @@ void factor_node_indef(
                   -1.0, &lcol[nelim*ldl+n], ldl, ld, ldld,
                   rbeta, node.contrib, m-n);
          }
-         if(options.pivot_method==PivotMethod::tpp) {
+         if(control.pivot_method==PivotMethod::tpp) {
             stats.not_first_pass += n - node.nelim;
          } else {
             stats.not_second_pass += n - node.nelim;
@@ -145,7 +145,7 @@ void factor_node_posdef(
       T beta,
       SymbolicNode const& snode,
       NumericNode<T, PoolAlloc> &node,
-      struct cpu_factor_options const& options,
+      struct cpu_factor_control const& control,
       ThreadStats& stats
       ) {
    /* Extract useful information about node */
@@ -158,7 +158,7 @@ void factor_node_posdef(
    /* Perform factorization */
    ipc_ flag;
    cholesky_factor(
-         m, n, lcol, ldl, beta, contrib, m-n, options.cpu_block_size, &flag
+         m, n, lcol, ldl, beta, contrib, m-n, control.cpu_block_size, &flag
          );
    if(flag!=-1) {
       node.nelim = flag+1;
@@ -180,14 +180,14 @@ void factor_node(
       ipc_ ni,
       SymbolicNode const& snode,
       NumericNode<T, PoolAlloc> &node,
-      struct cpu_factor_options const& options,
+      struct cpu_factor_control const& control,
       ThreadStats& stats,
       std::vector<Workspace>& work,
       PoolAlloc& pool_alloc
       ) {
    T zero_val = 0.0;
-   if(posdef) factor_node_posdef(zero_val, snode, node, options, stats);
-   else       factor_node_indef(ni, snode, node, options, stats, work, pool_alloc);
+   if(posdef) factor_node_posdef(zero_val, snode, node, control, stats);
+   else       factor_node_indef(ni, snode, node, control, stats, work, pool_alloc);
 }
 
 }}} /* end of namespace spral::ssids::cpu */

@@ -30,7 +30,7 @@ enum Flag : ipc_ {
 };
 
 /**
- * \brief Exception class for options.action = false and singular matrix.
+ * \brief Exception class for control.action = false and singular matrix.
  */
 class SingularError: public std::runtime_error {
 public:

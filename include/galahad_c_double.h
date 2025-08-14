@@ -2244,7 +2244,7 @@ struct spral_ssids_options {
     int32_t pivot_method;
     double small;
     double u;
-    struct nodend_control_type nodend_options;
+    struct nodend_control_type nodend_control;
     int32_t nstream;
     double multiplier;
     float min_loadbalance;
@@ -2272,7 +2272,7 @@ struct spral_ssids_options_64 {
     int64_t pivot_method;
     double small;
     double u;
-    struct nodend_control_type_64 nodend_options;
+    struct nodend_control_type_64 nodend_control;
     int64_t nstream;
     double multiplier;
     float min_loadbalance;

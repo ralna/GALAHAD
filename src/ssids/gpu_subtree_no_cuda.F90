@@ -1,206 +1,220 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-14 AT 12:10 GMT
 
 #include "spral_procedures.h"
 
 ! This is dummy file compiled when there is no CUDA support
-module spral_ssids_gpu_subtree_precision
-  use spral_kinds_precision
-  use spral_ssids_contrib_precision, only : contrib_type
-  use spral_ssids_types_precision
-  use spral_ssids_inform_precision, only : ssids_inform
-  use spral_ssids_subtree_precision, only : symbolic_subtree_base, &
-                                            numeric_subtree_base
-  implicit none
 
-  private
-  public :: gpu_symbolic_subtree, construct_gpu_symbolic_subtree
-  public :: gpu_numeric_subtree, gpu_free_contrib
+MODULE GALAHAD_SSIDS_gpu_subtree_precision
+  USE SPRAL_KINDS_precision
+  USE GALAHAD_SSIDS_contrib_precision, ONLY : contrib_type
+  USE GALAHAD_SSIDS_types_precision
+  USE GALAHAD_SSIDS_inform_precision, ONLY : SSIDS_inform_type
+  USE GALAHAD_SSIDS_subtree_precision, ONLY : symbolic_subtree_base,           &
+                                              numeric_subtree_base
+  IMPLICIT none
 
-  type, extends(symbolic_subtree_base) :: gpu_symbolic_subtree
-     integer(long_) :: dummy
+  PRIVATE
+  PUBLIC :: gpu_symbolic_subtree, construct_gpu_symbolic_subtree
+  PUBLIC :: gpu_numeric_subtree, gpu_free_contrib
+
+  TYPE, EXTENDS( symbolic_subtree_base ) :: gpu_symbolic_subtree
+     INTEGER( long_ ) :: dummy
    contains
-     procedure :: factor
-     procedure :: cleanup => symbolic_cleanup
-  end type gpu_symbolic_subtree
+     PROCEDURE :: factor
+     PROCEDURE :: cleanup => symbolic_cleanup
+  end TYPE gpu_symbolic_subtree
 
-  type, extends(numeric_subtree_base) :: gpu_numeric_subtree
-     real(rp_) :: dummy !< Just so we can perform dummy ops to prevent warnings
-   contains
-     procedure :: get_contrib
-     procedure :: solve_fwd
-     procedure :: solve_diag
-     procedure :: solve_diag_bwd
-     procedure :: solve_bwd
-     procedure :: enquire_posdef
-     procedure :: enquire_indef
-     procedure :: alter
-     procedure :: cleanup => numeric_cleanup
-  end type gpu_numeric_subtree
+  TYPE, extends( numeric_subtree_base ) :: gpu_numeric_subtree
+    REAL( rp_ ) :: dummy ! just so we can perform dummy ops to prevent warnings
+  CONTAINS
+    PROCEDURE :: get_contrib
+    PROCEDURE :: solve_fwd
+    PROCEDURE :: solve_diag
+    PROCEDURE :: solve_diag_bwd
+    PROCEDURE :: solve_bwd
+    PROCEDURE :: enquire_posdef
+    PROCEDURE :: enquire_indef
+    PROCEDURE :: alter
+    PROCEDURE :: cleanup => numeric_cleanup
+  END TYPE gpu_numeric_subtree
 
-contains
+CONTAINS
 
-  function construct_gpu_symbolic_subtree(device, n, sa, en, sptr, sparent, &
-       rptr, rlist, nptr, nlist, options) result(this)
-    implicit none
-    class(gpu_symbolic_subtree), pointer :: this
-    integer(ip_), intent(in) :: device
-    integer(ip_), intent(in) :: n
-    integer(ip_), intent(in) :: sa
-    integer(ip_), intent(in) :: en
-    integer(ip_), dimension(*), target, intent(in) :: sptr
-    integer(ip_), dimension(*), target, intent(in) :: sparent
-    integer(long_), dimension(*), target, intent(in) :: rptr
-    integer(ip_), dimension(*), target, intent(in) :: rlist
-    integer(long_), dimension(*), target, intent(in) :: nptr
-    integer(long_), dimension(2,*), target, intent(in) :: nlist
-    class(ssids_options), intent(in) :: options
+    FUNCTION construct_gpu_symbolic_subtree( device, n, sa, en, sptr, sparent, &
+       rptr, rlist, nptr, nlist, control ) result( this )
+    IMPLICIT none
+    CLASS( gpu_symbolic_subtree ), pointer :: this
+    INTEGER( ip_ ), INTENT( IN ) :: device
+    INTEGER( ip_ ), INTENT( IN ) :: n
+    INTEGER( ip_ ), INTENT( IN ) :: sa
+    INTEGER( ip_ ), INTENT( IN ) :: en
+    INTEGER( ip_ ), DIMENSION( * ), TARGET, INTENT( IN ) :: sptr
+    INTEGER( ip_ ), DIMENSION( * ), TARGET, INTENT( IN ) :: sparent
+    INTEGER( long_ ), DIMENSION( * ), TARGET, INTENT( IN ) :: rptr
+    INTEGER( ip_ ), DIMENSION( * ), TARGET, INTENT( IN ) :: rlist
+    INTEGER( long_ ), DIMENSION( * ), TARGET, INTENT( IN ) :: nptr
+    INTEGER( long_ ), DIMENSION( 2,* ), TARGET, INTENT( IN ) :: nlist
+    CLASS( SSIDS_control_type ), INTENT( IN ) :: control
 
-    nullify(this)
+    NULLIFY( this )
 
-    print *, "construct_gpu_symbolic_subtree() called without GPU support."
-    print *, "This should never happen."
-    stop -1
+    PRINT *, "construct_gpu_symbolic_subtree() called without GPU support."
+    PRINT *, "This should never happen."
+    STOP - 1
 
-    ! Dummy operations to prevent warnings
-    this%dummy = device+n+sa+en+sptr(1)+sparent(1)+rptr(1)+rlist(1)+nptr(1)+&
-         nlist(1,1)+options%print_level
-  end function construct_gpu_symbolic_subtree
+!  dummy operations to prevent warnings
 
-  subroutine symbolic_cleanup(this)
-    implicit none
-    class(gpu_symbolic_subtree), intent(inout) :: this
+    this%dummy = device + n + sa + en + sptr( 1 ) + sparent( 1 ) + rptr( 1 )   &
+       + rlist( 1 ) + nptr( 1 ) + nlist( 1, 1 ) + control%print_level
+    END FUNCTION construct_gpu_symbolic_subtree
 
-    ! Dummy operation to prevent warnings
+    SUBROUTINE symbolic_cleanup( this )
+    IMPLICIT none
+    CLASS( gpu_symbolic_subtree ), INTENT( INOUT ) :: this
+
+!  dummy operation to prevent warnings
+
     this%dummy = 0
-  end subroutine symbolic_cleanup
+    END SUBROUTINE symbolic_cleanup
 
-  function factor(this, posdef, aval, child_contrib, options, inform, scaling)
-    implicit none
-    class(numeric_subtree_base), pointer :: factor
-    class(gpu_symbolic_subtree), target, intent(inout) :: this
-    logical, intent(in) :: posdef
-    real(rp_), dimension(*), target, intent(in) :: aval
-    type(contrib_type), dimension(:), target, intent(inout) :: child_contrib
-    type(ssids_options), intent(in) :: options
-    type(ssids_inform), intent(inout) :: inform
-    real(rp_), dimension(*), target, optional, intent(in) :: scaling
+    FUNCTION factor( this, posdef, aval, child_contrib, control, inform,       &
+                     scaling )
+    IMPLICIT none
+    CLASS( numeric_subtree_base ), POINTER :: factor
+    CLASS( gpu_symbolic_subtree ), TARGET, INTENT( INOUT ) :: this
+    logical, INTENT( IN ) :: posdef
+    REAL( rp_ ), DIMENSION( * ), TARGET, INTENT( IN ) :: aval
+    TYPE( contrib_type ), DIMENSION( : ), TARGET,                              &
+                                          INTENT( INOUT ) :: child_contrib
+    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
+    TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
+    REAL( rp_ ), DIMENSION( * ), TARGET, OPTIONAL, INTENT( IN ) :: scaling
 
-    type(gpu_numeric_subtree), pointer :: subtree
+    TYPE( gpu_numeric_subtree ), pointer :: subtree
 
-    nullify(subtree)
-    ! Dummy operations to prevent warnings
+    NULLIFY( subtree )
+
+!  dummy operations to prevent warnings
+
     factor => subtree
-    if (posdef) &
-         subtree%dummy = real(this%dummy,rp_)+aval(1)+child_contrib(1)%val(1)+&
-         options%gpu_perf_coeff
-    if (present(scaling)) subtree%dummy = subtree%dummy * scaling(1)
+    IF ( posdef ) subtree%dummy = REAL( this%dummy,rp_ )+aval( 1 ) +           &
+         child_contrib( 1 )%val( 1 ) + control%gpu_perf_coeff
+    IF ( PRESENT( scaling ) ) subtree%dummy = subtree%dummy * scaling( 1 )
     inform%flag = SSIDS_ERROR_UNKNOWN
-  end function factor
+    END FUNCTION factor
 
-  subroutine numeric_cleanup(this)
-    implicit none
-    class(gpu_numeric_subtree), intent(inout) :: this
+    SUBROUTINE numeric_cleanup( this )
+    IMPLICIT none
+    CLASS( gpu_numeric_subtree ), INTENT( INOUT ) :: this
 
-    ! Dummy operations to prevent warnings
+!  dummy operations to prevent warnings
+
     this%dummy = 0
-  end subroutine numeric_cleanup
+    END SUBROUTINE numeric_cleanup
 
-  function get_contrib(this)
-    implicit none
-    type(contrib_type) :: get_contrib
-    class(gpu_numeric_subtree), intent(in) :: this
-
-    ! Dummy operation to prevent warnings
-    get_contrib%n = int(this%dummy)
-  end function get_contrib
-
-  subroutine gpu_free_contrib(contrib)
-    implicit none
-    type(contrib_type), intent(inout) :: contrib
+    FUNCTION get_contrib( this )
+    IMPLICIT none
+    TYPE( contrib_type ) :: get_contrib
+    CLASS( gpu_numeric_subtree ), INTENT( IN ) :: this
 
     ! Dummy operation to prevent warnings
+    get_contrib%n = int( this%dummy )
+    END FUNCTION get_contrib
+
+    SUBROUTINE gpu_free_contrib( contrib )
+    IMPLICIT none
+    TYPE( contrib_type ), INTENT( INOUT ) :: contrib
+
+!  dummy operation to prevent warnings
+
     contrib%n = 0
-  end subroutine gpu_free_contrib
+    END SUBROUTINE gpu_free_contrib
 
-  subroutine solve_fwd(this, nrhs, x, ldx, inform)
-    implicit none
-    class(gpu_numeric_subtree), intent(inout) :: this
-    integer(ip_), intent(in) :: nrhs
-    real(rp_), dimension(*), intent(inout) :: x
-    integer(ip_), intent(in) :: ldx
-    type(ssids_inform), intent(inout) :: inform
+    SUBROUTINE solve_fwd( this, nrhs, x, ldx, inform )
+    IMPLICIT none
+    CLASS( gpu_numeric_subtree ), INTENT( INOUT ) :: this
+    INTEGER( ip_ ), INTENT( IN ) :: nrhs
+    REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
+    INTEGER( ip_ ), INTENT( IN ) :: ldx
+    TYPE( ssids_inform_type ), INTENT( INOUT ) :: inform
 
-    ! Dummy operations to prevent warnings
-    x(nrhs+1*ldx) = this%dummy
+!  dummy operations to prevent warnings
+
+    x( nrhs + 1 * ldx ) = this%dummy
     inform%flag = SSIDS_ERROR_UNKNOWN
-  end subroutine solve_fwd
+    END SUBROUTINE solve_fwd
 
-  subroutine solve_diag(this, nrhs, x, ldx, inform)
-    implicit none
-    class(gpu_numeric_subtree), intent(inout) :: this
-    integer(ip_), intent(in) :: nrhs
-    real(rp_), dimension(*), intent(inout) :: x
-    integer(ip_), intent(in) :: ldx
-    type(ssids_inform), intent(inout) :: inform
+    SUBROUTINE solve_diag( this, nrhs, x, ldx, inform )
+    IMPLICIT none
+    CLASS( gpu_numeric_subtree ), INTENT( INOUT ) :: this
+    INTEGER( ip_ ), INTENT( IN ) :: nrhs
+    REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
+    INTEGER( ip_ ), INTENT( IN ) :: ldx
+    TYPE( ssids_inform_type ), INTENT( INOUT ) :: inform
 
-    ! Dummy operations to prevent warnings
-    x(nrhs+1*ldx) = this%dummy
+!  dummy operations to prevent warnings
+
+    x( nrhs + 1 * ldx ) = this%dummy
     inform%flag = SSIDS_ERROR_UNKNOWN
-  end subroutine solve_diag
+    END SUBROUTINE solve_diag
 
-  subroutine solve_diag_bwd(this, nrhs, x, ldx, inform)
-    implicit none
-    class(gpu_numeric_subtree), intent(inout) :: this
-    integer(ip_), intent(in) :: nrhs
-    real(rp_), dimension(*), intent(inout) :: x
-    integer(ip_), intent(in) :: ldx
-    type(ssids_inform), intent(inout) :: inform
+    SUBROUTINE solve_diag_bwd( this, nrhs, x, ldx, inform )
+    IMPLICIT none
+    CLASS( gpu_numeric_subtree ), INTENT( INOUT ) :: this
+    INTEGER( ip_ ), INTENT( IN ) :: nrhs
+    REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
+    INTEGER( ip_ ), INTENT( IN ) :: ldx
+    TYPE( ssids_inform_type ), INTENT( INOUT ) :: inform
 
-    ! Dummy operations to prevent warnings
-    x(nrhs+1*ldx) = this%dummy
+!  dummy operations to prevent warnings
+
+    x( nrhs + 1 * ldx ) = this%dummy
     inform%flag = SSIDS_ERROR_UNKNOWN
-  end subroutine solve_diag_bwd
+    END SUBROUTINE solve_diag_bwd
 
-  subroutine solve_bwd(this, nrhs, x, ldx, inform)
-    implicit none
-    class(gpu_numeric_subtree), intent(inout) :: this
-    integer(ip_), intent(in) :: nrhs
-    real(rp_), dimension(*), intent(inout) :: x
-    integer(ip_), intent(in) :: ldx
-    type(ssids_inform), intent(inout) :: inform
+    SUBROUTINE solve_bwd( this, nrhs, x, ldx, inform )
+    IMPLICIT none
+    CLASS( gpu_numeric_subtree ), INTENT( INOUT ) :: this
+    INTEGER( ip_ ), INTENT( IN ) :: nrhs
+    REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
+    INTEGER( ip_ ), INTENT( IN ) :: ldx
+    TYPE( ssids_inform_type ), INTENT( INOUT ) :: inform
 
-    ! Dummy operations to prevent warnings
-    x(nrhs+1*ldx) = this%dummy
+!  dummy operations to prevent warnings
+
+    x( nrhs + 1 * ldx ) = this%dummy
     inform%flag = SSIDS_ERROR_UNKNOWN
-  end subroutine solve_bwd
+    END SUBROUTINE solve_bwd
 
-  subroutine enquire_posdef(this, d)
-    implicit none
-    class(gpu_numeric_subtree), target, intent(in) :: this
-    real(rp_), dimension(*), target, intent(out) :: d
+    SUBROUTINE enquire_posdef( this, d )
+    IMPLICIT none
+    CLASS( gpu_numeric_subtree ), TARGET, INTENT( IN ) :: this
+    REAL( rp_ ), DIMENSION( * ), TARGET, INTENT( OUT ) :: d
 
-    ! Dummy operation to prevent warnings
-    d(1) = this%dummy
-  end subroutine enquire_posdef
+!  dummy operation to prevent warnings
 
-  subroutine enquire_indef(this, piv_order, d)
-    implicit none
-    class(gpu_numeric_subtree), target, intent(in) :: this
-    integer(ip_), dimension(*), target, optional, intent(out) :: piv_order
-    real(rp_), dimension(2,*), target, optional, intent(out) :: d
+    d( 1 ) = this%dummy
+    END SUBROUTINE enquire_posdef
 
-    ! Dummy operation to prevent warnings
-    if (present(d)) d(1,1) = this%dummy
-    if (present(piv_order)) piv_order(1) = 1
-  end subroutine enquire_indef
+    SUBROUTINE enquire_indef( this, piv_order, d )
+    IMPLICIT none
+    CLASS( gpu_numeric_subtree ), TARGET, INTENT( IN ) :: this
+    INTEGER( ip_ ), DIMENSION( * ), TARGET, OPTIONAL, INTENT( OUT ) :: piv_order
+    REAL( rp_ ), DIMENSION( 2,* ), TARGET, OPTIONAL, INTENT( OUT ) :: d
 
-  subroutine alter(this, d)
-    implicit none
-    class(gpu_numeric_subtree), target, intent(inout) :: this
-    real(rp_), dimension(2,*), intent(in) :: d
+!  dummy operation to prevent warnings
+    IF ( PRESENT( d ) ) d( 1, 1 ) = this%dummy
+    IF ( PRESENT( piv_order ) ) piv_order( 1 ) = 1
+    END SUBROUTINE enquire_indef
 
-    ! Dummy operation to prevent warnings
-    this%dummy = d(1,1)
-  end subroutine alter
+    SUBROUTINE alter( this, d )
+    IMPLICIT none
+    CLASS( gpu_numeric_subtree ), TARGET, INTENT( INOUT ) :: this
+    REAL( rp_ ), DIMENSION( 2, * ), INTENT( IN ) :: d
 
-end module spral_ssids_gpu_subtree_precision
+!  dummy operation to prevent warnings
+
+    this%dummy = d( 1,1 )
+    END SUBROUTINE alter
+
+END MODULE GALAHAD_SSIDS_gpu_subtree_precision

@@ -1,59 +1,59 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-06 AT 11:30 GMT.
-
-#ifdef INTEGER_64
-#define spral_ssids_lapack_iface spral_ssids_lapack_iface_64
-#define spral_kinds spral_kinds_64
-#endif
+! THIS VERSION: GALAHAD 5.3 - 2025-08-14 AT 10:20 GMT
 
 ! Definition of LAPACK API in module
 
-module spral_ssids_lapack_iface
-  implicit none
+#ifdef INTEGER_64
+#define GALAHAD_SSIDS_LAPACK_IFACE GALAHAD_SSIDS_LAPACK_IFACE_64
+#define SPRAL_KINDS SPRAL_KINDS_64
+#endif
 
-  private
-  public :: spotrf, ssytrf
-  public :: dpotrf, dsytrf
+MODULE GALAHAD_SSIDS_LAPACK_IFACE
+  IMPLICIT none
 
-  interface
-    subroutine spotrf( uplo, n, a, lda, info )
-      use spral_kinds, only: ip_, sp_
-      implicit none
-      character, intent(in) :: uplo
-      integer(ip_), intent(in) :: n, lda
-      real(sp_), intent(inout) :: a(lda, n)
-      integer(ip_), intent(out) :: info
-    end subroutine spotrf
-    subroutine ssytrf( uplo, n, a, lda, ipiv, work, lwork, info )
-      use spral_kinds, only: ip_, sp_
-      implicit none
-      character, intent(in) :: uplo
-      integer(ip_), intent(in) :: n, lda, lwork
-      integer(ip_), intent(out), dimension(n) :: ipiv
-      integer(ip_), intent(out) :: info
-      real(sp_), intent(inout), dimension(lda, *) :: a
-      real(sp_), intent(out  ), dimension(*) :: work
-    end subroutine ssytrf
-  end interface
+  PRIVATE
+  PUBLIC :: spotrf, ssytrf
+  PUBLIC :: dpotrf, dsytrf
 
-  interface
-    subroutine dpotrf( uplo, n, a, lda, info )
-      use spral_kinds, only: ip_, dp_
-      implicit none
-      character, intent(in) :: uplo
-      integer(ip_), intent(in) :: n, lda
-      real(dp_), intent(inout) :: a(lda, n)
-      integer(ip_), intent(out) :: info
-    end subroutine dpotrf
-    subroutine dsytrf( uplo, n, a, lda, ipiv, work, lwork, info )
-      use spral_kinds, only: ip_, dp_
-      implicit none
-      character, intent(in) :: uplo
-      integer(ip_), intent(in) :: n, lda, lwork
-      integer(ip_), intent(out), dimension(n) :: ipiv
-      integer(ip_), intent(out) :: info
-      real(dp_), intent(inout), dimension(lda, *) :: a
-      real(dp_), intent(out  ), dimension(*) :: work
-    end subroutine dsytrf
-  end interface
+  INTERFACE
+    SUBROUTINE spotrf( uplo, n, a, lda, info )
+      USE SPRAL_KINDS, only: ip_, sp_
+      IMPLICIT none
+      CHARACTER, INTENT( IN ) :: uplo
+      INTEGER( ip_ ), INTENT( IN ) :: n, lda
+      REAL( sp_ ), INTENT( INOUT ) :: a(lda, n)
+      INTEGER( ip_ ), INTENT( INOUT ) :: info
+    END SUBROUTINE spotrf
+    SUBROUTINE ssytrf( uplo, n, a, lda, ipiv, work, lwork, info )
+      USE SPRAL_KINDS, only: ip_, sp_
+      IMPLICIT none
+      CHARACTER, INTENT( IN ) :: uplo
+      INTEGER( ip_ ), INTENT( IN ) :: n, lda, lwork
+      INTEGER( ip_ ), INTENT( INOUT ), dimension(n) :: ipiv
+      INTEGER( ip_ ), INTENT( INOUT ) :: info
+      REAL( sp_ ), INTENT( INOUT ), dimension(lda, *) :: a
+      REAL( sp_ ), intent(out  ), dimension(*) :: work
+    END SUBROUTINE ssytrf
+  END INTERFACE
 
-end module spral_ssids_lapack_iface
+  INTERFACE
+    SUBROUTINE dpotrf( uplo, n, a, lda, info )
+      USE SPRAL_KINDS, only: ip_, dp_
+      IMPLICIT none
+      CHARACTER, INTENT( IN ) :: uplo
+      INTEGER( ip_ ), INTENT( IN ) :: n, lda
+      REAL( dp_ ), INTENT( INOUT ) :: a(lda, n)
+      INTEGER( ip_ ), INTENT( INOUT ) :: info
+    END SUBROUTINE dpotrf
+    SUBROUTINE dsytrf( uplo, n, a, lda, ipiv, work, lwork, info )
+      USE SPRAL_KINDS, only: ip_, dp_
+      IMPLICIT none
+      CHARACTER, INTENT( IN ) :: uplo
+      INTEGER( ip_ ), INTENT( IN ) :: n, lda, lwork
+      INTEGER( ip_ ), INTENT( INOUT ), dimension(n) :: ipiv
+      INTEGER( ip_ ), INTENT( INOUT ) :: info
+      REAL( dp_ ), INTENT( INOUT ), dimension(lda, *) :: a
+      REAL( dp_ ), intent(out  ), dimension(*) :: work
+    END SUBROUTINE dsytrf
+  END INTERFACE
+
+END MODULE GALAHAD_SSIDS_LAPACK_IFACE

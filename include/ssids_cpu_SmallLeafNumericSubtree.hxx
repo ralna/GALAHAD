@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.1 - 2024-06-11 AT 10:30 GMT
+ *  \version   GALAHAD 5.3 - 2025-08-14 AT 11:00 GMT
  */
 
 #pragma once
@@ -38,7 +38,7 @@ class SmallLeafNumericSubtree<true, T, FactorAllocator, PoolAllocator> {
    typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<ipc_> FAIntTraits;
    typedef std::allocator_traits<PoolAllocator> PATraits;
 public:
-   SmallLeafNumericSubtree(SmallLeafSymbolicSubtree const& symb, std::vector<NumericNode<T,PoolAllocator>>& old_nodes, T const* aval, T const* scaling, FactorAllocator& factor_alloc, PoolAllocator& pool_alloc, std::vector<Workspace>& work_vec, struct cpu_factor_options const& options, ThreadStats& stats)
+   SmallLeafNumericSubtree(SmallLeafSymbolicSubtree const& symb, std::vector<NumericNode<T,PoolAllocator>>& old_nodes, T const* aval, T const* scaling, FactorAllocator& factor_alloc, PoolAllocator& pool_alloc, std::vector<Workspace>& work_vec, struct cpu_factor_control const& control, ThreadStats& stats)
       : old_nodes_(old_nodes), symb_(symb), lcol_(FAPrecisionTraits::allocate(factor_alloc, symb.nfactor_))
    {
       Workspace& work = work_vec[omp_get_thread_num()];
@@ -68,7 +68,7 @@ public:
          // Factorization
          rpc_ one_val = 1.0;
          factor_node_posdef
-            (one_val, symb_.symb_[ni], old_nodes_[ni], options, stats);
+            (one_val, symb_.symb_[ni], old_nodes_[ni], control, stats);
          if(stats.flag<Flag::SUCCESS) return;
       }
    }
@@ -194,7 +194,7 @@ class SmallLeafNumericSubtree<false, T, FactorAllocator, PoolAllocator> {
    typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<ipc_> FAIntTraits;
    typedef std::allocator_traits<PoolAllocator> PATraits;
 public:
-   SmallLeafNumericSubtree(SmallLeafSymbolicSubtree const& symb, std::vector<NumericNode<T,PoolAllocator>>& old_nodes, T const* aval, T const* scaling, FactorAllocator& factor_alloc, PoolAllocator& pool_alloc, std::vector<Workspace>& work_vec, struct cpu_factor_options const& options, ThreadStats& stats)
+   SmallLeafNumericSubtree(SmallLeafSymbolicSubtree const& symb, std::vector<NumericNode<T,PoolAllocator>>& old_nodes, T const* aval, T const* scaling, FactorAllocator& factor_alloc, PoolAllocator& pool_alloc, std::vector<Workspace>& work_vec, struct cpu_factor_control const& control, ThreadStats& stats)
    : old_nodes_(old_nodes), symb_(symb)
    {
       Workspace& work = work_vec[omp_get_thread_num()];
@@ -215,7 +215,7 @@ public:
 
          // Factorization
          factor_node
-            (symb_.symb_[ni], &old_nodes_[ni], options,
+            (symb_.symb_[ni], &old_nodes_[ni], control,
              stats, work, pool_alloc);
          if(stats.flag<Flag::SUCCESS) return; // something is wrong
 
@@ -351,7 +351,7 @@ private:
    void factor_node(
          SymbolicNode const& snode,
          NumericNode<T,PoolAllocator>* node,
-         struct cpu_factor_options const& options,
+         struct cpu_factor_control const& control,
          ThreadStats& stats,
          Workspace& work,
          PoolAllocator& pool_alloc
@@ -368,8 +368,8 @@ private:
       //Verify<T> verifier(m, n, perm, lcol, ldl);
       T *ld = work.get_ptr<T>(2*m);
       node->nelim = ldlt_tpp_factor(
-            m, n, perm, lcol, ldl, d, ld, m, options.action, options.u,
-            options.small
+            m, n, perm, lcol, ldl, d, ld, m, control.action, control.u,
+            control.small
             );
       //verifier.verify(node->nelim, perm, lcol, ldl, d);
 
