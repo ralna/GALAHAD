@@ -1,44 +1,60 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-07-20 AT 09:00 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 13:10 GMT
 ! (consistent with SPRAL up to issue #250)
 
 #include "spral_procedures.h"
 
-!> \file
-!> \copyright 2011-2016 The Science and Technology Facilities Council (STFC)
-!> \licence   BSD licence, see LICENCE file for details
-!> \author    Jonathan Hogg and Jennifer Scott
-!> \note      Originally based on HSL_MA97 v2.2.0
-module spral_ssids_precision
-!$  use omp_lib
-  use spral_kinds_precision
-  use spral_hw_topology, only : guess_topology, numa_region
-  use spral_match_order_precision, only : match_order_metis
-  use spral_matrix_util_precision, only : SPRAL_MATRIX_REAL_SYM_INDEF, &
-                                          SPRAL_MATRIX_REAL_SYM_PSDEF, &
-                                          convert_coord_to_cscl, &
-                                          clean_cscl_oop, &
-                                          apply_conversion_map
-! use spral_metis_wrapper, only : metis_order
-  use GALAHAD_NODEND_precision, only : NODEND_half_order, NODEND_control_type, &
-                                       NODEND_inform_type
-  use spral_scaling_precision, only : auction_scale_sym, equilib_scale_sym, &
-                                      hungarian_scale_sym, &
-                                      equilib_options, equilib_inform, &
-                                      hungarian_options, hungarian_inform
-  use spral_ssids_anal_precision, only : analyse_phase, check_order, &
-                                         expand_matrix, expand_pattern
-  use spral_ssids_types_precision
-  use spral_ssids_akeep_precision, only : ssids_akeep
-  use spral_ssids_fkeep_precision, only : ssids_fkeep
-  use spral_ssids_inform_precision, only : ssids_inform
-  use spral_ral_boeing_precision, only : rb_write_options, rb_write
-  implicit none
+!-*-*-*-*-*-*-*-*-  G A L A H A D _ S S I D S   M O D U L E  *-*-*-*-*-*-*-*-*-
 
-  private
+!  Copyright reserved, Fowkes/Gould/Montoison/Orban, for GALAHAD productions
+!  Principal authors: Jonathan Hogg, Jennifer Scott
+
+!  History -
+!   original version: Jonathan Hogg and Jennifer Scott, STFC, 2011, 
+!   under a BSD Licence as part of SPRAL
+!   forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
+
+!  For full documentation, see
+!   http://galahad.rl.ac.uk/galahad-www/specs.html
+
+MODULE GALAHAD_SSIDS_precision
+
+!     ------------------------------------------------------------
+!    |                                                            |
+!    | SSIDS, a sparse, symmetric, idefinite direct linear solver |
+!    |                                                            |
+!     ------------------------------------------------------------
+
+!$  USE omp_lib
+  USE SPRAL_KINDS_precision
+  USE SPRAL_HW_TOPOLOGY, only : guess_topology, numa_region
+  USE SPRAL_MATCH_ORDER_precision, ONLY: match_order_metis
+  USE SPRAL_MATRIX_UTIL_precision, ONLY: SPRAL_MATRIX_REAL_SYM_INDEF,          &
+                                         SPRAL_MATRIX_REAL_SYM_PSDEF,          &
+                                         convert_coord_to_cscl,                &
+                                         clean_cscl_oop,                       &
+                                         apply_conversion_map
+  USE SPRAL_SCALING_precision, ONLY: auction_scale_sym, equilib_scale_sym,     &
+                                     hungarian_scale_sym,                      &
+                                     equilib_options, equilib_inform,          &
+                                     hungarian_options, hungarian_inform
+  USE SPRAL_RAL_BOEING_precision, ONLY: rb_write_options, rb_write
+  USE GALAHAD_NODEND_precision, ONLY: NODEND_half_order, NODEND_control_type,  &
+                                      NODEND_inform_type
+  USE GALAHAD_SSIDS_ANALYSE_precision, ONLY: analyse_phase, check_order,       &
+                                             expand_matrix, expand_pattern
+  USE GALAHAD_SSIDS_TYPES_precision
+  USE GALAHAD_SSIDS_AKEEP_precision, ONLY: SSIDS_akeep_type
+  USE GALAHAD_SSIDS_FKEEP_precision, ONLY: SSIDS_fkeep_type
+  USE GALAHAD_SSIDS_INFORM_precision, ONLY: SSIDS_inform_type
+
+  IMPLICIT none
+
+  PRIVATE
   ! Data types
-  public :: ssids_akeep, ssids_fkeep, ssids_options, ssids_inform
+  PUBLIC :: SSIDS_akeep_tyep, SSIDS_fkeep_type, SSIDS_control_type,            &
+            SSIDS_inform_type
   ! User interface routines
-  public :: ssids_analyse,         & ! Analyse phase, CSC-lower input
+  PUBLIC :: ssids_analyse,         & ! Analyse phase, CSC-lower input
             ssids_analyse_coord,   & ! Analyse phase, Coordinate input
             ssids_factor,          & ! Factorize phase
             ssids_solve,           & ! Solve phase
@@ -49,67 +65,72 @@ module spral_ssids_precision
 
    LOGICAL, PUBLIC, PROTECTED :: ssids_available = .TRUE.
 
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!----------------------
+!   I n t e r f a c e s
+!----------------------
 
-  !> \brief Caches user OpenMP ICV values for later restoration
-  type :: omp_settings
+  INTERFACE ssids_analyse
+    MODULE PROCEDURE analyse_precision, analyse_precision_ptr32
+  END INTERFACE ssids_analyse
+
+  INTERFACE ssids_analyse_coord
+    MODULE PROCEDURE ssids_analyse_coord_precision
+  END INTERFACE ssids_analyse_coord
+
+  INTERFACE ssids_factor
+    MODULE PROCEDURE ssids_factor_ptr32_precision, ssids_factor_ptr64_precision
+  END INTERFACE ssids_factor
+
+  INTERFACE ssids_solve
+    MODULE PROCEDURE ssids_solve_one_precision
+    MODULE PROCEDURE ssids_solve_mult_precision
+  END INTERFACE ssids_solve
+
+  INTERFACE ssids_free
+    MODULE PROCEDURE free_akeep_precision
+    MODULE PROCEDURE free_fkeep_precision
+    MODULE PROCEDURE free_both_precision
+  END INTERFACE ssids_free
+
+  INTERFACE ssids_enquire_posdef
+    MODULE PROCEDURE ssids_enquire_posdef_precision
+  END INTERFACE ssids_enquire_posdef
+
+  INTERFACE ssids_enquire_indef
+    MODULE PROCEDURE ssids_enquire_indef_precision
+  END INTERFACE ssids_enquire_indef
+
+  INTERFACE ssids_alter
+    MODULE PROCEDURE ssids_alter_precision
+  END INTERFACE ssids_alter
+
+!-------------------------------------------------
+!  D e r i v e d   t y p e   d e f i n i t i o n s
+!-------------------------------------------------
+
+  TYPE :: omp_settings ! CACHES user OpenMP ICV values for later restoration
      logical :: dynamic
      integer(ip_) :: max_active_levels
-  end type omp_settings
+  END TYPE omp_settings
 
-  ! Make interfaces generic.
-  interface ssids_analyse
-     module procedure analyse_precision, analyse_precision_ptr32
-  end interface ssids_analyse
+CONTAINS
 
-  interface ssids_analyse_coord
-     module procedure ssids_analyse_coord_precision
-  end interface ssids_analyse_coord
+!-*-*-  G A L A H A D - S S I D S _ analyse_ptr32  S U B R O U T I N E  -*-*-
 
-  interface ssids_factor
-     module procedure ssids_factor_ptr32_precision, ssids_factor_ptr64_precision
-  end interface ssids_factor
+  subroutine analyse_precision_ptr32( check, n, ptr, row, akeep, control,      &
+                                      inform, order, val, topology )
 
-  interface ssids_solve
-     module procedure ssids_solve_one_precision
-     module procedure ssids_solve_mult_precision
-  end interface ssids_solve
+!  providesa wrapper around analyse_precision() that copies the
+!  32-bit ptr to a 64-bit array before calling the 64-bit version.
 
-  interface ssids_free
-     module procedure free_akeep_precision
-     module procedure free_fkeep_precision
-     module procedure free_both_precision
-  end interface ssids_free
-
-  interface ssids_enquire_posdef
-     module procedure ssids_enquire_posdef_precision
-  end interface ssids_enquire_posdef
-
-  interface ssids_enquire_indef
-     module procedure ssids_enquire_indef_precision
-  end interface ssids_enquire_indef
-
-  interface ssids_alter
-     module procedure ssids_alter_precision
-  end interface ssids_alter
-
-contains
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Analyse phase (32-bit wrapper).
-!>
-!> This routine provides a wrapper around analyse_precision() that copies the
-!> 32-bit ptr to a 64-bit array before calling the 64-bit version.
-  subroutine analyse_precision_ptr32(check, n, ptr, row, akeep, options, &
-                                     inform, order, val, topology)
     implicit none
     logical, intent(in) :: check
     integer(ip_), intent(in) :: n
     integer(i4_), intent(in) :: ptr(:)
     integer(ip_), intent(in) :: row(:)
-    type(ssids_akeep), intent(inout) :: akeep
-    type(ssids_options), intent(in) :: options
-    type(ssids_inform), intent(out) :: inform
+    type(SSIDS_akeep_type), intent(inout) :: akeep
+    type(SSIDS_control_type), intent(in) :: control
+    type(SSIDS_inform_type), intent(out) :: inform
     integer(ip_), optional, intent(inout) :: order(:)
     real(rp_), optional, intent(in) :: val(:)
     type(numa_region), dimension(:), optional, intent(in) :: topology
@@ -121,50 +142,51 @@ contains
     if (inform%stat .ne. 0) then
        inform%flag = SSIDS_ERROR_ALLOCATION
        akeep%inform = inform
-       call inform%print_flag(options, 'ssids_analyse')
+       call inform%print_flag(control, 'ssids_analyse')
        return
     end if
     ptr64(1:n+1) = ptr(1:n+1)
 
     ! Call 64-bit version of routine
-    call analyse_precision(check, n, ptr64, row, akeep, options, inform, &
+    call analyse_precision(check, n, ptr64, row, akeep, control, inform, &
          order=order, val=val, topology=topology)
   end subroutine analyse_precision_ptr32
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Analyse phase.
-!>
-!> Matrix entered in CSC format (lower triangle).
-!> The user optionally inputs the pivot order. If not, metis called.
-!> Structure is then expanded.
-!> Supervariables are computed
-!> and then the assembly tree is constructed and the data structures
-!> required by the factorization are set up.
-!> There is no checking of the user's data if check = .false.
-!> Otherwise, matrix_util routines are used to clean data.
-!>
-!> See user documentation for full detail on parameters.
-!>
-!> @param check Clean matrix data if true (cleaned version stored in akeep).
-!> @param n Order of A.
-!> @param ptr Column pointers of A.
-!> @param row Row indices of A.
-!> @param akeep Symbolic factorization out.
-!> @param options User-supplied options.
-!> @param inform Stats/information returned to user.
-!> @param order Return ordering to user / allow user to supply order.
-!> @param val Values of A. Only required if matching-based ordering requested.
-!> @param topology Specify machine topology to work with.
-  subroutine analyse_precision(check, n, ptr, row, akeep, options, inform, &
-       order, val, topology)
+!-*-*-  G A L A H A D - S S I D S _ a n a l y s e   S U B R O U T I N E  -*-*-
+
+  subroutine analyse_precision( check, n, ptr, row, akeep, control, inform,   &
+                                order, val, topology)
+
+!  analyse phase: mMatrix entered in CSC format (lower triangle).
+!  The user optionally inputs the pivot order. If not, metis called.
+!  Structure is then expanded, supervariables are computed and then
+!  the assembly tree is constructed and the data structures required
+!  by the factorization are set up.
+!
+!  There is no checking of the user's data if check = .false.
+!  Otherwise, matrix_util routines are used to clean data.
+!
+!  See user documentation for full detail on parameters.
+!
+!  check Clean matrix data if true (cleaned version stored in akeep).
+!  n Order of A.
+!  ptr Column pointers of A.
+!  row Row indices of A.
+!  akeep Symbolic factorization out.
+!  control User-supplied options.
+!  inform Stats/information returned to user.
+!  order Return ordering to user / allow user to supply order.
+!  val Values of A. Only required if matching-based ordering requested.
+!  topology Specify machine topology to work with.
+
     implicit none
     logical, intent(in) :: check
     integer(ip_), intent(in) :: n
     integer(i8_), intent(in) :: ptr(:)
     integer(ip_), intent(in) :: row(:)
-    type(ssids_akeep), intent(inout) :: akeep
-    type(ssids_options), intent(in) :: options
-    type(ssids_inform), intent(out) :: inform
+    type(SSIDS_akeep_type), intent(inout) :: akeep
+    type(SSIDS_control_type), intent(in) :: control
+    type(SSIDS_inform_type), intent(out) :: inform
     integer(ip_), optional, intent(inout) :: order(:)
     real(rp_), optional, intent(in) :: val(:)
     type(numa_region), dimension(:), optional, intent(in) :: topology
@@ -187,7 +209,7 @@ contains
 
     integer(ip_) :: mo_flag
     integer(ip_) :: free_flag
-    type(ssids_inform) :: inform_default
+    type(ssids_inform_type) :: inform_default
 
     ! Initialise
     context = 'ssids_analyse'
@@ -197,15 +219,15 @@ contains
        inform%flag = SSIDS_ERROR_CUDA_UNKNOWN
        inform%cuda_error = free_flag
        akeep%inform = inform
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     ! Print status on entry
-    call options%print_summary_analyse(context)
-    if ((options%print_level .ge. 1) .and. &
-        (options%unit_diagnostics .ge. 0)) then
-       write (options%unit_diagnostics,'(a,i15)') &
+    call control%print_summary_analyse(context)
+    if ((control%print_level .ge. 1) .and. &
+        (control%unit_diagnostics .ge. 0)) then
+       write (control%unit_diagnostics,'(a,i15)') &
             ' n                         =  ',n
     end if
 
@@ -216,7 +238,7 @@ contains
     if (n .lt. 0) then
        inform%flag = SSIDS_ERROR_A_N_OOR
        akeep%inform = inform
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
@@ -228,20 +250,20 @@ contains
        return
     end if
 
-    ! check options%ordering has a valid value
-    if ((options%ordering .lt. 0) .or. (options%ordering .gt. 2)) then
+    ! check control%ordering has a valid value
+    if ((control%ordering .lt. 0) .or. (control%ordering .gt. 2)) then
        inform%flag = SSIDS_ERROR_ORDER
        akeep%inform = inform
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     ! check val present when expected
-    if (options%ordering .eq. 2) then
+    if (control%ordering .eq. 2) then
        if (.not. present(val)) then
           inform%flag = SSIDS_ERROR_VAL
           akeep%inform = inform
-          call inform%print_flag(options, context)
+          call inform%print_flag(control, context)
           return
        end if
     end if
@@ -268,7 +290,7 @@ contains
           if (mu_flag .eq. -6) inform%flag  = SSIDS_ERROR_A_PTR
           if (mu_flag .eq. -10) inform%flag = SSIDS_ERROR_A_ALL_OOR
           akeep%inform = inform
-          call inform%print_flag(options, context)
+          call inform%print_flag(control, context)
           return
        end if
 
@@ -276,7 +298,7 @@ contains
        ! Note: same numbering of positive flags as in matrix_util
        if (mu_flag .gt. 0) then
           inform%flag = mu_flag
-          call inform%print_flag(options, context)
+          call inform%print_flag(control, context)
        end if
        nz = akeep%ptr(n+1) - 1
     else
@@ -290,21 +312,21 @@ contains
 
     allocate(akeep%invp(n),order2(n),ptr2(n+1),row2(2*nz),stat=st)
     if (st .ne. 0) go to 490
-    if (options%ordering .eq. 2) then
+    if (control%ordering .eq. 2) then
        allocate(akeep%scaling(n), val2(2*nz), stat=st)
        if (st .ne. 0) go to 490
     end if
 
-    select case(options%ordering)
+    select case(control%ordering)
     case(0)
        if (.not. present(order)) then
           ! we have an error since user should have supplied the order
           inform%flag = SSIDS_ERROR_ORDER
           akeep%inform = inform
-          call inform%print_flag(options, context)
+          call inform%print_flag(control, context)
           return
        end if
-       call check_order(n,order,akeep%invp,options,inform)
+       call check_order(n,order,akeep%invp,control,inform)
        if (inform%flag .lt. 0) go to 490
        order2(1:n) = order(1:n)
        if (check) then
@@ -320,7 +342,7 @@ contains
 !         if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
 !         if (flag .lt. 0) go to 490
           CALL NODEND_half_order(n, akeep%ptr, akeep%row, order2, &
-                                 options%nodend_options,  &
+                                 control%nodend_control,  &
                                  inform%nodend_inform)
           inform%flag = inform%nodend_inform%status
           st = inform%nodend_inform%alloc_status
@@ -332,7 +354,7 @@ contains
 !         if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
 !         if (flag .lt. 0) go to 490
           CALL NODEND_half_order(n, ptr, row, order2, &
-                                 options%nodend_options,  &
+                                 control%nodend_control,  &
                                  inform%nodend_inform)
           inform%flag = inform%nodend_inform%status
           st = inform%nodend_inform%alloc_status
@@ -357,7 +379,7 @@ contains
 !      call match_order_metis(n, ptr2, row2, val2, order2, akeep%scaling, &
 !           mo_flag, inform%stat)
        call match_order_metis(n, ptr2, row2, val2, order2, akeep%scaling, &
-                              options%nodend_options, inform%nodend_inform, &
+                              control%nodend_control, inform%nodend_inform, &
                               mo_flag, inform%stat)
        select case(mo_flag)
        case(0)
@@ -368,12 +390,12 @@ contains
        case(-1)
           inform%flag = SSIDS_ERROR_ALLOCATION
           akeep%inform = inform
-          call inform%print_flag(options, context)
+          call inform%print_flag(control, context)
           return
        case default
           inform%flag = SSIDS_ERROR_UNKNOWN
           akeep%inform = inform
-          call inform%print_flag(options, context)
+          call inform%print_flag(control, context)
           return
        end select
 
@@ -391,20 +413,20 @@ contains
        call guess_topology(akeep%topology, st)
        if (st .ne. 0) goto 490
     end if
-    call squash_topology(akeep%topology, options, st)
+    call squash_topology(akeep%topology, control, st)
     if (st .ne. 0) goto 490
 
     ! perform rest of analyse
     if (check) then
        call analyse_phase(n, akeep%ptr, akeep%row, ptr2, row2, order2,  &
-            akeep%invp, akeep, options, inform)
+            akeep%invp, akeep, control, inform)
     else
        call analyse_phase(n, ptr, row, ptr2, row2, order2, akeep%invp, &
-            akeep, options, inform)
+            akeep, control, inform)
     end if
 
     if (present(order)) order(1:n) = abs(order2(1:n))
-    if (options%print_level .gt. DEBUG_PRINT_LEVEL) &
+    if (control%print_level .gt. DEBUG_PRINT_LEVEL) &
          print *, "order = ", order2(1:n)
 
 490 continue
@@ -413,17 +435,19 @@ contains
        inform%flag = SSIDS_ERROR_ALLOCATION
     end if
     akeep%inform = inform
-    call inform%print_flag(options, context)
+    call inform%print_flag(control, context)
   end subroutine analyse_precision
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Given an initial topology, modify it to squash any resources options
-!>        parameters tell us to ignore.
-!> @param topology
-  subroutine squash_topology(topology, options, st)
+!-*-*-  G A L A H A D - S S I D S _  squash_topology  S U B R O U T I N E  -*-*-
+
+  subroutine squash_topology( topology, control, st )
+
+!  given an initial topology, modify it to squash any resources control
+!  parameters tell us to ignore.
+
     implicit none
     type(numa_region), dimension(:), allocatable, intent(inout) :: topology
-    type(ssids_options), intent(in) :: options
+    type(ssids_control_type), intent(in) :: control
     integer(ip_), intent(out) :: st
 
     logical :: no_omp
@@ -436,7 +460,7 @@ contains
 !$  no_omp = .false.
 
     ! Get rid of GPUs if we're not using them
-    if (.not. options%use_gpu) then
+    if (.not. control%use_gpu) then
        do i = 1, size(topology)
           if (size(topology(i)%gpus) .ne. 0) then
              deallocate(topology(i)%gpus)
@@ -447,7 +471,7 @@ contains
     end if
 
     ! FIXME: One can envisage a sensible coexistence of both
-    ! no_omp=.true. AND options%ignore_numa=.false. (e.g., choose the
+    ! no_omp=.true. AND control%ignore_numa=.false. (e.g., choose the
     ! "best" NUMA node, with the least utilised CPUs and/or GPUs...).
     if (no_omp) then
        allocate(new_topology(1), stat=st)
@@ -458,15 +482,15 @@ contains
        do i = 1, size(topology)
           ngpu = ngpu + size(topology(i)%gpus)
        end do
-       ! FIXME: if no_omp=.true. AND options%ignore_numa=.true.,
+       ! FIXME: if no_omp=.true. AND control%ignore_numa=.true.,
        ! then take the "first" GPU (whichever it might be), only.
        ! A combination not meant for production, only for testing!
-       if (options%ignore_numa) ngpu = min(ngpu, 1)
+       if (control%ignore_numa) ngpu = min(ngpu, 1)
        ! Store list of GPUs
        allocate(new_topology(1)%gpus(ngpu), stat=st)
        if (st .ne. 0) return
        if (ngpu .gt. 0) then
-          if (options%ignore_numa) then
+          if (control%ignore_numa) then
              new_topology(1)%gpus(1) = huge(new_topology(1)%gpus(1))
              do i = 1, size(topology)
                 new_topology(1)%gpus(1) = &
@@ -486,7 +510,7 @@ contains
        deallocate(topology)
        call move_alloc(new_topology, topology)
     ! Squash everything to single NUMA region if we're ignoring numa
-    else if ((size(topology) .gt. 1) .and. options%ignore_numa) then
+    else if ((size(topology) .gt. 1) .and. control%ignore_numa) then
        allocate(new_topology(1), stat=st)
        if (st .ne. 0) return
        ! Count resources to reallocate
@@ -514,29 +538,28 @@ contains
     end if
   end subroutine squash_topology
 
-!****************************************************************************
-!
-! Analyse phase.
-! Matrix entered in coordinate format.
-! matrix_util routine is used to convert the data to CSC format.
-! The user optionally inputs the pivot order. If not, metis called.
-! Structure is then expanded.
-! Supervariables are computed
-! and then the assembly tree is constructed and the data structures
-! required by the factorization are set up.
-!
-  subroutine ssids_analyse_coord_precision(n, ne, row, col, akeep, options, &
-       inform, order, val, topology)
+!-*-*-  G A L A H A D - S S I D S _  analyse_coord  S U B R O U T I N E  -*-*-
+
+  subroutine ssids_analyse_coord_precision( n, ne, row, col, akeep, control,   &
+                                            inform, order, val, topology )
+
+!  analyse phase: matrix entered in coordinate format.
+!  matrix_util routine is used to convert the data to CSC format.
+!  The user optionally inputs the pivot order. If not, metis called.
+!  Structure is then expanded, supervariables are computed and then
+!  the assembly tree is constructed and the data structures required
+!  by the factorization are set up.
+
     implicit none
     integer(ip_), intent(in) :: n ! order of A
     integer(long_), intent(in) :: ne ! entries to be input by user
     integer(ip_), intent(in) :: row(:) ! row indices
     integer(ip_), intent(in) :: col(:) ! col indices
-    type(ssids_akeep), intent(inout) :: akeep ! See derived-type declaration
-    type(ssids_options), intent(in) :: options ! See derived-type declaration
-    type(ssids_inform), intent(out) :: inform ! See derived-type declaration
+    type(SSIDS_akeep_type), intent(inout) :: akeep ! See derived-type declaration
+    type(SSIDS_control_type), intent(in) :: control ! See derived-type declaration
+    type(SSIDS_inform_type), intent(out) :: inform ! See derived-type declaration
     integer(ip_), intent(inout), optional  :: order(:)
-      ! Must be present and set on entry if options%ordering = 0
+      ! Must be present and set on entry if control%ordering = 0
       ! i is used to index a variable, order(i) must
       ! hold its position in the pivot sequence.
       ! If i is not used to index a variable,
@@ -544,7 +567,7 @@ contains
       ! On exit, holds the pivot order to be used by factorization.
     real(rp_), optional, intent(in) :: val(:) ! must be present
       ! if a matching-based elimination ordering is required
-      ! (options%ordering = 2).
+      ! (control%ordering = 2).
       ! If present, val(k) must hold value of entry in row(k) and col(k).
     type(numa_region), dimension(:), optional, intent(in) :: topology
       ! user specified topology
@@ -566,7 +589,7 @@ contains
     integer(ip_) :: st           ! stat parameter
     integer(ip_) :: free_flag
 
-    type(ssids_inform) :: inform_default
+    type(ssids_inform_type) :: inform_default
 
     ! Initialise
     context = 'ssids_analyse_coord'
@@ -576,17 +599,17 @@ contains
        inform%flag = SSIDS_ERROR_CUDA_UNKNOWN
        inform%cuda_error = free_flag
        akeep%inform = inform
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     ! Output status on entry
-    call options%print_summary_analyse(context)
-    if ((options%print_level .ge. 1) .and. &
-        (options%unit_diagnostics .ge. 0)) then
-       write (options%unit_diagnostics,'(a,i15)') &
+    call control%print_summary_analyse(context)
+    if ((control%print_level .ge. 1) .and. &
+        (control%unit_diagnostics .ge. 0)) then
+       write (control%unit_diagnostics,'(a,i15)') &
             ' n                         =  ', n
-       write (options%unit_diagnostics,'(a,i15)') &
+       write (control%unit_diagnostics,'(a,i15)') &
             ' ne                        =  ', ne
     end if
 
@@ -599,7 +622,7 @@ contains
     if ((n .lt. 0) .or. (ne .lt. 0)) then
        inform%flag = SSIDS_ERROR_A_N_OOR
        akeep%inform = inform
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
@@ -611,20 +634,20 @@ contains
        return
     end if
 
-    ! check options%ordering has a valid value
-    if ((options%ordering .lt. 0) .or. (options%ordering .gt. 2)) then
+    ! check control%ordering has a valid value
+    if ((control%ordering .lt. 0) .or. (control%ordering .gt. 2)) then
        inform%flag = SSIDS_ERROR_ORDER
        akeep%inform = inform
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     ! check val present when expected
-    if (options%ordering .eq. 2) then
+    if (control%ordering .eq. 2) then
        if (.not. present(val)) then
           inform%flag = SSIDS_ERROR_VAL
           akeep%inform = inform
-          call inform%print_flag(options, context)
+          call inform%print_flag(control, context)
           return
        end if
     end if
@@ -649,7 +672,7 @@ contains
        if (mu_flag .eq. -1)  inform%flag = SSIDS_ERROR_ALLOCATION
        if (mu_flag .eq. -10) inform%flag = SSIDS_ERROR_A_ALL_OOR
        akeep%inform = inform
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
@@ -665,21 +688,21 @@ contains
 
     allocate(akeep%invp(n),order2(n),ptr2(n+1),row2(2*nz),stat=st)
     if (st .ne. 0) go to 490
-    if (options%ordering .eq. 2) then
+    if (control%ordering .eq. 2) then
        allocate(val2(2*nz),akeep%scaling(n),stat=st)
        if (st .ne. 0) go to 490
     end if
 
-    select case(options%ordering)
+    select case(control%ordering)
     case(0)
        if (.not. present(order)) then
           ! we have an error since user should have supplied the order
           inform%flag = SSIDS_ERROR_ORDER
           akeep%inform = inform
-          call inform%print_flag(options, context)
+          call inform%print_flag(control, context)
           return
        end if
-       call check_order(n,order,akeep%invp,options,inform)
+       call check_order(n,order,akeep%invp,control,inform)
        if (inform%flag .lt. 0) go to 490
        order2(1:n) = order(1:n)
        call expand_pattern(n, nz, akeep%ptr, akeep%row, ptr2, row2)
@@ -691,7 +714,7 @@ contains
 !      if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
 !      if (flag .lt. 0) go to 490
        CALL NODEND_half_order(n, akeep%ptr, akeep%row, order2, &
-                              options%nodend_options,  &
+                              control%nodend_control,  &
                               inform%nodend_inform)
        inform%flag = inform%nodend_inform%status
        st = inform%nodend_inform%alloc_status
@@ -708,7 +731,7 @@ contains
 !      call match_order_metis(n,ptr2,row2,val2,order2,akeep%scaling,mo_flag, &
 !           inform%stat)
        call match_order_metis(n, ptr2, row2, val2, order2, akeep%scaling, &
-                              options%nodend_options, inform%nodend_inform, &
+                              control%nodend_control, inform%nodend_inform, &
                               mo_flag, inform%stat)
 
        select case(mo_flag)
@@ -720,12 +743,12 @@ contains
        case(-1)
           inform%flag = SSIDS_ERROR_ALLOCATION
           akeep%inform = inform
-          call inform%print_flag(options, context)
+          call inform%print_flag(control, context)
           return
        case default
           inform%flag = SSIDS_ERROR_UNKNOWN
           akeep%inform = inform
-          call inform%print_flag(options, context)
+          call inform%print_flag(control, context)
           return
        end select
 
@@ -747,11 +770,11 @@ contains
     ! we now have the expanded structure held using ptr2, row2
     ! and we are ready to get on with the analyse phase.
     call analyse_phase(n, akeep%ptr, akeep%row, ptr2, row2, order2,  &
-         akeep%invp, akeep, options, inform)
+         akeep%invp, akeep, control, inform)
     if (inform%flag .lt. 0) go to 490
 
     if (present(order)) order(1:n) = abs(order2(1:n))
-    if (options%print_level .gt. DEBUG_PRINT_LEVEL) &
+    if (control%print_level .gt. DEBUG_PRINT_LEVEL) &
          print *, "order = ", order2(1:n)
 
 490 continue
@@ -760,23 +783,23 @@ contains
        inform%flag = SSIDS_ERROR_ALLOCATION
     end if
     akeep%inform = inform
-    call inform%print_flag(options, context)
+    call inform%print_flag(control, context)
   end subroutine ssids_analyse_coord_precision
 
-!****************************************************************************
-!
-! Factorize phase - 32-bit wrapper around 64-bit version
-! Note ptr is non-optional
-!
-  subroutine ssids_factor_ptr32_precision(posdef, val, akeep, fkeep, options, &
-       inform, scale, ptr, row)
+!-*-*-  G A L A H A D - S S I D S _ factor_ptr32   S U B R O U T I N E  -*-*-
+
+  subroutine ssids_factor_ptr32_precision( posdef, val, akeep, fkeep, control, &
+                                           inform, scale, ptr, row )
+
+!  factorize phase: 32-bit wrapper around 64-bit version, NB ptr is non-optional
+
     implicit none
     logical, intent(in) :: posdef
     real(rp_), dimension(*), target, intent(in) :: val
-    type(ssids_akeep), intent(in) :: akeep
-    type(ssids_fkeep), intent(inout) :: fkeep
-    type(ssids_options), intent(in) :: options
-    type(ssids_inform), intent(out) :: inform
+    type(SSIDS_akeep_type), intent(in) :: akeep
+    type(SSIDS_fkeep_type), intent(inout) :: fkeep
+    type(SSIDS_control_type), intent(in) :: control
+    type(SSIDS_inform_type), intent(out) :: inform
     real(rp_), dimension(:), optional, intent(inout) :: scale
     integer(i4_), dimension(akeep%n+1), intent(in) :: ptr
     integer(ip_), dimension(*), optional, intent(in) :: row
@@ -787,33 +810,34 @@ contains
     allocate(ptr64(akeep%n+1), stat=inform%stat)
     if (inform%stat .ne. 0) then
        inform%flag = SSIDS_ERROR_ALLOCATION
-       call inform%print_flag(options, 'ssids_factor')
+       call inform%print_flag(control, 'ssids_factor')
        fkeep%inform = inform
        return
     end if
     ptr64(1:akeep%n+1) = ptr(1:akeep%n+1)
 
     ! Call 64-bit routine
-    call ssids_factor_ptr64_precision(posdef, val, akeep, fkeep, options, &
+    call ssids_factor_ptr64_precision(posdef, val, akeep, fkeep, control, &
          inform, scale=scale, ptr=ptr64, row=row)
   end subroutine ssids_factor_ptr32_precision
 
-!****************************************************************************
-!
-! Factorize phase
-!
-  subroutine ssids_factor_ptr64_precision(posdef, val, akeep, fkeep, options, &
-       inform, scale, ptr, row)
+!-*-*-  G A L A H A D - S S I D S _ factor_ptr64  S U B R O U T I N E  -*-*-
+
+  subroutine ssids_factor_ptr64_precision( posdef, val, akeep, fkeep, control, &
+                                           inform, scale, ptr, row )
+
+!  factorize phase (64-bit pointers)
+
     implicit none
     logical, intent(in) :: posdef
     real(rp_), dimension(*), target, intent(in) :: val ! A values (lwr triangle)
-    type(ssids_akeep), intent(in) :: akeep
-    type(ssids_fkeep), intent(inout) :: fkeep
-    type(ssids_options), intent(in) :: options
-    type(ssids_inform), intent(out) :: inform
+    type(SSIDS_akeep_type), intent(in) :: akeep
+    type(SSIDS_fkeep_type), intent(inout) :: fkeep
+    type(SSIDS_control_type), intent(in) :: control
+    type(SSIDS_inform_type), intent(out) :: inform
     real(rp_), dimension(:), optional, intent(inout) :: scale ! used to hold
       ! row and column scaling factors. Must be set on entry if
-      ! options%scaling <= 0
+      ! control%scaling <= 0
       ! Note: Has to be assumed shape, not assumed size or fixed size to work
       ! around funny compiler bug
     integer(i8_), dimension(akeep%n+1), optional, intent(in) :: ptr ! must be
@@ -837,7 +861,7 @@ contains
     real(rp_), dimension(:), allocatable :: scaling
 
     ! Types related to scaling routines
-    type(hungarian_options) :: hsoptions
+    type(hungarian_control) :: hsoptions
     type(hungarian_inform) :: hsinform
     type(equilib_options) :: esoptions
     type(equilib_inform) :: esinform
@@ -849,14 +873,14 @@ contains
     ! Setup for any printing we may require
     context = 'ssids_factor'
 
-    ! Print summary of input options (depending on print level etc.)
-    call options%print_summary_factor(posdef, context)
+    ! Print summary of input control (depending on print level etc.)
+    call control%print_summary_factor(posdef, context)
 
     ! Check for error in call sequence
     if ((.not. allocated(akeep%sptr)) .or. (akeep%inform%flag .lt. 0)) then
        ! Analyse cannot have been run
        inform%flag = SSIDS_ERROR_CALL_SEQUENCE
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        fkeep%inform = inform
        return
     end if
@@ -872,12 +896,12 @@ contains
     call push_omp_settings(user_omp_settings, inform%flag)
     if (inform%flag .lt. 0) then
        fkeep%inform = inform
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
-    ! Immediate return if analyse detected singularity and options%action=false
-    if ((.not. options%action) .and. &
+    ! Immediate return if analyse detected singularity and control%action=false
+    if ((.not. control%action) .and. &
         (akeep%n .ne. akeep%inform%matrix_rank)) then
        inform%flag = SSIDS_ERROR_SINGULAR
        goto 100
@@ -919,14 +943,14 @@ contains
     ! hold the lower triangular part of A
 
     ! Dump matrix if required
-    if (allocated(options%rb_dump)) then
-       write(options%unit_warning,*) "Dumping matrix to '", options%rb_dump, "'"
+    if (allocated(control%rb_dump)) then
+       write(control%unit_warning,*) "Dumping matrix to '", control%rb_dump, "'"
        if (akeep%check) then
-          call rb_write(options%rb_dump, SPRAL_MATRIX_REAL_SYM_INDEF, &
-               n, n, akeep%ptr, akeep%row, rb_options, flag, val=val2)
+          call rb_write(control%rb_dump, SPRAL_MATRIX_REAL_SYM_INDEF, &
+               n, n, akeep%ptr, akeep%row, rb_control, flag, val=val2)
        else
-          call rb_write(options%rb_dump, SPRAL_MATRIX_REAL_SYM_INDEF, &
-               n, n, ptr, row, rb_options, flag, val=val)
+          call rb_write(control%rb_dump, SPRAL_MATRIX_REAL_SYM_INDEF, &
+               n, n, ptr, row, rb_control, flag, val=val)
        end if
        if (flag .ne. 0) then
           inform%flag = SSIDS_ERROR_UNKNOWN
@@ -937,7 +961,7 @@ contains
     !
     ! Perform scaling if required
     !
-    if ((options%scaling .gt. 0) .or. present(scale)) then
+    if ((control%scaling .gt. 0) .or. present(scale)) then
        if (allocated(fkeep%scaling)) then
           if (size(fkeep%scaling) .lt. n) then
              deallocate(fkeep%scaling, stat=st)
@@ -951,12 +975,12 @@ contains
        deallocate(fkeep%scaling, stat=st)
     end if
 
-    if (allocated(akeep%scaling) .and. (options%scaling .ne. 3)) then
+    if (allocated(akeep%scaling) .and. (control%scaling .ne. 3)) then
        inform%flag = SSIDS_WARNING_MATCH_ORD_NO_SCALE
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
     end if
 
-    select case (options%scaling)
+    select case (control%scaling)
     case(:0) ! User supplied or none
        if (present(scale)) then
           do i = 1, n
@@ -1004,10 +1028,10 @@ contains
        ! Run auction algorithm
        if (akeep%check) then
           call auction_scale_sym(n, akeep%ptr, akeep%row, val2, scaling, &
-               options%auction, inform%auction)
+               control%auction, inform%auction)
        else
           call auction_scale_sym(n, ptr, row, val, scaling, &
-               options%auction, inform%auction)
+               control%auction, inform%auction)
        end if
        if (inform%auction%flag .ne. 0) then
           ! only possible error is allocation failed
@@ -1084,10 +1108,10 @@ contains
     ! Call main factorization routine
     if (akeep%check) then
 !write(6,*) 'val2 = ', val2(:nz)
-       call fkeep%inner_factor(akeep, val2, options, inform)
+       call fkeep%inner_factor(akeep, val2, control, inform)
     else
 !write(6,*) 'val = ', val(:ptr(n+1)-1)
-       call fkeep%inner_factor(akeep, val, options, inform)
+       call fkeep%inner_factor(akeep, val, control, inform)
     end if
     if (inform%flag .lt. 0) then
        fkeep%inform = inform
@@ -1096,21 +1120,21 @@ contains
 
     if (akeep%n .ne. inform%matrix_rank) then
        ! Rank deficient
-       ! Note: If we reach this point then must be options%action=.true.
-       if (options%action) then
+       ! Note: If we reach this point then must be control%action=.true.
+       if (control%action) then
           inform%flag = SSIDS_WARNING_FACT_SINGULAR
        else
           inform%flag = SSIDS_ERROR_SINGULAR
        end if
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
     end if
 write(99,*) ' c'
 
-    if ((options%print_level .ge. 1) .and. &
-        (options%unit_diagnostics .ge. 0)) then
-       write (options%unit_diagnostics,'(/a)') &
+    if ((control%print_level .ge. 1) .and. &
+        (control%unit_diagnostics .ge. 0)) then
+       write (control%unit_diagnostics,'(/a)') &
             ' Completed factorisation with:'
-       write (options%unit_diagnostics, &
+       write (control%unit_diagnostics, &
          '(a,3(/a,i12),2(/a,es12.4),5(/a,i12))') &
          ' information parameters (inform%) :', &
          ' flag                   Error flag                               = ',&
@@ -1137,7 +1161,7 @@ write(99,*) ' c'
 100 continue
     ! Clean up and return
     fkeep%inform = inform
-    call inform%print_flag(options, context)
+    call inform%print_flag(control, context)
     call pop_omp_settings(user_omp_settings)
     return
     !!!!!!!!!!!!!!!!!!!!
@@ -1151,53 +1175,57 @@ write(99,*) ' c'
     goto 100
   end subroutine ssids_factor_ptr64_precision
 
-!*************************************************************************
-!
-! Solve phase single x.
-!
-  subroutine ssids_solve_one_precision(x1, akeep, fkeep, options, inform, job)
+!-*-*-  G A L A H A D - S S I D S _ solve_one   S U B R O U T I N E  -*-*-
+
+  subroutine ssids_solve_one_precision( x1, akeep, fkeep, control, inform, job )
+
+!  solve phase single x
+
     implicit none
     real(rp_), dimension(:), intent(inout) :: x1 ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i) is the corresponding component of the
       ! right-hand side.On exit, if i has been used to index a variable,
       ! x(i) holds solution for variable i
-    type(ssids_akeep), intent(in) :: akeep
-    type(ssids_fkeep), intent(inout) :: fkeep
-    type(ssids_options), intent(in) :: options
-    type(ssids_inform), intent(out) :: inform
+    type(SSIDS_akeep_type), intent(in) :: akeep
+    type(SSIDS_fkeep_type), intent(inout) :: fkeep
+    type(SSIDS_control_type), intent(in) :: control
+    type(SSIDS_inform_type), intent(out) :: inform
     integer(ip_), optional, intent(in) :: job
 
     integer(ip_) :: ldx
 
     ldx = size(x1)
     if (present(job)) then
-       call ssids_solve_mult_precision(1_ip_, x1, ldx, akeep, fkeep, options,  &
+       call ssids_solve_mult_precision(1_ip_, x1, ldx, akeep, fkeep, control,  &
                                        inform, job)
     else
-       call ssids_solve_mult_precision(1_ip_, x1, ldx, akeep, fkeep, options,  &
+       call ssids_solve_mult_precision(1_ip_, x1, ldx, akeep, fkeep, control,  &
                                        inform)
     end if
   end subroutine ssids_solve_one_precision
 
-!*************************************************************************
+!-*-*-  G A L A H A D - S S I D S _  solve_mult  S U B R O U T I N E  -*-*-
 
-  subroutine ssids_solve_mult_precision(nrhs, x, ldx, akeep, fkeep, options, &
-       inform, job)
+  subroutine ssids_solve_mult_precision(nrhs, x, ldx, akeep, fkeep, control, &
+                                        inform, job)
+
+!  solve phase multiple x
+
     implicit none
     integer(ip_), intent(in) :: nrhs
     integer(ip_), intent(in) :: ldx
     real(rp_), dimension(ldx,nrhs), intent(inout), target :: x
-    type(ssids_akeep), intent(in) :: akeep ! On entry, x must
+    type(SSIDS_akeep_type), intent(in) :: akeep ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i,j) is the corresponding component of the
       ! right-hand side for the jth system (j = 1,2,..., nrhs).
       ! On exit, if i has been used to index a variable,
       ! x(i,j) holds solution for variable i to system j
-    ! For details of keep, options, inform : see derived type description
-    type(ssids_fkeep), intent(inout) :: fkeep !inout for moving data
-    type(ssids_options), intent(in) :: options
-    type(ssids_inform), intent(out) :: inform
+    ! For details of keep, control, inform : see derived type description
+    type(SSIDS_fkeep_type), intent(inout) :: fkeep !inout for moving data
+    type(SSIDS_control_type), intent(in) :: control
+    type(SSIDS_inform_type), intent(out) :: inform
     integer(ip_), optional, intent(in) :: job ! used to indicate whether
       ! partial solution required
       ! job = 1 : forward eliminations only (PLX = B)
@@ -1213,23 +1241,23 @@ write(99,*) ' c'
     inform%flag = SSIDS_SUCCESS
 
     ! Perform appropriate printing
-    if ((options%print_level .ge. 1) .and. &
-        (options%unit_diagnostics .ge. 0)) then
-       write (options%unit_diagnostics,'(//a)') &
+    if ((control%print_level .ge. 1) .and. &
+        (control%unit_diagnostics .ge. 0)) then
+       write (control%unit_diagnostics,'(//a)') &
             ' Entering ssids_solve with:'
-       write (options%unit_diagnostics,'(a,4(/a,i12),(/a,i12))') &
-            ' options parameters (options%) :', &
+       write (control%unit_diagnostics,'(a,4(/a,i12),(/a,i12))') &
+            ' control parameters (control%) :', &
             ' print_level         Level of diagnostic printing        = ', &
-            options%print_level, &
+            control%print_level, &
             ' unit_diagnostics    Unit for diagnostics                = ', &
-            options%unit_diagnostics, &
+            control%unit_diagnostics, &
             ' unit_error          Unit for errors                     = ', &
-            options%unit_error, &
+            control%unit_error, &
             ' unit_warning        Unit for warnings                   = ', &
-            options%unit_warning, &
+            control%unit_warning, &
             ' nrhs                                                    = ', &
             nrhs
-       if (nrhs .gt. 1) write (options%unit_diagnostics,'(/a,i12)') &
+       if (nrhs .gt. 1) write (control%unit_diagnostics,'(/a,i12)') &
             ' ldx                                                     = ', &
             ldx
     end if
@@ -1241,7 +1269,7 @@ write(99,*) ' c'
     if (.not. allocated(fkeep%subtree)) then
        ! factorize phase has not been performed
        inform%flag = SSIDS_ERROR_CALL_SEQUENCE
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
@@ -1249,25 +1277,25 @@ write(99,*) ' c'
     ! immediate return if already had an error
     if ((akeep%inform%flag .lt. 0) .or. (fkeep%inform%flag .lt. 0)) then
        inform%flag = SSIDS_ERROR_CALL_SEQUENCE
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     n = akeep%n
     if (ldx .lt. n) then
        inform%flag = SSIDS_ERROR_X_SIZE
-       call inform%print_flag(options, context)
-       if ((options%print_level .ge. 0) .and. (options%unit_error .gt. 0)) &
-            write (options%unit_error,'(a,i8,a,i8)') &
+       call inform%print_flag(control, context)
+       if ((control%print_level .ge. 0) .and. (control%unit_error .gt. 0)) &
+            write (control%unit_error,'(a,i8,a,i8)') &
             ' Increase ldx from ', ldx, ' to at least ', n
        return
     end if
 
     if (nrhs .lt. 1) then
        inform%flag = SSIDS_ERROR_X_SIZE
-       call inform%print_flag(options, context)
-       if ((options%print_level .ge. 0) .and. (options%unit_error .gt. 0)) &
-            write (options%unit_error,'(a,i8,a,i8)') &
+       call inform%print_flag(control, context)
+       if ((control%print_level .ge. 0) .and. (control%unit_error .gt. 0)) &
+            write (control%unit_error,'(a,i8,a,i8)') &
             ' nrhs must be at least 1. nrhs = ', nrhs
        return
     end if
@@ -1286,26 +1314,27 @@ write(99,*) ' c'
        if (fkeep%pos_def .and. (job .eq. SSIDS_SOLVE_JOB_DIAG_BWD)) &
             inform%flag = SSIDS_ERROR_JOB_OOR
        if (inform%flag .eq. SSIDS_ERROR_JOB_OOR) then
-          call inform%print_flag(options, context)
+          call inform%print_flag(control, context)
           return
        end if
        local_job = job
     end if
 
     call fkeep%inner_solve(local_job, nrhs, x, ldx, akeep, inform)
-    call inform%print_flag(options, context)
+    call inform%print_flag(control, context)
   end subroutine ssids_solve_mult_precision
 
-!*************************************************************************
-!
-! Return diagonal entries to user
-!
-  subroutine ssids_enquire_posdef_precision(akeep, fkeep, options, inform, d)
+!-*-*-  G A L A H A D - S S I D S _  enquire_posdef  S U B R O U T I N E  -*-*-
+
+  subroutine ssids_enquire_posdef_precision(akeep, fkeep, control, inform, d)
+
+!  return diagonal entries to user
+
     implicit none
-    type(ssids_akeep), intent(in) :: akeep
-    type(ssids_fkeep), target, intent(in) :: fkeep
-    type(ssids_options), intent(in) :: options
-    type(ssids_inform), intent(out) :: inform
+    type(SSIDS_akeep_type), intent(in) :: akeep
+    type(SSIDS_fkeep_type), target, intent(in) :: fkeep
+    type(SSIDS_control_type), intent(in) :: control
+    type(SSIDS_inform_type), intent(out) :: inform
     real(rp_), dimension(*), intent(out) :: d
 
     character(50)  :: context      ! Procedure name (used when printing).
@@ -1316,41 +1345,42 @@ write(99,*) ' c'
     if (.not. allocated(fkeep%subtree)) then
        ! factorize phase has not been performed
        inform%flag = SSIDS_ERROR_CALL_SEQUENCE
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     if ((akeep%inform%flag .lt. 0) .or. (fkeep%inform%flag .lt. 0)) then
        ! immediate return if had an error
        inform%flag = SSIDS_ERROR_CALL_SEQUENCE
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     if (.not. fkeep%pos_def) then
        inform%flag = SSIDS_ERROR_NOT_LLT
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     call fkeep%enquire_posdef(akeep, d)
-    call inform%print_flag(options, context)
+    call inform%print_flag(control, context)
   end subroutine ssids_enquire_posdef_precision
 
-!*************************************************************************
-! In indefinite case, the pivot sequence used will not necessarily be
-! the same as that passed to ssids_factor (because of delayed pivots). This
-! subroutine allows the user to obtain the pivot sequence that was
-! actually used.
-! also the entries of D^{-1} are returned using array d.
-!
-  subroutine ssids_enquire_indef_precision(akeep, fkeep, options, inform,      &
-       piv_order, d)
+!-*-*-  G A L A H A D - S S I D S _ enquire_indef S U B R O U T I N E  -*-*-
+
+  subroutine ssids_enquire_indef_precision(akeep, fkeep, control, inform,      &
+                                           piv_order, d)
+
+!  In the indefinite case, the pivot sequence used will not necessarily be
+!  the same as that passed to ssids_factor (because of delayed pivots). 
+!  This subroutine allows the user to obtain the pivot sequence that was
+!  actually used. also the entries of D^{-1} are returned using array d.
+
     implicit none
-    type(ssids_akeep), intent(in) :: akeep
-    type(ssids_fkeep), target, intent(in) :: fkeep
-    type(ssids_options), intent(in) :: options
-    type(ssids_inform), intent(out) :: inform
+    type(SSIDS_akeep_type), intent(in) :: akeep
+    type(SSIDS_fkeep_type), target, intent(in) :: fkeep
+    type(SSIDS_control_type), intent(in) :: control
+    type(SSIDS_inform_type), intent(out) :: inform
     integer(ip_), dimension(*), optional, intent(out) :: piv_order
       ! If i is used to index a variable, its position in the pivot sequence
       ! will be placed in piv_order(i), with its sign negative if it is
@@ -1367,20 +1397,20 @@ write(99,*) ' c'
     if (.not. allocated(fkeep%subtree)) then
        ! factorize phase has not been performed
        inform%flag = SSIDS_ERROR_CALL_SEQUENCE
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     if ((akeep%inform%flag .lt. 0) .or. (fkeep%inform%flag .lt. 0)) then
        ! immediate return if had an error
        inform%flag = SSIDS_ERROR_CALL_SEQUENCE
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     if (fkeep%pos_def) then
        inform%flag = SSIDS_ERROR_NOT_LDLT
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
@@ -1415,22 +1445,22 @@ write(99,*) ' c'
       END IF 
 !     write(6,"(' ssids: revised piv_order ', 7I6 )" ) piv_order( : akeep%n )
     END IF
-    call inform%print_flag(options, context)
+    call inform%print_flag(control, context)
   end subroutine ssids_enquire_indef_precision
 
-!*************************************************************************
-!
-! In indefinite case, the entries of D^{-1} may be changed using this routine.
-!
-  subroutine ssids_alter_precision(d, akeep, fkeep, options, inform)
+!-*-*-*-  G A L A H A D - S S I D S _  a l t e r  S U B R O U T I N E  -*-*-*-
+
+!  In indefinite case, the entries of D^{-1} may be changed using this routine
+
+  subroutine ssids_alter_precision(d, akeep, fkeep, control, inform)
     implicit none
     real(rp_), dimension(2,*), intent(in) :: d  ! The required diagonal entries
       ! of D^{-1} must be placed in d(1,i) (i = 1,...n)
       ! and the off-diagonal entries must be placed in d(2,i) (i = 1,...n-1).
-    type(ssids_akeep), intent(in) :: akeep
-    type(ssids_fkeep), target, intent(inout) :: fkeep
-    type(ssids_options), intent(in) :: options
-    type(ssids_inform), intent(out) :: inform
+    type(SSIDS_akeep_type), intent(in) :: akeep
+    type(SSIDS_fkeep_type), target, intent(inout) :: fkeep
+    type(SSIDS_control_type), intent(in) :: control
+    type(SSIDS_inform_type), intent(out) :: inform
 
     character(50)  :: context      ! Procedure name (used when printing).
 
@@ -1440,53 +1470,53 @@ write(99,*) ' c'
     if (.not. allocated(fkeep%subtree)) then
        ! factorize phase has not been performed
        inform%flag = SSIDS_ERROR_CALL_SEQUENCE
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     ! immediate return if already had an error
     if ((akeep%inform%flag .lt. 0) .or. (fkeep%inform%flag .lt. 0)) then
        inform%flag = SSIDS_ERROR_CALL_SEQUENCE
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     if (fkeep%pos_def) then
        inform%flag = SSIDS_ERROR_NOT_LDLT
-       call inform%print_flag(options, context)
+       call inform%print_flag(control, context)
        return
     end if
 
     call fkeep%alter(d, akeep)
-    call inform%print_flag(options, context)
+    call inform%print_flag(control, context)
   end subroutine ssids_alter_precision
 
-!*************************************************************************
+!-*-*-  G A L A H A D - S S I D S _ f r e e _a k e e p  S U B R O U T I N E  -*-
 
   subroutine free_akeep_precision(akeep, flag)
     implicit none
-    type(ssids_akeep), intent(inout) :: akeep
+    type(SSIDS_akeep_type), intent(inout) :: akeep
     integer(ip_), intent(out) :: flag
 
     call akeep%free(flag)
   end subroutine free_akeep_precision
 
-!*******************************
+!-*-*-  G A L A H A D - S S I D S _ f r e e _f k e e p  S U B R O U T I N E  -*-
 
   subroutine free_fkeep_precision(fkeep, cuda_error)
     implicit none
-    type(ssids_fkeep), intent(inout) :: fkeep
+    type(SSIDS_fkeep_type), intent(inout) :: fkeep
     integer(ip_), intent(out) :: cuda_error
 
     call fkeep%free(cuda_error)
   end subroutine free_fkeep_precision
 
-!*******************************
+!-*-*-  G A L A H A D - S S I D S _ f r e e _ b o t h  S U B R O U T I N E  -*-
 
   subroutine free_both_precision(akeep, fkeep, cuda_error)
     implicit none
-    type(ssids_akeep), intent(inout) :: akeep
-    type(ssids_fkeep), intent(inout) :: fkeep
+    type(SSIDS_akeep_type), intent(inout) :: akeep
+    type(SSIDS_fkeep_type), intent(inout) :: fkeep
     integer(ip_), intent(out) :: cuda_error
 
     ! NB: Must free fkeep first as it may reference akeep
@@ -1496,11 +1526,12 @@ write(99,*) ' c'
     if (cuda_error .ne. 0) return
   end subroutine free_both_precision
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> \brief Ensure OpenMP ICVs are as required, and store user versions for
-!>        later restoration.
-!> \sa pop_omp_settings()
+!-*-*-  G A L A H A D - S S I D S _ push_omp_settings S U B R O U T I N E  -*-*-
+
   subroutine push_omp_settings(user_settings, flag)
+
+! ensure OpenMP ICVs are as required, and store user versions for
+
     implicit none
     type(omp_settings), intent(out) :: user_settings
     integer(ip_), intent(inout) :: flag
@@ -1537,10 +1568,12 @@ write(99,*) ' c'
 !$  if (user_settings%max_active_levels .lt. 2) call omp_set_max_active_levels(2)
   end subroutine push_omp_settings
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> \brief Restore user OpenMP ICV values.
-!> \sa push_omp_settings()
+!-*-*-  G A L A H A D - S S I D S _  pop_omp_settings S U B R O U T I N E  -*-*-
+
   subroutine pop_omp_settings(user_settings)
+
+!  restore user OpenMP ICV values.
+
     implicit none
     type(omp_settings), intent(in) :: user_settings
 
@@ -1550,4 +1583,4 @@ write(99,*) ' c'
 !$       call omp_set_max_active_levels(int(user_settings%max_active_levels))
   end subroutine pop_omp_settings
 
-end module spral_ssids_precision
+END MODULE GALAHAD_SSIDS_precision

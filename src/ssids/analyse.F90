@@ -1,41 +1,40 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 13:10 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 15:20 GMT
 
 #include "spral_procedures.h"
 
-!> \copyright 2010-2016 The Science and Technology Facilities Council (STFC)
-!> \licence   BSD licence, see LICENCE file for details
-!> \author    Jonathan Hogg
-!> \note      Originally based on HSL_MA97 v2.2.0
-module spral_ssids_anal_precision
-  use, intrinsic :: iso_c_binding
-!$ use :: omp_lib
-  use spral_kinds_precision
-  use spral_core_analyse, only : basic_analyse
-  use spral_cuda_precision, only : detect_gpu
-  use spral_hw_topology, only : guess_topology, numa_region
-  use spral_pgm, only : writePPM
-  use spral_ssids_akeep_precision, only : ssids_akeep
-  use spral_ssids_cpu_subtree_precision, only : construct_cpu_symbolic_subtree
-  use spral_ssids_gpu_subtree_precision, only : construct_gpu_symbolic_subtree
-  use spral_ssids_types_precision
-  use spral_ssids_inform_precision, only : ssids_inform
-  implicit none
+!  copyright 2010-2016 The Science and Technology Facilities Council (STFC)
+!  licence   BSD licence, see LICENCE file for details
+!  author    Jonathan Hogg
 
-  private
-  public :: analyse_phase,   & ! Calls core analyse and builds data strucutres
+MODULE GALAHAD_SSIDS_ANALYSE_precision
+  USE, INTRINSIC :: iso_c_binding
+!$ use :: omp_lib
+  USE SPRAL_KINDS_precision
+  USE SPRAL_CORE_ANALYSE, ONLY : basic_analyse
+  USE SPRAL_CUDA_precision, ONLY : detect_gpu
+  USE SPRAL_HW_TOPOLOGY, ONLY : guess_topology, numa_region
+  USE SPRAL_PGM, ONLY : writePPM
+  USE GALAHAD_SSIDS_AKEEP_precision, ONLY : SSIDS_akeep_type
+  USE GALAHAD_SSIDS_CPU_SUBTREE_precision, ONLY : construct_cpu_symbolic_subtree
+  USE GALAHAD_SSIDS_GPU_SUBTREE_precision, ONLY : construct_gpu_symbolic_subtree
+  USE GALAHAD_SSIDS_TYPES_precision
+  USE GALAHAD_SSIDS_INFORM_precision, ONLY : SSIDS_inform_type
+  IMPLICIT none
+
+  PRIVATE
+  PUBLIC :: analyse_phase,   & ! Calls core analyse and builds data strucutres
             check_order,     & ! Check order is a valid permutation
             expand_pattern,  & ! Specialised half->full matrix conversion
             expand_matrix      ! Specialised half->full matrix conversion
 
-  interface print_atree
-     module procedure print_atree, print_atree_part
-  end interface print_atree
+  INTERFACE print_atree
+     MODULE PROCEDURE print_atree, print_atree_part
+  END INTERFACE print_atree
 
-contains
+CONTAINS
 
-!****************************************************************************
+  SUBROUTINE expand_pattern(n,nz,ptr,row,aptr,arow)
 
-!
 ! Given lower triangular part of A held in row and ptr, expand to
 ! upper and lower triangular parts (pattern only). No checks.
 !
@@ -43,7 +42,6 @@ contains
 ! need an extra copy of the lower triangle into the full structure before
 ! calling half_to_full
 !
-  subroutine expand_pattern(n,nz,ptr,row,aptr,arow)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
     integer(long_), intent(in) :: nz
@@ -86,14 +84,13 @@ contains
     do j = 1,n
        aptr(j) = aptr(j) + 1
     end do
-  end subroutine expand_pattern
+  END SUBROUTINE expand_pattern
 
-!****************************************************************************
-!
+  SUBROUTINE expand_matrix(n,nz,ptr,row,val,aptr,arow,aval)
+
 ! Given lower triangular part of A held in row, val and ptr, expand to
 ! upper and lower triangular parts.
 
-  subroutine expand_matrix(n,nz,ptr,row,val,aptr,arow,aval)
     implicit none
     integer(ip_), intent(in)   :: n ! order of system
     integer(long_), intent(in)   :: nz
@@ -144,16 +141,15 @@ contains
     do j = 1,n
        aptr(j) = aptr(j) + 1
     end do
-  end subroutine expand_matrix
+  END SUBROUTINE expand_matrix
 
-!****************************************************************************
+  SUBROUTINE check_order(n, order, invp, control, inform)
+
+!  This routine requires the LOWER triangular part of A
+!  to be held in CSC format.
+!  The user has supplied a pivot order and this routine checks it is OK
+!  and returns an error if not. Also sets perm, invp.
 !
-! This routine requires the LOWER triangular part of A
-! to be held in CSC format.
-! The user has supplied a pivot order and this routine checks it is OK
-! and returns an error if not. Also sets perm, invp.
-!
-  subroutine check_order(n, order, invp, options, inform)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
     integer(ip_), intent(inout) :: order(:)
@@ -166,8 +162,8 @@ contains
       ! !!!! In this version, signs are reset to positive value
     integer(ip_), intent(out) :: invp(n)
       ! Used to check order and then holds inverse of perm.
-    type(ssids_options), intent(in) :: options
-    type(ssids_inform), intent(inout) :: inform
+    type(ssids_control_type), intent(in) :: control
+    type(ssids_inform_type), intent(inout) :: inform
 
     character(50)  :: context ! Procedure name (used when printing).
 
@@ -175,8 +171,8 @@ contains
     integer(ip_) :: nout  ! stream for error messages
 
     context = 'ssids_analyse'
-    nout = options%unit_error
-    if (options%print_level .lt. 0) nout = -1
+    nout = control%unit_error
+    if (control%print_level .lt. 0) nout = -1
 
     if (size(order) .lt. n) then
        ! Order is too short
@@ -203,15 +199,14 @@ contains
        inform%flag = SSIDS_ERROR_ORDER
        return
     end if
-  end subroutine check_order
+  END SUBROUTINE check_order
 
-!****************************************************************************
+  FUNCTION compute_flops(nnodes, sptr, rptr, node)
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  !> @brief Compute flops for processing a node
-  !> @param akeep Information generated in analysis phase by SSIDS
-  !> @param node Node
-  function compute_flops(nnodes, sptr, rptr, node)
+!  compute flops for processing a node
+!   akeep Information generated in analysis phase by SSIDS
+!   node Node
+
     implicit none
 
     integer(ip_), intent(in) :: nnodes
@@ -231,74 +226,76 @@ contains
        compute_flops = compute_flops + jj**2
     end do
 
-  end function compute_flops
+  END FUNCTION compute_flops
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Partition an elimination tree for execution on different NUMA regions
-!>        and GPUs.
-!>
-!> Start with a single tree, and proceed top down splitting the largest subtree
-!> (in terms of total flops)  until we have a sufficient number of independent
-!> subtrees. A sufficient number is such that subtrees can be assigned to NUMA
-!> regions and GPUs with a load balance no worse than max_load_inbalance.
-!> Load balance is calculated as the maximum value over all regions/GPUs of:
-!> \f[ \frac{ n x_i / \alpha_i } { \sum_j (x_j/\alpha_j) } \f]
-!> Where \f$ \alpha_i \f$ is the performance coefficient of region/GPU i,
-!> \f$ x_i \f$ is the number of flops assigned to region/GPU i and \f$ n \f$ is
-!> the total number of regions. \f$ \alpha_i \f$ should be proportional to the
-!> speed of the region/GPU (i.e. if GPU is twice as fast as CPU, set alpha for
-!> CPU to 1.0 and alpha for GPU to 2.0).
-!>
-!> If the original number of flops is greater than min_gpu_work and the
-!> performance coefficient of a GPU is greater than the combined coefficients
-!> of the CPU, then subtrees will not be split to become smaller than
-!> min_gpu_work until all GPUs are filled.
-!>
-!> If the balance criterion cannot be satisfied after we have split into
-!> 2 * (total regions/GPUs), we just use the best obtained value.
-!>
-!> GPUs may only handle leaf subtrees, so the top nodes are assigned to the
-!> full set of CPUs.
-!>
-!> Parts are returned as contigous ranges of nodes. Part i consists of nodes
-!> part(i):part(i+1)-1
-!>
-!> @param nnodes Total number of nodes
-!> @param sptr Supernode pointers. Supernode i consists of nodes
-!>        sptr(i):sptr(i+1)-1.
-!> @param sparent Supernode parent array. Supernode i has parent sparent(i).
-!> @param rptr Row pointers. Supernode i has rows rlist(rptr(i):rptr(i+1)-1).
-!> @param topology Machine topology to partition for.
-!> @param min_gpu_work Minimum flops for a GPU execution to be worthwhile.
-!> @param max_load_inbalance Number greater than 1.0 representing maximum
-!>        permissible load inbalance.
-!> @param gpu_perf_coeff The value of \f$ \alpha_i \f$ used for all GPUs,
-!>        assuming that used for all NUMA region CPUs is 1.0.
-!> @param nparts Number of parts found.
-!> @param parts List of part ranges. Part i consists of supernodes
-!>        part(i):part(i+1)-1.
-!> @param exec_loc Execution location. Part i should be run on partition
-!>        mod((exec_loc(i) - 1), size(topology)) + 1.
-!>        It should be run on the CPUs if
-!>        exec_loc(i) <= size(topology),
-!>        otherwise it should be run on GPU number
-!>        (exec_loc(i) - 1)/size(topology).
-!> @param contrib_ptr Contribution pointer. Part i has contribution from
-!>        subtrees contrib_idx(contrib_ptr(i):contrib_ptr(i+1)-1).
-!> @param contrib_idx List of contributing subtrees, see contrib_ptr.
-!> @param contrib_dest Node to which each subtree listed in contrib_idx(:)
-!>        contributes.
-!> @param st Allocation status parameter. If non-zero an allocation error
-!>        occurred.
-  subroutine find_subtree_partition(nnodes, sptr, sparent, rptr, options, &
-       topology, nparts, part, exec_loc, contrib_ptr, contrib_idx, &
-       contrib_dest, inform, st)
+  SUBROUTINE find_subtree_partition( nnodes, sptr, sparent, rptr, control,    &
+                                     topology, nparts, part, exec_loc,        &
+                                     contrib_ptr, contrib_idx,                &
+                                     contrib_dest, inform, st )
+
+!  partition an elimination tree for execution on different NUMA regions
+!   and GPUs.
+!
+!  Start with a single tree, and proceed top down splitting the largest subtree
+!  (in terms of total flops)  until we have a sufficient number of independent
+!  subtrees. A sufficient number is such that subtrees can be assigned to NUMA
+!  regions and GPUs with a load balance no worse than max_load_inbalance.
+!  Load balance is calculated as the maximum value over all regions/GPUs of:
+!  \f[ \frac{ n x_i / \alpha_i } { \sum_j (x_j/\alpha_j) } \f]
+!  Where \f$ \alpha_i \f$ is the performance coefficient of region/GPU i,
+!  \f$ x_i \f$ is the number of flops assigned to region/GPU i and \f$ n \f$ is
+!  the total number of regions. \f$ \alpha_i \f$ should be proportional to the
+!  speed of the region/GPU (i.e. if GPU is twice as fast as CPU, set alpha for
+!  CPU to 1.0 and alpha for GPU to 2.0).
+!
+!  If the original number of flops is greater than min_gpu_work and the
+!  performance coefficient of a GPU is greater than the combined coefficients
+!  of the CPU, then subtrees will not be split to become smaller than
+!  min_gpu_work until all GPUs are filled.
+!
+!  If the balance criterion cannot be satisfied after we have split into
+!  2 * (total regions/GPUs), we just use the best obtained value.
+!
+!  GPUs may only handle leaf subtrees, so the top nodes are assigned to the
+!  full set of CPUs.
+!
+!  Parts are returned as contigous ranges of nodes. Part i consists of nodes
+!  part(i):part(i+1)-1
+!
+!   nnodes Total number of nodes
+!   sptr Supernode pointers. Supernode i consists of nodes
+!   sptr(i):sptr(i+1)-1.
+!   sparent Supernode parent array. Supernode i has parent sparent(i).
+!   rptr Row pointers. Supernode i has rows rlist(rptr(i):rptr(i+1)-1).
+!   topology Machine topology to partition for.
+!   min_gpu_work Minimum flops for a GPU execution to be worthwhile.
+!   max_load_inbalance Number greater than 1.0 representing maximum
+!   permissible load inbalance.
+!   gpu_perf_coeff The value of \f$ \alpha_i \f$ used for all GPUs,
+!   assuming that used for all NUMA region CPUs is 1.0.
+!   nparts Number of parts found.
+!   parts List of part ranges. Part i consists of supernodes
+!   part(i):part(i+1)-1.
+!   exec_loc Execution location. Part i should be run on partition
+!   mod((exec_loc(i) - 1), size(topology)) + 1.
+!   It should be run on the CPUs if
+!   exec_loc(i) <= size(topology),
+!   otherwise it should be run on GPU number
+!   (exec_loc(i) - 1)/size(topology).
+!   contrib_ptr Contribution pointer. Part i has contribution from
+!   subtrees contrib_idx(contrib_ptr(i):contrib_ptr(i+1)-1).
+!   contrib_idx List of contributing subtrees, see contrib_ptr.
+!   contrib_dest Node to which each subtree listed in contrib_idx(:)
+!   contributes.
+!   st Allocation status parameter. If non-zero an allocation error
+!         occurred.
+
     implicit none
     integer(ip_), intent(in) :: nnodes
     integer(ip_), dimension(nnodes+1), intent(in) :: sptr
     integer(ip_), dimension(nnodes), intent(in) :: sparent
     integer(long_), dimension(nnodes+1), intent(in) :: rptr
-    type(ssids_options), intent(in) :: options
+    type(ssids_control_type), intent(in) :: control
     type(numa_region), dimension(:), intent(in) :: topology
     integer(ip_), intent(out) :: nparts
     integer(ip_), dimension(:), allocatable, intent(inout) :: part
@@ -306,7 +303,7 @@ contains
     integer(ip_), dimension(:), allocatable, intent(inout) :: contrib_ptr
     integer(ip_), dimension(:), allocatable, intent(inout) :: contrib_idx
     integer(ip_), dimension(:), allocatable, intent(out) :: contrib_dest
-    type(ssids_inform), intent(inout) :: inform
+    type(ssids_inform_type), intent(inout) :: inform
     integer(ip_), intent(out) :: st
 
     integer(ip_) :: i, j, k
@@ -361,20 +358,20 @@ contains
     do i = 1, 2*(nregion+ngpu)
        ! Check load balance criterion
        load_balance = calc_exec_alloc(nparts, part, size_order, is_child,  &
-            flops, topology, options%min_gpu_work, options%gpu_perf_coeff, &
+            flops, topology, control%min_gpu_work, control%gpu_perf_coeff, &
             exec_loc, st)
        if (st .ne. 0) return
        best_load_balance = min(load_balance, best_load_balance)
-       if (load_balance .lt. options%max_load_inbalance) exit ! allocation is ok
+       if (load_balance .lt. control%max_load_inbalance) exit ! allocation is ok
        ! Split tree further
        call split_tree(nparts, part, size_order, is_child, sparent, flops, &
-            ngpu, options%min_gpu_work, st)
+            ngpu, control%min_gpu_work, st)
        if (st .ne. 0) return
     end do
 
-    if ((options%print_level .ge. 1) .and. &
-        (options%unit_diagnostics .ge. 0)) then
-       write (options%unit_diagnostics,*) &
+    if ((control%print_level .ge. 1) .and. &
+        (control%unit_diagnostics .ge. 0)) then
+       write (control%unit_diagnostics,*) &
             "[find_subtree_partition] load_balance = ", best_load_balance
     end if
     ! Consolidate adjacent non-children nodes into same part and regn exec_alloc
@@ -395,7 +392,7 @@ contains
     !print *, "post merge", part(1:nparts+1)
     call create_size_order(nparts, part, flops, size_order)
     load_balance = calc_exec_alloc(nparts, part, size_order, is_child,  &
-         flops, topology, options%min_gpu_work, options%gpu_perf_coeff, &
+         flops, topology, control%min_gpu_work, control%gpu_perf_coeff, &
          exec_loc, st)
     if (st .ne. 0) return
     !print *, "exec_loc ", exec_loc(1:nparts)
@@ -466,52 +463,54 @@ contains
             inform%gpu_flops = inform%gpu_flops + flops(part(i+1)-1)
     end do
     inform%cpu_flops = flops(nnodes+1) - inform%gpu_flops
-  end subroutine find_subtree_partition
+  END SUBROUTINE find_subtree_partition
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Allocate execution of subtrees to resources and calculate load balance
-!>
-!> Given the partition supplied, uses a greedy algorithm to assign subtrees to
-!> resources specified by topology and then returns the resulting load balance
-!> as
-!> \f[ \frac{\max_i( n x_i / \alpha_i )} { \sum_j (x_j/\alpha_j) } \f]
-!> Where \f$ \alpha_i \f$ is the performance coefficient of region/GPU i,
-!> \f$ x_i \f$ is the number of flops assigned to region/GPU i and \f$ n \f$ is
-!> the total number of regions. \f$ \alpha_i \f$ should be proportional to the
-!> speed of the region/GPU (i.e. if GPU is twice as fast as CPU, set alpha for
-!> CPU to 1.0 and alpha for GPU to 2.0).
-!>
-!> Work is only assigned to GPUs if the subtree has at least min_gpu_work flops.
-!>
-!> None-child subtrees are ignored (they will be executed using all available
-!> resources). They are recorded with exec_loc -1.
-!>
-!> @param nparts Number of parts.
-!> @param parts List of part ranges. Part i consists of supernodes
-!>        part(i):part(i+1)-1.
-!> @param size_order Lists parts in decreasing order of flops.
-!>        i.e. size_order(1) is the largest part.
-!> @param is_child True if subtree is a child subtree (has no contributions
-!>        from other subtrees).
-!> @param flops Number of floating points in subtree rooted at each node.
-!> @param topology Machine topology to allocate execution for.
-!> @param min_gpu_work Minimum work before allocation to GPU is useful.
-!> @param gpu_perf_coeff The value of \f$ \alpha_i \f$ used for all GPUs,
-!>        assuming that used for all NUMA region CPUs is 1.0.
-!> @param exec_loc Execution location. Part i should be run on partition
-!>        mod((exec_loc(i) - 1), size(topology)) + 1.
-!>        It should be run on the CPUs if
-!>        exec_loc(i) <= size(topology),
-!>        otherwise it should be run on GPU number
-!>        (exec_loc(i) - 1)/size(topology).
-!> @param st Allocation status parameter. If non-zero an allocation error
-!>        occurred.
-!> @returns Load balance value as detailed in subroutine description.
-!> @sa find_subtree_partition()
-! FIXME: Consider case when gpu_perf_coeff > 2.0 ???
+  REAL FUNCTION calc_exec_alloc( nparts, part, size_order, is_child, flops,    &
+                                 topology, min_gpu_work, gpu_perf_coeff,       &
+                                 exec_loc, st )
+
+!  allocate execution of subtrees to resources and calculate load balance
+!
+!  Given the partition supplied, uses a greedy algorithm to assign subtrees to
+!  resources specified by topology and then returns the resulting load balance
+!  as
+!  \f[ \frac{\max_i( n x_i / \alpha_i )} { \sum_j (x_j/\alpha_j) } \f]
+!  Where \f$ \alpha_i \f$ is the performance coefficient of region/GPU i,
+!  \f$ x_i \f$ is the number of flops assigned to region/GPU i and \f$ n \f$ is
+!  the total number of regions. \f$ \alpha_i \f$ should be proportional to the
+!  speed of the region/GPU (i.e. if GPU is twice as fast as CPU, set alpha for
+!  CPU to 1.0 and alpha for GPU to 2.0).
+!
+!  Work is only assigned to GPUs if the subtree has at least min_gpu_work flops.
+!
+!  None-child subtrees are ignored (they will be executed using all available
+!  resources). They are recorded with exec_loc -1.
+!
+!   nparts Number of parts.
+!   parts List of part ranges. Part i consists of supernodes
+!   part(i):part(i+1)-1.
+!   size_order Lists parts in decreasing order of flops.
+!   i.e. size_order(1) is the largest part.
+!   is_child True if subtree is a child subtree (has no contributions
+!   from other subtrees).
+!   flops Number of floating points in subtree rooted at each node.
+!   topology Machine topology to allocate execution for.
+!   min_gpu_work Minimum work before allocation to GPU is useful.
+!   gpu_perf_coeff The value of \f$ \alpha_i \f$ used for all GPUs,
+!   assuming that used for all NUMA region CPUs is 1.0.
+!   exec_loc Execution location. Part i should be run on partition
+!   mod((exec_loc(i) - 1), size(topology)) + 1.
+!   It should be run on the CPUs if
+!   exec_loc(i) <= size(topology),
+!   otherwise it should be run on GPU number
+!   (exec_loc(i) - 1)/size(topology).
+!   st Allocation status parameter. If non-zero an allocation error
+!         occurred.
+!   Load balance value as detailed in subroutine description.
+!   see also find_subtree_partition()
+!  FIXME: Consider case when gpu_perf_coeff > 2.0 ???
 !        (Round robin may not be correct thing)
-  real function calc_exec_alloc(nparts, part, size_order, is_child, flops, &
-       topology, min_gpu_work, gpu_perf_coeff, exec_loc, st)
+
     implicit none
     integer(ip_), intent(in) :: nparts
     integer(ip_), dimension(nparts+1), intent(in) :: part
@@ -624,32 +623,32 @@ contains
     ! Calculate n * max(x_i/a_i) / sum(x_j/a_j)
     calc_exec_alloc &
       = real(nregion+ngpu) * maxval(load_balance(:)) / total_balance
-  end function calc_exec_alloc
+  END FUNCTION calc_exec_alloc
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Split tree into an additional part as required by
-!>        find_subtree_partition().
-!>
-!> Split largest partition into two parts, unless doing so would reduce the
-!> number of subtrees with at least min_gpu_work below ngpu.
-!>
-!> Note: We require all input parts to have a single root.
-!>
-!> @param nparts Number of parts: normally increased by one on return.
-!> @param part Part i consists of nodes part(i):part(i+1).
-!> @param size_order Lists parts in decreasing order of flops.
-!>        i.e. size_order(1) is the largest part.
-!> @param is_child True if subtree is a child subtree (has no contributions
-!>        from other subtrees).
-!> @param sparent Supernode parent array. Supernode i has parent sparent(i).
-!> @param flops Number of floating points in subtree rooted at each node.
-!> @param ngpu Number of gpus.
-!> @param min_gpu_work Minimum worthwhile work to give to GPU.
-!> @param st Allocation status parameter. If non-zero an allocation error
-!>        occurred.
-!> @sa find_subtree_partition()
-  subroutine split_tree(nparts, part, size_order, is_child, sparent, flops, &
-       ngpu, min_gpu_work, st)
+  subroutine split_tree( nparts, part, size_order, is_child, sparent, flops,   &
+                         ngpu, min_gpu_work, st)
+
+!  split tree into an additional part as required by find_subtree_partition().
+!
+!  split largest partition into two parts, unless doing so would reduce the
+!  number of subtrees with at least min_gpu_work below ngpu.
+!
+!  Note: We require all input parts to have a single root.
+!
+!   nparts Number of parts: normally increased by one on return.
+!   part Part i consists of nodes part(i):part(i+1).
+!   size_order Lists parts in decreasing order of flops.
+!   i.e. size_order(1) is the largest part.
+!   is_child True if subtree is a child subtree (has no contributions
+!   from other subtrees).
+!   sparent Supernode parent array. Supernode i has parent sparent(i).
+!   flops Number of floating points in subtree rooted at each node.
+!   ngpu Number of gpus.
+!   min_gpu_work Minimum worthwhile work to give to GPU.
+!   st Allocation status parameter. If non-zero an allocation error
+!         occurred.
+!   see also find_subtree_partition()
+
     implicit none
     integer(ip_), intent(inout) :: nparts
     integer(ip_), dimension(*), intent(inout) :: part
@@ -725,19 +724,19 @@ contains
 
     ! Finally, recreate size_order array
     call create_size_order(nparts, part, flops, size_order)
-  end subroutine split_tree
+  END SUBROUTINE split_tree
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Determine order of subtrees based on size
-!>
-!> @note Sorting algorithm could be improved if this becomes a bottleneck.
-!>
-!> @param nparts Number of parts: normally increased by one on return.
-!> @param part Part i consists of nodes part(i):part(i+1).
-!> @param flops Number of floating points in subtree rooted at each node.
-!> @param size_order Lists parts in decreasing order of flops.
-!>        i.e. size_order(1) is the largest part.
-  subroutine create_size_order(nparts, part, flops, size_order)
+!  determine order of subtrees based on size
+!
+!  note Sorting algorithm could be improved if this becomes a bottleneck.
+!
+!   nparts Number of parts: normally increased by one on return.
+!   part Part i consists of nodes part(i):part(i+1).
+!   flops Number of floating points in subtree rooted at each node.
+!   size_order Lists parts in decreasing order of flops.
+!   i.e. size_order(1) is the largest part.
+
+  SUBROUTINE create_size_order( nparts, part, flops, size_order )
     implicit none
     integer(ip_), intent(in) :: nparts
     integer(ip_), dimension(nparts+1), intent(in) :: part
@@ -756,11 +755,12 @@ contains
        size_order(j+1:i) = size_order(j:i-1)
        size_order(j) = i
     end do
-  end subroutine create_size_order
+  END SUBROUTINE create_size_order
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  !> @brief Prints assembly tree
-  subroutine print_atree(nnodes, sptr, sparent, rptr)
+  SUBROUTINE print_atree(nnodes, sptr, sparent, rptr)
+
+!  prints assembly tree
+
     implicit none
 
     integer(ip_), intent(in) :: nnodes
@@ -829,12 +829,13 @@ contains
 
     close(2)
 
-  end subroutine print_atree
+  END SUBROUTINE print_atree
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  !> @brief Prints assembly tree with partitions
-  subroutine print_atree_part(nnodes, sptr, sparent, rptr, topology, nparts, &
-       part, exec_loc)
+  SUBROUTINE print_atree_part( nnodes, sptr, sparent, rptr, topology, nparts,  &
+                               part, exec_loc)
+
+!  prints assembly tree with partitions
+
     implicit none
 
     integer(ip_), intent(in) :: nnodes
@@ -937,20 +938,18 @@ contains
 
     close(2)
 
-  end subroutine print_atree_part
+  END SUBROUTINE print_atree_part
 
-!****************************************************************************
+  SUBROUTINE analyse_phase( n, ptr, row, ptr2, row2, order, invp,              &
+                            akeep, control, inform )
 
+!  this routine requires the LOWER and UPPER triangular parts of A
+!  to be held in CSC format using ptr2 and row2
+!  AND lower triangular part held using ptr and row.
 !
-! This routine requires the LOWER and UPPER triangular parts of A
-! to be held in CSC format using ptr2 and row2
-! AND lower triangular part held using ptr and row.
-!
-! On exit from this routine, order is set to order
-! input to factorization.
-!
-  subroutine analyse_phase(n, ptr, row, ptr2, row2, order, invp, &
-       akeep, options, inform)
+!  On exit from this routine, order is set to order
+!  input to factorization.
+
     implicit none
     integer(ip_), intent(in) :: n ! order of system
     integer(long_), intent(in) :: ptr(n+1) ! col pointers (lower triangle)
@@ -962,9 +961,9 @@ contains
     integer(ip_), dimension(n), intent(out) :: invp
       ! Work array. Used to hold inverse of order but
       ! is NOT set to inverse for the final order that is returned.
-    type(ssids_akeep), intent(inout) :: akeep
-    type(ssids_options), intent(in) :: options
-    type(ssids_inform), intent(inout) :: inform
+    type(SSIDS_akeep_type), intent(inout) :: akeep
+    type(SSIDS_control_type), intent(in) :: control
+    type(SSIDS_inform_type), intent(inout) :: inform
 
     character(50)  :: context ! Procedure name (used when printing).
     integer(ip_), dimension(:), allocatable :: contrib_dest, exec_loc, level
@@ -979,14 +978,14 @@ contains
     integer(ip_) :: st
 
     context = 'ssids_analyse'
-    nout = options%unit_error
-    if (options%print_level .lt. 0) nout = -1
-    nout1 = options%unit_warning
-    if (options%print_level .lt. 0) nout1 = -1
+    nout = control%unit_error
+    if (control%print_level .lt. 0) nout = -1
+    nout1 = control%unit_warning
+    if (control%print_level .lt. 0) nout1 = -1
     st = 0
 
     ! Check nemin and set to default if out of range.
-    nemin = options%nemin
+    nemin = control%nemin
     if (nemin .lt. 1) nemin = nemin_default
 
     ! Perform basic analysis so we can figure out subtrees we want to construct
@@ -1027,19 +1026,19 @@ contains
     if (st .ne. 0) go to 100
 
     ! Sort out subtrees
-    if ((options%print_level .ge. 1) .and. &
-        (options%unit_diagnostics .ge. 0)) then
-       write (options%unit_diagnostics,*) "Input topology"
+    if ((control%print_level .ge. 1) .and. &
+        (control%unit_diagnostics .ge. 0)) then
+       write (control%unit_diagnostics,*) "Input topology"
        do i = 1, size(akeep%topology)
-         write (options%unit_diagnostics,*) &
+         write (control%unit_diagnostics,*) &
               "Region ", i, " with ", akeep%topology(i)%nproc, " cores"
          if(size(akeep%topology(i)%gpus).gt.0) &
-            write (options%unit_diagnostics,*) &
+            write (control%unit_diagnostics,*) &
                  "---> gpus ", akeep%topology(i)%gpus
        end do
     end if
     call find_subtree_partition(akeep%nnodes, akeep%sptr, akeep%sparent, &
-         akeep%rptr, options, akeep%topology, akeep%nparts, akeep%part, &
+         akeep%rptr, control, akeep%topology, akeep%nparts, akeep%part, &
          exec_loc, akeep%contrib_ptr, akeep%contrib_idx, contrib_dest, &
          inform, st)
     if (st .ne. 0) go to 100
@@ -1092,7 +1091,7 @@ contains
                akeep%part(i), akeep%part(i+1), akeep%sptr, akeep%sparent,   &
                akeep%rptr, akeep%rlist, akeep%nptr, akeep%nlist,            &
                contrib_dest(akeep%contrib_ptr(i):akeep%contrib_ptr(i+1)-1), &
-               options)
+               control)
        else
           ! GPU
           device = akeep%topology(numa_region)%gpus(device)
@@ -1101,7 +1100,7 @@ contains
           akeep%subtree(i)%ptr => construct_gpu_symbolic_subtree(device, &
                akeep%n, akeep%part(i), akeep%part(i+1), akeep%sptr, &
                akeep%sparent, akeep%rptr, akeep%rlist, akeep%nptr, &
-               akeep%nlist, options)
+               akeep%nlist, control)
        end if
     end do
 !$omp end parallel
@@ -1135,16 +1134,15 @@ contains
        inform%flag = SSIDS_ERROR_ALLOCATION
     end if
     return
-  end subroutine analyse_phase
+  END SUBROUTINE analyse_phase
 
-!****************************************************************************
-!
-! Build a map from A to nodes
-! lcol( nlist(2,i) ) = val( nlist(1,i) )
-! nptr defines start of each node in nlist
-!
-  subroutine build_map(n, ptr, row, perm, invp, nnodes, sptr, rptr, rlist, &
-       nptr, nlist, st)
+  SUBROUTINE build_map( n, ptr, row, perm, invp, nnodes, sptr, rptr, rlist,   &
+                         nptr, nlist, st)
+
+!  build a map from A to nodes
+!   lcol( nlist(2,i) ) = val( nlist(1,i) )
+!   nptr defines start of each node in nlist
+
     implicit none
     ! Original matrix A
     integer(ip_), intent(in) :: n
@@ -1245,5 +1243,5 @@ contains
        end do
     end do
     nptr(nnodes+1) = pp
-  end subroutine build_map
-end module spral_ssids_anal_precision
+  END SUBROUTINE build_map
+END MODULE GALAHAD_SSIDS_ANALYSE_precision

@@ -1,207 +1,209 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 13:40 GMT
 
 #include "spral_procedures.h"
 
-!> \file
-!> \copyright 2016 The Science and Technology Facilities Council (STFC)
-!> \licence   BSD licence, see LICENCE file for details
-!> \author    Jonathan Hogg
-module spral_ssids_inform_precision
-  use spral_cuda_precision, only : cudaGetErrorString
-  use spral_scaling_precision, only : auction_inform
-! use spral_kinds_precision, only : ip_, long_
-  use spral_kinds_precision
-  use spral_ssids_types_precision
-  use GALAHAD_NODEND_precision, only : NODEND_inform_type
-  implicit none
+!  copyright 2016 The Science and Technology Facilities Council (STFC)
+!  licence   BSD licence, see LICENCE file for details
+!  author    Jonathan Hogg
 
-  private
-  public :: ssids_inform
+MODULE GALAHAD_SSIDS_INFORM_precision
+  USE SPRAL_KINDS_precision
+  USE SPRAL_CUDA_precision, ONLY: cudaGetErrorString
+  USE SPRAL_SCALING_precision, ONLY: auction_inform
+  USE GALAHAD_SSIDS_TYPES_precision
+  USE GALAHAD_NODEND_precision, ONLY: NODEND_inform_type
+  IMPLICIT NONE
 
-  !
-  ! Data type for information returned by code
-  !
-  type ssids_inform
-     integer(ip_) :: flag = SSIDS_SUCCESS ! Takes one of the enumerated
+  PRIVATE
+  PUBLIC :: SSIDS_inform_type
+
+!  Data type for information returned by code
+
+  TYPE SSIDS_inform_type
+     INTEGER( ip_ ) :: flag = SSIDS_SUCCESS ! Takes one of the enumerated
          ! flag values:
          !  SSIDS_SUCCESS
          !  SSIDS_ERROR_XXX
          !  SSIDS_WARNING_XXX
-     integer(ip_) :: matrix_dup = 0 ! Number of duplicated entries.
-     integer(ip_) :: matrix_missing_diag = 0 ! Number of missing diag. entries
-     integer(ip_) :: matrix_outrange = 0 ! Number of out-of-range entries.
-     integer(ip_) :: matrix_rank = 0 ! Rank of matrix (anal=structral,
+     INTEGER( ip_ ) :: matrix_dup = 0 ! # duplicated entries.
+     INTEGER( ip_ ) :: matrix_missing_diag = 0 ! # missing diagonal entries
+     INTEGER( ip_ ) :: matrix_outrange = 0 ! # out-of-range entries.
+     INTEGER( ip_ ) :: matrix_rank = 0 ! Rank of matrix (anal=structral,
                                      ! fact=actual)
-     integer(ip_) :: maxdepth = 0 ! Maximum depth of tree
-     integer(ip_) :: maxfront = 0 ! Maximum front size
-     integer(ip_) :: maxsupernode = 0 ! Maximum supernode size
-     integer(ip_) :: num_delay = 0 ! Number of delayed variables
-     integer(long_) :: num_factor = 0_long_ ! Number of entries in factors
-     integer(long_) :: num_flops = 0_long_ ! Number of floating point operations
-     integer(ip_) :: num_neg = 0 ! Number of negative pivots
-     integer(ip_) :: num_sup = 0 ! Number of supernodes
-     integer(ip_) :: num_two = 0 ! Number of 2x2 pivots used by factorization
-     integer(ip_) :: stat = 0 ! stat parameter
-     type(auction_inform) :: auction
-     integer(ip_) :: cuda_error = 0
-     integer(ip_) :: cublas_error = 0
-     type ( NODEND_inform_type ) :: nodend_inform
+     INTEGER( ip_ ) :: maxdepth = 0 ! Maximum depth of tree
+     INTEGER( ip_ ) :: maxfront = 0 ! Maximum front size
+     INTEGER( ip_ ) :: maxsupernode = 0 ! Maximum supernode size
+     INTEGER( ip_ ) :: num_delay = 0 ! # delayed variables
+     INTEGER( long_ ) :: num_factor = 0_long_ ! # entries in factors
+     INTEGER( long_ ) :: num_flops = 0_long_ ! # floating point operations
+     INTEGER( ip_ ) :: num_neg = 0 ! # negative pivots
+     INTEGER( ip_ ) :: num_sup = 0 ! # supernodes
+     INTEGER( ip_ ) :: num_two = 0 ! # 2x2 pivots used by factorization
+     INTEGER( ip_ ) :: stat = 0 ! stat parameter
+     TYPE( auction_inform ) :: auction
+     INTEGER( ip_ ) :: cuda_error = 0
+     INTEGER( ip_ ) :: cublas_error = 0
+     TYPE( NODEND_inform_type ) :: nodend_inform
 
      ! Undocumented FIXME: should we document them?
-     integer(ip_) :: not_first_pass = 0
-     integer(ip_) :: not_second_pass = 0
-     integer(ip_) :: nparts = 0
-     integer(long_) :: cpu_flops = 0
-     integer(long_) :: gpu_flops = 0
+     INTEGER( ip_ ) :: not_first_pass = 0
+     INTEGER( ip_ ) :: not_second_pass = 0
+     INTEGER( ip_ ) :: nparts = 0
+     INTEGER( long_ ) :: cpu_flops = 0
+     INTEGER( long_ ) :: gpu_flops = 0
      ! character(C_CHAR) :: unused(76)
-   contains
-     procedure :: flag_to_character
-     procedure :: print_flag
-     procedure :: reduce
-  end type ssids_inform
+   CONTAINS
+     PROCEDURE :: flag_to_character
+     PROCEDURE :: print_flag
+     PROCEDURE :: reduce
+  END TYPE SSIDS_inform_type
 
-contains
+CONTAINS
 
-!
-! Returns a string representation
-! Member function inform%flagToCharacter
-!
-  function flag_to_character(this) result(msg)
-    implicit none
-    class(ssids_inform), intent(in) :: this
-    character(len=200) :: msg ! return value
+  FUNCTION flag_to_character(this) result(msg)
 
-    select case(this%flag)
+!  returns a string representation
+!  member function inform%flagToCharacter
+
+    IMPLICIT NONE
+    CLASS( SSIDS_inform_type ), INTENT( IN ) :: this
+    CHARACTER( len=200 ) :: msg ! return value
+
+    SELECT CASE(this%flag)
        !
        ! Success
        !
-    case(SSIDS_SUCCESS)
+    CASE(SSIDS_SUCCESS)
        msg = 'Success'
        !
        ! Errors
        !
-    case(SSIDS_ERROR_CALL_SEQUENCE)
+    CASE(SSIDS_ERROR_CALL_SEQUENCE)
        msg = 'Error in sequence of calls.'
-    case(SSIDS_ERROR_A_N_OOR)
+    CASE(SSIDS_ERROR_A_N_OOR)
        msg = 'n or ne is out of range (or has changed)'
-    case(SSIDS_ERROR_A_PTR)
+    CASE(SSIDS_ERROR_A_PTR)
        msg = 'Error in ptr'
-    case(SSIDS_ERROR_A_ALL_OOR)
+    CASE(SSIDS_ERROR_A_ALL_OOR)
        msg = 'All entries in a column out-of-range (ssids_analyse) &
             &or all entries out-of-range (ssids_analyse_coord)'
-    case(SSIDS_ERROR_SINGULAR)
+    CASE(SSIDS_ERROR_SINGULAR)
        msg = 'Matrix found to be singular'
-    case(SSIDS_ERROR_NOT_POS_DEF)
+    CASE(SSIDS_ERROR_NOT_POS_DEF)
        msg = 'Matrix is not positive-definite'
-    case(SSIDS_ERROR_PTR_ROW)
+    CASE(SSIDS_ERROR_PTR_ROW)
        msg = 'ptr and row should be present'
-    case(SSIDS_ERROR_ORDER)
+    CASE(SSIDS_ERROR_ORDER)
        msg = 'Either control%ordering out of range or error in user-supplied  &
             &elimination order'
-    case(SSIDS_ERROR_X_SIZE)
+    CASE(SSIDS_ERROR_X_SIZE)
        msg = 'Error in size of x or nrhs'
-    case(SSIDS_ERROR_JOB_OOR)
+    CASE(SSIDS_ERROR_JOB_OOR)
        msg = 'job out of range'
-    case(SSIDS_ERROR_NOT_LLT)
+    CASE(SSIDS_ERROR_NOT_LLT)
        msg = 'Not a LL^T factorization of a positive-definite matrix'
-    case(SSIDS_ERROR_NOT_LDLT)
+    CASE(SSIDS_ERROR_NOT_LDLT)
        msg = 'Not a LDL^T factorization of an indefinite matrix'
-    case(SSIDS_ERROR_ALLOCATION)
+    CASE(SSIDS_ERROR_ALLOCATION)
        write (msg,'(a,i6)') 'Allocation error. stat parameter = ', this%stat
-    case(SSIDS_ERROR_VAL)
+    CASE(SSIDS_ERROR_VAL)
        msg = 'Optional argument val not present when expected'
-    case(SSIDS_ERROR_NO_SAVED_SCALING)
+    CASE(SSIDS_ERROR_NO_SAVED_SCALING)
        msg = 'Requested use of scaling from matching-based &
             &ordering but matching-based ordering not used'
-    case(SSIDS_ERROR_UNIMPLEMENTED)
+    CASE(SSIDS_ERROR_UNIMPLEMENTED)
        msg = 'Functionality not yet implemented'
-    case(SSIDS_ERROR_CUDA_UNKNOWN)
+    CASE(SSIDS_ERROR_CUDA_UNKNOWN)
        write(msg,'(2a)') ' Unhandled CUDA error: ', &
             trim(cudaGetErrorString(this%cuda_error))
-    case(SSIDS_ERROR_CUBLAS_UNKNOWN)
+    CASE(SSIDS_ERROR_CUBLAS_UNKNOWN)
        msg = 'Unhandled CUBLAS error:'
-!$  case(SSIDS_ERROR_OMP_CANCELLATION)
+!$  CASE(SSIDS_ERROR_OMP_CANCELLATION)
 !$     msg = 'SSIDS CPU code requires OMP cancellation to be enabled'
-    case(SSIDS_ERROR_NO_METIS)
+    CASE(SSIDS_ERROR_NO_METIS)
        msg = 'MeTiS is not available'
 
-       !
-       ! Warnings
-       !
-    case(SSIDS_WARNING_IDX_OOR)
+!  warnings
+
+    CASE(SSIDS_WARNING_IDX_OOR)
        msg = 'out-of-range indices detected'
-    case(SSIDS_WARNING_DUP_IDX)
+    CASE(SSIDS_WARNING_DUP_IDX)
        msg = 'duplicate entries detected'
-    case(SSIDS_WARNING_DUP_AND_OOR)
+    CASE(SSIDS_WARNING_DUP_AND_OOR)
        msg = 'out-of-range indices detected and duplicate entries detected'
-    case(SSIDS_WARNING_MISSING_DIAGONAL)
+    CASE(SSIDS_WARNING_MISSING_DIAGONAL)
        msg = 'one or more diagonal entries is missing'
-    case(SSIDS_WARNING_MISS_DIAG_OORDUP)
+    CASE(SSIDS_WARNING_MISS_DIAG_OORDUP)
        msg = 'one or more diagonal entries is missing and out-of-range and/or &
             &duplicate entries detected'
-    case(SSIDS_WARNING_ANAL_SINGULAR)
+    CASE(SSIDS_WARNING_ANAL_SINGULAR)
        msg = 'Matrix found to be structually singular'
-    case(SSIDS_WARNING_FACT_SINGULAR)
+    CASE(SSIDS_WARNING_FACT_SINGULAR)
        msg = 'Matrix found to be singular'
-    case(SSIDS_WARNING_MATCH_ORD_NO_SCALE)
+    CASE(SSIDS_WARNING_MATCH_ORD_NO_SCALE)
        msg = 'Matching-based ordering used but associated scaling ignored'
-!$  case(SSIDS_WARNING_OMP_PROC_BIND)
+!$  CASE(SSIDS_WARNING_OMP_PROC_BIND)
 !$     msg = 'OMP_PROC_BIND=false, this may reduce performance'
-    case default
+    CASE DEFAULT
        msg = 'SSIDS Internal Error'
-    end select
-  end function flag_to_character
+    END SELECT
+  END FUNCTION flag_to_character
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Print out warning or error if flag is non-zero
-!> @param this Instance variable.
-!> @param options Options to be used for printing
-!> @param context Name of routine to report error from
-  subroutine print_flag(this, options, context)
-    implicit none
-    class(ssids_inform), intent(in) :: this
-    type(ssids_options), intent(in) :: options
-    character (len=*), intent(in) :: context
+  SUBROUTINE print_flag(this, options, context)
 
-    character(len=200) :: msg
+!  print out warning or error if flag is non-zero
+!   this Instance variable.
+!   options Options to be used for printing
+!   context Name of routine to report error from
 
-    if (this%flag .eq. SSIDS_SUCCESS) return ! Nothing to print
-    if (options%print_level .lt. 0) return ! No printing
-    if (this%flag .gt. SSIDS_SUCCESS) then
-       ! Warning
-       if (options%unit_warning .lt. 0) return ! printing supressed
-       write (options%unit_warning,'(/3a,i0)') ' Warning from ', &
-            trim(context), '. Warning flag = ', this%flag
-       msg = this%flag_to_character()
-       write (options%unit_warning, '(a)') msg
-    else
-       if (options%unit_error .lt. 0) return ! printing supressed
-       write (options%unit_error,'(/3a,i0)') ' Error return from ', &
-            trim(context), '. Error flag = ', this%flag
-       msg = this%flag_to_character()
-       write (options%unit_error, '(a)') msg
-    end if
-  end subroutine print_flag
+    IMPLICIT none
+    CLASS( SSIDS_inform_type ), INTENT( IN ) :: this
+    TYPE( SSIDS_options_type ), INTENT( IN ) :: options
+    CHARACTER( len = * ), INTENT( IN ) :: context
 
-!> @brief Combine other's values into this object.
-!>
-!> Primarily intended for reducing inform objects after parallel execution.
-!> @param this Instance object.
-!> @param other Object to reduce values from
-  subroutine reduce(this, other)
-    implicit none
-    class(ssids_inform), intent(inout) :: this
-    class(ssids_inform), intent(in) :: other
+    CHARACTER( len=200 ) :: msg
 
-    if ((this%flag .lt. 0) .or. (other%flag .lt. 0)) then
-       ! An error is present
-       this%flag = min(this%flag, other%flag)
-    else
-       ! Otherwise only success if both are zero
-       this%flag = max(this%flag, other%flag)
-    end if
+    IF ( this%flag == SSIDS_SUCCESS ) RETURN ! Nothing to print
+    IF ( options%print_level < 0) RETURN ! No printing
+
+!  warning
+
+    IF ( this%flag > SSIDS_SUCCESS ) THEN
+      IF ( options%unit_warning < 0 ) RETURN ! printing supressed
+      WRITE( options%unit_warning,'(/3a,i0)') ' Warning from ',                &
+           TRIM( context ), '. Warning flag = ', this%flag
+      msg = this%flag_to_character( )
+      WRITE (options%unit_warning, '(a)') msg
+    ELSE
+      IF ( options%unit_error < 0 ) RETURN ! printing supressed
+      WRITE( options%unit_error,'(/3a,i0)') ' Error return from ',             &
+           TRIM( context ), '. Error flag = ', this%flag
+      msg = this%flag_to_character( )
+      WRITE( options%unit_error, '(a)') msg
+    END IF
+  END SUBROUTINE print_flag
+
+  SUBROUTINE reduce( this, other )
+
+!  combine other's values into this object.
+!
+!  primarily intended for reducing inform objects after parallel execution.
+!   this  instance object
+!   other object to reduce values from
+
+    IMPLICIT none
+    CLASS( SSIDS_inform_type ), INTENT( INOUT ) :: this
+    CLASS( SSIDS_inform_type ), INTENT( IN ) :: other
+
+    IF ( this%flag < 0 .OR. other%flag < 0 ) THEN
+!  an error is present
+      this%flag = MIN( this%flag, other%flag )
+    ELSE
+!  otherwise only success if both are zero
+      this%flag = MAX( this%flag, other%flag )
+    END IF
     this%matrix_dup = this%matrix_dup + other%matrix_dup
-    this%matrix_missing_diag = this%matrix_missing_diag + &
+    this%matrix_missing_diag = this%matrix_missing_diag +                      &
          other%matrix_missing_diag
     this%matrix_outrange = this%matrix_outrange + other%matrix_outrange
     this%matrix_rank = this%matrix_rank + other%matrix_rank
@@ -214,14 +216,14 @@ contains
     this%num_neg = this%num_neg + other%num_neg
     this%num_sup = this%num_sup + other%num_sup
     this%num_two = this%num_two + other%num_two
-    if (other%stat .ne. 0) this%stat = other%stat
+    IF ( other%stat /= 0 ) this%stat = other%stat
     ! FIXME: %auction ???
-    if (other%cuda_error .ne. 0) this%cuda_error = other%cuda_error
-    if (other%cublas_error .ne. 0) this%cublas_error = other%cublas_error
+    IF ( other%cuda_error /= 0 ) this%cuda_error = other%cuda_error
+    IF ( other%cublas_error /= 0 ) this%cublas_error = other%cublas_error
     this%not_first_pass = this%not_first_pass + other%not_first_pass
     this%not_second_pass = this%not_second_pass + other%not_second_pass
     this%nparts = this%nparts + other%nparts
     this%cpu_flops = this%cpu_flops + other%cpu_flops
     this%gpu_flops = this%gpu_flops + other%gpu_flops
-  end subroutine reduce
-end module spral_ssids_inform_precision
+  END SUBROUTINE reduce
+END MODULE GALAHAD_SSIDS_INFORM_precision

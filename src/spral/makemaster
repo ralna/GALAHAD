@@ -229,98 +229,6 @@ RSSIDSCDTF64 = $(OBJD64)/ssidsctf_double_64.o -L$(OBJD64) $(CLIBS)
 RSSIDSCQT64 = $(OBJQ64)/ssidsct_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 RSSIDSCQTF64 = $(OBJQ64)/ssidsctf_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 
-CUDAS = $(RLGS)(cuda_nocuda_single.o)
-CUDAD = $(RLGD)(cuda_nocuda_double.o)
-CUDAQ = $(RLGQ)(cuda_nocuda_quadruple.o)
-CUDAS64 = $(RLGS64)(cuda_nocuda_single_64.o)
-CUDAD64 = $(RLGD64)(cuda_nocuda_double_64.o)
-CUDAQ64 = $(RLGQ64)(cuda_nocuda_quadruple_64.o)
-
-CUDAScuda = $(RLGS)(api_wrappers_single.o) $(RLGS)(cuda_single.o)
-CUDADcuda = $(RLGD)(api_wrappers_double.o) $(RLGD)(cuda_double.o)
-CUDAQcuda = $(RLGQ)(api_wrappers_quadruple.o) $(RLGQ)(cuda_quadruple.o)
-CUDAS64cuda = $(RLGS64)(api_wrappers_single_64.o) $(RLGS64)(cuda_single_64.o)
-CUDAD64cuda = $(RLGD64)(api_wrappers_quadruple_64.o) \
-              $(RLGD64)(cuda_quadruple_64.o)
-CUDAQ64cuda = $(RLGQ64)(api_wrappers_quadruple_64.o) \
-              $(RLGQ64)(cuda_quadruple_64.o)
-
-CUDASUSE = $(CUDAS$(CUDA))
-CUDADUSE = $(CUDAD$(CUDA))
-CUDAQUSE = $(CUDAQ$(CUDA))
-GPUSUSE = $(GPUS$(CUDA))
-GPUDUSE = $(GPUD$(CUDA))
-GPUQUSE = $(GPUQ$(CUDA))
-CUDASUSE64 = $(CUDAS64$(CUDA))
-CUDADUSE64 = $(CUDAD64$(CUDA))
-CUDAQUSE64 = $(CUDAQ64$(CUDA))
-GPUSUSE64 = $(GPUS64$(CUDA))
-GPUDUSE64 = $(GPUD64$(CUDA))
-GPUQUSE64 = $(GPUQ64$(CUDA))
-
-GPUS = $(RLGS)(gpu_subtree_no_cuda_single.o)
-GPUScuda = $(RLGS)(gpu_alloc_single.o) $(RLGS)(cpu_solve_single.o) \
-           $(RLGS)(gpu_datatypes_single.o) $(RLGS)(gpu_interfaces_single.o) \
-           $(RLGS)(gpu_dense_factor_single.o) $(RLGS)(gpu_solve_single.o) \
-           $(RLGS)(gpu_smalloc_single.o) $(RLGS)(gpu_factor_single.o) \
-           $(RLGS)(gpu_subtree_single.o) $(RLGS)(assemble_single.o) \
-           $(RLGS)(dense_factor_single.o) $(RLGS)(reorder_single.o) \
-           $(RLGS)(solve_single.o) $(RLGS)(syrk_single.o)
-GPUD = $(RLGD)(gpu_subtree_no_cuda_double.o)
-GPUDcuda = $(RLGD)(gpu_alloc_double.o) $(RLGD)(cpu_solve_double.o) \
-           $(RLGD)(gpu_datatypes_double.o) $(RLGD)(gpu_interfaces_double.o) \
-           $(RLGD)(gpu_dense_factor_double.o) $(RLGD)(gpu_solve_double.o) \
-           $(RLGD)(gpu_smalloc_double.o) $(RLGD)(gpu_factor_double.o) \
-           $(RLGD)(gpu_subtree_double.o) $(RLGD)(assemble_double.o) \
-           $(RLGD)(dense_factor_double.o) $(RLGD)(reorder_double.o) \
-           $(RLGD)(solve_double.o) $(RLGD)(syrk_double.o)
-GPUQ = $(RLGQ)(gpu_subtree_no_cuda_quadruple.o)
-GPUQcuda = $(RLGQ)(gpu_alloc_quadruple.o) $(RLGQ)(cpu_solve_quadruple.o) \
-           $(RLGQ)(gpu_datatypes_quadruple.o) \
-           $(RLGQ)(gpu_interfaces_quadruple.o) \
-           $(RLGQ)(gpu_dense_factor_quadruple.o) \
-           $(RLGQ)(gpu_solve_quadruple.o) \
-           $(RLGQ)(gpu_smalloc_quadruple.o) $(RLGQ)(gpu_factor_quadruple.o) \
-           $(RLGQ)(gpu_subtree_quadruple.o) $(RLGQ)(assemble_quadruple.o) \
-           $(RLGQ)(dense_factor_quadruple.o) $(RLGQ)(reorder_quadruple.o) \
-           $(RLGQ)(solve_quadruple.o) $(RLGQ)(syrk_quadruple.o)
-GPUS64 = $(RLGS64)(gpu_subtree_no_cuda_single_64.o)
-GPUS64cuda = $(RLGS64)(gpu_alloc_single_64.o) $(RLGS64)(cpu_solve_single_64.o) \
-           $(RLGS64)(gpu_datatypes_single_64.o) \
-           $(RLGS64)(gpu_interfaces_single_64.o) \
-           $(RLGS64)(gpu_dense_factor_single_64.o) \
-           $(RLGS64)(gpu_solve_single_64.o) \
-           $(RLGS64)(gpu_smalloc_single_64.o) \
-           $(RLGS64)(gpu_factor_single_64.o) \
-           $(RLGS64)(gpu_subtree_single_64.o) $(RLGS64)(assemble_single_64.o) \
-           $(RLGS64)(dense_factor_single_64.o) $(RLGS64)(reorder_single_64.o) \
-           $(RLGS64)(solve_single_64.o) $(RLGS64)(syrk_single_64.o)
-GPUD64 = $(RLGD64)(gpu_subtree_no_cuda_double_64.o)
-GPUD64cuda = $(RLGD64)(gpu_alloc_double_64.o) $(RLGD64)(cpu_solve_double_64.o) \
-           $(RLGD64)(gpu_datatypes_double_64.o) \
-           $(RLGD64)(gpu_interfaces_double_64.o) \
-           $(RLGD64)(gpu_dense_factor_double_64.o) \
-           $(RLGD64)(gpu_solve_double_64.o) \
-           $(RLGD64)(gpu_smalloc_double_64.o) \
-           $(RLGD64)(gpu_factor_double_64.o) \
-           $(RLGD64)(gpu_subtree_double_64.o) $(RLGD64)(assemble_double_64.o) \
-           $(RLGD64)(dense_factor_double_64.o) $(RLGD64)(reorder_double_64.o) \
-           $(RLGD64)(solve_double_64.o) $(RLGD64)(syrk_double_64.o)
-GPUQ64 = $(RLGQ64)(gpu_subtree_no_cuda_quadruple_64.o)
-GPUQ64cuda = $(RLGQ64)(gpu_alloc_quadruple_64.o) \
-           $(RLGQ64)(cpu_solve_quadruple_64.o) \
-           $(RLGQ64)(gpu_datatypes_quadruple_64.o) \
-           $(RLGQ64)(gpu_interfaces_quadruple_64.o) \
-           $(RLGQ64)(gpu_dense_factor_quadruple_64.o) \
-           $(RLGQ64)(gpu_solve_quadruple_64.o) \
-           $(RLGQ64)(gpu_smalloc_quadruple_64.o) \
-           $(RLGQ64)(gpu_factor_quadruple_64.o) \
-           $(RLGQ64)(gpu_subtree_quadruple_64.o) \
-           $(RLGQ64)(assemble_quadruple_64.o) \
-           $(RLGQ64)(dense_factor_quadruple_64.o) \
-           $(RLGQ64)(reorder_quadruple_64.o) \
-           $(RLGQ64)(solve_quadruple_64.o) $(RLGQ64)(syrk_quadruple_64.o)
-
 SPRALRBS = $(RLGS)(spral_kinds.o) $(RLGS)(spral_kinds_single.o) \
            $(RLGS)(matrix_util_single.o) \
            $(RLGS)(random_single.o) $(RLGS)(rutherford_boeing_single.o)
@@ -343,7 +251,7 @@ SPRALRBQ64 = $(RLGQ64)(spral_kinds.o) $(RLGQ64)(spral_kinds_quadruple_64.o) \
              $(RLGQ64)(random_quadruple_64.o) \
              $(RLGQ64)(rutherford_boeing_quadruple_64.o)
 
-SSIDSS = extend basics $(SPRALRBS) $(CUDASUSE) \
+SSIDSS = extend basics $(SPRALRBS) $(RLGS)(cuda_nocuda_single.o) \
          $(RLGS)(compat.o) $(RLGS)(guess_topology.o) \
          $(RLGS)(omp.o) $(RLGS)(profile.o) $(RLGS)(SymbolicSubtree.o) \
          $(RLGS)(NumericSubtree_single.o) \
@@ -358,10 +266,10 @@ SSIDSS = extend basics $(SPRALRBS) $(CUDASUSE) \
          $(RLGS)(subtree_single.o) $(RLGS)(akeep_single.o) \
          $(RLGS)(blas_iface.o) $(RLGS)(lapack_iface.o) \
          $(RLGS)(cpu_iface_single.o) $(RLGS)(cpu_subtree_single.o) \
-         $(RLGS)(profile_iface.o) $(GPUSUSE) \
+         $(RLGS)(profile_iface.o) $(RLGS)(gpu_subtree_no_cuda_single.o) \
          $(RLGS)(anal_single.o) $(RLGS)(fkeep_single.o) \
          $(RLGS)(contrib_free_single.o) $(RLGS)(ssids_single.o)
-SSIDSD = extend basics $(SPRALRBD) $(CUDADUSE) \
+SSIDSD = extend basics $(SPRALRBD) $(RLGD)(cuda_nocuda_double.o) \
          $(RLGD)(compat.o) $(RLGD)(guess_topology.o) \
          $(RLGD)(omp.o) $(RLGD)(profile.o) $(RLGD)(SymbolicSubtree.o) \
          $(RLGD)(NumericSubtree_double.o) \
@@ -376,10 +284,10 @@ SSIDSD = extend basics $(SPRALRBD) $(CUDADUSE) \
          $(RLGD)(subtree_double.o) $(RLGD)(akeep_double.o) \
          $(RLGD)(blas_iface.o) $(RLGD)(lapack_iface.o) \
          $(RLGD)(cpu_iface_double.o) $(RLGD)(cpu_subtree_double.o) \
-         $(RLGD)(profile_iface.o) $(GPUDUSE) \
+         $(RLGD)(profile_iface.o) $(RLGD)(gpu_subtree_no_cuda_double.o) \
          $(RLGD)(anal_double.o) $(RLGD)(fkeep_double.o) \
          $(RLGD)(contrib_free_double.o) $(RLGD)(ssids_double.o)
-SSIDSQ = extend basics $(SPRALRBQ) $(CUDAQUSE) \
+SSIDSQ = extend basics $(SPRALRBQ) $(RLGQ)(cuda_nocuda_quadruple.o) \
          $(RLGQ)(compat.o) $(RLGQ)(guess_topology.o) \
          $(RLGQ)(omp.o) $(RLGQ)(profile.o) $(RLGQ)(SymbolicSubtree.o) \
          $(RLGQ)(NumericSubtree_quadruple.o) \
@@ -394,10 +302,10 @@ SSIDSQ = extend basics $(SPRALRBQ) $(CUDAQUSE) \
          $(RLGQ)(subtree_quadruple.o) $(RLGQ)(akeep_quadruple.o) \
          $(RLGQ)(blas_iface.o) $(RLGQ)(lapack_iface.o) \
          $(RLGQ)(cpu_iface_quadruple.o) $(RLGQ)(cpu_subtree_quadruple.o) \
-         $(RLGQ)(profile_iface.o) $(GPUQUSE) \
+         $(RLGQ)(profile_iface.o) $(RLGQ)(gpu_subtree_no_cuda_quadruple.o) \
          $(RLGQ)(anal_quadruple.o) $(RLGQ)(fkeep_quadruple.o) \
          $(RLGQ)(contrib_free_quadruple.o) $(RLGQ)(ssids_quadruple.o)
-SSIDSS64 = extend basics $(SPRALRBS64) $(CUDASUSE64) \
+SSIDSS64 = extend basics $(SPRALRBS64) $(RLGS64)(cuda_nocuda_single_64.o) \
          $(RLGS64)(compat.o) $(RLGS64)(guess_topology.o) \
          $(RLGS64)(omp.o) $(RLGS64)(profile.o) \
          $(RLGS64)(SymbolicSubtree.o) $(RLGS64)(NumericSubtree_single_64.o) \
@@ -412,10 +320,10 @@ SSIDSS64 = extend basics $(SPRALRBS64) $(CUDASUSE64) \
          $(RLGS64)(subtree_single_64.o) $(RLGS64)(akeep_single_64.o) \
          $(RLGS64)(blas_iface.o) $(RLGS64)(lapack_iface.o) \
          $(RLGS64)(cpu_iface_single_64.o) $(RLGS64)(cpu_subtree_single_64.o) \
-         $(RLGS64)(profile_iface.o) $(GPUSUSE64) \
+         $(RLGS64)(profile_iface.o) $(RLGS64)(gpu_subtree_no_cuda_single_64.o) \
          $(RLGS64)(anal_single_64.o) $(RLGS64)(fkeep_single_64.o) \
          $(RLGS64)(contrib_free_single_64.o) $(RLGS64)(ssids_single_64.o)
-SSIDSD64 = extend basics $(SPRALRBD64) $(CUDADUSE64) \
+SSIDSD64 = extend basics $(SPRALRBD64) $(RLGD64)(cuda_nocuda_double_64.o) \
          $(RLGD64)(compat.o) $(RLGD64)(guess_topology.o) \
          $(RLGD64)(omp.o) $(RLGD64)(profile.o) \
          $(RLGD64)(SymbolicSubtree.o) $(RLGD64)(NumericSubtree_double_64.o) \
@@ -430,10 +338,10 @@ SSIDSD64 = extend basics $(SPRALRBD64) $(CUDADUSE64) \
          $(RLGD64)(subtree_double_64.o) $(RLGD64)(akeep_double_64.o) \
          $(RLGD64)(blas_iface.o) $(RLGD64)(lapack_iface.o) \
          $(RLGD64)(cpu_iface_double_64.o) $(RLGD64)(cpu_subtree_double_64.o) \
-         $(RLGD64)(profile_iface.o) $(GPUDUSE64) \
+         $(RLGD64)(profile_iface.o) $(RLGD64)(gpu_subtree_no_cuda_double_64.o) \
          $(RLGD64)(anal_double_64.o) $(RLGD64)(fkeep_double_64.o) \
          $(RLGD64)(contrib_free_double_64.o) $(RLGD64)(ssids_double_64.o)
-SSIDSQ64 = extend basics $(SPRALRBQ64) $(CUDAQUSE64) \
+SSIDSQ64 = extend basics $(SPRALRBQ64) $(RLGQ64)(cuda_nocuda_quadruple_64.o) \
          $(RLGQ64)(compat.o) $(RLGQ64)(guess_topology.o) \
          $(RLGQ64)(omp.o) $(RLGQ64)(profile.o) \
          $(RLGQ64)(SymbolicSubtree.o) $(RLGQ64)(NumericSubtree_quadruple_64.o) \
@@ -451,7 +359,8 @@ SSIDSQ64 = extend basics $(SPRALRBQ64) $(CUDAQUSE64) \
          $(RLGQ64)(blas_iface.o) $(RLGQ64)(lapack_iface.o) \
          $(RLGQ64)(cpu_iface_quadruple_64.o) \
          $(RLGQ64)(cpu_subtree_quadruple_64.o) \
-         $(RLGQ64)(profile_iface.o) $(GPUQUSE64) \
+         $(RLGQ64)(profile_iface.o) \
+         $(RLGQ64)(gpu_subtree_no_cuda_quadruple_64.o) \
          $(RLGQ64)(anal_quadruple_64.o) $(RLGQ64)(fkeep_quadruple_64.o) \
          $(RLGQ64)(contrib_free_quadruple_64.o) $(RLGQ64)(ssids_quadruple_64.o)
 
@@ -573,21 +482,6 @@ ssidsds_valgrind: $(SSIDSDS)
 	- valgrind $(VALGRIND) ../ssids/run_ssids < ../ssids/ssidss.data
 	rm ../ssids/run_ssids
 
-ssidsds_cuda: $(SSIDSDS)
-	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
-                      $(RSSIDSDS) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
-#	- ../ssids/run_ssids < ../ssids/ssidss.data
-	- ../ssids/run_ssids < ../ssids/ssidss.data \
-                             > ../ssids/ssidsds.output 2>&1
-	cat ../ssids/ssidsds.output
-	rm ../ssids/run_ssids
-
-ssidsds_cuda_valgrind: $(SSIDSDS)
-	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
-                      $(RSSIDSDS) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
-	- valgrind $(VALGRIND) ../ssids/run_ssids < ../ssids/ssidss.data
-	rm ../ssids/run_ssids
-
 ssidsss_64: $(SSIDSSS64)
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_ssids $(RSSIDSSS64)
@@ -614,24 +508,9 @@ ssidsqs_64: $(SSIDSDQ64)
 	cat ../ssids/ssidsds_64.output
 	rm ../ssids/run_ssids
 
-ssidsds_64_cuda: $(SSIDSDS64)
-	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
-                      $(RSSIDSDS64) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
-#	- ../ssids/run_ssids < ../ssids/ssidss.data
-	- ../ssids/run_ssids < ../ssids/ssidss.data \
-                             > ../ssids/ssidsds_64.output 2>&1
-	cat ../ssids/ssidsds_64.output
-	rm ../ssids/run_ssids
-
 ssidsds_64_valgrind: $(SSIDSDS64)
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_ssids $(RSSIDSDS64)
-	- valgrind $(VALGRIND) ../ssids/run_ssids < ../ssids/ssidss.data
-	rm ../ssids/run_ssids
-
-ssidsds_64_cuda_valgrind: $(SSIDSDS64)
-	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
-                      $(RSSIDSDS64) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
 	- valgrind $(VALGRIND) ../ssids/run_ssids < ../ssids/ssidss.data
 	rm ../ssids/run_ssids
 
@@ -752,25 +631,11 @@ ssidsdt_gdb: $(SSIDSDT)
 	- gdb $(GDB) ./run_ssids
 	rm ../ssids/run_ssids
 
-ssidsdt_cuda: $(SSIDSDT)
-	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
-                      $(RSSIDSDT) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
-#	- ../ssids/run_ssids
-	- ../ssids/run_ssids > ../ssids/ssidsdt.output 2>&1
-	cat ../ssids/ssidsdt.output
-	rm ../ssids/run_ssids
-
 ssidsdt_valgrind: $(SSIDSDT)
 	echo " Exhaustive test of subroutine interface to ssids"
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_ssids $(RSSIDSDT)
 #	- ../ssids/run_ssids
-	- valgrind $(VALGRIND) ../ssids/run_ssids
-	rm ../ssids/run_ssids
-
-ssidsdt_cuda_valgrind: $(SSIDSDT)
-	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
-                      $(RSSIDSDT) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
 	- valgrind $(VALGRIND) ../ssids/run_ssids
 	rm ../ssids/run_ssids
 
@@ -783,14 +648,6 @@ ssidsdt_64_gdb: $(SSIDSDT64)
 	- gdb $(GDB) ./run_ssids
 	rm ../ssids/run_ssids
 
-ssidsdt_64_cuda: $(SSIDSDT64)
-	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
-                      $(RSSIDSDT64) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
-#	- ../ssids/run_ssids
-	- ../ssids/run_ssids > ../ssids/ssidsdt_64.output 2>&1
-	cat ../ssids/ssidsdt_64.output
-	rm ../ssids/run_ssids
-
 ssidsdt_64_valgrind: $(SSIDSDT64)
 	echo " Exhaustive test of subroutine interface to ssids"
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
@@ -798,11 +655,6 @@ ssidsdt_64_valgrind: $(SSIDSDT64)
 #	- ../ssids/run_ssids
 	- valgrind $(VALGRIND) ../ssids/run_ssids
 	rm ../ssids/run_ssids
-
-ssidsdt_64_cuda_valgrind: $(SSIDSDT64)
-	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
-                      $(RSSIDSDT64) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
-	- valgrind $(VALGRIND)	rm ../ssids/run_ssids
 
 #  run full (comprehensive) C example tests
 
@@ -1073,7 +925,6 @@ $(RLG)(spral_kinds_$(PRECIS).o): ../spral/spral_kinds_real.F90
                     spral_kinds_$(PRECIS).F90 )
 	cd $(OBJ) ; $(RARR) spral_kinds_$(PRECIS).o ; \
           $(RM) spral_kinds_$(PRECIS).F90 spral_kinds_$(PRECIS).o
-	$(RRMARFILE) cuda_$(PRECIS).o
 	$(RRMARFILE) cuda_nocuda_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
@@ -1123,19 +974,6 @@ $(RLG)(rutherford_boeing_$(PRECIS).o): ../spral/rutherford_boeing.F90
 	cd $(OBJ) ; $(RARR) rutherford_boeing_$(PRECIS).o ; \
                       $(RM) rutherford_boeing.F90 rutherford_boeing_$(PRECIS).o
 	$(RRMARFILE) ssids.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-cuda.o: $(RLG)(cuda_$(PRECIS).o)
-
-$(RLG)(cuda_$(PRECIS).o): ../spral/cuda.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "cuda  "
-	$(CP) ../spral/cuda.F90 $(OBJ)/cuda.F90
-	cd $(OBJ) ; $(FORTRAN) -o cuda_$(PRECIS).o $(FFLAGSOMP) cuda.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o cuda_$(PRECIS).o $(FFLAGSNOMP) cuda.F90 )
-	cd $(OBJ) ; $(RARR) cuda_$(PRECIS).o ; $(RM) cuda.F90 cuda_$(PRECIS).o
-	$(RRMARFILE) anal_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -1340,22 +1178,6 @@ $(RLG)(hw_topology.o): ../spral/hw_topology.F90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-metis4_wrapper.o: $(RLG)(metis4_wrapper.o)
-
-$(RLG)(metis4_wrapper.o): ../spral/metis4_wrapper.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "metis4_wrapper  "
-	$(CP) ../spral/metis4_wrapper.F90 $(OBJ)/metis4_wrapper.F90
-	cd $(OBJ) ; $(FORTRAN) -o metis4_wrapper.o $(FFLAGSOMP) \
-           metis4_wrapper.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o metis4_wrapper.o $(FFLAGSNOMP) \
-           metis4_wrapper.F90 )
-	cd $(OBJ) ; $(RARR) metis4_wrapper.o ; \
-          $(RM) metis4_wrapper.F90 metis4_wrapper.o
-	$(RRMARFILE) match_order_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
 spral_scaling.o: $(RLG)(spral_scaling_$(PRECIS).o)
 
 $(RLG)(spral_scaling_$(PRECIS).o): ../spral/spral_scaling.F90
@@ -1401,7 +1223,6 @@ $(RLG)(datatypes_$(PRECIS).o): ../ssids/datatypes.F90
 	cd $(OBJ) ; $(RARR) datatypes_$(PRECIS).o ; \
                       $(RM) datatypes.F90 datatypes_$(PRECIS).o
 	$(RRMARFILE) cpu_subtree_$(PRECIS).o
-	$(RRMARFILE) gpu_alloc_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -1415,7 +1236,7 @@ $(RLG)(core_analyse.o): ../spral/core_analyse.F90
                   $(FORTRAN) -o core_analyse.o $(FFLAGSNOMP) core_analyse.F90 )
 	cd $(OBJ) ; $(RARR) core_analyse.o ; \
           $(RM) core_analyse.F90 core_analyse.o
-	$(RRMARFILE) anal.o
+	$(RRMARFILE) analyse.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -1428,7 +1249,7 @@ $(RLG)(pgm.o): ../spral/pgm.F90
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o pgm.o $(FFLAGSNOMP) pgm.F90 )
 	cd $(OBJ) ; $(RARR) pgm.o ; $(RM) pgm.F90 pgm.o
-	$(RRMARFILE) anal.o
+	$(RRMARFILE) analyse.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -1587,19 +1408,6 @@ $(RLG)(gpu_subtree_no_cuda_$(PRECIS).o): ../ssids/gpu_subtree_no_cuda.F90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-$(RLG)(gpu_alloc_$(PRECIS).o): ../ssids/gpu_alloc.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_alloc  "
-	$(CP) ../ssids/gpu_alloc.F90 $(OBJ)/gpu_alloc.F90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_alloc_$(PRECIS).o \
-                      $(FFLAGSOMP) gpu_alloc.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_alloc_$(PRECIS).o \
-                      $(FFLAGSNOMP) gpu_alloc.F90 )
-	cd $(OBJ) ; $(RARR) gpu_alloc_$(PRECIS).o ; \
-                      $(RM) gpu_alloc.F90 gpu_alloc_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
 $(RLG)(cpu_solve_$(PRECIS).o): ../ssids/cpu_solve.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_solve  "
 	$(CP) ../ssids/cpu_solve.F90 $(OBJ)/cpu_solve.F90
@@ -1614,212 +1422,16 @@ $(RLG)(cpu_solve_$(PRECIS).o): ../ssids/cpu_solve.F90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-$(RLG)(gpu_datatypes_$(PRECIS).o): ../ssids/gpu_datatypes.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_datatypes  "
-	$(CP) ../ssids/gpu_datatypes.F90 $(OBJ)/gpu_datatypes.F90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_datatypes_$(PRECIS).o $(FFLAGSOMP) \
-           gpu_datatypes.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_datatypes_$(PRECIS).o $(FFLAGSNOMP) \
-                       gpu_datatypes.F90 )
-	cd $(OBJ) ; $(RARR) gpu_datatypes_$(PRECIS).o ; \
-          $(RM) gpu_datatypes.F90 gpu_datatypes_$(PRECIS).o
-#	$(RRMARFILE) ssids_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
+analyse.o: $(RLG)(anal_$(PRECIS).o)
 
-$(RLG)(gpu_interfaces_$(PRECIS).o): ../ssids/gpu_interfaces.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_interfaces  "
-	$(CP) ../ssids/gpu_interfaces.F90 $(OBJ)/gpu_interfaces.F90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_interfaces_$(PRECIS).o $(FFLAGSOMP) \
-           gpu_interfaces.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_interfaces_$(PRECIS).o $(FFLAGSNOMP) \
-                       gpu_interfaces.F90 )
-	cd $(OBJ) ; $(RARR) gpu_interfaces_$(PRECIS).o ; \
-          $(RM) gpu_interfaces.F90 gpu_interfaces_$(PRECIS).o
-#	$(RRMARFILE) ssids_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-$(RLG)(gpu_dense_factor_$(PRECIS).o): ../ssids/gpu_dense_factor.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_dense_factor  "
-	$(CP) ../ssids/gpu_dense_factor.F90 $(OBJ)/gpu_dense_factor.F90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_dense_factor_$(PRECIS).o $(FFLAGSOMP) \
-           gpu_dense_factor.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_dense_factor_$(PRECIS).o $(FFLAGSNOMP) \
-                       gpu_dense_factor.F90 )
-	cd $(OBJ) ; $(RARR) gpu_dense_factor_$(PRECIS).o ; \
-          $(RM) gpu_dense_factor.F90 gpu_dense_factor_$(PRECIS).o
-#	$(RRMARFILE) ssids_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-$(RLG)(gpu_solve_$(PRECIS).o): ../ssids/gpu_solve.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_solve  "
-	$(CP) ../ssids/gpu_solve.F90 $(OBJ)/gpu_solve.F90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_solve_$(PRECIS).o \
-                    $(FFLAGSOMP) gpu_solve.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_solve_$(PRECIS).o \
-                       $(FFLAGSNOMP) gpu_solve.F90 )
-	cd $(OBJ) ; $(RARR) gpu_solve_$(PRECIS).o ; \
-                      $(RM) gpu_solve.F90 gpu_solve_$(PRECIS).o
-#	$(RRMARFILE) ssids_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-$(RLG)(gpu_smalloc_$(PRECIS).o): ../ssids/gpu_smalloc.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_smalloc  "
-	$(CP) ../ssids/gpu_smalloc.F90 $(OBJ)/gpu_smalloc.F90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_smalloc_$(PRECIS).o \
-                      $(FFLAGSOMP) gpu_smalloc.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_smalloc_$(PRECIS).o \
-                      $(FFLAGSNOMP) gpu_smalloc.F90 )
-	cd $(OBJ) ; $(RARR) gpu_smalloc_$(PRECIS).o ; \
-          $(RM) gpu_smalloc.F90 gpu_smalloc_$(PRECIS).o
-#	$(RRMARFILE) ssids_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-$(RLG)(gpu_factor_$(PRECIS).o): ../ssids/gpu_factor.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_factor  "
-	$(CP) ../ssids/gpu_factor.F90 $(OBJ)/gpu_factor.F90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_factor_$(PRECIS).o \
-                      $(FFLAGSOMP) gpu_factor.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_factor_$(PRECIS).o \
-                      $(FFLAGSNOMP) gpu_factor.F90 )
-	cd $(OBJ) ; $(RARR) gpu_factor_$(PRECIS).o ; \
-                      $(RM) gpu_factor.F90 gpu_factor_$(PRECIS).o
-#	$(RRMARFILE) ssids_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-gpu_subtree.o: $(RLG)(gpu_subtree_$(PRECIS).o)
-
-$(RLG)(gpu_subtree_$(PRECIS).o): ../ssids/gpu_subtree.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_subtree  "
-	$(CP) ../ssids/gpu_subtree.F90 $(OBJ)/gpu_subtree.F90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_subtree_$(PRECIS).o \
-                      $(FFLAGSOMP) gpu_subtree.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_subtree_$(PRECIS).o \
-                      $(FFLAGSNOMP) gpu_subtree.F90 )
-	cd $(OBJ) ; $(RARR) gpu_subtree_$(PRECIS).o ; \
-                      $(RM) gpu_subtree.F90 gpu_subtree_$(PRECIS).o
-	$(RRMARFILE) anal_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-api_wrappers.o: $(RLG)(api_wrappers_$(PRECIS).o)
-
-$(RLG)(api_wrappers_$(PRECIS).o): ../spral/api_wrappers.cu
-	@printf ' %-9s %-15s\t\t' "Compiling" "api_wrappers  "
-	$(CP) ../spral/api_wrappers.cu $(OBJ)/api_wrappers.cu
-	cd $(OBJ) ; $(CUDACOMP) -o api_wrappers_$(PRECIS).o \
-                      $(CUDAFLAGS) api_wrappers.cu \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(CUDACOMP) -o api_wrappers_$(PRECIS).o \
-                      $(CUDAFLAGSN) api_wrappers.cu )
-	cd $(OBJ) ; $(RARR) api_wrappers_$(PRECIS).o ; \
-                      $(RM) api_wrappers.cu api_wrappers_$(PRECIS).o
-#	$(RRMARFILE) anal_$(PRECIS).o
-#	$(RANLIB) $(RLG)
-#	$(MVMODS)
-	@printf '[ OK ]\n'
-
-assemble.o: $(RLG)(assemble_$(PRECIS).o)
-
-$(RLG)(assemble_$(PRECIS).o): ../ssids/assemble.cu
-	@printf ' %-9s %-15s\t\t' "Compiling" "assemble  "
-	$(CP) ../ssids/assemble.cu $(OBJ)/assemble.cu
-	cd $(OBJ) ; $(CUDACOMP) -o assemble_$(PRECIS).o \
-                      $(CUDAFLAGS) assemble.cu \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(CUDACOMP) -o assemble_$(PRECIS).o \
-                      $(CUDAFLAGSN) assemble.cu )
-	cd $(OBJ) ; $(RARR) assemble_$(PRECIS).o ; \
-                      $(RM) assemble.cu assemble_$(PRECIS).o
-#	$(RRMARFILE) anal_$(PRECIS).o
-#	$(RANLIB) $(RLG)
-#	$(MVMODS)
-	@printf '[ OK ]\n'
-
-dense_factor.o: $(RLG)(dense_factor_$(PRECIS).o)
-
-$(RLG)(dense_factor_$(PRECIS).o): ../ssids/dense_factor.cu
-	@printf ' %-9s %-15s\t\t' "Compiling" "dense_factor  "
-	$(CP) ../ssids/dense_factor.cu $(OBJ)/dense_factor.cu
-	cd $(OBJ) ; $(CUDACOMP) -o dense_factor_$(PRECIS).o \
-           $(CUDAFLAGS) dense_factor.cu \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(CUDACOMP) -o dense_factor_$(PRECIS).o $(CUDAFLAGSN) \
-                    dense_factor.cu )
-	cd $(OBJ) ; $(RARR) dense_factor_$(PRECIS).o ; \
-                      $(RM) dense_factor.cu dense_factor_$(PRECIS).o
-#	$(RRMARFILE) anal_$(PRECIS).o
-#	$(RANLIB) $(RLG)
-#	$(MVMODS)
-	@printf '[ OK ]\n'
-
-reorder.o: $(RLG)(reorder_$(PRECIS).o)
-
-$(RLG)(reorder_$(PRECIS).o): ../ssids/reorder.cu
-	@printf ' %-9s %-15s\t\t' "Compiling" "reorder  "
-	$(CP) ../ssids/reorder.cu $(OBJ)/reorder.cu
-	cd $(OBJ) ; $(CUDACOMP) -o reorder_$(PRECIS).o $(CUDAFLAGS) reorder.cu \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(CUDACOMP) -o reorder_$(PRECIS).o $(CUDAFLAGSN) \
-                    reorder.cu )
-	cd $(OBJ) ; $(RARR) reorder_$(PRECIS).o ; \
-                       $(RM) reorder.cu reorder_$(PRECIS).o
-#	$(RRMARFILE) anal_$(PRECIS).o
-#	$(RANLIB) $(RLG)
-#	$(MVMODS)
-	@printf '[ OK ]\n'
-
-solve.o: $(RLG)(solve_$(PRECIS).o)
-
-$(RLG)(solve_$(PRECIS).o): ../ssids/solve.cu
-	@printf ' %-9s %-15s\t\t' "Compiling" "solve  "
-	$(CP) ../ssids/solve.cu $(OBJ)/solve.cu
-	cd $(OBJ) ; $(CUDACOMP) -o solve_$(PRECIS).o $(CUDAFLAGS) solve.cu \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(CUDACOMP) -o solve_$(PRECIS).o $(CUDAFLAGSN) \
-                    solve.cu )
-	cd $(OBJ) ; $(RARR) solve_$(PRECIS).o ; $(RM) solve.cu solve_$(PRECIS).o
-#	$(RRMARFILE) anal_$(PRECIS).o
-#	$(RANLIB) $(RLG)
-#	$(MVMODS)
-	@printf '[ OK ]\n'
-
-syrk.o: $(RLG)(syrk_$(PRECIS).o)
-
-$(RLG)(syrk_$(PRECIS).o): ../ssids/syrk.cu
-	@printf ' %-9s %-15s\t\t' "Compiling" "syrk  "
-	$(CP) ../ssids/syrk.cu $(OBJ)/syrk.cu
-	cd $(OBJ) ; $(CUDACOMP) -o syrk_$(PRECIS).o $(CUDAFLAGS) syrk.cu \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(CUDACOMP) -o syrk_$(PRECIS).o $(CUDAFLAGSN) \
-                    syrk.cu )
-	cd $(OBJ) ; $(RARR) syrk_$(PRECIS).o ; $(RM) syrk.cu syrk_$(PRECIS).o
-#	$(RRMARFILE) anal_$(PRECIS).o
-#	$(RANLIB) $(RLG)
-#	$(MVMODS)
-	@printf '[ OK ]\n'
-
-anal.o: $(RLG)(anal_$(PRECIS).o)
-
-$(RLG)(anal_$(PRECIS).o): ../ssids/anal.F90
+$(RLG)(anal_$(PRECIS).o): ../ssids/analyse.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "anal  "
-	$(CP) ../ssids/anal.F90 $(OBJ)/anal.F90
-	cd $(OBJ) ; $(FORTRAN) -o anal_$(PRECIS).o $(FFLAGSOMP) anal.F90 \
+	$(CP) ../ssids/analyse.F90 $(OBJ)/analyse.F90
+	cd $(OBJ) ; $(FORTRAN) -o anal_$(PRECIS).o $(FFLAGSOMP) analyse.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o anal_$(PRECIS).o $(FFLAGSNOMP) anal.F90 )
-	cd $(OBJ) ; $(RARR) anal_$(PRECIS).o ; $(RM) anal.F90 anal_$(PRECIS).o
+                    $(FORTRAN) -o anal_$(PRECIS).o $(FFLAGSNOMP) analyse.F90 )
+	cd $(OBJ) ; $(RARR) anal_$(PRECIS).o ; a
+                    $(RM) analyse.F90 anal_$(PRECIS).o
 	$(RRMARFILE) ssids_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'

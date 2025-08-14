@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-03-23 AT 13:50 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 11:10 GMT
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -77,9 +77,9 @@
         copy_ma97_info_out => copy_info_out,                                   &
         copy_ma97_control_in => copy_control_in
 
-    USE SPRAL_SSIDS_precision_ciface, ONLY:                                    &
-        spral_ssids_inform,                                                    &
-        spral_ssids_options,                                                   &
+    USE GALAHAD_SSIDS_precision_ciface, ONLY:                                  &
+        ssids_inform_type,                                                     &
+        ssids_control_type,                                                    &
         copy_ssids_inform_out => copy_inform_out,                              &
         copy_ssids_options_in => copy_options_in
 
@@ -244,7 +244,7 @@
       TYPE ( ma86_info ) :: ma86_info
       TYPE ( ma87_info ) :: ma87_info
       TYPE ( ma97_info ) :: ma97_info
-      TYPE ( spral_ssids_inform ) :: ssids_inform
+      TYPE ( ssids_inform_type ) :: ssids_inform
       TYPE ( nodend_inform_type ) :: nodend_inform
       INTEGER ( KIND = ipc_ ), DIMENSION( 10 ) :: mc61_info
       REAL ( KIND = rpc_ ), DIMENSION( 15 ) :: mc61_rinfo
