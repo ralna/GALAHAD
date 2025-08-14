@@ -37,7 +37,7 @@ typedef int32_t ipc_;  // integer precision
 #define i_ipc_ PRIu32
 #endif
 
-// C long integer 
+// C long integer
 
 typedef int64_t hsl_longc_;
 

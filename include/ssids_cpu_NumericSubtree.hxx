@@ -195,7 +195,7 @@ public:
 
                   // Factorization
                   factor_node<posdef>
-                     (ni, symb_[ni], nodes_[ni], options,
+                     (symb_[ni], nodes_[ni], options,
                       thread_stats[this_thread], work,
                       pool_alloc_);
                   if(thread_stats[this_thread].flag<Flag::SUCCESS) {

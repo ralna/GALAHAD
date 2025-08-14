@@ -39,7 +39,6 @@ namespace spral { namespace ssids { namespace cpu {
 /* Factorize a node (indef) */
 template <typename T, typename PoolAlloc>
 void factor_node_indef(
-      ipc_ ni, // FIXME: remove post debug
       SymbolicNode const& snode,
       NumericNode<T, PoolAlloc> &node,
       struct cpu_factor_options const& options,
@@ -177,7 +176,6 @@ void factor_node_posdef(
 /* Factorize a node (wrapper) */
 template <bool posdef, typename T, typename PoolAlloc>
 void factor_node(
-      ipc_ ni,
       SymbolicNode const& snode,
       NumericNode<T, PoolAlloc> &node,
       struct cpu_factor_options const& options,
@@ -187,7 +185,7 @@ void factor_node(
       ) {
    T zero_val = 0.0;
    if(posdef) factor_node_posdef(zero_val, snode, node, options, stats);
-   else       factor_node_indef(ni, snode, node, options, stats, work, pool_alloc);
+   else       factor_node_indef(snode, node, options, stats, work, pool_alloc);
 }
 
 }}} /* end of namespace spral::ssids::cpu */

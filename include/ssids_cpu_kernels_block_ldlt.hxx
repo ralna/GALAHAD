@@ -352,7 +352,7 @@ void block_ldlt(ipc_ from, ipc_ *perm, T *a, ipc_ lda, T *d, T *ldwork,
       if(pivsiz == 0) {
          // FIXME: debug remove
          printf("broken!\n");
-         printf("t = %" d_ipc_ " m = %ld\n", t2, m2);
+         printf("t = %" d_ipc_ " m = %" d_ipc_ "\n", t2, m2);
          a11 = a[m2*lda+m2];
 #ifdef REAL_128
         char buf1[128];
