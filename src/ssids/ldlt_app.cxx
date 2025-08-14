@@ -1,6 +1,6 @@
 /** \file \copyright 2016 The Science and Technology Facilities Council
  *  (STFC) \licence BSD licence, see LICENCE file for details \author
- *  Jonathan Hogg 
+ *  Jonathan Hogg
  *  Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  */
 #include "ssids_cpu_kernels_ldlt_app.hxx"
@@ -33,14 +33,6 @@
 #include "ssids_cpu_kernels_ldlt_tpp.hxx"
 #include "ssids_cpu_kernels_common.hxx"
 #include "ssids_cpu_kernels_wrappers.hxx"
-
-#ifdef INTEGER_64
-#define d_ipc_ "ld"
-#define i_ipc_ "li"
-#else
-#define d_ipc_ "d"
-#define i_ipc_ "i"
-#endif
 
 namespace galahad { namespace ssids { namespace cpu {
 

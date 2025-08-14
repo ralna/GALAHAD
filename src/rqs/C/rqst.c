@@ -116,7 +116,7 @@ int main(void) {
                                        0, NULL, 0, 0, NULL, NULL );
                   }
                   break;
-              printf(" case %1" i_ipc_ " break\n", storage_type );
+              printf(" case %1" d_ipc_ " break\n", storage_type );
               case 2: // sparse by rows
                   st = 'R';
                   // import the control parameters and structural data
@@ -231,7 +231,7 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_rqs.h
 #include "galahad_pquad_rqs.h"
 #else
-          printf("format %c%s: RQS_solve_problem exit status = %1" i_ipc_ 
+          printf("format %c%s: RQS_solve_problem exit status = %1" d_ipc_ 
                  ", f = %.2f\n", st, ma, inform.status, inform.obj );
 #endif
           //printf("x: ");

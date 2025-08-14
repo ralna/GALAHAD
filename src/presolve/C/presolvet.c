@@ -61,7 +61,7 @@ int main(void) {
                            c_l, c_u, x_l, x_u,
                            &n_trans, &m_trans, &H_ne_trans, &A_ne_trans );
                 break;
-            printf(" case %1" i_ipc_ " break\n",d);
+            printf(" case %1" d_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 presolve_import_problem( &control, &data, &status, n, m,
@@ -127,7 +127,7 @@ int main(void) {
                 break;
             }
 
-        //printf("%c: n, m, h_ne, a_ne = %2" i_ipc_ ", %2" i_ipc_ ", %2" i_ipc_ ", %2" i_ipc_ "\n",
+        //printf("%c: n, m, h_ne, a_ne = %2" d_ipc_ ", %2" d_ipc_ ", %2" d_ipc_ ", %2" d_ipc_ "\n",
         //           st, n_trans, m_trans, H_ne_trans, A_ne_trans);
         rpc_ f_trans;  // transformed constant term in the objective
         ipc_ H_ptr_trans[n_trans+1]; // transformed Hessian row pointers
@@ -167,7 +167,7 @@ int main(void) {
         rpc_ y[m]; // Lagrange multipliers
         rpc_ z[n]; // dual variables
 
-        //printf("%c: n_trans, m_trans, n, m = %2" i_ipc_ ", %2" i_ipc_ ", %2" i_ipc_ ", %2" i_ipc_ "\n",
+        //printf("%c: n_trans, m_trans, n, m = %2" d_ipc_ ", %2" d_ipc_ ", %2" d_ipc_ ", %2" d_ipc_ "\n",
         //           st, n_trans, m_trans, n, m );
         presolve_restore_solution( &data, &status, n_trans, m_trans,
                   x_trans, c_trans, y_trans, z_trans, n, m, x, c, y, z );
@@ -175,10 +175,10 @@ int main(void) {
         presolve_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6" i_ipc_ " transformations, n, m = %2" i_ipc_ ", %2" i_ipc_ ", status = %1" i_ipc_ "\n",
+            printf("%c:%6" d_ipc_ " transformations, n, m = %2" d_ipc_ ", %2" d_ipc_ ", status = %1" d_ipc_ "\n",
                    st, inform.nbr_transforms, n_trans, m_trans, inform.status);
         }else{
-            printf("%c: PRESOLVE_solve exit status = %1" i_ipc_ "\n", st, inform.status);
+            printf("%c: PRESOLVE_solve exit status = %1" d_ipc_ "\n", st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

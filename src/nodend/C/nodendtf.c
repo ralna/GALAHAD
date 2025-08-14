@@ -60,7 +60,7 @@ int main(void) {
                 nodend_order( &control, &data, &status, n, perm,
                               "coordinate", A_ne, A_row, A_col, NULL );
                 break;
-            printf(" case %1" i_ipc_ " break\n",d);
+            printf(" case %1" d_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 nodend_order( &control, &data, &status, n, perm,
@@ -76,10 +76,10 @@ int main(void) {
 
         if(inform.status == 0){
             printf("%c: NODEND_order success, perm: ", st);
-            for( i = 0; i < n; i++) printf("%1" i_ipc_ " ", perm[i]);
+            for( i = 0; i < n; i++) printf("%1" d_ipc_ " ", perm[i]);
             printf("\n");
         }else{
-            printf("%c: NODEND_order exit status = %1" i_ipc_ "\n", 
+            printf("%c: NODEND_order exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
 

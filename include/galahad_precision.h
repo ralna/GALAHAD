@@ -14,6 +14,7 @@
  */
 
 #include <stdint.h>
+#include <inttypes.h>
 
 // include guard
 #ifndef GALAHAD_PRECISION_H
@@ -36,16 +37,13 @@ typedef double rpc_;  // working precision
 #endif
 
 typedef int64_t longc_;  // long integers
-#ifdef INTEGER_64
 typedef int64_t ipc_;  // integer type
 typedef uint64_t uipc_;
-#define d_ipc_ "ld"
-#define i_ipc_ "li"
+#define d_ipc_ PRId32
 #else
 typedef int32_t ipc_;  // integer type
 typedef uint32_t uipc_;
-#define d_ipc_ "d"
-#define i_ipc_ "i"
+#define d_ipc_ PRId64
 #endif
 
 // end include guard

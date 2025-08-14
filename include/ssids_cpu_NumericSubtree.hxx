@@ -188,7 +188,7 @@ public:
 
                   // Factorization
                   factor_node<posdef>
-                     (ni, symb_[ni], nodes_[ni], control,
+                     (symb_[ni], nodes_[ni], control,
                       thread_stats[this_thread], work,
                       pool_alloc_);
                   if(thread_stats[this_thread].flag<Flag::SUCCESS) {
@@ -255,7 +255,7 @@ public:
             for(ipc_ i=0; i<nodes_[ni].nelim; ) {
                T a11 = d[2*i];
                T a21 = d[2*i+1];
-               if(i+1==nodes_[ni].nelim || 
+               if(i+1==nodes_[ni].nelim ||
 #ifdef REAL_128
                   std::isfinite(static_cast<double>(d[2*i+2]))) {
 #else
@@ -453,7 +453,7 @@ public:
 //             bool a=i+1==nelim ;
 //             bool b=(std::isfinite(dptr[2*i+2]));
 //             printf(" i = %d a = %d b = %d\n", i, a, b );
-               if(i+1==nelim || 
+               if(i+1==nelim ||
 #ifdef REAL_128
                   std::isfinite(static_cast<double>(dptr[2*i+2]))) {
 #else
@@ -547,26 +547,18 @@ public:
 
 	void print() const {
 		for(ipc_ node=0; node<symb_.nnodes_; node++) {
-#ifdef INTEGER_64
-			printf("== Node %ld ==\n", node);
-#else
-			printf("== Node %d ==\n", node);
-#endif
+			printf("== Node %" d_ipc_ " ==\n", node);
 			ipc_ m = symb_[node].nrow + nodes_[node].ndelay_in;
 			ipc_ n = symb_[node].ncol + nodes_[node].ndelay_in;
          ipc_ ldl = align_lda<T>(m);
          ipc_ nelim = nodes_[node].nelim;
 			ipc_ const* rlist = &symb_[node].rlist[ symb_[node].ncol ];
 			for(ipc_ i=0; i<m; ++i) {
-#ifdef INTEGER_64
-				if(i<n) printf("%ld%s:", nodes_[node].perm[i], 
-                                               (i<nelim)?"X":"D");
-				else    printf("%ld:", rlist[i-n]);
-#else
-				if(i<n) printf("%d%s:", nodes_[node].perm[i], 
-                                               (i<nelim)?"X":"D");
-				else    printf("%d:", rlist[i-n]);
-#endif
+				if (i<n) {
+               printf("%" d_ipc_ "%s:", nodes_[node].perm[i], (i<nelim) ? "X" : "D");
+				} else {
+               printf("%" d_ipc_ ":", rlist[i-n]);
+            }
 #ifdef REAL_128
 				for(ipc_ j=0; j<n; j++) {
                                   char buf1[128];
@@ -574,22 +566,22 @@ public:
                                       "%+-#*.20Qe", nodes_[node].lcol[j*ldl+i]);
                                   if ((size_t) n1 < sizeof buf1)
                                      printf( "%s", buf1);
-//                                   printf(" %10.2Qe", 
+//                                   printf(" %10.2Qe",
 //                                     nodes_[node].lcol[j*ldl+i]);
                                  }
 #else
-				for(ipc_ j=0; j<n; j++) printf(" %10.2e", 
+				for(ipc_ j=0; j<n; j++) printf(" %10.2e",
                                    nodes_[node].lcol[j*ldl+i]);
 #endif
             T const* d = &nodes_[node].lcol[n*ldl];
             if(!posdef && i<nelim){
 #ifdef REAL_128
                char buf1[128], buf2[128];
-               int n1 = quadmath_snprintf(buf1, sizeof buf1, 
+               int n1 = quadmath_snprintf(buf1, sizeof buf1,
                                            "%+-#*.20Qe", d[2*i+0]);
-               int n2 = quadmath_snprintf(buf2, sizeof buf2, 
+               int n2 = quadmath_snprintf(buf2, sizeof buf2,
                                            "%+-#*.20Qe", d[2*i+1]);
-               if ((size_t) n1 < sizeof buf1 && 
+               if ((size_t) n1 < sizeof buf1 &&
                    (size_t) n2 < sizeof buf2)
                   printf( "  d: %s %s", buf1, buf2);
 //               printf("  d: %10.2Qe %10.2Qe", d[2*i+0], d[2*i+1]);

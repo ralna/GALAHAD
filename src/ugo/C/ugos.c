@@ -68,16 +68,16 @@ int main(void) {
 
     if(inform.status == 0){
 #ifdef REAL_128
-        printf("%" i_ipc_ " evaluations. Optimal objective value = %5.2f"
-               " at x = %5.2f, status = %1" i_ipc_ "\n", 
+        printf("%" d_ipc_ " evaluations. Optimal objective value = %5.2f"
+               " at x = %5.2f, status = %1" d_ipc_ "\n", 
                inform.f_eval, (double)f, (double)x, inform.status);
 #else
-        printf("%" i_ipc_ " evaluations. Optimal objective value = %5.2f"
-               " at x = %5.2f, status = %1" i_ipc_ "\n", 
+        printf("%" d_ipc_ " evaluations. Optimal objective value = %5.2f"
+               " at x = %5.2f, status = %1" d_ipc_ "\n", 
                inform.f_eval, f, x, inform.status);
 #endif
     }else{
-        printf("UGO_solve exit status = %1" i_ipc_ "\n", inform.status);
+        printf("UGO_solve exit status = %1" d_ipc_ "\n", inform.status);
     }
 
     // Delete internal workspace

@@ -83,7 +83,7 @@ int main(void) {
                               A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                               x_stat, c_stat );
                 break;
-            printf(" case %1" i_ipc_ " break\n",d);
+            printf(" case %1" d_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 dqp_import( &control, &data, &status, n, m,
@@ -142,12 +142,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_f.h
 #include "galahad_pquad_f.h"
 #else
-            printf("%c:%6" i_ipc_ " iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%c:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("%c: DQP_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: DQP_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
         //printf("x: ");
@@ -208,12 +208,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_f.h
 #include "galahad_pquad_f.h"
 #else
-            printf("%c:%6" i_ipc_ " iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%c:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("%c: DQP_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: DQP_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
         //printf("x: ");

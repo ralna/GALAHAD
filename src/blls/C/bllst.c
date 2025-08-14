@@ -225,12 +225,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
 #include "galahad_pquad_sf.h"
 #else
-            printf("%s:%6" i_ipc_ " iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("%s: BLLS_solve exit status = %1" i_ipc_ "\n", 
+            printf("%s: BLLS_solve exit status = %1" d_ipc_ "\n", 
                     st, inform.status);
         }
         //printf("x: ");
@@ -322,7 +322,7 @@ int main(void) {
         }else if(status == 7){ // evaluate p = P^{-}v
           for( ipc_ i = 0; i < n; i++) p[i] = userdata.scale * v[i];
         }else{
-            printf(" the value %1" i_ipc_ " of status should not occur\n", 
+            printf(" the value %1" d_ipc_ " of status should not occur\n", 
                    status);
             break;
         }
@@ -338,12 +338,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
 #include "galahad_pquad_sf.h"
 #else
-            printf("%s:%6" i_ipc_ " iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
 #endif
     }else{
-        printf("%s: BLLS_solve exit status = %1" i_ipc_ "\n", 
+        printf("%s: BLLS_solve exit status = %1" d_ipc_ "\n", 
                st, inform.status);
     }
     //printf("x: ");

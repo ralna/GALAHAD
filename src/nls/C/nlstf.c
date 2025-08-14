@@ -160,12 +160,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_f.h
 #include "galahad_pquad_f.h"
 #else
-            printf("%c:%6" i_ipc_ " iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%c:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("%c: NLS_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: NLS_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
         // Delete internal workspace
@@ -224,7 +224,7 @@ int main(void) {
                       eval_status = rhessprods( n, m, p_ne, x, v, P_val,
                                                 got_h, &userdata );
                   }else{
-                      printf(" the value %1" i_ipc_ " of status should not occur\n",
+                      printf(" the value %1" d_ipc_ " of status should not occur\n",
                         status);
                       break;
                   }
@@ -254,7 +254,7 @@ int main(void) {
                       eval_status = rhessprods( n, m, p_ne, x, v, P_val,
                                                 got_h, &userdata );
                   }else{
-                      printf(" the value %1" i_ipc_ " of status should not occur\n",
+                      printf(" the value %1" d_ipc_ " of status should not occur\n",
                         status);
                       break;
                   }
@@ -287,7 +287,7 @@ int main(void) {
                       eval_status = rhessprods_dense( n, m, p_ne, x, v, P_dense,
                                                       got_h, &userdata );
                   }else{
-                      printf(" the value %1" i_ipc_ " of status should not occur\n",
+                      printf(" the value %1" d_ipc_ " of status should not occur\n",
                         status);
                       break;
                   }
@@ -317,7 +317,7 @@ int main(void) {
                       eval_status = rhessprods( n, m, p_ne, x, v, P_val,
                                                 got_h, &userdata );
                   }else{
-                      printf(" the value %1" i_ipc_ " of status should not occur\n",
+                      printf(" the value %1" d_ipc_ " of status should not occur\n",
                         status);
                       break;
                   }
@@ -350,7 +350,7 @@ int main(void) {
                       eval_status = rhessprods( n, m, p_ne, x, v, P_val,
                                                 got_h, &userdata );
                   }else{
-                      printf(" the value %1" i_ipc_ " of status should not occur\n",
+                      printf(" the value %1" d_ipc_ " of status should not occur\n",
                         status);
                       break;
                   }
@@ -365,12 +365,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_f.h
 #include "galahad_pquad_f.h"
 #else
-            printf("%c:%6" i_ipc_ " iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%c:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("%c: NLS_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: NLS_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
         // Delete internal workspace
@@ -408,13 +408,13 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_nf.h
 #include "galahad_pquad_nf.h"
 #else
-            printf(" %1" i_ipc_ ":%6" i_ipc_ 
+            printf(" %1" d_ipc_ ":%6" d_ipc_ 
                    " iterations. Optimal objective value = %.2f"
-                   " status = %1" i_ipc_ "\n",
+                   " status = %1" d_ipc_ "\n",
                    model, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf(" %" i_ipc_ ": NLS_solve exit status = %1" i_ipc_ 
+            printf(" %" d_ipc_ ": NLS_solve exit status = %1" d_ipc_ 
                    "\n", model, inform.status);
         }
         // Delete internal workspace
@@ -451,12 +451,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_pf.h
 #include "galahad_pquad_pf.h"
 #else
-            printf("P%1" i_ipc_ ":%6" i_ipc_ " iterations. Optimal objective "
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("P%1" d_ipc_ ":%6" d_ipc_ " iterations. Optimal objective "
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    model, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("P%" i_ipc_ ": NLS_solve exit status = %1" i_ipc_ 
+            printf("P%" d_ipc_ ": NLS_solve exit status = %1" d_ipc_ 
                    "\n", model, inform.status);
         }
         // Delete internal workspace
@@ -501,7 +501,7 @@ int main(void) {
               eval_status = rhessprods( n, m, p_ne, x, v, P_val,
                                         got_h, &userdata );
           }else{
-              printf(" the value %1" i_ipc_ " of status should not occur\n",
+              printf(" the value %1" d_ipc_ " of status should not occur\n",
                 status);
               break;
           }
@@ -514,12 +514,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_pf.h
 #include "galahad_pquad_pf.h"
 #else
-            printf("P%1" i_ipc_ ":%6" i_ipc_ " iterations. Optimal objective "
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("P%1" d_ipc_ ":%6" d_ipc_ " iterations. Optimal objective "
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    model, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf(" %" i_ipc_ ": NLS_solve exit status = %1" i_ipc_ 
+            printf(" %" d_ipc_ ": NLS_solve exit status = %1" d_ipc_ 
                    "\n", model, inform.status);
         }
         // Delete internal workspace
@@ -566,7 +566,7 @@ int main(void) {
               eval_status = rhessprods( n, m, p_ne, x, v, P_val,
                                         got_h, &userdata );
           }else{
-              printf(" the value %1" i_ipc_ " of status should not occur\n",
+              printf(" the value %1" d_ipc_ " of status should not occur\n",
                 status);
               break;
           }
@@ -579,12 +579,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_pf.h
 #include "galahad_pquad_pf.h"
 #else
-            printf("P%1" i_ipc_ ":%6" i_ipc_ " iterations. Optimal objective "
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("P%1" d_ipc_ ":%6" d_ipc_ " iterations. Optimal objective "
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    model, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("P%" i_ipc_ ": NLS_solve exit status = %1" i_ipc_ 
+            printf("P%" d_ipc_ ": NLS_solve exit status = %1" d_ipc_ 
                    "\n", model, inform.status);
         }
         // Delete internal workspace
