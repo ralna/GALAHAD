@@ -14,111 +14,111 @@ MODULE GALAHAD_SSIDS_BLAS_IFACE
   PUBLIC :: dgemm, dsyrk, dtrsm
 
   ! Level 2 BLAS
-  interface
-    subroutine sgemv( trans, m, n, alpha, a, lda, x, incx, beta, y, incy )
-      use spral_kinds, only: ip_, sp_
-      implicit none
-      character, intent(in) :: trans
-      integer(ip_), intent(in) :: m, n, lda, incx, incy
-      real(sp_), intent(in) :: alpha, beta
-      real(sp_), intent(in   ), dimension(lda, n) :: a
-      real(sp_), intent(in   ), dimension(*) :: x
-      real(sp_), intent(inout), dimension(*) :: y
-    end subroutine sgemv
-    subroutine strsv( uplo, trans, diag, n, a, lda, x, incx )
-      use spral_kinds, only: ip_, sp_
-      implicit none
-      character, intent(in) :: uplo, trans, diag
-      integer(ip_), intent(in) :: n, lda, incx
-      real(sp_), intent(in   ), dimension(lda, n) :: a
-      real(sp_), intent(inout), dimension(*) :: x
-    end subroutine strsv
-  end interface
+  INTERFACE
+    SUBROUTINE sgemv( trans, m, n, alpha, a, lda, x, incx, beta, y, incy )
+      USE SPRAL_KINDS, ONLY: ip_, sp_
+      IMPLICIT none
+      CHARACTER, INTENT( IN ) :: trans
+      INTEGER( ip_) , INTENT( IN ) :: m, n, lda, incx, incy
+      REAL( sp_ ), INTENT( IN ) :: alpha, beta
+      REAL( sp_) , INTENT( IN ), dimension(lda, n) :: a
+      REAL( sp_) , INTENT( IN ), dimension(*) :: x
+      REAL( sp_ ), INTENT( INOUT ), dimension(*) :: y
+    END SUBROUTINE sgemv
+    SUBROUTINE strsv( uplo, trans, diag, n, a, lda, x, incx )
+      USE SPRAL_KINDS, ONLY: ip_, sp_
+      IMPLICIT none
+      CHARACTER, INTENT( IN ) :: uplo, trans, diag
+      INTEGER( ip_ ), INTENT( IN ) :: n, lda, incx
+      REAL( sp_ ), INTENT( IN ), dimension(lda, n) :: a
+      REAL( sp_ ), INTENT( INOUT ), dimension(*) :: x
+    END SUBROUTINE strsv
+  END INTERFACE
 
-  interface
-    subroutine dgemv( trans, m, n, alpha, a, lda, x, incx, beta, y, incy )
-      use spral_kinds, only: ip_, dp_
+  INTERFACE
+    SUBROUTINE dgemv( trans, m, n, alpha, a, lda, x, incx, beta, y, incy )
+      USE SPRAL_KINDS, ONLY: ip_, dp_
+      IMPLICIT none
+      CHARACTER, INTENT( IN ) :: trans
+      INTEGER( ip_ ), INTENT( IN ) :: m, n, lda, incx, incy
+      REAL( dp_ ), INTENT( IN ) :: alpha, beta
+      REAL( dp_ ), INTENT( IN ), dimension(lda, n) :: a
+      REAL( dp_ ), INTENT( IN ), dimension(*) :: x
+      REAL( dp_ ), INTENT( INOUT ), dimension(*) :: y
+    END SUBROUTINE dgemv
+    SUBROUTINE dtrsv( uplo, trans, diag, n, a, lda, x, incx )
+      USE SPRAL_KINDS, ONLY: ip_, dp_
       implicit none
-      character, intent(in) :: trans
-      integer(ip_), intent(in) :: m, n, lda, incx, incy
-      real(dp_), intent(in) :: alpha, beta
-      real(dp_), intent(in   ), dimension(lda, n) :: a
-      real(dp_), intent(in   ), dimension(*) :: x
-      real(dp_), intent(inout), dimension(*) :: y
-    end subroutine dgemv
-    subroutine dtrsv( uplo, trans, diag, n, a, lda, x, incx )
-      use spral_kinds, only: ip_, dp_
-      implicit none
-      character, intent(in) :: uplo, trans, diag
-      integer(ip_), intent(in) :: n, lda, incx
-      real(dp_), intent(in   ), dimension(lda, n) :: a
-      real(dp_), intent(inout), dimension(*) :: x
-    end subroutine dtrsv
-  end interface
+      CHARACTER, INTENT( IN ) :: uplo, trans, diag
+      INTEGER( ip_ ), INTENT( IN ) :: n, lda, incx
+      REAL( dp_ ), INTENT( IN ), dimension(lda, n) :: a
+      REAL( dp_ ), INTENT( INOUT ), dimension(*) :: x
+    END SUBROUTINE dtrsv
+  END INTERFACE
 
   ! Level 3 BLAS
-  interface
-    subroutine sgemm( ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc )
-      use spral_kinds, only : ip_, sp_
-      implicit none
-      character, intent(in) :: ta, tb
-      integer(ip_), intent(in) :: m, n, k
-      integer(ip_), intent(in) :: lda, ldb, ldc
-      real(sp_), intent(in) :: alpha, beta
-      real(sp_), intent(in   ), dimension(lda, *) :: a
-      real(sp_), intent(in   ), dimension(ldb, *) :: b
-      real(sp_), intent(inout), dimension(ldc, *) :: c
-    end subroutine sgemm
-    subroutine ssyrk( uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
-      use spral_kinds, only : ip_, sp_
-      implicit none
-      character, intent(in) :: uplo, trans
-      integer(ip_), intent(in) :: n, k, lda, ldc
-      real(sp_), intent(in) :: alpha, beta
-      real(sp_), intent(in   ), dimension(lda, *) :: a
-      real(sp_), intent(inout), dimension(ldc, n) :: c
-    end subroutine ssyrk
-    subroutine strsm( side, uplo, trans, diag, m, n, alpha, a, lda, b, ldb )
-      use spral_kinds, only : ip_, sp_
-      implicit none
-      character, intent(in) :: side, uplo, trans, diag
-      integer(ip_), intent(in) :: m, n, lda, ldb
-      real(sp_), intent(in   ) :: alpha
-      real(sp_), intent(in   ) :: a(lda, *)
-      real(sp_), intent(inout) :: b(ldb, n)
-    end subroutine strsm
-  end interface
+  INTERFACE
+    SUBROUTINE sgemm( ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc )
+      USE SPRAL_KINDS, ONLY : ip_, sp_
+      IMPLICIT NONE
+      CHARACTER, INTENT( IN ) :: ta, tb
+      INTEGER( ip_ ), INTENT( IN ) :: m, n, k
+      INTEGER( ip_ ), INTENT( IN ) :: lda, ldb, ldc
+      REAL( sp_ ), INTENT( IN ) :: alpha, beta
+      REAL( sp_ ), INTENT( IN ), dimension(lda, *) :: a
+      REAL( sp_ ), INTENT( IN ), dimension(ldb, *) :: b
+      REAL( sp_ ), INTENT( INOUT ), dimension(ldc, *) :: c
+    END SUBROUTINE sgemm
+    SUBROUTINE ssyrk( uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
+      USE SPRAL_KINDS, ONLY : ip_, sp_
+      IMPLICIT none
+      CHARACTER, INTENT( IN ) :: uplo, trans
+      INTEGER( ip_ ), INTENT( IN ) :: n, k, lda, ldc
+      REAL( sp_ ), INTENT( IN ) :: alpha, beta
+      REAL( sp_ ), INTENT( IN ), dimension(lda, *) :: a
+      REAL( sp_ ), INTENT( INOUT ), dimension(ldc, n) :: c
+    END SUBROUTINE ssyrk
+    SUBROUTINE strsm( side, uplo, trans, diag, m, n, alpha, a, lda, b, ldb )
+      USE SPRAL_KINDS, ONLY : ip_, sp_
+      IMPLICIT none
+      CHARACTER, INTENT( IN ) :: side, uplo, trans, diag
+      INTEGER( ip_ ), INTENT( IN ) :: m, n, lda, ldb
+      REAL( sp_ ), INTENT( IN ) :: alpha
+      REAL( sp_ ), INTENT( IN ) :: a(lda, *)
+      REAL( sp_ ), INTENT( INOUT ) :: b(ldb, n)
+    END SUBROUTINE strsm
+  END INTERFACE
 
-  interface
-    subroutine dgemm( ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc )
-      use spral_kinds, only : ip_, dp_
-      implicit none
-      character, intent(in) :: ta, tb
-      integer(ip_), intent(in) :: m, n, k
-      integer(ip_), intent(in) :: lda, ldb, ldc
-      real(dp_), intent(in) :: alpha, beta
-      real(dp_), intent(in   ), dimension(lda, *) :: a
-      real(dp_), intent(in   ), dimension(ldb, *) :: b
-      real(dp_), intent(inout), dimension(ldc, *) :: c
-    end subroutine dgemm
-    subroutine dsyrk( uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
-      use spral_kinds, only : ip_, dp_
-      implicit none
-      character, intent(in) :: uplo, trans
-      integer(ip_), intent(in) :: n, k, lda, ldc
-      real(dp_), intent(in) :: alpha, beta
-      real(dp_), intent(in   ), dimension(lda, *) :: a
-      real(dp_), intent(inout), dimension(ldc, n) :: c
-    end subroutine dsyrk
-    subroutine dtrsm( side, uplo, trans, diag, m, n, alpha, a, lda, b, ldb )
-      use spral_kinds, only : ip_, dp_
-      implicit none
-      character, intent(in) :: side, uplo, trans, diag
-      integer(ip_), intent(in) :: m, n, lda, ldb
-      real(dp_), intent(in   ) :: alpha
-      real(dp_), intent(in   ) :: a(lda, *)
-      real(dp_), intent(inout) :: b(ldb, n)
-    end subroutine dtrsm
-  end interface
+  INTERFACE
+    SUBROUTINE dgemm( ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc )
+      USE SPRAL_KINDS, ONLY : ip_, dp_
+      IMPLICIT none
+      CHARACTER, INTENT( IN ) :: ta, tb
+      INTEGER( ip_ ), INTENT( IN ) :: m, n, k
+      INTEGER( ip_ ), INTENT( IN ) :: lda, ldb, ldc
+      REAL( dp_ ), INTENT( IN ) :: alpha, beta
+      REAL( dp_ ), INTENT( IN ), dimension(lda, *) :: a
+      REAL( dp_ ), INTENT( IN ), dimension(ldb, *) :: b
+      REAL( dp_ ), INTENT( INOUT ), dimension(ldc, *) :: c
+    END SUBROUTINE dgemm
+    SUBROUTINE dsyrk( uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
+      USE SPRAL_KINDS, ONLY : ip_, dp_
+      IMPLICIT NONE
+      CHARACTER, INTENT( IN ) :: uplo, trans
+      INTEGER( ip_ ), INTENT( IN ) :: n, k, lda, ldc
+      REAL( dp_ ), INTENT( IN ) :: alpha, beta
+      REAL( dp_ ), INTENT( IN ), dimension(lda, *) :: a
+      REAL( dp_ ), INTENT( INOUT ), dimension(ldc, n) :: c
+    END SUBROUTINE dsyrk
+    SUBROUTINE dtrsm( side, uplo, trans, diag, m, n, alpha, a, lda, b, ldb )
+      USE SPRAL_KINDS, ONLY : ip_, dp_
+      IMPLICIT none
+      CHARACTER, INTENT( IN ) :: side, uplo, trans, diag
+      INTEGER( ip_ ), INTENT( IN ) :: m, n, lda, ldb
+      REAL( dp_ ), INTENT( IN ) :: alpha
+      REAL( dp_ ), INTENT( IN ) :: a(lda, *)
+      REAL( dp_ ), INTENT( INOUT ) :: b(ldb, n)
+    END SUBROUTINE dtrsm
+  END INTERFACE
 
 END MODULE GALAHAD_SSIDS_BLAS_IFACE

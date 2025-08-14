@@ -1,4 +1,8 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-21-18 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-14 AT 10:30 GMT
+
+!> \copyright 2016 The Science and Technology Facilities Council (STFC)
+!> \licence   BSD licence, see LICENCE file for details
+!> \author    Jonathan Hogg
 
 #include "galahad_lapack.h"
 #include "spral_procedures.h"
@@ -71,30 +75,25 @@
 #endif
 #endif
 
-!> \file
-!> \copyright 2016 The Science and Technology Facilities Council (STFC)
-!> \licence   BSD licence, see LICENCE file for details
-!> \author    Jonathan Hogg
-module spral_ssids_cpu_iface_precision
-   use spral_kinds_precision
-   use, intrinsic :: iso_c_binding
-   use spral_ssids_types_precision, only : ssids_options
-   use spral_ssids_inform_precision, only : ssids_inform
-   use GALAHAD_BLAS_inter_precision, only : GEMV, GEMM, TRSV, TRSM, SYRK
-   use GALAHAD_LAPACK_inter_precision, only : SYTRF, POTRF
-   implicit none
+MODULE GALAHAD_SSIDS_CPU_IFACE_precision
+   USE SPRAL_KINDS_precision
+   USE, INTRINSIC :: iso_c_binding
+   USE GALAHAD_SSIDS_TYPES_precision, ONLY : SSIDS_control_type
+   USE GALAHAD_SSIDS_INFORM_precision, ONLY : SSIDS_inform_type
+   USE GALAHAD_BLAS_inter_precision, ONLY : GEMV, GEMM, TRSV, TRSM, SYRK
+   USE GALAHAD_LAPACK_inter_precision, ONLY : SYTRF, POTRF
+   IMPLICIT none
 
-   private
-   public :: cpu_factor_options, cpu_factor_stats
-   public :: cpu_copy_options_in, cpu_copy_stats_out
+   PRIVATE
+   PUBLIC :: cpu_factor_control, cpu_factor_stats
+   PUBLIC :: cpu_copy_control_in, cpu_copy_stats_out
 
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-   !> @brief Interoperable subset of ssids_options
-   !> @details Interoperates with cpu_factor_options C++ type
-   !> @sa spral_ssids_types_precision::ssids_options
-   !> @sa spral::ssids::cpu::cpu_factor_options
-   type, bind(C) :: cpu_factor_options
+   !> @brief Interoperable subset of ssids_control
+   !> @details Interoperates with cpu_factor_control C++ type
+   !> @sa galahad_ssids_types_precision::ssids_control
+   !> @sa spral::ssids::cpu::cpu_factor_control
+   type, bind(C) :: cpu_factor_control
       integer(C_IP_) :: print_level
       logical(C_BOOL) :: action
       real(C_RP_) :: small
@@ -104,13 +103,13 @@ module spral_ssids_cpu_iface_precision
       integer(C_IP_) :: cpu_block_size
       integer(C_IP_) :: pivot_method
       integer(C_IP_) :: failed_pivot_method
-   end type cpu_factor_options
+   end type cpu_factor_control
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
    !> @brief Interoperable subset of ssids_inform
    !> @details Interoperates with ThreadStats C++ type
-   !> @sa spral_ssids_inform_precision::ssids_inform
+   !> @sa galahad_ssids_inform_precision::ssids_inform
    !> @sa spral::ssids::cpu::ThreadStats
    type, bind(C) :: cpu_factor_stats
       integer(C_IP_) :: flag
@@ -129,33 +128,33 @@ module spral_ssids_cpu_iface_precision
 contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Copy subset of ssids_options to interoperable type
-subroutine cpu_copy_options_in(foptions, coptions)
-   type(ssids_options), intent(in) :: foptions
-   type(cpu_factor_options), intent(out) :: coptions
+!> @brief Copy subset of ssids_control to interoperable type
+subroutine cpu_copy_control_in(fcontrol, ccontrol)
+   type(SSIDS_control_type), intent(in) :: fcontrol
+   type(cpu_factor_control), intent(out) :: ccontrol
 
-   coptions%print_level    = foptions%print_level
-   coptions%action         = foptions%action
-   coptions%small          = foptions%small
-   coptions%u              = foptions%u
-   coptions%multiplier     = foptions%multiplier
-   coptions%small_subtree_threshold = foptions%small_subtree_threshold
-   coptions%cpu_block_size = foptions%cpu_block_size
-   coptions%pivot_method   = min(3, max(1, foptions%pivot_method))
-   coptions%failed_pivot_method = min(2, max(1, foptions%failed_pivot_method))
-end subroutine cpu_copy_options_in
+   ccontrol%print_level    = fcontrol%print_level
+   ccontrol%action         = fcontrol%action
+   ccontrol%small          = fcontrol%small
+   ccontrol%u              = fcontrol%u
+   ccontrol%multiplier     = fcontrol%multiplier
+   ccontrol%small_subtree_threshold = fcontrol%small_subtree_threshold
+   ccontrol%cpu_block_size = fcontrol%cpu_block_size
+   ccontrol%pivot_method   = min(3, max(1, fcontrol%pivot_method))
+   ccontrol%failed_pivot_method = min(2, max(1, fcontrol%failed_pivot_method))
+end subroutine cpu_copy_control_in
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !> @brief Copy subset of ssids_inform from interoperable type
 subroutine cpu_copy_stats_out(cstats, finform)
    type(cpu_factor_stats), intent(in) :: cstats
-   type(ssids_inform), intent(inout) :: finform
+   type(SSIDS_inform_type), intent(inout) :: finform
 
    ! Combine stats
    if(cstats%flag < 0) then
-      finform%flag = min(finform%flag, cstats%flag) ! error
+     finform%flag = min(finform%flag, cstats%flag) ! error
    else
-      finform%flag = max(finform%flag, cstats%flag) ! success or warning
+     finform%flag = max(finform%flag, cstats%flag) ! success or warning
    endif
    finform%num_delay    = finform%num_delay + cstats%num_delay
    finform%num_factor   = finform%num_factor + cstats%num_factor
@@ -247,5 +246,5 @@ bind(C)
    call DGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
 end subroutine spral_c_gemv
 
-end module spral_ssids_cpu_iface_precision
+end module galahad_ssids_cpu_iface_precision
 

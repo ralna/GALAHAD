@@ -1,6 +1,6 @@
 //* \file spral_ssids.h */
 /**  
- * \version   GALAHAD 5.2 - 2025-03-23 AT 13:50 GMT
+ * \version   GALAHAD 5.3 - 2025-08-14 AT 11:10 GMT
  */
 
 #ifdef __cplusplus
@@ -26,7 +26,7 @@ extern "C" {
  * Derived types
  ************************************/
 
-struct spral_ssids_options {
+struct spral_ssids_control_type {
    ipc_ array_base; // Not in Fortran type
    ipc_ print_level;
    ipc_ unit_diagnostics;
@@ -47,7 +47,7 @@ struct spral_ssids_options {
    ipc_ pivot_method;
    rpc_ small;
    rpc_ u;
-   struct nodend_control_type nodend_options;
+   struct nodend_control_type nodend_control;
    ipc_ nstream;
    rpc_ multiplier;
    real_sp_ min_loadbalance;
@@ -55,7 +55,7 @@ struct spral_ssids_options {
    // char unused[80]; // Allow for future expansion
 };
 
-struct spral_ssids_inform {
+struct spral_ssids_inform_type {
    ipc_ flag;
    ipc_ matrix_dup;
    ipc_ matrix_missing_diag;
@@ -86,39 +86,39 @@ struct spral_ssids_inform {
  * Basic subroutines
  ************************************/
 
-/* Initialize options to defaults */
-void spral_ssids_default_options(struct spral_ssids_options *options);
+/* Initialize control to defaults */
+void spral_ssids_default_control(struct spral_ssids_control_type *control);
 /* Perform analysis phase for CSC data */
 void spral_ssids_analyse(bool check, ipc_ n, ipc_ *order, const int64_t *ptr,
       const ipc_ *row, const rpc_ *val, void **akeep,
-      const struct spral_ssids_options *options,
-      struct spral_ssids_inform *inform);
+      const struct spral_ssids_control_type *control,
+      struct spral_ssids_inform_type *inform);
 void spral_ssids_analyse_ptr32(bool check, ipc_ n, ipc_ *order, const ipc_ *ptr,
       const ipc_ *row, const rpc_ *val, void **akeep,
-      const struct spral_ssids_options *options,
-      struct spral_ssids_inform *inform);
+      const struct spral_ssids_control_type *control,
+      struct spral_ssids_inform_type *inform);
 /* Perform analysis phase for coordinate data */
 void spral_ssids_analyse_coord(ipc_ n, ipc_ *order, int64_t ne, const ipc_ *row,
       const ipc_ *col, const rpc_ *val, void **akeep,
-      const struct spral_ssids_options *options,
-      struct spral_ssids_inform *inform);
+      const struct spral_ssids_control_type *control,
+      struct spral_ssids_inform_type *inform);
 /* Perform numerical factorization */
 void spral_ssids_factor(bool posdef, const int64_t *ptr, const ipc_ *row,
       const rpc_ *val, rpc_ *scale, void *akeep, void **fkeep,
-      const struct spral_ssids_options *options,
-      struct spral_ssids_inform *inform);
+      const struct spral_ssids_control_type *control,
+      struct spral_ssids_inform_type *inform);
 void spral_ssids_factor_ptr32(bool posdef, const ipc_ *ptr, const ipc_ *row,
       const rpc_ *val, rpc_ *scale, void *akeep, void **fkeep,
-      const struct spral_ssids_options *options,
-      struct spral_ssids_inform *inform);
+      const struct spral_ssids_control_type *control,
+      struct spral_ssids_inform_type *inform);
 /* Perform triangular solve(s) for single rhs */
 void spral_ssids_solve1(ipc_ job, rpc_ *x1, void *akeep, void *fkeep,
-      const struct spral_ssids_options *options,
-      struct spral_ssids_inform *inform);
+      const struct spral_ssids_control_type *control,
+      struct spral_ssids_inform_type *inform);
 /* Perform triangular solve(s) for one or more rhs */
 void spral_ssids_solve(ipc_ job, ipc_ nrhs, rpc_ *x, ipc_ ldx, void *akeep,
-      void *fkeep, const struct spral_ssids_options *options,
-      struct spral_ssids_inform *inform);
+      void *fkeep, const struct spral_ssids_control_type *control,
+      struct spral_ssids_inform_type *inform);
 /* Free memory */
 ipc_ spral_ssids_free_akeep(void **akeep);
 ipc_ spral_ssids_free_fkeep(void **fkeep);
@@ -130,16 +130,16 @@ ipc_ spral_ssids_free(void **akeep, void **fkeep);
 
 /* Retrieve information on pivots (positive-definite case) */
 void spral_ssids_enquire_posdef(const void *akeep, const void *fkeep,
-      const struct spral_ssids_options *options,
-      struct spral_ssids_inform *inform, rpc_ *d);
+      const struct spral_ssids_control_type *control,
+      struct spral_ssids_inform_type *inform, rpc_ *d);
 /* Retrieve information on pivots (indefinite case) */
 void spral_ssids_enquire_indef(const void *akeep, const void *fkeep,
-      const struct spral_ssids_options *options,
-      struct spral_ssids_inform *inform, ipc_ *piv_order, rpc_ *d);
+      const struct spral_ssids_control_type *control,
+      struct spral_ssids_inform_type *inform, ipc_ *piv_order, rpc_ *d);
 /* Alter pivots (indefinite case only) */
 void spral_ssids_alter(const rpc_ *d, const void *akeep, void *fkeep,
-      const struct spral_ssids_options *options,
-      struct spral_ssids_inform *inform);
+      const struct spral_ssids_control_type *control,
+      struct spral_ssids_inform_type *inform);
 
 #ifdef __cplusplus
 } /* extern "C" */

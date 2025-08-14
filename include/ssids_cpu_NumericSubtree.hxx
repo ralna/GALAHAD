@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.2 - 2025-01-24 AT 14:00 GMT
+ *  \version   GALAHAD 5.3 - 2025-08-14 AT 11:00 GMT
  */
 
 #pragma once
@@ -50,7 +50,7 @@ public:
     *  \param child_contrib array of pointers to contributions from child
     *         subtrees. Information to be extracted by call to Fortran routine
     *         spral_ssids_contrib_get_data_double() or _single().
-    *  \param options user-supplied options controlling execution.
+    *  \param control user-supplied options controlling execution.
     *  \param stats collection of statistics for return to user.
     */
    NumericSubtree(
@@ -58,10 +58,10 @@ public:
          T const* aval,
          T const* scaling,
          void** child_contrib,
-         struct cpu_factor_options const& options,
+         struct cpu_factor_control const& control,
          ThreadStats& stats)
    : symb_(symbolic_subtree),
-     factor_alloc_(symbolic_subtree.get_factor_mem_est(options.multiplier)),
+     factor_alloc_(symbolic_subtree.get_factor_mem_est(control.multiplier)),
      pool_alloc_(symbolic_subtree.get_pool_size<T>()),
      small_leafs_(static_cast<SLNS*>(::operator new[](symb_.small_leafs_.size()*sizeof(SLNS))))
    {
@@ -101,7 +101,7 @@ public:
             auto* parent_lcol = nodes_.data() + symb_.small_leafs_[si].get_parent();
             #pragma omp task default(none) \
                firstprivate(si) \
-               shared(aval, abort, options, scaling, thread_stats, work) \
+               shared(aval, abort, control, scaling, thread_stats, work) \
                depend(in: parent_lcol[0:1])
             {
               bool my_abort;
@@ -117,7 +117,7 @@ public:
                   auto const& leaf = symb_.small_leafs_[si];
                   new (&small_leafs_[si]) SLNS(leaf, nodes_, aval, scaling,
                         factor_alloc_, pool_alloc_, work,
-                        options, thread_stats[this_thread]);
+                        control, thread_stats[this_thread]);
                   if(thread_stats[this_thread].flag<Flag::SUCCESS) {
 #ifdef _OPENMP
                      #pragma omp atomic write
@@ -166,7 +166,7 @@ public:
             auto* parent_lcol = nodes_.data() + symb_[ni].parent; // for depend
             #pragma omp task default(none) \
                firstprivate(ni) \
-               shared(aval, abort, child_contrib, options, scaling, \
+               shared(aval, abort, child_contrib, control, scaling, \
                       thread_stats, work) \
                depend(inout: this_lcol[0:1]) \
                depend(in: parent_lcol[0:1])
@@ -195,7 +195,7 @@ public:
 
                   // Factorization
                   factor_node<posdef>
-                     (ni, symb_[ni], nodes_[ni], options,
+                     (ni, symb_[ni], nodes_[ni], control,
                       thread_stats[this_thread], work,
                       pool_alloc_);
                   if(thread_stats[this_thread].flag<Flag::SUCCESS) {
@@ -270,7 +270,7 @@ public:
 #endif
                   // 1x1 pivot (or zero)
                   if(a11 == 0.0) {
-                     // NB: If we reach this stage, options.action must be true.
+                     // NB: If we reach this stage, control.action must be true.
                      stats.flag = Flag::WARNING_FACT_SINGULAR;
                      stats.num_zero++;
                   }

@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-03 AT 10:30 GMT
+ *  \version   GALAHAD 5.3 - 2025-08-14 AT 11:00 GMT
  */
 
 #pragma once
@@ -25,7 +25,7 @@ enum struct FailedPivotMethod : ipc_ {
    pass           = 2
 };
 
-struct cpu_factor_options {
+struct cpu_factor_control {
    ipc_ print_level;
    bool action;
    rpc_ small;

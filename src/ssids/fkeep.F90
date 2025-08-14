@@ -1,184 +1,188 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-26 AT 13:10 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-14 AT 13:40 GMT
 
 #include "spral_procedures.h"
 
-!> \file
-!> \copyright 2016 The Science and Technology Facilities Council (STFC)
-!> \licence   BSD licence, see LICENCE file for details
-!> \author    Jonathan Hogg
-!> \author    Florent Lopez
-!
-!> \brief Define ssids_fkeep type and associated procedures (CPU version)
-module spral_ssids_fkeep_precision
-   use spral_kinds_precision
-   use :: omp_lib
-   use spral_ssids_akeep_precision, only : ssids_akeep
-   use spral_ssids_contrib_precision, only : contrib_type
-   use spral_ssids_types_precision
-   use spral_ssids_inform_precision, only : ssids_inform
-   use spral_ssids_subtree_precision, only : numeric_subtree_base
-   use spral_ssids_cpu_subtree_precision, only : cpu_numeric_subtree
-#ifdef PROFILE
-   use spral_ssids_profile_precision, only : profile_begin, profile_end, &
-                                             profile_add_event
-#endif
-   implicit none
+!  define ssids_fkeep type and associated procedures (CPU version)
 
-   private
-   public :: ssids_fkeep
+!  author    Jonathan Hogg and Florent Lopez
+!  licence   BSD licence, see LICENCE file for details
+!  copyright 2016 The Science and Technology Facilities Council (STFC)
+
+MODULE GALAHAD_SSIDS_fkeep_precision
+   USE SPRAL_KINDS_precision
+   USE :: omp_lib
+   USE GALAHAD_SSIDS_akeep_precision, only : ssids_akeep
+   USE GALAHAD_SSIDS_contrib_precision, only : contrib_type
+   USE GALAHAD_SSIDS_types_precision
+   USE GALAHAD_SSIDS_inform_precision, only : ssids_inform_type
+   USE GALAHAD_SSIDS_subtree_precision, only : numeric_subtree_base
+   USE GALAHAD_SSIDS_cpu_subtree_precision, only : cpu_numeric_subtree
+#ifdef PROFILE
+   USE GALAHAD_SSIDS_profile_precision, only : profile_begin, profile_end,     &
+                                               profile_add_event
+#endif
+   IMPLICIT none
+
+   PRIVATE
+   PUBLIC :: ssids_fkeep_type
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-   type numeric_subtree_ptr
-      class(numeric_subtree_base), pointer :: ptr
-   end type numeric_subtree_ptr
+   TYPE numeric_subtree_ptr
+      class( numeric_subtree_base ), pointer :: ptr
+   END TYPE numeric_subtree_ptr
 
-   !
    ! Data type for data generated in factorise phase
-   !
-   type ssids_fkeep
-      real(rp_), dimension(:), allocatable :: scaling ! Stores scaling for
-         ! each entry (in original matrix order)
-      logical :: pos_def ! set to true if user indicates matrix pos. definite
+
+   TYPE ssids_fkeep_type
+
+ !  stores scaling for each entry ( in original matrix order )
+
+      REAL( rp_ ), DIMENSION( : ), allocatable :: scaling
+      LOGICAL :: pos_def ! set to true if user indicates matrix pos. definite
 
       ! Factored subtrees
-      type(numeric_subtree_ptr), dimension(:), allocatable :: subtree
+      TYPE( numeric_subtree_ptr ), DIMENSION( : ), allocatable :: subtree
 
       ! Copy of inform on exit from factorize
-      type(ssids_inform) :: inform
+      TYPE( ssids_inform_type ) :: inform
 
-   contains
-      procedure, pass(fkeep) :: inner_factor => inner_factor_cpu 
-        ! Do actual factorization
-      procedure, pass(fkeep) :: inner_solve => inner_solve_cpu 
-        ! Do actual solve
-      procedure, pass(fkeep) :: enquire_posdef => enquire_posdef_cpu
-      procedure, pass(fkeep) :: enquire_indef => enquire_indef_cpu
-      procedure, pass(fkeep) :: alter => alter_cpu ! Alter D values
-      procedure, pass(fkeep) :: free => free_fkeep ! Frees memory
-   end type ssids_fkeep
+   CONTAINS
 
-contains
+!  do actual factorization
 
-subroutine inner_factor_cpu(fkeep, akeep, val, options, inform)
-  implicit none
-  type(ssids_akeep), intent(in) :: akeep
-  class(ssids_fkeep), target, intent(inout) :: fkeep
-  real(rp_), dimension(*), target, intent(in) :: val
-  type(ssids_options), intent(in) :: options
-  type(ssids_inform), intent(inout) :: inform
+      PROCEDURE, PASS( fkeep ) :: inner_factor => inner_factor_cpu 
 
-  integer(ip_) :: i, numa_region, exec_loc, my_loc
-  integer(ip_) :: total_threads, max_gpus, to_launch, thread_num
-  integer(ip_) :: nth ! Number of threads within a region
-  integer(ip_) :: ngpus ! Number of GPUs in a given NUMA region
-  logical :: abort, all_region
-  type(contrib_type), dimension(:), allocatable :: child_contrib
-  type(ssids_inform), dimension(:), allocatable :: thread_inform
+!  do actual solve
+
+      PROCEDURE, PASS( fkeep ) :: inner_solve => inner_solve_cpu 
+      PROCEDURE, PASS( fkeep ) :: enquire_posdef => enquire_posdef_cpu
+      PROCEDURE, PASS( fkeep ) :: enquire_indef => enquire_indef_cpu
+      PROCEDURE, PASS( fkeep ) :: alter => alter_cpu ! Alter D values
+      PROCEDURE, PASS( fkeep ) :: free => free_fkeep ! Frees memory
+   END TYPE ssids_fkeep_type
+
+CONTAINS
+
+SUBROUTINE inner_factor_cpu( fkeep, akeep, val, control, inform )
+  IMPLICIT none
+  TYPE( SSIDS_akeep_type ), INTENT( IN ) :: akeep
+  class( SSIDS_fkeep_type ), TARGET, INTENT( INOUT ) :: fkeep
+  REAL( rp_ ), DIMENSION( * ), TARGET, INTENT( IN ) :: val
+  TYPE( SSIDS_control_type ), INTENT( IN ) :: control
+  TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
+
+  INTEGER( ip_ ) :: i, numa_region, exec_loc, my_loc
+  INTEGER( ip_ ) :: total_threads, max_gpus, to_launch, thread_num
+  INTEGER( ip_ ) :: nth ! Number of threads within a region
+  INTEGER( ip_ ) :: ngpus ! Number of GPUs in a given NUMA region
+  LOGICAL :: abort, all_region
+  TYPE( contrib_type ), DIMENSION( : ), allocatable :: child_contrib
+  TYPE( ssids_inform_type ), DIMENSION( : ), allocatable :: thread_inform
 #ifdef PROFILE
-  ! Begin profile trace (noop if not enabled)
-  call profile_begin(akeep%topology)
+  ! Begin profile trace ( noop if not enabled )
+  call profile_begin( akeep%topology )
 #endif
-!write(6,*) ' n ', akeep%n
-!write(6,*) ' ptr ', akeep%ptr( : akeep%n + 1 )
-!write(6,*) ' row ', akeep%row( : akeep%ptr( akeep%n + 1 ) - 1 )
-!write(6,*) ' val ', val( : akeep%ptr( akeep%n + 1 ) - 1 )
+!write( 6,* ) ' n ', akeep%n
+!write( 6,* ) ' ptr ', akeep%ptr(  : akeep%n + 1  )
+!write( 6,* ) ' row ', akeep%row(  : akeep%ptr(  akeep%n + 1  ) - 1  )
+!write( 6,* ) ' val ', val(  : akeep%ptr(  akeep%n + 1  ) - 1  )
 !stop
 
   ! Allocate space for subtrees
-  allocate(fkeep%subtree(akeep%nparts), stat=inform%stat)
-  if(inform%stat.ne.0) goto 200
+  allocate( fkeep%subtree( akeep%nparts ), stat=inform%stat )
+  IF ( inform%stat /= 0 ) GO TO 200
 
   ! Determine resources
   total_threads = 0
   max_gpus = 0
-  do i = 1, size(akeep%topology)
-     total_threads = total_threads + akeep%topology(i)%nproc
-     max_gpus = max(max_gpus, size(akeep%topology(i)%gpus))
-  end do
+  DO i = 1, size( akeep%topology )
+     total_threads = total_threads + akeep%topology( i )%nproc
+     max_gpus = max( max_gpus, size( akeep%topology( i )%gpus ) )
+  END DO
 
   ! Call subtree factor routines
-  allocate(child_contrib(akeep%nparts), stat=inform%stat)
-  if(inform%stat.ne.0) goto 200
+  allocate( child_contrib( akeep%nparts ), stat=inform%stat )
+  IF ( inform%stat /= 0 ) GO TO 200
   ! Split into numa regions; parallelism within a region is responsibility
   ! of subtrees.
-  to_launch = size(akeep%topology)*(1+max_gpus)
-  allocate(thread_inform(to_launch), stat=inform%stat)
-  if(inform%stat.ne.0) goto 200
+  to_launch = size( akeep%topology )*( 1+max_gpus )
+  allocate( thread_inform( to_launch ), stat=inform%stat )
+  IF ( inform%stat /= 0 ) GO TO 200
   all_region = .false.
 
-  !$omp parallel proc_bind(spread) num_threads(to_launch) &
-  !$omp    default(none) &
-  !$omp    private(abort, i, exec_loc, numa_region, my_loc, thread_num) &
-  !$omp    private(nth, ngpus) &
-  !$omp    shared(akeep, fkeep, val, options, thread_inform, child_contrib, &
-  !$omp           all_region) &
-  !$omp    if(to_launch.gt.1)
+  !$omp parallel proc_bind( spread ) num_threads( to_launch ) &
+  !$omp    default( none ) &
+  !$omp    private( abort, i, exec_loc, numa_region, my_loc, thread_num ) &
+  !$omp    private( nth, ngpus ) &
+  !$omp    shared( akeep, fkeep, val, control, thread_inform, child_contrib, &
+  !$omp           all_region ) &
+  !$omp    if ( to_launch.gt.1 )
 
   thread_num = 0
-  !$ thread_num = omp_get_thread_num()
-  numa_region = mod(thread_num, size(akeep%topology)) + 1
+  !$ thread_num = omp_get_thread_num(  )
+  numa_region = mod( thread_num, size( akeep%topology ) ) + 1
   my_loc = thread_num + 1
-  if (thread_num .lt. size(akeep%topology)) then
-     ngpus = size(akeep%topology(numa_region)%gpus,1)
-     ! CPU, control number of inner threads (not needed for gpu)
-     nth = akeep%topology(numa_region)%nproc
+  IF ( thread_num .lt. size( akeep%topology ) ) THEN
+     ngpus = size( akeep%topology( numa_region )%gpus,1 )
+     ! CPU, control number of inner threads ( not needed for gpu )
+     nth = akeep%topology( numa_region )%nproc
      ! nth = nth - ngpus
-  else
+  ELSE
      nth = 1
-  endif
+  END IF
 
-  !$ call omp_set_num_threads(int(nth))
-  ! Split into threads for this NUMA region (unless we're running a GPU)
+  !$ call omp_set_num_threads( int( nth ) )
+  ! Split into threads for this NUMA region ( unless we're running a GPU )
   exec_loc = -1 ! avoid compiler warning re uninitialized
   abort = .false.
 
-  !$omp parallel proc_bind(close) default(shared) &
-  !$omp    num_threads(nth) &
-  !$omp    if(my_loc.le.size(akeep%topology))
+  !$omp parallel proc_bind( close ) default( shared ) &
+  !$omp    num_threads( nth ) &
+  !$omp    if ( my_loc.le.size( akeep%topology ) )
 
   !$omp single
   !$omp taskgroup
 
-  do i = 1, akeep%nparts
-     exec_loc = akeep%subtree(i)%exec_loc
-     if(numa_region.eq.1 .and. exec_loc.eq.-1) all_region = .true.
-     if(exec_loc.ne.my_loc) cycle
+  DO i = 1, akeep%nparts
+     exec_loc = akeep%subtree( i )%exec_loc
+     IF ( numa_region.eq.1 .and. exec_loc.eq.-1 ) all_region = .true.
+     IF ( exec_loc /= my_loc ) cycle
 
-     !$omp task untied default(shared) firstprivate(i, exec_loc) &
-     !$omp    if(my_loc.le.size(akeep%topology))
-     if (abort) goto 10
-     if (allocated(fkeep%scaling)) then
-        fkeep%subtree(i)%ptr => akeep%subtree(i)%ptr%factor( &
+     !$omp task untied default( shared ) firstprivate( i, exec_loc ) &
+     !$omp    if ( my_loc.le.size( akeep%topology ) )
+     IF ( abort ) GO TO 10
+     IF ( allocated( fkeep%scaling ) ) THEN
+        fkeep%subtree( i )%ptr => akeep%subtree( i )%ptr%factor(  &
              fkeep%pos_def, val, &
-             child_contrib(akeep%contrib_ptr(i):akeep%contrib_ptr(i+1)-1), &
-             options, thread_inform(my_loc), scaling=fkeep%scaling &
-             )
-     else
-        fkeep%subtree(i)%ptr => akeep%subtree(i)%ptr%factor( &
+             child_contrib( akeep%contrib_ptr( i ):akeep%contrib_ptr( i+1 )-1 ), &
+             control, thread_inform( my_loc ), scaling=fkeep%scaling &
+              )
+     ELSE
+        fkeep%subtree( i )%ptr => akeep%subtree( i )%ptr%factor(  &
              fkeep%pos_def, val, &
-             child_contrib(akeep%contrib_ptr(i):akeep%contrib_ptr(i+1)-1), &
-             options, thread_inform(my_loc) &
-             )
-     endif
-     if (thread_inform(my_loc)%flag .lt. 0) then
+             child_contrib( akeep%contrib_ptr( i ):akeep%contrib_ptr( i+1 )-1 ), &
+             control, thread_inform( my_loc ) &
+              )
+     END IF
+     IF ( thread_inform( my_loc )%flag .lt. 0 ) THEN
         abort = .true.
-        goto 10
+        GO TO 10
         ! !$omp    cancel taskgroup
-     endif
-     if (akeep%contrib_idx(i) .le. akeep%nparts) then
+     END IF
+     IF ( akeep%contrib_idx( i ) .le. akeep%nparts ) THEN
         ! There is a parent subtree to contribute to
-        child_contrib(akeep%contrib_idx(i)) = &
-             fkeep%subtree(i)%ptr%get_contrib()
+        child_contrib( akeep%contrib_idx( i ) ) = &
+             fkeep%subtree( i )%ptr%get_contrib(  )
         !$omp    flush
-        child_contrib(akeep%contrib_idx(i))%ready = .true.
-     endif
+        child_contrib( akeep%contrib_idx( i ) )%ready = .true.
+     END IF
 10   continue ! jump target for abort
      !$omp end task
 
-  end do
+  end DO
 
-!write(99,*) ' all_region ', all_region
+!write( 99,* ) ' all_region ', all_region
 !stop
   !$omp end taskgroup
 
@@ -187,289 +191,302 @@ subroutine inner_factor_cpu(fkeep, akeep, val, options, inform)
   !$omp end parallel
   !$omp end parallel
 
-  do i = 1, size(thread_inform)
-     call inform%reduce(thread_inform(i))
-  end do
-  if (inform%flag.lt.0) goto 100 ! cleanup and exit
+  DO i = 1, size( thread_inform )
+     call inform%reduce( thread_inform( i ) )
+  END DO
+  IF ( inform%flag.lt.0 ) GO TO 100 ! cleanup and exit
 
-  if (all_region) then
+  IF ( all_region ) THEN
 
 #ifdef PROFILE
      ! At least some all region subtrees exist
-     call profile_add_event("EV_ALL_REGIONS", &
-                            "Starting processing root subtree", 0)
+     call profile_add_event( "EV_ALL_REGIONS", &
+                            "Starting processing root subtree", 0 )
 #endif
 
-     !$omp parallel num_threads(total_threads) default(shared)
+     !$omp parallel num_threads( total_threads ) default( shared )
      !$omp single
-     do i = 1, akeep%nparts
-        exec_loc = akeep%subtree(i)%exec_loc
-        if (exec_loc.ne.-1) cycle
-        if (allocated(fkeep%scaling)) then
-           fkeep%subtree(i)%ptr => akeep%subtree(i)%ptr%factor( &
+     DO i = 1, akeep%nparts
+        exec_loc = akeep%subtree( i )%exec_loc
+        IF ( exec_loc /= - 1 ) cycle
+        IF ( allocated( fkeep%scaling ) ) THEN
+           fkeep%subtree( i )%ptr => akeep%subtree( i )%ptr%factor(  &
                 fkeep%pos_def, val, &
-                child_contrib(akeep%contrib_ptr(i):akeep%contrib_ptr(i+1)-1), &
-                options, inform, scaling=fkeep%scaling &
-                )
-        else
-           fkeep%subtree(i)%ptr => akeep%subtree(i)%ptr%factor( &
+                child_contrib( akeep%contrib_ptr( i ):akeep%contrib_ptr( i+1 )-1 ), &
+                control, inform, scaling=fkeep%scaling &
+                 )
+        ELSE
+           fkeep%subtree( i )%ptr => akeep%subtree( i )%ptr%factor(  &
                 fkeep%pos_def, val, &
-                child_contrib(akeep%contrib_ptr(i):akeep%contrib_ptr(i+1)-1), &
-                options, inform &
-                )
-        endif
-        if (akeep%contrib_idx(i) .gt. akeep%nparts) cycle ! part is a root
-        child_contrib(akeep%contrib_idx(i)) = &
-             fkeep%subtree(i)%ptr%get_contrib()
+                child_contrib( akeep%contrib_ptr( i ):akeep%contrib_ptr( i+1 )-1 ), &
+                control, inform &
+                 )
+        END IF
+        IF ( akeep%contrib_idx( i ) .gt. akeep%nparts ) cycle ! part is a root
+        child_contrib( akeep%contrib_idx( i ) ) = &
+             fkeep%subtree( i )%ptr%get_contrib(  )
         !$omp    flush
-        child_contrib(akeep%contrib_idx(i))%ready = .true.
-     end do
+        child_contrib( akeep%contrib_idx( i ) )%ready = .true.
+     END DO
      !$omp end single
      !$omp end parallel
-  end if
+  END if
 
 100 continue ! cleanup and exit
 
 #ifdef PROFILE
-  ! End profile trace (noop if not enabled)
-  call profile_end()
+  ! End profile trace ( noop if not enabled )
+  call profile_end(  )
 #endif
 
   return
 
 200 continue
   inform%flag = SSIDS_ERROR_ALLOCATION
-  goto 100 ! cleanup and exit
-end subroutine inner_factor_cpu
+  GO TO 100 ! cleanup and exit
+end SUBROUTINE inner_factor_cpu
 
-subroutine inner_solve_cpu(local_job, nrhs, x, ldx, akeep, fkeep, inform)
-   type(ssids_akeep), intent(in) :: akeep
-   class(ssids_fkeep), intent(inout) :: fkeep
-   integer(ip_), intent(inout) :: local_job
-   integer(ip_), intent(in) :: nrhs
-   integer(ip_), intent(in) :: ldx
-   real(rp_), dimension(ldx,nrhs), target, intent(inout) :: x
-   type(ssids_inform), intent(inout) :: inform
+SUBROUTINE inner_solve_cpu( local_job, nrhs, x, ldx, akeep, fkeep, inform )
+   TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
+   class( ssids_fkeep_type ), INTENT( INOUT ) :: fkeep
+   INTEGER( ip_ ), INTENT( INOUT ) :: local_job
+   INTEGER( ip_ ), INTENT( IN ) :: nrhs
+   INTEGER( ip_ ), INTENT( IN ) :: ldx
+   REAL( rp_ ), DIMENSION( ldx,nrhs ), TARGET, INTENT( INOUT ) :: x
+   TYPE( ssids_inform_type ), INTENT( INOUT ) :: inform
 
-   integer(ip_) :: i, r, part
-   integer(ip_) :: n
-   real(rp_), dimension(:,:), allocatable :: x2
+   INTEGER( ip_ ) :: i, r, part
+   INTEGER( ip_ ) :: n
+   REAL( rp_ ), DIMENSION( :,: ), allocatable :: x2
 
    n = akeep%n
 
-   allocate(x2(n, nrhs), stat=inform%stat)
-   if(inform%stat.ne.0) goto 100
+   allocate( x2( n, nrhs ), stat=inform%stat )
+   IF ( inform%stat /= 0 ) GO TO 100
 
    ! Permute/scale
-   if (allocated(fkeep%scaling) .and. (local_job == SSIDS_SOLVE_JOB_ALL .or. &
-            local_job == SSIDS_SOLVE_JOB_FWD)) then
+   IF ( ALLOCATED( fkeep%scaling ) .AND.                                       &
+         ( local_job == SSIDS_SOLVE_JOB_ALL .OR.                               &
+           local_job == SSIDS_SOLVE_JOB_FWD ) ) THEN
       ! Copy and scale
-      do r = 1, nrhs
-         do i = 1, n
-            x2(i,r) = x(akeep%invp(i),r) * fkeep%scaling(i)
-         end do
-      end do
-   else
-      ! Just copy
-      do r = 1, nrhs
-         x2(1:n, r) = x(akeep%invp(1:n), r)
-      end do
-   end if
+      DO r = 1, nrhs
+         DO i = 1, n
+            x2( i,r ) = x( akeep%invp( i ),r ) * fkeep%scaling( i )
+         END DO
+      END DO
+
+!  just copy
+
+   ELSE
+      DO r = 1, nrhs
+         x2( 1:n, r ) = x( akeep%invp( 1:n ), r )
+      END DO
+   END if
 
    ! Perform relevant solves
-   if (local_job.eq.SSIDS_SOLVE_JOB_FWD .or. &
-         local_job.eq.SSIDS_SOLVE_JOB_ALL) then
-      do part = 1, akeep%nparts
-         call fkeep%subtree(part)%ptr%solve_fwd(nrhs, x2, n, inform)
-         if (inform%stat .ne. 0) goto 100
-      end do
-   endif
+   IF ( local_job.eq.SSIDS_SOLVE_JOB_FWD .OR.                                  &
+        local_job.eq.SSIDS_SOLVE_JOB_ALL ) THEN
+     DO part = 1, akeep%nparts
+       CALL fkeep%subtree( part )%ptr%solve_fwd( nrhs, x2, n, inform )
+       IF ( inform%stat /= 0 ) GO TO 100
+     END DO
+   END IF
 
-   if (local_job.eq.SSIDS_SOLVE_JOB_DIAG) then
-      do part = 1, akeep%nparts
-         call fkeep%subtree(part)%ptr%solve_diag(nrhs, x2, n, inform)
-         if (inform%stat .ne. 0) goto 100
-      end do
-   endif
+   IF ( local_job.eq.SSIDS_SOLVE_JOB_DIAG ) THEN
+     DO part = 1, akeep%nparts
+       CALL fkeep%subtree( part )%ptr%solve_diag( nrhs, x2, n, inform )
+       IF ( inform%stat /= 0 ) GO TO 100
+     END DO
+   END IF
 
-   if (local_job.eq.SSIDS_SOLVE_JOB_BWD) then
-      do part = akeep%nparts, 1, -1
-         call fkeep%subtree(part)%ptr%solve_bwd(nrhs, x2, n, inform)
-         if (inform%stat .ne. 0) goto 100
-      end do
-   endif
+   IF ( local_job.eq.SSIDS_SOLVE_JOB_BWD ) THEN
+     DO part = akeep%nparts, 1, -1
+       CALL fkeep%subtree( part )%ptr%solve_bwd( nrhs, x2, n, inform )
+       IF ( inform%stat /= 0 ) GO TO 100
+     END DO
+   END IF
 
-   if (local_job.eq.SSIDS_SOLVE_JOB_DIAG_BWD .or. &
-         local_job.eq.SSIDS_SOLVE_JOB_ALL) then
-      do part = akeep%nparts, 1, -1
-         call fkeep%subtree(part)%ptr%solve_diag_bwd(nrhs, x2, n, inform)
-         if (inform%stat .ne. 0) goto 100
-      end do
-   endif
+   IF ( local_job.eq.SSIDS_SOLVE_JOB_DIAG_BWD .OR.                             &
+        local_job.eq.SSIDS_SOLVE_JOB_ALL ) THEN
+     DO part = akeep%nparts, 1, -1
+       CALL fkeep%subtree( part )%ptr%solve_diag_bwd( nrhs, x2, n, inform )
+       IF ( inform%stat /= 0 ) GO TO 100
+     END DO
+   END IF
 
-   ! Unscale/unpermute
-   if (allocated(fkeep%scaling) .and. ( &
-            local_job == SSIDS_SOLVE_JOB_ALL .or. &
-            local_job == SSIDS_SOLVE_JOB_BWD .or. &
-            local_job == SSIDS_SOLVE_JOB_DIAG_BWD)) then
-      ! Copy and scale
-      do r = 1, nrhs
-         do i = 1, n
-            x(akeep%invp(i),r) = x2(i,r) * fkeep%scaling(i)
-         end do
-      end do
-   else
-      ! Just copy
-      do r = 1, nrhs
-         x(akeep%invp(1:n), r) = x2(1:n, r)
-      end do
-   end if
+!  unscale/unpermute
 
-   return
+   IF ( ALLOCATED( fkeep%scaling ) .AND.                                       &
+         (  local_job == SSIDS_SOLVE_JOB_ALL .OR.                              &
+            local_job == SSIDS_SOLVE_JOB_BWD .OR.                              &
+            local_job == SSIDS_SOLVE_JOB_DIAG_BWD ) ) THEN
+
+!  copy and scale
+
+      DO r = 1, nrhs
+        DO i = 1, n
+          x( akeep%invp( i ),r ) = x2( i,r ) * fkeep%scaling( i )
+        END DO
+      END DO
+
+!  just copy
+
+   ELSE
+     DO r = 1, nrhs
+       x( akeep%invp( 1:n ), r ) = x2( 1:n, r )
+     END DO
+   END IF
+
+   RETURN
 
    100 continue
    inform%flag = SSIDS_ERROR_ALLOCATION
-   return
+   RETURN
 
-end subroutine inner_solve_cpu
+   END SUBROUTINE inner_solve_cpu
 
 !****************************************************************************
 
-subroutine enquire_posdef_cpu(akeep, fkeep, d)
-   type(ssids_akeep), intent(in) :: akeep
-   class(ssids_fkeep), target, intent(in) :: fkeep
-   real(rp_), dimension(*), intent(out) :: d
+   SUBROUTINE enquire_posdef_cpu( akeep, fkeep, d )
+   TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
+   class( ssids_fkeep_type ), TARGET, INTENT( IN ) :: fkeep
+   REAL( rp_ ), DIMENSION( * ), INTENT( OUT ) :: d
 
-   integer(ip_) :: n
-   integer(ip_) :: part, sa, en
+   INTEGER( ip_ ) :: n
+   INTEGER( ip_ ) :: part, sa, en
 
    n = akeep%n
    ! ensure d is not returned undefined
-   d(1:n) = 0.0 ! ensure do not returned with this undefined
+   d( 1:n ) = 0.0 ! ensure do not returned with this undefined
 
-   do part = 1, akeep%nparts
-      sa = akeep%part(part)
-      en = akeep%part(part+1)-1
-      associate(subtree => fkeep%subtree(part)%ptr)
-         select type(subtree)
-         type is (cpu_numeric_subtree)
-            call subtree%enquire_posdef(d(sa:en))
-         end select
-      end associate
-   end do
+   DO part = 1, akeep%nparts
+      sa = akeep%part( part )
+      en = akeep%part( part+1 )-1
+      associate( subtree => fkeep%subtree( part )%ptr )
+         select TYPE( subtree )
+         TYPE IS ( cpu_numeric_subtree )
+            call subtree%enquire_posdef( d( sa:en ) )
+         END select
+      END associate
+   END DO
 
-end subroutine enquire_posdef_cpu
+   END SUBROUTINE enquire_posdef_cpu
 
 !****************************************************************************
 
-subroutine enquire_indef_cpu(akeep, fkeep, inform, piv_order, d)
-   type(ssids_akeep), intent(in) :: akeep
-   class(ssids_fkeep), target, intent(in) :: fkeep
-   type(ssids_inform), intent(inout) :: inform
-   integer(ip_), dimension(akeep%n), optional, intent(out) :: piv_order
+   SUBROUTINE enquire_indef_cpu( akeep, fkeep, inform, piv_order, d )
+   TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
+   class( ssids_fkeep_type ), TARGET, INTENT( IN ) :: fkeep
+   TYPE( ssids_inform_type ), INTENT( INOUT ) :: inform
+   INTEGER( ip_ ), DIMENSION( akeep%n ), optional, INTENT( OUT ) :: piv_order
       ! If i is used to index a variable, its position in the pivot sequence
-      ! will be placed in piv_order(i), with its sign negative if it is
-      ! part of a 2 x 2 pivot; otherwise, piv_order(i) will be set to zero.
-   real(rp_), dimension(2,akeep%n), optional, intent(out) :: d ! The diagonal
-      ! entries of D^{-1} will be placed in d(1,:i) and the off-diagonal
-      ! entries will be placed in d(2,:). The entries are held in pivot order.
+      ! will be placed in piv_order( i ), with its sign negative if it is
+      ! part of a 2 x 2 pivot; otherwise, piv_order( i ) will be set to zero.
+   REAL( rp_ ), DIMENSION( 2,akeep%n ), optional, INTENT( OUT ) :: d ! The diagonal
+      ! entries of D^{-1} will be placed in d( 1,:i ) and the off-diagonal
+      ! entries will be placed in d( 2,: ). The entries are held in pivot order.
 
-   integer(ip_) :: part, sa
-   integer(ip_) :: i, n
-   integer(ip_), dimension(:), allocatable :: po
+   INTEGER( ip_ ) :: part, sa
+   INTEGER( ip_ ) :: i, n
+   INTEGER( ip_ ), DIMENSION( : ), allocatable :: po
 
    n = akeep%n
-   if(present(d)) then
-      ! ensure d is not returned undefined
-      d(1:2,1:n) = 0.0
-   end if
 
-   ! We need to apply the invp externally to piv_order
-   if(present(piv_order)) then
-      allocate(po(akeep%n), stat=inform%stat)
-      if(inform%stat.ne.0) then
+!  ensure d is not returned undefined
+
+   IF ( PRESENT( d ) ) THEN
+      d( 1:2,1:n ) = 0.0
+   END if
+
+!  we need to apply the invp externally to piv_order
+
+   IF ( PRESENT( piv_order ) ) THEN
+      allocate( po( akeep%n ), stat=inform%stat )
+      IF ( inform%stat /= 0 ) THEN
          inform%flag = SSIDS_ERROR_ALLOCATION
          return
-      endif
-   endif
+      END IF
+   END IF
 
-   ! FIXME: should probably return nelim from each part, due to delays passing
-   ! between them
-   do part = 1, akeep%nparts
-      sa = akeep%part(part)
-      associate(subtree => fkeep%subtree(1)%ptr)
-         select type(subtree)
-         type is (cpu_numeric_subtree)
-            if(present(d)) then
-               if(present(piv_order)) then
-                  call subtree%enquire_indef(piv_order=po(sa:n), d=d(1:2,sa:n))
-               else
-                  call subtree%enquire_indef(d=d(1:2,sa:))
-               endif
-            else
-               if(present(piv_order)) then
-                  call subtree%enquire_indef(piv_order=po(sa:akeep%n))
-               else
-                  ! No-op
-                  ! FIXME: should we report an error here? (or done higher up?)
-               endif
-            endif
-         end select
-      end associate
-   end do
+!  FIXME: should probably return nelim from each part, due to delays passing
+!  between them
 
-   ! Apply invp to piv_order
-   if(present(piv_order)) then
-      do i = 1, akeep%n
-         piv_order( akeep%invp(i) ) = po(i)
-!        piv_order( i ) = po(i)
-      end do
-   endif
+   DO part = 1, akeep%nparts
+     sa = akeep%part( part )
+     ASSOCIATE( subtree => fkeep%subtree( 1 )%ptr )
+       SELECT TYPE( subtree )
+       TYPE IS ( cpu_numeric_subtree )
+         IF ( PRESENT( d ) ) THEN
+           IF ( PRESENT( piv_order ) ) THEN
+             CALL subtree%enquire_indef( piv_order=po( sa:n ), d=d( 1:2,sa:n ) )
+           ELSE
+              CALL subtree%enquire_indef( d=d( 1:2,sa: ) )
+           END IF
+         ELSE
+           IF ( PRESENT( piv_order ) ) THEN
+              CALL subtree%enquire_indef( piv_order=po( sa:akeep%n ) )
+           ELSE
+              ! No-op
+              ! FIXME: should we report an error here? ( or done higher up? )
+           END IF
+         END IF
+       END SELECT
+     END ASSOCIATE
+   END DO
 
-end subroutine enquire_indef_cpu
+!  apply invp to piv_order
+
+   IF ( PRESENT( piv_order ) ) THEN
+      DO i = 1, akeep%n
+         piv_order(  akeep%invp( i )  ) = po( i )
+!        piv_order(  i  ) = po( i )
+      END DO
+   END IF
+
+   END SUBROUTINE enquire_indef_cpu
 
 ! Alter D values
-subroutine alter_cpu(d, akeep, fkeep)
-   real(rp_), dimension(2,*), intent(in) :: d  ! The required diagonal entries
-     ! of D^{-1} must be placed in d(1,i) (i = 1,...n)
-     ! and the off-diagonal entries must be placed in d(2,i) (i = 1,...n-1).
-   type(ssids_akeep), intent(in) :: akeep
-   class(ssids_fkeep), target, intent(inout) :: fkeep
 
-   integer(ip_) :: part
+   SUBROUTINE alter_cpu( d, akeep, fkeep )
+   REAL( rp_ ), DIMENSION( 2, * ), INTENT( IN ) :: d  ! The required diagonal entries
+     ! of D^{-1} must be placed in d( 1,i ) ( i = 1,...n )
+     ! and the off-diagonal entries must be placed in d( 2,i ) ( i = 1,...n-1 ).
+   TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
+   class( ssids_fkeep_type ), TARGET, INTENT( INOUT ) :: fkeep
 
-   do part = 1, akeep%nparts
-      associate(subtree => fkeep%subtree(1)%ptr)
-         select type(subtree)
-         type is (cpu_numeric_subtree)
-            call subtree%alter(d(1:2,akeep%part(part):akeep%part(part+1)-1))
-         end select
-      end associate
-   end do
-end subroutine alter_cpu
+   INTEGER( ip_ ) :: part
+
+   DO part = 1, akeep%nparts
+      ASSOCIATE( subtree => fkeep%subtree( 1 )%ptr )
+         SELECT TYPE( subtree )
+         TYPE IS ( cpu_numeric_subtree )
+            call subtree%alter( d( 1:2,akeep%part( part ):akeep%part( part+1 )-1 ) )
+         END select
+      END associate
+   END DO
+   END SUBROUTINE alter_cpu
 
 !****************************************************************************
 
-subroutine free_fkeep(fkeep, flag)
-   class(ssids_fkeep), intent(inout) :: fkeep
-   integer(ip_), intent(out) :: flag ! not used for cpu version, set to 0
+   SUBROUTINE free_fkeep( fkeep, flag )
+   CLASS( ssids_fkeep_type ), INTENT( INOUT ) :: fkeep
+   INTEGER( ip_ ), INTENT( OUT ) :: flag ! not used for cpu version, set to 0
 
-   integer(ip_) :: i
-   integer(ip_) :: st
+   INTEGER( ip_ ) :: i, st
 
    flag = 0 ! Not used for basic SSIDS, just set to zero
 
-   deallocate(fkeep%scaling, stat=st)
-   if(allocated(fkeep%subtree)) then
-      do i = 1, size(fkeep%subtree)
-         if(associated(fkeep%subtree(i)%ptr)) then
-            call fkeep%subtree(i)%ptr%cleanup()
-            deallocate(fkeep%subtree(i)%ptr)
-            nullify(fkeep%subtree(i)%ptr)
-         endif
-      end do
-      deallocate(fkeep%subtree)
-   endif
-end subroutine free_fkeep
+   deallocate( fkeep%scaling, stat=st )
+   IF ( allocated( fkeep%subtree ) ) THEN
+      DO i = 1, size( fkeep%subtree )
+         IF ( associated( fkeep%subtree( i )%ptr ) ) THEN
+            call fkeep%subtree( i )%ptr%cleanup(  )
+            deallocate( fkeep%subtree( i )%ptr )
+            nullify( fkeep%subtree( i )%ptr )
+         END IF
+      END DO
+      deallocate( fkeep%subtree )
+   END IF
+   END SUBROUTINE free_fkeep
 
-end module spral_ssids_fkeep_precision
+END MODULE GALAHAD_SSIDS_fkeep_precision
