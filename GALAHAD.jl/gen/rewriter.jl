@@ -10,7 +10,7 @@ callbacks = ("galahad_f", "galahad_g", "galahad_h", "galahad_prec", "galahad_hpr
              "galahad_constant_prec", "galahad_r", "galahad_jr", "galahad_hr", "galahad_jrprod",
              "galahad_hrprod", "galahad_shrprod", "galahad_fc", "galahad_gj", "galahad_hl", "galahad_fgh")
 
-types = ("control", "time", "inform", "history", "subproblem_control", "subproblem_inform", "ainfo", "finfo", "sinfo", "options")
+types = ("control", "time", "inform", "history", "subproblem_control", "subproblem_inform", "ainfo", "finfo", "sinfo")
 
 nonparametric_structures_int = ("arc_time_type", "bgo_time_type", "blls_time_type", "bllsb_time_type",
                                 "bnls_time_type", "bqp_time_type", "bqpb_time_type", "ccqp_time_type",
@@ -34,15 +34,13 @@ nonparametric_structures_float = ("bqp_time_type", "bsc_control_type", "convert_
 
 # Structures that don't have a field with rpc_ but have an inner structure with rpc_ as a field.
 special_structures_float = ("convert_inform_type", "cro_inform_type", "lms_inform_type", "ugo_inform_type",
-                            "uls_inform_type", "nodend_inform_type", "spral_ssids_inform", "ssls_inform_type",
+                            "uls_inform_type", "nodend_inform_type", "ssids_inform_type", "ssls_inform_type",
                             "ssls_control_type")
 
 hsl_structures = ("ma48_control", "ma48_ainfo", "ma48_finfo", "ma48_sinfo", "ma57_control", "ma57_ainfo",
                   "ma57_finfo", "ma57_sinfo", "ma77_control", "ma77_info", "ma86_control", "ma86_info", "ma87_control",
                   "ma87_info", "ma97_control", "ma97_info", "mc64_control", "mc64_info", "mc68_control", "mc68_info",
                   "mi20_control", "mi20_solve_control", "mi20_info", "mi28_control", "mi28_info")
-
-ssids_structures = ("spral_ssids_options", "spral_ssids_inform")
 
 include("galahad_c.jl")
 
@@ -58,7 +56,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
     # GALAHAD
     for type in types
       for package in packages
-        type_name = (package == "ssids") ? "spral_$(package)_$(type)" : "$(package)_$(type)_type"
+        type_name = "$(package)_$(type)_type"
         if (type_name ∉ nonparametric_structures_float) && (type_name ∈ nonparametric_structures_int)
           text = replace(text, "::$(type_name)" => "::$(type_name){T}")
           text = replace(text, ", $(type_name)}" => ", $(type_name){T}}")
@@ -139,7 +137,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
 
         for type in types
           for package in packages
-            type_name = (package == "ssids") ? "spral_$(package)_$(type)" : "$(package)_$(type)_type"
+            type_name = "$(package)_$(type)_type"
             if (type_name ∉ nonparametric_structures_float) && (type_name ∈ nonparametric_structures_int)
               routine_single_int32 = replace(routine_single_int32, type_name => "$(type_name){Float32}")
               routine_double_int32 = replace(routine_double_int32, type_name => "$(type_name){Float64}")
