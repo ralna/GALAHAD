@@ -92,11 +92,11 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_ef.h
 #include "galahad_pquad_ef.h"
 #else
-       printf("direct:  %" i_ipc_ " evaluations. Optimal objective value = %.2f"
-         " status = %1" i_ipc_ "\n", inform.f_eval, f, inform.status);
+       printf("direct:  %" d_ipc_ " evaluations. Optimal objective value = %.2f"
+         " status = %1" d_ipc_ "\n", inform.f_eval, f, inform.status);
 #endif
     }else{
-       printf("direct: UGO_solve exit status = %1" i_ipc_ "\n", inform.status);
+       printf("direct: UGO_solve exit status = %1" d_ipc_ "\n", inform.status);
     }
 
 
@@ -130,11 +130,11 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_ef.h
 #include "galahad_pquad_ef.h"
 #else
-       printf("reverse: %" i_ipc_ " evaluations. Optimal objective value = %.2f"
-          " status = %1" i_ipc_ "\n", inform.f_eval, f, inform.status);
+       printf("reverse: %" d_ipc_ " evaluations. Optimal objective value = %.2f"
+          " status = %1" d_ipc_ "\n", inform.f_eval, f, inform.status);
 #endif
     }else{
-       printf("reverse: UGO_solve exit status = %1" i_ipc_ "\n", inform.status);
+       printf("reverse: UGO_solve exit status = %1" d_ipc_ "\n", inform.status);
     }
 
     // Delete internal workspace

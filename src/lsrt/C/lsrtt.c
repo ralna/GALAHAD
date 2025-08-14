@@ -54,7 +54,7 @@ int main(void) {
       } else if ( status == 4 ) { // restart
         for( ipc_ i = 0; i < m; i++) u[i] = 1.0;
       }else{
-          printf(" the value %1" i_ipc_ " of status should not occur\n",
+          printf(" the value %1" d_ipc_ " of status should not occur\n",
             status);
           break;
       }
@@ -64,7 +64,7 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_lsrt.h
 #include "galahad_pquad_lsrt.h"
 #else
-    printf("lsrt_solve_problem exit status = %" i_ipc_
+    printf("lsrt_solve_problem exit status = %" d_ipc_
            ", f = %.2f\n", inform.status, inform.obj );
 #endif
     // Delete internal workspace

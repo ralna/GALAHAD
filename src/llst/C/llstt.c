@@ -189,13 +189,13 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_lf.h
 #include "galahad_pquad_lf.h"
 #else
-               printf("storage type %c%1" i_ipc_ ":  status = %1" i_ipc_ 
+               printf("storage type %c%1" d_ipc_ ":  status = %1" d_ipc_ 
                       ", ||r|| = %5.2f\n",
                       st, use_s, inform.status, inform.r_norm );
 #endif
            }else{
-               printf("storage type %c%1" i_ipc_ 
-                      ": LLST_solve exit status = %1" i_ipc_ "\n",
+               printf("storage type %c%1" d_ipc_ 
+                      ": LLST_solve exit status = %1" d_ipc_ "\n",
                       st, use_s, inform.status);
            }
         }
