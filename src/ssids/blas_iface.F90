@@ -1,17 +1,17 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-02-06 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 13:20 GMT
 
 ! Define BLAS API in Fortran module
 
 #include "ssids_routines.h"
 
-module spral_ssids_blas_iface
-  implicit none
+MODULE GALAHAD_SSIDS_BLAS_IFACE
+  IMPLICIT none
 
-  private
-  public :: sgemv, strsv
-  public :: dgemv, dtrsv
-  public :: sgemm, ssyrk, strsm
-  public :: dgemm, dsyrk, dtrsm
+  PRIVATE
+  PUBLIC :: sgemv, strsv
+  PUBLIC :: dgemv, dtrsv
+  PUBLIC :: sgemm, ssyrk, strsm
+  PUBLIC :: dgemm, dsyrk, dtrsm
 
   ! Level 2 BLAS
   interface
@@ -121,4 +121,4 @@ module spral_ssids_blas_iface
     end subroutine dtrsm
   end interface
 
-end module spral_ssids_blas_iface
+END MODULE GALAHAD_SSIDS_BLAS_IFACE

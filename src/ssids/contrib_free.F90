@@ -1,53 +1,54 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-16 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 13:20 GMT
 
 #include "spral_procedures.h"
 
-!> \file
-!> \copyright 2016 The Science and Technology Facilities Council (STFC)
-!> \licence   BSD licence, see LICENCE file for details
-!> \author    Jonathan Hogg
+!  copyright 2016 The Science and Technology Facilities Council (STFC)
+!  licence   BSD licence, see LICENCE file for details
+!  author    Jonathan Hogg
 !
-!> \brief Routines for freeing contrib_type.
-!>
-!> As it depends on routines defined by module that use the type, it needs
-!> to be a seperate module to spral_ssids_contrib_precision.
-module spral_ssids_contrib_fsub_precision
-  use spral_kinds_precision
-  use spral_ssids_contrib_precision, only : contrib_type
-  use spral_ssids_cpu_subtree_precision, only : cpu_free_contrib
-  use spral_ssids_gpu_subtree_precision, only : gpu_free_contrib
-  implicit none
+!  Routines for freeing contrib_type.
+!
+!  As it depends on routines defined by module that use the type, it needs
+!  to be a seperate module to GALAHAD_SSIDS_CONTRIB_PRECISION.
 
-contains
-  subroutine contrib_free(contrib)
-    implicit none
-    type(contrib_type), intent(inout) :: contrib
+MODULE GALAHAD_SSIDS_CONTRIB_FSUB_precision
+  USE SPRAL_KINDS_precision
+  USE GALAHAD_SSIDS_CONTRIB_precision, ONLY: contrib_type
+  USE GALAHAD_SSIDS_CPU_SUBTREE_precision, ONLY: cpu_free_contrib
+  USE GALAHAD_SSIDS_GPU_SUBTREE_precision, ONLY: gpu_free_contrib
+  IMPLICIT none
 
-    select case(contrib%owner)
-    case (0) ! CPU
-       call cpu_free_contrib(contrib%posdef, contrib%owner_ptr)
-    case (1) ! GPU
-       call gpu_free_contrib(contrib)
-    case default
+CONTAINS
+  SUBROUTINE contrib_free(contrib)
+    IMPLICIT none
+    TYPE( contrib_type ), INTENT( INOUT ) :: contrib
+
+    SELECT CASE(contrib%owner)
+    CASE (0) ! CPU
+       CALL cpu_free_contrib( contrib%posdef, contrib%owner_ptr )
+    CASE (1) ! GPU
+       CALL gpu_free_contrib( contrib )
+    CASE DEFAULT
        ! This should never happen
-       print *, "Unrecognised contrib owner ", contrib%owner
-       stop -1
-    end select
-  end subroutine contrib_free
-end module spral_ssids_contrib_fsub_precision
+       PRINT *, "Unrecognised contrib owner ", contrib%owner
+       STOP -1
+    END SELECT
+  END SUBROUTINE contrib_free
+END MODULE galahad_ssids_contrib_fsub_precision
 
 ! The C prototype for the following routine is in contrib.h
-subroutine spral_ssids_contrib_free_precision(ccontrib) bind(C)
-  use, intrinsic :: iso_c_binding
-  use spral_ssids_contrib_fsub_precision
-  implicit none
 
-  type(C_PTR), value :: ccontrib
+SUBROUTINE galahad_ssids_contrib_free_precision( ccontrib ) BIND(C)
+  USE, INTRINSIC :: iso_c_binding
+  USE GALAHAD_SSIDS_CONTRIB_FSUB_precision
+  IMPLICIT NONE
 
-  type(contrib_type), pointer :: fcontrib
+  TYPE( C_PTR ), VALUE :: ccontrib
 
-   if (c_associated(ccontrib)) then
-      call c_f_pointer(ccontrib, fcontrib)
-      call contrib_free(fcontrib)
-   end if
-end subroutine spral_ssids_contrib_free_precision
+  TYPE( contrib_type ), POINTER :: fcontrib
+
+  IF ( C_associated( ccontrib ) ) THEN
+    CALL C_F_POINTER( ccontrib, fcontrib )
+    CALL contrib_free( fcontrib )
+  END IF
+END SUBROUTINE galahad_ssids_contrib_free_precision

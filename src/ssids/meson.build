@@ -4,7 +4,7 @@ if build_ssids
                               'profile.cxx',  'SymbolicSubtree.cxx', 
                               'ThreadStats.cxx', 'wrappers.cxx')
 
-  libgalahad_src += files('akeep.F90', 'anal.F90', 
+  libgalahad_src += files('akeep.F90', 'analyse.F90', 
                           'blas_iface.F90', 'ssids.F90',
                           'contrib.F90', 'contrib_free.F90', 'cpu_iface.F90',
                           'cpu_solve.F90', 'cpu_subtree.F90', 'datatypes.F90',

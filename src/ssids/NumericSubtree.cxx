@@ -1,9 +1,7 @@
-/** \file
- *  \copyright 2016 The Science and Technology Facilities Council (STFC)
- *  \licence   BSD licence, see LICENCE file for details
- *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.1 - 2024-11-26 AT 12:45 GMT
- */
+//  version   GALAHAD 5.1 - 2025-08-13 AT 14:10 GMT
+//  copyright 2016 The Science and Technology Facilities Council (STFC)
+//  licence   BSD licence, see LICENCE file for details
+//  author    Jonathan Hogg
 
 #include "ssids_cpu_NumericSubtree.hxx"
 
@@ -16,7 +14,7 @@
 #include "spral_omp.hxx"
 #include "ssids_cpu_AppendAlloc.hxx"
 
-using namespace spral::ssids::cpu;
+using namespace galahad::ssids::cpu;
 
 /////////////////////////////////////////////////////////////////////////////
 // anonymous namespace
@@ -37,7 +35,7 @@ typedef NumericSubtree<false, T, PAGE_SIZE, AppendAlloc<T>> NumericSubtreeIndef;
 //////////////////////////////////////////////////////////////////////////
 
 extern "C"
-void* spral_ssids_cpu_create_num_subtree(
+void* galahad_ssids_cpu_create_num_subtree(
       bool posdef,
       void const* symbolic_subtree_ptr,
       const rpc_ *const aval, // Values of A
@@ -70,7 +68,7 @@ void* spral_ssids_cpu_create_num_subtree(
 }
 
 extern "C"
-void spral_ssids_cpu_destroy_num_subtree(bool posdef, void* target) {
+void galahad_ssids_cpu_destroy_num_subtree(bool posdef, void* target) {
    if(!target) return;
 
    if(posdef) {
@@ -84,7 +82,7 @@ void spral_ssids_cpu_destroy_num_subtree(bool posdef, void* target) {
 
 /* wrapper around templated routines */
 extern "C"
-Flag spral_ssids_cpu_subtree_solve_fwd(
+Flag galahad_ssids_cpu_subtree_solve_fwd(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
       ipc_ nrhs,         // number of right-hand sides
@@ -111,7 +109,7 @@ Flag spral_ssids_cpu_subtree_solve_fwd(
 
 /* wrapper around templated routines */
 extern "C"
-Flag spral_ssids_cpu_subtree_solve_diag(
+Flag galahad_ssids_cpu_subtree_solve_diag(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
       ipc_ nrhs,         // number of right-hand sides
@@ -136,7 +134,7 @@ Flag spral_ssids_cpu_subtree_solve_diag(
 
 /* wrapper around templated routines */
 extern "C"
-Flag spral_ssids_cpu_subtree_solve_diag_bwd(
+Flag galahad_ssids_cpu_subtree_solve_diag_bwd(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
       ipc_ nrhs,         // number of right-hand sides
@@ -163,7 +161,7 @@ Flag spral_ssids_cpu_subtree_solve_diag_bwd(
 
 /* wrapper around templated routines */
 extern "C"
-Flag spral_ssids_cpu_subtree_solve_bwd(
+Flag galahad_ssids_cpu_subtree_solve_bwd(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
       ipc_ nrhs,         // number of right-hand sides
@@ -190,7 +188,7 @@ Flag spral_ssids_cpu_subtree_solve_bwd(
 
 /* wrapper around templated routines */
 extern "C"
-void spral_ssids_cpu_subtree_enquire(
+void galahad_ssids_cpu_subtree_enquire(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
       ipc_* piv_order,   // pivot order, may be null, only used if indef
@@ -211,7 +209,7 @@ void spral_ssids_cpu_subtree_enquire(
 
 /* wrapper around templated routines */
 extern "C"
-void spral_ssids_cpu_subtree_alter(
+void galahad_ssids_cpu_subtree_alter(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void* subtree_ptr,// pointer to relevant type of NumericSubtree
       rpc_ const* d   // new diagonal entries
@@ -226,7 +224,7 @@ void spral_ssids_cpu_subtree_alter(
 
 /* wrapper around templated routines */
 extern "C"
-void spral_ssids_cpu_subtree_get_contrib(
+void galahad_ssids_cpu_subtree_get_contrib(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void* subtree_ptr,// pointer to relevant type of NumericSubtree
       ipc_* n,           // returned dimension of contribution block
@@ -256,7 +254,7 @@ void spral_ssids_cpu_subtree_get_contrib(
 
 /* wrapper around templated routines */
 extern "C"
-void spral_ssids_cpu_subtree_free_contrib(
+void galahad_ssids_cpu_subtree_free_contrib(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void* subtree_ptr // pointer to relevant type of NumericSubtree
       ) {
