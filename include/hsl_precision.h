@@ -6,6 +6,7 @@
  */
 
 #include <stdint.h>
+#include <inttypes.h>
 
 // include guard
 #ifndef HSL_PRECISION_H
@@ -28,12 +29,12 @@ typedef double rpc_;
 
 #ifdef INTEGER_64
 typedef int64_t ipc_;  // integer precision
-#define d_ipc_ "ld"
-#define i_ipc_ "li"
+#define d_ipc_ PRId64
+#define i_ipc_ PRIu64
 #else
 typedef int32_t ipc_;  // integer precision
-#define d_ipc_ "d"
-#define i_ipc_ "i"
+#define d_ipc_ PRId32
+#define i_ipc_ PRIu32
 #endif
 
 // C long integer 

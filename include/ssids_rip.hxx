@@ -6,6 +6,7 @@
  */
 
 #include <stdint.h>
+#include <inttypes.h>
 #ifdef REAL_128
 #include <quadmath.h>
 #endif
@@ -29,10 +30,13 @@ typedef double rpc_;
 #ifdef INTEGER_64
 typedef int64_t ipc_;
 typedef uint64_t uipc_;
+#define d_ipc_ PRId64
+#define i_ipc_ PRIu64
 #else
 typedef int32_t ipc_;
 typedef uint32_t uipc_;
-/* typedef unsigned int uipc_; */
+#define d_ipc_ PRId32
+#define i_ipc_ PRIu32
 #endif
 
 /* C long integer */

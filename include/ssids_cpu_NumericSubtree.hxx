@@ -554,26 +554,18 @@ public:
 
 	void print() const {
 		for(ipc_ node=0; node<symb_.nnodes_; node++) {
-#ifdef INTEGER_64
-			printf("== Node %ld ==\n", node);
-#else
-			printf("== Node %d ==\n", node);
-#endif
+			printf("== Node %" d_ipc_ " ==\n", node);
 			ipc_ m = symb_[node].nrow + nodes_[node].ndelay_in;
 			ipc_ n = symb_[node].ncol + nodes_[node].ndelay_in;
          ipc_ ldl = align_lda<T>(m);
          ipc_ nelim = nodes_[node].nelim;
 			ipc_ const* rlist = &symb_[node].rlist[ symb_[node].ncol ];
 			for(ipc_ i=0; i<m; ++i) {
-#ifdef INTEGER_64
-				if(i<n) printf("%ld%s:", nodes_[node].perm[i], 
-                                               (i<nelim)?"X":"D");
-				else    printf("%ld:", rlist[i-n]);
-#else
-				if(i<n) printf("%d%s:", nodes_[node].perm[i], 
-                                               (i<nelim)?"X":"D");
-				else    printf("%d:", rlist[i-n]);
-#endif
+				if (i<n) {
+               printf("%" d_ipc_ "%s:", nodes_[node].perm[i], (i<nelim) ? "X" : "D");
+				} else {
+               printf("%" d_ipc_ ":", rlist[i-n]);
+            }
 #ifdef REAL_128
 				for(ipc_ j=0; j<n; j++) {
                                   char buf1[128];
