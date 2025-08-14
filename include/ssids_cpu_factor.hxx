@@ -49,8 +49,7 @@ void factor_node_indef(
    /* Extract useful information about node */
    ipc_ m = snode.nrow + node.ndelay_in;
    ipc_ n = snode.ncol + node.ndelay_in;
-   size_t ldl = align_lda<T>(m);
-   ipc_ ldl = static_cast<ipc_>(ldl);
+   ipc_ ldl = static_cast<ipc_>(align_lda<T>(m));
    T *lcol = node.lcol;
    T *d = &node.lcol[ n*ldl ];
    ipc_ *perm = node.perm;
