@@ -72,7 +72,7 @@ int main(void) {
                             g, c_l, c_u, x_l, x_u, x, c, y, z,
                             x_stat, c_stat );
 
-    printf(" CRO_crossover exit status = %1" i_ipc_ "\n", inform.status);
+    printf(" CRO_crossover exit status = %1" d_ipc_ "\n", inform.status);
 
     // Delete internal workspace
     cro_terminate( &data, &control, &inform );

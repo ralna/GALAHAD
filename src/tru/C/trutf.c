@@ -118,12 +118,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_f.h
 #include "galahad_pquad_f.h"
 #else
-            printf("%c:%6" i_ipc_ " iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%c:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("%c: TRU_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: TRU_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
         //printf("x: ");
@@ -179,7 +179,7 @@ int main(void) {
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1" i_ipc_ " of status should not occur\n",
+                        printf(" the value %1" d_ipc_ " of status should not occur\n",
                           status);
                         break;
                     }
@@ -205,7 +205,7 @@ int main(void) {
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1" i_ipc_ " of status should not occur\n",
+                        printf(" the value %1" d_ipc_ " of status should not occur\n",
                           status);
                         break;
                     }
@@ -232,7 +232,7 @@ int main(void) {
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1" i_ipc_ " of status should not occur\n",
+                        printf(" the value %1" d_ipc_ " of status should not occur\n",
                           status);
                         break;
                     }
@@ -258,7 +258,7 @@ int main(void) {
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1" i_ipc_ " of status should not occur\n",
+                        printf(" the value %1" d_ipc_ " of status should not occur\n",
                           status);
                         break;
                     }
@@ -284,7 +284,7 @@ int main(void) {
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1" i_ipc_ " of status should not occur\n",
+                        printf(" the value %1" d_ipc_ " of status should not occur\n",
                           status);
                         break;
                     }
@@ -298,12 +298,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_f.h
 #include "galahad_pquad_f.h"
 #else
-            printf("%c:%6" i_ipc_ " iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%c:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("%c: TRU_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: TRU_solve exit status = %1" d_ipc_ "\n", 
             st, inform.status);
         }
         //printf("x: ");

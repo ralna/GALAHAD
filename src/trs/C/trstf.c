@@ -228,7 +228,7 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_trs.h
 #include "galahad_pquad_trs.h"
 #else
-          printf("format %c%s: TRS_solve_problem exit status = %1" i_ipc_ 
+          printf("format %c%s: TRS_solve_problem exit status = %1" d_ipc_ 
                  ", f = %.2f\n", st, ma, inform.status, inform.obj );
 #endif
           //printf("x: ");

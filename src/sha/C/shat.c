@@ -48,7 +48,7 @@ int main(void) {
 
         // analyse the matrix and discover the number of differences needed
         sha_analyse_matrix( &control, &data, &status, n, ne, row, col, &m );
-        printf(" Algorithm %" i_ipc_ " - %" i_ipc_ " differences required,"
+        printf(" Algorithm %" d_ipc_ " - %" d_ipc_ " differences required,"
                " one extra might help\n", algorithm, m);
         m = m + control.extra_differences;
 
@@ -77,7 +77,7 @@ int main(void) {
         //                  ly1, ly2, ytrans, val_est, NULL );
         //                  if the natural order is ok
 
-        printf(" H from %" i_ipc_ " differences:\n", m);
+        printf(" H from %" d_ipc_ " differences:\n", m);
         for( ipc_ i = 0; i < ne; i++) printf(" %1.2f", val_est[i]);
 
         sha_information( &data, &inform, &status );
