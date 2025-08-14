@@ -56,7 +56,6 @@ void factor_node_indef(
    T *contrib = node.contrib;
 
    /* Perform factorization */
-   //Verify<T> verifier(m, n, perm, lcol, ldl);
    if(options.pivot_method != PivotMethod::tpp) {
       // Use an APP based pivot method
       T zero_val = 0.0;
@@ -73,8 +72,6 @@ void factor_node_indef(
       node.nelim = 0;
    }
 //printf("past\n");
-   //verifier.verify(node.nelim, perm, lcol, ldl, d);
-
    /* Finish factorization worth simplistic code */
    if(node.nelim < n) {
       ipc_ nelim = node.nelim;
