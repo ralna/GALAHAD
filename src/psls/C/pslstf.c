@@ -52,7 +52,7 @@ int main(void) {
                              "coordinate", ne, row, col, NULL );
                 psls_form_preconditioner( &data, &status, ne, val );
                 break;
-            printf(" case %1" i_ipc_ " break\n",d);
+            printf(" case %1" d_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 psls_import( &control, &data, &status, n,
@@ -77,8 +77,8 @@ int main(void) {
           status_apply = - 1;
         }
 
-        printf("%c storage: status from form & factorize = %" i_ipc_ 
-               " apply = %" i_ipc_ "\n", st, status, status_apply );
+        printf("%c storage: status from form & factorize = %" d_ipc_ 
+               " apply = %" d_ipc_ "\n", st, status, status_apply );
 
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

@@ -128,12 +128,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
 #include "galahad_pquad_sf.h"
 #else
-            printf("%s:%6" i_ipc_ " iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("%s: BLLSB_solve exit status = %1" i_ipc_ "\n", 
+            printf("%s: BLLSB_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
         //printf("x: ");

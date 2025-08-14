@@ -82,7 +82,7 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_dps.h
 #include "galahad_pquad_dps.h"
 #else
-      printf("format %c: DPS_solve_problem exit status   = %1" i_ipc_ 
+      printf("format %c: DPS_solve_problem exit status   = %1" d_ipc_ 
              ", f = %.2f\n", st, inform.status, inform.obj );
 #endif
 
@@ -110,7 +110,7 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_dpsr.h
 #include "galahad_pquad_dpsr.h"
 #else
-      printf("format %c: DPS_resolve_problem exit status = %1" i_ipc_ 
+      printf("format %c: DPS_resolve_problem exit status = %1" d_ipc_ 
              ", f = %.2f\n", st, inform.status, inform.obj );
 #endif
       //printf("x: ");

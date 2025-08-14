@@ -66,50 +66,50 @@ int main(void) {
                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat );
     dqp_information( &data, &inform, &status );
-    printf("status %" i_ipc_ "\n", inform.status);
-    printf("alloc_status %" i_ipc_ "\n", inform.alloc_status);
+    printf("status %" d_ipc_ "\n", inform.status);
+    printf("alloc_status %" d_ipc_ "\n", inform.alloc_status);
     printf("bad_alloc %s\n", inform.bad_alloc);
-    printf("fdc status %" i_ipc_ "\n", inform.fdc_inform.status);
+    printf("fdc status %" d_ipc_ "\n", inform.fdc_inform.status);
     printf("fdc pivot %f\n", inform.fdc_inform.non_negligible_pivot);
-    printf("fdc sls status %" i_ipc_ "\n", inform.fdc_inform.sls_inform.status);
-    printf("fdc sls nodes %" i_ipc_ "\n", 
+    printf("fdc sls status %" d_ipc_ "\n", inform.fdc_inform.sls_inform.status);
+    printf("fdc sls nodes %" d_ipc_ "\n", 
            inform.fdc_inform.sls_inform.nodes_assembly_tree);
     printf("fdc sls flops %li\n", inform.fdc_inform.sls_inform.flops_blas);
     printf("fdc sls alt %d\n", inform.fdc_inform.sls_inform.alternative);
-    printf("fdc sls ma97 %" i_ipc_ "\n", 
+    printf("fdc sls ma97 %" d_ipc_ "\n", 
            inform.fdc_inform.sls_inform.ma97_info.flag);
 
-//    printf("fdc sls ssids %" i_ipc_ "\n", 
+//    printf("fdc sls ssids %" d_ipc_ "\n", 
 //           inform.fdc_inform.sls_inform.ssids_inform.flag);
-      printf("fdc sls mc61(0) %" i_ipc_ "\n", 
+      printf("fdc sls mc61(0) %" d_ipc_ "\n", 
               inform.fdc_inform.sls_inform.mc61_info[0]);
-      printf("fdc sls mc61(1) %" i_ipc_ "\n",
+      printf("fdc sls mc61(1) %" d_ipc_ "\n",
               inform.fdc_inform.sls_inform.mc61_info[1]);
-      printf("fdc sls mc64 %" i_ipc_ "\n", 
+      printf("fdc sls mc64 %" d_ipc_ "\n", 
              inform.fdc_inform.sls_inform.mc64_info.flag);
-//    printf("fdc sls mc64 %" i_ipc_ "\n", 
+//    printf("fdc sls mc64 %" d_ipc_ "\n", 
 //            inform.fdc_inform.sls_inform.mc64_info.more);
-//    printf("fdc sls mc64 %" i_ipc_ "\n", 
+//    printf("fdc sls mc64 %" d_ipc_ "\n", 
 //           inform.fdc_inform.sls_inform.mc64_info.strucrank);
-//    printf("fdc sls mc64 %" i_ipc_ "\n", 
+//    printf("fdc sls mc64 %" d_ipc_ "\n", 
 /            inform.fdc_inform.sls_inform.mc64_info.stat);
-      printf("fdc sls mc68 %" i_ipc_ "\n", 
+      printf("fdc sls mc68 %" d_ipc_ "\n", 
               inform.fdc_inform.sls_inform.mc68_info.flag);
-    printf("fdc sls mumps %" i_ipc_ "\n", 
+    printf("fdc sls mumps %" d_ipc_ "\n", 
            inform.fdc_inform.sls_inform.mumps_error);
-//    printf("fdc sls pard %" i_ipc_ "\n", 
+//    printf("fdc sls pard %" d_ipc_ "\n", 
 //            inform.fdc_inform.sls_inform.pardiso_error);
-    printf("fdc sls wsmp %" i_ipc_ "\n", 
+    printf("fdc sls wsmp %" d_ipc_ "\n", 
            inform.fdc_inform.sls_inform.wsmp_error);
-    printf("fdc sls pastix %" i_ipc_ "\n", 
+    printf("fdc sls pastix %" d_ipc_ "\n", 
            inform.fdc_inform.sls_inform.pastix_info);
-    printf("fdc sls mpi %" i_ipc_ "\n", inform.fdc_inform.sls_inform.mpi_ierr);
-    printf("fdc sls lapack %" i_ipc_ "\n", 
+    printf("fdc sls mpi %" d_ipc_ "\n", inform.fdc_inform.sls_inform.mpi_ierr);
+    printf("fdc sls lapack %" d_ipc_ "\n", 
            inform.fdc_inform.sls_inform.lapack_error);
-    printf("fdc uls status %" i_ipc_ "\n", inform.fdc_inform.uls_inform.status);
-    printf("sls status %" i_ipc_ "\n", inform.sls_inform.status);
-    printf("sbls status %" i_ipc_ "\n", inform.sbls_inform.status);
-    printf("sbls alloc_status %" i_ipc_ "\n", inform.sbls_inform.alloc_status);
+    printf("fdc uls status %" d_ipc_ "\n", inform.fdc_inform.uls_inform.status);
+    printf("sls status %" d_ipc_ "\n", inform.sls_inform.status);
+    printf("sbls status %" d_ipc_ "\n", inform.sbls_inform.status);
+    printf("sbls alloc_status %" d_ipc_ "\n", inform.sbls_inform.alloc_status);
     printf("sbls bad_alloc %s\n", inform.sbls_inform.bad_alloc);
 
     if(inform.status == 0){
@@ -117,12 +117,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_f.h
 #include "galahad_pquad_f.h"
 #else
-            printf("%c:%6" i_ipc_ " iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%c:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
 #endif
     }else{
-        printf("%c: DQP_solve exit status = %1" i_ipc_ "\n", st, inform.status);
+        printf("%c: DQP_solve exit status = %1" d_ipc_ "\n", st, inform.status);
     }
     //printf("x: ");
     //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

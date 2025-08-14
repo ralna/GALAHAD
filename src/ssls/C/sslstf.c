@@ -78,7 +78,7 @@ int main(void) {
                                        A_ne, A_val,
                                        C_ne, C_val );
                 break;
-            printf(" case %1" i_ipc_ " break\n",d);
+            printf(" case %1" d_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 ssls_import( &control, &data, &status, n, m,
@@ -151,7 +151,7 @@ int main(void) {
         // check that the factorization succeeded
         if(status != 0){
             ssls_information( &data, &inform, &status );
-            printf("%c: SSLS_solve factorization exit status = %1" i_ipc_ "\n", 
+            printf("%c: SSLS_solve factorization exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
             continue;
         } 
@@ -200,14 +200,14 @@ int main(void) {
         // check that the factorization succeeded
         if(status != 0){
             ssls_information( &data, &inform, &status );
-            printf("%c: SSLS_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: SSLS_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
             continue;
         } 
 
         ssls_information( &data, &inform, &status );
         if(inform.status == 0){
-            printf("%c: status = %1" i_ipc_ "", st, inform.status);
+            printf("%c: status = %1" d_ipc_ "", st, inform.status);
           printf(" sol = ");
           for(int loop = 0; loop < n+m; loop++)
 #ifdef REAL_128
@@ -217,7 +217,7 @@ int main(void) {
 #endif
            printf("\n");
         }else{
-            printf("%c: SSLS_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: SSLS_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
 

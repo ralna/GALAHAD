@@ -39,7 +39,6 @@ namespace spral { namespace ssids { namespace cpu {
 /* Factorize a node (indef) */
 template <typename T, typename PoolAlloc>
 void factor_node_indef(
-      ipc_ ni, // FIXME: remove post debug
       SymbolicNode const& snode,
       NumericNode<T, PoolAlloc> &node,
       struct cpu_factor_options const& options,
@@ -50,14 +49,13 @@ void factor_node_indef(
    /* Extract useful information about node */
    ipc_ m = snode.nrow + node.ndelay_in;
    ipc_ n = snode.ncol + node.ndelay_in;
-   size_t ldl = align_lda<T>(m);
+   ipc_ ldl = static_cast<ipc_>(align_lda<T>(m));
    T *lcol = node.lcol;
    T *d = &node.lcol[ n*ldl ];
    ipc_ *perm = node.perm;
    T *contrib = node.contrib;
 
    /* Perform factorization */
-   //Verify<T> verifier(m, n, perm, lcol, ldl);
    if(options.pivot_method != PivotMethod::tpp) {
       // Use an APP based pivot method
       T zero_val = 0.0;
@@ -74,8 +72,6 @@ void factor_node_indef(
       node.nelim = 0;
    }
 //printf("past\n");
-   //verifier.verify(node.nelim, perm, lcol, ldl, d);
-
    /* Finish factorization worth simplistic code */
    if(node.nelim < n) {
       ipc_ nelim = node.nelim;
@@ -177,7 +173,6 @@ void factor_node_posdef(
 /* Factorize a node (wrapper) */
 template <bool posdef, typename T, typename PoolAlloc>
 void factor_node(
-      ipc_ ni,
       SymbolicNode const& snode,
       NumericNode<T, PoolAlloc> &node,
       struct cpu_factor_options const& options,
@@ -187,7 +182,7 @@ void factor_node(
       ) {
    T zero_val = 0.0;
    if(posdef) factor_node_posdef(zero_val, snode, node, options, stats);
-   else       factor_node_indef(ni, snode, node, options, stats, work, pool_alloc);
+   else       factor_node_indef(snode, node, options, stats, work, pool_alloc);
 }
 
 }}} /* end of namespace spral::ssids::cpu */

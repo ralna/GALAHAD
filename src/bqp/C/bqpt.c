@@ -105,7 +105,7 @@ int main(void) {
                 bqp_solve_given_h( &data, &status, n, H_ne, H_val, g, f,
                                    x_l, x_u, x, z, x_stat );
                 break;
-            printf(" case %1" i_ipc_ " break\n",d);
+            printf(" case %1" d_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 bqp_import( &control, &data, &status, n,
@@ -135,12 +135,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_f.h
 #include "galahad_pquad_f.h"
 #else
-            printf("%c:%6" i_ipc_ " iterations. Optimal objective " 
-                   "value = %.2f status = %1" i_ipc_ "\n",
+            printf("%c:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
 #endif
         }else{
-            printf("%c: BQP_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: BQP_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
         //printf("x: ");
@@ -233,7 +233,7 @@ int main(void) {
           }
           for( ipc_ l = 0; l < nz_prod_end; l++) mask[nz_prod[l]] = 0;
         }else{
-            printf(" the value %1" i_ipc_ " of status should not occur\n", 
+            printf(" the value %1" d_ipc_ " of status should not occur\n", 
                    status);
             break;
         }
@@ -248,12 +248,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_f.h
 #include "galahad_pquad_f.h"
 #else
-        printf("%c:%6" i_ipc_ " iterations. Optimal objective " 
-               "value = %.2f status = %1" i_ipc_ "\n",
+        printf("%c:%6" d_ipc_ " iterations. Optimal objective " 
+               "value = %.2f status = %1" d_ipc_ "\n",
                st, inform.iter, inform.obj, inform.status);
 #endif
     }else{
-        printf("%c: BQP_solve exit status = %1" i_ipc_ "\n", st, inform.status);
+        printf("%c: BQP_solve exit status = %1" d_ipc_ "\n", st, inform.status);
     }
     //printf("x: ");
     //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

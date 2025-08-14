@@ -95,16 +95,16 @@ int main(void) {
 
     if(inform.status == 0){
 #ifdef REAL_128
-        printf(" %" i_ipc_ " Gauss-Newton iterations. Optimal objective"
-               " value = %5.2f status = %1" i_ipc_ "\n",
+        printf(" %" d_ipc_ " Gauss-Newton iterations. Optimal objective"
+               " value = %5.2f status = %1" d_ipc_ "\n",
                inform.iter, (double)inform.obj, inform.status);
 #else
-        printf(" %" i_ipc_ " Gauss-Newton iterations. Optimal objective"
-               " value = %5.2f status = %1" i_ipc_ "\n",
+        printf(" %" d_ipc_ " Gauss-Newton iterations. Optimal objective"
+               " value = %5.2f status = %1" d_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
 #endif
     }else{
-        printf(" NLS_solve exit status = %1" i_ipc_ "\n", inform.status);
+        printf(" NLS_solve exit status = %1" d_ipc_ "\n", inform.status);
     }
     // Delete internal workspace
     nls_terminate( &data, &control, &inform );
@@ -134,16 +134,16 @@ int main(void) {
 
     if(inform.status == 0){
 #ifdef REAL_128
-        printf(" %" i_ipc_ " Newton iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
+        printf(" %" d_ipc_ " Newton iterations. Optimal objective value = %5.2f"
+               " status = %1" d_ipc_ "\n",
                inform.iter, (double)inform.obj, inform.status);
 #else
-        printf(" %" i_ipc_ " Newton iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
+        printf(" %" d_ipc_ " Newton iterations. Optimal objective value = %5.2f"
+               " status = %1" d_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
 #endif
     }else{
-        printf(" NLS_solve exit status = %1" i_ipc_ "\n", inform.status);
+        printf(" NLS_solve exit status = %1" d_ipc_ "\n", inform.status);
     }
     // Delete internal workspace
     nls_terminate( &data, &control, &inform );
@@ -173,16 +173,16 @@ int main(void) {
 
     if(inform.status == 0){
 #ifdef REAL_128
-        printf(" %" i_ipc_ " tensor-Newton iterations. Optimal objective" 
-               " value = %5.2f status = %1" i_ipc_ "\n",
+        printf(" %" d_ipc_ " tensor-Newton iterations. Optimal objective" 
+               " value = %5.2f status = %1" d_ipc_ "\n",
                inform.iter, (double)inform.obj, inform.status);
 #else
-        printf(" %" i_ipc_ " tensor-Newton iterations. Optimal objective" 
-               " value = %5.2f status = %1" i_ipc_ "\n",
+        printf(" %" d_ipc_ " tensor-Newton iterations. Optimal objective" 
+               " value = %5.2f status = %1" d_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
 #endif
     }else{
-        printf(" NLS_solve exit status = %1" i_ipc_ "\n", inform.status);
+        printf(" NLS_solve exit status = %1" d_ipc_ "\n", inform.status);
     }
     // Delete internal workspace
     nls_terminate( &data, &control, &inform );
