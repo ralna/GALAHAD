@@ -405,6 +405,7 @@ static PyObject* py_ugo_initialize(PyObject *self){
 
 static PyObject* py_ugo_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyObject *py_options = NULL;
+    const char *specfile = NULL;
     double x_l, x_u;
 
     // Check that package has been initialised
@@ -412,15 +413,25 @@ static PyObject* py_ugo_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Parse positional and keyword arguments * Note sentinel at end
-    static char *kwlist[] = {"x_l","x_u","options", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "dd|O", kwlist,
-                                    &x_l, &x_u, &py_options))
+    static char *kwlist[] = {"x_l","x_u","options", "specfile", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "dd|Os", kwlist,
+                                    &x_l, &x_u, &py_options, &specfile))
         return NULL;
+
+    // Warn if both options and specfile are passed
+    if(py_options && specfile)
+        PyErr_WarnEx(PyExc_RuntimeWarning,
+                     "both options dictionary and specfile passed, for settings specified twice those in options will take precedence."
+                     ,1); // raise here
 
     // Reset control options
     ugo_reset_control(&control, &data, &status);
 
-    // Update UGO control options
+    // Update UGO control options from specfile
+    if(specfile)
+       ugo_read_specfile(&control, specfile);
+
+    // Update UGO control options from options dictionary
     if(!ugo_update_control(&control, py_options))
        return NULL;
 
