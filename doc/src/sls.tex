@@ -1041,7 +1041,7 @@ that corresponds to the output value {\tt ma97\_info}
 from {\tt HSL\_MA97}. See the documentation for {\tt HSL\_MA97} for further
 details.
 
-\itt{ssids\_inform} is a scalar variable of type {\tt ssids\_inform},
+\itt{ssids\_inform} is a scalar variable of type {\tt ssids\_inform\_type},
 that corresponds to the output value {\tt ssids\_inform}
 from {\tt SSIDS}. See the documentation for {\tt SSIDS} for further
 details.
@@ -1196,11 +1196,10 @@ offers the opportunity for general parallel solution.
 the functionality of {\tt HSL\_MA57} but offers the option of parallel
 execution of core computations.
 
-\itt{ssids} if the HSL solver {\tt HSL\_SSIDS} is desired. This option offers
+\itt{ssids} if the SPRAL solver {\tt SSIDS} is desired. This option offers
 the functionality of {\tt HSL\_MA97} but additionally performs
 core computations on a GPU if available. N.B., {\tt SSIDS} is only
-supported for compilers that are OMP 4.0 compliant, and only available
-in double precision.
+supported for compilers that are OMP 4.0 compliant.
 
 \itt{mumps} if the Mumps Technologies solver {\tt MUMPS} (version 5.5.1
 or above) is desired. Distributed parallel solution is offered with this choice.
@@ -2015,8 +2014,8 @@ To obtain HSL 2011 packages, see
 {\tt http://hsl.rl.ac.uk }.
 
 \noindent
-The solver {\tt SSIDS} is from the SPRAL sparse-matrix collection,
-and is available as part of \galahad.
+The solver {\tt SSIDS} is a fork of part of the open-source SPRAL sparse-matrix 
+solver suite, and is available as part of \galahad.
 %To obtain {\tt SPRAL}, see
 %
 %{\tt http://ccpforge.cse.rl.ac.uk/gf/project/asearchralna/ }.

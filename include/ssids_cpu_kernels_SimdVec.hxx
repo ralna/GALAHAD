@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.1 - 2024-11-21 AT 10:40 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 08:00 GMT
  */
 
 #pragma once
@@ -22,7 +22,7 @@
 #include <immintrin.h>
 #endif
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 /** \brief The SimdVec class isolates use of AVX/whatever intrinsics in a
  *  single place for ease of upgrading to future instruction sets.
@@ -797,7 +797,7 @@ private:
 
 #endif /* end of double version */
 
-}}} /* namespaces spral::ssids::cpu */
+}}} /* namespaces galahad:ssids::cpu */
 
 
 

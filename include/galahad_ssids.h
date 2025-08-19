@@ -87,57 +87,57 @@ struct ssids_inform_type {
  ************************************/
 
 /* Initialize control to defaults */
-void galahad_ssids_default_control(struct ssids_control_type *control);
+void ssids_default_control(struct ssids_control_type *control);
 /* Perform analysis phase for CSC data */
-void galahad_ssids_analyse(bool check, ipc_ n, ipc_ *order, const int64_t *ptr,
+void ssids_analyse(bool check, ipc_ n, ipc_ *order, const int64_t *ptr,
       const ipc_ *row, const rpc_ *val, void **akeep,
       const struct ssids_control_type *control,
       struct ssids_inform_type *inform);
-void galahad_ssids_analyse_ptr32(bool check, ipc_ n, ipc_ *order, const ipc_ *ptr,
+void ssids_analyse_ptr32(bool check, ipc_ n, ipc_ *order, const ipc_ *ptr,
       const ipc_ *row, const rpc_ *val, void **akeep,
       const struct ssids_control_type *control,
       struct ssids_inform_type *inform);
 /* Perform analysis phase for coordinate data */
-void galahad_ssids_analyse_coord(ipc_ n, ipc_ *order, int64_t ne, const ipc_ *row,
+void ssids_analyse_coord(ipc_ n, ipc_ *order, int64_t ne, const ipc_ *row,
       const ipc_ *col, const rpc_ *val, void **akeep,
       const struct ssids_control_type *control,
       struct ssids_inform_type *inform);
 /* Perform numerical factorization */
-void galahad_ssids_factor(bool posdef, const int64_t *ptr, const ipc_ *row,
+void ssids_factor(bool posdef, const int64_t *ptr, const ipc_ *row,
       const rpc_ *val, rpc_ *scale, void *akeep, void **fkeep,
       const struct ssids_control_type *control,
       struct ssids_inform_type *inform);
-void galahad_ssids_factor_ptr32(bool posdef, const ipc_ *ptr, const ipc_ *row,
+void ssids_factor_ptr32(bool posdef, const ipc_ *ptr, const ipc_ *row,
       const rpc_ *val, rpc_ *scale, void *akeep, void **fkeep,
       const struct ssids_control_type *control,
       struct ssids_inform_type *inform);
 /* Perform triangular solve(s) for single rhs */
-void galahad_ssids_solve1(ipc_ job, rpc_ *x1, void *akeep, void *fkeep,
+void ssids_solve1(ipc_ job, rpc_ *x1, void *akeep, void *fkeep,
       const struct ssids_control_type *control,
       struct ssids_inform_type *inform);
 /* Perform triangular solve(s) for one or more rhs */
-void galahad_ssids_solve(ipc_ job, ipc_ nrhs, rpc_ *x, ipc_ ldx, void *akeep,
+void ssids_solve(ipc_ job, ipc_ nrhs, rpc_ *x, ipc_ ldx, void *akeep,
       void *fkeep, const struct ssids_control_type *control,
       struct ssids_inform_type *inform);
 /* Free memory */
-ipc_ galahad_ssids_free_akeep(void **akeep);
-ipc_ galahad_ssids_free_fkeep(void **fkeep);
-ipc_ galahad_ssids_free(void **akeep, void **fkeep);
+ipc_ ssids_free_akeep(void **akeep);
+ipc_ ssids_free_fkeep(void **fkeep);
+ipc_ ssids_free(void **akeep, void **fkeep);
 
 /************************************
  * Advanced subroutines
  ************************************/
 
 /* Retrieve information on pivots (positive-definite case) */
-void galahad_ssids_enquire_posdef(const void *akeep, const void *fkeep,
+void ssids_enquire_posdef(const void *akeep, const void *fkeep,
       const struct ssids_control_type *control,
       struct ssids_inform_type *inform, rpc_ *d);
 /* Retrieve information on pivots (indefinite case) */
-void galahad_ssids_enquire_indef(const void *akeep, const void *fkeep,
+void ssids_enquire_indef(const void *akeep, const void *fkeep,
       const struct ssids_control_type *control,
       struct ssids_inform_type *inform, ipc_ *piv_order, rpc_ *d);
 /* Alter pivots (indefinite case only) */
-void galahad_ssids_alter(const rpc_ *d, const void *akeep, void *fkeep,
+void ssids_alter(const rpc_ *d, const void *akeep, void *fkeep,
       const struct ssids_control_type *control,
       struct ssids_inform_type *inform);
 

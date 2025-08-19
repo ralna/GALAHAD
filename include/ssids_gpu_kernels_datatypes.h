@@ -2,14 +2,14 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-03 AT 14:30 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 08:00 GMT
  */
 
 #define MAX_CUDA_BLOCKS 65535
 
 #include "ssids_rip.hxx"
 
-namespace spral { namespace ssids { namespace gpu {
+namespace galahad { namespace ssids { namespace gpu {
 
 /** \brief Represents work for a a node to be factorized
  *         (as part of a batched call).
@@ -35,4 +35,4 @@ struct cuda_stats {
   ipc_ num_zero; ///< Number of zero pivots
 };
 
-}}} /* namespace spral::ssids::gpu */
+}}} /* namespace galahad:ssids::gpu */

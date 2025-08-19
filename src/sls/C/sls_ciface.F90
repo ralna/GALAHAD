@@ -81,7 +81,7 @@
         ssids_inform_type,                                                     &
         ssids_control_type,                                                    &
         copy_ssids_inform_out => copy_inform_out,                              &
-        copy_ssids_options_in => copy_options_in
+        copy_ssids_control_in => copy_control_in
 
     USE GALAHAD_NODEND_precision_ciface, ONLY:                                 &
         nodend_inform_type,                                                    &

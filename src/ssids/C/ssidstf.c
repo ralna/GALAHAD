@@ -1,6 +1,6 @@
 /* ssidstf.c - Example code for GALAHAD_SSIDS package, GALified by */
 /* Jari Fowkes, Nick Gould, STFC-Rutherford Appleton Laboratory, */
-/* and Alexis Montoison, Argone National Laboratory, 2025-08-14 */
+/* and Alexis Montoison, Argone National Laboratory, 2025-08-19 */
 #include <stdlib.h>
 /*#include <stdint.h>*/
 #include <stdio.h>
@@ -15,12 +15,12 @@
 int main(void) {
    /* Derived types */
    void *akeep, *fkeep;
-   struct galahad_ssids_control_type control;
-   struct galahad_ssids_inform_type inform;
+   struct ssids_control_type control;
+   struct ssids_inform_type inform;
 
    // Initialize derived types
    akeep = NULL; fkeep = NULL; // Important that these are NULL to start with
-   galahad_ssids_default_control(&control);
+   ssids_default_control(&control);
    control.array_base = 1; // Fortran sparse matrix indexing
    control.nodend_control.print_level = 0;
 
@@ -43,23 +43,22 @@ int main(void) {
 
    // perform analysis and factorization with data checking
    bool check = true;
-   galahad_ssids_analyse(check, n, NULL, ptr, row, NULL, &akeep, &control,
-                         &inform);
+   ssids_analyse(check, n, NULL, ptr, row, NULL, &akeep, &control, &inform);
    if(inform.flag<0) {
-      galahad_ssids_free(&akeep, &fkeep);
+      ssids_free(&akeep, &fkeep);
       exit(1);
    }
-   galahad_ssids_factor(posdef, NULL, NULL, val, NULL, akeep, &fkeep, &control,
-                        &inform);
+   ssids_factor(posdef, NULL, NULL, val, NULL, akeep, &fkeep, &control,
+                &inform);
    if(inform.flag<0) {
-      galahad_ssids_free( &akeep, &fkeep );
+      ssids_free( &akeep, &fkeep );
       exit(1);
    }
 
    // solve
-   galahad_ssids_solve1(0, x, akeep, fkeep, &control, &inform);
+   ssids_solve1(0, x, akeep, fkeep, &control, &inform);
    if(inform.flag<0) {
-      galahad_ssids_free(&akeep, &fkeep);
+      ssids_free(&akeep, &fkeep);
       exit(1);
    }
    printf("The computed solution is:");
@@ -68,13 +67,12 @@ int main(void) {
 
    /* Determine and print the pivot order */
    ipc_ piv_order[5];
-   galahad_ssids_enquire_indef(akeep, fkeep, &control, &inform, piv_order, 
-                               NULL);
+   ssids_enquire_indef(akeep, fkeep, &control, &inform, piv_order, NULL);
    printf("Pivot order:");
    for(int i=0; i<n; i++) printf(" %3d", (int) piv_order[i]);
    printf("\n");
 
-   ipc_ cuda_error = galahad_ssids_free(&akeep, &fkeep);
+   ipc_ cuda_error = ssids_free(&akeep, &fkeep);
    if(cuda_error!=0) exit(1);
 
    return 0;

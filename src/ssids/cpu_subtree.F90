@@ -2,12 +2,13 @@
 
 #include "spral_procedures.h"
 
-!  copyright 2016 The Science and Technology Facilities Council (STFC)
-!  licence   BSD licence, see LICENCE file for details
-!  author    Jonathan Hogg
+!  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)
+!  licence: BSD licence, see LICENCE file for details
+!  author: Jonathan Hogg
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
 MODULE GALAHAD_SSIDS_cpu_subtree_precision
-  USE SPRAL_KINDS_precision
+  USE GALAHAD_KINDS_precision
   USE GALAHAD_SSIDS_contrib_precision, ONLY : contrib_type
   USE GALAHAD_SSIDS_cpu_iface_precision ! fixme only
   USE GALAHAD_SSIDS_types_precision
@@ -23,7 +24,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
   TYPE, EXTENDS( symbolic_subtree_base ) :: cpu_symbolic_subtree
      INTEGER( ip_ ) :: n
      type( C_PTR ) :: csubtree
-   contains
+   CONTAINS
      PROCEDURE :: factor
      PROCEDURE :: cleanup => symbolic_cleanup
   END type cpu_symbolic_subtree
@@ -49,7 +50,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
           sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
           BIND( C, name="galahad_ssids_cpu_create_symbolic_subtree_64" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPORT :: cpu_factor_control
        IMPLICIT none
        INTEGER( C_IP_ ), value :: n
@@ -68,7 +69,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_destroy_symbolic_subtree( subtree )                          &
           BIND( C, name="galahad_ssids_cpu_destroy_symbolic_subtree_64" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        TYPE( C_PTR ), value :: subtree
      END SUBROUTINE c_destroy_symbolic_subtree
@@ -76,7 +77,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
           sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
           BIND( C, name="galahad_ssids_cpu_create_symbolic_subtree" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPORT :: cpu_factor_control
        IMPLICIT none
        INTEGER( C_IP_ ), value :: n
@@ -95,7 +96,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_destroy_symbolic_subtree( subtree )                          &
           BIND( C, name="galahad_ssids_cpu_destroy_symbolic_subtree" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        TYPE( C_PTR ), value :: subtree
      END SUBROUTINE c_destroy_symbolic_subtree
@@ -108,7 +109,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      TYPE( C_PTR ) FUNCTION c_create_numeric_subtree( posdef,                  &
           symbolic_subtree, aval, scaling, child_contrib, control, stats )     &
           BIND( C, name="galahad_ssids_cpu_create_num_subtree_sgl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPORT :: cpu_factor_control, cpu_factor_stats
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
@@ -122,7 +123,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_destroy_numeric_subtree( posdef, subtree )                   &
           BIND( C, name="galahad_ssids_cpu_destroy_num_subtree_sgl_64" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -131,7 +132,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_fwd( posdef, subtree, nrhs, x,  &
                                                     ldx )                      &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_fwd_sgl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -143,7 +144,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_diag( posdef, subtree, nrhs, x, &
                                                      ldx )                     &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_diag_sgl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -155,7 +156,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_diag_bwd( posdef, subtree,      &
                                                          nrhs, x, ldx )        &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_diag_bwd_sgl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -167,7 +168,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_bwd( posdef, subtree, nrhs,     &
                                                     x, ldx )                   &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_bwd_sgl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -178,7 +179,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_subtree_enquire( posdef, subtree, piv_order, d )             &
           BIND( C, name="galahad_ssids_cpu_subtree_enquire_sgl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -188,7 +189,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_subtree_alter( posdef, subtree, d )                          &
           BIND( C, name="galahad_ssids_cpu_subtree_alter_sgl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -198,7 +199,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      SUBROUTINE c_get_contrib( posdef, subtree, n, val, ldval, rlist, ndelay,  &
                                delay_perm, delay_val, lddelay )                &
           BIND( C, name="galahad_ssids_cpu_subtree_get_contrib_sgl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -214,7 +215,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_free_contrib( posdef, subtree )                              &
           BIND( C, name="galahad_ssids_cpu_subtree_free_contrib_sgl_64" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -226,7 +227,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      TYPE( C_PTR ) FUNCTION c_create_numeric_subtree( posdef,                  &
           symbolic_subtree, aval, scaling, child_contrib, control, stats )     &
           BIND( C, name="galahad_ssids_cpu_create_num_subtree_qul_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPORT :: cpu_factor_control, cpu_factor_stats
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
@@ -240,7 +241,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_destroy_numeric_subtree( posdef, subtree )                   &
           BIND( C, name="galahad_ssids_cpu_destroy_num_subtree_qul_64" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -249,7 +250,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_fwd( posdef, subtree, nrhs, x,  &
                                                     ldx )                      &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_fwd_qul_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -261,7 +262,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_diag( posdef, subtree, nrhs, x, &
                                                      ldx )                     &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_diag_qul_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -273,7 +274,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_diag_bwd( posdef, subtree,      &
                                                          nrhs, x, ldx )        &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_diag_bwd_qul_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -285,7 +286,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_bwd( posdef, subtree, nrhs, x, &
                                                     ldx )                     &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_bwd_qul_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -296,7 +297,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_subtree_enquire( posdef, subtree, piv_order, d )             &
           BIND( C, name="galahad_ssids_cpu_subtree_enquire_qul_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -306,7 +307,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_subtree_alter( posdef, subtree, d )                         &
           BIND( C, name="galahad_ssids_cpu_subtree_alter_qul_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -316,7 +317,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      SUBROUTINE c_get_contrib( posdef, subtree, n, val, ldval, rlist, ndelay,  &
                                delay_perm, delay_val, lddelay )                &
           BIND( C, name="galahad_ssids_cpu_subtree_get_contrib_qul_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -332,7 +333,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_free_contrib( posdef, subtree )                              &
           BIND( C, name="galahad_ssids_cpu_subtree_free_contrib_qul_64" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -345,7 +346,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      TYPE( C_PTR ) FUNCTION c_create_numeric_subtree( posdef,                  &
           symbolic_subtree, aval, scaling, child_contrib, control, stats )     &
           BIND( C, name="galahad_ssids_cpu_create_num_subtree_dbl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPORT :: cpu_factor_control, cpu_factor_stats
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
@@ -359,7 +360,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_destroy_numeric_subtree( posdef, subtree )                   &
           BIND( C, name="galahad_ssids_cpu_destroy_num_subtree_dbl_64" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -368,7 +369,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_fwd( posdef, subtree, nrhs, x,  &
                                                     ldx )                      &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_fwd_dbl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -380,7 +381,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_diag( posdef, subtree, nrhs, x, &
                                                      ldx )                     &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_diag_dbl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -392,7 +393,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_diag_bwd( posdef, subtree,      &
                                                          nrhs, x, ldx )        &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_diag_bwd_dbl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -404,7 +405,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_bwd( posdef, subtree, nrhs, x, &
                                                     ldx )                     &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_bwd_dbl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -415,7 +416,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_subtree_enquire( posdef, subtree, piv_order, d )             &
           BIND( C, name="galahad_ssids_cpu_subtree_enquire_dbl_64" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -425,7 +426,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_subtree_alter( posdef, subtree, d )                          &
           BIND( C, name="galahad_ssids_cpu_subtree_alter_dbl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -435,7 +436,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      SUBROUTINE c_get_contrib( posdef, subtree, n, val, ldval, rlist, ndelay, &
                                delay_perm, delay_val, lddelay )               &
           BIND( C, name="galahad_ssids_cpu_subtree_get_contrib_dbl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -451,7 +452,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_free_contrib( posdef, subtree )                              &
           BIND( C, name="galahad_ssids_cpu_subtree_free_contrib_dbl_64" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -464,7 +465,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      TYPE( C_PTR ) FUNCTION c_create_numeric_subtree( posdef,                  &
           symbolic_subtree, aval, scaling, child_contrib, control, stats )     &
           BIND( C, name="galahad_ssids_cpu_create_num_subtree_sgl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPORT :: cpu_factor_control, cpu_factor_stats
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
@@ -478,7 +479,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_destroy_numeric_subtree( posdef, subtree )                   &
           BIND( C, name="galahad_ssids_cpu_destroy_num_subtree_sgl" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -487,7 +488,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_fwd( posdef, subtree, nrhs, x,  &
                                                     ldx )                      &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_fwd_sgl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -499,7 +500,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_diag( posdef, subtree, nrhs, x, &
                                                      ldx )                     &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_diag_sgl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -511,7 +512,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_diag_bwd( posdef, subtree,      &
                                                          nrhs, x, ldx )        &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_diag_bwd_sgl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -523,7 +524,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_bwd( posdef, subtree, nrhs, x,  &
                                                     ldx )                      &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_bwd_sgl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -534,7 +535,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_subtree_enquire( posdef, subtree, piv_order, d )             &
           BIND( C, name="galahad_ssids_cpu_subtree_enquire_sgl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -544,7 +545,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_subtree_alter( posdef, subtree, d )                          &
           BIND( C, name="galahad_ssids_cpu_subtree_alter_sgl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -554,7 +555,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      SUBROUTINE c_get_contrib( posdef, subtree, n, val, ldval, rlist, ndelay,  &
                                delay_perm, delay_val, lddelay )                &
           BIND( C, name="galahad_ssids_cpu_subtree_get_contrib_sgl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -570,7 +571,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_free_contrib( posdef, subtree )                              &
           BIND( C, name="galahad_ssids_cpu_subtree_free_contrib_sgl" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -582,7 +583,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      TYPE( C_PTR ) FUNCTION c_create_numeric_subtree( posdef,                  &
           symbolic_subtree, aval, scaling, child_contrib, control, stats )     &
           BIND( C, name="galahad_ssids_cpu_create_num_subtree_qul" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPORT :: cpu_factor_control, cpu_factor_stats
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
@@ -596,7 +597,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_destroy_numeric_subtree( posdef, subtree )                   &
           BIND( C, name="galahad_ssids_cpu_destroy_num_subtree_qul" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -605,7 +606,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_fwd( posdef, subtree, nrhs, x, &
                                                     ldx )                     &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_fwd_qul" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -617,7 +618,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_diag( posdef, subtree, nrhs, x, &
                                                      ldx )                     &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_diag_qul" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -629,7 +630,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_diag_bwd( posdef, subtree,      &
                                                          nrhs, x, ldx )        &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_diag_bwd_qul" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -641,7 +642,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_bwd( posdef, subtree, nrhs, x,  &
                                                     ldx )                      &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_bwd_qul" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -652,7 +653,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_subtree_enquire( posdef, subtree, piv_order, d )             &
           BIND( C, name="galahad_ssids_cpu_subtree_enquire_qul" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -662,7 +663,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_subtree_alter( posdef, subtree, d )                          &
           BIND( C, name="galahad_ssids_cpu_subtree_alter_qul" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -672,7 +673,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      SUBROUTINE c_get_contrib( posdef, subtree, n, val, ldval, rlist, ndelay,  &
                                delay_perm, delay_val, lddelay )                &
           BIND( C, name="galahad_ssids_cpu_subtree_get_contrib_qul" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -688,7 +689,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_free_contrib( posdef, subtree )                              &
           BIND( C, name="galahad_ssids_cpu_subtree_free_contrib_qul" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -701,7 +702,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      TYPE( C_PTR ) FUNCTION c_create_numeric_subtree( posdef,                  &
           symbolic_subtree, aval, scaling, child_contrib, control, stats )     &
           BIND( C, name="galahad_ssids_cpu_create_num_subtree_dbl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPORT :: cpu_factor_control, cpu_factor_stats
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
@@ -715,7 +716,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_destroy_numeric_subtree( posdef, subtree )                   &
           BIND( C, name="galahad_ssids_cpu_destroy_num_subtree_dbl" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -724,7 +725,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_fwd( posdef, subtree, nrhs, x,  &
                                                     ldx )                      &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_fwd_dbl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -736,7 +737,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_diag( posdef, subtree, nrhs, x, &
                                                      ldx )                     &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_diag_dbl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -748,7 +749,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_diag_bwd( posdef, subtree,      &
                                                          nrhs, x, ldx )        &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_diag_bwd_dbl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -760,7 +761,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      INTEGER( C_IP_ ) FUNCTION c_subtree_solve_bwd( posdef, subtree, nrhs, x,  &
                                                     ldx )                      &
           BIND( C, name="galahad_ssids_cpu_subtree_solve_bwd_dbl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -771,7 +772,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_subtree_enquire( posdef, subtree, piv_order, d )             &
           BIND( C, name="galahad_ssids_cpu_subtree_enquire_dbl" )
-       USE SPRAL_KINDS
+       USE GALAHAD_KINDS
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -781,7 +782,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_subtree_alter( posdef, subtree, d )                          &
           BIND( C, name="galahad_ssids_cpu_subtree_alter_dbl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -791,7 +792,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
      SUBROUTINE c_get_contrib( posdef, subtree, n, val, ldval, rlist, ndelay,  &
                                delay_perm, delay_val, lddelay )                &
           BIND( C, name="galahad_ssids_cpu_subtree_get_contrib_dbl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -807,7 +808,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
      SUBROUTINE c_free_contrib( posdef, subtree )                              &
           BIND( C, name="galahad_ssids_cpu_subtree_free_contrib_dbl" )
-       USE SPRAL_KINDS_precision
+       USE GALAHAD_KINDS_precision
        IMPLICIT none
        LOGICAL( C_BOOL ), value :: posdef
        TYPE( C_PTR ), value :: subtree
@@ -821,7 +822,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
     FUNCTION construct_cpu_symbolic_subtree( n, sa, en, sptr, sparent, rptr,   &
        rlist, nptr, nlist, contrib_idx, control ) result( this )
     IMPLICIT none
-    class( cpu_symbolic_subtree ), POINTER :: this
+    CLASS( cpu_symbolic_subtree ), POINTER :: this
     INTEGER( ip_ ), INTENT( IN ) :: n
     INTEGER( ip_ ), INTENT( IN ) :: sa
     INTEGER( ip_ ), INTENT( IN ) :: en
@@ -832,7 +833,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
     INTEGER( long_ ), DIMENSION( * ), TARGET, INTENT( IN ) :: nptr
     INTEGER( long_ ), DIMENSION( 2,* ), TARGET, INTENT( IN ) :: nlist
     INTEGER( ip_ ), DIMENSION( : ), INTENT( IN ) :: contrib_idx
-    class( ssids_control_type ), INTENT( IN ) :: control
+    CLASS( ssids_control_type ), INTENT( IN ) :: control
 
     INTEGER( ip_ ) :: st
     TYPE( cpu_factor_control ) :: ccontrol
@@ -937,20 +938,20 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
     FUNCTION get_contrib( this )
     IMPLICIT none
     TYPE( contrib_type ) :: get_contrib
-    class( cpu_numeric_subtree ), INTENT( IN ) :: this
+    CLASS( cpu_numeric_subtree ), INTENT( IN ) :: this
 
     TYPE( C_PTR ) :: cval, crlist, delay_perm, delay_val
 
     CALL c_get_contrib( this%posdef, this%csubtree, get_contrib%n, cval,       &
          get_contrib%ldval, crlist, get_contrib%ndelay, delay_perm, delay_val, &
          get_contrib%lddelay )
-    CALL c_f_pointer( cval, get_contrib%val, shape = ( / get_contrib%n**2 / ) )
-    CALL c_f_pointer( crlist, get_contrib%rlist, shape = ( / get_contrib%n / ) )
+    CALL c_f_pointer( cval, get_contrib%val, shape = (/ get_contrib%n ** 2 /) )
+    CALL c_f_pointer( crlist, get_contrib%rlist, shape = (/ get_contrib%n /) )
     IF ( c_associated( delay_val ) ) THEN
        CALL c_f_pointer( delay_perm, get_contrib%delay_perm,                   &
-            shape = ( / get_contrib%ndelay / ) )
+            shape = (/ get_contrib%ndelay /) )
        CALL c_f_pointer( delay_val, get_contrib%delay_val,                     &
-            shape = ( / get_contrib%ndelay*get_contrib%lddelay / ) )
+            shape = (/ get_contrib%ndelay*get_contrib%lddelay /) )
     ELSE
       NULLIFY( get_contrib%delay_perm )
       NULLIFY( get_contrib%delay_val )
@@ -962,7 +963,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
     SUBROUTINE solve_fwd( this, nrhs, x, ldx, inform )
     IMPLICIT none
-    class( cpu_numeric_subtree ), INTENT( INOUT ) :: this
+    CLASS( cpu_numeric_subtree ), INTENT( INOUT ) :: this
     INTEGER( ip_ ), INTENT( IN ) :: nrhs
     REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
     INTEGER( ip_ ), INTENT( IN ) :: ldx
@@ -976,7 +977,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
     SUBROUTINE solve_diag( this, nrhs, x, ldx, inform )
     IMPLICIT none
-    class( cpu_numeric_subtree ), INTENT( INOUT ) :: this
+    CLASS( cpu_numeric_subtree ), INTENT( INOUT ) :: this
     INTEGER( ip_ ), INTENT( IN ) :: nrhs
     REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
     INTEGER( ip_ ), INTENT( IN ) :: ldx
@@ -990,7 +991,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
     SUBROUTINE solve_diag_bwd( this, nrhs, x, ldx, inform )
     IMPLICIT none
-    class( cpu_numeric_subtree ), INTENT( INOUT ) :: this
+    CLASS( cpu_numeric_subtree ), INTENT( INOUT ) :: this
     INTEGER( ip_ ), INTENT( IN ) :: nrhs
     REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
     INTEGER( ip_ ), INTENT( IN ) :: ldx
@@ -1004,7 +1005,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
     SUBROUTINE solve_bwd( this, nrhs, x, ldx, inform )
     IMPLICIT none
-    class( cpu_numeric_subtree ), INTENT( INOUT ) :: this
+    CLASS( cpu_numeric_subtree ), INTENT( INOUT ) :: this
     INTEGER( ip_ ), INTENT( IN ) :: nrhs
     REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
     INTEGER( ip_ ), INTENT( IN ) :: ldx
@@ -1018,7 +1019,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
     SUBROUTINE enquire_posdef( this, d )
     IMPLICIT none
-    class( cpu_numeric_subtree ), INTENT( IN ) :: this
+    CLASS( cpu_numeric_subtree ), INTENT( IN ) :: this
     REAL( rp_ ), DIMENSION( * ), TARGET, INTENT( OUT ) :: d
 
     CALL c_subtree_enquire( this%posdef, this%csubtree, C_NULL_PTR, C_LOC( d ) )
@@ -1026,7 +1027,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
     SUBROUTINE enquire_indef( this, piv_order, d )
     IMPLICIT none
-    class( cpu_numeric_subtree ), INTENT( IN ) :: this
+    CLASS( cpu_numeric_subtree ), INTENT( IN ) :: this
     INTEGER( ip_ ), DIMENSION( * ), TARGET, optional, INTENT( OUT ) :: piv_order
     REAL( rp_ ), DIMENSION( 2,* ), TARGET, optional, INTENT( OUT ) :: d
 
@@ -1045,7 +1046,7 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
 
     SUBROUTINE alter( this, d )
     IMPLICIT none
-    class( cpu_numeric_subtree ), TARGET, INTENT( INOUT ) :: this
+    CLASS( cpu_numeric_subtree ), TARGET, INTENT( INOUT ) :: this
     REAL( rp_ ), DIMENSION( 2, * ), INTENT( IN ) :: d
 
     CALL c_subtree_alter( this%posdef, this%csubtree, d )

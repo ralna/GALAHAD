@@ -16,10 +16,10 @@ void* galahad_ssids_cpu_create_symbolic_subtree(
       ipc_ n, ipc_ sa, ipc_ en, ipc_ const* sptr, ipc_ const* sparent,
       longc_ const* rptr, ipc_ const* rlist, longc_ const* nptr, 
       longc_ const* nlist, ipc_ ncontrib, ipc_ const* contrib_idx,
-      struct cpu_factor_options const* options) {
+      struct cpu_factor_control const* control) {
    return (void*) new SymbolicSubtree(
          n, sa, en, sptr, sparent, rptr, rlist, nptr, nlist, ncontrib,
-         contrib_idx, *options
+         contrib_idx, *control
          );
 }
 

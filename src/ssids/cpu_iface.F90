@@ -1,8 +1,9 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-14 AT 10:30 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-17 AT 08:30 GMT
 
-!> \copyright 2016 The Science and Technology Facilities Council (STFC)
-!> \licence   BSD licence, see LICENCE file for details
-!> \author    Jonathan Hogg
+!  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)
+!  author: Jonathan Hogg
+!  licence: BSD licence, see LICENCE file for details
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
 #include "galahad_lapack.h"
 #include "spral_procedures.h"
@@ -75,11 +76,11 @@
 #endif
 #endif
 
-MODULE GALAHAD_SSIDS_CPU_IFACE_precision
-   USE SPRAL_KINDS_precision
+MODULE GALAHAD_SSIDS_cpu_iface_precision
+   USE GALAHAD_KINDS_precision
    USE, INTRINSIC :: iso_c_binding
-   USE GALAHAD_SSIDS_TYPES_precision, ONLY : SSIDS_control_type
-   USE GALAHAD_SSIDS_INFORM_precision, ONLY : SSIDS_inform_type
+   USE GALAHAD_SSIDS_types_precision, ONLY : SSIDS_control_type
+   USE GALAHAD_SSIDS_inform_precision, ONLY : SSIDS_inform_type
    USE GALAHAD_BLAS_inter_precision, ONLY : GEMV, GEMM, TRSV, TRSM, SYRK
    USE GALAHAD_LAPACK_inter_precision, ONLY : SYTRF, POTRF
    IMPLICIT none
@@ -92,7 +93,7 @@ MODULE GALAHAD_SSIDS_CPU_IFACE_precision
    !> @brief Interoperable subset of ssids_control
    !> @details Interoperates with cpu_factor_control C++ type
    !> @sa galahad_ssids_types_precision::ssids_control
-   !> @sa spral::ssids::cpu::cpu_factor_control
+   !> @sa galahad::ssids::cpu::cpu_factor_control
    type, bind(C) :: cpu_factor_control
       integer(C_IP_) :: print_level
       logical(C_BOOL) :: action
@@ -110,7 +111,7 @@ MODULE GALAHAD_SSIDS_CPU_IFACE_precision
    !> @brief Interoperable subset of ssids_inform
    !> @details Interoperates with ThreadStats C++ type
    !> @sa galahad_ssids_inform_precision::ssids_inform
-   !> @sa spral::ssids::cpu::ThreadStats
+   !> @sa galahad::ssids::cpu::ThreadStats
    type, bind(C) :: cpu_factor_stats
       integer(C_IP_) :: flag
       integer(C_IP_) :: num_delay
@@ -125,7 +126,7 @@ MODULE GALAHAD_SSIDS_CPU_IFACE_precision
       integer(C_IP_) :: not_second_pass
    end type cpu_factor_stats
 
-contains
+CONTAINS
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !> @brief Copy subset of ssids_control to interoperable type
@@ -173,7 +174,7 @@ end subroutine cpu_copy_stats_out
 !> interop calls from C.
 subroutine spral_c_gemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc) &
 bind(C)
-   use spral_kinds_precision, only: C_IP_, C_RP_
+   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
    character(C_CHAR), intent(in) :: ta, tb
    integer(C_IP_), intent(in) :: m, n, k
    integer(C_IP_), intent(in) :: lda, ldb, ldc
@@ -185,7 +186,7 @@ bind(C)
 end subroutine spral_c_gemm
 
 subroutine spral_c_potrf(uplo, n, a, lda, info) bind(C)
-   use spral_kinds_precision, only: C_IP_, C_RP_
+   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
    character(C_CHAR), intent(in) :: uplo
    integer(C_IP_), intent(in) :: n, lda
    integer(C_IP_), intent(out) :: info
@@ -194,7 +195,7 @@ subroutine spral_c_potrf(uplo, n, a, lda, info) bind(C)
 end subroutine spral_c_potrf
 
 subroutine spral_c_sytrf(uplo, n, a, lda, ipiv, work, lwork, info) bind(C)
-   use spral_kinds_precision, only: C_IP_, C_RP_
+   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
    character(C_CHAR), intent(in) :: uplo
    integer(C_IP_), intent(in) :: n, lda, lwork
    integer(C_IP_), intent(out), dimension(n) :: ipiv
@@ -206,7 +207,7 @@ end subroutine spral_c_sytrf
 
 subroutine spral_c_trsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
                          ldb) bind(C)
-   use spral_kinds_precision, only: C_IP_, C_RP_
+   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
    character(C_CHAR), intent(in) :: side, uplo, transa, diag
    integer(C_IP_), intent(in) :: m, n, lda, ldb
    real(C_RP_), intent(in   ) :: alpha
@@ -216,7 +217,7 @@ subroutine spral_c_trsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
 end subroutine spral_c_trsm
 
 subroutine spral_c_syrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc) bind(C)
-   use spral_kinds_precision, only: C_IP_, C_RP_
+   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
    character(C_CHAR), intent(in) :: uplo, trans
    integer(C_IP_), intent(in) :: n, k, lda, ldc
    real(C_RP_), intent(in) :: alpha, beta
@@ -226,7 +227,7 @@ subroutine spral_c_syrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc) bind(C)
 end subroutine spral_c_syrk
 
 subroutine spral_c_trsv(uplo, trans, diag, n, a, lda, x, incx) bind(C)
-   use spral_kinds_precision, only: C_IP_, C_RP_
+   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
    character(C_CHAR), intent(in) :: uplo, trans, diag
    integer(C_IP_), intent(in) :: n, lda, incx
    real(C_RP_), intent(in   ), dimension(lda, n) :: a
@@ -236,7 +237,7 @@ end subroutine spral_c_trsv
 
 subroutine spral_c_gemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy) &
 bind(C)
-   use spral_kinds_precision, only: C_IP_, C_RP_
+   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
    character(C_CHAR), intent(in) :: trans
    integer(C_IP_), intent(in) :: m, n, lda, incx, incy
    real(C_RP_), intent(in) :: alpha, beta
@@ -246,5 +247,5 @@ bind(C)
    call DGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
 end subroutine spral_c_gemv
 
-end module galahad_ssids_cpu_iface_precision
+END MODULE GALAHAD_SSIDS_cpu_iface_precision
 

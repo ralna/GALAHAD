@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.3 - 2025-08-14 AT 11:00 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  */
 #pragma once
 
@@ -34,7 +34,7 @@
 
 //#include "ssids_cpu_kernels_verify.hxx" // FIXME: remove debug
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 /* Factorize a node (indef) */
 template <typename T, typename PoolAlloc>
@@ -190,4 +190,4 @@ void factor_node(
    else       factor_node_indef(ni, snode, node, control, stats, work, pool_alloc);
 }
 
-}}} /* end of namespace spral::ssids::cpu */
+}}} /* end of namespace galahad:ssids::cpu */

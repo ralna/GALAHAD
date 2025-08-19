@@ -70,7 +70,7 @@ sls_inform_type structure
           ma86_info::ma86_info{T,INT}
           ma87_info::ma87_info{T,INT}
           ma97_info::ma97_info{T,INT}
-          ssids_inform::spral_ssids_inform{INT}
+          ssids_inform::ssids_inform_type{INT}
           nodend_inform::nodend_inform_type{INT}
           mc61_info::NTuple{10,INT}
           mc61_rinfo::NTuple{15,T}
@@ -730,7 +730,7 @@ the output structure from hsl_ma97
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct :ref:`spral_ssids_inform <details-structspral__ssids__inform>` ssids_inform
+	struct :ref:`ssids_inform_type<details-structssids__inform__type>` ssids_inform
 
 the output structure from ssids
 

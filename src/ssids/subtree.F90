@@ -3,14 +3,15 @@
 #include "spral_procedures.h"
 
 !  copyright 2016 The Science and Technology Facilities Council (STFC)
-!  licence   BSD licence, see LICENCE file for details
-!  author    Jonathan Hogg
+!  licence: BSD licence, see LICENCE file for details
+!  author: Jonathan Hogg
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
-MODULE GALAHAD_SSIDS_SUBTREE_precision
-   USE SPRAL_KINDS_precision
-   USE GALAHAD_SSIDS_CONTRIB_precision, ONLY : contrib_type
-   USE GALAHAD_SSIDS_TYPES_precision, ONLY : SSIDS_control_type
-   USE GALAHAD_SSIDS_INFORM_precision, ONLY : SSIDS_inform_type
+MODULE GALAHAD_SSIDS_subtree_precision
+   USE GALAHAD_KINDS_precision
+   USE GALAHAD_SSIDS_contrib_precision, ONLY : contrib_type
+   USE GALAHAD_SSIDS_types_precision, ONLY : SSIDS_control_type
+   USE GALAHAD_SSIDS_inform_precision, ONLY : SSIDS_inform_type
    IMPLICIT none
 
    PRIVATE
@@ -82,7 +83,7 @@ MODULE GALAHAD_SSIDS_SUBTREE_precision
 
    ABSTRACT interface
 
-      FUNCTION factor_iface( this, posdef, aval, child_contrib, options,       &
+      FUNCTION factor_iface( this, posdef, aval, child_contrib, control,       &
                              inform, scaling)
 
 !  perform numeric factorization, returning a subclass of numeric_subtree_base 
@@ -91,7 +92,7 @@ MODULE GALAHAD_SSIDS_SUBTREE_precision
 !   posdef Perform Cholesky-like unpivoted factorization if true.
 !   aval Value component of CSC datatype for original matrix A.
 !   child_contrib Array of contribution blocks from children.
-!   options User-supplied options.
+!   control User-supplied options.
 !   inform Information/statistics to be returned to user.
 !   scaling Scaling to be applied (if present).
 
@@ -105,7 +106,7 @@ MODULE GALAHAD_SSIDS_SUBTREE_precision
         REAL( rp_ ), dimension(*), target, intent(in) :: aval
         TYPE(contrib_type ), DIMENSION( : ), TARGET,                           &
            INTENT( INOUT ) :: child_contrib
-        TYPE( SSIDS_control_type ), INTENT( IN ) :: options
+        TYPE( SSIDS_control_type ), INTENT( IN ) :: control
         TYPE( SSIDS_inform_type) , INTENT( INOUT ) :: inform
         REAL( rp_), DIMENSION( * ), TARGET, OPTIONAL, INTENT( IN ) :: scaling
       END FUNCTION factor_iface
@@ -143,7 +144,7 @@ MODULE GALAHAD_SSIDS_SUBTREE_precision
 !   ldx Leading dimension of x.
 !   inform Information/statistics to be returned to user.
 
-        import numeric_subtree_base, ssids_inform, ip_, rp_
+        import numeric_subtree_base, ssids_inform_type, ip_, rp_
         implicit none
         CLASS( numeric_subtree_base ), INTENT( INOUT ) :: this
         INTEGER( ip_ ), INTENT( IN ) :: nrhs
@@ -162,4 +163,4 @@ MODULE GALAHAD_SSIDS_SUBTREE_precision
         CLASS( numeric_subtree_base ), INTENT( INOUT ) :: this
       END SUBROUTINE numeric_cleanup_iface
    END interface
-end module galahad_ssids_subtree_precision
+END MODULE GALAHAD_SSIDS_subtree_precision

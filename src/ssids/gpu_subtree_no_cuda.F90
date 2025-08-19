@@ -5,7 +5,7 @@
 ! This is dummy file compiled when there is no CUDA support
 
 MODULE GALAHAD_SSIDS_gpu_subtree_precision
-  USE SPRAL_KINDS_precision
+  USE GALAHAD_KINDS_precision
   USE GALAHAD_SSIDS_contrib_precision, ONLY : contrib_type
   USE GALAHAD_SSIDS_types_precision
   USE GALAHAD_SSIDS_inform_precision, ONLY : SSIDS_inform_type
@@ -24,7 +24,7 @@ MODULE GALAHAD_SSIDS_gpu_subtree_precision
      PROCEDURE :: cleanup => symbolic_cleanup
   end TYPE gpu_symbolic_subtree
 
-  TYPE, extends( numeric_subtree_base ) :: gpu_numeric_subtree
+  TYPE, EXTENDS( numeric_subtree_base ) :: gpu_numeric_subtree
     REAL( rp_ ) :: dummy ! just so we can perform dummy ops to prevent warnings
   CONTAINS
     PROCEDURE :: get_contrib

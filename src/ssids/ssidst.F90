@@ -1,15 +1,15 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-21 AT 10:10 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-15 AT 11:50 GMT
 
 #include "spral_procedures.h"
 
-   PROGRAM SPRAL_SSIDS_test_program
-   USE spral_kinds_precision
-   USE spral_ssids_precision
+   PROGRAM GALAHAD_SSIDS_test_program
+   USE GALAHAD_KINDS_precision
+   USE GALAHAD_SSIDS_precision
    IMPLICIT NONE
-   TYPE( ssids_inform ) :: inform
-   TYPE( ssids_akeep ) :: akeep
-   TYPE( ssids_fkeep ) :: fkeep
-   TYPE( ssids_options ) :: options
+   TYPE( ssids_inform_type ) :: inform
+   TYPE( ssids_akeep_type ) :: akeep
+   TYPE( ssids_fkeep_type ) :: fkeep
+   TYPE( ssids_control_type ) :: control
    INTEGER ( KIND = ip_ ) :: i, ordering, cuda_error
 !  LOGICAL :: mpi_flag
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, ne  = 7
@@ -46,14 +46,14 @@
 ! analyse the structure
 
 !    WRITE( 6, * ) ' analyse '
-!    options%print_level = 100
+!    control%print_level = 100
      IF ( ordering == 1 ) THEN
        DO i = 1, n ; ORDER( i ) = n - i + 1 ; END DO
-       options%ordering = 0
-       CALL ssids_analyse( .FALSE., n, PTR, ROW, akeep, options, inform,       &
+       control%ordering = 0
+       CALL ssids_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,       &
                            val = VAL, order = ORDER )
      ELSE
-       CALL ssids_analyse( .FALSE., n, PTR, ROW, akeep, options, inform,       &
+       CALL ssids_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,       &
                            val = VAL )
      END IF
      IF ( inform%flag < 0 ) THEN
@@ -66,7 +66,7 @@
 ! factorize the matrix
 
 !write(6,*) ' factorize '
-     CALL ssids_factor( .FALSE., VAL, akeep, fkeep, options, inform,           &
+     CALL ssids_factor( .FALSE., VAL, akeep, fkeep, control, inform,           &
                         ptr = PTR, row = ROW )
      IF ( inform%flag < 0 ) THEN
        WRITE( 6, "( '  fail in factorize, status = ', I0 )",                   &
@@ -79,7 +79,7 @@
 
 !write(6,*) ' solve 1 RHS'
      X = RHS
-     CALL ssids_solve( X, akeep, fkeep, options, inform )
+     CALL ssids_solve( X, akeep, fkeep, control, inform )
 !write(6,"( ' X = ', 5ES10.2 )" ) X( 1 : n )
 !write(6,*) ' status - ', inform%flag
 
@@ -94,7 +94,7 @@
 ! Solve multiple RHS without refinement
 
      X2( : , 1 ) = RHS ; X2( : , 2 ) = RHS
-     CALL ssids_solve( 2_ip_, X2, n, akeep, fkeep, options, inform )
+     CALL ssids_solve( 2_ip_, X2, n, akeep, fkeep, control, inform )
 
 !write(6,*) ' status - ', inform%flag
      IF ( MAXVAL( ABS( X2( 1 : n, 1 ) - SOL( 1 : n ) ) )                       &
@@ -109,16 +109,16 @@
 
      X = RHS
 !write(6,*) ' L '
-     CALL ssids_solve( X, akeep, fkeep, options, inform, job = 1_ip_ )
+     CALL ssids_solve( X, akeep, fkeep, control, inform, job = 1_ip_ )
      IF (inform%flag /= 0 ) THEN
        WRITE( 6, "( '    fail ' )", advance = 'no' )
        WRITE( 6, "( '' )" )
        CYCLE
      END IF
 !write(6,*) ' D '
-     CALL ssids_solve( X, akeep, fkeep, options, inform, job = 2_ip_ )
+     CALL ssids_solve( X, akeep, fkeep, control, inform, job = 2_ip_ )
 !write(6,*) ' U '
-     CALL ssids_solve( X, akeep, fkeep, options, inform, job = 3_ip_ )
+     CALL ssids_solve( X, akeep, fkeep, control, inform, job = 3_ip_ )
 !write(6,*) ' E '
      IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                            &
              <= EPSILON( 1.0_rp_ ) ** 0.333 ) THEN
@@ -130,10 +130,10 @@
 !  enquire about factors and modify diagonals
 
 !write(6,*) ' enquire '
-     CALL ssids_enquire_indef( akeep, fkeep, options, inform,                  &
+     CALL ssids_enquire_indef( akeep, fkeep, control, inform,                  &
                                piv_order = ORDER, d = D )
 !write(6,*) ' alter d '
-     CALL ssids_alter( D, akeep, fkeep, options, inform)
+     CALL ssids_alter( D, akeep, fkeep, control, inform)
 
 !  free data
 
@@ -145,4 +145,4 @@
 !  IF ( mpi_flag ) CALL MPI_FINALIZE( i )
    WRITE( 6, "( /, '  ssids tests completed' )" )
    STOP
-   END PROGRAM SPRAL_SSIDS_test_program
+   END PROGRAM GALAHAD_SSIDS_test_program

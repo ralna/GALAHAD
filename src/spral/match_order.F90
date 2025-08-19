@@ -1,32 +1,31 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-03-16 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-17 AT 13:40 GMT.
 
 #include "spral_procedures.h"
 
-! COPYRIGHT (c) 2012-3 Science and Technology Facilities Council
-! Authors: Jonathan Hogg and Jennifer Scott
-! Note: This code is a heavily modified version of HSL_MC80
+!  COPYRIGHT (c) 2012-3 Science and Technology Facilities Council (STFC)
+!  licence: BSD licence, see LICENCE file for details
+!  authors: Jonathan Hogg and Jennifer Scott
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
-! Given a sparse symmetric  matrix A, this module provides routines to
-! use a matching algorithm to compute an elimination
-! order that is suitable for use with a sparse direct solver.
-! It optionally computes scaling factors.
+MODULE SPRAL_MATCH_ORDER_precision
 
-! FIXME: At some stage replace call to mo_match() with call to
-! a higher level routine from spral_scaling_precision instead (NB: have to
-! cope with fact we are currently expecting a full matrix, even if it means
-! 2x more log operations)
+!  given a sparse symmetric  matrix A, this module provides routines to
+!  use a matching algorithm to compute an elimination order that is suitable 
+!  for use with a sparse direct solver. It optionally computes scaling factors
 
-module spral_match_order_precision
+!  FIXME: At some stage replace call to mo_match() with call to
+!  a higher level routine from spral_scaling_precision instead (NB: have to
+!  cope with fact we are currently expecting a full matrix, even if it means
+!  2x more log operations)
 
-  use spral_kinds_precision
-! use spral_metis_wrapper, only : metis_order
-  use GALAHAD_NODEND_precision, only : NODEND_half_order, NODEND_control_type, &
+  USE GALAHAD_KINDS_precision
+  use GALAHAD_NODEND_precision, ONLY : NODEND_half_order, NODEND_control_type, &
                                        NODEND_inform_type
-  use spral_scaling_precision, only : hungarian_match
-  implicit none
+  USE SPRAL_SCALING_precision, ONLY : hungarian_match
+  IMPLICIT none
 
-  private
-  public :: match_order_metis ! Find a matching-based ordering using the
+  PRIVATE
+  PUBLIC :: match_order_metis ! Find a matching-based ordering using the
     ! Hungarian algorithm for matching and METIS for ordering.
 
   ! Error flags
@@ -38,11 +37,11 @@ module spral_match_order_precision
   ! warning flags
   integer(ip_), parameter :: WARNING_SINGULAR      = 1
 
-  interface match_order_metis
-     module procedure match_order_metis_ptr32, match_order_metis_ptr64
-  end interface match_order_metis
+  INTERFACE match_order_metis
+     MODULE PROCEDURE match_order_metis_ptr32, match_order_metis_ptr64
+  END INTERFACE match_order_metis
 
-contains
+CONTAINS
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -53,7 +52,7 @@ contains
 ! more efficient on memory and does not need to expand supplied matrix)
 !
   subroutine match_order_metis_ptr32(n, ptr, row, val, order, scale, &
-       nodend_options, nodend_inform, flag, stat)
+       nodend_control, nodend_inform, flag, stat)
 !      flag, stat)
     implicit none
     integer(ip_), intent(in) :: n
@@ -66,7 +65,7 @@ contains
       ! scaling
     integer(ip_), intent(out) :: flag ! return value
     integer(ip_), intent(out) :: stat ! stat value returned on failed allocation
-    type ( NODEND_control_type ), INTENT( IN )  :: nodend_options
+    type ( NODEND_control_type ), INTENT( IN )  :: nodend_control
     type ( NODEND_inform_type ), INTENT( INOUT ) :: nodend_inform
     integer(ip_), dimension(:), allocatable :: cperm ! used to hold matching
     integer(i8_), dimension(:), allocatable :: ptr2 ! column pointers for
@@ -126,7 +125,7 @@ contains
     ! compress matrix and order.
 
     call mo_split(n,row2,ptr2,order,cperm, &
-                  nodend_options, nodend_inform, flag, stat)
+                  nodend_control, nodend_inform, flag, stat)
 !                 flag,stat)
 
     scale(1:n) = exp( scale(1:n) )
@@ -142,7 +141,7 @@ contains
 ! more efficient on memory and does not need to expand supplied matrix)
 !
   subroutine match_order_metis_ptr64(n, ptr, row, val, order, scale, &
-       nodend_options, nodend_inform, flag, stat)
+       nodend_control, nodend_inform, flag, stat)
 !      flag, stat)
     implicit none
     integer(ip_), intent(in) :: n
@@ -153,7 +152,7 @@ contains
       ! position of variable i in the elimination order (pivot sequence).
     real(rp_), dimension(n), intent(out) :: scale ! returns the mc64 symmetric
       ! scaling
-    type ( NODEND_control_type ), INTENT( IN )  :: nodend_options
+    type ( NODEND_control_type ), INTENT( IN )  :: nodend_control
     type ( NODEND_inform_type ), INTENT( INOUT ) :: nodend_inform
     integer(ip_), intent(out) :: flag ! return value
     integer(ip_), intent(out) :: stat ! stat value returned on failed allocation
@@ -216,7 +215,7 @@ contains
     ! compress matrix and order.
 
     call mo_split(n,row2,ptr2,order,cperm, &
-                  nodend_options, nodend_inform, flag, stat)
+                  nodend_control, nodend_inform, flag, stat)
 !                 flag,stat)
 
     scale(1:n) = exp( scale(1:n) )
@@ -233,7 +232,7 @@ contains
 ! Overwritten in the singular case
 !
   subroutine mo_split(n,row2,ptr2,order,cperm, &
-                      nodend_options, nodend_inform, flag, stat)
+                      nodend_control, nodend_inform, flag, stat)
 !                     flag,stat)
     implicit none
     integer(ip_), intent(in) :: n
@@ -241,7 +240,7 @@ contains
     integer(ip_), dimension(:), intent(in) :: row2
     integer(ip_), dimension(n), intent(out) :: order ! used to hold ordering
     integer(ip_), dimension(n), intent(inout) :: cperm ! used to hold matching
-    type ( NODEND_control_type ), INTENT( IN )  :: nodend_options
+    type ( NODEND_control_type ), INTENT( IN )  :: nodend_control
     type ( NODEND_inform_type ), INTENT( INOUT ) :: nodend_inform
     integer(ip_), intent(inout) :: flag
     integer(ip_), intent(inout) :: stat
@@ -381,7 +380,7 @@ contains
     ! switch off metis printing
 !   call metis_order(ncomp,ptr3,row3,order,invp,metis_flag,stat)
     CALL NODEND_half_order( ncomp, ptr3, row3, order, &
-                            nodend_options, nodend_inform)
+                            nodend_control, nodend_inform)
     metis_flag = nodend_inform%status
     stat = nodend_inform%alloc_status
 
@@ -657,4 +656,4 @@ contains
   end subroutine mo_match
 
 !**********************************************************************
-end module spral_match_order_precision
+END MODULE SPRAL_MATCH_ORDER_precision

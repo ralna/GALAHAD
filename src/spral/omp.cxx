@@ -9,7 +9,7 @@
 #include "spral_omp.hxx"
 
 /* This file wraps the C interface for OpenMP in C++ for style/safety */
-namespace spral { namespace omp {
+namespace galahad { namespace omp {
 
 int get_global_thread_num() {
 #ifdef _OPENMP
@@ -25,4 +25,4 @@ int get_global_thread_num() {
 #endif /* _OPENMP */
 }
 
-}} /* namepsace spral::omp */
+}} /* namepsace galahad::omp */

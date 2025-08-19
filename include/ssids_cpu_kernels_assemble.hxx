@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.1 - 2024-11-21 AT 10:50 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-19 AT 09:30 GMT
  */
 #pragma once
 
@@ -18,7 +18,7 @@
 #include "ssids_cpu_SymbolicNode.hxx"
 #include "ssids_cpu_Workspace.hxx"
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 /** Assemble a column.
  *
@@ -174,7 +174,7 @@ void assemble_pre(
       ipc_ cn, ldcontrib, ndelay, lddelay;
       rpc_ const *cval, *delay_val;
       ipc_ const *crlist, *delay_perm;
-      spral_ssids_contrib_get_data(
+      galahad_ssids_contrib_get_data(
             child_contrib[contrib_idx], &cn, &cval, &ldcontrib, &crlist,
             &ndelay, &delay_perm, &delay_val, &lddelay
             );
@@ -311,7 +311,7 @@ void assemble_pre(
       ipc_ cn, ldcontrib, ndelay, lddelay;
       rpc_ const *cval, *delay_val;
       ipc_ const *crlist, *delay_perm;
-      spral_ssids_contrib_get_data(
+      galahad_ssids_contrib_get_data(
             child_contrib[contrib_idx], &cn, &cval, &ldcontrib, &crlist,
             &ndelay, &delay_perm, &delay_val, &lddelay
             );
@@ -422,7 +422,7 @@ void assemble_post(
       ipc_ cn, ldcontrib, ndelay, lddelay;
       rpc_ const *cval, *delay_val;
       ipc_ const *crlist, *delay_perm;
-      spral_ssids_contrib_get_data(
+      galahad_ssids_contrib_get_data(
             child_contrib[contrib_idx], &cn, &cval, &ldcontrib, &crlist,
             &ndelay, &delay_perm, &delay_val, &lddelay
             );
@@ -442,9 +442,9 @@ void assemble_post(
          }
       }
       /* Free memory from child contribution block */
-      spral_ssids_contrib_free(child_contrib[contrib_idx]);
+      galahad_ssids_contrib_free(child_contrib[contrib_idx]);
    }
    if(map) PAIntTraits::deallocate(pool_alloc_int, map, n+1);
 }
 
-}}} /* namespaces spral::ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */

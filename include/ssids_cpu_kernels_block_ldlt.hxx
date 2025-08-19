@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-03 AT 14:30 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  */
 #pragma once
 
@@ -14,7 +14,7 @@
 #include "ssids_cpu_ThreadStats.hxx"
 #include "ssids_cpu_kernels_SimdVec.hxx"
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 namespace block_ldlt_internal {
 
 /** Swaps two columns of A */
@@ -455,4 +455,4 @@ void block_ldlt(ipc_ from, ipc_ *perm, T *a, ipc_ lda, T *d, T *ldwork,
       p += pivsiz;
    }
 }
-}}} /* namespaces spral::ssids::cpu */
+}}} /* namespaces galahad:ssids::cpu */

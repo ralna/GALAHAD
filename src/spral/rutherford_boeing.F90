@@ -1,17 +1,17 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:50 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-17 AT 13:40 GMT.
 
 #include "spral_procedures.h"
 
-! COPYRIGHT (c) 2000,2010,2013,2016 Science and Technology Facilities Council
-! Authors: Jonathan Hogg and Iain Duff
-!
-! Based on modified versions of MC56 and HSL_MC56.
+!  COPYRIGHT (c) 2000,2010,2013,2016 Science and Technology Facilities Council
+!  licence: BSD licence, see LICENCE file for details
+!  Authors: Jonathan Hogg and Iain Duff
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
-module spral_ral_boeing_precision
+MODULE SPRAL_RAL_BOEING_precision
 
-  use spral_kinds_precision
-  use spral_matrix_util_precision
-  use spral_random_precision, only : random_state, random_real
+  USE GALAHAD_KINDS_precision
+  USE SPRAL_MATRIX_UTIL_precision
+  USE SPRAL_RANDOM_precision, only : random_state, random_real
   implicit none
 
   private
@@ -1026,4 +1026,4 @@ contains
     end select
   end function sym_to_matrix_type
 
-end module spral_ral_boeing_precision
+END MODULE SPRAL_RAL_BOEING_precision

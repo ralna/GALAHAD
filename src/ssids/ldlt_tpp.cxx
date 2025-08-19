@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.1 - 2024-11-26 AT 11:40 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  */
 
 #include <algorithm>
@@ -16,7 +16,7 @@
 #include "ssids_cpu_ThreadStats.hxx"
 #include "ssids_cpu_kernels_wrappers.hxx"
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 namespace {
 
@@ -365,4 +365,4 @@ void ldlt_tpp_solve_bwd(ipc_ m, ipc_ n, rpc_ const* l, ipc_ ldl, ipc_ nrhs,
    }
 }
 
-}}} /* end of namespace spral::ssids::cpu */
+}}} /* end of namespace galahad::ssids::cpu */

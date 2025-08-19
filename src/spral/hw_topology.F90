@@ -1,18 +1,18 @@
-! THIS VERSION: GALAHAD 5.1 - 2025-01-07 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-17 AT 13:40 GMT.
 
 #include "spral_procedures.h"
 
-!> \file
-!> \copyright 2016 The Science and Technology Facilities Council (STFC)
-!> \licence   BSD licence, see LICENCE file for details
-!> \author    Jonathan Hogg
-!> \brief Hardware Topology module
+!  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)
+!  licence: BSD licence, see LICENCE file for details
+!  author: Jonathan Hogg
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 !
-!> \brief Provides routines for detecting and/or specifying hardware
-!>        topology for topology-aware routines
-module spral_hw_topology
+MODULE SPRAL_HW_TOPOLOGY
 
-  use spral_kinds, only: ip_, C_IP_
+!  provides routines for detecting and/or specifying hardware topology for 
+!  topology-aware routines
+
+  USE GALAHAD_KINDS, ONLY: ip_, C_IP_
   use, intrinsic :: iso_c_binding
   implicit none
 
@@ -21,7 +21,7 @@ module spral_hw_topology
   public :: guess_topology ! returns best guess of hardware topology
   public :: c_numa_region
 
-  !> Fortran interoperable definition of spral::hw_topology::NumaRegion
+  !> Fortran interoperable definition of galahad::hw_topology::NumaRegion
   type, bind(C) :: c_numa_region
      integer(C_INT) :: nproc
      integer(C_INT) :: ngpu
@@ -96,4 +96,4 @@ contains
     call spral_hw_topology_free(nregions, c_regions)
   end subroutine guess_topology
 
-end module spral_hw_topology
+END MODULE SPRAL_HW_TOPOLOGY

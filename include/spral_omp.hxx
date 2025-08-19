@@ -2,6 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  *
  *  \brief
  *  Additional support functions and wrappers for OpenMP.
@@ -21,7 +22,7 @@
 #endif /* _OPENMP */
 
 /* This file wraps the C interface for OpenMP in C++ for style/safety */
-namespace spral { namespace omp {
+namespace galahad { namespace omp {
 
 /**
  * \brief Safe wrapper around omp_lock_t ensuring init/cleanup.
@@ -95,4 +96,4 @@ private:
 /// Return global thread number (=thread number if not nested)
 int get_global_thread_num();
 
-}} /* end of namespace spral::omp */
+}} /* end of namespace galahad::omp */

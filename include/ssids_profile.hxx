@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-04 AT 09:10 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-16 AT 09:00 GMT
  */
 
 #pragma once
@@ -33,7 +33,7 @@ extern "C" {
 #include "spral_guess_topology.hxx"
 #include "spral_omp.hxx"
 
-namespace spral { namespace ssids {
+namespace galahad { namespace ssids {
 
 /**
  * \brief Provide easy to use wrapper around GTG to record execution traces.
@@ -137,8 +137,8 @@ public:
     * \note Times are all measured from the end of this subroutine.
     */
    static
-   // void init(ipc_ nregions, spral::hw_topology::NumaRegion* regions) {
-   void init(ipc_ nnodes, spral::hw_topology::NumaRegion* nodes) {
+   // void init(ipc_ nregions, galahad::hw_topology::NumaRegion* regions) {
+   void init(ipc_ nnodes, galahad::hw_topology::NumaRegion* nodes) {
 #if defined(PROFILE) && defined(HAVE_GTG)
       // Initialise profiling
       setTraceType(PAJE);
@@ -148,7 +148,7 @@ public:
       addContType("CT_THREAD", "CT_NODE", "Thread");
       addContType("CT_GPU", "CT_NODE", "GPU");
       // ipc_ nnodes = 0;
-      // spral::hw_topology::NumaRegion* nodes;
+      // galahad::hw_topology::NumaRegion* nodes;
       if (!nodes) spral_hw_topology_guess(&nnodes, &nodes);
       ipc_ core_idx=0;
       for(ipc_ node=0; node<nnodes; ++node) {
@@ -268,4 +268,4 @@ private:
 };
 
 
-}} /* namespace spral::ssids */
+}} /* namespace galahad:ssids */

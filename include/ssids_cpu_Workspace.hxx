@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-04 AT 08:30 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 08:00 GMT
  */
 
 #pragma once
@@ -13,7 +13,7 @@
 #include "ssids_rip.hxx"
 #include "spral_compat.hxx" // in case std::align not defined
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 /** A Workspace is a chunk of memory that can be reused. The get_ptr<T>(len)
  * function provides a pointer to it after ensuring it is of at least the
@@ -55,4 +55,4 @@ private:
    size_t sz_;
 };
 
-}}} /* end of namespace spral::ssids::cpu */
+}}} /* end of namespace galahad:ssids::cpu */

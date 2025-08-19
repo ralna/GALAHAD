@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-11 AT 14:40 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-17 AT 13:20 GMT
 
 #include "galahad_modules.h"
 
@@ -35,5 +35,6 @@ MODULE GALAHAD_KINDS_precision
   INTEGER, PARAMETER :: cp_ = c8_
   INTEGER, PARAMETER :: rpc_ = dpc_
 #endif
+INTEGER, PARAMETER :: C_RP_ = rpc_
 
 END MODULE GALAHAD_KINDS_precision

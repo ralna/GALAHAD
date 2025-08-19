@@ -23,7 +23,7 @@
 
 #include <cstdio> // debug
 
-using namespace spral::hw_topology;
+using namespace galahad::hw_topology;
 
 /**
  * \brief Guess hardware topology (using hwloc if available)

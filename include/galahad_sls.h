@@ -911,7 +911,7 @@ struct sls_inform_type {
 
     /// \brief
     /// the output structure from ssids
-    struct spral_ssids_inform ssids_inform;
+    struct ssids_inform_type ssids_inform;
 
     /// \brief
     /// the output structure from nodend
