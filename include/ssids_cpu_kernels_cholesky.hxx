@@ -17,4 +17,4 @@ void cholesky_solve_fwd(ipc_ m, ipc_ n, rpc_ const* a, ipc_ lda, ipc_ nrhs,
 void cholesky_solve_bwd(ipc_ m, ipc_ n, rpc_ const* a, ipc_ lda, ipc_ nrhs,
    rpc_* x, ipc_ ldx);
 
-}}} /* namespaces galahad:ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */

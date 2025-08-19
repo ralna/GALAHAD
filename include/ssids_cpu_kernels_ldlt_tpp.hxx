@@ -21,4 +21,4 @@ void ldlt_tpp_solve_diag(ipc_ n, rpc_ const* d, rpc_* x);
 void ldlt_tpp_solve_bwd(ipc_ m, ipc_ n, rpc_ const* l, ipc_ ldl, ipc_ nrhs,
       rpc_* x, ipc_ ldx);
 
-}}} /* end of namespace galahad:ssids::cpu */
+}}} /* end of namespace galahad::ssids::cpu */

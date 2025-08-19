@@ -147,4 +147,4 @@ namespace util {
 #endif
 }
 
-}}} /* namespaces galahad:ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */

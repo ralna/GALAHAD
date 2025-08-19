@@ -455,4 +455,4 @@ void block_ldlt(ipc_ from, ipc_ *perm, T *a, ipc_ lda, T *d, T *ldwork,
       p += pivsiz;
    }
 }
-}}} /* namespaces galahad:ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */

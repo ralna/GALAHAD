@@ -131,4 +131,4 @@ void calcLD(ipc_ m, ipc_ n, T const* l, ipc_ ldl, T const* d, T* ld,
    }
 }
 
-}}} /* namespaces galahad:ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */

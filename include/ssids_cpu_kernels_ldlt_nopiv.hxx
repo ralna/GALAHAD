@@ -20,4 +20,4 @@ void ldlt_nopiv_solve_diag(ipc_ m, ipc_ n, rpc_ const* a, ipc_ lda,
 void ldlt_nopiv_solve_bwd(ipc_ m, ipc_ n, rpc_ const* a, ipc_ lda,
    rpc_ *x);
 
-}}} /* namespaces galahad:ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */

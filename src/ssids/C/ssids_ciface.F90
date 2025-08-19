@@ -611,8 +611,8 @@ close(99)
 !  C interface to fortran ssids_factor
 !  -----------------------------------
 
-  SUBROUTINE ssids_factor( cposdef, cptr, crow, val, cscale, cakeep,   &
-                                   cfkeep, ccontrol, cinform ) BIND( C )
+  SUBROUTINE ssids_factor( cposdef, cptr, crow, val, cscale, cakeep,          &
+                           cfkeep, ccontrol, cinform ) BIND( C )
   USE GALAHAD_SSIDS_precision_ciface
   IMPLICIT NONE
 
@@ -718,9 +718,8 @@ close(99)
 !  C interface to fortran ssids_factor with 32-bit pointers
 !  --------------------------------------------------------
 
-  SUBROUTINE ssids_factor_ptr32( cposdef, cptr, crow, val, cscale,     &
-                                         cakeep, cfkeep, ccontrol,             &
-                                         cinform ) BIND( C )
+  SUBROUTINE ssids_factor_ptr32( cposdef, cptr, crow, val, cscale, cakeep,     &
+                                 cfkeep, ccontrol, cinform ) BIND( C )
   USE GALAHAD_SSIDS_precision_ciface
   IMPLICIT NONE
 
@@ -822,8 +821,8 @@ close(99)
 !  C interface to fortran galahad_ssids_solve with 1 right-hand side
 !  ---------------------------------------------------------------
 
-  SUBROUTINE ssids_solve1( job, cx1, cakeep, cfkeep, ccontrol,         &
-                                    cinform ) BIND( C )
+  SUBROUTINE ssids_solve1( job, cx1, cakeep, cfkeep, ccontrol,                 &
+                           cinform ) BIND( C )
   USE GALAHAD_SSIDS_precision_ciface
   IMPLICIT NONE
 
@@ -885,8 +884,8 @@ close(99)
 !  C interface to fortran galahad_ssids_solve with multiple right-hand sides
 !  -----------------------------------------------------------------------
 
-  SUBROUTINE ssids_solve( job, nrhs, x, ldx, cakeep, cfkeep, ccontrol, &
-                                  cinform ) BIND( C )
+  SUBROUTINE ssids_solve( job, nrhs, x, ldx, cakeep, cfkeep, ccontrol,         &
+                          cinform ) BIND( C )
   USE GALAHAD_SSIDS_precision_ciface
   IMPLICIT NONE
 
@@ -1006,8 +1005,7 @@ close(99)
 !  C interface to fortran ssids_free
 !  ---------------------------------
 
-  INTEGER ( KIND = ipc_ ) FUNCTION ssids_free( cakeep,                 &
-                                                       cfkeep ) BIND( C )
+  INTEGER ( KIND = ipc_ ) FUNCTION ssids_free( cakeep, cfkeep ) BIND( C )
   USE GALAHAD_SSIDS_precision_ciface
   IMPLICIT NONE
 
@@ -1043,8 +1041,8 @@ close(99)
 !  C interface to fortran ssids_enquire_posdef
 !  -------------------------------------------
 
-  SUBROUTINE ssids_enquire_posdef( cakeep, cfkeep, ccontrol,           &
-                                           cinform, d ) BIND( C )
+  SUBROUTINE ssids_enquire_posdef( cakeep, cfkeep, ccontrol,                   &
+                                   cinform, d ) BIND( C )
   USE GALAHAD_SSIDS_precision_ciface
   IMPLICIT NONE
 
@@ -1096,8 +1094,8 @@ close(99)
 !  C interface to fortran ssids_enquire_indef
 !  ------------------------------------------
 
-  SUBROUTINE ssids_enquire_indef( cakeep, cfkeep, ccontrol, cinform,   &
-                                          cpiv_order, cd ) BIND( C )
+  SUBROUTINE ssids_enquire_indef( cakeep, cfkeep, ccontrol, cinform,           &
+                                  cpiv_order, cd ) BIND( C )
   USE GALAHAD_SSIDS_precision_ciface
   IMPLICIT NONE
 
@@ -1180,8 +1178,7 @@ close(99)
 !  C interface to fortran ssids_alter
 !  ----------------------------------
 
-  SUBROUTINE ssids_alter( d, cakeep, cfkeep, ccontrol,                 &
-                                  cinform ) BIND( C )
+  SUBROUTINE ssids_alter( d, cakeep, cfkeep, ccontrol, cinform ) BIND( C )
   USE GALAHAD_SSIDS_precision_ciface
   IMPLICIT NONE
 

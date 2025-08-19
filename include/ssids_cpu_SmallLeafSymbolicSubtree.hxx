@@ -138,4 +138,4 @@ protected:
 };
 
 
-}}} /* namespaces galahad:ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */
