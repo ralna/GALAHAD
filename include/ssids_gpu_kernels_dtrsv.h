@@ -814,4 +814,4 @@ void __global__ trsv_ln_exec(T_ELEM *__restrict__ xglobal, ipc_ *__restrict__ sy
    __threadfence(); // Flush sync[0] asap
 }
 
-}}} /* namespace galahad:ssids::gpu */
+}}} /* namespace galahad::ssids::gpu */

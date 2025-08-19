@@ -116,4 +116,4 @@ private:
    friend class NumericSubtree;
 };
 
-}}} /* end of namespace galahad:ssids::cpu */
+}}} /* end of namespace galahad::ssids::cpu */

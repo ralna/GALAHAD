@@ -35,4 +35,4 @@ struct cuda_stats {
   ipc_ num_zero; ///< Number of zero pivots
 };
 
-}}} /* namespace galahad:ssids::gpu */
+}}} /* namespace galahad::ssids::gpu */

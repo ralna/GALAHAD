@@ -101,7 +101,7 @@ private:
    Page* top_page_;
 };
 
-} /* namespace galahad:ssids::cpu::append_alloc_internal */
+} /* namespace galahad::ssids::cpu::append_alloc_internal */
 
 /** An allocator built on top of a pool of pages, with expectation of
  * sequential allocation, and then everything deallocated at the end.
@@ -141,4 +141,4 @@ protected:
    template <typename U> friend class AppendAlloc;
 };
 
-}}} /* namepsace galahad:ssids::cpu */
+}}} /* namepsace galahad::ssids::cpu */

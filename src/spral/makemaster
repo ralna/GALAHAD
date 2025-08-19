@@ -261,7 +261,6 @@ SSIDSS = extend basics $(SPRALRBS) $(RLGS)(cuda_nocuda_single.o) \
          $(RLGS)(profile_iface.o) $(RLGS)(gpu_subtree_no_cuda_single.o) \
          $(RLGS)(analyse_single.o) $(RLGS)(fkeep_single.o) \
          $(RLGS)(contrib_free_single.o) $(RLGS)(ssids_single.o)
-#         $(RLGS)(blas_iface.o) $(RLGS)(lapack_iface.o) \
 
 SSIDSD = extend basics $(SPRALRBD) $(RLGD)(cuda_nocuda_double.o) \
          $(RLGD)(compat.o) $(RLGD)(guess_topology.o) \
@@ -279,7 +278,6 @@ SSIDSD = extend basics $(SPRALRBD) $(RLGD)(cuda_nocuda_double.o) \
          $(RLGD)(profile_iface.o) $(RLGD)(gpu_subtree_no_cuda_double.o) \
          $(RLGD)(analyse_double.o) $(RLGD)(fkeep_double.o) \
          $(RLGD)(contrib_free_double.o) $(RLGD)(ssids_double.o)
-#         $(RLGD)(blas_iface.o) $(RLGD)(lapack_iface.o) \
 
 SSIDSQ = extend basics $(SPRALRBQ) $(RLGQ)(cuda_nocuda_quadruple.o) \
          $(RLGQ)(compat.o) $(RLGQ)(guess_topology.o) \
@@ -297,7 +295,6 @@ SSIDSQ = extend basics $(SPRALRBQ) $(RLGQ)(cuda_nocuda_quadruple.o) \
          $(RLGQ)(profile_iface.o) $(RLGQ)(gpu_subtree_no_cuda_quadruple.o) \
          $(RLGQ)(analyse_quadruple.o) $(RLGQ)(fkeep_quadruple.o) \
          $(RLGQ)(contrib_free_quadruple.o) $(RLGQ)(ssids_quadruple.o)
-#         $(RLGQ)(blas_iface.o) $(RLGQ)(lapack_iface.o) \
 
 SSIDSS64 = extend basics $(SPRALRBS64) $(RLGS64)(cuda_nocuda_single_64.o) \
          $(RLGS64)(compat.o) $(RLGS64)(guess_topology.o) \
@@ -315,7 +312,6 @@ SSIDSS64 = extend basics $(SPRALRBS64) $(RLGS64)(cuda_nocuda_single_64.o) \
          $(RLGS64)(profile_iface.o) $(RLGS64)(gpu_subtree_no_cuda_single_64.o) \
          $(RLGS64)(analyse_single_64.o) $(RLGS64)(fkeep_single_64.o) \
          $(RLGS64)(contrib_free_single_64.o) $(RLGS64)(ssids_single_64.o)
-#         $(RLGS64)(blas_iface.o) $(RLGS64)(lapack_iface.o) \
 
 SSIDSD64 = extend basics $(SPRALRBD64) $(RLGD64)(cuda_nocuda_double_64.o) \
          $(RLGD64)(compat.o) $(RLGD64)(guess_topology.o) \
@@ -333,7 +329,6 @@ SSIDSD64 = extend basics $(SPRALRBD64) $(RLGD64)(cuda_nocuda_double_64.o) \
          $(RLGD64)(profile_iface.o) $(RLGD64)(gpu_subtree_no_cuda_double_64.o) \
          $(RLGD64)(analyse_double_64.o) $(RLGD64)(fkeep_double_64.o) \
          $(RLGD64)(contrib_free_double_64.o) $(RLGD64)(ssids_double_64.o)
-#         $(RLGD64)(blas_iface.o) $(RLGD64)(lapack_iface.o) \
 
 SSIDSQ64 = extend basics $(SPRALRBQ64) $(RLGQ64)(cuda_nocuda_quadruple_64.o) \
          $(RLGQ64)(compat.o) $(RLGQ64)(guess_topology.o) \
@@ -355,7 +350,6 @@ SSIDSQ64 = extend basics $(SPRALRBQ64) $(RLGQ64)(cuda_nocuda_quadruple_64.o) \
          $(RLGQ64)(gpu_subtree_no_cuda_quadruple_64.o) \
          $(RLGQ64)(analyse_quadruple_64.o) $(RLGQ64)(fkeep_quadruple_64.o) \
          $(RLGQ64)(contrib_free_quadruple_64.o) $(RLGQ64)(ssids_quadruple_64.o)
-#         $(RLGQ64)(blas_iface.o) $(RLGQ64)(lapack_iface.o) \
 
 SSIDSCS = $(SSIDSS) $(CLGS)(ssids_ciface_single.o)
 SSIDSCD = $(SSIDSD) $(CLGD)(ssids_ciface_double.o)
@@ -1251,33 +1245,6 @@ $(RLG)(akeep_$(PRECIS).o): ../ssids/akeep.F90
 	cd $(OBJ) ; $(RARR) akeep_$(PRECIS).o ; \
                       $(RM) akeep.F90 akeep_$(PRECIS).o
 	$(RRMARFILE) analyse_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-blas_iface.o: $(RLG)(blas_iface.o)
-
-$(RLG)(blas_iface.o): ../ssids/blas_iface.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "blas_iface  "
-	$(CP) ../ssids/blas_iface.F90 $(OBJ)/blas_iface.F90
-	cd $(OBJ) ; $(FORTRAN) -o blas_iface.o $(FFLAGSOMP) blas_iface.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o blas_iface.o $(FFLAGSNOMP) blas_iface.F90 )
-	cd $(OBJ) ; $(RARR) blas_iface.o ; $(RM) blas_iface.F90 blas_iface.o
-	$(RRMARFILE) cpu_iface_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-lapack_iface.o: $(RLG)(lapack_iface.o)
-
-$(RLG)(lapack_iface.o): ../ssids/lapack_iface.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "lapack_iface  "
-	$(CP) ../ssids/lapack_iface.F90 $(OBJ)/lapack_iface.F90
-	cd $(OBJ) ; $(FORTRAN) -o lapack_iface.o $(FFLAGSOMP) lapack_iface.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                  $(FORTRAN) -o lapack_iface.o $(FFLAGSNOMP) lapack_iface.F90 )
-	cd $(OBJ) ; $(RARR) lapack_iface.o ; \
-          $(RM) lapack_iface.F90 lapack_iface.o
-	$(RRMARFILE) cpu_iface_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

@@ -27,4 +27,4 @@ struct SymbolicNode {
    std::vector<ipc_> contrib; //< index of expected contribution(s)
 };
 
-}}} /* end of namespace galahad:ssids::cpu */
+}}} /* end of namespace galahad::ssids::cpu */

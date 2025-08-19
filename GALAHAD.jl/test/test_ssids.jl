@@ -9,16 +9,16 @@ using Quadmath
 
 function test_ssids(::Type{T}, ::Type{INT}) where {T,INT}
   # Derived types
-  options = Ref{spral_ssids_options{T,INT}}()
-  inform = Ref{spral_ssids_inform{T,INT}}()
+  control = Ref{ssids_control_type{T,INT}}()
+  inform = Ref{ssids_inform_type{T,INT}}()
 
   # Initialize derived types
   akeep = Ref{Ptr{Cvoid}}(C_NULL)
   fkeep = Ref{Ptr{Cvoid}}(C_NULL) # Important that these are C_NULL to start with
 
-  spral_ssids_default_options(T, INT, options)
-  @reset options[].array_base = INT(1)  # Fortran sparse matrix indexing
-  @reset options[].nodend_options.print_level = INT(0)
+  spral_ssids_default_control(T, INT, control)
+  @reset control[].array_base = INT(1)  # Fortran sparse matrix indexing
+  @reset control[].nodend_control.print_level = INT(0)
 
   @printf(" Fortran sparse matrix indexing\n\n")
 
@@ -39,12 +39,12 @@ function test_ssids(::Type{T}, ::Type{INT}) where {T,INT}
 
   # perform analysis and factorization with data checking
   check = true
-  spral_ssids_analyse(T, INT, check, n, C_NULL, ptr, row, C_NULL, akeep, options, inform)
+  spral_ssids_analyse(T, INT, check, n, C_NULL, ptr, row, C_NULL, akeep, control, inform)
   if inform[].flag < 0
     spral_ssids_free(T, INT, akeep, fkeep)
     error("[SSIDS] The analysis failed!")
   end
-  spral_ssids_factor(T, INT, posdef, C_NULL, C_NULL, val, C_NULL, akeep[], fkeep, options,
+  spral_ssids_factor(T, INT, posdef, C_NULL, C_NULL, val, C_NULL, akeep[], fkeep, control,
                      inform)
   if inform[].flag < 0
     spral_ssids_free(T, INT, akeep, fkeep)
@@ -52,7 +52,7 @@ function test_ssids(::Type{T}, ::Type{INT}) where {T,INT}
   end
 
   # solve
-  spral_ssids_solve1(T, INT, INT(0), x, akeep[], fkeep[], options, inform)
+  spral_ssids_solve1(T, INT, INT(0), x, akeep[], fkeep[], control, inform)
   if inform[].flag < 0
     spral_ssids_free(T, INT, akeep, fkeep)
     error("[SSIDS] The solve failed!")
@@ -66,7 +66,7 @@ function test_ssids(::Type{T}, ::Type{INT}) where {T,INT}
 
   # Determine and print the pivot order
   piv_order = zeros(INT, 5)
-  spral_ssids_enquire_indef(T, INT, akeep[], fkeep[], options, inform, piv_order, C_NULL)
+  spral_ssids_enquire_indef(T, INT, akeep[], fkeep[], control, inform, piv_order, C_NULL)
   @printf("Pivot order:")
   for i in 1:n
     @printf(" %3d", piv_order[i])

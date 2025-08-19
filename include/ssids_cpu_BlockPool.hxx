@@ -93,4 +93,4 @@ private:
    galahad::omp::Lock lock_; //< lock used for safe access to pool_
 };
 
-}}} /* namespace galahad:ssids::cpu */
+}}} /* namespace galahad::ssids::cpu */

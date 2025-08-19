@@ -450,4 +450,4 @@ private:
    SmallLeafSymbolicSubtree const& symb_;
 };
 
-}}} /* namespaces galahad:ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */

@@ -413,4 +413,4 @@ private:
    friend class BuddyAllocator;
 };
 
-}}} /* namespaces galahad:ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */

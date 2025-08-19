@@ -106,7 +106,7 @@ contains
 !
 ! Use matching-based scaling obtained using Hungarian algorithm (sym)
 !
-  subroutine hungarian_scale_sym_int32(n, ptr, row, val, scaling, options, &
+  subroutine hungarian_scale_sym_int32(n, ptr, row, val, scaling, control, &
        inform, match)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
@@ -114,7 +114,7 @@ contains
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
-    type(hungarian_control_type), intent(in) :: options
+    type(hungarian_control_type), intent(in) :: control
     type(hungarian_inform_type), intent(out) :: inform
     integer(ip_), dimension(n), optional, intent(out) :: match
 
@@ -127,11 +127,11 @@ contains
     end if
     ptr64(1:n+1) = ptr(1:n+1)
 
-    call hungarian_scale_sym_int64(n, ptr64, row, val, scaling, options, &
+    call hungarian_scale_sym_int64(n, ptr64, row, val, scaling, control, &
          inform, match=match)
   end subroutine hungarian_scale_sym_int32
 
-  subroutine hungarian_scale_sym_int64(n, ptr, row, val, scaling, options, &
+  subroutine hungarian_scale_sym_int64(n, ptr, row, val, scaling, control, &
        inform, match)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
@@ -139,7 +139,7 @@ contains
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
-    type(hungarian_control_type), intent(in) :: options
+    type(hungarian_control_type), intent(in) :: control
     type(hungarian_inform_type), intent(out) :: inform
     integer(ip_), dimension(n), optional, intent(out) :: match
 
@@ -156,7 +156,7 @@ contains
 
     if (present(match)) then
        call hungarian_wrapper(.true., n, n, ptr, row, val, match, rscaling, &
-            cscaling, options, inform)
+            cscaling, control, inform)
     else
        allocate(perm(n), stat=inform%stat)
        if (inform%stat .ne. 0) then
@@ -164,7 +164,7 @@ contains
           return
        end if
        call hungarian_wrapper(.true., n, n, ptr, row, val, perm, rscaling, &
-            cscaling, options, inform)
+            cscaling, control, inform)
     end if
     scaling(1:n) = exp( (rscaling(1:n) + cscaling(1:n)) / 2 )
   end subroutine hungarian_scale_sym_int64
@@ -174,7 +174,7 @@ contains
 ! Use matching-based scaling obtained using Hungarian algorithm (unsym)
 !
   subroutine hungarian_scale_unsym_int32(m, n, ptr, row, val, rscaling, &
-       cscaling, options, inform, match)
+       cscaling, control, inform, match)
     implicit none
     integer(ip_), intent(in) :: m ! number of rows
     integer(ip_), intent(in) :: n ! number of cols
@@ -183,7 +183,7 @@ contains
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(hungarian_control_type), intent(in) :: options
+    type(hungarian_control_type), intent(in) :: control
     type(hungarian_inform_type), intent(out) :: inform
     integer(ip_), dimension(m), optional, intent(out) :: match
 
@@ -198,11 +198,11 @@ contains
     ptr64(1:n+1) = ptr(1:n+1)
 
     call hungarian_scale_unsym_int64(m, n, ptr64, row, val, rscaling, &
-         cscaling, options, inform, match=match)
+         cscaling, control, inform, match=match)
   end subroutine hungarian_scale_unsym_int32
 
   subroutine hungarian_scale_unsym_int64(m, n, ptr, row, val, rscaling, &
-         cscaling, options, inform, match)
+         cscaling, control, inform, match)
     implicit none
     integer(ip_), intent(in) :: m ! number of rows
     integer(ip_), intent(in) :: n ! number of cols
@@ -211,7 +211,7 @@ contains
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(hungarian_control_type), intent(in) :: options
+    type(hungarian_control_type), intent(in) :: control
     type(hungarian_inform_type), intent(out) :: inform
     integer(ip_), dimension(m), optional, intent(out) :: match
 
@@ -222,7 +222,7 @@ contains
     ! Call main routine
     if (present(match)) then
        call hungarian_wrapper(.false., m, n, ptr, row, val, match, rscaling, &
-            cscaling, options, inform)
+            cscaling, control, inform)
     else
        allocate(perm(m), stat=inform%stat)
        if (inform%stat .ne. 0) then
@@ -230,7 +230,7 @@ contains
           return
        end if
        call hungarian_wrapper(.false., m, n, ptr, row, val, perm, rscaling, &
-            cscaling, options, inform)
+            cscaling, control, inform)
     end if
 
     ! Apply post processing
@@ -242,7 +242,7 @@ contains
 !
 ! Call auction algorithm to get a scaling, then symmetrize it
 !
-  subroutine auction_scale_sym_int32(n, ptr, row, val, scaling, options, &
+  subroutine auction_scale_sym_int32(n, ptr, row, val, scaling, control, &
        inform, match)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
@@ -250,7 +250,7 @@ contains
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
-    type(auction_control_type), intent(in) :: options
+    type(auction_control_type), intent(in) :: control
     type(auction_inform_type), intent(out) :: inform
     integer(ip_), dimension(n), optional, intent(out) :: match
 
@@ -263,11 +263,11 @@ contains
     end if
     ptr64(1:n+1) = ptr(1:n+1)
 
-    call auction_scale_sym_int64(n, ptr64, row, val, scaling, options, inform, &
+    call auction_scale_sym_int64(n, ptr64, row, val, scaling, control, inform, &
          match=match)
   end subroutine auction_scale_sym_int32
 
-  subroutine auction_scale_sym_int64(n, ptr, row, val, scaling, options, &
+  subroutine auction_scale_sym_int64(n, ptr, row, val, scaling, control, &
        inform, match)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
@@ -275,7 +275,7 @@ contains
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
-    type(auction_control_type), intent(in) :: options
+    type(auction_control_type), intent(in) :: control
     type(auction_inform_type), intent(out) :: inform
     integer(ip_), dimension(n), optional, intent(out) :: match
 
@@ -294,7 +294,7 @@ contains
     ! Call unsymmetric implementation with flag to expand half matrix
     if (present(match)) then
        call auction_match(.true., n, n, ptr, row, val, match, rscaling, &
-            cscaling, options, inform)
+            cscaling, control, inform)
     else
        allocate(perm(n), stat=inform%stat)
        if (inform%stat .ne. 0) then
@@ -302,7 +302,7 @@ contains
           return
        end if
        call auction_match(.true., n, n, ptr, row, val, perm, rscaling, &
-            cscaling, options, inform)
+            cscaling, control, inform)
     end if
 
     ! Average rscaling and cscaling to get symmetric scaling
@@ -314,7 +314,7 @@ contains
 ! Call auction algorithm to get a scaling (unsymmetric version)
 !
   subroutine auction_scale_unsym_int32(m, n, ptr, row, val, rscaling, &
-       cscaling, options, inform, match)
+       cscaling, control, inform, match)
     implicit none
     integer(ip_), intent(in) :: m ! number of rows
     integer(ip_), intent(in) :: n ! number of columns
@@ -323,7 +323,7 @@ contains
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(auction_control_type), intent(in) :: options
+    type(auction_control_type), intent(in) :: control
     type(auction_inform_type), intent(out) :: inform
     integer(ip_), dimension(m), optional, intent(out) :: match
 
@@ -337,11 +337,11 @@ contains
     ptr64(1:n+1) = ptr(1:n+1)
 
     call auction_scale_unsym_int64(m, n, ptr64, row, val, rscaling, cscaling, &
-         options, inform, match=match)
+         control, inform, match=match)
   end subroutine auction_scale_unsym_int32
 
   subroutine auction_scale_unsym_int64(m, n, ptr, row, val, rscaling, &
-       cscaling, options, inform, match)
+       cscaling, control, inform, match)
     implicit none
     integer(ip_), intent(in) :: m ! number of rows
     integer(ip_), intent(in) :: n ! number of columns
@@ -350,7 +350,7 @@ contains
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(auction_control_type), intent(in) :: options
+    type(auction_control_type), intent(in) :: control
     type(auction_inform_type), intent(out) :: inform
     integer(ip_), dimension(m), optional, intent(out) :: match
 
@@ -360,7 +360,7 @@ contains
 
     if (present(match)) then
        call auction_match(.false., m, n, ptr, row, val, match, rscaling, &
-            cscaling, options, inform)
+            cscaling, control, inform)
     else
        allocate(perm(m), stat=inform%stat)
        if (inform%stat .ne. 0) then
@@ -368,7 +368,7 @@ contains
           return
        end if
        call auction_match(.false., m, n, ptr, row, val, perm, rscaling, &
-            cscaling, options, inform)
+            cscaling, control, inform)
     end if
 
     rscaling(1:m) = exp(rscaling(1:m))
@@ -379,14 +379,14 @@ contains
 !
 ! Call the infinity-norm equilibriation algorithm (symmetric version)
 !
-  subroutine equilib_scale_sym_int32(n, ptr, row, val, scaling, options, inform)
+  subroutine equilib_scale_sym_int32(n, ptr, row, val, scaling, control, inform)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
     integer(i4_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
-    type(equilib_control_type), intent(in) :: options
+    type(equilib_control_type), intent(in) :: control
     type(equilib_inform_type), intent(out) :: inform
 
     integer(i8_), dimension(:), allocatable :: ptr64
@@ -398,22 +398,22 @@ contains
     end if
     ptr64(1:n+1) = ptr(1:n+1)
 
-    call equilib_scale_sym_int64(n, ptr64, row, val, scaling, options, inform)
+    call equilib_scale_sym_int64(n, ptr64, row, val, scaling, control, inform)
   end subroutine equilib_scale_sym_int32
 
-  subroutine equilib_scale_sym_int64(n, ptr, row, val, scaling, options, inform)
+  subroutine equilib_scale_sym_int64(n, ptr, row, val, scaling, control, inform)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
     integer(i8_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
-    type(equilib_control_type), intent(in) :: options
+    type(equilib_control_type), intent(in) :: control
     type(equilib_inform_type), intent(out) :: inform
 
     inform%flag = 0 ! Initialize to sucess
 
-    call inf_norm_equilib_sym(n, ptr, row, val, scaling, options, inform)
+    call inf_norm_equilib_sym(n, ptr, row, val, scaling, control, inform)
   end subroutine equilib_scale_sym_int64
 
 !*******************************
@@ -421,7 +421,7 @@ contains
 ! Call the infinity-norm equilibriation algorithm (unsymmetric version)
 !
   subroutine equilib_scale_unsym_int32(m, n, ptr, row, val, rscaling, &
-       cscaling, options, inform)
+       cscaling, control, inform)
     implicit none
     integer(ip_), intent(in) :: m ! number of rows
     integer(ip_), intent(in) :: n ! number of cols
@@ -430,7 +430,7 @@ contains
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(equilib_control_type), intent(in) :: options
+    type(equilib_control_type), intent(in) :: control
     type(equilib_inform_type), intent(out) :: inform
 
     integer(i8_), dimension(:), allocatable :: ptr64
@@ -443,11 +443,11 @@ contains
     ptr64(1:n+1) = ptr(1:n+1)
 
     call equilib_scale_unsym_int64(m, n, ptr64, row, val, rscaling, cscaling, &
-         options, inform)
+         control, inform)
   end subroutine equilib_scale_unsym_int32
 
   subroutine equilib_scale_unsym_int64(m, n, ptr, row, val, rscaling, &
-       cscaling, options, inform)
+       cscaling, control, inform)
     implicit none
     integer(ip_), intent(in) :: m ! number of rows
     integer(ip_), intent(in) :: n ! number of cols
@@ -456,13 +456,13 @@ contains
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(equilib_control_type), intent(in) :: options
+    type(equilib_control_type), intent(in) :: control
     type(equilib_inform_type), intent(out) :: inform
 
     inform%flag = 0 ! Initialize to sucess
 
     call inf_norm_equilib_unsym(m, n, ptr, row, val, rscaling, cscaling, &
-         options, inform)
+         control, inform)
   end subroutine equilib_scale_unsym_int64
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -478,14 +478,14 @@ contains
 !  reimplementation from the above paper to ensure it is 100% STFC
 !  copyright and can be released as open source)
 !
-  subroutine inf_norm_equilib_sym(n, ptr, row, val, scaling, options, inform)
+  subroutine inf_norm_equilib_sym(n, ptr, row, val, scaling, control, inform)
     implicit none
     integer(ip_), intent(in) :: n
     integer(long_), dimension(n+1), intent(in) :: ptr
     integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
     real(rp_), dimension(ptr(n+1)-1), intent(in) :: val
     real(rp_), dimension(n), intent(out) :: scaling
-    type(equilib_control_type), intent(in) :: options
+    type(equilib_control_type), intent(in) :: control
     type(equilib_inform_type), intent(inout) :: inform
 
     integer(ip_) :: itr, r, c
@@ -500,7 +500,7 @@ contains
     end if
 
     scaling(1:n) = 1.0
-    do itr = 1, options%max_iterations
+    do itr = 1, control%max_iterations
        ! Find maximum entry in each row and col
        ! Recall: matrix is symmetric, but we only have half
        maxentry(1:n) = 0.0
@@ -516,7 +516,7 @@ contains
        where (maxentry(1:n) .gt. 0) &
             scaling(1:n) = scaling(1:n) / sqrt(maxentry(1:n))
        ! Test convergence
-       if (maxval(abs(1-maxentry(1:n))) .lt. options%tol) exit
+       if (maxval(abs(1-maxentry(1:n))) .lt. control%tol) exit
     end do
     inform%iterations = itr-1
   end subroutine inf_norm_equilib_sym
@@ -531,7 +531,7 @@ contains
 !  copyright and can be released as open source)
 !
   subroutine inf_norm_equilib_unsym(m, n, ptr, row, val, rscaling, cscaling, &
-       options, inform)
+       control, inform)
     implicit none
     integer(ip_), intent(in) :: m
     integer(ip_), intent(in) :: n
@@ -540,7 +540,7 @@ contains
     real(rp_), dimension(ptr(n+1)-1), intent(in) :: val
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(equilib_control_type), intent(in) :: options
+    type(equilib_control_type), intent(in) :: control
     type(equilib_inform_type), intent(inout) :: inform
 
     integer(ip_) :: itr, r, c
@@ -556,7 +556,7 @@ contains
 
     rscaling(1:m) = 1.0
     cscaling(1:n) = 1.0
-    do itr = 1, options%max_iterations
+    do itr = 1, control%max_iterations
        ! Find maximum entry in each row and col
        ! Recall: matrix is symmetric, but we only have half
        rmaxentry(1:m) = 0.0
@@ -575,8 +575,8 @@ contains
        where(cmaxentry(1:n).gt.0) &
             cscaling(1:n) = cscaling(1:n) / sqrt(cmaxentry(1:n))
        ! Test convergence
-       if ((maxval(abs(1-rmaxentry(1:m))) .lt. options%tol) .and. &
-            (maxval(abs(1-cmaxentry(1:n))) .lt. options%tol)) exit
+       if ((maxval(abs(1-rmaxentry(1:m))) .lt. control%tol) .and. &
+            (maxval(abs(1-cmaxentry(1:n))) .lt. control%tol)) exit
     end do
     inform%iterations = itr-1
   end subroutine inf_norm_equilib_unsym
@@ -596,7 +596,7 @@ contains
 ! This code is adapted from HSL_MC64 v2.3.1
 !
   subroutine hungarian_wrapper(sym, m, n, ptr, row, val, match, rscaling, &
-       cscaling, options, inform)
+       cscaling, control, inform)
     implicit none
     logical, intent(in) :: sym
     integer(ip_), intent(in) :: m
@@ -607,7 +607,7 @@ contains
     integer(ip_), dimension(m), intent(out) :: match
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(hungarian_control_type), intent(in) :: options
+    type(hungarian_control_type), intent(in) :: control
     type(hungarian_inform_type), intent(out) :: inform
 
     integer(long_), allocatable :: ptr2(:)
@@ -666,7 +666,7 @@ contains
 
     if (inform%matched .ne. min(m,n)) then
        ! Singular matrix
-       if (options%scale_if_singular) then
+       if (control%scale_if_singular) then
           ! Just issue warning then continue
           inform%flag = WARNING_SINGULAR
        else
@@ -1354,7 +1354,7 @@ contains
 ! through the matrix.
 !
  subroutine auction_match_core(m, n, ptr, row, val, match, dualu, dualv, &
-      options, inform)
+      control, inform)
    implicit none
    integer(ip_), intent(in) :: m
    integer(ip_), intent(in) :: n
@@ -1365,7 +1365,7 @@ contains
       ! match(j) = i => column j matched to row i
    real(rp_), dimension(m), intent(out) :: dualu ! row dual variables
    real(rp_), dimension(n), intent(inout) :: dualv ! col dual variables
-   type(auction_control_type), intent(in) :: options
+   type(auction_control_type), intent(in) :: control
    type(auction_inform_type), intent(inout) :: inform
 
    integer(ip_), dimension(:), allocatable :: owner ! Inverse of match
@@ -1420,8 +1420,8 @@ contains
    end do
 
    ! Iterate until we run out of unmatched buyers
-   eps = options%eps_initial
-   do itr = 1, options%max_iterations
+   eps = control%eps_initial
+   do itr = 1, control%max_iterations
       if (unmatched .eq. 0) exit ! nothing left to match
       ! Bookkeeping to determine number of iterations with no change
       if (unmatched .ne. prev) nunchanged = 0
@@ -1429,12 +1429,12 @@ contains
       nunchanged = nunchanged + 1
       ! Test if we satisfy termination conditions
       ratio = real(minmn-unmatched)/real(minmn)
-      if ((nunchanged                  .ge. options%max_unchanged(1)) .and. &
-         (ratio .ge. options%min_proportion(1))) exit
-      if ((nunchanged                  .ge. options%max_unchanged(2)) .and. &
-         (ratio .ge. options%min_proportion(2))) exit
-      if ((nunchanged                  .ge. options%max_unchanged(3)) .and. &
-         (ratio .ge. options%min_proportion(3))) exit
+      if ((nunchanged                  .ge. control%max_unchanged(1)) .and. &
+         (ratio .ge. control%min_proportion(1))) exit
+      if ((nunchanged                  .ge. control%max_unchanged(2)) .and. &
+         (ratio .ge. control%min_proportion(2))) exit
+      if ((nunchanged                  .ge. control%max_unchanged(3)) .and. &
+         (ratio .ge. control%min_proportion(3))) exit
       ! Update epsilon scaling
       eps = min(1.0_rp_, eps+1.0_rp_/real(n+1,rp_))
       ! Now iterate over all unmatched entries listed in next(1:tail)
@@ -1509,7 +1509,7 @@ contains
 ! Lower triangle only as input (log(half)+half->full faster than log(full))
 !
  subroutine auction_match(expand, m, n, ptr, row, val, match, rscaling, &
-      cscaling, options, inform)
+      cscaling, control, inform)
    implicit none
    logical, intent(in) :: expand
    integer(ip_), intent(in) :: m
@@ -1520,7 +1520,7 @@ contains
    integer(ip_), dimension(m), intent(out) :: match
    real(rp_), dimension(m), intent(out) :: rscaling
    real(rp_), dimension(n), intent(out) :: cscaling
-   type(auction_control_type), intent(in) :: options
+   type(auction_control_type), intent(in) :: control
    type(auction_inform_type), intent(inout) :: inform
 
    integer(long_), allocatable :: ptr2(:)
@@ -1597,7 +1597,7 @@ contains
      ! cols that core algorithm doesn't visit
 
    call auction_match_core(m, n, ptr2, row2, val2, cmatch, rscaling, &
-        cscaling, options, inform)
+        cscaling, control, inform)
    inform%matched = count(cmatch.ne.0)
 
    ! Calculate an adjustment so row and col scaling similar orders of magnitude

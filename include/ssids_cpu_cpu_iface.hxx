@@ -52,4 +52,4 @@ size_t align_lda(size_t lda) {
    return Talign*((lda-1)/Talign + 1);
 }
 
-}}} /* namespaces galahad:ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */

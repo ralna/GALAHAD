@@ -190,4 +190,4 @@ void factor_node(
    else       factor_node_indef(ni, snode, node, control, stats, work, pool_alloc);
 }
 
-}}} /* end of namespace galahad:ssids::cpu */
+}}} /* end of namespace galahad::ssids::cpu */

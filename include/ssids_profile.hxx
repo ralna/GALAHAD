@@ -268,4 +268,4 @@ private:
 };
 
 
-}} /* namespace galahad:ssids */
+}} /* namespace galahad::ssids */

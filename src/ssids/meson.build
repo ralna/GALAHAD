@@ -4,13 +4,11 @@ if build_ssids
                               'profile.cxx',  'SymbolicSubtree.cxx', 
                               'ThreadStats.cxx', 'wrappers.cxx')
 
-  libgalahad_src += files('akeep.F90', 'analyse.F90', 
-                          'blas_iface.F90', 'ssids.F90',
+  libgalahad_src += files('akeep.F90', 'analyse.F90', 'ssids.F90',
                           'contrib.F90', 'contrib_free.F90', 'cpu_iface.F90',
                           'cpu_solve.F90', 'cpu_subtree.F90', 'datatypes.F90',
                           'fkeep.F90', 'gpu_subtree_no_cuda.F90', 'inform.F90',
-                          'lapack_iface.F90', 'profile_iface.F90', 
-                          'subtree.F90')
+                          'profile_iface.F90', 'subtree.F90')
 
   libgalahad_c_src += files('C/ssids_ciface.F90')
 

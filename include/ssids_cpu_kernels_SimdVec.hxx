@@ -797,7 +797,7 @@ private:
 
 #endif /* end of double version */
 
-}}} /* namespaces galahad:ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */
 
 
 

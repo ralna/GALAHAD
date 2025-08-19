@@ -55,4 +55,4 @@ private:
    size_t sz_;
 };
 
-}}} /* end of namespace galahad:ssids::cpu */
+}}} /* end of namespace galahad::ssids::cpu */
