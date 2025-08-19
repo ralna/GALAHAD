@@ -6,7 +6,8 @@ Other Contributors:
    Christopher Munro (STFC)
    Philippe Vandermersch (NVIDIA)
 All rights reserved.
-Current version - GALAHAD 4.3 - 2024-02-03 AT 15:15 GMT
+
+Nick Gould, fork for GALAHAD 5.3 - 2025-08-16 AT 09:00 GMT
 
 This file is a modified version of the ASEArch blas version. It has had a
 lookup capability added to allow execution on multiple small matrices
@@ -15,7 +16,7 @@ simulateously.
 
 #include "ssids_rip.hxx"
 
-namespace spral { namespace ssids { namespace gpu {
+namespace galahad { namespace ssids { namespace gpu {
 
 /** \brief Return value at address vptr using volatile load. */
 template<typename T_ELEM>
@@ -813,4 +814,4 @@ void __global__ trsv_ln_exec(T_ELEM *__restrict__ xglobal, ipc_ *__restrict__ sy
    __threadfence(); // Flush sync[0] asap
 }
 
-}}} /* namespace spral::ssids::gpu */
+}}} /* namespace galahad:ssids::gpu */

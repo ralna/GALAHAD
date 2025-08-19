@@ -12,23 +12,18 @@
 !
 ! Routines originally based on HSL_MC78 v1.2.0
 
-module spral_core_analyse
-  use spral_kinds
-  implicit none
+MODULE SPRAL_CORE_ANALYSE
+  USE SPRAL_KINDS
+  IMPLICIT none
 
-  private
-  public :: basic_analyse ! Perform a full analysis for a given matrix ordering
-
-  integer(ip_), parameter :: long = selected_int_kind(18)
-  integer(ip_), parameter :: ptr_kind = long ! integer kind used for user's
-    ! column pointers (rptr is always long) - integer or long
+  PRIVATE
+  PUBLIC :: basic_analyse ! Perform a full analysis for a given matrix ordering
 
   integer(ip_), parameter :: minsz_ms = 16 ! minimum size to use merge sort
-
   integer(ip_), parameter :: ERROR_ALLOCATION = -1
   integer(ip_), parameter :: WARNING_SINGULAR = 1
 
-contains
+CONTAINS
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !            Outline analysis routine
@@ -45,7 +40,7 @@ contains
        sparent, rptr, rlist, nemin, info, stat, nfact, nflops)
     implicit none
     integer(ip_), intent(in) :: n ! Dimension of system
-    integer(ptr_kind), dimension(n+1), intent(in) :: ptr ! Column pointers
+    integer(long_), dimension(n+1), intent(in) :: ptr ! Column pointers
     integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row ! Row indices
     integer(ip_), dimension(n), intent(inout) :: perm
       ! perm(i) must hold position of i in the pivot sequence.
@@ -185,7 +180,7 @@ contains
   subroutine find_etree(n, ptr, row, perm, invp, parent, st)
     implicit none
     integer(ip_), intent(in) :: n ! dimension of system
-    integer(ptr_kind), dimension(n+1), intent(in) :: ptr ! column pointers of A
+    integer(long_), dimension(n+1), intent(in) :: ptr ! column pointers of A
     integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row ! row indices of A
     integer(ip_), dimension(n), intent(in) :: perm ! perm(i) is the pivot
       ! position of column i
@@ -194,7 +189,7 @@ contains
       ! parent of pivot i in the elimination tree
     integer(ip_), intent(out) :: st ! stat parmeter for allocate calls
 
-    integer(ptr_kind) :: i ! next index into row
+    integer(long_) :: i ! next index into row
     integer(ip_) :: j ! current entry in row
     integer(ip_) :: k ! current ancestor
     integer(ip_) :: l ! next ancestor
@@ -246,7 +241,7 @@ contains
     implicit none
     integer(ip_), intent(in) :: n
     integer(ip_), intent(out) :: realn
-    integer(ptr_kind), dimension(n+1), intent(in) :: ptr
+    integer(long_), dimension(n+1), intent(in) :: ptr
     integer(ip_), dimension(n), intent(inout) :: perm ! perm(i) is the pivot
       ! position of column i
     integer(ip_), dimension(n), intent(inout) :: invp ! inverse of perm
@@ -402,7 +397,7 @@ contains
   subroutine find_col_counts(n, ptr, row, perm, invp, parent, cc, st)
     implicit none
     integer(ip_), intent(in) :: n ! dimension of system
-    integer(ptr_kind), dimension(n+1), intent(in) :: ptr ! column pointers of A
+    integer(long_), dimension(n+1), intent(in) :: ptr ! column pointers of A
     integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row ! row indices of A
     integer(ip_), dimension(n), intent(in) :: perm ! perm(i) is the pivot
       ! position of column i
@@ -420,7 +415,7 @@ contains
     integer(ip_) :: col ! column of matrix associated with piv
     integer(ip_), dimension(:), allocatable :: first ! first descendants
     integer(ip_) :: i
-    integer(ptr_kind) :: ii
+    integer(long_) :: ii
     integer(ip_), dimension(:), allocatable :: last_nbr ! previous neighbour
     integer(ip_), dimension(:), allocatable :: last_p ! previous p?
     integer(ip_) :: par ! parent node of piv
@@ -941,7 +936,7 @@ contains
        sptr, sparent, scc, rptr, rlist, info, st)
     implicit none
     integer(ip_), intent(in) :: n
-    integer(ptr_kind), dimension(n+1), intent(in) :: ptr
+    integer(long_), dimension(n+1), intent(in) :: ptr
     integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
     integer(ip_), dimension(n), intent(in) :: perm
     integer(ip_), dimension(n), intent(in) :: invp
@@ -1128,4 +1123,4 @@ contains
     end do
   end subroutine apply_perm
 
-end module spral_core_analyse
+END MODULE SPRAL_CORE_ANALYSE

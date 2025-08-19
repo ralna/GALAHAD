@@ -1,26 +1,26 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 07:50 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-17 AT 13:40 GMT.
 
 #include "spral_procedures.h"
 
-! COPYRIGHT (c) 2010, 2013 Science and Technology Facilities Council
-! Authors: Jonathan Hogg, John Reid, Jennifer Scott and Sue Thorne
-!
-! Based on modified versions of hsl_mc34 and hsl_mc69
-!
-module spral_matrix_util_precision
-   use spral_kinds_precision
-   implicit none
+!  COPYRIGHT (c) 2010, 2013 Science and Technology Facilities Council (STFC)
+!  licence: BSD licence, see LICENCE file for details
+!  authors: Jonathan Hogg, John Reid, Jennifer Scott and Sue Thorne
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
-   private
+MODULE SPRAL_MATRIX_UTIL_precision
+   USE GALAHAD_KINDS_precision
+   IMPLICIT none
+
+   PRIVATE
    ! Following are all types of matrix we may need to deal with
-   public :: SPRAL_MATRIX_UNSPECIFIED,                                         &
+   PUBLIC :: SPRAL_MATRIX_UNSPECIFIED,                                         &
              SPRAL_MATRIX_REAL_RECT, SPRAL_MATRIX_CPLX_RECT,                   &
              SPRAL_MATRIX_REAL_UNSYM, SPRAL_MATRIX_CPLX_UNSYM,                 &
              SPRAL_MATRIX_REAL_SYM_PSDEF, SPRAL_MATRIX_CPLX_HERM_PSDEF,        &
              SPRAL_MATRIX_REAL_SYM_INDEF, SPRAL_MATRIX_CPLX_HERM_INDEF,        &
              SPRAL_MATRIX_CPLX_SYM,                                            &
              SPRAL_MATRIX_REAL_SKEW, SPRAL_MATRIX_CPLX_SKEW
-   public ::                  &
+   PUBLIC ::                  &
       apply_conversion_map,   & ! Applies a map from previous conversion call
       cscl_verify,            & ! Verifies if matrix in CSC-lower form
       clean_cscl_oop,         & ! Cleans a CSC-lower matrix out-of-place
@@ -145,7 +145,7 @@ interface cleanup_dup
    module procedure cleanup_dup32, cleanup_dup64
 end interface
 
-contains
+CONTAINS
 
 !
 ! To verify that a matrix is in standard format, or identify why it is not
@@ -3299,4 +3299,4 @@ subroutine half_to_full_int64(n,row,ptr,iw,a,cbase)
 
 end subroutine half_to_full_int64
 
-end module spral_matrix_util_precision
+END MODULE SPRAL_MATRIX_UTIL_precision

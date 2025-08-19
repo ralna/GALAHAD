@@ -1,23 +1,27 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 07:50 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-17 AT 13:40 GMT.
 
 #include "spral_procedures.h"
 
-! COPYRIGHT (c) 2014 Science and Technology Facilities Council
-! Authors: Jonathan Hogg
-!
-! Implementation of simple LCG PRNG
-! Parameters as in glibc
-module spral_random_precision
-  use spral_kinds_precision
-  implicit none
+!  COPYRIGHT (c) 2014 The Science and Technology Facilities Council (STFC)
+!  licence: BSD licence, see LICENCE file for details
+!  author: Jonathan Hogg
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
+
+MODULE SPRAL_RANDOM_precision
+
+!  an implementation of a simple linear congruential pseudo-randomized 
+!  number generator, parameters as in glibc
+
+  USE GALAHAD_KINDS_precision
+  IMPLICIT none
 
   private
-  public :: random_real,& ! Returns random real
-       random_integer,  & ! Returns random integer
-       random_logical,  & ! Returns random logical
-       random_get_seed, & ! Get seed of generator
-       random_set_seed    ! Set seed of generator
-  public :: random_state  ! State type
+  PUBLIC :: random_real,     & ! Returns random real
+            random_integer,  & ! Returns random integer
+            random_logical,  & ! Returns random logical
+            random_get_seed, & ! Get seed of generator
+            random_set_seed    ! Set seed of generator
+  PUBLIC :: random_state       ! State type
 
   integer(ip_), parameter :: wp = kind(0d0)
   integer(ip_), parameter :: long = selected_int_kind(18)
@@ -37,7 +41,7 @@ module spral_random_precision
      module procedure random_integer32, random_integer64
   end interface random_integer
 
-contains
+CONTAINS
 
   !
   ! Get random seed
@@ -135,4 +139,4 @@ contains
     random_logical = (test .eq. 1)
   end function random_logical
 
-end module spral_random_precision
+END MODULE SPRAL_RANDOM_precision

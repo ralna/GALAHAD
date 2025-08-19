@@ -2,13 +2,13 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-03 AT 09:50 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  */
 
 #include "ssids_routines.h"
 #include "ssids_cpu_kernels_ldlt_nopiv.hxx"
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 /* We perform a 2x2 blocked LDL^T factorization of an m x n matrix.
  * This is not pivoted, and assumes we're doing this instead of a cholesky
@@ -114,4 +114,4 @@ void ldlt_nopiv_solve_bwd(ipc_ m, ipc_ n, rpc_ const* a, ipc_ lda, rpc_ *x) {
    }
 }
 
-}}} /* namespaces spral::ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */

@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-04 AT 10:10 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  */
 #pragma once
 
@@ -14,7 +14,7 @@
 #include "ssids_rip.hxx"
 #include "spral_omp.hxx"
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 namespace buddy_alloc_internal {
 
@@ -317,7 +317,7 @@ public:
     */
    void* allocate(std::size_t sz) {
       // Try allocating in existing pages
-      spral::omp::AcquiredLock scopeLock(lock_);
+      galahad::omp::AcquiredLock scopeLock(lock_);
       void* ptr = nullptr;
       for(auto& page: pages_) {
          ptr = page.allocate(sz);
@@ -355,7 +355,7 @@ public:
    /** \brief Release memory starting at ptr of size sz back to pool */
    void deallocate(void* ptr, std::size_t sz) {
       // Find page ptr belongs to and call it's deallocate function
-      spral::omp::AcquiredLock scopeLock(lock_);
+      galahad::omp::AcquiredLock scopeLock(lock_);
       for(auto& page: pages_) {
          if(page.is_owner(ptr)) {
             page.deallocate(ptr, sz);
@@ -368,7 +368,7 @@ private:
    CharAllocator alloc_; ///< Underlying allocator to be passed to new pages
    std::size_t max_sz_; ///< Size of last page allocated
    std::vector<PageSpec, PageAlloc> pages_; ///< Individual buddy allocators
-   spral::omp::Lock lock_; ///< Underlying OpenMP lock
+   galahad::omp::Lock lock_; ///< Underlying OpenMP lock
 };
 
 } /* namespace buddy_alloc_internal */
@@ -413,4 +413,4 @@ private:
    friend class BuddyAllocator;
 };
 
-}}} /* namespaces spral::ssids::cpu */
+}}} /* namespaces galahad:ssids::cpu */

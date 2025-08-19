@@ -3,17 +3,17 @@
 #include "ssids_routines.h"
 #include "spral_procedures.h"
 
-!> \file
-!> \copyright 2016 The Science and Technology Facilities Council (STFC)
-!> \licence   BSD licence, see LICENCE file for details
-!> \author    Jonathan Hogg
-!> \author    Florent Lopez
-MODULE GALAHAD_SSIDS_PROFILE
-   USE SPRAL_KINDS
+!  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)
+!  authors: Jonathan Hogg and Florent Lopez
+!  licence: BSD licence, see LICENCE file for details
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
+
+MODULE GALAHAD_SSIDS_profile
+   USE GALAHAD_KINDS
    IMPLICIT none
 
    PRIVATE
-   PUBLIC :: profile_begin, profile_end, profile_task_type, &
+   PUBLIC :: profile_begin, profile_end, profile_task_type,                    &
              profile_create_task, profile_set_state, profile_add_event
 
    type :: profile_task_type
@@ -105,8 +105,8 @@ MODULE GALAHAD_SSIDS_PROFILE
 
 contains
 
-  subroutine profile_begin(regions)
-    use spral_hw_topology, only : numa_region, c_numa_region
+  SUBROUTINE profile_begin(regions)
+    USE SPRAL_HW_TOPOLOGY, only : numa_region, c_numa_region
     implicit none
 
     type(numa_region), dimension(:), intent(in) :: regions
@@ -141,7 +141,7 @@ contains
 
     ! TODO free data structures
 
-  end subroutine profile_begin
+  END SUBROUTINE profile_begin
 
   type(profile_task_type) function profile_create_task(name, thread)
     character(len=*), intent(in) :: name
@@ -221,4 +221,4 @@ contains
     cstring(len(fstring)+1) = C_NULL_CHAR
   end subroutine f2c_string
 
-END MODULE GALAHAD_SSIDS_PROFILE
+END MODULE GALAHAD_SSIDS_profile

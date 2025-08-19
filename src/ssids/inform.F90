@@ -3,14 +3,14 @@
 #include "spral_procedures.h"
 
 !  copyright 2016 The Science and Technology Facilities Council (STFC)
-!  licence   BSD licence, see LICENCE file for details
-!  author    Jonathan Hogg
+!  licence: BSD licence, see LICENCE file for details
+!  author: Jonathan Hogg
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
-MODULE GALAHAD_SSIDS_INFORM_precision
-  USE SPRAL_KINDS_precision
-  USE SPRAL_CUDA_precision, ONLY: cudaGetErrorString
-  USE SPRAL_SCALING_precision, ONLY: auction_inform
-  USE GALAHAD_SSIDS_TYPES_precision
+MODULE GALAHAD_SSIDS_inform_precision
+  USE GALAHAD_KINDS_precision
+  USE SPRAL_SCALING_precision, ONLY: auction_inform_type
+  USE GALAHAD_SSIDS_types_precision
   USE GALAHAD_NODEND_precision, ONLY: NODEND_inform_type
   IMPLICIT NONE
 
@@ -40,7 +40,7 @@ MODULE GALAHAD_SSIDS_INFORM_precision
      INTEGER( ip_ ) :: num_sup = 0 ! # supernodes
      INTEGER( ip_ ) :: num_two = 0 ! # 2x2 pivots used by factorization
      INTEGER( ip_ ) :: stat = 0 ! stat parameter
-     TYPE( auction_inform ) :: auction
+     TYPE( auction_inform_type ) :: auction
      INTEGER( ip_ ) :: cuda_error = 0
      INTEGER( ip_ ) :: cublas_error = 0
      TYPE( NODEND_inform_type ) :: nodend_inform
@@ -113,9 +113,9 @@ CONTAINS
             &ordering but matching-based ordering not used'
     CASE(SSIDS_ERROR_UNIMPLEMENTED)
        msg = 'Functionality not yet implemented'
-    CASE(SSIDS_ERROR_CUDA_UNKNOWN)
-       write(msg,'(2a)') ' Unhandled CUDA error: ', &
-            trim(cudaGetErrorString(this%cuda_error))
+!   CASE(SSIDS_ERROR_CUDA_UNKNOWN)
+!      write(msg,'(2a)') ' Unhandled CUDA error: ', &
+!           trim(cudaGetErrorString(this%cuda_error))
     CASE(SSIDS_ERROR_CUBLAS_UNKNOWN)
        msg = 'Unhandled CUBLAS error:'
 !$  CASE(SSIDS_ERROR_OMP_CANCELLATION)
@@ -136,7 +136,7 @@ CONTAINS
     CASE(SSIDS_WARNING_MISS_DIAG_OORDUP)
        msg = 'one or more diagonal entries is missing and out-of-range and/or &
             &duplicate entries detected'
-    CASE(SSIDS_WARNING_ANAL_SINGULAR)
+    CASE(SSIDS_WARNING_ANALYSIS_SINGULAR)
        msg = 'Matrix found to be structually singular'
     CASE(SSIDS_WARNING_FACT_SINGULAR)
        msg = 'Matrix found to be singular'
@@ -149,37 +149,37 @@ CONTAINS
     END SELECT
   END FUNCTION flag_to_character
 
-  SUBROUTINE print_flag(this, options, context)
+  SUBROUTINE print_flag(this, control, context)
 
 !  print out warning or error if flag is non-zero
 !   this Instance variable.
-!   options Options to be used for printing
+!   control Options to be used for printing
 !   context Name of routine to report error from
 
     IMPLICIT none
     CLASS( SSIDS_inform_type ), INTENT( IN ) :: this
-    TYPE( SSIDS_options_type ), INTENT( IN ) :: options
+    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
     CHARACTER( len = * ), INTENT( IN ) :: context
 
     CHARACTER( len=200 ) :: msg
 
     IF ( this%flag == SSIDS_SUCCESS ) RETURN ! Nothing to print
-    IF ( options%print_level < 0) RETURN ! No printing
+    IF ( control%print_level < 0) RETURN ! No printing
 
 !  warning
 
     IF ( this%flag > SSIDS_SUCCESS ) THEN
-      IF ( options%unit_warning < 0 ) RETURN ! printing supressed
-      WRITE( options%unit_warning,'(/3a,i0)') ' Warning from ',                &
+      IF ( control%unit_warning < 0 ) RETURN ! printing supressed
+      WRITE( control%unit_warning,'(/3a,i0)') ' Warning from ',                &
            TRIM( context ), '. Warning flag = ', this%flag
       msg = this%flag_to_character( )
-      WRITE (options%unit_warning, '(a)') msg
+      WRITE (control%unit_warning, '(a)') msg
     ELSE
-      IF ( options%unit_error < 0 ) RETURN ! printing supressed
-      WRITE( options%unit_error,'(/3a,i0)') ' Error return from ',             &
+      IF ( control%unit_error < 0 ) RETURN ! printing supressed
+      WRITE( control%unit_error,'(/3a,i0)') ' Error return from ',             &
            TRIM( context ), '. Error flag = ', this%flag
       msg = this%flag_to_character( )
-      WRITE( options%unit_error, '(a)') msg
+      WRITE( control%unit_error, '(a)') msg
     END IF
   END SUBROUTINE print_flag
 
@@ -226,4 +226,4 @@ CONTAINS
     this%cpu_flops = this%cpu_flops + other%cpu_flops
     this%gpu_flops = this%gpu_flops + other%gpu_flops
   END SUBROUTINE reduce
-END MODULE GALAHAD_SSIDS_INFORM_precision
+END MODULE GALAHAD_SSIDS_inform_precision

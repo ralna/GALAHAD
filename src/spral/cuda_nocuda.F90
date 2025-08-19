@@ -1,30 +1,38 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-18 AT 13:00 GMT
 
 #include "spral_procedures.h"
 
-! Provides limited interface definitions for CUDA functions in the case
-! we are not compiled against CUDA libraries
-module spral_cuda_precision
-  use spral_kinds_precision
-  use, intrinsic :: iso_c_binding
-  implicit none
+!  provides limited interface definitions for CUDA functions in the case
+!  we are not compiled against CUDA libraries
 
-  private
-  public :: cudaGetErrorString
-  public :: detect_gpu
+MODULE SPRAL_CUDA_precision
+  USE GALAHAD_KINDS_precision
+  USE, INTRINSIC :: iso_c_binding
+  IMPLICIT none
 
-contains
-  ! Convert a CUDA error code to a Fortran character string
-  character(len=200) function cudaGetErrorString(error)
-    implicit none
-    integer(C_IP_), intent(in) :: error
+  PRIVATE
+  PUBLIC :: cudaGetErrorString
+  PUBLIC :: detect_gpu
 
-    write(cudaGetErrorString, "(a,i3)") "Not compiled with CUDA support ", error
-  end function cudaGetErrorString
+CONTAINS
 
-  ! Return true if a GPU is present and code is compiled with CUDA support
-  logical function detect_gpu()
-    implicit none
-    detect_gpu = .false.
-  end function detect_gpu
-end module spral_cuda_precision
+  CHARACTER( LEN = 200 ) FUNCTION cudaGetErrorString(error)
+
+!  convert a CUDA error code to a Fortran character string
+
+    IMPLICIT none
+    INTEGER( C_IP_ ), INTENT( IN ) :: error
+
+    WRITE( cudaGetErrorString, "( 'Not compiled with CUDA support ', I3 )" )   &
+      error
+  END FUNCTION cudaGetErrorString
+
+  LOGICAL FUNCTION detect_gpu( )
+
+!  return true if a GPU is present and code is compiled with CUDA support
+
+    IMPLICIT none
+
+    detect_gpu = .FALSE.
+  END FUNCTION detect_gpu
+END MODULE SPRAL_CUDA_precision

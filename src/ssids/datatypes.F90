@@ -2,15 +2,16 @@
 
 #include "spral_procedures.h"
 
-! copyright 2016 The Science and Technology Facilities Council (STFC)
-! licence   BSD licence, see LICENCE file for details
-! author    Jonathan Hogg
+!  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)
+!  licence: BSD licence, see LICENCE file for details
+!  author: Jonathan Hogg
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
-MODULE GALAHAD_SSIDS_TYPES_precision
-  USE SPRAL_KINDS_precision
+MODULE GALAHAD_SSIDS_types_precision
+  USE GALAHAD_KINDS_precision
 !$  use omp_lib
   USE, INTRINSIC :: iso_c_binding
-  USE SPRAL_SCALING_precision, ONLY : auction_options, auction_inform
+  USE SPRAL_SCALING_precision, ONLY : auction_control_type
   USE GALAHAD_NODEND_precision, ONLY : NODEND_control_type
   IMPLICIT none
 
@@ -43,7 +44,7 @@ MODULE GALAHAD_SSIDS_TYPES_precision
   INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_NOT_LDLT          = -14
   INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_NO_SAVED_SCALING  = -15
   INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_ALLOCATION        = -50
-  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_CUDA_UNKNOWN      = -51
+! INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_CUDA_UNKNOWN      = -51
   INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_CUBLAS_UNKNOWN    = -52
 !$ integer, parameter, public :: SSIDS_ERROR_OMP_CANCELLATION  = -53
   INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_NO_METIS          = -97
@@ -51,14 +52,14 @@ MODULE GALAHAD_SSIDS_TYPES_precision
   INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_UNKNOWN           = -99
 
   ! warning flags
-  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_IDX_OOR          = 1
-  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_DUP_IDX          = 2
-  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_DUP_AND_OOR      = 3
-  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_MISSING_DIAGONAL = 4
-  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_MISS_DIAG_OORDUP = 5
-  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_ANAL_SINGULAR    = 6
-  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_FACT_SINGULAR    = 7
-  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_MATCH_ORD_NO_SCALE=8
+  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_IDX_OOR            = 1
+  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_DUP_IDX            = 2
+  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_DUP_AND_OOR        = 3
+  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_MISSING_DIAGONAL   = 4
+  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_MISS_DIAG_OORDUP   = 5
+  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_ANALYSIS_SINGULAR  = 6
+  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_FACT_SINGULAR      = 7
+  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_MATCH_ORD_NO_SCALE = 8
 !$ integer, parameter, public :: SSIDS_WARNING_OMP_PROC_BIND    = 50
 
   ! solve job values
@@ -174,24 +175,22 @@ MODULE GALAHAD_SSIDS_TYPES_precision
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !
-  ! This type is used to pass buf around for each thread such that it can
-  ! be reallocated independantly
-  !
+!  this type is used to pass buf around for each thread such that it can
+!  be reallocated independantly
+
   TYPE real_ptr_type
-    REAL( rp_ ), pointer :: chkptr => null( )
-    REAL( rp_ ), dimension( : ), allocatable :: val
+    REAL( rp_ ), POINTER :: chkptr => NULL( )
+    REAL( rp_ ), DIMENSION( : ), ALLOCATABLE :: val
   END TYPE real_ptr_type
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !
-  ! Data type for control parameters
-  !
+!  data type for control parameters
+
   TYPE SSIDS_control_type
-    !
-    ! Printing options
-    !
+
+!  printing options
+
     INTEGER( ip_ ) :: print_level = 0 ! Controls diagnostic printing.
       ! Possible values are:
       !  < 0: no printing.
@@ -206,9 +205,8 @@ MODULE GALAHAD_SSIDS_TYPES_precision
     INTEGER( ip_ ) :: unit_warning = 6 ! unit number for warning messages.
       ! Printing is suppressed if unit_warning  <  0.
 
-    !
-    ! Options used ssids_analyse(  ) and ssids_analyse_coord(  )
-    !
+!  options used ssids_analyse( ) and ssids_analyse_coord( )
+
     INTEGER( ip_ ) :: ordering = 1 ! controls choice of ordering
       ! 0 Order must be supplied by user
       ! 1 METIS ordering with default settings is used.
@@ -216,9 +214,8 @@ MODULE GALAHAD_SSIDS_TYPES_precision
     INTEGER( ip_ ) :: nemin = nemin_default ! Min. number of eliminations at a
       ! tree node for amalgamation not to be considered.
 
-    !
-    ! High level subtree splitting parameters
-    !
+!  high level subtree splitting parameters
+
     LOGICAL :: ignore_numa = .true. ! If true, treat entire machine as single
       ! NUMA region for purposes of subtree allocation.
     LOGICAL :: use_gpu = .true. ! Use GPUs if present
@@ -230,9 +227,8 @@ MODULE GALAHAD_SSIDS_TYPES_precision
     REAL :: gpu_perf_coeff = 1.0 ! How many times better is a GPU than a
       ! single NUMA region's worth of processors
 
-    !
-    ! Options used by ssids_factor(  ) [both indef+posdef]
-    !
+!  options used by ssids_factor(  ) [both indef+posdef]
+
     INTEGER( ip_ ) :: scaling = 0 ! controls use of scaling.
       !  <=0: user supplied ( or no ) scaling
       !    1: Matching-based scaling by Hungarian Algorithm (MC64-like)
@@ -240,17 +236,15 @@ MODULE GALAHAD_SSIDS_TYPES_precision
       !    3: Scaling generated during analyse phase for matching-based order
       !  >=4: Norm equilibriation algorithm (MC77-like)
 
-    !
-    ! CPU-specific
-    !
+!  CPU-specific
+
     INTEGER( long_ ) :: small_subtree_threshold = 4*10**6 ! Flops below
       ! which we treat a subtree as small and use the single core kernel
     INTEGER( ip_ ) :: cpu_block_size = 256 ! block size to use for task
       ! generation on larger nodes
 
-    !
-    ! Options used by ssids_factor(  ) with posdef=.false.
-    !
+!  options used by ssids_factor(  ) with posdef=.false.
+
     LOGICAL :: action = .true. ! used in indefinite case only.
       ! If true and the matrix is found to be
       ! singular, computation continues with a warning.
@@ -264,15 +258,14 @@ MODULE GALAHAD_SSIDS_TYPES_precision
       ! pivot must be of size at least small to be accepted).
     REAL( rp_ ) :: u = 0.01
 
-    type (  NODEND_control_type  ) :: nodend_options
+    TYPE ( NODEND_control_type ) :: nodend_control
 
-    !
-    ! Undocumented
-    !
+!  undocumented
+
     INTEGER( ip_ ) :: nstream = 1 ! Number of streams to use
     REAL( rp_ ) :: multiplier = 1.1 ! size to multiply expected memory size by
       ! when doing initial memory allocation to allow for delays.
-    TYPE( auction_options ) :: auction ! Auction algorithm parameters
+    TYPE( auction_control_type ) :: auction ! Auction algorithm parameters
     REAL :: min_loadbalance = 0.8 ! Minimum load balance required when
       ! finding level set used for multiple streams
     CHARACTER( len=: ), allocatable :: rb_dump ! Filename to dump matrix in
@@ -309,7 +302,7 @@ CONTAINS
 !   context Name of subroutine to use in printing
 
     IMPLICIT none
-    CLASS( SSIDS_ocontrol_type ), INTENT( IN ) :: this
+    CLASS( SSIDS_control_type ), INTENT( IN ) :: this
     CHARACTER( len=* ), INTENT( IN ) :: context
 
     INTEGER( ip_ ) :: mp
@@ -387,4 +380,4 @@ CONTAINS
 210 FORMAT( '( // A, 5( / A ,I12  ), 5( / A, ES12.4 ) )' )
   END SUBROUTINE print_summary_factor
 
-END MODULE GALAHAD_SSIDS_TYPES_precision
+END MODULE GALAHAD_SSIDS_types_precision

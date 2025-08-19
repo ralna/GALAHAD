@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-04 AT 10:10 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  */
 
 #pragma once
@@ -15,7 +15,7 @@
 #include "ssids_rip.hxx"
 #include "spral_compat.hxx" // for std::align if required
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 namespace append_alloc_internal {
 
@@ -101,7 +101,7 @@ private:
    Page* top_page_;
 };
 
-} /* namespace spral::ssids::cpu::append_alloc_internal */
+} /* namespace galahad:ssids::cpu::append_alloc_internal */
 
 /** An allocator built on top of a pool of pages, with expectation of
  * sequential allocation, and then everything deallocated at the end.
@@ -141,4 +141,4 @@ protected:
    template <typename U> friend class AppendAlloc;
 };
 
-}}} /* namepsace spral::ssids::cpu */
+}}} /* namepsace galahad:ssids::cpu */

@@ -1,6 +1,7 @@
 /** \file \copyright 2016 The Science and Technology Facilities Council
  *  (STFC) \licence BSD licence, see LICENCE file for details \author
- *  Jonathan Hogg \version GALAHAD 5.1 - 2025-01-08 AT 08:10 GMT
+ *  Jonathan Hogg 
+ *  Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  */
 #include "ssids_cpu_kernels_ldlt_app.hxx"
 
@@ -42,7 +43,7 @@
 #define i_ipc_ "i"
 #endif
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 namespace ldlt_app_internal {
 
@@ -79,7 +80,7 @@ public:
     *  \param passed number of variables passing a posteori pivot test in block
     */
    void init_passed(ipc_ passed) {
-      spral::omp::AcquiredLock scopeLock(lock_);
+      galahad::omp::AcquiredLock scopeLock(lock_);
       npass_ = passed;
    }
    /** \brief Update number of passed columns.
@@ -87,7 +88,7 @@ public:
     *  \param passed number of variables passing a posteori pivot test in block
     */
    void update_passed(ipc_ passed) {
-      spral::omp::AcquiredLock scopeLock(lock_);
+      galahad::omp::AcquiredLock scopeLock(lock_);
       npass_ = std::min(npass_, passed);
    }
    /** \brief Test if column has failed (in unpivoted case), recording number of
@@ -103,7 +104,7 @@ public:
       bool fail = (passed < nelim);
       if(!fail) {
          // Record number of blocks in column passing this test
-         spral::omp::AcquiredLock scopeLock(lock_);
+         galahad::omp::AcquiredLock scopeLock(lock_);
          ++npass_;
       }
       return fail;
@@ -120,7 +121,7 @@ public:
    void adjust(ipc_& next_elim) {
       // Test if last passed column was first part of a 2x2: if so,
       // decrement npass
-      spral::omp::AcquiredLock scopeLock(lock_);
+      galahad::omp::AcquiredLock scopeLock(lock_);
       if(npass_>0) {
          T d11 = d[2*(npass_-1)+0];
          T d21 = d[2*(npass_-1)+1];
@@ -163,12 +164,12 @@ public:
 
    /** \brief return number of passed columns */
    ipc_ get_npass() const {
-     spral::omp::AcquiredLock scopeLock(lock_);
+     galahad::omp::AcquiredLock scopeLock(lock_);
      return npass_;
    }
 
 private:
-   mutable spral::omp::Lock lock_; ///< lock for altering npass
+   mutable galahad::omp::Lock lock_; ///< lock for altering npass
    ipc_ npass_=0; ///< reduction variable for nelim
 };
 
@@ -983,14 +984,14 @@ public:
     *  \param perm User permutation: entries are permuted in same way as
     *         matrix columns.
     *  \param d pointer to global array for D.
-    *  \param options user-supplied options
+    *  \param control user-supplied control
     *  \param work vector of thread-specific workspaces
     *  \param alloc allocator instance to be used on recursion to
     *         LDLT::factor().
     */
    template <typename Allocator>
    ipc_ factor(ipc_ next_elim, ipc_* perm, T* d,
-         struct cpu_factor_options const &options,
+         struct cpu_factor_control const &control,
          std::vector<Workspace>& work, Allocator const& alloc) {
       if(i_ != j_)
          throw std::runtime_error("factor called on non-diagonal block!");
@@ -1010,7 +1011,7 @@ public:
                  use_tasks, debug, Allocator>
                 ::factor(
                       nrow(), ncol(), lperm, aval_, lda_,
-                      cdata_[i_].d, inner_backup, options, options.pivot_method,
+                      cdata_[i_].d, inner_backup, control, control.pivot_method,
                       INNER_BLOCK_SIZE, 0, nullptr, 0, work, alloc
                       );
          if(cdata_[i_].nelim < 0) return cdata_[i_].nelim;
@@ -1026,8 +1027,8 @@ public:
             T* ld = work[omp_get_thread_num()].get_ptr<T>(2*INNER_BLOCK_SIZE);
             cdata_[i_].nelim = ldlt_tpp_factor(
                   nrow(), ncol(), lperm, aval_, lda_,
-                  cdata_[i_].d, ld, INNER_BLOCK_SIZE, options.action,
-                  options.u, options.small
+                  cdata_[i_].d, ld, INNER_BLOCK_SIZE, control.action,
+                  control.u, control.small
                   );
             if(cdata_[i_].nelim < 0) return cdata_[i_].nelim;
             ipc_* temp = work[omp_get_thread_num()].get_ptr<ipc_>(ncol());
@@ -1042,8 +1043,8 @@ public:
                   INNER_BLOCK_SIZE*INNER_BLOCK_SIZE
                   );
             block_ldlt<T, INNER_BLOCK_SIZE>(
-                  0, blkperm, aval_, lda_, cdata_[i_].d, ld, options.action,
-                  options.u, options.small, lperm
+                  0, blkperm, aval_, lda_, cdata_[i_].d, ld, control.action,
+                  control.u, control.small, lperm
                   );
             cdata_[i_].nelim = INNER_BLOCK_SIZE;
          }
@@ -1310,7 +1311,7 @@ private:
    static
    ipc_ run_elim_pivoted(ipc_ const m, ipc_ const n, ipc_* perm, T* a,
          ipc_ const lda, T* d, ColumnData<T,IntAlloc>& cdata, Backup& backup,
-         struct cpu_factor_options const& options, ipc_ const block_size,
+         struct cpu_factor_control const& control, ipc_ const block_size,
          T const beta, T* upd, ipc_ const ldupd, std::vector<Workspace>& work,
          Allocator const& alloc, ipc_ const from_blk=0) {
       typedef Block<T, BLOCK_SIZE, IntAlloc> BlockSpec;
@@ -1341,7 +1342,7 @@ private:
          #pragma omp task                                         \
             firstprivate(blk)                                     \
             shared(a, abort, perm, backup, cdata, next_elim, d,   \
-                   options, work, alloc, flag)                    \
+                   control, work, alloc, flag)                    \
             depend(inout: a[blk*block_size*lda+blk*block_size:1]) \
             depend(inout: perm[blk*block_size:1])
          {
@@ -1360,7 +1361,7 @@ private:
                dblk.backup(backup);
                // Perform actual factorization
                ipc_ nelim = dblk.template factor<Allocator>(next_elim, perm, d,
-                                                        options, work, alloc);
+                                                        control, work, alloc);
                if (nelim < 0) {
                  #pragma omp atomic write
                  flag = nelim;
@@ -1405,7 +1406,7 @@ private:
          for(ipc_ jblk = 0; jblk < blk; jblk++) {
             #pragma omp task                                          \
                firstprivate(blk, jblk)                                \
-               shared(a, abort, backup, cdata, options)               \
+               shared(a, abort, backup, cdata, control)               \
                depend(in: a[blk*block_size*lda+blk*block_size:1])     \
                depend(inout: a[jblk*block_size*lda+blk*block_size:1]) \
                depend(in: perm[blk*block_size:1])
@@ -1428,8 +1429,8 @@ private:
                 cblk.apply_rperm_and_backup(backup);
                 // Perform elimination and determine number of rows in block
                 // passing a posteori threshold pivot test
-                ipc_ blkpass = cblk.apply_pivot_app(dblk, options.u,
-                                                    options.small);
+                ipc_ blkpass = cblk.apply_pivot_app(dblk, control.u,
+                                                    control.small);
                 // Update column's passed pivot count
                 cdata[blk].update_passed(blkpass);
 #ifdef PROFILE
@@ -1440,7 +1441,7 @@ private:
          for (ipc_ iblk = blk + 1; iblk < mblk; iblk++) {
             #pragma omp task                                          \
                firstprivate(blk, iblk)                                \
-               shared(a, abort, backup, cdata, options)               \
+               shared(a, abort, backup, cdata, control)               \
                depend(in: a[blk*block_size*lda+blk*block_size:1])     \
                depend(inout: a[blk*block_size*lda+iblk*block_size:1]) \
                depend(in: perm[blk*block_size:1])
@@ -1463,8 +1464,8 @@ private:
                 rblk.apply_cperm_and_backup(backup);
                 // Perform elimination and determine number of rows in block
                 // passing a posteori threshold pivot test
-                ipc_ blkpass = rblk.apply_pivot_app(dblk, options.u,
-                                                   options.small);
+                ipc_ blkpass = rblk.apply_pivot_app(dblk, control.u,
+                                                   control.small);
                 // Update column's passed pivot count
                 cdata[blk].update_passed(blkpass);
 #ifdef PROFILE
@@ -1631,7 +1632,7 @@ private:
    static
    ipc_ run_elim_pivoted_notasks(ipc_ const m, ipc_ const n, ipc_* perm, T* a,
          ipc_ const lda, T* d, ColumnData<T,IntAlloc>& cdata, Backup& backup,
-         struct cpu_factor_options const& options, ipc_ const block_size,
+         struct cpu_factor_control const& control, ipc_ const block_size,
          T const beta, T* upd, ipc_ const ldupd, std::vector<Workspace>& work,
          Allocator const& alloc, ipc_ const from_blk=0) {
       typedef Block<T, BLOCK_SIZE, IntAlloc> BlockSpec;
@@ -1659,7 +1660,7 @@ private:
                dblk.backup(backup);
                // Perform actual factorization
                ipc_ nelim = dblk.template factor<Allocator>(
-                     next_elim, perm, d, options, work, alloc
+                     next_elim, perm, d, control, work, alloc
                      );
                if(nelim<0) return nelim;
                // Init threshold check (non locking => task dependencies)
@@ -1678,7 +1679,7 @@ private:
                // Perform elimination and determine number of rows in block
                // passing a posteori threshold pivot test
                ipc_ blkpass = cblk.apply_pivot_app(
-                     dblk, options.u, options.small
+                     dblk, control.u, control.small
                      );
                // Update column's passed pivot count
                cdata[blk].update_passed(blkpass);
@@ -1693,8 +1694,8 @@ private:
                rblk.apply_cperm_and_backup(backup);
                // Perform elimination and determine number of rows in block
                // passing a posteori threshold pivot test
-               ipc_ blkpass = rblk.apply_pivot_app(dblk, options.u,
-                                                  options.small);
+               ipc_ blkpass = rblk.apply_pivot_app(dblk, control.u,
+                                                  control.small);
                // Update column's passed pivot count
                cdata[blk].update_passed(blkpass);
             }
@@ -1781,7 +1782,7 @@ private:
    static
    ipc_ run_elim_unpivoted(ipc_ const m, ipc_ const n, ipc_* perm, T* a,
          ipc_ const lda, T* d, ColumnData<T,IntAlloc>& cdata, Backup& backup,
-         ipc_* up_to_date, struct cpu_factor_options const& options,
+         ipc_* up_to_date, struct cpu_factor_control const& control,
          ipc_ const block_size, T const beta, T* upd, ipc_ const ldupd,
          std::vector<Workspace>& work, Allocator const& alloc) {
       typedef Block<T, BLOCK_SIZE, IntAlloc> BlockSpec;
@@ -1811,7 +1812,7 @@ private:
          #pragma omp task                                       \
             firstprivate(blk)                                   \
             shared(a, abort, perm, backup, cdata, next_elim, d, \
-                   options, work, alloc, up_to_date, flag)      \
+                   control, work, alloc, up_to_date, flag)      \
             depend(inout: a[blk*block_size*lda+blk*block_size:1])
          {
            bool my_abort;
@@ -1830,7 +1831,7 @@ private:
                // Record block state as assuming we've done up to col blk
                up_to_date[blk*mblk+blk] = blk;
                // Perform actual factorization
-               ipc_ nelim = dblk.template factor<Allocator>(next_elim, perm, d, options, work, alloc);
+               ipc_ nelim = dblk.template factor<Allocator>(next_elim, perm, d, control, work, alloc);
                if (nelim < get_ncol(blk, n, block_size)) {
                  cdata[blk].init_passed(0); // diagonal block has NOT passed
 #ifdef _OPENMP
@@ -1875,7 +1876,7 @@ private:
          for (ipc_ jblk = 0; jblk < blk; jblk++) {
             #pragma omp task                                              \
                firstprivate(blk, jblk)                                    \
-               shared(a, abort, backup, cdata, options, work, up_to_date) \
+               shared(a, abort, backup, cdata, control, work, up_to_date) \
                depend(in: a[blk*block_size*lda+blk*block_size:1])         \
                depend(inout: a[jblk*block_size*lda+blk*block_size:1])
             {
@@ -1906,7 +1907,7 @@ private:
          for (ipc_ iblk = blk+1; iblk < mblk; iblk++) {
             #pragma omp task                                              \
                firstprivate(blk, iblk)                                    \
-               shared(a, abort, backup, cdata, options, work, up_to_date) \
+               shared(a, abort, backup, cdata, control, work, up_to_date) \
                depend(in: a[blk*block_size*lda+blk*block_size:1])         \
                depend(inout: a[blk*block_size*lda+iblk*block_size:1])
             {
@@ -1931,7 +1932,7 @@ private:
                 rblk.apply_cperm(work[thread_num]);
                 // Perform elimination and determine number of rows in block
                 // passing a posteori threshold pivot test
-                ipc_ blkpass = rblk.apply_pivot_app(dblk, options.u, options.small);
+                ipc_ blkpass = rblk.apply_pivot_app(dblk, control.u, control.small);
                 // Update column's passed pivot count
                 if (cdata[blk].test_fail(blkpass)) {
 #ifdef _OPENMP
@@ -2045,7 +2046,7 @@ private:
    static
    ipc_ run_elim_unpivoted_notasks(ipc_ const m, ipc_ const n, ipc_* perm, T* a,
          ipc_ const lda, T* d, ColumnData<T,IntAlloc>& cdata, Backup& backup,
-         ipc_* up_to_date, struct cpu_factor_options const& options,
+         ipc_* up_to_date, struct cpu_factor_control const& control,
          ipc_ const block_size, T const beta, T* upd, ipc_ const ldupd,
          std::vector<Workspace>& work, Allocator const& alloc) {
       typedef Block<T, BLOCK_SIZE, IntAlloc> BlockSpec;
@@ -2074,7 +2075,7 @@ private:
             up_to_date[blk*mblk+blk] = blk;
             // Perform actual factorization
             ipc_ nelim = dblk.template factor<Allocator>(
-                  next_elim, perm, d, options, work, alloc
+                  next_elim, perm, d, control, work, alloc
                   );
             if(nelim < get_ncol(blk, n, block_size)) {
                cdata[blk].init_passed(0); // diagonal block has NOT passed
@@ -2116,7 +2117,7 @@ private:
             rblk.apply_cperm(work[thread_num]);
             // Perform elimination and determine number of rows in block
             // passing a posteori threshold pivot test
-            ipc_ blkpass = rblk.apply_pivot_app(dblk, options.u, options.small);
+            ipc_ blkpass = rblk.apply_pivot_app(dblk, control.u, control.small);
             // Update column's passed pivot count
             if(cdata[blk].test_fail(blkpass))
                return cdata.calc_nelim(m);
@@ -2341,7 +2342,7 @@ private:
 public:
    /** Factorize an entire matrix */
    static
-   ipc_ factor(ipc_ m, ipc_ n, ipc_ *perm, T *a, ipc_ lda, T *d, Backup& backup, struct cpu_factor_options const& options, PivotMethod pivot_method, ipc_ block_size, T beta, T* upd, ipc_ ldupd, std::vector<Workspace>& work, Allocator const& alloc=Allocator()) {
+   ipc_ factor(ipc_ m, ipc_ n, ipc_ *perm, T *a, ipc_ lda, T *d, Backup& backup, struct cpu_factor_control const& control, PivotMethod pivot_method, ipc_ block_size, T beta, T* upd, ipc_ ldupd, std::vector<Workspace>& work, Allocator const& alloc=Allocator()) {
       /* Sanity check arguments */
       if(m < n) return -1;
       if(lda < n) return -4;
@@ -2385,12 +2386,12 @@ public:
          // Run the elimination
          if(use_tasks && mblk>1) {
             num_elim = run_elim_unpivoted(
-                  m, n, perm, a, lda, d, cdata, backup, up_to_date, options,
+                  m, n, perm, a, lda, d, cdata, backup, up_to_date, control,
                   block_size, beta, upd, ldupd, work, alloc
                   );
          } else {
             num_elim = run_elim_unpivoted_notasks(
-                  m, n, perm, a, lda, d, cdata, backup, up_to_date, options,
+                  m, n, perm, a, lda, d, cdata, backup, up_to_date, control,
                   block_size, beta, upd, ldupd, work, alloc
                   );
          }
@@ -2414,12 +2415,12 @@ public:
             // Factorize more carefully
             if(use_tasks && mblk>1) {
                num_elim = run_elim_pivoted(
-                     m, n, perm, a, lda, d, cdata, backup, options, block_size,
+                     m, n, perm, a, lda, d, cdata, backup, control, block_size,
                      beta, upd, ldupd, work, alloc, nelim_blk
                      );
             } else {
                num_elim = run_elim_pivoted_notasks(
-                     m, n, perm, a, lda, d, cdata, backup, options, block_size,
+                     m, n, perm, a, lda, d, cdata, backup, control, block_size,
                      beta, upd, ldupd, work, alloc, nelim_blk
                      );
             }
@@ -2430,12 +2431,12 @@ public:
       } else {
          if(use_tasks && mblk>1) {
             num_elim = run_elim_pivoted(
-                  m, n, perm, a, lda, d, cdata, backup, options,
+                  m, n, perm, a, lda, d, cdata, backup, control,
                   block_size, beta, upd, ldupd, work, alloc
                   );
          } else {
             num_elim = run_elim_pivoted_notasks(
-                  m, n, perm, a, lda, d, cdata, backup, options,
+                  m, n, perm, a, lda, d, cdata, backup, control,
                   block_size, beta, upd, ldupd, work, alloc
                   );
          }
@@ -2564,9 +2565,9 @@ public:
    }
 };
 
-} /* namespace spral::ssids:cpu::ldlt_app_internal */
+} /* namespace galahad::ssids:cpu::ldlt_app_internal */
 
-using namespace spral::ssids::cpu::ldlt_app_internal;
+using namespace galahad::ssids::cpu::ldlt_app_internal;
 
 template<typename T>
 size_t ldlt_app_factor_mem_required(ipc_ m, ipc_ n, ipc_ block_size) {
@@ -2582,13 +2583,13 @@ size_t ldlt_app_factor_mem_required(ipc_ m, ipc_ n, ipc_ block_size) {
 
 template<typename T, typename Allocator>
 ipc_ ldlt_app_factor(ipc_ m, ipc_ n, ipc_* perm, T* a, ipc_ lda, T* d, T beta,
-                    T* upd, ipc_ ldupd, struct cpu_factor_options const& options,
+                    T* upd, ipc_ ldupd, struct cpu_factor_control const& control,
                     std::vector<Workspace>& work, Allocator const& alloc) {
    // If we've got a tall and narrow node, adjust block size so each block
    // has roughly blksz**2 entries
    // FIXME: Decide if this reshape is actually useful, given it will generate
    //        a lot more update tasks instead?
-   ipc_ outer_block_size = options.cpu_block_size;
+   ipc_ outer_block_size = control.cpu_block_size;
    /*if(n < outer_block_size) {
        outer_block_size = ipc_((longc_(outer_block_size)*outer_block_size) / n);
    }*/
@@ -2608,13 +2609,13 @@ ipc_ ldlt_app_factor(ipc_ m, ipc_ n, ipc_* perm, T* a, ipc_ lda, T* d, T beta,
       <T, INNER_BLOCK_SIZE, CopyBackup<T,Allocator>, use_tasks, debug,
        Allocator>
       ::factor(
-            m, n, perm, a, lda, d, backup, options, options.pivot_method,
+            m, n, perm, a, lda, d, backup, control, control.pivot_method,
             outer_block_size, beta, upd, ldupd, work, alloc
             );
 }
 template ipc_ ldlt_app_factor<rpc_, BuddyAllocator<rpc_,
        std::allocator<rpc_>>>(ipc_, ipc_, ipc_*, rpc_*, ipc_, rpc_*, rpc_, 
-                              rpc_*, ipc_, struct cpu_factor_options const&, 
+                              rpc_*, ipc_, struct cpu_factor_control const&, 
                               std::vector<Workspace>&, 
                               BuddyAllocator<rpc_,
                               std::allocator<rpc_>> const& alloc);
@@ -2692,4 +2693,4 @@ void ldlt_app_solve_bwd(ipc_ m, ipc_ n, T const* l, ipc_ ldl, ipc_ nrhs, T* x,
 template void ldlt_app_solve_bwd<rpc_>(ipc_, ipc_, rpc_ const*, ipc_,
                                        ipc_, rpc_*, ipc_);
 
-}}} /* namespaces spral::ssids::cpu */
+}}} /* namespaces galahad::ssids::cpu */

@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.3 - 2025-08-14 AT 11:00 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 08:00 GMT
  */
 
 #pragma once
@@ -18,7 +18,7 @@
 #include "ssids_cpu_SmallLeafNumericSubtree.hxx"
 #include "ssids_cpu_ThreadStats.hxx"
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 /** \brief Represents a submatrix (subtree) factorized on the CPU.
  *
@@ -49,7 +49,7 @@ public:
     *         (references entire matrix). No scaling applied if null.
     *  \param child_contrib array of pointers to contributions from child
     *         subtrees. Information to be extracted by call to Fortran routine
-    *         spral_ssids_contrib_get_data_double() or _single().
+    *         galahad_ssids_contrib_get_data_double() or _single().
     *  \param control user-supplied options controlling execution.
     *  \param stats collection of statistics for return to user.
     */
@@ -642,4 +642,4 @@ private:
       // std::vector is out. So we use placement new instead.
 };
 
-}}} /* end of namespace spral::ssids::cpu */
+}}} /* end of namespace galahad::ssids::cpu */

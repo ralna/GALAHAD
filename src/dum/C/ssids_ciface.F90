@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-20 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-15 AT 15:00 GMT.
 
 #include "spral_procedures.h"
 
@@ -13,12 +13,14 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-!  C interface module to SPRAL_SSIDS types and interfaces
+!  C interface module to GALAHAD_SSIDS types and interfaces
 
-  MODULE SPRAL_SSIDS_precision_ciface
+  MODULE GALAHAD_SSIDS_precision_ciface
     USE SPRAL_KINDS_precision
-    USE SPRAL_SSIDS_precision, ONLY : f_ssids_options => ssids_options,        &
-                                      f_ssids_inform => ssids_inform
+    USE GALAHAD_SSIDS_precision, ONLY : f_ssids_control_type                   &
+                                          => SSIDS_control_type,               &
+                                        f_ssids_inform_type                    &
+                                          => SSIDS_inform_type
 
     IMPLICIT NONE
 
@@ -26,7 +28,7 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-    TYPE, BIND( C ) :: spral_ssids_options
+    TYPE, BIND( C ) :: galahad_ssids_control_type
        INTEGER ( KIND = ipc_ ) :: print_level
        INTEGER ( KIND = ipc_ ) :: unit_diagnostics
        INTEGER ( KIND = ipc_ ) :: unit_error
@@ -48,13 +50,13 @@
        REAL ( KIND = rpc_ ) :: u
        INTEGER ( KIND = ipc_ ) :: nstream
        REAL ( KIND = rpc_ ) :: multiplier
-!     type(auction_options) :: auction
+!     type(auction_control) :: auction
        REAL ( KIND = rpc_ ) :: min_loadbalance
 !    character(len=:), allocatable :: rb_dump
        INTEGER ( KIND = ipc_ ) :: failed_pivot_method
-    END TYPE spral_ssids_options
+    END TYPE galahad_ssids_control_type
 
-    TYPE, BIND( C ) :: spral_ssids_inform
+    TYPE, BIND( C ) :: galahad_ssids_inform_type
        INTEGER ( KIND = ipc_ ) :: flag
        INTEGER ( KIND = ipc_ ) :: matrix_dup
        INTEGER ( KIND = ipc_ ) :: matrix_missing_diag
@@ -77,7 +79,7 @@
        INTEGER ( KIND = ipc_ ) :: nparts
        INTEGER ( KIND = longc_ ) :: cpu_flops
        INTEGER ( KIND = longc_ ) :: gpu_flops
-    END TYPE spral_ssids_inform
+    END TYPE galahad_ssids_inform_type
 
 !----------------------
 !   P r o c e d u r e s
@@ -85,44 +87,44 @@
 
   CONTAINS
 
-!  copy C options parameters to fortran
+!  copy C control parameters to fortran
 
-    SUBROUTINE copy_options_in( coptions, foptions )
-    TYPE ( spral_ssids_options ), INTENT( IN ) :: coptions
-    TYPE ( f_ssids_options ), INTENT( OUT ) :: foptions
+    SUBROUTINE copy_control_in( ccontrol, fcontrol )
+    TYPE ( galahad_ssids_control_type ), INTENT( IN ) :: ccontrol
+    TYPE ( f_ssids_control_type ), INTENT( OUT ) :: fcontrol
 
-    foptions%print_level = coptions%print_level
-    foptions%unit_diagnostics = coptions%unit_diagnostics
-    foptions%unit_error = coptions%unit_error
-    foptions%unit_warning = coptions%unit_warning
-    foptions%ordering = coptions%ordering
-    foptions%nemin = coptions%nemin
-    foptions%ignore_numa = coptions%ignore_numa
-    foptions%use_gpu = coptions%use_gpu
-    foptions%gpu_only = coptions%gpu_only
-    foptions%min_gpu_work = coptions%min_gpu_work
-    foptions%max_load_inbalance = coptions%max_load_inbalance
-    foptions%gpu_perf_coeff = coptions%gpu_perf_coeff
-    foptions%scaling = coptions%scaling
-    foptions%small_subtree_threshold = coptions%small_subtree_threshold
-    foptions%cpu_block_size = coptions%cpu_block_size
-    foptions%action = coptions%action
-    foptions%pivot_method = coptions%pivot_method
-    foptions%small = coptions%small
-    foptions%u = coptions%u
-    foptions%nstream = coptions%nstream
-    foptions%multiplier = coptions%multiplier
-    foptions%min_loadbalance = coptions%min_loadbalance
-    foptions%failed_pivot_method = coptions%failed_pivot_method
+    fcontrol%print_level = ccontrol%print_level
+    fcontrol%unit_diagnostics = ccontrol%unit_diagnostics
+    fcontrol%unit_error = ccontrol%unit_error
+    fcontrol%unit_warning = ccontrol%unit_warning
+    fcontrol%ordering = ccontrol%ordering
+    fcontrol%nemin = ccontrol%nemin
+    fcontrol%ignore_numa = ccontrol%ignore_numa
+    fcontrol%use_gpu = ccontrol%use_gpu
+    fcontrol%gpu_only = ccontrol%gpu_only
+    fcontrol%min_gpu_work = ccontrol%min_gpu_work
+    fcontrol%max_load_inbalance = ccontrol%max_load_inbalance
+    fcontrol%gpu_perf_coeff = ccontrol%gpu_perf_coeff
+    fcontrol%scaling = ccontrol%scaling
+    fcontrol%small_subtree_threshold = ccontrol%small_subtree_threshold
+    fcontrol%cpu_block_size = ccontrol%cpu_block_size
+    fcontrol%action = ccontrol%action
+    fcontrol%pivot_method = ccontrol%pivot_method
+    fcontrol%small = ccontrol%small
+    fcontrol%u = ccontrol%u
+    fcontrol%nstream = ccontrol%nstream
+    fcontrol%multiplier = ccontrol%multiplier
+    fcontrol%min_loadbalance = ccontrol%min_loadbalance
+    fcontrol%failed_pivot_method = ccontrol%failed_pivot_method
     RETURN
 
-    END SUBROUTINE copy_options_in
+    END SUBROUTINE copy_control_in
 
 !  copy fortran information parameters to C
 
     SUBROUTINE copy_inform_out( finform, cinform )
-    TYPE ( f_ssids_inform ), INTENT( IN ) :: finform
-    TYPE ( spral_ssids_inform ), INTENT( OUT ) :: cinform
+    TYPE ( f_ssids_inform_type ), INTENT( IN ) :: finform
+    TYPE ( galahad_ssids_inform_type ), INTENT( OUT ) :: cinform
 
     cinform%flag = finform%flag
     cinform%matrix_dup = finform%matrix_dup
@@ -149,4 +151,4 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE SPRAL_SSIDS_precision_ciface
+  END MODULE GALAHAD_SSIDS_precision_ciface

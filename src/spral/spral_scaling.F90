@@ -1,73 +1,70 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-07-06 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-18 AT 16:20 GMT.
 
 #include "spral_procedures.h"
 
-! COPYRIGHT (c) 2014 The Science and Technology Facilities Council (STFC)
-! Original date 18 December 2014, Version 1.0.0
-!
-! Written by: Jonathan Hogg
-!
-! Hungarian code derives from HSL MC64 code, but has been substantially
-! altered for readability and to support rectangular matrices.
-! All other code is fresh for SPRAL.
-module spral_scaling_precision
+!  COPYRIGHT (c) 2014 The Science and Technology Facilities Council (STFC)
+!  licence: BSD licence, see LICENCE file for details
+!  author: Jonathan Hogg
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
-  use spral_matrix_util_precision, only : half_to_full
-  use spral_kinds_precision
-  implicit none
+MODULE SPRAL_SCALING_precision
+
+  USE GALAHAD_KINDS_precision
+  USE SPRAL_MATRIX_UTIL_precision, ONLY : half_to_full
+  IMPLICIT none
 
   private
   ! Top level routines
-  public :: auction_scale_sym, & ! Symmetric scaling by Auction algorithm
+  PUBLIC :: auction_scale_sym, & ! Symmetric scaling by Auction algorithm
        auction_scale_unsym,    & ! Unsymmetric scaling by Auction algorithm
        equilib_scale_sym,      & ! Sym scaling by Equilibriation (MC77-like)
        equilib_scale_unsym,    & ! Unsym scaling by Equilibriation (MC77-like)
        hungarian_scale_sym,    & ! Sym scaling by Hungarian alg (MC64-like)
        hungarian_scale_unsym     ! Unsym scaling by Hungarian alg (MC64-like)
   ! Inner routines that allow calling internals
-  public :: hungarian_match      ! Find a matching (no pre/post-processing)
+  PUBLIC :: hungarian_match      ! Find a matching (no pre/post-processing)
   ! Data types
-  public :: auction_options, auction_inform, &
-       equilib_options, equilib_inform,      &
-       hungarian_options, hungarian_inform
+  public :: auction_control_type, auction_inform_type, &
+       equilib_control_type, equilib_inform_type,      &
+       hungarian_control_type, hungarian_inform_type
 
   real(rp_), parameter :: rinf = huge(rinf)
 
-  type auction_options
+  type auction_control_type
      integer(ip_) :: max_iterations = 30000
      integer(ip_) :: max_unchanged(3) = (/ 10,   100, 100 /)
      real :: min_proportion(3) = (/ 0.90, 0.0, 0.0 /)
      real :: eps_initial = 0.01
-  end type auction_options
+  end type auction_control_type
 
-  type auction_inform
+  type auction_inform_type
      integer(ip_) :: flag = 0 ! success or failure
      integer(ip_) :: stat = 0 ! Fortran stat value on memory allocation failure
      integer(ip_) :: matched = 0 ! #matched rows/cols
      integer(ip_) :: iterations = 0 ! #iterations
      integer(ip_) :: unmatchable = 0 ! #classified as unmatchable
-  end type auction_inform
+  end type auction_inform_type
 
-  type equilib_options
+  type equilib_control_type
      integer(ip_) :: max_iterations = 10
      real :: tol = 1e-8
-  end type equilib_options
+  end type equilib_control_type
 
-  type equilib_inform
+  type equilib_inform_type
      integer(ip_) :: flag
      integer(ip_) :: stat
      integer(ip_) :: iterations
-  end type equilib_inform
+  end type equilib_inform_type
 
-  type hungarian_options
+  type hungarian_control_type
      logical :: scale_if_singular = .false.
-  end type hungarian_options
+  end type hungarian_control_type
 
-  type hungarian_inform
+  type hungarian_inform_type
      integer(ip_) :: flag
      integer(ip_) :: stat
      integer(ip_) :: matched
-  end type hungarian_inform
+  end type hungarian_inform_type
 
   integer(ip_), parameter :: ERROR_ALLOCATION = -1
   integer(ip_), parameter :: ERROR_SINGULAR = -2
@@ -117,8 +114,8 @@ contains
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
-    type(hungarian_options), intent(in) :: options
-    type(hungarian_inform), intent(out) :: inform
+    type(hungarian_control_type), intent(in) :: options
+    type(hungarian_inform_type), intent(out) :: inform
     integer(ip_), dimension(n), optional, intent(out) :: match
 
     integer(i8_), dimension(:), allocatable :: ptr64
@@ -142,8 +139,8 @@ contains
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
-    type(hungarian_options), intent(in) :: options
-    type(hungarian_inform), intent(out) :: inform
+    type(hungarian_control_type), intent(in) :: options
+    type(hungarian_inform_type), intent(out) :: inform
     integer(ip_), dimension(n), optional, intent(out) :: match
 
     integer(ip_), dimension(:), allocatable :: perm
@@ -186,8 +183,8 @@ contains
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(hungarian_options), intent(in) :: options
-    type(hungarian_inform), intent(out) :: inform
+    type(hungarian_control_type), intent(in) :: options
+    type(hungarian_inform_type), intent(out) :: inform
     integer(ip_), dimension(m), optional, intent(out) :: match
 
     integer(i8_), dimension(:), allocatable :: ptr64
@@ -214,8 +211,8 @@ contains
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(hungarian_options), intent(in) :: options
-    type(hungarian_inform), intent(out) :: inform
+    type(hungarian_control_type), intent(in) :: options
+    type(hungarian_inform_type), intent(out) :: inform
     integer(ip_), dimension(m), optional, intent(out) :: match
 
     integer(ip_), dimension(:), allocatable :: perm
@@ -253,8 +250,8 @@ contains
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
-    type(auction_options), intent(in) :: options
-    type(auction_inform), intent(out) :: inform
+    type(auction_control_type), intent(in) :: options
+    type(auction_inform_type), intent(out) :: inform
     integer(ip_), dimension(n), optional, intent(out) :: match
 
     integer(i8_), dimension(:), allocatable :: ptr64
@@ -278,8 +275,8 @@ contains
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
-    type(auction_options), intent(in) :: options
-    type(auction_inform), intent(out) :: inform
+    type(auction_control_type), intent(in) :: options
+    type(auction_inform_type), intent(out) :: inform
     integer(ip_), dimension(n), optional, intent(out) :: match
 
     integer(ip_), dimension(:), allocatable :: perm
@@ -326,8 +323,8 @@ contains
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(auction_options), intent(in) :: options
-    type(auction_inform), intent(out) :: inform
+    type(auction_control_type), intent(in) :: options
+    type(auction_inform_type), intent(out) :: inform
     integer(ip_), dimension(m), optional, intent(out) :: match
 
     integer(i8_), dimension(:), allocatable :: ptr64
@@ -353,8 +350,8 @@ contains
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(auction_options), intent(in) :: options
-    type(auction_inform), intent(out) :: inform
+    type(auction_control_type), intent(in) :: options
+    type(auction_inform_type), intent(out) :: inform
     integer(ip_), dimension(m), optional, intent(out) :: match
 
     integer(ip_), dimension(:), allocatable :: perm
@@ -389,8 +386,8 @@ contains
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
-    type(equilib_options), intent(in) :: options
-    type(equilib_inform), intent(out) :: inform
+    type(equilib_control_type), intent(in) :: options
+    type(equilib_inform_type), intent(out) :: inform
 
     integer(i8_), dimension(:), allocatable :: ptr64
 
@@ -411,8 +408,8 @@ contains
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
-    type(equilib_options), intent(in) :: options
-    type(equilib_inform), intent(out) :: inform
+    type(equilib_control_type), intent(in) :: options
+    type(equilib_inform_type), intent(out) :: inform
 
     inform%flag = 0 ! Initialize to sucess
 
@@ -433,8 +430,8 @@ contains
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(equilib_options), intent(in) :: options
-    type(equilib_inform), intent(out) :: inform
+    type(equilib_control_type), intent(in) :: options
+    type(equilib_inform_type), intent(out) :: inform
 
     integer(i8_), dimension(:), allocatable :: ptr64
 
@@ -459,8 +456,8 @@ contains
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(equilib_options), intent(in) :: options
-    type(equilib_inform), intent(out) :: inform
+    type(equilib_control_type), intent(in) :: options
+    type(equilib_inform_type), intent(out) :: inform
 
     inform%flag = 0 ! Initialize to sucess
 
@@ -488,8 +485,8 @@ contains
     integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
     real(rp_), dimension(ptr(n+1)-1), intent(in) :: val
     real(rp_), dimension(n), intent(out) :: scaling
-    type(equilib_options), intent(in) :: options
-    type(equilib_inform), intent(inout) :: inform
+    type(equilib_control_type), intent(in) :: options
+    type(equilib_inform_type), intent(inout) :: inform
 
     integer(ip_) :: itr, r, c
     integer(long_) :: j
@@ -543,8 +540,8 @@ contains
     real(rp_), dimension(ptr(n+1)-1), intent(in) :: val
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(equilib_options), intent(in) :: options
-    type(equilib_inform), intent(inout) :: inform
+    type(equilib_control_type), intent(in) :: options
+    type(equilib_inform_type), intent(inout) :: inform
 
     integer(ip_) :: itr, r, c
     integer(long_) :: j
@@ -610,8 +607,8 @@ contains
     integer(ip_), dimension(m), intent(out) :: match
     real(rp_), dimension(m), intent(out) :: rscaling
     real(rp_), dimension(n), intent(out) :: cscaling
-    type(hungarian_options), intent(in) :: options
-    type(hungarian_inform), intent(out) :: inform
+    type(hungarian_control_type), intent(in) :: options
+    type(hungarian_inform_type), intent(out) :: inform
 
     integer(long_), allocatable :: ptr2(:)
     integer(ip_), allocatable :: row2(:), iw(:), new_to_old(:), &
@@ -1368,8 +1365,8 @@ contains
       ! match(j) = i => column j matched to row i
    real(rp_), dimension(m), intent(out) :: dualu ! row dual variables
    real(rp_), dimension(n), intent(inout) :: dualv ! col dual variables
-   type(auction_options), intent(in) :: options
-   type(auction_inform), intent(inout) :: inform
+   type(auction_control_type), intent(in) :: options
+   type(auction_inform_type), intent(inout) :: inform
 
    integer(ip_), dimension(:), allocatable :: owner ! Inverse of match
    ! The list next(1:tail) is the search space of unmatched columns
@@ -1523,8 +1520,8 @@ contains
    integer(ip_), dimension(m), intent(out) :: match
    real(rp_), dimension(m), intent(out) :: rscaling
    real(rp_), dimension(n), intent(out) :: cscaling
-   type(auction_options), intent(in) :: options
-   type(auction_inform), intent(inout) :: inform
+   type(auction_control_type), intent(in) :: options
+   type(auction_inform_type), intent(inout) :: inform
 
    integer(long_), allocatable :: ptr2(:)
    integer(ip_), allocatable :: row2(:), iw(:), cmatch(:)
@@ -1728,4 +1725,4 @@ contains
    end if
  end subroutine match_postproc
 
-end module spral_scaling_precision
+END MODULE SPRAL_SCALING_precision

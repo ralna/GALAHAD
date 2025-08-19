@@ -1,10 +1,10 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-15 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-15 AT 15:00 GMT.
 
 #include "spral_procedures.h"
 
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   S S I D S   M O D U L E  -*-*-*-*-*-
 
-MODULE SPRAL_SSIDS_quadruple
+MODULE GALAHAD_SSIDS_quadruple
 !$ use omp_lib
    USE GALAHAD_SYMBOLS
    USE GALAHAD_KINDS_quadruple
@@ -395,4 +395,4 @@ end subroutine SSIDS_factor_quadruple
    cuda_error = GALAHAD_error_unknown_solver
  end subroutine free_both_quadruple
 
-END MODULE SPRAL_SSIDS_quadruple
+END MODULE GALAHAD_SSIDS_quadruple

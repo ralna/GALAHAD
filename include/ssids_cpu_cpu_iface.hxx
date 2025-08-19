@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 5.3 - 2025-08-14 AT 11:00 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  */
 
 #pragma once
@@ -12,7 +12,7 @@
 #include "ssids_routines.h"
 #include "ssids_rip.hxx"
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 enum struct PivotMethod : ipc_ {
    app_aggressive = 1,
@@ -52,4 +52,4 @@ size_t align_lda(size_t lda) {
    return Talign*((lda-1)/Talign + 1);
 }
 
-}}} /* namespaces spral::ssids::cpu */
+}}} /* namespaces galahad:ssids::cpu */

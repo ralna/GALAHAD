@@ -2,12 +2,13 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  */
 #include "ssids_cpu_ThreadStats.hxx"
 
 #include <algorithm>
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 /** \brief Reduce with stats from another thread.
  *
@@ -31,4 +32,4 @@ ThreadStats& ThreadStats::operator+=(ThreadStats const& other) {
    return *this;
 }
 
-}}} /* namespace spral::ssids::cpu */
+}}} /* namespace galahad::ssids::cpu */

@@ -4,21 +4,22 @@
 
 !  define ssids_fkeep type and associated procedures (CPU version)
 
-!  author    Jonathan Hogg and Florent Lopez
-!  licence   BSD licence, see LICENCE file for details
-!  copyright 2016 The Science and Technology Facilities Council (STFC)
+!  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)
+!  licence: BSD licence, see LICENCE file for details
+!  authors: Jonathan Hogg and Florent Lopez
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
 MODULE GALAHAD_SSIDS_fkeep_precision
-   USE SPRAL_KINDS_precision
+   USE GALAHAD_KINDS_precision
    USE :: omp_lib
-   USE GALAHAD_SSIDS_akeep_precision, only : ssids_akeep
-   USE GALAHAD_SSIDS_contrib_precision, only : contrib_type
+   USE GALAHAD_SSIDS_akeep_precision, ONLY : ssids_akeep_type
+   USE GALAHAD_SSIDS_contrib_precision, ONLY : contrib_type
    USE GALAHAD_SSIDS_types_precision
-   USE GALAHAD_SSIDS_inform_precision, only : ssids_inform_type
-   USE GALAHAD_SSIDS_subtree_precision, only : numeric_subtree_base
-   USE GALAHAD_SSIDS_cpu_subtree_precision, only : cpu_numeric_subtree
+   USE GALAHAD_SSIDS_inform_precision, ONLY : ssids_inform_type
+   USE GALAHAD_SSIDS_subtree_precision, ONLY : numeric_subtree_base
+   USE GALAHAD_SSIDS_cpu_subtree_precision, ONLY : cpu_numeric_subtree
 #ifdef PROFILE
-   USE GALAHAD_SSIDS_profile_precision, only : profile_begin, profile_end,     &
+   USE GALAHAD_SSIDS_profile_precision, ONLY : profile_begin, profile_end,     &
                                                profile_add_event
 #endif
    IMPLICIT none
@@ -29,7 +30,7 @@ MODULE GALAHAD_SSIDS_fkeep_precision
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
    TYPE numeric_subtree_ptr
-      class( numeric_subtree_base ), pointer :: ptr
+      CLASS( numeric_subtree_base ), pointer :: ptr
    END TYPE numeric_subtree_ptr
 
    ! Data type for data generated in factorise phase
@@ -67,7 +68,7 @@ CONTAINS
 SUBROUTINE inner_factor_cpu( fkeep, akeep, val, control, inform )
   IMPLICIT none
   TYPE( SSIDS_akeep_type ), INTENT( IN ) :: akeep
-  class( SSIDS_fkeep_type ), TARGET, INTENT( INOUT ) :: fkeep
+  CLASS( SSIDS_fkeep_type ), TARGET, INTENT( INOUT ) :: fkeep
   REAL( rp_ ), DIMENSION( * ), TARGET, INTENT( IN ) :: val
   TYPE( SSIDS_control_type ), INTENT( IN ) :: control
   TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
@@ -248,7 +249,7 @@ end SUBROUTINE inner_factor_cpu
 
 SUBROUTINE inner_solve_cpu( local_job, nrhs, x, ldx, akeep, fkeep, inform )
    TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
-   class( ssids_fkeep_type ), INTENT( INOUT ) :: fkeep
+   CLASS( ssids_fkeep_type ), INTENT( INOUT ) :: fkeep
    INTEGER( ip_ ), INTENT( INOUT ) :: local_job
    INTEGER( ip_ ), INTENT( IN ) :: nrhs
    INTEGER( ip_ ), INTENT( IN ) :: ldx
@@ -349,7 +350,7 @@ SUBROUTINE inner_solve_cpu( local_job, nrhs, x, ldx, akeep, fkeep, inform )
 
    SUBROUTINE enquire_posdef_cpu( akeep, fkeep, d )
    TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
-   class( ssids_fkeep_type ), TARGET, INTENT( IN ) :: fkeep
+   CLASS( ssids_fkeep_type ), TARGET, INTENT( IN ) :: fkeep
    REAL( rp_ ), DIMENSION( * ), INTENT( OUT ) :: d
 
    INTEGER( ip_ ) :: n
@@ -376,7 +377,7 @@ SUBROUTINE inner_solve_cpu( local_job, nrhs, x, ldx, akeep, fkeep, inform )
 
    SUBROUTINE enquire_indef_cpu( akeep, fkeep, inform, piv_order, d )
    TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
-   class( ssids_fkeep_type ), TARGET, INTENT( IN ) :: fkeep
+   CLASS( ssids_fkeep_type ), TARGET, INTENT( IN ) :: fkeep
    TYPE( ssids_inform_type ), INTENT( INOUT ) :: inform
    INTEGER( ip_ ), DIMENSION( akeep%n ), optional, INTENT( OUT ) :: piv_order
       ! If i is used to index a variable, its position in the pivot sequence
@@ -452,7 +453,7 @@ SUBROUTINE inner_solve_cpu( local_job, nrhs, x, ldx, akeep, fkeep, inform )
      ! of D^{-1} must be placed in d( 1,i ) ( i = 1,...n )
      ! and the off-diagonal entries must be placed in d( 2,i ) ( i = 1,...n-1 ).
    TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
-   class( ssids_fkeep_type ), TARGET, INTENT( INOUT ) :: fkeep
+   CLASS( ssids_fkeep_type ), TARGET, INTENT( INOUT ) :: fkeep
 
    INTEGER( ip_ ) :: part
 

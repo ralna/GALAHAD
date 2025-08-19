@@ -1,10 +1,10 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-07-20 AT 09:00 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-15 AT 15:00 GMT.
 
 #include "spral_procedures.h"
 
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   S S I D S   M O D U L E  -*-*-*-*-*-
 
-MODULE SPRAL_SSIDS_precision
+MODULE GALAHAD_SSIDS_precision
 !$ use omp_lib
    USE GALAHAD_SYMBOLS
    USE SPRAL_KINDS_precision, ONLY: ip_, ipc_, rp_, long_
@@ -396,4 +396,4 @@ end subroutine SSIDS_factor_precision
    cuda_error = GALAHAD_error_unknown_solver
  end subroutine free_both_precision
 
-END MODULE SPRAL_SSIDS_precision
+END MODULE GALAHAD_SSIDS_precision

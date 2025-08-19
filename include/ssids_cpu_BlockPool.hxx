@@ -2,6 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  */
 #pragma once
 
@@ -13,7 +14,7 @@
 #include "ssids_rip.hxx"
 #include "spral_omp.hxx"
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 /** Pool of blocks that can be aquired/released, providing a way to cap
  *  memory usage whilst avoiding fragmentation.
@@ -57,7 +58,7 @@ public:
     */
    T *get_nowait() {
       T *ptr = nullptr;
-      spral::omp::AcquiredLock scopeLock(lock_);
+      galahad::omp::AcquiredLock scopeLock(lock_);
       if(pool_.size() > 0) {
          ptr = pool_.back();
          pool_.pop_back();
@@ -79,7 +80,7 @@ public:
    }
    /** Release block acquired using get_*() function for reuse */
    void release(T *const ptr) {
-      spral::omp::AcquiredLock scopeLock(lock_);
+      galahad::omp::AcquiredLock scopeLock(lock_);
       pool_.push_back(ptr);
    }
 private:
@@ -89,7 +90,7 @@ private:
    std::size_t block_size_; //< Size of an aligned block in bytes
    char* mem_; //< pointer to allocated memory
    std::vector<T*> pool_; //< stack of free blocks
-   spral::omp::Lock lock_; //< lock used for safe access to pool_
+   galahad::omp::Lock lock_; //< lock used for safe access to pool_
 };
 
-}}} /* namespace spral::ssids::cpu */
+}}} /* namespace galahad:ssids::cpu */

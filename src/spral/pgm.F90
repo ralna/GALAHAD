@@ -2,15 +2,15 @@
 
 #include "spral_procedures.h"
 
-module spral_pgm
-   use spral_kinds, only: ip_
-   implicit none
+MODULE SPRAL_PGM
+   USE SPRAL_KINDS, only: ip_
+   IMPLICIT none
 
-   private
-   public :: writePGM,           & ! Grayscale
+   PRIVATE
+   PUBLIC :: writePGM,           & ! Grayscale
              writePPM,           & ! Colour
              writeMatrixPattern    ! Utility for writing out pattern as PGM
-contains
+CONTAINS
 
 subroutine writeMatrixPattern(filename, n, ptr, row, lp, rperm, cperm)
    character(len=*), intent(in) :: filename
@@ -99,16 +99,18 @@ subroutine writePGM(funit, bitmap)
    end do
 end subroutine writePGM
 
-!
-! Write out a Portable Pixel Map (.ppm) file
-! values of the array bitmap(:,:) specify an index of the array color(:,:)
-! color(:,:) should have size colours(3, ncolor) where ncolor is the maximum
-! number of colors. For a given color i:
-! color(1,i) gives the red   component with value between 0 and 255
-! color(2,i) gives the green component with value between 0 and 255
-! color(3,i) gives the blue  component with value between 0 and 255
-!
 subroutine writePPM(funit, bitmap, color, scale)
+
+!  write out a Portable Pixel Map (.ppm) file
+!  values of the array bitmap(:,:) specify an index of the array color(:,:)
+!  color(:,:) should have size colours(3, ncolor) where ncolor is the maximum
+!  number of colors. For a given color i:
+!  color(1,i) gives the red   component with value between 0 and 255
+!  color(2,i) gives the green component with value between 0 and 255
+!  color(3,i) gives the blue  component with value between 0 and 255
+!
+!  extracted from SPRAM PPM module
+
    integer(ip_), intent(in) :: funit
    integer(ip_), dimension(:,:), intent(in) :: bitmap
    integer(ip_), dimension(:,:), intent(in) :: color
@@ -139,4 +141,4 @@ subroutine writePPM(funit, bitmap, color, scale)
    end do
 end subroutine writePPM
 
-end module spral_pgm
+END MODULE SPRAL_PGM

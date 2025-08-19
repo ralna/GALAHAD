@@ -71,8 +71,8 @@ sls_inform_type structure
 		struct ma86_info :ref:`ma86_info<doxid-structsls__inform__type_ma86_info>`;
 		struct ma87_info :ref:`ma87_info<doxid-structsls__inform__type_ma87_info>`;
 		struct ma97_info :ref:`ma97_info<doxid-structsls__inform__type_ma97_info>`;
-		struct spral_ssids_inform :ref:`ssids_inform<doxid-structsls__inform__type_ssids_inform>`;
-		struct spral_ssids_inform :ref:`nodend_inform<doxid-structsls__inform__type_nodend_inform>`;
+		struct ssids_inform :ref:`ssids_inform<doxid-structsls__inform__type_ssids_inform>`;
+		struct nodend_inform :ref:`nodend_inform<doxid-structsls__inform__type_nodend_inform>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mc61_info<doxid-structsls__inform__type_mc61_info>`[10];
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mc61_rinfo<doxid-structsls__inform__type_mc61_rinfo>`[15];
 		struct mc64_info :ref:`mc64_info<doxid-structsls__inform__type_mc64_info>`;
@@ -670,7 +670,7 @@ the output structure from ma97
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	struct spral_ssids_inform ssids_inform
+	struct spral_ssids_inform_type ssids_inform
 
 the output structure from ssids
 

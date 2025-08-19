@@ -41,7 +41,7 @@ void* galahad_ssids_cpu_create_num_subtree(
       const rpc_ *const aval, // Values of A
       const rpc_ *const scaling, // Scaling vector (NULL if none)
       void** child_contrib, // Contributions from child subtrees
-      struct cpu_factor_options const* options, // Options in
+      struct cpu_factor_control const* control, // Options in
       ThreadStats* stats // Info out
       ) {
    auto const& symbolic_subtree = 
@@ -50,16 +50,16 @@ void* galahad_ssids_cpu_create_num_subtree(
    // Perform factorization
    if(posdef) {
       auto* subtree = new NumericSubtreePosdef
-         (symbolic_subtree, aval, scaling, child_contrib, *options, *stats);
-      if(options->print_level > 9999) {
+         (symbolic_subtree, aval, scaling, child_contrib, *control, *stats);
+      if(control->print_level > 9999) {
          printf("Final factors:\n");
          subtree->print();
       }
       return (void*) subtree;
    } else { /* indef */
       auto* subtree = new NumericSubtreeIndef
-         (symbolic_subtree, aval, scaling, child_contrib, *options, *stats);
-      if(options->print_level > 9999) {
+         (symbolic_subtree, aval, scaling, child_contrib, *control, *stats);
+      if(control->print_level > 9999) {
          printf("Final factors:\n");
          subtree->print();
       }

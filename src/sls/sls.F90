@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 11:10 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-19 AT 09:30 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -849,8 +849,8 @@
        TYPE ( MA97_control ) :: ma97_control
        TYPE ( MA97_info ) :: ma97_info
 
-       TYPE ( SSIDS_akeep ) :: ssids_akeep
-       TYPE ( SSIDS_fkeep ) :: ssids_fkeep
+       TYPE ( SSIDS_akeep_type ) :: ssids_akeep
+       TYPE ( SSIDS_fkeep_type ) :: ssids_fkeep
        TYPE ( SSIDS_control_type ) :: ssids_control
        TYPE ( SSIDS_inform_type ) :: ssids_inform
 
@@ -1618,7 +1618,7 @@
      INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL_ma27
      REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL_ma27
      TYPE ( MA57_control ) :: control_ma57
-     TYPE ( SSIDS_akeep ) :: akeep_ssids
+     TYPE ( SSIDS_akeep_type ) :: akeep_ssids
 !$   LOGICAL :: OMP_GET_CANCELLATION
 !$   INTEGER ( KIND = ip_ ) :: OMP_GET_PROC_BIND
 !$   INTEGER :: omp_status
@@ -2619,34 +2619,34 @@
 
 !-   S L S _ C O P Y _ I N F O R M _ F R O M _ S S I D S  S U B R O U T I N E  -
 
-     SUBROUTINE SLS_copy_inform_from_ssids( inform, info_ssids )
+     SUBROUTINE SLS_copy_inform_from_ssids( inform, ssids_inform )
 
 !  copy inform parameters from their SSIDS equivalents
 
 !  Dummy arguments
 
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( SSIDS_inform_type ), INTENT( IN ) :: info_ssids
+     TYPE ( SSIDS_inform_type ), INTENT( IN ) :: ssids_inform
 
-     inform%ssids_inform = info_ssids
-     inform%status = info_ssids%flag
+     inform%ssids_inform = ssids_inform
+     inform%status = ssids_inform%flag
      SELECT CASE( inform%status )
      CASE ( 0 : )
        inform%status = GALAHAD_ok
-       inform%duplicates = info_ssids%matrix_dup
-       inform%out_of_range = info_ssids%matrix_outrange
-       inform%two_by_two_pivots = info_ssids%num_two
-       inform%rank = info_ssids%matrix_rank
-       inform%negative_eigenvalues = info_ssids%num_neg
-!      inform%static_pivots = info_ssids%num_perturbed
-       inform%delayed_pivots = info_ssids%num_delay
-       inform%entries_in_factors = info_ssids%num_factor
-       inform%flops_elimination = info_ssids%num_flops
-       inform%max_front_size  = info_ssids%maxfront
-       inform%max_depth_assembly_tree = info_ssids%maxdepth
+       inform%duplicates = ssids_inform%matrix_dup
+       inform%out_of_range = ssids_inform%matrix_outrange
+       inform%two_by_two_pivots = ssids_inform%num_two
+       inform%rank = ssids_inform%matrix_rank
+       inform%negative_eigenvalues = ssids_inform%num_neg
+!      inform%static_pivots = ssids_inform%num_perturbed
+       inform%delayed_pivots = ssids_inform%num_delay
+       inform%entries_in_factors = ssids_inform%num_factor
+       inform%flops_elimination = ssids_inform%num_flops
+       inform%max_front_size  = ssids_inform%maxfront
+       inform%max_depth_assembly_tree = ssids_inform%maxdepth
      CASE ( - 50  )
        inform%status = GALAHAD_error_allocate
-       inform%alloc_status = info_ssids%stat
+       inform%alloc_status = ssids_inform%stat
      CASE( - 1, - 2, - 3, - 4, - 7, - 10, - 11, - 12, - 13, - 14 )
        inform%status = GALAHAD_error_restrictions
      CASE ( - 8, - 9, - 15 )

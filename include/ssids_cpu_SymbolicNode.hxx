@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-03 AT 15:00 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 08:00 GMT
  */
 #pragma once
 
@@ -10,7 +10,7 @@
 #include "ssids_routines.h"
 #include "ssids_rip.hxx"
 
-namespace spral { namespace ssids { namespace cpu {
+namespace galahad { namespace ssids { namespace cpu {
 
 /** Symbolic representation of a node */
 struct SymbolicNode {
@@ -27,4 +27,4 @@ struct SymbolicNode {
    std::vector<ipc_> contrib; //< index of expected contribution(s)
 };
 
-}}} /* end of namespace spral::ssids::cpu */
+}}} /* end of namespace galahad:ssids::cpu */

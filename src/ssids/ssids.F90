@@ -5,16 +5,10 @@
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ S S I D S   M O D U L E  *-*-*-*-*-*-*-*-*-
 
-!  Copyright reserved, Fowkes/Gould/Montoison/Orban, for GALAHAD productions
-!  Principal authors: Jonathan Hogg, Jennifer Scott
-
-!  History -
-!   original version: Jonathan Hogg and Jennifer Scott, STFC, 2011, 
-!   under a BSD Licence as part of SPRAL
-!   forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
-
-!  For full documentation, see
-!   http://galahad.rl.ac.uk/galahad-www/specs.html
+!  COPYRIGHT (c) 2011 The Science and Technology Facilities Council (STFC)
+!  licence: BSD licence, see LICENCE file for details
+!  authors: Jonathan Hogg and Jennifer Scott
+!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
 MODULE GALAHAD_SSIDS_precision
 
@@ -25,7 +19,7 @@ MODULE GALAHAD_SSIDS_precision
 !     ------------------------------------------------------------
 
 !$  USE omp_lib
-  USE SPRAL_KINDS_precision
+  USE GALAHAD_KINDS_precision
   USE SPRAL_HW_TOPOLOGY, only : guess_topology, numa_region
   USE SPRAL_MATCH_ORDER_precision, ONLY: match_order_metis
   USE SPRAL_MATRIX_UTIL_precision, ONLY: SPRAL_MATRIX_REAL_SYM_INDEF,          &
@@ -35,23 +29,25 @@ MODULE GALAHAD_SSIDS_precision
                                          apply_conversion_map
   USE SPRAL_SCALING_precision, ONLY: auction_scale_sym, equilib_scale_sym,     &
                                      hungarian_scale_sym,                      &
-                                     equilib_options, equilib_inform,          &
-                                     hungarian_options, hungarian_inform
+                                     equilib_control_type,                     &
+                                     equilib_inform_type,                      &
+                                     hungarian_control_type,                   &
+                                     hungarian_inform_type
   USE SPRAL_RAL_BOEING_precision, ONLY: rb_write_options, rb_write
   USE GALAHAD_NODEND_precision, ONLY: NODEND_half_order, NODEND_control_type,  &
                                       NODEND_inform_type
-  USE GALAHAD_SSIDS_ANALYSE_precision, ONLY: analyse_phase, check_order,       &
+  USE GALAHAD_SSIDS_analyse_precision, ONLY: analyse_phase, check_order,       &
                                              expand_matrix, expand_pattern
-  USE GALAHAD_SSIDS_TYPES_precision
-  USE GALAHAD_SSIDS_AKEEP_precision, ONLY: SSIDS_akeep_type
-  USE GALAHAD_SSIDS_FKEEP_precision, ONLY: SSIDS_fkeep_type
-  USE GALAHAD_SSIDS_INFORM_precision, ONLY: SSIDS_inform_type
+  USE GALAHAD_SSIDS_types_precision
+  USE GALAHAD_SSIDS_akeep_precision, ONLY: SSIDS_akeep_type
+  USE GALAHAD_SSIDS_fkeep_precision, ONLY: SSIDS_fkeep_type
+  USE GALAHAD_SSIDS_inform_precision, ONLY: SSIDS_inform_type
 
   IMPLICIT none
 
   PRIVATE
   ! Data types
-  PUBLIC :: SSIDS_akeep_tyep, SSIDS_fkeep_type, SSIDS_control_type,            &
+  PUBLIC :: SSIDS_akeep_type, SSIDS_fkeep_type, SSIDS_control_type,            &
             SSIDS_inform_type
   ! User interface routines
   PUBLIC :: ssids_analyse,         & ! Analyse phase, CSC-lower input
@@ -215,13 +211,13 @@ CONTAINS
     context = 'ssids_analyse'
     inform = inform_default
     call ssids_free(akeep, free_flag)
-    if (free_flag .ne. 0) then
-       inform%flag = SSIDS_ERROR_CUDA_UNKNOWN
-       inform%cuda_error = free_flag
-       akeep%inform = inform
-       call inform%print_flag(control, context)
-       return
-    end if
+!   if (free_flag .ne. 0) then
+!      inform%flag = SSIDS_ERROR_CUDA_UNKNOWN
+!      inform%cuda_error = free_flag
+!      akeep%inform = inform
+!      call inform%print_flag(control, context)
+!      return
+!   end if
 
     ! Print status on entry
     call control%print_summary_analyse(context)
@@ -386,7 +382,7 @@ CONTAINS
           ! Success; do nothing
        case(1)
           ! singularity warning required
-          inform%flag = SSIDS_WARNING_ANAL_SINGULAR
+          inform%flag = SSIDS_WARNING_ANALYSIS_SINGULAR
        case(-1)
           inform%flag = SSIDS_ERROR_ALLOCATION
           akeep%inform = inform
@@ -582,9 +578,9 @@ CONTAINS
       ! val is present.
     real(rp_), dimension(:), allocatable :: val2 ! expanded matrix (val present)
 
-    character(50)  :: context      ! Procedure name (used when printing).
+    character(50)  :: context    ! procedure name (used when printing).
     integer(ip_) :: mu_flag      ! error flag for matrix_util routines
-    integer(long_) :: nz     ! entries in expanded matrix
+    integer(long_) :: nz         ! entries in expanded matrix
 !   integer(ip_) :: flag         ! error flag for metis
     integer(ip_) :: st           ! stat parameter
     integer(ip_) :: free_flag
@@ -595,13 +591,13 @@ CONTAINS
     context = 'ssids_analyse_coord'
     inform = inform_default
     call ssids_free(akeep, free_flag)
-    if (free_flag .ne. 0) then
-       inform%flag = SSIDS_ERROR_CUDA_UNKNOWN
-       inform%cuda_error = free_flag
-       akeep%inform = inform
-       call inform%print_flag(control, context)
-       return
-    end if
+!   if (free_flag .ne. 0) then
+!      inform%flag = SSIDS_ERROR_CUDA_UNKNOWN
+!      inform%cuda_error = free_flag
+!      akeep%inform = inform
+!      call inform%print_flag(control, context)
+!      return
+!   end if
 
     ! Output status on entry
     call control%print_summary_analyse(context)
@@ -739,7 +735,7 @@ CONTAINS
           ! Success; do nothing
        case(1)
           ! singularity warning required
-          inform%flag = SSIDS_WARNING_ANAL_SINGULAR
+          inform%flag = SSIDS_WARNING_ANALYSIS_SINGULAR
        case(-1)
           inform%flag = SSIDS_ERROR_ALLOCATION
           akeep%inform = inform
@@ -755,7 +751,7 @@ CONTAINS
        deallocate(val2,stat=st)
     end select
 
-    ! Figure out topology
+    ! Assess topology
     if (present(topology)) then
        ! User supplied
        allocate(akeep%topology(size(topology)), stat=st)
@@ -861,13 +857,13 @@ CONTAINS
     real(rp_), dimension(:), allocatable :: scaling
 
     ! Types related to scaling routines
-    type(hungarian_control) :: hsoptions
-    type(hungarian_inform) :: hsinform
-    type(equilib_options) :: esoptions
-    type(equilib_inform) :: esinform
+    type(hungarian_control_type) :: hscontrol
+    type(hungarian_inform_type) :: hsinform
+    type(equilib_control_type) :: escontrol
+    type(equilib_inform_type) :: esinform
 
     type(omp_settings) :: user_omp_settings
-    type(rb_write_options) :: rb_options
+    type(rb_write_options) :: rb_control
     integer(ip_) :: flag
 
     ! Setup for any printing we may require
@@ -992,13 +988,13 @@ CONTAINS
        allocate(scaling(n), stat=st)
        if (st .ne. 0) goto 10
        ! Run Hungarian algorithm
-       hsoptions%scale_if_singular = options%action
+       hscontrol%scale_if_singular = control%action
        if (akeep%check) then
           call hungarian_scale_sym(n, akeep%ptr, akeep%row, val2, scaling, &
-               hsoptions, hsinform)
+               hscontrol, hsinform)
        else
           call hungarian_scale_sym(n, ptr, row, val, scaling, &
-               hsoptions, hsinform)
+               hscontrol, hsinform)
        end if
        select case(hsinform%flag)
        case(-1)
@@ -1066,10 +1062,10 @@ CONTAINS
        ! Run equilibriation algorithm
        if (akeep%check) then
           call equilib_scale_sym(n, akeep%ptr, akeep%row, val2, scaling, &
-               esoptions, esinform)
+               escontrol, esinform)
        else
           call equilib_scale_sym(n, ptr, row, val, scaling, &
-               esoptions, esinform)
+               escontrol, esinform)
        end if
        if (esinform%flag .ne. 0) then
           ! Only possible error is memory allocation failure

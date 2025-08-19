@@ -2,6 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  *
  *  \brief
  *  Implements HwlocTopology wrapper around hwloc library
@@ -18,7 +19,7 @@
 #include <hwloc/cudart.h>
 #endif /* HAVE_NVCC */
 
-namespace spral { namespace hw_topology {
+namespace galahad { namespace hw_topology {
 
 /**
  * \brief Object orientated wrapper around hwloc topology.
@@ -113,6 +114,6 @@ private:
    hwloc_topology_t topology_; ///< Underlying topology object
 };
 
-}} /* namespace spral::hw_topology */
+}} /* namespace galahad::hw_topology */
 
 #endif /* HAVE_HWLOC */
