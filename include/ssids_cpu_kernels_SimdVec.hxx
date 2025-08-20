@@ -16,7 +16,7 @@
 #endif
 
 #include "ssids_routines.h"
-#include "ssids_rit.hxx"
+#include "galahad_precision.h"
 
 #if defined(__AVX2__) || defined(__AVX__)
 #include <immintrin.h>

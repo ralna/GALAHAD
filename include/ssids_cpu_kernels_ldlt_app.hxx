@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ssids_routines.h"
-#include "ssids_rit.hxx"
+#include "galahad_precision.h"
 #include "ssids_cpu_Workspace.hxx"
 
 namespace galahad { namespace ssids { namespace cpu {

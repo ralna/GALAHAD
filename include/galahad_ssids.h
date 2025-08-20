@@ -1,5 +1,5 @@
 //* \file galahad_ssids.h */
-/**  
+/**
  * \version   GALAHAD 5.3 - 2025-08-25 AT 14:10 GMT
  */
 
@@ -16,7 +16,6 @@ extern "C" {
 
 // precision
 #include "galahad_precision.h"
-#include "ssids_rit.hxx"
 #include "galahad_cfunctions.h"
 
 // required packages
