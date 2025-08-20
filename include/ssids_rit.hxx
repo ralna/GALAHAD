@@ -13,8 +13,8 @@
 #endif
 
 /* include guard */
-#ifndef SSIDS_RIP_H
-#define SSIDS_RIP_H
+#ifndef SSIDS_RIT_H
+#define SSIDS_RIT_H
 
 /* real precision employed */
 

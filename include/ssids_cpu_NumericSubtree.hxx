@@ -8,7 +8,7 @@
 #pragma once
 
 #include "ssids_routines.h"
-#include "ssids_rit.hxx"
+#include "galahad_precision.h"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
 #include "ssids_cpu_factor.hxx"
