@@ -9,7 +9,6 @@
 
 #include "ssids_routines.h"
 #include "galahad_precision.h"
-#include "ssids_profile.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
 #include "ssids_cpu_factor.hxx"
 #include "ssids_cpu_BuddyAllocator.hxx"
@@ -111,9 +110,6 @@ public:
                // #pragma omp cancellation point taskgroup
                try {
                   int this_thread = omp_get_thread_num();
-#ifdef PROFILE
-                  Profile::Task task_subtree("TA_SUBTREE");
-#endif
                   auto const& leaf = symb_.small_leafs_[si];
                   new (&small_leafs_[si]) SLNS(leaf, nodes_, aval, scaling,
                         factor_alloc_, pool_alloc_, work,
@@ -128,9 +124,6 @@ public:
                      return;
 #endif /* _OPENMP */
                   }
-#ifdef PROFILE
-                  task_subtree.done();
-#endif
                } catch (std::bad_alloc const&) {
                   int thread_num = omp_get_thread_num();
                   thread_stats[thread_num].flag =

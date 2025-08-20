@@ -24,7 +24,6 @@
 #include "ssids_procedures.h"
 #include "ssids_compat.hxx"
 #include "ssids_routines.h"
-#include "ssids_profile.hxx"
 #include "ssids_cpu_BlockPool.hxx"
 #include "ssids_cpu_BuddyAllocator.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
@@ -1352,9 +1351,6 @@ private:
            if (!my_abort) {
              try {
                // #pragma omp cancellation point taskgroup
-#ifdef PROFILE
-               Profile::Task task("TA_LDLT_DIAG");
-#endif
                if (debug) printf("Factor(%" d_ipc_ ")\n", blk);
                BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                // Store a copy for recovery in case of a failed column
@@ -1376,9 +1372,6 @@ private:
                  // Init threshold check (non locking => task dependencies)
                  cdata[blk].init_passed(nelim);
                }
-#ifdef PROFILE
-               task.done();
-#endif
             } catch(std::bad_alloc const&) {
                #pragma omp atomic write
                flag = Flag::ERROR_ALLOCATION;
@@ -1416,9 +1409,6 @@ private:
               my_abort = abort;
               if (!my_abort) {
                 // #pragma omp cancellation point taskgroup
-#ifdef PROFILE
-                Profile::Task task("TA_LDLT_APPLY");
-#endif
                 if (debug) printf("ApplyT(%" d_ipc_ ",%" d_ipc_ ")\n", 
                                    blk, jblk);
                 BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
@@ -1433,9 +1423,6 @@ private:
                                                     control.small);
                 // Update column's passed pivot count
                 cdata[blk].update_passed(blkpass);
-#ifdef PROFILE
-                task.done();
-#endif
             } } /* task/abort */
          }
          for (ipc_ iblk = blk + 1; iblk < mblk; iblk++) {
@@ -1451,9 +1438,6 @@ private:
               my_abort = abort;
               if (!my_abort) {
                 // #pragma omp cancellation point taskgroup
-#ifdef PROFILE
-                Profile::Task task("TA_LDLT_APPLY");
-#endif
                 if (debug) printf("ApplyN(%" d_ipc_ ",%" d_ipc_ ")\n", 
                                   iblk, blk);
                 BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
@@ -1468,9 +1452,6 @@ private:
                                                    control.small);
                 // Update column's passed pivot count
                 cdata[blk].update_passed(blkpass);
-#ifdef PROFILE
-                task.done();
-#endif
             } } /* task/abort */
          }
 
@@ -1486,14 +1467,8 @@ private:
            my_abort = abort;
            if (!my_abort) {
              // #pragma omp cancellation point taskgroup
-#ifdef PROFILE
-             Profile::Task task("TA_LDLT_ADJUST");
-#endif
              if (debug) printf("Adjust(%" d_ipc_ ")\n", blk);
              cdata[blk].adjust(next_elim);
-#ifdef PROFILE
-             task.done();
-#endif
          } } /* task/abort */
 
          // Update uneliminated columns
@@ -1516,9 +1491,6 @@ private:
                  my_abort = abort;
                  if (!my_abort) {
                   // #pragma omp cancellation point taskgroup
-#ifdef PROFILE
-                  Profile::Task task("TA_LDLT_UPDA");
-#endif
                   if (debug) printf("UpdateT(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
                                              ")\n", iblk, jblk, blk);
                   int thread_num = omp_get_thread_num();
@@ -1533,9 +1505,6 @@ private:
                   ublk.restore_if_required(backup, blk);
                   // Perform actual update
                   ublk.update(isrc, jsrc, work[thread_num]);
-#ifdef PROFILE
-                  task.done();
-#endif
                } } /* task/abort */
             }
          }
@@ -1554,9 +1523,6 @@ private:
                  my_abort = abort;
                  if (!my_abort) {
                    // #pragma omp cancellation point taskgroup
-#ifdef PROFILE
-                   Profile::Task task("TA_LDLT_UPDA");
-#endif
                    if (debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_
                                      ")\n", iblk, jblk, blk);
                    int thread_num = omp_get_thread_num();
@@ -1568,9 +1534,6 @@ private:
                    ublk.restore_if_required(backup, blk);
                    // Perform actual update
                    ublk.update(isrc, jsrc, work[thread_num], beta, upd, ldupd);
-#ifdef PROFILE
-                   task.done();
-#endif
                } } /* task/abort */
             }
          }
@@ -1595,9 +1558,6 @@ private:
                   my_abort = abort;
                   if (!my_abort) {
                     // #pragma omp cancellation point taskgroup
-#ifdef PROFILE
-                    Profile::Task task("TA_LDLT_UPDC");
-#endif
                     if (debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ 
                                       ",%" d_ipc_ ")\n", iblk,jblk,blk);
                     int thread_num = omp_get_thread_num();
@@ -1606,9 +1566,6 @@ private:
                     BlockSpec jsrc(jblk, blk, m, n, cdata, a, lda, block_size);
                     ublk.form_contrib(isrc, jsrc, work[thread_num],
                                       beta, upd_ij, ldupd);
-#ifdef PROFILE
-                    task.done();
-#endif
                   } } /* task/abort */
               }
          }
@@ -1821,9 +1778,6 @@ private:
            if (!my_abort) {
              try {
                // #pragma omp cancellation point taskgroup
-#ifdef PROFILE
-               Profile::Task task("TA_LDLT_DIAG");
-#endif
                if(debug) printf("Factor(%" d_ipc_ ")\n", blk);
                BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                // On first access to this block, store copy in case of failure
@@ -1846,9 +1800,6 @@ private:
                   cdata[blk].init_passed(1); // diagonal block has passed
                   next_elim += nelim; // we're assuming everything works
                }
-#ifdef PROFILE
-               task.done();
-#endif
             } catch(std::bad_alloc const&) {
                #pragma omp atomic write
                flag = Flag::ERROR_ALLOCATION;
@@ -1885,9 +1836,6 @@ private:
               my_abort = abort;
               if (!my_abort) {
                 // #pragma omp cancellation point taskgroup
-#ifdef PROFILE
-                Profile::Task task("TA_LDLT_APPLY");
-#endif
                 if (debug) printf("ApplyT(%" d_ipc_ ",%" d_ipc_ ")\n", 
                                   blk, jblk);
                 int thread_num = omp_get_thread_num();
@@ -1899,9 +1847,6 @@ private:
                 cblk.apply_rperm(work[thread_num]);
                 // NB: no actual application of pivot must be done, as we are
                 // assuming everything has passed...
-#ifdef PROFILE
-                task.done();
-#endif
             } } /* task/abort */
          }
          for (ipc_ iblk = blk+1; iblk < mblk; iblk++) {
@@ -1916,9 +1861,6 @@ private:
               my_abort = abort;
               if (!my_abort) {
                 // #pragma omp cancellation point taskgroup
-#ifdef PROFILE
-                Profile::Task task("TA_LDLT_APPLY");
-#endif
                 if (debug) printf("ApplyN(%" d_ipc_ ",%" d_ipc_ ")\n", 
                                   iblk, blk);
                 int thread_num = omp_get_thread_num();
@@ -1943,9 +1885,6 @@ private:
                   return cdata.calc_nelim(m);
 #endif /* _OPENMP */
                }
-#ifdef PROFILE
-                task.done();
-#endif
             } } /* task/abort */
          }
 
@@ -1966,9 +1905,6 @@ private:
                  my_abort = abort;
                  if (!my_abort) {
                    // #pragma omp cancellation point taskgroup
-#ifdef PROFILE
-                   Profile::Task task("TA_LDLT_UPDA");
-#endif
                    if (debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_
                                      ")\n", iblk, jblk, blk);
                    int thread_num = omp_get_thread_num();
@@ -1981,9 +1917,6 @@ private:
                    up_to_date[jblk*mblk+iblk] = blk;
                    // Actual update
                    ublk.update(isrc, jsrc, work[thread_num], beta, upd, ldupd);
-#ifdef PROFILE
-                   task.done();
-#endif
                } } /* task/abort */
             }
          }
@@ -2007,9 +1940,6 @@ private:
                  my_abort = abort;
                  if (!my_abort) {
                    // #pragma omp cancellation point taskgroup
-#ifdef PROFILE
-                   Profile::Task task("TA_LDLT_UPDC");
-#endif
                    if (debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ 
                                      ",%" d_ipc_ ")\n", iblk, jblk,blk);
                    int thread_num = omp_get_thread_num();
@@ -2021,9 +1951,6 @@ private:
                    // Perform update
                    ublk.form_contrib(isrc, jsrc, work[thread_num], beta,
                                      upd_ij, ldupd);
-#ifdef PROFILE
-                   task.done();
-#endif
                } } /* task/abort */
             }
          }
@@ -2353,9 +2280,6 @@ public:
 
       /* Temporary workspaces */
       ColumnData<T, IntAlloc> cdata(n, block_size, IntAlloc(alloc));
-#ifdef PROFILE
-      Profile::setNullState();
-#endif
 
       /* Main loop
        *    - Each pass leaves any failed pivots in place and keeps everything
@@ -2397,14 +2321,6 @@ public:
          }
          if(num_elim < 0) return num_elim; // error
          if(num_elim < n) {
-#ifdef PROFILE
-            {
-               char buffer[200];
-               snprintf(buffer, 200, "tpp-aggressive failed at %d / %d\n",
-                        num_elim, n);
-               Profile::addEvent("EV_AGG_FAIL", buffer);
-            }
-#endif
             // Factorization ecountered a pivoting failure.
             ipc_ nelim_blk = num_elim/block_size;
             // Rollback to known good state
@@ -2449,9 +2365,6 @@ public:
 
       if(num_elim < n) {
          // Permute failed entries to end
-#ifdef PROFILE
-         Profile::Task task_post("TA_LDLT_POST");
-#endif
          std::vector<ipc_, IntAlloc> failed_perm(n-num_elim, 0, alloc);
          for(ipc_ jblk=0, insert=0, fail_insert=0; jblk<nblk; jblk++) {
             cdata[jblk].move_back(
@@ -2548,9 +2461,6 @@ public:
          for(ipc_ j=0; j<nfail; ++j)
          for(ipc_ i=0; i<m-n; ++i)
             arect[j*lda+i] = failed_rect[j*(m-n)+i];
-#ifdef PROFILE
-         task_post.done();
-#endif
       }
 
       if(debug) {
@@ -2593,10 +2503,6 @@ ipc_ ldlt_app_factor(ipc_ m, ipc_ n, ipc_* perm, T* a, ipc_ lda, T* d, T beta,
    /*if(n < outer_block_size) {
        outer_block_size = ipc_((longc_(outer_block_size)*outer_block_size) / n);
    }*/
-
-#ifdef PROFILE
-   Profile::setState("TA_MISC1");
-#endif
 
    // Template parameters and workspaces
    bool const debug = false;

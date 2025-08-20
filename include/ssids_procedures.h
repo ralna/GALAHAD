@@ -2,7 +2,6 @@
 #define GALAHAD_SYMBOLS GALAHAD_SYMBOLS_64
 #define GALAHAD_KINDS GALAHAD_KINDS_64
 #define GALAHAD_HW GALAHAD_HW_64
-#define GALAHAD_SSIDS_profile GALAHAD_SSIDS_profile_64
 #endif
 
 #ifdef REAL_32
@@ -27,7 +26,6 @@
 #define GALAHAD_SSIDS_fkeep_precision GALAHAD_SSIDS_fkeep_single_64
 #define GALAHAD_SSIDS_gpu_subtree_precision GALAHAD_SSIDS_gpu_subtree_single_64
 #define GALAHAD_SSIDS_inform_precision GALAHAD_SSIDS_inform_single_64
-#define GALAHAD_SSIDS_profile_precision GALAHAD_SSIDS_profile_single_64
 #define GALAHAD_SSIDS_subtree_precision GALAHAD_SSIDS_subtree_single_64
 #define GALAHAD_SSIDS_types_precision GALAHAD_SSIDS_types_single_64
 #else
@@ -51,7 +49,6 @@
 #define GALAHAD_SSIDS_fkeep_precision GALAHAD_SSIDS_fkeep_single
 #define GALAHAD_SSIDS_gpu_subtree_precision GALAHAD_SSIDS_gpu_subtree_single
 #define GALAHAD_SSIDS_inform_precision GALAHAD_SSIDS_inform_single
-#define GALAHAD_SSIDS_profile_precision GALAHAD_SSIDS_profile_single
 #define GALAHAD_SSIDS_subtree_precision GALAHAD_SSIDS_subtree_single
 #define GALAHAD_SSIDS_types_precision GALAHAD_SSIDS_types_single
 #endif
@@ -77,7 +74,6 @@
 #define GALAHAD_SSIDS_fkeep_precision GALAHAD_SSIDS_fkeep_quadruple_64
 #define GALAHAD_SSIDS_gpu_subtree_precision GALAHAD_SSIDS_gpu_subtree_quadruple_64
 #define GALAHAD_SSIDS_inform_precision GALAHAD_SSIDS_inform_quadruple_64
-#define GALAHAD_SSIDS_profile_precision GALAHAD_SSIDS_profile_quadruple_64
 #define GALAHAD_SSIDS_subtree_precision GALAHAD_SSIDS_subtree_quadruple_64
 #define GALAHAD_SSIDS_types_precision GALAHAD_SSIDS_types_quadruple_64
 #else
@@ -101,7 +97,6 @@
 #define GALAHAD_SSIDS_fkeep_precision GALAHAD_SSIDS_fkeep_quadruple
 #define GALAHAD_SSIDS_gpu_subtree_precision GALAHAD_SSIDS_gpu_subtree_quadruple
 #define GALAHAD_SSIDS_inform_precision GALAHAD_SSIDS_inform_quadruple
-#define GALAHAD_SSIDS_profile_precision GALAHAD_SSIDS_profile_quadruple
 #define GALAHAD_SSIDS_subtree_precision GALAHAD_SSIDS_subtree_quadruple
 #define GALAHAD_SSIDS_types_precision GALAHAD_SSIDS_types_quadruple
 #endif
@@ -127,7 +122,6 @@
 #define GALAHAD_SSIDS_fkeep_precision GALAHAD_SSIDS_fkeep_double_64
 #define GALAHAD_SSIDS_gpu_subtree_precision GALAHAD_SSIDS_gpu_subtree_double_64
 #define GALAHAD_SSIDS_inform_precision GALAHAD_SSIDS_inform_double_64
-#define GALAHAD_SSIDS_profile_precision GALAHAD_SSIDS_profile_double_64
 #define GALAHAD_SSIDS_subtree_precision GALAHAD_SSIDS_subtree_double_64
 #define GALAHAD_SSIDS_types_precision GALAHAD_SSIDS_types_double_64
 #else
@@ -151,9 +145,7 @@
 #define GALAHAD_SSIDS_fkeep_precision GALAHAD_SSIDS_fkeep_double
 #define GALAHAD_SSIDS_gpu_subtree_precision GALAHAD_SSIDS_gpu_subtree_double
 #define GALAHAD_SSIDS_inform_precision GALAHAD_SSIDS_inform_double
-#define GALAHAD_SSIDS_profile_precision GALAHAD_SSIDS_profile_double
 #define GALAHAD_SSIDS_subtree_precision GALAHAD_SSIDS_subtree_double
 #define GALAHAD_SSIDS_types_precision GALAHAD_SSIDS_types_double
 #endif
 #endif
-

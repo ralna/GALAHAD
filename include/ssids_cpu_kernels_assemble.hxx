@@ -13,7 +13,6 @@
 #include "ssids_routines.h"
 #include "galahad_precision.h"
 #include "ssids_contrib.h"
-#include "ssids_profile.hxx"
 #include "ssids_cpu_NumericNode.hxx"
 #include "ssids_cpu_SymbolicNode.hxx"
 #include "ssids_cpu_Workspace.hxx"
@@ -154,9 +153,6 @@ void assemble_pre(
       T const* aval,
       T const* scaling
       ) {
-#ifdef PROFILE
-   Profile::Task task_asm_pre("TA_ASM_PRE");
-#endif
    /* Rebind allocators */
    typedef typename std::allocator_traits<FactorAlloc>::template rebind_traits<rpc_> FAPrecisionTraits;
    typename FAPrecisionTraits::allocator_type factor_alloc_precision(factor_alloc);
@@ -217,9 +213,6 @@ void assemble_pre(
          add_a_block(iblk, std::min(iblk+add_a_blk_sz,snode.num_a), node, aval, scaling);
       }
    }
-#ifdef PROFILE
-   if(!node.first_child) task_asm_pre.done();
-#endif
 
    /* If we have no children, we're done. */
    if(node.first_child == nullptr && snode.contrib.size() == 0) return;
@@ -242,13 +235,7 @@ void assemble_pre(
    for(ipc_ i=snode.ncol; i<snode.nrow; i++)
       map[ snode.rlist[i] ] = i + node.ndelay_in;
    /* Loop over children adding contributions */
-#ifdef PROFILE
-   task_asm_pre.done();
-#endif
    for(auto* child=node.first_child; child!=NULL; child=child->next_child) {
-#ifdef PROFILE
-      Profile::Task task_asm_pre("TA_ASM_PRE");
-#endif
       SymbolicNode const& csnode = child->symb;
       /* Handle delays - go to back of node
        * (i.e. become the last rows as in lower triangular format) */
@@ -271,9 +258,6 @@ void assemble_pre(
          }
          delay_col++;
       }
-#ifdef PROFILE
-      task_asm_pre.done();
-#endif
 
       /* Handle expected contributions (only if something there) */
       if(child->contrib) {
@@ -292,15 +276,9 @@ void assemble_pre(
                   firstprivate(iblk) \
                   shared(map, child, snode, node, csnode, cm, nrow, work)
                {
-#ifdef PROFILE
-                  Profile::Task task_asm_pre("TA_ASM_PRE");
-#endif
                   ipc_* cache = work[omp_get_thread_num()].get_ptr<ipc_>(cm);
                   assemble_expected(iblk, std::min(iblk+block_size,cm), node,
                         *child, map, cache);
-#ifdef PROFILE
-                  task_asm_pre.done();
-#endif
                } /* task */
             }
          }
@@ -401,15 +379,9 @@ void assemble_post(
                   firstprivate(iblk) \
                   shared(map, child, node, cm, work)
                {
-#ifdef PROFILE
-                  Profile::Task task_asm("TA_ASM_POST");
-#endif
                   ipc_* cache = work[omp_get_thread_num()].get_ptr<ipc_>(cm);
                   assemble_expected_contrib(iblk, std::min(iblk+block_size,cm),
                         node, *child, map, cache);
-#ifdef PROFILE
-                  task_asm.done();
-#endif
                } /* task */
             }
          }
