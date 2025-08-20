@@ -18,10 +18,6 @@ MODULE GALAHAD_SSIDS_fkeep_precision
    USE GALAHAD_SSIDS_inform_precision, ONLY : ssids_inform_type
    USE GALAHAD_SSIDS_subtree_precision, ONLY : numeric_subtree_base
    USE GALAHAD_SSIDS_cpu_subtree_precision, ONLY : cpu_numeric_subtree
-#ifdef PROFILE
-   USE GALAHAD_SSIDS_profile_precision, ONLY : profile_begin, profile_end,     &
-                                               profile_add_event
-#endif
    IMPLICIT none
 
    PRIVATE
@@ -80,10 +76,6 @@ SUBROUTINE inner_factor_cpu( fkeep, akeep, val, control, inform )
   LOGICAL :: abort, all_region
   TYPE( contrib_type ), DIMENSION( : ), allocatable :: child_contrib
   TYPE( ssids_inform_type ), DIMENSION( : ), allocatable :: thread_inform
-#ifdef PROFILE
-  ! Begin profile trace ( noop if not enabled )
-  call profile_begin( akeep%topology )
-#endif
 !write( 6,* ) ' n ', akeep%n
 !write( 6,* ) ' ptr ', akeep%ptr(  : akeep%n + 1  )
 !write( 6,* ) ' row ', akeep%row(  : akeep%ptr(  akeep%n + 1  ) - 1  )
@@ -199,12 +191,6 @@ SUBROUTINE inner_factor_cpu( fkeep, akeep, val, control, inform )
 
   IF ( all_region ) THEN
 
-#ifdef PROFILE
-     ! At least some all region subtrees exist
-     call profile_add_event( "EV_ALL_REGIONS", &
-                            "Starting processing root subtree", 0 )
-#endif
-
      !$omp parallel num_threads( total_threads ) default( shared )
      !$omp single
      DO i = 1, akeep%nparts
@@ -234,11 +220,6 @@ SUBROUTINE inner_factor_cpu( fkeep, akeep, val, control, inform )
   END if
 
 100 continue ! cleanup and exit
-
-#ifdef PROFILE
-  ! End profile trace ( noop if not enabled )
-  call profile_end(  )
-#endif
 
   return
 

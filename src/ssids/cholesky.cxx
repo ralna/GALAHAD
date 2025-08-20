@@ -11,7 +11,6 @@
 #include <cstdio> // FIXME: remove as only used for debug
 
 #include "ssids_cpu_kernels_cholesky.hxx"
-#include "ssids_profile.hxx"
 #include "ssids_cpu_kernels_wrappers.hxx"
 
 namespace galahad { namespace ssids { namespace cpu {
@@ -58,9 +57,6 @@ void cholesky_factor(ipc_ m, ipc_ n, rpc_* a, ipc_ lda, rpc_ beta,
        #pragma omp atomic read
        my_info = *info;
        if (my_info == -1) {
-#ifdef PROFILE
-         Profile::Task task("TA_CHOL_DIAG");
-#endif
          ipc_ blkm = std::min(blksz, m-j);
          ipc_ flag = lapack_potrf(FILL_MODE_LWR, blkn, &a[j*(lda+1)], lda);
          if (flag > 0) {
@@ -80,9 +76,6 @@ void cholesky_factor(ipc_ m, ipc_ n, rpc_* a, ipc_ lda, rpc_ beta,
                        &a[j*(lda+1)+blkn], lda, rbeta, upd, ldupd);
            }
          }
-#ifdef PROFILE
-         task.done();
-#endif
        }
      }
      /* Column Solve Tasks */
@@ -98,9 +91,6 @@ void cholesky_factor(ipc_ m, ipc_ n, rpc_* a, ipc_ lda, rpc_ beta,
          #pragma omp atomic read
          my_info = *info;
          if (my_info == -1) {
-#ifdef PROFILE
-           Profile::Task task("TA_CHOL_TRSM");
-#endif
            rpc_ one_val = 1.0;
            rpc_ minus_one_val = - 1.0;
            host_trsm(SIDE_RIGHT, FILL_MODE_LWR, OP_T, DIAG_NON_UNIT, blkm,
@@ -111,9 +101,6 @@ void cholesky_factor(ipc_ m, ipc_ n, rpc_* a, ipc_ lda, rpc_ beta,
                        &a[j*lda+i], lda, &a[j*(lda+1)+blkn], lda,
                        rbeta, &upd[i-n], ldupd);
            }
-#ifdef PROFILE
-           task.done();
-#endif
          }
        }
      }
@@ -132,9 +119,6 @@ void cholesky_factor(ipc_ m, ipc_ n, rpc_* a, ipc_ lda, rpc_ beta,
            #pragma omp atomic read
            my_info = *info;
            if (my_info == -1) {
-#ifdef PROFILE
-             Profile::Task task("TA_CHOL_UPD");
-#endif
              ipc_ blkm = std::min(blksz, m-i);
              rpc_ one_val = 1.0;
              rpc_ minus_one_val = - 1.0;
@@ -155,9 +139,6 @@ void cholesky_factor(ipc_ m, ipc_ n, rpc_* a, ipc_ lda, rpc_ beta,
                            &upd[i-n], ldupd);
                }
              }
-#ifdef PROFILE
-             task.done();
-#endif
            }
          }
        }
@@ -178,18 +159,12 @@ void cholesky_factor(ipc_ m, ipc_ n, rpc_* a, ipc_ lda, rpc_ beta,
              #pragma omp atomic read
              my_info = *info;
              if (my_info == -1) {
-#ifdef PROFILE
-               Profile::Task task("TA_CHOL_UPD");
-#endif
                ipc_ blkm = std::min(blksz, m-i);
                rpc_ rbeta = (j==0) ? beta : 1.0;
                rpc_ minus_one_val = - 1.0;
                host_gemm(OP_N, OP_T, blkm, blkk, blkn, minus_one_val,
                          &a[j*lda+i], lda, &a[j*lda+k], lda,
                          rbeta, &upd[(k-n)*ldupd+(i-n)], ldupd);
-#ifdef PROFILE
-               task.done();
-#endif
              }
            }
          }
