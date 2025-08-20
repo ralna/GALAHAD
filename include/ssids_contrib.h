@@ -9,7 +9,7 @@
  */
 
 #include "spral_procedures.h"
-#include "ssids_rip.hxx"
+#include "galahad_precision.h"
 
 #ifndef GALAHAD_SSIDS_CONTRIB_H
 #define GALAHAD_SSIDS_CONTRIB_H

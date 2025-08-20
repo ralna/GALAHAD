@@ -8,7 +8,7 @@
 #pragma once
 
 #include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "galahad_precision.h"
 #include "spral_config.h"
 
 #include <time.h>

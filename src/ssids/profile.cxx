@@ -6,7 +6,7 @@
  */
 
 #include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "galahad_precision.h"
 #include "ssids_profile.hxx"
 
 #ifdef PROFILE

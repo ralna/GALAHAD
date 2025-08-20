@@ -8,7 +8,7 @@
 
 #include <vector>
 #include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "galahad_precision.h"
 
 namespace galahad { namespace ssids { namespace cpu {
 

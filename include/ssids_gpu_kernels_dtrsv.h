@@ -14,7 +14,7 @@ lookup capability added to allow execution on multiple small matrices
 simulateously.
 */
 
-#include "ssids_rip.hxx"
+#include "galahad_precision.h"
 
 namespace galahad { namespace ssids { namespace gpu {
 
