@@ -6,7 +6,7 @@
  */
 
 #include "ssids_routines.h"
-#include "ssids_rit.hxx"
+#include "galahad_precision.h"
 #include "ssids_cpu_SymbolicSubtree.hxx"
 
 using namespace galahad::ssids::cpu;

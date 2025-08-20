@@ -72,8 +72,6 @@ if build_ciface
                            'galahad_ugo.h',
                            'galahad_uls.h',
                            'galahad_wcp.h')
-
-  galahad_headers += files('ssids_rit.hxx')
 endif
 
 if build_pythoniface

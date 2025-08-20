@@ -9,7 +9,7 @@
  */
 
 #include "ssids_procedures.h"
-#include "ssids_rit.hxx"
+#include "galahad_precision.h"
 
 #ifndef GALAHAD_SSIDS_CONTRIB_H
 #define GALAHAD_SSIDS_CONTRIB_H
@@ -20,7 +20,7 @@ extern "C" {
 
 void galahad_ssids_contrib_get_data(const void *const contrib,
       ipc_ *const n, const rpc_* *const val, ipc_ *const ldval,
-      const ipc_* *const rlist, ipc_ *const ndelay, 
+      const ipc_* *const rlist, ipc_ *const ndelay,
       const ipc_* *const delay_perm,
       const rpc_* *const delay_val, ipc_ *const lddelay);
 

@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "ssids_routines.h"
-#include "ssids_rit.hxx"
+#include "galahad_precision.h"
 #include "ssids_compat.hxx" // in case std::align not defined
 
 namespace galahad { namespace ssids { namespace cpu {
