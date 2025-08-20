@@ -20,7 +20,6 @@
 
 #include "ssids_routines.h"
 #include "galahad_precision.h"
-#include "ssids_profile.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
 #include "ssids_cpu_SymbolicNode.hxx"
 #include "ssids_cpu_ThreadStats.hxx"
@@ -85,9 +84,6 @@ void factor_node_indef(
       // off but actually doing it, or failed_pivot_method says to do so
       if(m==n || control.pivot_method==PivotMethod::tpp ||
             control.failed_pivot_method==FailedPivotMethod::tpp) {
-#ifdef PROFILE
-         Profile::Task task_tpp("TA_LDLT_TPP");
-#endif
          T *ld = work[omp_get_thread_num()].get_ptr<T>(2*(m-nelim));
          node.nelim += ldlt_tpp_factor(
                m-nelim, n-nelim, &perm[nelim], &lcol[nelim*(ldl+1)], ldl,
@@ -111,15 +107,9 @@ void factor_node_indef(
          } else {
             stats.not_second_pass += n - node.nelim;
          }
-#ifdef profile
-         task_tpp.done();
-#endif
       }
    }
 
-#ifdef PROFILE
-      Profile::setState("TA_MISC1");
-#endif
    /* Record information */
    node.ndelay_out = n - node.nelim;
    stats.num_delay += node.ndelay_out;

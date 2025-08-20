@@ -92,9 +92,6 @@
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "2023.11.15"
 
-/* Define to 1 to enable profiling */
-/* #undef PROFILE */
-
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 

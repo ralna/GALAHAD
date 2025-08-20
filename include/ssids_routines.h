@@ -233,7 +233,6 @@
 #define BuddyAllocator BuddyAllocator_64
 #define Page Page_64
 #define Table Table_64
-#define Profile Profile_64
 #define NumericSubtree NumericSubtree_64
 #define now now_64
 #define guess_core guess_core_64
@@ -251,10 +250,4 @@
 #define Pool Pool_64
 #define SimdVec SimdVec_64
 #define block_ldlt_internal block_ldlt_internal_64
-#define galahad_ssids_profile_begin galahad_ssids_profile_begin_64
-#define galahad_ssids_profile_end galahad_ssids_profile_end_64
-#define galahad_ssids_profile_create_task galahad_ssids_profile_create_task_64
-#define galahad_ssids_profile_end_task galahad_ssids_profile_end_task_64
-#define galahad_ssids_profile_set_state galahad_ssids_profile_set_state_64
-#define galahad_ssids_profile_add_event galahad_ssids_profile_add_event_64
 #endif

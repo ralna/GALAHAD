@@ -2,12 +2,11 @@ if build_ssids
   libgalahad_cpp_src += files('omp.cxx', 'cholesky.cxx', 
                               'ldlt_app.cxx', 'ldlt_nopiv.cxx',
                               'ldlt_tpp.cxx', 'NumericSubtree.cxx', 
-                              'profile.cxx',  'SymbolicSubtree.cxx', 
-                              'ThreadStats.cxx', 'wrappers.cxx')
+                              'SymbolicSubtree.cxx', 'ThreadStats.cxx',
+                              'wrappers.cxx')
 
   libgalahad_src += files('ssids.F90', 'contrib_iface.F90', 'cpu_iface.F90',
-                          'cpu_subtree.F90', 'types.F90',
-                          'profile_iface.F90', 'subtree.F90')
+                          'cpu_subtree.F90', 'types.F90', 'subtree.F90')
 
   libgalahad_c_src += files('C/ssids_ciface.F90')
 
