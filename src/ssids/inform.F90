@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 13:40 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-23 AT 14:00 GMT
 
 #include "spral_procedures.h"
 
@@ -9,9 +9,9 @@
 
 MODULE GALAHAD_SSIDS_inform_precision
   USE GALAHAD_KINDS_precision
-  USE SPRAL_SCALING_precision, ONLY: auction_inform_type
-  USE GALAHAD_SSIDS_types_precision
+  USE GALAHAD_MS_precision, ONLY: MS_auction_inform_type
   USE GALAHAD_NODEND_precision, ONLY: NODEND_inform_type
+  USE GALAHAD_SSIDS_types_precision
   IMPLICIT NONE
 
   PRIVATE
@@ -40,7 +40,7 @@ MODULE GALAHAD_SSIDS_inform_precision
      INTEGER( ip_ ) :: num_sup = 0 ! # supernodes
      INTEGER( ip_ ) :: num_two = 0 ! # 2x2 pivots used by factorization
      INTEGER( ip_ ) :: stat = 0 ! stat parameter
-     TYPE( auction_inform_type ) :: auction
+     TYPE( MS_auction_inform_type ) :: auction
      INTEGER( ip_ ) :: cuda_error = 0
      INTEGER( ip_ ) :: cublas_error = 0
      TYPE( NODEND_inform_type ) :: nodend_inform

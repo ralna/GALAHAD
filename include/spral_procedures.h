@@ -25,10 +25,11 @@
 #define GALAHAD_SSIDS_profile_precision GALAHAD_SSIDS_profile_single_64
 #define GALAHAD_SSIDS_subtree_precision GALAHAD_SSIDS_subtree_single_64
 #define GALAHAD_SSIDS_types_precision GALAHAD_SSIDS_types_single_64
-#define SPRAL_MATCH_ORDER_precision SPRAL_MATCH_ORDER_single_64
-#define SPRAL_MATRIX_UTIL_precision SPRAL_MATRIX_UTIL_single_64
-#define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_single_64
-#define SPRAL_SCALING_precision SPRAL_SCALING_single_64
+#define GALAHAD_MO_precision GALAHAD_MO_single_64
+#define GALAHAD_MS_precision GALAHAD_MS_single_64
+#define GALAHAD_MU_precision GALAHAD_MU_single_64
+#define GALAHAD_RAND_precision GALAHAD_RAND_single_64
+#define GALAHAD_RB_precision GALAHAD_RB_single_64
 #else
 #define GALAHAD_KINDS_precision GALAHAD_KINDS_single
 #define GALAHAD_NODEND_precision GALAHAD_NODEND_single
@@ -48,10 +49,11 @@
 #define GALAHAD_SSIDS_profile_precision GALAHAD_SSIDS_profile_single
 #define GALAHAD_SSIDS_subtree_precision GALAHAD_SSIDS_subtree_single
 #define GALAHAD_SSIDS_types_precision GALAHAD_SSIDS_types_single
-#define SPRAL_MATCH_ORDER_precision SPRAL_MATCH_ORDER_single
-#define SPRAL_MATRIX_UTIL_precision SPRAL_MATRIX_UTIL_single
-#define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_single
-#define SPRAL_SCALING_precision SPRAL_SCALING_single
+#define GALAHAD_MO_precision GALAHAD_MO_single
+#define GALAHAD_MS_precision GALAHAD_MS_single
+#define GALAHAD_MU_precision GALAHAD_MU_single
+#define GALAHAD_RAND_precision GALAHAD_RAND_single
+#define GALAHAD_RB_precision GALAHAD_RB_single
 #endif
 #elif REAL_128
 #ifdef INTEGER_64
@@ -73,10 +75,11 @@
 #define GALAHAD_SSIDS_profile_precision GALAHAD_SSIDS_profile_quadruple_64
 #define GALAHAD_SSIDS_subtree_precision GALAHAD_SSIDS_subtree_quadruple_64
 #define GALAHAD_SSIDS_types_precision GALAHAD_SSIDS_types_quadruple_64
-#define SPRAL_MATCH_ORDER_precision SPRAL_MATCH_ORDER_quadruple_64
-#define SPRAL_MATRIX_UTIL_precision SPRAL_MATRIX_UTIL_quadruple_64
-#define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_quadruple_64
-#define SPRAL_SCALING_precision SPRAL_SCALING_quadruple_64
+#define GALAHAD_MO_precision GALAHAD_MO_quadruple_64
+#define GALAHAD_MS_precision GALAHAD_MS_quadruple_64
+#define GALAHAD_MU_precision GALAHAD_MU_quadruple_64
+#define GALAHAD_RAND_precision GALAHAD_RAND_quadruple_64
+#define GALAHAD_RB_precision GALAHAD_RB_quadruple_64
 #else
 #define GALAHAD_KINDS_precision GALAHAD_KINDS_quadruple
 #define GALAHAD_NODEND_precision GALAHAD_NODEND_quadruple
@@ -96,10 +99,11 @@
 #define GALAHAD_SSIDS_profile_precision GALAHAD_SSIDS_profile_quadruple
 #define GALAHAD_SSIDS_subtree_precision GALAHAD_SSIDS_subtree_quadruple
 #define GALAHAD_SSIDS_types_precision GALAHAD_SSIDS_types_quadruple
-#define SPRAL_MATCH_ORDER_precision SPRAL_MATCH_ORDER_quadruple
-#define SPRAL_MATRIX_UTIL_precision SPRAL_MATRIX_UTIL_quadruple
-#define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_quadruple
-#define SPRAL_SCALING_precision SPRAL_SCALING_quadruple
+#define GALAHAD_MO_precision GALAHAD_MO_quadruple
+#define GALAHAD_MS_precision GALAHAD_MS_quadruple
+#define GALAHAD_MU_precision GALAHAD_MU_quadruple
+#define GALAHAD_RAND_precision GALAHAD_RAND_quadruple
+#define GALAHAD_RB_precision GALAHAD_RB_quadruple
 #endif
 #else
 #ifdef INTEGER_64
@@ -121,10 +125,11 @@
 #define GALAHAD_SSIDS_profile_precision GALAHAD_SSIDS_profile_double_64
 #define GALAHAD_SSIDS_subtree_precision GALAHAD_SSIDS_subtree_double_64
 #define GALAHAD_SSIDS_types_precision GALAHAD_SSIDS_types_double_64
-#define SPRAL_MATCH_ORDER_precision SPRAL_MATCH_ORDER_double_64
-#define SPRAL_MATRIX_UTIL_precision SPRAL_MATRIX_UTIL_double_64
-#define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_double_64
-#define SPRAL_SCALING_precision SPRAL_SCALING_double_64
+#define GALAHAD_MO_precision GALAHAD_MO_double_64
+#define GALAHAD_MS_precision GALAHAD_MS_double_64
+#define GALAHAD_MU_precision GALAHAD_MU_double_64
+#define GALAHAD_RAND_precision GALAHAD_RAND_double_64
+#define GALAHAD_RB_precision GALAHAD_RB_double_64
 #else
 #define GALAHAD_KINDS_precision GALAHAD_KINDS_double
 #define GALAHAD_NODEND_precision GALAHAD_NODEND_double
@@ -144,10 +149,11 @@
 #define GALAHAD_SSIDS_profile_precision GALAHAD_SSIDS_profile_double
 #define GALAHAD_SSIDS_subtree_precision GALAHAD_SSIDS_subtree_double
 #define GALAHAD_SSIDS_types_precision GALAHAD_SSIDS_types_double
-#define SPRAL_MATCH_ORDER_precision SPRAL_MATCH_ORDER_double
-#define SPRAL_MATRIX_UTIL_precision SPRAL_MATRIX_UTIL_double
-#define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_double
-#define SPRAL_SCALING_precision SPRAL_SCALING_double
+#define GALAHAD_MO_precision GALAHAD_MO_double
+#define GALAHAD_MS_precision GALAHAD_MS_double
+#define GALAHAD_MU_precision GALAHAD_MU_double
+#define GALAHAD_RAND_precision GALAHAD_RAND_double
+#define GALAHAD_RB_precision GALAHAD_RB_double
 #endif
 #endif
 

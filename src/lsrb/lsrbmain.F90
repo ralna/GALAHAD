@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-22 AT 14:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -9,6 +9,8 @@
 !    min 1/2 || A x - b ||^W_2 + 1/2 sigma ||x||^2^2
 !  possibly subject to constraints using an iterative method
 
+!  Nick Gould, for GALAHAD productions, 2016
+
 !!$  USE omp_lib
 !   USE SMT_precision
     USE GALAHAD_KINDS_precision
@@ -18,7 +20,7 @@
     USE GALAHAD_BLLS_precision
     USE GALAHAD_SLLS_precision
     USE hsl_mi35_precision, ONLY: mi35_control, mi35_info, mi35_check_matrix
-    USE SPRAL_RAL_BOEING_precision
+    USE GALAHAD_RB_precision, ONLY: RB_read_options, RB_read
 
     IMPLICIT NONE
 
@@ -57,7 +59,7 @@
 !  structures
 
     TYPE ( SMT_type ) :: A
-    TYPE ( rb_read_options ) :: options_rb
+    TYPE ( RB_read_options ) :: options_rb
     INTEGER ( KIND = ip_ ) :: info_rb
     TYPE ( mi35_control ) :: control_mi35
     TYPE ( mi35_info ) :: info_mi35
@@ -206,10 +208,10 @@
 !  generate values automatically if not supplied
 
     options_rb%values = 2
-    CALL rb_read( TRIM( name ) // ".rb", p%A%m, p%A%n, p%A%ptr, p%A%row,       &
+    CALL RB_read( TRIM( name ) // ".rb", p%A%m, p%A%n, p%A%ptr, p%A%row,       &
                   p%A%val, options_rb, info_rb, title = title )
     IF ( info_rb /= 0 ) THEN
-      WRITE( out, "( ' rb_read failed with error ', I0 )" ) info_rb
+      WRITE( out, "( ' RB_read failed with error ', I0 )" ) info_rb
       STOP
     END IF
 
