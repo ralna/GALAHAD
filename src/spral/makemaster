@@ -229,12 +229,12 @@ RSSIDSCDTF64 = $(OBJD64)/ssidsctf_double_64.o -L$(OBJD64) $(CLIBS)
 RSSIDSCQT64 = $(OBJQ64)/ssidsct_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 RSSIDSCQTF64 = $(OBJQ64)/ssidsctf_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 
-SPRALRBS = $(RLGS)(MU_single.o) $(RLGS)(RB_single.o)
-SPRALRBD = $(RLGD)(MU_double.o) $(RLGD)(RB_double.o)
-SPRALRBQ = $(RLGQ)(MU_quadruple.o) $(RLGQ)(RB_quadruple.o)
-SPRALRBS64 = $(RLGS64)(MU_single_64.o) $(RLGS64)(RB_single_64.o)
-SPRALRBD64 = $(RLGD64)(MU_double_64.o) $(RLGD64)(RB_double_64.o)
-SPRALRBQ64 = $(RLGQ64)(MU_quadruple_64.o) $(RLGQ64)(RB_quadruple_64.o)
+SPRALRBS = $(RLGS)(mu_single.o) $(RLGS)(rb_single.o)
+SPRALRBD = $(RLGD)(mu_double.o) $(RLGD)(rb_double.o)
+SPRALRBQ = $(RLGQ)(mu_quadruple.o) $(RLGQ)(rb_quadruple.o)
+SPRALRBS64 = $(RLGS64)(mu_single_64.o) $(RLGS64)(rb_single_64.o)
+SPRALRBD64 = $(RLGD64)(mu_double_64.o) $(RLGD64)(rb_double_64.o)
+SPRALRBQ64 = $(RLGQ64)(mu_quadruple_64.o) $(RLGQ64)(rb_quadruple_64.o)
 
 SSIDSS = extend basics $(SPRALRBS) \
          $(RLGS)(compat.o) $(RLGS)(guess_topology.o) \
@@ -244,8 +244,8 @@ SSIDSS = extend basics $(SPRALRBS) \
          $(RLGS)(ldlt_nopiv_single.o) $(RLGS)(ldlt_tpp_single.o) \
          $(RLGS)(wrappers_single.o) \
          $(RLGS)(ThreadStats.o) $(RLGS)(hw_topology.o) \
-         $(RLGS)(MS_single.o) \
-         $(RLGS)(MO_single.o) $(RLGS)(datatypes_single.o) \
+         $(RLGS)(ms_single.o) \
+         $(RLGS)(mo_single.o) $(RLGS)(datatypes_single.o) \
          $(RLGS)(inform_single.o) $(RLGS)(contrib_single.o) \
          $(RLGS)(subtree_single.o) $(RLGS)(akeep_single.o) \
          $(RLGS)(cpu_iface_single.o) $(RLGS)(cpu_subtree_single.o) \
@@ -261,8 +261,8 @@ SSIDSD = extend basics $(SPRALRBD) \
          $(RLGD)(ldlt_nopiv_double.o) $(RLGD)(ldlt_tpp_double.o) \
          $(RLGD)(wrappers_double.o) \
          $(RLGD)(ThreadStats.o) $(RLGD)(hw_topology.o) \
-         $(RLGD)(MS_double.o) \
-         $(RLGD)(MO_double.o) $(RLGD)(datatypes_double.o) \
+         $(RLGD)(ms_double.o) \
+         $(RLGD)(mo_double.o) $(RLGD)(datatypes_double.o) \
          $(RLGD)(inform_double.o) $(RLGD)(contrib_double.o) \
          $(RLGD)(subtree_double.o) $(RLGD)(akeep_double.o) \
          $(RLGD)(cpu_iface_double.o) $(RLGD)(cpu_subtree_double.o) \
@@ -278,8 +278,8 @@ SSIDSQ = extend basics $(SPRALRBQ) \
          $(RLGQ)(ldlt_nopiv_quadruple.o) $(RLGQ)(ldlt_tpp_quadruple.o) \
          $(RLGQ)(wrappers_quadruple.o) \
          $(RLGQ)(ThreadStats.o) $(RLGQ)(hw_topology.o) \
-         $(RLGQ)(MS_quadruple.o) \
-         $(RLGQ)(MO_quadruple.o) $(RLGQ)(datatypes_quadruple.o) \
+         $(RLGQ)(ms_quadruple.o) \
+         $(RLGQ)(mo_quadruple.o) $(RLGQ)(datatypes_quadruple.o) \
          $(RLGQ)(inform_quadruple.o) $(RLGQ)(contrib_quadruple.o) \
          $(RLGQ)(subtree_quadruple.o) $(RLGQ)(akeep_quadruple.o) \
          $(RLGQ)(cpu_iface_quadruple.o) $(RLGQ)(cpu_subtree_quadruple.o) \
@@ -295,8 +295,8 @@ SSIDSS64 = extend basics $(SPRALRBS64) \
          $(RLGS64)(ldlt_nopiv_single_64.o) $(RLGS64)(ldlt_tpp_single_64.o) \
          $(RLGS64)(wrappers_single_64.o) $(RLGS64)(ThreadStats.o) \
          $(RLGS64)(hw_topology.o) \
-         $(RLGS64)(MS_single_64.o) \
-         $(RLGS64)(MO_single_64.o) $(RLGS64)(datatypes_single_64.o) \
+         $(RLGS64)(ms_single_64.o) \
+         $(RLGS64)(mo_single_64.o) $(RLGS64)(datatypes_single_64.o) \
          $(RLGS64)(inform_single_64.o) $(RLGS64)(contrib_single_64.o) \
          $(RLGS64)(subtree_single_64.o) $(RLGS64)(akeep_single_64.o) \
          $(RLGS64)(cpu_iface_single_64.o) $(RLGS64)(cpu_subtree_single_64.o) \
@@ -312,8 +312,8 @@ SSIDSD64 = extend basics $(SPRALRBD64) \
          $(RLGD64)(ldlt_nopiv_double_64.o) $(RLGD64)(ldlt_tpp_double_64.o) \
          $(RLGD64)(wrappers_double_64.o) $(RLGD64)(ThreadStats.o) \
          $(RLGD64)(hw_topology.o) \
-         $(RLGD64)(MS_double_64.o) \
-         $(RLGD64)(MO_double_64.o) $(RLGD64)(datatypes_double_64.o) \
+         $(RLGD64)(ms_double_64.o) \
+         $(RLGD64)(mo_double_64.o) $(RLGD64)(datatypes_double_64.o) \
          $(RLGD64)(inform_double_64.o) $(RLGD64)(contrib_double_64.o) \
          $(RLGD64)(subtree_double_64.o) $(RLGD64)(akeep_double_64.o) \
          $(RLGD64)(cpu_iface_double_64.o) $(RLGD64)(cpu_subtree_double_64.o) \
@@ -330,8 +330,8 @@ SSIDSQ64 = extend basics $(SPRALRBQ64) \
          $(RLGQ64)(ldlt_tpp_quadruple_64.o) \
          $(RLGQ64)(wrappers_quadruple_64.o) $(RLGQ64)(ThreadStats.o) \
          $(RLGQ64)(hw_topology.o) \
-         $(RLGQ64)(MS_quadruple_64.o) \
-         $(RLGQ64)(MO_quadruple_64.o) \
+         $(RLGQ64)(ms_quadruple_64.o) \
+         $(RLGQ64)(mo_quadruple_64.o) \
          $(RLGQ64)(datatypes_quadruple_64.o) \
          $(RLGQ64)(inform_quadruple_64.o) $(RLGQ64)(contrib_quadruple_64.o) \
          $(RLGQ64)(subtree_quadruple_64.o) $(RLGQ64)(akeep_quadruple_64.o) \
@@ -878,34 +878,34 @@ basics:
 
 #  individual compilations
 
-MU.o: $(RLG)(MU_$(PRECIS).o)
+mu.o: $(RLG)(mu_$(PRECIS).o)
 
-$(RLG)(MU_$(PRECIS).o): ../spral/MU.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "MU  "
-	$(CP) ../spral/MU.F90 $(OBJ)/MU.F90
-	cd $(OBJ) ; $(FORTRAN) -o MU_$(PRECIS).o \
-                      $(FFLAGSOMP) MU.F90 \
+$(RLG)(mu_$(PRECIS).o): ../spral/mu.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mu  "
+	$(CP) ../spral/mu.F90 $(OBJ)/mu.F90
+	cd $(OBJ) ; $(FORTRAN) -o mu_$(PRECIS).o \
+                      $(FFLAGSOMP) mu.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o MU_$(PRECIS).o \
-                      $(FFLAGSNOMP) MU.F90 )
-	cd $(OBJ) ; $(RARR) MU_$(PRECIS).o ; \
-                      $(RM) MU.F90 MU_$(PRECIS).o
+                    $(FORTRAN) -o mu_$(PRECIS).o \
+                      $(FFLAGSNOMP) mu.F90 )
+	cd $(OBJ) ; $(RARR) mu_$(PRECIS).o ; \
+                      $(RM) mu.F90 mu_$(PRECIS).o
 	$(RRMARFILE) MS_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-RB.o: $(RLG)(RB_$(PRECIS).o)
+rb.o: $(RLG)(rb_$(PRECIS).o)
 
-$(RLG)(RB_$(PRECIS).o): ../spral/RB.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "RB  "
-	$(CP) ../spral/RB.F90 $(OBJ)/RB.F90
-	cd $(OBJ) ; $(FORTRAN) -o RB_$(PRECIS).o \
-                      $(FFLAGSOMP) RB.F90 \
+$(RLG)(rb_$(PRECIS).o): ../spral/rb.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "rb  "
+	$(CP) ../spral/rb.F90 $(OBJ)/rb.F90
+	cd $(OBJ) ; $(FORTRAN) -o rb_$(PRECIS).o \
+                      $(FFLAGSOMP) rb.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o RB_$(PRECIS).o \
-                      $(FFLAGSNOMP) RB.F90 )
-	cd $(OBJ) ; $(RARR) RB_$(PRECIS).o ; \
-                      $(RM) RB.F90 RB_$(PRECIS).o
+                    $(FORTRAN) -o rb_$(PRECIS).o \
+                      $(FFLAGSNOMP) rb.F90 )
+	cd $(OBJ) ; $(RARR) rb_$(PRECIS).o ; \
+                      $(RM) rb.F90 rb_$(PRECIS).o
 	$(RRMARFILE) ssids.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
@@ -1095,34 +1095,34 @@ $(RLG)(hw_topology.o): ../spral/hw_topology.F90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-MS.o: $(RLG)(MS_$(PRECIS).o)
+ms.o: $(RLG)(ms_$(PRECIS).o)
 
-$(RLG)(MS_$(PRECIS).o): ../spral/MS.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "MS  "
-	$(CP) ../spral/MS.F90 $(OBJ)/MS.F90
-	cd $(OBJ) ; $(FORTRAN) -o MS_$(PRECIS).o \
-                      $(FFLAGSOMP) MS.F90 \
+$(RLG)(ms_$(PRECIS).o): ../spral/ms.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ms  "
+	$(CP) ../spral/ms.F90 $(OBJ)/ms.F90
+	cd $(OBJ) ; $(FORTRAN) -o ms_$(PRECIS).o \
+                      $(FFLAGSOMP) ms.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o MS_$(PRECIS).o \
-                      $(FFLAGSNOMP) MS.F90 )
-	cd $(OBJ) ; $(RARR) MS_$(PRECIS).o ; \
-                      $(RM) MS.F90 MS_$(PRECIS).o
+                    $(FORTRAN) -o ms_$(PRECIS).o \
+                      $(FFLAGSNOMP) ms.F90 )
+	cd $(OBJ) ; $(RARR) ms_$(PRECIS).o ; \
+                      $(RM) ms.F90 ms_$(PRECIS).o
 	$(RRMARFILE) ssids_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-MO.o: $(RLG)(MO_$(PRECIS).o)
+mo.o: $(RLG)(mo_$(PRECIS).o)
 
-$(RLG)(MO_$(PRECIS).o): ../spral/MO.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "MO  "
-	$(CP) ../spral/MO.F90 $(OBJ)/MO.F90
-	cd $(OBJ) ; $(FORTRAN) -o MO_$(PRECIS).o \
-                      $(FFLAGSOMP) MO.F90 \
+$(RLG)(mo_$(PRECIS).o): ../spral/mo.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mo  "
+	$(CP) ../spral/mo.F90 $(OBJ)/mo.F90
+	cd $(OBJ) ; $(FORTRAN) -o mo_$(PRECIS).o \
+                      $(FFLAGSOMP) mo.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o MO_$(PRECIS).o \
-                      $(FFLAGSNOMP) MO.F90 )
-	cd $(OBJ) ; $(RARR) MO_$(PRECIS).o ; \
-                      $(RM) MO.F90 MO_$(PRECIS).o
+                    $(FORTRAN) -o mo_$(PRECIS).o \
+                      $(FFLAGSNOMP) mo.F90 )
+	cd $(OBJ) ; $(RARR) mo_$(PRECIS).o ; \
+                      $(RM) mo.F90 mo_$(PRECIS).o
 	$(RRMARFILE) ssids_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
