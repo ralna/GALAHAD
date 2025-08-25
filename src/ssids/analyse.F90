@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 15:20 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-25 AT 15:20 GMT
 
 #include "spral_procedures.h"
 
@@ -11,7 +11,7 @@
     USE, INTRINSIC :: iso_c_binding
 !$ USE :: omp_lib
     USE GALAHAD_KINDS_precision
-    USE SPRAL_HW_TOPOLOGY, ONLY : guess_topology, numa_region
+    USE GALAHAD_HW, ONLY: HW_numa_region
     USE GALAHAD_SSIDS_akeep_precision, ONLY : SSIDS_akeep_type
     USE GALAHAD_SSIDS_cpu_subtree_precision, ONLY :                            &
       construct_cpu_symbolic_subtree
@@ -541,7 +541,7 @@
     INTEGER( ip_ ), DIMENSION( nnodes ), INTENT( IN ) :: sparent
     INTEGER( long_ ), DIMENSION( nnodes + 1 ), INTENT( IN ) :: rptr
     TYPE( ssids_control_type ), INTENT( IN ) :: control
-    TYPE( numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
+    TYPE( HW_numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
     INTEGER( ip_ ), INTENT( OUT ) :: nparts
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE, INTENT( INOUT ) :: part
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE, INTENT( OUT ) :: exec_loc
@@ -781,7 +781,7 @@
     INTEGER( ip_ ), DIMENSION( nparts ), INTENT( IN ) :: size_order
     LOGICAL, DIMENSION( nparts ), INTENT( IN ) :: is_child
     INTEGER( long_ ), DIMENSION( * ), INTENT( IN ) :: flops
-    TYPE( numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
+    TYPE( HW_numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
     INTEGER( long_ ), INTENT( IN ) :: min_gpu_work
     REAL, INTENT( IN ) :: gpu_perf_coeff
     INTEGER( ip_ ), DIMENSION( nparts ), INTENT( OUT ) :: exec_loc
@@ -1145,7 +1145,7 @@
     INTEGER( ip_ ), DIMENSION( nnodes + 1 ), INTENT( IN ) :: sptr
     INTEGER( ip_ ), DIMENSION( nnodes ), INTENT( IN ) :: sparent
     INTEGER( long_ ), DIMENSION( nnodes + 1 ), INTENT( IN ) :: rptr
-    TYPE( numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
+    TYPE( HW_numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
     INTEGER( ip_ ), INTENT( IN ) :: nparts
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE, INTENT( IN ) :: part
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE, INTENT( IN ) :: exec_loc

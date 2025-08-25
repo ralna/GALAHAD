@@ -11,7 +11,7 @@
 
 #include "ssids_routines.h"
 #include "ssids_rip.hxx"
-#include "spral_compat.hxx" // in case std::align not defined
+#include "ssids_compat.hxx" // in case std::align not defined
 
 namespace galahad { namespace ssids { namespace cpu {
 

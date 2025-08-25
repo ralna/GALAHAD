@@ -12,7 +12,7 @@
 
 #include "ssids_routines.h"
 #include "ssids_rip.hxx"
-#include "spral_omp.hxx"
+#include "ssids_omp.hxx"
 
 namespace galahad { namespace ssids { namespace cpu {
 

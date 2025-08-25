@@ -1,99 +1,138 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-17 AT 13:40 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-25 AT 10:40 GMT.
 
 #include "spral_procedures.h"
+
+!-*-*-*-*-*-*-*-*-  G A L A H A D _ H W   M O D U L E  *-*-*-*-*-*-*-*-*-*-*-
+
+!    --------------------------------------------------------------------
+!   | Hardware toplology package originally spral_hw_topology from SPRAL |
+!    --------------------------------------------------------------------
 
 !  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)
 !  licence: BSD licence, see LICENCE file for details
 !  author: Jonathan Hogg
 !  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
-!
-MODULE SPRAL_HW_TOPOLOGY
+
+      MODULE GALAHAD_HW
 
 !  provides routines for detecting and/or specifying hardware topology for 
 !  topology-aware routines
 
-  USE GALAHAD_KINDS, ONLY: ip_, C_IP_
-  use, intrinsic :: iso_c_binding
-  implicit none
+        USE GALAHAD_KINDS, ONLY: ip_, c_ip_
+        USE, INTRINSIC :: iso_c_binding
+        IMPLICIT NONE
 
-  private
-  public :: numa_region ! datatype describing regions
-  public :: guess_topology ! returns best guess of hardware topology
-  public :: c_numa_region
+        PRIVATE
+        PUBLIC :: HW_numa_region, HW_c_numa_region, HW_guess_topology
 
-  !> Fortran interoperable definition of galahad::hw_topology::NumaRegion
-  type, bind(C) :: c_numa_region
-     integer(C_INT) :: nproc
-     integer(C_INT) :: ngpu
-     type(C_PTR) :: gpus
-  end type c_numa_region
+!-------------------------------------------------
+!  D e r i v e d   t y p e   d e f i n i t i o n s
+!-------------------------------------------------
 
-  !> Represents a NUMA region
-  type :: numa_region
-     integer(ip_) :: nproc !< Number of processors in region
-     integer(ip_), dimension(:), allocatable :: gpus !< List of attached GPUs
-  end type numa_region
+!  derived type describing regions
 
-  interface
-     !> Interface to spral_hw_topology_guess()
-     subroutine spral_hw_topology_guess(nregion, regions) bind(C)
-       use, intrinsic :: iso_c_binding
-       implicit none
-       integer(C_INT), intent(out) :: nregion
-       type(C_PTR), intent(out) :: regions
-     end subroutine spral_hw_topology_guess
-     !> Interface to spral_hw_topology_free()
-     subroutine spral_hw_topology_free(nregion, regions) bind(C)
-       use, intrinsic :: iso_c_binding
-       implicit none
-       integer(C_INT), value :: nregion
-       type(C_PTR), value :: regions
-     end subroutine spral_hw_topology_free
-  end interface
+        TYPE :: HW_numa_region
 
-contains
+!  number of processors in region
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Return best guess for machine topology
-!> @param regions Upon return allocated to have size equal to the number of
-!>        NUMA regions. The members describe each region.
-!> @param st Status return from allocate. If non-zero upon return, an allocation
-!>        failed.
-  subroutine guess_topology(regions, st)
-    implicit none
-    type(numa_region), dimension(:), allocatable, intent(out) :: regions
-    integer(ip_), intent(out) :: st
+          INTEGER ( KIND = ip_ ) :: nproc
 
-    integer(C_INT) :: i
-    integer(C_INT) :: nregions
-    type(C_PTR) :: c_regions
-    type(c_numa_region), dimension(:), pointer, contiguous :: f_regions
-    integer(C_IP_), dimension(:), pointer, contiguous :: f_gpus
+!  list of attached GPUs
 
-    ! Get regions from C
-!write(6,*) '  call spral_hw_topology_guess'
-    call spral_hw_topology_guess(nregions, c_regions)
-    if (c_associated(c_regions)) then
-       call c_f_pointer(c_regions, f_regions, shape=(/ nregions /))
+          INTEGER ( KIND = ip_ ), DIMENSION ( : ), ALLOCATABLE :: gpus 
+        END TYPE HW_numa_region
 
-       ! Copy to allocatable array
-       allocate(regions(nregions), stat=st)
-       if (st .ne. 0) return
-       do i = 1, nregions
-          regions(i)%nproc = f_regions(i)%nproc
-          allocate(regions(i)%gpus(f_regions(i)%ngpu), stat=st)
-          if (st .ne. 0) return
-          if (f_regions(i)%ngpu .gt. 0) then
-             call c_f_pointer(f_regions(i)%gpus, f_gpus, &
-                  shape=(/ f_regions(i)%ngpu /))
-             regions(i)%gpus = f_gpus(:)
-          end if
-       end do
-    end if
+!  fortran interoperable definition of galahad::hw_topology::NumaRegion
 
-    ! Free C version
-!write(6,*) '  call spral_hw_topology_free', nregions
-    call spral_hw_topology_free(nregions, c_regions)
-  end subroutine guess_topology
+        TYPE, BIND( C ) :: HW_c_numa_region
+          INTEGER ( KIND = c_int ) :: nproc
+          INTEGER ( KIND = c_int ) :: ngpu
+          TYPE ( c_ptr ) :: gpus
+        END TYPE HW_c_numa_region
 
-END MODULE SPRAL_HW_TOPOLOGY
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+!  fortran interfaces to C procedures
+
+        INTERFACE
+          SUBROUTINE galahad_hw_topology_guess( nregion, regions ) BIND( C )
+            USE, INTRINSIC :: iso_c_binding
+            IMPLICIT NONE
+            INTEGER ( KIND = c_int ), INTENT ( OUT ) :: nregion
+            TYPE ( c_ptr ), INTENT ( OUT ) :: regions
+          END SUBROUTINE galahad_hw_topology_guess
+
+          SUBROUTINE galahad_hw_topology_free( nregion, regions ) BIND( C )
+            USE, INTRINSIC :: iso_c_binding
+            IMPLICIT NONE
+            INTEGER ( KIND = c_int ), VALUE :: nregion
+            TYPE ( c_ptr ), VALUE :: regions
+          END SUBROUTINE  galahad_hw_topology_free
+        END INTERFACE
+
+      CONTAINS
+
+!-*-*-*-*-   H W _ G U E S S _ T O P O L O G Y   S U B R O U T I N E   -*-*-*-*
+
+        SUBROUTINE HW_guess_topology( regions, st )
+
+!  return best guess for machine topology
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+!  upon return allocated to have size equal to the number of NUMA regions. 
+!  The members describe each region
+
+        TYPE ( HW_numa_region ), DIMENSION( : ), ALLOCATABLE,                  &
+                                                 INTENT( OUT ) :: regions
+
+!  status return from allocate. If non-zero upon return, an allocation failed
+
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: st
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+        INTEGER ( KIND = c_int ) :: i
+        INTEGER ( KIND = c_int ) :: nregions
+        TYPE ( c_ptr ) :: c_regions
+        TYPE ( HW_c_numa_region ), DIMENSION ( : ), POINTER,                   &
+                                                    CONTIGUOUS :: f_regions
+        INTEGER ( KIND = c_ip_ ), DIMENSION ( : ), POINTER,                    &
+                                                   CONTIGUOUS :: f_gpus
+
+!  get regions from C
+
+        CALL galahad_hw_topology_guess( nregions, c_regions )
+        IF ( c_associated( c_regions ) ) THEN
+          CALL c_f_pointer( c_regions, f_regions, shape = (/ nregions /) )
+
+!  copy to allocatable array
+
+          ALLOCATE ( regions( nregions ), STAT = st )
+          IF ( st /= 0 ) RETURN
+          DO i = 1, nregions
+            regions( i )%nproc = f_regions( i )%nproc
+            ALLOCATE ( regions( i )%gpus( f_regions( i )%ngpu ), STAT = st )
+            IF ( st /= 0 ) RETURN
+            IF ( f_regions( i )%ngpu > 0 ) THEN
+              CALL c_f_pointer( f_regions( i )%gpus, f_gpus,                   &
+                                shape = (/ f_regions( i )%ngpu /)  )
+              regions( i )%gpus = f_gpus( : )
+            END IF
+          END DO
+        END IF
+
+!  free C version
+
+        CALL galahad_hw_tolology_free( nregions, c_regions )
+        RETURN
+
+        END SUBROUTINE HW_guess_topology
+
+    END MODULE GALAHAD_HW

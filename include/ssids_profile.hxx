@@ -9,7 +9,7 @@
 
 #include "ssids_routines.h"
 #include "ssids_rip.hxx"
-#include "spral_config.h"
+#include "ssids_config.h"
 
 #include <time.h>
 
@@ -30,8 +30,8 @@ extern "C" {
 #include <sched.h>
 #endif /* HAVE_SCHED_GETCPU */
 
-#include "spral_guess_topology.hxx"
-#include "spral_omp.hxx"
+#include "galahad_guess_topology.hxx"
+#include "ssids_omp.hxx"
 
 namespace galahad { namespace ssids {
 
@@ -149,7 +149,7 @@ public:
       addContType("CT_GPU", "CT_NODE", "GPU");
       // ipc_ nnodes = 0;
       // galahad::hw_topology::NumaRegion* nodes;
-      if (!nodes) spral_hw_topology_guess(&nnodes, &nodes);
+      if (!nodes) galahad_hw_topology_guess(&nnodes, &nodes);
       ipc_ core_idx=0;
       for(ipc_ node=0; node<nnodes; ++node) {
          char node_id[100], node_name[100];

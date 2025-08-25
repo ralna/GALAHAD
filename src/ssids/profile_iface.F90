@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 13:20 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-25 AT 13:20 GMT
 
 #include "ssids_routines.h"
 #include "spral_procedures.h"
@@ -106,12 +106,12 @@ MODULE GALAHAD_SSIDS_profile
 contains
 
   SUBROUTINE profile_begin(regions)
-    USE SPRAL_HW_TOPOLOGY, only : numa_region, c_numa_region
+    USE GALAHAD_HW, ONLY : HW_numa_region, HW_c_numa_region
     implicit none
 
-    type(numa_region), dimension(:), intent(in) :: regions
+    type(HW_numa_region), dimension(:), intent(in) :: regions
 
-    type(c_numa_region), dimension(:), pointer, contiguous :: f_regions
+    type(HW_c_numa_region), dimension(:), pointer, contiguous :: f_regions
     integer(c_int) :: nregions
     integer(ip_) :: ngpus
     integer(ip_) :: i

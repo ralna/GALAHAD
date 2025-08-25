@@ -21,8 +21,8 @@
 #include <omp.h>
 #endif /* _OPENMP */
 
-#include "spral_procedures.h"
-#include "spral_compat.hxx"
+#include "ssids_procedures.h"
+#include "ssids_compat.hxx"
 #include "ssids_routines.h"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_BlockPool.hxx"
