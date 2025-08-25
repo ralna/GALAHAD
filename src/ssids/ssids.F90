@@ -8,7 +8,7 @@
 !  COPYRIGHT (c) 2011 The Science and Technology Facilities Council (STFC)
 !  licence: BSD licence, see LICENCE file for details
 !  authors: Jonathan Hogg and Jennifer Scott
-!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
+!  Forked from SPRAL and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
 MODULE GALAHAD_SSIDS_precision
 
@@ -20,20 +20,20 @@ MODULE GALAHAD_SSIDS_precision
 
 !$  USE omp_lib
   USE GALAHAD_KINDS_precision
-  USE SPRAL_HW_TOPOLOGY, only : guess_topology, numa_region
-  USE SPRAL_MATCH_ORDER_precision, ONLY: match_order_metis
-  USE SPRAL_MATRIX_UTIL_precision, ONLY: SPRAL_MATRIX_REAL_SYM_INDEF,          &
-                                         SPRAL_MATRIX_REAL_SYM_PSDEF,          &
-                                         convert_coord_to_cscl,                &
-                                         clean_cscl_oop,                       &
-                                         apply_conversion_map
-  USE SPRAL_SCALING_precision, ONLY: auction_scale_sym, equilib_scale_sym,     &
-                                     hungarian_scale_sym,                      &
-                                     equilib_control_type,                     &
-                                     equilib_inform_type,                      &
-                                     hungarian_control_type,                   &
-                                     hungarian_inform_type
-  USE SPRAL_RAL_BOEING_precision, ONLY: rb_write_options, rb_write
+  USE SPRAL_HW_TOPOLOGY, ONLY: guess_topology, numa_region
+  USE GALAHAD_MU_precision, ONLY: SPRAL_MATRIX_REAL_SYM_INDEF,                 &
+                                  SPRAL_MATRIX_REAL_SYM_PSDEF,                 &
+                                  convert_coord_to_cscl,                       &
+                                  clean_cscl_oop,                              &
+                                  apply_conversion_map
+  USE GALAHAD_MS_precision, ONLY: MS_auction_scale_sym, MS_equilib_scale_sym,  &
+                                  MS_hungarian_scale_sym,                      &
+                                  MS_equilib_control_type,                     &
+                                  MS_equilib_inform_type,                      &
+                                  MS_hungarian_control_type,                   &
+                                  MS_hungarian_inform_type
+  USE GALAHAD_MO_precision, ONLY: MO_match_order_metis
+  USE GALAHAD_RB_precision, ONLY: RB_write_options, RB_write
   USE GALAHAD_NODEND_precision, ONLY: NODEND_half_order, NODEND_control_type,  &
                                       NODEND_inform_type
   USE GALAHAD_SSIDS_analyse_precision, ONLY: analyse_phase, check_order,       &
@@ -381,7 +381,7 @@ CONTAINS
       flag = inform%flag
 
 !  matching-based ordering required; expand the matrix as more efficient to do
-!  it and then call match_order_metis( ) with full matrix supplied
+!  it and then call MO_match_order_metis( ) with full matrix supplied
 
     CASE( 2 )
       IF ( check ) THEN
@@ -391,9 +391,9 @@ CONTAINS
       ELSE
         CALL expand_matrix( n, nz, ptr, row, val, ptr2, row2, val2 )
       END IF
-      CALL match_order_metis( n, ptr2, row2, val2, order2, akeep%scaling,      &
-                              control%nodend_control, inform%nodend_inform,    &
-                              mo_flag, inform%stat )
+      CALL MO_match_order_metis( n, ptr2, row2, val2, order2, akeep%scaling,   &
+                                 control%nodend_control, inform%nodend_inform, &
+                                 mo_flag, inform%stat )
       SELECT CASE( mo_flag )
 
 !  success: do nothing
@@ -756,48 +756,47 @@ CONTAINS
 !  METIS ordering
 
     CASE( 1 )
-       CALL NODEND_half_order( n, akeep%ptr, akeep%row, order2, &
-                              control%nodend_control,  &
-                              inform%nodend_inform )
-       inform%flag = inform%nodend_inform%status
-       st = inform%nodend_inform%alloc_status
-       IF ( inform%flag < 0 ) GO TO 490
-       CALL expand_pattern( n, nz, akeep%ptr, akeep%row, ptr2, row2 )
+      CALL NODEND_half_order( n, akeep%ptr, akeep%row, order2,                 &
+                              control%nodend_control, inform%nodend_inform )
+      inform%flag = inform%nodend_inform%status
+      st = inform%nodend_inform%alloc_status
+      IF ( inform%flag < 0 ) GO TO 490
+      CALL expand_pattern( n, nz, akeep%ptr, akeep%row, ptr2, row2 )
 
 !  matching-based ordering required
 
     CASE( 2 )
-       CALL expand_matrix( n, nz, akeep%ptr, akeep%row, val_clean, ptr2, row2, &
-            val2 )
-       DEALLOCATE ( val_clean,STAT = st )
+      CALL expand_matrix( n, nz, akeep%ptr, akeep%row, val_clean, ptr2, row2,  &
+                          val2 )
+      DEALLOCATE( val_clean,STAT = st )
 
-       CALL match_order_metis( n, ptr2, row2, val2, order2, akeep%scaling,     &
-                               control%nodend_control, inform%nodend_inform,   &
-                               mo_flag, inform%stat )
+      CALL MO_match_order_metis( n, ptr2, row2, val2, order2, akeep%scaling,   &
+                                 control%nodend_control, inform%nodend_inform, &
+                                 mo_flag, inform%stat )
 
-       SELECT CASE( mo_flag )
-       CASE( 0 )
+      SELECT CASE( mo_flag )
+      CASE( 0 )
 
 !  success; do nothing
 
-       CASE( 1 )
+      CASE( 1 )
 
 !  singularity warning required
 
-          inform%flag = SSIDS_WARNING_ANALYSIS_SINGULAR
-       CASE( -1 )
-          inform%flag = SSIDS_ERROR_ALLOCATION
-          akeep%inform = inform
-          CALL inform%print_flag( control, context )
-          RETURN
-       CASE DEFAULT
-          inform%flag = SSIDS_ERROR_UNKNOWN
-          akeep%inform = inform
-          CALL inform%print_flag( control, context )
-          RETURN
-       END SELECT
+        inform%flag = SSIDS_WARNING_ANALYSIS_SINGULAR
+      CASE( -1 )
+        inform%flag = SSIDS_ERROR_ALLOCATION
+        akeep%inform = inform
+        CALL inform%print_flag( control, context )
+        RETURN
+      CASE DEFAULT
+        inform%flag = SSIDS_ERROR_UNKNOWN
+        akeep%inform = inform
+        CALL inform%print_flag( control, context )
+        RETURN
+      END SELECT
 
-       DEALLOCATE( val2,STAT = st )
+      DEALLOCATE( val2, STAT = st )
     END SELECT
 
 !  assess topology: user supplied
@@ -911,14 +910,15 @@ CONTAINS
     INTEGER( ip_ ) :: matrix_type
     REAL( rp_ ), DIMENSION( : ), ALLOCATABLE :: scaling
 
-!  TYPEs related to scaling routines
-    TYPE( hungarian_control_type ) :: hscontrol
-    TYPE( hungarian_inform_type ) :: hsinform
-    TYPE( equilib_control_type ) :: escontrol
-    TYPE( equilib_inform_type ) :: esinform
+!  types related to scaling routines
+
+    TYPE( MS_hungarian_control_type ) :: hscontrol
+    TYPE( MS_hungarian_inform_type ) :: hsinform
+    TYPE( MS_equilib_control_type ) :: escontrol
+    TYPE( MS_equilib_inform_type ) :: esinform
 
     TYPE( omp_settings ) :: user_omp_settings
-    TYPE( rb_WRITE_options ) :: rb_control
+    TYPE( RB_write_options ) :: rb_control
     INTEGER( ip_ ) :: flag
 
 !  Setup for any printing we may require
@@ -993,25 +993,26 @@ CONTAINS
 !                  or    akeep%ptr, akeep%row, val2
 !  hold the lower triangular part of A
 
-!  Dump matrix if required
+!  dump matrix if required
+
     IF ( ALLOCATED( control%rb_dump ) ) THEN
-       WRITE( control%unit_warning,* ) "Dumping matrix to '", control%rb_dump, "'"
-       IF ( akeep%check ) THEN
-          CALL rb_WRITE( control%rb_dump, SPRAL_MATRIX_REAL_SYM_INDEF, &
-               n, n, akeep%ptr, akeep%row, rb_control, flag, val=val2 )
-       ELSE
-          CALL rb_WRITE( control%rb_dump, SPRAL_MATRIX_REAL_SYM_INDEF, &
-               n, n, ptr, row, rb_control, flag, val=val )
-       END IF
-       IF ( flag /= 0 ) THEN
-          inform%flag = SSIDS_ERROR_UNKNOWN
-          GO TO 100
-       END IF
+      WRITE( control%unit_warning, * )                                         &
+        "Dumping matrix to '", control%rb_dump, "'"
+      IF ( akeep%check ) THEN
+        CALL RB_write( control%rb_dump, SPRAL_MATRIX_REAL_SYM_INDEF, n, n,     &
+                       akeep%ptr, akeep%row, rb_control, flag, val = val2 )
+      ELSE
+        CALL RB_write( control%rb_dump, SPRAL_MATRIX_REAL_SYM_INDEF, n, n,     &
+                       ptr, row, rb_control, flag, val = val )
+      END IF
+      IF ( flag /= 0 ) THEN
+        inform%flag = SSIDS_ERROR_UNKNOWN
+        GO TO 100
+      END IF
     END IF
 
-!
-!  Perform scaling if required
-!
+!  perform scaling if required
+
     IF ( ( control%scaling > 0 ) .OR. PRESENT( scale ) ) THEN
        IF ( ALLOCATED( fkeep%scaling ) ) THEN
           IF ( SIZE( fkeep%scaling ) < n ) THEN
@@ -1045,11 +1046,11 @@ CONTAINS
 !  Run Hungarian algorithm
        hscontrol%scale_if_singular = control%action
        IF ( akeep%check ) THEN
-          CALL hungarian_scale_sym( n, akeep%ptr, akeep%row, val2, scaling, &
-               hscontrol, hsinform )
+         CALL MS_hungarian_scale_sym( n, akeep%ptr, akeep%row, val2, scaling,  &
+                                      hscontrol, hsinform )
        ELSE
-          CALL hungarian_scale_sym( n, ptr, row, val, scaling, &
-               hscontrol, hsinform )
+         CALL MS_hungarian_scale_sym( n, ptr, row, val, scaling,               &
+                                      hscontrol, hsinform )
        END IF
        SELECT CASE( hsinform%flag )
        CASE( -1 )
@@ -1078,10 +1079,10 @@ CONTAINS
        IF ( st /= 0 ) GO TO 10
 !  Run auction algorithm
        IF ( akeep%check ) THEN
-          CALL auction_scale_sym( n, akeep%ptr, akeep%row, val2, scaling, &
+          CALL MS_auction_scale_sym( n, akeep%ptr, akeep%row, val2, scaling, &
                control%auction, inform%auction )
        ELSE
-          CALL auction_scale_sym( n, ptr, row, val, scaling, &
+          CALL MS_auction_scale_sym( n, ptr, row, val, scaling, &
                control%auction, inform%auction )
        END IF
        IF ( inform%auction%flag /= 0 ) THEN
@@ -1116,10 +1117,10 @@ CONTAINS
        IF ( st /= 0 ) GO TO 10
 !  Run equilibriation algorithm
        IF ( akeep%check ) THEN
-          CALL equilib_scale_sym( n, akeep%ptr, akeep%row, val2, scaling, &
+          CALL MS_equilib_scale_sym( n, akeep%ptr, akeep%row, val2, scaling, &
                escontrol, esinform )
        ELSE
-          CALL equilib_scale_sym( n, ptr, row, val, scaling, &
+          CALL MS_equilib_scale_sym( n, ptr, row, val, scaling, &
                escontrol, esinform )
        END IF
        IF ( esinform%flag /= 0 ) THEN

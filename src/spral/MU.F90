@@ -1,13 +1,19 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-17 AT 13:40 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-25 AT 09:30 GMT.
 
 #include "spral_procedures.h"
+
+!-*-*-*-*-*-*-*-*-  G A L A H A D _ M U   M O D U L E  *-*-*-*-*-*-*-*-*-*-*-
+
+!      ----------------------------------------------------------------
+!     | Matrix utility package originally spral_matrix_util from SPRAL |
+!      ----------------------------------------------------------------
 
 !  COPYRIGHT (c) 2010, 2013 Science and Technology Facilities Council (STFC)
 !  licence: BSD licence, see LICENCE file for details
 !  authors: Jonathan Hogg, John Reid, Jennifer Scott and Sue Thorne
 !  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
-MODULE SPRAL_MATRIX_UTIL_precision
+MODULE GALAHAD_MU_precision
    USE GALAHAD_KINDS_precision
    IMPLICIT none
 
@@ -3299,4 +3305,5 @@ subroutine half_to_full_int64(n,row,ptr,iw,a,cbase)
 
 end subroutine half_to_full_int64
 
-END MODULE SPRAL_MATRIX_UTIL_precision
+END MODULE GALAHAD_MU_precision
+

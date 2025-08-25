@@ -1,11 +1,19 @@
+! THIS VERSION: GALAHAD 5.3 - 2025-08-22 AT 13:50 GMT
+
 #include "galahad_modules.h"
+
+!  read a matrix and associated data specificed in Rutherford-Boeing format, 
+!  and solve the resulting system using SLS
+
+!  Nick Gould, for GALAHAD productions, 2016
+
   PROGRAM RUNSLS_RB_precision
     USE GALAHAD_KINDS_precision
     USE GALAHAD_CLOCK
     USE GALAHAD_COPYRIGHT
     USE GALAHAD_SPECFILE_precision
     USE GALAHAD_SLS_precision
-    USE SPRAL_RAL_BOEING_precision
+    USE GALAHAD_RB_precision, ONLY: RB_read_options, RB_peek, RB_read
 
     IMPLICIT none
 
@@ -27,7 +35,7 @@
     CHARACTER ( LEN = 8 ) :: identifier
     TYPE ( SMT_type ) :: A
     REAL( rp_ ), DIMENSION( : ), ALLOCATABLE :: X, B
-    TYPE( rb_read_options ) :: options ! control variables
+    TYPE( RB_read_options ) :: options ! control variables
     TYPE ( SLS_data_type ) :: data
     TYPE ( SLS_control_type ) :: SLS_control
     TYPE ( SLS_inform_type ) :: SLS_inform
@@ -83,7 +91,7 @@
 
 !  read header information from the Rutheford-Boeing file
 
-    CALL rb_peek( TRIM( filename ), info, m, n, nelt, nvar, a_ne,              &
+    CALL RB_peek( TRIM( filename ), info, m, n, nelt, nvar, a_ne,              &
                   matrix_type, type_code, title, identifier )
 
 !  check that the file exists and is not faulty
@@ -109,7 +117,7 @@
 !  uper-triangluar CSC = lower triangular CSR
 
     options%lwr_upr_full = 2
-    CALL rb_read( TRIM( filename ), m, n, A%ptr, A%col, A%val, options, info )
+    CALL RB_read( TRIM( filename ), m, n, A%ptr, A%col, A%val, options, info )
     CALL SMT_put( A%type, 'SPARSE_BY_ROWS', info )
     A%n = n
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 14:20 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-23 AT 14:00 GMT
 
 #include "spral_procedures.h"
 
@@ -11,9 +11,9 @@ MODULE GALAHAD_SSIDS_types_precision
   USE GALAHAD_KINDS_precision
 !$  use omp_lib
   USE, INTRINSIC :: iso_c_binding
-  USE SPRAL_SCALING_precision, ONLY : auction_control_type
+  USE GALAHAD_MS_precision, ONLY : MS_auction_control_type
   USE GALAHAD_NODEND_precision, ONLY : NODEND_control_type
-  IMPLICIT none
+  IMPLICIT NONE
 
   PRIVATE
   PUBLIC :: smalloc_type, stack_mem_type, stack_type, thread_stats,            &
@@ -265,7 +265,7 @@ MODULE GALAHAD_SSIDS_types_precision
     INTEGER( ip_ ) :: nstream = 1 ! Number of streams to use
     REAL( rp_ ) :: multiplier = 1.1 ! size to multiply expected memory size by
       ! when doing initial memory allocation to allow for delays.
-    TYPE( auction_control_type ) :: auction ! Auction algorithm parameters
+    TYPE( MS_auction_control_type ) :: auction ! Auction algorithm parameters
     REAL :: min_loadbalance = 0.8 ! Minimum load balance required when
       ! finding level set used for multiple streams
     CHARACTER( len=: ), allocatable :: rb_dump ! Filename to dump matrix in
