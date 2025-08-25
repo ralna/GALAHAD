@@ -243,7 +243,7 @@ SSIDSS = extend basics $(SPRALRBS) \
          $(RLGS)(cholesky_single.o) $(RLGS)(ldlt_app_single.o) \
          $(RLGS)(ldlt_nopiv_single.o) $(RLGS)(ldlt_tpp_single.o) \
          $(RLGS)(wrappers_single.o) \
-         $(RLGS)(ThreadStats.o) $(RLGS)(hw_topology.o) \
+         $(RLGS)(ThreadStats.o) $(RLGS)(hw.o) \
          $(RLGS)(ms_single.o) \
          $(RLGS)(mo_single.o) $(RLGS)(datatypes_single.o) \
          $(RLGS)(inform_single.o) $(RLGS)(contrib_single.o) \
@@ -260,7 +260,7 @@ SSIDSD = extend basics $(SPRALRBD) \
          $(RLGD)(cholesky_double.o) $(RLGD)(ldlt_app_double.o) \
          $(RLGD)(ldlt_nopiv_double.o) $(RLGD)(ldlt_tpp_double.o) \
          $(RLGD)(wrappers_double.o) \
-         $(RLGD)(ThreadStats.o) $(RLGD)(hw_topology.o) \
+         $(RLGD)(ThreadStats.o) $(RLGD)(hw.o) \
          $(RLGD)(ms_double.o) \
          $(RLGD)(mo_double.o) $(RLGD)(datatypes_double.o) \
          $(RLGD)(inform_double.o) $(RLGD)(contrib_double.o) \
@@ -277,7 +277,7 @@ SSIDSQ = extend basics $(SPRALRBQ) \
          $(RLGQ)(cholesky_quadruple.o) $(RLGQ)(ldlt_app_quadruple.o) \
          $(RLGQ)(ldlt_nopiv_quadruple.o) $(RLGQ)(ldlt_tpp_quadruple.o) \
          $(RLGQ)(wrappers_quadruple.o) \
-         $(RLGQ)(ThreadStats.o) $(RLGQ)(hw_topology.o) \
+         $(RLGQ)(ThreadStats.o) $(RLGQ)(hw.o) \
          $(RLGQ)(ms_quadruple.o) \
          $(RLGQ)(mo_quadruple.o) $(RLGQ)(datatypes_quadruple.o) \
          $(RLGQ)(inform_quadruple.o) $(RLGQ)(contrib_quadruple.o) \
@@ -294,7 +294,7 @@ SSIDSS64 = extend basics $(SPRALRBS64) \
          $(RLGS64)(cholesky_single_64.o) $(RLGS64)(ldlt_app_single_64.o) \
          $(RLGS64)(ldlt_nopiv_single_64.o) $(RLGS64)(ldlt_tpp_single_64.o) \
          $(RLGS64)(wrappers_single_64.o) $(RLGS64)(ThreadStats.o) \
-         $(RLGS64)(hw_topology.o) \
+         $(RLGS64)(hw.o) \
          $(RLGS64)(ms_single_64.o) \
          $(RLGS64)(mo_single_64.o) $(RLGS64)(datatypes_single_64.o) \
          $(RLGS64)(inform_single_64.o) $(RLGS64)(contrib_single_64.o) \
@@ -311,7 +311,7 @@ SSIDSD64 = extend basics $(SPRALRBD64) \
          $(RLGD64)(cholesky_double_64.o) $(RLGD64)(ldlt_app_double_64.o) \
          $(RLGD64)(ldlt_nopiv_double_64.o) $(RLGD64)(ldlt_tpp_double_64.o) \
          $(RLGD64)(wrappers_double_64.o) $(RLGD64)(ThreadStats.o) \
-         $(RLGD64)(hw_topology.o) \
+         $(RLGD64)(hw.o) \
          $(RLGD64)(ms_double_64.o) \
          $(RLGD64)(mo_double_64.o) $(RLGD64)(datatypes_double_64.o) \
          $(RLGD64)(inform_double_64.o) $(RLGD64)(contrib_double_64.o) \
@@ -329,7 +329,7 @@ SSIDSQ64 = extend basics $(SPRALRBQ64) \
          $(RLGQ64)(ldlt_nopiv_quadruple_64.o) \
          $(RLGQ64)(ldlt_tpp_quadruple_64.o) \
          $(RLGQ64)(wrappers_quadruple_64.o) $(RLGQ64)(ThreadStats.o) \
-         $(RLGQ64)(hw_topology.o) \
+         $(RLGQ64)(hw.o) \
          $(RLGQ64)(ms_quadruple_64.o) \
          $(RLGQ64)(mo_quadruple_64.o) \
          $(RLGQ64)(datatypes_quadruple_64.o) \
@@ -913,7 +913,7 @@ $(RLG)(rb_$(PRECIS).o): ../spral/rb.F90
 compat.o: $(RLG)(compat.o) 
 
 $(RLG)(compat.o): ../spral/compat.cxx \
-                  $(GALINCLUDE)/spral_compat.hxx
+                  $(GALINCLUDE)/ssids_compat.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "compat  "
 	$(CP) ../spral/compat.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o compat.o $(CXXFLAGSOMP) compat.cxx \
@@ -925,7 +925,7 @@ $(RLG)(compat.o): ../spral/compat.cxx \
 guess_topology.o: $(RLG)(guess_topology.o)
 
 $(RLG)(guess_topology.o): ../spral/guess_topology.cxx \
-                  $(GALINCLUDE)/spral_guess_topology.hxx
+                  $(GALINCLUDE)/galahad_guess_topology.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "guess_topology  "
 	$(CP) ../spral/guess_topology.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o guess_topology.o $(CXXFLAGSOMP) \
@@ -939,7 +939,7 @@ $(RLG)(guess_topology.o): ../spral/guess_topology.cxx \
 
 omp.o: $(RLG)(omp.o)
 
-$(RLG)(omp.o): ../spral/omp.cxx $(GALINCLUDE)/spral_omp.hxx
+$(RLG)(omp.o): ../spral/omp.cxx $(GALINCLUDE)/ssids_omp.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "omp  "
 	$(CP) ../spral/omp.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o omp.o $(CXXFLAGSOMP) \
@@ -1082,15 +1082,15 @@ $(RLG)(ThreadStats.o): ../ssids/ThreadStats.cxx \
                       $(RM) ThreadStats.cxx ThreadStats.o
 	@printf '[ OK ]\n'
 
-hw_topology.o: $(RLG)(hw_topology.o)
+hw.o: $(RLG)(hw.o)
 
-$(RLG)(hw_topology.o): ../spral/hw_topology.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hw_topology  "
-	$(CP) ../spral/hw_topology.F90 $(OBJ)/hw_topology.F90
-	cd $(OBJ) ; $(FORTRAN) -o hw_topology.o $(FFLAGSOMP) hw_topology.F90 \
+$(RLG)(hw.o): ../spral/hw.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hw  "
+	$(CP) ../spral/hw.F90 $(OBJ)/hw.F90
+	cd $(OBJ) ; $(FORTRAN) -o hw.o $(FFLAGSOMP) hw.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o hw_topology.o $(FFLAGSNOMP) hw_topology.F90 )
-	cd $(OBJ) ; $(RARR) hw_topology.o ; $(RM) hw_topology.F90 hw_topology.o
+                    $(FORTRAN) -o hw.o $(FFLAGSNOMP) hw.F90 )
+	cd $(OBJ) ; $(RARR) hw.o ; $(RM) hw.F90 hw.o
 	$(RRMARFILE) ssids_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'

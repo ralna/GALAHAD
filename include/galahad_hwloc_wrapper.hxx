@@ -8,7 +8,7 @@
  *  Implements HwlocTopology wrapper around hwloc library
  */
 #pragma once
-#include "spral_config.h"
+#include "ssids_config.h"
 
 #ifdef HAVE_HWLOC
 #include <vector>

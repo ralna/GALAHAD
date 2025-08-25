@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <cstdio>
 
-#include "spral_config.h"
+#include "ssids_config.h"
 
 #ifndef _OPENMP
 inline int omp_get_thread_num(void) { return 0; }

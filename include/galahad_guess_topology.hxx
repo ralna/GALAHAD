@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
+ *  \version   Nick Gould, fork for GALAHAD 5.3 - 2025-08-25 AT 11:40 GMT
  *
  * \brief
  * Defines NumaRegion struct.
@@ -20,8 +20,8 @@ struct NumaRegion {
 };
 
 extern "C"
-void spral_hw_topology_guess(int* nregions, NumaRegion** regions);
+void galahad_hw_topology_guess(int* nregions, NumaRegion** regions);
 extern "C"
-void spral_hw_topology_free(int nregions, NumaRegion* regions);
+void galahad_hw_topology_free(int nregions, NumaRegion* regions);
 
 }} /* namespace galahad::hw_topology */

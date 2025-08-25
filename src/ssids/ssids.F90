@@ -20,7 +20,7 @@ MODULE GALAHAD_SSIDS_precision
 
 !$  USE omp_lib
   USE GALAHAD_KINDS_precision
-  USE SPRAL_HW_TOPOLOGY, ONLY: guess_topology, numa_region
+  USE GALAHAD_HW, ONLY: HW_guess_topology, HW_numa_region
   USE GALAHAD_MU_precision, ONLY: SPRAL_MATRIX_REAL_SYM_INDEF,                 &
                                   SPRAL_MATRIX_REAL_SYM_PSDEF,                 &
                                   convert_coord_to_cscl,                       &
@@ -132,7 +132,7 @@ CONTAINS
     TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
     INTEGER( ip_ ), OPTIONAL, INTENT( INOUT ) :: order( : )
     REAL( rp_ ), OPTIONAL, INTENT( IN ) :: val( : )
-    TYPE( numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
+    TYPE( HW_numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
 
     INTEGER( i8_ ), DIMENSION( : ), ALLOCATABLE :: ptr64
 
@@ -192,7 +192,7 @@ CONTAINS
     TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
     INTEGER( ip_ ), OPTIONAL, INTENT( INOUT ) :: order( : )
     REAL( rp_ ), OPTIONAL, INTENT( IN ) :: val( : )
-    TYPE( numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
+    TYPE( HW_numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
 
     CHARACTER( LEN = 50 ) :: context !  Procedure name ( used when printing )
     INTEGER( ip_ ) :: mu_flag        !  error flag for matrix_util routines
@@ -430,7 +430,7 @@ CONTAINS
 !  guess it
 
     ELSE
-      CALL guess_topology( akeep%topology, st )
+      CALL HW_guess_topology( akeep%topology, st )
       IF ( st /= 0 ) GO TO 490
     END IF
     CALL squash_topology( akeep%topology, control, st )
@@ -467,14 +467,14 @@ CONTAINS
 !  parameters tell us to ignore.
 
     IMPLICIT none
-    TYPE( numa_region ), DIMENSION( : ), ALLOCATABLE,                          &
-                                         INTENT( INOUT ) :: topology
+    TYPE( HW_numa_region ), DIMENSION( : ), ALLOCATABLE,                       &
+                                            INTENT( INOUT ) :: topology
     TYPE( ssids_control_type ), INTENT( IN ) :: control
     INTEGER( ip_ ), INTENT( OUT ) :: st
 
     LOGICAL :: no_omp
     INTEGER( ip_ ) :: i, j, ngpu
-    TYPE( numa_region ), DIMENSION( : ), ALLOCATABLE :: new_topology
+    TYPE( HS_numa_region ), DIMENSION( : ), ALLOCATABLE :: new_topology
 
     st = 0
 
@@ -610,7 +610,7 @@ CONTAINS
   !  if a matching-based elimination ordering is required
   !  ( control%ordering = 2 ).
   !  If present, val( k ) must hold value of entry in row( k ) and col( k ).
-    TYPE( numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
+    TYPE( HW_numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
   !  user specified topology
 
     INTEGER( long_ ), DIMENSION( : ), ALLOCATABLE :: ptr2 !  col ptrs and row indices
@@ -809,7 +809,7 @@ CONTAINS
 !  guess it
 
     ELSE
-      CALL guess_topology( akeep%topology, st )
+      CALL HW_guess_topology( akeep%topology, st )
       IF ( st /= 0 ) GO TO 490
     END IF
 

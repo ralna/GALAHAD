@@ -2,13 +2,14 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  *
  *  \brief
  *  Implements topology guessing functions.
- *  current version: 2025-03-05
+ *  current version: 2025-08-25
  */
-#include "spral_guess_topology.hxx"
-#include "spral_config.h"
+#include "galahad_guess_topology.hxx"
+#include "ssids_config.h"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -18,8 +19,8 @@
 #include <cuda_runtime_api.h>
 #endif /* HAVE_NVCC */
 
-#include "spral_compat.hxx"
-#include "spral_hwloc_wrapper.hxx"
+#include "ssids_compat.hxx"
+#include "ssids_hwloc_wrapper.hxx"
 
 #include <cstdio> // debug
 
@@ -29,10 +30,10 @@ using namespace galahad::hw_topology;
  * \brief Guess hardware topology (using hwloc if available)
  * \param nregions Number of regions.
  * \param regions[nregions] Array of region descriptors, allocated by this
- *        routine. To free, call spral_hw_topology_free().
+ *        routine. To free, call galahad_hw_topology_free().
  */
 extern "C"
-void spral_hw_topology_guess(int* nregions, NumaRegion** regions) {
+void galahad_hw_topology_guess(int* nregions, NumaRegion** regions) {
 #if HAVE_HWLOC
    // Compiled with hwloc support
    HwlocTopology topology;
@@ -77,12 +78,12 @@ void spral_hw_topology_guess(int* nregions, NumaRegion** regions) {
 }
 
 /**
- * \brief Free hardware topology allocated by spral_hw_topology_guess().
+ * \brief Free hardware topology allocated by galahad_hw_topology_guess().
  * \param nregions Number of regions.
  * \param regions[nregions] Array of region descriptors to free.
  */
 extern "C"
-void spral_hw_topology_free(int nregions, NumaRegion* regions) {
+void galahad_hw_topology_free(int nregions, NumaRegion* regions) {
    for(int i=0; i<nregions; ++i) {
       if(regions[i].gpus)
          delete[] regions[i].gpus;
