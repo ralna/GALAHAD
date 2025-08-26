@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "ssids_rit.hxx"
 #include "ssids_omp.hxx"
 #include "ssids_cpu_AppendAlloc.hxx"
 

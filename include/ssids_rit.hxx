@@ -3,6 +3,8 @@
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Nick Gould
  *  \version   GALAHAD 5.1 - 2024-11-21 AT 10:30 GMT
+ *
+ *  define real and integer types
  */
 
 #include <stdint.h>

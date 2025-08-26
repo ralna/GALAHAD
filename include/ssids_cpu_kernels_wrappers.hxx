@@ -10,7 +10,7 @@
 #include <stdint.h>
 
 #include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "ssids_rit.hxx"
 #include "ssids_cpu_kernels_common.hxx"
 
 namespace galahad { namespace ssids { namespace cpu {

@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 5.3 - 2025-08-15 AT 11:50 GMT
 
-#include "spral_procedures.h"
+#include "ssids_procedures.h"
 
    PROGRAM GALAHAD_SSIDS_test_program
    USE GALAHAD_KINDS_precision

@@ -20,7 +20,7 @@
 #endif /* HAVE_NVCC */
 
 #include "ssids_compat.hxx"
-#include "ssids_hwloc_wrapper.hxx"
+#include "galahad_hwloc_wrapper.hxx"
 
 #include <cstdio> // debug
 

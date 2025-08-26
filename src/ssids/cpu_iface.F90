@@ -6,7 +6,7 @@
 !  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
 #include "galahad_lapack.h"
-#include "spral_procedures.h"
+#include "ssids_procedures.h"
 
 #ifdef REAL_32
 #ifdef INTEGER_64

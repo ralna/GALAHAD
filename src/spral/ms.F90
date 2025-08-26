@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 5.3 - 2025-08-25 AT 09:30 GMT.
 
-#include "spral_procedures.h"
+#include "ssids_procedures.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ M S   M O D U L E  *-*-*-*-*-*-*-*-*-*-*-
 
@@ -16,7 +16,7 @@
       MODULE GALAHAD_MS_precision
 
         USE GALAHAD_KINDS_precision
-        USE GALAHAD_MU_precision, ONLY: half_to_full
+        USE GALAHAD_MU_precision, ONLY: MU_half_to_full
         IMPLICIT NONE
 
         PRIVATE
@@ -854,7 +854,7 @@
           val2( ptr2( i ) : klong - 1 ) = LOG( val2( ptr2( i ) : klong - 1 ) )
         END DO
         ptr2( n + 1 ) = klong
-        IF ( sym ) CALL half_to_full( n, row2, ptr2, iw, a = val2 )
+        IF ( sym ) CALL MU_half_to_full( n, row2, ptr2, iw, a = val2 )
 
 !  compute column maxima
 
@@ -1970,7 +1970,7 @@ improve: DO j = 1, n
             inform%flag = ERROR_ALLOCATION
             RETURN
           END IF
-          CALL half_to_full( n, row2, ptr2, iw, a = val2 )
+          CALL MU_half_to_full( n, row2, ptr2, iw, a = val2 )
         END IF
 
 !  compute column maximums

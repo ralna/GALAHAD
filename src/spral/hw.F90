@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 5.3 - 2025-08-25 AT 10:40 GMT.
 
-#include "spral_procedures.h"
+#include "ssids_procedures.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ H W   M O D U L E  *-*-*-*-*-*-*-*-*-*-*-
 
@@ -130,7 +130,7 @@
 
 !  free C version
 
-        CALL galahad_hw_tolology_free( nregions, c_regions )
+        CALL galahad_hw_topology_free( nregions, c_regions )
         RETURN
 
         END SUBROUTINE HW_guess_topology

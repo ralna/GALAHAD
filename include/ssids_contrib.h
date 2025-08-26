@@ -8,8 +8,8 @@
  *         galahad_ssids_contrib_free modules.
  */
 
-#include "spral_procedures.h"
-#include "ssids_rip.hxx"
+#include "ssids_procedures.h"
+#include "ssids_rit.hxx"
 
 #ifndef GALAHAD_SSIDS_CONTRIB_H
 #define GALAHAD_SSIDS_CONTRIB_H

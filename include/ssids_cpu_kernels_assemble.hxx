@@ -11,7 +11,7 @@
 #include<vector>
 
 #include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "ssids_rit.hxx"
 #include "ssids_contrib.h"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_NumericNode.hxx"

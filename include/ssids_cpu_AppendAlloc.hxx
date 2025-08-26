@@ -12,7 +12,7 @@
 #include <memory>
 
 #include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "ssids_rit.hxx"
 #include "ssids_compat.hxx" // for std::align if required
 
 namespace galahad { namespace ssids { namespace cpu {

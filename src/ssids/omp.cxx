@@ -6,7 +6,7 @@
  *  \brief
  *  Additional support functions and wrappers for OpenMP.
  */
-#include "spral_omp.hxx"
+#include "ssids_omp.hxx"
 
 /* This file wraps the C interface for OpenMP in C++ for style/safety */
 namespace galahad { namespace omp {

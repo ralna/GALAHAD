@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "ssids_rit.hxx"
 #include "ssids_omp.hxx"
 
 namespace galahad { namespace ssids { namespace cpu {

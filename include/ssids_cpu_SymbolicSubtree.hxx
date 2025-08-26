@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 #include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "ssids_rit.hxx"
 #include "ssids_cpu_SmallLeafSymbolicSubtree.hxx"
 #include "ssids_cpu_SymbolicNode.hxx"
 
