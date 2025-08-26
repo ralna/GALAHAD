@@ -244,6 +244,11 @@ make_hash:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hash.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/hash )
 
+make_hw:
+	( cd $(GALAHAD)/src/hw ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hw.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/hw )
+
 make_ir:
 	( cd $(GALAHAD)/src/ir ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ir.o \
@@ -371,10 +376,25 @@ make_miqr:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) miqr.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/miqr )
 
+make_mo:
+	( cd $(GALAHAD)/src/mo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mo.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/mo )
+
 make_mop:
 	( cd $(GALAHAD)/src/mop ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mop.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/mop )
+
+make_ms:
+	( cd $(GALAHAD)/src/ms ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ms.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ms )
+
+make_mu:
+	( cd $(GALAHAD)/src/mu ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mu.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/mu )
 
 make_nlpt:
 	( cd $(GALAHAD)/src/nlpt ; \
@@ -479,6 +499,11 @@ make_rand:
 	( cd $(GALAHAD)/src/rand ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) rand.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rand )
+
+make_rb:
+	( cd $(GALAHAD)/src/rb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) rb.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rb )
 
 make_roots:
 	( cd $(GALAHAD)/src/roots ; \
@@ -986,6 +1011,11 @@ make_all_hash:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hash_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/hash )
 
+make_all_hw:
+	( cd $(GALAHAD)/src/hw ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hw_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/hw )
+
 make_all_ir:
 	( cd $(GALAHAD)/src/ir ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ir_silent \
@@ -1071,10 +1101,25 @@ make_all_miqr:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) miqr_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/miqr )
 
+make_all_mo:
+	( cd $(GALAHAD)/src/mo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mo_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/mo )
+
 make_all_mop:
 	( cd $(GALAHAD)/src/mop ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mop_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/mop )
+
+make_all_ms:
+	( cd $(GALAHAD)/src/ms ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ms_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ms )
+
+make_all_mu:
+	( cd $(GALAHAD)/src/mu ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mu_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/mu )
 
 make_all_nlpt:
 	( cd $(GALAHAD)/src/nlpt ; \
@@ -1167,6 +1212,11 @@ make_all_rand:
 	( cd $(GALAHAD)/src/rand ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) rand_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rand )
+
+make_all_rb:
+	( cd $(GALAHAD)/src/rb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) rb_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rb )
 
 make_all_roots:
 	( cd $(GALAHAD)/src/roots ; \
