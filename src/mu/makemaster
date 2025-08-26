@@ -1,0 +1,75 @@
+#  Main body of the installation makefile for the GALAHAD MU package
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2025-08-26
+
+#  include standard GALAHAD makefile defaults before package-specifics
+
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = mu
+PACKAGE = MU
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_kinds
+
+#  other packages that depend on package
+
+DEPENDS = rb
+
+#  auxiliary packages that the C interface to the current package depends
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = 
+
+#  other C interface packages that depend on current interface package
+
+CDEPENDS =
+
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES =
+
+#  other python interface packages that depend on current interface package
+
+PYDEPENDS =
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test)
+
+TESTS =
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE =
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+
+include $(GALAHAD)/src/makedefs/intermediaries

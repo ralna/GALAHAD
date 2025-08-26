@@ -229,12 +229,12 @@ RSSIDSCDTF64 = $(OBJD64)/ssidsctf_double_64.o -L$(OBJD64) $(CLIBS)
 RSSIDSCQT64 = $(OBJQ64)/ssidsct_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 RSSIDSCQTF64 = $(OBJQ64)/ssidsctf_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 
-SPRALRBS = $(RLGS)(mu_single.o) $(RLGS)(rb_single.o)
-SPRALRBD = $(RLGD)(mu_double.o) $(RLGD)(rb_double.o)
-SPRALRBQ = $(RLGQ)(mu_quadruple.o) $(RLGQ)(rb_quadruple.o)
-SPRALRBS64 = $(RLGS64)(mu_single_64.o) $(RLGS64)(rb_single_64.o)
-SPRALRBD64 = $(RLGD64)(mu_double_64.o) $(RLGD64)(rb_double_64.o)
-SPRALRBQ64 = $(RLGQ64)(mu_quadruple_64.o) $(RLGQ64)(rb_quadruple_64.o)
+SPRALRBS = mu rb
+SPRALRBD = mu rb
+SPRALRBQ = mu rb
+SPRALRBS64 = mu rb
+SPRALRBD64 = mu rb
+SPRALRBQ64 = mu rb
 
 SSIDSS = basics $(SPRALRBS) \
          $(RLGS)(compat.o) $(RLGS)(guess_topology.o) \
@@ -253,7 +253,7 @@ SSIDSS = basics $(SPRALRBS) \
          $(RLGS)(analyse_single.o) $(RLGS)(fkeep_single.o) \
          $(RLGS)(contrib_free_single.o) $(RLGS)(ssids_single.o)
 
-SSIDSD = basics $(SPRALRBD) \
+SSIDSD = basics $(SPRALRBD) ms mo \
          $(RLGD)(compat.o) $(RLGD)(guess_topology.o) \
          $(RLGD)(omp.o) $(RLGD)(profile.o) $(RLGD)(SymbolicSubtree.o) \
          $(RLGD)(NumericSubtree_double.o) \
@@ -261,8 +261,7 @@ SSIDSD = basics $(SPRALRBD) \
          $(RLGD)(ldlt_nopiv_double.o) $(RLGD)(ldlt_tpp_double.o) \
          $(RLGD)(wrappers_double.o) \
          $(RLGD)(ThreadStats.o) $(RLGD)(hw.o) \
-         $(RLGD)(ms_double.o) \
-         $(RLGD)(mo_double.o) $(RLGD)(datatypes_double.o) \
+         $(RLGD)(datatypes_double.o) \
          $(RLGD)(inform_double.o) $(RLGD)(contrib_double.o) \
          $(RLGD)(subtree_double.o) $(RLGD)(akeep_double.o) \
          $(RLGD)(cpu_iface_double.o) $(RLGD)(cpu_subtree_double.o) \
@@ -875,6 +874,18 @@ extend:
 basics:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+mo:
+	( cd ../mo ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mo_silent PRECIS=$(PRECIS) PWD=$(PWD)/../mo )
+ms:
+	( cd ../ms ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ms_silent PRECIS=$(PRECIS) PWD=$(PWD)/../ms )
+mu:
+	( cd ../mu ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mu_silent PRECIS=$(PRECIS) PWD=$(PWD)/../mu )
+rb:
+	( cd ../rb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            rb_silent PRECIS=$(PRECIS) PWD=$(PWD)/../rb )
 
 #  individual compilations
 

@@ -27,7 +27,6 @@
                                     SSIDS_MATRIX_REAL_SYM_INDEF,               &
                                     SSIDS_MATRIX_REAL_SKEW,                    &
                                     MU_half_to_full                       
-
     USE GALAHAD_RAND_precision, ONLY: RAND_random_state_lcg,                   &
                                       RAND_random_real_lcg
     IMPLICIT none
