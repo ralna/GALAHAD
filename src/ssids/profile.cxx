@@ -6,7 +6,7 @@
  */
 
 #include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "ssids_rit.hxx"
 #include "ssids_profile.hxx"
 
 #ifdef PROFILE

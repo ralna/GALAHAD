@@ -16,7 +16,7 @@
 #endif
 
 #include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "ssids_rit.hxx"
 
 #if defined(__AVX2__) || defined(__AVX__)
 #include <immintrin.h>

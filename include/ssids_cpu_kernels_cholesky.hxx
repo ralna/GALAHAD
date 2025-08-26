@@ -6,7 +6,7 @@
  */
 
 #include "ssids_routines.h"
-#include "ssids_rip.hxx"
+#include "ssids_rit.hxx"
 
 namespace galahad { namespace ssids { namespace cpu {
 

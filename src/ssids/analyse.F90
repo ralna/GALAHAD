@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 5.3 - 2025-08-25 AT 15:20 GMT
 
-#include "spral_procedures.h"
+#include "ssids_procedures.h"
 
 !  COPYRIGHT (c) 2010-2016 The Science and Technology Facilities Council (STFC)
 !  licence: BSD licence, see LICENCE file for details

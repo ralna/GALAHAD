@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 5.3 - 2025-08-14 AT 12:10 GMT
 
-#include "spral_procedures.h"
+#include "ssids_procedures.h"
 
 ! This is dummy file compiled when there is no CUDA support
 

@@ -1,7 +1,7 @@
 ! THIS VERSION: GALAHAD 5.3 - 2025-08-25 AT 13:20 GMT
 
 #include "ssids_routines.h"
-#include "spral_procedures.h"
+#include "ssids_procedures.h"
 
 !  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)
 !  authors: Jonathan Hogg and Florent Lopez

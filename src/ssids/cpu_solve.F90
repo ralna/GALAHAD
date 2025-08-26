@@ -1,7 +1,7 @@
 ! THIS VERSION: GALAHAD 5.1 - 2024-11-21 AT 09:40 GMT.
 
 #include "galahad_blas.h"
-#include "spral_procedures.h"
+#include "ssids_procedures.h"
 
 #ifdef GALAHAD_BLAS
 #ifdef REAL_32

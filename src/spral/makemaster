@@ -236,7 +236,7 @@ SPRALRBS64 = $(RLGS64)(mu_single_64.o) $(RLGS64)(rb_single_64.o)
 SPRALRBD64 = $(RLGD64)(mu_double_64.o) $(RLGD64)(rb_double_64.o)
 SPRALRBQ64 = $(RLGQ64)(mu_quadruple_64.o) $(RLGQ64)(rb_quadruple_64.o)
 
-SSIDSS = extend basics $(SPRALRBS) \
+SSIDSS = basics $(SPRALRBS) \
          $(RLGS)(compat.o) $(RLGS)(guess_topology.o) \
          $(RLGS)(omp.o) $(RLGS)(profile.o) $(RLGS)(SymbolicSubtree.o) \
          $(RLGS)(NumericSubtree_single.o) \
@@ -253,7 +253,7 @@ SSIDSS = extend basics $(SPRALRBS) \
          $(RLGS)(analyse_single.o) $(RLGS)(fkeep_single.o) \
          $(RLGS)(contrib_free_single.o) $(RLGS)(ssids_single.o)
 
-SSIDSD = extend basics $(SPRALRBD) \
+SSIDSD = basics $(SPRALRBD) \
          $(RLGD)(compat.o) $(RLGD)(guess_topology.o) \
          $(RLGD)(omp.o) $(RLGD)(profile.o) $(RLGD)(SymbolicSubtree.o) \
          $(RLGD)(NumericSubtree_double.o) \
@@ -270,7 +270,7 @@ SSIDSD = extend basics $(SPRALRBD) \
          $(RLGD)(analyse_double.o) $(RLGD)(fkeep_double.o) \
          $(RLGD)(contrib_free_double.o) $(RLGD)(ssids_double.o)
 
-SSIDSQ = extend basics $(SPRALRBQ) \
+SSIDSQ = basics $(SPRALRBQ) \
          $(RLGQ)(compat.o) $(RLGQ)(guess_topology.o) \
          $(RLGQ)(omp.o) $(RLGQ)(profile.o) $(RLGQ)(SymbolicSubtree.o) \
          $(RLGQ)(NumericSubtree_quadruple.o) \
@@ -287,7 +287,7 @@ SSIDSQ = extend basics $(SPRALRBQ) \
          $(RLGQ)(analyse_quadruple.o) $(RLGQ)(fkeep_quadruple.o) \
          $(RLGQ)(contrib_free_quadruple.o) $(RLGQ)(ssids_quadruple.o)
 
-SSIDSS64 = extend basics $(SPRALRBS64) \
+SSIDSS64 = basics $(SPRALRBS64) \
          $(RLGS64)(compat.o) $(RLGS64)(guess_topology.o) \
          $(RLGS64)(omp.o) $(RLGS64)(profile.o) \
          $(RLGS64)(SymbolicSubtree.o) $(RLGS64)(NumericSubtree_single_64.o) \
@@ -304,7 +304,7 @@ SSIDSS64 = extend basics $(SPRALRBS64) \
          $(RLGS64)(analyse_single_64.o) $(RLGS64)(fkeep_single_64.o) \
          $(RLGS64)(contrib_free_single_64.o) $(RLGS64)(ssids_single_64.o)
 
-SSIDSD64 = extend basics $(SPRALRBD64) \
+SSIDSD64 = basics $(SPRALRBD64) \
          $(RLGD64)(compat.o) $(RLGD64)(guess_topology.o) \
          $(RLGD64)(omp.o) $(RLGD64)(profile.o) \
          $(RLGD64)(SymbolicSubtree.o) $(RLGD64)(NumericSubtree_double_64.o) \
@@ -321,7 +321,7 @@ SSIDSD64 = extend basics $(SPRALRBD64) \
          $(RLGD64)(analyse_double_64.o) $(RLGD64)(fkeep_double_64.o) \
          $(RLGD64)(contrib_free_double_64.o) $(RLGD64)(ssids_double_64.o)
 
-SSIDSQ64 = extend basics $(SPRALRBQ64) \
+SSIDSQ64 = basics $(SPRALRBQ64) \
          $(RLGQ64)(compat.o) $(RLGQ64)(guess_topology.o) \
          $(RLGQ64)(omp.o) $(RLGQ64)(profile.o) \
          $(RLGQ64)(SymbolicSubtree.o) $(RLGQ64)(NumericSubtree_quadruple_64.o) \
@@ -939,9 +939,9 @@ $(RLG)(guess_topology.o): ../spral/guess_topology.cxx \
 
 omp.o: $(RLG)(omp.o)
 
-$(RLG)(omp.o): ../spral/omp.cxx $(GALINCLUDE)/ssids_omp.hxx
+$(RLG)(omp.o): ../ssids/omp.cxx $(GALINCLUDE)/ssids_omp.hxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "omp  "
-	$(CP) ../spral/omp.cxx $(OBJ)/
+	$(CP) ../ssids/omp.cxx $(OBJ)/
 	cd $(OBJ) ; $(CXX) -I. -o omp.o $(CXXFLAGSOMP) \
           omp.cxx \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \

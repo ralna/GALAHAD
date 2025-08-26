@@ -1,7 +1,7 @@
 ! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 13:10 GMT
 ! (consistent with SPRAL up to issue #250)
 
-#include "spral_procedures.h"
+#include "ssids_procedures.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ S S I D S   M O D U L E  *-*-*-*-*-*-*-*-*-
 
@@ -21,11 +21,11 @@ MODULE GALAHAD_SSIDS_precision
 !$  USE omp_lib
   USE GALAHAD_KINDS_precision
   USE GALAHAD_HW, ONLY: HW_guess_topology, HW_numa_region
-  USE GALAHAD_MU_precision, ONLY: SPRAL_MATRIX_REAL_SYM_INDEF,                 &
-                                  SPRAL_MATRIX_REAL_SYM_PSDEF,                 &
-                                  convert_coord_to_cscl,                       &
-                                  clean_cscl_oop,                              &
-                                  apply_conversion_map
+  USE GALAHAD_MU_precision, ONLY: SSIDS_MATRIX_REAL_SYM_INDEF,                 &
+                                  SSIDS_MATRIX_REAL_SYM_PSDEF,                 &
+                                  MU_convert_coord_to_cscl,                    &
+                                  MU_clean_cscl_oop,                           &
+                                  MU_apply_conversion_map
   USE GALAHAD_MS_precision, ONLY: MS_auction_scale_sym, MS_equilib_scale_sym,  &
                                   MS_hungarian_scale_sym,                      &
                                   MS_equilib_control_type,                     &
@@ -290,13 +290,13 @@ CONTAINS
       IF ( st /= 0 ) GO TO 490
 
       IF ( PRESENT( val ) ) THEN
-        CALL clean_cscl_oop( SPRAL_MATRIX_REAL_SYM_INDEF, n, n, ptr, row,      &
+        CALL MU_clean_cscl_oop( SSIDS_MATRIX_REAL_SYM_INDEF, n, n, ptr, row,   &
                              akeep%ptr, akeep%row, mu_flag, val_in = val,      &
                              val_out = val_clean, lmap = akeep%lmap,           &
                              map = akeep%map, noor = inform%matrix_outrange,   &
                              ndup = inform%matrix_dup )
       ELSE
-        CALL clean_cscl_oop( SPRAL_MATRIX_REAL_SYM_INDEF, n, n, ptr, row,      &
+        CALL MU_clean_cscl_oop( SSIDS_MATRIX_REAL_SYM_INDEF, n, n, ptr, row,   &
                              akeep%ptr, akeep%row, mu_flag, lmap = akeep%lmap, &
                              map = akeep%map, noor = inform%matrix_outrange,   &
                              ndup = inform%matrix_dup )
@@ -474,7 +474,7 @@ CONTAINS
 
     LOGICAL :: no_omp
     INTEGER( ip_ ) :: i, j, ngpu
-    TYPE( HS_numa_region ), DIMENSION( : ), ALLOCATABLE :: new_topology
+    TYPE( HW_numa_region ), DIMENSION( : ), ALLOCATABLE :: new_topology
 
     st = 0
 
@@ -698,12 +698,12 @@ CONTAINS
     IF ( st /= 0 ) GO TO 490
 
     IF ( PRESENT( val ) ) THEN
-       CALL convert_coord_to_cscl( SPRAL_MATRIX_REAL_SYM_INDEF, n, n, ne, row,  &
+       CALL MU_convert_coord_to_cscl( SSIDS_MATRIX_REAL_SYM_INDEF, n, n, ne, row,  &
             col, akeep%ptr, akeep%row, mu_flag, val_in=val, val_out=val_clean, &
             lmap=akeep%lmap, map=akeep%map,                                    &
             noor=inform%matrix_outrange,  ndup=inform%matrix_dup )
     ELSE
-       CALL convert_coord_to_cscl( SPRAL_MATRIX_REAL_SYM_INDEF, n, n, ne, row,  &
+       CALL MU_convert_coord_to_cscl( SSIDS_MATRIX_REAL_SYM_INDEF, n, n, ne, row,  &
             col, akeep%ptr, akeep%row, mu_flag, lmap=akeep%lmap, map=akeep%map,&
             noor=inform%matrix_outrange, ndup=inform%matrix_dup )
     END IF
@@ -967,9 +967,9 @@ CONTAINS
 
     fkeep%pos_def = posdef
     IF ( posdef ) THEN
-       matrix_type = SPRAL_MATRIX_REAL_SYM_PSDEF
+       matrix_type = SSIDS_MATRIX_REAL_SYM_PSDEF
     ELSE
-       matrix_type = SPRAL_MATRIX_REAL_SYM_INDEF
+       matrix_type = SSIDS_MATRIX_REAL_SYM_INDEF
     END IF
 
 !  If matrix has been checked, produce a clean version of val in val2
@@ -977,8 +977,8 @@ CONTAINS
        nz = akeep%ptr( n + 1 ) - 1
        ALLOCATE( val2( nz ),STAT = st )
        IF ( st /= 0 ) GO TO 10
-       CALL apply_conversion_map( matrix_type, akeep%lmap, akeep%map, val, &
-            nz, val2 )
+       CALL MU_apply_conversion_map( matrix_type, akeep%lmap, akeep%map, val, &
+                                     nz, val2 )
     ELSE
 !  analyse run with no checking so must have ptr and row present
        IF ( .NOT. PRESENT( ptr ) ) inform%flag = SSIDS_ERROR_PTR_ROW
@@ -999,10 +999,10 @@ CONTAINS
       WRITE( control%unit_warning, * )                                         &
         "Dumping matrix to '", control%rb_dump, "'"
       IF ( akeep%check ) THEN
-        CALL RB_write( control%rb_dump, SPRAL_MATRIX_REAL_SYM_INDEF, n, n,     &
+        CALL RB_write( control%rb_dump, SSIDS_MATRIX_REAL_SYM_INDEF, n, n,     &
                        akeep%ptr, akeep%row, rb_control, flag, val = val2 )
       ELSE
-        CALL RB_write( control%rb_dump, SPRAL_MATRIX_REAL_SYM_INDEF, n, n,     &
+        CALL RB_write( control%rb_dump, SSIDS_MATRIX_REAL_SYM_INDEF, n, n,     &
                        ptr, row, rb_control, flag, val = val )
       END IF
       IF ( flag /= 0 ) THEN
@@ -1180,7 +1180,6 @@ CONTAINS
        END IF
        CALL inform%print_flag( control, context )
     END IF
-WRITE( 99,* ) ' c'
 
     IF ( ( control%print_level >= 1 ) .AND. &
         ( control%unit_diagnostics >= 0 ) ) THEN

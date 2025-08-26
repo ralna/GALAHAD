@@ -1,7 +1,7 @@
 ! THIS VERSION: GALAHAD 5.3 - 2025-08-22 AT 15:20 GMT.
 
 !#include "galahad_modules.h"
-#include "spral_procedures.h"
+#include "ssids_procedures.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ R B   M O D U L E  *-*-*-*-*-*-*-*-*-*-*-
 
@@ -20,7 +20,14 @@
   MODULE GALAHAD_RB_precision
 
     USE GALAHAD_KINDS_precision
-    USE GALAHAD_MU_precision
+    USE GALAHAD_MU_precision, ONLY: SSIDS_MATRIX_UNSPECIFIED,                  &
+                                    SSIDS_MATRIX_REAL_RECT,                    &
+                                    SSIDS_MATRIX_REAL_UNSYM,                   &
+                                    SSIDS_MATRIX_REAL_SYM_PSDEF,               &
+                                    SSIDS_MATRIX_REAL_SYM_INDEF,               &
+                                    SSIDS_MATRIX_REAL_SKEW,                    &
+                                    MU_half_to_full                       
+
     USE GALAHAD_RAND_precision, ONLY: RAND_random_state_lcg,                   &
                                       RAND_random_real_lcg
     IMPLICIT none
@@ -389,7 +396,7 @@
 
     TYPE( RAND_random_state_lcg ) :: state2
 
-!  work array used by half_to_full
+!  work array used by MU_half_to_full
 
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: iw_h2f 
 
@@ -571,7 +578,7 @@
          .AND. symmetric .AND. options%lwr_upr_full == TRI_FULL ) THEN
       ALLOCATE( iw_h2f( n ),stat = st )
       IF ( st /= 0 ) GO TO 200
-      CALL half_to_full( n, rcptr, ptr, iw_h2f )
+      CALL MU_half_to_full( n, rcptr, ptr, iw_h2f )
       expanded = .TRUE.
     ELSE
       expanded = .FALSE.
@@ -634,14 +641,14 @@
         IF ( st /= 0 ) GO TO 200
         IF ( .NOT. expanded ) THEN
           IF ( ALLOCATED( val ) ) THEN
-            CALL half_to_full( n, rcptr, ptr, iw_h2f, a = val )
+            CALL MU_half_to_full( n, rcptr, ptr, iw_h2f, a = val )
           ELSE
-            CALL half_to_full( n, rcptr, ptr, iw_h2f )
+            CALL MU_half_to_full( n, rcptr, ptr, iw_h2f )
           END IF
           expanded = .TRUE.
 
-!  half_to_full doesn't cope with skew symmetry, need to flip -ve all entries 
-!  in the upper triangle
+!  MU_half_to_full doesn't cope with skew symmetry, need to flip -ve all
+!  entries in the upper triangle
 
           IF ( skew .AND. ALLOCATED( val ) )                                   &
             CALL sym_to_skew( n, ptr, row, val )
@@ -1162,17 +1169,17 @@
     INTEGER( ip_ ), INTENT( IN ) :: matrix_type
 
     SELECT CASE ( matrix_type )
-    CASE( SPRAL_MATRIX_UNSPECIFIED )
+    CASE( SSIDS_MATRIX_UNSPECIFIED )
       matrix_type_to_sym = "r"
-    CASE( SPRAL_MATRIX_REAL_RECT )
+    CASE( SSIDS_MATRIX_REAL_RECT )
       matrix_type_to_sym = "r"
-    CASE( SPRAL_MATRIX_REAL_UNSYM )
+    CASE( SSIDS_MATRIX_REAL_UNSYM )
       matrix_type_to_sym = "u"
-    CASE( SPRAL_MATRIX_REAL_SYM_PSDEF )
+    CASE( SSIDS_MATRIX_REAL_SYM_PSDEF )
       matrix_type_to_sym = "s"
-    CASE( SPRAL_MATRIX_REAL_SYM_INDEF )
+    CASE( SSIDS_MATRIX_REAL_SYM_INDEF )
       matrix_type_to_sym = "s"
-    CASE( SPRAL_MATRIX_REAL_SKEW )
+    CASE( SSIDS_MATRIX_REAL_SKEW )
       matrix_type_to_sym = "z"
     END SELECT
     RETURN
@@ -1190,18 +1197,33 @@
 
     SELECT CASE ( sym )
     CASE( "r" )
-      sym_to_matrix_type = SPRAL_MATRIX_REAL_RECT
+      sym_to_matrix_type = SSIDS_MATRIX_REAL_RECT
     CASE( "s" )
-      sym_to_matrix_type = SPRAL_MATRIX_REAL_SYM_INDEF
+      sym_to_matrix_type = SSIDS_MATRIX_REAL_SYM_INDEF
     CASE( "u" )
-      sym_to_matrix_type = SPRAL_MATRIX_REAL_UNSYM
+      sym_to_matrix_type = SSIDS_MATRIX_REAL_UNSYM
     CASE( "z" )
-      sym_to_matrix_type = SPRAL_MATRIX_REAL_SKEW
+      sym_to_matrix_type = SSIDS_MATRIX_REAL_SKEW
     CASE DEFAULT !  this should never happen
-      sym_to_matrix_type = SPRAL_MATRIX_UNSPECIFIED
+      sym_to_matrix_type = SSIDS_MATRIX_UNSPECIFIED
     END SELECT
     RETURN
 
     END FUNCTION sym_to_matrix_type
 
   END MODULE GALAHAD_RB_precision
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

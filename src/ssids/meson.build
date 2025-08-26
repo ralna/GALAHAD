@@ -1,5 +1,6 @@
 if build_ssids
-  libgalahad_cpp_src += files('cholesky.cxx', 'ldlt_app.cxx', 'ldlt_nopiv.cxx',
+  libgalahad_cpp_src += files('omp.cxx', 'cholesky.cxx', 
+                              'ldlt_app.cxx', 'ldlt_nopiv.cxx',
                               'ldlt_tpp.cxx', 'NumericSubtree.cxx', 
                               'profile.cxx',  'SymbolicSubtree.cxx', 
                               'ThreadStats.cxx', 'wrappers.cxx')
