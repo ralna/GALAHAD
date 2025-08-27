@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for dummy and basic GALAHAD packages
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2025-03-11
+#  This version: 2025-08-27
 
 #  include standard GALAHAD makefile definitions
 
@@ -297,20 +297,20 @@ $(HCLG)(dummy_hsl_c_$(PRECIS).o): ../dum/dummy_hsl_c.F90
 
 #  dummy_spral package
 
-dummy_spral_silent: $(RLG)(dummy_spral_$(PRECIS).o)
-dummy_spral: $(RLG)(dummy_spral_$(PRECIS).o)
+dummy_spral_silent: $(DRLG)(dummy_spral_$(PRECIS).o)
+dummy_spral: $(DRLG)(dummy_spral_$(PRECIS).o)
 	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
 
-dummy_spral.o: $(RLG)(dummy_spral_$(PRECIS).o)
+dummy_spral.o: $(DRLG)(dummy_spral_$(PRECIS).o)
 
-$(RLG)(dummy_spral_$(PRECIS).o): ../dum/dummy_spral.F90
+$(DRLG)(dummy_spral_$(PRECIS).o): ../dum/dummy_spral.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_spral"
 	$(CP) ../dum/dummy_spral.F90 $(OBJ)/dummy_spral.F90
 	cd $(OBJ); $(FORTRAN) -o dummy_spral_$(PRECIS).o \
                      $(FFLAGSS) dummy_spral.F90
-	cd $(OBJ); $(RARR) dummy_spral_$(PRECIS).o ; \
+	cd $(OBJ); $(DRARR) dummy_spral_$(PRECIS).o ; \
           $(RM) dummy_spral.F90 dummy_spral_$(PRECIS).o
-	$(RANLIB) $(RLG)
+	$(RANLIB) $(DRLG)
 	@printf '[ OK ]\n'
 
 #  blas_inter package

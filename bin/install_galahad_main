@@ -523,7 +523,7 @@ if [[ "$HSL" == "" ]]; then
   HSL="-lhsl"
 fi
 if [[ "$SPRAL" == "" ]]; then
-  SPRAL="-lgalahad_spral"
+  SPRAL=""
 fi
 if [[ "$METISVERSION" == "" ]]; then
   METISVERSION="52"

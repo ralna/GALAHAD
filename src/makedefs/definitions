@@ -328,13 +328,21 @@ PYLGS64 = $(OBJS64)/libgalahad_py.a
 PYLGD64 = $(OBJD64)/libgalahad_py.a
 PYLGQ64 = $(OBJQ64)/libgalahad_py.a
 
-RLG  = $(OBJ)/libgalahad_spral.a
-RLGS = $(OBJS)/libgalahad_spral.a
-RLGD = $(OBJD)/libgalahad_spral.a
-RLGQ = $(OBJQ)/libgalahad_spral.a
-RLGS64 = $(OBJS64)/libgalahad_spral.a
-RLGD64 = $(OBJD64)/libgalahad_spral.a
-RLGQ64 = $(OBJQ64)/libgalahad_spral.a
+DRLG  = $(OBJ)/libgalahad_spral.a
+DRLGS = $(OBJS)/libgalahad_spral.a
+DRLGD = $(OBJD)/libgalahad_spral.a
+DRLGQ = $(OBJQ)/libgalahad_spral.a
+DRLGS64 = $(OBJS64)/libgalahad_spral.a
+DRLGD64 = $(OBJD64)/libgalahad_spral.a
+DRLGQ64 = $(OBJQ64)/libgalahad_spral.a
+
+RLG  = $(OBJ)/libgalahad.a
+RLGS = $(OBJS)/libgalahad.a
+RLGD = $(OBJD)/libgalahad.a
+RLGQ = $(OBJQ)/libgalahad.a
+RLGS64 = $(OBJS64)/libgalahad.a
+RLGD64 = $(OBJD64)/libgalahad.a
+RLGQ64 = $(OBJQ64)/libgalahad.a
 
 ULG  = $(OBJ)/libgalahad_umfpack.a
 ULGS = $(OBJS)/libgalahad_umfpack.a
@@ -417,8 +425,11 @@ PYARR = $(AR) $(ARREPFLAGS) $(PYLG)
 PYRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PYLG)
 PYRMARFILES = $(GALAHAD)/bin/rmpyarfiles $(AR) $(GREP) $(PYLG)
 
-RARR = $(AR) $(ARREPFLAGS) $(RLG)
-RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(RLG)
+DRARR = $(AR) $(ARREPFLAGS) $(DRLG)
+DRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(DRLG)
+
+RARR = $(AR) $(ARREPFLAGS) $(LG)
+RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
 
 UARR = $(AR) $(ARREPFLAGS) $(ULG)
 URMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(ULG)
