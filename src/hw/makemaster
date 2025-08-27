@@ -1,0 +1,275 @@
+#  Main body of the installation makefile for the GALAHAD HW package
+#  SPRAL HW_TOPOLOGY was developed as part of SPRAL by Jonathan Hogg 
+#  (now at Apple) and is available under a BSD licence as part of GALAHAD
+
+#  Nick Gould, for GALAHAD production
+#  This version: 2025-08-27
+
+SHELL = /bin/$(BINSHELL)
+
+ifeq "$(PRECIS)" "single_64"
+  DPREC = -DREAL_32 -DINTEGER_64 $(QUADREAL)
+  METIS_64 = _64
+else ifeq "$(PRECIS)" "quadruple_64"
+  DPREC = -DREAL_128 -DINTEGER_64 $(QUADREAL)
+  METIS_64 = _64
+else ifeq "$(PRECIS)" "double_64"
+  DPREC = -DINTEGER_64 $(QUADREAL)
+  METIS_64 = _64
+else ifeq "$(PRECIS)" "single"
+  DPREC = -DREAL_32 $(QUADREAL)
+  METIS_64 =
+else ifeq "$(PRECIS)" "quadruple"
+  DPREC = -DREAL_128 $(QUADREAL)
+  METIS_64 =
+else
+  DPREC = $(QUADREAL)
+  METIS_64 =
+endif
+
+ifeq "$(HWLOC)" "un"
+ DHWLOC = -DSPRAL_NO_HWLOC
+else
+ DHWLOC = -DSPRAL_HAVE_HWLOC
+endif
+
+ifeq "$(GETCPU)" "un"
+ DGETCPU = -DSPRAL_NO_SCHED_GETCPU
+else
+ DGETCPU = -DSPRAL_HAVE_SCHED_GETCPU
+endif
+
+ifeq "$(MULTIVERSIONS)" "yes"
+  MULTI = -DMULTIPRECISION
+else
+  MULTI = 
+endif
+
+CPPDEFINES = $(DPREC) $(MULTI)
+
+GALINCLUDE = $(GALAHAD)/include
+
+VALGRIND = -v --tool=memcheck --leak-check=full --show-reachable=yes \
+--track-origins=yes -s
+
+#  compiler flags
+
+FFLAGS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+         $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGSS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
+          $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGSN = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
+          $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGS77 = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
+           $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
+            $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(SOMP) $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGSNOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
+             $(SOMP) $(CPPDEFINES) -I $(GALINCLUDE)
+
+#  C compiler flags
+
+CFLAGS     = $(CCBASIC) $(OPTIMIZATION) $(CCDEBUG) \
+              $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
+CFLAGSN    = $(CCBASIC) $(NOOPTIMIZATION) $(CCDEBUG) \
+              $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
+
+#  C++ compiler flags
+
+CXXFLAGSOMP   = $(CXXBASIC) $(OPTIMIZATION) $(CXXDEBUG) $(SOMP) \
+                 $(CPPDEFINES) $(DHWLOC) $(DGETCPU) -I $(GALINCLUDE)
+CXXFLAGSNOMP  = $(CXXBASIC) $(NOOPTIMIZATION) $(CXXDEBUG) $(SOMP) \
+                 $(CPPDEFINES) $(DHWLOC) $(DGETCPU) -I $(GALINCLUDE)
+
+#  CUDA compiler flags
+
+#CUDAFLAGS   = -arch=$(CUDAARCH) -code=$(CUDACODE) $(CUDABASIC) \
+#                $(OPTIMIZATION) -I $(GALINCLUDE)
+#CUDAFLAGSN  = -arch=$(CUDAARCH) -code=$(CUDACODE) $(CUDABASIC) \
+#               $(NOOPTIMIZATION)  -I$(GALINCLUDE)
+
+CUDAFLAGS = $(CUDABASIC) $(CUDAOPTIMIZATION) -I$(GALINCLUDE)
+CUDAFLAGSN = $(CUDABASIC) $(CUDANOOPTIMIZATION) -I$(GALINCLUDE)
+
+#  linking and run flags
+
+RUNFFLAGS     = $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSCUDA = $(OPTIMIZATION) $(MODULES)
+RUNFFLAGSOMP  = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(SOMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+LGQ = $(OBJQ)/libgalahad.a
+LGS64 = $(OBJS64)/libgalahad.a
+LGD64 = $(OBJD64)/libgalahad.a
+LGQ64 = $(OBJQ64)/libgalahad.a
+
+#CLG  = $(OBJ)/libgalahad_c.a
+#CLGS = $(OBJS)/libgalahad_c.a
+#CLGD = $(OBJD)/libgalahad_c.a
+#CLGQ = $(OBJQ)/libgalahad_c.a
+#CLGS64 = $(OBJS64)/libgalahad_c.a
+#CLGD64 = $(OBJD64)/libgalahad_c.a
+#CLGQ64 = $(OBJQ64)/libgalahad_c.a
+
+CLG  = $(OBJ)/libgalahad.a
+CLGS = $(OBJS)/libgalahad.a
+CLGD = $(OBJD)/libgalahad.a
+CLGQ = $(OBJQ)/libgalahad.a
+CLGS64 = $(OBJS64)/libgalahad.a
+CLGD64 = $(OBJD64)/libgalahad.a
+CLGQ64 = $(OBJQ64)/libgalahad.a
+
+#  Libraries used
+
+ifeq "$(METIS_64)" "_64"
+  LIBS = -L$(OBJ) $(SPRAL) $(METIS64) $(LAPACK) $(BLAS) \
+          -lgalahad $(METIS64) $(HSL)
+else
+  LIBS = -L$(OBJ) $(SPRAL) $(METIS) $(LAPACK) $(BLAS) \
+         -lgalahad $(METIS) $(HSL)
+endif
+
+PLIBS = $(LIBS) -lgalahad_problem
+CLIBS = -lgalahad_c -lhsl_c $(LIBS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+#CARR = $(AR) $(ARREPFLAGS) $(CLG)
+#CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
+
+CARR = $(AR) $(ARREPFLAGS) $(LG)
+CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+
+RARR = $(AR) $(ARREPFLAGS) $(RLG)
+RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(RLG)
+
+#  strings
+
+SUCC = precision version) compiled successfully
+
+#  compilation agenda
+
+HWS = kinds $(CLGS)(compat.o) $(CLGS)(guess_topology.o) $(LGS)(hw.o)
+HWD = kinds $(CLGD)(compat.o) $(CLGD)(guess_topology.o) $(LGD)(hw.o)
+HWQ = kinds $(CLGQ)(compat.o) $(CLGQ)(guess_topology.o) $(LGQ)(hw.o)
+HWS64 = kinds $(CLGS64)(compat.o) $(CLGS64)(guess_topology.o) $(LGS64)(hw.o)
+HWD64 = kinds $(CLGD64)(compat.o) $(CLGD64)(guess_topology.o) $(LGD64)(hw.o)
+HWQ64 = kinds $(CLGQ64)(compat.o) $(CLGQ64)(guess_topology.o) $(LGQ64)(hw.o)
+
+#  main compilations and runs
+
+all: hw
+
+# hw
+
+hw_silent: hw_silent_$(PRECIS)
+hw_silent_single: $(HWS)
+	$(RANLIB) $(LGS)
+	$(RANLIB) $(CLGS)
+hw_silent_double: $(HWD)
+	$(RANLIB) $(LGD)
+	$(RANLIB) $(CLGD)
+hw_silent_quadruple: $(HWQ)
+	$(RANLIB) $(LGQ)
+	$(RANLIB) $(CLGQ)
+hw_silent_single_64: $(HWS64)
+	$(RANLIB) $(LGS64)
+	$(RANLIB) $(CLGS64)
+hw_silent_double_64: $(HWD64)
+	$(RANLIB) $(LGD64)
+	$(RANLIB) $(CLGD64)
+hw_silent_quadruple_64: $(HWQ64)
+	$(RANLIB) $(LGQ64)
+	$(RANLIB) $(CLGQ64)
+
+hw: hw_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: HW ($(PRECIS) $(SUCC)"
+hw_single: $(HWS)
+	$(RANLIB) $(LGS)
+hw_double: $(HWD)
+	$(RANLIB) $(LGD)
+hw_quadruple: $(HWQ)
+	$(RANLIB) $(LGQ)
+hw_single_64: $(HWS64)
+	$(RANLIB) $(LGS64)
+hw_double_64: $(HWD64)
+	$(RANLIB) $(LGD64)
+hw_quadruple_64: $(HWQ64)
+	$(RANLIB) $(LGQ64)
+
+#  basic packages
+
+kinds:
+	( cd ../kinds ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+             kinds_silent PRECIS=$(PRECIS) PWD=$(PWD)/../kinds )
+
+#  individual compilations
+
+compat.o: $(CLG)(compat.o) 
+
+$(CLG)(compat.o): ../hw/compat.cxx \
+                  $(GALINCLUDE)/ssids_compat.hxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "compat  "
+	$(CP) ../hw/compat.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o compat.o $(CXXFLAGSOMP) compat.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o compat.o $(CXXFLAGSNCOMP) compat.cxx )
+	cd $(OBJ) ; $(CARR) compat.o ; $(RM) compat.cxx compat.o
+	@printf '[ OK ]\n'
+
+guess_topology.o: $(CLG)(guess_topology.o)
+
+$(CLG)(guess_topology.o): ../hw/guess_topology.cxx \
+                  $(GALINCLUDE)/galahad_guess_topology.hxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "guess_topology  "
+	$(CP) ../hw/guess_topology.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o guess_topology.o $(CXXFLAGSOMP) \
+          guess_topology.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o guess_topology.o $(CXXFLAGSNOMP) \
+                      guess_topology.cxx )
+	cd $(OBJ) ; $(CARR) guess_topology.o ; \
+          $(RM) guess_topology.cxx guess_topology.o
+	@printf '[ OK ]\n'
+
+hw.o: $(LG)(hw.o)
+
+$(LG)(hw.o): ../hw/hw.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hw  "
+	$(CP) ../hw/hw.F90 $(OBJ)/hw.F90
+	cd $(OBJ) ; $(FORTRAN) -o hw.o $(FFLAGSOMP) hw.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o hw.o $(FFLAGSNOMP) hw.F90 )
+	cd $(OBJ) ; $(ARR) hw.o ; $(RM) hw.F90 hw.o
+	$(RRMARFILE) ssids_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s %-15s\t\t' "Cleaning $(PRECIS) precision hw"
+	$(RM) $(LGS) $(LGD) $(OBJ)/hw*.o $(OBJ)/libgalahad.a \
+                            $(OBJ)/libgalahad_c.a $(MOD)/galahad*
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' \
+          "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmhw:
+	@printf ' %-9s %-15s\t\t' "Removing" "hw from archive "
+	$(RRMARFILE) hw_$(PRECIS).o
+	@printf '[ OK ]\n'

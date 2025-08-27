@@ -2,11 +2,11 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  Nick Gould, fork for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
+ *  Nick Gould, fork from SPRAL for GALAHAD 5.3 - 2025-08-17 AT 09:00 GMT
  *
  *  \brief
  *  Implements topology guessing functions.
- *  current version: 2025-08-25
+ *  current version: 2025-08-27
  */
 #include "galahad_guess_topology.hxx"
 #include "ssids_config.h"
