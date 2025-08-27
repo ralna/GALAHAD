@@ -6,10 +6,9 @@
  *
  * \brief
  * Implements compatability functions depending on the value of autoconf macros.
- *  current version: 2025-08-25
+ *  current version: 2025-08-27
  */
 #include "ssids_compat.hxx"
-
 #include "ssids_config.h"
 
 #ifdef GALAHAD_HAVE_HWLOC

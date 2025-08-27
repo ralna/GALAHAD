@@ -93,7 +93,7 @@ ifeq "$(HSL_64)" "_64"
             $(METIS64) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
 else
   LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
-             $(METIS)  $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
+             $(METIS)  $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS) -lgalahad
 endif
 PLIBS = $(LIBS) -lgalahad_problem
 CLIBS = -lgalahad_c -lhsl_c $(LIBS)
