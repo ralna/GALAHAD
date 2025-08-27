@@ -1,0 +1,1331 @@
+#  Main body of the installation makefile for the SPRAL SSIDS package
+#  SPRAL SSIDS was developed as part of SPRAL by Jonathan Hogg (now at Apple)
+#  and is available under a BSD licence as part of GALAHAD
+
+#  Nick Gould, for GALAHAD production
+#  This version: 2025-08-27
+
+SHELL = /bin/$(BINSHELL)
+
+ifeq "$(PRECIS)" "single_64"
+  DPREC = -DREAL_32 -DINTEGER_64 $(QUADREAL)
+  METIS_64 = _64
+else ifeq "$(PRECIS)" "quadruple_64"
+  DPREC = -DREAL_128 -DINTEGER_64 $(QUADREAL)
+  METIS_64 = _64
+else ifeq "$(PRECIS)" "double_64"
+  DPREC = -DINTEGER_64 $(QUADREAL)
+  METIS_64 = _64
+else ifeq "$(PRECIS)" "single"
+  DPREC = -DREAL_32 $(QUADREAL)
+  METIS_64 =
+else ifeq "$(PRECIS)" "quadruple"
+  DPREC = -DREAL_128 $(QUADREAL)
+  METIS_64 =
+else
+  DPREC = $(QUADREAL)
+  METIS_64 =
+endif
+
+ifeq "$(HWLOC)" "un"
+ DHWLOC = -DSPRAL_NO_HWLOC
+else
+ DHWLOC = -DSPRAL_HAVE_HWLOC
+endif
+
+ifeq "$(GETCPU)" "un"
+ DGETCPU = -DSPRAL_NO_SCHED_GETCPU
+else
+ DGETCPU = -DSPRAL_HAVE_SCHED_GETCPU
+endif
+
+ifeq "$(MULTIVERSIONS)" "yes"
+  MULTI = -DMULTIPRECISION
+else
+  MULTI = 
+endif
+
+CPPDEFINES = $(DPREC) $(MULTI)
+
+GALINCLUDE = $(GALAHAD)/include
+
+VALGRIND = -v --tool=memcheck --leak-check=full --show-reachable=yes \
+--track-origins=yes -s
+
+#  compiler flags
+
+FFLAGS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+         $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGSS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
+          $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGSN = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
+          $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGS77 = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
+           $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
+            $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(SOMP) $(CPPDEFINES) -I $(GALINCLUDE)
+FFLAGSNOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
+             $(SOMP) $(CPPDEFINES) -I $(GALINCLUDE)
+
+#  C compiler flags
+
+CFLAGS     = $(CCBASIC) $(OPTIMIZATION) $(CCDEBUG) \
+              $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
+CFLAGSN    = $(CCBASIC) $(NOOPTIMIZATION) $(CCDEBUG) \
+              $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
+
+#  C++ compiler flags
+
+CXXFLAGSOMP   = $(CXXBASIC) $(OPTIMIZATION) $(CXXDEBUG) $(SOMP) \
+                 $(CPPDEFINES) $(DHWLOC) $(DGETCPU) -I $(GALINCLUDE)
+CXXFLAGSNOMP  = $(CXXBASIC) $(NOOPTIMIZATION) $(CXXDEBUG) $(SOMP) \
+                 $(CPPDEFINES) $(DHWLOC) $(DGETCPU) -I $(GALINCLUDE)
+
+#  CUDA compiler flags
+
+#CUDAFLAGS   = -arch=$(CUDAARCH) -code=$(CUDACODE) $(CUDABASIC) \
+#                $(OPTIMIZATION) -I $(GALINCLUDE)
+#CUDAFLAGSN  = -arch=$(CUDAARCH) -code=$(CUDACODE) $(CUDABASIC) \
+#               $(NOOPTIMIZATION)  -I$(GALINCLUDE)
+
+CUDAFLAGS = $(CUDABASIC) $(CUDAOPTIMIZATION) -I$(GALINCLUDE)
+CUDAFLAGSN = $(CUDABASIC) $(CUDANOOPTIMIZATION) -I$(GALINCLUDE)
+
+#  linking and run flags
+
+RUNFFLAGS     = $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSCUDA = $(OPTIMIZATION) $(MODULES)
+RUNFFLAGSOMP  = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(SOMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+LGQ = $(OBJQ)/libgalahad.a
+LGS64 = $(OBJS64)/libgalahad.a
+LGD64 = $(OBJD64)/libgalahad.a
+LGQ64 = $(OBJQ64)/libgalahad.a
+
+CLG  = $(OBJ)/libgalahad_c.a
+CLGS = $(OBJS)/libgalahad_c.a
+CLGD = $(OBJD)/libgalahad_c.a
+CLGQ = $(OBJQ)/libgalahad_c.a
+CLGS64 = $(OBJS64)/libgalahad_c.a
+CLGD64 = $(OBJD64)/libgalahad_c.a
+CLGQ64 = $(OBJQ64)/libgalahad_c.a
+
+#RLG  = $(OBJ)/libgalahad_spral.a
+#RLGS = $(OBJS)/libgalahad_spral.a
+#RLGD = $(OBJD)/libgalahad_spral.a
+#RLGQ = $(OBJQ)/libgalahad_spral.a
+#RLGS64 = $(OBJS64)/libgalahad_spral.a
+#RLGD64 = $(OBJD64)/libgalahad_spral.a
+#RLGQ64 = $(OBJQ64)/libgalahad_spral.a
+
+RLG  = $(OBJ)/libgalahad.a
+RLGS = $(OBJS)/libgalahad.a
+RLGD = $(OBJD)/libgalahad.a
+RLGQ = $(OBJQ)/libgalahad.a
+RLGS64 = $(OBJS64)/libgalahad.a
+RLGD64 = $(OBJD64)/libgalahad.a
+RLGQ64 = $(OBJQ64)/libgalahad.a
+
+#  Libraries used
+
+ifeq "$(METIS_64)" "_64"
+# LIBS = -L$(OBJ) $(METIS64) $(LAPACK64) $(BLAS64) -lgalahad $(METIS64) $(HSL)
+  LIBS = -L$(OBJ)  -lgalahad $(SPRAL) $(METIS64) $(LAPACK) $(BLAS) \
+          $(METIS64) $(HSL) 
+else
+  LIBS = -L$(OBJ) -lgalahad $(SPRAL) $(METIS) $(LAPACK) $(BLAS) \
+         $(METIS) $(HSL)
+endif
+
+PLIBS = $(LIBS) -lgalahad_problem
+CLIBS = -lgalahad_c -lhsl_c $(LIBS)
+
+#  Archive manipulation strings
+
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+#RARR = $(AR) $(ARREPFLAGS) $(RLG)
+#RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(RLG)
+
+RARR = $(AR) $(ARREPFLAGS) $(LG)
+RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+
+CARR = $(AR) $(ARREPFLAGS) $(CLG)
+CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
+
+#  sed scripts
+
+BLASLAPACKSEDS = $(GALAHAD)/seds/blaslapack_$(PRECIS).sed
+
+#  strings
+
+SUCC = precision version) compiled successfully
+
+#  compilation agenda
+
+SSIDSSS = $(SSIDSS) $(OBJS)/ssidss_single.o
+SSIDSDS = $(SSIDSD) $(OBJD)/ssidss_double.o
+SSIDSQS = $(SSIDSQ) $(OBJQ)/ssidss_quadruple.o
+SSIDSST = $(SSIDSS) $(OBJS)/ssidst_single.o
+SSIDSST2 = $(SSIDSS) $(OBJS)/ssidst2_single.o
+SSIDSDT = $(SSIDSD) $(OBJD)/ssidst_double.o
+SSIDSDT2 = $(SSIDSD) $(OBJD)/ssidst2_double.o
+SSIDSQT = $(SSIDSQ) $(OBJQ)/ssidst_quadruple.o
+SSIDSQT2 = $(SSIDSQ) $(OBJQ)/ssidst2_quadruple.o
+
+SSIDSSS64 = $(SSIDSS64) $(OBJS64)/ssidss_single_64.o
+SSIDSDS64 = $(SSIDSD64) $(OBJD64)/ssidss_double_64.o
+SSIDSQS64 = $(SSIDSQ64) $(OBJQ64)/ssidss_quadruple_64.o
+SSIDSST64 = $(SSIDSS64) $(OBJS64)/ssidst_single_64.o
+SSIDSST264 = $(SSIDSS64) $(OBJS64)/ssidst2_single_64.o
+SSIDSDT64 = $(SSIDSD64) $(OBJD64)/ssidst_double_64.o
+SSIDSDT264 = $(SSIDSD64) $(OBJD64)/ssidst2_double_64.o
+SSIDSQT64 = $(SSIDSQ64) $(OBJQ64)/ssidst_quadruple_64.o
+SSIDSQT264 = $(SSIDSQ64) $(OBJQ64)/ssidst2_quadruple_64.o
+
+RSSIDSSS = $(OBJS)/ssidss_single.o -L$(OBJS) $(SPRAL) $(LIBS)
+RSSIDSDS = $(OBJD)/ssidss_double.o -L$(OBJD) $(SPRAL) $(LIBS)
+RSSIDSQS = $(OBJQ)/ssidss_quadruple.o -L$(OBJQ) $(SPRAL) $(LIBS)
+RSSIDSST = $(OBJS)/ssidst_single.o -L$(OBJS) $(SPRAL) $(LIBS)
+RSSIDSST2 = $(OBJS)/ssidst2_single.o -L$(OBJS) $(SPRAL) $(LIBS)
+RSSIDSDT = $(OBJD)/ssidst_double.o -L$(OBJD) $(SPRAL) $(LIBS)
+RSSIDSDT2 = $(OBJD)/ssidst2_double.o -L$(OBJD) $(SPRAL) $(LIBS)
+RSSIDSQT = $(OBJQ)/ssidst_quadruple.o -L$(OBJQ) $(SPRAL) $(LIBS)
+RSSIDSQT2 = $(OBJQ)/ssidst2_quadruple.o -L$(OBJQ) $(SPRAL) $(LIBS)
+
+RSSIDSSS64 = $(OBJS64)/ssidss_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
+RSSIDSDS64 = $(OBJD64)/ssidss_double_64.o -L$(OBJD64) $(SPRAL) $(LIBS)
+RSSIDSQS64 = $(OBJQ64)/ssidss_quadruple_64.o -L$(OBJQ64) $(SPRAL) $(LIBS)
+RSSIDSST64 = $(OBJS64)/ssidst_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
+RSSIDSST264 = $(OBJS64)/ssidst2_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
+RSSIDSDT64 = $(OBJD64)/ssidst_double_64.o -L$(OBJD64) $(SPRAL) $(LIBS)
+RSSIDSDT264 = $(OBJD64)/ssidst2_double_64.o -L$(OBJD64) $(SPRAL) $(LIBS)
+RSSIDSQT64 = $(OBJQ64)/ssidst_quadruple_64.o -L$(OBJQ64) $(SPRAL) $(LIBS)
+RSSIDSQT264 = $(OBJQ64)/ssidst2_quadruple_64.o -L$(OBJQ64) $(SPRAL) $(LIBS)
+
+#  test agenda for C interfaces
+
+SSIDSCST = $(SSIDSS) $(TESTDEPS) $(OBJS)/ssidsct_single.o
+SSIDSCDT = $(SSIDSD) $(TESTDEPS) $(OBJD)/ssidsct_double.o
+SSIDSCQT = $(SSIDSQ) $(TESTDEPS) $(OBJQ)/ssidsct_quadruple.o
+SSIDSCST64 = $(SSIDSS64) $(TESTDEPS) $(OBJS64)/ssidsct_single_64.o
+SSIDSCDT64 = $(SSIDSD64) $(TESTDEPS) $(OBJD64)/ssidsct_double_64.o
+SSIDSCQT64 = $(SSIDSQ64) $(TESTDEPS) $(OBJQ64)/ssidsct_quadruple_64.o
+
+SSIDSCSTF = $(SSIDSS) $(TESTDEPS) $(OBJS)/ssidsctf_single.o
+SSIDSCDTF = $(SSIDSD) $(TESTDEPS) $(OBJD)/ssidsctf_double.o
+SSIDSCQTF = $(SSIDSQ) $(TESTDEPS) $(OBJQ)/ssidsctf_quadruple.o
+SSIDSCSTF64 = $(SSIDSS64) $(TESTDEPS) $(OBJS64)/ssidsctf_single_64.o
+SSIDSCDTF64 = $(SSIDSD64) $(TESTDEPS) $(OBJD64)/ssidsctf_double_64.o
+SSIDSCQTF64 = $(SSIDCQ64) $(TESTDEPS) $(OBJQ64)/ssidsctf_quadruple_64.o
+
+RSSIDSCST = $(OBJS)/ssidsct_single.o -L$(OBJS) $(CLIBS)
+RSSIDSCSTF = $(OBJS)/ssidsctf_single.o -L$(OBJS) $(CLIBS)
+RSSIDSCDT = $(OBJD)/ssidsct_double.o -L$(OBJD) $(CLIBS)
+RSSIDSCDTF = $(OBJD)/ssidsctf_double.o -L$(OBJD) $(CLIBS)
+RSSIDSCQT = $(OBJQ)/ssidsct_quadruple.o -L$(OBJQ) $(CLIBS)
+RSSIDSCQTF = $(OBJQ)/ssidsctf_quadruple.o -L$(OBJQ) $(CLIBS)
+RSSIDSCST64 = $(OBJS64)/ssidsct_single_64.o -L$(OBJS64) $(CLIBS)
+RSSIDSCSTF64 = $(OBJS64)/ssidsctf_single_64.o -L$(OBJS64) $(CLIBS)
+RSSIDSCDT64 = $(OBJD64)/ssidsct_double_64.o -L$(OBJD64) $(CLIBS)
+RSSIDSCDTF64 = $(OBJD64)/ssidsctf_double_64.o -L$(OBJD64) $(CLIBS)
+RSSIDSCQT64 = $(OBJQ64)/ssidsct_quadruple_64.o -L$(OBJQ64) $(CLIBS)
+RSSIDSCQTF64 = $(OBJQ64)/ssidsctf_quadruple_64.o -L$(OBJQ64) $(CLIBS)
+
+SPRALRBS = mu rb
+SPRALRBD = mu rb
+SPRALRBQ = mu rb
+SPRALRBS64 = mu rb
+SPRALRBD64 = mu rb
+SPRALRBQ64 = mu rb
+
+SSIDSS = basics $(SPRALRBS) ms mo hw \
+         $(RLGS)(omp.o) $(RLGS)(profile.o) $(RLGS)(SymbolicSubtree.o) \
+         $(RLGS)(NumericSubtree_single.o) \
+         $(RLGS)(cholesky_single.o) $(RLGS)(ldlt_app_single.o) \
+         $(RLGS)(ldlt_nopiv_single.o) $(RLGS)(ldlt_tpp_single.o) \
+         $(RLGS)(wrappers_single.o) \
+         $(RLGS)(ThreadStats.o) \
+         $(RLGS)(datatypes_single.o) \
+         $(RLGS)(inform_single.o) $(RLGS)(contrib_single.o) \
+         $(RLGS)(subtree_single.o) $(RLGS)(akeep_single.o) \
+         $(RLGS)(cpu_iface_single.o) $(RLGS)(cpu_subtree_single.o) \
+         $(RLGS)(profile_iface.o) $(RLGS)(gpu_subtree_no_cuda_single.o) \
+         $(RLGS)(analyse_single.o) $(RLGS)(fkeep_single.o) \
+         $(RLGS)(contrib_free_single.o) $(RLGS)(ssids_single.o)
+
+SSIDSD = basics $(SPRALRBD) ms mo hw \
+         $(RLGD)(omp.o) $(RLGD)(profile.o) $(RLGD)(SymbolicSubtree.o) \
+         $(RLGD)(NumericSubtree_double.o) \
+         $(RLGD)(cholesky_double.o) $(RLGD)(ldlt_app_double.o) \
+         $(RLGD)(ldlt_nopiv_double.o) $(RLGD)(ldlt_tpp_double.o) \
+         $(RLGD)(wrappers_double.o) \
+         $(RLGD)(ThreadStats.o) \
+         $(RLGD)(datatypes_double.o) \
+         $(RLGD)(inform_double.o) $(RLGD)(contrib_double.o) \
+         $(RLGD)(subtree_double.o) $(RLGD)(akeep_double.o) \
+         $(RLGD)(cpu_iface_double.o) $(RLGD)(cpu_subtree_double.o) \
+         $(RLGD)(profile_iface.o) $(RLGD)(gpu_subtree_no_cuda_double.o) \
+         $(RLGD)(analyse_double.o) $(RLGD)(fkeep_double.o) \
+         $(RLGD)(contrib_free_double.o) $(RLGD)(ssids_double.o)
+
+SSIDSQ = basics $(SPRALRBQ) ms mo hw \
+         $(RLGQ)(omp.o) $(RLGQ)(profile.o) $(RLGQ)(SymbolicSubtree.o) \
+         $(RLGQ)(NumericSubtree_quadruple.o) \
+         $(RLGQ)(cholesky_quadruple.o) $(RLGQ)(ldlt_app_quadruple.o) \
+         $(RLGQ)(ldlt_nopiv_quadruple.o) $(RLGQ)(ldlt_tpp_quadruple.o) \
+         $(RLGQ)(wrappers_quadruple.o) \
+         $(RLGQ)(ThreadStats.o) \
+         $(RLGQ)(datatypes_quadruple.o) \
+         $(RLGQ)(inform_quadruple.o) $(RLGQ)(contrib_quadruple.o) \
+         $(RLGQ)(subtree_quadruple.o) $(RLGQ)(akeep_quadruple.o) \
+         $(RLGQ)(cpu_iface_quadruple.o) $(RLGQ)(cpu_subtree_quadruple.o) \
+         $(RLGQ)(profile_iface.o) $(RLGQ)(gpu_subtree_no_cuda_quadruple.o) \
+         $(RLGQ)(analyse_quadruple.o) $(RLGQ)(fkeep_quadruple.o) \
+         $(RLGQ)(contrib_free_quadruple.o) $(RLGQ)(ssids_quadruple.o)
+
+SSIDSS64 = basics $(SPRALRBS64) ms mo hw \
+         $(RLGS64)(omp.o) $(RLGS64)(profile.o) \
+         $(RLGS64)(SymbolicSubtree.o) $(RLGS64)(NumericSubtree_single_64.o) \
+         $(RLGS64)(cholesky_single_64.o) $(RLGS64)(ldlt_app_single_64.o) \
+         $(RLGS64)(ldlt_nopiv_single_64.o) $(RLGS64)(ldlt_tpp_single_64.o) \
+         $(RLGS64)(wrappers_single_64.o) $(RLGS64)(ThreadStats.o) \
+         $(RLGS64)(datatypes_single_64.o) \
+         $(RLGS64)(inform_single_64.o) $(RLGS64)(contrib_single_64.o) \
+         $(RLGS64)(subtree_single_64.o) $(RLGS64)(akeep_single_64.o) \
+         $(RLGS64)(cpu_iface_single_64.o) $(RLGS64)(cpu_subtree_single_64.o) \
+         $(RLGS64)(profile_iface.o) $(RLGS64)(gpu_subtree_no_cuda_single_64.o) \
+         $(RLGS64)(analyse_single_64.o) $(RLGS64)(fkeep_single_64.o) \
+         $(RLGS64)(contrib_free_single_64.o) $(RLGS64)(ssids_single_64.o)
+
+SSIDSD64 = basics $(SPRALRBD64) ms mo hw \
+         $(RLGD64)(omp.o) $(RLGD64)(profile.o) \
+         $(RLGD64)(SymbolicSubtree.o) $(RLGD64)(NumericSubtree_double_64.o) \
+         $(RLGD64)(cholesky_double_64.o) $(RLGD64)(ldlt_app_double_64.o) \
+         $(RLGD64)(ldlt_nopiv_double_64.o) $(RLGD64)(ldlt_tpp_double_64.o) \
+         $(RLGD64)(wrappers_double_64.o) $(RLGD64)(ThreadStats.o) \
+         $(RLGD64)(datatypes_double_64.o) \
+         $(RLGD64)(inform_double_64.o) $(RLGD64)(contrib_double_64.o) \
+         $(RLGD64)(subtree_double_64.o) $(RLGD64)(akeep_double_64.o) \
+         $(RLGD64)(cpu_iface_double_64.o) $(RLGD64)(cpu_subtree_double_64.o) \
+         $(RLGD64)(profile_iface.o) $(RLGD64)(gpu_subtree_no_cuda_double_64.o) \
+         $(RLGD64)(analyse_double_64.o) $(RLGD64)(fkeep_double_64.o) \
+         $(RLGD64)(contrib_free_double_64.o) $(RLGD64)(ssids_double_64.o)
+
+SSIDSQ64 = basics $(SPRALRBQ64) ms mo hw \
+         $(RLGQ64)(omp.o) $(RLGQ64)(profile.o) \
+         $(RLGQ64)(SymbolicSubtree.o) $(RLGQ64)(NumericSubtree_quadruple_64.o) \
+         $(RLGQ64)(cholesky_quadruple_64.o) $(RLGQ64)(ldlt_app_quadruple_64.o) \
+         $(RLGQ64)(ldlt_nopiv_quadruple_64.o) \
+         $(RLGQ64)(ldlt_tpp_quadruple_64.o) \
+         $(RLGQ64)(wrappers_quadruple_64.o) $(RLGQ64)(ThreadStats.o) \
+         $(RLGQ64)(datatypes_quadruple_64.o) \
+         $(RLGQ64)(inform_quadruple_64.o) $(RLGQ64)(contrib_quadruple_64.o) \
+         $(RLGQ64)(subtree_quadruple_64.o) $(RLGQ64)(akeep_quadruple_64.o) \
+         $(RLGQ64)(cpu_iface_quadruple_64.o) \
+         $(RLGQ64)(cpu_subtree_quadruple_64.o) \
+         $(RLGQ64)(profile_iface.o) \
+         $(RLGQ64)(gpu_subtree_no_cuda_quadruple_64.o) \
+         $(RLGQ64)(analyse_quadruple_64.o) $(RLGQ64)(fkeep_quadruple_64.o) \
+         $(RLGQ64)(contrib_free_quadruple_64.o) $(RLGQ64)(ssids_quadruple_64.o)
+
+SSIDSCS = $(SSIDSS) $(CLGS)(ssids_ciface_single.o)
+SSIDSCD = $(SSIDSD) $(CLGD)(ssids_ciface_double.o)
+SSIDSCQ = $(SSIDSQ) $(CLGQ)(ssids_ciface_quadruple.o)
+SSIDSCS64 = $(SSIDSS64) $(CLGS64)(ssids_ciface_single_64.o)
+SSIDSCD64 = $(SSIDSD64) $(CLGD64)(ssids_ciface_double_64.o)
+SSIDSCQ64 = $(SSIDSQ64) $(CLGQ64)(ssids_ciface_quadruple_64.o)
+
+#  main compilations and runs
+
+all: ssids
+
+# ssids
+
+ssids_silent: ssids_silent_$(PRECIS)
+ssids_silent_single: $(SSIDSS)
+	$(RANLIB) $(RLGS)
+ssids_silent_double: $(SSIDSD)
+	$(RANLIB) $(RLGD)
+ssids_silent_quadruple: $(SSIDSQ)
+	$(RANLIB) $(RLGQ)
+ssids_silent_single_64: $(SSIDSS64)
+	$(RANLIB) $(RLGS64)
+ssids_silent_double_64: $(SSIDSD64)
+	$(RANLIB) $(RLGD64)
+ssids_silent_quadruple_64: $(SSIDSQ64)
+	$(RANLIB) $(RLGQ64)
+
+ssids: ssids_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SSIDS ($(PRECIS) $(SUCC)"
+ssids_single: $(SSIDSS)
+	$(RANLIB) $(RLGS)
+ssids_double: $(SSIDSD)
+	$(RANLIB) $(RLGD)
+ssids_quadruple: $(SSIDSQ)
+	$(RANLIB) $(RLGQ)
+ssids_single_64: $(SSIDSS64)
+	$(RANLIB) $(RLGS64)
+ssids_double_64: $(SSIDSD64)
+	$(RANLIB) $(RLGD64)
+ssids_quadruple_64: $(SSIDSQ64)
+	$(RANLIB) $(RLGQ64)
+
+ssids_ciface: ssids_ciface_$(PRECIS)
+	@printf ' %-21s\n' "SSIDS C routines ($(PRECIS) $(SUCC)"
+ssids_ciface_silent: ssids_ciface_$(PRECIS)
+ssids_ciface_single: $(SSIDSCS)
+ssids_ciface_double: $(SSIDSCD)
+ssids_ciface_quadruple: $(SSIDSCQ)
+ssids_ciface_single_64: $(SSIDSCS64)
+ssids_ciface_double_64: $(SSIDSCD64)
+ssids_ciface_quadruple_64: $(SSIDSCQ64)
+
+# spralrb
+
+spralrb_silent: spralrb_silent_$(PRECIS)
+spralrb_silent_single: $(SPRALRBS)
+	$(RANLIB) $(RLGS)
+spralrb_silent_double: $(SPRALRBD)
+	$(RANLIB) $(RLGD)
+spralrb_silent_quadruple: $(SPRALRBQ)
+	$(RANLIB) $(RLGQ)
+spralrb_silent_single_64: $(SPRALRBS64)
+	$(RANLIB) $(RLGS64)
+spralrb_silent_double_64: $(SPRALRBD64)
+	$(RANLIB) $(RLGD64)
+spralrb_silent_quadruple_64: $(SPRALRBQ64)
+	$(RANLIB) $(RLGQ64)
+
+spralrb: spralrb_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SPRALRB ($(PRECIS) $(SUCC)"
+spralrb_single: $(SPRALRBS)
+	$(RANLIB) $(RLGS)
+spralrb_double: $(SPRALRBD)
+	$(RANLIB) $(RLGD)
+spralrb_quadruple: $(SPRALRBQ)
+	$(RANLIB) $(RLGQ)
+spralrb_single_64: $(SPRALRBS64)
+	$(RANLIB) $(RLGS64)
+spralrb_double_64: $(SPRALRBD64)
+	$(RANLIB) $(RLGD64)
+spralrb_quadruple_64: $(SPRALRBQ64)
+	$(RANLIB) $(RLGQ64)
+
+# run spec-sheet example tests
+
+ssidsss: $(SSIDSSS)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSSS)
+#	- ../ssids/run_ssids < ../ssids/ssidss.data
+	- ../ssids/run_ssids < ../ssids/ssidss.data \
+                             > ../ssids/ssidss.output 2>&1
+	cat ../ssids/ssidss.output
+	rm ../ssids/run_ssids
+
+ssidsds: $(SSIDSDS)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDS)
+#	- ../ssids/run_ssids < ../ssids/ssidss.data
+	- ../ssids/run_ssids < ../ssids/ssidss.data \
+                             > ../ssids/ssidsds.output 2>&1
+	cat ../ssids/ssidsds.output
+	rm ../ssids/run_ssids
+
+ssidsqs: $(SSIDSQS)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSQS)
+#	- ../ssids/run_ssids < ../ssids/ssidss.data
+	- ../ssids/run_ssids < ../ssids/ssidss.data \
+                             > ../ssids/ssidsds.output 2>&1
+	cat ../ssids/ssidsds.output
+	rm ../ssids/run_ssids
+
+ssidsds_valgrind: $(SSIDSDS)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDS)
+	- valgrind $(VALGRIND) ../ssids/run_ssids < ../ssids/ssidss.data
+	rm ../ssids/run_ssids
+
+ssidsss_64: $(SSIDSSS64)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSSS64)
+#	- ../ssids/run_ssids < ../ssids/ssidss.data
+	- ../ssids/run_ssids < ../ssids/ssidss.data \
+                             > ../ssids/ssidss_64.output 2>&1
+	cat ../ssids/ssidss_64.output
+	rm ../ssids/run_ssids
+
+ssidsds_64: $(SSIDSDS64)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDS64)
+#	- ../ssids/run_ssids < ../ssids/ssidss.data
+	- ../ssids/run_ssids < ../ssids/ssidss.data \
+                             > ../ssids/ssidsds_64.output 2>&1
+	cat ../ssids/ssidsds_64.output
+	rm ../ssids/run_ssids
+
+ssidsqs_64: $(SSIDSDQ64)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDQ64)
+	- ../ssids/run_ssids < ../ssids/ssidss.data \
+                             > ../ssids/ssidsds_64.output 2>&1
+	cat ../ssids/ssidsds_64.output
+	rm ../ssids/run_ssids
+
+ssidsds_64_valgrind: $(SSIDSDS64)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDS64)
+	- valgrind $(VALGRIND) ../ssids/run_ssids < ../ssids/ssidss.data
+	rm ../ssids/run_ssids
+
+# run full tests
+
+ssidsst: $(SSIDSST)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSST)
+#	- ../ssids/run_ssids < ../ssids/ssidss.data
+	- ../ssids/run_ssids > ../ssids/ssidst.output 2>&1
+	cat ../ssids/ssidst.output
+	rm ../ssids/run_ssids
+
+ssidsst2: $(SSIDSST2)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids2 $(RSSIDSST2)
+#	- ../ssids/run_ssids2
+	- ../ssids/run_ssids2 > ../ssids/ssidst2.output 2>&1
+	cat ../ssids/ssidst2.output
+	rm ../ssids/run_ssids2
+
+ssidsdt: $(SSIDSDT)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDT)
+#	- ../ssids/run_ssids
+	- ../ssids/run_ssids  > ../ssids/ssidsdt.output 2>&1
+	cat ../ssids/ssidsdt.output
+	rm ../ssids/run_ssids
+
+ssidsdt2: $(SSIDSDT2)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids2 $(RSSIDSDT2)
+#	- ../ssids/run_ssids2
+	- ../ssids/run_ssids2  > ../ssids/ssidsdt2.output 2>&1
+	cat ../ssids/ssidsdt2.output
+	rm ../ssids/run_ssids2
+
+ssidsqt: $(SSIDSQT)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSQT)
+#	- ../ssids/run_ssids
+	- ../ssids/run_ssids  > ../ssids/ssidsqt.output 2>&1
+	cat ../ssids/ssidsqt.output
+	rm ../ssids/run_ssids
+
+ssidsqt2: $(SSIDSQT2)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids2 $(RSSIDSQT2)
+#	- ../ssids/run_ssids2
+	- ../ssids/run_ssids2  > ../ssids/ssidsqt2.output 2>&1
+	cat ../ssids/ssidsqt2.output
+	rm ../ssids/run_ssids
+
+ssidsst_64: $(SSIDSST64)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSST64)
+#	- ../ssids/run_ssids < ../ssids/ssidss.data
+	- ../ssids/run_ssids > ../ssids/ssidst_64.output 2>&1
+	cat ../ssids/ssidst_64.output
+	rm ../ssids/run_ssids
+
+ssidsst2_64: $(SSIDSST264)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids2 $(RSSIDSST264)
+#	- ../ssids/run_ssids2 < ../ssids/ssidss.data
+	- ../ssids/run_ssids2 > ../ssids/ssidst2_64.output 2>&1
+	cat ../ssids/ssidst2_64.output
+	rm ../ssids/run_ssids2
+
+ssidsdt_64: $(SSIDSDT64)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDT64)
+#	- ../ssids/run_ssids
+	- ../ssids/run_ssids  > ../ssids/ssidsdt_64.output 2>&1
+	cat ../ssids/ssidsdt_64.output
+	rm ../ssids/run_ssids
+
+ssidsdt2_64: $(SSIDSDT264)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids2 $(RSSIDSDT264)
+#	- ../ssids/run_ssids2
+	- ../ssids/run_ssids2  > ../ssids/ssidsdt2_64.output 2>&1
+	cat ../ssids/ssidsdt2_64.output
+	rm ../ssids/run_ssids2
+
+ssidsqt_64: $(SSIDSQT64)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSQT64)
+#	- ../ssids/run_ssids
+	- ../ssids/run_ssids  > ../ssids/ssidsdt_64.output 2>&1
+	cat ../ssids/ssidsdt_64.output
+	rm ../ssids/run_ssids2
+
+ssidsqt2_64: $(SSIDSQT264)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids2 $(RSSIDSQT264)
+#	- ../ssids/run_ssids2
+	- ../ssids/run_ssids2  > ../ssids/ssidsdt2_64.output 2>&1
+	cat ../ssids/ssidsdt2_64.output
+	rm ../ssids/run_ssids2
+
+ssidsdt_gdb: $(SSIDSDT)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDT)
+	- gdb $(GDB) ./run_ssids
+	rm ../ssids/run_ssids
+
+ssidsdt_valgrind: $(SSIDSDT)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDT)
+#	- ../ssids/run_ssids
+	- valgrind $(VALGRIND) ../ssids/run_ssids
+	rm ../ssids/run_ssids
+
+#  run debugging tests
+
+ssidsdt_64_gdb: $(SSIDSDT64)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDT64)
+	- gdb $(GDB) ./run_ssids
+	rm ../ssids/run_ssids
+
+ssidsdt_64_valgrind: $(SSIDSDT64)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDT64)
+#	- ../ssids/run_ssids
+	- valgrind $(VALGRIND) ../ssids/run_ssids
+	rm ../ssids/run_ssids
+
+#  run full (comprehensive) C example tests
+
+ssidscst: $(SSIDSCST)
+	echo ""
+	echo " Exhaustive test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCST)
+	- ./run_ssids > ssidscst.output 2>&1
+	cat ssidscst.output
+	rm ./run_ssids
+
+ssidscstf: $(SSIDSCSTF)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCSTF)
+	- ./run_ssids > ssidscstf.output 2>&1
+	cat ssidscstf.output
+	rm ./run_ssids
+
+ssidscdt: $(SSIDSCDT)
+	echo ""
+	echo " Exhaustive test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCDT)
+	- ./run_ssids > ssidsdt.output 2>&1
+	cat ssidsdt.output
+	rm ./run_ssids
+
+ssidscdtf: $(SSIDSCDTF)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCDTF)
+	- ./run_ssids
+#	- ./run_ssids > ssidsdtf.output 2>&1
+#	cat ssidsdtf.output
+	rm ./run_ssids
+
+ssidscqt: $(SSIDSCQT)
+	echo ""
+	echo " Exhaustive test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCQT)
+	- ./run_ssids > ssidscqt.output 2>&1
+	cat ssidscqt.output
+	rm ./run_ssids
+
+ssidscqtf: $(SSIDSCQTF)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCQTF)
+	- ./run_ssids > ssidscqtf.output 2>&1
+	cat ssidscqtf.output
+	rm ./run_ssids
+
+ssidscst_64: $(SSIDSCST64)
+	echo ""
+	echo " Exhaustive test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCST64)
+	- ./run_ssids > ssidscst64.output 2>&1
+	cat ssidscst64.output
+	rm ./run_ssids
+
+ssidscstf_64: $(SSIDSCSTF64)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCSTF64)
+	- ./run_ssids > ssidscstf64.output 2>&1
+	cat ssidscstf64.output
+	rm ./run_ssids
+
+ssidscdt_64: $(SSIDSCDT64)
+	echo ""
+	echo " Exhaustive test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCDT64)
+	- ./run_ssids > ssidscdt64.output 2>&1
+	cat ssidscdt64.output
+	rm ./run_ssids
+
+ssidscdtf_64: $(SSIDSCDTF64)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCDTF64)
+	- ./run_ssids > ssidscdtf64.output 2>&1
+	cat ssidscdtf64.output
+	rm ./run_ssids
+
+ssidscqt_64: $(SSIDSCQT64)
+	echo ""
+	echo " Exhaustive test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCQT64)
+	- ./run_ssids > ssidscqt64.output 2>&1
+	cat ssidscqt64.output
+	rm ./run_ssids
+
+ssidscqtf_64: $(SSIDSCQTF64)
+	echo ""
+	echo " Exhaustive test of Fortran function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCQTF64)
+	- ./run_ssids > ssidscqtf64.output 2>&1
+	cat ssidscqtf64.output
+	rm ./run_ssids
+
+#  run debugging C example tests
+
+ssidscst_valgrind: $(SSIDSCST)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCST)
+	- valgrind $(VALGRIND) ./run_ssids > \
+           ssidscst_valgrind.output 2>&1
+	cat ssidscst_valgrind.output
+	rm ./run_ssids
+
+ssidscstf_valgrind: $(SSIDSCSTF)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCSTF)
+	- valgrind $(VALGRIND) ./run_ssids > \
+           ssidscstf_valgrind.output 2>&1
+	cat ssidscstf_valgrind.output
+	rm ./run_ssids
+
+ssidscst_gdb: $(SSIDSCST)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCST)
+	- gdb $(GDB) ./run_ssids
+	rm ./run_ssids
+
+ssidscdt_valgrind: $(SSIDSCDT)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCDT)
+	- ./run_ssids > ssidsdt.output 2>&1
+	- valgrind $(VALGRIND) ./run_ssids > \
+           ssidsdt_valgrind.output 2>&1
+	cat ssidsdt_valgrind.output
+	rm ./run_ssids
+
+ssidscdt_gdb: $(SSIDSCDT)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCDT)
+	$(RMOOC)
+	- gdb $(GDB) ./run_ssids
+	rm ./run_ssids
+
+ssidscqt_valgrind: $(SSIDSCQT)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCQT)
+	- valgrind $(VALGRIND) ./run_ssids > \
+           ssidscqt_valgrind.output 2>&1
+	cat ssidscqt_valgrind.output
+	rm ./run_ssids
+
+ssidscqt_gdb: $(SSIDSCQT)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCQT)
+	- gdb $(GDB) ./run_ssids
+	rm ./run_ssids
+
+ssidscst_64_valgrind: $(SSIDSCST64)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCST64)
+	- valgrind $(VALGRIND) ./run_ssids > \
+           ssidscst64_valgrind.output 2>&1
+	cat ssidscst64_valgrind.output
+	rm ./run_ssids
+
+ssidscstf_64_valgrind: $(SSIDSCSTF64)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCSTF64)
+	- valgrind $(VALGRIND) ./run_ssids > \
+           ssidscstf64_valgrind.output 2>&1
+	cat ssidscstf64_valgrind.output
+	rm ./run_ssids
+
+ssidscst_64_gdb: $(SSIDSCST64)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCST64)
+	- gdb $(GDB) ./run_ssids
+	rm ./run_ssids
+
+ssidscdt_64_gdb: $(SSIDSCDT64)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCDT64)
+	- gdb $(GDB) ./run_ssids
+	rm ./run_ssids
+
+ssidscqt_64_gdb: $(SSIDSCQT64)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCQT64)
+	- gdb $(GDB) ./run_ssids
+	rm ./run_ssids
+
+ssidscqtf_64_valgrind: $(SSIDSCQTF64)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to ssids"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_ssids $(RSSIDSCQTF64)
+	- valgrind $(VALGRIND) ./run_ssids > \
+           ssidscqtf64_valgrind.output 2>&1
+	cat ssidscqtf64_valgrind.output
+	rm ./run_ssids
+
+#  basic packages
+
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+hw:
+	( cd ../hw ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            hw_silent PRECIS=$(PRECIS) PWD=$(PWD)/../hw )
+mo:
+	( cd ../mo ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mo_silent PRECIS=$(PRECIS) PWD=$(PWD)/../mo )
+ms:
+	( cd ../ms ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ms_silent PRECIS=$(PRECIS) PWD=$(PWD)/../ms )
+mu:
+	( cd ../mu ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mu_silent PRECIS=$(PRECIS) PWD=$(PWD)/../mu )
+rb:
+	( cd ../rb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            rb_silent PRECIS=$(PRECIS) PWD=$(PWD)/../rb )
+
+#  individual compilations
+
+omp.o: $(RLG)(omp.o)
+
+$(RLG)(omp.o): ../ssids/omp.cxx $(GALINCLUDE)/ssids_omp.hxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "omp  "
+	$(CP) ../ssids/omp.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o omp.o $(CXXFLAGSOMP) \
+          omp.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o omp.o $(CXXFLAGSNOMP) omp.cxx )
+	cd $(OBJ) ; $(RARR) omp.o ; $(RM) omp.cxx omp.o
+	@printf '[ OK ]\n'
+
+profile.o: $(RLG)(profile.o)
+
+$(RLG)(profile.o): ../ssids/profile.cxx \
+                   $(GALINCLUDE)/ssids_profile.hxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "profile  "
+	$(CP) ../ssids/profile.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o profile.o $(CXXFLAGSOMP) \
+          profile.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o profile.o $(CXXFLAGSNOMP) profile.cxx )
+	cd $(OBJ) ; $(RARR) profile.o ; $(RM) profile.cxx profile.o
+	@printf '[ OK ]\n'
+
+SymbolicSubtree.o: $(RLG)(SymbolicSubtree.o)
+
+$(RLG)(SymbolicSubtree.o): ../ssids/SymbolicSubtree.cxx \
+                           $(GALINCLUDE)/ssids_cpu_SymbolicSubtree.hxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "SymbolicSubtree  "
+	$(CP) ../ssids/SymbolicSubtree.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o SymbolicSubtree.o $(CXXFLAGSOMP) \
+          SymbolicSubtree.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o SymbolicSubtree.o $(CXXFLAGSNOMP) \
+                      SymbolicSubtree.cxx )
+	cd $(OBJ) ; $(RARR) SymbolicSubtree.o ; \
+                      $(RM) SymbolicSubtree.cxx SymbolicSubtree.o
+	@printf '[ OK ]\n'
+
+NumericSubtree.o: $(RLG)(NumericSubtree_$(PRECIS).o)
+
+$(RLG)(NumericSubtree_$(PRECIS).o): ../ssids/NumericSubtree.cxx \
+                                    $(GALINCLUDE)/ssids_cpu_NumericSubtree.hxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "NumericSubtree  "
+	$(CP) ../ssids/NumericSubtree.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o NumericSubtree_$(PRECIS).o $(CXXFLAGSOMP) \
+          NumericSubtree.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o NumericSubtree_$(PRECIS).o $(CXXFLAGSNOMP) \
+                      NumericSubtree.cxx )
+	cd $(OBJ) ; $(RARR) NumericSubtree_$(PRECIS).o ; \
+                      $(RM) NumericSubtree.cxx NumericSubtree_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+cholesky.o: $(RLG)(cholesky_$(PRECIS).o)
+
+$(RLG)(cholesky_$(PRECIS).o): ../ssids/cholesky.cxx \
+                              $(GALINCLUDE)/ssids_cpu_kernels_cholesky.hxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "cholesky  "
+	$(CP) ../ssids/cholesky.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o cholesky_$(PRECIS).o $(CXXFLAGSOMP) \
+          cholesky.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o cholesky_$(PRECIS).o $(CXXFLAGSNOMP) \
+                      cholesky.cxx )
+	cd $(OBJ) ; $(RARR) cholesky_$(PRECIS).o ; \
+                       $(RM) cholesky.cxx cholesky_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+ldlt_app.o: $(RLG)(ldlt_app_$(PRECIS).o)
+
+$(RLG)(ldlt_app_$(PRECIS).o): ../ssids/ldlt_app.cxx \
+                              $(GALINCLUDE)/ssids_cpu_kernels_block_ldlt.hxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "ldlt_app  "
+	$(CP) ../ssids/ldlt_app.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o ldlt_app_$(PRECIS).o $(CXXFLAGSOMP) \
+          ldlt_app.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o ldlt_app_$(PRECIS).o $(CXXFLAGSNOMP) \
+                      ldlt_app.cxx )
+	cd $(OBJ) ; $(RARR) ldlt_app_$(PRECIS).o ; \
+                      $(RM) ldlt_app.cxx ldlt_app_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+ldlt_nopiv.o: $(RLG)(ldlt_nopiv_$(PRECIS).o)
+
+$(RLG)(ldlt_nopiv_$(PRECIS).o): ../ssids/ldlt_nopiv.cxx \
+                              $(GALINCLUDE)/ssids_cpu_kernels_ldlt_nopiv.hxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "ldlt_nopiv  "
+	$(CP) ../ssids/ldlt_nopiv.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o ldlt_nopiv_$(PRECIS).o $(CXXFLAGSOMP) \
+          ldlt_nopiv.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o ldlt_nopiv_$(PRECIS).o $(CXXFLAGSNOMP) \
+                      ldlt_nopiv.cxx )
+	cd $(OBJ) ; $(RARR) ldlt_nopiv_$(PRECIS).o ; \
+                      $(RM) ldlt_nopiv.cxx ldlt_nopiv_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+ldlt_tpp.o: $(RLG)(ldlt_tpp_$(PRECIS).o)
+
+$(RLG)(ldlt_tpp_$(PRECIS).o): ../ssids/ldlt_tpp.cxx \
+                              $(GALINCLUDE)/ssids_cpu_kernels_ldlt_tpp.hxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "ldlt_tpp  "
+	$(CP) ../ssids/ldlt_tpp.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o ldlt_tpp_$(PRECIS).o $(CXXFLAGSOMP) \
+          ldlt_tpp.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o ldlt_tpp_$(PRECIS).o $(CXXFLAGSNOMP) \
+                      ldlt_tpp.cxx )
+	cd $(OBJ) ; $(RARR) ldlt_tpp_$(PRECIS).o ; \
+                      $(RM) ldlt_tpp.cxx ldlt_tpp_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+wrappers.o: $(RLG)(wrappers_$(PRECIS).o)
+
+$(RLG)(wrappers_$(PRECIS).o): ../ssids/wrappers.cxx \
+                              $(GALINCLUDE)/ssids_cpu_kernels_wrappers.hxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "wrappers  "
+	$(CP) ../ssids/wrappers.cxx $(OBJ)/wrappers.cxx
+	cd $(OBJ) ; $(CXX) -I. -o wrappers_$(PRECIS).o $(CXXFLAGSOMP) \
+          wrappers.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o wrappers_$(PRECIS).o $(CXXFLAGSNOMP) \
+                      wrappers.cxx )
+	cd $(OBJ) ; $(RARR) wrappers_$(PRECIS).o ; \
+                      $(RM) wrappers.cxx wrappers_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+ThreadStats.o: $(RLG)(ThreadStats.o)
+
+$(RLG)(ThreadStats.o): ../ssids/ThreadStats.cxx \
+                       $(GALINCLUDE)/ssids_cpu_ThreadStats.hxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "ThreadStats  "
+	$(CP) ../ssids/ThreadStats.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o ThreadStats.o $(CXXFLAGSOMP) \
+          ThreadStats.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o ThreadStats.o $(CXXFLAGSNOMP) \
+                      ThreadStats.cxx )
+	cd $(OBJ) ; $(RARR) ThreadStats.o ; \
+                      $(RM) ThreadStats.cxx ThreadStats.o
+	@printf '[ OK ]\n'
+
+datatypes.o: $(RLG)(datatypes_$(PRECIS).o)
+
+$(RLG)(datatypes_$(PRECIS).o): ../ssids/datatypes.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "datatypes  "
+	$(CP) ../ssids/datatypes.F90 $(OBJ)/datatypes.F90
+	cd $(OBJ) ; $(FORTRAN) -o datatypes_$(PRECIS).o \
+                      $(FFLAGSOMP) datatypes.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o datatypes_$(PRECIS).o \
+                      $(FFLAGSNOMP) datatypes.F90 )
+	cd $(OBJ) ; $(RARR) datatypes_$(PRECIS).o ; \
+                      $(RM) datatypes.F90 datatypes_$(PRECIS).o
+	$(RRMARFILE) cpu_subtree_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+inform.o: $(RLG)(inform_$(PRECIS).o)
+
+$(RLG)(inform_$(PRECIS).o): ../ssids/inform.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "inform  "
+	$(CP) ../ssids/inform.F90 $(OBJ)/inform.F90
+	cd $(OBJ) ; $(FORTRAN) -o inform_$(PRECIS).o $(FFLAGSOMP) inform.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o inform_$(PRECIS).o $(FFLAGSNOMP) inform.F90 )
+	cd $(OBJ) ; $(RARR) inform_$(PRECIS).o ; \
+                      $(RM) inform.F90 inform_$(PRECIS).o
+	$(RRMARFILE) cpu_subtree_$(PRECIS).o
+	$(RRMARFILE) akeep_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+contrib.o: $(RLG)(contrib_$(PRECIS).o)
+
+$(RLG)(contrib_$(PRECIS).o): ../ssids/contrib.F90 \
+                             $(GALINCLUDE)/ssids_contrib.h
+	@printf ' %-9s %-15s\t\t' "Compiling" "contrib  "
+	$(CP) ../ssids/contrib.F90 $(OBJ)/contrib.F90
+	cd $(OBJ) ; $(FORTRAN) -o contrib_$(PRECIS).o \
+                      $(FFLAGSOMP) contrib.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o contrib_$(PRECIS).o \
+                      $(FFLAGSNOMP) contrib.F90 )
+	cd $(OBJ) ; $(RARR) contrib_$(PRECIS).o ; \
+                      $(RM) contrib.F90 contrib_$(PRECIS).o
+	$(RRMARFILE) cpu_subtree_$(PRECIS).o
+	$(RRMARFILE) subtree_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+subtree.o: $(RLG)(subtree_$(PRECIS).o)
+
+$(RLG)(subtree_$(PRECIS).o): ../ssids/subtree.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "subtree  "
+	$(CP) ../ssids/subtree.F90 $(OBJ)/subtree.F90
+	cd $(OBJ) ; $(FORTRAN) -o subtree_$(PRECIS).o \
+                      $(FFLAGSOMP) subtree.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o subtree_$(PRECIS).o \
+                      $(FFLAGSNOMP) subtree.F90 )
+	cd $(OBJ) ; $(RARR) subtree_$(PRECIS).o ; \
+                      $(RM) subtree.F90 subtree_$(PRECIS).o
+	$(RRMARFILE) cpu_subtree_$(PRECIS).o
+	$(RRMARFILE) akeep_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+akeep.o: $(RLG)(akeep_$(PRECIS).o)
+
+$(RLG)(akeep_$(PRECIS).o): ../ssids/akeep.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "akeep  "
+	$(CP) ../ssids/akeep.F90 $(OBJ)/akeep.F90
+	cd $(OBJ) ; $(FORTRAN) -o akeep_$(PRECIS).o $(FFLAGSOMP) akeep.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o akeep_$(PRECIS).o $(FFLAGSNOMP) akeep.F90 )
+	cd $(OBJ) ; $(RARR) akeep_$(PRECIS).o ; \
+                      $(RM) akeep.F90 akeep_$(PRECIS).o
+	$(RRMARFILE) analyse_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+cpu_iface.o: $(RLG)(cpu_iface_$(PRECIS).o)
+
+$(RLG)(cpu_iface_$(PRECIS).o): ../ssids/cpu_iface.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_iface  "
+	$(CP) ../ssids/cpu_iface.F90 $(OBJ)/cpu_iface.F90
+	cd $(OBJ) ; $(FORTRAN) -o cpu_iface_$(PRECIS).o \
+                      $(FFLAGSOMP) cpu_iface.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o cpu_iface_$(PRECIS).o \
+                      $(FFLAGSNOMP) cpu_iface.F90 )
+	cd $(OBJ) ; $(RARR) cpu_iface_$(PRECIS).o ; \
+                      $(RM) cpu_iface.F90 cpu_iface_$(PRECIS).o
+	$(RRMARFILE) cpu_subtree_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+cpu_subtree.o: $(RLG)(cpu_subtree_$(PRECIS).o)
+
+$(RLG)(cpu_subtree_$(PRECIS).o): ../ssids/cpu_subtree.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_subtree  "
+	$(CP) ../ssids/cpu_subtree.F90 $(OBJ)/cpu_subtree.F90
+	cd $(OBJ) ; $(FORTRAN) -o cpu_subtree_$(PRECIS).o \
+                      $(FFLAGSOMP) cpu_subtree.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o cpu_subtree_$(PRECIS).o \
+                      $(FFLAGSNOMP) cpu_subtree.F90 )
+	cd $(OBJ) ; $(RARR) cpu_subtree_$(PRECIS).o ; \
+                      $(RM) cpu_subtree.F90 cpu_subtree_$(PRECIS).o
+	$(RRMARFILE) analyse_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+profile_iface.o: $(RLG)(profile_iface.o)
+
+$(RLG)(profile_iface.o): ../ssids/profile_iface.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "profile_iface  "
+	$(CP) ../ssids/profile_iface.F90 $(OBJ)/profile_iface.F90
+	cd $(OBJ) ; $(FORTRAN) -o profile_iface.o $(FFLAGSOMP) \
+          profile_iface.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o profile_iface.o $(FFLAGSNOMP) \
+                      profile_iface.F90 )
+	cd $(OBJ) ; $(RARR) profile_iface.o ; \
+           $(RM) profile_iface.F90 profile_iface.o
+	$(RRMARFILE) fkeep.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+gpu_subtree_no_cuda.o: $(RLG)(gpu_subtree_no_cuda_$(PRECIS).o)
+
+$(RLG)(gpu_subtree_no_cuda_$(PRECIS).o): ../ssids/gpu_subtree_no_cuda.F90
+	@printf ' %-9s %-15s\t' "Compiling" "gpu_subtree_no_cuda  "
+	$(CP) ../ssids/gpu_subtree_no_cuda.F90 $(OBJ)/gpu_subtree_no_cuda.F90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_subtree_no_cuda_$(PRECIS).o \
+                      $(FFLAGSOMP) gpu_subtree_no_cuda.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o gpu_subtree_no_cuda_$(PRECIS).o \
+                      $(FFLAGSNOMP) gpu_subtree_no_cuda.F90 )
+	cd $(OBJ) ; $(RARR) gpu_subtree_no_cuda_$(PRECIS).o ; \
+          $(RM) gpu_subtree_no_cuda.F90 gpu_subtree_no_cuda_$(PRECIS).o
+	$(RRMARFILE) analyse_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+$(RLG)(cpu_solve_$(PRECIS).o): ../ssids/cpu_solve.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_solve  "
+	$(CP) ../ssids/cpu_solve.F90 $(OBJ)/cpu_solve.F90
+	cd $(OBJ) ; $(FORTRAN) -o cpu_solve_$(PRECIS).o \
+                     $(FFLAGSOMP) cpu_solve.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o cpu_solve_$(PRECIS).o \
+                      $(FFLAGSNOMP) cpu_solve.F90 )
+	cd $(OBJ) ; $(RARR) cpu_solve_$(PRECIS).o ; \
+          $(RM) cpu_solve.F90 cpu_solve_$(PRECIS).o
+#	$(RRMARFILE) ssids_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+analyse.o: $(RLG)(analyse_$(PRECIS).o)
+
+$(RLG)(analyse_$(PRECIS).o): ../ssids/analyse.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "analyse "
+	$(CP) ../ssids/analyse.F90 $(OBJ)/analyse.F90
+	cd $(OBJ) ; $(FORTRAN) -o analyse_$(PRECIS).o $(FFLAGSOMP) analyse.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o analyse_$(PRECIS).o $(FFLAGSNOMP) analyse.F90 )
+	cd $(OBJ) ; $(RARR) analyse_$(PRECIS).o ; \
+                    $(RM) analyse.F90 analyse_$(PRECIS).o
+	$(RRMARFILE) ssids_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+fkeep.o: $(RLG)(fkeep_$(PRECIS).o)
+
+$(RLG)(fkeep_$(PRECIS).o): ../ssids/fkeep.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "fkeep  "
+	$(CP) ../ssids/fkeep.F90 $(OBJ)/fkeep.F90
+	cd $(OBJ) ; $(FORTRAN) -o fkeep_$(PRECIS).o $(FFLAGSOMP) fkeep.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o fkeep_$(PRECIS).o $(FFLAGSNOMP) fkeep.F90 )
+	cd $(OBJ) ; $(RARR) fkeep_$(PRECIS).o ; \
+                      $(RM) fkeep.F90 fkeep_$(PRECIS).o
+	$(RRMARFILE) ssids_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+contrib_free.o: $(RLG)(contrib_free_$(PRECIS).o)
+
+$(RLG)(contrib_free_$(PRECIS).o): ../ssids/contrib_free.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "contrib_free  "
+	$(CP) ../ssids/contrib_free.F90 $(OBJ)/contrib_free.F90
+	cd $(OBJ) ; $(FORTRAN) -o contrib_free_$(PRECIS).o $(FFLAGSOMP) \
+                     contrib_free.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o contrib_free_$(PRECIS).o $(FFLAGSNOMP) \
+                       contrib_free.F90 )
+	cd $(OBJ) ; $(RARR) contrib_free_$(PRECIS).o ; \
+          $(RM) contrib_free.F90 contrib_free_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+ssids.o: $(RLG)(ssids_$(PRECIS).o)
+
+$(RLG)(ssids_$(PRECIS).o): ../ssids/ssids.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssids  "
+	$(CP) ../ssids/ssids.F90 $(OBJ)/ssids.F90
+	cd $(OBJ) ; $(FORTRAN) -o ssids_$(PRECIS).o $(FFLAGSOMP) ssids.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o ssids_$(PRECIS).o $(FFLAGSNOMP) ssids.F90 )
+	cd $(OBJ) ; $(RARR) ssids_$(PRECIS).o ; \
+                      $(RM) ssids.F90 ssids_$(PRECIS).o
+	$(RMARFILE) sls_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  C interface
+
+ssids_ciface.o: $(CLG)(ssids_ciface_$(PRECIS).o)
+
+$(CLG)(ssids_ciface_$(PRECIS).o): ../ssids/C/ssids_ciface.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssids_ciface"
+	$(CP) ../ssids/C/ssids_ciface.F90 $(OBJ)/ssids_ciface.F90
+	cd $(OBJ) ; $(FORTRAN) -o ssids_ciface_$(PRECIS).o $(FFLAGSOMP) \
+                      ssids_ciface.F90
+	cd $(OBJ) ; $(CARR) ssids_ciface_$(PRECIS).o ; \
+                    $(RM) ssids_ciface.F90 ssids_ciface_$(PRECIS).o
+	$(CRMARFILE) sls_ciface_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  test programs
+
+ssidss.o: $(OBJ)/ssidss_$(PRECIS).o
+
+$(OBJ)/ssidss_$(PRECIS).o: ../ssids/ssidss.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidss  "
+	$(SED) -f $(SEDS) ../ssids/ssidss.f90 > $(OBJ)/ssidss.f90
+	cd $(OBJ) ; $(FORTRAN) -o ssidss_$(PRECIS).o $(FFLAGSOMP) ssidss.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+ssidst.o: $(OBJ)/ssidst_$(PRECIS).o
+
+$(OBJ)/ssidst_$(PRECIS).o: ../ssids/ssidst.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidst  "
+	$(CP) ../ssids/ssidst.F90 $(OBJ)/ssidst.F90
+	cd $(OBJ) ; $(FORTRAN) -o ssidst_$(PRECIS).o $(FFLAGSS) ssidst.F90
+	rm $(OBJ)/*.F90
+	@printf '[ OK ]\n'
+
+ssidst2.o: $(OBJ)/ssidst2_$(PRECIS).o
+
+$(OBJ)/ssidst2_$(PRECIS).o: ../ssids/ssidst2.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidst2  "
+	$(CP) ../ssids/ssidst2.F90 $(OBJ)/ssidst2.F90
+	cd $(OBJ) ; $(FORTRAN) -o ssidst2_$(PRECIS).o $(FFLAGSS) ssidst2.F90
+	rm $(OBJ)/*.F90
+	@printf '[ OK ]\n'
+
+#  test programs for C programs
+
+ssidsct.o: $(OBJ)/ssidsct_$(PRECIS).o
+
+$(OBJ)/ssidsct_$(PRECIS).o: ../ssids/C/ssidst.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidsct  "
+	$(CP) ../ssids/C/ssidst.c $(OBJ)/ssidsct.c
+	cd $(OBJ) ; $(CC) -o ssidsct_$(PRECIS).o $(CFLAGS) \
+                      ssidsct.c -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
+	@printf '[ OK ]\n'
+
+ssidsctf.o: $(OBJ)/ssidsctf_$(PRECIS).o
+
+$(OBJ)/ssidsctf_$(PRECIS).o: ../ssids/C/ssidstf.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidsctf  "
+	$(CP) ../ssids/C/ssidstf.c $(OBJ)/ssidsctf.c
+	cd $(OBJ) ; $(CC) -o ssidsctf_$(PRECIS).o $(CFLAGS) \
+                      ssidsctf.c -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s %-15s\t\t' "Cleaning $(PRECIS) precision spral"
+	$(RM) $(LGS) $(LGD) $(OBJ)/ssids*.o $(OBJ)/libgalahad_spral.a \
+                            $(MOD)/spral*
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' \
+          "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmssids:
+	@printf ' %-9s %-15s\t\t' "Removing" "ssids from archive "
+	$(RRMARFILE) ssids_$(PRECIS).o
+	@printf '[ OK ]\n'

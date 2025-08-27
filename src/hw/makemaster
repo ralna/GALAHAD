@@ -150,8 +150,11 @@ RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
 CARR = $(AR) $(ARREPFLAGS) $(LG)
 CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
 
-RARR = $(AR) $(ARREPFLAGS) $(RLG)
-RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(RLG)
+RARR = $(AR) $(ARREPFLAGS) $(LG)
+RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+
+#RARR = $(AR) $(ARREPFLAGS) $(RLG)
+#RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(RLG)
 
 #  strings
 
