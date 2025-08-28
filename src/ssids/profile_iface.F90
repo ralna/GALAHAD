@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-25 AT 13:20 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-27 AT 16:40 GMT
 
 #include "ssids_routines.h"
 #include "ssids_procedures.h"
@@ -8,217 +8,245 @@
 !  licence: BSD licence, see LICENCE file for details
 !  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
-MODULE GALAHAD_SSIDS_profile
-   USE GALAHAD_KINDS
-   IMPLICIT none
+  MODULE GALAHAD_SSIDS_profile
+    USE GALAHAD_KINDS
+    IMPLICIT NONE
 
-   PRIVATE
-   PUBLIC :: profile_begin, profile_end, profile_task_type,                    &
-             profile_create_task, profile_set_state, profile_add_event
+    PRIVATE
+    PUBLIC :: profile_begin, profile_end, profile_task_type,                   &
+              profile_create_task, profile_set_state, profile_add_event
 
-   type :: profile_task_type
-      private
-      type(C_PTR) :: ctask
-   contains
-      procedure :: end_task
-   end type profile_task_type
+    TYPE :: profile_task_type
+      PRIVATE
+      TYPE(C_PTR) :: ctask
+    CONTAINS
+      PROCEDURE :: end_task
+    END TYPE profile_task_type
 
 #ifdef INTEGER_64
-   interface
-      subroutine c_begin(nregions, regions) &
-            bind(C, name="galahad_ssids_profile_begin_64")
-        use, intrinsic :: iso_c_binding
-        implicit none
-        integer(c_int), value :: nregions
-        type(c_ptr), value, intent(in) :: regions
-      end subroutine c_begin
-      subroutine profile_end() &
-            bind(C, name="galahad_ssids_profile_end_64")
-      end subroutine profile_end
-      type(C_PTR) function c_create_task(name, thread) &
-            bind(C, name="galahad_ssids_profile_create_task_64")
-         use, intrinsic :: iso_c_binding
-         character(C_CHAR), dimension(*), intent(in) :: name
-         integer(C_INT), value :: thread
-      end function c_create_task
-      subroutine c_end_task(task) &
-            bind(C, name="galahad_ssids_profile_end_task_64")
-         use, intrinsic :: iso_c_binding
-         type(C_PTR), value :: task
-      end subroutine c_end_task
-      subroutine c_set_state(container, type, name) &
-            bind(C, name="galahad_ssids_profile_set_state_64")
-         use, intrinsic :: iso_c_binding
-         character(C_CHAR), dimension(*), intent(in) :: container
-         character(C_CHAR), dimension(*), intent(in) :: type
-         character(C_CHAR), dimension(*), intent(in) :: name
-      end subroutine c_set_state
-      subroutine c_add_event(type, val, thread) &
-        bind(C, name="galahad_ssids_profile_add_event_64")
-        use, intrinsic :: iso_c_binding
-        implicit none
-        character(C_CHAR), dimension(*), intent(in) :: type
-        character(C_CHAR), dimension(*), intent(in) :: val
-        integer(C_INT), value :: thread
-      end subroutine c_add_event
-   end interface
+    INTERFACE
+      SUBROUTINE c_begin( nregions, regions )                                  &
+            BIND( C, name = "galahad_ssids_profile_begin_64" )
+        USE, INTRINSIC :: iso_c_binding
+        IMPLICIT NONE
+        INTEGER( c_int ), value :: nregions
+        TYPE( c_ptr ), value, INTENT( in ) :: regions
+      END SUBROUTINE c_begin
+
+      SUBROUTINE profile_end(  )                                               &
+            BIND( C, name = "galahad_ssids_profile_end_64" )
+      END SUBROUTINE profile_end
+
+      TYPE( C_PTR ) FUNCTION c_create_task( name, thread )                     &
+            BIND( C, name = "galahad_ssids_profile_create_task_64" )
+         USE, INTRINSIC :: iso_c_binding
+         CHARACTER( C_CHAR ), DIMENSION( * ), INTENT( IN ) :: name
+         INTEGER( C_INT ), value :: thread
+      END FUNCTION c_create_task
+
+      SUBROUTINE c_end_task( task )                                            &
+            BIND( C, name = "galahad_ssids_profile_end_task_64" )
+         USE, INTRINSIC :: iso_c_binding
+         type( C_PTR ), value :: task
+      END SUBROUTINE c_end_task
+
+      SUBROUTINE c_set_state( container, type, name )                          &
+            BIND( C, name = "galahad_ssids_profile_set_state_64" )
+         USE, INTRINSIC :: iso_c_binding
+         CHARACTER( C_CHAR ), DIMENSION( * ), INTENT( IN ) :: container
+         CHARACTER( C_CHAR ), DIMENSION( * ), INTENT( IN ) :: type
+         CHARACTER( C_CHAR ), DIMENSION( * ), INTENT( IN ) :: name
+      END SUBROUTINE c_set_state
+
+      SUBROUTINE c_add_event( type, val, thread )                              &
+        BIND( C, name = "galahad_ssids_profile_add_event_64" )
+        USE, INTRINSIC :: iso_c_binding
+        IMPLICIT NONE
+        CHARACTER( C_CHAR ), DIMENSION( * ), INTENT( IN ) :: type
+        CHARACTER( C_CHAR ), DIMENSION( * ), INTENT( IN ) :: val
+        INTEGER( C_INT ), value :: thread
+      END SUBROUTINE c_add_event
+    END INTERFACE
 #else
-   interface
-      subroutine c_begin(nregions, regions) &
-            bind(C, name="galahad_ssids_profile_begin")
-        use, intrinsic :: iso_c_binding
-        implicit none
-        integer(c_int), value :: nregions
-        type(c_ptr), value, intent(in) :: regions
-      end subroutine c_begin
-      subroutine profile_end() &
-            bind(C, name="galahad_ssids_profile_end")
-      end subroutine profile_end
-      type(C_PTR) function c_create_task(name, thread) &
-            bind(C, name="galahad_ssids_profile_create_task")
-         use, intrinsic :: iso_c_binding
-         character(C_CHAR), dimension(*), intent(in) :: name
-         integer(C_INT), value :: thread
-      end function c_create_task
-      subroutine c_end_task(task) &
-            bind(C, name="galahad_ssids_profile_end_task")
-         use, intrinsic :: iso_c_binding
-         type(C_PTR), value :: task
-      end subroutine c_end_task
-      subroutine c_set_state(container, type, name) &
-            bind(C, name="galahad_ssids_profile_set_state")
-         use, intrinsic :: iso_c_binding
-         character(C_CHAR), dimension(*), intent(in) :: container
-         character(C_CHAR), dimension(*), intent(in) :: type
-         character(C_CHAR), dimension(*), intent(in) :: name
-      end subroutine c_set_state
-      subroutine c_add_event(type, val, thread) &
-        bind(C, name="galahad_ssids_profile_add_event")
-        use, intrinsic :: iso_c_binding
-        implicit none
-        character(C_CHAR), dimension(*), intent(in) :: type
-        character(C_CHAR), dimension(*), intent(in) :: val
-        integer(C_INT), value :: thread
-      end subroutine c_add_event
-   end interface
+    INTERFACE
+      SUBROUTINE c_begin( nregions, regions )                                  &
+            BIND( C, name = "galahad_ssids_profile_begin" )
+        USE, INTRINSIC :: iso_c_binding
+        IMPLICIT NONE
+        INTEGER( c_int ), value :: nregions
+        TYPE( c_ptr ), value, INTENT( IN ) :: regions
+      END SUBROUTINE c_begin
+
+      SUBROUTINE profile_end(  )                                               &
+            BIND( C, name = "galahad_ssids_profile_end" )
+      END SUBROUTINE profile_end
+
+      TYPE( C_PTR ) FUNCTION c_create_task( name, thread )                     &
+            BIND( C, name = "galahad_ssids_profile_create_task" )
+         USE, INTRINSIC :: iso_c_binding
+         CHARACTER( C_CHAR ), DIMENSION( * ), INTENT( IN ) :: name
+         INTEGER( C_INT ), value :: thread
+      END FUNCTION c_create_task
+
+      SUBROUTINE c_end_task( task )                                            &
+            BIND( C, name = "galahad_ssids_profile_end_task" )
+         USE, INTRINSIC :: iso_c_binding
+         type( C_PTR ), value :: task
+      END SUBROUTINE c_end_task
+
+      SUBROUTINE c_set_state( container, type, name )                          &
+            BIND( C, name = "galahad_ssids_profile_set_state" )
+         USE, INTRINSIC :: iso_c_binding
+         CHARACTER( C_CHAR ), DIMENSION( * ), INTENT( IN ) :: container
+         CHARACTER( C_CHAR ), DIMENSION( * ), INTENT( IN ) :: type
+         CHARACTER( C_CHAR ), DIMENSION( * ), INTENT( IN ) :: name
+      END SUBROUTINE c_set_state
+
+      SUBROUTINE c_add_event( type, val, thread ) &
+        BIND( C, name = "galahad_ssids_profile_add_event" )
+        USE, INTRINSIC :: iso_c_binding
+        IMPLICIT NONE
+        CHARACTER( C_CHAR ), DIMENSION( * ), INTENT( IN ) :: type
+        CHARACTER( C_CHAR ), DIMENSION( * ), INTENT( IN ) :: val
+        INTEGER( C_INT ), value :: thread
+      END SUBROUTINE c_add_event
+   END INTERFACE
 #endif
 
-contains
+  CONTAINS
 
-  SUBROUTINE profile_begin(regions)
+!-  G A L A H A D -  S S I D S _   S U B R O U T I N E -
+
+    SUBROUTINE profile_begin( regions )
     USE GALAHAD_HW, ONLY : HW_numa_region, HW_c_numa_region
-    implicit none
+    IMPLICIT NONE
 
-    type(HW_numa_region), dimension(:), intent(in) :: regions
+    TYPE( HW_numa_region ), DIMENSION( : ), INTENT( IN ) :: regions
 
-    type(HW_c_numa_region), dimension(:), pointer, contiguous :: f_regions
-    integer(c_int) :: nregions
-    integer(ip_) :: ngpus
-    integer(ip_) :: i
-    integer(ip_) :: st
-    integer(c_int), dimension(:), pointer, contiguous :: gpus
-    type(c_ptr) :: c_regions
+    TYPE( HW_c_numa_region ), DIMENSION( : ), POINTER, CONTIGUOUS :: f_regions
+    INTEGER( c_int ) :: nregions
+    INTEGER( ip_ ) :: ngpus
+    INTEGER( ip_ ) :: i
+    INTEGER( ip_ ) :: st
+    INTEGER( c_int ), DIMENSION( : ), POINTER, CONTIGUOUS :: gpus
+    TYPE( c_ptr ) :: c_regions
 
-    nullify(gpus)
+    NULLIFY( gpus )
 
-    nregions = size(regions, 1)
-    allocate(f_regions(nregions), stat=st)
-    do i = 1, nregions
-       f_regions(i)%nproc = int(regions(i)%nproc,C_INT)
-       ngpus = size(regions(i)%gpus, 1)
-       f_regions(i)%ngpu = int(ngpus,C_INT)
-       if (ngpus .gt. 0) then
-          allocate(gpus(ngpus), stat=st)
-          gpus(:) = int(regions(i)%gpus,kind=c_int)
-          f_regions(i)%gpus = c_loc(gpus(1))
-          nullify(gpus)
-       end if
-    end do
+    nregions = SIZE( regions, 1 )
+    ALLOCATE( f_regions( nregions ), stat=st )
+    DO i = 1, nregions
+      f_regions( i )%nproc = INT( regions( i )%nproc, C_INT )
+      ngpus = SIZE( regions( i )%gpus, 1 )
+      f_regions( i )%ngpu = INT( ngpus, C_INT )
+      IF ( ngpus .gt. 0 ) THEN
+        ALLOCATE( gpus( ngpus ), stat=st )
+        gpus( : ) = INT( regions( i )%gpus,kind = c_int )
+        f_regions( i )%gpus = C_LOC( gpus( 1 ) )
+        NULLIFY( gpus )
+      END IF
+    END DO
 
-    c_regions = c_loc(f_regions)
+    c_regions = C_LOC( f_regions )
 
-    call c_begin(nregions, c_regions)
+    CALL c_begin( nregions, c_regions )
 
     ! TODO free data structures
 
-  END SUBROUTINE profile_begin
+    END SUBROUTINE profile_begin
 
-  type(profile_task_type) function profile_create_task(name, thread)
-    character(len=*), intent(in) :: name
-    integer(ip_), optional, intent(in) :: thread
+!-  G A L A H A D -  S S I D S _ profile_create_task  F U N C T I O N  -
 
-    integer(C_INT) :: mythread
-    character(C_CHAR), dimension(200) :: cname
+    TYPE( profile_task_type ) FUNCTION profile_create_task( name, thread )
+    CHARACTER( LEN = * ), INTENT( IN ) :: name
+    INTEGER( ip_ ), OPTIONAL, INTENT( IN ) :: thread
+
+    INTEGER( C_INT ) :: mythread
+    CHARACTER( C_CHAR ), DIMENSION( 200 ) :: cname
 
     mythread = -1 ! autodetect
-    if(present(thread)) mythread = int(thread,kind=C_INT)
-    call f2c_string(name, cname)
+    IF ( PRESENT( thread ) ) mythread = INT( thread,kind = C_INT )
+    CALL f2c_string( name, cname )
 
-    profile_create_task%ctask = c_create_task(cname, mythread)
-  end function profile_create_task
+    profile_create_task%ctask = c_create_task( cname, mythread )
+    END FUNCTION profile_create_task
 
-  subroutine end_task(this)
-    class(profile_task_type), intent(in) :: this
+    SUBROUTINE end_task( this )
+    CLASS( profile_task_type ), INTENT( IN ) :: this
 
-    call c_end_task(this%ctask)
-  end subroutine end_task
+    CALL c_end_task( this%ctask )
+    END SUBROUTINE end_task
 
-  subroutine profile_set_state(container, type, name)
-    character(len=*), intent(in) :: container
-    character(len=*), intent(in) :: type
-    character(len=*), intent(in) :: name
+!-  G A L A H A D -  S S I D S _ p r o f i l e _ set_state  S U B R O U T I N E 
 
-    character(C_CHAR), dimension(200) :: cname, ctype, ccontainer
+    SUBROUTINE profile_set_state( container, type, name )
+    CHARACTER( LEN = * ), INTENT( IN ) :: container
+    CHARACTER( LEN = * ), INTENT( IN ) :: type
+    CHARACTER( LEN = * ), INTENT( IN ) :: name
 
-    call f2c_string(container, ccontainer)
-    call f2c_string(type, ctype)
-    call f2c_string(name, cname)
-    call c_set_state(ccontainer, ctype, cname)
-  end subroutine profile_set_state
+    CHARACTER( C_CHAR ), DIMENSION( 200 ) :: cname, ctype, ccontainer
 
-  subroutine profile_add_event(type, val, thread)
-    implicit none
+    CALL f2c_string( container, ccontainer )
+    CALL f2c_string( type, ctype )
+    CALL f2c_string( name, cname )
+    CALL c_set_state( ccontainer, ctype, cname )
+    RETURN
 
-    character(len=*), intent(in) :: type
-    character(len=*), intent(in) :: val
-    integer(ip_), optional, intent(in) :: thread
+    END SUBROUTINE profile_set_state
 
-    integer(C_INT) :: mythread
-    character(C_CHAR), dimension(200) :: ctype, cval
+!-  G A L A H A D -  S S I D S _ p r o f i l e _ add_event  S U B R O U T I N E 
 
-    call f2c_string(type, ctype)
-    call f2c_string(val, cval)
+    SUBROUTINE profile_add_event( type, val, thread )
+    IMPLICIT NONE
+
+    CHARACTER( LEN = * ), INTENT( IN ) :: type
+    CHARACTER( LEN = * ), INTENT( IN ) :: val
+    INTEGER( ip_ ), OPTIONAL, INTENT( IN ) :: thread
+
+    INTEGER( C_INT ) :: mythread
+    CHARACTER( C_CHAR ), DIMENSION( 200 ) :: ctype, cval
+
+    CALL f2c_string( type, ctype )
+    CALL f2c_string( val, cval )
     mythread = -1 ! autodetect
-    if(present(thread)) mythread = int(thread,kind=C_INT)
+    IF ( PRESENT( thread ) ) mythread = INT( thread,kind = C_INT )
 
-    call c_add_event(ctype, cval, mythread)
+    CALL c_add_event( ctype, cval, mythread )
+    RETURN
 
-  end subroutine profile_add_event
+    END SUBROUTINE profile_add_event
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  !> @brief Convert Fortran character to C string, adding null terminator.
-  !> @param fstring Fortran string to convert.
-  !> @param cstring On output, overwritten with C string. Must be long enough
-  !>        to include null termination.
-  !> @param stat Status, 0 on sucess, otherwise number of additional characters
-  !>        required.
-  subroutine f2c_string(fstring, cstring, stat)
-    character(len=*), intent(in) :: fstring
-    character(C_CHAR), dimension(:), intent(out) :: cstring
-    integer(ip_), optional, intent(out) :: stat
+!-  G A L A H A D -  S S I D S _ f 2 c _ s t r i n g  S U B R O U T I N E -
 
-    integer(ip_) :: i
+    SUBROUTINE f2c_string( fstring, cstring, stat )
 
-    if(size(cstring).lt.len(fstring)+1) then
-       ! Not big enough, need +1 for null terminator
-       if(present(stat)) stat = len(fstring)+1 - size(cstring)
-       return
-    endif
+!  convert Fortran CHARACTER to C string, adding null terminator.
+!   fstring Fortran string to convert.
+!   cstring On output, overwritten with C string. Must be long enough
+!     to include null termination.
+!   stat Status, 0 on sucess, otherwise number of additional CHARACTERs
+!     required.
 
-    do i = 1, len(fstring)
-       cstring(i) = fstring(i:i)
-    end do
-    cstring(len(fstring)+1) = C_NULL_CHAR
-  end subroutine f2c_string
+    CHARACTER( LEN = * ), INTENT( IN ) :: fstring
+    CHARACTER( C_CHAR ), DIMENSION( : ), INTENT( OUT ) :: cstring
+    INTEGER( ip_ ), OPTIONAL, INTENT( OUT ) :: stat
 
-END MODULE GALAHAD_SSIDS_profile
+    INTEGER( ip_ ) :: i
+
+    IF (  SIZE( cstring ) < LEN( fstring ) + 1 ) THEN
+
+!  not big enough, need +1 for null terminator
+
+      IF ( PRESENT( stat ) ) stat = LEN( fstring ) + 1 - SIZE( cstring )
+      RETURN
+    END IF
+
+    DO i = 1, LEN( fstring )
+      cstring( i ) = fstring( i:i )
+    END do
+    cstring( LEN( fstring ) + 1 ) = C_NULL_CHAR
+    RETURN
+
+    END SUBROUTINE f2c_string
+
+  END MODULE GALAHAD_SSIDS_profile

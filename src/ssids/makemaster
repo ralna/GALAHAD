@@ -254,7 +254,7 @@ SSIDSS = basics $(SPRALRBS) ms mo hw \
          $(RLGS)(ldlt_nopiv_single.o) $(RLGS)(ldlt_tpp_single.o) \
          $(RLGS)(wrappers_single.o) \
          $(RLGS)(ThreadStats.o) \
-         $(RLGS)(datatypes_single.o) \
+         $(RLGS)(types_single.o) \
          $(RLGS)(inform_single.o) $(RLGS)(contrib_single.o) \
          $(RLGS)(subtree_single.o) $(RLGS)(akeep_single.o) \
          $(RLGS)(cpu_iface_single.o) $(RLGS)(cpu_subtree_single.o) \
@@ -269,7 +269,7 @@ SSIDSD = basics $(SPRALRBD) ms mo hw \
          $(RLGD)(ldlt_nopiv_double.o) $(RLGD)(ldlt_tpp_double.o) \
          $(RLGD)(wrappers_double.o) \
          $(RLGD)(ThreadStats.o) \
-         $(RLGD)(datatypes_double.o) \
+         $(RLGD)(types_double.o) \
          $(RLGD)(inform_double.o) $(RLGD)(contrib_double.o) \
          $(RLGD)(subtree_double.o) $(RLGD)(akeep_double.o) \
          $(RLGD)(cpu_iface_double.o) $(RLGD)(cpu_subtree_double.o) \
@@ -284,7 +284,7 @@ SSIDSQ = basics $(SPRALRBQ) ms mo hw \
          $(RLGQ)(ldlt_nopiv_quadruple.o) $(RLGQ)(ldlt_tpp_quadruple.o) \
          $(RLGQ)(wrappers_quadruple.o) \
          $(RLGQ)(ThreadStats.o) \
-         $(RLGQ)(datatypes_quadruple.o) \
+         $(RLGQ)(types_quadruple.o) \
          $(RLGQ)(inform_quadruple.o) $(RLGQ)(contrib_quadruple.o) \
          $(RLGQ)(subtree_quadruple.o) $(RLGQ)(akeep_quadruple.o) \
          $(RLGQ)(cpu_iface_quadruple.o) $(RLGQ)(cpu_subtree_quadruple.o) \
@@ -298,7 +298,7 @@ SSIDSS64 = basics $(SPRALRBS64) ms mo hw \
          $(RLGS64)(cholesky_single_64.o) $(RLGS64)(ldlt_app_single_64.o) \
          $(RLGS64)(ldlt_nopiv_single_64.o) $(RLGS64)(ldlt_tpp_single_64.o) \
          $(RLGS64)(wrappers_single_64.o) $(RLGS64)(ThreadStats.o) \
-         $(RLGS64)(datatypes_single_64.o) \
+         $(RLGS64)(types_single_64.o) \
          $(RLGS64)(inform_single_64.o) $(RLGS64)(contrib_single_64.o) \
          $(RLGS64)(subtree_single_64.o) $(RLGS64)(akeep_single_64.o) \
          $(RLGS64)(cpu_iface_single_64.o) $(RLGS64)(cpu_subtree_single_64.o) \
@@ -312,7 +312,7 @@ SSIDSD64 = basics $(SPRALRBD64) ms mo hw \
          $(RLGD64)(cholesky_double_64.o) $(RLGD64)(ldlt_app_double_64.o) \
          $(RLGD64)(ldlt_nopiv_double_64.o) $(RLGD64)(ldlt_tpp_double_64.o) \
          $(RLGD64)(wrappers_double_64.o) $(RLGD64)(ThreadStats.o) \
-         $(RLGD64)(datatypes_double_64.o) \
+         $(RLGD64)(types_double_64.o) \
          $(RLGD64)(inform_double_64.o) $(RLGD64)(contrib_double_64.o) \
          $(RLGD64)(subtree_double_64.o) $(RLGD64)(akeep_double_64.o) \
          $(RLGD64)(cpu_iface_double_64.o) $(RLGD64)(cpu_subtree_double_64.o) \
@@ -327,7 +327,7 @@ SSIDSQ64 = basics $(SPRALRBQ64) ms mo hw \
          $(RLGQ64)(ldlt_nopiv_quadruple_64.o) \
          $(RLGQ64)(ldlt_tpp_quadruple_64.o) \
          $(RLGQ64)(wrappers_quadruple_64.o) $(RLGQ64)(ThreadStats.o) \
-         $(RLGQ64)(datatypes_quadruple_64.o) \
+         $(RLGQ64)(types_quadruple_64.o) \
          $(RLGQ64)(inform_quadruple_64.o) $(RLGQ64)(contrib_quadruple_64.o) \
          $(RLGQ64)(subtree_quadruple_64.o) $(RLGQ64)(akeep_quadruple_64.o) \
          $(RLGQ64)(cpu_iface_quadruple_64.o) \
@@ -1030,18 +1030,18 @@ $(RLG)(ThreadStats.o): ../ssids/ThreadStats.cxx \
                       $(RM) ThreadStats.cxx ThreadStats.o
 	@printf '[ OK ]\n'
 
-datatypes.o: $(RLG)(datatypes_$(PRECIS).o)
+types.o: $(RLG)(types_$(PRECIS).o)
 
-$(RLG)(datatypes_$(PRECIS).o): ../ssids/datatypes.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "datatypes  "
-	$(CP) ../ssids/datatypes.F90 $(OBJ)/datatypes.F90
-	cd $(OBJ) ; $(FORTRAN) -o datatypes_$(PRECIS).o \
-                      $(FFLAGSOMP) datatypes.F90 \
+$(RLG)(types_$(PRECIS).o): ../ssids/types.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "types  "
+	$(CP) ../ssids/types.F90 $(OBJ)/types.F90
+	cd $(OBJ) ; $(FORTRAN) -o types_$(PRECIS).o \
+                      $(FFLAGSOMP) types.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o datatypes_$(PRECIS).o \
-                      $(FFLAGSNOMP) datatypes.F90 )
-	cd $(OBJ) ; $(RARR) datatypes_$(PRECIS).o ; \
-                      $(RM) datatypes.F90 datatypes_$(PRECIS).o
+                    $(FORTRAN) -o types_$(PRECIS).o \
+                      $(FFLAGSNOMP) types.F90 )
+	cd $(OBJ) ; $(RARR) types_$(PRECIS).o ; \
+                      $(RM) types.F90 types_$(PRECIS).o
 	$(RRMARFILE) cpu_subtree_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
@@ -1174,20 +1174,6 @@ $(RLG)(gpu_subtree_no_cuda_$(PRECIS).o): ../ssids/gpu_subtree_no_cuda.F90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-$(RLG)(cpu_solve_$(PRECIS).o): ../ssids/cpu_solve.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_solve  "
-	$(CP) ../ssids/cpu_solve.F90 $(OBJ)/cpu_solve.F90
-	cd $(OBJ) ; $(FORTRAN) -o cpu_solve_$(PRECIS).o \
-                     $(FFLAGSOMP) cpu_solve.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o cpu_solve_$(PRECIS).o \
-                      $(FFLAGSNOMP) cpu_solve.F90 )
-	cd $(OBJ) ; $(RARR) cpu_solve_$(PRECIS).o ; \
-          $(RM) cpu_solve.F90 cpu_solve_$(PRECIS).o
-#	$(RRMARFILE) ssids_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
 analyse.o: $(RLG)(analyse_$(PRECIS).o)
 
 $(RLG)(analyse_$(PRECIS).o): ../ssids/analyse.F90
@@ -1228,7 +1214,7 @@ $(RLG)(contrib_free_$(PRECIS).o): ../ssids/contrib_free.F90
                        contrib_free.F90 )
 	cd $(OBJ) ; $(RARR) contrib_free_$(PRECIS).o ; \
           $(RM) contrib_free.F90 contrib_free_$(PRECIS).o
-	$(MVMODS)
+#	$(MVMODS)
 	@printf '[ OK ]\n'
 
 ssids.o: $(RLG)(ssids_$(PRECIS).o)
