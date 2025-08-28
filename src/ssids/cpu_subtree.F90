@@ -12,7 +12,6 @@ MODULE GALAHAD_SSIDS_cpu_subtree_precision
   USE GALAHAD_SSIDS_contrib_precision, ONLY : contrib_type
   USE GALAHAD_SSIDS_cpu_iface_precision ! fixme only
   USE GALAHAD_SSIDS_types_precision
-  USE GALAHAD_SSIDS_inform_precision, ONLY : ssids_inform_type
   USE GALAHAD_SSIDS_subtree_precision, ONLY : symbolic_subtree_base,           &
                                               numeric_subtree_base
   IMPLICIT none

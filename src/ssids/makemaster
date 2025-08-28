@@ -255,7 +255,7 @@ SSIDSS = basics $(SPRALRBS) ms mo hw \
          $(RLGS)(wrappers_single.o) \
          $(RLGS)(ThreadStats.o) \
          $(RLGS)(types_single.o) \
-         $(RLGS)(inform_single.o) $(RLGS)(contrib_single.o) \
+         $(RLGS)(contrib_single.o) \
          $(RLGS)(subtree_single.o) $(RLGS)(akeep_single.o) \
          $(RLGS)(cpu_iface_single.o) $(RLGS)(cpu_subtree_single.o) \
          $(RLGS)(profile_iface.o) $(RLGS)(gpu_subtree_no_cuda_single.o) \
@@ -270,7 +270,7 @@ SSIDSD = basics $(SPRALRBD) ms mo hw \
          $(RLGD)(wrappers_double.o) \
          $(RLGD)(ThreadStats.o) \
          $(RLGD)(types_double.o) \
-         $(RLGD)(inform_double.o) $(RLGD)(contrib_double.o) \
+         $(RLGD)(contrib_double.o) \
          $(RLGD)(subtree_double.o) $(RLGD)(akeep_double.o) \
          $(RLGD)(cpu_iface_double.o) $(RLGD)(cpu_subtree_double.o) \
          $(RLGD)(profile_iface.o) $(RLGD)(gpu_subtree_no_cuda_double.o) \
@@ -285,7 +285,7 @@ SSIDSQ = basics $(SPRALRBQ) ms mo hw \
          $(RLGQ)(wrappers_quadruple.o) \
          $(RLGQ)(ThreadStats.o) \
          $(RLGQ)(types_quadruple.o) \
-         $(RLGQ)(inform_quadruple.o) $(RLGQ)(contrib_quadruple.o) \
+         $(RLGQ)(contrib_quadruple.o) \
          $(RLGQ)(subtree_quadruple.o) $(RLGQ)(akeep_quadruple.o) \
          $(RLGQ)(cpu_iface_quadruple.o) $(RLGQ)(cpu_subtree_quadruple.o) \
          $(RLGQ)(profile_iface.o) $(RLGQ)(gpu_subtree_no_cuda_quadruple.o) \
@@ -299,7 +299,7 @@ SSIDSS64 = basics $(SPRALRBS64) ms mo hw \
          $(RLGS64)(ldlt_nopiv_single_64.o) $(RLGS64)(ldlt_tpp_single_64.o) \
          $(RLGS64)(wrappers_single_64.o) $(RLGS64)(ThreadStats.o) \
          $(RLGS64)(types_single_64.o) \
-         $(RLGS64)(inform_single_64.o) $(RLGS64)(contrib_single_64.o) \
+         $(RLGS64)(contrib_single_64.o) \
          $(RLGS64)(subtree_single_64.o) $(RLGS64)(akeep_single_64.o) \
          $(RLGS64)(cpu_iface_single_64.o) $(RLGS64)(cpu_subtree_single_64.o) \
          $(RLGS64)(profile_iface.o) $(RLGS64)(gpu_subtree_no_cuda_single_64.o) \
@@ -313,7 +313,7 @@ SSIDSD64 = basics $(SPRALRBD64) ms mo hw \
          $(RLGD64)(ldlt_nopiv_double_64.o) $(RLGD64)(ldlt_tpp_double_64.o) \
          $(RLGD64)(wrappers_double_64.o) $(RLGD64)(ThreadStats.o) \
          $(RLGD64)(types_double_64.o) \
-         $(RLGD64)(inform_double_64.o) $(RLGD64)(contrib_double_64.o) \
+         $(RLGD64)(contrib_double_64.o) \
          $(RLGD64)(subtree_double_64.o) $(RLGD64)(akeep_double_64.o) \
          $(RLGD64)(cpu_iface_double_64.o) $(RLGD64)(cpu_subtree_double_64.o) \
          $(RLGD64)(profile_iface.o) $(RLGD64)(gpu_subtree_no_cuda_double_64.o) \
@@ -328,7 +328,7 @@ SSIDSQ64 = basics $(SPRALRBQ64) ms mo hw \
          $(RLGQ64)(ldlt_tpp_quadruple_64.o) \
          $(RLGQ64)(wrappers_quadruple_64.o) $(RLGQ64)(ThreadStats.o) \
          $(RLGQ64)(types_quadruple_64.o) \
-         $(RLGQ64)(inform_quadruple_64.o) $(RLGQ64)(contrib_quadruple_64.o) \
+         $(RLGQ64)(contrib_quadruple_64.o) \
          $(RLGQ64)(subtree_quadruple_64.o) $(RLGQ64)(akeep_quadruple_64.o) \
          $(RLGQ64)(cpu_iface_quadruple_64.o) \
          $(RLGQ64)(cpu_subtree_quadruple_64.o) \
@@ -1043,21 +1043,6 @@ $(RLG)(types_$(PRECIS).o): ../ssids/types.F90
 	cd $(OBJ) ; $(RARR) types_$(PRECIS).o ; \
                       $(RM) types.F90 types_$(PRECIS).o
 	$(RRMARFILE) cpu_subtree_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-inform.o: $(RLG)(inform_$(PRECIS).o)
-
-$(RLG)(inform_$(PRECIS).o): ../ssids/inform.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "inform  "
-	$(CP) ../ssids/inform.F90 $(OBJ)/inform.F90
-	cd $(OBJ) ; $(FORTRAN) -o inform_$(PRECIS).o $(FFLAGSOMP) inform.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o inform_$(PRECIS).o $(FFLAGSNOMP) inform.F90 )
-	cd $(OBJ) ; $(RARR) inform_$(PRECIS).o ; \
-                      $(RM) inform.F90 inform_$(PRECIS).o
-	$(RRMARFILE) cpu_subtree_$(PRECIS).o
-	$(RRMARFILE) akeep_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

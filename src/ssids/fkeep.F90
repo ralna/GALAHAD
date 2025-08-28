@@ -17,7 +17,6 @@
      USE GALAHAD_SSIDS_akeep_precision, ONLY : ssids_akeep_type
      USE GALAHAD_SSIDS_contrib_precision, ONLY : contrib_type
      USE GALAHAD_SSIDS_types_precision
-     USE GALAHAD_SSIDS_inform_precision, ONLY : ssids_inform_type
      USE GALAHAD_SSIDS_subtree_precision, ONLY : numeric_subtree_base
      USE GALAHAD_SSIDS_cpu_subtree_precision, ONLY : cpu_numeric_subtree
 #ifdef PROFILE

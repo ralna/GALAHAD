@@ -8,7 +8,6 @@ MODULE GALAHAD_SSIDS_gpu_subtree_precision
   USE GALAHAD_KINDS_precision
   USE GALAHAD_SSIDS_contrib_precision, ONLY : contrib_type
   USE GALAHAD_SSIDS_types_precision
-  USE GALAHAD_SSIDS_inform_precision, ONLY : SSIDS_inform_type
   USE GALAHAD_SSIDS_subtree_precision, ONLY : symbolic_subtree_base,           &
                                               numeric_subtree_base
   IMPLICIT none
