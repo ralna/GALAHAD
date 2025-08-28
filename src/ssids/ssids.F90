@@ -63,6 +63,8 @@ MODULE GALAHAD_SSIDS_precision
 
    LOGICAL, PUBLIC, PROTECTED :: ssids_available = .TRUE.
 
+   INTEGER( ip_ ), PARAMETER, PUBLIC :: DEBUG_PRINT_LEVEL = 9999
+
 !----------------------
 !   I n t e r f a c e s
 !----------------------
@@ -819,7 +821,7 @@ CONTAINS
     IF ( inform%flag < 0 ) GO TO 490
 
     IF ( PRESENT( order ) ) order( 1:n ) = abs( order2( 1:n ) )
-    IF ( control%print_level > DEBUG_PRINT_LEVEL ) &
+    IF ( control%print_level > DEBUG_PRINT_LEVEL )                             &
          print *, "order = ", order2( 1:n )
 
 490 CONTINUE

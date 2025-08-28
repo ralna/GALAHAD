@@ -8,12 +8,12 @@
 !  licence: BSD licence, see LICENCE file for details
 !  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
-MODULE GALAHAD_SSIDS_contrib_precision
-  USE GALAHAD_KINDS_precision
-  IMPLICIT none
+  MODULE GALAHAD_SSIDS_contrib_precision
+    USE GALAHAD_KINDS_precision
+    IMPLICIT none
 
-  PRIVATE
-  PUBLIC :: contrib_type
+    PRIVATE
+    PUBLIC :: contrib_type
 
 !  this type represents a contribution block being passed between two
 !  subtrees. It exists in CPU memory, but provides a cleanup routine as
@@ -22,24 +22,24 @@ MODULE GALAHAD_SSIDS_contrib_precision
 !  but alas Fortran/C interop causes severe problems, so we just have the
 !  owner value instead and if statements to call the right thing).
 
-  TYPE :: contrib_type
-     LOGICAL :: ready = .FALSE.
-     INTEGER( ip_ ) :: n ! size of block
-     REAL( C_RP_ ), DIMENSION( : ), POINTER :: val ! n x n lwr triangular matrix
-     INTEGER( C_IP_ ) :: ldval
-     INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: rlist ! row list
-     INTEGER( ip_ ) :: ndelay
-     INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: delay_perm
-     REAL( C_RP_ ), DIMENSION( : ), POINTER :: delay_val
-     INTEGER( ip_ ) :: lddelay
-     INTEGER( ip_ ) :: owner ! cleanup routine to call: 0=cpu, 1=gpu
+    TYPE :: contrib_type
+       LOGICAL :: ready = .FALSE.
+       INTEGER( ip_ ) :: n ! size of block
+       REAL( C_RP_ ), DIMENSION( : ), POINTER :: val ! nxn lwr triangular matrix
+       INTEGER( C_IP_ ) :: ldval
+       INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: rlist ! row list
+       INTEGER( ip_ ) :: ndelay
+       INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: delay_perm
+       REAL( C_RP_ ), DIMENSION( : ), POINTER :: delay_val
+       INTEGER( ip_ ) :: lddelay
+       INTEGER( ip_ ) :: owner ! cleanup routine to call: 0=cpu, 1=gpu
 
-!  the following are used by CPU to call correct cleanup routine
+  !  the following are used by CPU to call correct cleanup routine
 
-     LOGICAL( C_BOOL ) :: posdef
-     TYPE( C_PTR ) :: owner_ptr
-  END TYPE contrib_type
-END MODULE GALAHAD_SSIDS_contrib_precision
+       LOGICAL( C_BOOL ) :: posdef
+       TYPE( C_PTR ) :: owner_ptr
+    END TYPE contrib_type
+  END MODULE GALAHAD_SSIDS_contrib_precision
 
 !  C function to get interesting components
 
