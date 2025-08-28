@@ -16,10 +16,10 @@
     USE GALAHAD_KINDS_precision
     USE GALAHAD_HW, ONLY: HW_numa_region
     USE GALAHAD_SSIDS_akeep_precision, ONLY : SSIDS_akeep_type
-    USE GALAHAD_SSIDS_cpu_subtree_precision, ONLY :                            &
+    USE GALAHAD_SSIDS_cpu_subtree_precision, ONLY:                             &
       construct_cpu_symbolic_subtree
-    USE GALAHAD_SSIDS_gpu_subtree_precision, ONLY :                            &
-      construct_gpu_symbolic_subtree
+!   USE GALAHAD_SSIDS_gpu_subtree_precision, ONLY:                             &
+!     construct_gpu_symbolic_subtree
     USE GALAHAD_SSIDS_types_precision
 
     IMPLICIT NONE
@@ -89,7 +89,7 @@
     TYPE( SSIDS_control_type ), INTENT( IN ) :: control
     TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
 
-    character( 50 )  :: context !  Procedure name ( used when printing ).
+    CHARACTER( 50 )  :: context !  Procedure name ( used when printing ).
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: contrib_dest, exec_loc, level
 
     INTEGER( ip_ ) :: to_launch
@@ -233,15 +233,20 @@
 !  GPU
 
       ELSE
-          device = akeep%topology( numa_region )%gpus( device )
+        device = akeep%topology( numa_region )%gpus( device )
 
 !print  * , numa_region, "init gpu subtree ", i, akeep%part( i ), &
 !    akeep%part( i + 1 ) - 1, "device", device
 
-        akeep%subtree( i )%ptr => construct_gpu_symbolic_subtree( device,      &
-          akeep%n, akeep%part( i ), akeep%part( i + 1 ), akeep%sptr,           &
-          akeep%sparent, akeep%rptr, akeep%rlist, akeep%nptr,                  &
-          akeep%nlist, control )
+!  return a dummy GPU call in lieu of a proper implementation
+
+        akeep%subtree( i )%ptr => NULL( )
+
+!       akeep%subtree( i )%ptr => construct_gpu_symbolic_subtree( device,      &
+!         akeep%n, akeep%part( i ), akeep%part( i + 1 ), akeep%sptr,           &
+!         akeep%sparent, akeep%rptr, akeep%rlist, akeep%nptr,                  &
+!         akeep%nlist, control )
+!       akeep%subtree( i )%ptr => dummy
       END IF
     END DO
 !$omp end parallel

@@ -27,13 +27,6 @@
 !----------------------
 
     INTEGER( ip_ ), PARAMETER, PUBLIC :: nemin_default = 32 ! node amalgamation
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: BLOCK_SIZE = 8
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: MNF_BLOCKS = 11
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: HOGG_ASSEMBLE_TX = 128
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: HOGG_ASSEMBLE_TY = 8
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: EXEC_LOC_CPU = 0
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: EXEC_LOC_GPU = 1
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: DEBUG_PRINT_LEVEL = 9999
     REAL( rp_ ), PARAMETER, PUBLIC :: one = 1.0_rp_
     REAL( rp_ ), PARAMETER, PUBLIC :: zero = 0.0_rp_
 

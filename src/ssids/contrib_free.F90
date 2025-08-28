@@ -48,7 +48,7 @@
   USE, INTRINSIC :: iso_c_binding
   USE GALAHAD_SSIDS_contrib_precision, ONLY: contrib_type
   USE GALAHAD_SSIDS_cpu_subtree_precision, ONLY: cpu_free_contrib
-  USE GALAHAD_SSIDS_gpu_subtree_precision, ONLY: gpu_free_contrib
+! USE GALAHAD_SSIDS_gpu_subtree_precision, ONLY: gpu_free_contrib
 ! USE GALAHAD_SSIDS_contrib_fsub_precision
   IMPLICIT NONE
 
@@ -62,7 +62,8 @@
     CASE ( 0 ) ! CPU
        CALL cpu_free_contrib( fcontrib%posdef, fcontrib%owner_ptr )
     CASE ( 1 ) ! GPU
-       CALL gpu_free_contrib( fcontrib )
+!      CALL gpu_free_contrib( fcontrib ) 
+       fcontrib%n = 0
     CASE DEFAULT ! This should never happen
        PRINT *, "Unrecognised contrib owner ", fcontrib%owner
        STOP - 1
