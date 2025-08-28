@@ -2,12 +2,15 @@
 
 #include "ssids_procedures.h"
 
+!-*-*-*-*-  G A L A H A D _ S S I D S _ a n a l y s e   M O D U L E  *-*-*-*-*-
+
 !  COPYRIGHT (c) 2010-2016 The Science and Technology Facilities Council (STFC)
 !  licence: BSD licence, see LICENCE file for details
 !  author: Jonathan Hogg
 !  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
   MODULE GALAHAD_SSIDS_analyse_precision
+
     USE, INTRINSIC :: iso_c_binding
 !$ USE :: omp_lib
     USE GALAHAD_KINDS_precision
@@ -19,17 +22,23 @@
       construct_gpu_symbolic_subtree
     USE GALAHAD_SSIDS_types_precision
     USE GALAHAD_SSIDS_inform_precision, ONLY : SSIDS_inform_type
-    IMPLICIT none
+
+    IMPLICIT NONE
 
     PRIVATE
-    PUBLIC :: analyse_phase,   & !  Calls core analyse & builds data strucutres
-              check_order,     & !  Check order is a valid permutation
-              expand_pattern,  & !  Specialised half->full matrix conversion
-              expand_matrix      !  Specialised half->full matrix conversion
+    PUBLIC :: analyse_phase, check_order, expand_pattern, expand_matrix
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
 
     INTERFACE print_atree
       MODULE PROCEDURE print_atree, print_atree_part
     END INTERFACE print_atree
+
+!----------------------
+!   P a r a m e t e r s
+!----------------------
 
 !  extracted from SPRAL_CORE_ANALYSE
    
@@ -37,15 +46,18 @@
 
   CONTAINS
 
+!- G A L A H A D -  S S I D S _ a n a l y s e _ p h a s e  S U B R O U T I N E -
+
     SUBROUTINE analyse_phase( n, ptr, row, ptr2, row2, order, invp,            &
                               akeep, control, inform  )
 
-!   this routine requires the LOWER and UPPER triangular parts of A
-!   to be held in CSC format using ptr2 and row2
-!   AND lower triangular part held using ptr and row.
+!  calls core analyse & builds data strucutres
+
+!  this routine requires the LOWER and UPPER triangular parts of A to be held 
+!  in CSC format using ptr2 and row2  and lower triangular part held using ptr
+!  and row
 !
-!   On exit from this routine, order is set to order
-!   input to factorization.
+!  on exit from this routine, order is set to order input to factorization
 
     IMPLICIT none
     INTEGER( ip_ ), INTENT( IN ) :: n !  order of system
@@ -265,13 +277,18 @@
       inform%flag = SSIDS_ERROR_ALLOCATION
     END IF
     RETURN
+
     END SUBROUTINE analyse_phase
+
+!-*-  G A L A H A D -  S S I D S _ c h e c k _ o r d e r  S U B R O U T I N E -*
 
     SUBROUTINE check_order( n, order, invp, control, inform )
 
-!   this routine requires the LOWER triangular part of A to be held in CSC 
-!   format. The user has supplied a pivot order and this routine checks it 
-!   is OK and returns an error if not. Also sets perm, invp.
+!  check order is a valid permutation
+
+!  this routine requires the LOWER triangular part of A to be held in CSC 
+!  format. The user has supplied a pivot order and this routine checks it 
+!  is OK and returns an error if not. Also sets perm, invp.
 
     IMPLICIT none
     INTEGER( ip_ ), INTENT( IN ) :: n !  order of system
@@ -328,14 +345,20 @@
       inform%flag = SSIDS_ERROR_ORDER
       RETURN
     END IF
+    RETURN
+
     END SUBROUTINE check_order
+
+!  G A L A H A D -  S S I D S _ e x p a n d _ p a t t e r n  S U B R O U T I N E
 
     SUBROUTINE expand_pattern( n, nz, ptr, row, aptr, arow )
 
-!  Given lower triangular part of A held in row and ptr, expand to
-!  upper and lower triangular parts (pattern only). No checks.
+!  specialised half->full matrix conversion
+
+!  given lower triangular part of A held in row and ptr, expand to
+!  upper and lower triangular parts (pattern only). No checks
 !
-!  Note: we do not use half_to_full here to expand A since, if we did, we would
+!  note: we do not use half_to_full here to expand A since, if we did, we would
 !  need an extra copy of the lower triangle into the full structure before
 !  calling half_to_full
 !
@@ -384,9 +407,15 @@
     DO j = 1,n
       aptr( j ) = aptr( j ) + 1
     END DO
+    RETURN
+
     END SUBROUTINE expand_pattern
 
+!-  G A L A H A D -  S S I D S _ e x p a n d _ m a t r i x  S U B R O U T I N E 
+
     SUBROUTINE expand_matrix( n, nz, ptr, row, val, aptr, arow, aval )
+
+!  specialised half->full matrix conversion
 
 !  given lower triangular part of A held in row, val and ptr, expand to
 !  upper and lower triangular parts
@@ -444,7 +473,11 @@
     DO j = 1,n
       aptr( j ) = aptr( j ) + 1
     END DO
+    RETURN
+
     END SUBROUTINE expand_matrix
+
+!-*-  G A L A H A D -  S S I D S _ c o m p u t e _ f l o p s  F U N C T I O N -*
 
     FUNCTION compute_flops( nnodes, sptr, rptr, node )
 
@@ -472,6 +505,8 @@
     END DO
 
     END FUNCTION compute_flops
+
+!-  G A L A H A D -  S S I D S _ find_subtree_partition  F U N C T I O N -
 
     SUBROUTINE find_subtree_partition( nnodes, sptr, sparent, rptr, control,   &
                                        topology, nparts, part, exec_loc,       &
@@ -727,7 +762,11 @@
          inform%gpu_flops = inform%gpu_flops + flops( part( i + 1 ) - 1 )
     END DO
     inform%cpu_flops = flops( nnodes + 1 ) - inform%gpu_flops
+    RETURN
+
     END SUBROUTINE find_subtree_partition
+
+!-  G A L A H A D -  S S I D S _ calc_exec_alloc  F U N C T I O N -
 
     REAL FUNCTION calc_exec_alloc( nparts, part, size_order, is_child, flops,  &
                                    topology, min_gpu_work, gpu_perf_coeff,     &
@@ -903,7 +942,11 @@
 
     calc_exec_alloc                                                            &
       = REAL( nregion + ngpu ) * maxval( load_balance( : ) ) / total_balance
+    RETURN
+
     END FUNCTION calc_exec_alloc
+
+!-*-  G A L A H A D -  S S I D S _ s p l i t _ t r e e  S U B R O U T I N E -*-
 
     SUBROUTINE split_tree( nparts, part, size_order, is_child, sparent, flops, &
                            ngpu, min_gpu_work, st )
@@ -1020,7 +1063,11 @@
 !  finally, recreate size_order array
 
     CALL create_size_order( nparts, part, flops, size_order )
+    RETURN
+
     END SUBROUTINE split_tree
+
+!-  G A L A H A D -  S S I D S _ create_size_order  S U B R O U T I N E -
 
     SUBROUTINE create_size_order( nparts, part, flops, size_order )
 
@@ -1057,7 +1104,11 @@
       size_order( j + 1 : i ) = size_order( j : i - 1 )
       size_order( j ) = i
     END DO
+    RETURN
+
     END SUBROUTINE create_size_order
+
+!-  G A L A H A D -  S S I D S _ p r i n t _ a t r e e  S U B R O U T I N E -
 
     SUBROUTINE print_atree( nnodes, sptr, sparent, rptr )
 
@@ -1132,8 +1183,11 @@
 
     WRITE( 2, '( "}" )' )
     CLOSE( 2 )
+    RETURN
 
     END SUBROUTINE print_atree
+
+!-  G A L A H A D -  S S I D S _ print_atree_part  S U B R O U T I N E -
 
     SUBROUTINE print_atree_part( nnodes, sptr, sparent, rptr, topology,        &
                                  nparts, part, exec_loc )
@@ -1240,8 +1294,11 @@
 
     WRITE( 2, '( "}" )' ) !  Graph
     CLOSE( 2 )
+    RETURN
 
     END SUBROUTINE print_atree_part
+
+!-  G A L A H A D -  S S I D S _ b u i l d _ m a p   S U B R O U T I N E -
 
     SUBROUTINE build_map( n, ptr, row, perm, invp, nnodes, sptr, rptr, rlist,  &
                           nptr, nlist, st )
@@ -1365,11 +1422,15 @@
       END DO
     END DO
     nptr( nnodes + 1 ) = pp
+    RETURN
+
     END SUBROUTINE build_map
 
 !   ============================================================================
 !   ================ extracted from SPRAL_CORE_ANALYSE module ==================
 !   ============================================================================
+
+!-  G A L A H A D -  S S I D S _ b a s i c _ a n a l y s e  S U B R O U T I N E 
 
     SUBROUTINE basic_analyse( n, ptr, row, perm, nnodes, sptr, sparent, rptr,  &
                               rlist, nemin, info, stat, nfact, nflops )
@@ -1534,7 +1595,6 @@
 
     CALL dbl_tr_sort( n, nnodes, rptr, rlist, st )
     IF ( st /= 0 ) GO TO 490
-
     RETURN
 
 !  error handlers
@@ -1543,11 +1603,14 @@
     info = SSIDS_ERROR_ALLOCATION
     stat = st
     RETURN
+
     END SUBROUTINE basic_analyse
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  Elimination tree routines
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!-*-  G A L A H A D -  S S I D S _ f i n d _ e t r e e  S U B R O U T I N E -*-
 
     SUBROUTINE find_etree( n, ptr, row, perm, invp, parent, st )
 
@@ -1632,7 +1695,11 @@
       parent( piv ) = n + 1 !  set to be a root if not overwritten
       piv = piv + 1 !  move on to next pivot
     END DO
+    RETURN
+
     END SUBROUTINE find_etree
+
+!-  G A L A H A D -  S S I D S _ find_postorder  S U B R O U T I N E -
 
     SUBROUTINE find_postorder( n, realn, ptr, perm, invp, parent, st )
 
@@ -1785,11 +1852,15 @@
     DO i = 1, n
       parent( map( i ) ) = stack( i )
     END DO
+    RETURN
+
     END SUBROUTINE find_postorder
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  Column count routines
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!-  G A L A H A D -  S S I D S _  find_col_counts  S U B R O U T I N E -
 
     SUBROUTINE find_col_counts( n, ptr, row, perm, invp, parent, cc, st )
 
@@ -1980,11 +2051,15 @@
     END DO
 
     FIND = current
+    RETURN
+
     END FUNCTION FIND
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  Supernode amalgamation routines
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!-  G A L A H A D -  S S I D S _ find_supernodes  S U B R O U T I N E -
 
     SUBROUTINE find_supernodes( n, realn, parent, cc, sperm, nnodes, sptr,     &
                                 sparent, scc, nemin, info, st )
@@ -2227,7 +2302,10 @@
 490 CONTINUE
     info = SSIDS_ERROR_ALLOCATION
     RETURN
+
     END SUBROUTINE find_supernodes
+
+!-  G A L A H A D -  S S I D S _ sort_by_val S U B R O U T I N E -
 
     RECURSIVE SUBROUTINE sort_by_val( n, idx, val, st )
 
@@ -2265,7 +2343,11 @@
         kor = kor - 1
       END DO
     END IF
+    RETURN
+
     END SUBROUTINE sort_by_val
+
+!-  G A L A H A D -  S S I D S _ sort_by_val_ms  S U B R O U T I N E -
 
     RECURSIVE SUBROUTINE sort_by_val_ms( n, idx, val, st )
 
@@ -2326,7 +2408,11 @@
       END IF
     END DO
     IF ( j <= mid ) idx( i + 1 : n ) = work( j : mid )
+    RETURN
+
     END SUBROUTINE sort_by_val_ms
+
+!-*-  G A L A H A D -  S S I D S _ d o _ m e r g e  F U C T T I O N -*-
 
     LOGICAL FUNCTION do_merge( node, par, nelim, cc, ezero, nemin )
 
@@ -2347,7 +2433,11 @@
 
     do_merge = ( cc( par ) == cc( node ) - 1 .AND. nelim( par ) == 1 ) .OR.    &
                ( nelim( par ) < nemin .AND. nelim( node ) < nemin )
+    RETURN
+
     END FUNCTION do_merge
+
+!-  G A L A H A D -  S S I D S _ merge_nodes  S U B R O U T I N E -
 
     SUBROUTINE merge_nodes( node, par, nelim, nvert, vhead, vnext, height,     &
                             ezero, cc )
@@ -2383,11 +2473,15 @@
 !  nodes have same height
 
     height( par ) = max( height( par ), height( node ) )
+    RETURN
+
     END SUBROUTINE merge_nodes
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  Statistics routines
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!-  G A L A H A D -  S S I D S _  S U B R O U T I N E -
 
     SUBROUTINE calc_stats( nnodes, sptr, scc, nfact, nflops )
 
@@ -2435,11 +2529,15 @@
 !print  * , "nfact = ", nfact
 !print  * , "sum cc=", sum( cc( 1 : n ) )
 !print  * , "nflops = ", nflops
+    RETURN
+
     END SUBROUTINE calc_stats
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  Row list routines
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!-  G A L A H A D -  S S I D S _ find_row_lists  S U B R O U T I N E -
 
     SUBROUTINE find_row_lists( n, ptr, row, perm, invp, nnodes,                &
                                sptr, sparent, scc, rptr, rlist, info, st )
@@ -2543,11 +2641,15 @@
         END DO
       END DO
     END DO
+    RETURN
+
     END SUBROUTINE find_row_lists
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  Assorted auxilary routines
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!-  G A L A H A D -  S S I D S _  dbl_tr_sort  S U B R O U T I N E -
 
     SUBROUTINE dbl_tr_sort( n, nnodes, rptr, rlist, st )
 
@@ -2614,7 +2716,11 @@
         nptr( node ) = nptr( node ) + 1
       END DO
     END DO
+    RETURN
+
     END SUBROUTINE dbl_tr_sort
+
+!-  G A L A H A D -  S S I D S _  apply_perm  S U B R O U T I N E -
 
     SUBROUTINE apply_perm( n, perm, order, invp, cc )
 
@@ -2650,6 +2756,8 @@
     DO i = 1, n
       order( invp( i ) ) = i
     END DO
+    RETURN
+
     END SUBROUTINE apply_perm
 
 !!$!   =========================================================================
@@ -2694,6 +2802,8 @@
 !!$        END DO
 !!$      END DO
 !!$    END DO
+!!$    RETURN
+!!$
 !!$    END SUBROUTINE writePPM
 
   END MODULE GALAHAD_SSIDS_analyse_precision
