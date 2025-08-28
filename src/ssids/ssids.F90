@@ -41,7 +41,6 @@ MODULE GALAHAD_SSIDS_precision
   USE GALAHAD_SSIDS_types_precision
   USE GALAHAD_SSIDS_akeep_precision, ONLY: SSIDS_akeep_type
   USE GALAHAD_SSIDS_fkeep_precision, ONLY: SSIDS_fkeep_type
-  USE GALAHAD_SSIDS_inform_precision, ONLY: SSIDS_inform_type
 
   IMPLICIT none
   PRIVATE

@@ -79,8 +79,8 @@
 MODULE GALAHAD_SSIDS_cpu_iface_precision
    USE GALAHAD_KINDS_precision
    USE, INTRINSIC :: iso_c_binding
-   USE GALAHAD_SSIDS_types_precision, ONLY : SSIDS_control_type
-   USE GALAHAD_SSIDS_inform_precision, ONLY : SSIDS_inform_type
+   USE GALAHAD_SSIDS_types_precision, ONLY : SSIDS_control_type,               &
+                                             SSIDS_inform_type
    USE GALAHAD_BLAS_inter_precision, ONLY : GEMV, GEMM, TRSV, TRSM, SYRK
    USE GALAHAD_LAPACK_inter_precision, ONLY : SYTRF, POTRF
    IMPLICIT none

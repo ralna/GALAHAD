@@ -10,10 +10,8 @@
 MODULE GALAHAD_SSIDS_subtree_precision
    USE GALAHAD_KINDS_precision
    USE GALAHAD_SSIDS_contrib_precision, ONLY: contrib_type
-   USE GALAHAD_SSIDS_types_precision, ONLY: SSIDS_control_type
-!  USE GALAHAD_SSIDS_types_precision, ONLY: SSIDS_control_type,                &
-!                                           SSIDS_inform_type
-   USE GALAHAD_SSIDS_inform_precision, ONLY: SSIDS_inform_type
+   USE GALAHAD_SSIDS_types_precision, ONLY: SSIDS_control_type,                &
+                                            SSIDS_inform_type
    IMPLICIT NONE
 
    PRIVATE

@@ -21,7 +21,6 @@
     USE GALAHAD_SSIDS_gpu_subtree_precision, ONLY :                            &
       construct_gpu_symbolic_subtree
     USE GALAHAD_SSIDS_types_precision
-    USE GALAHAD_SSIDS_inform_precision, ONLY : SSIDS_inform_type
 
     IMPLICIT NONE
 
