@@ -259,7 +259,6 @@ SSIDSS = basics $(SPRALRBS) ms mo hw \
          $(RLGS)(subtree_single.o) $(RLGS)(akeep_single.o) \
          $(RLGS)(cpu_iface_single.o) $(RLGS)(cpu_subtree_single.o) \
          $(RLGS)(profile_iface.o) \
-         $(RLGS)(fkeep_single.o) \
          $(RLGS)(contrib_free_single.o) $(RLGS)(ssids_single.o)
 
 SSIDSD = basics $(SPRALRBD) ms mo hw \
@@ -274,7 +273,6 @@ SSIDSD = basics $(SPRALRBD) ms mo hw \
          $(RLGD)(subtree_double.o) $(RLGD)(akeep_double.o) \
          $(RLGD)(cpu_iface_double.o) $(RLGD)(cpu_subtree_double.o) \
          $(RLGD)(profile_iface.o) \
-         $(RLGD)(fkeep_double.o) \
          $(RLGD)(contrib_free_double.o) $(RLGD)(ssids_double.o)
 
 SSIDSQ = basics $(SPRALRBQ) ms mo hw \
@@ -289,7 +287,6 @@ SSIDSQ = basics $(SPRALRBQ) ms mo hw \
          $(RLGQ)(subtree_quadruple.o) $(RLGQ)(akeep_quadruple.o) \
          $(RLGQ)(cpu_iface_quadruple.o) $(RLGQ)(cpu_subtree_quadruple.o) \
          $(RLGQ)(profile_iface.o) \
-         $(RLGQ)(fkeep_quadruple.o) \
          $(RLGQ)(contrib_free_quadruple.o) $(RLGQ)(ssids_quadruple.o)
 
 SSIDSS64 = basics $(SPRALRBS64) ms mo hw \
@@ -303,7 +300,6 @@ SSIDSS64 = basics $(SPRALRBS64) ms mo hw \
          $(RLGS64)(subtree_single_64.o) $(RLGS64)(akeep_single_64.o) \
          $(RLGS64)(cpu_iface_single_64.o) $(RLGS64)(cpu_subtree_single_64.o) \
          $(RLGS64)(profile_iface.o) \
-         $(RLGS64)(fkeep_single_64.o) \
          $(RLGS64)(contrib_free_single_64.o) $(RLGS64)(ssids_single_64.o)
 
 SSIDSD64 = basics $(SPRALRBD64) ms mo hw \
@@ -317,7 +313,6 @@ SSIDSD64 = basics $(SPRALRBD64) ms mo hw \
          $(RLGD64)(subtree_double_64.o) $(RLGD64)(akeep_double_64.o) \
          $(RLGD64)(cpu_iface_double_64.o) $(RLGD64)(cpu_subtree_double_64.o) \
          $(RLGD64)(profile_iface.o) \
-         $(RLGD64)(fkeep_double_64.o) \
          $(RLGD64)(contrib_free_double_64.o) $(RLGD64)(ssids_double_64.o)
 
 SSIDSQ64 = basics $(SPRALRBQ64) ms mo hw \
@@ -333,7 +328,6 @@ SSIDSQ64 = basics $(SPRALRBQ64) ms mo hw \
          $(RLGQ64)(cpu_iface_quadruple_64.o) \
          $(RLGQ64)(cpu_subtree_quadruple_64.o) \
          $(RLGQ64)(profile_iface.o) \
-         $(RLGQ64)(fkeep_quadruple_64.o) \
          $(RLGQ64)(contrib_free_quadruple_64.o) $(RLGQ64)(ssids_quadruple_64.o)
 
 SSIDSCS = $(SSIDSS) $(CLGS)(ssids_ciface_single.o)
@@ -1138,20 +1132,6 @@ $(RLG)(profile_iface.o): ../ssids/profile_iface.F90
                       profile_iface.F90 )
 	cd $(OBJ) ; $(RARR) profile_iface.o ; \
            $(RM) profile_iface.F90 profile_iface.o
-	$(RRMARFILE) fkeep.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-fkeep.o: $(RLG)(fkeep_$(PRECIS).o)
-
-$(RLG)(fkeep_$(PRECIS).o): ../ssids/fkeep.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "fkeep  "
-	$(CP) ../ssids/fkeep.F90 $(OBJ)/fkeep.F90
-	cd $(OBJ) ; $(FORTRAN) -o fkeep_$(PRECIS).o $(FFLAGSOMP) fkeep.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o fkeep_$(PRECIS).o $(FFLAGSNOMP) fkeep.F90 )
-	cd $(OBJ) ; $(RARR) fkeep_$(PRECIS).o ; \
-                      $(RM) fkeep.F90 fkeep_$(PRECIS).o
 	$(RRMARFILE) ssids_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
