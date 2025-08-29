@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 13:10 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-29 AT 14:00 GMT
 ! (consistent with SPRAL up to issue #250)
 
 #include "ssids_procedures.h"
@@ -9,8 +9,8 @@
 !  licence: BSD licence, see LICENCE file for details
 !  authors: Jonathan Hogg and Jennifer Scott
 !  Forked from SPRAL and extended for GALAHAD, Nick Gould, version 3.1, 2016
-!  Absorbed SSIDS_analyse, SPRAL_CORE_ANALYSE module & SPRAL_pgm modules, 
-!  version 5.3, 2025
+!  Absorbed SSIDS_analyse, SSIDS_fkeep, SPRAL_CORE_ANALYSE
+!  & SPRAL_pgm modules, version 5.3, 2025
 
   MODULE GALAHAD_SSIDS_precision
 
@@ -41,12 +41,10 @@
     USE GALAHAD_NODEND_precision, ONLY: NODEND_half_order,                     &
                                         NODEND_control_type,                   &
                                         NODEND_inform_type
-    USE GALAHAD_SSIDS_contrib_precision, ONLY: contrib_type
     USE GALAHAD_SSIDS_types_precision
-    USE GALAHAD_SSIDS_akeep_precision, ONLY: SSIDS_akeep_type
-!   USE GALAHAD_SSIDS_fkeep_precision, ONLY: SSIDS_fkeep_type
-    USE GALAHAD_SSIDS_subtree_precision, ONLY: numeric_subtree_base
-    USE GALAHAD_SSIDS_cpu_subtree_precision, ONLY : cpu_numeric_subtree,       &
+    USE GALAHAD_SSIDS_subtree_precision, ONLY: numeric_subtree_base,           &
+                                               symbolic_subtree_base
+    USE GALAHAD_SSIDS_cpu_subtree_precision, ONLY: cpu_numeric_subtree,        &
                                                construct_cpu_symbolic_subtree
 !   USE GALAHAD_SSIDS_gpu_subtree_precision, ONLY:                             &
 !     construct_gpu_symbolic_subtree
@@ -143,6 +141,103 @@
       LOGICAL :: dynamic
       INTEGER( KIND = ip_ ) :: max_active_levels
     END TYPE omp_settings
+
+!  -------------------------
+!  extracts from SSIDS_akeep
+!  -------------------------
+
+    TYPE symbolic_subtree_ptr
+      INTEGER( ip_ ) :: exec_loc
+      CLASS( symbolic_subtree_base ), POINTER :: ptr => null( )
+    END TYPE symbolic_subtree_ptr
+
+!  type for information generated in analyse phase
+
+    TYPE, PUBLIC :: SSIDS_akeep_type
+
+!  copy of check as input to analyse phase
+
+      LOGICAL :: check
+
+!  dimension of matrix
+
+      INTEGER( ip_ ) :: n
+
+!  number of nodes in assembly tree
+
+      INTEGER( ip_ ) :: nnodes = - 1
+      
+!  subtree partition
+
+      INTEGER( ip_ ) :: nparts
+      INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: part
+      TYPE( symbolic_subtree_ptr ), DIMENSION( : ), ALLOCATABLE :: subtree
+      INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: contrib_ptr
+      INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: contrib_idx
+
+!  inverse of pivot order that is passed to factorize phase
+
+      INTEGER( ipc_ ), DIMENSION( : ), ALLOCATABLE :: invp
+
+!  map from A to factors. For nodes i, the entries 
+!  nlist(1:2,nptr(i):nptr(i+1)-1) define a relationship:
+!  nodes( node )%lcol(nlist( 2,j )) = val(nlist(1,j))
+
+      INTEGER( long_ ), DIMENSION( :,: ), ALLOCATABLE :: nlist
+
+!  entries into nlist for nodes of the assembly tree. Has length nnodes+1
+
+      INTEGER( long_ ), DIMENSION( : ), ALLOCATABLE :: nptr
+
+!  rlist(rptr(i):rptr(i+1)-1) contains the row indices for node i of the 
+!  assembly tree. At each node, the list is in elimination order.
+!  Allocated within basic_analyse in ssids
+
+      INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: rlist 
+
+!  pointers into rlist for nodes of assembly tree. Has length nnodes+1.
+!  Allocated within basic_analyse in ssids
+
+      INTEGER( long_ ), DIMENSION( : ), ALLOCATABLE :: rptr
+
+!  sparent(i) is the parent of node i in assembly tree. sparent(i)=nnodes+1 if 
+!  i is a  root. The parent is always numbered higher than each of its children.
+!  Allocated within basic_analyse in ssids
+
+      INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: sparent 
+
+!  (super)node pointers. Supernode i consists of sptr(i) through sptr(i+1)-1.
+!  Allocated within basic_analyse in ssids
+
+      INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: sptr
+      
+!  the following components are for cleaned up matrix data. LOWER triangle 
+!  only. We have to retain these for factorize phase as used if the user wants
+!  to do scaling. These components are NOT used if check is set to .false.
+!  on call to ssids_analyse
+
+      INTEGER( long_ ), ALLOCATABLE :: ptr( : ) ! column pointers
+      INTEGER( ip_ ), ALLOCATABLE :: row( : ) ! row indices
+      INTEGER( long_ ) :: lmap ! length of map
+      INTEGER( long_ ), ALLOCATABLE :: map( : ) ! map from old A to cleaned A
+      
+!  scaling from matching-based ordering
+
+      REAL( rp_ ), DIMENSION( : ), ALLOCATABLE :: scaling
+      
+!  machine topology
+   
+     TYPE( HW_numa_region ), DIMENSION( : ), ALLOCATABLE :: topology
+      
+!  inform at end of analyse phase
+
+      TYPE( ssids_inform_type ) :: inform
+
+    CONTAINS
+
+      PROCEDURE, PASS( akeep ) :: free => free_akeep
+
+    END TYPE SSIDS_akeep_type
 
 !  -------------------------
 !  extracts from SSIDS_fkeep
@@ -2045,9 +2140,7 @@
       END IF
       akeep%subtree( i )%exec_loc = exec_loc( i )
 
-!  CPU
-
-      IF ( device == 0 ) THEN
+      IF ( device == 0 ) THEN !  CPU
 
 !print  * , numa_region, "init cpu subtree ", i, akeep%part( i ), &
 !    akeep%part( i + 1 ) - 1
@@ -2057,9 +2150,8 @@
           akeep%rptr, akeep%rlist, akeep%nptr, akeep%nlist,                    &
           contrib_dest( akeep%contrib_ptr( i ) :                               &
                         akeep%contrib_ptr( i + 1 ) - 1 ), control )
-!  GPU
 
-      ELSE
+      ELSE !  GPU
         device = akeep%topology( numa_region )%gpus( device )
 
 !print  * , numa_region, "init gpu subtree ", i, akeep%part( i ), &
@@ -4592,7 +4684,49 @@
     END SUBROUTINE apply_perm
 
 !   ============================================================================
+!   =================== extracted from SSIDS_AKEEP module ======================
+!   ============================================================================
+!   ============= define ssids_akeep type and associated procedures ============
+!   ============================================================================
+
+!-*-  G A L A H A D -  S S I D S _ F R E E _ A K E E P  S U B R O U T I N E  -*-
+
+    SUBROUTINE free_akeep( akeep, flag )
+
+!  free all allocated components of the type akeep
+
+    CLASS( ssids_akeep_type ), INTENT( INOUT ) :: akeep
+    INTEGER( ip_ ), INTENT( OUT ) :: flag
+
+!  local variables
+
+    INTEGER( ip_ ) :: i, st
+
+    flag = 0
+
+    DEALLOCATE( akeep%part, STAT = st )
+    IF ( ALLOCATED( akeep%subtree ) ) THEN
+      DO i = 1, SIZE( akeep%subtree )
+        IF ( ASSOCIATED( akeep%subtree( i )%ptr ) ) THEN
+          CALL akeep%subtree( i )%ptr%cleanup(  )
+          DEALLOCATE( akeep%subtree( i )%ptr )
+          NULLIFY( akeep%subtree( i )%ptr )
+        END IF
+      END DO
+      DEALLOCATE( akeep%subtree, STAT = st )
+    END IF
+    DEALLOCATE( akeep%contrib_ptr, akeep%contrib_idx, akeep%invp,              &
+                akeep%nlist, akeep%nptr,  akeep%rlist, akeep%rptr,             &
+                akeep%sparent, akeep%sptr, akeep%ptr, akeep%row,               &
+                akeep%map, akeep%scaling, akeep%topology, STAT = st )
+    RETURN
+
+    END SUBROUTINE free_akeep
+
+!   ============================================================================
 !   =================== extracted from SSIDS_FKEEP module ======================
+!   ============================================================================
+!   ====== define ssids_fkeep type and associated procedures (CPU version) =====
 !   ============================================================================
 
 !-*-  G A L A H A D -  S S I D S _inner _ factor _ cpu  S U B R O U T I N E  -*-
@@ -4745,19 +4879,19 @@
 !$omp single
        DO i = 1, akeep%nparts
          exec_loc = akeep%subtree( i )%exec_loc
-         IF ( exec_loc /= - 1 ) cycle
+         IF ( exec_loc /= - 1 ) CYCLE
          IF ( ALLOCATED( fkeep%scaling ) ) THEN
            fkeep%subtree( i )%ptr                                              &
-               => akeep%subtree( i )%ptr%factor( fkeep%pos_def, val,           &
-                child_contrib( akeep%contrib_ptr( i ) :                        &
-                               akeep%contrib_ptr( i + 1 ) - 1 ),               &
-                control, inform, scaling=fkeep%scaling )
+             => akeep%subtree( i )%ptr%factor( fkeep%pos_def, val,             &
+                  child_contrib( akeep%contrib_ptr( i ) :                      &
+                                 akeep%contrib_ptr( i + 1 ) - 1 ),             &
+                  control, inform, scaling=fkeep%scaling )
          ELSE
            fkeep%subtree( i )%ptr                                              &
              => akeep%subtree( i )%ptr%factor( fkeep%pos_def, val,             &
-                child_contrib( akeep%contrib_ptr( i ) :                        &
-                                akeep%contrib_ptr( i + 1 ) - 1 ),              &
-                control, inform )
+                  child_contrib( akeep%contrib_ptr( i ) :                      &
+                                 akeep%contrib_ptr( i + 1 ) - 1 ),             &
+                  control, inform )
          END IF
          IF ( akeep%contrib_idx( i ) > akeep%nparts ) CYCLE ! part is a root
          child_contrib( akeep%contrib_idx( i ) )                               &
