@@ -115,7 +115,7 @@
 
   CONTAINS
 
-!-  G A L A H A D -  S S I D S _   S U B R O U T I N E -
+!  G A L A H A D -  S S I D S _ p r o f i l e _ b e g i n  - S U B R O U T I N E
 
     SUBROUTINE profile_begin( regions )
     USE GALAHAD_HW, ONLY : HW_numa_region, HW_c_numa_region

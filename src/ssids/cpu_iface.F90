@@ -76,176 +76,185 @@
 #endif
 #endif
 
-MODULE GALAHAD_SSIDS_cpu_iface_precision
+ MODULE GALAHAD_SSIDS_cpu_iface_precision
    USE GALAHAD_KINDS_precision
    USE, INTRINSIC :: iso_c_binding
-   USE GALAHAD_SSIDS_types_precision, ONLY : SSIDS_control_type,               &
-                                             SSIDS_inform_type
-   USE GALAHAD_BLAS_inter_precision, ONLY : GEMV, GEMM, TRSV, TRSM, SYRK
-   USE GALAHAD_LAPACK_inter_precision, ONLY : SYTRF, POTRF
+   USE GALAHAD_SSIDS_types_precision, ONLY: SSIDS_control_type,                &
+                                            SSIDS_inform_type
+   USE GALAHAD_BLAS_inter_precision, ONLY: GEMV, GEMM, TRSV, TRSM, SYRK
+   USE GALAHAD_LAPACK_inter_precision, ONLY: SYTRF, POTRF
    IMPLICIT none
 
    PRIVATE
    PUBLIC :: cpu_factor_control, cpu_factor_stats
    PUBLIC :: cpu_copy_control_in, cpu_copy_stats_out
 
+!  interoperable subset of ssids_control
+!  Interoperates with cpu_factor_control C++ type
+!  see also galahad_ssids_types_precision::ssids_control
+!           galahad::ssids::cpu::cpu_factor_control
 
-   !> @brief Interoperable subset of ssids_control
-   !> @details Interoperates with cpu_factor_control C++ type
-   !> @sa galahad_ssids_types_precision::ssids_control
-   !> @sa galahad::ssids::cpu::cpu_factor_control
-   type, bind(C) :: cpu_factor_control
-      integer(C_IP_) :: print_level
-      logical(C_BOOL) :: action
-      real(C_RP_) :: small
-      real(C_RP_) :: u
-      real(C_RP_) :: multiplier
-      integer(C_INT64_T) :: small_subtree_threshold
-      integer(C_IP_) :: cpu_block_size
-      integer(C_IP_) :: pivot_method
-      integer(C_IP_) :: failed_pivot_method
-   end type cpu_factor_control
+   TYPE, BIND( C ) :: cpu_factor_control
+     INTEGER( KIND = C_IP_ ) :: print_level
+     LOGICAL(C_BOOL) :: action
+     REAL( KIND = C_RP_ ) :: small
+     REAL( KIND = C_RP_ ) :: u
+     REAL( KIND = C_RP_ ) :: multiplier
+     INTEGER( KIND = C_INT64_T ) :: small_subtree_threshold
+     INTEGER( KIND = C_IP_ ) :: cpu_block_size
+     INTEGER( KIND = C_IP_ ) :: pivot_method
+     INTEGER( KIND = C_IP_ ) :: failed_pivot_method
+   END TYPE cpu_factor_control
 
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  interoperable subset of ssids_inform
+!  interoperates with ThreadStats C++ type
+!  see also galahad_ssids_inform_precision::ssids_inform
+!           galahad::ssids::cpu::ThreadStats
 
-   !> @brief Interoperable subset of ssids_inform
-   !> @details Interoperates with ThreadStats C++ type
-   !> @sa galahad_ssids_inform_precision::ssids_inform
-   !> @sa galahad::ssids::cpu::ThreadStats
-   type, bind(C) :: cpu_factor_stats
-      integer(C_IP_) :: flag
-      integer(C_IP_) :: num_delay
-      integer(C_INT64_T) :: num_factor
-      integer(C_INT64_T) :: num_flops
-      integer(C_IP_) :: num_neg
-      integer(C_IP_) :: num_two
-      integer(C_IP_) :: num_zero
-      integer(C_IP_) :: maxfront
-      integer(C_IP_) :: maxsupernode
-      integer(C_IP_) :: not_first_pass
-      integer(C_IP_) :: not_second_pass
-   end type cpu_factor_stats
+   TYPE, BIND( C ) :: cpu_factor_stats
+     INTEGER( KIND = C_IP_ ) :: flag
+     INTEGER( KIND = C_IP_ ) :: num_delay
+     INTEGER( KIND = C_INT64_T ) :: num_factor
+     INTEGER( KIND = C_INT64_T ) :: num_flops
+     INTEGER( KIND = C_IP_ ) :: num_neg
+     INTEGER( KIND = C_IP_ ) :: num_two
+     INTEGER( KIND = C_IP_ ) :: num_zero
+     INTEGER( KIND = C_IP_ ) :: maxfront
+     INTEGER( KIND = C_IP_ ) :: maxsupernode
+     INTEGER( KIND = C_IP_ ) :: not_first_pass
+     INTEGER( KIND = C_IP_ ) :: not_second_pass
+   END TYPE cpu_factor_stats
 
-CONTAINS
+ CONTAINS
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Copy subset of ssids_control to interoperable type
-subroutine cpu_copy_control_in(fcontrol, ccontrol)
-   type(SSIDS_control_type), intent(in) :: fcontrol
-   type(cpu_factor_control), intent(out) :: ccontrol
+   SUBROUTINE cpu_copy_control_in( fcontrol, ccontrol )
 
-   ccontrol%print_level    = fcontrol%print_level
-   ccontrol%action         = fcontrol%action
-   ccontrol%small          = fcontrol%small
-   ccontrol%u              = fcontrol%u
-   ccontrol%multiplier     = fcontrol%multiplier
+!  copy subset of ssids_control to interoperable type
+
+   TYPE( SSIDS_control_type ), INTENT( IN ) :: fcontrol
+   TYPE( cpu_factor_control ), INTENT( OUT ) :: ccontrol
+
+   ccontrol%print_level = fcontrol%print_level
+   ccontrol%action = fcontrol%action
+   ccontrol%small = fcontrol%small
+   ccontrol%u = fcontrol%u
+   ccontrol%multiplier = fcontrol%multiplier
    ccontrol%small_subtree_threshold = fcontrol%small_subtree_threshold
    ccontrol%cpu_block_size = fcontrol%cpu_block_size
-   ccontrol%pivot_method   = min(3, max(1, fcontrol%pivot_method))
-   ccontrol%failed_pivot_method = min(2, max(1, fcontrol%failed_pivot_method))
-end subroutine cpu_copy_control_in
+   ccontrol%pivot_method   = MIN( 3, MAX( 1, fcontrol%pivot_method ) )
+   ccontrol%failed_pivot_method = MIN( 2, MAX(1, fcontrol%failed_pivot_method ))
+   RETURN
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Copy subset of ssids_inform from interoperable type
-subroutine cpu_copy_stats_out(cstats, finform)
-   type(cpu_factor_stats), intent(in) :: cstats
-   type(SSIDS_inform_type), intent(inout) :: finform
+   END SUBROUTINE cpu_copy_control_in
+
+   SUBROUTINE cpu_copy_stats_out( cstats, finform )
+
+!  copy subset of ssids_inform from interoperable type
+
+   TYPE( cpu_factor_stats ), INTENT( IN ) :: cstats
+   TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: finform
 
    ! Combine stats
-   if(cstats%flag < 0) then
-     finform%flag = min(finform%flag, cstats%flag) ! error
-   else
-     finform%flag = max(finform%flag, cstats%flag) ! success or warning
-   endif
-   finform%num_delay    = finform%num_delay + cstats%num_delay
-   finform%num_factor   = finform%num_factor + cstats%num_factor
-   finform%num_flops    = finform%num_flops + cstats%num_flops
-   finform%num_neg      = finform%num_neg + cstats%num_neg
-   finform%num_two      = finform%num_two + cstats%num_two
-   finform%maxfront     = max(finform%maxfront, cstats%maxfront)
-   finform%maxsupernode = max(finform%maxsupernode, cstats%maxsupernode)
+   IF ( cstats%flag < 0 ) THEN
+     finform%flag = MIN( finform%flag, cstats%flag ) ! error
+   ELSE
+     finform%flag = MAX( finform%flag, cstats%flag ) ! success or warning
+   END IF
+   finform%num_delay = finform%num_delay + cstats%num_delay
+   finform%num_factor = finform%num_factor + cstats%num_factor
+   finform%num_flops = finform%num_flops + cstats%num_flops
+   finform%num_neg = finform%num_neg + cstats%num_neg
+   finform%num_two = finform%num_two + cstats%num_two
+   finform%maxfront = MAX( finform%maxfront, cstats%maxfront )
+   finform%maxsupernode = MAX( finform%maxsupernode, cstats%maxsupernode )
    finform%not_first_pass = finform%not_first_pass + cstats%not_first_pass
    finform%not_second_pass = finform%not_second_pass + cstats%not_second_pass
    finform%matrix_rank  = finform%matrix_rank - cstats%num_zero
-end subroutine cpu_copy_stats_out
+   RETURN
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!> @brief Wrapper functions for BLAS/LAPACK routines for standard conforming
-!> interop calls from C.
-subroutine spral_c_gemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc) &
-bind(C)
+   END SUBROUTINE cpu_copy_stats_out
+
+!  wrapper functions for BLAS/LAPACK routines for standard conforming
+
+   SUBROUTINE spral_c_gemm( ta, tb, m, n, k, alpha, a, lda, b, ldb, beta,      &
+                            c, ldc ) BIND( C )
+
+!  interopability calls from C
+
+   USE GALAHAD_KINDS_precision, only: C_IP_, C_RP_
+   CHARACTER( C_CHAR ), INTENT( IN ) :: ta, tb
+   INTEGER( KIND = C_IP_ ), INTENT( IN ) :: m, n, k
+   INTEGER( KIND = C_IP_ ), INTENT( IN ) :: lda, ldb, ldc
+   REAL( KIND = C_RP_ ), INTENT( IN ) :: alpha, beta
+   REAL( KIND = C_RP_ ), INTENT( IN ), DIMENSION(lda, *) :: a
+   REAL( KIND = C_RP_ ), INTENT( IN ), DIMENSION(ldb, *) :: b
+   REAL( KIND = C_RP_ ), INTENT( INOUT ), DIMENSION(ldc, *) :: c
+   CALL DGEMM( ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc )
+   END SUBROUTINE spral_c_gemm
+
+   SUBROUTINE spral_c_potrf( uplo, n, a, lda, info ) BIND( C )
+   USE GALAHAD_KINDS_precision, only: C_IP_, C_RP_
+   CHARACTER( C_CHAR ), INTENT( IN ) :: uplo
+   INTEGER( KIND = C_IP_ ), INTENT( IN ) :: n, lda
+   INTEGER( KIND = C_IP_ ), INTENT( OUT ) :: info
+   REAL( KIND = C_RP_ ), INTENT( INOUT ), DIMENSION(lda, *) :: a
+   CALL DPOTRF(uplo, n, a, lda, info)
+   END SUBROUTINE spral_c_potrf
+
+   SUBROUTINE spral_c_sytrf( uplo, n, a, lda, ipiv, work,                      &
+                             lwork, info ) BIND( C )
+   USE GALAHAD_KINDS_precision, ONLY: C_IP_, C_RP_
+   CHARACTER( C_CHAR ), INTENT( IN ) :: uplo
+   INTEGER( KIND = C_IP_ ), INTENT( IN ) :: n, lda, lwork
+   INTEGER( KIND = C_IP_ ), INTENT( OUT ), DIMENSION(n) :: ipiv
+   INTEGER( KIND = C_IP_ ), INTENT( OUT ) :: info
+   REAL( KIND = C_RP_ ), INTENT( INOUT ), DIMENSION(lda, *) :: a
+   REAL( KIND = C_RP_ ), INTENT( OUT ), DIMENSION(*) :: work
+   CALL DSYTRF( uplo, n, a, lda, ipiv, work, lwork, info )
+   END SUBROUTINE spral_c_sytrf
+
+   SUBROUTINE spral_c_trsm( side, uplo, transa, diag, m, n, alpha, a, lda, b,  &
+                            ldb ) BIND( C )
+   USE GALAHAD_KINDS_precision, ONLY: C_IP_, C_RP_
+   CHARACTER( C_CHAR ), INTENT( IN ) :: side, uplo, transa, diag
+   INTEGER( KIND = C_IP_ ), INTENT( IN ) :: m, n, lda, ldb
+   REAL( KIND = C_RP_ ), INTENT( IN ) :: alpha
+   REAL( KIND = C_RP_ ), INTENT( IN ) :: a(lda, *)
+   REAL( KIND = C_RP_ ), INTENT( INOUT ) :: b(ldb, n)
+   CALL DTRSM( side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb )
+   END SUBROUTINE spral_c_trsm
+
+   SUBROUTINE spral_c_syrk( uplo, trans, n, k, alpha, a, lda, beta,            &
+                            c, ldc ) BIND(C)
+   USE GALAHAD_KINDS_precision, ONLY: C_IP_, C_RP_
+   CHARACTER( C_CHAR ), INTENT( IN ) :: uplo, trans
+   INTEGER( KIND = C_IP_ ), INTENT( IN ) :: n, k, lda, ldc
+   REAL( KIND = C_RP_ ), INTENT( IN ) :: alpha, beta
+   REAL( KIND = C_RP_ ), INTENT( IN ), DIMENSION( lda, * ) :: a
+   REAL( KIND = C_RP_ ), INTENT( INOUT ), DIMENSION( ldc, n ) :: c
+   CALL DSYRK( uplo, trans, n, k, alpha, a, lda, beta, c, ldc )
+   END SUBROUTINE spral_c_syrk
+
+   SUBROUTINE spral_c_trsv( uplo, trans, diag, n, a, lda, x, incx ) BIND( C )
+   USE GALAHAD_KINDS_precision, ONLY: C_IP_, C_RP_
+   character(C_CHAR), INTENT( IN ) :: uplo, trans, diag
+   INTEGER( KIND = C_IP_ ), INTENT( IN ) :: n, lda, incx
+   REAL( KIND = C_RP_ ), INTENT( IN ), DIMENSION(lda, n) :: a
+   REAL( KIND = C_RP_ ), INTENT( INOUT ), DIMENSION(*) :: x
+   call DTRSV( uplo, trans, diag, n, a, lda, x, incx )
+   END SUBROUTINE spral_c_trsv
+
+   subroutine spral_c_gemv( trans, m, n, alpha, a, lda, x, incx, beta,        &
+                            y, incy ) BIND( C )
    use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
-   character(C_CHAR), intent(in) :: ta, tb
-   integer(C_IP_), intent(in) :: m, n, k
-   integer(C_IP_), intent(in) :: lda, ldb, ldc
-   real(C_RP_), intent(in) :: alpha, beta
-   real(C_RP_), intent(in   ), dimension(lda, *) :: a
-   real(C_RP_), intent(in   ), dimension(ldb, *) :: b
-   real(C_RP_), intent(inout), dimension(ldc, *) :: c
-   call DGEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
-end subroutine spral_c_gemm
+   CHARACTER( C_CHAR ), INTENT( IN ) :: trans
+   INTEGER( KIND = C_IP_ ), INTENT( IN ) :: m, n, lda, incx, incy
+   REAL( KIND = C_RP_ ), INTENT( IN ) :: alpha, beta
+   REAL( KIND = C_RP_ ), INTENT( IN ), DIMENSION(lda, n) :: a
+   REAL( KIND = C_RP_ ), INTENT( IN ), DIMENSION(*) :: x
+   REAL( KIND = C_RP_ ), INTENT( INOUT ), DIMENSION(*) :: y
+   CALL DGEMV( trans, m, n, alpha, a, lda, x, incx, beta, y, incy )
+   END SUBROUTINE spral_c_gemv
 
-subroutine spral_c_potrf(uplo, n, a, lda, info) bind(C)
-   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
-   character(C_CHAR), intent(in) :: uplo
-   integer(C_IP_), intent(in) :: n, lda
-   integer(C_IP_), intent(out) :: info
-   real(C_RP_), intent(inout), dimension(lda, *) :: a
-   call DPOTRF(uplo, n, a, lda, info)
-end subroutine spral_c_potrf
-
-subroutine spral_c_sytrf(uplo, n, a, lda, ipiv, work, lwork, info) bind(C)
-   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
-   character(C_CHAR), intent(in) :: uplo
-   integer(C_IP_), intent(in) :: n, lda, lwork
-   integer(C_IP_), intent(out), dimension(n) :: ipiv
-   integer(C_IP_), intent(out) :: info
-   real(C_RP_), intent(inout), dimension(lda, *) :: a
-   real(C_RP_), intent(out  ), dimension(*) :: work
-   call DSYTRF(uplo, n, a, lda, ipiv, work, lwork, info)
-end subroutine spral_c_sytrf
-
-subroutine spral_c_trsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
-                         ldb) bind(C)
-   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
-   character(C_CHAR), intent(in) :: side, uplo, transa, diag
-   integer(C_IP_), intent(in) :: m, n, lda, ldb
-   real(C_RP_), intent(in   ) :: alpha
-   real(C_RP_), intent(in   ) :: a(lda, *)
-   real(C_RP_), intent(inout) :: b(ldb, n)
-   call DTRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
-end subroutine spral_c_trsm
-
-subroutine spral_c_syrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc) bind(C)
-   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
-   character(C_CHAR), intent(in) :: uplo, trans
-   integer(C_IP_), intent(in) :: n, k, lda, ldc
-   real(C_RP_), intent(in) :: alpha, beta
-   real(C_RP_), intent(in   ), dimension(lda, *) :: a
-   real(C_RP_), intent(inout), dimension(ldc, n) :: c
-   call DSYRK(uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
-end subroutine spral_c_syrk
-
-subroutine spral_c_trsv(uplo, trans, diag, n, a, lda, x, incx) bind(C)
-   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
-   character(C_CHAR), intent(in) :: uplo, trans, diag
-   integer(C_IP_), intent(in) :: n, lda, incx
-   real(C_RP_), intent(in   ), dimension(lda, n) :: a
-   real(C_RP_), intent(inout), dimension(*) :: x
-   call DTRSV(uplo, trans, diag, n, a, lda, x, incx)
-end subroutine spral_c_trsv
-
-subroutine spral_c_gemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy) &
-bind(C)
-   use GALAHAD_KINDS_precision, only: C_IP_, C_RP_
-   character(C_CHAR), intent(in) :: trans
-   integer(C_IP_), intent(in) :: m, n, lda, incx, incy
-   real(C_RP_), intent(in) :: alpha, beta
-   real(C_RP_), intent(in   ), dimension(lda, n) :: a
-   real(C_RP_), intent(in   ), dimension(*) :: x
-   real(C_RP_), intent(inout), dimension(*) :: y
-   call DGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
-end subroutine spral_c_gemv
-
-END MODULE GALAHAD_SSIDS_cpu_iface_precision
+  END MODULE GALAHAD_SSIDS_cpu_iface_precision
 

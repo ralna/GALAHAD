@@ -8,7 +8,7 @@
 !  licence: BSD licence, see LICENCE file for details
 !  author: Jonathan Hogg
 !  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
-!  Now incorporating parts of the previous SSIDS_inform
+!  Absorbed SSIDS_inform and parts of SSIDS_contrib, version 5.3, 2025
 
   MODULE GALAHAD_SSIDS_types_precision
     USE GALAHAD_KINDS_precision
@@ -94,7 +94,7 @@
 !-------------------------------------------------
 
 !  note: below smalloc etc. types can't be in galahad_ssids_alloc module as
-!  they are used as components of later datatypes.
+!  they are used as components of later datatypes
 
 !  type for custom allocator. Used to aggregate many small allocations by 
 !  doing a single big allocation and chopping it up.
@@ -336,7 +336,7 @@
       PROCEDURE :: print_summary_factor
     END TYPE SSIDS_control_type
 
-!  data type for information returned by code
+!  data type for information returned by code, extracted from ssids_inform
 
     TYPE, PUBLIC :: SSIDS_inform_type
 
@@ -345,39 +345,66 @@
 !    SSIDS_ERROR_XXX
 !    SSIDS_WARNING_XXX
 
-       INTEGER( ip_ ) :: flag = SSIDS_SUCCESS
-       INTEGER( ip_ ) :: matrix_dup = 0 ! # duplicated entries.
-       INTEGER( ip_ ) :: matrix_missing_diag = 0 ! # missing diagonal entries
-       INTEGER( ip_ ) :: matrix_outrange = 0 ! # out-of-range entries.
-       INTEGER( ip_ ) :: matrix_rank = 0 ! Rank of matrix (anal=structral,
-                                       ! fact=actual)
-       INTEGER( ip_ ) :: maxdepth = 0 ! Maximum depth of tree
-       INTEGER( ip_ ) :: maxfront = 0 ! Maximum front size
-       INTEGER( ip_ ) :: maxsupernode = 0 ! Maximum supernode size
-       INTEGER( ip_ ) :: num_delay = 0 ! # delayed variables
-       INTEGER( long_ ) :: num_factor = 0_long_ ! # entries in factors
-       INTEGER( long_ ) :: num_flops = 0_long_ ! # floating point operations
-       INTEGER( ip_ ) :: num_neg = 0 ! # negative pivots
-       INTEGER( ip_ ) :: num_sup = 0 ! # supernodes
-       INTEGER( ip_ ) :: num_two = 0 ! # 2x2 pivots used by factorization
-       INTEGER( ip_ ) :: stat = 0 ! stat parameter
-       TYPE( MS_auction_inform_type ) :: auction
-       INTEGER( ip_ ) :: cuda_error = 0
-       INTEGER( ip_ ) :: cublas_error = 0
-       TYPE( NODEND_inform_type ) :: nodend_inform
+      INTEGER( ip_ ) :: flag = SSIDS_SUCCESS
+      INTEGER( ip_ ) :: matrix_dup = 0 ! # duplicated entries.
+      INTEGER( ip_ ) :: matrix_missing_diag = 0 ! # missing diagonal entries
+      INTEGER( ip_ ) :: matrix_outrange = 0 ! # out-of-range entries.
+      INTEGER( ip_ ) :: matrix_rank = 0 ! rank (anal=structral, fact=actual)
+      INTEGER( ip_ ) :: maxdepth = 0 ! maximum depth of tree
+      INTEGER( ip_ ) :: maxfront = 0 ! maximum front size
+      INTEGER( ip_ ) :: maxsupernode = 0 ! maximum supernode size
+      INTEGER( ip_ ) :: num_delay = 0 ! # delayed variables
+      INTEGER( long_ ) :: num_factor = 0_long_ ! # entries in factors
+      INTEGER( long_ ) :: num_flops = 0_long_ ! # floating point operations
+      INTEGER( ip_ ) :: num_neg = 0 ! # negative pivots
+      INTEGER( ip_ ) :: num_sup = 0 ! # supernodes
+      INTEGER( ip_ ) :: num_two = 0 ! # 2x2 pivots used by factorization
+      INTEGER( ip_ ) :: stat = 0 ! stat parameter
+      TYPE( MS_auction_inform_type ) :: auction
+      INTEGER( ip_ ) :: cuda_error = 0
+      INTEGER( ip_ ) :: cublas_error = 0
+      TYPE( NODEND_inform_type ) :: nodend_inform
 
-       ! Undocumented FIXME: should we document them?
-       INTEGER( ip_ ) :: not_first_pass = 0
-       INTEGER( ip_ ) :: not_second_pass = 0
-       INTEGER( ip_ ) :: nparts = 0
-       INTEGER( long_ ) :: cpu_flops = 0
-       INTEGER( long_ ) :: gpu_flops = 0
-       ! character( C_CHAR ) :: unused( 76 )
-     CONTAINS
-       PROCEDURE :: flag_to_character
-       PROCEDURE :: print_flag
-       PROCEDURE :: reduce
+!  undocumented FIXME: should we document them?
+
+      INTEGER( ip_ ) :: not_first_pass = 0
+      INTEGER( ip_ ) :: not_second_pass = 0
+      INTEGER( ip_ ) :: nparts = 0
+      INTEGER( long_ ) :: cpu_flops = 0
+      INTEGER( long_ ) :: gpu_flops = 0
+!     CHARACTER( C_CHAR ) :: unused( 76 )
+    CONTAINS
+      PROCEDURE :: flag_to_character
+      PROCEDURE :: print_flag
+      PROCEDURE :: reduce
     END TYPE SSIDS_inform_type
+
+!  data type to hold a contribution block, extracted from ssids_contrib
+
+!  this type represents a contribution block being passed between two
+!  subtrees. It exists in CPU memory, but provides a cleanup routine as
+!  memory management may differ between two subtrees being passed.
+!  (It would be nice and clean to have a procedure pointer for the cleanup,
+!  but alas Fortran/C interop causes severe problems, so we just have the
+!  owner value instead and if statements to call the right thing).
+
+    TYPE, PUBLIC :: contrib_type
+      LOGICAL :: ready = .FALSE.
+      INTEGER( ip_ ) :: n ! size of block
+      REAL( C_RP_ ), DIMENSION( : ), POINTER :: val ! nxn lwr triangular matrix
+      INTEGER( C_IP_ ) :: ldval
+      INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: rlist ! row list
+      INTEGER( ip_ ) :: ndelay
+      INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: delay_perm
+      REAL( C_RP_ ), DIMENSION( : ), POINTER :: delay_val
+      INTEGER( ip_ ) :: lddelay
+      INTEGER( ip_ ) :: owner ! cleanup routine to call: 0=cpu, 1=gpu
+
+!  the following are used by CPU to call correct cleanup routine
+
+      LOGICAL( C_BOOL ) :: posdef
+      TYPE( C_PTR ) :: owner_ptr
+    END TYPE contrib_type
 
   CONTAINS
 

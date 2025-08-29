@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 15:50 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-29 AT 14:00 GMT
 
 #include "ssids_procedures.h"
 
@@ -7,11 +7,11 @@
 !  author: Jonathan Hogg
 !  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
-MODULE GALAHAD_SSIDS_subtree_precision
+ MODULE GALAHAD_SSIDS_subtree_precision
    USE GALAHAD_KINDS_precision
-   USE GALAHAD_SSIDS_contrib_precision, ONLY: contrib_type
    USE GALAHAD_SSIDS_types_precision, ONLY: SSIDS_control_type,                &
-                                            SSIDS_inform_type
+                                            SSIDS_inform_type,                 &
+                                            contrib_type
    IMPLICIT NONE
 
    PRIVATE
@@ -91,7 +91,7 @@ MODULE GALAHAD_SSIDS_subtree_precision
    ABSTRACT INTERFACE
 
      FUNCTION factor_iface( this, posdef, aval, child_contrib, control,        &
-                            inform, scaling)
+                            inform, scaling )
 
 !  perform numeric factorization, returning a subclass of numeric_subtree_base 
 !  representing this. Arguments:
@@ -170,4 +170,4 @@ MODULE GALAHAD_SSIDS_subtree_precision
      CLASS( numeric_subtree_base ), INTENT( INOUT ) :: this
      END SUBROUTINE numeric_cleanup_iface
    END INTERFACE
-END MODULE GALAHAD_SSIDS_subtree_precision
+ END MODULE GALAHAD_SSIDS_subtree_precision
