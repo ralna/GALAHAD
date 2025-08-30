@@ -649,7 +649,7 @@
        INTEGER( KIND = C_IP_ ), VALUE :: ldx
      END FUNCTION c_subtree_solve_diag_bwd
 
-     INTEGER( KIND = C_IP_ ) FUNCTION c_subtree_solve_bwd( posdef, subtree, 
+     INTEGER( KIND = C_IP_ ) FUNCTION c_subtree_solve_bwd( posdef, subtree,    &
                                                            nrhs, x, ldx )      &
           BIND( C, NAME = "galahad_ssids_cpu_subtree_solve_bwd_qul" )
        USE GALAHAD_KINDS_precision
