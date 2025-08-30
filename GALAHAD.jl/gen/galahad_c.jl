@@ -72,7 +72,7 @@ function prototype(wrapper::String, suffix::String)
         args[i] = strip(args[i])
         for type in types
           for package in packages
-            type_name = (package == "ssids") ? "spral_$(package)_$(type)" : "$(package)_$(type)_type"
+            type_name = "$(package)_$(type)_type"
             if (type_name ∉ nonparametric_structures_float) && (type_name ∈ nonparametric_structures_int)
               args[i] = endswith(args[i], "::Ptr{$(type_name){Float32}}") ? "struct $(type_name)_s *" * replace(args[i], "::Ptr{$(type_name){Float32}}" => "") : args[i]
               args[i] = endswith(args[i], "::Ptr{$(type_name){Float64}}") ? "struct $(type_name) *" * replace(args[i], "::Ptr{$(type_name){Float64}}" => "") : args[i]
@@ -150,7 +150,7 @@ function galahad_c(structure::String, mode::String, variant_INT::Bool, variant_T
       if !isempty(lines[i])
         if contains(lines[i], "_type") && !contains(lines[i], "indicator_type") && mapreduce(x -> !contains(lines[i], x), &, ["char", "int32_t", "int64_t"])
           text = text * "    " * "struct " * lines[i] * ";\n"
-        elseif mapreduce(x -> contains(lines[i], x), |, hsl_structures) || mapreduce(x -> contains(lines[i], x), |, ssids_structures)
+        elseif mapreduce(x -> contains(lines[i], x), |, hsl_structures)
           text = text * "    " * "struct " * lines[i] * ";\n"
         else
           text = text * "    " * lines[i] * ";\n"
