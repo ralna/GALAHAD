@@ -55,25 +55,25 @@
 
   MODULE GALAHAD_SSIDS_precision_ciface
     USE GALAHAD_KINDS_precision
-    USE GALAHAD_SSIDS_precision, ONLY : f_ssids_analyse => ssids_analyse,      &
+    USE GALAHAD_SSIDS_precision, ONLY : f_ssids_analyse => SSIDS_analyse,      &
                                         f_ssids_analyse_coord                  &
-                                          => ssids_analyse_coord,              &
-                                        f_ssids_factor => ssids_factor,        &
-                                        f_ssids_solve => ssids_solve,          &
-                                        f_ssids_free => ssids_free,            &
+                                          => SSIDS_analyse_coord,              &
+                                        f_ssids_factor => SSIDS_factor,        &
+                                        f_ssids_solve => SSIDS_solve,          &
+                                        f_ssids_free => SSIDS_free,            &
                                         f_ssids_enquire_posdef                 &
-                                          => ssids_enquire_posdef,             &
+                                          => SSIDS_enquire_posdef,             &
                                         f_ssids_enquire_indef                  &
-                                          => ssids_enquire_indef,              &
-                                        f_ssids_alter => ssids_alter,          &
+                                          => SSIDS_enquire_indef,              &
+                                        f_ssids_alter => SSIDS_alter,          &
                                         f_ssids_control_type                   &
-                                          => ssids_control_type,               &
+                                          => SSIDS_control_type,               &
                                         f_ssids_inform_type                    &
-                                          => ssids_inform_type,                &
+                                          => SSIDS_inform_type,                &
                                         f_ssids_akeep_type                     &
-                                          => ssids_akeep_type,                 &
+                                          => SSIDS_akeep_type,                 &
                                         f_ssids_fkeep_type                     &
-                                          => ssids_fkeep_type
+                                          => SSIDS_fkeep_type
     USE GALAHAD_NODEND_precision_ciface, ONLY:                                 &
         nodend_inform_type, nodend_control_type,                               &
         copy_nodend_control_in => copy_control_in,                             &
