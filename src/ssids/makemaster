@@ -214,19 +214,19 @@ RSSIDSQT264 = $(OBJQ64)/ssidst2_quadruple_64.o -L$(OBJQ64) $(SPRAL) $(LIBS)
 
 #  test agenda for C interfaces
 
-SSIDSCST = $(SSIDSS) $(TESTDEPS) $(OBJS)/ssidsct_single.o
-SSIDSCDT = $(SSIDSD) $(TESTDEPS) $(OBJD)/ssidsct_double.o
-SSIDSCQT = $(SSIDSQ) $(TESTDEPS) $(OBJQ)/ssidsct_quadruple.o
-SSIDSCST64 = $(SSIDSS64) $(TESTDEPS) $(OBJS64)/ssidsct_single_64.o
-SSIDSCDT64 = $(SSIDSD64) $(TESTDEPS) $(OBJD64)/ssidsct_double_64.o
-SSIDSCQT64 = $(SSIDSQ64) $(TESTDEPS) $(OBJQ64)/ssidsct_quadruple_64.o
+SSIDSCST = $(SSIDSCS) $(TESTDEPS) $(OBJS)/ssidsct_single.o
+SSIDSCDT = $(SSIDSCD) $(TESTDEPS) $(OBJD)/ssidsct_double.o
+SSIDSCQT = $(SSIDSCQ) $(TESTDEPS) $(OBJQ)/ssidsct_quadruple.o
+SSIDSCST64 = $(SSIDSCS64) $(TESTDEPS) $(OBJS64)/ssidsct_single_64.o
+SSIDSCDT64 = $(SSIDSCD64) $(TESTDEPS) $(OBJD64)/ssidsct_double_64.o
+SSIDSCQT64 = $(SSIDSCQ64) $(TESTDEPS) $(OBJQ64)/ssidsct_quadruple_64.o
 
-SSIDSCSTF = $(SSIDSS) $(TESTDEPS) $(OBJS)/ssidsctf_single.o
-SSIDSCDTF = $(SSIDSD) $(TESTDEPS) $(OBJD)/ssidsctf_double.o
-SSIDSCQTF = $(SSIDSQ) $(TESTDEPS) $(OBJQ)/ssidsctf_quadruple.o
-SSIDSCSTF64 = $(SSIDSS64) $(TESTDEPS) $(OBJS64)/ssidsctf_single_64.o
-SSIDSCDTF64 = $(SSIDSD64) $(TESTDEPS) $(OBJD64)/ssidsctf_double_64.o
-SSIDSCQTF64 = $(SSIDCQ64) $(TESTDEPS) $(OBJQ64)/ssidsctf_quadruple_64.o
+SSIDSCSTF = $(SSIDSCS) $(TESTDEPS) $(OBJS)/ssidsctf_single.o
+SSIDSCDTF = $(SSIDSCD) $(TESTDEPS) $(OBJD)/ssidsctf_double.o
+SSIDSCQTF = $(SSIDSCQ) $(TESTDEPS) $(OBJQ)/ssidsctf_quadruple.o
+SSIDSCSTF64 = $(SSIDSCS64) $(TESTDEPS) $(OBJS64)/ssidsctf_single_64.o
+SSIDSCDTF64 = $(SSIDSCD64) $(TESTDEPS) $(OBJD64)/ssidsctf_double_64.o
+SSIDSCQTF64 = $(SSIDCCQ64) $(TESTDEPS) $(OBJQ64)/ssidsctf_quadruple_64.o
 
 RSSIDSCST = $(OBJS)/ssidsct_single.o -L$(OBJS) $(CLIBS)
 RSSIDSCSTF = $(OBJS)/ssidsctf_single.o -L$(OBJS) $(CLIBS)
