@@ -50,9 +50,9 @@
       PROCEDURE :: cleanup => numeric_cleanup
     END TYPE cpu_numeric_subtree
 
-  INTERFACE
-#ifdef REAL_32
 #ifdef INTEGER_64
+#ifdef REAL_32
+  INTERFACE
      TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
           sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
           BIND( C, NAME = "galahad_ssids_cpu_create_symbolic_subtree_sgl_64" )
@@ -79,153 +79,7 @@
        IMPLICIT none
        TYPE( C_PTR ), VALUE :: subtree
      END SUBROUTINE c_destroy_symbolic_subtree
-#else
-     TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
-          sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
-          BIND( C, NAME = "galahad_ssids_cpu_create_symbolic_subtree_sgl" )
-       USE GALAHAD_KINDS
-       IMPORT :: cpu_factor_control
-       IMPLICIT none
-       INTEGER( KIND = C_IP_ ), VALUE :: n
-       INTEGER( KIND = C_IP_ ), VALUE :: sa
-       INTEGER( KIND = C_IP_ ), VALUE :: en
-       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sptr
-       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sparent
-       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: rptr
-       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: rlist
-       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nptr
-       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nlist
-       INTEGER( KIND = C_IP_ ), VALUE :: ncontrib
-       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: contrib_idx
-       TYPE( cpu_factor_control ), INTENT( IN ) :: control
-     END FUNCTION c_create_symbolic_subtree
 
-     SUBROUTINE c_destroy_symbolic_subtree( subtree )                          &
-          BIND( C, NAME = "galahad_ssids_cpu_destroy_symbolic_subtree_sgl" )
-       USE GALAHAD_KINDS
-       IMPLICIT none
-       TYPE( C_PTR ), VALUE :: subtree
-     END SUBROUTINE c_destroy_symbolic_subtree
-#endif
-#elif REAL_128
-#ifdef INTEGER_64
-     TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
-          sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
-          BIND( C, NAME = "galahad_ssids_cpu_create_symbolic_subtree_qul_64" )
-      USE GALAHAD_KINDS
-      IMPORT :: cpu_factor_control
-      IMPLICIT none
-      INTEGER( KIND = C_IP_ ), VALUE :: n
-      INTEGER( KIND = C_IP_ ), VALUE :: sa
-      INTEGER( KIND = C_IP_ ), VALUE :: en
-      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sptr
-      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sparent
-      INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: rptr
-      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: rlist
-      INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nptr
-      INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nlist
-      INTEGER( KIND = C_IP_ ), VALUE :: ncontrib
-      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: contrib_idx
-      TYPE( cpu_factor_control ), INTENT( IN ) :: control
-     END FUNCTION c_create_symbolic_subtree
-
-     SUBROUTINE c_destroy_symbolic_subtree( subtree )                          &
-          BIND( C, NAME = "galahad_ssids_cpu_destroy_symbolic_subtree_qul_64" )
-       USE GALAHAD_KINDS
-       IMPLICIT none
-       TYPE( C_PTR ), VALUE :: subtree
-     END SUBROUTINE c_destroy_symbolic_subtree
-#else
-     TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
-          sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
-          BIND( C, NAME = "galahad_ssids_cpu_create_symbolic_subtree_qul" )
-       USE GALAHAD_KINDS
-       IMPORT :: cpu_factor_control
-       IMPLICIT none
-       INTEGER( KIND = C_IP_ ), VALUE :: n
-       INTEGER( KIND = C_IP_ ), VALUE :: sa
-       INTEGER( KIND = C_IP_ ), VALUE :: en
-       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sptr
-       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sparent
-       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: rptr
-       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: rlist
-       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nptr
-       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nlist
-       INTEGER( KIND = C_IP_ ), VALUE :: ncontrib
-       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: contrib_idx
-       TYPE( cpu_factor_control ), INTENT( IN ) :: control
-     END FUNCTION c_create_symbolic_subtree
-
-     SUBROUTINE c_destroy_symbolic_subtree( subtree )                          &
-          BIND( C, NAME = "galahad_ssids_cpu_destroy_symbolic_subtree_qul" )
-       USE GALAHAD_KINDS
-       IMPLICIT none
-       TYPE( C_PTR ), VALUE :: subtree
-     END SUBROUTINE c_destroy_symbolic_subtree
-#endif
-#else
-#ifdef INTEGER_64
-     TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
-          sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
-          BIND( C, NAME = "galahad_ssids_cpu_create_symbolic_subtree_dbl_64" )
-      USE GALAHAD_KINDS
-      IMPORT :: cpu_factor_control
-      IMPLICIT none
-      INTEGER( KIND = C_IP_ ), VALUE :: n
-      INTEGER( KIND = C_IP_ ), VALUE :: sa
-      INTEGER( KIND = C_IP_ ), VALUE :: en
-      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sptr
-      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sparent
-      INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: rptr
-      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: rlist
-      INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nptr
-      INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nlist
-      INTEGER( KIND = C_IP_ ), VALUE :: ncontrib
-      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: contrib_idx
-      TYPE( cpu_factor_control ), INTENT( IN ) :: control
-     END FUNCTION c_create_symbolic_subtree
-
-     SUBROUTINE c_destroy_symbolic_subtree( subtree )                          &
-          BIND( C, NAME = "galahad_ssids_cpu_destroy_symbolic_subtree_dbl_64" )
-       USE GALAHAD_KINDS
-       IMPLICIT none
-       TYPE( C_PTR ), VALUE :: subtree
-     END SUBROUTINE c_destroy_symbolic_subtree
-#else
-     TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
-          sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
-          BIND( C, NAME = "galahad_ssids_cpu_create_symbolic_subtree_dbl" )
-       USE GALAHAD_KINDS
-       IMPORT :: cpu_factor_control
-       IMPLICIT none
-       INTEGER( KIND = C_IP_ ), VALUE :: n
-       INTEGER( KIND = C_IP_ ), VALUE :: sa
-       INTEGER( KIND = C_IP_ ), VALUE :: en
-       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sptr
-       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sparent
-       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: rptr
-       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: rlist
-       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nptr
-       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nlist
-       INTEGER( KIND = C_IP_ ), VALUE :: ncontrib
-       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: contrib_idx
-       TYPE( cpu_factor_control ), INTENT( IN ) :: control
-     END FUNCTION c_create_symbolic_subtree
-
-     SUBROUTINE c_destroy_symbolic_subtree( subtree )                          &
-          BIND( C, NAME = "galahad_ssids_cpu_destroy_symbolic_subtree_dbl" )
-       USE GALAHAD_KINDS
-       IMPLICIT none
-       TYPE( C_PTR ), VALUE :: subtree
-     END SUBROUTINE c_destroy_symbolic_subtree
-#endif
-#endif
-
-  END INTERFACE
-
-#ifdef INTEGER_64
-#ifdef REAL_32
-  INTERFACE
      TYPE( C_PTR ) FUNCTION c_create_numeric_subtree( posdef,                  &
           symbolic_subtree, aval, scaling, child_contrib, control, stats )     &
           BIND( C, NAME = "galahad_ssids_cpu_create_num_subtree_sgl_64" )
@@ -345,6 +199,33 @@
 
 #elif REAL_128
   INTERFACE
+     TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
+          sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
+          BIND( C, NAME = "galahad_ssids_cpu_create_symbolic_subtree_qul_64" )
+      USE GALAHAD_KINDS
+      IMPORT :: cpu_factor_control
+      IMPLICIT none
+      INTEGER( KIND = C_IP_ ), VALUE :: n
+      INTEGER( KIND = C_IP_ ), VALUE :: sa
+      INTEGER( KIND = C_IP_ ), VALUE :: en
+      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sptr
+      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sparent
+      INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: rptr
+      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: rlist
+      INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nptr
+      INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nlist
+      INTEGER( KIND = C_IP_ ), VALUE :: ncontrib
+      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: contrib_idx
+      TYPE( cpu_factor_control ), INTENT( IN ) :: control
+     END FUNCTION c_create_symbolic_subtree
+
+     SUBROUTINE c_destroy_symbolic_subtree( subtree )                          &
+          BIND( C, NAME = "galahad_ssids_cpu_destroy_symbolic_subtree_qul_64" )
+       USE GALAHAD_KINDS
+       IMPLICIT none
+       TYPE( C_PTR ), VALUE :: subtree
+     END SUBROUTINE c_destroy_symbolic_subtree
+
      TYPE( C_PTR ) FUNCTION c_create_numeric_subtree( posdef,                  &
           symbolic_subtree, aval, scaling, child_contrib, control, stats )     &
           BIND( C, NAME = "galahad_ssids_cpu_create_num_subtree_qul_64" )
@@ -465,6 +346,33 @@
 #else
 
   INTERFACE
+     TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
+          sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
+          BIND( C, NAME = "galahad_ssids_cpu_create_symbolic_subtree_dbl_64" )
+      USE GALAHAD_KINDS
+      IMPORT :: cpu_factor_control
+      IMPLICIT none
+      INTEGER( KIND = C_IP_ ), VALUE :: n
+      INTEGER( KIND = C_IP_ ), VALUE :: sa
+      INTEGER( KIND = C_IP_ ), VALUE :: en
+      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sptr
+      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sparent
+      INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: rptr
+      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: rlist
+      INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nptr
+      INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nlist
+      INTEGER( KIND = C_IP_ ), VALUE :: ncontrib
+      INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: contrib_idx
+      TYPE( cpu_factor_control ), INTENT( IN ) :: control
+     END FUNCTION c_create_symbolic_subtree
+
+     SUBROUTINE c_destroy_symbolic_subtree( subtree )                          &
+          BIND( C, NAME = "galahad_ssids_cpu_destroy_symbolic_subtree_dbl_64" )
+       USE GALAHAD_KINDS
+       IMPLICIT none
+       TYPE( C_PTR ), VALUE :: subtree
+     END SUBROUTINE c_destroy_symbolic_subtree
+
      TYPE( C_PTR ) FUNCTION c_create_numeric_subtree( posdef,                  &
           symbolic_subtree, aval, scaling, child_contrib, control, stats )     &
           BIND( C, NAME = "galahad_ssids_cpu_create_num_subtree_dbl_64" )
@@ -585,6 +493,33 @@
 #else
 #ifdef REAL_32
   INTERFACE
+     TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
+          sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
+          BIND( C, NAME = "galahad_ssids_cpu_create_symbolic_subtree_sgl" )
+       USE GALAHAD_KINDS
+       IMPORT :: cpu_factor_control
+       IMPLICIT none
+       INTEGER( KIND = C_IP_ ), VALUE :: n
+       INTEGER( KIND = C_IP_ ), VALUE :: sa
+       INTEGER( KIND = C_IP_ ), VALUE :: en
+       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sptr
+       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sparent
+       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: rptr
+       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: rlist
+       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nptr
+       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nlist
+       INTEGER( KIND = C_IP_ ), VALUE :: ncontrib
+       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: contrib_idx
+       TYPE( cpu_factor_control ), INTENT( IN ) :: control
+     END FUNCTION c_create_symbolic_subtree
+
+     SUBROUTINE c_destroy_symbolic_subtree( subtree )                          &
+          BIND( C, NAME = "galahad_ssids_cpu_destroy_symbolic_subtree_sgl" )
+       USE GALAHAD_KINDS
+       IMPLICIT none
+       TYPE( C_PTR ), VALUE :: subtree
+     END SUBROUTINE c_destroy_symbolic_subtree
+
      TYPE( C_PTR ) FUNCTION c_create_numeric_subtree( posdef,                  &
           symbolic_subtree, aval, scaling, child_contrib, control, stats )     &
           BIND( C, NAME = "galahad_ssids_cpu_create_num_subtree_sgl" )
@@ -704,6 +639,33 @@
 
 #elif REAL_128
   INTERFACE
+     TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
+          sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
+          BIND( C, NAME = "galahad_ssids_cpu_create_symbolic_subtree_qul" )
+       USE GALAHAD_KINDS
+       IMPORT :: cpu_factor_control
+       IMPLICIT none
+       INTEGER( KIND = C_IP_ ), VALUE :: n
+       INTEGER( KIND = C_IP_ ), VALUE :: sa
+       INTEGER( KIND = C_IP_ ), VALUE :: en
+       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sptr
+       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sparent
+       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: rptr
+       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: rlist
+       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nptr
+       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nlist
+       INTEGER( KIND = C_IP_ ), VALUE :: ncontrib
+       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: contrib_idx
+       TYPE( cpu_factor_control ), INTENT( IN ) :: control
+     END FUNCTION c_create_symbolic_subtree
+
+     SUBROUTINE c_destroy_symbolic_subtree( subtree )                          &
+          BIND( C, NAME = "galahad_ssids_cpu_destroy_symbolic_subtree_qul" )
+       USE GALAHAD_KINDS
+       IMPLICIT none
+       TYPE( C_PTR ), VALUE :: subtree
+     END SUBROUTINE c_destroy_symbolic_subtree
+
      TYPE( C_PTR ) FUNCTION c_create_numeric_subtree( posdef,                  &
           symbolic_subtree, aval, scaling, child_contrib, control, stats )     &
           BIND( C, NAME = "galahad_ssids_cpu_create_num_subtree_qul" )
@@ -824,6 +786,33 @@
 #else
 
   INTERFACE
+     TYPE( C_PTR ) FUNCTION c_create_symbolic_subtree( n, sa, en, sptr,        &
+          sparent, rptr, rlist, nptr, nlist, ncontrib, contrib_idx, control )  &
+          BIND( C, NAME = "galahad_ssids_cpu_create_symbolic_subtree_dbl" )
+       USE GALAHAD_KINDS
+       IMPORT :: cpu_factor_control
+       IMPLICIT none
+       INTEGER( KIND = C_IP_ ), VALUE :: n
+       INTEGER( KIND = C_IP_ ), VALUE :: sa
+       INTEGER( KIND = C_IP_ ), VALUE :: en
+       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sptr
+       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: sparent
+       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: rptr
+       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: rlist
+       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nptr
+       INTEGER( KIND = CLONG_ ), DIMENSION( * ), INTENT( IN ) :: nlist
+       INTEGER( KIND = C_IP_ ), VALUE :: ncontrib
+       INTEGER( KIND = C_IP_ ), DIMENSION( * ), INTENT( IN ) :: contrib_idx
+       TYPE( cpu_factor_control ), INTENT( IN ) :: control
+     END FUNCTION c_create_symbolic_subtree
+
+     SUBROUTINE c_destroy_symbolic_subtree( subtree )                          &
+          BIND( C, NAME = "galahad_ssids_cpu_destroy_symbolic_subtree_dbl" )
+       USE GALAHAD_KINDS
+       IMPLICIT none
+       TYPE( C_PTR ), VALUE :: subtree
+     END SUBROUTINE c_destroy_symbolic_subtree
+
      TYPE( C_PTR ) FUNCTION c_create_numeric_subtree( posdef,                  &
           symbolic_subtree, aval, scaling, child_contrib, control, stats )     &
           BIND( C, NAME = "galahad_ssids_cpu_create_num_subtree_dbl" )
