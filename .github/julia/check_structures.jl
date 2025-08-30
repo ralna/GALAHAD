@@ -53,8 +53,13 @@ function F_structures()
       folders = split(root, '/')
       (folders[end-1] != "forthcoming") && (folders[end-1] != "src") && continue
       package = folders[end]
-      if (file == "$package.F90") || (package == "ssids" && file == "inform.F90") || (package == "ssids" && file == "datatypes.F90")
-        code = read(path, String)
+      if file == "$package.F90"
+        if package == "ssids"
+          code_aux = read(joinpath(root, "types.F90") |> normpath, String)
+          code = code_aux * "\n" * read(path, String)
+        else
+          code = read(path, String)
+        end
         lines = split(code, '\n')
         f_contains = false
         for (i, line) in enumerate(lines)
