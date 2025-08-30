@@ -34,7 +34,7 @@ nonparametric_structures_float = ("bqp_time_type", "bsc_control_type", "convert_
 
 # Structures that don't have a field with rpc_ but have an inner structure with rpc_ as a field.
 special_structures_float = ("convert_inform_type", "cro_inform_type", "lms_inform_type", "ugo_inform_type",
-                            "uls_inform_type", "nodend_inform_type", "spral_ssids_inform", "ssls_inform_type",
+                            "uls_inform_type", "nodend_inform_type", "ssids_inform_type", "ssls_inform_type",
                             "ssls_control_type")
 
 hsl_structures = ("ma48_control", "ma48_ainfo", "ma48_finfo", "ma48_sinfo", "ma57_control", "ma57_ainfo",
@@ -42,7 +42,7 @@ hsl_structures = ("ma48_control", "ma48_ainfo", "ma48_finfo", "ma48_sinfo", "ma5
                   "ma87_info", "ma97_control", "ma97_info", "mc64_control", "mc64_info", "mc68_control", "mc68_info",
                   "mi20_control", "mi20_solve_control", "mi20_info", "mi28_control", "mi28_info")
 
-ssids_structures = ("spral_ssids_options", "spral_ssids_inform")
+ssids_structures = ("ssids_control_type", "ssids_inform_type")
 
 include("galahad_c.jl")
 
