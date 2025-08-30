@@ -21,8 +21,6 @@ lazy_definitions = Dict(
   "sils_control_type" => "sils_control",
   "sils_finfo_type" => "sils_finfo",
   "sils_sinfo_type" => "sils_sinfo",
-  "spral_ssids_inform" => "ssids_inform",
-  "spral_ssids_options" => "ssids_options",
 )
 
 mapping_types_c2f = Dict(
@@ -85,7 +83,7 @@ function F_structures()
               f_structures[f_struct] = String[]
             end
           else
-            if startswith(line |> strip, "contains")
+            if startswith(line |> strip, "contains") || startswith(line |> strip, "CONTAINS")
               f_contains = true
             elseif contains(line |> uppercase, "END TYPE")
               f_struct = ""

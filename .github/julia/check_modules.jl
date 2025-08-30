@@ -38,8 +38,6 @@ modules_combinations = [(modules_single_int32, modules_double_int32, 32, 32, "li
 
 single_double_quadruple_modules = ["galahad_blas_interface",
                                    "galahad_lapack_interface",
-                                   "spral_ssids_blas_iface",
-                                   "spral_ssids_lapack_iface",
                                    "galahad_clock",
                                    "galahad_string",
                                    "galahad_symbols",
@@ -63,17 +61,16 @@ single_double_quadruple_modules = ["galahad_blas_interface",
                                    "gal_hsl_mc68_integer_64_ciface",
                                    "galahad_kinds",
                                    "galahad_kinds_64",
-                                   "spral_kinds",
                                    "mkl_pardiso",
                                    "mkl_pardiso_private",
                                    "lancelot_hsl_routines",
                                    "spmf_enums",
                                    "pastixf_enums",
-                                   "spral_core_analyse",
-                                   "spral_hw_topology",
-                                   "spral_metis_wrapper",
-                                   "spral_pgm",
-                                   "spral_ssids_profile"]
+                                   "galahad_hw",
+                                   "galahad_hw_64",
+                                   "galahad_ssids_profile",
+                                   "galahad_ssids_profile_64",
+                                   ]
 
 for (modules1, modules2, int1, int2, name) in modules_combinations
   intersect_modules = intersect(modules1, modules2)
