@@ -40,7 +40,7 @@ append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "hsl_subset_cif
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "hsl_subset_ciface_quadruple.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_cfunctions.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_kinds.h"))
-append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "spral_procedures.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "ssids_procedures.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "ssids_routines.h"))
 
 # Check the number of characters
