@@ -59,554 +59,433 @@ end
 export ssids_default_control
 
 function ssids_default_control(::Type{Float32}, ::Type{Int32}, control)
-  @ccall libgalahad_single.ssids_default_control_s(control::Ptr{ssids_control_type{Float32,
-                                                                                          Int32}})::Cvoid
+  @ccall libgalahad_single.ssids_default_control_s(control::Ptr{ssids_control_type})::Cvoid
 end
 
 function ssids_default_control(::Type{Float32}, ::Type{Int64}, control)
-  @ccall libgalahad_single_64.ssids_default_control_s_64(control::Ptr{ssids_control_type{Float32,
-                                                                                                Int64}})::Cvoid
+  @ccall libgalahad_single_64.ssids_default_control_s_64(control::Ptr{ssids_control_type})::Cvoid
 end
 
 function ssids_default_control(::Type{Float64}, ::Type{Int32}, control)
-  @ccall libgalahad_double.ssids_default_control(control::Ptr{ssids_control_type{Float64,
-                                                                                        Int32}})::Cvoid
+  @ccall libgalahad_double.ssids_default_control(control::Ptr{ssids_control_type})::Cvoid
 end
 
 function ssids_default_control(::Type{Float64}, ::Type{Int64}, control)
-  @ccall libgalahad_double_64.ssids_default_control_64(control::Ptr{ssids_control_type{Float64,
-                                                                                              Int64}})::Cvoid
+  @ccall libgalahad_double_64.ssids_default_control_64(control::Ptr{ssids_control_type})::Cvoid
 end
 
 function ssids_default_control(::Type{Float128}, ::Type{Int32}, control)
-  @ccall libgalahad_quadruple.ssids_default_control_q(control::Ptr{ssids_control_type{Float128,
-                                                                                             Int32}})::Cvoid
+  @ccall libgalahad_quadruple.ssids_default_control_q(control::Ptr{ssids_control_type})::Cvoid
 end
 
 function ssids_default_control(::Type{Float128}, ::Type{Int64}, control)
-  @ccall libgalahad_quadruple_64.ssids_default_control_q_64(control::Ptr{ssids_control_type{Float128,
-                                                                                                   Int64}})::Cvoid
+  @ccall libgalahad_quadruple_64.ssids_default_control_q_64(control::Ptr{ssids_control_type})::Cvoid
 end
 
 export ssids_analyse
 
 function ssids_analyse(::Type{Float32}, ::Type{Int32}, check, n, order, ptr, row, val,
-                             akeep, control, inform)
+                       akeep, control, inform)
   @ccall libgalahad_single.ssids_analyse_s(check::Bool, n::Int32, order::Ptr{Int32},
-                                                 ptr::Ptr{Int64}, row::Ptr{Int32},
-                                                 val::Ptr{Float32}, akeep::Ptr{Ptr{Cvoid}},
-                                                 control::Ptr{ssids_control_type{Float32,
-                                                                                  Int32}},
-                                                 inform::Ptr{ssids_inform_type{Float32,
-                                                                                Int32}})::Cvoid
+                                           ptr::Ptr{Int64}, row::Ptr{Int32},
+                                           val::Ptr{Float32}, akeep::Ptr{Ptr{Cvoid}},
+                                           control::Ptr{ssids_control_type},
+                                           inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_analyse(::Type{Float32}, ::Type{Int64}, check, n, order, ptr, row, val,
-                             akeep, control, inform)
-  @ccall libgalahad_single_64.ssids_analyse_s_64(check::Bool, n::Int64,
-                                                       order::Ptr{Int64}, ptr::Ptr{Int64},
-                                                       row::Ptr{Int64}, val::Ptr{Float32},
-                                                       akeep::Ptr{Ptr{Cvoid}},
-                                                       control::Ptr{ssids_control_type{Float32,
-                                                                                        Int64}},
-                                                       inform::Ptr{ssids_inform_type{Float32,
-                                                                                      Int64}})::Cvoid
+                       akeep, control, inform)
+  @ccall libgalahad_single_64.ssids_analyse_s_64(check::Bool, n::Int64, order::Ptr{Int64},
+                                                 ptr::Ptr{Int64}, row::Ptr{Int64},
+                                                 val::Ptr{Float32}, akeep::Ptr{Ptr{Cvoid}},
+                                                 control::Ptr{ssids_control_type},
+                                                 inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_analyse(::Type{Float64}, ::Type{Int32}, check, n, order, ptr, row, val,
-                             akeep, control, inform)
+                       akeep, control, inform)
   @ccall libgalahad_double.ssids_analyse(check::Bool, n::Int32, order::Ptr{Int32},
-                                               ptr::Ptr{Int64}, row::Ptr{Int32},
-                                               val::Ptr{Float64}, akeep::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{ssids_control_type{Float64,
-                                                                                Int32}},
-                                               inform::Ptr{ssids_inform_type{Float64,
-                                                                              Int32}})::Cvoid
+                                         ptr::Ptr{Int64}, row::Ptr{Int32},
+                                         val::Ptr{Float64}, akeep::Ptr{Ptr{Cvoid}},
+                                         control::Ptr{ssids_control_type},
+                                         inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_analyse(::Type{Float64}, ::Type{Int64}, check, n, order, ptr, row, val,
-                             akeep, control, inform)
-  @ccall libgalahad_double_64.ssids_analyse_64(check::Bool, n::Int64,
-                                                     order::Ptr{Int64}, ptr::Ptr{Int64},
-                                                     row::Ptr{Int64}, val::Ptr{Float64},
-                                                     akeep::Ptr{Ptr{Cvoid}},
-                                                     control::Ptr{ssids_control_type{Float64,
-                                                                                      Int64}},
-                                                     inform::Ptr{ssids_inform_type{Float64,
-                                                                                    Int64}})::Cvoid
+                       akeep, control, inform)
+  @ccall libgalahad_double_64.ssids_analyse_64(check::Bool, n::Int64, order::Ptr{Int64},
+                                               ptr::Ptr{Int64}, row::Ptr{Int64},
+                                               val::Ptr{Float64}, akeep::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{ssids_control_type},
+                                               inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_analyse(::Type{Float128}, ::Type{Int32}, check, n, order, ptr, row,
-                             val, akeep, control, inform)
-  @ccall libgalahad_quadruple.ssids_analyse_q(check::Bool, n::Int32,
-                                                    order::Ptr{Int32}, ptr::Ptr{Int64},
-                                                    row::Ptr{Int32}, val::Ptr{Float128},
-                                                    akeep::Ptr{Ptr{Cvoid}},
-                                                    control::Ptr{ssids_control_type{Float128,
-                                                                                     Int32}},
-                                                    inform::Ptr{ssids_inform_type{Float128,
-                                                                                   Int32}})::Cvoid
+function ssids_analyse(::Type{Float128}, ::Type{Int32}, check, n, order, ptr, row, val,
+                       akeep, control, inform)
+  @ccall libgalahad_quadruple.ssids_analyse_q(check::Bool, n::Int32, order::Ptr{Int32},
+                                              ptr::Ptr{Int64}, row::Ptr{Int32},
+                                              val::Ptr{Float128}, akeep::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{ssids_control_type},
+                                              inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_analyse(::Type{Float128}, ::Type{Int64}, check, n, order, ptr, row,
-                             val, akeep, control, inform)
+function ssids_analyse(::Type{Float128}, ::Type{Int64}, check, n, order, ptr, row, val,
+                       akeep, control, inform)
   @ccall libgalahad_quadruple_64.ssids_analyse_q_64(check::Bool, n::Int64,
-                                                          order::Ptr{Int64},
-                                                          ptr::Ptr{Int64}, row::Ptr{Int64},
-                                                          val::Ptr{Float128},
-                                                          akeep::Ptr{Ptr{Cvoid}},
-                                                          control::Ptr{ssids_control_type{Float128,
-                                                                                           Int64}},
-                                                          inform::Ptr{ssids_inform_type{Float128,
-                                                                                         Int64}})::Cvoid
+                                                    order::Ptr{Int64}, ptr::Ptr{Int64},
+                                                    row::Ptr{Int64}, val::Ptr{Float128},
+                                                    akeep::Ptr{Ptr{Cvoid}},
+                                                    control::Ptr{ssids_control_type},
+                                                    inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 export ssids_analyse_ptr32
 
-function ssids_analyse_ptr32(::Type{Float32}, ::Type{Int32}, check, n, order, ptr,
-                                   row, val, akeep, control, inform)
-  @ccall libgalahad_single.ssids_analyse_ptr32_s(check::Bool, n::Int32,
-                                                       order::Ptr{Int32}, ptr::Ptr{Int32},
-                                                       row::Ptr{Int32}, val::Ptr{Float32},
-                                                       akeep::Ptr{Ptr{Cvoid}},
-                                                       control::Ptr{ssids_control_type{Float32,
-                                                                                        Int32}},
-                                                       inform::Ptr{ssids_inform_type{Float32,
-                                                                                      Int32}})::Cvoid
+function ssids_analyse_ptr32(::Type{Float32}, ::Type{Int32}, check, n, order, ptr, row, val,
+                             akeep, control, inform)
+  @ccall libgalahad_single.ssids_analyse_ptr32_s(check::Bool, n::Int32, order::Ptr{Int32},
+                                                 ptr::Ptr{Int32}, row::Ptr{Int32},
+                                                 val::Ptr{Float32}, akeep::Ptr{Ptr{Cvoid}},
+                                                 control::Ptr{ssids_control_type},
+                                                 inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_analyse_ptr32(::Type{Float32}, ::Type{Int64}, check, n, order, ptr,
-                                   row, val, akeep, control, inform)
+function ssids_analyse_ptr32(::Type{Float32}, ::Type{Int64}, check, n, order, ptr, row, val,
+                             akeep, control, inform)
   @ccall libgalahad_single_64.ssids_analyse_ptr32_s_64(check::Bool, n::Int64,
-                                                             order::Ptr{Int64},
-                                                             ptr::Ptr{Int64},
-                                                             row::Ptr{Int64},
-                                                             val::Ptr{Float32},
-                                                             akeep::Ptr{Ptr{Cvoid}},
-                                                             control::Ptr{ssids_control_type{Float32,
-                                                                                              Int64}},
-                                                             inform::Ptr{ssids_inform_type{Float32,
-                                                                                            Int64}})::Cvoid
+                                                       order::Ptr{Int64}, ptr::Ptr{Int64},
+                                                       row::Ptr{Int64}, val::Ptr{Float32},
+                                                       akeep::Ptr{Ptr{Cvoid}},
+                                                       control::Ptr{ssids_control_type},
+                                                       inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_analyse_ptr32(::Type{Float64}, ::Type{Int32}, check, n, order, ptr,
-                                   row, val, akeep, control, inform)
-  @ccall libgalahad_double.ssids_analyse_ptr32(check::Bool, n::Int32,
-                                                     order::Ptr{Int32}, ptr::Ptr{Int32},
-                                                     row::Ptr{Int32}, val::Ptr{Float64},
-                                                     akeep::Ptr{Ptr{Cvoid}},
-                                                     control::Ptr{ssids_control_type{Float64,
-                                                                                      Int32}},
-                                                     inform::Ptr{ssids_inform_type{Float64,
-                                                                                    Int32}})::Cvoid
+function ssids_analyse_ptr32(::Type{Float64}, ::Type{Int32}, check, n, order, ptr, row, val,
+                             akeep, control, inform)
+  @ccall libgalahad_double.ssids_analyse_ptr32(check::Bool, n::Int32, order::Ptr{Int32},
+                                               ptr::Ptr{Int32}, row::Ptr{Int32},
+                                               val::Ptr{Float64}, akeep::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{ssids_control_type},
+                                               inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_analyse_ptr32(::Type{Float64}, ::Type{Int64}, check, n, order, ptr,
-                                   row, val, akeep, control, inform)
+function ssids_analyse_ptr32(::Type{Float64}, ::Type{Int64}, check, n, order, ptr, row, val,
+                             akeep, control, inform)
   @ccall libgalahad_double_64.ssids_analyse_ptr32_64(check::Bool, n::Int64,
-                                                           order::Ptr{Int64},
-                                                           ptr::Ptr{Int64}, row::Ptr{Int64},
-                                                           val::Ptr{Float64},
-                                                           akeep::Ptr{Ptr{Cvoid}},
-                                                           control::Ptr{ssids_control_type{Float64,
-                                                                                            Int64}},
-                                                           inform::Ptr{ssids_inform_type{Float64,
-                                                                                          Int64}})::Cvoid
+                                                     order::Ptr{Int64}, ptr::Ptr{Int64},
+                                                     row::Ptr{Int64}, val::Ptr{Float64},
+                                                     akeep::Ptr{Ptr{Cvoid}},
+                                                     control::Ptr{ssids_control_type},
+                                                     inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_analyse_ptr32(::Type{Float128}, ::Type{Int32}, check, n, order, ptr,
-                                   row, val, akeep, control, inform)
+function ssids_analyse_ptr32(::Type{Float128}, ::Type{Int32}, check, n, order, ptr, row,
+                             val, akeep, control, inform)
   @ccall libgalahad_quadruple.ssids_analyse_ptr32_q(check::Bool, n::Int32,
-                                                          order::Ptr{Int32},
-                                                          ptr::Ptr{Int32}, row::Ptr{Int32},
+                                                    order::Ptr{Int32}, ptr::Ptr{Int32},
+                                                    row::Ptr{Int32}, val::Ptr{Float128},
+                                                    akeep::Ptr{Ptr{Cvoid}},
+                                                    control::Ptr{ssids_control_type},
+                                                    inform::Ptr{ssids_inform_type})::Cvoid
+end
+
+function ssids_analyse_ptr32(::Type{Float128}, ::Type{Int64}, check, n, order, ptr, row,
+                             val, akeep, control, inform)
+  @ccall libgalahad_quadruple_64.ssids_analyse_ptr32_q_64(check::Bool, n::Int64,
+                                                          order::Ptr{Int64},
+                                                          ptr::Ptr{Int64}, row::Ptr{Int64},
                                                           val::Ptr{Float128},
                                                           akeep::Ptr{Ptr{Cvoid}},
-                                                          control::Ptr{ssids_control_type{Float128,
-                                                                                           Int32}},
-                                                          inform::Ptr{ssids_inform_type{Float128,
-                                                                                         Int32}})::Cvoid
-end
-
-function ssids_analyse_ptr32(::Type{Float128}, ::Type{Int64}, check, n, order, ptr,
-                                   row, val, akeep, control, inform)
-  @ccall libgalahad_quadruple_64.ssids_analyse_ptr32_q_64(check::Bool, n::Int64,
-                                                                order::Ptr{Int64},
-                                                                ptr::Ptr{Int64},
-                                                                row::Ptr{Int64},
-                                                                val::Ptr{Float128},
-                                                                akeep::Ptr{Ptr{Cvoid}},
-                                                                control::Ptr{ssids_control_type{Float128,
-                                                                                                 Int64}},
-                                                                inform::Ptr{ssids_inform_type{Float128,
-                                                                                               Int64}})::Cvoid
+                                                          control::Ptr{ssids_control_type},
+                                                          inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 export ssids_analyse_coord
 
-function ssids_analyse_coord(::Type{Float32}, ::Type{Int32}, n, order, ne, row, col,
-                                   val, akeep, control, inform)
-  @ccall libgalahad_single.ssids_analyse_coord_s(n::Int32, order::Ptr{Int32},
-                                                       ne::Int64, row::Ptr{Int32},
-                                                       col::Ptr{Int32}, val::Ptr{Float32},
-                                                       akeep::Ptr{Ptr{Cvoid}},
-                                                       control::Ptr{ssids_control_type{Float32,
-                                                                                        Int32}},
-                                                       inform::Ptr{ssids_inform_type{Float32,
-                                                                                      Int32}})::Cvoid
+function ssids_analyse_coord(::Type{Float32}, ::Type{Int32}, n, order, ne, row, col, val,
+                             akeep, control, inform)
+  @ccall libgalahad_single.ssids_analyse_coord_s(n::Int32, order::Ptr{Int32}, ne::Int64,
+                                                 row::Ptr{Int32}, col::Ptr{Int32},
+                                                 val::Ptr{Float32}, akeep::Ptr{Ptr{Cvoid}},
+                                                 control::Ptr{ssids_control_type},
+                                                 inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_analyse_coord(::Type{Float32}, ::Type{Int64}, n, order, ne, row, col,
-                                   val, akeep, control, inform)
+function ssids_analyse_coord(::Type{Float32}, ::Type{Int64}, n, order, ne, row, col, val,
+                             akeep, control, inform)
   @ccall libgalahad_single_64.ssids_analyse_coord_s_64(n::Int64, order::Ptr{Int64},
-                                                             ne::Int64, row::Ptr{Int64},
-                                                             col::Ptr{Int64},
-                                                             val::Ptr{Float32},
-                                                             akeep::Ptr{Ptr{Cvoid}},
-                                                             control::Ptr{ssids_control_type{Float32,
-                                                                                              Int64}},
-                                                             inform::Ptr{ssids_inform_type{Float32,
-                                                                                            Int64}})::Cvoid
+                                                       ne::Int64, row::Ptr{Int64},
+                                                       col::Ptr{Int64}, val::Ptr{Float32},
+                                                       akeep::Ptr{Ptr{Cvoid}},
+                                                       control::Ptr{ssids_control_type},
+                                                       inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_analyse_coord(::Type{Float64}, ::Type{Int32}, n, order, ne, row, col,
-                                   val, akeep, control, inform)
+function ssids_analyse_coord(::Type{Float64}, ::Type{Int32}, n, order, ne, row, col, val,
+                             akeep, control, inform)
   @ccall libgalahad_double.ssids_analyse_coord(n::Int32, order::Ptr{Int32}, ne::Int64,
-                                                     row::Ptr{Int32}, col::Ptr{Int32},
+                                               row::Ptr{Int32}, col::Ptr{Int32},
+                                               val::Ptr{Float64}, akeep::Ptr{Ptr{Cvoid}},
+                                               control::Ptr{ssids_control_type},
+                                               inform::Ptr{ssids_inform_type})::Cvoid
+end
+
+function ssids_analyse_coord(::Type{Float64}, ::Type{Int64}, n, order, ne, row, col, val,
+                             akeep, control, inform)
+  @ccall libgalahad_double_64.ssids_analyse_coord_64(n::Int64, order::Ptr{Int64}, ne::Int64,
+                                                     row::Ptr{Int64}, col::Ptr{Int64},
                                                      val::Ptr{Float64},
                                                      akeep::Ptr{Ptr{Cvoid}},
-                                                     control::Ptr{ssids_control_type{Float64,
-                                                                                      Int32}},
-                                                     inform::Ptr{ssids_inform_type{Float64,
-                                                                                    Int32}})::Cvoid
+                                                     control::Ptr{ssids_control_type},
+                                                     inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_analyse_coord(::Type{Float64}, ::Type{Int64}, n, order, ne, row, col,
-                                   val, akeep, control, inform)
-  @ccall libgalahad_double_64.ssids_analyse_coord_64(n::Int64, order::Ptr{Int64},
-                                                           ne::Int64, row::Ptr{Int64},
-                                                           col::Ptr{Int64},
-                                                           val::Ptr{Float64},
-                                                           akeep::Ptr{Ptr{Cvoid}},
-                                                           control::Ptr{ssids_control_type{Float64,
-                                                                                            Int64}},
-                                                           inform::Ptr{ssids_inform_type{Float64,
-                                                                                          Int64}})::Cvoid
+function ssids_analyse_coord(::Type{Float128}, ::Type{Int32}, n, order, ne, row, col, val,
+                             akeep, control, inform)
+  @ccall libgalahad_quadruple.ssids_analyse_coord_q(n::Int32, order::Ptr{Int32}, ne::Int64,
+                                                    row::Ptr{Int32}, col::Ptr{Int32},
+                                                    val::Ptr{Float128},
+                                                    akeep::Ptr{Ptr{Cvoid}},
+                                                    control::Ptr{ssids_control_type},
+                                                    inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_analyse_coord(::Type{Float128}, ::Type{Int32}, n, order, ne, row, col,
-                                   val, akeep, control, inform)
-  @ccall libgalahad_quadruple.ssids_analyse_coord_q(n::Int32, order::Ptr{Int32},
-                                                          ne::Int64, row::Ptr{Int32},
-                                                          col::Ptr{Int32},
+function ssids_analyse_coord(::Type{Float128}, ::Type{Int64}, n, order, ne, row, col, val,
+                             akeep, control, inform)
+  @ccall libgalahad_quadruple_64.ssids_analyse_coord_q_64(n::Int64, order::Ptr{Int64},
+                                                          ne::Int64, row::Ptr{Int64},
+                                                          col::Ptr{Int64},
                                                           val::Ptr{Float128},
                                                           akeep::Ptr{Ptr{Cvoid}},
-                                                          control::Ptr{ssids_control_type{Float128,
-                                                                                           Int32}},
-                                                          inform::Ptr{ssids_inform_type{Float128,
-                                                                                         Int32}})::Cvoid
-end
-
-function ssids_analyse_coord(::Type{Float128}, ::Type{Int64}, n, order, ne, row, col,
-                                   val, akeep, control, inform)
-  @ccall libgalahad_quadruple_64.ssids_analyse_coord_q_64(n::Int64, order::Ptr{Int64},
-                                                                ne::Int64, row::Ptr{Int64},
-                                                                col::Ptr{Int64},
-                                                                val::Ptr{Float128},
-                                                                akeep::Ptr{Ptr{Cvoid}},
-                                                                control::Ptr{ssids_control_type{Float128,
-                                                                                                 Int64}},
-                                                                inform::Ptr{ssids_inform_type{Float128,
-                                                                                               Int64}})::Cvoid
+                                                          control::Ptr{ssids_control_type},
+                                                          inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 export ssids_factor
 
-function ssids_factor(::Type{Float32}, ::Type{Int32}, posdef, ptr, row, val, scale,
+function ssids_factor(::Type{Float32}, ::Type{Int32}, posdef, ptr, row, val, scale, akeep,
+                      fkeep, control, inform)
+  @ccall libgalahad_single.ssids_factor_s(posdef::Bool, ptr::Ptr{Int64}, row::Ptr{Int32},
+                                          val::Ptr{Float32}, scale::Ptr{Float32},
+                                          akeep::Ptr{Cvoid}, fkeep::Ptr{Ptr{Cvoid}},
+                                          control::Ptr{ssids_control_type},
+                                          inform::Ptr{ssids_inform_type})::Cvoid
+end
+
+function ssids_factor(::Type{Float32}, ::Type{Int64}, posdef, ptr, row, val, scale, akeep,
+                      fkeep, control, inform)
+  @ccall libgalahad_single_64.ssids_factor_s_64(posdef::Bool, ptr::Ptr{Int64},
+                                                row::Ptr{Int64}, val::Ptr{Float32},
+                                                scale::Ptr{Float32}, akeep::Ptr{Cvoid},
+                                                fkeep::Ptr{Ptr{Cvoid}},
+                                                control::Ptr{ssids_control_type},
+                                                inform::Ptr{ssids_inform_type})::Cvoid
+end
+
+function ssids_factor(::Type{Float64}, ::Type{Int32}, posdef, ptr, row, val, scale, akeep,
+                      fkeep, control, inform)
+  @ccall libgalahad_double.ssids_factor(posdef::Bool, ptr::Ptr{Int64}, row::Ptr{Int32},
+                                        val::Ptr{Float64}, scale::Ptr{Float64},
+                                        akeep::Ptr{Cvoid}, fkeep::Ptr{Ptr{Cvoid}},
+                                        control::Ptr{ssids_control_type},
+                                        inform::Ptr{ssids_inform_type})::Cvoid
+end
+
+function ssids_factor(::Type{Float64}, ::Type{Int64}, posdef, ptr, row, val, scale, akeep,
+                      fkeep, control, inform)
+  @ccall libgalahad_double_64.ssids_factor_64(posdef::Bool, ptr::Ptr{Int64},
+                                              row::Ptr{Int64}, val::Ptr{Float64},
+                                              scale::Ptr{Float64}, akeep::Ptr{Cvoid},
+                                              fkeep::Ptr{Ptr{Cvoid}},
+                                              control::Ptr{ssids_control_type},
+                                              inform::Ptr{ssids_inform_type})::Cvoid
+end
+
+function ssids_factor(::Type{Float128}, ::Type{Int32}, posdef, ptr, row, val, scale, akeep,
+                      fkeep, control, inform)
+  @ccall libgalahad_quadruple.ssids_factor_q(posdef::Bool, ptr::Ptr{Int64}, row::Ptr{Int32},
+                                             val::Ptr{Float128}, scale::Ptr{Float128},
+                                             akeep::Ptr{Cvoid}, fkeep::Ptr{Ptr{Cvoid}},
+                                             control::Ptr{ssids_control_type},
+                                             inform::Ptr{ssids_inform_type})::Cvoid
+end
+
+function ssids_factor(::Type{Float128}, ::Type{Int64}, posdef, ptr, row, val, scale, akeep,
+                      fkeep, control, inform)
+  @ccall libgalahad_quadruple_64.ssids_factor_q_64(posdef::Bool, ptr::Ptr{Int64},
+                                                   row::Ptr{Int64}, val::Ptr{Float128},
+                                                   scale::Ptr{Float128}, akeep::Ptr{Cvoid},
+                                                   fkeep::Ptr{Ptr{Cvoid}},
+                                                   control::Ptr{ssids_control_type},
+                                                   inform::Ptr{ssids_inform_type})::Cvoid
+end
+
+export ssids_factor_ptr32
+
+function ssids_factor_ptr32(::Type{Float32}, ::Type{Int32}, posdef, ptr, row, val, scale,
                             akeep, fkeep, control, inform)
-  @ccall libgalahad_single.ssids_factor_s(posdef::Bool, ptr::Ptr{Int64},
+  @ccall libgalahad_single.ssids_factor_ptr32_s(posdef::Bool, ptr::Ptr{Int32},
                                                 row::Ptr{Int32}, val::Ptr{Float32},
                                                 scale::Ptr{Float32}, akeep::Ptr{Cvoid},
                                                 fkeep::Ptr{Ptr{Cvoid}},
-                                                control::Ptr{ssids_control_type{Float32,
-                                                                                 Int32}},
-                                                inform::Ptr{ssids_inform_type{Float32,
-                                                                               Int32}})::Cvoid
+                                                control::Ptr{ssids_control_type},
+                                                inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_factor(::Type{Float32}, ::Type{Int64}, posdef, ptr, row, val, scale,
+function ssids_factor_ptr32(::Type{Float32}, ::Type{Int64}, posdef, ptr, row, val, scale,
                             akeep, fkeep, control, inform)
-  @ccall libgalahad_single_64.ssids_factor_s_64(posdef::Bool, ptr::Ptr{Int64},
+  @ccall libgalahad_single_64.ssids_factor_ptr32_s_64(posdef::Bool, ptr::Ptr{Int64},
                                                       row::Ptr{Int64}, val::Ptr{Float32},
                                                       scale::Ptr{Float32},
                                                       akeep::Ptr{Cvoid},
                                                       fkeep::Ptr{Ptr{Cvoid}},
-                                                      control::Ptr{ssids_control_type{Float32,
-                                                                                       Int64}},
-                                                      inform::Ptr{ssids_inform_type{Float32,
-                                                                                     Int64}})::Cvoid
+                                                      control::Ptr{ssids_control_type},
+                                                      inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_factor(::Type{Float64}, ::Type{Int32}, posdef, ptr, row, val, scale,
+function ssids_factor_ptr32(::Type{Float64}, ::Type{Int32}, posdef, ptr, row, val, scale,
                             akeep, fkeep, control, inform)
-  @ccall libgalahad_double.ssids_factor(posdef::Bool, ptr::Ptr{Int64},
+  @ccall libgalahad_double.ssids_factor_ptr32(posdef::Bool, ptr::Ptr{Int32},
                                               row::Ptr{Int32}, val::Ptr{Float64},
                                               scale::Ptr{Float64}, akeep::Ptr{Cvoid},
                                               fkeep::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{ssids_control_type{Float64,
-                                                                               Int32}},
-                                              inform::Ptr{ssids_inform_type{Float64,Int32}})::Cvoid
+                                              control::Ptr{ssids_control_type},
+                                              inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_factor(::Type{Float64}, ::Type{Int64}, posdef, ptr, row, val, scale,
+function ssids_factor_ptr32(::Type{Float64}, ::Type{Int64}, posdef, ptr, row, val, scale,
                             akeep, fkeep, control, inform)
-  @ccall libgalahad_double_64.ssids_factor_64(posdef::Bool, ptr::Ptr{Int64},
+  @ccall libgalahad_double_64.ssids_factor_ptr32_64(posdef::Bool, ptr::Ptr{Int64},
                                                     row::Ptr{Int64}, val::Ptr{Float64},
                                                     scale::Ptr{Float64}, akeep::Ptr{Cvoid},
                                                     fkeep::Ptr{Ptr{Cvoid}},
-                                                    control::Ptr{ssids_control_type{Float64,
-                                                                                     Int64}},
-                                                    inform::Ptr{ssids_inform_type{Float64,
-                                                                                   Int64}})::Cvoid
+                                                    control::Ptr{ssids_control_type},
+                                                    inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_factor(::Type{Float128}, ::Type{Int32}, posdef, ptr, row, val, scale,
+function ssids_factor_ptr32(::Type{Float128}, ::Type{Int32}, posdef, ptr, row, val, scale,
                             akeep, fkeep, control, inform)
-  @ccall libgalahad_quadruple.ssids_factor_q(posdef::Bool, ptr::Ptr{Int64},
+  @ccall libgalahad_quadruple.ssids_factor_ptr32_q(posdef::Bool, ptr::Ptr{Int32},
                                                    row::Ptr{Int32}, val::Ptr{Float128},
                                                    scale::Ptr{Float128}, akeep::Ptr{Cvoid},
                                                    fkeep::Ptr{Ptr{Cvoid}},
-                                                   control::Ptr{ssids_control_type{Float128,
-                                                                                    Int32}},
-                                                   inform::Ptr{ssids_inform_type{Float128,
-                                                                                  Int32}})::Cvoid
+                                                   control::Ptr{ssids_control_type},
+                                                   inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_factor(::Type{Float128}, ::Type{Int64}, posdef, ptr, row, val, scale,
+function ssids_factor_ptr32(::Type{Float128}, ::Type{Int64}, posdef, ptr, row, val, scale,
                             akeep, fkeep, control, inform)
-  @ccall libgalahad_quadruple_64.ssids_factor_q_64(posdef::Bool, ptr::Ptr{Int64},
+  @ccall libgalahad_quadruple_64.ssids_factor_ptr32_q_64(posdef::Bool, ptr::Ptr{Int64},
                                                          row::Ptr{Int64},
                                                          val::Ptr{Float128},
                                                          scale::Ptr{Float128},
                                                          akeep::Ptr{Cvoid},
                                                          fkeep::Ptr{Ptr{Cvoid}},
-                                                         control::Ptr{ssids_control_type{Float128,
-                                                                                          Int64}},
-                                                         inform::Ptr{ssids_inform_type{Float128,
-                                                                                        Int64}})::Cvoid
-end
-
-export ssids_factor_ptr32
-
-function ssids_factor_ptr32(::Type{Float32}, ::Type{Int32}, posdef, ptr, row, val,
-                                  scale, akeep, fkeep, control, inform)
-  @ccall libgalahad_single.ssids_factor_ptr32_s(posdef::Bool, ptr::Ptr{Int32},
-                                                      row::Ptr{Int32}, val::Ptr{Float32},
-                                                      scale::Ptr{Float32},
-                                                      akeep::Ptr{Cvoid},
-                                                      fkeep::Ptr{Ptr{Cvoid}},
-                                                      control::Ptr{ssids_control_type{Float32,
-                                                                                       Int32}},
-                                                      inform::Ptr{ssids_inform_type{Float32,
-                                                                                     Int32}})::Cvoid
-end
-
-function ssids_factor_ptr32(::Type{Float32}, ::Type{Int64}, posdef, ptr, row, val,
-                                  scale, akeep, fkeep, control, inform)
-  @ccall libgalahad_single_64.ssids_factor_ptr32_s_64(posdef::Bool, ptr::Ptr{Int64},
-                                                            row::Ptr{Int64},
-                                                            val::Ptr{Float32},
-                                                            scale::Ptr{Float32},
-                                                            akeep::Ptr{Cvoid},
-                                                            fkeep::Ptr{Ptr{Cvoid}},
-                                                            control::Ptr{ssids_control_type{Float32,
-                                                                                             Int64}},
-                                                            inform::Ptr{ssids_inform_type{Float32,
-                                                                                           Int64}})::Cvoid
-end
-
-function ssids_factor_ptr32(::Type{Float64}, ::Type{Int32}, posdef, ptr, row, val,
-                                  scale, akeep, fkeep, control, inform)
-  @ccall libgalahad_double.ssids_factor_ptr32(posdef::Bool, ptr::Ptr{Int32},
-                                                    row::Ptr{Int32}, val::Ptr{Float64},
-                                                    scale::Ptr{Float64}, akeep::Ptr{Cvoid},
-                                                    fkeep::Ptr{Ptr{Cvoid}},
-                                                    control::Ptr{ssids_control_type{Float64,
-                                                                                     Int32}},
-                                                    inform::Ptr{ssids_inform_type{Float64,
-                                                                                   Int32}})::Cvoid
-end
-
-function ssids_factor_ptr32(::Type{Float64}, ::Type{Int64}, posdef, ptr, row, val,
-                                  scale, akeep, fkeep, control, inform)
-  @ccall libgalahad_double_64.ssids_factor_ptr32_64(posdef::Bool, ptr::Ptr{Int64},
-                                                          row::Ptr{Int64},
-                                                          val::Ptr{Float64},
-                                                          scale::Ptr{Float64},
-                                                          akeep::Ptr{Cvoid},
-                                                          fkeep::Ptr{Ptr{Cvoid}},
-                                                          control::Ptr{ssids_control_type{Float64,
-                                                                                           Int64}},
-                                                          inform::Ptr{ssids_inform_type{Float64,
-                                                                                         Int64}})::Cvoid
-end
-
-function ssids_factor_ptr32(::Type{Float128}, ::Type{Int32}, posdef, ptr, row, val,
-                                  scale, akeep, fkeep, control, inform)
-  @ccall libgalahad_quadruple.ssids_factor_ptr32_q(posdef::Bool, ptr::Ptr{Int32},
-                                                         row::Ptr{Int32},
-                                                         val::Ptr{Float128},
-                                                         scale::Ptr{Float128},
-                                                         akeep::Ptr{Cvoid},
-                                                         fkeep::Ptr{Ptr{Cvoid}},
-                                                         control::Ptr{ssids_control_type{Float128,
-                                                                                          Int32}},
-                                                         inform::Ptr{ssids_inform_type{Float128,
-                                                                                        Int32}})::Cvoid
-end
-
-function ssids_factor_ptr32(::Type{Float128}, ::Type{Int64}, posdef, ptr, row, val,
-                                  scale, akeep, fkeep, control, inform)
-  @ccall libgalahad_quadruple_64.ssids_factor_ptr32_q_64(posdef::Bool,
-                                                               ptr::Ptr{Int64},
-                                                               row::Ptr{Int64},
-                                                               val::Ptr{Float128},
-                                                               scale::Ptr{Float128},
-                                                               akeep::Ptr{Cvoid},
-                                                               fkeep::Ptr{Ptr{Cvoid}},
-                                                               control::Ptr{ssids_control_type{Float128,
-                                                                                                Int64}},
-                                                               inform::Ptr{ssids_inform_type{Float128,
-                                                                                              Int64}})::Cvoid
+                                                         control::Ptr{ssids_control_type},
+                                                         inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 export ssids_solve1
 
 function ssids_solve1(::Type{Float32}, ::Type{Int32}, job, x1, akeep, fkeep, control,
-                            inform)
-  @ccall libgalahad_single.ssids_solve1_s(job::Int32, x1::Ptr{Float32},
-                                                akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
-                                                control::Ptr{ssids_control_type{Float32,
-                                                                                 Int32}},
-                                                inform::Ptr{ssids_inform_type{Float32,
-                                                                               Int32}})::Cvoid
+                      inform)
+  @ccall libgalahad_single.ssids_solve1_s(job::Int32, x1::Ptr{Float32}, akeep::Ptr{Cvoid},
+                                          fkeep::Ptr{Cvoid},
+                                          control::Ptr{ssids_control_type},
+                                          inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_solve1(::Type{Float32}, ::Type{Int64}, job, x1, akeep, fkeep, control,
-                            inform)
+                      inform)
   @ccall libgalahad_single_64.ssids_solve1_s_64(job::Int64, x1::Ptr{Float32},
-                                                      akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
-                                                      control::Ptr{ssids_control_type{Float32,
-                                                                                       Int64}},
-                                                      inform::Ptr{ssids_inform_type{Float32,
-                                                                                     Int64}})::Cvoid
+                                                akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                                control::Ptr{ssids_control_type},
+                                                inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_solve1(::Type{Float64}, ::Type{Int32}, job, x1, akeep, fkeep, control,
-                            inform)
-  @ccall libgalahad_double.ssids_solve1(job::Int32, x1::Ptr{Float64},
-                                              akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
-                                              control::Ptr{ssids_control_type{Float64,
-                                                                               Int32}},
-                                              inform::Ptr{ssids_inform_type{Float64,Int32}})::Cvoid
+                      inform)
+  @ccall libgalahad_double.ssids_solve1(job::Int32, x1::Ptr{Float64}, akeep::Ptr{Cvoid},
+                                        fkeep::Ptr{Cvoid}, control::Ptr{ssids_control_type},
+                                        inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_solve1(::Type{Float64}, ::Type{Int64}, job, x1, akeep, fkeep, control,
-                            inform)
+                      inform)
   @ccall libgalahad_double_64.ssids_solve1_64(job::Int64, x1::Ptr{Float64},
-                                                    akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
-                                                    control::Ptr{ssids_control_type{Float64,
-                                                                                     Int64}},
-                                                    inform::Ptr{ssids_inform_type{Float64,
-                                                                                   Int64}})::Cvoid
+                                              akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                              control::Ptr{ssids_control_type},
+                                              inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_solve1(::Type{Float128}, ::Type{Int32}, job, x1, akeep, fkeep, control,
-                            inform)
+                      inform)
   @ccall libgalahad_quadruple.ssids_solve1_q(job::Int32, x1::Ptr{Float128},
-                                                   akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
-                                                   control::Ptr{ssids_control_type{Float128,
-                                                                                    Int32}},
-                                                   inform::Ptr{ssids_inform_type{Float128,
-                                                                                  Int32}})::Cvoid
+                                             akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                             control::Ptr{ssids_control_type},
+                                             inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_solve1(::Type{Float128}, ::Type{Int64}, job, x1, akeep, fkeep, control,
-                            inform)
+                      inform)
   @ccall libgalahad_quadruple_64.ssids_solve1_q_64(job::Int64, x1::Ptr{Float128},
-                                                         akeep::Ptr{Cvoid},
-                                                         fkeep::Ptr{Cvoid},
-                                                         control::Ptr{ssids_control_type{Float128,
-                                                                                          Int64}},
-                                                         inform::Ptr{ssids_inform_type{Float128,
-                                                                                        Int64}})::Cvoid
+                                                   akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                                   control::Ptr{ssids_control_type},
+                                                   inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 export ssids_solve
 
 function ssids_solve(::Type{Float32}, ::Type{Int32}, job, nrhs, x, ldx, akeep, fkeep,
-                           control, inform)
+                     control, inform)
   @ccall libgalahad_single.ssids_solve_s(job::Int32, nrhs::Int32, x::Ptr{Float32},
-                                               ldx::Int32, akeep::Ptr{Cvoid},
-                                               fkeep::Ptr{Cvoid},
-                                               control::Ptr{ssids_control_type{Float32,
-                                                                                Int32}},
-                                               inform::Ptr{ssids_inform_type{Float32,
-                                                                              Int32}})::Cvoid
+                                         ldx::Int32, akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                         control::Ptr{ssids_control_type},
+                                         inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_solve(::Type{Float32}, ::Type{Int64}, job, nrhs, x, ldx, akeep, fkeep,
-                           control, inform)
-  @ccall libgalahad_single_64.ssids_solve_s_64(job::Int64, nrhs::Int64,
-                                                     x::Ptr{Float32}, ldx::Int64,
-                                                     akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
-                                                     control::Ptr{ssids_control_type{Float32,
-                                                                                      Int64}},
-                                                     inform::Ptr{ssids_inform_type{Float32,
-                                                                                    Int64}})::Cvoid
+                     control, inform)
+  @ccall libgalahad_single_64.ssids_solve_s_64(job::Int64, nrhs::Int64, x::Ptr{Float32},
+                                               ldx::Int64, akeep::Ptr{Cvoid},
+                                               fkeep::Ptr{Cvoid},
+                                               control::Ptr{ssids_control_type},
+                                               inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_solve(::Type{Float64}, ::Type{Int32}, job, nrhs, x, ldx, akeep, fkeep,
-                           control, inform)
-  @ccall libgalahad_double.ssids_solve(job::Int32, nrhs::Int32, x::Ptr{Float64},
-                                             ldx::Int32, akeep::Ptr{Cvoid},
-                                             fkeep::Ptr{Cvoid},
-                                             control::Ptr{ssids_control_type{Float64,
-                                                                              Int32}},
-                                             inform::Ptr{ssids_inform_type{Float64,Int32}})::Cvoid
+                     control, inform)
+  @ccall libgalahad_double.ssids_solve(job::Int32, nrhs::Int32, x::Ptr{Float64}, ldx::Int32,
+                                       akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                       control::Ptr{ssids_control_type},
+                                       inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_solve(::Type{Float64}, ::Type{Int64}, job, nrhs, x, ldx, akeep, fkeep,
-                           control, inform)
+                     control, inform)
   @ccall libgalahad_double_64.ssids_solve_64(job::Int64, nrhs::Int64, x::Ptr{Float64},
-                                                   ldx::Int64, akeep::Ptr{Cvoid},
-                                                   fkeep::Ptr{Cvoid},
-                                                   control::Ptr{ssids_control_type{Float64,
-                                                                                    Int64}},
-                                                   inform::Ptr{ssids_inform_type{Float64,
-                                                                                  Int64}})::Cvoid
+                                             ldx::Int64, akeep::Ptr{Cvoid},
+                                             fkeep::Ptr{Cvoid},
+                                             control::Ptr{ssids_control_type},
+                                             inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_solve(::Type{Float128}, ::Type{Int32}, job, nrhs, x, ldx, akeep, fkeep,
-                           control, inform)
+                     control, inform)
   @ccall libgalahad_quadruple.ssids_solve_q(job::Int32, nrhs::Int32, x::Ptr{Float128},
-                                                  ldx::Int32, akeep::Ptr{Cvoid},
-                                                  fkeep::Ptr{Cvoid},
-                                                  control::Ptr{ssids_control_type{Float128,
-                                                                                   Int32}},
-                                                  inform::Ptr{ssids_inform_type{Float128,
-                                                                                 Int32}})::Cvoid
+                                            ldx::Int32, akeep::Ptr{Cvoid},
+                                            fkeep::Ptr{Cvoid},
+                                            control::Ptr{ssids_control_type},
+                                            inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_solve(::Type{Float128}, ::Type{Int64}, job, nrhs, x, ldx, akeep, fkeep,
-                           control, inform)
-  @ccall libgalahad_quadruple_64.ssids_solve_q_64(job::Int64, nrhs::Int64,
-                                                        x::Ptr{Float128}, ldx::Int64,
-                                                        akeep::Ptr{Cvoid},
-                                                        fkeep::Ptr{Cvoid},
-                                                        control::Ptr{ssids_control_type{Float128,
-                                                                                         Int64}},
-                                                        inform::Ptr{ssids_inform_type{Float128,
-                                                                                       Int64}})::Cvoid
+                     control, inform)
+  @ccall libgalahad_quadruple_64.ssids_solve_q_64(job::Int64, nrhs::Int64, x::Ptr{Float128},
+                                                  ldx::Int64, akeep::Ptr{Cvoid},
+                                                  fkeep::Ptr{Cvoid},
+                                                  control::Ptr{ssids_control_type},
+                                                  inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 export ssids_free_akeep
@@ -665,226 +544,181 @@ export ssids_free
 
 function ssids_free(::Type{Float32}, ::Type{Int32}, akeep, fkeep)
   @ccall libgalahad_single.ssids_free_s(akeep::Ptr{Ptr{Cvoid}},
-                                              fkeep::Ptr{Ptr{Cvoid}})::Int32
+                                        fkeep::Ptr{Ptr{Cvoid}})::Int32
 end
 
 function ssids_free(::Type{Float32}, ::Type{Int64}, akeep, fkeep)
   @ccall libgalahad_single_64.ssids_free_s_64(akeep::Ptr{Ptr{Cvoid}},
-                                                    fkeep::Ptr{Ptr{Cvoid}})::Int64
+                                              fkeep::Ptr{Ptr{Cvoid}})::Int64
 end
 
 function ssids_free(::Type{Float64}, ::Type{Int32}, akeep, fkeep)
-  @ccall libgalahad_double.ssids_free(akeep::Ptr{Ptr{Cvoid}},
-                                            fkeep::Ptr{Ptr{Cvoid}})::Int32
+  @ccall libgalahad_double.ssids_free(akeep::Ptr{Ptr{Cvoid}}, fkeep::Ptr{Ptr{Cvoid}})::Int32
 end
 
 function ssids_free(::Type{Float64}, ::Type{Int64}, akeep, fkeep)
   @ccall libgalahad_double_64.ssids_free_64(akeep::Ptr{Ptr{Cvoid}},
-                                                  fkeep::Ptr{Ptr{Cvoid}})::Int64
+                                            fkeep::Ptr{Ptr{Cvoid}})::Int64
 end
 
 function ssids_free(::Type{Float128}, ::Type{Int32}, akeep, fkeep)
   @ccall libgalahad_quadruple.ssids_free_q(akeep::Ptr{Ptr{Cvoid}},
-                                                 fkeep::Ptr{Ptr{Cvoid}})::Int32
+                                           fkeep::Ptr{Ptr{Cvoid}})::Int32
 end
 
 function ssids_free(::Type{Float128}, ::Type{Int64}, akeep, fkeep)
   @ccall libgalahad_quadruple_64.ssids_free_q_64(akeep::Ptr{Ptr{Cvoid}},
-                                                       fkeep::Ptr{Ptr{Cvoid}})::Int64
+                                                 fkeep::Ptr{Ptr{Cvoid}})::Int64
 end
 
 export ssids_enquire_posdef
 
-function ssids_enquire_posdef(::Type{Float32}, ::Type{Int32}, akeep, fkeep, control,
-                                    inform, d)
-  @ccall libgalahad_single.ssids_enquire_posdef_s(akeep::Ptr{Cvoid},
+function ssids_enquire_posdef(::Type{Float32}, ::Type{Int32}, akeep, fkeep, control, inform,
+                              d)
+  @ccall libgalahad_single.ssids_enquire_posdef_s(akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                                  control::Ptr{ssids_control_type},
+                                                  inform::Ptr{ssids_inform_type},
+                                                  d::Ptr{Float32})::Cvoid
+end
+
+function ssids_enquire_posdef(::Type{Float32}, ::Type{Int64}, akeep, fkeep, control, inform,
+                              d)
+  @ccall libgalahad_single_64.ssids_enquire_posdef_s_64(akeep::Ptr{Cvoid},
                                                         fkeep::Ptr{Cvoid},
-                                                        control::Ptr{ssids_control_type{Float32,
-                                                                                         Int32}},
-                                                        inform::Ptr{ssids_inform_type{Float32,
-                                                                                       Int32}},
+                                                        control::Ptr{ssids_control_type},
+                                                        inform::Ptr{ssids_inform_type},
                                                         d::Ptr{Float32})::Cvoid
 end
 
-function ssids_enquire_posdef(::Type{Float32}, ::Type{Int64}, akeep, fkeep, control,
-                                    inform, d)
-  @ccall libgalahad_single_64.ssids_enquire_posdef_s_64(akeep::Ptr{Cvoid},
-                                                              fkeep::Ptr{Cvoid},
-                                                              control::Ptr{ssids_control_type{Float32,
-                                                                                               Int64}},
-                                                              inform::Ptr{ssids_inform_type{Float32,
-                                                                                             Int64}},
-                                                              d::Ptr{Float32})::Cvoid
+function ssids_enquire_posdef(::Type{Float64}, ::Type{Int32}, akeep, fkeep, control, inform,
+                              d)
+  @ccall libgalahad_double.ssids_enquire_posdef(akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                                control::Ptr{ssids_control_type},
+                                                inform::Ptr{ssids_inform_type},
+                                                d::Ptr{Float64})::Cvoid
 end
 
-function ssids_enquire_posdef(::Type{Float64}, ::Type{Int32}, akeep, fkeep, control,
-                                    inform, d)
-  @ccall libgalahad_double.ssids_enquire_posdef(akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
-                                                      control::Ptr{ssids_control_type{Float64,
-                                                                                       Int32}},
-                                                      inform::Ptr{ssids_inform_type{Float64,
-                                                                                     Int32}},
+function ssids_enquire_posdef(::Type{Float64}, ::Type{Int64}, akeep, fkeep, control, inform,
+                              d)
+  @ccall libgalahad_double_64.ssids_enquire_posdef_64(akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                                      control::Ptr{ssids_control_type},
+                                                      inform::Ptr{ssids_inform_type},
                                                       d::Ptr{Float64})::Cvoid
 end
 
-function ssids_enquire_posdef(::Type{Float64}, ::Type{Int64}, akeep, fkeep, control,
-                                    inform, d)
-  @ccall libgalahad_double_64.ssids_enquire_posdef_64(akeep::Ptr{Cvoid},
-                                                            fkeep::Ptr{Cvoid},
-                                                            control::Ptr{ssids_control_type{Float64,
-                                                                                             Int64}},
-                                                            inform::Ptr{ssids_inform_type{Float64,
-                                                                                           Int64}},
-                                                            d::Ptr{Float64})::Cvoid
-end
-
 function ssids_enquire_posdef(::Type{Float128}, ::Type{Int32}, akeep, fkeep, control,
-                                    inform, d)
-  @ccall libgalahad_quadruple.ssids_enquire_posdef_q(akeep::Ptr{Cvoid},
-                                                           fkeep::Ptr{Cvoid},
-                                                           control::Ptr{ssids_control_type{Float128,
-                                                                                            Int32}},
-                                                           inform::Ptr{ssids_inform_type{Float128,
-                                                                                          Int32}},
-                                                           d::Ptr{Float128})::Cvoid
+                              inform, d)
+  @ccall libgalahad_quadruple.ssids_enquire_posdef_q(akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                                     control::Ptr{ssids_control_type},
+                                                     inform::Ptr{ssids_inform_type},
+                                                     d::Ptr{Float128})::Cvoid
 end
 
 function ssids_enquire_posdef(::Type{Float128}, ::Type{Int64}, akeep, fkeep, control,
-                                    inform, d)
+                              inform, d)
   @ccall libgalahad_quadruple_64.ssids_enquire_posdef_q_64(akeep::Ptr{Cvoid},
-                                                                 fkeep::Ptr{Cvoid},
-                                                                 control::Ptr{ssids_control_type{Float128,
-                                                                                                  Int64}},
-                                                                 inform::Ptr{ssids_inform_type{Float128,
-                                                                                                Int64}},
-                                                                 d::Ptr{Float128})::Cvoid
+                                                           fkeep::Ptr{Cvoid},
+                                                           control::Ptr{ssids_control_type},
+                                                           inform::Ptr{ssids_inform_type},
+                                                           d::Ptr{Float128})::Cvoid
 end
 
 export ssids_enquire_indef
 
-function ssids_enquire_indef(::Type{Float32}, ::Type{Int32}, akeep, fkeep, control,
-                                   inform, piv_order, d)
+function ssids_enquire_indef(::Type{Float32}, ::Type{Int32}, akeep, fkeep, control, inform,
+                             piv_order, d)
   @ccall libgalahad_single.ssids_enquire_indef_s(akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
-                                                       control::Ptr{ssids_control_type{Float32,
-                                                                                        Int32}},
-                                                       inform::Ptr{ssids_inform_type{Float32,
-                                                                                      Int32}},
-                                                       piv_order::Ptr{Int32},
+                                                 control::Ptr{ssids_control_type},
+                                                 inform::Ptr{ssids_inform_type},
+                                                 piv_order::Ptr{Int32},
+                                                 d::Ptr{Float32})::Cvoid
+end
+
+function ssids_enquire_indef(::Type{Float32}, ::Type{Int64}, akeep, fkeep, control, inform,
+                             piv_order, d)
+  @ccall libgalahad_single_64.ssids_enquire_indef_s_64(akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                                       control::Ptr{ssids_control_type},
+                                                       inform::Ptr{ssids_inform_type},
+                                                       piv_order::Ptr{Int64},
                                                        d::Ptr{Float32})::Cvoid
 end
 
-function ssids_enquire_indef(::Type{Float32}, ::Type{Int64}, akeep, fkeep, control,
-                                   inform, piv_order, d)
-  @ccall libgalahad_single_64.ssids_enquire_indef_s_64(akeep::Ptr{Cvoid},
-                                                             fkeep::Ptr{Cvoid},
-                                                             control::Ptr{ssids_control_type{Float32,
-                                                                                              Int64}},
-                                                             inform::Ptr{ssids_inform_type{Float32,
-                                                                                            Int64}},
-                                                             piv_order::Ptr{Int64},
-                                                             d::Ptr{Float32})::Cvoid
+function ssids_enquire_indef(::Type{Float64}, ::Type{Int32}, akeep, fkeep, control, inform,
+                             piv_order, d)
+  @ccall libgalahad_double.ssids_enquire_indef(akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                               control::Ptr{ssids_control_type},
+                                               inform::Ptr{ssids_inform_type},
+                                               piv_order::Ptr{Int32},
+                                               d::Ptr{Float64})::Cvoid
 end
 
-function ssids_enquire_indef(::Type{Float64}, ::Type{Int32}, akeep, fkeep, control,
-                                   inform, piv_order, d)
-  @ccall libgalahad_double.ssids_enquire_indef(akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
-                                                     control::Ptr{ssids_control_type{Float64,
-                                                                                      Int32}},
-                                                     inform::Ptr{ssids_inform_type{Float64,
-                                                                                    Int32}},
-                                                     piv_order::Ptr{Int32},
+function ssids_enquire_indef(::Type{Float64}, ::Type{Int64}, akeep, fkeep, control, inform,
+                             piv_order, d)
+  @ccall libgalahad_double_64.ssids_enquire_indef_64(akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                                     control::Ptr{ssids_control_type},
+                                                     inform::Ptr{ssids_inform_type},
+                                                     piv_order::Ptr{Int64},
                                                      d::Ptr{Float64})::Cvoid
 end
 
-function ssids_enquire_indef(::Type{Float64}, ::Type{Int64}, akeep, fkeep, control,
-                                   inform, piv_order, d)
-  @ccall libgalahad_double_64.ssids_enquire_indef_64(akeep::Ptr{Cvoid},
-                                                           fkeep::Ptr{Cvoid},
-                                                           control::Ptr{ssids_control_type{Float64,
-                                                                                            Int64}},
-                                                           inform::Ptr{ssids_inform_type{Float64,
-                                                                                          Int64}},
-                                                           piv_order::Ptr{Int64},
-                                                           d::Ptr{Float64})::Cvoid
+function ssids_enquire_indef(::Type{Float128}, ::Type{Int32}, akeep, fkeep, control, inform,
+                             piv_order, d)
+  @ccall libgalahad_quadruple.ssids_enquire_indef_q(akeep::Ptr{Cvoid}, fkeep::Ptr{Cvoid},
+                                                    control::Ptr{ssids_control_type},
+                                                    inform::Ptr{ssids_inform_type},
+                                                    piv_order::Ptr{Int32},
+                                                    d::Ptr{Float128})::Cvoid
 end
 
-function ssids_enquire_indef(::Type{Float128}, ::Type{Int32}, akeep, fkeep, control,
-                                   inform, piv_order, d)
-  @ccall libgalahad_quadruple.ssids_enquire_indef_q(akeep::Ptr{Cvoid},
-                                                          fkeep::Ptr{Cvoid},
-                                                          control::Ptr{ssids_control_type{Float128,
-                                                                                           Int32}},
-                                                          inform::Ptr{ssids_inform_type{Float128,
-                                                                                         Int32}},
-                                                          piv_order::Ptr{Int32},
-                                                          d::Ptr{Float128})::Cvoid
-end
-
-function ssids_enquire_indef(::Type{Float128}, ::Type{Int64}, akeep, fkeep, control,
-                                   inform, piv_order, d)
+function ssids_enquire_indef(::Type{Float128}, ::Type{Int64}, akeep, fkeep, control, inform,
+                             piv_order, d)
   @ccall libgalahad_quadruple_64.ssids_enquire_indef_q_64(akeep::Ptr{Cvoid},
-                                                                fkeep::Ptr{Cvoid},
-                                                                control::Ptr{ssids_control_type{Float128,
-                                                                                                 Int64}},
-                                                                inform::Ptr{ssids_inform_type{Float128,
-                                                                                               Int64}},
-                                                                piv_order::Ptr{Int64},
-                                                                d::Ptr{Float128})::Cvoid
+                                                          fkeep::Ptr{Cvoid},
+                                                          control::Ptr{ssids_control_type},
+                                                          inform::Ptr{ssids_inform_type},
+                                                          piv_order::Ptr{Int64},
+                                                          d::Ptr{Float128})::Cvoid
 end
 
 export ssids_alter
 
 function ssids_alter(::Type{Float32}, ::Type{Int32}, d, akeep, fkeep, control, inform)
   @ccall libgalahad_single.ssids_alter_s(d::Ptr{Float32}, akeep::Ptr{Cvoid},
-                                               fkeep::Ptr{Cvoid},
-                                               control::Ptr{ssids_control_type{Float32,
-                                                                                Int32}},
-                                               inform::Ptr{ssids_inform_type{Float32,
-                                                                              Int32}})::Cvoid
+                                         fkeep::Ptr{Cvoid},
+                                         control::Ptr{ssids_control_type},
+                                         inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_alter(::Type{Float32}, ::Type{Int64}, d, akeep, fkeep, control, inform)
   @ccall libgalahad_single_64.ssids_alter_s_64(d::Ptr{Float32}, akeep::Ptr{Cvoid},
-                                                     fkeep::Ptr{Cvoid},
-                                                     control::Ptr{ssids_control_type{Float32,
-                                                                                      Int64}},
-                                                     inform::Ptr{ssids_inform_type{Float32,
-                                                                                    Int64}})::Cvoid
+                                               fkeep::Ptr{Cvoid},
+                                               control::Ptr{ssids_control_type},
+                                               inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_alter(::Type{Float64}, ::Type{Int32}, d, akeep, fkeep, control, inform)
   @ccall libgalahad_double.ssids_alter(d::Ptr{Float64}, akeep::Ptr{Cvoid},
-                                             fkeep::Ptr{Cvoid},
-                                             control::Ptr{ssids_control_type{Float64,
-                                                                              Int32}},
-                                             inform::Ptr{ssids_inform_type{Float64,Int32}})::Cvoid
+                                       fkeep::Ptr{Cvoid}, control::Ptr{ssids_control_type},
+                                       inform::Ptr{ssids_inform_type})::Cvoid
 end
 
 function ssids_alter(::Type{Float64}, ::Type{Int64}, d, akeep, fkeep, control, inform)
   @ccall libgalahad_double_64.ssids_alter_64(d::Ptr{Float64}, akeep::Ptr{Cvoid},
-                                                   fkeep::Ptr{Cvoid},
-                                                   control::Ptr{ssids_control_type{Float64,
-                                                                                    Int64}},
-                                                   inform::Ptr{ssids_inform_type{Float64,
-                                                                                  Int64}})::Cvoid
+                                             fkeep::Ptr{Cvoid},
+                                             control::Ptr{ssids_control_type},
+                                             inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_alter(::Type{Float128}, ::Type{Int32}, d, akeep, fkeep, control,
-                           inform)
+function ssids_alter(::Type{Float128}, ::Type{Int32}, d, akeep, fkeep, control, inform)
   @ccall libgalahad_quadruple.ssids_alter_q(d::Ptr{Float128}, akeep::Ptr{Cvoid},
-                                                  fkeep::Ptr{Cvoid},
-                                                  control::Ptr{ssids_control_type{Float128,
-                                                                                   Int32}},
-                                                  inform::Ptr{ssids_inform_type{Float128,
-                                                                                 Int32}})::Cvoid
+                                            fkeep::Ptr{Cvoid},
+                                            control::Ptr{ssids_control_type},
+                                            inform::Ptr{ssids_inform_type})::Cvoid
 end
 
-function ssids_alter(::Type{Float128}, ::Type{Int64}, d, akeep, fkeep, control,
-                           inform)
+function ssids_alter(::Type{Float128}, ::Type{Int64}, d, akeep, fkeep, control, inform)
   @ccall libgalahad_quadruple_64.ssids_alter_q_64(d::Ptr{Float128}, akeep::Ptr{Cvoid},
-                                                        fkeep::Ptr{Cvoid},
-                                                        control::Ptr{ssids_control_type{Float128,
-                                                                                         Int64}},
-                                                        inform::Ptr{ssids_inform_type{Float128,
-                                                                                       Int64}})::Cvoid
+                                                  fkeep::Ptr{Cvoid},
+                                                  control::Ptr{ssids_control_type},
+                                                  inform::Ptr{ssids_inform_type})::Cvoid
 end
