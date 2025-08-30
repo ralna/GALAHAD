@@ -56,9 +56,9 @@
     IMPLICIT NONE
 
     PRIVATE
-    PUBLIC :: ssids_analyse, ssids_analyse_coord, ssids_factor, ssids_solve,   &
-              ssids_free, ssids_enquire_posdef, ssids_enquire_indef,           &
-              ssids_alter, SSIDS_akeep_type, SSIDS_fkeep_type,                 &
+    PUBLIC :: SSIDS_analyse, SSIDS_analyse_coord, SSIDS_factor, SSIDS_solve,   &
+              SSIDS_free, SSIDS_enquire_posdef, SSIDS_enquire_indef,           &
+              SSIDS_alter, SSIDS_akeep_type, SSIDS_fkeep_type,                 &
               SSIDS_control_type, SSIDS_inform_type
 !----------------------
 !   P a r a m e t e r s
@@ -77,55 +77,55 @@
 
 !  analyse phase, CSC-lower input
 
-    INTERFACE ssids_analyse
+    INTERFACE SSIDS_analyse
       MODULE PROCEDURE analyse_precision, analyse_precision_ptr32
-    END INTERFACE ssids_analyse
+    END INTERFACE SSIDS_analyse
 
 !  analyse phase, coordinate input
 
-    INTERFACE ssids_analyse_coord
+    INTERFACE SSIDS_analyse_coord
       MODULE PROCEDURE ssids_analyse_coord_precision
-    END INTERFACE ssids_analyse_coord
+    END INTERFACE SSIDS_analyse_coord
 
 !  factorize phase
 
-    INTERFACE ssids_factor
+    INTERFACE SSIDS_factor
       MODULE PROCEDURE ssids_factor_ptr32_precision
       MODULE PROCEDURE ssids_factor_ptr64_precision
-    END INTERFACE ssids_factor
+    END INTERFACE SSIDS_factor
 
 !  solve phase
 
-    INTERFACE ssids_solve
+    INTERFACE SSIDS_solve
       MODULE PROCEDURE ssids_solve_one_precision
       MODULE PROCEDURE ssids_solve_mult_precision
-    END INTERFACE ssids_solve
+    END INTERFACE SSIDS_solve
 
 !   free akeep and/or fkeep
 
-    INTERFACE ssids_free
+    INTERFACE SSIDS_free
       MODULE PROCEDURE free_akeep_precision
       MODULE PROCEDURE free_fkeep_precision
       MODULE PROCEDURE free_both_precision
-    END INTERFACE ssids_free
+    END INTERFACE SSIDS_free
 
 !  pivot information in positive definite case
 
-    INTERFACE ssids_enquire_posdef
+    INTERFACE SSIDS_enquire_posdef
       MODULE PROCEDURE ssids_enquire_posdef_precision
-    END INTERFACE ssids_enquire_posdef
+    END INTERFACE SSIDS_enquire_posdef
 
 !  pivot information in indefinite case
 
-    INTERFACE ssids_enquire_indef
+    INTERFACE SSIDS_enquire_indef
       MODULE PROCEDURE ssids_enquire_indef_precision
-    END INTERFACE ssids_enquire_indef
+    END INTERFACE SSIDS_enquire_indef
 
 !  alter diagonal
 
-    INTERFACE ssids_alter
+    INTERFACE SSIDS_alter
       MODULE PROCEDURE ssids_alter_precision
-    END INTERFACE ssids_alter
+    END INTERFACE SSIDS_alter
 
 !  extracted from ssids_analyse
 
