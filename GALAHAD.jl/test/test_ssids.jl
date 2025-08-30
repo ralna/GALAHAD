@@ -16,7 +16,7 @@ function test_ssids(::Type{T}, ::Type{INT}) where {T,INT}
   akeep = Ref{Ptr{Cvoid}}(C_NULL)
   fkeep = Ref{Ptr{Cvoid}}(C_NULL) # Important that these are C_NULL to start with
 
-  spral_ssids_default_control(T, INT, control)
+  ssids_default_control(T, INT, control)
   @reset control[].array_base = INT(1)  # Fortran sparse matrix indexing
   @reset control[].nodend_control.print_level = INT(0)
 
@@ -39,22 +39,22 @@ function test_ssids(::Type{T}, ::Type{INT}) where {T,INT}
 
   # perform analysis and factorization with data checking
   check = true
-  spral_ssids_analyse(T, INT, check, n, C_NULL, ptr, row, C_NULL, akeep, control, inform)
+  ssids_analyse(T, INT, check, n, C_NULL, ptr, row, C_NULL, akeep, control, inform)
   if inform[].flag < 0
-    spral_ssids_free(T, INT, akeep, fkeep)
+    ssids_free(T, INT, akeep, fkeep)
     error("[SSIDS] The analysis failed!")
   end
-  spral_ssids_factor(T, INT, posdef, C_NULL, C_NULL, val, C_NULL, akeep[], fkeep, control,
+  ssids_factor(T, INT, posdef, C_NULL, C_NULL, val, C_NULL, akeep[], fkeep, control,
                      inform)
   if inform[].flag < 0
-    spral_ssids_free(T, INT, akeep, fkeep)
+    ssids_free(T, INT, akeep, fkeep)
     error("[SSIDS] The factorization failed!")
   end
 
   # solve
-  spral_ssids_solve1(T, INT, INT(0), x, akeep[], fkeep[], control, inform)
+  ssids_solve1(T, INT, INT(0), x, akeep[], fkeep[], control, inform)
   if inform[].flag < 0
-    spral_ssids_free(T, INT, akeep, fkeep)
+    ssids_free(T, INT, akeep, fkeep)
     error("[SSIDS] The solve failed!")
   end
 
@@ -66,7 +66,7 @@ function test_ssids(::Type{T}, ::Type{INT}) where {T,INT}
 
   # Determine and print the pivot order
   piv_order = zeros(INT, 5)
-  spral_ssids_enquire_indef(T, INT, akeep[], fkeep[], control, inform, piv_order, C_NULL)
+  ssids_enquire_indef(T, INT, akeep[], fkeep[], control, inform, piv_order, C_NULL)
   @printf("Pivot order:")
   for i in 1:n
     @printf(" %3d", piv_order[i])
@@ -74,8 +74,8 @@ function test_ssids(::Type{T}, ::Type{INT}) where {T,INT}
   @printf("\n")
 
   # Delete internal workspace
-  flag = spral_ssids_free(T, INT, akeep, fkeep)
-  (flag != 0) && error("[SSIDS] Error while calling spral_ssids_free.")
+  flag = ssids_free(T, INT, akeep, fkeep)
+  (flag != 0) && error("[SSIDS] Error while calling ssids_free.")
 
   return 0
 end
