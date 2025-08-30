@@ -61,7 +61,7 @@ int main(void) {
       exit(1);
    }
    printf("The computed solution is:");
-   for(int i=0; i<n; i++) printf(" %9.2e", x[i]);
+   for(int i=0; i<n; i++) printf(" %9.2e", (double) x[i]);
    printf("\n");
 
    /* Determine and print the pivot order */
