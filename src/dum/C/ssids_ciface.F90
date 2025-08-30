@@ -1,6 +1,6 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-15 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-30 AT 09:30 GMT.
 
-#include "spral_procedures.h"
+#include "ssids_procedures.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ S S I D S   C   I N T E R F A C E  -*-*-*-*-*-
 
