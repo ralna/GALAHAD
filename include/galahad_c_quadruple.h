@@ -2223,7 +2223,7 @@ void ugo_terminate_q(void **data, struct ugo_control_type_q *control, struct ugo
 void ugo_terminate_q_64(void **data, struct ugo_control_type_q_64 *control, struct ugo_inform_type_q_64 *inform);
 
 // C interface for SSIDS
-struct galahad_ssids_control_type_q {
+struct ssids_control_type_q {
     int32_t array_base;
     int32_t print_level;
     int32_t unit_diagnostics;
@@ -2251,7 +2251,7 @@ struct galahad_ssids_control_type_q {
     int32_t failed_pivot_method;
 };
 
-struct galahad_ssids_control_type_q_64 {
+struct ssids_control_type_q_64 {
     int64_t array_base;
     int64_t print_level;
     int64_t unit_diagnostics;
@@ -2279,7 +2279,7 @@ struct galahad_ssids_control_type_q_64 {
     int64_t failed_pivot_method;
 };
 
-struct galahad_ssids_inform_type_q {
+struct ssids_inform_type_q {
     int32_t flag;
     int32_t matrix_dup;
     int32_t matrix_missing_diag;
@@ -2305,7 +2305,7 @@ struct galahad_ssids_inform_type_q {
     int64_t gpu_flops;
 };
 
-struct galahad_ssids_inform_type_q_64 {
+struct ssids_inform_type_q_64 {
     int64_t flag;
     int64_t matrix_dup;
     int64_t matrix_missing_diag;
@@ -2331,34 +2331,34 @@ struct galahad_ssids_inform_type_q_64 {
     int64_t gpu_flops;
 };
 
-void spral_ssids_default_control_q(struct galahad_ssids_control_type_q *control);
-void spral_ssids_default_control_q_64(struct galahad_ssids_control_type_q_64 *control);
-void spral_ssids_analyse_q(bool check, int32_t n, int32_t *order, int64_t *ptr, int32_t *row, __float128 *val, void **akeep, struct galahad_ssids_control_type_q *control, struct galahad_ssids_inform_type_q *inform);
-void spral_ssids_analyse_q_64(bool check, int64_t n, int64_t *order, int64_t *ptr, int64_t *row, __float128 *val, void **akeep, struct galahad_ssids_control_type_q_64 *control, struct galahad_ssids_inform_type_q_64 *inform);
-void spral_ssids_analyse_ptr32_q(bool check, int32_t n, int32_t *order, int32_t *ptr, int32_t *row, __float128 *val, void **akeep, struct galahad_ssids_control_type_q *control, struct galahad_ssids_inform_type_q *inform);
-void spral_ssids_analyse_ptr32_q_64(bool check, int64_t n, int64_t *order, int64_t *ptr, int64_t *row, __float128 *val, void **akeep, struct galahad_ssids_control_type_q_64 *control, struct galahad_ssids_inform_type_q_64 *inform);
-void spral_ssids_analyse_coord_q(int32_t n, int32_t *order, int64_t ne, int32_t *row, int32_t *col, __float128 *val, void **akeep, struct galahad_ssids_control_type_q *control, struct galahad_ssids_inform_type_q *inform);
-void spral_ssids_analyse_coord_q_64(int64_t n, int64_t *order, int64_t ne, int64_t *row, int64_t *col, __float128 *val, void **akeep, struct galahad_ssids_control_type_q_64 *control, struct galahad_ssids_inform_type_q_64 *inform);
-void spral_ssids_factor_q(bool posdef, int64_t *ptr, int32_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct galahad_ssids_control_type_q *control, struct galahad_ssids_inform_type_q *inform);
-void spral_ssids_factor_q_64(bool posdef, int64_t *ptr, int64_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct galahad_ssids_control_type_q_64 *control, struct galahad_ssids_inform_type_q_64 *inform);
-void spral_ssids_factor_ptr32_q(bool posdef, int32_t *ptr, int32_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct galahad_ssids_control_type_q *control, struct galahad_ssids_inform_type_q *inform);
-void spral_ssids_factor_ptr32_q_64(bool posdef, int64_t *ptr, int64_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct galahad_ssids_control_type_q_64 *control, struct galahad_ssids_inform_type_q_64 *inform);
-void spral_ssids_solve1_q(int32_t job, __float128 *x1, void *akeep, void *fkeep, struct galahad_ssids_control_type_q *control, struct galahad_ssids_inform_type_q *inform);
-void spral_ssids_solve1_q_64(int64_t job, __float128 *x1, void *akeep, void *fkeep, struct galahad_ssids_control_type_q_64 *control, struct galahad_ssids_inform_type_q_64 *inform);
-void spral_ssids_solve_q(int32_t job, int32_t nrhs, __float128 *x, int32_t ldx, void *akeep, void *fkeep, struct galahad_ssids_control_type_q *control, struct galahad_ssids_inform_type_q *inform);
-void spral_ssids_solve_q_64(int64_t job, int64_t nrhs, __float128 *x, int64_t ldx, void *akeep, void *fkeep, struct galahad_ssids_control_type_q_64 *control, struct galahad_ssids_inform_type_q_64 *inform);
+void spral_ssids_default_control_q(struct ssids_control_type_q *control);
+void spral_ssids_default_control_q_64(struct ssids_control_type_q_64 *control);
+void spral_ssids_analyse_q(bool check, int32_t n, int32_t *order, int64_t *ptr, int32_t *row, __float128 *val, void **akeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
+void spral_ssids_analyse_q_64(bool check, int64_t n, int64_t *order, int64_t *ptr, int64_t *row, __float128 *val, void **akeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
+void spral_ssids_analyse_ptr32_q(bool check, int32_t n, int32_t *order, int32_t *ptr, int32_t *row, __float128 *val, void **akeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
+void spral_ssids_analyse_ptr32_q_64(bool check, int64_t n, int64_t *order, int64_t *ptr, int64_t *row, __float128 *val, void **akeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
+void spral_ssids_analyse_coord_q(int32_t n, int32_t *order, int64_t ne, int32_t *row, int32_t *col, __float128 *val, void **akeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
+void spral_ssids_analyse_coord_q_64(int64_t n, int64_t *order, int64_t ne, int64_t *row, int64_t *col, __float128 *val, void **akeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
+void spral_ssids_factor_q(bool posdef, int64_t *ptr, int32_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
+void spral_ssids_factor_q_64(bool posdef, int64_t *ptr, int64_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
+void spral_ssids_factor_ptr32_q(bool posdef, int32_t *ptr, int32_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
+void spral_ssids_factor_ptr32_q_64(bool posdef, int64_t *ptr, int64_t *row, __float128 *val, __float128 *scale, void *akeep, void **fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
+void spral_ssids_solve1_q(int32_t job, __float128 *x1, void *akeep, void *fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
+void spral_ssids_solve1_q_64(int64_t job, __float128 *x1, void *akeep, void *fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
+void spral_ssids_solve_q(int32_t job, int32_t nrhs, __float128 *x, int32_t ldx, void *akeep, void *fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
+void spral_ssids_solve_q_64(int64_t job, int64_t nrhs, __float128 *x, int64_t ldx, void *akeep, void *fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
 int32_t spral_ssids_free_akeep_q(void **akeep);
 int64_t spral_ssids_free_akeep_q_64(void **akeep);
 int32_t spral_ssids_free_fkeep_q(void **fkeep);
 int64_t spral_ssids_free_fkeep_q_64(void **fkeep);
 int32_t spral_ssids_free_q(void **akeep, void **fkeep);
 int64_t spral_ssids_free_q_64(void **akeep, void **fkeep);
-void spral_ssids_enquire_posdef_q(void *akeep, void *fkeep, struct galahad_ssids_control_type_q *control, struct galahad_ssids_inform_type_q *inform, __float128 *d);
-void spral_ssids_enquire_posdef_q_64(void *akeep, void *fkeep, struct galahad_ssids_control_type_q_64 *control, struct galahad_ssids_inform_type_q_64 *inform, __float128 *d);
-void spral_ssids_enquire_indef_q(void *akeep, void *fkeep, struct galahad_ssids_control_type_q *control, struct galahad_ssids_inform_type_q *inform, int32_t *piv_order, __float128 *d);
-void spral_ssids_enquire_indef_q_64(void *akeep, void *fkeep, struct galahad_ssids_control_type_q_64 *control, struct galahad_ssids_inform_type_q_64 *inform, int64_t *piv_order, __float128 *d);
-void spral_ssids_alter_q(__float128 *d, void *akeep, void *fkeep, struct galahad_ssids_control_type_q *control, struct galahad_ssids_inform_type_q *inform);
-void spral_ssids_alter_q_64(__float128 *d, void *akeep, void *fkeep, struct galahad_ssids_control_type_q_64 *control, struct galahad_ssids_inform_type_q_64 *inform);
+void spral_ssids_enquire_posdef_q(void *akeep, void *fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform, __float128 *d);
+void spral_ssids_enquire_posdef_q_64(void *akeep, void *fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform, __float128 *d);
+void spral_ssids_enquire_indef_q(void *akeep, void *fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform, int32_t *piv_order, __float128 *d);
+void spral_ssids_enquire_indef_q_64(void *akeep, void *fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform, int64_t *piv_order, __float128 *d);
+void spral_ssids_alter_q(__float128 *d, void *akeep, void *fkeep, struct ssids_control_type_q *control, struct ssids_inform_type_q *inform);
+void spral_ssids_alter_q_64(__float128 *d, void *akeep, void *fkeep, struct ssids_control_type_q_64 *control, struct ssids_inform_type_q_64 *inform);
 
 // C interface for SLS
 struct sls_control_type_q {
@@ -2547,7 +2547,7 @@ struct sls_inform_type_q {
     struct ma86_info_q ma86_info;
     struct ma87_info_q ma87_info;
     struct ma97_info_q ma97_info;
-    struct galahad_ssids_inform_type_q ssids_inform;
+    struct ssids_inform_type_q ssids_inform;
     struct nodend_inform_type_q nodend_inform;
     int32_t mc61_info[10];
     __float128 mc61_rinfo[15];
@@ -2628,7 +2628,7 @@ struct sls_inform_type_q_64 {
     struct ma86_info_q_64 ma86_info;
     struct ma87_info_q_64 ma87_info;
     struct ma97_info_q_64 ma97_info;
-    struct galahad_ssids_inform_type_q_64 ssids_inform;
+    struct ssids_inform_type_q_64 ssids_inform;
     struct nodend_inform_type_q_64 nodend_inform;
     int64_t mc61_info[10];
     __float128 mc61_rinfo[15];
