@@ -351,7 +351,7 @@ extern "C" {
 #include "hsl_ma87.h"
 #include "hsl_ma97.h"
 #include "galahad_nodend.h"
-#include "spral_ssids.h"
+#include "galahad_ssids.h"
 #include "hsl_mc64.h"
 #include "hsl_mc68.h"
 
