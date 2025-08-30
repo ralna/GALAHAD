@@ -88,7 +88,7 @@ for (symbols1, symbols2, int1, int2, name) in symbols_combinations
     flag16 = contains(symbol, "operator delete") || contains(symbol, "operator new")
     flag17 = contains(symbol, "galahad_ssids_cpu_create_symbolic_subtree") || contains(symbol, "galahad_ssids_cpu_destroy_symbolic_subtree")
     if !flag1 && !flag2 && !flag3 && !flag4 && !flag5 && !flag6 && !flag7 && !flag8 && !flag9 && !flag10
-      if !flag11 && !flag12 && !flag13 && !flag14 && !flag15 && !flag16 && !flag17 && !flag18
+      if !flag11 && !flag12 && !flag13 && !flag14 && !flag15 && !flag16 && !flag17
         println(symbol)
         global n = n+1
       end
