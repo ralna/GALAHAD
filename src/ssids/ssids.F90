@@ -166,7 +166,7 @@
 !  number of nodes in assembly tree
 
       INTEGER( ip_ ) :: nnodes = - 1
-      
+
 !  subtree partition
 
       INTEGER( ip_ ) :: nparts
@@ -210,7 +210,7 @@
 !  Allocated within basic_analyse in ssids
 
       INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: sptr
-      
+
 !  the following components are for cleaned up matrix data. LOWER triangle 
 !  only. We have to retain these for factorize phase as used if the user wants
 !  to do scaling. These components are NOT used if check is set to .false.
@@ -220,15 +220,15 @@
       INTEGER( ip_ ), ALLOCATABLE :: row( : ) ! row indices
       INTEGER( long_ ) :: lmap ! length of map
       INTEGER( long_ ), ALLOCATABLE :: map( : ) ! map from old A to cleaned A
-      
+
 !  scaling from matching-based ordering
 
       REAL( rp_ ), DIMENSION( : ), ALLOCATABLE :: scaling
-      
+
 !  machine topology
-   
+
      TYPE( HW_numa_region ), DIMENSION( : ), ALLOCATABLE :: topology
-      
+
 !  inform at end of analyse phase
 
       TYPE( ssids_inform_type ) :: inform

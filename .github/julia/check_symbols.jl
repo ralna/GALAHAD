@@ -45,8 +45,8 @@ single_double_quadruple_modules = ["hash_MOD", "string_MOD", "string_64_MOD", "c
                                    "spral_pgm_64_MOD", "pastixf_enums_64_MOD", "mkl_pardiso_private_64_MOD", "spmf_enums_64_MOD", "spral_hw_topology_64_MOD",
                                    "spral_metis_wrapper_64_MOD", "tools_64_MOD", "galahad_symbols_64_MOD", "hsl_mc68_integer_64_ciface_MOD", "hsl_kb22_long_integer_64_MOD",
                                    "common_ciface_64_MOD", "clock_64_MOD", "hsl_mc68_integer_64_MOD", "hsl_zb01_integer_64_MOD", "copyright_64_MOD",
-                                   "version_64_MOD", "spral_hw_topology_MOD", "spral_pgm_MOD", "spral_metis_wrapper_MOD", "spral_core_analyse_64_MOD",
-                                   "galahad_version_MOD", "spral_core_analyse_MOD", "spral_ssids_profile_64_MOD"]
+                                   "version_64_MOD", "galahad_hw_MOD", "galahad_hw_64_MOD", "spral_metis_wrapper_MOD", "spral_core_analyse_64_MOD",
+                                   "galahad_version_MOD", "galahad_ssids_profile_MOD", "galahad_ssids_profile_64_MOD"]
 
 metis_adapters = ["galahad_nodend4_adapter", "galahad_nodend51_adapter", "galahad_nodend52_adapter"]
 
@@ -86,8 +86,7 @@ for (symbols1, symbols2, int1, int2, name) in symbols_combinations
     flag14 = mapreduce(x -> contains(symbol, x), |, ["::", "<", ">"]) && (int1 == int2)
     flag15 = contains(symbol, "std::") || contains(symbol, "__gnu_cxx::")
     flag16 = contains(symbol, "operator delete") || contains(symbol, "operator new")
-    flag17 = contains(symbol, "spral_ssids_cpu_create_symbolic_subtree") || contains(symbol, "spral_ssids_cpu_destroy_symbolic_subtree")
-    flag18 = contains(symbol, "spral_ssids_profile")
+    flag17 = contains(symbol, "galahad_ssids_cpu_create_symbolic_subtree") || contains(symbol, "galahad_ssids_cpu_destroy_symbolic_subtree")
     if !flag1 && !flag2 && !flag3 && !flag4 && !flag5 && !flag6 && !flag7 && !flag8 && !flag9 && !flag10
       if !flag11 && !flag12 && !flag13 && !flag14 && !flag15 && !flag16 && !flag17 && !flag18
         println(symbol)
