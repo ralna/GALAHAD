@@ -68,8 +68,6 @@ single_double_quadruple_modules = ["galahad_blas_interface",
                                    "pastixf_enums",
                                    "galahad_hw",
                                    "galahad_hw_64",
-                                   "galahad_ssids_profile",
-                                   "galahad_ssids_profile_64",
                                    ]
 
 for (modules1, modules2, int1, int2, name) in modules_combinations
