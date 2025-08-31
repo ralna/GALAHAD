@@ -3,7 +3,7 @@
 #  and is available under a BSD licence as part of GALAHAD
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2025-08-27
+#  This version: 2025-08-31
 
 SHELL = /bin/$(BINSHELL)
 
@@ -248,9 +248,8 @@ SPRALRBS64 = mu rb
 SPRALRBD64 = mu rb
 SPRALRBQ64 = mu rb
 
-SSIDSS = basics $(SPRALRBS) ms mo hw \
-         $(RLGS)(omp.o) $(RLGS)(profile.o) $(RLGS)(SymbolicSubtree.o) \
-         $(RLGS)(NumericSubtree_single.o) \
+SSIDSS = basics $(SPRALRBS) ms mo hw $(RLGS)(omp.o) \
+         $(RLGS)(SymbolicSubtree.o) $(RLGS)(NumericSubtree_single.o) \
          $(RLGS)(cholesky_single.o) $(RLGS)(ldlt_app_single.o) \
          $(RLGS)(ldlt_nopiv_single.o) $(RLGS)(ldlt_tpp_single.o) \
          $(RLGS)(wrappers_single.o) $(RLGS)(ThreadStats.o) \
@@ -259,20 +258,17 @@ SSIDSS = basics $(SPRALRBS) ms mo hw \
          $(RLGS)(profile_iface.o) \
          $(RLGS)(contrib_iface_single.o) $(RLGS)(ssids_single.o)
 
-SSIDSD = basics $(SPRALRBD) ms mo hw \
-         $(RLGD)(omp.o) $(RLGD)(profile.o) $(RLGD)(SymbolicSubtree.o) \
-         $(RLGD)(NumericSubtree_double.o) \
+SSIDSD = basics $(SPRALRBD) ms mo hw $(RLGD)(omp.o) \
+         $(RLGD)(SymbolicSubtree.o) $(RLGD)(NumericSubtree_double.o) \
          $(RLGD)(cholesky_double.o) $(RLGD)(ldlt_app_double.o) \
          $(RLGD)(ldlt_nopiv_double.o) $(RLGD)(ldlt_tpp_double.o) \
          $(RLGD)(wrappers_double.o) $(RLGD)(ThreadStats.o) \
          $(RLGD)(types_double.o) $(RLGD)(subtree_double.o) \
          $(RLGD)(cpu_iface_double.o) $(RLGD)(cpu_subtree_double.o) \
-         $(RLGD)(profile_iface.o) \
          $(RLGD)(contrib_iface_double.o) $(RLGD)(ssids_double.o)
 
-SSIDSQ = basics $(SPRALRBQ) ms mo hw \
-         $(RLGQ)(omp.o) $(RLGQ)(profile.o) $(RLGQ)(SymbolicSubtree.o) \
-         $(RLGQ)(NumericSubtree_quadruple.o) \
+SSIDSQ = basics $(SPRALRBQ) ms mo hw $(RLGQ)(omp.o) \
+         $(RLGQ)(SymbolicSubtree.o) $(RLGQ)(NumericSubtree_quadruple.o) \
          $(RLGQ)(cholesky_quadruple.o) $(RLGQ)(ldlt_app_quadruple.o) \
          $(RLGQ)(ldlt_nopiv_quadruple.o) $(RLGQ)(ldlt_tpp_quadruple.o) \
          $(RLGQ)(wrappers_quadruple.o) $(RLGQ)(ThreadStats.o) \
@@ -281,8 +277,7 @@ SSIDSQ = basics $(SPRALRBQ) ms mo hw \
          $(RLGQ)(profile_iface.o) \
          $(RLGQ)(contrib_iface_quadruple.o) $(RLGQ)(ssids_quadruple.o)
 
-SSIDSS64 = basics $(SPRALRBS64) ms mo hw \
-         $(RLGS64)(omp.o) $(RLGS64)(profile.o) \
+SSIDSS64 = basics $(SPRALRBS64) ms mo hw $(RLGS64)(omp.o) \
          $(RLGS64)(SymbolicSubtree.o) $(RLGS64)(NumericSubtree_single_64.o) \
          $(RLGS64)(cholesky_single_64.o) $(RLGS64)(ldlt_app_single_64.o) \
          $(RLGS64)(ldlt_nopiv_single_64.o) $(RLGS64)(ldlt_tpp_single_64.o) \
@@ -292,19 +287,16 @@ SSIDSS64 = basics $(SPRALRBS64) ms mo hw \
          $(RLGS64)(profile_iface.o) \
          $(RLGS64)(contrib_iface_single_64.o) $(RLGS64)(ssids_single_64.o)
 
-SSIDSD64 = basics $(SPRALRBD64) ms mo hw \
-         $(RLGD64)(omp.o) $(RLGD64)(profile.o) \
+SSIDSD64 = basics $(SPRALRBD64) ms mo hw $(RLGD64)(omp.o) \
          $(RLGD64)(SymbolicSubtree.o) $(RLGD64)(NumericSubtree_double_64.o) \
          $(RLGD64)(cholesky_double_64.o) $(RLGD64)(ldlt_app_double_64.o) \
          $(RLGD64)(ldlt_nopiv_double_64.o) $(RLGD64)(ldlt_tpp_double_64.o) \
          $(RLGD64)(wrappers_double_64.o) $(RLGD64)(ThreadStats.o) \
          $(RLGD64)(types_double_64.o) $(RLGD64)(subtree_double_64.o) \
          $(RLGD64)(cpu_iface_double_64.o) $(RLGD64)(cpu_subtree_double_64.o) \
-         $(RLGD64)(profile_iface.o) \
          $(RLGD64)(contrib_iface_double_64.o) $(RLGD64)(ssids_double_64.o)
 
-SSIDSQ64 = basics $(SPRALRBQ64) ms mo hw \
-         $(RLGQ64)(omp.o) $(RLGQ64)(profile.o) \
+SSIDSQ64 = basics $(SPRALRBQ64) ms mo hw $(RLGQ64)(omp.o) \
          $(RLGQ64)(SymbolicSubtree.o) $(RLGQ64)(NumericSubtree_quadruple_64.o) \
          $(RLGQ64)(cholesky_quadruple_64.o) $(RLGQ64)(ldlt_app_quadruple_64.o) \
          $(RLGQ64)(ldlt_nopiv_quadruple_64.o) \
@@ -313,7 +305,6 @@ SSIDSQ64 = basics $(SPRALRBQ64) ms mo hw \
          $(RLGQ64)(types_quadruple_64.o) $(RLGQ64)(subtree_quadruple_64.o) \
          $(RLGQ64)(cpu_iface_quadruple_64.o) \
          $(RLGQ64)(cpu_subtree_quadruple_64.o) \
-         $(RLGQ64)(profile_iface.o) \
          $(RLGQ64)(contrib_iface_quadruple_64.o) $(RLGQ64)(ssids_quadruple_64.o)
 
 SSIDSCS = $(SSIDSS) nodend_c $(CLGS)(ssids_ciface_single.o)
@@ -879,19 +870,6 @@ $(RLG)(omp.o): ../ssids/omp.cxx $(GALINCLUDE)/ssids_omp.hxx
 	cd $(OBJ) ; $(RARR) omp.o ; $(RM) omp.cxx omp.o
 	@printf '[ OK ]\n'
 
-profile.o: $(RLG)(profile.o)
-
-$(RLG)(profile.o): ../ssids/profile.cxx \
-                   $(GALINCLUDE)/ssids_profile.hxx
-	@printf ' %-9s %-15s\t\t' "Compiling" "profile  "
-	$(CP) ../ssids/profile.cxx $(OBJ)/
-	cd $(OBJ) ; $(CXX) -I. -o profile.o $(CXXFLAGSOMP) \
-          profile.cxx \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(CXX) -I. -o profile.o $(CXXFLAGSNOMP) profile.cxx )
-	cd $(OBJ) ; $(RARR) profile.o ; $(RM) profile.cxx profile.o
-	@printf '[ OK ]\n'
-
 SymbolicSubtree.o: $(RLG)(SymbolicSubtree.o)
 
 $(RLG)(SymbolicSubtree.o): ../ssids/SymbolicSubtree.cxx \
@@ -1087,22 +1065,6 @@ $(RLG)(cpu_subtree_$(PRECIS).o): ../ssids/cpu_subtree.F90
                       $(FFLAGSNOMP) cpu_subtree.F90 )
 	cd $(OBJ) ; $(RARR) cpu_subtree_$(PRECIS).o ; \
                       $(RM) cpu_subtree.F90 cpu_subtree_$(PRECIS).o
-	$(RRMARFILE) ssids_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-profile_iface.o: $(RLG)(profile_iface.o)
-
-$(RLG)(profile_iface.o): ../ssids/profile_iface.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "profile_iface  "
-	$(CP) ../ssids/profile_iface.F90 $(OBJ)/profile_iface.F90
-	cd $(OBJ) ; $(FORTRAN) -o profile_iface.o $(FFLAGSOMP) \
-          profile_iface.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o profile_iface.o $(FFLAGSNOMP) \
-                      profile_iface.F90 )
-	cd $(OBJ) ; $(RARR) profile_iface.o ; \
-           $(RM) profile_iface.F90 profile_iface.o
 	$(RRMARFILE) ssids_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'

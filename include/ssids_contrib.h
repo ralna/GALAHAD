@@ -8,7 +8,7 @@
  *         galahad_ssids_contrib_free modules.
  */
 
-#include "ssids_procedures.h"
+#include "galahad_modules.h"
 #include "galahad_precision.h"
 
 #ifndef GALAHAD_SSIDS_CONTRIB_H

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-17 AT 08:30 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 10:00 GMT
 
 !  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)
 !  author: Jonathan Hogg
@@ -6,7 +6,7 @@
 !  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
 #include "galahad_lapack.h"
-#include "ssids_procedures.h"
+#include "galahad_modules.h"
 
 #ifdef REAL_32
 #ifdef INTEGER_64
