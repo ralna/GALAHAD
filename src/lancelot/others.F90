@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-08-31 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -63,10 +63,10 @@
 !  Computes the secant update to the second derivative matrix
 !  for each element function
 
-!  If second_derivatives =  1, the B.F.G.S. update is used
-!  If second_derivatives =  2, the D.F.P. update is used
-!  If second_derivatives =  3, the P.S.B. update is used
-!  If second_derivatives >= 4, the S.R.1 update is used
+!  If second_derivatives = 1, the B.F.G.S. update is used
+!  If second_derivatives = 2, the D.F.P. update is used
+!  If second_derivatives = 3, the P.S.B. update is used
+!  If second_derivatives = 4, the S.R.1 update is used
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -324,7 +324,7 @@
 
 !  Symmetric Rank One update
 
-       IF ( second_derivatives >= 4 ) THEN
+       IF ( second_derivatives == 4 ) THEN
 !        wtw = DOT_PRODUCT( W_in( : nin ), W_in( : nin ) )
          wtw = zero ; DO ii = 1, nin ; wtw = wtw + W_in( ii ) ** 2 ; END DO
          IF ( ABS( wts ) <= skipr1 * wtw ) THEN
@@ -625,7 +625,7 @@
 
 !  Symmetric Rank One update
 
-       IF ( second_derivatives >= 4 ) THEN
+       IF ( second_derivatives == 4 ) THEN
 !        wtw = DOT_PRODUCT( W_in( : nin ), W_in( : nin ) )
          wtw = zero ; DO ii = 1, nin ; wtw = wtw + W_in( ii ) ** 2 ; END DO
          IF ( ABS( wts ) <= skipr1 * wtw ) THEN
@@ -713,11 +713,11 @@
 
      nel1   = nel + 1
      lhxi   = INTVAR( nel1 ) - 1
-     lhuval = ISTADH( nel + 1 ) - ISTADH( 1 )
-     IF ( inith ) THEN
+     lhuval = ISTADH( nel1 ) - ISTADH( 1 )
 
 !  Set all values to zero
 
+     IF ( inith ) THEN
        FUVALS( lhxi + 1 : lhxi + lhuval ) = zero
 
 !  Reset the diagonals to the one
@@ -854,7 +854,8 @@
          IF ( EL2DER( iel ) > 0 ) THEN
            nin = INTVAR( iel + 1 ) - INTVAR( iel )
            FUVALS( ISTADH( iel ) : ISTADH( iel + 1 ) - 1 ) = zero
-           FUVALS( ISTADH( iel ) + ISYMMD( : nin ) ) = one
+           IF ( EL2DER( iel ) <= 4 )                                           &
+             FUVALS( ISTADH( iel ) + ISYMMD( : nin ) ) = one
          END IF
        END DO
      ELSE

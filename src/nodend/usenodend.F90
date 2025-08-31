@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-03-11 AT 08:45 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-08-31 AT 13:35 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -89,7 +89,7 @@
 
 !  Functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 

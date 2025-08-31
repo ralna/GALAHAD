@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-08-31 AT 14:30 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_initialize MA57_initialize
@@ -1024,6 +1024,7 @@
 
 !  second is .TRUE. if the user provides exact second derivatives
 !  of the nonlinear element functions and .FALSE. otherwise
+!  second_zero is .TRUE. if the element 2nd derivatives are to be set to zero
 
        IF ( use_elders ) THEN
          DO i = 1, prob%nel
@@ -1031,9 +1032,11 @@
            IF ( ELDERS( 1 , i ) > 0 ) ELDERS( 2 , i ) = 4
          END DO
          data%S%second = COUNT( ELDERS( 2 , : ) <= 0 ) == prob%nel
+         data%S%second_zero = .FALSE.
        ELSE
          data%S%second_derivatives = MIN( control%second_derivatives, 4 )
          data%S%second = data%S%second_derivatives <= 0
+         data%S%second_zero = data%S%second_derivatives >= 5
          IF ( data%S%fdgrad .AND. data%S%second ) THEN
            data%S%second_derivatives = 4 ; data%S%second = .FALSE.
          END IF
@@ -1066,7 +1069,6 @@
 !  nmhist is the length of the history if a non-monotone strategy is to be used
 
        data%S%nmhist = control%non_monotone
-
 
 !  The problem is generally constrained
 
@@ -2831,7 +2833,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: i, ig, ic, is, j, lgfx, ifixd
+     INTEGER ( KIND = ip_ ) :: i, ig, ic, is, j, lgfx, ifixd, lhuval
      INTEGER ( KIND = ip_ ) :: k, k1, k2, l, ifflag, alloc_status
      INTEGER ( KIND = ip_ ) :: ipdgen, iddgen, istate, ir, nvar1
      REAL :: tim
@@ -2855,6 +2857,7 @@
      external_el = .NOT. ( PRESENT( ELFUN ) .OR. PRESENT( ELFUN_flexible ) )
      external_gr = .NOT. PRESENT( GROUP )
      use_elders = PRESENT( ELDERS )
+     IF ( S%second_zero ) lhuval = ISTADH( nel + 1 ) - ISTADH( 1 )
 
 !  If the run is being continued after the "alive" file has been reinstated
 !  jump to the appropriate place in the code
@@ -3136,7 +3139,9 @@
 
          CALL CPU_TIME( S%t )
          IF ( .NOT. S%second .AND. .NOT. S%alllin ) THEN
-           IF ( use_elders ) THEN
+           IF ( S%second_zero ) THEN
+             FUVALS( S%lhxi + 1 : S%lhxi + lhuval ) = zero
+           ELSE IF ( use_elders ) THEN
              CALL OTHERS_scaleh_flexible(                                      &
                  .TRUE., n, nel, lfuval, S%nvrels, S%ntotin,                   &
                  inform%ncalcf, ISTAEV, ISTADH, ICALCF, INTVAR, IELVAR,        &
@@ -4972,10 +4977,16 @@
 !  If they are used, update the second derivative approximations
 
            IF ( .NOT. S%second .AND. .NOT.S%alllin ) THEN
-             IF ( use_elders ) THEN
+
+!  if zero second-derivative approximations are required, set these at the
+!  first update
+
+             IF ( S%second_zero ) THEN
+               IF ( S%firsup ) FUVALS( S%lhxi + 1 : S%lhxi + lhuval ) = zero
 
 !  Form the differences in the gradients, QGRAD
 
+             ELSE IF ( use_elders ) THEN
                QGRAD( : S%ntotin ) =                                           &
                  FUVALS( S%lgxi + 1 : S%lgxi + S%ntotin ) - QGRAD( : S%ntotin )
                IF ( S%firsup ) THEN
@@ -4999,10 +5010,10 @@
                    ITYPEE, INTREP, ISTADH, FUVALS, ICALCF, inform%ncalcf, P,   &
                    QGRAD, inform%iskip, S%print_level, S%out, W_el, W_in,      &
                    H_in, ELDERS( 2, : ), RANGE )
-             ELSE
 
 !  Form the differences in the gradients, QGRAD
 
+             ELSE
                QGRAD( : S%ntotin ) =                                           &
                  FUVALS( S%lgxi + 1 : S%lgxi + S%ntotin ) - QGRAD( : S%ntotin )
                IF ( S%firsup ) THEN

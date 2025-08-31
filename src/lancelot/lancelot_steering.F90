@@ -995,6 +995,7 @@
 
 !  second is .TRUE. if the user provides exact second derivatives
 !  of the nonlinear element functions and .FALSE. otherwise
+!  second_zero is .TRUE. if the element 2nd derivatives are to be set to zero
 
        IF ( use_elders ) THEN
          DO i = 1, prob%nel
@@ -1002,9 +1003,11 @@
            IF ( ELDERS( 1 , i ) > 0 ) ELDERS( 2 , i ) = 4
          END DO
          data%S%second = COUNT( ELDERS( 2 , : ) <= 0 ) == prob%nel
+         data%S%second_zero = .FALSE.
        ELSE
          data%S%second_derivatives = MIN( control%second_derivatives, 4 )
          data%S%second = data%S%second_derivatives <= 0
+         data%S%second_zero = data%S%second_derivatives >= 5
          IF ( data%S%fdgrad .AND. data%S%second ) THEN
            data%S%second_derivatives = 4 ; data%S%second = .FALSE.
          END IF
@@ -2823,7 +2826,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: i, ig, ic, is, j, lgfx
+     INTEGER ( KIND = ip_ ) :: i, ig, ic, is, j, lgfx, lhuval
      INTEGER ( KIND = ip_ ) :: ifixd, k, k1, k2, l, ifflag
      INTEGER ( KIND = ip_ ) :: ipdgen, iddgen, istate, ir, nvar1, alloc_status
      REAL ( KIND = KIND( 1.0E0 ) ) :: tim
@@ -2846,6 +2849,7 @@
      external_el = .NOT. ( PRESENT( ELFUN ) .OR. PRESENT( ELFUN_flexible ) )
      external_gr = .NOT. PRESENT( GROUP )
      use_elders = PRESENT( ELDERS )
+     IF ( S%second_zero ) lhuval = ISTADH( nel + 1 ) - ISTADH( 1 )
 
 !  If the run is being continued after the "alive" file has been reinstated
 !  jump to the appropriate place in the code
@@ -3132,7 +3136,9 @@
 
          CALL CPU_TIME( S%t )
          IF ( .NOT. S%second .AND. .NOT. S%alllin ) THEN
-           IF ( use_elders ) THEN
+           IF ( S%second_zero ) THEN
+             FUVALS( S%lhxi + 1 : S%lhxi + lhuval ) = zero
+           ELSE IF ( use_elders ) THEN
              CALL OTHERS_scaleh_flexible(                                      &
                  .TRUE., n, nel, lfuval, S%nvrels, S%ntotin,                   &
                  inform%ncalcf, ISTAEV, ISTADH, ICALCF, INTVAR, IELVAR,        &
@@ -5594,10 +5600,16 @@
 !  If they are used, update the second derivative approximations
 
            IF ( .NOT. S%second .AND. .NOT.S%alllin ) THEN
-             IF ( use_elders ) THEN
+
+!  if zero second-derivative approximations are required, set these at the
+!  first update
+
+             IF ( S%second_zero ) THEN
+               IF ( S%firsup ) FUVALS( S%lhxi + 1 : S%lhxi + lhuval ) = zero
 
 !  Form the differences in the gradients, QGRAD
 
+             ELSE IF ( use_elders ) THEN
                QGRAD( : S%ntotin ) =                                           &
                  FUVALS( S%lgxi + 1 : S%lgxi + S%ntotin ) - QGRAD( : S%ntotin )
                IF ( S%firsup ) THEN

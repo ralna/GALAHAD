@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-12-13 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-08-31 AT 14:30 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_control MA57_control
@@ -149,7 +149,7 @@
        LOGICAL :: prcond, firstc, nobnds, getders, save_c
        LOGICAL :: printt, printi, printm, printw, printd, printe, set_printe
        LOGICAL :: set_printt, set_printi, set_printm, set_printw, set_printd
-       LOGICAL :: skipg, steering, new_major
+       LOGICAL :: skipg, steering, new_major, second_zero
        CHARACTER ( LEN = 6 ) :: cgend, lisend
        CHARACTER ( LEN = 1 ) :: cgend1, lisend1
        REAL ( KIND = KIND( 1.0E0 ) ) :: t, time, tmv, tca, tls, tup
@@ -357,7 +357,7 @@
        INTEGER ( KIND = ip_ ) :: first_derivatives = 0
 
 !  second_derivatives specifies the approximation to the second derivatives
-!                used. 0=exact, 1=BFGS, 2=DFP, 3=PSB, 4=SR1
+!                used. 0=exact, 1=BFGS, 2=DFP, 3=PSB, 4=SR1, 5=zero
 
        INTEGER ( KIND = ip_ ) :: second_derivatives = 0
 
