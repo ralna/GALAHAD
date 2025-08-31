@@ -102,11 +102,11 @@ int main(void) {
     bnls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %" i_ipc_ " Gauss-Newton iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
+        printf(" %" d_ipc_ " Gauss-Newton iterations. Optimal objective value = %5.2f"
+               " status = %1" d_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
     }else{
-        printf(" BNLS_solve exit status = %1" i_ipc_ "\n", inform.status);
+        printf(" BNLS_solve exit status = %1" d_ipc_ "\n", inform.status);
     }
     // Delete internal workspace
     bnls_terminate( &data, &control, &inform );
@@ -135,11 +135,11 @@ int main(void) {
     bnls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %" i_ipc_ " Newton iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
+        printf(" %" d_ipc_ " Newton iterations. Optimal objective value = %5.2f"
+               " status = %1" d_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
     }else{
-        printf(" BNLS_solve exit status = %1" i_ipc_ "\n", inform.status);
+        printf(" BNLS_solve exit status = %1" d_ipc_ "\n", inform.status);
     }
     // Delete internal workspace
     bnls_terminate( &data, &control, &inform );
@@ -168,11 +168,11 @@ int main(void) {
     bnls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %" i_ipc_ " tensor-Newton iterations. Optimal objective value = %5.2f"
-               " status = %1" i_ipc_ "\n",
+        printf(" %" d_ipc_ " tensor-Newton iterations. Optimal objective value = %5.2f"
+               " status = %1" d_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
     }else{
-        printf(" BNLS_solve exit status = %1" i_ipc_ "\n", inform.status);
+        printf(" BNLS_solve exit status = %1" d_ipc_ "\n", inform.status);
     }
     // Delete internal workspace
     bnls_terminate( &data, &control, &inform );

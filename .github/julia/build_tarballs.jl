@@ -36,11 +36,17 @@ rm -r deps
 cp ${host_prefix}/bin/ninja /usr/bin/ninja
 
 cd ${WORKSPACE}/srcdir/GALAHAD
+rm version
 
 if [[ "${target}" == *mingw* ]]; then
   HWLOC="hwloc-15"
 else
   HWLOC="hwloc"
+fi
+
+QUADRUPLE="true"
+if [[ "${target}" == *arm* ]] || [[ "${target}" == *aarch64-linux* ]] || [[ "${target}" == *aarch64-unknown-freebsd* ]] || [[ "${target}" == *powerpc64le-linux-gnu* ]] || [[ "${target}" == *riscv64* ]]; then
+    QUADRUPLE="false"
 fi
 
 meson setup builddir_int32 --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
@@ -50,7 +56,7 @@ meson setup builddir_int32 --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
                            -Dliblapack=openblas \
                            -Dsingle=true \
                            -Ddouble=true \
-                           -Dquadruple=true \
+                           -Dquadruple=$QUADRUPLE \
                            -Dint64=false \
                            -Dlibhsl=hsl_subset \
                            -Dtests=false \
@@ -73,7 +79,7 @@ meson setup builddir_int64 --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
                            -Dlibcutest_quadruple= \
                            -Dsingle=true \
                            -Ddouble=true \
-                           -Dquadruple=true \
+                           -Dquadruple=$QUADRUPLE \
                            -Dint64=true \
                            -Dlibhsl=hsl_subset_64 \
                            -Dtests=false \
@@ -94,10 +100,10 @@ platforms = expand_gfortran_versions(platforms)
 products = [
     LibraryProduct("libgalahad_single", :libgalahad_single),
     LibraryProduct("libgalahad_double", :libgalahad_double),
-    LibraryProduct("libgalahad_quadruple", :libgalahad_quadruple),
+    # LibraryProduct("libgalahad_quadruple", :libgalahad_quadruple),
     LibraryProduct("libgalahad_single_64", :libgalahad_single_64),
     LibraryProduct("libgalahad_double_64", :libgalahad_double_64),
-    LibraryProduct("libgalahad_quadruple_64", :libgalahad_quadruple_64),
+    # LibraryProduct("libgalahad_quadruple_64", :libgalahad_quadruple_64),
 ]
 
 # Dependencies that must be installed before this package can be built
@@ -107,10 +113,9 @@ dependencies = [
     Dependency(PackageSpec(name="OpenBLAS32_jll", uuid="656ef2d0-ae68-5445-9ca0-591084a874a2")),
     Dependency(PackageSpec(name="OpenBLAS_jll", uuid="4536629a-c528-5b80-bd46-f80d51c5b363")),
     Dependency(PackageSpec(name="Hwloc_jll", uuid="e33a78d0-f292-5ffc-b300-72abe9b543c8")),
-    Dependency(PackageSpec(name="MUMPS_seq_jll", uuid="d7ed1dd3-d0ae-5e8e-bfb4-87a502085b8d"), compat="=5.4.1"),
-    # Dependency(PackageSpec(url="https://github.com/amontoison/MUMPS_seq_jll.jl", rev="main")),
+    # Dependency(PackageSpec(name="MUMPS_seq_jll", uuid="d7ed1dd3-d0ae-5e8e-bfb4-87a502085b8d"), compat="=5.4.1"),
     Dependency(PackageSpec(name="HSL_jll", uuid="017b0a0e-03f4-516a-9b91-836bbd1904dd")),
-    Dependency(PackageSpec(name="CUTEst_jll", uuid="bb5f6f25-f23d-57fd-8f90-3ef7bad1d825"), compat="2.5.2"),
+    Dependency(PackageSpec(name="CUTEst_jll", uuid="bb5f6f25-f23d-57fd-8f90-3ef7bad1d825"), compat="2.5.6"),
 ]
 
 # Build the tarballs, and possibly a `build.jl` as well.

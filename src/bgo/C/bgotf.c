@@ -142,12 +142,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_of.h
 #include "galahad_pquad_of.h"
 #else
-            printf("%c:%6" i_ipc_ " evaluations. Optimal objective "
-                   "value = %.2f status = %1" i_ipc_ "\n", 
+            printf("%c:%6" d_ipc_ " evaluations. Optimal objective "
+                   "value = %.2f status = %1" d_ipc_ "\n", 
                    st, inform.f_eval, inform.obj, inform.status);
 #endif
         }else{
-            printf("%c: BGO_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: BGO_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
         //printf("x: ");
@@ -225,7 +225,7 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                         eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1" i_ipc_ " of status should not occur\n",
+                        printf(" the value %1" d_ipc_ " of status should not occur\n",
                                status );
                         break;
                     }
@@ -266,7 +266,7 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                         eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1" i_ipc_ " of status should not occur\n",
+                        printf(" the value %1" d_ipc_ " of status should not occur\n",
                                status);
                         break;
                     }
@@ -309,7 +309,7 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                         eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1" i_ipc_ " of status should not occur\n",
+                        printf(" the value %1" d_ipc_ " of status should not occur\n",
                                status);
                         break;
                     }
@@ -354,7 +354,7 @@ int main(void) {
                         eval_status = hessprod_diag( n, x, u, v, false,
                                                      &userdata );
                     }else{
-                        printf(" the value %1" i_ipc_ " of status should not occur\n",
+                        printf(" the value %1" d_ipc_ " of status should not occur\n",
                                status);
                         break;
                     }
@@ -399,7 +399,7 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                         eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1" i_ipc_ " of status should not occur\n",
+                        printf(" the value %1" d_ipc_ " of status should not occur\n",
                                status);
                         break;
                     }
@@ -415,12 +415,12 @@ int main(void) {
 // interim replacement for quad output: $GALAHAD/include/galahad_pquad_of.h
 #include "galahad_pquad_of.h"
 #else
-            printf("%c:%6" i_ipc_ " evaluations. Optimal objective "
-                   "value = %.2f status = %1" i_ipc_ "\n", 
+            printf("%c:%6" d_ipc_ " evaluations. Optimal objective "
+                   "value = %.2f status = %1" d_ipc_ "\n", 
                    st, inform.f_eval, inform.obj, inform.status);
 #endif
         }else{
-            printf("%c: BGO_solve exit status = %1" i_ipc_ "\n", 
+            printf("%c: BGO_solve exit status = %1" d_ipc_ "\n", 
                    st, inform.status);
         }
         //printf("x: ");

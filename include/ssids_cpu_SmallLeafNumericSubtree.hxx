@@ -365,13 +365,11 @@ private:
       ipc_ *perm = node->perm;
 
       /* Perform factorization */
-      //Verify<T> verifier(m, n, perm, lcol, ldl);
       T *ld = work.get_ptr<T>(2*m);
       node->nelim = ldlt_tpp_factor(
             m, n, perm, lcol, ldl, d, ld, m, control.action, control.u,
             control.small
             );
-      //verifier.verify(node->nelim, perm, lcol, ldl, d);
 
       if(m-n>0 && node->nelim>0) {
          ipc_ nelim = node->nelim;

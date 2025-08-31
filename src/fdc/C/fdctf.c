@@ -43,15 +43,15 @@ int main(void) {
 
     if(status == 0){
       if(n_depen == 0){
-        printf("FDC_find_dependent - no dependent rows, status = %" i_ipc_ "\n",
+        printf("FDC_find_dependent - no dependent rows, status = %" d_ipc_ "\n",
                status);
       }else{
         printf("FDC_find_dependent - dependent rows(s):" );
-        for( ipc_ i = 0; i < n_depen; i++) printf(" %" i_ipc_ "", depen[i]);
-        printf(", status = %" i_ipc_ "\n", status);
+        for( ipc_ i = 0; i < n_depen; i++) printf(" %" d_ipc_ "", depen[i]);
+        printf(", status = %" d_ipc_ "\n", status);
       }
     }else{
-        printf("FDC_find_dependent - exit status = %1" i_ipc_ "\n", status);
+        printf("FDC_find_dependent - exit status = %1" d_ipc_ "\n", status);
     }
 
     // Delete internal workspace

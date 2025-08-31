@@ -71,8 +71,8 @@ int main(void) {
     rpd_get_stats( qplib_file, qplib_file_len, &control, &data, &status,
                    p_type, &n, &m, &h_ne, &a_ne, &h_c_ne );
     printf( " QPLIB file is of type %s\n", p_type );
-    printf( " n = %" i_ipc_ ", m = %" i_ipc_ ", h_ne = %" i_ipc_ 
-            ", a_ne = %" i_ipc_ ", h_c_ne = %" i_ipc_ "\n",
+    printf( " n = %" d_ipc_ ", m = %" d_ipc_ ", h_ne = %" d_ipc_ 
+            ", a_ne = %" d_ipc_ ", h_c_ne = %" d_ipc_ "\n",
             n, m, h_ne, a_ne, h_c_ne );
 
     // Recover g
@@ -180,11 +180,11 @@ int main(void) {
 #ifdef REAL_128
 //    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf",  h_val[i]);
 //    if ((size_t) n0 < sizeof buf0)
-//      printf("   %" i_ipc_ " %" i_ipc_ " %s\n", h_row[i], h_col[i], buf0);
-      printf("   %" i_ipc_ " %" i_ipc_ " %.1f\n", h_row[i], h_col[i], 
+//      printf("   %" d_ipc_ " %" d_ipc_ " %s\n", h_row[i], h_col[i], buf0);
+      printf("   %" d_ipc_ " %" d_ipc_ " %.1f\n", h_row[i], h_col[i], 
              (double)h_val[i]);
 #else
-      printf("   %" i_ipc_ " %" i_ipc_ " %.1f\n", h_row[i], h_col[i], h_val[i]);
+      printf("   %" d_ipc_ " %" d_ipc_ " %.1f\n", h_row[i], h_col[i], h_val[i]);
 #endif
     }
 
@@ -198,11 +198,11 @@ int main(void) {
 #ifdef REAL_128
 //    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf",  a_val[i]);
 //    if ((size_t) n0 < sizeof buf0)
-//      printf("   %" i_ipc_ " %" i_ipc_ " %s\n", a_row[i], a_col[i], buf0);
-      printf("   %" i_ipc_ " %" i_ipc_ " %.1f\n", a_row[i], a_col[i], 
+//      printf("   %" d_ipc_ " %" d_ipc_ " %s\n", a_row[i], a_col[i], buf0);
+      printf("   %" d_ipc_ " %" d_ipc_ " %.1f\n", a_row[i], a_col[i], 
              (double)a_val[i]);
 #else
-      printf("   %" i_ipc_ " %" i_ipc_ " %.1f\n", a_row[i], a_col[i], a_val[i]);
+      printf("   %" d_ipc_ " %" d_ipc_ " %.1f\n", a_row[i], a_col[i], a_val[i]);
 #endif
     }
 
@@ -217,19 +217,19 @@ int main(void) {
 #ifdef REAL_128
 //    n0 = quadmath_snprintf(buf0, sizeof buf0, "%*.1Qf",  h_c_val[i]);
 //    if ((size_t) n0 < sizeof buf0)
-//      printf("   %" i_ipc_ " %" i_ipc_ " %s\n", h_c_row[i], h_c_col[i], buf0);
-      printf("   %" i_ipc_ " %" i_ipc_ " %" i_ipc_ " %.1f\n", 
+//      printf("   %" d_ipc_ " %" d_ipc_ " %s\n", h_c_row[i], h_c_col[i], buf0);
+      printf("   %" d_ipc_ " %" d_ipc_ " %" d_ipc_ " %.1f\n", 
              h_c_ptr[i], h_c_row[i], h_c_col[i], (double)h_c_val[i]);
 #else
-      printf("   %" i_ipc_ " %" i_ipc_ " %" i_ipc_ " %.1f\n", 
+      printf("   %" d_ipc_ " %" d_ipc_ " %" d_ipc_ " %.1f\n", 
              h_c_ptr[i], h_c_row[i], h_c_col[i], h_c_val[i]);
 #endif
     }
     // Recover x_type
     ipc_ x_type[n];
     rpd_get_x_type( &data, &status, n, x_type );
-    printf( " x_type = %" i_ipc_ " %" i_ipc_ " %" i_ipc_ " %" i_ipc_ 
-            " %" i_ipc_ "\n", x_type[0], x_type[1], x_type[2],
+    printf( " x_type = %" d_ipc_ " %" d_ipc_ " %" d_ipc_ " %" d_ipc_ 
+            " %" d_ipc_ "\n", x_type[0], x_type[1], x_type[2],
             x_type[3], x_type[4] );
 
     // Recover x

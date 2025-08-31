@@ -87,7 +87,7 @@ int main(void) {
             printf("  fail ");
           }
         }else{
-            printf(" ULS_solve exit status = %1" i_ipc_ "\n", inform.status);
+            printf(" ULS_solve exit status = %1" d_ipc_ "\n", inform.status);
         }
         // printf("sol: ");
         // for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -108,7 +108,7 @@ int main(void) {
             printf("   fail ");
           }
         }else{
-            printf(" ULS_solve exit status = %1" i_ipc_ "\n", inform.status);
+            printf(" ULS_solve exit status = %1" d_ipc_ "\n", inform.status);
         }
 
         // Set right-hand side and solve the system A^T x = b
@@ -126,7 +126,7 @@ int main(void) {
             printf("  fail ");
           }
         }else{
-            printf(" ULS_solve exit status = %1" i_ipc_ "\n", inform.status);
+            printf(" ULS_solve exit status = %1" d_ipc_ "\n", inform.status);
         }
         // printf("sol: ");
         // for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -147,7 +147,7 @@ int main(void) {
             printf("   fail ");
           }
         }else{
-            printf(" ULS_solve exit status = %1" i_ipc_ "\n", inform.status);
+            printf(" ULS_solve exit status = %1" d_ipc_ "\n", inform.status);
         }
 
         // Delete internal workspace

@@ -20,6 +20,7 @@ script = raw"""
 cp ${host_prefix}/bin/ninja /usr/bin/ninja
 
 cd ${WORKSPACE}/srcdir/GALAHAD
+rm version
 
 if [[ "${target}" == *mingw* ]]; then
   LBT="blastrampoline-5"

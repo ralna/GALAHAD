@@ -97,20 +97,20 @@ int main(void) {
 
           if(inform.status == 0){
 #ifdef REAL_128
-            printf(" format %c: status = %1" i_ipc_ "\n", st, inform.status);
+            printf(" format %c: status = %1" d_ipc_ "\n", st, inform.status);
 #else
-            printf(" format %c: status = %1" i_ipc_ "\n", st, inform.status);
+            printf(" format %c: status = %1" d_ipc_ "\n", st, inform.status);
 #endif
           }else{
-              printf(" format %c: BSC_solve exit status = %1" i_ipc_ "\n", 
+              printf(" format %c: BSC_solve exit status = %1" d_ipc_ "\n", 
                      st, inform.status);
           }
 
           printf("S_row: ");
-          for( ipc_ i = 0; i < S_ne; i++) printf("%1" i_ipc_ " ", S_row[i]);
+          for( ipc_ i = 0; i < S_ne; i++) printf("%1" d_ipc_ " ", S_row[i]);
           printf("\n");
           printf("S_col: ");
-          for( ipc_ i = 0; i < S_ne; i++) printf("%1" i_ipc_ " ", S_col[i]);
+          for( ipc_ i = 0; i < S_ne; i++) printf("%1" d_ipc_ " ", S_col[i]);
           printf("\n");
           printf("S_val: ");
 #ifdef REAL_128
@@ -121,7 +121,7 @@ int main(void) {
           printf("\n");
           if(ptr == 1){
             printf("S_ptr: ");
-            for( ipc_ i = 0; i < m + 1; i++) printf("%1" i_ipc_ " ", S_ptr[i]);
+            for( ipc_ i = 0; i < m + 1; i++) printf("%1" d_ipc_ " ", S_ptr[i]);
             printf("\n");
           }
         }
