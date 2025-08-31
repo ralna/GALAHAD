@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-06-19 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 13:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -3443,10 +3443,10 @@ stop
          DO j = 1, nlp%n
            IF ( data%X_status( j ) == 1 .OR. data%X_status( j ) == 3 ) THEN
              data%Z_l( j ) = data%Z_l( j ) + data%R( k )
-             IF ( data%Z_l( i ) <= zero ) THEN
+             IF ( data%Z_l( j ) <= zero ) THEN
                IF ( data%printd ) WRITE( data%out,                             &
                  "(' warning - new z_u(', I0, ') = ', ES12.4, ' <= 0' )" )     &
-                   i, data%Z_l( i )
+                   i, data%Z_l( j )
 !              data%Z_l( j ) = teeny
                negval = .TRUE. ; EXIT
              END IF
@@ -3457,10 +3457,10 @@ stop
            END IF
            IF ( data%X_status( j ) == 2 .OR. data%X_status( j ) == 3 ) THEN
              data%Z_u( j ) = data%Z_u( j ) + data%R( k )
-             IF ( data%Z_u( i ) <= zero ) THEN
+             IF ( data%Z_u( j ) <= zero ) THEN
                IF ( data%printd ) WRITE( data%out,                             &
                  "(' warning - new z_u(', I0, ') = ', ES12.4, ' <= 0' )" )     &
-                   i, data%Z_u( i )
+                   i, data%Z_u( j )
 !              data%Z_u( j ) = teeny
                negval = .TRUE. ; EXIT
              END IF
