@@ -1,6 +1,6 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-29 AT 12:30 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 10:00 GMT
 
-#include "ssids_procedures.h"
+#include "galahad_modules.h"
 #include "ssids_routines.h"
 
 !  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)

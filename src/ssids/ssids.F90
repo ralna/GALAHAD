@@ -1,7 +1,7 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-29 AT 14:00 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 09:50 GMT
 ! (consistent with SPRAL up to issue #250)
 
-#include "ssids_procedures.h"
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ S S I D S   M O D U L E  *-*-*-*-*-*-*-*-*-
 
@@ -249,7 +249,7 @@
 
 !  type for data generated in factorise phase
 
-     TYPE, PUBLIC :: ssids_fkeep_type
+     TYPE, PUBLIC :: SSIDS_fkeep_type
 
 !  stores scaling for each entry ( in original matrix order )
 
@@ -277,7 +277,7 @@
        PROCEDURE, PASS( fkeep ) :: enquire_indef => enquire_indef_cpu
        PROCEDURE, PASS( fkeep ) :: alter => alter_cpu ! Alter D values
        PROCEDURE, PASS( fkeep ) :: free => free_fkeep ! Frees memory
-     END TYPE ssids_fkeep_type
+     END TYPE SSIDS_fkeep_type
 
   CONTAINS
 

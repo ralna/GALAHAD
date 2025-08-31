@@ -1,6 +1,6 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-30 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 09:30 GMT.
 
-#include "ssids_procedures.h"
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   S S I D S   M O D U L E  -*-*-*-*-*-
 

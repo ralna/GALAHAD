@@ -21,7 +21,7 @@
 #include <omp.h>
 #endif /* _OPENMP */
 
-#include "ssids_procedures.h"
+#include "galahad_modules.h"
 #include "ssids_compat.hxx"
 #include "ssids_routines.h"
 #include "ssids_cpu_BlockPool.hxx"

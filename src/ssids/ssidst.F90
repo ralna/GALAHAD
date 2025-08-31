@@ -1,15 +1,15 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-15 AT 11:50 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 10:00 GMT
 
-#include "ssids_procedures.h"
+#include "galahad_modules.h"
 
    PROGRAM GALAHAD_SSIDS_test_program
    USE GALAHAD_KINDS_precision
    USE GALAHAD_SSIDS_precision
    IMPLICIT NONE
-   TYPE( ssids_inform_type ) :: inform
-   TYPE( ssids_akeep_type ) :: akeep
-   TYPE( ssids_fkeep_type ) :: fkeep
-   TYPE( ssids_control_type ) :: control
+   TYPE( SSIDS_inform_type ) :: inform
+   TYPE( SSIDS_akeep_type ) :: akeep
+   TYPE( SSIDS_fkeep_type ) :: fkeep
+   TYPE( SSIDS_control_type ) :: control
    INTEGER ( KIND = ip_ ) :: i, ordering, cuda_error
 !  LOGICAL :: mpi_flag
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, ne  = 7
@@ -50,10 +50,10 @@
      IF ( ordering == 1 ) THEN
        DO i = 1, n ; ORDER( i ) = n - i + 1 ; END DO
        control%ordering = 0
-       CALL ssids_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,       &
+       CALL SSIDS_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,       &
                            val = VAL, order = ORDER )
      ELSE
-       CALL ssids_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,       &
+       CALL SSIDS_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,       &
                            val = VAL )
      END IF
      IF ( inform%flag < 0 ) THEN
@@ -65,8 +65,8 @@
 
 ! factorize the matrix
 
-!write(6,*) ' factorize '
-     CALL ssids_factor( .FALSE., VAL, akeep, fkeep, control, inform,           &
+!    WRITE(6,*) ' factorize '
+     CALL SSIDS_factor( .FALSE., VAL, akeep, fkeep, control, inform,           &
                         ptr = PTR, row = ROW )
      IF ( inform%flag < 0 ) THEN
        WRITE( 6, "( '  fail in factorize, status = ', I0 )",                   &
@@ -77,26 +77,26 @@
 
 ! assign the right-hand side, and solve without refinement
 
-!write(6,*) ' solve 1 RHS'
+!    WRITE(6,*) ' solve 1 RHS'
      X = RHS
-     CALL ssids_solve( X, akeep, fkeep, control, inform )
-!write(6,"( ' X = ', 5ES10.2 )" ) X( 1 : n )
-!write(6,*) ' status - ', inform%flag
+     CALL SSIDS_solve( X, akeep, fkeep, control, inform )
+!    WRITE(6,"( ' X = ', 5ES10.2 )" ) X( 1 : n )
+!    WRITE(6,*) ' status - ', inform%flag
 
      IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                            &
              <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
        WRITE( 6, "( '   ok  ' )", advance = 'no' )
      ELSE
-!write(6,*) MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )
+!      WRITE(6,*) MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )
        WRITE( 6, "( '  fail ' )", advance = 'no' )
      END IF
 
 ! Solve multiple RHS without refinement
 
      X2( : , 1 ) = RHS ; X2( : , 2 ) = RHS
-     CALL ssids_solve( 2_ip_, X2, n, akeep, fkeep, control, inform )
+     CALL SSIDS_solve( 2_ip_, X2, n, akeep, fkeep, control, inform )
 
-!write(6,*) ' status - ', inform%flag
+!    WRITE(6,*) ' status - ', inform%flag
      IF ( MAXVAL( ABS( X2( 1 : n, 1 ) - SOL( 1 : n ) ) )                       &
              <= EPSILON( 1.0_rp_ ) ** 0.5 .AND.                                &
           MAXVAL( ABS( X2( 1 : n, 2 ) - SOL( 1 : n ) ) )                       &
@@ -105,21 +105,22 @@
      ELSE
        WRITE( 6, "( '     fail ' )", advance = 'no' )
      END IF
-! Obtain solution by part solves
+
+!  obtain solution by part solves
 
      X = RHS
-!write(6,*) ' L '
-     CALL ssids_solve( X, akeep, fkeep, control, inform, job = 1_ip_ )
+!    WRITE(6,*) ' L '
+     CALL SSIDS_solve( X, akeep, fkeep, control, inform, job = 1_ip_ )
      IF (inform%flag /= 0 ) THEN
        WRITE( 6, "( '    fail ' )", advance = 'no' )
        WRITE( 6, "( '' )" )
        CYCLE
      END IF
-!write(6,*) ' D '
-     CALL ssids_solve( X, akeep, fkeep, control, inform, job = 2_ip_ )
-!write(6,*) ' U '
-     CALL ssids_solve( X, akeep, fkeep, control, inform, job = 3_ip_ )
-!write(6,*) ' E '
+!    WRITE(6,*) ' D '
+     CALL SSIDS_solve( X, akeep, fkeep, control, inform, job = 2_ip_ )
+!    WRITE(6,*) ' U '
+     CALL SSIDS_solve( X, akeep, fkeep, control, inform, job = 3_ip_ )
+!    WRITE(6,*) ' E '
      IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                            &
              <= EPSILON( 1.0_rp_ ) ** 0.333 ) THEN
        WRITE( 6, "( '     ok  ' )", advance = 'no' )
@@ -129,16 +130,16 @@
 
 !  enquire about factors and modify diagonals
 
-!write(6,*) ' enquire '
-     CALL ssids_enquire_indef( akeep, fkeep, control, inform,                  &
+!    WRITE(6,*) ' enquire '
+     CALL SSIDS_enquire_indef( akeep, fkeep, control, inform,                  &
                                piv_order = ORDER, d = D )
-!write(6,*) ' alter d '
-     CALL ssids_alter( D, akeep, fkeep, control, inform)
+!    WRITE(6,*) ' alter d '
+     CALL SSIDS_alter( D, akeep, fkeep, control, inform)
 
 !  free data
 
-!write(6,*) ' terminate '
-     CALL ssids_free(akeep, fkeep, cuda_error )
+!    WRITE(6,*) ' terminate '
+     CALL SSIDS_free(akeep, fkeep, cuda_error )
      WRITE( 6, "( '' )" )
    END DO
 !  CALL MPI_INITIALIZED( mpi_flag, i )

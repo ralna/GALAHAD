@@ -1,8 +1,8 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-28 AT 13:00 GMT
+! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 09:50 GMT
 
 !-*-*-*-*-*-  G A L A H A D _ S S I D S _ t y p e s   M O D U L E  *-*-*-*-*-
 
-#include "ssids_procedures.h"
+#include "galahad_modules.h"
 
 !  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)
 !  licence: BSD licence, see LICENCE file for details
