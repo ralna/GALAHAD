@@ -1,9 +1,4 @@
 #ifdef INTEGER_64
-#define galahad_ssids_blas_iface galahad_ssids_blas_iface_64
-#define spral_kinds spral_kinds_64
-#endif
-
-#ifdef INTEGER_64
 #ifdef REAL_32
 #define ldlt_app_factor ldlt_app_factor_sgl_64
 #define ldlt_app_solve_fwd ldlt_app_solve_fwd_sgl_64
@@ -223,13 +218,13 @@
 #endif
 
 #ifdef INTEGER_64
-#define galahad_ssids_cpu_create_symbolic_subtree galahad_ssids_cpu_create_symbolic_subtree_64
-#define galahad_ssids_cpu_destroy_symbolic_subtree galahad_ssids_cpu_destroy_symbolic_subtree_64
 #define align_lda align_lda_64
 #define SymbolicSubtree SymbolicSubtree_64
-#define SmallLeafSymbolicSubtree SmallLeafSymbolicSubtree_64
-#define SmallLeafNumericSubtree SmallLeafNumericSubtree_64
 #define SymbolicNode SymbolicNode_64
+#define SmallLeafSymbolicSubtree SmallLeafSymbolicSubtree_64
+#define NumericSubtree NumericSubtree_64
+#define NumericNode NumericNode_64
+#define SmallLeafNumericSubtree SmallLeafNumericSubtree_64
 #define BuddyAllocator BuddyAllocator_64
 #define Page Page_64
 #define Table Table_64
@@ -241,10 +236,6 @@
 #define Workspace Workspace_64
 #define ThreadStats ThreadStats_64
 #define SingularError SingularError_64
-#define SymbolicSubtree SymbolicSubtree_64
-#define NumericSubtree NumericSubtree_64
-#define SymbolicNode SymbolicNode_64
-#define NumericNode NumericNode_64
 #define AppendAlloc AppendAlloc_64
 #define Page Page_64
 #define Pool Pool_64
