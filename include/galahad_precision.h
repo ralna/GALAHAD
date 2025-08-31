@@ -38,10 +38,12 @@ typedef double rpc_;  // working precision
 typedef int64_t longc_;  // long integers
 #ifdef INTEGER_64
 typedef int64_t ipc_;  // integer type
+typedef uint64_t uipc_;
 #define d_ipc_ "ld"
 #define i_ipc_ "li"
 #else
-typedef int32_t ipc_;  // integer typen
+typedef int32_t ipc_;  // integer type
+typedef uint32_t uipc_;
 #define d_ipc_ "d"
 #define i_ipc_ "i"
 #endif
