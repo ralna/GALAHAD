@@ -37,6 +37,8 @@ typedef double rpc_;  // working precision
 #endif
 
 typedef int64_t longc_;  // long integers
+
+#ifdef INTEGER_64
 typedef int64_t ipc_;  // integer type
 typedef uint64_t uipc_;
 #define d_ipc_ PRId32
