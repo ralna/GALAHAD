@@ -1034,7 +1034,7 @@
          data%S%second = COUNT( ELDERS( 2 , : ) <= 0 ) == prob%nel
          data%S%second_zero = .FALSE.
        ELSE
-         data%S%second_derivatives = MIN( control%second_derivatives, 4 )
+         data%S%second_derivatives = MIN( control%second_derivatives, 5 )
          data%S%second = data%S%second_derivatives <= 0
          data%S%second_zero = data%S%second_derivatives >= 5
          IF ( data%S%fdgrad .AND. data%S%second ) THEN
@@ -1076,7 +1076,8 @@
 
 !  Set initial real values
 
-         data%S%tau = point1
+!        data%S%tau = point1
+         data%S%tau = control%mu_decrease
          data%S%gamma1 = point1
          data%S%alphae = point1 ; data%S%alphao = one
          data%S%betae = point9 ; data%S%betao = one
@@ -5151,10 +5152,10 @@
           &     ' preconditioner used ' )" )
            IF ( control%linear_solver ==  8 ) WRITE( S%out,                    &
              "( ' Bandsolver preconditioned C.G.',                             &
-          &     ' ( semi-bandwidth = ', I6, ' ) used ' )" ) inform%nsemib
+          &     ' (semi-bandwidth = ', I0, ') used ' )" ) inform%nsemib
            IF ( control%linear_solver ==  9 ) WRITE( S%out,                    &
              "( ' Conjugate gradients with Lin and More`s',                    &
-          &     ' preconditioner used ( memory = ', I6, ' )' )" ) S%icfact
+          &     ' preconditioner used (memory = ', I0, ')' )" ) S%icfact
            IF ( control%linear_solver == 11 ) WRITE( S%out,                    &
              "( ' Exact matrix factorization used ' )" )
            IF ( control%linear_solver == 12 ) WRITE( S%out,                    &
@@ -5169,8 +5170,8 @@
              END IF
            END IF
            IF ( S%nmhist > 0 ) WRITE( S%out,                                   &
-             "( ' Non-monotone descent strategy ( history =', I3,              &
-          &     ' ) used ' )" ) S%nmhist
+             "( ' Non-monotone descent strategy (history = ', I0,              &
+          &     ') used ' )" ) S%nmhist
            IF ( S%first_derivatives >= 1 )  WRITE( S%out,                      &
              "( ' Finite-difference approximations to',                        &
           &     ' nonlinear-element gradients used' )" )
@@ -5182,8 +5183,10 @@
              "( ' D.F.P. approximation to second derivatives used ' )" )
            IF ( S%second_derivatives == 3 ) WRITE( S%out,                      &
              "( ' P.S.B. approximation to second derivatives used ' )" )
-           IF ( S%second_derivatives >= 4 ) WRITE( S%out,                      &
-             "( ' S.R.1 Approximation to second derivatives used ' )" )
+           IF ( S%second_derivatives == 4 ) WRITE( S%out,                      &
+             "( ' S.R.1 approximation to second derivatives used ' )" )
+           IF ( S%second_derivatives >= 5 ) WRITE( S%out,                      &
+             "( ' Zero approximation to second derivatives used ' )" )
            IF ( S%direct ) THEN
              IF ( S%modchl ) THEN
                WRITE( S%out, "( ' No. pos. def. systems = ', I4,               &
@@ -5806,6 +5809,7 @@
          S%alphak = MIN( inform%mu, S%gamma1 )
          S%etak   = MAX( S%eta_min, S%eta0 * S%alphak ** S%alphae )
          S%omegak = MAX( S%omega_min, S%omega0 * S%alphak ** S%alphao )
+!write(58,"( ( 5ES16.8 ) )" ) X( : n )
 
 !  Prepare for the next outer iteration
 

@@ -562,7 +562,7 @@
        LOGICAL :: set_printi, set_printt, set_printd, set_printm, use_dps
        LOGICAL :: monotone, new_h, got_h, poor_model, f_is_nan, non_trivial_p
        LOGICAL :: reverse_f, reverse_g, reverse_h, reverse_hprod, reverse_prec
-       LOGICAL :: sparse_hessian, successful
+       LOGICAL :: sparse_hessian, successful, f_failed
        CHARACTER ( LEN = 1 ) :: negcur = ' '
        CHARACTER ( LEN = 1 ) :: bndry = ' '
        CHARACTER ( LEN = 1 ) :: perturb = ' '
@@ -2800,7 +2800,11 @@
 !  set the lower bound and estimate of the next multiplier to the current
 !  values, as Newton will converge rapidly from here
 
-               data%control%TRS_control%lower = inform%TRS_inform%multiplier
+               IF ( data%f_failed ) THEN
+                 data%control%TRS_control%lower = zero
+               ELSE
+                 data%control%TRS_control%lower = inform%TRS_inform%multiplier
+               END IF
                data%control%TRS_control%initial_multiplier =                   &
                  data%control%TRS_control%lower
                data%control%TRS_control%use_initial_multiplier = .TRUE.
@@ -3211,9 +3215,14 @@
 !      data%f_is_nan = IEEE_IS_NAN( data%f_trial )
        data%f_is_nan = data%f_trial /= data%f_trial
 !write(6,*) ' objective is NaN? ', data%f_is_nan
-       IF ( data%f_is_nan ) THEN
+       data%f_failed = data%f_is_nan .OR. data%eval_status /= 0
+       IF ( data%f_failed ) THEN
          data%poor_model = .TRUE.
-         data%accept = 'n'
+         IF ( data%f_is_nan ) THEN
+           data%accept = 'N'
+         ELSE
+           data%accept = 'E'
+         END IF
          nlp%X( : nlp%n ) = data%X_current( : nlp%n )
 
 !  control printing for the NaN case
@@ -3261,18 +3270,32 @@
              ELSE
                multiplier = inform%TRS_inform%multiplier
              END IF
-             WRITE( data%out,  "( A, A6, 1X, 4A1, '    NaN           -    ',   &
-            &  '    - Inf ', '    -    ', 2ES8.1, 1X, A6, F8.2 )" )            &
-                prefix, char_iter, data%accept, data%bndry, data%negcur,       &
-                data%hard, inform%radius, multiplier, char_facts, data%clock_now
+             IF ( data%f_is_nan ) THEN
+               WRITE( data%out,  "( A, A6, 1X, 4A1, '     NaN          -    ', &
+              &  '   Inf  ', 2ES8.1, 1X, A6, F8.2 )" ) prefix, char_iter,      &
+                  data%accept, data%bndry, data%negcur, data%hard,             &
+                  inform%radius, multiplier, char_facts, data%clock_now
+             ELSE
+               WRITE( data%out,  "( A, A6, 1X, 4A1, '     Fail         -    ', &
+              &  '   Inf  ', 2ES8.1, 1X, A6, F8.2 )" ) prefix, char_iter,      &
+                  data%accept, data%bndry, data%negcur, data%hard,             &
+                  inform%radius, multiplier, char_facts, data%clock_now
+             END IF
            ELSE
              char_sit = ADJUSTR( STRING_integer_6( inform%GLTR_inform%iter ) )
              char_sit2 =                                                       &
                 ADJUSTR( STRING_integer_6( inform%GLTR_inform%iter_pass2 ) )
-             WRITE( data%out, "( A, A6, 1X, 4A1, '    NaN           -    ',    &
-            &  '    - Inf ', '    -    ', ES9.1, 1X, 2A6, F8.2 )" ) prefix,    &
-                char_iter, data%accept, data%bndry, data%negcur, data%perturb, &
-                inform%radius, char_sit, char_sit2, data%clock_now
+             IF ( data%f_is_nan ) THEN
+               WRITE( data%out, "( A, A6, 1X, 4A1, '     NaN          -    ',  &
+              &  '   Inf  ', ES9.1, 1X, 2A6, F8.2 )" ) prefix, char_iter,      &
+                  data%accept, data%bndry, data%negcur, data%perturb,          &
+                  inform%radius, char_sit, char_sit2, data%clock_now
+             ELSE
+               WRITE( data%out, "( A, A6, 1X, 4A1, '      Fail        -    ',  &
+              &  '   Inf  ', ES9.1, 1X, 2A6, F8.2 )" ) prefix, char_iter,      &
+                  data%accept, data%bndry, data%negcur, data%perturb,          &
+                  inform%radius, char_sit, char_sit2, data%clock_now
+             END IF
            END IF
          END IF
 

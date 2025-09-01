@@ -2177,10 +2177,44 @@
         inform%hard_case = .TRUE.
       END IF
 
+!  check that data%control%lower and data%control%upper are reasonable
+
       IF ( lambda_l > lambda_u ) THEN
-        WRITE( out, "( ' lambda_l = ', ES12.4, ' > lambda_u = ', ES12.4 )" )   &
-          lambda_l, lambda_u
-        STOP
+        IF ( c_norm > zero ) THEN
+          IF ( constrained ) THEN
+            IF ( data%control%equality_problem ) THEN
+              lambda_l = - lambda_max
+              lambda_u = c_norm_over_radius - lambda_min
+            ELSE
+              lambda_l = zero
+              lambda_u = MAX( zero, c_norm_over_radius - lambda_min )
+            END IF
+          ELSE
+            lambda_l = MAX( lambda_s_l, c_norm_over_radius - lambda_max )
+            lambda_u = c_norm_over_radius - lambda_min
+            IF ( .NOT. data%control%equality_problem )                         &
+              lambda_u = MAX( zero, lambda_u )
+          END IF
+        ELSE
+          IF ( constrained ) THEN
+            lambda_l = - lambda_max
+            lambda_u = - lambda_min
+            IF ( .NOT. data%control%equality_problem ) THEN
+              lambda_l = MAX( zero, lambda_l )
+              lambda_u = MAX( zero, lambda_u )
+            END IF
+          ELSE
+            lambda_l = MAX( - lambda_max, lambda_s_l )
+            lambda_u = - lambda_min
+            IF ( .NOT. data%control%equality_problem )                         &
+              lambda_u = MAX( zero, lambda_u )
+          END IF
+        END IF
+        IF ( lambda_l > lambda_u ) THEN
+          WRITE( out, "( ' TRS stopping: lambda_l = ', ES12.4,                 &
+         &               ' > lambda_u = ', ES12.4 )" ) lambda_l, lambda_u
+          STOP
+        END IF
       END IF
 
 !  assign the initial lambda

@@ -1005,7 +1005,7 @@
          data%S%second = COUNT( ELDERS( 2 , : ) <= 0 ) == prob%nel
          data%S%second_zero = .FALSE.
        ELSE
-         data%S%second_derivatives = MIN( control%second_derivatives, 4 )
+         data%S%second_derivatives = MIN( control%second_derivatives, 5 )
          data%S%second = data%S%second_derivatives <= 0
          data%S%second_zero = data%S%second_derivatives >= 5
          IF ( data%S%fdgrad .AND. data%S%second ) THEN
@@ -5812,8 +5812,10 @@
              "( ' D.F.P. approximation to second derivatives used' )" )
            IF ( S%second_derivatives == 3 ) WRITE( S%out,                      &
              "( ' P.S.B. approximation to second derivatives used' )" )
-           IF ( S%second_derivatives >= 4 ) WRITE( S%out,                      &
+           IF ( S%second_derivatives == 4 ) WRITE( S%out,                      &
              "( ' S.R.1 Approximation to second derivatives used' )" )
+           IF ( S%second_derivatives >= 5 ) WRITE( S%out,                      &
+             "( ' Zero approximation to second derivatives used ' )" )
            IF ( S%direct ) THEN
              IF ( S%modchl ) THEN
                WRITE( S%out, "( ' No. pos. def. systems = ', I4,               &

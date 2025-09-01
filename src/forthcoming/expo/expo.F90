@@ -2498,10 +2498,15 @@ stop
 
 !  (the z_j^u and y_i^u are not used in this case)
 
+           data%tru_data%eval_status = 0
            penalty_term = zero
            DO j = 1, nlp%n
              IF ( use_cosh .AND. nlp%X_l( j ) == nlp%X_u( j ) ) THEN
                arg = ( data%expo%X( j ) - nlp%X_l( j ) ) / data%NU_l( j )
+               IF ( ABS( arg ) > exp_arg_huge ) THEN
+                 data%tru_data%eval_status = 1
+                 EXIT
+               END IF
                vcosh = data%V_l( j ) * COSH( arg )
                data%Z_l( j ) = data%V_l( j ) * SINH( arg )
 !data%Z_u( j ) = data%V_l( j ) * EXP( arg )
@@ -2512,7 +2517,10 @@ stop
              END IF
              IF ( nlp%X_l( j ) >= - control%infinity ) THEN
                exp_arg = ( nlp%X_l( j ) - data%expo%X( j ) ) / data%NU_l( j )
-               IF ( exp_arg > exp_arg_tiny ) THEN
+               IF ( exp_arg > exp_arg_huge ) THEN
+                 data%tru_data%eval_status = 2
+                 EXIT
+               ELSE IF ( exp_arg > exp_arg_tiny ) THEN
                  data%Z_l( j ) = data%V_l( j ) * EXP( exp_arg )
                ELSE
                  data%Z_l( j ) = zero
@@ -2526,7 +2534,10 @@ stop
              END IF
              IF ( nlp%X_u( j ) <= control%infinity ) THEN
                exp_arg = ( data%expo%X( j ) - nlp%X_u( j ) ) / data%NU_u( j )
-               IF ( exp_arg > exp_arg_tiny ) THEN
+               IF ( exp_arg > exp_arg_huge ) THEN
+                 data%tru_data%eval_status = 3
+                 EXIT
+               ELSE IF ( exp_arg > exp_arg_tiny ) THEN
                  data%Z_u( j ) = data%V_u( j ) * EXP( exp_arg )
                ELSE
                  data%Z_u( j ) = zero
@@ -2537,12 +2548,20 @@ stop
              END IF
            END DO
 
+!  check that all exponential arguments are "in range"
+
+           IF ( data%tru_data%eval_status /= 0 ) GO TO 200
+
 !  for the Lagrange multipliers:
 
            DO i = 1, nlp%m
              IF ( use_cosh .AND. nlp%C_l( i ) == nlp%C_u( i ) ) THEN
                arg = ( nlp%C( i ) - nlp%C_l( i ) ) / data%MU_l( i )
-               wcosh = data%W_l( i )  * COSH( arg )
+               IF ( ABS( arg ) > exp_arg_huge ) THEN
+                 data%tru_data%eval_status = 4
+                 EXIT
+               END IF
+               wcosh = data%W_l( i ) * COSH( arg )
                data%Y_l( i ) = data%W_l( i ) * SINH( arg )
 !data%Y_u( i ) = data%W_l( i ) * EXP( arg )
                nlp%Y( i ) = data%Y_l( i )
@@ -2552,7 +2571,10 @@ stop
              END IF
              IF ( nlp%C_l( i ) >= - control%infinity ) THEN
                exp_arg = ( nlp%C_l( i ) - nlp%C( i ) ) / data%MU_l( i )
-               IF ( exp_arg > exp_arg_tiny ) THEN
+               IF ( exp_arg > exp_arg_huge ) THEN
+                 data%tru_data%eval_status = 5
+                 EXIT
+               ELSE IF ( exp_arg > exp_arg_tiny ) THEN
                  data%Y_l( i ) = data%W_l( i ) * EXP( exp_arg )
                ELSE
                  data%Y_l( i ) = zero
@@ -2566,7 +2588,10 @@ stop
              END IF
              IF ( nlp%C_u( i ) <= control%infinity ) THEN
                exp_arg = ( nlp%C( i ) - nlp%C_u( i ) ) / data%MU_u( i )
-               IF ( exp_arg > exp_arg_tiny ) THEN
+               IF ( exp_arg > exp_arg_huge ) THEN
+                 data%tru_data%eval_status = 6
+                 EXIT
+               ELSE IF ( exp_arg > exp_arg_tiny ) THEN
                  data%Y_u( i ) = data%W_u( i ) * EXP( exp_arg )
                ELSE
                  data%Y_u( i ) = zero
@@ -2576,6 +2601,10 @@ stop
                penalty_term = penalty_term + data%MU_u( i ) * data%Y_u( i )
              END IF
            END DO
+
+!  check that all exponential arguments are "in range"
+
+           IF ( data%tru_data%eval_status /= 0 ) GO TO 200
 
            IF ( data%printd ) THEN
              WRITE( data%out, "( ' new x ', 3ES22.14, :/, ( 4X, 3ES22.14 ) )") &
@@ -2703,6 +2732,7 @@ stop
 !  ---------------------------
 
  300   CONTINUE
+!      WRITE( 33, "( ( 5ES16.8 ) )" ) nlp%X( : nlp%n )
 
 !  compute the dual infeasibility
 
@@ -2787,7 +2817,7 @@ stop
          CALL CLOCK_time( data%clock_now )
          data%clock_now = data%clock_now - data%clock_start
          IF ( data%printi ) WRITE( data%out,                                   &
-           "( A, I6, ES16.8, 4ES9.1, 2I6, F9.2 )" )                            &
+           "( A, I6, 1X, ES16.8, 4ES8.1, 2I6, F9.2 )" )                        &
              prefix, inform%iter, inform%obj, inform%primal_infeasibility,     &
              inform%dual_infeasibility, inform%complementary_slackness,        &
              data%max_mu, inform%tru_inform%iter, inform%tru_inform%status,    &
@@ -3613,7 +3643,7 @@ stop
                CALL CLOCK_time( data%clock_now )
                data%clock_now = data%clock_now - data%clock_start
                IF ( data%printi ) WRITE( data%out,                             &
-                 "( A, I6, A1, ES15.8, 4ES9.1, 2I6, F9.2 )" ) prefix,          &
+                 "( A, I6, A1, ES16.8, 4ES8.1, 2I6, F9.2 )" ) prefix,          &
                    inform%iter + 1, data%adv, nlp%f, primal_infeasibility,     &
                    dual_infeasibility, complementary_slackness,                &
                    data%max_mu, data%iter_advanced, 0, data%clock_now
@@ -3787,7 +3817,7 @@ stop
          CALL CLOCK_time( data%clock_now )
          data%clock_now = data%clock_now - data%clock_start
          IF ( data%printi ) WRITE( data%out,                                   &
-           "( A, I6, A1, ES15.8, 4ES9.1, 2I6, F9.2 )" ) prefix,                &
+           "( A, I6, A1, ES16.8, 4ES8.1, 2I6, F9.2 )" ) prefix,                &
              inform%iter + 1, data%adv, nlp%f, primal_infeasibility,           &
              dual_infeasibility, complementary_slackness,                      &
              data%max_mu, data%iter_advanced, 0, data%clock_now
@@ -3996,7 +4026,7 @@ stop
 !  Non-executable statements
 
  2000 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
- 2010 FORMAT( A, '  iter  f               pr-feas  du-feas  cmp-slk  ',        &
+ 2010 FORMAT( A, '  iter   f              pr-feas du-feas cmp-slk ',           &
               ' max mu inner  stop cpu time' )
  2200 FORMAT( /, A, ' # function evaluations  = ', I0,                         &
               /, A, ' # gradient evaluations  = ', I0,                         &
