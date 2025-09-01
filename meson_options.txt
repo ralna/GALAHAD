@@ -88,15 +88,15 @@ option('libpardiso',
        value : 'pardiso',
        description : 'PARDISO library against which to link')
 
-option('libspmf',
+option('libspm',
        type : 'string',
        value : 'spmf',
-       description : 'SPMF library against which to link')
+       description : 'SPM library against which to link')
 
-option('libpastixf',
+option('libpastix',
        type : 'string',
        value : 'pastixf',
-       description : 'PASTIXF library against which to link')
+       description : 'PASTIX library against which to link')
 
 option('libsmumps',
        type : 'string',
@@ -148,15 +148,15 @@ option('libpardiso_path',
        value : [],
        description : 'Additional directories to search for the PARDISO library')
 
-option('libspmf_path',
+option('libspm_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search for the SPMF library')
+       description : 'Additional directories to search for the SPM library')
 
-option('libpastixf_path',
+option('libpastix_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search for the PASTIXF library')
+       description : 'Additional directories to search for the PASTIX library')
 
 option('libmumps_path',
        type : 'array',
@@ -187,6 +187,16 @@ option('libcutest_modules',
        type : 'array',
        value : [],
        description : 'Additional directories to search for the CUTEST modules')
+
+option('libspm_modules',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the SPM modules')
+
+option('libpastix_modules',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the PASTIX modules')
 
 option('int64',
        type : 'boolean',

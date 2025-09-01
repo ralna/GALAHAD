@@ -89,7 +89,7 @@
         CALL c_f_pointer( spm%values, cvalues, [ spm%nnzexp ] )
      IF ( PRESENT( dvalues ) .AND. ( spm%flttype == SpmDouble ) )              &
         CALL c_f_pointer( spm%values, dvalues, [ spm%nnzexp ] )
-     IF ( PRESENT( svalues ) .AND. ( spm%flttype == SpmFloat ) )              &
+     IF ( PRESENT( svalues ) .AND. ( spm%flttype == SpmFloat ) )               &
         CALL c_f_pointer( spm%values, svalues, [ spm%nnzexp ] )
 
    END SUBROUTINE spmGetArray_f08
