@@ -352,17 +352,21 @@ void block_ldlt(ipc_ from, ipc_ *perm, T *a, ipc_ lda, T *d, T *ldwork,
       if(pivsiz == 0) {
          // FIXME: debug remove
          printf("broken!\n");
-         printf("t = %" d_ipc_ " m = %" d_ipc_ "\n", t2, m2);
+#ifdef INTEGER_64
+         printf("t = %" PRId64 " m = %" PRId64 "\n", t2, m2);
+         printf("[%" PRId64 "] = ", m2*BLOCK_SIZE+m2);
+#else
+         printf("t = %" PRId32 " m = %" PRId32 "\n", t2, m2);
+         printf("[%" PRId32 "] = ", m2*BLOCK_SIZE+m2);
+#endif
          a11 = a[m2*lda+m2];
 #ifdef REAL_128
         char buf1[128];
-        int n1 = quadmath_snprintf(buf1, sizeof buf1,
-            "%+-#*.20Qe", a[m2*lda+m2]);
+        int n1 = quadmath_snprintf(buf1, sizeof buf1, "%+-#*.20Qe", a[m2*lda+m2]);
         if ((size_t) n1 < sizeof buf1)
-           printf("[%" d_ipc_ "] = %s\n", m2*BLOCK_SIZE+m2, buf1);
-//         printf("[%" d_ipc_ "] = %q\n", m2*BLOCK_SIZE+m2, a[m2*lda+m2]);
+           printf("%s\n", buf1);
 #else
-         printf("[%" d_ipc_ "] = %e\n", m2*BLOCK_SIZE+m2, a[m2*lda+m2]);
+         printf("%e\n", a[m2*lda+m2]);
 #endif
          a22 = a[t2*lda+t2];
          a21 = a[m2*lda+t2];

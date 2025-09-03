@@ -1324,7 +1324,7 @@ private:
 
       #pragma omp taskgroup
       for (ipc_ blk = from_blk; blk < nblk; blk++) {
-         /*if(debug) {
+         /*if (debug) {
             printf("Bcol %d:\n", blk);
             print_mat(mblk, nblk, m, n, blkdata, cdata, lda);
          }*/
@@ -1343,7 +1343,11 @@ private:
            if (!my_abort) {
              try {
                // #pragma omp cancellation point taskgroup
-               if (debug) printf("Factor(%" d_ipc_ ")\n", blk);
+#ifdef INTEGER_64
+               if (debug) printf("Factor(%" PRId64 ")\n", blk);
+#else
+               if (debug) printf("Factor(%" PRId32 ")\n", blk);
+#endif
                BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                // Store a copy for recovery in case of a failed column
                dblk.backup(backup);
@@ -1401,8 +1405,11 @@ private:
               my_abort = abort;
               if (!my_abort) {
                 // #pragma omp cancellation point taskgroup
-                if (debug) printf("ApplyT(%" d_ipc_ ",%" d_ipc_ ")\n", 
-                                   blk, jblk);
+#ifdef INTEGER_64
+                if (debug) printf("ApplyT(%" PRId64 ",%" PRId64 ")\n", blk, jblk);
+#else
+                if (debug) printf("ApplyT(%" PRId32 ",%" PRId32 ")\n", blk, jblk);
+#endif
                 BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                 BlockSpec cblk(blk, jblk, m, n, cdata, a, lda, block_size);
                 // Apply row permutation from factorization of dblk and in
@@ -1430,8 +1437,11 @@ private:
               my_abort = abort;
               if (!my_abort) {
                 // #pragma omp cancellation point taskgroup
-                if (debug) printf("ApplyN(%" d_ipc_ ",%" d_ipc_ ")\n", 
-                                  iblk, blk);
+#ifdef INTEGER_64
+                if (debug) printf("ApplyN(%" PRId64 ",%" PRId64 ")\n", iblk, blk);
+#else
+                if (debug) printf("ApplyN(%" PRId32 ",%" PRId32 ")\n", iblk, blk);
+#endif
                 BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                 BlockSpec rblk(iblk, blk, m, n, cdata, a, lda, block_size);
                 // Apply column permutation from factorization of dblk and in
@@ -1459,7 +1469,11 @@ private:
            my_abort = abort;
            if (!my_abort) {
              // #pragma omp cancellation point taskgroup
-             if (debug) printf("Adjust(%" d_ipc_ ")\n", blk);
+#ifdef INTEGER_64
+             if (debug) printf("Adjust(%" PRId64 ")\n", blk);
+#else
+             if (debug) printf("Adjust(%" PRId32 ")\n", blk);
+#endif
              cdata[blk].adjust(next_elim);
          } } /* task/abort */
 
@@ -1483,8 +1497,11 @@ private:
                  my_abort = abort;
                  if (!my_abort) {
                   // #pragma omp cancellation point taskgroup
-                  if (debug) printf("UpdateT(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
-                                             ")\n", iblk, jblk, blk);
+#ifdef INTEGER_64
+                  if (debug) printf("UpdateT(%" PRId64 ",%" PRId64 ",%" PRId64 ")\n", iblk, jblk, blk);
+#else
+                  if (debug) printf("UpdateT(%" PRId32 ",%" PRId32 ",%" PRId32 ")\n", iblk, jblk, blk);
+#endif
                   int thread_num = omp_get_thread_num();
                   BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                   ipc_ isrc_row = (blk<=iblk) ? iblk : blk;
@@ -1515,8 +1532,11 @@ private:
                  my_abort = abort;
                  if (!my_abort) {
                    // #pragma omp cancellation point taskgroup
-                   if (debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_
-                                     ")\n", iblk, jblk, blk);
+#ifdef INTEGER_64
+                   if (debug) printf("UpdateN(%" PRId64 ",%" PRId64 ",%" PRId64 ")\n", iblk, jblk, blk);
+#else
+                   if (debug) printf("UpdateN(%" PRId32 ",%" PRId32 ",%" PRId32 ")\n", iblk, jblk, blk);
+#endif
                    int thread_num = omp_get_thread_num();
                    BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                    BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -1550,8 +1570,11 @@ private:
                   my_abort = abort;
                   if (!my_abort) {
                     // #pragma omp cancellation point taskgroup
-                    if (debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ 
-                                      ",%" d_ipc_ ")\n", iblk,jblk,blk);
+#ifdef INTEGER_64
+                    if (debug) printf("FormContrib(%" PRId64 ",%" PRId64 ",%" PRId64 ")\n", iblk, jblk, blk);
+#else
+                    if (debug) printf("FormContrib(%" PRId32 ",%" PRId32 ",%" PRId32 ")\n", iblk, jblk, blk);
+#endif
                     int thread_num = omp_get_thread_num();
                     BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                     BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -1567,7 +1590,7 @@ private:
       my_flag = flag;
       if (my_flag < 0) return my_flag; // Error
 
-      /*if(debug) {
+      /*if (debug) {
          printf("PostElim:\n");
          print_mat(mblk, nblk, m, n, blkdata, cdata, lda);
       }*/
@@ -1596,14 +1619,18 @@ private:
       /* Inner loop - iterate over block columns */
       try {
          for(ipc_ blk=from_blk; blk<nblk; blk++) {
-            /*if(debug) {
+            /*if (debug) {
                printf("Bcol %d:\n", blk);
                print_mat(mblk, nblk, m, n, blkdata, cdata, lda);
             }*/
 
             // Factor diagonal: depend on perm[blk*block_size] as we init npass
             {
-               if(debug) printf("Factor(%" d_ipc_ ")\n", blk);
+#ifdef INTEGER_64
+               if (debug) printf("Factor(%" PRId64 ")\n", blk);
+#else
+               if (debug) printf("Factor(%" PRId32 ")\n", blk);
+#endif
                BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                // Store a copy for recovery in case of a failed column
                dblk.backup(backup);
@@ -1618,7 +1645,11 @@ private:
 
             // Loop over off-diagonal blocks applying pivot
             for(ipc_ jblk=0; jblk<blk; jblk++) {
-               if(debug) printf("ApplyT(%" d_ipc_ ",%" d_ipc_ ")\n", blk, jblk);
+#ifdef INTEGER_64
+               if (debug) printf("ApplyT(%" PRId64 ",%" PRId64 ")\n", blk, jblk);
+#else
+               if (debug) printf("ApplyT(%" PRId32 ",%" PRId32 ")\n", blk, jblk);
+#endif
                BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                BlockSpec cblk(blk, jblk, m, n, cdata, a, lda, block_size);
                // Apply row permutation from factorization of dblk and in
@@ -1634,7 +1665,11 @@ private:
                cdata[blk].update_passed(blkpass);
             }
             for(ipc_ iblk=blk+1; iblk<mblk; iblk++) {
-               if(debug) printf("ApplyN(%" d_ipc_ ",%" d_ipc_ ")\n", iblk, blk);
+#ifdef INTEGER_64
+               if (debug) printf("ApplyN(%" PRId64 ",%" PRId64 ")\n", iblk, blk);
+#else
+               if (debug) printf("ApplyN(%" PRId32 ",%" PRId32 ")\n", iblk, blk);
+#endif
                BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                BlockSpec rblk(iblk, blk, m, n, cdata, a, lda, block_size);
                // Apply column permutation from factorization of dblk and in
@@ -1651,14 +1686,21 @@ private:
 
             // Adjust column once all applys have finished and we know final
             // number of passed columns.
-            if(debug) printf("Adjust(%" d_ipc_ ")\n", blk);
+#ifdef INTEGER_64
+            if (debug) printf("Adjust(%" PRId64 ")\n", blk);
+#else
+            if (debug) printf("Adjust(%" PRId32 ")\n", blk);
+#endif
             cdata[blk].adjust(next_elim);
 
             // Update uneliminated columns
             for(ipc_ jblk=0; jblk<blk; jblk++) {
                for(ipc_ iblk=jblk; iblk<mblk; iblk++) {
-                  if(debug) printf("UpdateT(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
-                                   ")\n", iblk, jblk, blk);
+#ifdef INTEGER_64
+                  if (debug) printf("UpdateT(%" PRId64 ",%" PRId64 ",%" PRId64 ")\n", iblk, jblk, blk);
+#else
+                  if (debug) printf("UpdateT(%" PRId32 ",%" PRId32 ",%" PRId32 ")\n", iblk, jblk, blk);
+#endif
                   int thread_num = omp_get_thread_num();
                   BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                   ipc_ isrc_row = (blk<=iblk) ? iblk : blk;
@@ -1675,8 +1717,11 @@ private:
             }
             for(ipc_ jblk=blk; jblk<nblk; jblk++) {
                for(ipc_ iblk=jblk; iblk<mblk; iblk++) {
-                  if(debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
-                                   ")\n", iblk, jblk, blk);
+#ifdef INTEGER_64
+                  if (debug) printf("UpdateN(%" PRId64 ",%" PRId64 ",%" PRId64 ")\n", iblk, jblk, blk);
+#else
+                  if (debug) printf("UpdateN(%" PRId32 ",%" PRId32 ",%" PRId32 ")\n", iblk, jblk, blk);
+#endif
                   int thread_num = omp_get_thread_num();
                   BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                   BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -1699,8 +1744,11 @@ private:
                   T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd +
                                     (iblk-nblk)*block_size];
                   {
-                     if(debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ 
-                                       ",%" d_ipc_ ")\n", iblk, jblk, blk);
+#ifdef INTEGER_64
+                     if (debug) printf("FormContrib(%" PRId64 ",%" PRId64 ",%" PRId64 ")\n", iblk, jblk, blk);
+#else
+                     if (debug) printf("FormContrib(%" PRId32 ",%" PRId32 ",%" PRId32 ")\n", iblk, jblk, blk);
+#endif
                      int thread_num = omp_get_thread_num();
                      BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda,block_size);
                      BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -1718,7 +1766,7 @@ private:
          return Flag::ERROR_SINGULAR;
       }
 
-      /*if(debug) {
+      /*if (debug) {
          printf("PostElim:\n");
          print_mat(mblk, nblk, m, n, blkdata, cdata, lda);
       }*/
@@ -1752,7 +1800,7 @@ private:
       abort = false;
       #pragma omp taskgroup
       for(ipc_ blk = 0; blk < nblk; blk++) {
-         /*if(debug) {
+         /*if (debug) {
             printf("Bcol %d:\n", blk);
             print_mat(mblk, nblk, m, n, blkdata, cdata, lda);
          }*/
@@ -1770,7 +1818,11 @@ private:
            if (!my_abort) {
              try {
                // #pragma omp cancellation point taskgroup
-               if(debug) printf("Factor(%" d_ipc_ ")\n", blk);
+#ifdef INTEGER_64
+               if (debug) printf("Factor(%" PRId64 ")\n", blk);
+#else
+               if (debug) printf("Factor(%" PRId32 ")\n", blk);
+#endif
                BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                // On first access to this block, store copy in case of failure
                if (blk == 0) dblk.backup(backup);
@@ -1828,8 +1880,11 @@ private:
               my_abort = abort;
               if (!my_abort) {
                 // #pragma omp cancellation point taskgroup
-                if (debug) printf("ApplyT(%" d_ipc_ ",%" d_ipc_ ")\n", 
-                                  blk, jblk);
+#ifdef INTEGER_64
+                if (debug) printf("ApplyT(%" PRId64 ",%" PRId64 ")\n", blk, jblk);
+#else
+                if (debug) printf("ApplyT(%" PRId32 ",%" PRId32 ")\n", blk, jblk);
+#endif
                 int thread_num = omp_get_thread_num();
                 BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                 BlockSpec cblk(blk, jblk, m, n, cdata, a, lda, block_size);
@@ -1853,8 +1908,11 @@ private:
               my_abort = abort;
               if (!my_abort) {
                 // #pragma omp cancellation point taskgroup
-                if (debug) printf("ApplyN(%" d_ipc_ ",%" d_ipc_ ")\n", 
-                                  iblk, blk);
+#ifdef INTEGER_64
+                if (debug) printf("ApplyN(%" PRId64 ",%" PRId64 ")\n", iblk, blk);
+#else
+                if (debug) printf("ApplyN(%" PRId32 ",%" PRId32 ")\n", iblk, blk);
+#endif
                 int thread_num = omp_get_thread_num();
                 BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                 BlockSpec rblk(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -1897,8 +1955,11 @@ private:
                  my_abort = abort;
                  if (!my_abort) {
                    // #pragma omp cancellation point taskgroup
-                   if (debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_
-                                     ")\n", iblk, jblk, blk);
+#ifdef INTEGER_64
+                   if (debug) printf("UpdateN(%" PRId64 ",%" PRId64 ",%" PRId64 ")\n", iblk, jblk, blk);
+#else
+                   if (debug) printf("UpdateN(%" PRId32 ",%" PRId32 ",%" PRId32 ")\n", iblk, jblk, blk);
+#endif
                    int thread_num = omp_get_thread_num();
                    BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                    BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -1932,8 +1993,11 @@ private:
                  my_abort = abort;
                  if (!my_abort) {
                    // #pragma omp cancellation point taskgroup
-                   if (debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ 
-                                     ",%" d_ipc_ ")\n", iblk, jblk,blk);
+#ifdef INTEGER_64
+                   if (debug) printf("FormContrib(%" PRId64 ",%" PRId64 ",%" PRId64 ")\n", iblk, jblk, blk);
+#else
+                   if (debug) printf("FormContrib(%" PRId32 ",%" PRId32 ",%" PRId32 ")\n", iblk, jblk, blk);
+#endif
                    int thread_num = omp_get_thread_num();
                    BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                    BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -1948,7 +2012,7 @@ private:
          }
       } // taskgroup and for
 
-      /*if(debug) {
+      /*if (debug) {
          printf("PostElim:\n");
          print_mat(mblk, nblk, m, n, blkdata, cdata, lda);
       }*/
@@ -1979,14 +2043,18 @@ private:
 
       /* Inner loop - iterate over block columns */
       for(ipc_ blk=0; blk<nblk; blk++) {
-         /*if(debug) {
+         /*if (debug) {
             printf("Bcol %d:\n", blk);
             print_mat(mblk, nblk, m, n, blkdata, cdata, lda);
          }*/
 
          // Factor diagonal
          try {
-            if(debug) printf("Factor(%" d_ipc_ ")\n", blk);
+#ifdef INTEGER_64
+            if (debug) printf("Factor(%" PRId64 ")\n", blk);
+#else
+            if (debug) printf("Factor(%" PRId32 ")\n", blk);
+#endif
             BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
             // On first access to this block, store copy in case of failure
             if(blk==0) dblk.backup(backup);
@@ -2012,7 +2080,11 @@ private:
 
          // Loop over off-diagonal blocks applying pivot
          for(ipc_ jblk=0; jblk<blk; jblk++) {
-            if(debug) printf("ApplyT(%" d_ipc_ ",%" d_ipc_ ")\n", blk, jblk);
+#ifdef INTEGER_64
+            if (debug) printf("ApplyT(%" PRId64 ",%" PRId64 ")\n", blk, jblk);
+#else
+            if (debug) printf("ApplyT(%" PRId32 ",%" PRId32 ")\n", blk, jblk);
+#endif
             int thread_num = omp_get_thread_num();
             BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
             BlockSpec cblk(blk, jblk, m, n, cdata, a, lda, block_size);
@@ -2024,7 +2096,11 @@ private:
             // assuming everything has passed...
          }
          for(ipc_ iblk=blk+1; iblk<mblk; iblk++) {
-            if(debug) printf("ApplyN(%" d_ipc_ ",%" d_ipc_ ")\n", iblk, blk);
+#ifdef INTEGER_64
+            if (debug) printf("ApplyN(%" PRId64 ",%" PRId64 ")\n", iblk, blk);
+#else
+            if (debug) printf("ApplyN(%" PRId32 ",%" PRId32 ")\n", iblk, blk);
+#endif
             int thread_num = omp_get_thread_num();
             BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
             BlockSpec rblk(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -2047,8 +2123,11 @@ private:
          ipc_ jsa = (upd) ? blk : blk + 1;
          for(ipc_ jblk=jsa; jblk<nblk; jblk++) {
             for(ipc_ iblk=jblk; iblk<mblk; iblk++) {
-               if(debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
-                                ")\n", iblk, jblk, blk);
+#ifdef INTEGER_64
+               if (debug) printf("UpdateN(%" PRId64 ",%" PRId64 ",%" PRId64 ")\n", iblk, jblk, blk);
+#else
+               if (debug) printf("UpdateN(%" PRId32 ",%" PRId32 ",%" PRId32 ")\n", iblk, jblk, blk);
+#endif
                int thread_num = omp_get_thread_num();
                BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -2070,8 +2149,11 @@ private:
             for(ipc_ iblk=jblk; iblk<mblk; ++iblk) {
             T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd +
                               (iblk-nblk)*block_size];
-               if(debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
-                                ")\n", iblk, jblk, blk);
+#ifdef INTEGER_64
+               if (debug) printf("FormContrib(%" PRId64 ",%" PRId64 ",%" PRId64 ")\n", iblk, jblk, blk);
+#else
+               if (debug) printf("FormContrib(%" PRId32 ",%" PRId32 ",%" PRId32 ")\n", iblk, jblk, blk);
+#endif
                int thread_num = omp_get_thread_num();
                BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -2228,9 +2310,17 @@ private:
                   std::vector<bool> const& eliminated, const T *a, ipc_ lda) {
       for(ipc_ row=0; row<m; row++) {
          if(row < n)
-            printf("%" d_ipc_ "%s:", perm[row], eliminated[row]?"X":" ");
+#ifdef INTEGER_64
+            printf("%" PRId64 "%s:", perm[row], eliminated[row]?"X":" ");
+#else
+            printf("%" PRId32 "%s:", perm[row], eliminated[row]?"X":" ");
+#endif
          else
-            printf("%" d_ipc_ "%s:", row, "U");
+#ifdef INTEGER_64
+            printf("%" PRId64 "%s:", row, "U");
+#else
+            printf("%" PRId32 "%s:", row, "U");
+#endif
          for(ipc_ col=0; col<std::min(n,row+1); col++) {
 #ifdef REAL_128
            char buf1[128];
@@ -2455,7 +2545,7 @@ public:
             arect[j*lda+i] = failed_rect[j*(m-n)+i];
       }
 
-      if(debug) {
+      if (debug) {
          std::vector<bool> eliminated(n);
          for(ipc_ i=0; i<num_elim; i++) eliminated[i] = true;
          for(ipc_ i=num_elim; i<n; i++) eliminated[i] = false;

@@ -547,7 +547,11 @@ public:
 
 	void print() const {
 		for(ipc_ node=0; node<symb_.nnodes_; node++) {
-			printf("== Node %" d_ipc_ " ==\n", node);
+#ifdef INTEGER_64
+         printf("== Node %" PRId64 " ==\n", node);
+#else
+         printf("== Node %" PRId32 " ==\n", node);
+#endif
 			ipc_ m = symb_[node].nrow + nodes_[node].ndelay_in;
 			ipc_ n = symb_[node].ncol + nodes_[node].ndelay_in;
          ipc_ ldl = align_lda<T>(m);
@@ -555,9 +559,17 @@ public:
 			ipc_ const* rlist = &symb_[node].rlist[ symb_[node].ncol ];
 			for(ipc_ i=0; i<m; ++i) {
 				if (i<n) {
-               printf("%" d_ipc_ "%s:", nodes_[node].perm[i], (i<nelim) ? "X" : "D");
+#ifdef INTEGER_64
+               printf("%" PRId64 "%s:", nodes_[node].perm[i], (i<nelim) ? "X" : "D");
+#else
+               printf("%" PRId32 "%s:", nodes_[node].perm[i], (i<nelim) ? "X" : "D");
+#endif
 				} else {
-               printf("%" d_ipc_ ":", rlist[i-n]);
+#ifdef INTEGER_64
+               printf("%" PRId64 ":", rlist[i-n]);
+#else
+               printf("%" PRId32 ":", rlist[i-n]);
+#endif
             }
 #ifdef REAL_128
 				for(ipc_ j=0; j<n; j++) {
