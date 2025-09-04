@@ -36,7 +36,6 @@ rm -r deps
 cp ${host_prefix}/bin/ninja /usr/bin/ninja
 
 cd ${WORKSPACE}/srcdir/GALAHAD
-rm version
 
 if [[ "${target}" == *mingw* ]]; then
   HWLOC="hwloc-15"
@@ -58,9 +57,9 @@ meson setup builddir_int32 --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
                            -Ddouble=true \
                            -Dquadruple=$QUADRUPLE \
                            -Dint64=false \
-                           -Dlibhsl=hsl_subset \
                            -Dtests=false \
                            -Dbinaries=true \
+                           -Dlibhsl=hsl_subset \
                            -Dlibhsl_modules=$prefix/modules \
                            -Dlibcutest_modules=$prefix/modules
 
@@ -81,9 +80,9 @@ meson setup builddir_int64 --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
                            -Ddouble=true \
                            -Dquadruple=$QUADRUPLE \
                            -Dint64=true \
-                           -Dlibhsl=hsl_subset_64 \
                            -Dtests=false \
                            -Dbinaries=false \
+                           -Dlibhsl=hsl_subset_64 \
                            -Dlibhsl_modules=$prefix/modules \
                            -Dlibcutest_modules=$prefix/modules
 
@@ -113,7 +112,7 @@ dependencies = [
     Dependency(PackageSpec(name="OpenBLAS32_jll", uuid="656ef2d0-ae68-5445-9ca0-591084a874a2")),
     Dependency(PackageSpec(name="OpenBLAS_jll", uuid="4536629a-c528-5b80-bd46-f80d51c5b363")),
     Dependency(PackageSpec(name="Hwloc_jll", uuid="e33a78d0-f292-5ffc-b300-72abe9b543c8")),
-    # Dependency(PackageSpec(name="MUMPS_seq_jll", uuid="d7ed1dd3-d0ae-5e8e-bfb4-87a502085b8d"), compat="=5.4.1"),
+    Dependency(PackageSpec(name="MUMPS_seq_jll", uuid="d7ed1dd3-d0ae-5e8e-bfb4-87a502085b8d"), compat="=5.4.1"),
     Dependency(PackageSpec(name="HSL_jll", uuid="017b0a0e-03f4-516a-9b91-836bbd1904dd")),
     Dependency(PackageSpec(name="CUTEst_jll", uuid="bb5f6f25-f23d-57fd-8f90-3ef7bad1d825"), compat="2.5.6"),
 ]
