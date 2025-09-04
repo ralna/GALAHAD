@@ -41,11 +41,19 @@ typedef int64_t longc_;  // long integers
 #ifdef INTEGER_64
 typedef int64_t ipc_;  // integer type
 typedef uint64_t uipc_;
+#ifdef __cplusplus
+#define d_ipc_ "lld"
+#else
 #define d_ipc_ PRId64
+#endif
 #else
 typedef int32_t ipc_;  // integer type
 typedef uint32_t uipc_;
+#ifdef __cplusplus
+#define d_ipc_ "d"
+#else
 #define d_ipc_ PRId32
+#endif
 #endif
 
 // end include guard
