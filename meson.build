@@ -705,9 +705,9 @@ if build_binaries
     foreach binary: galahad_binaries_single
       binname = binary[0]
       binfile = binary[1]
-      executable(binname+'_single', binfile,
+      pp_binfile = gen_single.process(binfile)
+      executable(binname+'_single', pp_binfile,
                  dependencies : libhsl,
-                 fortran_args : pp_flag + extra_args_single,
                  link_with : libgalahad_single,
                  link_language : 'fortran',
                  link_args : lstdcpp,
@@ -720,8 +720,8 @@ if build_binaries
     foreach binary: galahad_multi_binaries
       binname = binary[0]
       binfile = binary[1]
-      executable(binname, binfile,
-                 fortran_args : pp_flag + extra_args_double,
+      pp_binfile = gen_double.process(binfile)
+      executable(binname, pp_binfile,
                  link_with : libgalahad_double,
                  link_language : 'fortran',
                  include_directories: libgalahad_include,
@@ -731,9 +731,9 @@ if build_binaries
     foreach binary: galahad_binaries_double
       binname = binary[0]
       binfile = binary[1]
-      executable(binname+'_double', binfile,
+      pp_binfile = gen_double.process(binfile)
+      executable(binname+'_double', pp_binfile,
                  dependencies : libhsl,
-                 fortran_args : pp_flag + extra_args_double,
                  link_with : libgalahad_double,
                  link_language : 'fortran',
                  link_args : lstdcpp,
@@ -746,9 +746,9 @@ if build_binaries
     foreach binary: galahad_binaries_quadruple
       binname = binary[0]
       binfile = binary[1]
-      executable(binname+'_quadruple', binfile,
+      pp_binfile = gen_quadruple.process(binfile)
+      executable(binname+'_quadruple', pp_binfile,
                  dependencies : libhsl,
-                 fortran_args : pp_flag + extra_args_quadruple,
                  link_with : libgalahad_quadruple,
                  link_language : 'fortran',
                  link_args : lstdcpp,
@@ -794,18 +794,20 @@ if build_tests
 
       if precision == 'single'
         deps_tests = libgalahad_single_deps
+        pp_file = gen_single.process(file)
       endif
       if precision == 'double'
         deps_tests = libgalahad_double_deps
+        pp_file = gen_double.process(file)
       endif
       if precision == 'quadruple'
         deps_tests = libgalahad_quadruple_deps
+        pp_file = gen_quadruple.process(file)
       endif
 
       if not (name == 'croti_single' or name == 'croti_quadruple')
         test(name,
-             executable(name, file,
-                        fortran_args : pp_flag + args_precision,
+             executable(name, pp_file,
                         link_with : libgalahad_precision,
                         dependencies : deps_tests,
                         link_language : 'fortran',
