@@ -1,2 +1,5 @@
- TRB: 5 iterations - optimal objective value = -7.5897E-01
- Optimal solution =  -3.7247E+00  0.0000E+00  0.0000E+00
+forrtl: severe (174): SIGSEGV, segmentation fault occurred
+Image              PC                Routine            Line        Source             
+libc.so.6          00000C0606E45330  Unknown               Unknown  Unknown
+run_trb            0000000000406098  Unknown               Unknown  Unknown
+libc.so.6          00000C0606E45330  Unknown               Unknown  Unknown

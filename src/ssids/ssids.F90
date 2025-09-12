@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 09:50 GMT
+! THIS VERSION: GALAHAD 5.4 - 2025-09-12 AT 08:50 GMT
 ! (consistent with SPRAL up to issue #250)
 
 #include "galahad_modules.h"
@@ -58,8 +58,7 @@
     PRIVATE
     PUBLIC :: SSIDS_analyse, SSIDS_analyse_coord, SSIDS_factor, SSIDS_solve,   &
               SSIDS_free, SSIDS_enquire_posdef, SSIDS_enquire_indef,           &
-              SSIDS_alter, SSIDS_akeep_type, SSIDS_fkeep_type,                 &
-              SSIDS_control_type, SSIDS_inform_type
+              SSIDS_alter, SSIDS_control_type, SSIDS_inform_type
 !----------------------
 !   P a r a m e t e r s
 !----------------------

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-09-12 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -7,7 +7,7 @@
  MODULE GALAHAD_SSIDS_precision
 !$ USE omp_lib
    USE GALAHAD_SYMBOLS
-   USE SPRAL_KINDS_precision, ONLY: ip_, ipc_, rp_, long_
+   USE GALAHAD_KINDS_precision, ONLY: ip_, ipc_, rp_, long_
    USE, INTRINSIC :: iso_c_binding
    IMPLICIT NONE
 
@@ -285,6 +285,7 @@
    INTEGER( KIND = ip_ ), optional, INTENT( IN ) :: job
 
    IF ( control%unit_error >= 0 .AND. control%print_level > 0 )                &
+     WRITE( control%unit_error,                                                &
          "( ' We regret that the SSIDS package that you have selected is', /,  &
   &         ' not available with GALAHAD for the compiler you have chosen.' )" )
    inform%flag = GALAHAD_error_unknown_solver

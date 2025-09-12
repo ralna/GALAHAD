@@ -77,8 +77,8 @@
      LOGICAL, PARAMETER :: debug_model_4 = .TRUE.
      LOGICAL, PARAMETER :: test_s = .TRUE.
 !    LOGICAL, PARAMETER :: test_s = .FALSE.
-!    LOGICAL, PARAMETER :: use_gltr = .FALSE.
-     LOGICAL, PARAMETER :: use_gltr = .TRUE.
+     LOGICAL, PARAMETER :: use_gltr = .FALSE.
+!    LOGICAL, PARAMETER :: use_gltr = .TRUE.
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
@@ -1606,10 +1606,12 @@
        GO TO 210
      CASE ( 310 ) ! Hessian-vector product
        GO TO 310
-     CASE ( 440 ) ! Hessian-vector product
-       GO TO 440
      CASE ( 410 ) ! sparse Hessian-vector product
        GO TO 410
+     CASE ( 425 ) ! Hessian-vector product
+       GO TO 425
+     CASE ( 440 ) ! Hessian-vector product
+       GO TO 440
      CASE ( 480 ) ! sparse Hessian-vector product
        GO TO 480
      CASE ( 500 ) ! sparse Hessian-vector product
@@ -3701,21 +3703,56 @@
          IF ( data%printd ) THEN
            WRITE( data%out, "( ' trs model value =', ES12.4 )" )               &
              inform%TRS_inform%obj
+
+!  compute the step, p, to the Cauchy point
+
            data%P = data%X_trial - data%X_current
-           data%HP( : nlp%n ) = zero
-           CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,      &
-                            data%HP( : nlp%n ), data%P( : nlp%n ),             &
-                            got_h = data%got_h )
-           WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )        &
-             data%model, DOT_PRODUCT( data%P( : nlp%n ),                       &
-               nlp%G( : nlp%n ) + half * data%HP( : nlp%n ) )
+
+!  compute the product of the Hessian H and the step p
+
+           IF ( data%control%hessian_available ) THEN
+             CALL mop_Ax( one, nlp%H,  data%HP( : nlp%n ), zero,               &
+                          data%P( : nlp%n ), data%out, data%control%error,     &
+                          0_ip_, symmetric = .TRUE. )
+
+!  if the Hessian is unavailable, obtain a matrix-free product
+
+           ELSE
+             IF ( data%reverse_hprod ) THEN
+               data%U( : nlp%n ) = zero
+               data%branch = 425 ; inform%status = 5 ; RETURN
+             ELSE
+               data%HP( : nlp%n ) = zero
+               CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,  &
+                                data%HP( : nlp%n ), data%P( : nlp%n ),         &
+                                got_h = data%got_h )
+               data%got_h = .TRUE.
+             END IF
+           END IF
+         END IF
+
+!  return from reverse communication to obtain the Hessian-vector product
+
+  425    CONTINUE
+         IF ( data%printd ) THEN
+           IF ( .NOT. data%control%hessian_available .AND.                     &
+                 data%reverse_hprod ) THEN
+             WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )      &
+               data%model, DOT_PRODUCT( data%P( : nlp%n ),                     &
+                 nlp%G( : nlp%n ) + half * data%U( : nlp%n ) )
+           ELSE
+             WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )      &
+               data%model, DOT_PRODUCT( data%P( : nlp%n ),                     &
+                 nlp%G( : nlp%n ) + half * data%HP( : nlp%n ) )
+           END IF
          END IF
 
 !  - - - - - - - - - - - - direct method - - - - - - - - - - - - - - - -
 
 !  minimize the reduced quadratic model using a direct method (TRS)
 
-         IF ( data%control%subproblem_direct ) THEN
+         IF ( .FALSE. ) THEN
+!        IF ( data%control%subproblem_direct ) THEN
 
 !  compute a radius for model reduction beyond the Cauchy point for which the
 !  feasible region for this model problem lies within the overall trust region
@@ -3732,9 +3769,9 @@
 !  record the gradient of the model at the Cauchy point in Hp
 
            data%HP( : nlp%n ) = data%G_current( : nlp%n )
-           CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,      &
-                            data%HP( : nlp%n ), data%P( : nlp%n ),             &
-                            got_h = data%got_h )
+           CALL mop_Ax( one, nlp%H,  data%HP( : nlp%n ), one,                  &
+                        data%P( : nlp%n ), data%out, data%control%error,       &
+                        0_ip_, symmetric = .TRUE. )
 
 !  build the reduced model, that is the model that only involves the n_sub
 !  variables that are free at the Cauchy point. Start by computing the
@@ -3916,12 +3953,17 @@
 
            IF ( data%printd ) THEN
              WRITE( data%out, "( ' trs model value =', ES12.4 )" )             &
-               inform%TRS_inform%obj
+             inform%TRS_inform%obj
+
+!  compute the step, p, to the trial point
+
              data%P = data%X_trial - data%X_current
-             data%HP( : nlp%n ) = zero
-             CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,    &
-                              data%HP( : nlp%n ), data%P( : nlp%n ),           &
-                              got_h = data%got_h )
+
+!  compute the product of the Hessian H and the step p
+
+             CALL mop_Ax( one, nlp%H,  data%HP( : nlp%n ), zero,             &
+                          data%P( : nlp%n ), data%out, data%control%error,   &
+                          0_ip_, symmetric = .TRUE. )
              WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )      &
                data%model, DOT_PRODUCT( data%P( : nlp%n ),                     &
                  nlp%G( : nlp%n ) + half * data%HP( : nlp%n ) )

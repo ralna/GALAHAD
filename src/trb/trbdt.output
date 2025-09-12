@@ -1,17 +1,9 @@
- C sparse matrix indexing
 
- tests options for all-in-one storage format
+Program received signal SIGSEGV: Segmentation fault - invalid memory reference.
 
-C:     5 iterations. Optimal objective value = -0.97 status = 0
-R:     5 iterations. Optimal objective value = -0.97 status = 0
-D:     5 iterations. Optimal objective value = -0.97 status = 0
-I:     1 iterations. Optimal objective value = 0.88 status = 0
-P:     6 iterations. Optimal objective value = -0.97 status = 0
-
- tests reverse-communication options
-
-C:     5 iterations. Optimal objective value = -0.97 status = 0
-R:     5 iterations. Optimal objective value = -0.97 status = 0
-D:     5 iterations. Optimal objective value = -0.97 status = 0
-I:     1 iterations. Optimal objective value = 0.88 status = 0
-P:     6 iterations. Optimal objective value = -0.97 status = 0
+Backtrace for this error:
+#0  0xbd8c1c23e59 in ???
+#1  0xbd8c1c22e75 in ???
+#2  0xbd8c184532f in ???
+	at ./signal/../sysdeps/unix/sysv/linux/x86_64/libc_sigaction.c:0
+#3  0x0 in ???
