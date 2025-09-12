@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-09-02 AT 10:00 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_initialize MA57_initialize
@@ -2826,9 +2826,9 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: i, ig, ic, is, j, lgfx, lhuval
+     INTEGER ( KIND = ip_ ) :: i, ig, ic, ic1, ir, ir2, is, j, lgfx, lhuval
      INTEGER ( KIND = ip_ ) :: ifixd, k, k1, k2, l, ifflag
-     INTEGER ( KIND = ip_ ) :: ipdgen, iddgen, istate, ir, nvar1, alloc_status
+     INTEGER ( KIND = ip_ ) :: ipdgen, iddgen, istate, nvar1, alloc_status
      REAL ( KIND = KIND( 1.0E0 ) ) :: tim
      REAL ( KIND = rp_ ) :: hmuinv, yiui, scaleg, epsmch, epslam, hdash, ctt
      REAL ( KIND = rp_ ) :: ftt, xi, gi, bli, bui, dltnrm, val
@@ -3252,10 +3252,10 @@
 
              IF ( S%print_header .OR. S%print_level == 2 ) THEN
                IF ( S%direct ) THEN
-                 WRITE( S%out, "( /, ' Iter g.ev fill-in    obj    ||c||',     &
+                 WRITE( S%out, "( /, ' Iter g.ev fill-in   obj     ||c||',     &
                 &  '   proj.g    rho    radius   step  free  time' )" )
                ELSE
-                 WRITE( S%out, "( /, ' Iter g.ev cg.it      obj   ||c|| ',     &
+                 WRITE( S%out, "( /, ' Iter g.ev cg.it     obj    ||c|| ',     &
                 &  '  proj.g    rho   radius   step   free  time' )" )
                END IF
              END IF
@@ -4081,10 +4081,10 @@
                IF ( S%out > 0 .AND.                                            &
                     ( S%print_level == 1 .OR. S%print_level == 2 ) ) THEN
                  IF ( S%direct ) THEN
-                   WRITE( S%out, "( /, ' Iter g.ev fill-in    obj    ||c||',   &
+                   WRITE( S%out, "( /, ' Iter g.ev fill-in   obj     ||c||',   &
                   &  '   proj.g    rho    radius   step  free  time' )" )
                  ELSE
-                   WRITE( S%out, "( /, ' Iter g.ev cg.it      obj   ||c|| ',   &
+                   WRITE( S%out, "( /, ' Iter g.ev cg.it     obj    ||c|| ',   &
                   &  '  proj.g    rho   radius   step   free  time' )" )
                  END IF
                END IF
@@ -6674,21 +6674,27 @@
          start_p = .FALSE.
 !        IF ( S%printt )THEN ; l = ng ; ELSE ; l = 2 ; END IF
          IF ( S%full_solution ) THEN
-           l = ng
+           ic1 = ng
+           ir2 = ng + 1
          ELSE
            j = 0
-           DO l = 1, ng
-             IF ( KNDOFG( l ) > 1 ) j = j + 1
+           DO ic1 = 1, ng
+             IF ( KNDOFG( ic1 ) > 1 ) j = j + 1
+             IF ( j == 2 ) EXIT
+           END DO
+           j = 0
+           DO ir2 = ng, 1, - 1
+             IF ( KNDOFG( ir2 ) > 1 ) j = j + 1
              IF ( j == 2 ) EXIT
            END DO
          END IF
          DO j = 1, 2
            IF ( j == 1 ) THEN
              ir = 1
-             ic = MIN( l, ng )
+             ic = ic1
            ELSE
-             IF ( ic < ng - l .AND. start_p ) WRITE( S%out, 2230 )
-             ir = MAX( ic + 1, ng - ic + 1 )
+             IF ( ic1 < ir2 .AND. start_p ) WRITE( S%out, 2230 )
+             ir = ir2
              ic = ng
            END IF
            DO ig = ir, ic

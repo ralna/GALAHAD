@@ -2353,6 +2353,7 @@ stop
 !  ---------------------------
 
  300   CONTINUE
+!      WRITE( 32, "( ( 5ES16.8 ) )" ) nlp%X( : nlp%n )
 
 !  compute the dual infeasibility
 

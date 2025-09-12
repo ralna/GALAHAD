@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-09-02 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -408,6 +408,7 @@
        REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
        REAL ( KIND = rp_ ) :: mu, max_mu, stop_p, stop_d, stop_c, f_old
        REAL ( KIND = rp_ ) :: old_primal_infeasibility, rnorm, rnorm_old
+       REAL ( KIND = rp_ ) :: f_0, c_0, clock_0
 
        LOGICAL :: printi, printt, printm, printw, printd
        LOGICAL :: print_iteration_header, print_1st_header
@@ -416,7 +417,7 @@
        LOGICAL :: reverse_hprod, reverse_prec
        LOGICAL :: constrained, map_h_to_jtj, no_bounds, header, update_vw
        LOGICAL :: eval_fc, eval_gj, eval_hl, initialize_munu, update_munu
-       LOGICAL :: use_advanced, try_sqp, use_sqp
+       LOGICAL :: use_advanced, try_sqp, use_sqp, got_fc_0
 
        CHARACTER ( LEN = 1 ) :: negcur, bndry, perturb, hard, adv
 
@@ -1322,7 +1323,7 @@
 
      INTEGER ( KIND = ip_ ) :: i, ii, ic, ir, j, k, l
      REAL ( KIND = rp_ ) :: penalty_term, arg, exp_arg, vcosh, wcosh
-     REAL ( KIND = rp_ ) :: primal, dual, primal_infeasibility
+     REAL ( KIND = rp_ ) :: primal, dual, primal_infeasibility, mu_init
      REAL ( KIND = rp_ ) :: dual_infeasibility, complementary_slackness
      LOGICAL :: alive, negval
      CHARACTER ( LEN = 80 ) :: array_name
@@ -1694,8 +1695,8 @@
 !  make sure that the supplied sqp start control is no larger than the
 !  advanced start one
 
-     data%control%try_sqp_start = MIN( data%control%try_sqp_start,                     &
-                                   data%control%try_advanced_start )
+     data%control%try_sqp_start = MIN( data%control%try_sqp_start,             &
+                                       data%control%try_advanced_start )
 
 !  record the number of nonzeos in the upper triangle of the Hessian
 
@@ -1796,7 +1797,7 @@
        data%control%BSC_control%new_a = 3
        data%control%BSC_control%extra_space_s = 0
        data%control%BSC_control%s_also_by_column = data%map_h_to_jtj
-       CALL BSC_form( nlp%n, nlp%m, data%JT, data%expo%H, data%BSC_data,        &
+       CALL BSC_form( nlp%n, nlp%m, data%JT, data%expo%H, data%BSC_data,       &
                       data%control%BSC_control, inform%BSC_inform )
        data%control%BSC_control%new_a = 1
        data%jtdzj_ne = data%expo%H%ne
@@ -2176,6 +2177,7 @@ stop
 
     data%expo%X( : nlp%n ) = nlp%X( : nlp%n )
     inform%iter = 0
+    data%got_fc_0 = .FALSE.
 
 !  compute stopping tolerances
 
@@ -2263,7 +2265,7 @@ stop
        inform%tru_inform%iter = 0
        data%control%tru_control%maxit = MIN( control%tru_control%maxit,        &
          data%control%max_eval - inform%fc_eval )
-
+       data%control%tru_control%error = 0
        IF ( data%control%stop_subproblem_rel > zero .AND.                      &
             data%control%stop_subproblem_rel < one )                           &
          data%control%tru_control%stop_g_relative                              &
@@ -2368,6 +2370,15 @@ stop
                                          control%infinity ),                   &
                       EXPO_infeasibility( nlp%m, nlp%C, nlp%C_l, nlp%C_u,      &
                                          control%infinity ) )
+
+!  save the original objective and infeasibility values for printing later
+
+             IF ( .NOT. data%got_fc_0 .AND. data%printi ) THEN
+               data%f_0 = inform%obj ; data%c_0 = inform%primal_infeasibility
+               CALL CLOCK_time( data%clock_0 )
+               data%clock_0 = data%clock_0 - data%clock_start
+               data%got_fc_0 = .TRUE.
+             END IF
            ELSE
              data%eval_fc = .TRUE.
            END IF
@@ -2382,19 +2393,21 @@ stop
 !  initialize the penalty parameters to equilibrate the constraints
 
              IF ( control%initial_mu <= zero ) THEN
+               mu_init = 1.0_rp_
+!              mu_init = 0.5_rp_
 
 !  for the simple bound constraints
 
                DO j = 1, nlp%n
                  IF ( nlp%X_l( j ) >= - control%infinity ) THEN
                    data%NU_l( j )                                              &
-                     = MAX( one, ( nlp%X_l( j ) - data%expo%X( j ) ) )
+                     = mu_init * MAX( one, ( nlp%X_l( j ) - data%expo%X( j ) ) )
                  ELSE
                    data%NU_l( j ) = zero
                  END IF
                  IF ( nlp%X_u( j ) <= control%infinity ) THEN
                    data%NU_u( j )                                              &
-                     = MAX( one, ( nlp%X_u( j ) - data%expo%X( j ) ) )
+                     = mu_init * MAX( one, ( nlp%X_u( j ) - data%expo%X( j ) ) )
                  ELSE
                    data%NU_u( j ) = zero
                  END IF
@@ -2404,12 +2417,14 @@ stop
 
                DO i = 1, nlp%m
                  IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-                   data%MU_l( i ) = MAX( one, ABS( nlp%C_l( i ) - nlp%C( i ) ) )
+                   data%MU_l( i )                                              &
+                     = mu_init * MAX( one, ABS( nlp%C_l( i ) - nlp%C( i ) ) )
                  ELSE
                    data%MU_l( i ) = zero
                  END IF
                  IF ( nlp%C_u( i ) <= control%infinity ) THEN
-                   data%MU_u( i ) = MAX( one, ABS( nlp%C_u( i ) - nlp%C( i ) ) )
+                   data%MU_u( i )                                              &
+                     = mu_init * MAX( one, ABS( nlp%C_u( i ) - nlp%C( i ) ) )
                  ELSE
                    data%MU_u( i ) = zero
                  END IF
@@ -2509,7 +2524,7 @@ stop
                END IF
                vcosh = data%V_l( j ) * COSH( arg )
                data%Z_l( j ) = data%V_l( j ) * SINH( arg )
-!data%Z_u( j ) = data%V_l( j ) * EXP( arg )
+!              data%Z_u( j ) = data%V_l( j ) * EXP( arg )
                nlp%Z( j ) = data%Z_l( j )
                data%Dz( j ) = vcosh / data%NU_l( j )
                penalty_term = penalty_term + vcosh * data%NU_l( j )
@@ -2563,7 +2578,7 @@ stop
                END IF
                wcosh = data%W_l( i ) * COSH( arg )
                data%Y_l( i ) = data%W_l( i ) * SINH( arg )
-!data%Y_u( i ) = data%W_l( i ) * EXP( arg )
+!              data%Y_u( i ) = data%W_l( i ) * EXP( arg )
                nlp%Y( i ) = data%Y_l( i )
                data%Dy( i ) = wcosh / data%MU_l( i )
                penalty_term = penalty_term + wcosh * data%MU_l( i )
@@ -2816,12 +2831,16 @@ stop
 
          CALL CLOCK_time( data%clock_now )
          data%clock_now = data%clock_now - data%clock_start
-         IF ( data%printi ) WRITE( data%out,                                   &
-           "( A, I6, 1X, ES16.8, 4ES8.1, 2I6, F9.2 )" )                        &
+         IF ( data%printi ) THEN
+           IF ( inform%iter == 1 ) WRITE( data%out, "( A, I6, 1X, ES16.8,      &
+            &  ES8.1, 3( '    -   ' ), 2( '     -'), F9.2 )" )                 &
+             prefix, 0, data%f_0, data%c_0, data%clock_0
+           WRITE( data%out, "( A, I6, 1X, ES16.8, 4ES8.1, 2I6, F9.2 )" )       &
              prefix, inform%iter, inform%obj, inform%primal_infeasibility,     &
              inform%dual_infeasibility, inform%complementary_slackness,        &
              data%max_mu, inform%tru_inform%iter, inform%tru_inform%status,    &
              data%clock_now
+         END IF
 
          IF ( data%printm ) WRITE( data%out,                                   &
            "( A, ' objective value      = ', ES22.14, /,                       &
@@ -4025,13 +4044,13 @@ stop
 
 !  Non-executable statements
 
- 2000 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
- 2010 FORMAT( A, '  iter   f              pr-feas du-feas cmp-slk ',           &
+ 2000 FORMAT( /, A, ' Problem: ', A, ' n = ', I0 )
+ 2010 FORMAT( A, '  iter     objective    pr-feas du-feas cmp-slk ',           &
               ' max mu inner  stop cpu time' )
- 2200 FORMAT( /, A, ' # function evaluations  = ', I0,                         &
-              /, A, ' # gradient evaluations  = ', I0,                         &
-              /, A, ' # Hessian evaluations   = ', I0,                         &
-              /, A, ' # major iterations      = ', I0,                         &
+ 2200 FORMAT( /, A, ' # function evaluations = ', I0,                          &
+              /, A, ' # gradient evaluations = ', I0,                          &
+              /, A, ' # Hessian evaluations  = ', I0,                          &
+              /, A, ' # major iterations     = ', I0,                          &
              //, A, ' Terminal objective value =', ES22.14,                    &
               /, A, ' Terminal gradient norm   =', ES12.4 )
  2210 FORMAT( /, A, ' name             X_l        X         X_u         G ' )

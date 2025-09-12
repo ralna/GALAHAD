@@ -624,9 +624,9 @@
 !   f        the value of the quadratic function at the current point.
 !            Need not be set on entry. On exit it will contain the value at
 !            the best point found
-!   X        the vector of unknowns. Need not be set on entry.
+!   X        the vector of unknowns. Need not be set on initial entry.
 !            On exit, the best value found so far
-!   R        the residual vector H x + c. On entry this must contain c
+!   R        the residual vector H x + c. On initial entry, this must contain c
 !   VECTOR   see inform%status = 2 and 3
 !   data     private internal data
 !   control  a structure containing control information. See GLTR_initialize
@@ -636,7 +636,7 @@
 !              been reduced since the last entry. Other values are
 !               2 on exit => the inverse of M must be applied to
 !                 VECTOR with the result returned in VECTOR and the subroutine
-!                 re-entered. This will only happen if unitm is .FALSE.
+!                 re-entered. This will only happen if control%unitm is .FALSE.
 !               3 on exit => the product H * VECTOR must be formed, with
 !                 the result returned in VECTOR and the subroutine re-entered
 !               4 The iteration is to be restarted with a smaller radius but

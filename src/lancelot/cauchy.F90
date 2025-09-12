@@ -321,8 +321,10 @@
      DO j = 1, S%nbreak
        i = IVAR( j )
        IF ( P( i ) > epsmch ) THEN
+!        write(6, "( 'upper ', 3ES12.4 )" ) BND( i, 2 ),  X0( i ), P( i )
          t = ( BND( i, 2 ) - X0( i ) ) / P( i )
        ELSE
+!        write(6, "( 'lower ', 3ES12.4 )" ) BND( i, 1 ),  X0( i ), P( i )
          t = ( BND( i, 1 ) - X0( i ) ) / P( i )
        END IF
        BREAKP( j ) = t
@@ -331,10 +333,12 @@
 !  Order the breakpoints in increasing size using a heapsort. Build the heap
 
      CALL SORT_heapsort_build( S%nbreak, BREAKP, insort, ix = IVAR )
+!    write(6,*) BREAKP( : S%nbreak )
 
 !  Return to the main routine to evaluate Q = B * P
 
      jumpto = 2 ; nvar1 = 1 ; nvar2 = nfree
+!write(6,"( ' return 2 from cauchy: nvar1, nvar2 =', 2( 1X, I0 ))") nvar1, nvar2
      RETURN
 
 !  Calculate the function value ( QXT ), first derivative ( GXT ) and
@@ -371,9 +375,9 @@
 
      S%tk = S%tbreak
 
-!  Find the next breakpoint ( end of the piece )
+!  Find the next breakpoint (end of the piece)
 
-     S%tbreak = BREAKP(  1  )
+     S%tbreak = BREAKP( 1 )
      CALL SORT_heapsort_smallest( S%nbreak, BREAKP, insort, ix = IVAR )
 
 !  Compute the length of the current piece
@@ -431,7 +435,7 @@
        END IF
      END IF
 
-!  If the breakpoint occurs on the spherical boundary, exit.
+!  If the breakpoint occurs on the spherical boundary, exit
 
      IF ( boundx ) THEN
        IF ( tbndsq <= S%tcauch ) THEN
@@ -442,7 +446,7 @@
        END IF
      END IF
 
-!  If the Cauchy point occurs at tmax, exit.
+!  If the Cauchy point occurs at tmax, exit
 
      IF ( tmax < S%tcauch ) THEN
        S%tcauch = tmax
@@ -461,7 +465,7 @@
 
      feasep = S%tbreak + S%epstl2
 
-!  Move the appropriate variable( s ) to their bound( s )
+!  Move the appropriate variable(s) to their bound(s)
 
  220 CONTINUE
      ibreak = IVAR( S%nbreak )
@@ -510,6 +514,7 @@
 !  Return to the main routine to evaluate Q = B * P
 
      jumpto = 3 ; nvar1 = S%nbreak + 1
+!write(6,"( ' return 3 from cauchy: nvar1, nvar2 = ', I0, 1X, I0)") nvar1, nvar2
      RETURN
 
 !  Update the first and second derivatives of the univariate function
@@ -590,6 +595,7 @@
 
      IF ( S%recomp .OR. S%prnter ) THEN
        jumpto = 4 ; nvar1 = 1
+!write(6,"( ' return 4 from cauchy: nvar1, nvar2 = ', I0, 1X, I0)") nvar1, nvar2
        RETURN
      END IF
 
@@ -653,30 +659,32 @@
 !  Set return conditions
 
      jumpto = 0 ; nvar1 = 1 ; nvar2 = nfree
+!write(6,"( ' return 0 from cauchy: nvar1, nvar2 = ', I0, 1X, I0)") nvar1, nvar2
 
      RETURN
 
 !  Non-executable statements
 
  2010  FORMAT( / ' ------------ CAUCHY_get_exact_gcp entered -------------' )
- 2020  FORMAT(   ' Variable ', I4, ' is fixed, step = ', ES12.4 )
- 2030  FORMAT( /, ' Piece', I5, ': f, G & H at start point', 4ES11.3 )
- 2040  FORMAT( /, ' Next break point = ', ES12.4,                              &
-           /, ' Maximum step     = ', ES12.4 )
- 2050  FORMAT(    ' Stationary point = ', ES12.4 )
+ 2020  FORMAT(   ' Variable ', I0, ' is fixed, step =', ES12.4 )
+ 2030  FORMAT( /, ' Piece ', I0, ': f, G & H at start point', 4ES11.3 )
+ 2040  FORMAT( /, ' Next break point =', ES12.4,                               &
+               /, ' Maximum step     =', ES12.4 )
+ 2050  FORMAT(    ' Stationary point =', ES12.4 )
  2060  FORMAT( /, ' Function value at the Cauchy point ', ES12.4 )
- 2070  FORMAT( /, '  ',I7,' vars. freed ', I7, ' vars. remain fixed' )
+ 2070  FORMAT( /, '  ', I0,' vars. freed ', I0, ' vars. remain fixed' )
  2080  FORMAT( 24X, I7, 4ES12.4 )
- 2090  FORMAT( /, ' Calculated gxt and hxt = ', 2ES12.4, /,                    &
-              ' Recurred   gxt and hxt = ', 2ES12.4 )
+ 2090  FORMAT( /, ' Calculated gxt and hxt =', 2ES12.4, /,                     &
+                  ' Recurred   gxt and hxt =', 2ES12.4 )
  2100  FORMAT(    ' Current search direction ', /, ( 4( I6, ES12.4 ) ) )
- 2110  FORMAT( /, I8, ' variables freed from their bounds ', /, I8,            &
-              ' variables remain fixed ',/ )
+ 2110  FORMAT( /, I0, ' variables freed from their bounds ', /, I0,            &
+                      ' variables remain fixed ',/ )
  2120  FORMAT( /, '    ** CAUCHY entered ** Segment    Model   ',              &
-              '   Gradient   Curvature     Step ' )
+                  '   Gradient   Curvature     Step ' )
  2130  FORMAT( /, '       Spherical trust region encountered ', / )
  2140  FORMAT( /, ' Next break point = ', ES12.4,                              &
-          /, ' Maximum step     = ', ES12.4, /, ' Spherical bound  = ', ES12.4 )
+               /, ' Maximum step     = ', ES12.4,                              &
+               /, ' Spherical bound  = ', ES12.4 )
  2150  FORMAT( ' Var low X up P ', I6, 4ES12.4 )
  2160  FORMAT( 24X, I7, ES12.4, 24X, ES12.4 )
 

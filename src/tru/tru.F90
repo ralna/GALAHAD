@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-05-12 AT 08:10 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-09-02 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 

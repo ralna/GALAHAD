@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-08-31 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-09-02 AT 10:00 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_initialize MA57_initialize
@@ -2834,9 +2834,9 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: i, ig, ic, is, j, lgfx, ifixd, lhuval
+     INTEGER ( KIND = ip_ ) :: i, ig, ic, ic1, is, j, lgfx, ifixd, lhuval
      INTEGER ( KIND = ip_ ) :: k, k1, k2, l, ifflag, alloc_status
-     INTEGER ( KIND = ip_ ) :: ipdgen, iddgen, istate, ir, nvar1
+     INTEGER ( KIND = ip_ ) :: ipdgen, iddgen, istate, ir, ir2, nvar1
      REAL :: tim
      REAL ( KIND = rp_ ) :: hmuinv, yiui  , scaleg
      REAL ( KIND = rp_ ) :: epsmch, epslam, hdash , ctt
@@ -3248,10 +3248,10 @@
 
              IF ( S%print_header .OR. S%print_level == 2 ) THEN
                IF ( S%direct ) THEN
-                 WRITE( S%out, "( /, ' Iter g.ev fill-in    obj    ||c||',     &
+                 WRITE( S%out, "( /, ' Iter g.ev fill-in   obj     ||c||',     &
                 &  '   proj.g    rho    radius   step  free  time' )" )
                ELSE
-                 WRITE( S%out, "( /, ' Iter g.ev cg.it      obj   ||c|| ',     &
+                 WRITE( S%out, "( /, ' Iter g.ev cg.it     obj    ||c|| ',     &
                 &  '  proj.g    rho   radius   step   free  time' )" )
                END IF
              END IF
@@ -5951,21 +5951,27 @@
          start_p = .FALSE.
 !        IF ( S%printt )THEN ; l = ng ; ELSE ; l = 2 ; END IF
          IF ( S%full_solution ) THEN
-           l = ng
+           ic1 = ng
+           ir2 = ng + 1
          ELSE
            j = 0
-           DO l = 1, ng
-             IF ( KNDOFG( l ) > 1 ) j = j + 1
+           DO ic1 = 1, ng
+             IF ( KNDOFG( ic1 ) > 1 ) j = j + 1
+             IF ( j == 2 ) EXIT
+           END DO
+           j = 0
+           DO ir2 = ng, 1, - 1
+             IF ( KNDOFG( ir2 ) > 1 ) j = j + 1
              IF ( j == 2 ) EXIT
            END DO
          END IF
          DO j = 1, 2
            IF ( j == 1 ) THEN
              ir = 1
-             ic = MIN( l, ng )
+             ic = ic1
            ELSE
-             IF ( ic < ng - l .AND. start_p ) WRITE( S%out, 2230 )
-             ir = MAX( ic + 1, ng - ic + 1 )
+             IF ( ic1 < ir2 .AND. start_p ) WRITE( S%out, 2230 )
+             ir = ir2
              ic = ng
            END IF
            DO ig = ir, ic

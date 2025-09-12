@@ -74,7 +74,7 @@ Linux distributions, but please make sure that you have Vesion 5.5 (and not
 See $GALAHAD/src/makedefs/packages for more details about downloads
 and installation of non-binary packages.
 
-TODO: add interfaces to umfpack and BaSpaCho
+TODO: add interfaces to umfpack, BaSpaCho and cuDSS
 
 Nick Gould
 March 28th 2024

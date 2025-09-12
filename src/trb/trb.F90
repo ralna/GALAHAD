@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-07-31 AT 12:50 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-09-02 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -77,6 +77,8 @@
      LOGICAL, PARAMETER :: debug_model_4 = .TRUE.
      LOGICAL, PARAMETER :: test_s = .TRUE.
 !    LOGICAL, PARAMETER :: test_s = .FALSE.
+!    LOGICAL, PARAMETER :: use_gltr = .FALSE.
+     LOGICAL, PARAMETER :: use_gltr = .TRUE.
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
@@ -559,7 +561,7 @@
        INTEGER ( KIND = ip_ ) :: print_gap, max_diffs, latest_diff, total_diffs
        INTEGER ( KIND = ip_ ) :: advanced_start_iter, max_hist, itercg, n_fix
        INTEGER ( KIND = ip_ ) :: non_monotone_history, lwork_svd, ref( 1 )
-       INTEGER ( KIND = ip_ ) :: nnz_p_l, nnz_p_u, nnz_hp
+       INTEGER ( KIND = ip_ ) :: nnz_p_l, nnz_p_u, nnz_hp, n_sub, h_ne_sub
 !      INTEGER ( KIND = ip_ ), POINTER :: nnz_p_l => NULL( )
 !      INTEGER ( KIND = ip_ ), POINTER :: nnz_p_u => NULL( )
 !      INTEGER ( KIND = ip_ ), POINTER :: nnz_hp => NULL( )
@@ -572,6 +574,7 @@
        REAL ( KIND = rp_ ) :: stop_pg, s_new_norm, rho_g, g_model, rg_norm
        REAL ( KIND = rp_ ) :: diagonal_min, diagonal_max, step, dxsqr, cg_stop
        REAL ( KIND = rp_ ) :: model, model_new, model_cp, model_start, step_max
+       REAL ( KIND = rp_ ) :: radius_sub, f_sub, gltr_model
 
        LOGICAL :: printi, printt, printm, printw, printd
        LOGICAL :: print_iteration_header, print_1st_header
@@ -612,6 +615,8 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VAL_est
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DX
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DG
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_cauchy
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_sub
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: DX_past
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: DG_past
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: BANDH
@@ -624,7 +629,7 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_svd
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK_svd
 
-       TYPE ( SMT_type ) :: H_by_cols
+       TYPE ( SMT_type ) :: H_by_cols, H_sub
        TYPE ( CAUCHY_save_type ) :: CAUCHY_save
        TYPE ( CG_save_type ) :: CG_save
 
@@ -1560,10 +1565,10 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: i, j, ic, ir, i_fixed, k, l, n_active
+     INTEGER ( KIND = ip_ ) :: i, ii, ic, ir, i_fixed, j, jj, k, l, n_active
      INTEGER ( KIND = ip_ ) :: duplicates, out_of_range, upper
      INTEGER ( KIND = ip_ ) :: missing_diagonals, info_svd
-     REAL ( KIND = rp_ ) :: val, ared, prered, rounding, delta_norm
+     REAL ( KIND = rp_ ) :: val, ared, prered, rounding, delta_norm, gi
      REAL ( KIND = rp_ ) :: delta, tau, tau_1, tau_2, tau_min, tau_max, distan
      LOGICAL :: alive
      CHARACTER ( LEN = 6 ) :: char_iter, char_facts, char_sit, char_sit2
@@ -1571,6 +1576,8 @@
      CHARACTER ( LEN = 80 ) :: array_name
 !    REAL ( KIND = rp_ ), DIMENSION( nlp%n ) :: V
      TYPE ( TRB_inform_type ) :: inform_initialize
+
+     INTEGER ( KIND = ip_ ), DIMENSION( nlp%n ) :: X_status_old
 
 !  prefix for all output
 
@@ -1593,28 +1600,30 @@
        GO TO 20
      CASE ( 30 )  ! initial gradient evaluation
        GO TO 30
-     CASE ( 110 )  ! Hessian evaluation
+     CASE ( 110 ) ! Hessian evaluation
        GO TO 110
-     CASE ( 210 )  ! Hessian-vector product or preconditioner
+     CASE ( 210 ) ! Hessian-vector product or preconditioner
        GO TO 210
-     CASE ( 310 )  ! Hessian-vector product
+     CASE ( 310 ) ! Hessian-vector product
        GO TO 310
-     CASE ( 420 )  ! objective evaluation
-       GO TO 420
-     CASE ( 440 )  ! Hessian-vector product
+     CASE ( 440 ) ! Hessian-vector product
        GO TO 440
-     CASE ( 450 )  ! gradient evaluation
-       GO TO 450
-     CASE ( 340 ) ! sparse Hessian-vector product
-       GO TO 340
-     CASE ( 380 ) ! sparse Hessian-vector product
-       GO TO 380
-     CASE ( 391 ) ! sparse Hessian-vector product
-       GO TO 391
-     CASE ( 392 ) ! sparse Hessian-vector product
-       GO TO 392
-     CASE ( 393 ) ! sparse Hessian-vector product
-       GO TO 393
+     CASE ( 410 ) ! sparse Hessian-vector product
+       GO TO 410
+     CASE ( 480 ) ! sparse Hessian-vector product
+       GO TO 480
+     CASE ( 500 ) ! sparse Hessian-vector product
+       GO TO 500
+     CASE ( 510 ) ! sparse Hessian-vector product
+       GO TO 510
+     CASE ( 520 ) ! sparse Hessian-vector product
+       GO TO 520
+     CASE ( 620 ) ! objective evaluation
+       GO TO 620
+     CASE ( 640 ) ! Hessian-vector product
+       GO TO 640
+     CASE ( 650 ) ! gradient evaluation
+       GO TO 650
      END SELECT
 
 !  ============================================================================
@@ -1970,6 +1979,12 @@
        data%print_level = 0
      END IF
 
+!  warn that we haven't yet implemented direct subproblem solution
+
+!    IF ( data%control%subproblem_direct .AND. data%set_printi )               &
+!      WRITE( data%out, "( A, ' Warning - subproblem_direct is',               &
+!     &   ' currently not supported', / )" ) prefix
+
 !  create a file which the user may subsequently remove to cause
 !  immediate termination of a run
 
@@ -2240,6 +2255,54 @@
        END IF
      ELSE
        data%diagonal_preconditioner = .FALSE.
+     END IF
+
+!  set up enough space to hold the data for any reduced quadratic model 
+
+     IF ( data%control%subproblem_direct .OR. use_gltr ) THEN
+       array_name = 'trb: data%G_cauchy'
+       CALL SPACE_resize_array( nlp%n, data%G_cauchy, inform%status,           &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       array_name = 'trb: data%S_sub'
+       CALL SPACE_resize_array( nlp%n, data%S_sub, inform%status,              &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+     END IF
+
+     IF ( data%control%subproblem_direct ) THEN
+       array_name = 'trb: data%H_sub%row'
+       CALL SPACE_resize_array( data%h_ne, data%H_sub%row, inform%status,      &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       array_name = 'trb: data%H_sub%col'
+       CALL SPACE_resize_array( data%h_ne, data%H_sub%col, inform%status,      &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       array_name = 'trb: data%H_sub%val'
+       CALL SPACE_resize_array( data%h_ne, data%H_sub%val, inform%status,      &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       CALL SMT_put( data%H_sub%type, 'COORDINATE', inform%alloc_status )
      END IF
 
 !  ensure that the initial point is feasible
@@ -2527,15 +2590,15 @@
                char_facts = STRING_integer_6( inform%TRS_inform%factorizations )
                WRITE( data%out, 2050 ) prefix, char_iter, data%hard,           &
                   data%negcur, data%bndry, inform%obj, inform%norm_pg,         &
-                  data%ratio, inform%radius, inform%TRS_inform%multiplier,     &
-                  char_facts, data%clock_now
+                  data%ratio, data%s_norm, inform%radius,                      &
+                  inform%TRS_inform%multiplier, char_facts, data%clock_now
              ELSE
                char_sit = STRING_integer_6( inform%GLTR_inform%iter )
                char_sit2 = STRING_integer_6( inform%GLTR_inform%iter_pass2 )
                WRITE( data%out, 2060 ) prefix, char_iter, data%negcur,         &
                   data%bndry, data%perturb, inform%obj, inform%norm_pg,        &
-                  data%ratio, inform%radius, char_sit, char_sit2,              &
-                  data%clock_now
+                  data%ratio, data%s_norm, inform%radius, char_sit,            &
+                  char_sit2, data%clock_now
              END IF
            ELSE
              WRITE( data%out, 2070 ) prefix,                                   &
@@ -2548,19 +2611,18 @@
                char_facts = STRING_integer_6( inform%TRS_inform%factorizations )
                WRITE( data%out, 2080 ) prefix, char_iter, data%hard,           &
                   data%negcur, data%bndry, inform%obj, inform%norm_pg,         &
-                  data%ratio, inform%radius, char_active, char_facts,          &
-                  data%clock_now
+                  data%ratio, data%s_norm, inform%radius, char_active,         &
+                  char_facts, data%clock_now
              ELSE
                char_sit = STRING_integer_6( data%itercg )
                WRITE( data%out, 2080 ) prefix, char_iter, data%negcur,         &
                   data%bndry, data%perturb, inform%obj, inform%norm_pg,        &
-                  data%ratio, inform%radius, char_active, char_sit,            &
-                  data%clock_now
+                  data%ratio, data%s_norm, inform%radius, char_active,         &
+                  char_sit, data%clock_now
              END IF
            ELSE
-             WRITE( data%out, 2090 ) prefix,                                   &
-                  char_iter, inform%obj, inform%norm_pg, inform%radius,        &
-                  char_active
+             WRITE( data%out, 2090 ) prefix, char_iter, inform%obj,            &
+                  inform%norm_pg, inform%radius, char_active
            END IF
          END IF
        END IF
@@ -3063,12 +3125,12 @@
        END IF
 
 !  ============================================================================
-!  3. Calculate the search direction, s
+!  3. Calculate the search direction, s -- unconstrained case
 !  ============================================================================
 
 !  -------------------------- UNCONSTRAINED CASE ------------------------------
 
-       IF ( .NOT. data%unconstrained ) GO TO 330
+       IF ( .NOT. data%unconstrained ) GO TO 400
          data%control%GLTR_control%stop_relative                               &
            = MIN( data%control%GLTR_control%stop_relative,                     &
                   inform%norm_pg ** 0.1 )
@@ -3146,7 +3208,7 @@
 !  if the Hessian has been calculated, form the product directly
 
                IF ( data%control%hessian_available ) THEN
-                 data%V( : nlp%n ) = data%U( : nlp%n )
+!                data%V( : nlp%n ) = data%U( : nlp%n )
                  CALL mop_Ax( one, nlp%H,  data%V( : nlp%n ), zero,            &
                               data%U( : nlp%n ), data%out, data%control%error, &
                               0_ip_, symmetric = .TRUE. )
@@ -3246,15 +3308,20 @@
 
 !  ------------------------- END OF UNCONSTRAINED CASE ------------------------
 
-         GO TO 400
+         GO TO 600
 
 !  -------------------------- BOUND CONSTRAINED CASE --------------------------
 
 !      ELSE
-  330  CONTINUE
+
+!  ============================================================================
+!  4. Calculate the search direction, s -- bound-constrained case
+!  ============================================================================
+
+  400    CONTINUE
 
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-!  3a. Compute a Generalized Cauchy Point
+!  4a. Compute a Generalized Cauchy Point
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 !  initialize INDEX_used_hp
@@ -3298,10 +3365,9 @@
 
            ELSE
              IF ( data%diagonal_preconditioner ) THEN
-!              distan = inform%radius / SQRT( data%H_diagonal( i ) )
-               distan = inform%radius /                                        &
-                 SQRT( MAX( data%diagonal_max, data%H_diagonal( i ) ) )
-
+!              distan = inform%radius /                                        &
+!                SQRT( MAX( data%diagonal_max, data%H_diagonal( i ) ) )
+               distan = inform%radius / SQRT( data%H_diagonal( i ) )
              ELSE
                distan = inform%radius
              END IF
@@ -3376,7 +3442,7 @@
            data%reuse_cp = .FALSE.
            IF ( data%printt ) WRITE( data%out,                                 &
              "( /, A, ' Reusing previous generalized Cauchy point ' )" ) prefix
-           GO TO 350
+           GO TO 420
          END IF
 
 !  find the norm of the reduced gradient
@@ -3391,9 +3457,11 @@
          data%radius = inform%radius
          data%jumpto = 1
 
+         X_status_old = data%X_status
+
 !  ------------------- start of generalized Cauchy point loop -----------------
 
-  340    CONTINUE
+  410    CONTINUE
 
 !  if required, print a list of the nonzeros of P and HP
 
@@ -3415,7 +3483,7 @@
 
          IF ( data%control%exact_gcp ) THEN
            CALL CAUCHY_get_exact_gcp(                                          &
-               nlp%n, data%X_current, data%X_trial, data%G_current, data%BND,  &
+               nlp%n, data%X_current, data%X_trial, nlp%G, data%BND,           &
                data%X_status, data%model_start, data%step_max,                 &
                epsmch, data%control%two_norm_tr, data%dxsqr, data%radius,      &
                data%model, data%P, data%HP, data%INDEX_nz_p, inform%n_free,    &
@@ -3427,12 +3495,12 @@
 
          ELSE
            CALL CAUCHY_get_approx_gcp(                                         &
-               nlp%n, data%X_current, data%X_trial, data%G_current, data%BND,  &
+               nlp%n, data%X_current, data%X_trial, nlp%G, data%BND,           &
                data%X_status, data%model_start, epsmch, data%step_max, point1, &
                data%control%two_norm_tr, data%radius, data%model, data%P,      &
                data%HP, data%INDEX_nz_p, inform%n_free, data%nnz_p_l,          &
                data%nnz_p_u, data%out, data%jumpto, data%print_level, one,     &
-             data%WK, data%WK2, data%CAUCHY_save )
+               data%WK, data%WK2, data%CAUCHY_save )
          END IF
          CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
 !        data%tca = data%tca + data%time_now - data%time_record
@@ -3468,9 +3536,9 @@
            CASE ( second_order_model, sparsity_hessian_model )
 !write(6,*) ' jummpto ', data%jumpto
 !write(6,*) ' nvar1,2 ', data%nnz_p_l, data%nnz_p_u
-             data%dense_p = data%jumpto == 2 .OR.                              &
-                          ( data%jumpto == 4 .AND. data%control%exact_gcp )
-!            data%dense_p = data%jumpto == 2
+!            data%dense_p = data%jumpto == 2 .OR.                              &
+!                         ( data%jumpto == 4 .AND. data%control%exact_gcp )
+             data%dense_p = data%jumpto == 2
 
 !  if the Hessian has been calculated, form the product directly
 
@@ -3488,7 +3556,7 @@
                  data%HP( : nlp%n ) = zero
                  IF ( data%reverse_hprod ) THEN
 !                  data%V( : : nlp%n ) = data%P( : : nlp%n )
-                   data%branch = 340 ; inform%status = 7 ; RETURN
+                   data%branch = 410 ; inform%status = 7 ; RETURN
                  ELSE
                    CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ),        &
                                     userdata, data%HP( : nlp%n ),              &
@@ -3500,7 +3568,7 @@
                  IF ( data%reverse_shprod ) THEN
 !                  data%V( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) ) =  &
 !                    data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u) )
-                   data%branch = 340 ; inform%status = 7 ; RETURN
+                   data%branch = 410 ; inform%status = 7 ; RETURN
                  ELSE
 !write(6,*) ' ================'
                    CALL eval_SHPROD( data%eval_status, nlp%X( : nlp%n ),       &
@@ -3532,8 +3600,10 @@
 
 !  ------------------ end of generalized Cauchy point loop --------------------
 
-           GO TO 340
+           GO TO 410
          END IF
+!write(6,*) ' nfree = ', COUNT( data%X_status == 0 )
+!write(6,*) ' changed = ', COUNT( X_status_old /= data%X_status )
 
 !  check to see if there are any remaining free variables
 
@@ -3541,7 +3611,7 @@
            IF ( data%printt ) WRITE( data%out,                                 &
              "( /, A, '    No free variables - search direction complete ' )" )&
                prefix
-           GO TO 400
+           GO TO 600
          ELSE
            IF ( data%printt ) WRITE( data%out,                                 &
              "( /, A, ' There are now ', I0, ' free variables ' )" )           &
@@ -3549,7 +3619,7 @@
          END IF
 
          IF ( data%control%more_toraldo > 0 .AND.                              &
-              data%more_toraldo_its > data%control%more_toraldo ) GO TO 400
+              data%more_toraldo_its > data%control%more_toraldo ) GO TO 600
 
 !  store the Cauchy point and its gradient for future use
 
@@ -3591,12 +3661,14 @@
            END IF
          END IF
 
+!  write(6,*) ' error', MAXVAL( ABS( data%X_trial - data%X_current - data%P ) )
+
          IF ( data%control%more_toraldo > 0 )                                  &
            data%P = data%X_trial - data%X_current
 
 !  if required, print the active set at the generalized Cauchy point
 
-  350    CONTINUE
+  420    CONTINUE
          IF ( data%printw ) THEN
            WRITE( data%out, "( / )" )
            DO i = 1, nlp%n
@@ -3615,197 +3687,510 @@
          END IF
 
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-!  3b. Compute a Newton-like step s beyond the Generalized Cauchy Point
+!  4b. Compute a Newton-like step s beyond the Generalized Cauchy Point
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+         data%itercg = 0
+         IF ( COUNT( data%X_status( : nlp%n ) == 0 ) == 0 ) GO TO 600
 
 !  the minimization will take place over all variables which are not on the
 !  trust-region boundary with negative gradients pushing over the boundary
 
-!      IF ( data%direct ) THEN
+!  compare the recurred and compted reduction, if required
+
+         IF ( data%printd ) THEN
+           WRITE( data%out, "( ' trs model value =', ES12.4 )" )               &
+             inform%TRS_inform%obj
+           data%P = data%X_trial - data%X_current
+           data%HP( : nlp%n ) = zero
+           CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,      &
+                            data%HP( : nlp%n ), data%P( : nlp%n ),             &
+                            got_h = data%got_h )
+           WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )        &
+             data%model, DOT_PRODUCT( data%P( : nlp%n ),                       &
+               nlp%G( : nlp%n ) + half * data%HP( : nlp%n ) )
+         END IF
 
 !  - - - - - - - - - - - - direct method - - - - - - - - - - - - - - - -
 
-!  minimize the quadratic using a direct method. The method used is a
-!  multifrontal symmetric indefinite factorization scheme. Evaluate the
-!  gradient of the quadratic at data%X_trial
+!  minimize the reduced quadratic model using a direct method (TRS)
 
-!        inform%n_free = 0
-!        data%g_model = zero
-!        DO i = 1, n
-!          IF ( data%X_status( i ) == 0 ) THEN
-!            inform%n_free = inform%n_free + 1
-!            data%INDEX_nz_p( inform%n_free ) = i
-!            gi = data%G_current( i ) + data%HP( i )
-!            data%P( inform%n_free ) = gi
-!            data%g_model = MAX( data%g_model, ABS( gi ) )
-!          ELSE
-!            gi = zero
-!          END IF
-!          data%P( i ) = zero ; QGRAD( i ) = gi
-!        END DO
-!        data%nnz_p_u = inform%n_free
+         IF ( data%control%subproblem_direct ) THEN
 
-!  check if the gradient of the model at the generalized Cauchy point
-!  is already small enough. Compute the ( scaled ) step moved from the
-!  previous to the current iterate
+!  compute a radius for model reduction beyond the Cauchy point for which the
+!  feasible region for this model problem lies within the overall trust region
 
-!        IF ( data%control%two_norm_tr ) THEN
-!          data%step =                                                         &
-!            TWO_NORM( data%X_trial( : nlp%n ) - nlp%X( : nlp%n ) )
-!        ELSE
-!          data%step =                                                         &
-!            INFINITY_NORM( data%X_trial( : nlp%n ) - nlp%X( : nlp%n ) )
-!        END IF
+           data%radius_sub = HUGE( one )
+           DO i = 1, nlp%n
+             IF ( data%X_status( i ) == 0 ) data%radius_sub                    &
+               = MIN( data%radius_sub, data%X_trial( i ) - data%BND( i, 1 ),   &
+                                       data%BND( i, 2 ) - data%X_trial( i ) )
+!              = MIN( data%radius_sub, data%X_trial( i ) - nlp%X_l( i ),       &
+!                                      nlp%X_u( i ) - data%X_trial( i ) )
+           END DO
 
-!  if the step taken is small relative to the trust-region radius,
-!  ensure that an accurate approximation to the minimizer of the
-!  model is found
+!  record the gradient of the model at the Cauchy point in Hp
 
-!        IF ( data%step <= stptol * inform%radius ) THEN
-!          IF ( MAX( data%resmin, data%step * data%cg_stop /                   &
-!            ( inform%radius * stptol ) ) >= data%g_model ) GO TO 400
-!        ELSE
-!          IF ( data%g_model * data%g_model < data%cg_stop ) GO TO 400
-!        END IF
+           data%HP( : nlp%n ) = data%G_current( : nlp%n )
+           CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,      &
+                            data%HP( : nlp%n ), data%P( : nlp%n ),             &
+                            got_h = data%got_h )
 
-!  factorize the matrix and obtain the solution to the linear system, a
-!  direction of negative curvature or a descent direction for the quadratic
-!  model
+!  build the reduced model, that is the model that only involves the n_sub
+!  variables that are free at the Cauchy point. Start by computing the
+!  gradent term G_cauchy. At the same time, record the list of reduced variables
+!  in data%INDEX_nz_p(j), i = 1,..,n_sub, and the mapping from complete to
+!  reduced variables in data%INDEX_nz_hp(i), i = 1,...,n, for which
+!  data%INDEX_nz_hp(i) = j > 0 if variable i is reduced variable j, and 
+!  data%INDEX_nz_hp(i) = 0, if variable i is fixed (and thus not a reduced one)
 
-!        CALL CPU_time( data%time_record ); CALL CLOCK_time( data%clock_record )
-!        IF ( data%control%more_toraldo > 0 ) THEN
-!          CALL FRNTL_get_search_direction(                                    &
-!              nlp%n, ng, nel, data%ntotel, data%nnza, data%maxsel,            &
-!              data%nvargp, control%io_buffer, INTVAR, IELVAR,                 &
-!              data%nvrels, INTREP, IELING, ISTADG, ISTAEV, A, ICNA,           &
-!              ISTADA, FUVALS, data%lnguvl, FUVALS, data%lnhuvl, ISTADH,       &
-!              GXEQX_used, GVALS( : , 2 ), GVALS( : , 3 ), data%INDEX_nz_p,    &
-!              data%nnz_p_u, QGRAD, data%P, data%X_trial,                      &
-!              data%BND_radius, data%model, GSCALE_used, ESCALE,               &
-!              data%X_current, data%control%two_norm_tr, data%no_bounds,       &
-!              data%dxsqr, data%radius, data%cg_stop, data%number,             &
-!              data%next, data%modchl, RANGE, inform%nsemib, inform%ratio,     &
-!              data%print_level, data%error, data%out, data%infor,             &
-!              alloc_status, bad_alloc, ITYPEE, DIAG, OFFDIA, IVUSE,           &
-!              RHS, RHS2, P2, ISTAGV, ISVGRP,                                  &
-!              lirnh, ljcnh, lh, LINK_col, POS_in_H, llink, lpos,              &
-!              IW_asmbl, W_ws, W_el, W_in, H_el, H_in,                         &
-!              matrix, SILS_data, control%SILS_cntl,                           &
-!              inform%SILS_infoa, inform%SILS_infof, inform%SILS_infos,        &
-!              SCU_matrix, SCU_data, inform%SCU_info, data%ASMBL,              &
-!              data%skipg, KNDOFG )
-!        ELSE
-!          CALL FRNTL_get_search_direction(                                    &
-!              nlp%n, ng, nel, data%ntotel, data%nnza, data%maxsel,            &
-!              data%nvargp, control%io_buffer, INTVAR, IELVAR,                 &
-!              data%nvrels, INTREP, IELING, ISTADG, ISTAEV, A, ICNA,           &
-!              ISTADA, FUVALS, data%lnguvl, FUVALS, data%lnhuvl, ISTADH,       &
-!              GXEQX_used, GVALS( : , 2 ), GVALS( : , 3 ), data%INDEX_nz_p,    &
-!              data%nnz_p_u, QGRAD, data%P, data%X_trial,                      &
-!              BND, data%model, GSCALE_used, ESCALE, data%X_current,           &
-!              data%control%two_norm_tr, data%no_bounds, data%dxsqr,           &
-!              data%radius, data%cg_stop, data%number, data%next,              &
-!              data%modchl, RANGE, inform%nsemib, inform%ratio,                &
-!              data%print_level, data%error, data%out, data%infor,             &
-!              alloc_status, bad_alloc, ITYPEE, DIAG, OFFDIA, IVUSE,           &
-!              RHS, RHS2, P2, ISTAGV, ISVGRP,                                  &
-!              lirnh, ljcnh, lh, LINK_col, POS_in_H, llink, lpos,              &
-!              IW_asmbl, W_ws, W_el, W_in, H_el, H_in,                         &
-!              matrix, SILS_data, control%SILS_cntl,                           &
-!              inform%SILS_infoa, inform%SILS_infof, inform%SILS_infos,        &
-!              SCU_matrix, SCU_data, inform%SCU_info, data%ASMBL,              &
-!              data%skipg, KNDOFG )
-!        END IF
-!        CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-!        data%tls = data%tls + data%time_now - data%time_record
-!        inform%n_free = data%nnz_p_u
+           data%n_sub = 0
+           data%g_model = zero
+           DO i = 1, nlp%n
+             IF ( data%X_status( i ) == 0 ) THEN
+               data%n_sub = data%n_sub + 1
+               data%INDEX_nz_p( data%n_sub ) = i
+               data%INDEX_nz_hp( i ) = data%n_sub
+               gi = data%HP( i )
+               data%G_cauchy( data%n_sub ) = gi
+               data%g_model = MAX( data%g_model, ABS( gi ) )
+             ELSE
+               data%INDEX_nz_hp( i ) = 0
+             END IF
+           END DO
 
-!  check for error returns
+!  now copy the reduced Hessian in coordinate format into H_sub
 
-!        IF ( data%infor == 10 ) THEN
-!          inform%status = 4 ; GO TO 820
-!        END IF
-!        IF ( data%infor == 11 ) THEN
-!          inform%status = 5 ; GO TO 820
-!        END IF
-!        IF ( data%infor == 12 ) GO TO 990
-!        IF ( data%infor >= 6 ) THEN
-!          inform%status = data%infor ; GO TO 820
-!        END IF
+           data%h_ne_sub = 0
+           SELECT CASE ( SMT_get( nlp%H%type ) )
+           CASE ( 'coordinate', 'COORDINATE' )
+             DO l = 1, nlp%H%ne
+               i = nlp%H%row( l ) ; ii = data%INDEX_nz_hp( i )
+               IF ( ii == 0 ) CYCLE
+               j = nlp%H%col( l ) ; jj = data%INDEX_nz_hp( j )
+               IF ( jj == 0 ) CYCLE
+               data%h_ne_sub = data%h_ne_sub + 1
+               IF ( jj <= ii ) THEN
+                 data%H_sub%row( data%h_ne_sub ) = ii
+                 data%H_sub%col( data%h_ne_sub ) = jj
+               ELSE
+                 data%H_sub%row( data%h_ne_sub ) = jj
+                 data%H_sub%col( data%h_ne_sub ) = ii
+               END IF
+               data%H_sub%val( data%h_ne_sub ) = nlp%H%val( l )
+             END DO
+           CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+             DO i = 1, nlp%n
+               ii = data%INDEX_nz_hp( i )
+               IF ( ii == 0 ) CYCLE
+               DO l = nlp%H%ptr( i ), nlp%H%ptr( i + 1 ) - 1
+                 j = nlp%H%col( l ) ; jj = data%INDEX_nz_hp( j )
+                 IF ( jj == 0 ) CYCLE
+                 data%h_ne_sub = data%h_ne_sub + 1
+                 IF ( jj <= ii ) THEN
+                   data%H_sub%row( data%h_ne_sub ) = ii
+                   data%H_sub%col( data%h_ne_sub ) = jj
+                 ELSE
+                   data%H_sub%row( data%h_ne_sub ) = jj
+                   data%H_sub%col( data%h_ne_sub ) = ii
+                 END IF
+                 data%H_sub%val( data%h_ne_sub ) = nlp%H%val( l )
+               END DO
+             END DO
+           CASE ( 'dense', 'DENSE' )
+             l = 1
+             DO i = 1, nlp%n
+               ii = data%INDEX_nz_hp( i )
+               IF ( ii == 0 ) THEN
+                 l = l + i
+                 CYCLE
+               END IF
+               DO j = 1, i
+                 l = l + 1
+                 jj = data%INDEX_nz_hp( j )
+                 IF ( jj == 0 ) CYCLE
+                 data%h_ne_sub = data%h_ne_sub + 1
+                 IF ( jj <= ii ) THEN
+                   data%H_sub%row( data%h_ne_sub ) = ii
+                   data%H_sub%col( data%h_ne_sub ) = jj
+                 ELSE
+                   data%H_sub%row( data%h_ne_sub ) = jj
+                   data%H_sub%col( data%h_ne_sub ) = ii
+                 END IF
+                 data%H_sub%val( data%h_ne_sub ) = nlp%H%val( l )
+               END DO
+             END DO
+           CASE DEFAULT
+             DO i = 1, nlp%n
+               ii = data%INDEX_nz_hp( i )
+               IF ( ii == 0 ) CYCLE
+               data%h_ne_sub = data%h_ne_sub + 1
+               data%H_sub%row( data%h_ne_sub ) = ii
+               data%H_sub%col( data%h_ne_sub ) = ii
+               data%H_sub%val( data%h_ne_sub ) = nlp%H%val( i )
+             END DO
+           END SELECT
+           data%H_sub%ne = data%h_ne_sub
 
-!  save details of the system solved
+!  print the subproblem
 
-!        data%fill = MAX( data%fill, inform%ratio )
-!        data%ISYS( data%infor ) = data%ISYS( data%infor ) + 1
-!        data%lisend = data%LSENDS( data%infor )
+           IF ( data%printd ) THEN
+             WRITE( data%out, "( ' c = ', /, ( 5ES12.4 ) )" )                  &
+               data%G_cauchy( : data%n_sub )
+             WRITE( data%out, "( ' H(row,col,val) = ', /, 2( 2I7, ES12.4 ) )" )&
+               ( data%H_sub%row( i ), data%H_sub%col( i ),                     &
+                 data%H_sub%val( i ), i = 1, data%h_ne_sub )
+             WRITE( data%out, "( ' distance to nearest inactive bound = ',     &
+            &                    ES11.4 )" )  data%radius_sub
+           END IF
 
-!  compute the ( scaled ) step from the previous to the current iterate
-!  in the appropriate norm
+!  the reduced model problem is now defined, call the subproblem solver
 
-!        IF ( data%control%two_norm_tr ) THEN
-!          data%step =                                                         &
-!            TWO_NORM( data%X_trial( : nlp%n ) - nlp%X( : nlp%n ) )
-!        ELSE
-!          data%step =                                                         &
-!            INFINITY_NORM( data%X_trial( : nlp%n ) - nlp%X( : nlp%n ) )
-!        END IF
+           data%f_sub = zero
+           CALL TRS_solve( data%n_sub, data%radius_sub, data%f_sub,            &
+                           data%G_cauchy( : data%n_sub ), data%H_sub,          &
+                           data%S_sub( : data%n_sub ), data%TRS_data,          &
+                           data%control%TRS_control, inform%TRS_inform )
 
-!  for debugging, compute the directional derivative and curvature
-!  along the direction P
+!  check for successful convergence
 
-!        IF ( data%printm ) THEN
-!          data%INDEX_used_hp( : data%nnz_hp ) = 0
-!          data%nnz_p_l = 0
-!          DO i = 1, data%nnz_p_u
-!            IF ( data%INDEX_nz_p( i ) > 0 ) THEN
-!              data%nnz_p_l = data%nnz_p_l + 1
-!              data%INDEX_nz_p( data%nnz_p_l ) = data%INDEX_nz_p( i )
-!            END IF
-!          END DO
-!          data%nnz_p_u = data%nnz_p_l ; inform%n_free = data%nnz_p_u
-!          data%nnz_p_l = 1 ; data%n_prods = 1
+           IF ( inform%TRS_inform%status < 0 .AND.                             &
+                inform%TRS_inform%status /= GALAHAD_error_ill_conditioned ) THEN
+             IF ( data%printt ) WRITE( data%out, "( /,                         &
+            &    A, ' Error return from TRS, status = ', I0 )" ) prefix,       &
+               inform%TRS_inform%status
+             inform%status = inform%TRS_inform%status ; GO TO 900
+           END IF
 
-!  evaluate the product of the Hessian with the dense vector P
+!  record subproblem solution information
 
-!        CALL CPU_time( data%time_record ); CALL CLOCK_time( data%clock_record )
-!          data%HP = zero
-!          data%dense_p = .TRUE.
-!          CALL TRB_hessian_times_vector( nlp%n,                               &
-!                   data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ),            &
-!                   data%nnz_p_u - data%nnz_p_l + 1, data%INDEX_nz_hp,         &
-!                   data%nnz_hp, data%INDEX_used_hp, data%n_prods,             &
-!                   data%P, data%HP, data%H_by_cols, data%dense_p )
-!          CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-!          data%tmv = data%tmv + data%time_now - data%time_record
+!          facts_this_solve                                                    &
+!            = inform%TRS_inform%factorizations - facts_this_solve
+!          inform%factorization_average = ( inform%factorization_average *     &
+!           ( inform%iter - 1 ) + inform%TRS_inform%factorizations )/inform%iter
+!          inform%factorization_max =                                          &
+!            MAX( inform%factorization_max, inform%TRS_inform%factorizations )
+!          inform%factorization_average =                                      &
+!            REAL( inform%TRS_inform%factorizations, KIND = rp_ ) /            &
+!            REAL( inform%iter, KIND = rp_ )
+!          inform%factorization_max =                                          &
+!            MAX( inform%factorization_max, facts_this_solve )
+!           inform%max_entries_factors = MAX( inform%max_entries_factors,      &
+!                                        inform%TRS_inform%max_entries_factors )
+           inform%factorization_integer =                                      &
+             MAX( inform%factorization_integer,                                &
+                  inform%TRS_inform%SLS_inform%integer_size_factors )
+           inform%factorization_real =                                         &
+             MAX( inform%factorization_real,                                   &
+                  inform%TRS_inform%SLS_inform%real_size_factors )
 
-!  compute the curvature
+           IF ( inform%TRS_inform%pole > zero ) THEN
+             data%negcur = 'n'
+           ELSE
+             data%negcur = ' '
+           END IF
 
-!!         data%curv =                                                         &
-!!          DOT_PRODUCT( data%HP( data%INDEX_nz_p( : data%nnz_p_u ) ),         &
-!!                       data%P( data%INDEX_nz_p( : data%nnz_p_u)))
-!          data%curv = zero
-!          DO i = 1, data%nnz_p_u
-!            data%curv = data%curv +                                           &
-!              data%HP( data%INDEX_nz_p( i ) ) * data%P( data%INDEX_nz_p( i ) )
-!          END DO
+           data%s_norm = inform%TRS_inform%x_norm
+           IF ( ABS( inform%radius - data%s_norm )                             &
+                  <= tenm8 * inform%radius ) THEN
+             data%bndry = 'b'
+           ELSE
+             data%bndry = ' '
+           END IF
 
-!  compare the calculated and recurred curvature
+           IF ( inform%TRS_inform%hard_case ) THEN
+             data%hard = 'h'
+           ELSE
+             data%hard = ' '
+           END IF
 
-!          WRITE( data%out, "( ' curv  = ', ES12.4 )" ) data%curv
-!          WRITE( data%out, "( ' FRNTL - infor = ', I1 )" ) data%infor
-!          IF ( data%infor == 1 .OR. data%infor == 3 .OR.                      &
-!               data%infor == 5 ) THEN
-!            DO j = 1, data%nnz_p_u
-!              i = data%INDEX_nz_p( j )
-!              WRITE( data%out, "( ' P, H * P( ', I6, ' ), RHS( ', I6,         &
-!             &' ) = ', 3ES15.7 )" ) i, i, data%P( i ), data%HP( i ), QGRAD( i )
-!            END DO
-!          END IF
-!        END IF
-!      ELSE
+!  map the solution back on to the full set of variables
 
-!  - - - - - - - - - - - - iterative method - - - - - - - - - - - - - -
+           DO ii = 1, data%n_sub
+             i =  data%INDEX_nz_p( ii )
+             data%X_trial( i ) = data%X_trial( i ) + data%S_sub( ii )
+           END DO
+           data%model = data%model_cp + inform%TRS_inform%obj
 
+!  compare the recurred and compted reduction, if required
+
+           IF ( data%printd ) THEN
+             WRITE( data%out, "( ' trs model value =', ES12.4 )" )             &
+               inform%TRS_inform%obj
+             data%P = data%X_trial - data%X_current
+             data%HP( : nlp%n ) = zero
+             CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,    &
+                              data%HP( : nlp%n ), data%P( : nlp%n ),           &
+                              got_h = data%got_h )
+             WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )      &
+               data%model, DOT_PRODUCT( data%P( : nlp%n ),                     &
+                 nlp%G( : nlp%n ) + half * data%HP( : nlp%n ) )
+           END IF
+           GO TO 600
+         END IF
+
+!  - - - - - - - - - - - iterative method using GLTR - - - - - - - - - - - - -
+
+         IF ( .NOT. use_gltr ) GO TO 460
+
+!  compute a radius for model reduction beyond the Cauchy point for which the
+!  feasible region for this model problem lies within the overall trust region
+
+           data%radius_sub = HUGE( one )
+           DO i = 1, nlp%n
+             IF ( data%X_status( i ) == 0 ) data%radius_sub                    &
+               = MIN( data%radius_sub, data%X_trial( i ) - nlp%X_l( i ),       &
+                                       nlp%X_u( i ) - data%X_trial( i ) )
+           END DO
+
+!  record the gradient of the model at the Cauchy point in G_cauchy
+
+           data%G_cauchy( : nlp%n ) = nlp%G( : nlp%n )
+           CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,      &
+                            data%G_cauchy( : nlp%n ), data%P( : nlp%n ),       &
+                            got_h = data%got_h )
+
+!  build the reduced model, that is the model that only involves the 
+!  variables that are free at the Cauchy point. Start by resetting 
+!  components of G_cauchy for fixed variables to zero
+
+           WHERE ( data%X_status /= 0 ) data%G_cauchy = zero
+!write(6,"( '  data%G_cauchy = ', /, ( 5ES12.4 ) )" ) data%G_cauchy( : nlp%n )
+
+!  set stopping tolerances
+
+           data%control%GLTR_control%stop_relative                             &
+             = MIN( data%control%GLTR_control%stop_relative,                   &
+                    inform%norm_pg ** 0.1 )
+
+!  set initial data for the generalized Lanczos iteration
+
+           data%gltr_model = zero
+           data%G_current( : nlp%n ) = data%G_cauchy( : nlp%n )
+           IF ( data%new_h ) THEN
+              inform%GLTR_inform%status = 1
+           ELSE
+             IF ( .NOT. data%control%GLTR_control%steihaug_toint )             &
+               inform%GLTR_inform%status = 4
+           END IF
+           data%nprec = - 1
+
+!  Start of the generalized Lanczos iteration
+!  ..........................................
+
+  430      CONTINUE
+
+!  perform a generalized Lanczos iteration
+
+             CALL GLTR_solve( nlp%n, data%radius_sub, data%gltr_model,         &
+                              data%S_sub( : nlp%n ),                           &
+                              data%G_current( : nlp%n ), data%V( : nlp%n ),    &
+                              data%GLTR_data, data%control%GLTR_control,       &
+                              inform%GLTR_inform )
+
+!write(6,"( ' s_sub = ', /, ( 5ES12.4 ) )" ) data%S_sub( : nlp%n )
+!write(6,*) ' case ', inform%GLTR_inform%status
+             SELECT CASE( inform%GLTR_inform%status )
+
+!  form the preconditioned gradient
+
+             CASE ( 2, 6 )
+
+!  use the factors obtained from PSLS
+
+               IF ( data%nprec > 0 ) THEN
+                 CALL PSLS_apply( data%V, data%PSLS_data,                      &
+                                  data%control%PSLS_control, inform%PSLS_inform)
+                 WHERE ( data%X_status /= 0 ) data%V = zero
+
+!  compute the precoditioned gradient BFGS * g using Nocedal's LBFGS formula
+
+               ELSE IF ( data%nprec == l_bfgs_preconditioner ) THEN
+                 CALL LMS_apply( data%V( : nlp%n ), data%U( : nlp%n ),         &
+                                 data%LMS_data_prec,                           &
+                                 data%control%LMS_control_prec,                &
+                                 inform%LMS_inform_prec )
+                 WHERE ( data%X_status == 0 )
+                   data%V = data%U
+                 ELSE WHERE
+                   data%V = zero
+                 END WHERE
+               ELSE IF ( data%nprec == user_preconditioner ) THEN
+                 IF ( data%reverse_prec ) THEN
+                   data%branch = 440 ; inform%status = 6 ; RETURN
+                 ELSE
+                   CALL eval_PREC( data%eval_status, nlp%X( : nlp%n ),         &
+                                   userdata, data%U( : nlp%n ),                &
+                                   data%V( : nlp%n ) )
+                   WHERE ( data%X_status == 0 )
+                     data%V = data%U
+                   ELSE WHERE
+                     data%V = zero
+                   END WHERE
+                 END IF
+               END IF
+
+!  form the Hessian-vector product v <- u = H v
+
+             CASE ( 3, 7 )
+               SELECT CASE( data%control%model )
+
+!  linear model (no Hessian)
+
+               CASE ( first_order_model )
+                 data%V( : nlp%n ) = zero
+
+!  quadratic model with identity Hessian
+
+               CASE ( identity_hessian_model )
+
+!  quadratic model with true or sparsity-based Hessian
+
+               CASE ( second_order_model, sparsity_hessian_model )
+
+!  if the Hessian has been calculated, form the product directly
+
+                 IF ( data%control%hessian_available ) THEN
+!                  data%V( : nlp%n ) = data%U( : nlp%n )
+                   CALL mop_Ax( one, nlp%H,  data%V( : nlp%n ), zero,          &
+                                data%U( : nlp%n ), data%out,                   &
+                                data%control%error,                            &
+                                0_ip_, symmetric = .TRUE. )
+                   WHERE ( data%X_status == 0 )
+                     data%V = data%U
+                   ELSE WHERE
+                     data%V = zero
+                   END WHERE
+
+!  if the Hessian is unavailable, obtain a matrix-free product
+
+                 ELSE
+                   data%U( : nlp%n ) = zero
+                   IF ( data%reverse_hprod ) THEN
+                     data%branch = 440 ; inform%status = 5 ; RETURN
+                   ELSE
+                     CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ),      &
+                                      userdata, data%U( : nlp%n ),             &
+                                      data%V( : nlp%n ), got_h = data%got_h )
+                     WHERE ( data%X_status /= 0 ) data%V = zero
+                     data%got_h = .TRUE.
+                   END IF
+                 END IF
+
+!  quadratic model with limited-memory Hessian
+
+               CASE ( l_bfgs_hessian_model, l_sr1_hessian_model )
+                 CALL LMS_apply( data%V( : nlp%n ), data%U( : nlp%n ),         &
+                                 data%LMS_data, data%control%LMS_control,      &
+                                 inform%LMS_inform )
+                 WHERE ( data%X_status == 0 )
+                   data%V = data%U
+                 ELSE WHERE
+                   data%V = zero
+                 END WHERE
+               END SELECT
+
+!  restore the gradient
+
+             CASE ( 5 )
+               data%G_current( : nlp%n ) = data%G_cauchy( : nlp%n )
+
+!  successful return
+
+             CASE ( GALAHAD_ok, GALAHAD_warning_on_boundary,                   &
+                    GALAHAD_error_max_iterations )
+               GO TO 450
+
+!  error returns
+
+             CASE DEFAULT
+               IF ( data%printt ) WRITE( data%out, "( /,                       &
+               &  A, ' Error return from GLTR, status = ', I0 )" ) prefix,     &
+                 inform%GLTR_inform%status
+               inform%status = inform%GLTR_inform%status
+               GO TO 900
+             END SELECT
+
+!  return from reverse communication to obtain the Hessian-vector product
+!  or preconditioned vector
+
+  440        CONTINUE
+             IF ( .NOT. data%control%hessian_available ) THEN
+               IF ( inform%GLTR_inform%status == 3 .OR.                        &
+                    inform%GLTR_inform%status == 7 ) THEN
+                 inform%h_eval = inform%h_eval + 1 ; data%got_h = .TRUE.
+                 WHERE ( data%X_status == 0 )
+                   data%V = data%U
+                 ELSE WHERE
+                   data%V = zero
+                 END WHERE
+               END IF
+             END IF
+             IF ( ( inform%GLTR_inform%status == 2 .OR.                        &
+                    inform%GLTR_inform%status == 6 ) .AND.                     &
+                    data%nprec == - 3 .AND. data%reverse_prec ) THEN
+               WHERE ( data%X_status == 0 )
+                 data%V = data%U
+               ELSE WHERE
+                 data%V = zero
+               END WHERE
+             END IF
+!write(6,"( ' v = ', /, ( 5ES12.4 ) )" ) data%V( : nlp%n )
+           GO TO 430
+
+!  End of the generalized Lanczos iteration
+!  ........................................
+
+  450      CONTINUE
+           data%itercg = inform%GLTR_inform%iter
+write(6,*) ' ||s||, Delta = ', inform%GLTR_inform%mnormx, data%radius_sub
+
+!  record whether there is negative curvature or if the boundary is encountered
+
+           IF ( inform%GLTR_inform%negative_curvature ) THEN
+             data%negcur = 'n'
+           ELSE
+             data%negcur = ' '
+           END IF
+
+           data%s_norm = inform%GLTR_inform%mnormx
+           IF ( ABS( inform%radius - inform%GLTR_inform%mnormx )               &
+                 <= 1.0D-8 ) THEN
+             data%bndry = 'b'
+           ELSE
+             data%bndry = ' '
+           END IF
+
+!  Record the total number of Lanczos iterations
+
+           inform%cg_iter = inform%cg_iter +                                   &
+             inform%GLTR_inform%iter + inform%GLTR_inform%iter_pass2
+           IF ( data%printt ) WRITE( data%out,                                 &
+              "( /, A, ' CG iterations required = ', I8 )" )                   &
+                prefix, inform%GLTR_inform%iter
+
+           WHERE ( data%X_status == 0 ) data%X_trial = data%X_trial + data%S_sub
+           data%model = data%model_cp + data%gltr_model
+
+!  compare the recurred and compted reduction, if required
+
+           IF ( data%printd ) THEN
+             WRITE( data%out, "( ' gltr model value =', ES12.4 )" )            &
+               data%gltr_model
+             data%P = data%X_trial - data%X_current
+             data%HP( : nlp%n ) = zero
+             CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,    &
+                              data%HP( : nlp%n ), data%P( : nlp%n ),           &
+                              got_h = data%got_h )
+             WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )      &
+               data%model, DOT_PRODUCT( data%P( : nlp%n ),                     &
+                 nlp%G( : nlp%n ) + half * data%HP( : nlp%n ) )
+           END IF
+           GO TO 600
+
+!  - - - - - - - - - - - - iterative method using CG - - - - - - - - - - - - -
+
+  460    CONTINUE
          data%new_preconditioner = .TRUE.
          data%jumpto = 1
 
@@ -3833,11 +4218,11 @@
 
 !  calculate an approximate minimizer of the model within the specified bounds
 
-  370    CONTINUE
-         IF ( data%jumpto == 1 .OR. data%jumpto == 3 ) THEN
+  470    CONTINUE
 
 !  the product of the Hessian with the vector P is required
 
+         IF ( data%jumpto == 1 .OR. data%jumpto == 3 ) THEN
            data%n_prods = data%n_prods + 1
            data%nnz_p_l = 1
            CALL CPU_time( data%time_record )
@@ -3891,7 +4276,7 @@
                IF ( data%reverse_shprod ) THEN
 !                data%V( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) ) =    &
 !                  data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u) )
-                 data%branch = 380 ; inform%status = 7 ; RETURN
+                 data%branch = 480 ; inform%status = 7 ; RETURN
                ELSE
                  l = data%nnz_p_u - data%nnz_p_l + 1
                  CALL eval_SHPROD( data%eval_status, nlp%X( : nlp%n ),         &
@@ -3916,7 +4301,7 @@
 
 !  re-entry after sparse Hessian-vector product
 
-  380    CONTINUE
+  480    CONTINUE
          IF ( data%jumpto == 1 .OR. data%jumpto == 3 ) THEN
 
            CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
@@ -3973,7 +4358,7 @@
 !write(6,*) ' refactor ', data%refactorize
            IF ( data%new_preconditioner ) THEN
               data%new_preconditioner = .FALSE.
- 390         CONTINUE
+ 490         CONTINUE
              IF ( data%refactorize ) THEN
                IF ( data%printt ) WRITE( data%out,                             &
                       "( A, ' Computing preconditioner' )" ) prefix
@@ -4009,7 +4394,7 @@
                  CALL PSLS_index_submatrix( data%nnz_p_u, data%INDEX_nz_p,     &
                                             data%PSLS_data )
                  data%refactorize = .TRUE.
-                 GO TO 390
+                 GO TO 490
                ELSE IF ( inform%PSLS_inform%status /= 0 ) THEN
                  inform%status = inform%PSLS_inform%status  ; GO TO 900
                END IF
@@ -4162,7 +4547,7 @@
 
 !  if the bound encountered was a problem bound, continue minimizing the model
 
-         IF ( data%jumpto > 0 ) GO TO 370
+         IF ( data%jumpto > 0 ) GO TO 470
 
 !  if required, compute the value of the model from first principles
 
@@ -4222,7 +4607,7 @@
                IF ( data%reverse_shprod ) THEN
 !                data%V( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) ) =    &
 !                  data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u) )
-                 data%branch = 391 ; inform%status = 7 ; RETURN
+                 data%branch = 500 ; inform%status = 7 ; RETURN
                ELSE
                  CALL eval_SHPROD( data%eval_status, nlp%X( : nlp%n ),         &
                               userdata, data%nnz_p_u - data%nnz_p_l + 1,       &
@@ -4251,9 +4636,13 @@
              WRITE( data%out, 2250 ) prefix, data%P
          END IF
 
+!  ============================================================================
+!  5. If required: More'-Toraldo projections
+!  ============================================================================
+
 !  compute the model value, model_new, and reset P to zero
 
- 391     CONTINUE
+ 500     CONTINUE
          IF ( data%printd ) THEN
            CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
 !          data%tmv = data%tmv + data%time_now - data%time_record
@@ -4269,10 +4658,6 @@
           &    A, ' *** Recurred   quadratic at end CG ', ES22.14 )" )         &
              prefix, data%model_new, prefix, data%model
          END IF
-
-!  --------------------------------------
-!  If required: More'-Toraldo projections
-!  --------------------------------------
 
          IF ( data%control%more_toraldo > 0 ) THEN
            data%exceeds_bounds = .FALSE.
@@ -4340,7 +4725,7 @@
                  IF ( data%reverse_shprod ) THEN
                    data%V( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) ) =  &
                      data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u) )
-                   data%branch = 392 ; inform%status = 7 ; RETURN
+                   data%branch = 510 ; inform%status = 7 ; RETURN
                  ELSE
                    CALL eval_SHPROD( data%eval_status, nlp%X( : nlp%n ),       &
                                 userdata, data%nnz_p_u - data%nnz_p_l + 1,     &
@@ -4368,7 +4753,7 @@
 
 !  recover the Cauchy point and its function and gradient values
 
- 392     CONTINUE
+ 510     CONTINUE
          IF ( data%control%more_toraldo > 0 ) THEN
            IF ( data%exceeds_bounds ) THEN
              data%model_start = data%model_cp
@@ -4388,7 +4773,7 @@
 
              data%jumpto = 1
              data%more_toraldo_its = data%more_toraldo_its + 1
-             GO TO 340
+             GO TO 410
            END IF
          END IF
 
@@ -4453,7 +4838,7 @@
                IF ( data%reverse_shprod ) THEN
                  data%V( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) ) =   &
                    data%DX_bqp( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) )
-                 data%branch = 393 ; inform%status = 7 ; RETURN
+                 data%branch = 520 ; inform%status = 7 ; RETURN
                ELSE
                  CALL eval_SHPROD( data%eval_status, nlp%X( : nlp%n ),         &
                               userdata, data%nnz_p_u - data%nnz_p_l + 1,       &
@@ -4477,7 +4862,7 @@
 
 !  compute the model gradient at data%X_trial
 
- 393     CONTINUE
+ 520     CONTINUE
          IF ( data%control%accurate_bqp ) THEN
            CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
 !          data%tmv = data%tmv + data%time_now - data%time_record
@@ -4523,7 +4908,7 @@
 !              IFREE( : data%nfreef ) = ABS( IFREE( : data%nfreef ) )
              END IF
              data%jumpto = 1
-             GO TO 340
+             GO TO 410
            END IF
          END IF
          inform%cg_iter = inform%cg_iter + data%itercg
@@ -4531,12 +4916,12 @@
 !  --------------------- END OF BOUND CONSTRAINED CASE ------------------------
 
 !      END IF
- 400   CONTINUE
 
 !  ============================================================================
-!  4. check for acceptance of the new point
+!  6. check for acceptance of the new point
 !  ============================================================================
 
+ 600   CONTINUE
        data%S( : nlp%n ) = data%X_trial( : nlp%n ) - nlp%X( : nlp%n )
        data%s_norm = TWO_norm( data%S( : nlp%n ) )
 
@@ -4580,13 +4965,13 @@
 
 !  form the trial point
 
- 410   CONTINUE
+ 610   CONTINUE
        nlp%X( : nlp%n ) = data%X_current( : nlp%n ) + data%S( : nlp%n )
 
 !  evaluate the objective function at the trial point
 
        IF ( data%reverse_f ) THEN
-         data%branch = 420 ; inform%status = 2 ; RETURN
+         data%branch = 620 ; inform%status = 2 ; RETURN
        ELSE
          CALL eval_F( data%eval_status, nlp%X( : nlp%n ), userdata,            &
                       data%f_trial )
@@ -4594,7 +4979,7 @@
 
 !  return from reverse communication to obtain the objective value
 
- 420   CONTINUE
+ 620   CONTINUE
        IF ( data%reverse_f ) data%f_trial = nlp%f
        inform%f_eval = inform%f_eval + 1
 
@@ -4615,7 +5000,7 @@
 
 !  If the predicted radius is larger than its upper bound, exit
 
-         IF ( inform%radius >= data%radius_max ) GO TO 430
+         IF ( inform%radius >= data%radius_max ) GO TO 630
 
 !  perform another iteration
 
@@ -4741,15 +5126,15 @@
                      = STRING_integer_6( inform%TRS_inform%factorizations )
                    WRITE( data%out, 2050 ) prefix, char_iter, data%hard,       &
                       data%negcur, data%bndry, inform%obj, inform%norm_pg,     &
-                      data%ratio, inform%radius, inform%TRS_inform%multiplier, &
-                      char_facts, data%clock_now
+                      data%ratio, data%s_norm, inform%radius,                  &
+                      inform%TRS_inform%multiplier, char_facts, data%clock_now
                  ELSE
                    char_sit = STRING_integer_6( inform%GLTR_inform%iter )
                    char_sit2 = STRING_integer_6( inform%GLTR_inform%iter_pass2 )
                    WRITE( data%out, 2060 ) prefix, char_iter, data%negcur,     &
                       data%bndry, data%perturb, inform%obj, inform%norm_pg,    &
-                      data%ratio, inform%radius, char_sit, char_sit2,          &
-                      data%clock_now
+                      data%ratio, data%s_norm, inform%radius,                  &
+                      char_sit, char_sit2, data%clock_now
                  END IF
                ELSE
                  WRITE( data%out, 2070 ) prefix,                               &
@@ -4763,19 +5148,18 @@
                      = STRING_integer_6( inform%TRS_inform%factorizations )
                    WRITE( data%out, 2080 ) prefix, char_iter, data%hard,       &
                       data%negcur, data%bndry, inform%obj, inform%norm_pg,     &
-                      data%ratio, inform%radius, char_active, char_facts,      &
-                      data%clock_now
+                      data%ratio, data%s_norm, inform%radius,                  &
+                      char_active, char_facts, data%clock_now
                  ELSE
                    char_sit = STRING_integer_6( data%itercg )
                    WRITE( data%out, 2080 ) prefix, char_iter, data%negcur,     &
                       data%bndry, data%perturb, inform%obj, inform%norm_pg,    &
-                      data%ratio, inform%radius, char_active, char_sit,        &
-                      data%clock_now
+                      data%ratio, data%s_norm, inform%radius,                  &
+                      char_active, char_sit, data%clock_now
                  END IF
                ELSE
-                 WRITE( data%out, 2090 ) prefix,                               &
-                      char_iter, inform%obj, inform%norm_pg, inform%radius,    &
-                      char_active
+                 WRITE( data%out, 2090 ) prefix, char_iter, inform%obj,        &
+                      inform%norm_pg, inform%radius, char_active
                END IF
              END IF
            END IF
@@ -4790,12 +5174,12 @@
 !  form the next trial step
 
            data%S( : nlp%n ) = tau * data%S( : nlp%n )
-           GO TO 410
+           GO TO 610
          END IF
 
 !  record the best value found
 
- 430     CONTINUE
+ 630     CONTINUE
          inform%iter = inform%iter + data%advanced_start_iter - 1
          IF ( data%f_best < inform%obj ) THEN
            data%S( : nlp%n ) = data%X_best( : nlp%n ) - nlp%X( : nlp%n )
@@ -4869,7 +5253,7 @@
                data%V( : nlp%n ) = data%S( : nlp%n )
                CALL SWAP( nlp%n, nlp%X( : nlp%n ), 1_ip_,                      &
                           data%X_current( : nlp%n ), 1_ip_ ) !  at current x
-               data%branch = 440 ; inform%status = 5 ; RETURN
+               data%branch = 640 ; inform%status = 5 ; RETURN
              ELSE
                CALL eval_HPROD( data%eval_status, data%X_current( : nlp%n ),   &
                                 userdata, data%U( : nlp%n ), data%S( : nlp%n ),&
@@ -4903,7 +5287,7 @@
 
 !  the new point is acceptable
 
- 440   CONTINUE
+ 640   CONTINUE
        IF ( data%ratio >= data%control%eta_successful ) THEN
          IF ( ABS( data%ratio - one ) <= rho_quad .AND.                        &
               data%control%model == second_order_model .AND.                   &
@@ -4916,7 +5300,7 @@
 !  evaluate the gradient of the objective function
 
          IF ( data%reverse_g ) THEN
-            data%branch = 450 ; inform%status = 3 ; RETURN
+            data%branch = 650 ; inform%status = 3 ; RETURN
          ELSE
            CALL eval_G( data%eval_status, nlp%X( : nlp%n ),                    &
                         userdata, nlp%G( : nlp%n ) )
@@ -4930,7 +5314,7 @@
 
 !  return from reverse communication to obtain the gradient
 
- 450   CONTINUE
+ 650   CONTINUE
 
 !  compute rho_g, the relative difference in model and true gradients
 
@@ -5053,7 +5437,7 @@
        CASE ( second_order_model )
          WRITE( data%out, "( A, '  Second-order model used' )" ) prefix
        CASE ( identity_hessian_model )
-         WRITE( data%out, "( A, '  Secod-order model with identity',           &
+         WRITE( data%out, "( A, '  Second-order model with identity',          &
         &  ' Hessian used' )" ) prefix
        CASE ( sparsity_hessian_model )
          WRITE( data%out, "( A, '  Secod-order model with sparse secant',      &
@@ -5197,19 +5581,19 @@
 !  Non-executable statements
 
  2000 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
- 2010 FORMAT( A, 'It              f        pgrad     ',                        &
-             ' ratio   radius  multplr # fact         time ' )
- 2020 FORMAT( A, 'It              f        pgrad     ',                        &
-             ' ratio   radius  pass 1 pass 2         time ' )
- 2030 FORMAT( A, 'It              f        pgrad     ',                        &
-             ' ratio   radius # active # fact         time ' )
- 2040 FORMAT( A, 'It              f        pgrad     ',                        &
-             ' ratio   radius # active cg its         time ' )
- 2050 FORMAT( A, A6, 3A1, 2ES12.4, 3ES9.1, A7, F12.2 )
- 2060 FORMAT( A, A6, 3A1, 2ES12.4, 2ES9.1, 2A7, F12.2 )
- 2070 FORMAT( A, A6, 3X,  2ES12.4, 9X, ES9.1 )
- 2080 FORMAT( A, A6, 3A1, 2ES12.4, 2ES9.1, 2X, A7, A7, F12.2 )
- 2090 FORMAT( A, A6, 3X,  2ES12.4, 9X, ES9.1, 2X, A7 )
+ 2010 FORMAT( A, 'It              f       pgrad  ',                            &
+             ' ratio   ||s||  radius  multplr #fact   time ' )
+ 2020 FORMAT( A, 'It              f       pgrad  ',                            &
+             ' ratio   ||s||  radius  pass 1 pass 2   time ' )
+ 2030 FORMAT( A, 'It              f       pgrad  ',                            &
+             ' ratio   ||s||  radius  #active #fact   time ' )
+ 2040 FORMAT( A, 'It              f       pgrad  ',                            &
+             ' ratio   ||s||  radius  #active cg its    time ' )
+ 2050 FORMAT( A, A6, 3A1, ES12.4, ES8.1, ES9.1, 3ES8.1, A7, F8.2 )
+ 2060 FORMAT( A, A6, 3A1, ES12.4, ES8.1, ES9.1, 2ES8.1, 2A7, F8.2 )
+ 2070 FORMAT( A, A6, 3X,  ES12.4, ES8.1, 9X, 2ES8.1 )
+ 2080 FORMAT( A, A6, 3A1, ES12.4, ES8.1, ES9.1, 2ES8.1, 1X, 2A7, F8.2 )
+ 2090 FORMAT( A, A6, 3X,  ES12.4, ES8.1, 9X, 8X, ES8.1, 1X, A7 )
  2200 FORMAT( /, A, ' # function evaluations  = ', I10,                        &
               /, A, ' # gradient evaluations  = ', I10,                        &
               /, A, ' # Hessian evaluations   = ', I10,                        &
@@ -5448,6 +5832,42 @@
 
      array_name = 'trb: data%H_by_cols%type'
      CALL SPACE_dealloc_array( data%H_by_cols%type,                            &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%G_cauchy'
+     CALL SPACE_dealloc_array( data%G_cauchy,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%S_sub'
+     CALL SPACE_dealloc_array( data%S_sub,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%H_sub%ROW'
+     CALL SPACE_dealloc_array( data%H_sub%ROW,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%H_sub%COL'
+     CALL SPACE_dealloc_array( data%H_sub%COL,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%H_sub%VAL'
+     CALL SPACE_dealloc_array( data%H_sub%VAL,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%H_sub%type'
+     CALL SPACE_dealloc_array( data%H_sub%type,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
