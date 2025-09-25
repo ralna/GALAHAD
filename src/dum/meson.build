@@ -13,28 +13,20 @@ if not libpardiso.found()
 endif
 libgalahad_quadruple_src += files('pardiso.F90')
 
-if not libspmf.found()
-  libgalahad_single_src += files('spmf.F90', 'spmf_enums.F90')
-  libgalahad_double_src += files('spmf.F90', 'spmf_enums.F90')
+if not (libpastix.found() and libspm.found())
+  libgalahad_single_src += files('spmf.F90', 'spmf_enums.F90', 'pastixf.F90', 'pastixf_enums.F90')
+  libgalahad_double_src += files('spmf.F90', 'spmf_enums.F90', 'pastixf.F90', 'pastixf_enums.F90')
 endif
-libgalahad_quadruple_src += files('spmf.F90', 'spmf_enums.F90')
-
-if not libpastixf.found()
-  libgalahad_single_src += files('pastixf.F90', 'pastixf_enums.F90')
-  libgalahad_double_src += files('pastixf.F90', 'pastixf_enums.F90')
-endif
-libgalahad_quadruple_src += files('pastixf.F90', 'pastixf_enums.F90')
+libgalahad_quadruple_src += files('spmf.F90', 'spmf_enums.F90', 'pastixf.F90', 'pastixf_enums.F90')
 
 if not libsmumps.found()
   libgalahad_single_src += files('mumps.F90')
   galahad_headers += files('include/smumps_struc.h')
 endif
-
 if not libdmumps.found()
   libgalahad_double_src += files('mumps.F90')
   galahad_headers += files('include/dmumps_struc.h')
 endif
-
 libgalahad_quadruple_src += files('mumps.F90')
 galahad_headers += files('include/qmumps_struc.h')
 

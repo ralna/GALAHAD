@@ -239,6 +239,32 @@ runs:
         wget https://github.com/JuliaBinaryWrappers/CompilerSupportLibraries_jll.jl/releases/download/CompilerSupportLibraries-v${VERSION_CSL}%2B0/CompilerSupportLibraries.v${VERSION_CSL}.$PLATFORM-libgfortran5.tar.gz
         tar -xzvf CompilerSupportLibraries.v${VERSION_CSL}.$PLATFORM-libgfortran5.tar.gz -C deps
 
+    - name: Install PASTIX and SPM
+      if: inputs.int == '32' && inputs.os == 'ubuntu-latest' && inputs.compiler == 'gcc'
+      shell: bash
+      run: |
+        cd ..
+        mkdir -p deps
+        VERSION_SCOTCH="7.0.6"
+        wget https://github.com/JuliaBinaryWrappers/SCOTCH_jll.jl/releases/download/SCOTCH-v${VERSION_SCOTCH}%2B0/SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz
+        tar -xzvf SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz -C deps
+        sudo apt-get -y install libhwloc-dev
+        git clone https://gitlab.inria.fr/solverstack/pastix.git
+        cd pastix
+        git submodule update --init --recursive
+        mkdir build
+        cd build
+        cmake .. \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_DOCUMENTATION=OFF \
+          -DCMAKE_INSTALL_PREFIX=$DEPS/deps \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DPASTIX_INT64=OFF \
+          -DPASTIX_ORDERING_SCOTCH=ON \
+          -DPASTIX_ORDERING_METIS=ON
+        make -j4
+        make install
+
     - name: Install MKL
       if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'intel'
       shell: bash
@@ -257,6 +283,8 @@ runs:
         mkdir -p ../deps/${LIBDIR}
         mkdir -p ../deps/modules
         mkdir -p ../CUTEst/modules
+        mkdir -p ../deps/include/spm
+        mkdir -p ../deps/include/pastix
         CSTD="c99"
         CPPSTD="c++11"
         INT64="false"
@@ -340,13 +368,17 @@ runs:
                              -Dciface=${C_INTERFACE} \
                              -Dpythoniface=${PYTHON_INTERFACE} \
                              -Dint64=${INT64} \
-                             -Dquadruple=${QUADRUPLE} \
+                             -Dquadruple=false \
                              -Dlibblas_path=${BLAS_PATH} \
                              -Dliblapack_path=${LAPACK_PATH} \
                              -Dlibblas=${BLAS} \
                              -Dliblapack=${LAPACK} \
                              -Dfortran_link_args=${LD_CLASSIC} \
                              -Dc_link_args=${LD_CLASSIC} \
+                             -Dlibspm_path=$DEPS/deps/${LIBDIR} \
+                             -Dlibspm_modules=../deps/include/spm \
+                             -Dlibpastix_path=$DEPS/deps/${LIBDIR} \
+                             -Dlibpastix_modules=../deps/include/pastix \
                              -Dlibsmumps=${MUMPS_SINGLE} \
                              -Dlibdmumps=${MUMPS_DOUBLE} \
                              -Dlibmumps_path=$DEPS/deps/${LIBDIR} \

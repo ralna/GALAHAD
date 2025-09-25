@@ -17,30 +17,6 @@
 !> @author Tony Delarue
 !> @date 2023-12-06
 
-#ifdef INTEGER_64
-#define spmf_enums spmf_enums_64
-#endif
-
-#ifdef REAL_32
-#ifdef INTEGER_64
-#define spmf_interfaces_precision spmf_interfaces_single_64
-#else
-#define spmf_interfaces_precision spmf_interfaces_single
-#endif
-#elif REAL_128
-#ifdef INTEGER_64
-#define spmf_interfaces_precision spmf_interfaces_quadruple_64
-#else
-#define spmf_interfaces_precision spmf_interfaces_quadruple
-#endif
-#else
-#ifdef INTEGER_64
-#define spmf_interfaces_precision spmf_interfaces_double_64
-#else
-#define spmf_interfaces_precision spmf_interfaces_double
-#endif
-#endif
-
  MODULE spmf_interfaces_precision
 
    USE iso_c_binding, ONLY : c_float, c_double, c_ptr,                         &
