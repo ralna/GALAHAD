@@ -22,6 +22,12 @@ fs = import('fs')
 py = import('python').find_installation()
 host_system = host_machine.system()
 
+if host_machine.system() == 'darwin'
+  if cxx.get_id() == 'clang' and fc.get_id() == 'gcc'
+    error('On macOS, building GALAHAD with gfortran and clang++ is not supported. Please use g++ as the C++ compiler.')
+  endif
+endif
+
 # Remove messages about deprecated Intel compilers
 if cc.get_id() == 'intel'
   add_global_arguments('-diag-disable=10441', language : 'c')
@@ -210,16 +216,6 @@ libgalahad_double_deps = [libdmumps, libcutest_double, libblas, liblapack,
 
 libgalahad_quadruple_deps = [libcutest_quadruple, libhsl, libwsmp, libpardiso,
                              libspmf, libpastixf, libampl, libhwloc, libquadmath]
-
-# Fix the compilation on Mac when we use gfortran and clang++
-if host_machine.system() == 'darwin'
-  if cxx.get_id() == 'clang' and fc.get_id() == 'gcc'
-    libunwind = cc.find_library('unwind', required : true)
-    libgalahad_single_deps += libunwind
-    libgalahad_double_deps += libunwind
-    libgalahad_quadruple_deps += libunwind
-  endif
-endif
 
 # BLAS and LAPACK
 libblas_src = []
