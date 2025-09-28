@@ -7668,11 +7668,11 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( /, A, ' Iter   p-feas  d-feas com-slk    obj   ',                &
+ 2000 FORMAT( /, A, ' Iter   p-feas  d-feas com-slk     objective  ',          &
                 '  step   target   arc bt     time' )
- 2020 FORMAT( A, I5, A1, 3ES8.1, ES9.1, '     -   ', ES7.1,                    &
+ 2020 FORMAT( A, I5, A1, 3ES8.1, ES15.6, '     -   ', ES7.1,                   &
             '    -   -', 0P, F9.2 )
- 2030 FORMAT( A, I5, A1, 3ES8.1, ES9.1, ES8.1, 1X, ES7.1, I3, A1, A2, I3,      &
+ 2030 FORMAT( A, I5, A1, 3ES8.1, ES15.6, ES8.1, 1X, ES7.1, I3, A1, A2, I3,     &
               0P, F9.2 )
  2070 FORMAT( /, A, ' ========================= feasible point found',         &
                     ' =========================', / )

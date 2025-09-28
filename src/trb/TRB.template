@@ -32,7 +32,6 @@
 ! maximum-clock-time-limit                          -1.0
 ! hessian-available                                 yes
 ! sub-problem-direct                                no
-! two-norm-trust-region-used                        no
 ! exact-GCP-used                                    yes
 ! retrospective-trust-region                        no
 ! subproblem-solved-accurately                      no
