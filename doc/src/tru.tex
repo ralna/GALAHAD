@@ -1091,8 +1091,8 @@ obtain Hessian-vector products (see Section~\ref{reverse}).
 
 \itt{eval\_PREC} is an \optional\
 user-supplied subroutine whose purpose is to evaluate the value of the
-product $\bmP(\bmx)\bmv$ of the user's preconditioner with a given vector
-$\bmv$. See Section~\ref{pv} for details.
+product $\bmP(\bmx)^{-1}\bmv$ of the inverse of the user's preconditioner 
+with a given vector $\bmv$. See Section~\ref{pv} for details.
 If {\tt eval\_PREC} is present,
 it must be declared {\tt EXTERNAL} in the calling program.
 If {\tt eval\_PREC} is absent, \solver\ will use reverse communication to
@@ -1321,10 +1321,10 @@ $\bmx$ to speed up subsequent products.
 
 If the argument {\tt eval\_PREC} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
-product $\bmu = \bmP(\bmx) \bmv$ involving the user's preconditioner
-$\bmP(\bmx)$ with a given vector $\bmv$. The symmetric matrix $\bmP(\bmx)$
-should ideally be chosen so that the eigenvalues of
-$\bmP(\bmx) (\nabla_{xx} f(\bmx))^{-1}$ are clustered.
+product $\bmu = \bmP(\bmx)^{-1} \bmv$ involving the inverse of the user's 
+preconditioner $\bmP(\bmx)$ with a given vector $\bmv$. 
+The symmetric matrix $\bmP(\bmx)$ should ideally be chosen so that the 
+eigenvalues of $\bmP(\bmx) (\nabla_{xx} f(\bmx))^{-1}$ are clustered.
 The routine must be specified as
 
 \def\baselinestretch{0.8}
@@ -1338,7 +1338,7 @@ The routine must be specified as
 \begin{description}
 \itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate the
-product $\bmP(\bmx) \bmv$
+product $\bmP(\bmx)^{-1} \bmv$
 and to a non-zero value if the evaluation has not been possible.
 
 \ittf{X} is a rank-one \intentin\ array argument of type \realdp\
@@ -1353,7 +1353,7 @@ subroutines {\tt eval\_F}, {\tt eval\_G},
 
 \ittf{U} is a rank-one \intentout\ array argument of type \realdp\
 whose components on output should contain the product
-sum $\bmu = \bmP(\bmx) \bmv$.
+sum $\bmu = \bmP(\bmx)^{-1} \bmv$.
 
 \ittf{V} is a rank-one \intentin\ array argument of type \realdp\
 whose components contain the vector $\bmv$.
@@ -1421,12 +1421,12 @@ Possible values of {\tt inform\%status} and the information required are
      undefined at $\bmx$---the user need not set {\tt nlp\%H\%val}, but
      should then set {\tt data\%eval\_status} to a non-zero value.
 
-\ittf{6.} The user should compute the product $\bmu = \bmP(\bmx)\bmv$
-     of their preconditioner $\bmP(\bmx)$ at the point $\bmx$
+\ittf{6.} The user should compute the product $\bmu = \bmP(\bmx)^{-1}\bmv$
+     of the inverse of their preconditioner $\bmP(\bmx)$ at the point $\bmx$
      indicated in {\tt nlp\%X} with the vector $\bmv$.
      The vectors $\bmv$ is given in {\tt data\%V}, the
-     resulting vector $\bmu = \bmP(\bmx)\bmv$ should be set in {\tt data\%U}
-     and {\tt data\%eval\_status}
+     resulting vector $\bmu = \bmP(\bmx)^{-1}\bmv$ should be set in 
+     {\tt data\%U} and {\tt data\%eval\_status}
      should be set to 0. If the user is unable to evaluate the product---for
      instance, if a component of the preconditioner is undefined at
      $\bmx$---the user need not set {\tt data\%U}, but should then set

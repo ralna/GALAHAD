@@ -301,7 +301,7 @@
         END IF
       ELSE
         WRITE( errout, "( /, 'name           n  f               du-feas ',     &
-       &  '   its     #g      #cg       time stat' )" )
+       &  '   its     #g    #gltr       time stat' )" )
         IF ( inform%status == 0 ) THEN
           WRITE( errout, 2050 ) nlp%pname, nlp%n, inform%obj,                  &
             inform%norm_pg, inform%iter, inform%g_eval,                        &

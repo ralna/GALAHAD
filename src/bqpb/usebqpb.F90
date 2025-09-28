@@ -598,8 +598,8 @@
             nfixed = nfixed + 1
             IF ( ABS( prob%Z( i ) ) < ten * stopr ) ndegen = ndegen + 1
           ELSE IF ( MIN( ABS( prob%X( i ) - prob%X_l( i ) ),                   &
-                    ABS( prob%X( i ) - prob%X_u( i ) ) ) <=                    &
-                    MAX( ten * stopr, ABS( prob%Z( i ) ) ) ) THEN
+                         ABS( prob%X( i ) - prob%X_u( i ) ) )                  &
+                    <= MAX( ten * stopr, ABS( prob%Z( i ) ) ) ) THEN
             nfixed = nfixed + 1
             IF ( ABS( prob%Z( i ) ) < ten * stopr ) ndegen = ndegen + 1
           END IF
@@ -701,7 +701,7 @@
                  '      # name       state    value   ',                       &
                  '    Lower       Upper       Dual ' )
  2100 FORMAT( /, ' Of the ', I0, ' variables, ', I0,                           &
-              ' are on bounds & ', I0, ' are dual degenerate' )
+                 ' are on bounds & ', I0, ' are dual degenerate' )
 ! 2110 FORMAT( ' Of the ', I7, ' constraints, ', I7,' are equations &', I7,    &
 !              ' are degenerate' )
  2150 FORMAT( ' Allocation error, variable ', A8, ' status = ', I6 )

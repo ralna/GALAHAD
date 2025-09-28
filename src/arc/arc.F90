@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-05-12 AT 08:20 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-09-17 AT 12:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -3546,6 +3546,8 @@
              prefix, inform%max_entries_factors
          END IF
        ELSE
+         WRITE( data%out, "( A, '  Iterative (GLRT) solution of the',          &
+        &  ' regularization sub-problem' )" ) prefix
          IF ( data%nprec > 0 )                                                 &
            WRITE( data%out, "( A, '  Hessian semi-bandwidth (original,',       &
           &     ' re-ordered) = ', I0, ', ', I0 )" ) prefix,                   &

@@ -299,7 +299,7 @@
        REAL ( KIND = rp_ ) :: tk, gxt, hxt, epstl2, tpttp, tcauch
        REAL ( KIND = rp_ ) :: tbreak, deltat, epsqrt, gxtold, g0tp
        REAL ( KIND = rp_ ) :: t, tamax , ptp, gtp, flxt, t_new
-       LOGICAL :: prnter, pronel, recomp, explicit_h, use_hprod
+       LOGICAL :: prnter, pronel, recomp, explicit_h, use_hprod, t_is_zero
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: USED
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BREAKP, GRAD
      END TYPE BQP_arcsearch_data_type
@@ -1476,6 +1476,8 @@
 !    data%change_status = 0
 !    data%change_status = prob%n
      data%change_status = MAX( prob%n, control%change_max + 1 )
+     data%arcsearch_data%t_is_zero = .TRUE.
+     data%norm_step = zero
 
 !  ------------------------
 !  Start the main iteration
@@ -1605,8 +1607,9 @@
 
 !      IF ( MOD( inform%iter, control%ratio_cg_vs_sd + 1 ) == 0                &
 !           .OR. data%change_status == 0 ) THEN
-       IF ( MOD( inform%iter, control%ratio_cg_vs_sd + 1 ) == 0                &
-            .AND. data%change_status > control%change_max ) THEN
+       IF ( ( MOD( inform%iter, control%ratio_cg_vs_sd + 1 ) == 0              &
+              .AND. data%change_status > control%change_max ) .OR.             &
+            data%arcsearch_data%t_is_zero .OR. data%norm_step == zero ) THEN
 !write(6,*) ' ---------------- steepest descent '
          IF ( data% reverse ) THEN
            reverse%V = - data%G
@@ -1672,11 +1675,11 @@
            IF ( data%change_status == 0 ) THEN
              data%stop_cg =                                                    &
                MAX( SQRT( ABS( gnrmsq ) ) * SQRT( epsmch ),                    &
-                                            control%stop_cg_absolute )
+                    control%stop_cg_absolute )
            ELSE
              data%stop_cg =                                                    &
                MAX( SQRT( ABS( gnrmsq ) ) * control%stop_cg_relative,          &
-                                            control%stop_cg_absolute )
+                    control%stop_cg_absolute )
            END IF
          END IF
 
@@ -1852,151 +1855,151 @@
 
 !  find an improved point, X_new, by arcsearch when H is explicit ...
 
-         IF ( data%explicit_h ) THEN
+       IF ( data%explicit_h ) THEN
 
 !  perform an exact arcsearch ...
 
-           IF ( control%exact_arcsearch ) THEN
-             CALL BQP_exact_arcsearch( prob%n, prob%X, data%G, inform%obj,  &
-                                          prob%X_l, prob%X_u, t_max,           &
-                                          data%X_new, data%q_t,                &
-                                          data%VARIABLE_status, fixed_tol,     &
-                                          data%V, data%NZ_v,                   &
-                                          data%nz_v_start,                     &
-                                          data%nz_v_end,                       &
-                                          data%PROD, data%NZ_prod,             &
-                                          data%nz_prod_end, data%out,          &
-                                          data%print_level, prefix,            &
-                                          data%arcsearch_status, data%n_free,  &
-                                          data%arcsearch_data, userdata,       &
-                                          H = data%H )
+         IF ( control%exact_arcsearch ) THEN
+           CALL BQP_exact_arcsearch( prob%n, prob%X, data%G, inform%obj,       &
+                                     prob%X_l, prob%X_u, t_max,                &
+                                     data%X_new, data%q_t,                     &
+                                     data%VARIABLE_status, fixed_tol,          &
+                                     data%V, data%NZ_v,                        &
+                                     data%nz_v_start,                          &
+                                     data%nz_v_end,                            &
+                                     data%PROD, data%NZ_prod,                  &
+                                     data%nz_prod_end, data%out,               &
+                                     data%print_level, prefix,                 &
+                                     data%arcsearch_status, data%n_free,       &
+                                     data%arcsearch_data, userdata,            &
+                                     H = data%H )
 
 !  ... or an approximation
 
-           ELSE
-             CALL BQP_inexact_arcsearch( prob%n, prob%X, data%G, inform%obj,&
-                                            prob%X_l, prob%X_u, t_max,         &
-                                            data%X_new, data%q_t,              &
-                                            data%VARIABLE_status, fixed_tol,   &
-                                            mu_search,                         &
-                                            data%V, data%NZ_v,                 &
-                                            data%nz_v_start,                   &
-                                            data%nz_v_end,                     &
-                                            data%PROD, data%out,               &
-                                            data%print_level, prefix,          &
-                                            data%arcsearch_status, data%n_free,&
-                                            data%arcsearch_data, userdata,     &
-                                            H = data%H )
-           END IF
+         ELSE
+           CALL BQP_inexact_arcsearch( prob%n, prob%X, data%G, inform%obj,     &
+                                       prob%X_l, prob%X_u, t_max,              &
+                                       data%X_new, data%q_t,                   &
+                                       data%VARIABLE_status, fixed_tol,        &
+                                       mu_search,                              &
+                                       data%V, data%NZ_v,                      &
+                                       data%nz_v_start,                        &
+                                       data%nz_v_end,                          &
+                                       data%PROD, data%out,                    &
+                                       data%print_level, prefix,               &
+                                       data%arcsearch_status, data%n_free,     &
+                                       data%arcsearch_data, userdata,          &
+                                       H = data%H )
+         END IF
 
 !  ... or matrix-vector products are available via the user's subroutine ...
 
-         ELSE IF ( data%use_hprod ) THEN
+       ELSE IF ( data%use_hprod ) THEN
 
 !  perform an exact arcsearch ...
 
-           IF ( control%exact_arcsearch ) THEN
-             CALL BQP_exact_arcsearch( prob%n, prob%X, data%G, inform%obj,     &
-                                          prob%X_l, prob%X_u, t_max,           &
-                                          data%X_new, data%q_t,                &
-                                          data%VARIABLE_status, fixed_tol,     &
-                                          data%V, data%NZ_v,                   &
-                                          data%nz_v_start,                     &
-                                          data%nz_v_end,                       &
-                                          data%PROD, data%NZ_prod,             &
-                                          data%nz_prod_end, data%out,          &
-                                          data%print_level, prefix,            &
-                                          data%arcsearch_status, data%n_free,  &
-                                          data%arcsearch_data, userdata,       &
-                                          eval_HPROD = eval_HPROD )
+         IF ( control%exact_arcsearch ) THEN
+           CALL BQP_exact_arcsearch( prob%n, prob%X, data%G, inform%obj,       &
+                                     prob%X_l, prob%X_u, t_max,                &
+                                     data%X_new, data%q_t,                     &
+                                     data%VARIABLE_status, fixed_tol,          &
+                                     data%V, data%NZ_v,                        &
+                                     data%nz_v_start,                          &
+                                     data%nz_v_end,                            &
+                                     data%PROD, data%NZ_prod,                  &
+                                     data%nz_prod_end, data%out,               &
+                                     data%print_level, prefix,                 &
+                                     data%arcsearch_status, data%n_free,       &
+                                     data%arcsearch_data, userdata,            &
+                                     eval_HPROD = eval_HPROD )
 
 !  ... or an approximation
 
-           ELSE
-             CALL BQP_inexact_arcsearch( prob%n, prob%X, data%G, inform%obj,&
-                                            prob%X_l, prob%X_u, t_max,         &
-                                            data%X_new, data%q_t,              &
-                                            data%VARIABLE_status, fixed_tol,   &
-                                            mu_search,                         &
-                                            data%V, data%NZ_v,                 &
-                                            data%nz_v_start,                   &
-                                            data%nz_v_end,                     &
-                                            data%PROD, data%out,               &
-                                            data%print_level, prefix,          &
-                                            data%arcsearch_status, data%n_free,&
-                                            data%arcsearch_data, userdata,     &
-                                            eval_HPROD = eval_HPROD )
-           END IF
+         ELSE
+           CALL BQP_inexact_arcsearch( prob%n, prob%X, data%G, inform%obj,     &
+                                       prob%X_l, prob%X_u, t_max,              &
+                                       data%X_new, data%q_t,                   &
+                                       data%VARIABLE_status, fixed_tol,        &
+                                       mu_search,                              &
+                                       data%V, data%NZ_v,                      &
+                                       data%nz_v_start,                        &
+                                       data%nz_v_end,                          &
+                                       data%PROD, data%out,                    &
+                                       data%print_level, prefix,               &
+                                       data%arcsearch_status, data%n_free,     &
+                                       data%arcsearch_data, userdata,          &
+                                       eval_HPROD = eval_HPROD )
+         END IF
 
 !  ... or matrix-vector products are available via reverse communication
 
-         ELSE
+        ELSE
 
 !  perform an exact arcsearch ...
 
-           IF ( control%exact_arcsearch ) THEN
-             CALL BQP_exact_arcsearch( prob%n, prob%X, data%G, inform%obj,     &
-                                          prob%X_l, prob%X_u, t_max,           &
-                                          data%X_new, data%q_t,                &
-                                          data%VARIABLE_status, fixed_tol,     &
-                                          reverse%V, reverse%NZ_v,             &
-                                          reverse%nz_v_start,                  &
-                                          reverse%nz_v_end,                    &
-                                          reverse%PROD, reverse%NZ_prod,       &
-                                          reverse%nz_prod_end, data%out,       &
-                                          data%print_level, prefix,            &
-                                          data%arcsearch_status, data%n_free,  &
-                                          data%arcsearch_data, userdata )
+         IF ( control%exact_arcsearch ) THEN
+           CALL BQP_exact_arcsearch( prob%n, prob%X, data%G, inform%obj,       &
+                                     prob%X_l, prob%X_u, t_max,                &
+                                     data%X_new, data%q_t,                     &
+                                     data%VARIABLE_status, fixed_tol,          &
+                                     reverse%V, reverse%NZ_v,                  &
+                                     reverse%nz_v_start,                       &
+                                     reverse%nz_v_end,                         &
+                                     reverse%PROD, reverse%NZ_prod,            &
+                                     reverse%nz_prod_end, data%out,            &
+                                     data%print_level, prefix,                 &
+                                     data%arcsearch_status, data%n_free,       &
+                                     data%arcsearch_data, userdata )
 
 !  ... or an approximation
 
-           ELSE
-             CALL BQP_inexact_arcsearch( prob%n, prob%X, data%G, inform%obj,   &
-                                            prob%X_l, prob%X_u, t_max,         &
-                                            data%X_new, data%q_t,              &
-                                            data%VARIABLE_status, fixed_tol,   &
-                                            mu_search,                         &
-                                            reverse%V, reverse%NZ_v,           &
-                                            reverse%nz_v_start,                &
-                                            reverse%nz_v_end,                  &
-                                            reverse%PROD, data%out,            &
-                                            data%print_level, prefix,          &
-                                            data%arcsearch_status, data%n_free,&
-                                            data%arcsearch_data, userdata )
-           END IF
+         ELSE
+           CALL BQP_inexact_arcsearch( prob%n, prob%X, data%G, inform%obj,     &
+                                       prob%X_l, prob%X_u, t_max,              &
+                                       data%X_new, data%q_t,                   &
+                                       data%VARIABLE_status, fixed_tol,        &
+                                       mu_search,                              &
+                                       reverse%V, reverse%NZ_v,                &
+                                       reverse%nz_v_start,                     &
+                                       reverse%nz_v_end,                       &
+                                       reverse%PROD, data%out,                 &
+                                       data%print_level, prefix,               &
+                                       data%arcsearch_status, data%n_free,     &
+                                       data%arcsearch_data, userdata )
          END IF
+       END IF
 
-         SELECT CASE ( data%arcsearch_status )
+       SELECT CASE ( data%arcsearch_status )
 
 !  successful exit with the new point
 
-         CASE ( 0 )
-           IF ( data% reverse ) THEN
-             data%norm_step = MAXVAL( ABS( reverse%V ) )
-           ELSE
-             data%norm_step = MAXVAL( ABS( data%V ) )
-           END IF
-           GO TO 510
+       CASE ( 0 )
+         IF ( data% reverse ) THEN
+           data%norm_step = MAXVAL( ABS( reverse%V ) )
+         ELSE
+           data%norm_step = MAXVAL( ABS( data%V ) )
+         END IF
+         GO TO 510
 
 !  error exit without the new point
 
-         CASE ( : - 1 )
-           IF ( data%printe ) WRITE( control%error, 2010 )                     &
-             prefix, data%arcsearch_status, 'BQP_(in)exact_arcsearch'
-           inform%status = GALAHAD_error_inertia
-           GO TO 910
+       CASE ( : - 1 )
+         IF ( data%printe ) WRITE( control%error, 2010 )                       &
+           prefix, data%arcsearch_status, 'BQP_(in)exact_arcsearch'
+         inform%status = GALAHAD_error_inertia
+         GO TO 910
 
 !  form the matrix-vector product H * v
 
-         CASE ( 2 )
-           data%branch = 500 ; inform%status = 3 ; RETURN
+       CASE ( 2 )
+         data%branch = 500 ; inform%status = 3 ; RETURN
 
 !  form the sparse matrix-vector product H * v
 
-         CASE ( 3 )
-           data%branch = 500 ; inform%status = 4 ; RETURN
-         END SELECT
-         GO TO 500
+       CASE ( 3 )
+         data%branch = 500 ; inform%status = 4 ; RETURN
+       END SELECT
+       GO TO 500
 
 !  - - - - - - - - - - -
 !  End the stepsize loop
@@ -2423,11 +2426,11 @@
 !-*-*-*-   B Q P _ E X A C T _ A R C S E A R C H   S U B R O U T I N E   -*-*-*-
 
      SUBROUTINE BQP_exact_arcsearch( n, X_0, G, f, X_l, X_u, t_max,            &
-                                        X_t, q_t, VARIABLE_status, fixed_tol,  &
-                                        P, NZ_p, nz_p_start, nz_p_end,         &
-                                        HP, NZ_hp, nz_hp_end, out,             &
-                                        print_level, prefix, status, n_free,   &
-                                        data, userdata, H, eval_HPROD )
+                                     X_t, q_t, VARIABLE_status, fixed_tol,     &
+                                     P, NZ_p, nz_p_start, nz_p_end,            &
+                                     HP, NZ_hp, nz_hp_end, out,                &
+                                     print_level, prefix, status, n_free,      &
+                                     data, userdata, H, eval_HPROD )
 
 !  If we define the 'search arc' x(t) = projection of x_0 + t * p into the box
 !  region x_l(*) <= x(*) <= x_u(*), find the global minimizer of the quadratic
@@ -2629,6 +2632,7 @@
 
 !  Find the status of the variables
 
+!write(6,*) COUNT( VARIABLE_status <= 2 )
 !DIR$ IVDEP
      DO i = 1, n
 
@@ -2652,6 +2656,7 @@
 !  The variable lies close to its lower bound
 
              IF ( P( i ) > epsmch ) THEN
+!write(6,*) i, ' freed lower '
                n_freed = n_freed + 1
                GO TO 110
              END IF
@@ -2661,6 +2666,7 @@
 !  The variable lies close to its upper bound
 
              IF ( P( i ) < - epsmch ) THEN
+!write(6,*) i, ' freed upper '
                n_freed = n_freed + 1
                GO TO 110
              END IF
@@ -2682,6 +2688,9 @@
        data%nbreak = data%nbreak + 1
        NZ_p( data%nbreak ) = i
      END DO
+!    write(6,*) ' free  ', COUNT( VARIABLE_status == 0 )
+!    write(6,*) ' lower ', COUNT( VARIABLE_status == 1 )
+!    write(6,*) ' upper ', COUNT( VARIABLE_status == 2 )
 
 !  Record the number of free variables at the starting point
 
@@ -2690,11 +2699,12 @@
 !  If all of the variables are fixed, exit
 
      IF ( data%pronel ) WRITE( out, "( A, '  ', I0,' variables freed, ', I0,   &
-    &  ' variables. remain fixed' )" ) prefix, n_freed, n - data%nbreak
+    &  ' variables remain fixed' )" ) prefix, n_freed, n - data%nbreak
      IF ( data%prnter ) WRITE( out, "( A, I0, ' variables freed from',         &
     &  ' their bounds ', /, A, I0, ' variables remain fixed ',/ )" )           &
           prefix, n_freed, prefix, n - data%nbreak
-     IF ( data%nbreak == 0 ) GO TO 600
+     data%t_is_zero = data%nbreak == 0
+     IF ( data%t_is_zero ) GO TO 600
      data%iter = 0
      IF ( data%pronel ) WRITE( out,                                            &
        "( A, ' segment    model      gradient   curvature     step' )" )       &
@@ -3392,7 +3402,8 @@
      prefix, prefix, data%iterca, zero, f
      data%iterca = data%iterca + 1
      n_free = nbreak
-     IF ( nbreak == 0 ) GO TO 600
+     data%t_is_zero = data%nbreak == 0
+     IF ( data%t_is_zero ) GO TO 600
 
 !  Calculate HP = H * P ...
 
