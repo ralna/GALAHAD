@@ -212,11 +212,13 @@ libgalahad_quadruple_deps = [libcutest_quadruple, libhsl, libwsmp, libpardiso,
                              libspmf, libpastixf, libampl, libhwloc, libquadmath]
 
 # Fix the compilation on Mac when we use gfortran and clang++
-if cxx.get_id() == 'clang' and fc.get_id() == 'gcc'
-  libgcc_s = fc.find_library('gcc_s', required : true)
-  libgalahad_single_deps += libgcc_s
-  libgalahad_double_deps += libgcc_s
-  libgalahad_quadruple_deps += libgcc_s
+if host_machine.system() == 'darwin'
+  if cxx.get_id() == 'clang' and fc.get_id() == 'gcc'
+    libunwind = cc.find_library('unwind', required : true)
+    libgalahad_single_deps += libunwind
+    libgalahad_double_deps += libunwind
+    libgalahad_quadruple_deps += libunwind
+  endif
 endif
 
 # BLAS and LAPACK
