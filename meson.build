@@ -200,6 +200,11 @@ if build_openmp
   add_global_link_arguments(lomp, language : 'cpp')
 endif
 
+# Fix the compilation on Mac when we use gfortran and clang++
+if cxx.get_id() == 'clang' and fc.get_id() == 'gcc'
+  add_global_link_arguments('-lgcc_s', language : 'cpp')
+endif
+
 libgalahad_single_deps = [libsmumps, libcutest_single, libblas, liblapack,
                           libhsl, libwsmp, libpardiso, libspmf, libpastixf,
                           libampl, libhwloc]
