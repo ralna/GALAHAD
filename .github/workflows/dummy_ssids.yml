@@ -1,4 +1,4 @@
-name: Dummy SSIDS
+name: Meson
 on:
   push:
     branches:
@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: GALAHAD -- Check symbols
+    name: Compilation with the dummy SSIDS
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GALAHAD
