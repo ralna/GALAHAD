@@ -700,6 +700,7 @@ if build_binaries
       binfile = binary[1]
       pp_binfile = gen_double.process(binfile)
       executable(binname, pp_binfile,
+                 link_with : libgalahad_double,
                  include_directories: libgalahad_include,
                  install : true)
     endforeach
