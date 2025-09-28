@@ -45,8 +45,6 @@ endif
 libgalahad_quadruple_src += files('mkl_pardiso.F90')
 
 if not build_ssids
-  libgalahad_single_src += files('ssidss.F90')
-  libgalahad_double_src += files('ssidsd.F90')
-  libgalahad_quadruple_src += files('ssidsq.F90')
+  libgalahad_src += files('ssids.F90')
   libgalahad_c_src += files('C/ssids_ciface.F90')
 endif
