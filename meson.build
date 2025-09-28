@@ -208,8 +208,8 @@ libgalahad_double_deps = [libdmumps, libcutest_double, libblas, liblapack,
                           libhsl, libwsmp, libpardiso, libspmf, libpastixf,
                           libampl, libhwloc]
 
-libgalahad_quadruple_deps = [libcutest_quadruple, libhsl, libwsmp, libpardiso, libspmf,
-                             libpastixf, libampl, libhwloc]
+libgalahad_quadruple_deps = [libcutest_quadruple, libhsl, libwsmp, libpardiso,
+                             libspmf, libpastixf, libampl, libhwloc, libquadmath]
 
 # BLAS and LAPACK
 libblas_src = []
@@ -723,7 +723,7 @@ if build_binaries
       binfile = binary[1]
       pp_binfile = gen_quadruple.process(binfile)
       executable(binname+'_quadruple', pp_binfile,
-                 dependencies : libhsl,
+                 dependencies : [libhsl, libquadmath],
                  link_with : libgalahad_quadruple,
                  include_directories: libgalahad_include,
                  install : true)
