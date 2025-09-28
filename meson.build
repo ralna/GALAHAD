@@ -287,20 +287,6 @@ if libhsl.found()
   add_global_arguments('-DLANCELOT_USE_MA57', language : 'fortran')
 endif
 
-# Link flag for C++
-lstdcpp = '-lstdc++'
-if host_machine.system() != 'linux'
-  if cxx.get_id() == 'clang' or cxx.get_id() == 'clang-cl'
-    lstdcpp = '-lc++'
-  endif
-  if cxx.get_id() == 'intel' or cxx.get_id() == 'intel-llvm'
-    lstdcpp = '-cxxlib'
-  endif
-  if cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm-cl'
-    lstdcpp = '/Qcxxlib'
-  endif
-endif
-
 extra_args_single = ['-DREAL_32']
 extra_args_double = []
 extra_args_quadruple = ['-DREAL_128', '-DGALAHAD_BLAS', '-DGALAHAD_LAPACK', '-DDUMMY_QMUMPS']
@@ -547,8 +533,6 @@ if build_single
                               fortran_args : extra_args_single,
                               c_args : extra_args_single,
                               cpp_args : extra_args_single,
-                              link_language : 'fortran',
-                              link_args : lstdcpp,
                               include_directories: libgalahad_include,
                               install : true)
 endif
@@ -600,8 +584,6 @@ if build_double
                               fortran_args : extra_args_double,
                               c_args : extra_args_double,
                               cpp_args : extra_args_double,
-                              link_language : 'fortran',
-                              link_args : lstdcpp,
                               include_directories: libgalahad_include,
                               install : true)
 endif
@@ -653,8 +635,6 @@ if build_quadruple
                                  fortran_args : extra_args_quadruple,
                                  c_args : extra_args_quadruple,
                                  cpp_args : extra_args_quadruple,
-                                 link_language : 'fortran',
-                                 link_args : lstdcpp,
                                  include_directories: libgalahad_include,
                                  install : true)
 endif
@@ -709,8 +689,6 @@ if build_binaries
       executable(binname+'_single', pp_binfile,
                  dependencies : libhsl,
                  link_with : libgalahad_single,
-                 link_language : 'fortran',
-                 link_args : lstdcpp,
                  include_directories: libgalahad_include,
                  install : true)
     endforeach
@@ -722,8 +700,6 @@ if build_binaries
       binfile = binary[1]
       pp_binfile = gen_double.process(binfile)
       executable(binname, pp_binfile,
-                 link_with : libgalahad_double,
-                 link_language : 'fortran',
                  include_directories: libgalahad_include,
                  install : true)
     endforeach
@@ -735,8 +711,6 @@ if build_binaries
       executable(binname+'_double', pp_binfile,
                  dependencies : libhsl,
                  link_with : libgalahad_double,
-                 link_language : 'fortran',
-                 link_args : lstdcpp,
                  include_directories: libgalahad_include,
                  install : true)
     endforeach
@@ -750,8 +724,6 @@ if build_binaries
       executable(binname+'_quadruple', pp_binfile,
                  dependencies : libhsl,
                  link_with : libgalahad_quadruple,
-                 link_language : 'fortran',
-                 link_args : lstdcpp,
                  include_directories: libgalahad_include,
                  install : true)
     endforeach
@@ -810,8 +782,6 @@ if build_tests
              executable(name, pp_file,
                         link_with : libgalahad_precision,
                         dependencies : deps_tests,
-                        link_language : 'fortran',
-                        link_args : lstdcpp,
                         include_directories: libgalahad_include,
                         install : true,
                         install_dir : fortran_tests_folder),
@@ -840,8 +810,6 @@ if build_tests and build_ciface
                       c_args : args_precision,
                       link_with : libgalahad_precision,
                       dependencies : [lm, libquadmath],
-                      link_language : 'c',
-                      link_args : lstdcpp,
                       include_directories : libgalahad_include,
                       install : true,
                       install_dir : c_tests_folder),
@@ -878,8 +846,6 @@ if build_examples and build_double and (not int64)
     executable(name, file,
                link_with : libgalahad_double,
                dependencies : libgalahad_double_deps,
-               link_language : 'fortran',
-               link_args : lstdcpp,
                include_directories : libgalahad_include,
                install : true,
                install_dir : fortran_examples_folder)
@@ -902,8 +868,6 @@ if build_examples and build_ciface
                  c_args : args_precision,
                  link_with : libgalahad_precision,
                  dependencies : [lm, libquadmath],
-                 link_language : 'c',
-                 link_args : lstdcpp,
                  include_directories : libgalahad_include,
                  install : true,
                  install_dir : c_examples_folder)
