@@ -16,7 +16,7 @@
 !  C interface module to GALAHAD_SSIDS types and interfaces
 
   MODULE GALAHAD_SSIDS_precision_ciface
-    USE SPRAL_KINDS_precision
+    USE GALAHAD_KINDS_precision
     USE GALAHAD_SSIDS_precision, ONLY : f_ssids_control_type                   &
                                           => SSIDS_control_type,               &
                                         f_ssids_inform_type                    &
