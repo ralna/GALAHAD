@@ -26,7 +26,7 @@ mkdir -p shared
 echo " creating single GALAHAD shared library in"
 echo "  $PWD/shared"
 
-STATICLIBS="libgalahad.a libhsl.a libgalahad_spral.a \
+STATICLIBS="libgalahad.a libhsl.a \
             libgalahad_mkl_pardiso.a libgalahad_pardiso.a libgalahad_wsmp.a \
             libgalahad_pastix.a libgalahad_mumps.a libgalahad_umfpack.a \
             libmetis_nodednd.a libgalahad_lapack.a libgalahad_blas.a \

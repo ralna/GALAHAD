@@ -328,21 +328,29 @@ PYLGS64 = $(OBJS64)/libgalahad_py.a
 PYLGD64 = $(OBJD64)/libgalahad_py.a
 PYLGQ64 = $(OBJQ64)/libgalahad_py.a
 
-DRLG  = $(OBJ)/libgalahad_spral.a
-DRLGS = $(OBJS)/libgalahad_spral.a
-DRLGD = $(OBJD)/libgalahad_spral.a
-DRLGQ = $(OBJQ)/libgalahad_spral.a
-DRLGS64 = $(OBJS64)/libgalahad_spral.a
-DRLGD64 = $(OBJD64)/libgalahad_spral.a
-DRLGQ64 = $(OBJQ64)/libgalahad_spral.a
+#DRLG  = $(OBJ)/libgalahad_spral.a
+#DRLGS = $(OBJS)/libgalahad_spral.a
+#DRLGD = $(OBJD)/libgalahad_spral.a
+#DRLGQ = $(OBJQ)/libgalahad_spral.a
+#DRLGS64 = $(OBJS64)/libgalahad_spral.a
+#DRLGD64 = $(OBJD64)/libgalahad_spral.a
+#DRLGQ64 = $(OBJQ64)/libgalahad_spral.a
 
-RLG  = $(OBJ)/libgalahad.a
-RLGS = $(OBJS)/libgalahad.a
-RLGD = $(OBJD)/libgalahad.a
-RLGQ = $(OBJQ)/libgalahad.a
-RLGS64 = $(OBJS64)/libgalahad.a
-RLGD64 = $(OBJD64)/libgalahad.a
-RLGQ64 = $(OBJQ64)/libgalahad.a
+DRLG  = $(LG)
+DRLGS = $(LGS)
+DRLGD = $(LGD)
+DRLGQ = $(LGQ)
+DRLGS64 = $(LGS64)
+DRLGD64 = $(LGD64)
+DRLGQ64 = $(LGQ64)
+
+RLG  = $(LG)
+RLGS = $(LGS)
+RLGD = $(LGD)
+RLGQ = $(LGQ)
+RLGS64 = $(LGS64)
+RLGD64 = $(LGD64)
+RLGQ64 = $(LGQ64)
 
 ULG  = $(OBJ)/libgalahad_umfpack.a
 ULGS = $(OBJS)/libgalahad_umfpack.a

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-23 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-10-03 AT 13:50 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_RQS_test_deck
    USE GALAHAD_KINDS_precision
@@ -113,9 +113,9 @@
    f = 0.96_rp_
    C = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
 
-!  DO data_storage_type = -3, 0
+   DO data_storage_type = -6, 0
 !  DO data_storage_type = -1, -1
-   DO data_storage_type = 0, 0
+!  DO data_storage_type = 0, 0
      CALL RQS_initialize( data, control, inform )
      CALL WHICH_sls( control )
      control%error = 23 ; control%out = 23 ; control%print_level = 10
@@ -166,7 +166,7 @@
        CALL SMT_put( A%type, 'DENSE', smt_stat )
        A%m = 1
      ELSE IF ( data_storage_type == - 3 ) THEN      ! diagonal H, dense A
-       st = 'I'
+       st = 'G'
        ALLOCATE( H%val( n ), H%row( 0 ), H%col( 0 ) )
        IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
        CALL SMT_put( H%type, 'DIAGONAL', smt_stat )
@@ -176,6 +176,39 @@
        ALLOCATE( A%val( n ), A%row( 0 ), A%col( 0 ) )
        IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
        CALL SMT_put( A%type, 'DENSE', smt_stat )
+     ELSE IF ( data_storage_type == - 4 ) THEN      ! scaled identity H, no A
+       st = 'S'
+       ALLOCATE( H%val( 1 ), H%row( 0 ), H%col( 0 ) )
+       IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
+       CALL SMT_put( H%type, 'SCALED_IDENTITY', smt_stat )
+       ALLOCATE( M%val( 0 ), M%row( 0 ), M%col( 0 ) )
+       IF ( ALLOCATED( M%type ) ) DEALLOCATE( M%type )
+       CALL SMT_put( M%type, 'ZERO', smt_stat )
+       ALLOCATE( A%val( 0 ), A%row( 0 ), A%col( 0 ) )
+       IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
+       CALL SMT_put( A%type, 'ZERO', smt_stat )
+     ELSE IF ( data_storage_type == - 5 ) THEN      ! identity H, no A
+       st = 'I'
+       ALLOCATE( H%val( 0 ), H%row( 0 ), H%col( 0 ) )
+       IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
+       CALL SMT_put( H%type, 'IDENTITY', smt_stat )
+       ALLOCATE( M%val( 0 ), M%row( 0 ), M%col( 0 ) )
+       IF ( ALLOCATED( M%type ) ) DEALLOCATE( M%type )
+       CALL SMT_put( M%type, 'ZERO', smt_stat )
+       ALLOCATE( A%val( 0 ), A%row( 0 ), A%col( 0 ) )
+       IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
+       CALL SMT_put( A%type, 'ZERO', smt_stat )
+     ELSE IF ( data_storage_type == - 6 ) THEN      ! no H, no A
+       st = 'Z'
+       ALLOCATE( H%val( 0 ), H%row( 0 ), H%col( 0 ) )
+       IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
+       CALL SMT_put( H%type, 'ZERO', smt_stat )
+       ALLOCATE( M%val( 0 ), M%row( 0 ), M%col( 0 ) )
+       IF ( ALLOCATED( M%type ) ) DEALLOCATE( M%type )
+       CALL SMT_put( M%type, 'ZERO', smt_stat )
+       ALLOCATE( A%val( 0 ), A%row( 0 ), A%col( 0 ) )
+       IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
+       CALL SMT_put( A%type, 'ZERO', smt_stat )
      END IF
 
 !  test with new and existing data
@@ -196,9 +229,13 @@
        H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_ /)
        M%val = (/ 1.0_rp_, 2.0_rp_, 1.0_rp_ /)
        A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+     ELSE IF ( data_storage_type == - 4 ) THEN    !  diagonal/no storage
+       H%val = (/ 1.0_rp_ /)
      END IF
      DO ia = 0, 1
+       IF ( ia == 1 .AND. data_storage_type < - 3 ) CYCLE
        DO im = 0, 1
+         IF ( im == 1 .AND. data_storage_type < - 3 ) CYCLE
          DO ifa = 0, 1
            IF ( ia == 0 .AND. im == 0 .AND. ifa == 0 ) CYCLE ! avoids a bug!
            control%dense_factorization = ifa
@@ -207,7 +244,8 @@
            ELSE
              afa = 'D'
            END IF
-           DO i = 2, 0, -1
+           DO i = 2, 0, - 1
+             IF ( i < 2 .AND. data_storage_type < - 3 ) CYCLE
              control%new_h = i
              IF ( ia == 0 .AND. im == 0 ) THEN
                ma = '  '

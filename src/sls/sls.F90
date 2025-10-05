@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-19 AT 09:30 GMT
+! THIS VERSION: GALAHAD 5.4 - 2025-10-05 AT 15:10 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -7957,7 +7957,7 @@
 
      INTEGER ( KIND = ip_ ) :: i, ip, k, pk
      REAL :: time_start, time_now
-     REAL ( KIND = rp_ ) :: clock_start, clock_now
+     REAL ( KIND = rp_ ) :: clock_start, clock_now, det
 !    INTEGER, DIMENSION( data%n ) :: INV
 
 !  trivial cases
@@ -8224,13 +8224,20 @@
              ELSE IF ( data%matrix_dense( k, k ) == 0.0_rp_ ) THEN
                inform%rank = inform%rank - 1
              END IF
-             D( 1, k ) = data%matrix_dense( k, k )
+!            D( 1, k ) = data%matrix_dense( k, k )
+             D( 1, k ) = 1.0_rp_ / data%matrix_dense( k, k )
              D( 2, k ) = 0.0_rp_
              k = k + 1
            ELSE                               ! a 2 x 2 pivot
-             D( 1, k ) = data%matrix_dense( k, k )
-             D( 1, k + 1 ) = data%matrix_dense( k + 1, k + 1 )
-             D( 2, k ) = data%matrix_dense( k + 1, k )
+!            D( 1, k ) = data%matrix_dense( k, k )
+!            D( 1, k + 1 ) = data%matrix_dense( k + 1, k + 1 )
+!            D( 2, k ) = data%matrix_dense( k + 1, k )
+             det                                                               &
+               = data%matrix_dense( k, k ) * data%matrix_dense( k + 1, k + 1 ) &
+                 - data%matrix_dense( k + 1, k + 1 ) ** 2
+             D( 1, k ) = data%matrix_dense( k + 1, k + 1 ) / det
+             D( 1, k + 1 ) = data%matrix_dense( k, k ) / det
+             D( 2, k ) = - data%matrix_dense( k + 1, k ) /det
              D( 2, k + 1 ) = 0.0_rp_
              k = k + 2
            END IF
@@ -8317,7 +8324,7 @@
 
      INTEGER ( KIND = ip_ ) :: info, k
      REAL :: time_start, time_now
-     REAL ( KIND = rp_ ) :: clock_start, clock_now
+     REAL ( KIND = rp_ ) :: clock_start, clock_now, det
 
 !  start timimg
 
@@ -8403,12 +8410,17 @@
            ELSE IF ( data%matrix_dense( k, k ) == 0.0_rp_ ) THEN
              inform%rank = inform%rank - 1
            END IF
-           data%matrix_dense( k, k ) = D( 1, k )
+!          data%matrix_dense( k, k ) = D( 1, k )
+           data%matrix_dense( k, k ) = 1.0_rp_ / D( 1, k )
            k = k + 1
          ELSE                               ! a 2 x 2 pivot
-           data%matrix_dense( k, k ) = D( 1, k )
-           data%matrix_dense( k + 1, k + 1 ) = D( 1, k + 1 )
-           data%matrix_dense( k + 1, k ) = D( 2, k )
+!          data%matrix_dense( k, k ) = D( 1, k )
+!          data%matrix_dense( k + 1, k + 1 ) = D( 1, k + 1 )
+!          data%matrix_dense( k + 1, k ) = D( 2, k )
+           det = D( 1, k ) * D( 1, k + 1 ) - D( 2, k ) ** 2
+           data%matrix_dense( k, k ) = D( 1, k + 1 ) / det
+           data%matrix_dense( k + 1, k + 1 ) = D( 1, k ) / det
+           data%matrix_dense( k + 1, k ) = - D( 2, k ) / det
            k = k + 2
          END IF
        END DO

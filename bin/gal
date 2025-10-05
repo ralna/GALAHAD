@@ -32,7 +32,7 @@
 #  History -
 #   originally released pre GALAHAD Version 1.0. August 20th, 1999 (for csh)
 #   update released with GALAHAD Version 2.0. May 11th 2006 (for sh)
-#   this version 2025-05-20
+#   this version 2025-09-29
 
 if [[ -z $GALAHAD ]]; then
   echo ' You have not set the GALAHAD environment variable. '
@@ -1130,7 +1130,6 @@ fi
 EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN $NSUB \
  -L$GALOBJ -lgalahad -lgalahad_cutest $PROBLIB $CUTESTLIB -lgalahad \
  ${HSLLIB-${HSL--lgalahad_hsl}} \
- ${SPRALLIB-${SPRAL--lgalahad_spral}} \
  ${PARDISOLIB-${PARDISO--lgalahad_pardiso}} \
  ${MKL_PARDISOLIB-${MKL_PARDISO--lgalahad_mkl_pardiso}} \
  ${WSMPLIB-${WSMP--lgalahad_wsmp}} \
@@ -1139,11 +1138,12 @@ EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN $NSUB \
  ${MPILIB-${MPI--lgalahad_mpi}} \
  ${UMFPACKLIB-${UMFPACK--lgalahad_umfpack}} \
  ${SUITESPARSELIB-${SUITESPARSE-}} \
- ${METISLIB-${METIS--lgalahad_metis_dummy}} \
+ ${METIS4LIB-${METIS4ND--lmetis4_nodend}} \
+ ${METIS5LIB-${METIS5ND--lmetis5_nodend}} \
  ${LAPACKLIB-${LAPACK--lgalahad_lapack}} \
  ${BLASLIB-${BLAS--lgalahad_blas}} \
  ${PLPLOTLIB-${PLPLOT-}} \
- ${CUDALIBS-}"
+ ${CUDALIBS-} -lstdc++ -lhwloc"
 
 if [[ $OUTPUT == "1" ]]; then
   echo " $EXECUTABLE"

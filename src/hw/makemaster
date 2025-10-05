@@ -128,11 +128,11 @@ CLGQ64 = $(OBJQ64)/libgalahad.a
 #  Libraries used
 
 ifeq "$(METIS_64)" "_64"
-  LIBS = -L$(OBJ) $(SPRAL) $(METIS64) $(LAPACK) $(BLAS) \
-          -lgalahad $(METIS64) $(HSL)
+  LIBS = -L$(OBJ) $(METIS464ND) $(METIS564ND) $(LAPACK) $(BLAS) \
+          -lgalahad $(METIS464ND) $(METIS564ND) $(HSL) -lstdc++ -lhwloc
 else
-  LIBS = -L$(OBJ) $(SPRAL) $(METIS) $(LAPACK) $(BLAS) \
-         -lgalahad $(METIS) $(HSL)
+  LIBS = -L$(OBJ) $(METIS4ND) $(METIS5ND) $(LAPACK) $(BLAS) \
+         -lgalahad $(METIS4ND) $(METIS5ND) $(HSL) -lstdc++ -lhwloc
 endif
 
 PLIBS = $(LIBS) -lgalahad_problem

@@ -1,17 +1,29 @@
- C sparse matrix indexing
 
- tests options for all-in-one storage format
+ error exit tests
 
-C:     5 iterations. Optimal objective value = -1.00 status = 0
-R:     5 iterations. Optimal objective value = -1.00 status = 0
-D:     5 iterations. Optimal objective value = -1.00 status = 0
-I:    15 iterations. Optimal objective value = -1.00 status = 0
-P:     9 iterations. Optimal objective value = -1.00 status = 0
+ 3: TRU_solve exit status =     -3
+ 7: TRU_solve exit status =     -7
+15: TRU_solve exit status =    -15
+18: TRU_solve exit status =    -18
+19: TRU_solve exit status =    -19
 
- tests reverse-communication options
+ test of availible options
 
-C:     5 iterations. Optimal objective value = -1.00 status = 0
-R:     5 iterations. Optimal objective value = -1.00 status = 0
-D:     5 iterations. Optimal objective value = -1.00 status = 0
-I:    15 iterations. Optimal objective value = -1.00 status = 0
-P:     9 iterations. Optimal objective value = -1.00 status = 0
+ 1:     8 iterations. Optimal objective value =   -1.0 status =      0
+ 2:     5 iterations. Optimal objective value =   -1.0 status =      0
+ 3:     5 iterations. Optimal objective value =   -1.0 status =      0
+ 4:     9 iterations. Optimal objective value =   -1.0 status =      0
+ 5:     6 iterations. Optimal objective value =   -1.0 status =      0
+ 6:    80 iterations. Optimal objective value =   -1.0 status =      0
+ 7:   148 iterations. Optimal objective value =   -1.0 status =      0
+
+ full test of generic problems
+
+ 1:     8 iterations. Optimal objective value =   -1.0 status =      0
+ 2:     6 iterations. Optimal objective value =   -1.0 status =      0
+ 3:    10 iterations. Optimal objective value =   -1.0 status =      0
+ 4:     8 iterations. Optimal objective value =   -1.0 status =      0
+ 5:     6 iterations. Optimal objective value =   -1.0 status =      0
+ 6:    10 iterations. Optimal objective value =   -1.0 status =      0
+
+ tests completed

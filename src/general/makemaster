@@ -638,7 +638,7 @@ ulinearsolver_quadruple_64: $($(ULINEARSOLVERQ))
 	$(RANLIB) $(LGQ64)
 
 SSIDSS = symbols_silent $(RLGS)(ssids_single.o)
-SSIDSD = symbols_silent $(RLGD)(ssids_double.o)
+SSIDSD = symbols_silent nodend_silent $(RLGD)(ssids_double.o)
 SSIDSQ = symbols_silent $(RLGQ)(ssids_quadruple.o)
 SSIDSS64 = symbols_silent $(RLGS64)(ssids_single_64.o)
 SSIDSD64 = symbols_silent $(RLGD64)(ssids_double_64.o)
@@ -733,7 +733,7 @@ ssids:
 
 ssids.o: $(RLG)(ssids_$(PRECIS).o)
 
-$(RLG)(ssids_$(PRECIS).o): ../dum/ssidss.F90
+$(RLG)(ssids_$(PRECIS).o): ../dum/ssids.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssidss_dum"
 	$(CP) ../dum/ssids.F90 $(OBJ)/ssids.F90
 	cd $(OBJ); $(FORTRAN) -o ssids_$(PRECIS).o $(FFLAGS) ssids.F90

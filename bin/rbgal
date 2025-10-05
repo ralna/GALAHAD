@@ -32,7 +32,7 @@
 
 #  History -
 #   originally released with GALAHAD Version 4.0. March 10th 2022
-#   this version 2023-05-17
+#   this version 2025-09-29
 
 if [[ -z $GALAHAD ]]; then
   echo ' You have not the=true GALAHAD environment variable. '
@@ -283,7 +283,6 @@ fi
 EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN \
  -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad \
  ${HSLLIB-${HSL--lgalahad_hsl}} \
- ${SPRALLIB-${SPRAL--lgalahad_spral}} \
  ${PARDISOLIB-${PARDISO--lgalahad_pardiso}} \
  ${MKL_PARDISOLIB-${MKL_PARDISO--lgalahad_mkl_pardiso}} \
  ${WSMPLIB-${WSMP--lgalahad_wsmp}} \
@@ -292,11 +291,12 @@ EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN \
  ${MPILIB-${MPI--lgalahad_mpi}} \
  ${UMFPACKLIB-${UMFPACK--lgalahad_umfpack}} \
  ${SUITESPARSELIB-${SUITESPARSE-}} \
- ${METISLIB-${METIS--lgalahad_metis_dummy}} \
+ ${METIS4LIB-${METIS4--lmetis4_nodend}} \
+ ${METIS5LIB-${METIS5--lmetis5_nodend}} \
  ${LAPACKLIB-${LAPACK--lgalahad_lapack}} \
  ${BLASLIB-${BLAS--lgalahad_blas}} \
  ${PLPLOTLIB-${PLPLOT-}} \
- ${CUDALIBS-}"
+ ${CUDALIBS-} -lstdc++ -lhwloc"
 
 #echo $EXECUTABLE
 

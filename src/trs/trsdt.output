@@ -9,30 +9,36 @@
 
  ==== basic tests of storage formats ===== 
 
+ format ZS2  : TRS_solve exit status =    0
+ format ZD2  : TRS_solve exit status =    0
  format IS2  : TRS_solve exit status =    0
- format IS1  : TRS_solve exit status =    0
- format IS0  : TRS_solve exit status =    0
  format ID2  : TRS_solve exit status =    0
- format ID1  : TRS_solve exit status =    0
- format ID0  : TRS_solve exit status =    0
- format IS2M : TRS_solve exit status =    0
- format IS1M : TRS_solve exit status =    0
- format IS0M : TRS_solve exit status =    0
- format ID2M : TRS_solve exit status =    0
- format ID1M : TRS_solve exit status =    0
- format ID0M : TRS_solve exit status =    0
- format IS2A : TRS_solve exit status =    0
- format IS1A : TRS_solve exit status =    0
- format IS0A : TRS_solve exit status =    0
- format ID2A : TRS_solve exit status =    0
- format ID1A : TRS_solve exit status =    0
- format ID0A : TRS_solve exit status =    0
- format IS2MA: TRS_solve exit status =    0
- format IS1MA: TRS_solve exit status =    0
- format IS0MA: TRS_solve exit status =    0
- format ID2MA: TRS_solve exit status =    0
- format ID1MA: TRS_solve exit status =    0
- format ID0MA: TRS_solve exit status =    0
+ format SS2  : TRS_solve exit status =    0
+ format SD2  : TRS_solve exit status =    0
+ format GS2  : TRS_solve exit status =    0
+ format GS1  : TRS_solve exit status =    0
+ format GS0  : TRS_solve exit status =    0
+ format GD2  : TRS_solve exit status =    0
+ format GD1  : TRS_solve exit status =    0
+ format GD0  : TRS_solve exit status =    0
+ format GS2M : TRS_solve exit status =    0
+ format GS1M : TRS_solve exit status =    0
+ format GS0M : TRS_solve exit status =    0
+ format GD2M : TRS_solve exit status =    0
+ format GD1M : TRS_solve exit status =    0
+ format GD0M : TRS_solve exit status =    0
+ format GS2A : TRS_solve exit status =    0
+ format GS1A : TRS_solve exit status =    0
+ format GS0A : TRS_solve exit status =    0
+ format GD2A : TRS_solve exit status =    0
+ format GD1A : TRS_solve exit status =    0
+ format GD0A : TRS_solve exit status =    0
+ format GS2MA: TRS_solve exit status =    0
+ format GS1MA: TRS_solve exit status =    0
+ format GS0MA: TRS_solve exit status =    0
+ format GD2MA: TRS_solve exit status =    0
+ format GD1MA: TRS_solve exit status =    0
+ format GD0MA: TRS_solve exit status =    0
  format DS2  : TRS_solve exit status =    0
  format DS1  : TRS_solve exit status =    0
  format DS0  : TRS_solve exit status =    0
@@ -114,5 +120,7 @@
  pass    4: TRS_solve exit status =      0
  pass    5: TRS_solve exit status =      0
  pass    6: TRS_solve exit status =      0
- pass    7: TRS_solve exit status =    -16
+ pass    7: TRS_solve exit status =      0
  pass    8: TRS_solve exit status =      0
+
+ tests completed

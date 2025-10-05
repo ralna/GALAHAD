@@ -73,14 +73,14 @@ GALAHADMAIN  = $(GALAHAD)/ampl_bin/$(VERSION)
 AMPL_OBJS    = $(AMPLDIR)/funcadd0.o $(AMPLDIR)/amplsolver.a
 LIB_DIR      = -L$(AMPLDIR) -L$(OBJ) \
                -L$(CUTEST)/objects/$(CUTESTVERSION)/$(PRECIS) -L.
-LIBS         = -lgalahad -lcutest $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) \
+LIBS         = -lgalahad -lcutest $(HSL) $(MKL_PARDISO) $(PARDISO) \
                 $(WSMP) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) \
                 $(METIS) $(LAPACK) $(BLAS) -lm
-LIBS_JUST_QP = -lgalahad -lcutest $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) \
+LIBS_JUST_QP = -lgalahad -lcutest $(HSL) $(MKL_PARDISO) $(PARDISO) \
                 $(WSMP) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) \
                 $(METIS) $(LAPACK) $(BLAS) -lm
 LIBS_JUST_FILTRANE = -lgalahad -lcutest $(LAPACK) $(BLAS) -lm
-LIBS_JUST_LANCELOTB = -lgalahad -lcutest $(HSL) $(SPRAL) $(MKL_PARDISO) \
+LIBS_JUST_LANCELOTB = -lgalahad -lcutest $(HSL) $(MKL_PARDISO) \
                  $(PARDISO) $(WSMP) $(METIS) $(PASTIX) $(MUMPS) $(MPI) \
                  $(UMFPACK) $(LAPACK) $(BLAS) -lm
 

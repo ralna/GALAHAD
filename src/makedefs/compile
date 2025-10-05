@@ -82,7 +82,7 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
           -Wl,-O1  -Wl,-Bsymbolic-functions $(OBJ)/$(package)_pyiface.o \
           -L$(OBJ)/shared \
           -lgalahad_py -lgalahad_c -lhsl_c \
-          -lgalahad -lgalahad_cutest_dummy $(HSL) $(SPRAL) $(MKL_PARDISO) \
+          -lgalahad -lgalahad_cutest_dummy $(HSL) $(MKL_PARDISO) \
           $(PARDISO) $(WSMP) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(METIS) \
           $(LAPACK) $(BLAS) -lgfortran \
           -o $(PYSITEPACKDIR)/galahad/$(package).$(SOABI).$(DLEXT) \
@@ -106,7 +106,7 @@ $(package)_gcov: ../$(package)/$(package).F90
 	$(FORTRAN) $(FFLAGSOMP) -o $(package)t_gcov.o $(package)t_gcov.F90
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(COVERAGE) \
           -o ./$(package)_gcov $(package)_gcov.o $(package)t_gcov.o -L $(OBJ) \
-          -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
+          -lgalahad $(HSL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
              $(METIS)  $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
 	./$(package)_gcov
 	gcov ./$(package)_gcov
