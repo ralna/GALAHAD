@@ -66,26 +66,6 @@ and say "no" to making dash (rather than bash) the default.
 4. KNOWN PROBLEMS WITH SPECIFIC SYSTEMS
 ---------------------------------------
 
-4.3 ifort under LINUX
----------------------
-
-There may be unfortunate clashes between ifort/icc and the c++ libraries
-from GNU. If you see a linking or run message along the lines of
-
- libgalahad_spral.a(NumericSubtree.o):
-  In function `spral_ssids_cpu_subtree_solve_fwd_dbl':
- NumericSubtree.cxx:(.text+0xa8c): undefined reference to
- `__cxa_throw_bad_array_new_length'
-
-you will need to use libstdc++ from a version of GCC at least
-as recent as version 4.9. TO do so, edit the .ifr files in
-$GALAHAD/makfiles and $GALAHAD/bin/sys so that the SPRAL variable becomes
-
-  -L/usr/lib/gcc/x86_64-linux-gnu/xxx -lgalahad_spral -lstdc++ -lhwloc
-
-where xxx is 4.9 or later (check /usr/lib/gcc/x86_64-linux-gnu to
-see what xxx should be).
-
 4.2. f90/f95 under SOLARIS
 --------------------------
 

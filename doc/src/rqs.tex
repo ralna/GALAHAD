@@ -133,6 +133,25 @@ and the first $n$ components of the array {\tt H\%val} may be used for
 the purpose. The same applies to $\bmM$ if it is required.
 This scheme is inappropriate and thus unavailable for $\bmA$.
 
+\subsubsection{Scaled-identity-matrix storage format}\label{scaled-identity}
+If $\bmH$ is a scalar multiple of the identity matrix
+(i.e., $h_{ii} = h_{11}$  and $h_{ij} = 0$ for all $1 \leq i \neq j \leq n$)
+only the first diagonal entry $h_{11}$ needs be stored,
+and the first component of the array {\tt H\%val} may be used for
+the purpose. The same applies to $\bmM$ if it is required, but again, 
+there is no sensible equivalent for the non-square $\bmA$.
+
+\subsubsection{Identity-matrix storage format}\label{identity}
+If $\bmH$ is the identity matrix
+(i.e., $h_{ii} = 1$ and $h_{ij} = 0$ for all $1 \leq i \neq j \leq n$),
+no explicit entries needs be stored. The same is true for $\bmM$ but
+not for the non-square $\bmA$.
+
+\subsubsection{Zero-matrix storage format}\label{zero}
+If $\bmH = \bmzero$ (i.e., $h_{ij} = 0$ for all $1 \leq i, j \leq n$),
+no explicit entries needs be stored. The same applies both to $\bmM$ and $\bmA$,
+although there would seem little real justification for using $\bmA = 0$.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \input{kinds}
@@ -698,7 +717,19 @@ the first fourteen components of {\tt H\%type} must contain the
 string {\tt SPARSE\_BY\_ROWS},
 and for the diagonal storage scheme (see Section~\ref{diagonal}),
 the first eight components of {\tt H\%type} must contain the
-string {\tt DIAGONAL}.
+string {\tt DIAGONAL},
+for the scaled-identity matrix storage scheme
+(see Section~\ref{scaled-identity}),
+the first fifteen components of {\tt H\%type} must contain the
+string {\tt SCALED\_IDENTITY},
+for the identity matrix storage scheme
+(see Section~\ref{identity}),
+the first eight components of {\tt H\%type} must contain the
+string {\tt IDENTITY}, and
+for the zero matrix storage scheme
+(see Section~\ref{zero}),
+the first four components of {\tt H\%type} must contain the
+string {\tt ZERO}.
 
 For convenience, the procedure {\tt SMT\_put}
 may be used to allocate sufficient space and insert the required keyword
@@ -793,7 +824,19 @@ the first fourteen components of {\tt M\%type} must contain the
 string {\tt SPARSE\_BY\_ROWS},
 and for the diagonal storage scheme (see Section~\ref{diagonal}),
 the first eight components of {\tt M\%type} must contain the
-string {\tt DIAGONAL}.
+string {\tt DIAGONAL},
+for the scaled-identity matrix storage scheme
+(see Section~\ref{scaled-identity}),
+the first fifteen components of {\tt M\%type} must contain the
+string {\tt SCALED\_IDENTITY},
+for the identity matrix storage scheme
+(see Section~\ref{identity}),
+the first eight components of {\tt M\%type} must contain the
+string {\tt IDENTITY}, and
+for the zero matrix storage scheme
+(see Section~\ref{zero}),
+the first four components of {\tt M\%type} must contain the
+string {\tt ZERO}.
 
 For convenience, the procedure {\tt SMT\_put}
 may be used to allocate sufficient space and insert the required keyword
@@ -863,7 +906,10 @@ the first ten components of {\tt A\%type} must contain the
 string {\tt COORDINATE},
 for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
 the first fourteen components of {\tt A\%type} must contain the
-string {\tt SPARSE\_BY\_ROWS}.
+string {\tt SPARSE\_BY\_ROWS},
+and for the zero matrix storage scheme (see Section~\ref{zero}),
+the first four components of {\tt A\%type} must contain the
+string {\tt ZERO}.
 
 For convenience, the procedure {\tt SMT\_put}
 may be used to allocate sufficient space and insert the required keyword

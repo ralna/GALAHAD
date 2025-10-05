@@ -1676,6 +1676,7 @@
      IF ( data%control%norm == diagonalising_preconditioner ) THEN
        IF ( data%control%subproblem_direct ) THEN
          data%use_dps = .TRUE.
+         data%poor_model = .FALSE.
        ELSE
          IF ( control%error > 0 ) WRITE(  control%error,                       &
            "( A, ' diagonalizing norm not avaible with iterative',             &

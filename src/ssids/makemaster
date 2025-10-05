@@ -125,23 +125,23 @@ CLGQ64 = $(OBJQ64)/libgalahad_c.a
 #RLGD64 = $(OBJD64)/libgalahad_spral.a
 #RLGQ64 = $(OBJQ64)/libgalahad_spral.a
 
-RLG  = $(OBJ)/libgalahad.a
-RLGS = $(OBJS)/libgalahad.a
-RLGD = $(OBJD)/libgalahad.a
-RLGQ = $(OBJQ)/libgalahad.a
-RLGS64 = $(OBJS64)/libgalahad.a
-RLGD64 = $(OBJD64)/libgalahad.a
-RLGQ64 = $(OBJQ64)/libgalahad.a
+RLG  = $(LG)
+RLGS = $(LGS)
+RLGD = $(LGD)
+RLGQ = $(LGQ)
+RLGS64 = $(LGS64)
+RLGD64 = $(LGD64)
+RLGQ64 = $(LGQ64)
 
 #  Libraries used
 
 ifeq "$(METIS_64)" "_64"
 # LIBS = -L$(OBJ) $(METIS64) $(LAPACK64) $(BLAS64) -lgalahad $(METIS64) $(HSL)
-  LIBS = -L$(OBJ)  -lgalahad $(SPRAL) $(METIS64) $(LAPACK) $(BLAS) \
-          $(METIS64) $(HSL) 
+  LIBS = -L$(OBJ)  -lgalahad $(LAPACK) $(BLAS) \
+          $(METIS464ND) $(METIS564ND) $(HSL) -lstdc++ -lhwloc
 else
-  LIBS = -L$(OBJ) -lgalahad $(SPRAL) $(METIS) $(LAPACK) $(BLAS) \
-         $(METIS) $(HSL)
+  LIBS = -L$(OBJ) -lgalahad $(LAPACK) $(BLAS) \
+         $(METIS4ND) $(METIS5ND) $(HSL) -lstdc++ -lhwloc
 endif
 
 PLIBS = $(LIBS) -lgalahad_problem
@@ -192,25 +192,25 @@ SSIDSDT264 = $(SSIDSD64) $(OBJD64)/ssidst2_double_64.o
 SSIDSQT64 = $(SSIDSQ64) $(OBJQ64)/ssidst_quadruple_64.o
 SSIDSQT264 = $(SSIDSQ64) $(OBJQ64)/ssidst2_quadruple_64.o
 
-RSSIDSSS = $(OBJS)/ssidss_single.o -L$(OBJS) $(SPRAL) $(LIBS)
-RSSIDSDS = $(OBJD)/ssidss_double.o -L$(OBJD) $(SPRAL) $(LIBS)
-RSSIDSQS = $(OBJQ)/ssidss_quadruple.o -L$(OBJQ) $(SPRAL) $(LIBS)
-RSSIDSST = $(OBJS)/ssidst_single.o -L$(OBJS) $(SPRAL) $(LIBS)
-RSSIDSST2 = $(OBJS)/ssidst2_single.o -L$(OBJS) $(SPRAL) $(LIBS)
-RSSIDSDT = $(OBJD)/ssidst_double.o -L$(OBJD) $(SPRAL) $(LIBS)
-RSSIDSDT2 = $(OBJD)/ssidst2_double.o -L$(OBJD) $(SPRAL) $(LIBS)
-RSSIDSQT = $(OBJQ)/ssidst_quadruple.o -L$(OBJQ) $(SPRAL) $(LIBS)
-RSSIDSQT2 = $(OBJQ)/ssidst2_quadruple.o -L$(OBJQ) $(SPRAL) $(LIBS)
+RSSIDSSS = $(OBJS)/ssidss_single.o -L$(OBJS) $(LIBS)
+RSSIDSDS = $(OBJD)/ssidss_double.o -L$(OBJD) $(LIBS)
+RSSIDSQS = $(OBJQ)/ssidss_quadruple.o -L$(OBJQ) $(LIBS)
+RSSIDSST = $(OBJS)/ssidst_single.o -L$(OBJS) $(LIBS)
+RSSIDSST2 = $(OBJS)/ssidst2_single.o -L$(OBJS) $(LIBS)
+RSSIDSDT = $(OBJD)/ssidst_double.o -L$(OBJD) $(LIBS)
+RSSIDSDT2 = $(OBJD)/ssidst2_double.o -L$(OBJD) $(LIBS)
+RSSIDSQT = $(OBJQ)/ssidst_quadruple.o -L$(OBJQ) $(LIBS)
+RSSIDSQT2 = $(OBJQ)/ssidst2_quadruple.o -L$(OBJQ) $(LIBS)
 
-RSSIDSSS64 = $(OBJS64)/ssidss_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
-RSSIDSDS64 = $(OBJD64)/ssidss_double_64.o -L$(OBJD64) $(SPRAL) $(LIBS)
-RSSIDSQS64 = $(OBJQ64)/ssidss_quadruple_64.o -L$(OBJQ64) $(SPRAL) $(LIBS)
-RSSIDSST64 = $(OBJS64)/ssidst_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
-RSSIDSST264 = $(OBJS64)/ssidst2_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
-RSSIDSDT64 = $(OBJD64)/ssidst_double_64.o -L$(OBJD64) $(SPRAL) $(LIBS)
-RSSIDSDT264 = $(OBJD64)/ssidst2_double_64.o -L$(OBJD64) $(SPRAL) $(LIBS)
-RSSIDSQT64 = $(OBJQ64)/ssidst_quadruple_64.o -L$(OBJQ64) $(SPRAL) $(LIBS)
-RSSIDSQT264 = $(OBJQ64)/ssidst2_quadruple_64.o -L$(OBJQ64) $(SPRAL) $(LIBS)
+RSSIDSSS64 = $(OBJS64)/ssidss_single_64.o -L$(OBJS64) $(LIBS)
+RSSIDSDS64 = $(OBJD64)/ssidss_double_64.o -L$(OBJD64) $(LIBS)
+RSSIDSQS64 = $(OBJQ64)/ssidss_quadruple_64.o -L$(OBJQ64) $(LIBS)
+RSSIDSST64 = $(OBJS64)/ssidst_single_64.o -L$(OBJS64) $(LIBS)
+RSSIDSST264 = $(OBJS64)/ssidst2_single_64.o -L$(OBJS64) $(LIBS)
+RSSIDSDT64 = $(OBJD64)/ssidst_double_64.o -L$(OBJD64) $(LIBS)
+RSSIDSDT264 = $(OBJD64)/ssidst2_double_64.o -L$(OBJD64) $(LIBS)
+RSSIDSQT64 = $(OBJQ64)/ssidst_quadruple_64.o -L$(OBJQ64) $(LIBS)
+RSSIDSQT264 = $(OBJQ64)/ssidst2_quadruple_64.o -L$(OBJQ64) $(LIBS)
 
 #  test agenda for C interfaces
 

@@ -31,6 +31,7 @@
 
 #  History -
 #   originally released pre GALAHAD Version 4.1. July 18th, 2022 (for sh)
+#   this version 2025-09-29
 
 if [[ -z $GALAHAD ]]; then
   echo ' You have not set the GALAHAD environment variable. '
@@ -495,8 +496,21 @@ fi
 
 EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN\
  -L$GALOBJ -lgalahad $PROBLIB -lgalahad\
- $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMPLIB $SUITESPARSELIB\
- $METISLIB $LAPACKLIB $BLASLIB $PLPLOT $CUDALIBS"
+ ${HSLLIB-${HSL--lgalahad_hsl}} \
+ ${PARDISOLIB-${PARDISO--lgalahad_pardiso}} \
+ ${MKL_PARDISOLIB-${MKL_PARDISO--lgalahad_mkl_pardiso}} \
+ ${WSMPLIB-${WSMP--lgalahad_wsmp}} \
+ ${PASTIXLIB-${PASTIX--lgalahad_pastix}} \
+ ${MUMPSLIB-${MUMPS--lgalahad_mumps}} \
+ ${MPILIB-${MPI--lgalahad_mpi}} \
+ ${UMFPACKLIB-${UMFPACK--lgalahad_umfpack}} \
+ ${SUITESPARSELIB-${SUITESPARSE-}} \
+ ${METIS4LIB-${METIS4--lmetis4_nodend}} \
+ ${METIS5LIB-${METIS5--lmetis5_nodend}} \
+ ${LAPACKLIB-${LAPACK--lgalahad_lapack}} \
+ ${BLASLIB-${BLAS--lgalahad_blas}} \
+ ${PLPLOTLIB-${PLPLOT-}} \
+ ${CUDALIBS-} -lstdc++ -lhwloc"
 
 if [[ $OUTPUT == "1" ]]; then
   echo " $EXECUTABLE"

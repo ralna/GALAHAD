@@ -76,6 +76,7 @@
      INTEGER ( KIND = ip_ ), PARAMETER  :: nskip_prec_max = 0
      INTEGER ( KIND = ip_ ), PARAMETER  :: history_max = 100
      LOGICAL, PARAMETER  :: debug_model_4 = .TRUE.
+     LOGICAL, PARAMETER  :: debug_subproblem_data = .FALSE.
      LOGICAL, PARAMETER  :: test_s = .TRUE.
 !    LOGICAL, PARAMETER  :: test_s = .FALSE.
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
@@ -1676,6 +1677,7 @@
      IF ( data%control%norm == diagonalising_preconditioner ) THEN
        IF ( data%control%subproblem_direct ) THEN
          data%use_dps = .TRUE.
+         data%poor_model = .FALSE.
        ELSE
          IF ( control%error > 0 ) WRITE(  control%error,                       &
            "( A, ' diagonalizing norm not avaible with iterative',             &
@@ -2710,8 +2712,8 @@
            data%model = zero
            IF ( data%poor_model ) THEN
              CALL DPS_resolve( nlp%n, data%S( : nlp%n ), data%DPS_data,        &
-                             data%control%DPS_control, inform%DPS_inform,      &
-                             delta = inform%radius )
+                               data%control%DPS_control, inform%DPS_inform,    &
+                               delta = inform%radius )
              facts_this_solve = 0
            ELSE
              CALL DPS_solve( nlp%n, nlp%H, nlp%G( : nlp%n ), data%model,       &
@@ -2874,6 +2876,15 @@
 
            data%model = zero
            facts_this_solve = inform%TRS_inform%factorizations
+
+           IF ( debug_subproblem_data ) THEN
+             WRITE( data%out,"( ' type, n, ne = ', A, ', ', I0, ', ' I0 )" )   &
+                 SMT_get( nlp%H%type ), nlp%H%n, nlp%H%ne
+             DO l = 1, nlp%H%ne
+               WRITE( data%out, "( A, 2I7, ES24.16 )" ) prefix,                &
+                 nlp%H%row( l ), nlp%H%col( l ), nlp%H%val( l )
+             END DO
+           END IF
 
            IF ( data%non_trivial_p ) THEN
              CALL TRS_solve( nlp%n, inform%radius, data%model,                 &
@@ -3810,8 +3821,10 @@
              WRITE(data%out, "( A,                                             &
             &  '  Goldfarb diagonalising TR-norm used')")  prefix
            ELSE
-             WRITE(data%out, "( A, '  Modified absolute-value ',               &
-            &   'diagonalising TR-norm used')")  prefix
+             WRITE(data%out, "( A, '  Modified absolute-value (solver ', A,    &
+            &  ') diagonalising TR-norm used')")  prefix,                      &
+               TRIM( data%control%DPS_control%symmetric_linear_solver ) 
+!              TRIM( inform%DPS_inform%SLS_inform%solver )
            END IF
          END SELECT
          WRITE( data%out, "( A, '  Number of factorization = ', I0,            &

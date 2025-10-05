@@ -522,17 +522,20 @@ fi
 if [[ "$HSL" == "" ]]; then
   HSL="-lhsl"
 fi
-if [[ "$SPRAL" == "" ]]; then
-  SPRAL="-lgalahad_spral"
-fi
 if [[ "$METISVERSION" == "" ]]; then
   METISVERSION="52"
 fi
-if [[ "$METIS" == "" ]]; then
-  METIS="-lmetis4_nodend -lmetis5_nodend"
+if [[ "$METIS4ND" == "" ]]; then
+  METIS4ND="-lmetis4_nodend"
 fi
-if [[ "$METIS64" == "" ]]; then
-  METIS64="-lmetis464_nodend -lmetis564_nodend"
+if [[ "$METIS5ND" == "" ]]; then
+  METIS5ND="-lmetis5_nodend"
+fi
+if [[ "$METIS464ND" == "" ]]; then
+  METIS464ND="-lmetis464_nodend"
+fi
+if [[ "$METIS564ND" == "" ]]; then
+  METIS564ND="-lmetis564_nodend"
 fi
 if [[ "$PARDISO" == "" ]]; then
   PARDISO="-lgalahad_pardiso"
@@ -590,9 +593,10 @@ echo '#  External libraries, see $GALAHAD/doc/README.external'     >> $SYSFILE
 echo 'BLAS="'$BLAS'"'                                              >> $SYSFILE
 echo 'LAPACK="'$LAPACK'"'                                          >> $SYSFILE
 echo 'HSL="'$HSL'"'                                                >> $SYSFILE
-echo 'SPRAL="'$SPRAL'"'                                            >> $SYSFILE
-echo 'METIS="'$METIS'"'                                            >> $SYSFILE
-echo 'METIS64="'$METIS64'"'                                        >> $SYSFILE
+echo 'METIS4ND="'$METIS4ND'"'                                      >> $SYSFILE
+echo 'METIS5ND="'$METIS5ND'"'                                      >> $SYSFILE
+echo 'METIS464ND="'$METIS464ND'"'                                  >> $SYSFILE
+echo 'METIS564ND="'$METIS564ND'"'                                  >> $SYSFILE
 echo 'PARMETIS="'$PARMETIS'"'                                      >> $SYSFILE
 echo 'SCOTCH="'$SCOTCH'"'                                          >> $SYSFILE
 echo 'PTSCOTCH="'$PTSCOTCH'"'                                      >> $SYSFILE
@@ -744,15 +748,13 @@ echo '#  -- HSL --'                                                >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'HSL = '$HSL                                                  >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
-echo '#  -- SPRAL --'                                              >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'SPRAL = '$SPRAL                                              >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
 echo '#  -- Metis -- (METISVERSION = 4, 51 or 52, with default 52 files included)' >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'METISVERSION = '$METISVERSION                                >> $MAKEFILE
-echo 'METIS = '$METIS                                              >> $MAKEFILE
-echo 'METIS64 = '$METIS64                                          >> $MAKEFILE
+echo 'METIS4ND = '$METIS4ND                                        >> $MAKEFILE
+echo 'METIS5ND = '$METIS5ND                                        >> $MAKEFILE
+echo 'METIS464ND = '$METIS464ND                                    >> $MAKEFILE
+echo 'METIS564ND = '$METIS564ND                                    >> $MAKEFILE
 echo 'PARMETIS = '$PARMETIS                                        >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  -- Scotch --'                                             >> $MAKEFILE

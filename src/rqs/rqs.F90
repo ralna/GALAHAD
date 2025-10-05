@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-10-05 AT 09:15 GMT.
 
 #include "galahad_modules.h"
 
@@ -827,6 +827,7 @@
 !-----------------------------------------------
 
       INTEGER ( KIND = ip_ ) :: i, j, l, m_dim, nb, nim1, lwork, sy_status
+      REAL ( KIND = rp_ ) :: h_val, c_norm, lambda, pm2, oopm2, target
       REAL :: time_start, time_now, time_record
       REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record
       LOGICAL :: new_q
@@ -838,6 +839,8 @@
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
 
 !  check for obvious errors
 
@@ -867,7 +870,72 @@
         GO TO 910
       END IF
 
-      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
+!  special unconstrained case with unit M and diagonal Hessian
+
+      IF ( .NOT. PRESENT( M ) .AND. .NOT. PRESENT( A ) ) THEN
+
+!  the Hessian is generally diagonal
+
+        IF ( SMT_get( H%type ) == 'DIAGONAL' ) THEN
+          CALL RQS_solve_diagonal( n, p, sigma, f, C, H%val, X, control,       &
+                                   inform )
+          GO TO 900
+
+!  the Hessian is zero or a (scaled) identity
+
+        ELSE IF ( SMT_get( H%type ) == 'SCALED_IDENTITY' .OR.                  &
+                  SMT_get( H%type ) == 'IDENTITY' .OR.                         &
+                  SMT_get( H%type ) == 'ZERO' .OR.                             &
+                  SMT_get( H%type ) == 'NONE' ) THEN
+          SELECT CASE ( SMT_get( H%type ) )
+          CASE ( 'ZERO', 'NONE' )
+            h_val = zero
+          CASE ( 'IDENTITY' )
+            h_val = one
+          CASE ( 'SCALED_IDENTITY' )
+            h_val = H%val( 1 )
+          END SELECT
+
+          c_norm = TWO_NORM( C )
+          IF ( c_norm > 0 ) THEN ! c /= 0
+            IF ( p > two ) THEN
+              pm2 = p - two ; oopm2 = one / pm2
+              lambda = RQS_lambda_root( h_val, c_norm * sigma ** oopm2, oopm2 )
+            ELSE
+              lambda = sigma
+            END IF
+            X = - C / ( h_val + lambda )
+            inform%x_norm = TWO_NORM( X )
+            IF ( p > two ) THEN
+              target = ( lambda / sigma ) ** oopm2
+              inform%obj = f + half * DOT_PRODUCT( C, X )                      &
+                             - half * lambda * target ** 2
+              inform%obj_regularized = inform%obj + ( lambda / p ) * target ** 2
+            ELSE
+              inform%obj_regularized = f + half * DOT_PRODUCT( C, X )
+              inform%obj                                                       &
+                = inform%obj_regularized - half * sigma * inform%x_norm ** 2
+            END IF
+            inform%multiplier = lambda
+            inform%pole = MAX( zero, - h_val )
+            inform%status = 0
+          ELSE ! c = 0
+            X = zero
+            inform%x_norm = zero
+            inform%obj = f
+            inform%obj_regularized = f
+            inform%multiplier = zero
+            inform%pole = zero
+            IF ( p > two .OR. sigma + h_val >= 0 ) THEN ! zero solution
+              inform%status = 0
+            ELSE ! unbounded from below
+              inform%status = GALAHAD_error_unbounded
+            END IF
+          END IF
+          inform%hard_case = .FALSE.
+          GO TO 900
+        END IF
+      END IF
 
 !  should the problem be solved by dense factorization? Possible values are
 !   0     sparse factorization will be used
@@ -1145,19 +1213,9 @@
 
         X( : n ) = MATMUL( data%Q_dense( : n , : n ), data%X_dense( : n ) )
 
-!  record the overall time when a dense factorization is used
-
-        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%total = inform%time%total + time_now - time_start
-        inform%time%clock_total =                                              &
-          inform%time%clock_total + clock_now - clock_start
-
-!  a sparse factorization will be used
+!  a sparse factorization will be used, solve the sparse problem
 
       ELSE
-
-!  solve the sparse problem
-
         CALL RQS_solve_main( n, p, sigma, f, C, H, X, data, control, inform,   &
                              M, A, Y )
       END IF
@@ -1166,6 +1224,11 @@
 !  Exit
 !  ----
 
+  900 CONTINUE
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total =                                                &
+        inform%time%clock_total + clock_now - clock_start
       RETURN
 
 !  -------------
@@ -1176,6 +1239,10 @@
       IF ( control%out > 0 .AND. control%print_level > 0 )                     &
         WRITE( control%out, "( A, '   **  Error return ', I0,                  &
        & ' from RQS ' )" ) control%prefix, inform%status
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total =                                                &
+        inform%time%clock_total + clock_now - clock_start
       RETURN
 
 !  ---------------------
@@ -1414,14 +1481,6 @@
 
       unit_m = .NOT. PRESENT( M )
       constrained = PRESENT( A )
-
-!  is the problem diagonal and unconstrained?
-
-      IF ( SMT_get( H%type ) == 'DIAGONAL' .AND. unit_m .AND.                  &
-           .NOT. constrained ) THEN
-        CALL RQS_solve_diagonal( n, p, sigma, f, C, H%val, X, control, inform )
-        RETURN
-      END IF
 
 !  set initial values
 
@@ -2003,9 +2062,6 @@
 
           IF ( inform%IR_inform%norm_final_residual >                          &
                inform%IR_inform%norm_initial_residual ) THEN
-! write(out, "( ' *********** WARNING 1 - initial and final residuals are ',   &
-!& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
-!               inform%IR_inform%norm_final_residual
             bad_eval = '1'
           END IF
 
@@ -2318,11 +2374,7 @@
              &    "( ' **** WARNING *** iterative refinement diverged,',       &
              &    ' increasing lambda marginally' ) ")
               bad_eval = '2'
-!write(6, "( ' *********** WARNING 2 - initial and final residuals are ',      &
-!& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
-!               inform%IR_inform%norm_final_residual
               lambda_l = lambda
-!             lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
               lambda = lambda_l + lambda_pert
               it = it + 1
               GO TO 100
@@ -2575,13 +2627,8 @@
              &    "( ' **** WARNING 3 *** iterative refinement diverged,',     &
              &    ' increasing lambda marginally' ) ")
               bad_eval = '3'
-! write(6, "( ' *********** WARNING 3 - initial and final residuals are ',     &
-!& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
-!              inform%IR_inform%norm_final_residual
-!write(6,"( ' in ', A, ' B, was ', 3ES22.15 )" ) region,lambda_l,lambda,lambda_u
               lambda_l = lambda
               lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
-!write(6,"( ' in ', A, ' B, is  ', 3ES22.15 )" ) region,lambda_l,lambda,lambda_u
               it = it + 1
               GO TO 100
             END IF
@@ -2608,14 +2655,6 @@
           ELSE
             IF ( printt ) WRITE( out, 2050 ) prefix, clock_now - clock_record
           END IF
-
-!         IF ( inform%IR_inform%norm_final_residual >                          &
-!              inform%IR_inform%norm_initial_residual ) THEN
-!             bad_eval = '4'
-! write(6, "( ' *********** WARNING 4 - initial and final residuals are ',     &
-!& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
-!              inform%IR_inform%norm_final_residual
-!         END IF
 
 !  form ||w||^2 = y^T z = x^T L^-T D^-1 L^-1 x = x^T H^-1(lambda) x
 
@@ -2807,12 +2846,8 @@
                  &    "( ' **** WARNING 5 *** iterative refinement diverged,', &
                  &    ' increasing lambda marginally' ) ")
                   bad_eval = '5'
-!write(6,"( ' in ', A, ' C, was ', 3ES22.15 )" ) &
-!  region, lambda_l, lambda, lambda_u
                   lambda_l = lambda
                   lambda = lambda_l + theta_eps5 * ( lambda_u - lambda_l )
-!write(6,"( ' in ', A, ' C, is  ', 3ES22.15 )" ) &
-!  region, lambda_l ,lambda, lambda_u
                   it = it + 1
                   GO TO 100
                 END IF
@@ -2858,14 +2893,6 @@
                 IF ( printt )                                                  &
                   WRITE( out, 2050 ) prefix, clock_now - clock_record
               END IF
-
-!             IF ( inform%IR_inform%norm_final_residual >                      &
-!                  inform%IR_inform%norm_initial_residual ) THEN
-!               bad_eval = '6'
-! write(6, "( ' *********** WARNING 6 - initial and final residuals are ',     &
-!& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
-!              inform%IR_inform%norm_final_residual
-!             END IF
 
 !  form ||v||^2 = z^T y = x'^T L^-T D^-1 L^-1 x' = x'^T H^-1(lambda) x'
 
@@ -3573,10 +3600,6 @@
                   data%U( : n ) = data%Y( : n ) / u_norm
                 END IF
                 IF ( constrained ) data%U( n + 1 : data%npm ) = zero
-!data%control%IR_control%out = 6
-!data%control%IR_control%print_level = 3
-!data%control%SLS_control%out = 6
-!data%control%SLS_control%print_level = 3
                 CALL IR_solve( data%H_lambda, data%U( : data%npm ),            &
                        data%IR_data, data%SLS_data,                            &
                        data%control%IR_control, data%control%SLS_control,      &
@@ -3586,14 +3609,6 @@
                 inform%time%clock_solve =                                      &
                   inform%time%clock_factorize + clock_now - clock_record
                 IF ( printt ) WRITE( out, 2040 ) prefix, clock_now -clock_record
-
-!               IF ( inform%IR_inform%norm_final_residual >                    &
-!                    inform%IR_inform%norm_initial_residual ) THEN
-!                 bad_eval = '7'
-! write(6, "( ' *********** WARNING 7 - initial and final residuals are ',     &
-!& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
-!              inform%IR_inform%norm_final_residual
-!               END IF
 
                 IF ( unit_m ) THEN
                   u_norm = TWO_NORM( data%U( : n ) )
@@ -3900,11 +3915,6 @@
  900  CONTINUE
       inform%multiplier = lambda
       inform%pole = lambda_s_l
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start
-!write(6,*) ' ok'
       RETURN
 
 !  -------------
@@ -3914,11 +3924,6 @@
   910 CONTINUE
       IF ( printi ) WRITE( out, "( A, '   **  Error return ', I0,              &
     & ' from RQS ' )" ) prefix, inform%status
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start
-!write(6,*) ' error '
       RETURN
 
 !  ---------------------
@@ -3929,11 +3934,6 @@
       IF ( printi ) WRITE( out, "( A, ' error return from ',                   &
     &   'SLS_factorize: status = ', I0 )" ) prefix, inform%SLS_inform%status
       inform%status = GALAHAD_error_factorization
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start
-!write(6,*) ' fact error '
       RETURN
 
 !  -----------------
@@ -3945,11 +3945,6 @@
          "( A, ' The matrix M provided for RQS appears not to be strictly ',   &
        &      ' diagonally dominant '  )" ) prefix
       inform%status = GALAHAD_error_preconditioner
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start
-!write(6,*) ' inertia error '
       RETURN
 
 ! Non-executable statements

@@ -220,20 +220,20 @@
        control%error = - 1
        CALL TRB_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
-     ELSE IF ( i == 5 ) THEN
-       control%model = - 2
-       CALL TRB_solve( nlp, control, inform, data, userdata,                   &
-                       eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
-     ELSE IF ( i == 6 ) THEN
-       control%model = 1
-       control%maxit = 1000
-       CALL TRB_solve( nlp, control, inform, data, userdata,                   &
-                       eval_F = FUN, eval_G = GRAD )
-     ELSE IF ( i == 7 ) THEN
-       control%model = 3
-       control%maxit = 1000
-       CALL TRB_solve( nlp, control, inform, data, userdata,                   &
-                       eval_F = FUN, eval_G = GRAD )
+!    ELSE IF ( i == 5 ) THEN
+!      control%model = - 2
+!      CALL TRB_solve( nlp, control, inform, data, userdata,                   &
+!                      eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
+    ELSE IF ( i == 6 ) THEN
+      control%model = 1
+      control%maxit = 1000
+      CALL TRB_solve( nlp, control, inform, data, userdata,                   &
+                      eval_F = FUN, eval_G = GRAD )
+!    ELSE IF ( i == 7 ) THEN
+!      control%model = 3
+!      control%maxit = 1000
+!      CALL TRB_solve( nlp, control, inform, data, userdata,                   &
+!                      eval_F = FUN, eval_G = GRAD )
      END IF
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &

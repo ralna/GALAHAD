@@ -1,4 +1,4 @@
-In order to get GALAHAD working, here is what you need to do.
+In order to get GALAHAD working **using make**, here is what you need to do.
 
     ===========
     PREPARATION
@@ -444,13 +444,12 @@ In order to get GALAHAD working, here is what you need to do.
     You should add this to your LIBPATH environment variable,
     and may then link the library with the -lgalahad compiler flag.
     Access to optional auxiliary libraries is via
-     -lgalahad_hsl  -lgalahad_spral -lgalahad_mkl_pardiso
+     -lgalahad_hsl  -lgalahad_mkl_pardiso
      -lgalahad_pardiso -lgalahad_wsmp -lgalahad_pastix -lgalahad_mumps
-     -lgalahad_mpi -galahad_umfpack -lgalahad_metis_dummy
+     -lgalahad_mpi -galahad_umfpack -lmetis4_nodend -lmetis5_nodend
      -lgalahad_lapack -lgalahad_blas
     as appropriate; any of these dummies may be replaced by their real
-    equivalents by using the proper library name, but note that
-    access to Metis 4 or 5 requires -lgalahad_metis4 or _metis5.
+    equivalents by using the proper library name.
     C versions may be accessed by additionally pre-pending
       -lgalahad_c -lgalahad_hsl_c
     to the previous list
@@ -474,15 +473,11 @@ In order to get GALAHAD working, here is what you need to do.
      - Matlab. help is provided using hslp galahad_"pack" within Matlab
      - general. An introductory paper is in $GALAHAD/doc/galahad.pdf
 
-[23. If you like using graphical user-interfaces, why not try the GALAHAD
-     python GUI(see $GAHALAD/doc/README.gui for details). This has not
-     been updated in years, so is probably of limited use.]
-
     ====
     NEWS
     ====
 
-24. Refer to the GALAHAD WWW page
+23. Refer to the GALAHAD WWW page
 
       http://galahad.rl.ac.uk/galahad-www/
 
@@ -492,7 +487,7 @@ In order to get GALAHAD working, here is what you need to do.
     REPORTING ISSUES
     ================
 
-25. If you have issues that you would like to report, such as potential bugs
+24. If you have issues that you would like to report, such as potential bugs
     or extensons that might be useful, please use the issues page
 
        https://github.com/ralna/GALAHAD/issues
@@ -513,6 +508,6 @@ From version 4.2, additionally with
  Jari Fowkes
  Alexis Montoison
 
-This version, 5.1
+This version, 5.3
 
-5th January 2025
+1st October 2025

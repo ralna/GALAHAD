@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-07-01 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-10-05 AT 09:15 GMT.
 
 #include "galahad_modules.h"
 
@@ -858,6 +858,7 @@
 
       INTEGER ( KIND = ip_ ) :: i, j, l, m_dim, nb, nim1, lwork, sy_status
       REAL :: time_start, time_now, time_record
+      REAL ( KIND = rp_ ) :: h_val, beta, c_norm, lambda
       REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record
       LOGICAL :: new_q
       CHARACTER ( LEN = 80 ) :: array_name
@@ -867,6 +868,8 @@
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
 
 !  check for obvious errors
 
@@ -886,7 +889,65 @@
         GO TO 910
       END IF
 
-      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
+!  special unconstrained case with unit M and diagonal Hessian
+
+      IF ( .NOT. PRESENT( M ) .AND. .NOT. PRESENT( A ) ) THEN
+
+!  the Hessian is generally diagonal
+
+        IF ( SMT_get( H%type ) == 'DIAGONAL' ) THEN
+          CALL TRS_solve_diagonal( n, radius, f, C, H%val, X, control, inform )
+
+!  the Hessian is zero or a (scaled) identity
+
+        ELSE IF ( SMT_get( H%type ) == 'SCALED_IDENTITY' .OR.                  &
+                  SMT_get( H%type ) == 'IDENTITY' .OR.                         &
+                  SMT_get( H%type ) == 'ZERO' .OR.                             &
+                  SMT_get( H%type ) == 'NONE' ) THEN
+          SELECT CASE ( SMT_get( H%type ) )
+          CASE ( 'ZERO', 'NONE' )
+            h_val = zero
+          CASE ( 'IDENTITY' )
+            h_val = one
+          CASE ( 'SCALED_IDENTITY' )
+            h_val = H%val( 1 )
+          END SELECT
+          c_norm = TWO_NORM( C )
+          IF ( c_norm > 0 ) THEN ! c /= 0
+            beta = c_norm / radius
+            IF ( beta <= h_val ) THEN ! interior solution
+              X = - C / h_val
+              inform%obj = f - half * c_norm * c_norm / h_val
+              inform%multiplier = zero
+              inform%x_norm = c_norm / h_val
+            ELSE ! solution on the trust-region boundary
+              X = - C / beta
+              lambda = beta - h_val
+              inform%obj = f - half * radius * ( c_norm - lambda * radius )
+              inform%multiplier = lambda
+              inform%x_norm = radius
+            END IF
+            inform%pole = MAX( zero, - h_val )
+          ELSE ! c = 0
+            X = zero
+            IF ( h_val >= 0 ) THEN ! zero solution
+              inform%obj = f
+              inform%multiplier = zero
+              inform%pole = zero
+              inform%x_norm = zero
+            ELSE ! artibtrary solution on the trust-region boundary
+              inform%obj = f + half * h_val * radius
+              X( 1 ) = radius
+              inform%multiplier = one
+              inform%pole = - h_val
+              inform%x_norm = radius
+            END IF
+          END IF
+          inform%hard_case = .FALSE.
+          inform%status = 0
+        END IF
+        GO TO 900
+      END IF
 
 !  should the problem be solved by dense factorization? Possible values are
 !   0     sparse factorization will be used
@@ -988,6 +1049,14 @@
 
           data%Q_dense( : n, : n ) = zero
           SELECT CASE ( SMT_get( H%type ) )
+          CASE ( 'IDENTITY' )
+            DO i = 1, n
+              data%Q_dense( i, i ) = one
+            END DO
+          CASE ( 'SCALED_IDENTITY' )
+            DO i = 1, n
+              data%Q_dense( i, i ) = H%val( 1 )
+            END DO
           CASE ( 'DIAGONAL' )
             DO i = 1, n
               data%Q_dense( i, i ) = H%val( i )
@@ -1043,6 +1112,14 @@
 
             data%M_dense( : n, : n ) = zero
             SELECT CASE ( SMT_get( M%type ) )
+            CASE ( 'IDENTITY' )
+              DO i = 1, n
+                data%M_dense( i, i ) = one
+              END DO
+            CASE ( 'SCALED_IDENTITY' )
+              DO i = 1, n
+                data%M_dense( i, i ) = M%val( 1 )
+              END DO
             CASE ( 'DIAGONAL' )
               DO i = 1, n
                 data%M_dense( i, i ) = M%val( i )
@@ -1169,19 +1246,9 @@
 
         X( : n ) = MATMUL( data%Q_dense( : n , : n ), data%X_dense( : n ) )
 
-!  record the overall time when a dense factorization is used
-
-        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%total = inform%time%total + time_now - time_start
-        inform%time%clock_total =                                              &
-          inform%time%clock_total + clock_now - clock_start
-
-!  a sparse factorization will be used
+!  a sparse factorization will be used, solve the sparse problem
 
       ELSE
-
-!  solve the sparse problem
-
         CALL TRS_solve_main( n, radius, f, C, H, X, data, control, inform,     &
                              M, A, Y )
       END IF
@@ -1190,6 +1257,11 @@
 !  Exit
 !  ----
 
+  900 CONTINUE
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total =                                                &
+        inform%time%clock_total + clock_now - clock_start
       RETURN
 
 !  -------------
@@ -1197,6 +1269,10 @@
 !  -------------
 
   910 CONTINUE
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total =                                                &
+        inform%time%clock_total + clock_now - clock_start
       IF ( control%out > 0 .AND. control%print_level > 0 )                     &
         WRITE( control%out, "( A, '   **  Error return ', I0,                  &
        & ' from TRS ' )" ) control%prefix, inform%status
@@ -1435,14 +1511,6 @@
 
       unit_m = .NOT. PRESENT( M )
       constrained = PRESENT( A )
-
-!  is the problem diagonal and unconstrained?
-
-      IF ( SMT_get( H%type ) == 'DIAGONAL' .AND. unit_m .AND.                  &
-           .NOT. constrained ) THEN
-        CALL TRS_solve_diagonal( n, radius, f, C, H%val, X, control, inform )
-        RETURN
-      END IF
 
 !  set initial values
 
@@ -3320,11 +3388,6 @@
  900  CONTINUE
       inform%multiplier = lambda
       inform%pole = lambda_s_l
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start
-
       RETURN
 
 !  -------------
@@ -3334,10 +3397,6 @@
   910 CONTINUE
       IF ( printi ) WRITE( out, "( A, '   **  Error return ', I0,              &
      & ' from TRS ' )" ) prefix, inform%status
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start
       RETURN
 
 !  ---------------------
@@ -3348,10 +3407,6 @@
       IF ( printi ) WRITE( out, "( A, ' error return from ',                   &
      &   'SLS_factorize: status = ', I0 )" ) prefix, inform%SLS_inform%status
       inform%status = GALAHAD_error_factorization
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start
       RETURN
 
 !  -----------------
@@ -3363,10 +3418,6 @@
          "( A, ' The matrix M provided for TRS appears not to be strictly',    &
         &   A, ' diagonally dominant '  )" ) prefix, prefix
       inform%status = GALAHAD_error_preconditioner
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
-      inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start
       RETURN
 
 ! Non-executable statements

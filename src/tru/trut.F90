@@ -212,7 +212,7 @@
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 4 ) THEN
        control%error = - 1
-       control%norm = 5
+       control%norm = 6
        CALL TRU_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 5 ) THEN
@@ -265,11 +265,11 @@
      CALL TRU_initialize( data, control, inform )! Initialize control parameters
      CALL WHICH_sls( control )
 !    control%print_level = 1
-     inform%status = 1                            ! set for initial entry
+     inform%status = 1                             ! set for initial entry
      nlp%X = 1.0_rp_                               ! start from one
 
      IF ( i == 1 ) THEN
-       control%subproblem_direct = .TRUE.        ! Use a direct method
+       control%subproblem_direct = .TRUE.         ! Use a direct method
        control%error = - 1
        CALL TRU_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
@@ -279,7 +279,7 @@
                        eval_F = FUN, eval_G = GRAD,  eval_HPROD = HESSPROD )
      ELSE IF ( i == 3 ) THEN
        control%hessian_available = .FALSE.       ! Hessian products will be used
-       control%norm = - 3               ! User's preconditioner
+       control%norm = - 3                        ! User's preconditioner
        CALL TRU_solve( nlp, control, inform, data, userdata, eval_F = FUN,     &
               eval_G = GRAD, eval_HPROD = HESSPROD, eval_PREC = PREC )
      ELSE IF ( i == 4 .OR. i == 5 .OR. i == 6 ) THEN
@@ -290,7 +290,7 @@
        ELSE
          control%hessian_available = .FALSE.        ! Hessian prods will be used
        END IF
-       IF ( i == 6 ) control%norm = - 3   ! User's preconditioner
+       IF ( i == 6 ) control%norm = - 3             ! User's preconditioner
        DO                                           ! Loop to solve problem
          CALL TRU_solve( nlp, control, inform, data, userdata )
          SELECT CASE ( inform%status )              ! reverse communication

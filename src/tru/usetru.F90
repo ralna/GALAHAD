@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-04-30 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-10-05 AT 11:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -343,7 +343,7 @@
       END DO
 
       IF ( control%subproblem_direct ) THEN
-        WRITE( errout, "( /, 'name           n  f              du-feas ',      &
+        WRITE( errout, "( /, 'name            n  f              du-feas ',     &
        &  '   its     #g   av fac     time stat' )" )
         IF ( inform%status == GALAHAD_ok .OR.                                  &
              inform%status == GALAHAD_error_unbounded ) THEN
@@ -356,7 +356,7 @@
             inform%factorization_max, - inform%time%clock_total, inform%status
         END IF
       ELSE
-        WRITE( errout, "( /, 'name           n  f              du-feas ',      &
+        WRITE( errout, "( /, 'name            n  f              du-feas ',     &
        &  '   its     #g      #cg       time stat' )" )
         IF ( inform%status == GALAHAD_ok .OR.                                  &
              inform%status == GALAHAD_error_unbounded ) THEN
@@ -459,8 +459,8 @@
  2010 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
- 2040 FORMAT( A10, I6, ES16.8, ES8.1, bn, 2I7, F5.1, I4, F9.2, I5 )
- 2050 FORMAT( A10, I6, ES16.8, ES8.1, bn, 2I7, I9, ' :', F9.2, I5 )
+ 2040 FORMAT( A10, I7, ES16.8, ES8.1, bn, 2I7, F5.1, I4, F9.2, I5 )
+ 2050 FORMAT( A10, I7, ES16.8, ES8.1, bn, 2I7, I9, ' :', F9.2, I5 )
 
 
 !  End of subroutine USE_TRU

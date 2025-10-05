@@ -89,11 +89,13 @@ QRB$(PACKAGE)64 = $(RB_TESTS) $(TESTDEPS) $(OBJQ64)/run$(package)_rb_quadruple.o
 #  libraries used when linking for tests
 
 ifeq "$(HSL_64)" "_64"
-  LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
-            $(METIS64) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
+  LIBS = -lgalahad $(HSL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
+             $(METIS464ND) $(METIS564ND) $(PASTIX) $(MUMPS) $(MPI) \
+             $(UMFPACK) $(LAPACK) $(BLAS) -lstdc++ -lhwloc
 else
-  LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
-             $(METIS)  $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
+  LIBS = -lgalahad $(HSL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
+             $(METIS4ND)  $(METIS5ND) $(PASTIX) $(MUMPS) $(MPI) \
+             $(UMFPACK) $(LAPACK) $(BLAS) -lstdc++ -lhwloc
 endif
 PLIBS = $(LIBS) -lgalahad_problem
 CLIBS = -lgalahad_c -lhsl_c $(LIBS)
@@ -2398,7 +2400,6 @@ $(package)ctm: $($(PACKAGE)CDTM) $($(PACKAGE)OBJECTSCS64)
           $(OBJD)/libhsl_c.a \
           $(OBJD)/libgalahad.a \
           $(OBJD)/libhsl.a \
-          $(OBJD)/libgalahad_spral.a \
           $(OBJD)/libgalahad_mkl_pardiso.a \
           $(OBJD)/libgalahad_pardiso.a \
           $(OBJD)/libgalahad_wsmp.a \
@@ -2414,7 +2415,6 @@ $(package)ctm: $($(PACKAGE)CDTM) $($(PACKAGE)OBJECTSCS64)
           $(OBJS64)/libhsl_c.a \
           $(OBJS64)/libgalahad.a \
           $(OBJS64)/libhsl.a \
-          $(OBJS64)/libgalahad_spral.a \
           $(OBJS64)/libgalahad_mkl_pardiso.a \
           $(OBJS64)/libgalahad_pardiso.a \
           $(OBJS64)/libgalahad_wsmp.a \
