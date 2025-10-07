@@ -1631,6 +1631,15 @@ $(package)dt: $($(PACKAGE)DT)
 	cat $(package)dt.output
 	rm ./run_$(package)
 
+$(package)dt_nosave: $($(PACKAGE)DT)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DT)
+	$(RMOOC)
+	- ./run_$(package) 2>/dev/null
+	rm ./run_$(package)
+
 $(package)dt2: $($(PACKAGE)DT2)
 	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"

@@ -4507,7 +4507,7 @@
          CASE ( gmps_regularization )
           WRITE( data%out, "( A, '  GMPS (solver ', A, ') full',               &
          & ' regularization used')" ) prefix,                                  &
-            TRIM( data%control%PSLS_control%definite_linear_solver )
+            TRIM( data%control%PSLS_control%symmetric_linear_solver )
          CASE ( lin_more_regularization )
            WRITE( data%out, "( A, '  Lin-More''(', I0, ') incomplete',         &
           &  ' Cholesky factorization regularization used ' )" )               &
@@ -4582,7 +4582,7 @@
 
 !-  G A L A H A D - B N L S _ s u b p r o b l e m _ s o l v e  S U B R O U T I N E
 
-     SUBROUTINE BNLS_subproblem_solve( nlp, control, inform, data, userdata,    &
+     SUBROUTINE BNLS_subproblem_solve( nlp, control, inform, data, userdata,   &
                                       W, stabilisation, eval_C, eval_J,        &
                                       eval_H, eval_JPROD, eval_HPROD,          &
                                       eval_SCALE )

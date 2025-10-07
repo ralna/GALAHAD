@@ -40,6 +40,7 @@ int main(void) {
         psls_initialize( &data, &control, &status );
         control.preconditioner = 2; // band preconditioner
         control.semi_bandwidth = 1; // semibandwidth
+        strcpy( control.symmetric_linear_solver, "sils" );
         strcpy( control.definite_linear_solver, "sils" );
 
         // Set user-defined control options

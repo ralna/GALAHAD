@@ -4724,7 +4724,7 @@
                prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
            CASE ( 5 )
              WRITE( data%out, "( A, '  GMPS (solver ', A, ') full norm used')")&
-               prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
+               prefix, TRIM( data%control%PSLS_control%symmetric_linear_solver )
            CASE ( 6 )
              WRITE( data%out, "(A,'  Lin-More''(', I0, ') incomplete Cholesky',&
             &  ' factorization used ' )" ) prefix, data%control%icfs_vectors
@@ -4755,7 +4755,7 @@
            CASE ( 5 )
              WRITE( data%out, "( A, '  GMPS (solver ', A,                      &
             &   ') full preconditioner used' )" )                              &
-               prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
+               prefix, TRIM( data%control%PSLS_control%symmetric_linear_solver )
            CASE ( 6 )
              WRITE( data%out, "(A,'  Lin-More''(', I0, ') incomplete Cholesky',&
             &  ' factorization used ' )" ) prefix, data%control%icfs_vectors

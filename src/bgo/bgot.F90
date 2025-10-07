@@ -67,6 +67,8 @@ CONTAINS
      = symmetric_linear_solver
    control%TRB_control%TRS_control%definite_linear_solver                      &
      = definite_linear_solver
+   control%TRB_control%PSLS_control%symmetric_linear_solver                    &
+     = symmetric_linear_solver
    control%TRB_control%PSLS_control%definite_linear_solver                     &
      = definite_linear_solver
    END SUBROUTINE WHICH_sls

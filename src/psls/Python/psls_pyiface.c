@@ -160,6 +160,13 @@ bool psls_update_control(struct psls_control_type *control,
                 return false;
             continue;
         }
+        if(strcmp(key_name, "symmetric_linear_solver") == 0){
+            if(!parse_char_option(value, "symmetric_linear_solver",
+                                  control->symmetric_linear_solver,
+                                  sizeof(control->definite_linear_solver)))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "definite_linear_solver") == 0){
             if(!parse_char_option(value, "definite_linear_solver",
                                   control->definite_linear_solver,
@@ -234,6 +241,8 @@ PyObject* psls_make_options_dict(const struct psls_control_type *control){
                          PyBool_FromLong(control->space_critical));
     PyDict_SetItemString(py_options, "deallocate_error_fatal",
                          PyBool_FromLong(control->deallocate_error_fatal));
+    PyDict_SetItemString(py_options, "symmetric_linear_solver",
+                        PyUnicode_FromString(control->symmetric_linear_solver));
     PyDict_SetItemString(py_options, "definite_linear_solver",
                          PyUnicode_FromString(control->definite_linear_solver));
     PyDict_SetItemString(py_options, "prefix",

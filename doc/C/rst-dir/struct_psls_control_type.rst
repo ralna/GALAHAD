@@ -33,6 +33,7 @@ psls_control_type structure
 		bool :ref:`get_norm_residual<doxid-structpsls__control__type_get_norm_residual>`;
 		bool :ref:`space_critical<doxid-structpsls__control__type_space_critical>`;
 		bool :ref:`deallocate_error_fatal<doxid-structpsls__control__type_deallocate_error_fatal>`;
+		char :ref:`symmetric_linear_solver<doxid-structpsls__control__type_symmetric_linear_solver>`[31];
 		char :ref:`definite_linear_solver<doxid-structpsls__control__type_definite_linear_solver>`[31];
 		char :ref:`prefix<doxid-structpsls__control__type_prefix>`[31];
 		struct :ref:`sls_control_type<doxid-structsls__control__type>` :ref:`sls_control<doxid-structpsls__control__type_sls_control>`;
@@ -252,6 +253,16 @@ if space is critical, ensure allocated arrays are no bigger than needed
 
 exit if any deallocation fails
 
+.. index:: pair: variable; symmetric_linear_solver
+.. _doxid-structpsls__control__type_symmetric_linear_solver:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	char symmetric_linear_solver[31]
+
+the name of the symmetric linear equation solver used. Possible choices are currently: 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl_pardiso', 'pastix', 'wsmp' and 'sytr, although only 'sytr' and, for OMP 4.0-compliant compilers, 'ssids' are installed by default; others are easily installed (see README.external). More details of the capabilities of each solver are provided in the documentation for :ref:`galahad_sls<details-sls__solvers>`.
+
 .. index:: pair: variable; definite_linear_solver
 .. _doxid-structpsls__control__type_definite_linear_solver:
 
@@ -260,7 +271,7 @@ exit if any deallocation fails
 
 	char definite_linear_solver[31]
 
-the name of the definite linear equation solver used. Possible choices are currently: 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl_pardiso', 'pastix', 'wsmp', 'potr',  'sytr' and 'pbtr', although only 'potr',  'sytr', 'pbtr' and, for OMP 4.0-compliant compilers, 'ssids' are installed by default; others are easily installed (see README.external). More details of the capabilities of each solver are provided in the documentation for :ref:`galahad_sls<details-sls__solvers>`.
+the name of the definite linear equation solver used. Possible choices are currently: 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl_pardiso', 'pastix', 'wsmp', 'potr',  'sytr' and 'pbtr', although only 'potr',  'sytr', 'pbtr' and, for OMP 4.0-compliant compilers, 'ssids' are installed by default; others are easily installed (see README.external). More details of the capabilities of each solver are provided in the documentation for :ref:`galahad_sls<details-sls__solvers>`.
 
 .. index:: pair: variable; prefix
 .. _doxid-structpsls__control__type_prefix:

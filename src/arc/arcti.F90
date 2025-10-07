@@ -253,6 +253,7 @@ CONTAINS
 #include "galahad_sls_defaults.h"
      control%RQS_control%symmetric_linear_solver = symmetric_linear_solver
      control%RQS_control%definite_linear_solver = definite_linear_solver
+     control%PSLS_control%symmetric_linear_solver = symmetric_linear_solver
      control%PSLS_control%definite_linear_solver = definite_linear_solver
      control%DPS_control%symmetric_linear_solver = symmetric_linear_solver
      END SUBROUTINE WHICH_sls

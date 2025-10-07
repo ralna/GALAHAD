@@ -169,6 +169,7 @@
 !      control%trs_control%print_level = 1
 !      control%trs_control%sls_control%print_level = 3
        control%subproblem_direct = .TRUE.
+       control%psls_control%symmetric_linear_solver = 'sytr '
        control%psls_control%definite_linear_solver = 'sytr '
 !      control%trs_control%definite_linear_solver = 'ma27 '
 !      control%trs_control%symmetric_linear_solver = 'ma27 '

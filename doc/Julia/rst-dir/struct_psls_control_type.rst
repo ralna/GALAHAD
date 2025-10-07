@@ -29,6 +29,7 @@ psls_control_type structure
           get_norm_residual::Bool
           space_critical::Bool
           deallocate_error_fatal::Bool
+          symmetric_linear_solver::NTuple{31,Cchar}
           definite_linear_solver::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
           sls_control::sls_control_type{T,INT}
@@ -248,6 +249,16 @@ if space is critical, ensure allocated arrays are no bigger than needed
 
 exit if any deallocation fails
 
+.. index:: pair: variable; symmetric_linear_solver
+.. _doxid-structpsls__control__type_symmetric_linear_solver:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	NTuple{31,Cchar} symmetric_linear_solver
+
+the symmetric linear equation :ref:`solver package<details-sls__solvers>` used when .preconditioner = 5. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma97, ssids, mumps, pardiso, mkl_pardiso,pastix, wsmp, sytr, potr and pbtr, although only sils, sytr and, for OMP 4.0-compliant compilers, ssids are installed by default.
+
 .. index:: pair: variable; definite_linear_solver
 .. _doxid-structpsls__control__type_definite_linear_solver:
 
@@ -256,7 +267,7 @@ exit if any deallocation fails
 
 	NTuple{31,Cchar} definite_linear_solver
 
-the definite linear equation :ref:`solver package<details-sls__solvers>` used when .preconditioner = 3,4. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso, mkl_pardiso,pastix, wsmp, potr and pbtr, although only sils, potr, pbtr and, for OMP 4.0-compliant compilers, ssids are installed by default.
+the definite linear equation :ref:`solver package<details-sls__solvers>` used when .preconditioner = 4. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso, mkl_pardiso,pastix, wsmp, sytr, potr and pbtr, although only sils, sytr, potr, pbtr and, for OMP 4.0-compliant compilers, ssids are installed by default.
 
 .. index:: pair: variable; prefix
 .. _doxid-structpsls__control__type_prefix:

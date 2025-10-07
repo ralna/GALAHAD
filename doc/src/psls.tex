@@ -433,10 +433,31 @@ that must be set \true\ if the user wishes to terminate execution if
 a deallocation  fails, and \false\ if an attempt to continue
 will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
 
+\itt{symmetric\_linear\_solver} is a scalar variable of type default \character\
+and length 30, that specifies the external package to be used to
+solve any symmetric linear system that might arise
+when {\tt \%precondit\-ioner = 5}. Possible choices are
+{\tt 'sils'},
+{\tt 'ma27'},
+{\tt 'ma57'},
+{\tt 'ma77'},
+{\tt 'ma86'},
+{\tt 'ma97'},
+{\tt 'ssids'},
+{\tt 'pardiso'}
+{\tt 'mkl\_pardiso'},
+{\tt 'wsmp'} and
+{\tt 'sytr'},
+although only {\tt 'sils'}, {\tt 'sytr} and, for OMP 4.0-compliant compilers,
+{\tt 'ssids'} are installed by default.
+See Table~\ref{solvers} and
+the documentation for the \galahad\ package {\tt SLS} for further details.
+The default is {\tt symmetric\_linear\_solver = 'ssids'}.
+
 \itt{definite\_linear\_solver} is a scalar variable of type default \character\
 and length 30, that specifies the external package to be used to
 solve any symmetric positive-definite linear system that might arise
-when {\tt \%precondit\-ioner = 4,5}. Possible choices are
+when {\tt \%precondit\-ioner = 4}. Possible choices are
 {\tt 'sils'},
 {\tt 'ma27'},
 {\tt 'ma57'},
@@ -448,14 +469,15 @@ when {\tt \%precondit\-ioner = 4,5}. Possible choices are
 {\tt 'pardiso'}
 {\tt 'mkl\_pardiso'},
 {\tt 'wsmp'},
+{\tt 'sytr'},
 {\tt 'potr'} and
 {\tt 'pbtr'},
-although only {\tt 'sils'}, {\tt 'potr'}, {\tt 'pbtr'}
+although only {\tt 'sils'}, {\tt 'sytr'}, {\tt 'potr'}, {\tt 'pbtr'}
 and, for OMP 4.0-compliant compilers,
 {\tt 'ssids'} are installed by default.
 See Table~\ref{solvers} and
 the documentation for the \galahad\ package {\tt SLS} for further details.
-The default is {\tt definite\_linear\_solver = 'sils'}.
+The default is {\tt definite\_linear\_solver = 'ssids'}.
 
 \itt{prefix} is a scalar variable of type default \character\
 and length 30, that may be used to provide a user-selected
@@ -1009,6 +1031,7 @@ that each affects are given in Table~\ref{specfile}.
 {\tt get-norm-residual}   & {\tt \%get\_norm\_residual} & {\tt logical} \\
 {\tt space-critical}   & {\tt \%space\_critical} & {\tt logical} \\
 {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & {\tt logical} \\
+{\tt symmetric-linear-equation-solver} & {\tt \%symmetric\_linear\_solver} & {\tt character} \\
 {\tt definite-linear-equation-solver} & {\tt \%definite\_linear\_solver} & {\tt character} \\
 {\tt output-line-prefix} & {\tt \%prefix} & character \\
 \hline
@@ -1118,9 +1141,8 @@ We illustrate the use of the package on the (indefinite) sparse matrix
                      &   & 5 &   &   \\
                      & 6 & &     & 1 }}
 (Note that this example does not illustrate all the facilities).
-Then, choosing the solver {\tt SILS}, we may use the following code
-to find a tridiagonal (banded, with a semi-bandwidth of 1) preconditioner 
-and apply it to a given vector:
+Then we may use the following code to find a tridiagonal (banded, with a 
+semi-bandwidth of 1) preconditioner and apply it to a given vector:
 
 {\tt \small
 \VerbatimInput{\packageexample}

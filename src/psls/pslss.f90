@@ -22,7 +22,6 @@
    CALL PSLS_initialize( data, control, inform )
    control%preconditioner = 2  ! band preconditioner
    control%semi_bandwidth = 1  ! semi-bandwidth of one
-!  control%definite_linear_solver = 'sils'
 ! form and factorize the preconditioner, P
    CALL PSLS_form_and_factorize( matrix, data, control, inform )
    IF ( inform%status < 0 ) THEN

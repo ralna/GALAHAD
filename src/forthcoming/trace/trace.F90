@@ -3697,7 +3697,7 @@
              prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
          CASE ( gmps_preconditioner )
           WRITE( data%out, "( A, '  GMPS (solver ', A, ') full TR-norm used')")&
-             prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
+             prefix, TRIM( data%control%PSLS_control%symmetric_linear_solver )
          CASE ( lin_more_preconditioner )
            WRITE( data%out, "( A, '  Lin-More''(', I0, ') incomplete Cholesky',&
           &  ' factorization TR-norm used ' )" )                               &

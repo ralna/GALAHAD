@@ -7,7 +7,7 @@
    TYPE ( PSLS_full_data_type ) :: data
    TYPE ( PSLS_control_type ) control
    TYPE ( PSLS_inform_type ) :: inform
-   INTEGER ( KIND = ip_ ) :: storage_type, s, status, status_sol
+   INTEGER ( KIND = ip_ ) :: storage_type, status, status_sol
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, ne  = 7
    REAL ( KIND = rp_ ), PARAMETER :: good_x = EPSILON( 1.0_rp_ ) ** 0.333
    REAL ( KIND = rp_ ), DIMENSION( n ) :: X
@@ -30,9 +30,10 @@
    DO storage_type = 1, 3
      CALL PSLS_initialize( data, control, inform )
      CALL WHICH_sls( control )
-     control%print_level = 10
+!    control%print_level = 10
      control%preconditioner = 2  ! banded preconditioner
      control%semi_bandwidth = 1  ! semi-bandwidth of one
+!    control%symmetric_linear_solver = 'sils'
 !    control%definite_linear_solver = 'sils'
 ! import the matrix structure
      SELECT CASE( storage_type )
@@ -79,8 +80,10 @@
    CONTAINS
      SUBROUTINE WHICH_sls( control )
      TYPE ( PSLS_control_type ) :: control
-#include "galahad_sls_defaults.h"
+#include "galahad_sls_defaults_ls.h"
+     control%symmetric_linear_solver = symmetric_linear_solver
      control%definite_linear_solver = definite_linear_solver
+!    control%symmetric_linear_solver = 'sytr'
      END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_PSLS_interface_test

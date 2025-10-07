@@ -301,6 +301,7 @@
         IF ( .NOT. control%unitm ) THEN
           IF ( TRIM( mode ) == 'initial' .OR. TRIM( mode ) == 'all' )          &
             CALL PSLS_initialize( PSLS_data, PSLS_control, PSLS_inform )
+          PSLS_control%symmetric_linear_solver = 'sils'
           PSLS_control%definite_linear_solver = 'sils'
           PSLS_control%preconditioner = 5
           CALL PSLS_form_and_factorize( M, PSLS_data, PSLS_control,            &

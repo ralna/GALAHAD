@@ -160,12 +160,19 @@ functions
              if ``deallocate_error_fatal`` is True, any array/pointer
              deallocation error will terminate execution. Otherwise,
              computation will continue.
+          symmetric_linear_solver : str
+             the symmetric linear equation solver used when
+             ``preconditioner`` = 5. Possible choices are currently:
+             sils, ma27, ma57, ma77, ma86, ma97, ssids, mumps, pardiso,
+             mkl_pardiso, pastix, wsmp and sytrr, although only sils,
+             sytr and, for OMP 4.0-compliant compilers, ssids are
+             installed by default.
           definite_linear_solver : str
              the definite linear equation solver used when
-             ``preconditioner`` = 3,4. Possible choices are currently:
+             ``preconditioner`` = 4. Possible choices are currently:
              sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso,
-             mkl_pardiso, pastix, wsmp, potr and pbtr, although only sils,
-             potr, pbtr and, for OMP 4.0-compliant compilers, ssids are
+             mkl_pardiso, pastix, wsmp, sytr, potr and pbtr, although only sils,
+             sytr, potr, pbtr and, for OMP 4.0-compliant compilers, ssids are
              installed by default.
           prefix : str
             all output lines will be prefixed by the string contained

@@ -4507,7 +4507,7 @@
          CASE ( gmps_regularization )
           WRITE( data%out, "( A, '  GMPS (solver ', A, ') full',               &
          & ' regularization used')" ) prefix,                                  &
-            TRIM( data%control%PSLS_control%definite_linear_solver )
+            TRIM( data%control%PSLS_control%symmetric_linear_solver )
          CASE ( lin_more_regularization )
            WRITE( data%out, "( A, '  Lin-More''(', I0, ') incomplete',         &
           &  ' Cholesky factorization regularization used ' )" )               &
@@ -7856,7 +7856,7 @@
          CASE ( gmps_regularization )
            WRITE( data%out, "( A, '  GMPS (solver ', A, ') full',              &
           &    ' regularization used' )" ) prefix,                             &
-               TRIM( data%control%PSLS_control%definite_linear_solver )
+               TRIM( data%control%PSLS_control%symmetric_linear_solver )
          CASE ( lin_more_regularization )
            WRITE( data%out, "( A, '  Lin-More''(', I0, ') incomplete',         &
           & ' Cholesky factorization regularization used ' )" )                &
