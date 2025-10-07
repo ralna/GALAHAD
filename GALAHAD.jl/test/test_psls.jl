@@ -38,6 +38,7 @@ function test_psls(::Type{T}, ::Type{INT}; dls::String="potr") where {T,INT}
     @reset control[].semi_bandwidth = INT(1) # semibandwidth
 
     # Linear solvers
+    @reset control[].symmetric_linear_solver = galahad_linear_solver(sls)
     @reset control[].definite_linear_solver = galahad_linear_solver(dls)
 
     # sparse co-ordinate storage

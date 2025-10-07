@@ -8234,7 +8234,7 @@
 !            D( 2, k ) = data%matrix_dense( k + 1, k )
              det                                                               &
                = data%matrix_dense( k, k ) * data%matrix_dense( k + 1, k + 1 ) &
-                 - data%matrix_dense( k + 1, k + 1 ) ** 2
+                 - data%matrix_dense( k + 1, k ) ** 2
              D( 1, k ) = data%matrix_dense( k + 1, k + 1 ) / det
              D( 1, k + 1 ) = data%matrix_dense( k, k ) / det
              D( 2, k ) = - data%matrix_dense( k + 1, k ) /det

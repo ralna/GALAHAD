@@ -19,6 +19,7 @@ struct psls_control_type{T,INT}
   get_norm_residual::Bool
   space_critical::Bool
   deallocate_error_fatal::Bool
+  symmetric_linear_solver::NTuple{31,Cchar}
   definite_linear_solver::NTuple{31,Cchar}
   prefix::NTuple{31,Cchar}
   sls_control::sls_control_type{T,INT}

@@ -1669,7 +1669,7 @@
                  "( A, ' Computing preconditioner' )" ) prefix
            CALL PSLS_form_and_factorize( nlp%H, data%PSLS_data,                &
                      data%control%PSLS_control, inform%PSLS_inform )
-!write(6,*) ' perturbed? ', inform%PSLS_inform%perturbed,  data%control%PSLS_control%definite_linear_solver
+!write(6,*) ' perturbed? ', inform%PSLS_inform%perturbed,  data%control%PSLS_control%symmetric_linear_solver
 !  check for error returns
 
            IF ( inform%PSLS_inform%status /= 0 ) THEN

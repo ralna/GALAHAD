@@ -192,6 +192,11 @@
 
         LOGICAL :: deallocate_error_fatal  = .FALSE.
 
+!  indefinite linear equation solver
+
+        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "ssids" //         &
+                                                             REPEAT( ' ', 25 )
+
 !  definite linear equation solver
 
         CHARACTER ( LEN = 30 ) :: definite_linear_solver = "ssids" //          &
@@ -573,8 +578,10 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = get_norm_residual + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
                                             = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: symmetric_linear_solver              &
+                                            = deallocate_error_fatal + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: definite_linear_solver               &
-                                            = deallocate_error_fatal  + 1
+                                            = symmetric_linear_solver + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = definite_linear_solver + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'PSLS'
@@ -612,6 +619,8 @@
 
 !  Character key-words
 
+     spec( symmetric_linear_solver )%keyword =                                 &
+       'symmetric-linear-equation-solver'
      spec( definite_linear_solver )%keyword = 'definite-linear-equation-solver'
      spec( prefix )%keyword = 'output-line-prefix'
 
@@ -687,6 +696,9 @@
 
 !  Set xharacter values
 
+      CALL SPECFILE_assign_value( spec( symmetric_linear_solver ),             &
+                                  control%symmetric_linear_solver,             &
+                                  control%error )
       CALL SPECFILE_assign_value( spec( definite_linear_solver ),              &
                                   control%definite_linear_solver,              &
                                   control%error )
@@ -2232,7 +2244,8 @@
 !  initialize solver-specific data
 
         data%SLS_control = control%SLS_control
-        CALL SLS_initialize( control%definite_linear_solver,                   &
+!       CALL SLS_initialize( control%definite_linear_solver,                   &
+        CALL SLS_initialize( control%symmetric_linear_solver,                  &
                              data%SLS_data, data%SLS_control,                  &
                              inform%SLS_inform, check = .TRUE. )
 
@@ -2312,11 +2325,12 @@
        &     /, A, '  # nonzeros in preconditioner    = ', I0,                 &
        &     /, A, '  predicted # nonzeros in factors = ', I0,                 &
        &     /, A, '  actual    # nonzeros in factors = ', I0 )" )             &
-           prefix, control%definite_linear_solver,                             &
+           prefix, control%symmetric_linear_solver,                            &
            prefix, inform%SLS_inform%largest_modified_pivot,                   &
            prefix, data%n_sub,                                                 &
            prefix, data%P%ne, prefix, predicted,                               &
            prefix, inform%SLS_inform%entries_in_factors
+!          prefix, control%definite_linear_solver,                             &
 
 !  Record the relative fill-in
 
@@ -2331,7 +2345,7 @@
 !  initialize solver-specific data
 
         data%SLS_control = control%SLS_control
-        CALL SLS_initialize( control%definite_linear_solver,                   &
+        CALL SLS_initialize( control%symmetric_linear_solver,                  &
                              data%SLS_data, data%SLS_control,                  &
                              inform%SLS_inform, check = .TRUE. )
 
@@ -2413,7 +2427,7 @@
        &     /, A, '  actual    # nonzeros in factors = ', I0,                 &
        &     /, A, '  # negative 1 x 1 block pivots   = ', I0,                 &
        &     /, A, '  # negative 2 x 2 block pivots   = ', I0 )" )             &
-           prefix, control%definite_linear_solver,                             &
+           prefix, control%symmetric_linear_solver,                            &
            prefix, data%n_sub, prefix, data%P%ne, prefix, predicted,           &
            prefix, inform%SLS_inform%entries_in_factors, prefix,               &
            inform%neg1, prefix, inform%neg2

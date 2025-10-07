@@ -73,6 +73,7 @@
       LOGICAL ( KIND = C_BOOL ) :: get_norm_residual
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: symmetric_linear_solver
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: definite_linear_solver
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
       TYPE ( sls_control_type ) :: sls_control
@@ -172,6 +173,11 @@
                                f_indexing_mi28 )
 
     ! Strings
+    DO i = 1, LEN( fcontrol%symmetric_linear_solver )
+      IF ( ccontrol%symmetric_linear_solver( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%symmetric_linear_solver( i : i )                                &
+        = ccontrol%symmetric_linear_solver( i )
+    END DO
     DO i = 1, LEN( fcontrol%definite_linear_solver )
       IF ( ccontrol%definite_linear_solver( i ) == C_NULL_CHAR ) EXIT
       fcontrol%definite_linear_solver( i : i )                                 &
@@ -224,6 +230,12 @@
 !   CALL copy_mi28_control_out( fcontrol%mi28_control, ccontrol%mi28_control )
 
     ! Strings
+    l = LEN( fcontrol%symmetric_linear_solver )
+    DO i = 1, l
+      ccontrol%symmetric_linear_solver( i )                                    &
+        = fcontrol%symmetric_linear_solver( i : i )
+    END DO
+    ccontrol%symmetric_linear_solver( l + 1 ) = C_NULL_CHAR
     l = LEN( fcontrol%definite_linear_solver )
     DO i = 1, l
       ccontrol%definite_linear_solver( i )                                     &

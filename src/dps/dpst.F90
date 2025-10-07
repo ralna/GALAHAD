@@ -49,6 +49,7 @@ PROGRAM GALAHAD_DPS_EXAMPLE
            CALL DPS_initialize( data, control, inform )
 !        control%symmetric_linear_solver = "ma27 "
          control%symmetric_linear_solver = 'sytr'
+!        control%symmetric_linear_solver = 'ma97'
          control%error = 23 ; control%out = 23 ; control%print_level = 10
 !        control%error = 6 ; control%out = 6 ; control%print_level = 1
          IF ( var == 1 ) THEN

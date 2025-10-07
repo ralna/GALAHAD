@@ -1,8 +1,8 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 08/03/2010 AT 15:15 GMT.
+!  THIS VERSION: GALAHAD 5.4 - 2025-10-06 AT 08:05 GMT.
 
-!-*-*-*-  G A L A H A D _ S P L S _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
+!-*-*-*-  G A L A H A D _ P S L S _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
@@ -132,6 +132,9 @@
         CASE( 'deallocate_error_fatal ' )
           CALL MATLAB_get_value( ps, 'deallocate_error_fatal ',                &
                                  pc, PSLS_control%deallocate_error_fatal  )
+        CASE( 'symmetric_linear_solver' )
+          CALL galmxGetCharacter( ps, 'symmetric_linear_solver',               &
+                                  pc, PSLS_control%symmetric_linear_solver, len)
         CASE( 'definite_linear_solver' )
           CALL galmxGetCharacter( ps, 'definite_linear_solver',                &
                                   pc, PSLS_control%definite_linear_solver, len )
@@ -177,7 +180,7 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 16
+      INTEGER * 4, PARAMETER :: ninform = 17
       CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
          'error                          ', 'out                            ', &
          'print_level                    ', 'preconditioner                 ', &
@@ -186,6 +189,7 @@
          'min_diagonal                   ', 'new_structure                  ', &
          'get_semi_bandwidth             ', 'get_norm_residual              ', &
          'space_critical                 ', 'deallocate_error_fatal         ', &
+         'symmetric_linear_solver        ', &
          'definite_linear_solver         ', 'prefix                         ', &
          'SLS_control                    '                      /)
 
@@ -227,6 +231,8 @@
                                   PSLS_control%space_critical )
       CALL MATLAB_fill_component( pointer, 'deallocate_error_fatal ',          &
                                   PSLS_control%deallocate_error_fatal  )
+      CALL MATLAB_fill_component( pointer, 'symmetric_linear_solver',          &
+                                  PSLS_control%symmetric_linear_solver )
       CALL MATLAB_fill_component( pointer, 'definite_linear_solver',           &
                                   PSLS_control%definite_linear_solver )
       CALL MATLAB_fill_component( pointer, 'prefix',                           &

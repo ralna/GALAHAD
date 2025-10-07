@@ -1672,6 +1672,10 @@
        IF ( data%control%model == first_order_model .OR.                       &
             data%control%model == identity_hessian_model )                     &
          data%control%GLTR_control%steihaug_toint = .TRUE.
+       IF ( data%control%model == first_order_model )                          &
+         CALL SMT_put( nlp%H%type, 'ZERO', inform%alloc_status )
+       IF ( data%control%model == identity_hessian_model )                     &
+         CALL SMT_put( nlp%H%type, 'IDENTITY', inform%alloc_status )
      END IF
      data%reverse_prec = .NOT. PRESENT( eval_PREC )
      IF ( data%control%norm == diagonalising_preconditioner ) THEN
@@ -2686,9 +2690,9 @@
 !  3a. Direct solution
 !  -------------------
 
-!write(6,*) ' direct, type ', &
-! data%control%subproblem_direct, SMT_get( nlp%H%type )
        IF ( data%control%subproblem_direct ) THEN
+!        write( 6,* ) ' direct, type ', &
+!          data%control%subproblem_direct, SMT_get( nlp%H%type )
 
 !  norm constructed by the DPS package
 
@@ -3793,7 +3797,7 @@
            WRITE( data%out,                                                    &
            "( A, '  Direct solution (solver ', A,                              &
           &      ') of the trust-region sub-problem' )" )                      &
-              prefix, TRIM( data%control%TRS_control%definite_linear_solver )
+              prefix, TRIM( data%control%TRS_control%symmetric_linear_solver )
          END IF
          SELECT CASE ( data%nprec )
          CASE ( user_preconditioner )
@@ -3870,7 +3874,7 @@
              prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
          CASE ( gmps_preconditioner )
           WRITE( data%out, "( A, '  GMPS (solver ', A, ') full TR-norm used')")&
-             prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
+             prefix, TRIM( data%control%PSLS_control%symmetric_linear_solver )
          CASE ( lin_more_preconditioner )
            WRITE( data%out, "( A, '  Lin-More''(', I0, ') incomplete Cholesky',&
           &  ' factorization TR-norm used ' )" )                               &

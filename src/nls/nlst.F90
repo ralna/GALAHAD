@@ -956,6 +956,7 @@
      SUBROUTINE WHICH_sls( control )
      TYPE ( NLS_control_type ) :: control
 #include "galahad_sls_defaults.h"
+     control%PSLS_control%symmetric_linear_solver = symmetric_linear_solver
      control%PSLS_control%definite_linear_solver = definite_linear_solver
      control%RQS_control%symmetric_linear_solver = symmetric_linear_solver
      control%RQS_control%definite_linear_solver = definite_linear_solver

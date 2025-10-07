@@ -171,6 +171,7 @@
        control%trs_control%print_level = 1
        OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.
+       control%psls_control%symmetric_linear_solver = 'sytr '
        control%psls_control%definite_linear_solver = 'sytr '
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
                          eval_F = FUN, eval_G = GRAD, eval_H = HESS )

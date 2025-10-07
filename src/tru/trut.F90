@@ -32,33 +32,34 @@
 
 !  tests for s = - 1 ... - 40
 
-   DO s = 1, 40
-
-     IF ( s > 24 .AND. s <= 40 ) CYCLE
-     IF ( s == - GALAHAD_error_allocate ) CYCLE
-     IF ( s == - GALAHAD_error_deallocate ) CYCLE
-!    IF ( s == - GALAHAD_error_restrictions ) CYCLE
-     IF ( s == - GALAHAD_error_bad_bounds ) CYCLE
-     IF ( s == - GALAHAD_error_primal_infeasible ) CYCLE
-     IF ( s == - GALAHAD_error_dual_infeasible ) CYCLE
-!    IF ( s == - GALAHAD_error_unbounded ) CYCLE
-     IF ( s == - GALAHAD_error_no_center ) CYCLE
-     IF ( s == - GALAHAD_error_analysis ) CYCLE
-     IF ( s == - GALAHAD_error_factorization ) CYCLE
-     IF ( s == - GALAHAD_error_solve ) CYCLE
-     IF ( s == - GALAHAD_error_uls_analysis ) CYCLE
-     IF ( s == - GALAHAD_error_uls_factorization ) CYCLE
-     IF ( s == - GALAHAD_error_uls_solve ) CYCLE
-!    IF ( s == - GALAHAD_error_preconditioner ) CYCLE
-     IF ( s == - GALAHAD_error_ill_conditioned ) CYCLE
-     IF ( s == - GALAHAD_error_tiny_step ) CYCLE
-!    IF ( s == - GALAHAD_error_max_iterations ) CYCLE
-!    IF ( s == - GALAHAD_error_cpu_limit ) CYCLE
-     IF ( s == - GALAHAD_error_inertia ) CYCLE
-     IF ( s == - GALAHAD_error_file ) CYCLE
-     IF ( s == - GALAHAD_error_io ) CYCLE
-     IF ( s == - GALAHAD_error_upper_entry ) CYCLE
-     IF ( s == - GALAHAD_error_sort ) CYCLE
+   DO s = 1, 24
+     SELECT CASE( - s )
+     CASE ( GALAHAD_error_allocate,                                            &
+            GALAHAD_error_deallocate,                                          &
+            GALAHAD_error_bad_bounds,                                          &
+            GALAHAD_error_primal_infeasible,                                   &
+            GALAHAD_error_dual_infeasible,                                     &
+            GALAHAD_error_no_center,                                           &
+            GALAHAD_error_analysis,                                            &
+            GALAHAD_error_factorization,                                       &
+            GALAHAD_error_solve,                                               &
+            GALAHAD_error_uls_analysis,                                        &
+            GALAHAD_error_uls_factorization,                                   &
+            GALAHAD_error_uls_solve,                                           &
+            GALAHAD_error_ill_conditioned,                                     &
+            GALAHAD_error_tiny_step,                                           &
+            GALAHAD_error_inertia,                                             &
+            GALAHAD_error_file,                                                &
+            GALAHAD_error_io,                                                  &
+            GALAHAD_error_upper_entry,                                         &
+            GALAHAD_error_sort )
+!           GALAHAD_error_max_iterations,                                      &
+!           GALAHAD_error_cpu_limit,                                           &
+!           GALAHAD_error_preconditioner,                                      &
+!           GALAHAD_error_restrictions
+!           GALAHAD_error_unbounded ) CYCLE
+       CYCLE
+     END SELECT
      CALL TRU_initialize( data, control,inform ) ! Initialize control parameters
      CALL WHICH_sls( control )
      control%out = 0 ; control%error = 0
@@ -349,6 +350,7 @@
 #include "galahad_sls_defaults_ls.h"
      control%TRS_control%symmetric_linear_solver = symmetric_linear_solver
      control%TRS_control%definite_linear_solver = definite_linear_solver
+     control%PSLS_control%symmetric_linear_solver = symmetric_linear_solver
      control%PSLS_control%definite_linear_solver = definite_linear_solver
      control%DPS_control%symmetric_linear_solver = symmetric_linear_solver
      END SUBROUTINE WHICH_sls

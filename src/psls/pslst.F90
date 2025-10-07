@@ -212,8 +212,10 @@
    CONTAINS
      SUBROUTINE WHICH_sls( control )
      TYPE ( PSLS_control_type ) :: control
-#include "galahad_sls_defaults.h"
+#include "galahad_sls_defaults_ls.h"
+     control%symmetric_linear_solver = symmetric_linear_solver
      control%definite_linear_solver = definite_linear_solver
+!    control%definite_linear_solver = 'sytr'
      END SUBROUTINE WHICH_sls
 
    END PROGRAM PSLS_TEST_PROGRAM

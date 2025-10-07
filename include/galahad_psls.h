@@ -361,7 +361,15 @@ struct psls_control_type {
     bool deallocate_error_fatal;
 
     /// \brief
-    /// the definite linear equation solver used when .preconditioner = 3,4.
+    /// the symmetric linear equation solver used when .preconditioner = 5.
+    /// Possible choices are currently:
+    /// sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso,
+    /// mkl_pardiso,pastix, wsmp, sytr, potr and pbtr, although only sils, sytr,
+    /// and for OMP 4.0-compliant compilers, ssids are installed by default.
+    char symmetric_linear_solver[31];
+
+    /// \brief
+    /// the definite linear equation solver used when .preconditioner = 4.
     /// Possible choices are currently:
     /// sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso,
     /// mkl_pardiso,pastix, wsmp, potr and pbtr, although only sils, potr,

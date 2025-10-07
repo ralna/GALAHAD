@@ -345,9 +345,10 @@ CONTAINS
 #include "galahad_sls_defaults_ls.h"
 !symmetric_linear_solver = 'ssids'
 !definite_linear_solver = 'ssids'
-definite_linear_solver = 'sytr '
+!definite_linear_solver = 'sytr '
    control%TRS_control%symmetric_linear_solver = symmetric_linear_solver
    control%TRS_control%definite_linear_solver = definite_linear_solver
+   control%PSLS_control%symmetric_linear_solver = symmetric_linear_solver
    control%PSLS_control%definite_linear_solver = definite_linear_solver
    END SUBROUTINE WHICH_sls
 
