@@ -166,8 +166,8 @@
 
    WRITE( 6, "( /, ' test of availible options ', / )" )
 
-!  DO i = 1, 1
-   DO i = 1, 7
+   DO i = 8, 8
+!  DO i = 1, 7
      CALL TRB_initialize( data, control, inform )! Initialize control parameters
      CALL WHICH_sls( control )
 !    control%print_level = 1
@@ -218,22 +218,32 @@
 !      control%print_level = 1
        control%norm = 5
        control%error = - 1
+!      control%print_level = 1
        CALL TRB_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
-!    ELSE IF ( i == 5 ) THEN
-!      control%model = - 2
-!      CALL TRB_solve( nlp, control, inform, data, userdata,                   &
-!                      eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
+     ELSE IF ( i == 5 ) THEN
+       control%model = 1
+       control%stop_pg_absolute = 0.0001_rp_
+       CALL TRB_solve( nlp, control, inform, data, userdata,                   &
+                       eval_F = FUN, eval_G = GRAD, eval_H = HESS )
     ELSE IF ( i == 6 ) THEN
-      control%model = 1
-      control%maxit = 1000
+      control%model = 3
+!     control%print_level = 1
+      control%stop_pg_absolute = 0.0001_rp_
       CALL TRB_solve( nlp, control, inform, data, userdata,                   &
                       eval_F = FUN, eval_G = GRAD )
-!    ELSE IF ( i == 7 ) THEN
-!      control%model = 3
-!      control%maxit = 1000
-!      CALL TRB_solve( nlp, control, inform, data, userdata,                   &
-!                      eval_F = FUN, eval_G = GRAD )
+     ELSE IF ( i == 7 ) THEN
+       control%model = 1
+       control%stop_pg_absolute = 0.0001_rp_
+       control%subproblem_direct = .TRUE.         ! Use a direct method
+       CALL TRB_solve( nlp, control, inform, data, userdata,                   &
+                       eval_F = FUN, eval_G = GRAD, eval_H = HESS )
+     ELSE IF ( i == 8 ) THEN
+       control%model = 3
+       control%stop_pg_absolute = 0.0001_rp_
+       control%subproblem_direct = .TRUE.         ! Use a direct method
+       CALL TRB_solve( nlp, control, inform, data, userdata,                   &
+                       eval_F = FUN, eval_G = GRAD )
      END IF
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &

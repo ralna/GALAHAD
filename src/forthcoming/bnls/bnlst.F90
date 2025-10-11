@@ -13,7 +13,7 @@
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
    REAL ( KIND = rp_ ), PARAMETER :: p = 1.0_rp_
    REAL ( KIND = rp_ ), PARAMETER :: mult = 1.0_rp_
-!  EXTERNAL :: RES, JAC, HESS, JACPROD, HESSPROD, RHESSPRODS, SCALE
+!  EXTERNAL :: RES, JAC, HESS, JACPROD, HESSPROD, SCALE
    INTEGER ( KIND = ip_ ) :: i, j, store, s, model, scaling, rev, usew
    INTEGER ( KIND = ip_ ) :: scratch_out
    CHARACTER ( len = 1 ) :: storage
@@ -25,9 +25,9 @@
 ! start problem data
 
    nlp%n = 1 ;  nlp%m = 1 ; nlp%J%ne = 1 ; nlp%H%ne = 1 ; nlp%P%ne = 1
-   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( n ), nlp%X_u( n ), nlp%G( nlp%n ) )
-   ALLOCATE( nlp%C( nlp%m ), W( nlp%m ) )
-   nlp%X_l = 0.0_wp ; nlp%X_u = 1.0_wp          ! variables lie in [0,1]
+   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ) )
+   ALLOCATE( nlp%C( nlp%m ), W( nlp%m ), nlp%G( nlp%n ) )
+   nlp%X_l = 0.0_rp_ ; nlp%X_u = 1.0_rp_        ! variables lie in [0,1]
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%J%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%J%val( nlp%J%ne ), nlp%J%row( nlp%J%ne ), nlp%J%col( nlp%J%ne))
@@ -60,6 +60,7 @@
 !    control%RQS_control%print_level = 4
 !    control%GLRT_control%print_level = 4
 
+!write(6,*) ' i ', i
 !  choose error test
 
      IF ( i == 1 ) THEN
@@ -78,6 +79,7 @@
        control%model = 3
        s = GALAHAD_error_restrictions
      ELSE IF ( i == 5 ) THEN
+       CYCLE
        s = GALAHAD_error_restrictions
        control%model = 6
      ELSE IF ( i == 6 ) THEN
@@ -88,11 +90,14 @@
        control%model = 4
        s = GALAHAD_error_restrictions
      ELSE IF ( i == 7 ) THEN
-       control%model = 7
-       s = GALAHAD_error_restrictions
+       nlp%X_u( 1 ) = - 1.0_rp_
+       control%model = 4
+       s = GALAHAD_error_bad_bounds
      ELSE IF ( i == 8 ) THEN
+       nlp%X_u( 1 ) = 1.0_rp_
        IF ( ALLOCATED( nlp%H%type ) ) DEALLOCATE( nlp%H%type )
        CALL SMT_put( nlp%H%type, 'COORDINATE', s )
+       CYCLE
        IF ( ALLOCATED( nlp%P%type ) ) DEALLOCATE( nlp%P%type )
        CALL SMT_put( nlp%P%type, 'WRONG', s )
        control%model = 6
@@ -105,6 +110,7 @@
        control%stop_g_relative = 0.0_rp_
        s = GALAHAD_error_tiny_step
      ELSE IF ( i == 10 ) THEN
+       CYCLE
        control%stop_c_absolute = 0.0_rp_
        control%stop_c_relative = 0.0_rp_
        control%stop_g_absolute = 0.0_rp_
@@ -115,6 +121,7 @@
        control%maxit = 0
        s = GALAHAD_error_max_iterations
      ELSE IF ( i == 12 ) THEN
+       CYCLE
        control%maxit = 0
        control%model = 6
        s = GALAHAD_error_max_iterations
@@ -122,6 +129,7 @@
        control%cpu_time_limit = 0.0_rp_
        s = GALAHAD_error_cpu_limit
      ELSE IF ( i == 14 ) THEN
+       CYCLE
        control%cpu_time_limit = 0.0_rp_
        control%model = 6
        s = GALAHAD_error_cpu_limit
@@ -129,12 +137,14 @@
        CYCLE ! NAG doesn't cope
        s = GALAHAD_error_evaluation
      ELSE IF ( i == 16 ) THEN
+       CYCLE
        control%model = 6
        s = GALAHAD_error_evaluation
        CYCLE ! NAG doesn't cope
      ELSE IF ( i == 17 ) THEN
        s = GALAHAD_error_alive
      ELSE IF ( i == 18 ) THEN
+       CYCLE
        control%model = 6
        s = GALAHAD_error_alive
      END IF
@@ -146,6 +156,7 @@
      nlp%X = 1.0_rp_                               ! start from one
      OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
      control%out = scratch_out ; control%error = scratch_out
+!    control%error = 6
 
      DO                                           ! Loop to solve problem
 !      write(6,*) ' problem ', s, 'in staus', inform%status
@@ -209,11 +220,11 @@
      CLOSE( UNIT = scratch_out )
    END DO
 
+!stop
    control%subproblem_direct = .TRUE.         ! Use a direct method
    CALL BNLS_solve( nlp, control, inform, data, userdata,                      &
                    eval_C = RES, eval_J = JAC, eval_H = HESS,                  &
-                   eval_JPROD = JACPROD, eval_HPROD = HESSPROD,                &
-                   eval_HPRODS  = RHESSPRODS )
+                   eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
 
    DEALLOCATE( nlp%X, nlp%X_l, nlp%X_u, nlp%C, nlp%G, userdata%real, W )
    DEALLOCATE( nlp%J%val, nlp%J%row, nlp%J%col, nlp%J%type )
@@ -230,9 +241,9 @@
 !  IF ( .TRUE. ) GO TO 20
 ! start problem data
    nlp%n = 2 ;  nlp%m = 3 ; nlp%J%ne = 5 ; nlp%H%ne = 2 ; nlp%P%ne = 2
-   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( n ), nlp%X_u( n ), nlp%G( nlp%n ) )
-   ALLOCATE( nlp%C( nlp%m ), W( nlp%m ) )
-   nlp%X_l = 0.0_wp ; nlp%X_u = 1.0_wp          ! variables lie in [0,1]
+   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ) )
+   ALLOCATE( nlp%C( nlp%m ), W( nlp%m ), nlp%G( nlp%n ) )
+   nlp%X_l = 0.0_rp_ ; nlp%X_u = 1.0_rp_          ! variables lie in [0,1]
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%J%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%J%val( nlp%J%ne ), nlp%J%row( nlp%J%ne ), nlp%J%col( nlp%J%ne))
@@ -279,8 +290,7 @@
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
        CLOSE( UNIT = scratch_out )
        DEALLOCATE( nlp%VNAMES )
      ELSE IF ( i == 2 ) THEN
@@ -297,8 +307,7 @@
        control%rqs_control%print_level = 1
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 3 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
@@ -317,8 +326,7 @@
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
        CLOSE( UNIT = scratch_out )
        DEALLOCATE( nlp%VNAMES )
      ELSE IF ( i == 4 ) THEN
@@ -336,8 +344,7 @@
        control%rqs_control%print_level = 1
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 5 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
@@ -356,8 +363,7 @@
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
        CLOSE( UNIT = scratch_out )
        DEALLOCATE( nlp%VNAMES )
      ELSE IF ( i == 6 ) THEN
@@ -375,8 +381,7 @@
        control%rqs_control%print_level = 1
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 7 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
@@ -396,8 +401,7 @@
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
        CLOSE( UNIT = scratch_out )
        DEALLOCATE( nlp%VNAMES )
      ELSE IF ( i == 8 ) THEN
@@ -416,8 +420,7 @@
        control%rqs_control%print_level = 1
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 9 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
@@ -436,8 +439,7 @@
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
        CLOSE( UNIT = scratch_out )
        DEALLOCATE( nlp%VNAMES )
      ELSE IF ( i == 10 ) THEN
@@ -455,8 +457,7 @@
        control%rqs_control%print_level = 1
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 11 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
@@ -476,8 +477,7 @@
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
        CLOSE( UNIT = scratch_out )
        DEALLOCATE( nlp%VNAMES )
      ELSE IF ( i == 12 ) THEN
@@ -496,41 +496,35 @@
        control%rqs_control%print_level = 1
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 13 ) THEN
        control%norm = 3
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
      ELSE IF ( i == 14 ) THEN
        control%norm = 5
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
      ELSE IF ( i == 15 ) THEN
        control%norm = - 2
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
      ELSE IF ( i == 16 ) THEN
        control%model = 1
        control%maxit = 1000
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
      ELSE IF ( i == 17 ) THEN
        control%model = 3
        control%maxit = 1000
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS  = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
      END IF
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal ||c|| = ', F6.1,        &
@@ -555,9 +549,9 @@
 !  IF ( .TRUE. ) GO TO 30
 ! start problem data
    nlp%n = 2 ;  nlp%m = 3 ; nlp%J%ne = 5 ; nlp%H%ne = 2 ; nlp%P%ne = 2
-   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( n ), nlp%X_u( n ), nlp%G( nlp%n ) )
+   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ), nlp%G( nlp%n ) )
    ALLOCATE( nlp%C( nlp%m ), W( nlp%m ) )
-   nlp%X_l = 0.0_wp ; nlp%X_u = 1.0_wp          ! variables lie in [0,1]
+   nlp%X_l = 0.0_rp_ ; nlp%X_u = 1.0_rp_          ! variables lie in [0,1]
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%J%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%J%val( nlp%J%ne ), nlp%J%row( nlp%J%ne ), nlp%J%col( nlp%J%ne))
@@ -570,7 +564,7 @@
 
    WRITE( 6, "( /, ' test of scaling, model & weighting options ', / )" )
 
-   DO model = 1, 8
+   DO model = 1, 5
 !  DO model = 3, 3
      IF ( model == 4 ) THEN
      CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
@@ -578,11 +572,6 @@
                  nlp%H%col( nlp%H%ne ) )
        nlp%H%row = (/ 1, 2 /) ! Hessian H
        nlp%H%col = (/ 1, 2 /) ! NB lower triangle only
-     ELSE IF ( model == 6 ) THEN
-       ALLOCATE( nlp%P%val( nlp%P%ne ), nlp%P%row( nlp%P%ne ),                 &
-                 nlp%P%ptr( nlp%m + 1 ) )
-       nlp%P%row = (/ 1, 2 /)  ! Hessian products
-       nlp%P%ptr = (/ 1, 2, 3, 3 /)
      END IF
 !if(model /= 3) cycle
      DO scaling = - 1, 8
@@ -619,13 +608,12 @@
            IF ( usew == 0 ) THEN
              CALL BNLS_solve( nlp, control, inform, data, userdata,            &
                              eval_C = RES, eval_J = JAC, eval_H = HESS,        &
-                             eval_JPROD = JACPROD, eval_HPROD = HESSPROD,      &
-                             eval_HPRODS = RHESSPRODS )
+                             eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
            ELSE
              CALL BNLS_solve( nlp, control, inform, data, userdata,            &
                              eval_C = RES, eval_J = JAC, eval_H = HESS,        &
                              eval_JPROD = JACPROD, eval_HPROD = HESSPROD,      &
-                             eval_HPRODS = RHESSPRODS, W = W )
+                             W = W )
            END IF
          ELSE
            DO              ! Loop to solve problem
@@ -648,9 +636,6 @@
              CASE ( 6 )    ! form a Hessian-vector product
                CALL HESSPROD( data%eval_status, nlp%X, data%Y, userdata,       &
                               data%U, data%V )
-             CASE ( 7 )    ! form residual Hessian-vector products
-               CALL RHESSPRODS( data%eval_status, nlp%X, data%V, userdata,     &
-                                nlp%P%val )
              CASE ( 8 )     ! Apply the preconditioner
                CALL SCALE( data%eval_status, nlp%X, userdata, data%U, data%V )
              CASE DEFAULT   ! Terminal exit from loop
@@ -676,7 +661,9 @@
    DEALLOCATE( nlp%X, nlp%X_l, nlp%X_u, nlp%C, nlp%G, W, userdata%real )
    DEALLOCATE( nlp%J%val, nlp%J%row, nlp%J%col, nlp%J%type )
    DEALLOCATE( nlp%H%val, nlp%H%row, nlp%H%col, nlp%H%type )
-   DEALLOCATE( nlp%P%val, nlp%P%row, nlp%P%ptr )
+   IF ( ALLOCATED( nlp%P%row ) ) DEALLOCATE( nlp%P%row )
+   IF ( ALLOCATED( nlp%P%col ) ) DEALLOCATE( nlp%P%col )
+   IF ( ALLOCATED( nlp%P%val ) ) DEALLOCATE( nlp%P%val )
    IF ( ALLOCATED( nlp%P%type ) ) DEALLOCATE( nlp%P%type )
 
 !  ============================
@@ -687,9 +674,9 @@
 
 ! start problem data
    nlp%n = 2 ;  nlp%m = 3 ; nlp%J%ne = 5 ; nlp%H%ne = 2 ; nlp%P%ne = 2
-   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( n ), nlp%X_u( n ), nlp%G( nlp%n ) )
-   ALLOCATE( nlp%C( nlp%m ), W( nlp%m ) )
-   nlp%X_l = 0.0_wp ; nlp%X_u = 1.0_wp          ! variables lie in [0,1]
+   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ) )
+   ALLOCATE( nlp%C( nlp%m ), W( nlp%m ), nlp%G( nlp%n ) )
+   nlp%X_l = 0.0_rp_ ; nlp%X_u = 1.0_rp_          ! variables lie in [0,1]
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%J%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%J%val( nlp%J%ne ), nlp%J%row( nlp%J%ne ), nlp%J%col( nlp%J%ne))
@@ -726,21 +713,19 @@
        control%subproblem_direct = .TRUE.        ! Use a direct method
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
      ELSE IF ( i == 2 ) THEN
        control%hessian_available = 1     ! Hessian products will be used
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
-                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS = RHESSPRODS )
+                       eval_JPROD = JACPROD, eval_HPROD = HESSPROD )
      ELSE IF ( i == 3 ) THEN
        control%hessian_available = 1    ! Hessian products will be used
        control%norm = - 3               ! User's preconditioner
        CALL BNLS_solve( nlp, control, inform, data, userdata,                  &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
                        eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
-                       eval_HPRODS = RHESSPRODS, eval_SCALE = SCALE )
+                       eval_SCALE = SCALE )
      ELSE IF ( i == 4 .OR. i == 5 .OR. i == 6 ) THEN
        IF ( i == 4 ) THEN
          control%subproblem_direct = .TRUE. ! Use a direct method
@@ -763,9 +748,6 @@
          CASE ( 6 )                      ! form a Hessian-vector product
            CALL HESSPROD( data%eval_status, nlp%X, data%Y, userdata,           &
                           data%U, data%V )
-         CASE ( 7 )                      ! form residual Hessian-vector products
-           CALL RHESSPRODS( data%eval_status, nlp%X, data%V, userdata,         &
-                            nlp%P%val )
          CASE ( 8 )                      ! Apply the preconditioner
            CALL SCALE( data%eval_status, nlp%X, userdata, data%U, data%V )
          CASE DEFAULT                    ! Terminal exit from loop
@@ -800,11 +782,10 @@
 
    nlp%n = 2 ;  nlp%m = 3
    ALLOCATE( nlp%X( nlp%n ), nlp%C( nlp%m ), nlp%G( nlp%n ) )
-   ALLOCATE( nlp%X( nlp%n ), nlp%X_l( n ), nlp%X_u( n ), nlp%G( nlp%n ) )
-   ALLOCATE( nlp%C( nlp%m ) )
+   ALLOCATE( nlp%X_l( nlp%n ), nlp%X_u( nlp%n ) )
    ALLOCATE( userdata%real( 1 ) ) ! Allocate space to hold parameter
    userdata%real( 1 ) = p         ! Record parameter, p
-   nlp%X_l = 0.0_wp ; nlp%X_u = 1.0_wp          ! variables lie in [0,1]
+   nlp%X_l = 0.0_rp_ ; nlp%X_u = 1.0_rp_          ! variables lie in [0,1]
 
    DO store = 1, 3
 !  DO store = 1, 1
@@ -873,7 +854,7 @@
        control%hessian_available = 2                ! the Hessian is available
        control%subproblem_direct = .TRUE. ! Use a direct method
 !      control%subproblem_control%subproblem_direct = .TRUE.
-       control%model = 6   ! tensor-Gauss-Newton model
+       control%model = 5   ! transition-Gauss-Newton model
        control%norm = - 3  ! User's scaling
        control%norm = - 1  ! Euclidean scaling
 !      control%print_level = 1
@@ -886,12 +867,11 @@
          IF ( store == 3 ) THEN
            CALL BNLS_solve( nlp, control, inform, data, userdata,              &
                            eval_C = RES, eval_J = JAC_dense,                   &
-                           eval_H = HESS_dense,                                &
-                           eval_HPRODS = RHESSPRODS_dense, eval_SCALE = SCALE )
+                           eval_H = HESS_dense, eval_SCALE = SCALE )
          ELSE
            CALL BNLS_solve( nlp, control, inform, data, userdata,              &
                            eval_C = RES, eval_J = JAC, eval_H = HESS,          &
-                           eval_HPRODS = RHESSPRODS, eval_SCALE = SCALE )
+                           eval_SCALE = SCALE )
          END IF
        ELSE
          DO                              ! Loop to solve problem
@@ -919,14 +899,6 @@
            CASE ( 6 )                    ! form a Hessian-vector product
              CALL HESSPROD( data%eval_status, nlp%X, data%Y, userdata,         &
                             data%U, data%V )
-           CASE ( 7 )                 ! form residual Hessian-vector products
-             IF ( store == 3 ) THEN
-               CALL RHESSPRODS_dense( data%eval_status, nlp%X, data%V,         &
-                                      userdata, nlp%P%val )
-             ELSE
-               CALL RHESSPRODS( data%eval_status, nlp%X, data%V, userdata,     &
-                                nlp%P%val )
-             END IF
            CASE ( 8 )                      ! Apply the preconditioner
              CALL SCALE( data%eval_status, nlp%X, userdata, data%U, data%V )
            CASE DEFAULT                    ! Terminal exit from loop
@@ -966,7 +938,7 @@
 
      SUBROUTINE WHICH_sls( control )
      TYPE ( BNLS_control_type ) :: control
-#include "galahad_sls_defaults.h"
+#include "galahad_sls_defaults_ls.h"
      control%PSLS_control%symmetric_linear_solver = symmetric_linear_solver
      control%PSLS_control%definite_linear_solver = definite_linear_solver
      control%RQS_control%symmetric_linear_solver = symmetric_linear_solver
@@ -1043,19 +1015,6 @@
      status = 0
      END SUBROUTINE HESSPROD
 
-     SUBROUTINE RHESSPRODS( status, X, V, userdata, P_val, got_h )
-     USE GALAHAD_USERDATA_precision
-     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P_val
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-     P_val( 1 ) = 2.0_rp_ * V( 1 )
-     P_val( 2 ) = 2.0_rp_ * V( 2 )
-     status = 0
-     END SUBROUTINE RHESSPRODS
-
      SUBROUTINE SCALE( status, X, userdata, U, V )
      USE GALAHAD_USERDATA_precision
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
@@ -1095,22 +1054,5 @@
      H_val( 3 ) = 2.0_rp_ * Y( 2 )
      status = 0
      END SUBROUTINE HESS_dense
-
-     SUBROUTINE RHESSPRODS_dense( status, X, V, userdata, P_val, got_h )
-     USE GALAHAD_USERDATA_precision
-     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P_val
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-     P_val( 1 ) = 2.0_rp_ * V( 1 )
-     P_val( 2 ) = 0.0_rp_
-     P_val( 3 ) = 0.0_rp_
-     P_val( 4 ) = 2.0_rp_ * V( 2 )
-     P_val( 5 ) = 0.0_rp_
-     P_val( 6 ) = 0.0_rp_
-     status = 0
-     END SUBROUTINE RHESSPRODS_dense
 
    END PROGRAM GALAHAD_BNLS_test_deck

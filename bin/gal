@@ -1127,8 +1127,8 @@ fi
 #  create the executable
 
 #EXECUTABLE="$FORTRAN $FFLAGS -o $galmin $RUNMAIN $NSUB\
-EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN $NSUB \
- -L$GALOBJ -lgalahad -lgalahad_cutest $PROBLIB $CUTESTLIB -lgalahad \
+EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN $NSUB -L$GALOBJ \
+ -lgalahad -lgalahad_cutest $PROBLIB $CUTESTLIB -lgalahad $CUTESTLIB \
  ${HSLLIB-${HSL--lgalahad_hsl}} \
  ${PARDISOLIB-${PARDISO--lgalahad_pardiso}} \
  ${MKL_PARDISOLIB-${MKL_PARDISO--lgalahad_mkl_pardiso}} \

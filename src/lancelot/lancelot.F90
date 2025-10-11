@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-09-02 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-10-08 AT 11:10 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_initialize MA57_initialize
@@ -5959,18 +5959,20 @@
              IF ( KNDOFG( ic1 ) > 1 ) j = j + 1
              IF ( j == 2 ) EXIT
            END DO
+           ic1 = MIN( ic1, ng )
            j = 0
            DO ir2 = ng, 1, - 1
              IF ( KNDOFG( ir2 ) > 1 ) j = j + 1
              IF ( j == 2 ) EXIT
            END DO
+           ir2 = MAX( ic1 + 1, ir2, 1 )
          END IF
          DO j = 1, 2
            IF ( j == 1 ) THEN
              ir = 1
              ic = ic1
            ELSE
-             IF ( ic1 < ir2 .AND. start_p ) WRITE( S%out, 2230 )
+             IF ( ic1 < ir2 .AND. ir2 < ng .AND. start_p ) WRITE( S%out, 2230 )
              ir = ir2
              ic = ng
            END IF

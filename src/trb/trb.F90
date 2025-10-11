@@ -2275,31 +2275,37 @@
 !    END IF
 
      IF ( data%control%subproblem_direct ) THEN
-       array_name = 'trb: data%H_sub%row'
-       CALL SPACE_resize_array( data%h_ne, data%H_sub%row, inform%status,      &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       IF ( data%control%model == first_order_model ) THEN
+         CALL SMT_put( data%H_sub%type, 'ZERO', inform%alloc_status )
+       ELSE IF ( data%control%model == identity_hessian_model ) THEN
+         CALL SMT_put( data%H_sub%type, 'IDENTITY', inform%alloc_status )
+       ELSE
+         array_name = 'trb: data%H_sub%row'
+         CALL SPACE_resize_array( data%h_ne, data%H_sub%row, inform%status,    &
+                inform%alloc_status, array_name = array_name,                  &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= 0 ) GO TO 980
 
-       array_name = 'trb: data%H_sub%col'
-       CALL SPACE_resize_array( data%h_ne, data%H_sub%col, inform%status,      &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+         array_name = 'trb: data%H_sub%col'
+         CALL SPACE_resize_array( data%h_ne, data%H_sub%col, inform%status,    &
+                inform%alloc_status, array_name = array_name,                  &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= 0 ) GO TO 980
 
-       array_name = 'trb: data%H_sub%val'
-       CALL SPACE_resize_array( data%h_ne, data%H_sub%val, inform%status,      &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+         array_name = 'trb: data%H_sub%val'
+         CALL SPACE_resize_array( data%h_ne, data%H_sub%val, inform%status,    &
+                inform%alloc_status, array_name = array_name,                  &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= 0 ) GO TO 980
 
-       CALL SMT_put( data%H_sub%type, 'COORDINATE', inform%alloc_status )
+         CALL SMT_put( data%H_sub%type, 'COORDINATE', inform%alloc_status )
+       END IF
      END IF
 
      array_name = 'trb: data%M_sub%val'
@@ -3702,24 +3708,30 @@
 
 !  compute the product of the Hessian H and the step p
 
-           IF ( data%control%hessian_available ) THEN
-             CALL mop_Ax( one, nlp%H, data%P( : nlp%n ), zero,                 &
-                          data%HP( : nlp%n ), data%out, data%control%error,    &
-                          0_ip_, symmetric = .TRUE. )
+           IF ( data%control%model == first_order_model ) THEN
+             data%HP( : nlp%n ) = zero
+           ELSE IF ( data%control%model == identity_hessian_model ) THEN
+             data%HP( : nlp%n ) = data%P( : nlp%n )
+           ELSE
+             IF ( data%control%hessian_available ) THEN
+               CALL mop_Ax( one, nlp%H, data%P( : nlp%n ), zero,               &
+                            data%HP( : nlp%n ), data%out, data%control%error,  &
+                            0_ip_, symmetric = .TRUE. )
 
 !  if the Hessian is unavailable, obtain a matrix-free product
 
-           ELSE
-             IF ( data%reverse_hprod ) THEN
-               data%U( : nlp%n ) = zero
-               data%V( : nlp%n ) = data%P( : nlp%n )
-               data%branch = 425 ; inform%status = 5 ; RETURN
              ELSE
-               data%HP( : nlp%n ) = zero
-               CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,  &
-                                data%HP( : nlp%n ), data%P( : nlp%n ),         &
-                                got_h = data%got_h )
-               data%got_h = .TRUE.
+               IF ( data%reverse_hprod ) THEN
+                 data%U( : nlp%n ) = zero
+                 data%V( : nlp%n ) = data%P( : nlp%n )
+                 data%branch = 425 ; inform%status = 5 ; RETURN
+               ELSE
+                 data%HP( : nlp%n ) = zero
+                 CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,&
+                                  data%HP( : nlp%n ), data%P( : nlp%n ),       &
+                                  got_h = data%got_h )
+                 data%got_h = .TRUE.
+               END IF
              END IF
            END IF
          END IF
@@ -3728,7 +3740,15 @@
 
   425    CONTINUE
          IF ( data%printd ) THEN
-           IF ( .NOT. data%control%hessian_available .AND.                     &
+           IF ( data%control%model == first_order_model ) THEN
+             WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )      &
+               data%model, DOT_PRODUCT( data%P( : nlp%n ),                     &
+                 nlp%G( : nlp%n ) )
+           ELSE IF ( data%control%model == identity_hessian_model ) THEN
+             WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )      &
+               data%model, DOT_PRODUCT( data%P( : nlp%n ),                     &
+                 nlp%G( : nlp%n ) + half * data%P( : nlp%n ) )
+           ELSE IF ( .NOT. data%control%hessian_available .AND.                &
                  data%reverse_hprod ) THEN
              WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )      &
                data%model, DOT_PRODUCT( data%P( : nlp%n ),                     &
@@ -3771,6 +3791,7 @@
 !  data%INDEX_nz_hp(i) = j > 0 if variable i is reduced variable j, and 
 !  data%INDEX_nz_hp(i) = 0, if variable i is fixed (and thus not a reduced one)
 
+           data%H_sub%n = data%n_sub
            data%n_sub = 0
            data%g_model = zero
            DO i = 1, nlp%n
@@ -3788,29 +3809,14 @@
 
 !  now copy the reduced Hessian in coordinate format into H_sub
 
-           data%h_ne_sub = 0
-           SELECT CASE ( SMT_get( nlp%H%type ) )
-           CASE ( 'coordinate', 'COORDINATE' )
-             DO l = 1, nlp%H%ne
-               i = nlp%H%row( l ) ; ii = data%INDEX_nz_hp( i )
-               IF ( ii == 0 ) CYCLE
-               j = nlp%H%col( l ) ; jj = data%INDEX_nz_hp( j )
-               IF ( jj == 0 ) CYCLE
-               data%h_ne_sub = data%h_ne_sub + 1
-               IF ( jj <= ii ) THEN
-                 data%H_sub%row( data%h_ne_sub ) = ii
-                 data%H_sub%col( data%h_ne_sub ) = jj
-               ELSE
-                 data%H_sub%row( data%h_ne_sub ) = jj
-                 data%H_sub%col( data%h_ne_sub ) = ii
-               END IF
-               data%H_sub%val( data%h_ne_sub ) = nlp%H%val( l )
-             END DO
-           CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
-             DO i = 1, nlp%n
-               ii = data%INDEX_nz_hp( i )
-               IF ( ii == 0 ) CYCLE
-               DO l = nlp%H%ptr( i ), nlp%H%ptr( i + 1 ) - 1
+           IF ( data%control%model /= first_order_model .AND.                  &
+                data%control%model /= identity_hessian_model ) THEN
+             data%h_ne_sub = 0
+             SELECT CASE ( SMT_get( nlp%H%type ) )
+             CASE ( 'coordinate', 'COORDINATE' )
+               DO l = 1, nlp%H%ne
+                 i = nlp%H%row( l ) ; ii = data%INDEX_nz_hp( i )
+                 IF ( ii == 0 ) CYCLE
                  j = nlp%H%col( l ) ; jj = data%INDEX_nz_hp( j )
                  IF ( jj == 0 ) CYCLE
                  data%h_ne_sub = data%h_ne_sub + 1
@@ -3823,41 +3829,59 @@
                  END IF
                  data%H_sub%val( data%h_ne_sub ) = nlp%H%val( l )
                END DO
-             END DO
-           CASE ( 'dense', 'DENSE' )
-             l = 1
-             DO i = 1, nlp%n
-               ii = data%INDEX_nz_hp( i )
-               IF ( ii == 0 ) THEN
-                 l = l + i
-                 CYCLE
-               END IF
-               DO j = 1, i
-                 l = l + 1
-                 jj = data%INDEX_nz_hp( j )
-                 IF ( jj == 0 ) CYCLE
-                 data%h_ne_sub = data%h_ne_sub + 1
-                 IF ( jj <= ii ) THEN
-                   data%H_sub%row( data%h_ne_sub ) = ii
-                   data%H_sub%col( data%h_ne_sub ) = jj
-                 ELSE
-                   data%H_sub%row( data%h_ne_sub ) = jj
-                   data%H_sub%col( data%h_ne_sub ) = ii
-                 END IF
-                 data%H_sub%val( data%h_ne_sub ) = nlp%H%val( l )
+             CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+               DO i = 1, nlp%n
+                 ii = data%INDEX_nz_hp( i )
+                 IF ( ii == 0 ) CYCLE
+                 DO l = nlp%H%ptr( i ), nlp%H%ptr( i + 1 ) - 1
+                   j = nlp%H%col( l ) ; jj = data%INDEX_nz_hp( j )
+                   IF ( jj == 0 ) CYCLE
+                   data%h_ne_sub = data%h_ne_sub + 1
+                   IF ( jj <= ii ) THEN
+                     data%H_sub%row( data%h_ne_sub ) = ii
+                     data%H_sub%col( data%h_ne_sub ) = jj
+                   ELSE
+                     data%H_sub%row( data%h_ne_sub ) = jj
+                     data%H_sub%col( data%h_ne_sub ) = ii
+                   END IF
+                   data%H_sub%val( data%h_ne_sub ) = nlp%H%val( l )
+                 END DO
                END DO
-             END DO
-           CASE DEFAULT
-             DO i = 1, nlp%n
-               ii = data%INDEX_nz_hp( i )
-               IF ( ii == 0 ) CYCLE
-               data%h_ne_sub = data%h_ne_sub + 1
-               data%H_sub%row( data%h_ne_sub ) = ii
-               data%H_sub%col( data%h_ne_sub ) = ii
-               data%H_sub%val( data%h_ne_sub ) = nlp%H%val( i )
-             END DO
-           END SELECT
-           data%H_sub%ne = data%h_ne_sub
+             CASE ( 'dense', 'DENSE' )
+               l = 1
+               DO i = 1, nlp%n
+                 ii = data%INDEX_nz_hp( i )
+                 IF ( ii == 0 ) THEN
+                   l = l + i
+                   CYCLE
+                 END IF
+                 DO j = 1, i
+                   l = l + 1
+                   jj = data%INDEX_nz_hp( j )
+                   IF ( jj == 0 ) CYCLE
+                   data%h_ne_sub = data%h_ne_sub + 1
+                   IF ( jj <= ii ) THEN
+                     data%H_sub%row( data%h_ne_sub ) = ii
+                     data%H_sub%col( data%h_ne_sub ) = jj
+                   ELSE
+                     data%H_sub%row( data%h_ne_sub ) = jj
+                     data%H_sub%col( data%h_ne_sub ) = ii
+                   END IF
+                   data%H_sub%val( data%h_ne_sub ) = nlp%H%val( l )
+                 END DO
+               END DO
+             CASE DEFAULT
+               DO i = 1, nlp%n
+                 ii = data%INDEX_nz_hp( i )
+                 IF ( ii == 0 ) CYCLE
+                 data%h_ne_sub = data%h_ne_sub + 1
+                 data%H_sub%row( data%h_ne_sub ) = ii
+                 data%H_sub%col( data%h_ne_sub ) = ii
+                 data%H_sub%val( data%h_ne_sub ) = nlp%H%val( i )
+               END DO
+             END SELECT
+             data%H_sub%ne = data%h_ne_sub
+           END IF
 
 !  next compute the diagonal scaling matrix M_sub, so that each diagonal
 !  is the reciprocal of the square of the distance to the nearest bound
@@ -3966,12 +3990,18 @@
 
 !  compute the product of the Hessian H and the step p
 
-             CALL mop_Ax( one, nlp%H,  data%P( : nlp%n ), zero,                &
-                          data%HP( : nlp%n ), data%out, data%control%error,    &
-                          0_ip_, symmetric = .TRUE. )
-             WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )      &
-               data%model, DOT_PRODUCT( data%P( : nlp%n ),                     &
-                 nlp%G( : nlp%n ) + half * data%HP( : nlp%n ) )
+             IF ( data%control%model == first_order_model ) THEN
+               data%HP( : nlp%n ) = zero
+             ELSE IF ( data%control%model == identity_hessian_model ) THEN
+               data%HP( : nlp%n ) = data%P( : nlp%n )
+             ELSE
+               CALL mop_Ax( one, nlp%H,  data%P( : nlp%n ), zero,              &
+                            data%HP( : nlp%n ), data%out, data%control%error,  &
+                            0_ip_, symmetric = .TRUE. )
+               WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )    &
+                 data%model, DOT_PRODUCT( data%P( : nlp%n ),                   &
+                   nlp%G( : nlp%n ) + half * data%HP( : nlp%n ) )
+             END IF
            END IF
            GO TO 500
          END IF
@@ -4006,36 +4036,45 @@
 
 !  record the gradient of the model at the Cauchy point in G_cauchy
 
-           data%G_cauchy( : nlp%n ) = nlp%G( : nlp%n )
+           IF ( data%control%model == first_order_model ) THEN
+             data%G_cauchy( : nlp%n ) = nlp%G( : nlp%n )
+           ELSE IF ( data%control%model == identity_hessian_model ) THEN
+             data%G_cauchy( : nlp%n ) = nlp%G( : nlp%n ) + data%P( : nlp%n )
+           ELSE
+             data%G_cauchy( : nlp%n ) = nlp%G( : nlp%n )
 
 !  add the product of the Hessian H and the step p to G_cauchy
 
-           IF ( data%control%hessian_available ) THEN
-             CALL mop_Ax( one, nlp%H, data%P( : nlp%n ), one,                  &
-                          data%G_cauchy( : nlp%n ), data%out,                  &
-                          data%control%error, 0_ip_, symmetric = .TRUE. )
+             IF ( data%control%hessian_available ) THEN
+               CALL mop_Ax( one, nlp%H, data%P( : nlp%n ), one,                &
+                            data%G_cauchy( : nlp%n ), data%out,                &
+                            data%control%error, 0_ip_, symmetric = .TRUE. )
 
 !  if the Hessian is unavailable, obtain a matrix-free product
 
-           ELSE
-             IF ( data%reverse_hprod ) THEN
-               data%U( : nlp%n ) = data%G_cauchy( : nlp%n )
-               data%V( : nlp%n ) = data%P( : nlp%n )
-               data%branch = 428 ; inform%status = 5 ; RETURN
              ELSE
-               data%HP( : nlp%n ) = zero
-               CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,  &
-                                data%G_cauchy( : nlp%n ), data%P( : nlp%n ),   &
-                                got_h = data%got_h )
-               data%got_h = .TRUE.
+               IF ( data%reverse_hprod ) THEN
+                 data%U( : nlp%n ) = data%G_cauchy( : nlp%n )
+                 data%V( : nlp%n ) = data%P( : nlp%n )
+                 data%branch = 428 ; inform%status = 5 ; RETURN
+               ELSE
+                 data%HP( : nlp%n ) = zero
+                 CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,&
+                                  data%G_cauchy( : nlp%n ), data%P( : nlp%n ), &
+                                  got_h = data%got_h )
+                 data%got_h = .TRUE.
+               END IF
              END IF
            END IF
 
 !  return from reverse communication to obtain the Hessian-vector product
 
   428    CONTINUE
-         IF ( .NOT. data%control%hessian_available .AND. data%reverse_hprod )  &
-           data%G_cauchy( : nlp%n ) = data%U( : nlp%n )
+         IF ( data%control%model /= first_order_model .AND.                    &
+              data%control%model /= identity_hessian_model ) THEN
+           IF ( .NOT. data%control%hessian_available .AND. data%reverse_hprod )&
+             data%G_cauchy( : nlp%n ) = data%U( : nlp%n )
+         END IF
 
 !  build the reduced model, that is the model that only involves the 
 !  variables that are free at the Cauchy point. Start by resetting 
@@ -4226,10 +4265,17 @@
            WRITE( data%out, "( ' gltr model value =', ES12.4 )" )              &
              data%gltr_model
            data%P = data%X_trial - data%X_current
-           data%HP( : nlp%n ) = zero
-           CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,      &
-                            data%HP( : nlp%n ), data%P( : nlp%n ),             &
-                            got_h = data%got_h )
+
+           IF ( data%control%model == first_order_model ) THEN
+             data%HP( : nlp%n ) = zero
+           ELSE IF ( data%control%model == identity_hessian_model ) THEN
+             data%HP( : nlp%n ) = data%P( : nlp%n )
+           ELSE
+             data%HP( : nlp%n ) = zero
+             CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,    &
+                              data%HP( : nlp%n ), data%P( : nlp%n ),           &
+                              got_h = data%got_h )
+           END IF
            WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )        &
              data%model, DOT_PRODUCT( data%P( : nlp%n ),                       &
                nlp%G( : nlp%n ) + half * data%HP( : nlp%n ) )
