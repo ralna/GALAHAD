@@ -907,9 +907,25 @@
 !  f is a scalar variable of type default real, that holds the value of
 !   the objective function.
 !
+!  X_l is a rank-one allocatable array of dimension n and type default real,
+!   that holds the values x_l of the lower bounds on the optimization
+!   variables x. The j-th component of X_l, j = 1, ... , n, contains (x_l)j.
+!
+!  X_u is a rank-one allocatable array of dimension n and type default real,
+!   that holds the values x_u of the upper bounds on the optimization
+!   variables x. The j-th component of X_u, j = 1, ... , n, contains (x_u)j.
+!
+!  C_l is a rank-one allocatable array of dimension m and type default real,
+!   that holds the values c_l of the lower bounds on the constraint functions
+!   c(x). The i-th component of C_l, i = 1, ... , m, contains (c_l)i.
+!
+!  C_u is a rank-one allocatable array of dimension m and type default real,
+!   that holds the values c_u of the upper bounds on the constraint functions
+!   c(x). The i-th component of C_u, i = 1, ... , m, contains (c_u)i.
+!
 !  C is a rank-one allocatable array of dimension n and type default real,
 !   that holds the constraint value c. The i-th component of C, i = 1, ... , m,
-!   contains g_j.
+!   contains c_i.
 !
 !  X is a rank-one allocatable array of dimension n and type default real, that
 !   holds the values x of the optimization variables. The j-th component of

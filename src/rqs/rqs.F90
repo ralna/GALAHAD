@@ -1037,6 +1037,14 @@
 
           data%Q_dense( : n, : n ) = zero
           SELECT CASE ( SMT_get( H%type ) )
+          CASE ( 'IDENTITY' )
+            DO i = 1, n
+              data%Q_dense( i, i ) = one
+            END DO
+          CASE ( 'SCALED_IDENTITY' )
+            DO i = 1, n
+              data%Q_dense( i, i ) = H%val( 1 )
+            END DO
           CASE ( 'DIAGONAL' )
             DO i = 1, n
               data%Q_dense( i, i ) = H%val( i )
@@ -1089,6 +1097,14 @@
 
             data%M_dense( : n, : n ) = zero
             SELECT CASE ( SMT_get( M%type ) )
+            CASE ( 'IDENTITY' )
+              DO i = 1, n
+                data%M_dense( i, i ) = one
+              END DO
+            CASE ( 'SCALED_IDENTITY' )
+              DO i = 1, n
+                data%M_dense( i, i ) = M%val( 1 )
+              END DO
             CASE ( 'DIAGONAL' )
               DO i = 1, n
                 data%M_dense( i, i ) = M%val( i )
@@ -1545,7 +1561,9 @@
       IF ( data%control%new_h >= 2 ) THEN
 !       write(6,*) ' H ', SMT_get( H%type )
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' )
+        CASE ( 'ZERO', 'NONE' )
+          data%h_ne = 0
+        CASE ( 'DIAGONAL', 'SCALED_IDENTITY', 'IDENTITY' )
           data%h_ne = n
         CASE ( 'DENSE' )
           data%h_ne = ( n * ( n + 1 ) ) / 2
@@ -1662,7 +1680,7 @@
 !  fit the data from H into the coordinate storage scheme provided
 
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' )
+        CASE ( 'DIAGONAL', 'SCALED_IDENTITY', 'IDENTITY' )
           DO i = 1, n
             data%H_lambda%row( i ) = i ; data%H_lambda%col( i ) = i
           END DO
@@ -1982,30 +2000,52 @@
 !  its diagonal terms (in Z) and H u or H c (in V)
 
         ELSE
-          data%Y( : n ) = zero ; data%Z( : n ) = zero ; data%V( : n ) = zero
-          i_max = 0 ; j_max = 0 ; h_max = zero
-          DO l = 1, data%h_ne
-            i = data%H_lambda%row( l ) ; j = data%H_lambda%col( l )
-            val = H%val( l )
-            IF ( i == j ) THEN
-              data%Z( i ) = data%Z( i ) + val
+          data%Y( : n ) = zero ; i_max = 0 ; j_max = 0 ; h_max = zero
+          IF ( SMT_get( H%type ) == 'SCALED_IDENTITY' .OR.                     &
+               SMT_get( H%type ) == 'IDENTITY' .OR.                            &
+               SMT_get( H%type ) == 'ZERO' .OR.                                &
+               SMT_get( H%type ) == 'NONE' ) THEN
+            SELECT CASE ( SMT_get( H%type ) )
+            CASE ( 'ZERO', 'NONE' )
+              val = zero
+            CASE ( 'IDENTITY' )
+              val = one
+            CASE ( 'SCALED_IDENTITY' )
+              val = H%val( 1 )
+            END SELECT
+            DO i = 1, n
+              data%Z( i ) = val
               IF ( data%get_initial_u ) THEN
-                data%V( i ) = data%V( i ) + val * C( i )
+                data%V( i ) = val * C( i )
               ELSE
-                data%V( i ) = data%V( i ) + val * data%U( i )
+                data%V( i ) = val * data%U( i )
               END IF
-            ELSE
-              data%Y( i ) = data%Y( i ) + ABS( val )
-              data%Y( j ) = data%Y( j ) + ABS( val )
-              IF ( data%get_initial_u ) THEN
-                data%V( i ) = data%V( i ) + val * C( j )
-                data%V( j ) = data%V( j ) + val * C( i )
+            END DO
+          ELSE
+            data%Z( : n ) = zero ; data%V( : n ) = zero
+            DO l = 1, data%h_ne
+              i = data%H_lambda%row( l ) ; j = data%H_lambda%col( l )
+              val = H%val( l )
+              IF ( i == j ) THEN
+                data%Z( i ) = data%Z( i ) + val
+                IF ( data%get_initial_u ) THEN
+                  data%V( i ) = data%V( i ) + val * C( i )
+                ELSE
+                  data%V( i ) = data%V( i ) + val * data%U( i )
+                END IF
               ELSE
-                data%V( i ) = data%V( i ) + val * data%U( j )
-                data%V( j ) = data%V( j ) + val * data%U( i )
+                data%Y( i ) = data%Y( i ) + ABS( val )
+                data%Y( j ) = data%Y( j ) + ABS( val )
+                IF ( data%get_initial_u ) THEN
+                  data%V( i ) = data%V( i ) + val * C( j )
+                  data%V( j ) = data%V( j ) + val * C( i )
+                ELSE
+                  data%V( i ) = data%V( i ) + val * data%U( j )
+                  data%V( j ) = data%V( j ) + val * data%U( i )
+                END IF
               END IF
-            END IF
-          END DO
+            END DO
+          END IF
 
 !  compute u^T H u or c^T H c as required
 
@@ -2242,8 +2282,15 @@
 
       IF ( data%control%new_h >= 1 .OR.                                        &
            ( .NOT. unit_m .AND. data%control%new_m >= 2 ) .OR.                 &
-           ( constrained .AND. data%control%new_a >= 2 ) )                     &
-        data%H_lambda%val( : data%h_ne ) = H%val( : data%h_ne )
+           ( constrained .AND. data%control%new_a >= 2 ) ) THEN
+        IF ( SMT_get( H%type ) == 'IDENTITY' ) THEN
+          data%H_lambda%val( : data%h_ne ) = one
+        ELSE IF ( SMT_get( H%type ) == 'SCALED_IDENTITY' ) THEN
+          data%H_lambda%val( : data%h_ne ) = H%val( 1 )
+        ELSE
+          data%H_lambda%val( : data%h_ne ) = H%val( : data%h_ne )
+        END IF  
+      END IF
 
 !  ... and from A
 

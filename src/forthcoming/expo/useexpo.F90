@@ -230,6 +230,7 @@
 
      inform%status = 1
 !    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
+
      CALL EXPO_solve( nlp, control, inform, data, userdata,                    &
                       eval_FC = CUTEST_eval_FC,                                &
                       eval_GJ = CUTEST_eval_GJ,                                &

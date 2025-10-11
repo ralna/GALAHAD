@@ -2137,7 +2137,7 @@ stop
 
 !  record whether an advanced SQP start will be attempted
 
-     data%try_sqp = data%control%try_sqp_start > zero
+       data%try_sqp = data%control%try_sqp_start > zero
 
 !  set space for the C block
 
@@ -2272,6 +2272,7 @@ stop
            = data%control%stop_subproblem_rel
        IF (data%printi .AND.  data%control%TRU_control%print_level > 0 )       &
          WRITE( data%out, "( '' )" )
+
  200   CONTINUE
 
 !  solve the problem using a trust-region method

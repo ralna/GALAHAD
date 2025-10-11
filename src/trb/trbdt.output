@@ -1,9 +1,22 @@
 
-Program received signal SIGSEGV: Segmentation fault - invalid memory reference.
+ error exit tests 
+ 3: TRB_solve exit status =     -3
+ 4: TRB_solve exit status =     -4
+ 7: TRB_solve exit status =     -7
+18: TRB_solve exit status =    -18
+19: TRB_solve exit status =    -19
 
-Backtrace for this error:
-#0  0xc6264e23e59 in ???
-#1  0xc6264e22e75 in ???
-#2  0xc6264a4532f in ???
-	at ./signal/../sysdeps/unix/sysv/linux/x86_64/libc_sigaction.c:0
-#3  0x0 in ???
+ test of availible options 
+
+ 8:    33 iterations. Optimal objective value =   -0.8 status =      0
+
+ full test of generic problems 
+
+ 1:     1 iterations. Optimal objective value =   17.0 status =      0
+ 2:     1 iterations. Optimal objective value =   17.0 status =      0
+ 3:     1 iterations. Optimal objective value =   17.0 status =      0
+ 4:     1 iterations. Optimal objective value =   17.0 status =      0
+ 5:     1 iterations. Optimal objective value =   17.0 status =      0
+ 6:     1 iterations. Optimal objective value =   17.0 status =      0
+
+ tests completed
