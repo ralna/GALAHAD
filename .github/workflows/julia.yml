@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         version: ['1']
-        os: [ubuntu-latest, windows-latest, macos-13]
+        os: [ubuntu-latest, windows-latest, macos-15-intel]
         arch: ['x64']
         allow_failure: [false]
         include:
