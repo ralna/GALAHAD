@@ -58,7 +58,7 @@ runs:
           echo "PLATFORM=x86_64-linux-gnu" >> $GITHUB_ENV
           echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/lib" >> $GITHUB_ENV
         fi
-        if [[ "${{inputs.os}}" == "macos-13" ]]; then
+        if [[ "${{inputs.os}}" == "macos-15-intel" ]]; then
           echo "LIBDIR=lib" >> $GITHUB_ENV
           echo "DLEXT=dylib" >> $GITHUB_ENV
           echo "PLATFORM=x86_64-apple-darwin" >> $GITHUB_ENV
@@ -89,7 +89,7 @@ runs:
           echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
         fi
-        if [[ "${{ inputs.os }}" == "macos-13" || "${{inputs.os}}" == "macos-latest" ]]; then
+        if [[ "${{ inputs.os }}" == "macos-15-intel" || "${{inputs.os}}" == "macos-latest" ]]; then
           echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
@@ -276,7 +276,7 @@ runs:
         HSL="hsl_subset"
         HSL_PATH="$DEPS/deps/$LIBDIR"
         LD_CLASSIC=""
-        if [[ "${{inputs.os}}" == "macos-13" || "${{inputs.os}}" == "macos-latest" ]]; then
+        if [[ "${{inputs.os}}" == "macos-15-intel" || "${{inputs.os}}" == "macos-latest" ]]; then
           LD_CLASSIC="-Wl,-ld_classic"
         fi
         if [[ "${{ inputs.compiler }}" == "nvidia-hpc" ]]; then
