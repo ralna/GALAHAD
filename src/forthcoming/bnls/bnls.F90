@@ -41,8 +41,9 @@
      USE GALAHAD_USERDATA_precision
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_PSLS_precision
-     USE GALAHAD_GLRT_precision
-     USE GALAHAD_RQS_precision
+     USE GALAHAD_QPT_precision
+     USE GALAHAD_BLLS_precision
+     USE GALAHAD_BLLSB_precision
      USE GALAHAD_BSC_precision
      USE GALAHAD_SPACE_precision
      USE GALAHAD_ROOTS_precision
@@ -359,13 +360,13 @@
 
        CHARACTER ( LEN = 30 ) :: prefix = '""                            '
 
-!  control parameters for RQS
+!  control parameters for BLLS
 
-       TYPE ( RQS_control_type ) :: RQS_control
+       TYPE ( BLLS_control_type ) :: BLLS_control
 
-!  control parameters for GLRT
+!  control parameters for BLLSB
 
-       TYPE ( GLRT_control_type ) :: GLRT_control
+       TYPE ( BLLSB_control_type ) :: BLLSB_control
 
 !  control parameters for PSLS
 
@@ -518,13 +519,13 @@
 
        TYPE ( BNLS_time_type ) :: time
 
-!  inform parameters for RQS
+!  inform parameters for BLLS
 
-       TYPE ( RQS_inform_type ) :: RQS_inform
+       TYPE ( BLLS_inform_type ) :: BLLS_inform
 
-!  inform parameters for GLRT
+!  inform parameters for BLLSB
 
-       TYPE ( GLRT_inform_type ) :: GLRT_inform
+       TYPE ( BLLSB_inform_type ) :: BLLSB_inform
 
 !  inform parameters for PSLS
 
@@ -568,7 +569,8 @@
        INTEGER ( KIND = ip_ ) :: branch = 1
        INTEGER ( KIND = ip_ ) :: branch_newton = 1
        INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print
-       INTEGER ( KIND = ip_ ) :: print_level, print_level_glrt, print_level_rqs
+       INTEGER ( KIND = ip_ ) :: print_level
+       INTEGER ( KIND = ip_ ) :: print_level_blls, print_level_bllsb
        INTEGER ( KIND = ip_ ) :: len_history, ibound, ipoint, icp, lbfgs_mem
        INTEGER ( KIND = ip_ ) :: nskip_lbfgs, nskip_prec, non_monotone_history
        INTEGER ( KIND = ip_ ) :: print_gap, max_diffs, latest_diff, total_diffs
@@ -591,12 +593,12 @@
        LOGICAL :: reverse_scale, reverse_hprods, non_trivial_regularization
        LOGICAL :: successful, transpose, form_regularization, f_is_nan, g_is_nan
        LOGICAL :: hessian_available, jacobian_available, re_entry
-       LOGICAL :: w_eq_identity, step_accepted, hessian_computed, map_h_to_jtj
+       LOGICAL :: w_eq_identity, step_accepted
        CHARACTER ( LEN = 1 ) :: negcur = ' '
        CHARACTER ( LEN = 1 ) :: perturb = ' '
        CHARACTER ( LEN = 1 ) :: hard = ' '
        CHARACTER ( LEN = 1 ) :: accept = ' '
-       TYPE ( RQS_history_type ), DIMENSION( history_max ) :: history
+       TYPE ( BLLSB_history_type ), DIMENSION( history_max ) :: history
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PAST
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW
@@ -620,22 +622,24 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JS
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: HSHS
 
+       TYPE ( QPT_problem_type ) :: GN_model
        TYPE ( SMT_type ) :: JT
        TYPE ( SMT_type ) :: H
        TYPE ( NLS_regularization_data_type ) :: regularization
 
-!  copys of controls
+!  copys of controls and informs
 
        TYPE ( BNLS_control_type ) :: control
        TYPE ( BNLS_inform_type ) :: inform
 
-!  data for RQS
+!  data for BLLS
 
-       TYPE ( RQS_data_type ) :: RQS_data
+       TYPE ( BLLS_data_type ) :: BLLS_data
+       TYPE ( BLLS_reverse_type ) :: reverse
 
-!  data for GLRT
+!  data for BLLSB
 
-       TYPE ( GLRT_data_type ) :: GLRT_data
+       TYPE ( BLLSB_data_type ) :: BLLSB_data
 
 !  data for PSLS
 
@@ -693,17 +697,17 @@
 
      inform%status = GALAHAD_ok
 
-!  initalize RQS components
+!  initalize BLLS components
 
-     CALL RQS_initialize( data%RQS_data, control%RQS_control,                  &
-                          inform%RQS_inform )
-     control%RQS_control%prefix = '" - RQS:"                     '
+     CALL BLLS_initialize( data%BLLS_data, control%BLLS_control,               &
+                           inform%BLLS_inform )
+     control%BLLS_control%prefix = '" - BLLS:"                    '
 
-!  initalize GLRT components
+!  initalize BLLSB components
 
-     CALL GLRT_initialize( data%GLRT_data, control%GLRT_control,               &
-                           inform%GLRT_inform )
-     control%GLRT_control%prefix = '" - GLRT:"                    '
+     CALL BLLSB_initialize( data%BLLSB_data, control%BLLSB_control,            &
+                           inform%BLLSB_inform )
+     control%BLLSB_control%prefix = '" - BLLSB:"                   '
 
 !  initalize PSLS components
 
@@ -1119,17 +1123,17 @@
 !  read the controls for the sub-problem solvers and regularizations
 
      IF ( PRESENT( alt_specname ) ) THEN
-       CALL RQS_read_specfile( control%RQS_control, device,                    &
-              alt_specname = TRIM( alt_specname ) // '-RQS' )
-       CALL GLRT_read_specfile( control%GLRT_control, device,                  &
-              alt_specname = TRIM( alt_specname ) // '-GLRT' )
+       CALL BLLS_read_specfile( control%BLLS_control, device,                  &
+              alt_specname = TRIM( alt_specname ) // '-BLLS' )
+       CALL BLLSB_read_specfile( control%BLLSB_control, device,                &
+              alt_specname = TRIM( alt_specname ) // '-BLLSB' )
        CALL PSLS_read_specfile( control%PSLS_control, device,                  &
               alt_specname = TRIM( alt_specname ) // '-PSLS'  )
        CALL ROOTS_read_specfile( control%ROOTS_control, device,                &
               alt_specname = TRIM( alt_specname ) // '-ROOTS' )
      ELSE
-       CALL RQS_read_specfile( control%RQS_control, device )
-       CALL GLRT_read_specfile( control%GLRT_control, device )
+       CALL BLLS_read_specfile( control%BLLS_control, device )
+       CALL BLLSB_read_specfile( control%BLLSB_control, device )
        CALL PSLS_read_specfile( control%PSLS_control, device )
        CALL ROOTS_read_specfile( control%ROOTS_control, device )
      END IF
@@ -1143,8 +1147,8 @@
 !-*-*-*-*-  G A L A H A D -  B N L S _ s o l v e  S U B R O U T I N E  -*-*-*-*-
 
      SUBROUTINE BNLS_solve( nlp, control, inform, data, userdata,              &
-                            W, eval_C, eval_J, eval_H,                         &
-                            eval_JPROD, eval_HPROD, eval_SCALE )
+                            W, eval_C, eval_J, eval_H, eval_JPROD,             &
+                            eval_SJPROD, eval_HPROD, eval_SCALE )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -1568,7 +1572,8 @@
      TYPE ( BNLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
-     OPTIONAL :: eval_C, eval_J, eval_H, eval_JPROD, eval_HPROD, eval_SCALE
+     OPTIONAL :: eval_C, eval_J, eval_H, eval_JPROD, eval_SJPROD,              &
+                 eval_HPROD, eval_SCALE
 
 !----------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -1618,6 +1623,24 @@
      END INTERFACE
 
      INTERFACE
+       SUBROUTINE eval_SJPROD( status, X, userdata, transpose, nnz_v,          &
+                               INDEX_nz_v, V, nnz_u, INDEX_nz_u, U, got_j )
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_v
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnz_u
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       LOGICAL, INTENT( IN ) :: transpose
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
+       END SUBROUTINE eval_SJPROD
+     END INTERFACE
+
+     INTERFACE
        SUBROUTINE eval_HPROD( status, X, Y, userdata, U, V, got_h )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
@@ -1664,15 +1687,11 @@
      END IF
      IF ( inform%status == 1 ) THEN
        data%branch = 10
-     ELSE IF ( inform%status == 11 ) THEN
-       data%branch = 20
      END IF
 
      SELECT CASE ( data%branch )
      CASE ( 10 )  ! initialization
        GO TO 10
-     CASE ( 20 )  ! re-entry without initialization
-       GO TO 20
      CASE ( 30 )  ! initial residual evaluation
        GO TO 30
      CASE ( 110 ) ! initial Jacobian evaluation or Jacobian transpose vect prod
@@ -1778,9 +1797,8 @@
 !  check to see if the Jacobian is available explicitly or only via its
 !  action on a vector, and whether reverse communication will be required
 
-! write(6,*) ' data%control%jacobian_available ',data%control%jacobian_available
-     data%jacobian_available = data%control%jacobian_available >= 2 .OR.       &
-       PRESENT( eval_J )
+     data%jacobian_available                                                   &
+       = data%control%jacobian_available >= 2 .OR. PRESENT( eval_J )
      IF ( data%jacobian_available ) THEN
        data%reverse_j = .NOT. PRESENT( eval_J )
      ELSE
@@ -1791,12 +1809,18 @@
      END IF
      data%reverse_jprod = .NOT. PRESENT( eval_JPROD )
 
+     IF ( data%control%model /= first_order_model .AND.                        &
+          data%control%model /= diagonal_hessian_model .AND.                   &
+          data%control%model /= gauss_newton_model )  THEN
+        WRITE( 6, "( ** Warning - Newton model not currently suuported' )" )
+        WRITE( 6, "(    switching to Gauss-Newton model' )" )
+        data%control%model = gauss_newton_model
+     END IF
+
 !  check to see if the Hessian is available explicitly, available via its
 !  action on a vector, or is unavailable, and whether reverse communication
 !  will be required
 
-!    data%hessian_available = data%control%hessian_available >= 2 .OR.         &
-!      PRESENT( eval_H )
      data%hessian_available = data%control%hessian_available >= 2
      IF ( data%hessian_available ) THEN
        data%reverse_h = .NOT. PRESENT( eval_H )
@@ -1836,9 +1860,6 @@
 
 !  check that the Hessian is specified in a permitted format
 
-!inform%status = -1
-!write(6,*) ' **************** deliberate quit', data%hessian_available
-!GO TO 990
      IF ( data%hessian_available ) THEN
        SELECT CASE ( SMT_get( nlp%H%type ) )
        CASE ( 'DIAGONAL', 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE',             &
@@ -1909,7 +1930,7 @@
 !     data%regularization_type = data%control%norm
 !write(6,*) ' ** subproblem scaling type ', data%regularization_type
 !write(6,*) ' ** subproblem regularization type ', data%regularization_type
-     data%control%GLRT_control%unitm                                           &
+     data%control%BLLS_control%unitm                                           &
        = data%regularization_type == euclidean_regularization
      SELECT CASE ( data%regularization_type )
      CASE ( diagonal_hessian_regularization )
@@ -1934,7 +1955,7 @@
        data%control%PSLS_control%preconditioner = - 1
      END SELECT
      data%control%PSLS_control%new_structure = .TRUE.
-     data%control%RQS_control%initial_multiplier = zero
+     data%control%BLLSB_control%initial_multiplier = zero
 
 !  check that the Jacobian is specified in a permitted format
 
@@ -2197,15 +2218,6 @@
        END IF
      END IF
 
-!  re-entry without initialization
-
-  20 CONTINUE
-!    CALL CLOCK_time( data%clock_now )
-!    write(6,*) ' 20 elapsed', data%clock_now - data%clock_start
-     data%set_printw = control%out > 0 .AND. control%print_level >= 4
-     IF ( data%set_printw )                                                    &
-       WRITE( control%out, "( A, ' statement 20' )" ) prefix
-
 !  control the output printing
 
      IF ( data%control%start_print < 0 ) THEN
@@ -2227,8 +2239,8 @@
      END IF
 
      data%out = data%control%out
-     data%print_level_glrt = data%control%GLRT_control%print_level
-     data%print_level_rqs = data%control%RQS_control%print_level
+     data%print_level_blls = data%control%BLLS_control%print_level
+     data%print_level_bllsb = data%control%BLLSB_control%print_level
      data%print_1st_header = .TRUE.
 
 !  basic single line of output per iteration
@@ -2445,20 +2457,20 @@
                data%printm = data%set_printm ; data%printw = data%set_printw
                data%printd = data%set_printd
                data%print_level = data%control%print_level
-               data%control%GLRT_control%print_level = data%print_level_glrt
-               data%control%RQS_control%print_level = data%print_level_rqs
+               data%control%BLLS_control%print_level = data%print_level_blls
+               data%control%BLLSB_control%print_level = data%print_level_bllsb
              ELSE
                data%printi = .FALSE. ; data%printt = .FALSE.
                data%printm = .FALSE. ; data%printw = .FALSE.
                data%printd = .FALSE.
                data%print_level = 0
-               data%control%GLRT_control%print_level = 0
-               data%control%RQS_control%print_level = 0
+               data%control%BLLS_control%print_level = 0
+               data%control%BLLSB_control%print_level = 0
              END IF
              data%print_iteration_header = data%print_level > 1 .OR.           &
-               ( data%control%GLRT_control%print_level > 0 .AND. .NOT.         &
+               ( data%control%BLLS_control%print_level > 0 .AND. .NOT.         &
                  data%control%subproblem_direct ) .OR.                         &
-               ( data%control%RQS_control%print_level > 0 .AND.                &
+               ( data%control%BLLSB_control%print_level > 0 .AND.              &
                  data%control%subproblem_direct )
 
 !  print one-line summary
@@ -2492,9 +2504,9 @@
                     char_facts, data%clock_now
                ELSE
                  char_sit =                                                    &
-                    ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter ) )
+                    ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter ) )
                  char_sit2 =                                                   &
-                    ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter_pass2 ) )
+                    ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter_pass2 ) )
                  WRITE( data%out, "( A, A6, 1X, 3A1, ES11.4, '    NaN    ',    &
                 &  ES9.1, 2ES8.1, 1X, 2A6, F8.2 )" ) prefix,                   &
                     char_iter, data%accept, data%negcur, data%perturb,         &
@@ -2566,19 +2578,19 @@
          data%printm = data%set_printm ; data%printw = data%set_printw
          data%printd = data%set_printd
          data%print_level = data%control%print_level
-         data%control%GLRT_control%print_level = data%print_level_glrt
-         data%control%RQS_control%print_level = data%print_level_rqs
+         data%control%BLLS_control%print_level = data%print_level_blls
+         data%control%BLLSB_control%print_level = data%print_level_bllsb
        ELSE
          data%printi = .FALSE. ; data%printt = .FALSE.
          data%printm = .FALSE. ; data%printw = .FALSE. ; data%printd = .FALSE.
          data%print_level = 0
-         data%control%GLRT_control%print_level = 0
-         data%control%RQS_control%print_level = 0
+         data%control%BLLS_control%print_level = 0
+         data%control%BLLSB_control%print_level = 0
        END IF
        data%print_iteration_header = data%print_level > 1 .OR.                 &
-         ( data%control%GLRT_control%print_level > 0 .AND. .NOT.               &
+         ( data%control%BLLS_control%print_level > 0 .AND. .NOT.               &
            data%control%subproblem_direct ) .OR.                               &
-         ( data%control%RQS_control%print_level > 0 .AND.                      &
+         ( data%control%BLLSB_control%print_level > 0 .AND.                    &
            data%control%subproblem_direct )
 
 !  print one-line summary
@@ -2622,9 +2634,9 @@
                   data%s_norm, char_facts, data%clock_now
              END IF
            ELSE
-             char_sit = ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter ) )
+             char_sit = ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter ) )
              char_sit2 =                                                       &
-                ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter_pass2 ) )
+                ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter_pass2 ) )
              IF ( data%control%print_obj ) THEN
                WRITE( data%out, 2130 ) prefix, char_iter, data%accept,         &
                   data%negcur, data%perturb, inform%obj,                       &
@@ -2927,201 +2939,34 @@
 !  ============================================================================
 !  2. Calculate the search direction, s
 !  ============================================================================
-!  .............................................................................
-!                        Linear or quadratic model
-!  .............................................................................
 
 !  2a. Direct solution
 !  -------------------
 
 !      write(6,*) ' direct? ', data%control%subproblem_direct
-      IF ( data%control%subproblem_direct ) THEN
-
-!  estimate Lagrange multipler for the next regularization subproblem
-
-         IF ( inform%iter > 1 ) THEN
-
-!  only the weight for the next problem differs from the current one
-
-!          write(6,*) ' poor model ', data%poor_model
-           IF ( data%poor_model ) THEN
-
-!  if there is a history of points with smaller norms, record them
-
-             IF ( inform%RQS_inform%len_history > 0 ) THEN
-               data%len_history = inform%RQS_inform%len_history
-               data%history( : data%len_history )                              &
-                 = inform%RQS_inform%history( : data%len_history )
-             ELSE
-               data%len_history = 0
-             END IF
-
-!  set the lower bound and estimate of the next multiplier to the current
-!  values, as Newton will converge rapidly from here
-
-             data%control%RQS_control%lower = inform%RQS_inform%multiplier
-             data%control%RQS_control%initial_multiplier =                     &
-               data%control%RQS_control%lower
-             data%control%RQS_control%use_initial_multiplier = .TRUE.
-
-!  if the hard case was possible, slightly perturb the multiplier
-
-             IF ( inform%RQS_inform%pole > zero )                              &
-               data%control%RQS_control%initial_multiplier =                   &
-                 data%control%RQS_control%initial_multiplier                   &
-                   + MAX( inform%RQS_inform%pole, one ) * epsmch ** half
-
-!  look through the history to see if a better starting value is available
-
-             DO i = data%len_history, 1, - 1
-               IF ( data%history( i )%x_norm > inform%weight ) THEN
-                 data%control%RQS_control%initial_multiplier =                 &
-                   data%history( i )%lambda
-               ELSE
-                 EXIT
-               END IF
-             END DO
-             data%control%RQS_control%initialize_approx_eigenvector = .FALSE.
-!            data%control%RQS_control%initialize_approx_eigenvector = .TRUE.
-
-!  the next problem is likley different - try to guess a good initial
-!  value for the next multiplier
-
-           ELSE
-             data%control%RQS_control%lower = zero
-             data%control%RQS_control%use_initial_multiplier = .TRUE.
-             IF ( inform%RQS_inform%multiplier == zero ) THEN
-               data%control%RQS_control%initial_multiplier = zero
-             ELSE
-               data%control%RQS_control%initial_multiplier =                   &
-                 inform%RQS_inform%multiplier *                                &
-                   ( data%old_weight / inform%weight ) +                       &
-                 inform%RQS_inform%pole *                                      &
-                 ( one - ( data%old_weight / inform%weight ) )
-               IF ( inform%RQS_inform%pole > zero )                            &
-                 data%control%RQS_control%initial_multiplier =                 &
-                   data%control%RQS_control%initial_multiplier                 &
-                     + MAX( inform%RQS_inform%pole, one ) * epsmch ** half
-             END IF
-!            data%control%RQS_control%initialize_approx_eigenvector = .TRUE.
-           END IF
-         END IF
-
-!  refactorize the Hessian if it has changed
-
-         IF ( data%new_point ) THEN
-           IF ( data%nskip_prec > nskip_prec_max ) THEN
-             IF ( inform%iter <= 1 )THEN
-               data%control%RQS_control%new_h = 2
-             ELSE
-               data%control%RQS_control%new_m = 1
-               data%control%RQS_control%new_h = 1
-             END IF
-             data%nskip_prec = 0
-           ELSE
-             data%control%RQS_control%new_m = 0
-             data%control%RQS_control%new_h = 0
-           END IF
-         END IF
-
-!  Solve the regularization subproblem
-!  ...................................
-
-  200    CONTINUE
-         data%model = zero
-         facts_this_solve = inform%RQS_inform%factorizations
-         IF ( data%printw ) WRITE( data%out, "( A, ' enter rqs_solve')" ) prefix
-!write(6,*) 'x', nlp%X( : nlp%n ), inform%weight
-!write(6,*) 'f', data%model
-!write(6,*) 'g', nlp%G( : nlp%n )
-!write(6,*) 'h', data%H%val( : nlp%n )
-!write(6,*) 'power', data%power
-         IF ( data%non_trivial_regularization ) THEN
-           CALL RQS_solve( nlp%n, data%power, inform%weight, data%model,       &
-                           nlp%G, data%H, data%S, data%RQS_data,               &
-                           data%control%RQS_control, inform%RQS_inform,        &
-                           M = data%regularization%matrix )
-         ELSE
-           CALL RQS_solve( nlp%n, data%power, inform%weight, data%model,       &
-                           nlp%G, data%H, data%S, data%RQS_data,               &
-                           data%control%RQS_control, inform%RQS_inform )
-         END IF
-!write(6,*) 's', data%S( : nlp%n )
-!        write(6,*) ' ||s|| ', TWO_NORM( data%S( : nlp%n ) )
-         IF ( data%printw ) WRITE( data%out, "( A, ' exit rqs_solve')" ) prefix
-
-!  check for successful convergence
-
-         IF ( inform%RQS_inform%status == GALAHAD_error_ill_conditioned ) THEN
-           inform%weight = inform%weight * 10.0_rp_
-           GO TO 200
-         ELSE IF ( inform%RQS_inform%status < 0 ) THEN
-           IF ( data%printt ) WRITE( data%out, "( /,                           &
-          &    A, ' Error return from RQS, status = ', I0 )" ) prefix,         &
-             inform%RQS_inform%status
-           inform%status = inform%RQS_inform%status
-           GO TO 900
-         END IF
-         data%model = inform%RQS_inform%obj
-!write(6,*) ' obj, reg',inform%RQS_inform%obj, inform%RQS_inform%obj_regularized
-
-!        CALL mop_Ax( one, data%H, data%S( : nlp%n ), zero, &
-!                     data%U( : nlp%n ), data%out, data%control%error, &
-!                     0, symmetric = .TRUE. )
-!        write(6,*) ' model est, calc ', &
-!         data%model, DOT_PRODUCT( nlp%G( : nlp%n ), data%S( : nlp%n ) ) + &
-!         half * DOT_PRODUCT( data%U( : nlp%n ), data%S( : nlp%n ) )
-!        write(6,*) ' f_old, new ', inform%obj, data%f_trial
-!        write(6,*) ' ||x+s|| ', TWO_NORM( nlp%X( : nlp%n ) + data%S( : nlp%n ))
-!        write(6,"(A, 3ES12.4 )" ) ' f, model, s = ', inform%obj, &
-!        inform%obj + data%model, TWO_NORM( data%S( : nlp%n ) )
-
-         IF ( inform%RQS_inform%hard_case ) data%hard = 'h'
-         facts_this_solve = inform%RQS_inform%factorizations - facts_this_solve
-         inform%factorization_average =                                        &
-           REAL( inform%RQS_inform%factorizations, KIND = rp_ )                &
-             / REAL( inform%iter, KIND = rp_ )
-         inform%factorization_max =                                            &
-           MAX( inform%factorization_max, facts_this_solve )
-         inform%max_entries_factors = MAX( inform%max_entries_factors,         &
-                                         inform%RQS_inform%max_entries_factors )
-         data%s_norm = inform%RQS_inform%x_norm
-
-         data%total_facts = inform%RQS_inform%factorizations
-         IF ( inform%RQS_inform%pole > zero ) THEN
-           data%negcur = 'n'
-         ELSE
-           data%negcur = ' '
-         END IF
-
-         IF ( inform%RQS_inform%hard_case ) THEN
-           data%hard = 'h'
-         ELSE
-           data%hard = ' '
-         END IF
-
-!write(6,*) ' go to 300 '
+       IF ( data%control%subproblem_direct ) THEN
+         CALL BLLSB_solve( data%GN_model, data%BLLSB_data,                     &
+                           control%BLLSB_control, inform%BLLSB_inform,         &
+                           regularization_weight = inform%weight, W = W )
          GO TO 300
        END IF
 
 !  2b. Iterative solution
 !  ----------------------
 
-       data%control%GLRT_control%stop_relative                                 &
-         = MIN( data%control%GLRT_control%stop_relative, inform%norm_g ** 0.1 )
+       data%control%BLLS_control%stop_relative                                 &
+         = MIN( data%control%BLLS_control%stop_relative, inform%norm_g ** 0.1 )
 
 !      data%model = zero
        data%model = inform%obj
-       data%control%GLRT_control%f_0 = inform%obj
+       data%control%BLLS_control%f_0 = inform%obj
        data%S( : nlp%n ) = zero
        data%G_current( : nlp%n ) = nlp%G( : nlp%n )
-       IF ( data%new_point ) THEN
-         inform%GLRT_inform%status = 1
-       ELSE
-!        inform%GLRT_inform%status = 6
-         inform%GLRT_inform%status = 1
-       END IF
-!      data%control%GLRT_control%print_level = 1
+       inform%BLLS_inform%status = 1
+!      data%control%BLLS_control%print_level = 1
+       ALLOCATE( FLAG( MAX( o, n ) ) )
+       nf = 0 ; FLAG = 0
+       data%got_j = .TRUE.
 
 !  Start of the generalized Lanczos iteration
 !  ..........................................
@@ -3130,50 +2975,105 @@
 
 !  perform a generalized Lanczos iteration
 
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 210, GLRT_',    &
-        &  'inform%status = ', I0 )" ) prefix, inform%GLRT_inform%status
-         CALL GLRT_solve( nlp%n, data%power, inform%weight, data%S,            &
-                          data%G_current, data%V, data%GLRT_data,              &
-                          data%control%GLRT_control, inform%GLRT_inform )
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement > 210, GLRT_',  &
-        &  'inform%status = ', I0 )" ) prefix, inform%GLRT_inform%status
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement 210, BLLS_',    &
+        &  'inform%status = ', I0 )" ) prefix, inform%BLLS_inform%status
 
-!  branch to perform required computation before re-entering GLRT
 
-         SELECT CASE( inform%GLRT_inform%status )
+         CALL BLLS_solve( data%GN_model, X_stat, data%BLLSB_data,              &
+                          data%control%BLLS_control, inform%BLLS_inform,       &
+                          userdata, reverse = data%reverse, W = W )
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement > 210, BLLS_',  &
+        &  'inform%status = ', I0 )" ) prefix, inform%BLLS_inform%status
+
+!  branch to perform required computation before re-entering BLLS
+
+         SELECT CASE( inform%BLLS_inform%status )
+         CASE ( : 0 ) !  termination return
+           WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ',     &
+          &  I0, ', status = ', I0,', objective = ', F6.4 ) " )                &
+              mode, exact_arc_search, inform%status, inform%obj
+           EXIT
+
+!  compute p = J(x) * v
+
+         CASE ( 2 )
+           data%reverse%P( : nlp%m ) = 0.0_rp_
+           CALL eval_JPROD( data%reverse%eval_status, nlp%X,                   &
+                            userdata, .FALSE.,                                 &
+                            data%reverse%P, data%reverse%V, data%got_j )
+           data%got_j = .TRUE.
+
+!  compute p = J^T(x) * v
+
+         CASE ( 3 )
+           data%reverse%P( : nlp%n ) = 0.0_rp_
+           CALL eval_JPROD( data%reverse%eval_status, nlp%X,                   &
+                            userdata, .TRUE.,                                  &
+                            data%reverse%P, data%reverse%V, data%got_j )
+           data%got_j = .TRUE.
+
+!  compute p = J(x) * sparse v
+
+         CASE ( 4 )
+           data%reverse%P( : nlp%n ) = 0.0_rp_
+           CALL eval_SJPROD( data%reverse%eval_status, nlp%X,                  &
+                             userdata, .FALSE., data%reverse%nz_in_end         &
+                               - data%reverse%nz_in_start + 1,                 &
+                             data%reverse%NZ_in( data%reverse%nz_in_start :    &
+                                                 data%reverse%nz_in_end ),     &
+                             data%reverse%V, nnz_u, INDEX_nz_u, U, got_j )
+
+
+           data%reverse%P( : o ) = 0.0_rp_
+           DO l = data%reverse%nz_in_start, data%reverse%nz_in_end
+             j = data%reverse%NZ_in( l )
+             val = data%reverse%V( j )
+             DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+               i = Ao_row( k )
+               data%reverse%P( i ) = data%reverse%P( i ) + Ao_val( k ) * val
+             END DO
+           END DO
+
+!  compute sparse( J(x) * sparse v )
+
+         CASE ( 5 )
+           nf = nf + 1
+           data%reverse%nz_out_end = 0
+           DO l = data%reverse%nz_in_start, data%reverse%nz_in_end
+             j = data%reverse%NZ_in( l )
+             val = data%reverse%V( j )
+             DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+               i = Ao_row( k )
+               IF ( FLAG( i ) < nf ) THEN
+                 FLAG( i ) = nf
+                 data%reverse%P( i ) = Ao_val( k ) * val
+                 data%reverse%nz_out_end = data%reverse%nz_out_end + 1
+                 data%reverse%NZ_out( data%reverse%nz_out_end ) = i
+               ELSE
+                 data%reverse%P( i ) = data%reverse%P( i ) + Ao_val( k ) * val
+               END IF
+             END DO
+           END DO
+
+!  compute sparse( J^T(x) * v )
+
+         CASE ( 6 )
+           data%reverse%P( : n ) = 0.0_rp_
+           DO l = data%reverse%nz_in_start, data%reverse%nz_in_end
+             j = data%reverse%NZ_in( l )
+             val = 0.0_rp_
+             DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+               val = val + Ao_val( k ) * data%reverse%V( Ao_row( k ) )
+             END DO
+             data%reverse%P( j ) = val
+           END DO
+         END SELECT
+
+
 
 !  form the preconditioned gradient
 
          CASE ( 2 )
-
-!  use the factors obtained from PSLS
-
-           IF ( data%regularization_type > diagonal_jtj_regularization ) THEN
-             CALL PSLS_apply( data%V, data%PSLS_data,                          &
-                              data%control%PSLS_control, inform%PSLS_inform )
-
-!  use the column scaling factors from J
-
-           ELSE IF ( data%regularization_type ==                               &
-                     diagonal_jtj_regularization ) THEN
-             data%V( : nlp%n )                                                 &
-               = data%V( : nlp%n ) / data%regularization%matrix%val( : nlp%n )
-
-!  apply the user's scaling matrix
-
-           ELSE IF ( data%regularization_type == user_regularization ) THEN
-             IF ( data%reverse_scale ) THEN
-               data%branch = 250 ; inform%status = 8 ; RETURN
-             ELSE
-               CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,  &
-                                data%U( : nlp%n ), data%V( : nlp%n ) )
-               IF ( data%eval_status /= 0 ) THEN
-                 inform%bad_eval = 'eval_SCALE'
-                 inform%status = GALAHAD_error_evaluation ; GO TO 900
-               END IF
-               data%V( : nlp%n ) = data%U( : nlp%n )
-             END IF
-           END IF
 
 !  form the Hessian-vector product v <- u = H v
 
@@ -3244,25 +3144,25 @@
 
          CASE ( GALAHAD_ok, GALAHAD_warning_on_boundary,                       &
                 GALAHAD_error_max_iterations )
-           data%model = inform%GLRT_inform%obj
+           data%model = inform%BLLS_inform%obj
            GO TO 260
 
 !  error returns
 
          CASE DEFAULT
            IF ( data%printt ) WRITE( data%out, "( /,                           &
-           &  A, ' Error return from GLRT, status = ', I0 )" ) prefix,         &
-             inform%GLRT_inform%status
-           inform%status = inform%GLRT_inform%status
+           &  A, ' Error return from BLLS, status = ', I0 )" ) prefix,         &
+             inform%BLLS_inform%status
+           inform%status = inform%BLLS_inform%status
            GO TO 900
          END SELECT
 
 !  return from reverse communication with the Jacobian-vector product
 
    230   CONTINUE
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 230, GLRT_',    &
-        &  'inform%status = ', I0 )" ) prefix, inform%GLRT_inform%status
-         IF ( inform%GLRT_inform%status == 3 .AND.                             &
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement 230, BLLS_',    &
+        &  'inform%status = ', I0 )" ) prefix, inform%BLLS_inform%status
+         IF ( inform%BLLS_inform%status == 3 .AND.                             &
               ( data%control%model == newton_model .OR.                        &
                 data%control%model == gauss_newton_model ) ) THEN
 
@@ -3323,9 +3223,9 @@
 !  product
 
    240   CONTINUE
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 240, GLRT_',    &
-        &  'inform%status = ', I0 )" ) prefix, inform%GLRT_inform%status
-         IF ( inform%GLRT_inform%status == 3 .AND.                             &
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement 240, BLLS_',    &
+        &  'inform%status = ', I0 )" ) prefix, inform%BLLS_inform%status
+         IF ( inform%BLLS_inform%status == 3 .AND.                             &
               data%control%model == newton_model ) THEN
            IF ( .NOT. data%hessian_available .AND.                             &
                 .NOT. data%got_h ) inform%h_eval = inform%h_eval + 1
@@ -3361,16 +3261,16 @@
 !  or preconditioned vector
 
    250   CONTINUE
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 250, GLRT_',    &
-        &  'inform%status = ', I0 )" ) prefix, inform%GLRT_inform%status
-         IF ( inform%GLRT_inform%status == 3 ) THEN
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement 250, BLLS_',    &
+        &  'inform%status = ', I0 )" ) prefix, inform%BLLS_inform%status
+         IF ( inform%BLLS_inform%status == 3 ) THEN
            IF ( data%control%model == newton_model .OR.                        &
                 data%control%model == gauss_newton_model ) THEN
              data%V( : nlp%n ) = data%U( : nlp%n )
            END IF
          END IF
 
-         IF ( inform%GLRT_inform%status == 2 .AND. data%reverse_scale .AND.    &
+         IF ( inform%BLLS_inform%status == 2 .AND. data%reverse_scale .AND.    &
               data%regularization_type == user_regularization ) THEN
            data%V( : nlp%n ) = data%U( : nlp%n )
          END IF
@@ -3386,21 +3286,21 @@
 
 !  Record whether there is negative curvature or if the boundary is encountered
 
-       IF ( inform%GLRT_inform%negative_curvature ) THEN
+       IF ( inform%BLLS_inform%negative_curvature ) THEN
          data%negcur = 'n'
        ELSE
          data%negcur = ' '
        END IF
-       data%s_norm = inform%GLRT_inform%xpo_norm
+       data%s_norm = inform%BLLS_inform%xpo_norm
 !      write(6,*) ' s_norm ', data%s_norm
 
 !      Record the total number of Lanczos iterations
 
        inform%cg_iter = inform%cg_iter +                                       &
-         inform%GLRT_inform%iter + inform%GLRT_inform%iter_pass2
+         inform%BLLS_inform%iter + inform%BLLS_inform%iter_pass2
        IF ( data%printt ) WRITE( data%out,                                     &
           "( /, A, ' CG iterations required = ', I8 )" )                       &
-            prefix, inform%GLRT_inform%iter
+            prefix, inform%BLLS_inform%iter
 
 !  ============================================================================
 !  3. check for acceptance of the new point
@@ -3514,19 +3414,19 @@
            data%printm = data%set_printm ; data%printw = data%set_printw
            data%printd = data%set_printd
            data%print_level = data%control%print_level
-           data%control%GLRT_control%print_level = data%print_level_glrt
-           data%control%RQS_control%print_level = data%print_level_rqs
+           data%control%BLLS_control%print_level = data%print_level_blls
+           data%control%BLLSB_control%print_level = data%print_level_bllsb
          ELSE
            data%printi = .FALSE. ; data%printt = .FALSE.
            data%printm = .FALSE. ; data%printw = .FALSE. ; data%printd = .FALSE.
            data%print_level = 0
-           data%control%GLRT_control%print_level = 0
-           data%control%RQS_control%print_level = 0
+           data%control%BLLS_control%print_level = 0
+           data%control%BLLSB_control%print_level = 0
          END IF
          data%print_iteration_header = data%print_level > 1 .OR.               &
-           ( data%control%GLRT_control%print_level > 0 .AND. .NOT.             &
+           ( data%control%BLLS_control%print_level > 0 .AND. .NOT.             &
              data%control%subproblem_direct ) .OR.                             &
-           ( data%control%RQS_control%print_level > 0 .AND.                    &
+           ( data%control%BLLSB_control%print_level > 0 .AND.                  &
              data%control%subproblem_direct )
 
 !  print one-line summary
@@ -3557,9 +3457,9 @@
                 prefix, char_iter, data%accept, data%negcur, data%hard,        &
                 inform%weight, data%s_norm, char_facts, data%clock_now
            ELSE
-             char_sit = ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter ) )
+             char_sit = ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter ) )
              char_sit2 =                                                       &
-                ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter_pass2 ) )
+                ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter_pass2 ) )
              WRITE( data%out, "( A, A6, 1X, 3A1, '    NaN           -    ',    &
             &  '    - Inf ', 2ES8.1, 1X, 2A6, F8.2 )" ) prefix, char_iter,     &
                 data%accept, data%negcur, data%perturb,                        &
@@ -3682,9 +3582,9 @@
                       data%s_norm, char_facts, data%clock_now
                  END IF
                ELSE
-                 char_sit = ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter))
+                 char_sit = ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter))
                  char_sit2 =                                                   &
-                    ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter_pass2 ) )
+                    ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter_pass2 ) )
                  IF ( data%control%print_obj ) THEN
                    WRITE( data%out, 2130 ) prefix, char_iter, data%accept,     &
                       data%negcur, data%perturb, inform%obj,                   &
@@ -3835,9 +3735,9 @@
 
 !        IF ( data%ratio < control%eta_successful ) THEN
 !          IF ( data%control%subproblem_direct ) THEN
-!            val = two * inform%RQS_inform%pole / data%s_norm_successful
+!            val = two * inform%BLLSB_inform%pole / data%s_norm_successful
 !          ELSE
-!            val = - two * inform%GLRT_inform%leftmost /data%s_norm_successful
+!            val = - two * inform%BLLS_inform%leftmost /data%s_norm_successful
 !          END IF
 !          inform%weight = MAX( inform%weight, val )
 !        END IF
@@ -3989,7 +3889,7 @@
        IF ( data%control%magic_step )                                          &
          WRITE( data%out, "( A, '  Magic step used' )" ) prefix
        IF ( data%control%subproblem_direct ) THEN
-         IF ( inform%RQS_inform%dense_factorization ) THEN
+         IF ( inform%BLLSB_inform%dense_factorization ) THEN
            WRITE( data%out,                                                    &
            "( A, '  Direct solution (eigen solver SYSV',                       &
           &      ') of the regularization sub-problem' )" ) prefix
@@ -3997,7 +3897,7 @@
            WRITE( data%out,                                                    &
            "( A, '  Direct solution (solver ', A,                              &
           &      ') of the regularization sub-problem' )" )                    &
-              prefix, TRIM( data%control%RQS_control%definite_linear_solver )
+              prefix, TRIM( data%control%BLLSB_control%definite_linear_solver )
          END IF
          SELECT CASE ( data%regularization_type )
          CASE ( user_regularization )
@@ -4025,13 +3925,13 @@
          END SELECT
          WRITE( data%out, "( A, '  Number of factorization = ', I0,            &
         &     ', factorization time = ', F0.2, ' seconds'  )" ) prefix,        &
-           inform%RQS_inform%factorizations,                                   &
-           inform%RQS_inform%time%clock_factorize
-         IF ( TRIM( data%control%RQS_control%definite_linear_solver ) ==       &
+           inform%BLLSB_inform%factorizations,                                   &
+           inform%BLLSB_inform%time%clock_factorize
+         IF ( TRIM( data%control%BLLSB_control%definite_linear_solver ) ==       &
               'pbtr' ) THEN
            WRITE( data%out, "( A, '  Max entries in factors = ', I0,           &
           & ', semi-bandwidth = ', I0  )" ) prefix, inform%max_entries_factors,&
-              inform%RQS_inform%SLS_inform%semi_bandwidth
+              inform%BLLSB_inform%SLS_inform%semi_bandwidth
          ELSE
            WRITE( data%out, "( A, '  Max entries in factors = ', I0 )" )       &
              prefix, inform%max_entries_factors
@@ -4695,25 +4595,25 @@
        IF ( control%deallocate_error_fatal ) RETURN
      END IF
 
-!  Deallocate all arrays allocated within GLRT
+!  Deallocate all arrays allocated within BLLS
 
-     CALL GLRT_terminate( data%GLRT_data, data%control%GLRT_control,           &
-                          inform%GLRT_inform )
-     inform%status = inform%GLRT_inform%status
+     CALL BLLS_terminate( data%BLLS_data, data%control%BLLS_control,           &
+                          inform%BLLS_inform )
+     inform%status = inform%BLLS_inform%status
      IF ( inform%status /= 0 ) THEN
-       inform%alloc_status = inform%GLRT_inform%alloc_status
-       inform%bad_alloc = inform%GLRT_inform%bad_alloc
+       inform%alloc_status = inform%BLLS_inform%alloc_status
+       inform%bad_alloc = inform%BLLS_inform%bad_alloc
        IF ( control%deallocate_error_fatal ) RETURN
      END IF
 
-!  Deallocate all arraysn allocated within RQS
+!  Deallocate all arrays allocated within BLLSB
 
-     CALL RQS_terminate( data%RQS_data, data%control%RQS_control,              &
-                          inform%RQS_inform )
-     inform%status = inform%RQS_inform%status
+     CALL BLLSB_terminate( data%BLLSB_data, data%control%BLLSB_control,        &
+                          inform%BLLSB_inform )
+     inform%status = inform%BLLSB_inform%status
      IF ( inform%status /= 0 ) THEN
-       inform%alloc_status = inform%RQS_inform%alloc_status
-       inform%bad_alloc = inform%RQS_inform%bad_alloc
+       inform%alloc_status = inform%BLLSB_inform%alloc_status
+       inform%bad_alloc = inform%BLLSB_inform%bad_alloc
        IF ( control%deallocate_error_fatal ) RETURN
      END IF
 
@@ -4815,36 +4715,6 @@
 
      array_name = 'bnls: data%nlp%J%type'
      CALL SPACE_dealloc_array( data%nlp%J%type,                                &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%nlp%H%row'
-     CALL SPACE_dealloc_array( data%nlp%H%row,                                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%nlp%H%col'
-     CALL SPACE_dealloc_array( data%nlp%H%col,                                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%nlp%H%ptr'
-     CALL SPACE_dealloc_array( data%nlp%H%ptr,                                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%nlp%H%val'
-     CALL SPACE_dealloc_array( data%nlp%H%val,                                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%nlp%H%type'
-     CALL SPACE_dealloc_array( data%nlp%H%type,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

@@ -1,0 +1,20 @@
+ C sparse matrix indexing
+
+ basic tests of storage formats
+
+format C  : TREK_solve_problem exit status = 0, f = -1.00
+format C- : TREK_solve_problem exit status = 0, f = -0.75
+format R  : TREK_solve_problem exit status = 0, f = -1.00
+format R- : TREK_solve_problem exit status = 0, f = -0.75
+format D  : TREK_solve_problem exit status = 0, f = -1.00
+format D- : TREK_solve_problem exit status = 0, f = -0.75
+format G  : TREK_solve_problem exit status = 0, f = -2.00
+format G- : TREK_solve_problem exit status = 0, f = -1.00
+format CS : TREK_solve_problem exit status = 0, f = -0.91
+format CS-: TREK_solve_problem exit status = 0, f = -0.58
+format RS : TREK_solve_problem exit status = 0, f = -0.91
+format RS-: TREK_solve_problem exit status = 0, f = -0.58
+format DS : TREK_solve_problem exit status = 0, f = -0.91
+format DS-: TREK_solve_problem exit status = 0, f = -0.58
+format GS : TREK_solve_problem exit status = 0, f = -1.41
+format GS-: TREK_solve_problem exit status = 0, f = -0.71

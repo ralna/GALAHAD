@@ -35,8 +35,8 @@ The supported solvers are: `:arc`, `:bgo`, `:blls`, `:bllsb`, `:bnls`,
 `:dps`, `:dqp`, `:eqp`, `:expo`, `:fdh`, `:filtrane`, `:glrt`, `:gltr`, `:l1qp`,
 `:l2rt`, `:lancelot`, `:lls`, `:lpa`, `:lpb`, `:lpqp`, `:lqr`, `:lqt`, `:lsrt`,
 `:lstr`, `:miqr`, `:nls`, `:nodend`, `:presolve`, `:qp`, `:qpa`, `:qpb`, `:qpc`,
-`:rqs`, `:sbls`, `:sha`, `:sils`, `:slls`, `:sls`, `:ssls`, `:trb`, `:trs`,
-`:tru`, `:ugo`, `:warm`, and `:wcp`.
+`:rqs`, `:sbls`, `:sha`, `:sils`, `:slls`, `:sls`, `:ssls`, `:trb`, `:trek`,
+`:trs`, `:tru`, `:ugo`, `:warm`, and `:wcp`.
 
 The supported precisions are: `:single` and `:double`.
 """

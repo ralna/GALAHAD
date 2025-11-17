@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-07-03 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 5.3 - 2025-10-29 AT 08:50 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -22,6 +22,7 @@
      USE GALAHAD_TREK_precision
      USE GALAHAD_TRS_precision
      USE GALAHAD_GLTR_precision
+     USE GALAHAD_SLS_precision
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_precision
@@ -36,7 +37,7 @@
 
      SUBROUTINE USE_TREK( input )
 
-!  Dummy argument
+!  dummy argument
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
@@ -56,6 +57,10 @@
      TYPE ( GLTR_inform_type ) :: GLTR_inform
      TYPE ( GLTR_data_type ) :: GLTR_data
 
+      TYPE ( SLS_data_type ) :: SLS_data
+      TYPE ( SLS_control_type ) :: SLS_control
+      TYPE ( SLS_inform_type ) :: SLS_inform
+
 !------------------------------------
 !   L o c a l   P a r a m e t e r s
 !------------------------------------
@@ -72,11 +77,11 @@
      REAL ( KIND = rp_ ) :: clock_total, clock_start
      LOGICAL :: goth
 
-!  Functions
+!  functions
 
 !$   INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
-!  Problem characteristics
+!  problem characteristics
 
      INTEGER ( KIND = ip_ ) :: n, nnzh
      INTEGER ( KIND = ip_ ) :: n_threads = 1
@@ -86,13 +91,13 @@
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R, VECTOR, H_vector
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RADIUS
      CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAMES
-     TYPE ( SMT_type ) :: H
+     TYPE ( SMT_type ) :: H, S
 
-!  Problem input characteristics
+!  problem input characteristics
 
      LOGICAL :: filexx, is_specfile
 
-!  Default values for specfile-defined parameters
+!  default values for specfile-defined parameters
 
      INTEGER ( KIND = ip_ ) :: trek_rfiledevice = 47
      INTEGER ( KIND = ip_ ) :: trek_sfiledevice = 62
@@ -111,23 +116,25 @@
      CHARACTER ( LEN = 30 ) :: trs_sfilename = 'TRSSOL.d'
      CHARACTER ( LEN = 30 ) :: gltr_rfilename = 'GLTRRES.d'
      CHARACTER ( LEN = 30 ) :: gltr_sfilename = 'GLTRSOL.d'
+     CHARACTER ( LEN = 30 ) :: linear_solver = "ignore" // REPEAT( ' ', 24 )
      REAL ( KIND = rp_ ) ::  radius_initial = 1.0_rp_
      INTEGER ( KIND = ip_ ) :: m = 1
+     LOGICAL :: run_trek = .TRUE.
      LOGICAL :: run_trs = .FALSE.
      LOGICAL :: run_gltr = .FALSE.
 !    LOGICAL :: one_norm = .TRUE.
 
-!  Output file characteristics
+!  output file characteristics
 
      INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
      INTEGER ( KIND = ip_ ) :: out  = 6
      INTEGER ( KIND = ip_ ) :: errout = 6
      CHARACTER ( LEN =  6 ) :: solv
 
-!  Specfile characteristics
+!  specfile characteristics
 
      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
-     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 20
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 22
      CHARACTER ( LEN = 16 ) :: specname = 'RUNTREK'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNTREK.SPC'
@@ -138,7 +145,7 @@
      IF ( is_specfile ) THEN
        OPEN( input_specfile, FILE = runspec, FORM = 'FORMATTED', STATUS = 'OLD')
 
-!   Define the keywords
+!   define the keywords
 
        spec( 1 )%keyword = 'write-problem-data'
        spec( 2 )%keyword = 'write-result-summary'
@@ -160,12 +167,14 @@
        spec( 18 )%keyword = 'number-of-radii'
        spec( 19 )%keyword = 'compare-with-trs'
        spec( 20 )%keyword = 'compare-with-gltr'
+       spec( 21 )%keyword = 'compare-with-trek'
+       spec( 22 )%keyword = 'symmetric-linear-equation-solver'
 
-!   Read the specfile
+!   read the specfile
 
        CALL SPECFILE_read( input_specfile, specname, spec, lspec, errout )
 
-!   Interpret the result
+!   interpret the result
 
        CALL SPECFILE_assign_logical( spec( 1 ), write_problem_data, errout )
        CALL SPECFILE_assign_logical( spec( 2 ), write_result_summary, errout )
@@ -187,18 +196,20 @@
        CALL SPECFILE_assign_integer( spec( 18 ), m, errout )
        CALL SPECFILE_assign_logical( spec( 19 ), run_trs, errout )
        CALL SPECFILE_assign_logical( spec( 20 ), run_gltr, errout )
+       CALL SPECFILE_assign_logical( spec( 21 ), run_trek, errout )
+       CALL SPECFILE_assign_string ( spec( 22 ), linear_solver, errout )
      END IF
 
-!  Set copyright
+!  set copyright
 
      IF ( out > 0 ) CALL COPYRIGHT( out, '2025' )
 
-!  Set up data for next problem
+!  set up data for next problem
 
      CALL TREK_initialize( data, control, inform )
      IF ( is_specfile ) CALL TREK_read_specfile( control, input_specfile )
 
-!  Read the initial point and bounds
+!  read the initial point and bounds
 
      CALL CUTEST_udimen_r( cutest_status, input, n )
      IF ( cutest_status /= 0 ) GO TO 910
@@ -209,23 +220,23 @@
      IF ( cutest_status /= 0 ) GO TO 910
      DEALLOCATE( X_l, X_u )
 
-!  Read the problem and variable names
+!  read the problem and variable names
 
      CALL CUTEST_unames_r( cutest_status, n, pname, VNAMES )
      IF ( cutest_status /= 0 ) GO TO 910
 
-!  Set f to zero
+!  set f to zero
 
     f = zero
 
-!  Evaluate the gradient
+!  evaluate the gradient
 
      CALL CUTEST_ugr_r( cutest_status, n, X0, G )
      IF ( cutest_status /= 0 ) GO TO 910
 
      solv = 'TREK  '
 
-!  Evaluate the Hessian
+!  evaluate the Hessian
 
      CALL CUTEST_udimsh_r( cutest_status, nnzh )
      IF ( cutest_status /= 0 ) GO TO 910
@@ -235,15 +246,50 @@
      CALL CUTEST_ush_r( cutest_status, n, X0, H%ne, nnzh, H%val, H%row, H%col )
      IF ( cutest_status /= 0 ) GO TO 910
 
+!  if required, select the linear solver
+
+     IF ( TRIM( linear_solver ) == 'find' ) THEN
+
+!  analyse H by calling sls to find its semi-bandwith
+
+       CALL SLS_initialize( 'pbtr', SLS_data, SLS_control, SLS_inform )
+       CALL SLS_analyse( H, SLS_data, SLS_control, SLS_inform )
+       WRITE( 6, "( ' n = ', I0, ' semi-bandwidth = ', I0 )" )                 &
+         n, SLS_inform%semi_bandwidth
+       CALL SLS_terminate( SLS_data, SLS_control, SLS_inform )
+       IF ( SLS_inform%semi_bandwidth <= 5 ) THEN
+         linear_solver = 'pbtr'
+       ELSE
+         IF ( TRIM( linear_solver ) /= 'ignore' ) linear_solver = 'ma57'
+       END IF
+     END IF
+
+!  provide a default scaling matrix
+
+     S%n = n ; S%ne = n
+!    CALL SMT_put( S%type, 'COORDINATE', smt_stat ) ! storage for S
+     CALL SMT_put( S%type, 'DIAGONAL', smt_stat ) ! storage for S
+     ALLOCATE( S%row( n ), S%col( n ), S%val( n ) )
+     DO i = 1, n
+       S%row( i ) = i ; S%col( i ) = i ; S%val( i ) = 1.0_rp_
+     END DO
+
 !    WRITE(6,*) ' H(i,j,val)'
 !    DO i = 1, nnzh
 !      WRITE(6,*) H%row( i ), H%col( i ), H%val( i )
 !    END DO
 
+!  provide default radii
+
      ALLOCATE( RADIUS( m ) )
      RADIUS( 1 ) = radius_initial
+     DO k = 2, m
+       RADIUS( k ) = RADIUS( k - 1 ) * control%reduction
+     END DO
 
-!  If required, open a file for the results
+     IF ( run_trek ) THEN
+
+!  if required, open a file for the results
 
      IF ( write_result_summary ) THEN
        INQUIRE( FILE = trek_rfilename, EXIST = filexx )
@@ -260,17 +306,23 @@
        END IF
        WRITE( trek_rfiledevice, "( A10 )" ) pname
      END IF
+     IF ( TRIM( linear_solver ) /= 'ignore' ) THEN
+       control%linear_solver = linear_solver
+       control%linear_solver_for_S = linear_solver
+     END IF
 
 !  loop over m instances
 
      DO k = 1, m
 
-!  Solve the problem
+!  solve the problem
 
+       CALL CLOCK_time( clock_start )
        inform%time%clock_total = 0.0_rp_
        CALL TREK_solve( n, H, G, RADIUS( k ), X, data, control, inform,        &
 !                       new_values = .TRUE. )
                         resolve = k > 1 )
+!                       resolve = k > 1, S = S )
        IF ( k < m ) RADIUS( k + 1 ) = inform%next_radius
 
        IF ( control%print_level > 0 .AND. control%out > 0 )                    &
@@ -278,27 +330,32 @@
        IF ( control%print_level > 0 .AND. control%out > 0 )                    &
          WRITE( control%out, "(  ' non-zeros and fill-in (H) = ', I0, 1X, I0,  &
         &    ', linear solver: ', A )" ) nnzh,                                 &
-           inform%SLS_inform%entries_in_factors, TRIM( control%solver )
+           inform%SLS_inform%entries_in_factors,                               &
+           TRIM( control%linear_solver )
 !$      n_threads = OMP_GET_MAX_THREADS( )
        IF ( k == 1 .OR. ( control%print_level > 0 .AND. control%out > 0 ) )    &
          WRITE( out, "( ' number of threads = ', I0 )" ) n_threads
+       CALL CLOCK_time( clock_total )
+       clock_total = clock_total - clock_start
 
-!  If required, append results to a file,
+!  if required, append results to a file
 
        IF ( write_result_summary ) THEN
-         BACKSPACE( trek_rfiledevice )
+         IF ( k == 1 ) BACKSPACE( trek_rfiledevice )
          IF ( inform%status == 0 ) THEN
            WRITE( trek_rfiledevice, 2040 ) pname, n, inform%obj,               &
-             inform%multiplier,                                                &
-             inform%iter, inform%time%clock_total, inform%status
+             inform%multiplier, inform%iter, clock_total, inform%status,       &
+             radius( k )
+!write(trek_rfiledevice,*) ' trek time ', inform%time%clock_total
          ELSE
            WRITE( trek_rfiledevice, 2040 ) pname, n, inform%obj,               &
-             inform%multiplier,                                                &
-             inform%iter, - inform%time%clock_total, inform%status
+             inform%multiplier, inform%iter, - clock_total, inform%status,     &
+             radius( k )
          END IF
+!write(6,*) ' trek time ', inform%time%clock_total
        END IF
 
-!  If required, write the solution
+!  if required, write the solution
 
        IF ( control%print_level > 0 .AND. control%out > 0 ) THEN
          l = 2
@@ -351,10 +408,13 @@
          END DO
        END IF
      END DO
-     WRITE( 6, "( 1X, A, ' time(analyse, factorize, solve) = ', 3F6.2 )" )     &
+     WRITE( 6, "( 1X, A, ' time(anal, fact, sol, nz, fill) =',                 &
+    &             3F6.2, 1X, I0, 1X, I0 )" )                                   &
        TRIM( inform%SLS_inform%solver ), inform%time%clock_analyse,            &
-       inform%time%clock_factorize, inform%time%clock_solve
+       inform%time%clock_factorize, inform%time%clock_solve,                   &
+       nnzh, inform%SLS_inform%entries_in_factors
      CALL TREK_terminate( data, control, inform )
+     END IF
 
 !  now compare with trs if desired
 
@@ -379,13 +439,18 @@
        TRS_inform%time%clock_total = 0.0_rp_
        CALL TRS_initialize( TRS_data, TRS_control, TRS_inform )
        IF ( is_specfile ) CALL TRS_read_specfile( TRS_control, input_specfile )
+       IF ( TRIM( linear_solver ) /= 'ignore' ) THEN
+         TRS_control%symmetric_linear_solver = linear_solver
+         TRS_control%definite_linear_solver = linear_solver
+       END IF
 
 !    loop over m instances
 
        DO k = 1, m
 
-!    Solve the problem
+!    solve the problem
 
+         CALL CLOCK_time( clock_start )
          IF ( k > 1 ) THEN
            TRS_control%lower = TRS_inform%multiplier
            TRS_control%initial_multiplier = TRS_control%lower
@@ -402,22 +467,25 @@
            TRS_inform%SLS_inform%entries_in_factors,                           &
            TRIM( TRS_control%definite_linear_solver )
 
-!    If required, append results to a file,
+         CALL CLOCK_time( clock_total )
+         clock_total = clock_total - clock_start
+
+!    if required, append results to a file
 
          IF ( write_result_summary ) THEN
-           BACKSPACE( trs_rfiledevice )
+           IF ( k == 1 ) BACKSPACE( trs_rfiledevice )
            IF ( TRS_inform%status == 0 ) THEN
              WRITE( trs_rfiledevice, 2040 ) pname, n, TRS_inform%obj,          &
                TRS_inform%multiplier, TRS_inform%factorizations,               &
-               TRS_inform%time%clock_total, TRS_inform%status
+               clock_total, TRS_inform%status, radius( k )
            ELSE
              WRITE( trs_rfiledevice, 2040 ) pname, n, TRS_inform%obj,          &
                TRS_inform%multiplier, TRS_inform%factorizations,               &
-               - TRS_inform%time%clock_total, TRS_inform%status
+               - TRS_inform%time%clock_total, TRS_inform%status, radius( k )
            END IF
          END IF
 
-!    If required, write the solution
+!    if required, write the solution
 
          IF ( TRS_control%print_level > 0 .AND. TRS_control%out > 0 ) THEN
            l = 2
@@ -443,13 +511,11 @@
          IF ( TRS_inform%status == 0 ) THEN
            WRITE( errout, 2050 ) pname, n, TRS_inform%obj,                     &
              TRS_inform%multiplier, TRS_inform%factorizations,                 &
-             TRS_inform%time%clock_total, TRS_inform%status, solv,             &
-             radius( k )
+             clock_total, TRS_inform%status, solv, radius( k )
          ELSE
            WRITE( errout, 2050 ) pname, n, TRS_inform%obj,                     &
              TRS_inform%multiplier, TRS_inform%factorizations,                 &
-             - TRS_inform%time%clock_total, TRS_inform%status, solv,           &
-             radius( k )
+             - clock_total, TRS_inform%status, solv, radius( k )
          END IF
 
          IF ( write_solution .AND.                                             &
@@ -473,9 +539,11 @@
            END DO
          END IF
        END DO
-       WRITE( 6, "( 1X, A, ' time(analyse, factorize, solve) = ', 3F6.2 )" )   &
+       WRITE( 6, "( 1X, A, ' time(anal, fact, sol, nz, fill) =',               &
+      &             3F6.2, 1X, I0, 1X, I0 )" )                                 &
          TRIM( inform%SLS_inform%solver ), TRS_inform%time%clock_analyse,      &
-         TRS_inform%time%clock_factorize, TRS_inform%time%clock_solve
+         TRS_inform%time%clock_factorize, TRS_inform%time%clock_solve,         &
+         nnzh, TRS_inform%SLS_inform%entries_in_factors
        CALL TRS_terminate( TRS_data, TRS_control, TRS_inform )
      END IF
 
@@ -507,7 +575,7 @@
 
        DO k = 1, m
 
-!    Solve the problem
+!    solve the problem
 
          CALL CLOCK_time( clock_start )
          R = G                ! The linear term is the gradient
@@ -523,7 +591,7 @@
            SELECT CASE( GLTR_inform%status ) ! Branch as a result of status
            CASE( 2 )         ! Form the preconditioned gradient
            CASE( 3 )         ! Form the matrix-vector product
-             CALL CUTEST_uhprod_r( cutest_status, n, goth, X, VECTOR, H_vector )
+             CALL CUTEST_uhprod_r( cutest_status, n, goth, X0, VECTOR, H_vector)
              VECTOR = H_vector
              goth = .TRUE.
            CASE ( 5 )        !  Restart
@@ -549,19 +617,21 @@
 !    If required, append results to a file,
 
          IF ( write_result_summary ) THEN
-           BACKSPACE( gltr_rfiledevice )
+           IF ( k == 1 ) BACKSPACE( gltr_rfiledevice )
            IF ( GLTR_inform%status == 0 ) THEN
              WRITE( gltr_rfiledevice, 2080 ) pname, n, f,                      &
-               GLTR_inform%multiplier, GLTR_inform%iter,                       &
-               GLTR_inform%iter_pass2, clock_total, GLTR_inform%status
+               GLTR_inform%multiplier, GLTR_inform%iter +                      &
+               GLTR_inform%iter_pass2, clock_total, GLTR_inform%status,        &
+               RADIUS( k )
            ELSE
              WRITE( gltr_rfiledevice, 2080 ) pname, n, f,                      &
-               GLTR_inform%multiplier, GLTR_inform%iter,                       &
-               GLTR_inform%iter_pass2, - clock_total, GLTR_inform%status
+               GLTR_inform%multiplier, GLTR_inform%iter +                      &
+               GLTR_inform%iter_pass2, - clock_total, GLTR_inform%status,      &
+               RADIUS( k )
            END IF
          END IF
 
-!    If required, write the solution
+!    if required, write the solution
 
          IF ( GLTR_control%print_level > 0 .AND. GLTR_control%out > 0 ) THEN
            l = 2
@@ -622,7 +692,8 @@
      END IF
 
      IF ( is_specfile ) CLOSE( input_specfile )
-     DEALLOCATE( H%val, H%row, H%col, X, X0, G, VNAMES, RADIUS )
+     DEALLOCATE( H%type, H%val, H%row, H%col, X, X0, G, VNAMES, RADIUS )
+     DEALLOCATE( S%type, S%val, S%row, S%col )
      CALL CUTEST_cterminate_r( cutest_status )
      RETURN
 
@@ -639,13 +710,13 @@
  2010 FORMAT( 6X, '. .', 9X, ( 2X, 10( '.' ) ) )
  2020 FORMAT( I7, 1X, A10, ES22.14 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
- 2040 FORMAT( A10, I6, 2ES16.8, I4, F9.2, I5 )
+ 2040 FORMAT( A10, I6, 2ES16.8, I4, F9.2, I5, 1X, ES7.1 )
  2050 FORMAT( A10, I6, 2ES16.8, I4, F9.2, I5, 1X, A4, 1X, ES7.1 )
  2060 FORMAT( /, 'name           n  f               lambda    ',               &
                  '    iter     time stat alg   radius' )
  2070 FORMAT( /, 'name           n  f               lambda    ',               &
                  '     fac     time stat alg   radius' )
- 2080 FORMAT( A10, I6, 2ES16.8, 2I6, F9.2, I5 )
+ 2080 FORMAT( A10, I6,  ES16.8, ES13.6, I6, F9.2, I5, 1X, ES7.1 )
  2090 FORMAT( A10, I6, ES16.8, ES10.3, 2I5, F9.2, I5, 1X, A4, 1X, ES7.1 )
  2100 FORMAT( /, 'name           n  f              lambda ',                   &
                  '   iter itr2     time stat alg   radius' )

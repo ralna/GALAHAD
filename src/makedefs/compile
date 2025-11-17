@@ -21,9 +21,9 @@ $(LG)($(package)_$(PRECIS).o): ../$(package)/$(package).F90
 	$(RMARFILES) $(DEPENDS)
 	$(CURMARFILE) use$(package)_$(PRECIS).o
 	$(RMOBFILE) run$(package)_qplib_$(PRECIS).o
-	$(RMOBFILE) $(package)s.o
-	$(RMOBFILE) $(package)s2.o
-	$(RMOBFILE) $(package)s3.o
+	$(RMOBFILE) $(package)s_$(PRECIS).o
+	$(RMOBFILE) $(package)s2_$(PRECIS).o
+	$(RMOBFILE) $(package)s3_$(PRECIS).o
 	$(RMOBFILE) $(package)t_$(PRECIS).o
 	$(RMOBFILE) $(package)ti_$(PRECIS).o
 	$(CRMARFILE) $(package)_ciface_$(PRECIS).o
@@ -83,8 +83,9 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
           -L$(OBJ)/shared \
           -lgalahad_py -lgalahad_c -lhsl_c \
           -lgalahad -lgalahad_cutest_dummy $(HSL) $(MKL_PARDISO) \
-          $(PARDISO) $(WSMP) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(METIS) \
-          $(LAPACK) $(BLAS) -lgfortran \
+          $(PARDISO) $(WSMP) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) \
+          $(METIS4ND) $(METIS5ND) $(LAPACK) $(BLAS) \
+          -lgfortran -lstdc++ -lhwloc \
           -o $(PYSITEPACKDIR)/galahad/$(package).$(SOABI).$(DLEXT) \
           -Wl,-rpath=$(OBJ)/shared $(MOMP)
 	cd $(OBJ); $(RM) $(package)_pyiface.o
@@ -107,7 +108,8 @@ $(package)_gcov: ../$(package)/$(package).F90
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(COVERAGE) \
           -o ./$(package)_gcov $(package)_gcov.o $(package)t_gcov.o -L $(OBJ) \
           -lgalahad $(HSL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
-             $(METIS)  $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
+             $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) \
+             $(METIS4ND) $(METIS5ND) $(LAPACK) $(BLAS)
 	./$(package)_gcov
 	gcov ./$(package)_gcov
 	$(MV) ./$(package)_gcov.F90.gcov ./$(package)_coverage

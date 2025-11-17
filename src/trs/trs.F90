@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-10-05 AT 09:15 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-11-11 AT 08:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -453,8 +453,8 @@
 !   D u m m y   A r g u m e n t
 !-----------------------------------------------
 
-      TYPE ( TRS_DATA_TYPE ), INTENT( INOUT ) :: data
-      TYPE ( TRS_CONTROL_TYPE ), INTENT( OUT ) :: control
+      TYPE ( TRS_data_type ), INTENT( INOUT ) :: data
+      TYPE ( TRS_control_type ), INTENT( OUT ) :: control
       TYPE ( TRS_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
@@ -897,6 +897,7 @@
 
         IF ( SMT_get( H%type ) == 'DIAGONAL' ) THEN
           CALL TRS_solve_diagonal( n, radius, f, C, H%val, X, control, inform )
+          GO TO 900
 
 !  the Hessian is zero or a (scaled) identity
 
@@ -945,8 +946,8 @@
           END IF
           inform%hard_case = .FALSE.
           inform%status = 0
+          GO TO 900
         END IF
-        GO TO 900
       END IF
 
 !  should the problem be solved by dense factorization? Possible values are
@@ -3465,8 +3466,7 @@
 
 !-*-*-*-*-  T R S _ S O L V E _ D I A G O N A L   S U B R O U T I N E  -*-*-*-
 
-      SUBROUTINE TRS_solve_diagonal( n, radius, f, C, H, X, control, inform,   &
-                                     shift )
+      SUBROUTINE TRS_solve_diagonal( n, radius, f, C, H, X, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -3498,10 +3498,6 @@
 !
 !   inform - a structure containing information. See TRS_inform_type
 !
-!   shift - an optional argument that says that the diagonals of the input 
-!           matrix H have been pre-shifted by a positive value, shift. If
-!           this argument is absent, a shift of zero will be presumed
-
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !-----------------------------------------------
@@ -3515,7 +3511,6 @@
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X
       TYPE ( TRS_control_type ), INTENT( IN ) :: control
       TYPE ( TRS_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: shift
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -3523,6 +3518,7 @@
 
       INTEGER ( KIND = ip_ ) :: i, it, out, nroots, print_level
       INTEGER ( KIND = ip_ ) :: max_order, n_lambda, i_hard, n_sing, it_max
+      INTEGER ( KIND = ip_ ) :: lambda_min_loc( 1 )
       REAL :: time_start, time_now, time_record
       REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record
       REAL ( KIND = rp_ ) :: lambda, lambda_l, lambda_u, delta_lambda
@@ -3530,7 +3526,7 @@
       REAL ( KIND = rp_ ) :: c_norm, c_norm_over_radius, v_norm2, w_norm2
       REAL ( KIND = rp_ ) :: beta, z_norm2, root1, root2, root3
       REAL ( KIND = rp_ ) :: lambda_min, lambda_max, lambda_plus, c2
-      REAL ( KIND = rp_ ) :: a_0, a_1, a_2, a_3, a_max, shift_val
+      REAL ( KIND = rp_ ) :: a_0, a_1, a_2, a_3, a_max
       REAL ( KIND = rp_ ), DIMENSION( 3 ) :: lambda_new
       REAL ( KIND = rp_ ), DIMENSION( 0 : max_degree ) :: x_norm2, pi_beta
       LOGICAL :: printi, printt, printd, problem_file_exists
@@ -3582,14 +3578,6 @@
       printt = out > 0 .AND. print_level > 1
       printd = out > 0 .AND. print_level > 2
 
-!  record the value of the shift, if any
-
-      IF ( PRESENT( shift ) ) THEN
-        shift_val = shift
-      ELSE
-        shift_val = zero
-      END IF
-
 !  place an upper bound on the number of iterations allowed
 
       IF ( control%max_factorizations > 0 ) THEN
@@ -3613,29 +3601,23 @@
         WRITE( out, "( A, 4X, 28( '-' ), ' phase two ', 28( '-' ) )" ) prefix
       IF ( printi ) WRITE( out, 2030 ) prefix
 
-!  check for the trivial case
+!  check for trivial cases when ||c|| = 0
 
-      IF ( c_norm == zero .AND. lambda_min >= zero ) THEN
-        IF (  control%equality_problem ) THEN
-          DO i = 1, n
-            IF ( H( i ) == lambda_min ) THEN
-              i_hard = i
-              EXIT
-            END IF
-          END DO
-          X( i_hard ) = one / radius
+      IF ( c_norm == zero ) THEN
+        IF ( lambda_min >= zero .AND. .NOT. control%equality_problem ) THEN
+          lambda = zero
+        ELSE
+          lambda_min_loc = MINLOC( H( : n ) )
+          X( lambda_min_loc( 1 ) ) = radius
           inform%x_norm = radius
           inform%obj = f + lambda_min * radius ** 2
           lambda = - lambda_min
-        ELSE
-          lambda = zero
         END IF
         IF ( printi ) THEN
           WRITE( out, "( A, A2, I4, 3ES22.15 )" )  prefix, region,             &
-            0, ABS( inform%x_norm - radius ), shift_val + lambda,              &
-            ABS( delta_lambda )
+            0, ABS( inform%x_norm - radius ), lambda, ABS( delta_lambda )
           WRITE( out, "( A,                                                    &
-       &    ' Normal stopping criteria satisfied' )" ) prefix
+       &    ' Trivial (||c||=0) stopping criteria satisfied' )" ) prefix
         END IF
         inform%status = GALAHAD_ok
         GO TO 900
@@ -3652,7 +3634,7 @@
         lambda_u = MIN( control%upper,                                         &
                         c_norm_over_radius - lambda_min )
       ELSE
-        lambda_l = MAX( control%lower, - shift_val, - lambda_min,              &
+        lambda_l = MAX( control%lower, - lambda_min,                           &
                         c_norm_over_radius - lambda_max )
         lambda_u = MIN( control%upper,                                         &
                         MAX( zero, c_norm_over_radius - lambda_min ) )
@@ -3705,8 +3687,8 @@
               utx = X( i_hard ) / radius
               distx = ( radius - inform%x_norm ) *                             &
                 ( ( radius + inform%x_norm ) / radius )
-              alpha = sign( distx / ( abs( utx ) +                             &
-                            sqrt( utx ** 2 + distx / radius ) ), utx )
+              alpha = SIGN( distx / ( ABS( utx ) +                             &
+                            SQRT( utx ** 2 + distx / radius ) ), utx )
 
 !  record the optimal values
 
@@ -3717,8 +3699,7 @@
                 f + half * ( DOT_PRODUCT( C, X ) - lambda * radius ** 2 )
             IF ( printi ) THEN
               WRITE( out, "( A, A2, I4, 3ES22.15 )" )  prefix, region,         &
-                0, ABS( inform%x_norm - radius ), shift_val + lambda,          &
-                ABS( delta_lambda )
+                0, ABS( inform%x_norm - radius ), lambda, ABS( delta_lambda )
               WRITE( out, "( A,                                                &
            &    ' Hard-case stopping criteria satisfied' )" ) prefix
             END IF
@@ -3829,8 +3810,7 @@
           IF ( printt .AND. it > 1 ) WRITE( out, 2030 ) prefix
           IF ( printi ) THEN
             WRITE( out, "( A, A2, I4, 3ES22.15 )" )  prefix, region,           &
-              it, ABS( inform%x_norm - radius ), shift_val + lambda,           &
-              ABS( delta_lambda )
+              it, ABS( inform%x_norm - radius ), lambda, ABS( delta_lambda )
             WRITE( out, "( A,                                                  &
          &    ' Normal stopping criteria satisfied' )" ) prefix
           END IF
@@ -3845,13 +3825,11 @@
         IF ( printd ) THEN
           WRITE( out, "( A, 8X, 'lambda', 13X, 'x_norm', 15X, 'radius' )" )    &
             prefix
-          WRITE( out, "( A, 3ES20.12 )") prefix, shift_val + lambda,           &
-            inform%x_norm, radius
+          WRITE( out, "( A, 3ES20.12 )") prefix, lambda, inform%x_norm, radius
         ELSE IF ( printi ) THEN
           IF ( printt .AND. it > 1 ) WRITE( out, 2030 ) prefix
           WRITE( out, "( A, A2, I4, 3ES22.15 )" ) prefix, region, it,          &
-            ABS( inform%x_norm - radius ), shift_val + lambda,                 &
-            ABS( delta_lambda )
+            ABS( inform%x_norm - radius ), lambda, ABS( delta_lambda )
         END IF
 
 !  record, for the future, values of lambda which give small ||x||
@@ -4004,7 +3982,7 @@
 !  Record the optimal obective value
 
       inform%obj = f +                                                         &
-        half * ( DOT_PRODUCT( C, X ) - ( shift_val + lambda ) * x_norm2( 0 ) )
+        half * ( DOT_PRODUCT( C, X ) - lambda * x_norm2( 0 ) )
 
 !  ----
 !  Exit

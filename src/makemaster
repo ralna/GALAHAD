@@ -4229,8 +4229,8 @@ build_julia_shared:
           -o shared/libgalahad_julia.$(DLEXT) \
           $(LOADALL) libgalahad_c.a $(LOADNONE) -L$(OBJ) \
           -lgalahad -l_hsl_c $(HSL) \
-          $(MKL_PARDISO) $(PARDISO) $(WSMP)  $(METIS) $(PASTIX) \
-          $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS) $(MOMP) \
+          $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS4ND) $(METIS5ND) \
+          $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS) $(MOMP) \
           $(NOUNDEFINED)
 
 #  book keeping

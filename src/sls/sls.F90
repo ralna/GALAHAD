@@ -87,7 +87,7 @@
                SLS_ma86_available, SLS_ma87_available, SLS_ma97_available,     &
                SLS_mumps_available, SLS_pardiso_available,                     &
                SLS_mkl_pardiso_available, SLS_pastix_available,                &
-               SLS_wsmp_available, SLS_initialize_solver,                      &
+               SLS_wsmp_available, SLS_keyword, SLS_initialize_solver,         &
                SLS_coord_to_extended_csr, SLS_coord_to_sorted_csr,             &
                SLS_full_initialize, SLS_full_terminate,                        &
                SLS_analyse_matrix, SLS_factorize_matrix, SLS_solve_system,     &
@@ -10381,7 +10381,8 @@
 
 !  Keyword known
 
-     CASE( 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' )
+     CASE( 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE', 'DIAGONAL',                &
+           'SCALED_IDENTITY', 'IDENTITY', 'ZERO', 'NONE' )
        SLS_keyword = .TRUE.
 
 !  Keyword unknown

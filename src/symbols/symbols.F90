@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-02-01 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-10-20 AT 11:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -155,6 +155,8 @@
                               GALAHAD_error_access_perm = - 47
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_error_access_diagonal = - 48
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_bad_scaling = - 49
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_error_technical = - 50
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
@@ -745,6 +747,10 @@
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   it is impossible to access the factor diagonals with',       &
       &       ' this solver' )" ) prefix, routine, prefix
+     CASE( GALAHAD_error_bad_scaling )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   the provided scaling matrix is inappropriate' )" )           &
+         prefix, routine, prefix
      CASE( GALAHAD_error_technical )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   a technical error has occurred within the linear solver' )" )&
