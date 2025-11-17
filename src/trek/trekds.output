@@ -1,0 +1,12 @@
+ 12 vectors required, error =  4.5524E-08
+ radius, ||x||, f, multiplier = 1.0000E+01 1.0000E+01 -1.0000E+03  1.0000E+01
+ total time TREK = .01
+ 12 vectors required, error =  3.7551E-10
+ radius, ||x||, f, multiplier = 5.0000E+00 5.0000E+00 -5.0000E+02  2.0000E+01
+ total time TREK = .00
+ 12 vectors required, error =  4.4371E-12
+ radius, ||x||, f, multiplier = 2.5000E+00 2.5000E+00 -2.5000E+02  4.0000E+01
+ total time TREK = .00
+ 12 vectors required, error =  6.0771E-14
+ radius, ||x||, f, multiplier = 1.2500E+00 1.2500E+00 -1.2500E+02  8.0000E+01
+ total time TREK = .00

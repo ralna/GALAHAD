@@ -19,16 +19,17 @@ MAIN
 ! number-of-radii                                   1
 ! compare-with-trs                                  no
 ! compare-with-gltr                                 no
+! compare-with-trek                                 yes
+! symmetric-linear-equation-solver                  ignore
 
 INCLUDE TREK
 
 INCLUDE TRS
+REPLACE
+! print-level                                       -1
 
 INCLUDE GLTR
 
 INCLUDE SLS
 
 INCLUDE IR
-
-INCLUDE TRS
-

@@ -103,6 +103,7 @@ The possible values for `library` are:
 - `"ssids`;
 - `"ssls`;
 - `"trb"`;
+- `"trek"`;
 - `"trs"`;
 - `"tru"`;
 - `"ugo"`;

@@ -990,7 +990,7 @@
 !         reverse%NZ_in( reverse%nz_in_start : reverse%nz_in_end )
 !       of the vector v stored in reverse%V are nonzero. The resulting
 !       NONZEROS in the product A * v must be placed in their appropriate
-!       comnpinents of reverse%P, while a list of indices of the nonzeos
+!       comnpinents of reverse%P, and a list of indices of the nonzeos
 !       placed in reverse%NZ_out( 1 : reverse%nz_out_end ). BLLS_solve should
 !       then be re-entered with all other arguments unchanged. Typically
 !       v will be very sparse (i.e., reverse%nz_in_end-reverse%NZ_in_start

@@ -1,7 +1,8 @@
 #  GALAHAD makefile intermediaries
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2025-05-27
+#  This version: 2025-11-16
+
 ########################
 #  basic packages alone
 ########################
@@ -416,6 +417,12 @@ make_norms:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/norms )
 
+make_nrek:
+	( cd $(GALAHAD)/src/nrek ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nrek.o \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/nrek )
+
 make_opt:
 	( cd $(GALAHAD)/src/opt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) opt.o \
@@ -637,10 +644,10 @@ make_trb:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trb )
 
 make_trek:
-	( cd $(GALAHAD)/src/forthcoming/trek ; \
+	( cd $(GALAHAD)/src/trek ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trek.o \
           PRECIS=$(PRECIS) \
-          PWD=$(GALAHAD)/src/forthcoming/trek )
+          PWD=$(GALAHAD)/src/trek )
 
 make_trs:
 	( cd $(GALAHAD)/src/trs ; \
@@ -1136,6 +1143,12 @@ make_all_norms:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/norms )
 
+make_all_nrek:
+	( cd $(GALAHAD)/src/nrek ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nrek_silent \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/nrek )
+
 make_all_opt:
 	( cd $(GALAHAD)/src/opt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) opt_silent \
@@ -1329,10 +1342,10 @@ make_all_trb:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trb )
 
 make_all_trek:
-	( cd $(GALAHAD)/src/forthcoming/trek ; \
+	( cd $(GALAHAD)/src/trek ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trek_silent \
           PRECIS=$(PRECIS) \
-          PWD=$(GALAHAD)/src/forthcoming/trek )
+          PWD=$(GALAHAD)/src/trek )
 
 make_all_trs:
 	( cd $(GALAHAD)/src/trs ; \
@@ -1789,6 +1802,12 @@ make_ciface_norms:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/norms )
 
+make_ciface_nrek:
+	( cd $(GALAHAD)/src/nrek ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nrek_ciface.o \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/nrek )
+
 make_ciface_opt:
 	( cd $(GALAHAD)/src/opt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) opt_ciface.o \
@@ -1994,10 +2013,10 @@ make_ciface_trb:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trb )
 
 make_ciface_trek:
-	( cd $(GALAHAD)/src/forthcoming/trek ; \
+	( cd $(GALAHAD)/src/trek ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trek_ciface.o \
           PRECIS=$(PRECIS) \
-          PWD=$(GALAHAD)/src/forthcoming/trek )
+          PWD=$(GALAHAD)/src/trek )
 
 make_ciface_trs:
 	( cd $(GALAHAD)/src/trs ; \
@@ -2489,6 +2508,12 @@ make_pyiface_norms:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/norms )
 
+make_pyiface_nrek:
+	( cd $(GALAHAD)/src/nrek ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nrek_pyiface.o \
+          PRECIS=$(PRECIS) \
+          PWD=$(GALAHAD)/src/nrek )
+
 make_pyiface_opt:
 	( cd $(GALAHAD)/src/opt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) opt_pyiface.o \
@@ -2685,10 +2710,10 @@ make_pyiface_trb:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trb )
 
 make_pyiface_trek:
-	( cd $(GALAHAD)/src/forthcoming/trek ; \
+	( cd $(GALAHAD)/src/trek ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trek_pyiface.o \
           PRECIS=$(PRECIS) \
-          PWD=$(GALAHAD)/src/forthcoming/trek )
+          PWD=$(GALAHAD)/src/trek )
 
 make_pyiface_trs:
 	( cd $(GALAHAD)/src/trs ; \

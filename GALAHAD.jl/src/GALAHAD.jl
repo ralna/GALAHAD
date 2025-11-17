@@ -100,6 +100,9 @@ include("wrappers/psls.jl")
 # arc requires rqs, sls, sils, ir, glrt, dps, psls, lms, sha, nodend.
 include("wrappers/arc.jl")
 
+# trek requires sls, trs, nodend.
+include("wrappers/trek.jl")
+
 # trs requires sls, sils, ir, nodend.
 include("wrappers/trs.jl")
 

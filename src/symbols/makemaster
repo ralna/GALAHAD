@@ -78,8 +78,9 @@ $(package)_silent_quadruple_64: $($(PACKAGE)OBJECTSQ64)
 
 #  libraries used when linking for tests
 
-LIBS = -lgalahad $(HSL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
-                 $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(HSL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
+                 $(METIS464ND) $(METIS564ND) $(PASTIX) $(MUMPS) \
+                 $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
 
 #  non-standard package compilation
 

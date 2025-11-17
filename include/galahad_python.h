@@ -38,7 +38,8 @@ static inline bool check_error_codes(int status){
             PyErr_SetString(PyExc_ValueError,
             "the restriction n > 0 or requirement that H_type contains"
             " its relevant string 'dense', 'coordinate', 'sparse_by_rows',"
-            " 'diagonal' or 'absent' has been violated."
+            " 'diagonal', 'scaled_identity', 'identity', 'zero' or 'absent'"
+            " has been violated."
             );
             return false; // errors return false
         case -4:

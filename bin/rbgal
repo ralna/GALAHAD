@@ -291,14 +291,14 @@ EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN \
  ${MPILIB-${MPI--lgalahad_mpi}} \
  ${UMFPACKLIB-${UMFPACK--lgalahad_umfpack}} \
  ${SUITESPARSELIB-${SUITESPARSE-}} \
- ${METIS4LIB-${METIS4--lmetis4_nodend}} \
- ${METIS5LIB-${METIS5--lmetis5_nodend}} \
+ ${METIS4LIB-${METIS4ND--lmetis4_nodend}} \
+ ${METIS5LIB-${METIS5ND--lmetis5_nodend}} \
  ${LAPACKLIB-${LAPACK--lgalahad_lapack}} \
  ${BLASLIB-${BLAS--lgalahad_blas}} \
  ${PLPLOTLIB-${PLPLOT-}} \
  ${CUDALIBS-} -lstdc++ -lhwloc"
 
-#echo $EXECUTABLE
+echo $EXECUTABLE
 
 if [[ $OUTPUT == "1" ]]; then
   echo " $EXECUTABLE"
