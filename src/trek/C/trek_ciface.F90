@@ -28,7 +28,7 @@
         f_trek_initialize => TREK_initialize,                                  &
         f_trek_read_specfile => TREK_read_specfile,                            &
         f_trek_import => TREK_import,                                          &
-        f_trek_import_s => TREK_import_s,                                      &
+        f_trek_s_import => TREK_s_import,                                      &
         f_trek_solve_problem => TREK_solve_problem,                            &
         f_trek_reset_control => TREK_reset_control,                            &
         f_trek_information => TREK_information,                                &
@@ -500,7 +500,7 @@
 !  C interface to fortran trek_inport_s
 !  -----------------------------------
 
-  SUBROUTINE trek_import_s( cdata, status, n, cstype, sne, srow, scol,         &
+  SUBROUTINE trek_s_import( cdata, status, n, cstype, sne, srow, scol,         &
                             sptr ) BIND( C )
   USE GALAHAD_TREK_precision_ciface
   IMPLICIT NONE
@@ -535,10 +535,10 @@
 
 !  import the problem data into the required TREK structure
 
-  CALL f_trek_import_s( fdata, status, fstype, sne, srow, scol, sptr )
+  CALL f_trek_s_import( fdata, status, fstype, sne, srow, scol, sptr )
   RETURN
 
-  END SUBROUTINE trek_import_s
+  END SUBROUTINE trek_s_import
 
 !  -----------------------------------------
 !  C interface to fortran trek_reset_control

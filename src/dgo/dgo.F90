@@ -1984,9 +1984,11 @@
            IF ( data%present_eval_hprod ) THEN
              CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ),              &
                               userdata, data%U( : nlp%n ),                     &
-                              data%TRB_data%S( : nlp%n ), got_h = data%got_h )
+                              data%TRB_data%V( : nlp%n ), got_h = data%got_h )
+!                             data%TRB_data%S( : nlp%n ), got_h = data%got_h )
            ELSE
-             data%V => data%TRB_data%S
+!            data%V => data%TRB_data%S
+             data%V => data%TRB_data%V
              data%branch = 250 ; inform%status = 5 ; RETURN
            END IF
 

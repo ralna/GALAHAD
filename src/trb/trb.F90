@@ -3545,11 +3545,14 @@
 !  if the Hessian has been calculated, form the product directly
 
              IF ( data%control%hessian_available ) THEN
+!write(6,*) ' hess ', data%dense_p
                CALL TRB_hessian_times_vector( nlp%n,                           &
                         data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ),        &
                         data%nnz_p_u - data%nnz_p_l + 1, data%INDEX_nz_hp,     &
                         data%nnz_hp, data%INDEX_used_hp, data%n_prods,         &
                         data%P, data%HP, data%H_by_cols, data%dense_p )
+!write(6,*) ' p ', data%P
+!write(6,*) ' hp ', data%HP
 
 !  if the Hessian is unavailable, obtain a matrix-free product
 
@@ -5416,7 +5419,7 @@
      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: INDEX_nz_hp
      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: INDEX_used_hp
      REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( n ) :: P
-     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: HP
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: HP
      TYPE ( SMT_type ), INTENT( IN ) :: H_by_cols
 
 !-----------------------------------------------

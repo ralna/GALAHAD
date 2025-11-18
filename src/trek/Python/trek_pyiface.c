@@ -1,7 +1,7 @@
 //* \file trek_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.5 - 2025-11-16 AT 12:10 GMT.
+ * THIS VERSION: GALAHAD 5.4 - 2025-11-17 AT 13:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_TREK PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -490,7 +490,7 @@ static PyObject* py_trek_load_s(PyObject *self, PyObject *args,
         return NULL;
 
     // Call trek_import
-    trek_import_s(&data, &status, n, S_type, S_ne, S_row, S_col, S_ptr);
+    trek_s_import(&data, &status, n, S_type, S_ne, S_row, S_col, S_ptr);
 
     // Free allocated memory
     if(S_row != NULL) free(S_row);

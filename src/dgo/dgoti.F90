@@ -77,6 +77,7 @@
                                 FUN_diag, GRAD_diag, HESS_diag, HESSPROD_diag, &
                                 PREC )
      CASE ( 5 ) ! access by products
+!     control%max_evals = 200
        st = 'P'
        CALL DGO_import( control, data, status, n, X_l, X_u,                    &
                         'absent', ne, H_row, H_col, H_ptr )
@@ -87,7 +88,8 @@
 
      IF ( inform%status == GALAHAD_ok .OR.                                     &
           inform%status == GALAHAD_error_max_iterations .OR.                   &
-          inform%status == GALAHAD_error_max_evaluations ) THEN  ! Success
+          inform%status == GALAHAD_error_max_evaluations .OR.                  &
+          inform%status == GALAHAD_budget_exhausted ) THEN  ! Success
        WRITE( 6, "( A1, ':', I6, ' evaluations.',                              &
      &  ' Best objective value found = ', F8.2, ' status = ', I0 )" )          &
          st, inform%f_eval, inform%obj, inform%status
@@ -109,6 +111,7 @@
      CALL DGO_initialize( data, control, inform )
      CALL WHICH_sls( control )
      control%max_evals = 20000
+!    control%print_level = 1
      X = 0.0_rp_  ! start from 1.0
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -300,7 +303,8 @@
      CALL DGO_information( data, inform, status )
      IF ( inform%status == GALAHAD_ok .OR.                                     &
           inform%status == GALAHAD_error_max_iterations .OR.                   &
-          inform%status == GALAHAD_error_max_evaluations ) THEN  ! Success
+          inform%status == GALAHAD_error_max_evaluations .OR.                  &
+          inform%status == GALAHAD_budget_exhausted ) THEN  ! Success
        WRITE( 6, "( A1, ':', I6, ' evaluations.',                              &
      &  ' Best objective value found = ', F8.2, ' status = ', I0 )" )          &
          st, inform%f_eval, inform%obj, inform%status
@@ -320,7 +324,7 @@ CONTAINS
 
    SUBROUTINE WHICH_sls( control )
    TYPE ( DGO_control_type ) :: control
-#include "galahad_sls_defaults.h"
+#include "galahad_sls_defaults_ls.h"
    control%TRB_control%TRS_control%symmetric_linear_solver                     &
      = symmetric_linear_solver
    control%TRB_control%TRS_control%definite_linear_solver                      &

@@ -75,10 +75,14 @@
       an iterative method
       \latexonly \href{eqp_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/eqp/eqp.html">(link)</a> \endhtmlonly
-  \li \link trs \endlink - the trust-region subproblem using
-       matrix factorization
+  \li \link trs \endlink - the trust-region subproblem using multiple
+       matrix factorizations
       \latexonly \href{trs_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/trs/trs.html">(link)</a> \endhtmlonly
+  \li \link trek \endlink - the trust-region subproblem using a single
+       matrix factorization
+      \latexonly \href{trek_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/trek/trek.html">(link)</a> \endhtmlonly
   \li \link gltr  \endlink - the trust-region subproblem using
        matrix-vector products
       \latexonly \href{gltr_c.pdf}{(link)} \endlatexonly
@@ -369,6 +373,7 @@
 #include "galahad_sls.h"
 #include "galahad_ssls.h"
 #include "galahad_trb.h"
+#include "galahad_trek.h"
 #include "galahad_trs.h"
 #include "galahad_tru.h"
 #include "galahad_ugo.h"

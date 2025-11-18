@@ -613,8 +613,9 @@
        END DO
 !      gp = gp + DOT_PRODUCT( P( IVAR( nvar2 + 1 : nfree ) ),                  &
 !                             Q( IVAR( nvar2 + 1 : nfree ) ) )
-       DO i = nvar2 + 1, nfree
-         gp = gp + P( IVAR( i ) ) * Q( IVAR( i ) )
+       DO j = nvar2 + 1, nfree
+         i = IVAR( j )
+         gp = gp + P( i ) * Q( i )
        END DO
        IF ( S%prnter ) WRITE( iout, 2090 ) gp  * findmx, pbp * findmx,         &
                                            S%gxt * findmx, S%hxt * findmx

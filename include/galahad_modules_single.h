@@ -35,6 +35,7 @@
 #define GALAHAD_DQP_precision GALAHAD_DQP_single_64
 #define GALAHAD_EKS_precision GALAHAD_EKS_single_64
 #define GALAHAD_TREK_precision GALAHAD_TREK_single_64
+#define GALAHAD_NREK_precision GALAHAD_NREK_single_64
 #define GALAHAD_EKRT_precision GALAHAD_EKRT_single_64
 #define GALAHAD_EXPO_precision GALAHAD_EXPO_single_64
 #define GALAHAD_EQP_precision GALAHAD_EQP_single_64
@@ -181,6 +182,7 @@
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_single_64
 #define GALAHAD_USEEKS_precision GALAHAD_USEEKS_single_64
 #define GALAHAD_USETREK_precision GALAHAD_USETREK_single_64
+#define GALAHAD_USENREK_precision GALAHAD_USENREK_single_64
 #define GALAHAD_USEEKRT_precision GALAHAD_USEEKRT_single_64
 #define GALAHAD_USEEXPO_precision GALAHAD_USEEXPO_single_64
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_single_64
@@ -389,6 +391,7 @@
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_single_64
 #define RUNEKS_SIF_precision RUNEKS_SIF_single_64
 #define RUNTREK_SIF_precision RUNTREK_SIF_single_64
+#define RUNNREK_SIF_precision RUNNREK_SIF_single_64
 #define RUNEKRT_SIF_precision RUNEKRT_SIF_single_64
 #define RUNEXPO_SIF_precision RUNEXPO_SIF_single_64
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_single_64
@@ -464,6 +467,7 @@
 #define GALAHAD_DQP_precision GALAHAD_DQP_single
 #define GALAHAD_EKS_precision GALAHAD_EKS_single
 #define GALAHAD_TREK_precision GALAHAD_TREK_single
+#define GALAHAD_NREK_precision GALAHAD_NREK_single
 #define GALAHAD_EKRT_precision GALAHAD_EKRT_single
 #define GALAHAD_EXPO_precision GALAHAD_EXPO_single
 #define GALAHAD_EQP_precision GALAHAD_EQP_single
@@ -610,6 +614,7 @@
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_single
 #define GALAHAD_USEEKS_precision GALAHAD_USEEKS_single
 #define GALAHAD_USETREK_precision GALAHAD_USETREK_single
+#define GALAHAD_USENREK_precision GALAHAD_USENREK_single
 #define GALAHAD_USEEKRT_precision GALAHAD_USEEKRT_single
 #define GALAHAD_USEEXPO_precision GALAHAD_USEEXPO_single
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_single
@@ -818,6 +823,7 @@
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_single
 #define RUNEKS_SIF_precision RUNEKS_SIF_single
 #define RUNTREK_SIF_precision RUNTREK_SIF_single
+#define RUNNREK_SIF_precision RUNNREK_SIF_single
 #define RUNEKRT_SIF_precision RUNEKRT_SIF_single
 #define RUNEXPO_SIF_precision RUNEXPO_SIF_single
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_single

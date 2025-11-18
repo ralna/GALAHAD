@@ -161,7 +161,7 @@ export trek_import
 
 function trek_import(::Type{Float32}, ::Type{Int32}, control, data, status, n, H_type, H_ne,
                     H_row, H_col, H_ptr)
-  @ccall libgalahad_single.trek_import_s(control::Ptr{trek_control_type{Float32,Int32}},
+  @ccall libgalahad_single.trek_s_import(control::Ptr{trek_control_type{Float32,Int32}},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
                                         H_type::Ptr{Cchar}, H_ne::Int32, H_row::Ptr{Int32},
                                         H_col::Ptr{Int32}, H_ptr::Ptr{Int32})::Cvoid
@@ -169,7 +169,7 @@ end
 
 function trek_import(::Type{Float32}, ::Type{Int64}, control, data, status, n, H_type, H_ne,
                     H_row, H_col, H_ptr)
-  @ccall libgalahad_single_64.trek_import_s_64(control::Ptr{trek_control_type{Float32,Int64}},
+  @ccall libgalahad_single_64.trek_s_import_64(control::Ptr{trek_control_type{Float32,Int64}},
                                               data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
                                               n::Int64, H_type::Ptr{Cchar}, H_ne::Int64,
                                               H_row::Ptr{Int64}, H_col::Ptr{Int64},
@@ -212,50 +212,50 @@ function trek_import(::Type{Float128}, ::Type{Int64}, control, data, status, n, 
                                                  H_ptr::Ptr{Int64})::Cvoid
 end
 
-export trek_import_s
+export trek_s_import
 
-function trek_import_s(::Type{Float32}, ::Type{Int32}, data, status, n, S_type, S_ne, S_row,
+function trek_s_import(::Type{Float32}, ::Type{Int32}, data, status, n, S_type, S_ne, S_row,
                       S_col, S_ptr)
-  @ccall libgalahad_single.trek_import_s_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+  @ccall libgalahad_single.trek_s_import_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
                                           n::Int32, S_type::Ptr{Cchar}, S_ne::Int32,
                                           S_row::Ptr{Int32}, S_col::Ptr{Int32},
                                           S_ptr::Ptr{Int32})::Cvoid
 end
 
-function trek_import_s(::Type{Float32}, ::Type{Int64}, data, status, n, S_type, S_ne, S_row,
+function trek_s_import(::Type{Float32}, ::Type{Int64}, data, status, n, S_type, S_ne, S_row,
                       S_col, S_ptr)
-  @ccall libgalahad_single_64.trek_import_s_s_64(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+  @ccall libgalahad_single_64.trek_s_import_s_64(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
                                                 n::Int64, S_type::Ptr{Cchar}, S_ne::Int64,
                                                 S_row::Ptr{Int64}, S_col::Ptr{Int64},
                                                 S_ptr::Ptr{Int64})::Cvoid
 end
 
-function trek_import_s(::Type{Float64}, ::Type{Int32}, data, status, n, S_type, S_ne, S_row,
+function trek_s_import(::Type{Float64}, ::Type{Int32}, data, status, n, S_type, S_ne, S_row,
                       S_col, S_ptr)
-  @ccall libgalahad_double.trek_import_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
+  @ccall libgalahad_double.trek_s_import(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
                                         S_type::Ptr{Cchar}, S_ne::Int32, S_row::Ptr{Int32},
                                         S_col::Ptr{Int32}, S_ptr::Ptr{Int32})::Cvoid
 end
 
-function trek_import_s(::Type{Float64}, ::Type{Int64}, data, status, n, S_type, S_ne, S_row,
+function trek_s_import(::Type{Float64}, ::Type{Int64}, data, status, n, S_type, S_ne, S_row,
                       S_col, S_ptr)
-  @ccall libgalahad_double_64.trek_import_s_64(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
+  @ccall libgalahad_double_64.trek_s_import_64(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
                                               n::Int64, S_type::Ptr{Cchar}, S_ne::Int64,
                                               S_row::Ptr{Int64}, S_col::Ptr{Int64},
                                               S_ptr::Ptr{Int64})::Cvoid
 end
 
-function trek_import_s(::Type{Float128}, ::Type{Int32}, data, status, n, S_type, S_ne, S_row,
+function trek_s_import(::Type{Float128}, ::Type{Int32}, data, status, n, S_type, S_ne, S_row,
                       S_col, S_ptr)
-  @ccall libgalahad_quadruple.trek_import_s_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+  @ccall libgalahad_quadruple.trek_s_import_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
                                              n::Int32, S_type::Ptr{Cchar}, S_ne::Int32,
                                              S_row::Ptr{Int32}, S_col::Ptr{Int32},
                                              S_ptr::Ptr{Int32})::Cvoid
 end
 
-function trek_import_s(::Type{Float128}, ::Type{Int64}, data, status, n, S_type, S_ne, S_row,
+function trek_s_import(::Type{Float128}, ::Type{Int64}, data, status, n, S_type, S_ne, S_row,
                       S_col, S_ptr)
-  @ccall libgalahad_quadruple_64.trek_import_s_q_64(data::Ptr{Ptr{Cvoid}},
+  @ccall libgalahad_quadruple_64.trek_s_import_q_64(data::Ptr{Ptr{Cvoid}},
                                                    status::Ptr{Int64}, n::Int64,
                                                    S_type::Ptr{Cchar}, S_ne::Int64,
                                                    S_row::Ptr{Int64}, S_col::Ptr{Int64},

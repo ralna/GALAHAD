@@ -36,6 +36,7 @@
 #define GALAHAD_DQP_precision GALAHAD_DQP_double_64
 #define GALAHAD_EKS_precision GALAHAD_EKS_double_64
 #define GALAHAD_TREK_precision GALAHAD_TREK_double_64
+#define GALAHAD_NREK_precision GALAHAD_NREK_double_64
 #define GALAHAD_EKRT_precision GALAHAD_EKRT_double_64
 #define GALAHAD_EXPO_precision GALAHAD_EXPO_double_64
 #define GALAHAD_EQP_precision GALAHAD_EQP_double_64
@@ -182,6 +183,7 @@
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_double_64
 #define GALAHAD_USEEKS_precision GALAHAD_USEEKS_double_64
 #define GALAHAD_USETREK_precision GALAHAD_USETREK_double_64
+#define GALAHAD_USENREK_precision GALAHAD_USENREK_double_64
 #define GALAHAD_USEEKRT_precision GALAHAD_USEEKRT_double_64
 #define GALAHAD_USEEXPO_precision GALAHAD_USEEXPO_double_64
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_double_64
@@ -391,6 +393,7 @@
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_double_64
 #define RUNEKS_SIF_precision RUNEKS_SIF_double_64
 #define RUNTREK_SIF_precision RUNTREK_SIF_double_64
+#define RUNNREK_SIF_precision RUNNREK_SIF_double_64
 #define RUNEKRT_SIF_precision RUNEKRT_SIF_double_64
 #define RUNEXPO_SIF_precision RUNEXPO_SIF_double_64
 #define RUNERMO_SIF_precision RUNERMO_SIF_double_64
@@ -465,6 +468,7 @@
 #define GALAHAD_DQP_precision GALAHAD_DQP_double
 #define GALAHAD_EKS_precision GALAHAD_EKS_double
 #define GALAHAD_TREK_precision GALAHAD_TREK_double
+#define GALAHAD_NREK_precision GALAHAD_NREK_double
 #define GALAHAD_EKRT_precision GALAHAD_EKRT_double
 #define GALAHAD_EXPO_precision GALAHAD_EXPO_double
 #define GALAHAD_EQP_precision GALAHAD_EQP_double
@@ -611,6 +615,7 @@
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_double
 #define GALAHAD_USEEKS_precision GALAHAD_USEEKS_double
 #define GALAHAD_USETREK_precision GALAHAD_USETREK_double
+#define GALAHAD_USENREK_precision GALAHAD_USENREK_double
 #define GALAHAD_USEEKRT_precision GALAHAD_USEEKRT_double
 #define GALAHAD_USEEXPO_precision GALAHAD_USEEXPO_double
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_double
@@ -820,6 +825,7 @@
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_double
 #define RUNEKS_SIF_precision RUNEKS_SIF_double
 #define RUNTREK_SIF_precision RUNTREK_SIF_double
+#define RUNNREK_SIF_precision RUNNREK_SIF_double
 #define RUNEKRT_SIF_precision RUNEKRT_SIF_double
 #define RUNEXPO_SIF_precision RUNEXPO_SIF_double
 #define RUNERMO_SIF_precision RUNERMO_SIF_double

@@ -1688,8 +1688,9 @@ $(package)dti: $($(PACKAGE)DTI)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)DTI)
 	$(RMOOC)
-	- ./run_$(package) > $(package)dti.output 2>&1
-	cat $(package)dti.output
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)dti.output 2>&1
+#	cat $(package)dti.output
 	rm ./run_$(package)
 
 $(package)dti_valgrind: $($(PACKAGE)DTI)
