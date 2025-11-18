@@ -1,7 +1,7 @@
 //* \file galahad_trek.h */
 
 /*
- * THIS VERSION:  GALAHAD 5.4 - 2025-11-15 AT 15:10 GMT.
+ * THIS VERSION:  GALAHAD 5.4 - 2025-11-17 AT 13:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_TREK C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -105,7 +105,7 @@
       by reading replacement values from a file
   - \link trek_import \endlink - set up problem data structures and fixed
       values
-  - \link trek_import_s \endlink - (optional) set up problem data structures
+  - \link trek_s_import \endlink - (optional) set up problem data structures
       and fixed values for the scaling matrix \f$M\f$, if any
   - \link trek_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
@@ -445,7 +445,7 @@ struct trek_inform_type {
     struct trs_inform_type trs_inform;
 };
 
-// *-*-*-*-*-*-*-*-*-*-    T R S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-    T R E K  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
 void trek_initialize( void **data,
                       struct trek_control_type *control,
@@ -464,7 +464,7 @@ void trek_initialize( void **data,
   \li  0. The import was succesful.
 */
 
-// *-*-*-*-*-*-*-*-*-    T R S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-    T R E K  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
 void trek_read_specfile( struct trek_control_type *control,
                          const char specfile[] );
@@ -484,7 +484,7 @@ void trek_read_specfile( struct trek_control_type *control,
               the specification file
 */
 
-// *-*-*-*-*-*-*-*-*-*-*-*-    T R S _ I M P O R T   -*-*-*-*-*-*-*-*-*-*-
+// *-*-*-*-*-*-*-*-*-*-*-*-    T R E K _ I M P O R T   -*-*-*-*-*-*-*-*-*-*-
 
 void trek_import( struct trek_control_type *control,
                   void **data,
@@ -552,9 +552,9 @@ void trek_import( struct trek_control_type *control,
    other schemes are used, and in this case can be NULL.
 */
 
-// *-*-*-*-*-*-*-*-*-*-*-*-    T R S _ I M P O R T _ S  -*-*-*-*-*-*-*-*-*-*-
+// *-*-*-*-*-*-*-*-*-*-*-*-    T R E K _ S _ I M P O R T  -*-*-*-*-*-*-*-*-*-*-
 
-void trek_import_s( void **data,
+void trek_s_import( void **data,
                     ipc_ *status,
                     ipc_ n,
                     const char S_type[],
@@ -564,7 +564,8 @@ void trek_import_s( void **data,
                     const ipc_ S_ptr[] );
 
 /*!<
- Import data for the scaling matrix \f$S\f$ into internal storage prior to solution.
+ Import data for the scaling matrix \f$S\f$ into internal storage prior 
+ to solution.
 
  @param[in,out] data holds private internal data
 
@@ -616,7 +617,7 @@ void trek_import_s( void **data,
    other schemes are used, and in this case can be NULL.
 */
 
-//  *-*-*-*-*-*-*-*-*-   T R S _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-   T R E K _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
 
 void trek_reset_control( struct trek_control_type *control,
                          void **data,
@@ -635,7 +636,7 @@ void trek_reset_control( struct trek_control_type *control,
   \li  0. The import was succesful.
  */
 
-//  *-*-*-*-*-*-*-*-*-   T R S _ S O L V E _ P R O B L E M   -*-*-*-*-*-*-*-*-*-
+//  *-*-*-*-*-*-*-*-*-   T R E K _ S O L V E _ P R O B L E M   -*-*-*-*-*-*-*-*-
 
 void trek_solve_problem( void **data,
                          ipc_ *status,
@@ -715,7 +716,7 @@ void trek_solve_problem( void **data,
     identity matrix.
 */
 
-// *-*-*-*-*-*-*-*-*-*-    T R S  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-    T R E K  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
 void trek_information( void **data,
                        struct trek_inform_type *inform,
@@ -735,7 +736,7 @@ void trek_information( void **data,
   \li  0. The values were recorded succesfully
 */
 
-// *-*-*-*-*-*-*-*-*-*-    T R S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-    T R E K  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
 void trek_terminate( void **data,
                      struct trek_control_type *control,

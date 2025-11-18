@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-11-15 AT 08:50 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-11-17 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -46,7 +46,7 @@
      PRIVATE
      PUBLIC :: TREK_initialize, TREK_read_specfile, TREK_solve,                &
                TREK_terminate, TREK_full_initialize, TREK_full_terminate,      &
-               TREK_import, TREK_import_S, TREK_solve_problem,                 &
+               TREK_import, TREK_S_import, TREK_solve_problem,                 &
                TREK_reset_control, TREK_information,                           &
                SMT_type, SMT_put, SMT_get
 
@@ -3333,7 +3333,7 @@
 
 !-*-*-  G A L A H A D -  T R E K _ i m p o r t _ S _ S U B R O U T I N E -*-*-
 
-     SUBROUTINE TREK_import_S( data, status, S_type, S_ne, S_row, S_col, S_ptr )
+     SUBROUTINE TREK_s_import( data, status, S_type, S_ne, S_row, S_col, S_ptr )
 
 !  import fixed problem data for the scaling matrix S into internal
 !  storage prior to solution. Arguments are as follows:
@@ -3552,9 +3552,9 @@
      status = data%trek_inform%status
      RETURN
 
-!  End of subroutine TREK_import_S
+!  End of subroutine TREK_S_import
 
-     END SUBROUTINE TREK_import_S
+     END SUBROUTINE TREK_S_import
 
 !-  G A L A H A D -  T R E K _ r e s e t _ c o n t r o l   S U B R O U T I N E -
 

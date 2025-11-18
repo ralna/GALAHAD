@@ -63,7 +63,7 @@ int main(void) {
                 trek_import( &control, &data, &status, n,
                              "coordinate", H_ne, H_row, H_col, NULL );
                 if (s_is == 1) {
-                  trek_import_s( &data, &status, n,
+                  trek_s_import( &data, &status, n,
                                 "coordinate", S_ne, S_row, S_col, NULL );
                 }
                 break;
@@ -73,7 +73,7 @@ int main(void) {
                 trek_import( &control, &data, &status, n,
                              "sparse_by_rows", H_ne, NULL, H_col, H_ptr );
                 if (s_is == 1) {
-                  trek_import_s( &data, &status, n,
+                  trek_s_import( &data, &status, n,
                                  "sparse_by_rows", S_ne, NULL, S_col, S_ptr );
                 }
                 break;
@@ -83,7 +83,7 @@ int main(void) {
                 trek_import( &control, &data, &status, n,
                             "dense", H_ne, NULL, NULL, NULL );
                 if (s_is == 1) {
-                  trek_import_s( &data, &status, n,
+                  trek_s_import( &data, &status, n,
                                  "dense", S_ne, NULL, NULL, NULL );
                 }
                 break;
@@ -93,7 +93,7 @@ int main(void) {
                 trek_import( &control, &data, &status, n,
                              "diagonal", H_ne, NULL, NULL, NULL );
                 if (s_is == 1) {
-                  trek_import_s( &data, &status, n,
+                  trek_s_import( &data, &status, n,
                                  "diagonal", S_ne, NULL, NULL, NULL );
                 }
                 break;
@@ -171,8 +171,8 @@ int main(void) {
 
           trek_information( &data, &inform, &status );
 #ifdef REAL_128
-// interim replacement for quad output: $GALAHAD/include/galahad_pquad_trek.h
-#include "galahad_pquad_trek.h"
+          printf("format %c%s: TREK_solve_problem exit status = %1" d_ipc_ 
+                 ", f = %.2f\n", st, sr, inform.status, (double)inform.obj );
 #else
           printf("format %c%s: TREK_solve_problem exit status = %1" d_ipc_ 
                  ", f = %.2f\n", st, sr, inform.status, inform.obj );

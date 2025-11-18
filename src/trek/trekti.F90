@@ -1,9 +1,9 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-11-14 AT 13:40 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-11-17 AT 13:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_TREK_interface_test
    USE GALAHAD_KINDS_precision, ONLY: rp_, ip_
    USE GALAHAD_TREK_precision, ONLY: TREK_full_data_type, TREK_control_type,   &
-         TREK_inform_type, TREK_initialize, TREK_import, TREK_import_S,        &
+         TREK_inform_type, TREK_initialize, TREK_import, TREK_S_import,        &
          TREK_solve_problem, TREK_information, TREK_terminate
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ) :: status, storage_type, r_is, s_is
@@ -56,25 +56,25 @@
          st = 'C'
          CALL TREK_import( control, data, status, n, 'COORDINATE',             &
                            H_ne, H_row, H_col, null_ )
-         IF ( use_s ) CALL TREK_import_S( data, status, 'COORDINATE',          &
+         IF ( use_s ) CALL TREK_S_import( data, status, 'COORDINATE',          &
                                           S_ne, S_row, S_col, null_ )
        CASE ( 2 ) ! sparse row-wise storage
          st = 'R'
          CALL TREK_import( control, data, status, n, 'SPARSE_BY_ROWS',         &
                            H_ne, null_, H_col, H_ptr )
-         IF ( use_s ) CALL TREK_import_S( data, status, 'SPARSE_BY_ROWS',      &
+         IF ( use_s ) CALL TREK_S_import( data, status, 'SPARSE_BY_ROWS',      &
                                           S_ne, null_, S_col, S_ptr )
        CASE ( 3 ) ! dense storage
          st = 'D'
          CALL TREK_import( control, data, status, n, 'DENSE',                  &
                            H_ne, null_, null_, null_ )
-         IF ( use_s ) CALL TREK_import_S( data, status, 'DENSE',               &
+         IF ( use_s ) CALL TREK_S_import( data, status, 'DENSE',               &
                                           S_ne, null_, null_, null_ )
        CASE ( 4 ) ! diagonal H, S
          st = 'G'
          CALL TREK_import( control, data, status, n, 'DIAGONAL',               &
                            H_ne, null_, null_, null_ )
-         IF ( use_s ) CALL TREK_import_S( data, status, 'DIAGONAL',            &
+         IF ( use_s ) CALL TREK_S_import( data, status, 'DIAGONAL',            &
                                           S_ne, null_, null_, null_ )
        END SELECT
        DO r_is = 1, 2

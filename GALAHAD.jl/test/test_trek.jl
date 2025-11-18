@@ -59,8 +59,8 @@ function test_trek(::Type{T}, ::Type{INT}; dls::String="pbtr") where {T,INT}
         trek_import(T, INT, control, data, status, n,
                    "coordinate", H_ne, H_row, H_col, C_NULL)
         if s_is == 1
-          trek_import_s(T, INT, data, status, n,
-                       "coordinate", S_ne, S_row, S_col, C_NULL)
+          trek_s_import(T, INT, data, status, n,
+                        "coordinate", S_ne, S_row, S_col, C_NULL)
         end
       end
 
@@ -71,8 +71,8 @@ function test_trek(::Type{T}, ::Type{INT}; dls::String="pbtr") where {T,INT}
         trek_import(T, INT, control, data, status, n,
                    "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr)
         if s_is == 1
-          trek_import_s(T, INT, data, status, n,
-                       "sparse_by_rows", S_ne, C_NULL, S_col, S_ptr)
+          trek_s_import(T, INT, data, status, n,
+                        "sparse_by_rows", S_ne, C_NULL, S_col, S_ptr)
         end
       end
 
@@ -83,8 +83,8 @@ function test_trek(::Type{T}, ::Type{INT}; dls::String="pbtr") where {T,INT}
         trek_import(T, INT, control, data, status, n,
                    "dense", H_ne, C_NULL, C_NULL, C_NULL)
         if s_is == 1
-          trek_import_s(T, INT, data, status, n,
-                       "dense", S_ne, C_NULL, C_NULL, C_NULL)
+          trek_s_import(T, INT, data, status, n,
+                        "dense", S_ne, C_NULL, C_NULL, C_NULL)
         end
       end
 
@@ -95,8 +95,8 @@ function test_trek(::Type{T}, ::Type{INT}; dls::String="pbtr") where {T,INT}
         trek_import(T, INT, control, data, status, n,
                    "diagonal", H_ne, C_NULL, C_NULL, C_NULL)
         if s_is == 1
-          trek_import_s(T, INT, data, status, n,
-                       "diagonal", S_ne, C_NULL, C_NULL, C_NULL)
+          trek_s_import(T, INT, data, status, n,
+                        "diagonal", S_ne, C_NULL, C_NULL, C_NULL)
         end
       end
 
@@ -139,12 +139,12 @@ function test_trek(::Type{T}, ::Type{INT}; dls::String="pbtr") where {T,INT}
         if storage_type == 2
           if s_is == 1
             trek_solve_problem(T, INT, data, status, n,
-                              radius, f, c, H_ne, H_val, x,
-                              S_ne, S_val, 0, 0, C_NULL, C_NULL)
+                               radius, f, c, H_ne, H_val, x,
+                               S_ne, S_val, 0, 0, C_NULL, C_NULL)
           else
             trek_solve_problem(T, INT, data, status, n,
-                              radius, f, c, H_ne, H_val, x,
-                              0, C_NULL, 0, 0, C_NULL, C_NULL)
+                               radius, f, c, H_ne, H_val, x,
+                               0, C_NULL, 0, 0, C_NULL, C_NULL)
           end
         end
 
@@ -152,12 +152,12 @@ function test_trek(::Type{T}, ::Type{INT}; dls::String="pbtr") where {T,INT}
         if storage_type == 3
           if s_is == 1
             trek_solve_problem(T, INT, data, status, n,
-                              radius, f, c, H_dense_ne, H_dense, x,
-                              S_dense_ne, S_dense, 0, 0, C_NULL, C_NULL)
+                               radius, f, c, H_dense_ne, H_dense, x,
+                               S_dense_ne, S_dense, 0, 0, C_NULL, C_NULL)
           else
             trek_solve_problem(T, INT, data, status, n,
-                              radius, f, c, H_dense_ne, H_dense, x,
-                              0, C_NULL, 0, 0, C_NULL, C_NULL)
+                               radius, f, c, H_dense_ne, H_dense, x,
+                               0, C_NULL, 0, 0, C_NULL, C_NULL)
           end
         end
 
@@ -165,19 +165,19 @@ function test_trek(::Type{T}, ::Type{INT}; dls::String="pbtr") where {T,INT}
         if storage_type == 4
           if s_is == 1
             trek_solve_problem(T, INT, data, status, n,
-                              radius, f, c, n, H_diag, x,
-                              n, S_diag, 0, 0, C_NULL, C_NULL)
+                               radius, f, c, n, H_diag, x,
+                               n, S_diag, 0, 0, C_NULL, C_NULL)
           else
             trek_solve_problem(T, INT, data, status, n,
-                              radius, f, c, n, H_diag, x,
-                              0, C_NULL, 0, 0, C_NULL, C_NULL)
+                               radius, f, c, n, H_diag, x,
+                               0, C_NULL, 0, 0, C_NULL, C_NULL)
           end
         end
 
         trek_information(T, INT, data, inform, status)
 
-        @printf("format %c%s: TREK_solve_problem exit status = %1i, f = %.2f\n", st, sr,
-                inform[].status, inform[].obj)
+        @printf("format %c%s: TREK_solve_problem exit status = %1i, 
+                f = %.2f\n", st, sr, inform[].status, inform[].obj)
 
       end
 
