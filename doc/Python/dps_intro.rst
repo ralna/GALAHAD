@@ -50,7 +50,7 @@ $$M = P L L^T P^T.$$
 Given the factors of $H$ (and $M$), the required solution is
 found by making the change of variables $y = B^{1/2} L^T P^T x$
 (or $y = L^T P^T x$ in the Goldfarb case)
-which results in ``diagonal'' trust-region and regularization subproblems,
+which results in ''diagonal'' trust-region and regularization subproblems,
 whose solution may be easily obtained suing a Newton or higher-order iteration
 of a resulting "secular" equation. If subsequent problems, for which
 $H$ and $g$ are unchanged, are to be attempted, the existing
@@ -65,8 +65,8 @@ references
 The method is described in detail for the trust-region case in
 
   N. I. M. Gould and J. Nocedal,
-  ``The modified absolute-value factorization for trust-region minimization''.
-  In ``High Performance Algorithms and Software in Nonlinear Optimization''
+  ''The modified absolute-value factorization for trust-region minimization''.
+  In ''High Performance Algorithms and Software in Nonlinear Optimization''
   (R. De Leone, A. Murli, P. M. Pardalos and G. Toraldo, eds.),
   Kluwer Academic Publishers, (1998) 225--241,
 
@@ -75,7 +75,7 @@ to solve the diagonal trust-region and regularization subproblems are as
 given by
 
   H. S. Dollar, N. I. M. Gould and D. P. Robinson,
-  ``On solving trust-region and other regularised subproblems in optimization''.
+  ''On solving trust-region and other regularised subproblems in optimization''.
   *Mathematical Programming Computation* **2(1)** (2010) 21--57
 
 with simplifications due to the diagonal Hessian.

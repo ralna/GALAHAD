@@ -12,7 +12,7 @@ Regularization subproblems
 **Author:** `Jaroslav Fowkes <jaroslav.fowkes@stfc.ac.uk>`_ and `Nick Gould <nick.gould@stfc.ac.uk>`_
 
 GALAHAD [1]_ is a suite of open-source routines for large-scale continuous
-optimization.  Currently there ten packages designed to find a global
+optimization.  Currently there are twelve packages designed to find a global
 minimizer of a variety of regularized quadratic functions
 
 .. toctree::
@@ -22,6 +22,8 @@ minimizer of a variety of regularized quadratic functions
 
    TRS - global minization of a quadratic function within an ellipsoid using matrix factorization <trs>
    RQS - global minization of a regularized quadratic function using matrix factorization <rqs>
+   TREK - global minization of a quadratic function within an ellipsoid using extended-Krylov-subspace iteration <trek>
+   NREK - global minization of a regularized quadratic function using extended-Krylov-subspace iteration <nrek>
    DPS - global minization of a regularized quadratic function in a diagonalising norm using matrix factorization <dps>
    GLTR - global minization of a quadratic function within an ellipsoid using an iterative method <gltr>
    GLRT - global minization of a regularized quadratic function <glrt>

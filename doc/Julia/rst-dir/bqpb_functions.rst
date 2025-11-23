@@ -479,26 +479,17 @@ Solve the shifted least-distance quadratic program
 	*
 		- x
 
-		- is a one-dimensional array of size n and type T that
-		holds the values $x$ of the optimization variables. The
-		j-th component of ``x``, j = 1, ... , n, contains $x_j$.
+		- is a one-dimensional array of size n and type T thatholds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type T that
-		holds the values $z$ of the dual variables. The j-th
-		component of ``z``, j = 1, ... , n, contains $z_j$.
+		- is a one-dimensional array of size n and type T thatholds the values $z$ of the dual variables. The j-th component of ``z``, j = 1, ... , n, contains $z_j$.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type INT
-		that gives the optimal status of the problem
-		variables. If x_stat(j) is negative, the variable $x_j$
-		most likely lies on its lower bound, if it is positive,
-		it lies on its upper bound, and if it is zero, it lies
-		between its bounds.
+		- is a one-dimensional array of size n and type INT that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies	between its bounds.
 
 .. index:: pair: function; bqpb_information
 .. _doxid-galahad__bqpb_8h_1a01c7e22011ff22e8084be1e8a26d84c6:

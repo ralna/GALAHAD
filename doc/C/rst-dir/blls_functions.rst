@@ -321,27 +321,27 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
-		  * ****1**
+		  * **1**
                     The import was successful, and the package is ready
                     for the solve phase
 		  
 		  * **-1**
-                    An allocation error occurred**
+                    An allocation error occurred
                     A message indicating the offending array is written
                     on unit control.error, and the returned allocation
                     status and a string containing the name of the
                     offending array are held in inform.alloc_status and
                     inform.bad_alloc respectively.
 		  
-		  * ****-2**
-                    A deallocation error occurred**
+		  * **-2**
+                    A deallocation error occurred
                     A message indicating the offending array is written
                     on unit control.error and the returned allocation
                     status and a string containing the name of the
                     offending array are held in inform.alloc_status and
                     inform.bad_alloc respectively.
 		  
-		  * ****-3**
+		  * **-3**
                     The restrictions n > 0, o > 0 or requirement that
                     type contains its relevant string 'coordinate',
                     'sparse_by_rows', 'sparse_by_columns',
@@ -364,7 +364,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- Ao_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the design matrix $A_o$. It should be one of 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme<details-blls_storage__unsym>` used for the design matrix $A_o$. It should be one of 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns'; lower or upper case variants are allowed.
 
 	*
 		- Ao_ne
@@ -430,28 +430,28 @@ Import problem data into internal storage prior to solution.
 		- 
 		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
-		  * ****1**
+		  * **1**
                     The import was successful, and the package is ready
                     for the solve phase
 		  
 		  * **-1**
-                    An allocation error occurred**
+                    An allocation error occurred
                     A message indicating the offending array is written
                     on unit control.error, and the returned allocation
                     status and a string containing the name of the
                     offending array are held in inform.alloc_status and
                     inform.bad_alloc respectively.
 		  
-		  * ****-2**
-                    A deallocation error occurred**
+		  * **-2**
+                    A deallocation error occurred
                     A message indicating the offending array is written
                     on unit control.error and the returned allocation
                     status and a string containing the name of the
                     offending array are held in inform.alloc_status and
                     inform.bad_alloc respectively.
 		  
-		  * ****-3**
-                    The restriction n > 0 or o > 0 has been violated**
+		  * **-3**
+                    The restriction n > 0 or o > 0 has been violated
 
 	*
 		- n

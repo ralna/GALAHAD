@@ -297,7 +297,7 @@ Find a row/colum permutation for sparse Cholesky-like factorization.
 	*
 		- A_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_symmetric_matrices>` used for the Hessian. It should be one of 'coordinate' or 'sparse_by_rows'; lower or upper case variants are allowed. If A_type is not one of the supported values, the identity permutation will be returned.
+		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme<details-nodend_storage__sym>` used for the Hessian. It should be one of 'coordinate' or 'sparse_by_rows'; lower or upper case variants are allowed. If A_type is not one of the supported values, the identity permutation will be returned.
 
 	*
 		- ne

@@ -4808,8 +4808,12 @@
       inform%obj = f + half * ( DOT_PRODUCT( C, X ) - lambda * target ** 2 )
       inform%obj_regularized = inform%obj + ( lambda / p ) * target ** 2
       IF ( printi ) WRITE( out,                                                &
-        "( A, ' estimated, true objective values =', 2ES21.13 )" ) prefix,     &
+        "( A, ' objective (est,true) =', 2ES21.13 )" ) prefix,                 &
           inform%obj, f + DOT_PRODUCT( C, X ) +                                &
+            half * DOT_PRODUCT( X, H( : n ) * X )
+      IF ( printi ) WRITE( out,                                                &
+        "( A, ' regularized objective (est,true) =', 2ES21.13 )" ) prefix,     &
+          inform%obj_regularized, f + DOT_PRODUCT( C, X ) +                                &
             half * DOT_PRODUCT( X, H( : n ) * X ) +                            &
           ( sigma / p ) * inform%x_norm ** p
 

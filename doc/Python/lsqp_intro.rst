@@ -119,14 +119,14 @@ references
 The basic algorithm is that of
 
   Y. Zhang,
-  ``On the convergence of a class of infeasible interior-point methods 
+  ''On the convergence of a class of infeasible interior-point methods 
   for the horizontal linear complementarity problem''.
   *SIAM J. Optimization* **4(1)** (1994) 208-227,
 
 with a number of enhancements described by
 
   A. R. Conn, N. I. M. Gould, D. Orban and Ph. L. Toint,
-  ``A primal-dual trust-region algorithm for minimizing a non-convex 
+  '' primal-dual trust-region algorithm for minimizing a non-convex 
   function subject to general inequality and linear equality constraints''.
   *Mathematical Programming **87** (1999) 215-249.
 

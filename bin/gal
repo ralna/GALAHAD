@@ -688,6 +688,14 @@ elif [[ $2 == 'trek' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec trek update
   [[ ! -L RUNTREK.SPC ]] && ln -s ~/.galahad/specs/RUNTREK.SPC RUNTREK.SPC
 
+# nrek
+
+elif [[ $2 == 'nrek' ]]; then
+  RUNMAIN=$GALOBJ/runnrek_sif_$PRECIS.o
+  [[ ! -e ~/.galahad/specs/RUNNREK.SPC ]] && $GALOBJ/buildspec nrek
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec nrek update
+  [[ ! -L RUNNREK.SPC ]] && ln -s ~/.galahad/specs/RUNNREK.SPC RUNNREK.SPC
+
 # dps
 
 elif [[ $2 == 'dps' ]]; then

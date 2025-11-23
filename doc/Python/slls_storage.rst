@@ -1,3 +1,5 @@
+.. _details-slls_storage__unsym:
+
 matrix storage
 --------------
 

@@ -1,0 +1,12 @@
+ 8 vectors required, error =  1.7175E-08
+ weight, ||x||, f, multiplier = 1.0000E+01 3.1623E+00 -2.1082E+02  3.1623E+01
+ total time NREK = .01
+ 8 vectors required, error =  4.0443E-09
+ weight, ||x||, f, multiplier = 2.0000E+01 2.2361E+00 -1.4907E+02  4.4721E+01
+ total time NREK = .00
+ 8 vectors required, error =  9.7010E-10
+ weight, ||x||, f, multiplier = 4.0000E+01 1.5811E+00 -1.0541E+02  6.3246E+01
+ total time NREK = .00
+ 8 vectors required, error =  2.3564E-10
+ weight, ||x||, f, multiplier = 8.0000E+01 1.1180E+00 -7.4536E+01  8.9443E+01
+ total time NREK = .00

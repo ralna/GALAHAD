@@ -252,7 +252,7 @@ bounds are non-negative if the original bound is an lower bound, non-positive
 if it is an upper bound, or unconstrained in sign if the variables is fixed;
 and this convention is reversed in ${\tt z_{sign} = -1}$. The values of 
 ${\tt z_{sign}}$ and ${\tt y_{sign}}$ may be chosen by setting the corresponding
-components of the ``options` to 1 or -1.
+components of the ``options`` to 1 or -1.
 
 references
 ----------
@@ -260,5 +260,5 @@ references
 The algorithm is described in more detail in
 
   N. I. M. Gould and Ph. L. Toint,
-  ``Presolving for quadratic programming''.
+  ''Presolving for quadratic programming''.
   *Mathematical Programming* **100(1)** (2004) 95--132.

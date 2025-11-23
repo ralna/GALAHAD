@@ -70,6 +70,6 @@ reference
 Full details are provided in
 
   N. I. M. Gould (2022).
-  ``A projection method for bound-constrained linear least-squares''.
+  ''A projection method for bound-constrained linear least-squares''.
   STFC-Rutherford Appleton Laboratory Computational Mathematics Group
   Internal Report 2023-1 (2023).

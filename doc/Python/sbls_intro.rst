@@ -44,7 +44,7 @@ and there is a large variety of different possibilities. The
 essential ideas are described in detail in
 
   H. S. Dollar, N. I. M. Gould and A. J. Wathen.
-  ``On implicit-factorization constraint preconditioners''.
+  ''On implicit-factorization constraint preconditioners''.
   In  Large Scale Nonlinear Optimization (G. Di Pillo and M. Roma, eds.)
   Springer Series on Nonconvex Optimization and Its Applications, Vol. 83,
   Springer Verlag (2006) 61--82
@@ -52,7 +52,7 @@ essential ideas are described in detail in
 and
 
   H. S. Dollar, N. I. M. Gould, W. H. A. Schilders and A. J. Wathen
-  ``On iterative methods and implicit-factorization preconditioners for
+  ''On iterative methods and implicit-factorization preconditioners for
   regularized saddle-point systems''.
   *SIAM Journal on Matrix Analysis and Applications* **28(1)** (2006) 170--189.
 
@@ -60,7 +60,7 @@ The range-space factorization is based upon the decomposition
 $$K_G = \begin{pmatrix}G & 0 \\ A & I\end{pmatrix} 
 \begin{pmatrix}G^{-1} & 0 \\ 0 & - S\end{pmatrix} 
 \begin{pmatrix}G & A^T \\ 0 & I\end{pmatrix},$$
-where the ``Schur complement'' $S = C + A G^{-1} A^T$.
+where the ''Schur complement'' $S = C + A G^{-1} A^T$.
 Such a method requires that $S$ is easily invertible. This is often the
 case when $G$ is a diagonal matrix, in which case $S$ is frequently
 sparse, or when $m \ll n$ in which case $S$
@@ -74,7 +74,7 @@ G_{11}^{} & 0 & I \\ G_{21}^{} & I & A_{2}^{T} A_{1}^{-T} \\ A_{1}^{} & 0 & 0
 \end{pmatrix} \begin{pmatrix}
 G_{11}^{} & G_{21}^T & A_{1}^T \\ 0 & I & 0 \\ I & A_{1}^{-1} A_{2}^{} & 0
 \end{pmatrix} P^T,$$
-where the ``reduced Hessian''
+where the ''reduced Hessian''
 $$R = ( - A_{2}^{T} A_1^{-T} \;\; I ) 
 \begin{pmatrix}G_{11}^{} & G_{21}^{T} \\ G_{21}^{} & G_{22}^{}\end{pmatrix} 
 \begin{pmatrix}- A_1^{-1} A_2^{} \\ I\end{pmatrix}$$

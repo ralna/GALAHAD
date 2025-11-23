@@ -1,7 +1,7 @@
 .. _doxid-index_clls:
 
 GALAHAD CLLS package
-===================
+====================
 
 .. module:: galahad.clls
 

@@ -129,6 +129,6 @@ reference
 The method is described in detail in
 
   A. R. Conn, N. I. M. Gould, D. Orban and Ph. L. Toint,
-  ``A primal-dual trust-region algorithm for minimizing a non-convex 
+  ''A primal-dual trust-region algorithm for minimizing a non-convex 
   function subject to general inequality and linear equality constraints''.
   *Mathematical Programming* **87**  (1999) 215-249.

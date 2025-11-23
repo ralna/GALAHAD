@@ -25,7 +25,7 @@ bllsb_time_type structure
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structbllsb__time__type_clock_total>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_preprocess<doxid-structbllsb__time__type_clock_preprocess>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_find_dependent<doxid-structbllsb__time__type_clock_find_dependent>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_analyse<doxid-structbllsb__time__type_1a3394e706afb1s75d930c81c4b86fe8f4b>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_analyse<doxid-structbllsb__time__type_clock_analyse>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_factorize<doxid-structbllsb__time__type_clock_factorize>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_solve<doxid-structbllsb__time__type_clock_solve>`;
 	};

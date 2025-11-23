@@ -1,3 +1,5 @@
+.. _details-expo_storage__unsym:
+
 matrix storage
 --------------
 
@@ -52,6 +54,8 @@ l = J_ptr(j), $\ldots$, J_ptr(j+1)-1, $0 \leq j \leq n-1$,
 of the integer array J_row, and real array J_val, respectively.
 As before, for sparse matrices, this scheme almost always requires less
 storage than the co-ordinate format.
+
+.. _details-expo_storage__sym:
 
 The **symmetric** $n$ by $n$ matrix $H = Hl(x,y)$ may
 be presented and stored in a variety of formats. But crucially symmetry

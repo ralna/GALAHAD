@@ -331,7 +331,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- A_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, $A$ if any. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme<details-llsr_storage__unsym>` used for the constraint Jacobian, $A$ if any. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- A_ne
@@ -429,7 +429,7 @@ Import the scaling matrix $S$ into internal storage prior to solution. Thus must
 	*
 		- S_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid->` used for the matrix $S$. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'diagonal'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme<details-llsr_storage__sym>` used for the matrix $S$. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'diagonal'; lower or upper case variants are allowed.
 
 	*
 		- S_ne

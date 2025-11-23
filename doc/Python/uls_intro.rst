@@ -36,6 +36,8 @@ where $P_R$ and $P_C$ are row and column permutation matrices, respectively.
 supported solvers
 -----------------
 
+.. _details-uls_supported__unsym:
+
 The key features of the external solvers supported by ``uls`` are
 given in the following table:
 

@@ -1,3 +1,5 @@
+.. _details-lsqp_storage__unsym:
+
 matrix storage
 --------------
 

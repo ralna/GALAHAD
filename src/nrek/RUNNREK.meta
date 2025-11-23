@@ -1,0 +1,36 @@
+MAIN
+! write-problem-data                                no
+! write-result-summary                              yes
+! nrek-result-summary-file-name                     NREKRES.d
+! nrek-result-summary-file-device                   47
+! trs-result-summary-file-name                      TRSRES.d
+! trs-result-summary-file-device                    48
+! gltr-result-summary-file-name                     GLTRRES.d
+! gltr-result-summary-file-device                   49
+! print-full-solution                               no
+! write-solution                                    yes
+! nrek-solution-file-name                           NREKSOL.d
+! nrek-solution-file-device                         62
+! trs-solution-file-name                            TRSSOL.d
+! trs-solution-file-device                          63
+! gltr-solution-file-name                           GLTRSOL.d
+! gltr-solution-file-device                         64
+! power                                             3.0
+! weight                                            1.0
+! number-of-weights                                 1
+! compare-with-rqs                                  no
+! compare-with-glrt                                 no
+! compare-with-nrek                                 yes
+! symmetric-linear-equation-solver                  ignore
+
+INCLUDE NREK
+
+INCLUDE RQS
+REPLACE
+! print-level                                       -1
+
+INCLUDE GLRT
+
+INCLUDE SLS
+
+INCLUDE IR

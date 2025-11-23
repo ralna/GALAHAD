@@ -1,3 +1,5 @@
+.. _details-psls_storage__sym:
+
 matrix storage
 --------------
 

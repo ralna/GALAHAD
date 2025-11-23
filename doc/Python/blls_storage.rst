@@ -1,3 +1,5 @@
+.. _details-blls_storage__unsym:
+
 matrix storage
 --------------
 

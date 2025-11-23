@@ -1,3 +1,4 @@
+.. _details-qpb_storage__unsym:
 
 matrix storage
 --------------
@@ -57,6 +58,8 @@ of the integer array A_row, and real array A_val, respectively.
 As before, for sparse matrices, this scheme almost always requires less
 storage than the co-ordinate format.
 The string A_type = 'sparse_by_columns' should be specified.
+
+.. _details-qpb_storage__sym:
 
 The **symmetric** $n$ by $n$ matrix $H$ may also
 be presented and stored in a variety of formats. But crucially symmetry

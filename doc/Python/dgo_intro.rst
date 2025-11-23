@@ -51,7 +51,7 @@ references
 The global minimization method employed is an extension of that due to
 
   Ya. D. Sergeyev and D. E. Kasov,
-  ``A deterministic global optimization using smooth diagonal 
+  ''A deterministic global optimization using smooth diagonal 
   auxiliary functions'',
   *Communications in Nonlinear Science and Numerical Simulation*,
   **21(1-3)** (2015) 99-111.
@@ -60,7 +60,7 @@ but adapted to use 2nd derivatives, while in the special case when $n=1$,
 a simplification based on the ideas in
 
   D. Lera and Ya. D. Sergeyev (2013),
-  ``Acceleration of univariate global optimization algorithms working with
+  ''Acceleration of univariate global optimization algorithms working with
   Lipschitz functions and Lipschitz first derivatives''
   *SIAM J. Optimization* **23(1)** (2013) 508–529.
 

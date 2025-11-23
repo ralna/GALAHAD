@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for all the GALAHAD RQ packages
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2025-11-16
+#  This version: 2025-11-23
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -17,7 +17,7 @@ PACKAGE = ALL_RQ
 DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
                make_lmt make_qpt make_rand make_gltr make_glrt \
                make_lstr make_lsrt make_l2rt make_mop make_ir \
-               make_trs make_rqs make_trek \
+               make_trs make_rqs make_trek make_nrek \
                make_dps make_llsr make_llst
 
 #  auxiliary packages that the C interface to the current package depends
@@ -27,7 +27,7 @@ CDEPENDENCIES = make_ciface_common make_ciface_sils make_ciface_uls_deps \
                 make_ciface_sls_deps make_ciface_sls make_ciface_gltr \
                 make_ciface_glrt make_ciface_lstr make_ciface_lsrt \
                 make_ciface_l2rt make_ciface_trs make_ciface_rqs \
-                make_ciface_trek \
+                make_ciface_trek make_ciface_nrek \
                 make_ciface_dps make_ciface_llsr make_ciface_llst
 
 #  auxiliary packages that the python interface to the current package depends
@@ -36,7 +36,7 @@ CDEPENDENCIES = make_ciface_common make_ciface_sils make_ciface_uls_deps \
 PYDEPENDENCIES = make_pyiface_gltr make_pyiface_glrt \
                  make_pyiface_lstr make_pyiface_lsrt make_pyiface_l2rt \
                  make_pyiface_trs make_pyiface_rqs \
-                 make_pyiface_trek \
+                 make_pyiface_trek make_pyiface_nrek \
                  make_pyiface_dps make_pyiface_llsr make_pyiface_llst
 
 #  auxiliary packages that are needed for tests (prepend with make_)
@@ -46,22 +46,23 @@ TESTDEPS = make_copyright make_convert make_miqr make_mi35
 #  packages that are needed for CUTEst interfaces (prepend with make_)
 
 CUTESTDEPS = $(CUTEST_TESTS) $(TESTDEPS) \
-             make_trs_cutest make_rqs_cutest make_trek_cutest \
-             make_dps_cutest \
+             make_trs_cutest make_rqs_cutest \
+             make_trek_cutest make_nrek_cutest make_dps_cutest \
              make_gltr_cutest make_glrt_cutest make_lstr_cutest \
              make_lsrt_cutest make_l2rt_cutest
 
 #  comprehensive tests to be performed (prepend with make_)
 
-TEST = make_trs_test make_rqs_test make_trek_test make_dps_test \
+TEST = make_trs_test make_rqs_test \
+       make_trek_test make_nrek_test make_dps_test \
        make_llsr_test make_llst_test make_gltr_test \
        make_glrt_test make_lstr_test make_lsrt_test \
        make_l2rt_test
 
 #  comprehensive and CUTEst tests to be performed (prepend with make_)
 
-TESTS = make_trs_tests make_rqs_tests make_trek_tests \
-        make_dps_tests \
+TESTS = make_trs_tests make_rqs_tests \
+        make_trek_tests make_nrek_tests make_dps_tests \
         make_llsr_tests make_llst_tests make_gltr_tests \
         make_glrt_tests make_lstr_tests make_lsrt_tests \
         make_l2rt_tests
@@ -69,7 +70,7 @@ TESTS = make_trs_tests make_rqs_tests make_trek_tests \
 #  all tests except CUTEst ones to be performed (prepend with make_)
 
 TEST_FULL = make_trs_test_full make_rqs_test_full \
-            make_trek_test_full \
+            make_trek_test_full make_nrek_test_full \
             make_dps_test_full make_llsr_test_full \
             make_llst_test_full make_gltr_test_full \
             make_glrt_test_full make_lstr_test_full \
@@ -78,7 +79,7 @@ TEST_FULL = make_trs_test_full make_rqs_test_full \
 #  all tests except CUTEst ones to be performed (prepend with make_)
 
 TEST_SPEC = make_trs_test_spec make_rqs_test_spec \
-            make_trek_test_spec \
+            make_trek_test_spec make_nrek_test_spec \
             make_dps_test_spec make_llsr_test_spec \
             make_llst_test_spec make_gltr_test_spec \
             make_glrt_test_spec make_lstr_test_spec \
@@ -87,7 +88,7 @@ TEST_SPEC = make_trs_test_spec make_rqs_test_spec \
 #  tests of C interfaces to be performed (prepend with make_)
 
 TEST_CIFACE = make_ciface_trs_test make_ciface_rqs_test \
-              make_ciface_trek \
+              make_ciface_trek make_ciface_nrek \
               make_ciface_dps_test make_ciface_llsr_test \
               make_ciface_llst_test make_ciface_gltr_test \
               make_ciface_glrt_test make_ciface_lstr_test \
@@ -96,7 +97,7 @@ TEST_CIFACE = make_ciface_trs_test make_ciface_rqs_test \
 #  tests of python interfaces to be performed (prepend with make_pyiface_)
 
 TEST_PYIFACE = make_pyiface_trs_test make_pyiface_rqs_test \
-               make_pyiface_trek_test \
+               make_pyiface_trek_test make_pyiface_nrek_test \
                make_pyiface_dps_test make_pyiface_llsr_test \
                make_pyiface_llst_test make_pyiface_gltr_test \
                make_pyiface_glrt_test make_pyiface_lstr_test \
@@ -104,7 +105,7 @@ TEST_PYIFACE = make_pyiface_trs_test make_pyiface_rqs_test \
 
 #  all packages in the RQ section
 
-PACKAGES = ir trs rqs trek dps llsr llst gltr glrt lstr lsrt l2rt
+PACKAGES = ir trs rqs trek nrek dps llsr llst gltr glrt lstr lsrt l2rt
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================
