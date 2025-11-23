@@ -948,7 +948,7 @@
          IF ( inform%status /= 0 ) GO TO 910
 
          array_name = 'nrek: data%S2'
-         CALL SPACE_resize_array( data%is_max, 1, data%S2,                     &
+         CALL SPACE_resize_array( data%is_max, 1_ip_, data%S2,                 &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
