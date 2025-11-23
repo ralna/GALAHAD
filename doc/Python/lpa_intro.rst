@@ -56,7 +56,7 @@ method
 
 The bulk of the work is peformed by the HSL package *LA04*. The
 main subbroutine from this package requires that the input problem
-be transformed into the ``standard form''
+be transformed into the ''standard form''
 $$\begin{array}{rl} 
 \mbox{minimize} & g'^T x' \\
 \mbox{subject to} & A' x' = b \\
@@ -67,7 +67,7 @@ removing fixed variables and free constraints. The resulting
 problem involves $n'$ unknowns and $m'$ general constraints.
 In order to deal with the possibility that the general constraints
 are inconsistent or not of full rank,
-*LA04* introduces additional ``artifical'' variables $v$,
+*LA04* introduces additional ''artifical'' variables $v$,
 replaces the constraints of the standard-form LP by the enlaarged set
 $$A' x' + v = b,$$
 and gradually encourages $v$ to zero as a first solution phase.
@@ -110,18 +110,18 @@ references
 ----------
 
   D. Goldfarb and J. K. Reid,
-  ``A practicable steepest-edge simplex algorithm''.
+  ''A practicable steepest-edge simplex algorithm''.
   *Mathematical Programming* **12** (1977) 361-371.
 
   N. I. M. Gould and J. K. Reid,
-  ``New crash procedures for large systems of linear constraints''.
+  ''New crash procedures for large systems of linear constraints''.
   *Mathematical Programming* **45** (1989) 475-501.
 
   P. M. J. Harris,
-  ``Pivot selection methods of the Devex LP code''.
+  ''Pivot selection methods of the Devex LP code''.
   *Mathematical Programming* **5** (1973) 1-28.
 
   J. K. Reid,
-  ``A sparsity-exploiting variant of the Bartels-Golub
+  ''A sparsity-exploiting variant of the Bartels-Golub
   decomposition for linear-programming bases''.
   *Mathematical Programming* **24** (1982) 55-69.

@@ -2,7 +2,7 @@
 packages = ("arc", "bgo", "blls", "bllsb", "bnls", "bqp", "bqpb", "bsc", "ccqp", "clls",
             "convert", "cqp", "cro", "dgo", "dps", "dqp", "eqp", "expo", "fdc", "fit",
             "glrt", "gls", "gltr", "hash", "ir", "l2rt", "lhs", "llsr", "llst", "lms",
-            "lpa", "lpb", "lsqp", "lsrt", "lstr", "nls", "nodend", "presolve", "psls",
+            "lpa", "lpb", "lsqp", "lsrt", "lstr", "nls", "nodend", "nrek", "presolve", "psls",
             "qpa", "qpb", "roots", "rpd", "rqs", "sbls", "scu", "sec", "sha", "sils",
             "slls", "sls", "ssids", "ssls", "trb", "trek", "trs", "tru", "ugo", "uls", "version", "wcp")
 
@@ -21,7 +21,7 @@ nonparametric_structures_int = ("arc_time_type", "bgo_time_type", "blls_time_typ
                                 "lsqp_time_type", "nls_time_type", "psls_time_type", "qpa_time_type",
                                 "qpb_time_type", "rqs_time_type", "rqs_history_type", "sbls_time_type",
                                 "scu_control_type", "slls_time_type", "sls_time_type", "trb_time_type",
-                                "trek_time_type",
+                                "trek_time_type", nrek_time_type",
                                 "trs_time_type", "trs_history_type", "tru_time_type", "ugo_time_type",
                                 "wcp_time_type", "nodend_time_type", "expo_time_type", "ssls_time_type")
 

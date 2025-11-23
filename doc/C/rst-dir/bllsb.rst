@@ -1,7 +1,7 @@
 .. _doxid-index_bllsb:
 
 GALAHAD BLLSB package
-===================
+=====================
 
 .. module:: galahad.bllsb
 

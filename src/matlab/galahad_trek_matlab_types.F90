@@ -8,7 +8,7 @@
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released with GALAHAD Version 2.4. February 12th, 2010
+!   originally released with GALAHAD Version 5.4. November 17th, 2025
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -215,7 +215,7 @@
          'perturb_c                      ', 'stop_check_all_orders          ', &
          'new_radius                     ', 'new_values                     ', &
          'space_critical                 ', 'deallocate_error_fatal         ', &
-         'symmetric_linear_solver        ', 'definite_linear_solver         ', &
+         'linear_solver                  ', 'linear_solver_for_s            ', &
          'prefix                         ', 'SLS_control                    ', &
          'SLS_s_control                  ', 'TRS_control                    ' /)
 

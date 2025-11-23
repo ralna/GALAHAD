@@ -1,3 +1,5 @@
+.. _details-bsc_storage__unsym:
+
 matrix storage
 --------------
 
@@ -48,6 +50,8 @@ of the integer array A_row, and real array A_val, respectively.
 As before, for sparse matrices, this scheme almost always requires less
 storage than the co-ordinate format.
 The string A_type = 'sparse_by_columns' should be specified.
+
+.. _details-bsc_storage__sym:
 
 The **symmetric** $n$ by $n$ Schur complement matrix $S$ may be returned
 in a couple of formats. But now crucially symmetry

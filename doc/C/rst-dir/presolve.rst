@@ -7,6 +7,8 @@ GALAHAD PRESOLVE package
 
 .. include:: ../../Python/presolve_intro.rst
 
+.. include:: ../../Python/presolve_storage.rst
+
 .. toctree::
 	:hidden:
 
@@ -44,8 +46,6 @@ available structures
 --------------------
 
 .. include :: struct_presolve_control_type.rst
-
-.. include :: struct_presolve_time_type.rst
 
 .. include :: struct_presolve_inform_type.rst
 

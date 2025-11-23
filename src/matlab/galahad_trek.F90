@@ -8,11 +8,11 @@
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!  Given a symmetric n by n matrix H (and possibly S), an n-vector g, 
-!  a constant f, and a scalar radius, find the solution of the 
+!  Given a symmetric n by n matrix H (and possibly S), an n-vector g,
+!  a constant f, and a scalar radius, find the solution of the
 !  TRUST-REGION subproblem
 !    minimize 0.5 * x' * H * x + c' * x + f
-!    subject to ||x||_M <= radius
+!    subject to ||x||_S <= radius
 !  Here ||x||_S^2 = x' * S * x and S is diagonally dominant; if S is
 !  not given, S=I and ||x||_S is thus taken to be the Euclidean (l_2-)norm
 !  sqrt(x' * x). H need not be definite. Advantage is taken of sparse H and S.
@@ -177,10 +177,9 @@
         END IF
       END IF
 
-      IF ( .NOT. TRIM( mode ) == 'final' ) THEN
-
 !  Check that TREK_initialize has been called
 
+      IF ( .NOT. TRIM( mode ) == 'final' ) THEN
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
 
@@ -280,7 +279,7 @@
             i = mexPrintf( TRIM( str ) // ACHAR( 10 ) )
           END DO
         END IF
-   500 CONTINUE
+   500  CONTINUE
 
 !  Output solution
 
@@ -302,9 +301,11 @@
 !  all components now set
 
       IF ( TRIM( mode ) == 'final' .OR. TRIM( mode ) == 'all' ) THEN
+        IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type, STAT = info )
         IF ( ALLOCATED( H%row ) ) DEALLOCATE( H%row, STAT = info )
         IF ( ALLOCATED( H%col ) ) DEALLOCATE( H%col, STAT = info )
         IF ( ALLOCATED( H%val ) ) DEALLOCATE( H%val, STAT = info )
+        IF ( ALLOCATED( S%type ) ) DEALLOCATE( S%type, STAT = info )
         IF ( ALLOCATED( S%row ) ) DEALLOCATE( S%row, STAT = info )
         IF ( ALLOCATED( S%col ) ) DEALLOCATE( S%col, STAT = info )
         IF ( ALLOCATED( S%val ) ) DEALLOCATE( S%val, STAT = info )

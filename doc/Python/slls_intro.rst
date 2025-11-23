@@ -70,6 +70,6 @@ reference
 Full details are provided in
 
   N. I. M. Gould (2023).
-  ``Linear least-squares over the unit simplex''.
+  ''Linear least-squares over the unit simplex''.
   STFC-Rutherford Appleton Laboratory Computational Mathematics Group
   Internal Report 2023-2.

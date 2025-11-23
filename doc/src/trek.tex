@@ -249,7 +249,7 @@ computed minimizer $\bmx$. The default is {\tt f = 0.0}.
 of the reduction factor for a suggested subsequent trust-region radius
 (see {\tt control\%next\_radius}).
 The suggested radius will be {\tt reduction} times the smaller of
-the current radius and $\|\bmx\|$ at the output $\bmx$.
+the current radius and $\|\bmx\|_{\bmS}$ at the output $\bmx$.
 The default is {\tt reduction = 0.5}.
 
 \itt{stop\_residual} is a scalar variable of type \realdp, that holds
@@ -268,14 +268,14 @@ The default is {\tt reorthogonalize = \false} which is our recommendation.
 
 \itt{s\_version\_52} is a scalar variable of type default \logical, that
 may be set \true\ if the user wishes to use Algorithm 5.2 in the
-paper to generate the extended Krylov space recurrences when a non-unit S 
-is give, and \false\ if those from Algorithm B.3 should be used instead.
+paper to generate the extended Krylov space recurrences when a non-unit $S$
+is given, and \false\ if those from Algorithm B.3 should be used instead.
 In practice, there is very little difference in performance and accuracy.
 The default is {\tt s\_version\_52 = \true}.
 
 \itt{perturb\_c} is a scalar variable of type default \logical, that
 may be set \true\ if the user wishes the package make a tiny 
-pseudo random perturbations to the components of the term $\bmc$ 
+pseudo-random perturbations to the components of the term $\bmc$ 
 to try to protect from the so-called (probability zero) ``hard case''.
 Perturbations are generally not needed, and should only be used in
 very exceptional cases.
@@ -283,9 +283,9 @@ The default is {\tt perturb\_c = \false}.
 
 \itt{stop\_check\_all\_orders} is a scalar variable of type default \logical, 
 that may be set \true\ if the user wishes the package to check for termination
-for each new member of the extended Krylov space. Such checks incur some
+for each new member of the extended Krylov space. Such checks incur some extra
 cost, and experience shows that testing every second member is sufficient, 
-using {\tt stop\_check\_all\_orders = \true}.
+using {\tt stop\_check\_all\_orders = \false}.
 The default is {\tt stop\_check\_all\_orders = \false}.
 
 \itt{new\_radius} is a scalar variable of type 
@@ -431,7 +431,7 @@ current status of the algorithm. See Section~\ref{galerrors} for details.
 
 \itt{alloc\_status} is a scalar variable of type \integer,
 that gives the status of the last internal array allocation
-or deallocation. This will be 0 if {\tt status = 0}.
+or deallocation. This will be {\tt 0} if {\tt status = 0}.
 
 \itt{bad\_alloc} is a scalar variable of type default \character\
 and length 80, that  gives the name of the last internal array
@@ -871,7 +871,7 @@ but may also be symptomatic of a badly scaled problem.
 
 \itt{\galerrcallorder.} ({\tt \packagename\_solve} only)
 A resolve call has been made before an initial call (see 
-the argument {\tt resolve}).
+{\tt control\%new\_radius} and {\tt control\%new\_values}).
 
 \itt{\galerrlapack.} ({\tt \packagename\_solve} only)
 An error occurred in a call to an LAPACK subroutine.
@@ -1006,12 +1006,13 @@ that each affects are given in Table~\ref{specfile}.
   {\tt print-level} & {\tt \%print\_level} & integer \\
   {\tt maximum-subspace-dimension} & {\tt \%eks\_max} & integer \\
   {\tt maximum-number-of-iterations} & {\tt \%it\_max} & integer \\
+  {\tt constant-term-in-objective} & {\tt \%f} & real \\
   {\tt radius-reduction-factor} & {\tt \%reduction} & real \\
   {\tt residual-accuracy} & {\tt \%stop\_residual} & real \\
   {\tt reorthogonalize-vectors} & {\tt \%reorthogonalize} & logical \\
   {\tt s-version-52} & {\tt \%s\_version\_52} & logical \\
-  {\tt stop-check-all-orders} & {\tt \%stop-check-all-orders} & logical \\
   {\tt perturb-c} & {\tt \%perturb-c} & logical \\
+  {\tt stop-check-all-orders} & {\tt \%stop-check-all-orders} & logical \\
   {\tt space-critical} & {\tt \%space\_critical} & logical \\
   {\tt deallocate-error-fatal} & {\tt \%deallocate\_error\_fatal} & logical \\
   {\tt linear-equation-solver} & {\tt \%linear\_solver} & character \\
@@ -1118,7 +1119,7 @@ Suppose we wish to solve a problem in 10,000 unknowns, whose data is
                            \\ & & & 1 & -2 }, \;\;
 \bmS  = \mat{ccccc}{ 2 &   \\   & 2  &   \\ & & . \\ & & & 2 & \\ & & & & 2 },
 \;\; \bmc  =  \vect{ 1 \\ 1 \\ . \\ 1 \\ 1 } \tim{and} f = 0,}
-starting with a radius $\Delta = 10$ but then gradually halving the radius
+starting with a radius $\Delta = 10$, but then gradually halving the radius
 at every subsequent stage. Then we may use the following code:
 
 %\renewcommand{\packagedir}{\galahaddir/src/forthcoming/\package}

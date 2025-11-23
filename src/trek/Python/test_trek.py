@@ -12,7 +12,7 @@ infinity = float("inf")
 #  describe objective function
 
 f = 0.96
-g = np.array([0.0,2.0,0.0])
+c = np.array([0.0,2.0,0.0])
 H_type = 'coordinate'
 H_ne = 4
 H_row = np.array([0,1,2,2])
@@ -45,7 +45,7 @@ radius = 1.0
 
 # find minimum of quadratic within the trust region
 print("\n solve problem 1")
-x = trek.solve_problem(n, H_ne, H_val, g, radius)
+x = trek.solve_problem(n, H_ne, H_val, c, radius)
 print(" x:",x)
 
 # get information
@@ -60,7 +60,7 @@ trek.reset_options(options)
 
 # find minimum of quadratic within the trust region
 print("\n solve problem 2 with smaller radius")
-x = trek.solve_problem(n, H_ne, H_val, g, radius)
+x = trek.solve_problem(n, H_ne, H_val, c, radius)
 print(" x:",x)
 
 # get information
@@ -78,7 +78,7 @@ trek.load_s(n, S_type, S_ne, S_row, S_col, S_ptr)
 
 # find minimum of quadratic within the trust region
 print("\n solve problem 3 with additional non-unit norm")
-x = trek.solve_problem(n, H_ne, H_val, g, radius, S_ne, S_val)
+x = trek.solve_problem(n, H_ne, H_val, c, radius, S_ne, S_val)
 print(" x:",x)
 
 # get information

@@ -127,14 +127,14 @@ references
 The generic adaptive cubic regularization method is described in detail in
 
   C. Cartis,  N. I. M. Gould and Ph. L. Toint,
-  ``Adaptive cubic regularisation methods for unconstrained optimization.
+  ''Adaptive cubic regularisation methods for unconstrained optimization.
   Part I: motivation, convergence and numerical results''
   *Mathematical Programming* **127(2)** (2011) 245--295,
 
-and uses ``tricks'' as suggested in
+and uses ''tricks'' as suggested in
 
   N. I. M. Gould, M. Porcelli and Ph. L. Toint,
-  ``Updating the regularization parameter in the adaptive cubic regularization
+  ''Updating the regularization parameter in the adaptive cubic regularization
   algorithm''.
   *Computational Optimization and Applications*
   **53(1)** (2012) 1--22.
@@ -142,7 +142,7 @@ and uses ``tricks'' as suggested in
 The specific methods employed here are discussed in
 
   N. I. M. Gould, J. A. Scott and T. Rees,
-  ``Convergence and evaluation-complexity analysis of a regularized
+  ''Convergence and evaluation-complexity analysis of a regularized
   tensor-Newton method for solving nonlinear least-squares problems''.
   *Computational Optimization and Applications*
   **73(1)** (2019) 1--35.

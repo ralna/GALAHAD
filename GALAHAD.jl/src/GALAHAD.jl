@@ -103,6 +103,9 @@ include("wrappers/arc.jl")
 # trek requires sls, trs, nodend.
 include("wrappers/trek.jl")
 
+# nrek requires sls, rqs, nodend.
+include("wrappers/nrek.jl")
+
 # trs requires sls, sils, ir, nodend.
 include("wrappers/trs.jl")
 

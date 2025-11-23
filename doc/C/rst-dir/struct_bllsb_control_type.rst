@@ -609,7 +609,7 @@ if .balance_initial_complentarity is true, the initial complemetarity is require
 if .crossover is true, cross over the solution to one defined by linearly-independent constraints if possible
 
 .. index:: pair: variable; reduced_pounce_system
-.. _doxid-structbllsb__control__type_crossover:
+.. _doxid-structbllsb__control__type_pounce_system:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -709,7 +709,7 @@ control parameters for FDC
 control parameters for SLS
 
 .. index:: pair: variable; sbls_pounce_control
-.. _doxid-structbllsb__control__type_sbls_control:
+.. _doxid-structbllsb__control__type_sbls_pounce_control:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block

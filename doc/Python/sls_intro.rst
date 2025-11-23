@@ -44,6 +44,8 @@ perturbation introduced.
 supported solvers
 -----------------
 
+.. _details-sls_supported__sym:
+
 The key features of the external solvers supported by ``sls`` are
 given in the following table:
 

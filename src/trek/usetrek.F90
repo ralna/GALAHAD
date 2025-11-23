@@ -319,12 +319,10 @@
 
        CALL CLOCK_time( clock_start )
        inform%time%clock_total = 0.0_rp_
-       CALL TREK_solve( n, H, G, RADIUS( k ), X, data, control, inform,        &
-!                       new_values = .TRUE. )
-                        resolve = k > 1 )
-!                       resolve = k > 1, S = S )
+       control%new_radius = k > 1
+       CALL TREK_solve( n, H, G, RADIUS( k ), X, data, control, inform )
+!                       S = S )
        IF ( k < m ) RADIUS( k + 1 ) = inform%next_radius
-
        IF ( control%print_level > 0 .AND. control%out > 0 )                    &
          WRITE( control%out, "( /, ' TREK used ' )" )
        IF ( control%print_level > 0 .AND. control%out > 0 )                    &

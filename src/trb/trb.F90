@@ -3782,9 +3782,14 @@
 !  record the gradient of the model at the Cauchy point in Hp
 
            data%HP( : nlp%n ) = data%G_current( : nlp%n )
-           CALL mop_Ax( one, nlp%H,  data%P( : nlp%n ), one,                   &
-                        data%HP( : nlp%n ), data%out, data%control%error,      &
-                        0_ip_, symmetric = .TRUE. )
+           IF ( data%control%model == identity_hessian_model ) THEN
+             data%HP( : nlp%n ) = data%HP( : nlp%n ) + data%P( : nlp%n )
+           ELSE IF ( .NOT. data%control%model == first_order_model ) THEN
+             CALL mop_Ax( one, nlp%H, data%P( : nlp%n ), one,                  &
+                          data%HP( : nlp%n ), data%out, data%control%error,    &
+                          0_ip_, symmetric = .TRUE. )
+           END IF 
+
 
 !  build the reduced model, that is the model that only involves the n_sub
 !  variables that are free at the Cauchy point. Start by computing the
@@ -3836,7 +3841,8 @@
                DO i = 1, nlp%n
                  ii = data%INDEX_nz_hp( i )
                  IF ( ii == 0 ) CYCLE
-                 DO l = nlp%H%ptr( i ), nlp%H%ptr( i + 1 ) - 1
+!                DO l = nlp%H%ptr( i ), nlp%H%ptr( i + 1 ) - 1
+                 DO l = nlp%H%ptr( ii ), nlp%H%ptr( ii + 1 ) - 1
                    j = nlp%H%col( l ) ; jj = data%INDEX_nz_hp( j )
                    IF ( jj == 0 ) CYCLE
                    data%h_ne_sub = data%h_ne_sub + 1
@@ -3858,7 +3864,9 @@
                    l = l + i
                    CYCLE
                  END IF
-                 DO j = 1, i
+                 l = ( ii * ( ii + 1 ) ) / 2
+!                DO j = 1, i
+                 DO j = 1, ii
                    l = l + 1
                    jj = data%INDEX_nz_hp( j )
                    IF ( jj == 0 ) CYCLE
@@ -4264,7 +4272,7 @@
 
 !  compare the recurred and compted reduction, if required
 
-         IF ( data%printd ) THEN
+         IF ( data%printd .AND. .NOT. data%reverse_hprod ) THEN
            WRITE( data%out, "( ' gltr model value =', ES12.4 )" )              &
              data%gltr_model
            data%P = data%X_trial - data%X_current

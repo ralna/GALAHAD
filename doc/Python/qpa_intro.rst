@@ -179,6 +179,6 @@ reference
 The method is described in detail in
 
   N. I. M. Gould and Ph. L. Toint
-  ``An iterative working-set method for large-scale 
+  ''An iterative working-set method for large-scale 
   non-convex quadratic programming''.
   *Applied Numerical Mathematics* **43(1--2)** (2002) 109--128.

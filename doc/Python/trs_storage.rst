@@ -1,3 +1,5 @@
+.. _details-trs_storage__unsym:
+
 matrix storage
 --------------
 
@@ -57,7 +59,9 @@ As before, for sparse matrices, this scheme almost always requires less
 storage than the co-ordinate format.
 The string A_type = 'sparse_by_columns' should be specified.
 
-The **symmetric** $n$ by $n$ matrices $H$ and, optionally. $M$ may also
+.. _details-trs_storage__sym:
+
+The **symmetric** $n$ by $n$ matrices $H$ and, optionally, $M$ may also
 be presented and stored in a variety of formats. But crucially symmetry
 is exploited by only storing values from the *lower triangular* part
 (i.e, those entries that lie on or below the leading diagonal).

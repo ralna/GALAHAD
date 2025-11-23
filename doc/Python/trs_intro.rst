@@ -42,7 +42,7 @@ if any; for the equality-constrained problem $\|x\|_M = \Delta$,
 the multiplier is unconstrained.
 In addition in all cases, the matrix $H + \lambda_* M$ will be positive
 semi-definite on the null-space of $A$; in most instances it will actually
-be positive definite, but in special ``hard'' cases singularity is a 
+be positive definite, but in special ''hard'' cases singularity is a 
 possibility.
 
 The method is iterative, and proceeds in two phases.
@@ -84,5 +84,5 @@ reference
 The method is described in detail in
 
   H. S. Dollar, N. I. M. Gould and D. P. Robinson.
-  "On solving trust-region and other regularised subproblems in optimization".
+  ''On solving trust-region and other regularised subproblems in optimization''.
   *Mathematical Programming Computation* **2(1)** (2010) 21--57.

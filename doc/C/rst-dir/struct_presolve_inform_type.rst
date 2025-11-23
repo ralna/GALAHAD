@@ -16,8 +16,6 @@ presolve_inform_type structure
 		// fields
 	
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structpresolve__inform__type_status>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status_continue<doxid-structpresolve__inform__type_1ab9d0ea9275be048bd854d13bd68b06d1>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status_continued<doxid-structpresolve__inform__type_1ae9021be7a578e777cc20e3cd5f0ab51d>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nbr_transforms<doxid-structpresolve__inform__type_nbr_transforms>`;
 		char :ref:`message<doxid-structpresolve__inform__type_message>`[3][81];
 	};

@@ -34,7 +34,8 @@ The supported solvers are: `:arc`, `:bgo`, `:blls`, `:bllsb`, `:bnls`,
 `:bqp`, `:bqpb`, `:ccqp`, `:cdqp`, `:clls`, `:cqp`, `:demo`, `:dgo`, `:dlp`,
 `:dps`, `:dqp`, `:eqp`, `:expo`, `:fdh`, `:filtrane`, `:glrt`, `:gltr`, `:l1qp`,
 `:l2rt`, `:lancelot`, `:lls`, `:lpa`, `:lpb`, `:lpqp`, `:lqr`, `:lqt`, `:lsrt`,
-`:lstr`, `:miqr`, `:nls`, `:nodend`, `:presolve`, `:qp`, `:qpa`, `:qpb`, `:qpc`,
+`:lstr`, `:miqr`, `:nls`, `:nodend`, `:nrek`, `:presolve`, 
+`:qp`, `:qpa`, `:qpb`, `:qpc`,
 `:rqs`, `:sbls`, `:sha`, `:sils`, `:slls`, `:sls`, `:ssls`, `:trb`, `:trek`,
 `:trs`, `:tru`, `:ugo`, `:warm`, and `:wcp`.
 

@@ -1,3 +1,5 @@
+.. _details-tru_storage__sym:
+
 matrix storage
 --------------
 

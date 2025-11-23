@@ -60,23 +60,23 @@ overall violation of (1a), (2a) and (3),
 rather than reducing each of the terms individually. Given an estimate
 $v = (x, \; c, \; y, \; y^{l}, \; y^{u}, \; z, \; z^{l}, \; z^{u})$
 of the primal-dual variables, a correction
-$\Delta v = \Delta (x, \; c, \; y, \; y^{l}, \; 
-y^{u} ,\;z,\;z^{l} ,\;z^{u} )$
+$\Delta v = \Delta (x, \; c, \; y, \; y^{l}, \;$
+$y^{u} ,\;z,\;z^{l} ,\;z^{u} )$
 is obtained by solving a suitable linear system of Newton equations for the
-nonlinear systems (1a), (2a) and a parameterized ``residual
+nonlinear systems (1a), (2a) and a parameterized ''residual
 trajectory'' perturbation of (3); residual trajectories
 proposed by Zhang (1994) and Zhao and Sun (1999) are possibilities.
 An improved estimate $v + \alpha \Delta v$
 is then used, where the step-size $\alpha$
 is chosen as close to 1.0 as possible while ensuring both that
 (1b) and (2b) continue to hold and that the individual components
-which make up the complementary slackness
-(3) do not deviate too significantly
+which make up the complementary slackness (3)
+do not deviate too significantly
 from their average value. The parameter that controls the perturbation
 of (3) is ultimately driven to zero.
 
 If the algorithm believes that it is close to the solution, it may take a
-speculative ``pounce'', based on an estimate of the ultimate active set, 
+speculative ''pounce'', based on an estimate of the ultimate active set, 
 to avoid further costly iterations. If the pounce is unsuccessful, the 
 iteration continues, and further pounces may be attempted later.
 
@@ -92,21 +92,21 @@ references
 The basic algorithm is a generalisation of those of
 
   Y. Zhang,
-  ``On the convergence of a class of infeasible interior-point methods 
+  ''On the convergence of a class of infeasible interior-point methods 
   for the horizontal linear complementarity problem''.
   *SIAM J. Optimization* **4(1)** (1994) 208-227,
 
 and 
 
   G. Zhao and J. Sun,
-  ``On the rate of local convergence of high-order infeasible 
+  ''On the rate of local convergence of high-order infeasible 
   path-following algorithms for $P_*$ linear complementarity problems''.
-  *Computational Optimization and Applications* **14(1)* (1999) 293-307,
+  *Computational Optimization and Applications* **14(1)** (1999) 293-307,
 
 with many enhancements described by
 
   N. I. M. Gould, D. Orban and D. P. Robinson,
-  ``Trajectory-following methods for large-scale degenerate 
+  ''Trajectory-following methods for large-scale degenerate 
   convex quadratic programming'',
   *Mathematical Programming Computation* **5(2)** (2013) 113-142
 

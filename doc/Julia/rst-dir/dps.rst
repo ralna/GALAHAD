@@ -7,7 +7,7 @@ GALAHAD DPS package
 
 .. include:: ../../Python/dps_intro.rst
 
-.. include:: dps_storage.rst
+.. include:: ../../Python/dps_storage.rst
 
 .. toctree::
 	:hidden:

@@ -1,3 +1,5 @@
+.. _details-sls_storage__sym:
+
 matrix storage
 --------------
 

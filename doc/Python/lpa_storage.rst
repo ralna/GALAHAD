@@ -1,3 +1,5 @@
+.. _details-lpa_storage__unsym:
+
 matrix storage
 --------------
 

@@ -175,7 +175,7 @@ Select solver, set default control values and initialize private data
 	*
 		- solver
 
-		- is a one-dimensional array of type char that specifies the :ref:`solver package <doxid->` that should be used to factorize the matrix $A$. It should be one of 'gls', 'ma28', 'ma48 or 'getr'; lower or upper case variants are allowed. Only 'getr' is available by default, but others are easily installed (see README.external).
+		- is a one-dimensional array of type char that specifies the :ref:`solver package<details-uls_supported__unsym>` that should be used to factorize the matrix $A$. It should be one of 'gls', 'ma28', 'ma48 or 'getr'; lower or upper case variants are allowed. Only 'getr' is available by default, but others are easily installed (see README.external).
 
 	*
 		- data
@@ -334,7 +334,7 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 	*
 		- type
 
-		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the matrix $A$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme<details-uls_storage__unsym>` used for the matrix $A$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
 	*
 		- ne

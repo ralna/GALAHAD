@@ -1,3 +1,5 @@
+.. _details-nodend_storage__sym:
+
 matrix storage
 --------------
 

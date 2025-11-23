@@ -1,7 +1,7 @@
 % test galahad_trek
-% Nick Gould for GALAHAD productions 15/February/2009
+% Nick Gould for GALAHAD productions 18/November/2025
 
-clear H S SA SH SS control inform
+clear H S SA SH SS c radius control inform
 
 n = 10 ;
 control.out = 0 ;
@@ -22,13 +22,24 @@ fprintf('solve dense examples \n')
 [ x, inform ] = galahad_trek( H, c, radius, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - trek: optimal f =', inform.obj, '- status =', inform.status ) )
-[ x, inform ] = galahad_trek( H, c, radius, control, S ) ;
+
+[ control ] = galahad_trek( 'initial' ) ;
+[ x, inform ] = galahad_trek( 'existing', H, c, radius, control, S ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - trek: optimal f =', inform.obj, '- status =', inform.status ) )
+radius = inform.next_radius ;
+control.new_radius = true ;
+%control.print_level = 1;
+[ x, inform ] = galahad_trek( 'existing', H, c, radius, control, S ) ;
+disp( sprintf( '%s %13.6e %s %2.0f', ...
+  ' - trek: optimal f =', inform.obj, '- status =', inform.status ) )
+galahad_trek( 'final' ) ;
 
 fprintf('solve sparse examples \n')
 SH = sparse(H) ;
 SS = sparse(S) ;
+radius = 10.0 ;
+control.new_radius = false ;
 [ x, inform ] = galahad_trek( SH, c, radius, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - trek: optimal f =', inform.obj, '- status =', inform.status ) )

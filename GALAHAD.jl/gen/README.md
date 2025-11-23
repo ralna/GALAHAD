@@ -84,6 +84,7 @@ The possible values for `library` are:
 - `"lstr"`;
 - `"nls"`;
 - `"nodend"`;
+- `"nrek"`;
 - `"presolve"`;
 - `"psls"`;
 - `"qp"`;

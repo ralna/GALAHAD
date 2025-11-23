@@ -58,7 +58,7 @@ struct trek_inform_type{T,INT}
   time::trek_time_type{T}
   sls_inform::sls_inform_type{T,INT}
   sls_s_inform::sls_inform_type{T,INT}
-  ir_inform::ir_inform_type{T,INT}
+  trs_inform::trs_inform_type{T,INT}
 end
 
 export trek_initialize
@@ -305,77 +305,88 @@ end
 
 export trek_solve_problem
 
-function trek_solve_problem(::Type{Float32}, ::Type{Int32}, data, status, n, radius, f, c,
-                           H_ne, H_val, x, S_ne, S_val, m, A_ne, A_val, y)
-  @ccall libgalahad_single.trek_solve_problem_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                               n::Int32, radius::Float32, f::Float32,
-                                               c::Ptr{Float32}, H_ne::Int32,
-                                               H_val::Ptr{Float32}, x::Ptr{Float32},
-                                               S_ne::Int32, S_val::Ptr{Float32}, m::Int32,
-                                               A_ne::Int32, A_val::Ptr{Float32},
-                                               y::Ptr{Float32})::Cvoid
+function trek_solve_problem(::Type{Float32}, ::Type{Int32}, data, status,
+                            n, H_ne, H_val, c, radius, x, S_ne, S_val)
+  @ccall libgalahad_single.trek_solve_problem_s(data::Ptr{Ptr{Cvoid}}, 
+                                                status::Ptr{Int32},
+                                                n::Int32, 
+                                                H_ne::Int32,
+                                                H_val::Ptr{Float32}, 
+                                                c::Ptr{Float32}, 
+                                                radius::Float32,
+                                                x::Ptr{Float32},
+                                                S_ne::Int32, 
+                                                S_val::Ptr{Float32})::Cvoid
 end
 
-function trek_solve_problem(::Type{Float32}, ::Type{Int64}, data, status, n, radius, f, c,
-                           H_ne, H_val, x, S_ne, M_val, m, A_ne, A_val, y)
+function trek_solve_problem(::Type{Float32}, ::Type{Int64}, data, status,
+                            n, H_ne, H_val, c, radius, x, S_ne, S_val)
   @ccall libgalahad_single_64.trek_solve_problem_s_64(data::Ptr{Ptr{Cvoid}},
-                                                     status::Ptr{Int64}, n::Int64,
-                                                     radius::Float32, f::Float32,
-                                                     c::Ptr{Float32}, H_ne::Int64,
-                                                     H_val::Ptr{Float32}, x::Ptr{Float32},
-                                                     S_ne::Int64, S_val::Ptr{Float32},
-                                                     m::Int64, A_ne::Int64,
-                                                     A_val::Ptr{Float32},
-                                                     y::Ptr{Float32})::Cvoid
+                                                status::Ptr{Int64},
+                                                n::Int64, 
+                                                H_ne::Int64,
+                                                H_val::Ptr{Float32}, 
+                                                c::Ptr{Float32}, 
+                                                radius::Float32,
+                                                x::Ptr{Float32},
+                                                S_ne::Int64, 
+                                                S_val::Ptr{Float32})::Cvoid
 end
 
-function trek_solve_problem(::Type{Float64}, ::Type{Int32}, data, status, n, radius, f, c,
-                           H_ne, H_val, x, S_ne, S_val, m, A_ne, A_val, y)
-  @ccall libgalahad_double.trek_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                             n::Int32, radius::Float64, f::Float64,
-                                             c::Ptr{Float64}, H_ne::Int32,
-                                             H_val::Ptr{Float64}, x::Ptr{Float64},
-                                             S_ne::Int32, S_val::Ptr{Float64}, m::Int32,
-                                             A_ne::Int32, A_val::Ptr{Float64},
-                                             y::Ptr{Float64})::Cvoid
+function trek_solve_problem(::Type{Float64}, ::Type{Int32}, data, status,
+                            n, H_ne, H_val, c, radius, x, S_ne, S_val)
+  @ccall libgalahad_double.trek_solve_problem(data::Ptr{Ptr{Cvoid}}, 
+                                                status::Ptr{Int32},
+                                                n::Int32, 
+                                                H_ne::Int32,
+                                                H_val::Ptr{Float64}, 
+                                                c::Ptr{Float64}, 
+                                                radius::Float64,
+                                                x::Ptr{Float64},
+                                                S_ne::Int32, 
+                                                S_val::Ptr{Float64})::Cvoid
 end
 
-function trek_solve_problem(::Type{Float64}, ::Type{Int64}, data, status, n, radius, f, c,
-                           H_ne, H_val, x, S_ne, S_val, m, A_ne, A_val, y)
+function trek_solve_problem(::Type{Float64}, ::Type{Int64}, data, status,
+                            n, H_ne, H_val, c, radius, x, S_ne, S_val)
   @ccall libgalahad_double_64.trek_solve_problem_64(data::Ptr{Ptr{Cvoid}},
-                                                   status::Ptr{Int64}, n::Int64,
-                                                   radius::Float64, f::Float64,
-                                                   c::Ptr{Float64}, H_ne::Int64,
-                                                   H_val::Ptr{Float64}, x::Ptr{Float64},
-                                                   S_ne::Int64, S_val::Ptr{Float64},
-                                                   m::Int64, A_ne::Int64,
-                                                   A_val::Ptr{Float64},
-                                                   y::Ptr{Float64})::Cvoid
+                                                status::Ptr{Int64},
+                                                n::Int64, 
+                                                H_ne::Int64,
+                                                H_val::Ptr{Float64}, 
+                                                c::Ptr{Float64}, 
+                                                radius::Float64,
+                                                x::Ptr{Float64},
+                                                S_ne::Int64, 
+                                                S_val::Ptr{Float64})::Cvoid
 end
 
-function trek_solve_problem(::Type{Float128}, ::Type{Int32}, data, status, n, radius, f, c,
-                           H_ne, H_val, x, S_ne, S_val, m, A_ne, A_val, y)
-  @ccall libgalahad_quadruple.trek_solve_problem_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                                  n::Int32, radius::Cfloat128, f::Cfloat128,
-                                                  c::Ptr{Float128}, H_ne::Int32,
-                                                  H_val::Ptr{Float128}, x::Ptr{Float128},
-                                                  S_ne::Int32, S_val::Ptr{Float128},
-                                                  m::Int32, A_ne::Int32,
-                                                  A_val::Ptr{Float128},
-                                                  y::Ptr{Float128})::Cvoid
+function trek_solve_problem(::Type{Float128}, ::Type{Int32}, data, status,
+                            n, H_ne, H_val, c, radius, x, S_ne, S_val)
+  @ccall libgalahad_quadruple.trek_solve_problem_q(data::Ptr{Ptr{Cvoid}}, 
+                                                 status::Ptr{Int32},
+                                                 n::Int32, 
+                                                 H_ne::Int32,
+                                                 H_val::Ptr{Float128}, 
+                                                 c::Ptr{Float128}, 
+                                                 radius::Cfloat128,
+                                                 x::Ptr{Float128},
+                                                 S_ne::Int32, 
+                                                 S_val::Ptr{Float128})::Cvoid
 end
 
-function trek_solve_problem(::Type{Float128}, ::Type{Int64}, data, status, n, radius, f, c,
-                           H_ne, H_val, x, S_ne, S_val, m, A_ne, A_val, y)
+function trek_solve_problem(::Type{Float128}, ::Type{Int64}, data, status,
+                            n, H_ne, H_val, c, radius, x, S_ne, S_val)
   @ccall libgalahad_quadruple_64.trek_solve_problem_q_64(data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Int64}, n::Int64,
-                                                        radius::Cfloat128, f::Cfloat128,
-                                                        c::Ptr{Float128}, H_ne::Int64,
-                                                        H_val::Ptr{Float128},
-                                                        x::Ptr{Float128}, S_ne::Int64,
-                                                        S_val::Ptr{Float128}, m::Int64,
-                                                        A_ne::Int64, A_val::Ptr{Float128},
-                                                        y::Ptr{Float128})::Cvoid
+                                                 status::Ptr{Int64},
+                                                 n::Int64, 
+                                                 H_ne::Int64,
+                                                 H_val::Ptr{Float128}, 
+                                                 c::Ptr{Float128}, 
+                                                 radius::Cfloat128,
+                                                 x::Ptr{Float128},
+                                                 S_ne::Int64, 
+                                                 S_val::Ptr{Float128})::Cvoid
 end
 
 export trek_information

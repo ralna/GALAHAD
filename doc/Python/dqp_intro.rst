@@ -85,7 +85,7 @@ reference
 The basic algorithm is described in
 
   N. I. M. Gould and D. P. Robinson,
-  ``A dual gradient-projection method
+  ''A dual gradient-projection method
   for large-scale strictly-convex quadratic problems'',
   *Computational Optimization and Applications*
   **67(1)** (2017) 1-38.

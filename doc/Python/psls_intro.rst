@@ -22,13 +22,13 @@ The basic preconditioners are described in detail in
 along with the more modern versions implements in ``ICFS`` due to
 
   C.-J. Lin and J. J. More',
-  ``Incomplete Cholesky factorizations with limited memory''.
+  ''Incomplete Cholesky factorizations with limited memory''.
   *SIAM Journal on Scientific Computing* **21** (1999) 21-45,
 
 and in ``HSL_MI28`` described by
 
   J. A. Scott and M. Tuma, 
-  ``HSL_MI28: an efficient and robust
+  ''HSL_MI28: an efficient and robust
   limited-memory incomplete Cholesky factorization code''.
   *ACM Transactions on Mathematical Software* **40(4)** (2014), Article 24.
 
@@ -134,7 +134,7 @@ solvers directly rather that via this package.
 Orderings to reduce the bandwidth, as implemented in HSL's ``MC61``, are due to
 
   J. K. Reid and J. A. Scott,
-  ``Ordering symmetric sparse matrices for small profile and wavefront''.
+  ''Ordering symmetric sparse matrices for small profile and wavefront''.
   *International Journal for Numerical Methods in Engineering*
   **45**  (1999) 1737-1755.
 

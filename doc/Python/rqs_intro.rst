@@ -72,5 +72,5 @@ reference
 The method is described in detail in
 
   H. S. Dollar, N. I. M. Gould and D. P. Robinson.
-  ``On solving trust-region and other regularised subproblems in optimization''.
+  ''On solving trust-region and other regularised subproblems in optimization''.
   *Mathematical Programming Computation* **2(1)** (2010) 21--57.

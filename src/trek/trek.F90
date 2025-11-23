@@ -115,7 +115,7 @@
 
         REAL ( KIND = rp_ ) :: f = zero
 
-!  reduction factor for subsequent trust-region radii, i = 2,...,m
+!  reduction factor for subsequent trust-region radii
 
        REAL ( KIND = rp_ ) :: reduction = 0.5_rp_
 
@@ -201,19 +201,19 @@
 
         REAL ( KIND = rp_ ) :: total = 0.0_rp_
 
-!  CPU time spent building H + lambda * S
+!  CPU time spent building H and S
 
         REAL ( KIND = rp_ ) :: assemble = 0.0_rp_
 
-!  CPU time spent reordering H + lambda * S prior to factorization
+!  CPU time spent reordering H and S prior to factorization
 
         REAL ( KIND = rp_ ) :: analyse = 0.0_rp_
 
-!  CPU time spent factorizing H + lambda * S
+!  CPU time spent factorizing H and S
 
         REAL ( KIND = rp_ ) :: factorize = 0.0_rp_
 
-!  CPU time spent solving linear systems inolving H + lambda * S
+!  CPU time spent solving linear systems inolving H and S
 
         REAL ( KIND = rp_ ) :: solve = 0.0_rp_
 
@@ -221,19 +221,19 @@
 
         REAL ( KIND = rp_ ) :: clock_total = 0.0_rp_
 
-!  clock time spent building H + lambda * S
+!  clock time spent building H and S
 
         REAL ( KIND = rp_ ) :: clock_assemble = 0.0_rp_
 
-!  clock time spent reordering H + lambda * S prior to factorization
+!  clock time spent reordering H and S prior to factorization
 
         REAL ( KIND = rp_ ) :: clock_analyse = 0.0_rp_
 
-!  clock time spent factorizing H + lambda * S
+!  clock time spent factorizing H and S
 
         REAL ( KIND = rp_ ) :: clock_factorize = 0.0_rp_
 
-!  clock time spent solving linear systems inolving H + lambda * S
+!  clock time spent solving linear systems inolving H and S
 
         REAL ( KIND = rp_ ) :: clock_solve = 0.0_rp_
       END TYPE TREK_time_type
@@ -844,7 +844,7 @@
          inform%status = GALAHAD_error_restrictions ; GO TO 920
        END IF
 
-!  record the radiius, and set the potential next one
+!  record the radius, and set the potential next one
 
        inform%next_radius = radius * data%control%reduction
      END IF

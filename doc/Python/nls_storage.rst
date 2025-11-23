@@ -1,3 +1,5 @@
+.. _details-nls_storage__unsym:
+
 matrix storage
 --------------
 
@@ -54,6 +56,8 @@ l = A_ptr(j), $\ldots$, A_ptr(j+1)-1, $0 \leq j \leq n-1$,
 of the integer array A_row, and real array A_val, respectively.
 As before, for sparse matrices, this scheme almost always requires less
 storage than the co-ordinate format.
+
+.. _details-nls_storage__sym:
 
 The **symmetric** $n$ by $n$ matrix $H = H(x,y)$ may
 be presented and stored in a variety of formats. But crucially symmetry

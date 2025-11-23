@@ -1,3 +1,5 @@
+.. _details-bqp_storage__sym:
+
 matrix storage
 --------------
 

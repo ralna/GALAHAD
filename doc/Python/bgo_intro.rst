@@ -82,13 +82,13 @@ the univariate global minimization method employed is an extension of that
 due to
 
   D. Lera and Ya. D. Sergeyev,
-  ``Acceleration of univariate global optimization algorithms working with
+  ''Acceleration of univariate global optimization algorithms working with
   Lipschitz functions and Lipschitz first derivatives''
   *SIAM J. Optimization* **23(1)** (2013) 508–529,
 
 while the Latin-hypercube sampling method employed is that of
 
   B. Beachkofski and R. Grandhi,
-  ``Improved Distributed Hypercube Sampling'',
+  ''Improved Distributed Hypercube Sampling'',
   43rd AIAA structures, structural dynamics, and materials conference,
   (2002) 2002-1274.

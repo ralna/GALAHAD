@@ -3,7 +3,7 @@
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
 
-!-*-*-*-*-*-*-*-  G A L A H A D _  T R S    C   I N T E R F A C E  -*-*-*-*-*-
+!-*-*-*-*-*-*-*-  G A L A H A D _  T R E K    C   I N T E R F A C E  -*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal authors: Hussam Al Daas, Jaroslav Fowkes & Nick Gould

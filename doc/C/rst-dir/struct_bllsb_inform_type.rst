@@ -30,10 +30,6 @@ bllsb_inform_type structure
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`primal_infeasibility<doxid-structbllsb__inform__type_primal_infeasibility>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`dual_infeasibility<doxid-structbllsb__inform__type_dual_infeasibility>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`complementary_slackness<doxid-structbllsb__inform__type_complementary_slackness>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`init_primal_infeasibility<doxid-structbllsb__inform__type_init_primal_infeasibility>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`init_dual_infeasibility<doxid-structbllsb__inform__type_init_dual_infeasibility>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`init_complementary_slackness<doxid-structbllsb__inform__type_init_complementary_slackness>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`potential<doxid-structbllsb__inform__type_potential>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`non_negligible_pivot<doxid-structbllsb__inform__type_non_negligible_pivot>`;
 		bool :ref:`feasible<doxid-structbllsb__inform__type_feasible>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`checkpointsIter<doxid-structbllsb__inform__type_checkpointsIter>`[16];
@@ -267,7 +263,7 @@ inform parameters for FDC
 inform parameters for SLS
 
 .. index:: pair: variable; sls_pounce_inform
-.. _doxid-structbllsb__inform__type_sbls_inform:
+.. _doxid-structbllsb__inform__type_sbls_pounce_inform:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
