@@ -360,6 +360,8 @@ int main(void) {
                 }
                 break;
             case 5: // access by products
+                // control.print_level = 2;
+                // control.trb_control.print_level = 5;
                 st = 'P';
                 bgo_import( &control, &data, &status, n, x_l, x_u,
                             "absent", ne, NULL, NULL, NULL );

@@ -2470,6 +2470,7 @@
 
       ITER_LOOP : DO
         iter = iter + 1
+!       IF ( iter > 10 ) EXIT
 
 !  Compute the inertia of T - e I by implicitly factoring the matrix
 

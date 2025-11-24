@@ -375,6 +375,10 @@ struct slls_control_type {
     /// if an approximation suffices
     bool exact_arc_search;
 
+    /// advance is true if an inexact exact arc_search can increase steps as 
+    /// well as decrease them (currently not implemented)
+    bool advance;
+
     /// \brief
     /// if space_critical is true, every effort will be made to use as little
     /// space as possible. This may result in longer computation times

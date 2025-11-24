@@ -255,7 +255,6 @@ SSIDSS = basics $(SPRALRBS) ms mo hw $(RLGS)(omp.o) \
          $(RLGS)(wrappers_single.o) $(RLGS)(ThreadStats.o) \
          $(RLGS)(types_single.o) $(RLGS)(subtree_single.o) \
          $(RLGS)(cpu_iface_single.o) $(RLGS)(cpu_subtree_single.o) \
-         $(RLGS)(profile_iface.o) \
          $(RLGS)(contrib_iface_single.o) $(RLGS)(ssids_single.o)
 
 SSIDSD = basics $(SPRALRBD) ms mo hw $(RLGD)(omp.o) \
@@ -274,7 +273,6 @@ SSIDSQ = basics $(SPRALRBQ) ms mo hw $(RLGQ)(omp.o) \
          $(RLGQ)(wrappers_quadruple.o) $(RLGQ)(ThreadStats.o) \
          $(RLGQ)(types_quadruple.o) $(RLGQ)(subtree_quadruple.o) \
          $(RLGQ)(cpu_iface_quadruple.o) $(RLGQ)(cpu_subtree_quadruple.o) \
-         $(RLGQ)(profile_iface.o) \
          $(RLGQ)(contrib_iface_quadruple.o) $(RLGQ)(ssids_quadruple.o)
 
 SSIDSS64 = basics $(SPRALRBS64) ms mo hw $(RLGS64)(omp.o) \
@@ -284,7 +282,6 @@ SSIDSS64 = basics $(SPRALRBS64) ms mo hw $(RLGS64)(omp.o) \
          $(RLGS64)(wrappers_single_64.o) $(RLGS64)(ThreadStats.o) \
          $(RLGS64)(types_single_64.o) $(RLGS64)(subtree_single_64.o) \
          $(RLGS64)(cpu_iface_single_64.o) $(RLGS64)(cpu_subtree_single_64.o) \
-         $(RLGS64)(profile_iface.o) \
          $(RLGS64)(contrib_iface_single_64.o) $(RLGS64)(ssids_single_64.o)
 
 SSIDSD64 = basics $(SPRALRBD64) ms mo hw $(RLGD64)(omp.o) \

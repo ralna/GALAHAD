@@ -3688,7 +3688,7 @@
                prefix, i
            END DO
          END IF
-
+!write(6,*) ' trb: x_status ', data%X_status( : nlp%n )
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  4b. Compute a Newton-like step s beyond the Generalized Cauchy Point
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -4092,7 +4092,6 @@
 !  components of G_cauchy for fixed variables to zero
 
            WHERE ( data%X_status /= 0 ) data%G_cauchy = zero
-!write(6,"( '  data%G_cauchy = ', /, ( 5ES12.4 ) )" ) data%G_cauchy( : nlp%n )
 
 !  set stopping tolerances
 
