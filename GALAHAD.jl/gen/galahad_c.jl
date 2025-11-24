@@ -200,11 +200,11 @@ end
 
 function generate_galahad_c()
   ordered_packages = ("bsc", "convert", "fit", "glrt", "gls", "gltr", "hash", "hsl", "ir", "l2rt",
-                      "lhs", "lms", "lsrt", "lstr", "nodend", "nrek", "presolve", "roots", "rpd", "scu", "sec",
-                      "sha", "sils", "ugo", "ssids", "sls", "rqs", "dps", "psls", "arc", "trs", "trek",
+                      "lhs", "lms", "lsrt", "lstr", "nodend", "presolve", "roots", "rpd", "scu", "sec",
+                      "sha", "sils", "ugo", "ssids", "sls", "rqs", "dps", "psls", "arc", "trs",
                       "trb", "bgo", "uls", "sbls", "blls", "bqp", "fdc", "cro", "bqpb", "ccqp", "cqp",
                       "clls", "dgo", "dqp", "eqp", "lpa", "lpb", "lsqp", "nls", "qpa", "qpb", "slls",
-                      "tru", "wcp", "llsr", "llst", "bllsb", "ssls", "expo", "version")
+                      "tru", "wcp", "llsr", "llst", "bllsb", "ssls", "expo", "nrek", "trek", "version")
 
   for variant in ("common", "single", "double", "quadruple")
     @assert length(galahad_mp[variant]) == length(ordered_packages)
