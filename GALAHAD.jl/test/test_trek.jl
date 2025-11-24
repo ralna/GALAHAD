@@ -200,4 +200,5 @@ for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
     @testset "TREK -- $T -- $INT" begin
       @test test_trek(T, INT) == 0
     end
+  end
 end

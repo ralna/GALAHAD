@@ -201,4 +201,5 @@ for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
     @testset "NREK -- $T -- $INT" begin
       @test test_nrek(T, INT) == 0
     end
+  end
 end
