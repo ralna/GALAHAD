@@ -85,6 +85,7 @@
       REAL ( KIND = rpc_ ) :: cpu_time_limit
       LOGICAL ( KIND = C_BOOL ) :: direct_subproblem_solve
       LOGICAL ( KIND = C_BOOL ) :: exact_arc_search
+      LOGICAL ( KIND = C_BOOL ) :: advance
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       LOGICAL ( KIND = C_BOOL ) :: generate_sif_file
@@ -178,6 +179,7 @@
     ! Logicals
     fcontrol%direct_subproblem_solve = ccontrol%direct_subproblem_solve
     fcontrol%exact_arc_search = ccontrol%exact_arc_search
+    fcontrol%advance = ccontrol%advance
     fcontrol%space_critical = ccontrol%space_critical
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
     fcontrol%generate_sif_file = ccontrol%generate_sif_file
@@ -242,6 +244,7 @@
     ! Logicals
     ccontrol%direct_subproblem_solve = fcontrol%direct_subproblem_solve
     ccontrol%exact_arc_search = fcontrol%exact_arc_search
+    ccontrol%advance = fcontrol%advance
     ccontrol%space_critical = fcontrol%space_critical
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
     ccontrol%generate_sif_file = fcontrol%generate_sif_file

@@ -212,6 +212,12 @@ static bool slls_update_control(struct slls_control_type *control,
                 return false;
             continue;
         }
+        if(strcmp(key_name, "advance") == 0){
+            if(!parse_bool_option(value, "advance",
+                                  &control->advance))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "space_critical") == 0){
             if(!parse_bool_option(value, "space_critical",
                                   &control->space_critical))
@@ -323,6 +329,8 @@ PyObject* slls_make_options_dict(const struct slls_control_type *control){
                          PyBool_FromLong(control->direct_subproblem_solve));
     PyDict_SetItemString(py_options, "exact_arc_search",
                          PyBool_FromLong(control->exact_arc_search));
+    PyDict_SetItemString(py_options, "advance",
+                         PyBool_FromLong(control->advance));
     PyDict_SetItemString(py_options, "space_critical",
                          PyBool_FromLong(control->space_critical));
     PyDict_SetItemString(py_options, "deallocate_error_fatal",

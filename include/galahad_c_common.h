@@ -376,16 +376,12 @@ struct nodend_control_type_64 {
 // C interface for PRESOLVE
 struct presolve_inform_type {
     int32_t status;
-    int32_t status_continue;
-    int32_t status_continued;
     int32_t nbr_transforms;
     char message[3][81];
 };
 
 struct presolve_inform_type_64 {
     int64_t status;
-    int64_t status_continue;
-    int64_t status_continued;
     int64_t nbr_transforms;
     char message[3][81];
 };

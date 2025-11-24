@@ -1111,6 +1111,7 @@
        data%branch = 20
      END IF
 
+!write(6,*) ' branch, status ', data%branch, inform%status
      SELECT CASE ( data%branch )
      CASE ( 10 )  ! initialization
        GO TO 10
@@ -1393,7 +1394,7 @@
              CALL mop_Ax( one, nlp%H, data%TRB_data%S( : nlp%n ),              &
                           one, data%U( : nlp%n ), symmetric = .TRUE. )
            ELSE
-             data%V => data%TRB_data%S
+             data%V => data%TRB_data%V
              data%branch = 120 ; inform%status = 5 ; RETURN
            END IF
 

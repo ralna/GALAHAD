@@ -2066,8 +2066,9 @@ $(package)cdt: $($(PACKAGE)CDT)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT)
 	$(RMOOC)
-	- ./run_$(package) > $(package)dt.output 2>&1
-	cat $(package)dt.output
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)dt.output 2>&1
+#	cat $(package)dt.output
 	rm ./run_$(package)
 
 $(package)cdt2: $($(PACKAGE)CDT2)

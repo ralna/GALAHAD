@@ -364,10 +364,6 @@ PyObject* presolve_make_inform_dict(const struct presolve_inform_type *inform){
 
     PyDict_SetItemString(py_inform, "status",
                          PyLong_FromLong(inform->status));
-    PyDict_SetItemString(py_inform, "status_continue",
-                         PyLong_FromLong(inform->status_continue));
-    PyDict_SetItemString(py_inform, "status_continued",
-                         PyLong_FromLong(inform->status_continued));
     PyDict_SetItemString(py_inform, "nbr_transforms",
                          PyLong_FromLong(inform->nbr_transforms));
 

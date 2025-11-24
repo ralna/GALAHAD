@@ -994,9 +994,7 @@ struct presolve_inform_type {
     ///   \f$(x, y, z)\f$ is incompatible with its declared value.
     ///   This may caused the restored problem to be infeasible
     ///   or suboptimal.
-    ipc_ status_continue;
-
-    /// \brief
+    ///
     /// continuation of status (name in previous column should be status,
     /// doxygen issue):
     /// \li -58 (Z_CANNOT_BE_ZEROED)
@@ -1054,9 +1052,7 @@ struct presolve_inform_type {
     ///   incompatible value of A_ne
     /// \li -74 (WRONG_HNE)
     ///   incompatible value of H_ne
-    ipc_ status_continued;
-
-    /// \brief
+    ///
     /// The final number of problem transformations, as reported
     /// to the user at exit.
     ipc_ nbr_transforms;

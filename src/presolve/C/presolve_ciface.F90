@@ -90,8 +90,6 @@
 
     TYPE, BIND( C ) :: presolve_inform_type
       INTEGER ( KIND = ipc_ ) :: status
-      INTEGER ( KIND = ipc_ ) :: status_continue   ! ignore - doxygen fix
-      INTEGER ( KIND = ipc_ ) :: status_continued  ! ignore - doxygen fix
       INTEGER ( KIND = ipc_ ) :: nbr_transforms
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 3, 81 ) :: message
     END TYPE presolve_inform_type
