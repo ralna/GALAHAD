@@ -7159,6 +7159,7 @@ struct slls_control_type {
     double cpu_time_limit;
     bool direct_subproblem_solve;
     bool exact_arc_search;
+    bool advance;
     bool space_critical;
     bool deallocate_error_fatal;
     bool generate_sif_file;
@@ -7196,6 +7197,7 @@ struct slls_control_type_64 {
     double cpu_time_limit;
     bool direct_subproblem_solve;
     bool exact_arc_search;
+    bool advance;
     bool space_critical;
     bool deallocate_error_fatal;
     bool generate_sif_file;
