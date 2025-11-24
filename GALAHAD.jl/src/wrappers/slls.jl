@@ -28,6 +28,7 @@ struct slls_control_type{T,INT}
   cpu_time_limit::T
   direct_subproblem_solve::Bool
   exact_arc_search::Bool
+  advance::Bool
   space_critical::Bool
   deallocate_error_fatal::Bool
   generate_sif_file::Bool

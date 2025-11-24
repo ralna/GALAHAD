@@ -44,8 +44,6 @@ export presolve_inform_type
 
 struct presolve_inform_type{INT}
   status::INT
-  status_continue::INT
-  status_continued::INT
   nbr_transforms::INT
   message::NTuple{3,NTuple{81,Cchar}}
 end
