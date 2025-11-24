@@ -1683,6 +1683,127 @@ void nodend_information_s_64(void **data, struct nodend_inform_type_s_64 *inform
 void nodend_terminate_s(void **data);
 void nodend_terminate_s_64(void **data);
 
+// C interface for NREK
+struct nrek_control_type_s {
+    bool f_indexing;
+    int32_t error;
+    int32_t out;
+    int32_t print_level;
+    int32_t eks_max;
+    int32_t it_max;
+    float f;
+    float increase;
+    float stop_residual;
+    bool reorthogonalize;
+    bool s_version_52;
+    bool perturb_c;
+    bool stop_check_all_orders;
+    bool new_weight;
+    bool new_values;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char linear_solver[31];
+    char linear_solver_for_s[31];
+    char prefix[31];
+    struct sls_control_type_s sls_control;
+    struct sls_control_type_s sls_s_control;
+    struct rqs_control_type_s rqs_control;
+};
+
+struct nrek_control_type_s_64 {
+    bool f_indexing;
+    int64_t error;
+    int64_t out;
+    int64_t print_level;
+    int64_t eks_max;
+    int64_t it_max;
+    float f;
+    float increase;
+    float stop_residual;
+    bool reorthogonalize;
+    bool s_version_52;
+    bool perturb_c;
+    bool stop_check_all_orders;
+    bool new_weight;
+    bool new_values;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char linear_solver[31];
+    char linear_solver_for_s[31];
+    char prefix[31];
+    struct sls_control_type_s_64 sls_control;
+    struct sls_control_type_s_64 sls_s_control;
+    struct rqs_control_type_s_64 rqs_control;
+};
+
+struct nrek_time_type_s {
+    float total;
+    float assemble;
+    float analyse;
+    float factorize;
+    float solve;
+    float clock_total;
+    float clock_assemble;
+    float clock_analyse;
+    float clock_factorize;
+    float clock_solve;
+};
+
+struct nrek_inform_type_s {
+    int32_t status;
+    int32_t alloc_status;
+    int32_t iter;
+    int32_t n_vec;
+    float obj;
+    float obj_regularized;
+    float x_norm;
+    float multiplier;
+    float weight;
+    float next_weight;
+    float error;
+    char bad_alloc[81];
+    struct nrek_time_type_s time;
+    struct sls_inform_type_s sls_inform;
+    struct sls_inform_type_s sls_s_inform;
+    struct rqs_inform_type_s rqs_inform;
+};
+
+struct nrek_inform_type_s_64 {
+    int64_t status;
+    int64_t alloc_status;
+    int64_t iter;
+    int64_t n_vec;
+    float obj;
+    float obj_regularized;
+    float x_norm;
+    float multiplier;
+    float weight;
+    float next_weight;
+    float error;
+    char bad_alloc[81];
+    struct nrek_time_type_s time;
+    struct sls_inform_type_s_64 sls_inform;
+    struct sls_inform_type_s_64 sls_s_inform;
+    struct rqs_inform_type_s_64 rqs_inform;
+};
+
+void nrek_initialize_s(void **data, struct nrek_control_type_s *control, int32_t *status);
+void nrek_initialize_s_64(void **data, struct nrek_control_type_s_64 *control, int64_t *status);
+void nrek_read_specfile_s(struct nrek_control_type_s *control, char *specfile);
+void nrek_read_specfile_s_64(struct nrek_control_type_s_64 *control, char *specfile);
+void nrek_import_s(struct nrek_control_type_s *control, void **data, int32_t *status, int32_t n, char *H_type, int32_t H_ne, int32_t *H_row, int32_t *H_col, int32_t *H_ptr);
+void nrek_import_s_64(struct nrek_control_type_s_64 *control, void **data, int64_t *status, int64_t n, char *H_type, int64_t H_ne, int64_t *H_row, int64_t *H_col, int64_t *H_ptr);
+void nrek_s_import_s(void **data, int32_t *status, int32_t n, char *S_type, int32_t S_ne, int32_t *S_row, int32_t *S_col, int32_t *S_ptr);
+void nrek_s_import_s_64(void **data, int64_t *status, int64_t n, char *S_type, int64_t S_ne, int64_t *S_row, int64_t *S_col, int64_t *S_ptr);
+void nrek_reset_control_s(struct nrek_control_type_s *control, void **data, int32_t *status);
+void nrek_reset_control_s_64(struct nrek_control_type_s_64 *control, void **data, int64_t *status);
+void nrek_solve_problem_s(void **data, int32_t *status, int32_t n, int32_t H_ne, float *H_val, float *c, float power, float weight, float *x, int32_t S_ne, float *S_val);
+void nrek_solve_problem_s_64(void **data, int64_t *status, int64_t n, int64_t H_ne, float *H_val, float *c, float power, float weight, float *x, int64_t S_ne, float *S_val);
+void nrek_information_s(void **data, struct nrek_inform_type_s *inform, int32_t *status);
+void nrek_information_s_64(void **data, struct nrek_inform_type_s_64 *inform, int64_t *status);
+void nrek_terminate_s(void **data, struct nrek_control_type_s *control, struct nrek_inform_type_s *inform);
+void nrek_terminate_s_64(void **data, struct nrek_control_type_s_64 *control, struct nrek_inform_type_s_64 *inform);
+
 // C interface for PRESOLVE
 struct presolve_control_type_s {
     bool f_indexing;
@@ -2942,6 +3063,7 @@ struct psls_control_type_s {
     bool get_norm_residual;
     bool space_critical;
     bool deallocate_error_fatal;
+    char symmetric_linear_solver[31];
     char definite_linear_solver[31];
     char prefix[31];
     struct sls_control_type_s sls_control;
@@ -2967,6 +3089,7 @@ struct psls_control_type_s_64 {
     bool get_norm_residual;
     bool space_critical;
     bool deallocate_error_fatal;
+    char symmetric_linear_solver[31];
     char definite_linear_solver[31];
     char prefix[31];
     struct sls_control_type_s_64 sls_control;
@@ -3413,6 +3536,125 @@ void trs_information_s(void **data, struct trs_inform_type_s *inform, int32_t *s
 void trs_information_s_64(void **data, struct trs_inform_type_s_64 *inform, int64_t *status);
 void trs_terminate_s(void **data, struct trs_control_type_s *control, struct trs_inform_type_s *inform);
 void trs_terminate_s_64(void **data, struct trs_control_type_s_64 *control, struct trs_inform_type_s_64 *inform);
+
+// C interface for TREK
+struct trek_control_type_s {
+    bool f_indexing;
+    int32_t error;
+    int32_t out;
+    int32_t print_level;
+    int32_t eks_max;
+    int32_t it_max;
+    float f;
+    float reduction;
+    float stop_residual;
+    bool reorthogonalize;
+    bool s_version_52;
+    bool perturb_c;
+    bool stop_check_all_orders;
+    bool new_radius;
+    bool new_values;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char linear_solver[31];
+    char linear_solver_for_s[31];
+    char prefix[31];
+    struct sls_control_type_s sls_control;
+    struct sls_control_type_s sls_s_control;
+    struct trs_control_type_s trs_control;
+};
+
+struct trek_control_type_s_64 {
+    bool f_indexing;
+    int64_t error;
+    int64_t out;
+    int64_t print_level;
+    int64_t eks_max;
+    int64_t it_max;
+    float f;
+    float reduction;
+    float stop_residual;
+    bool reorthogonalize;
+    bool s_version_52;
+    bool perturb_c;
+    bool stop_check_all_orders;
+    bool new_radius;
+    bool new_values;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char linear_solver[31];
+    char linear_solver_for_s[31];
+    char prefix[31];
+    struct sls_control_type_s_64 sls_control;
+    struct sls_control_type_s_64 sls_s_control;
+    struct trs_control_type_s_64 trs_control;
+};
+
+struct trek_time_type_s {
+    float total;
+    float assemble;
+    float analyse;
+    float factorize;
+    float solve;
+    float clock_total;
+    float clock_assemble;
+    float clock_analyse;
+    float clock_factorize;
+    float clock_solve;
+};
+
+struct trek_inform_type_s {
+    int32_t status;
+    int32_t alloc_status;
+    int32_t iter;
+    int32_t n_vec;
+    float obj;
+    float x_norm;
+    float multiplier;
+    float radius;
+    float next_radius;
+    float error;
+    char bad_alloc[81];
+    struct trek_time_type_s time;
+    struct sls_inform_type_s sls_inform;
+    struct sls_inform_type_s sls_s_inform;
+    struct trs_inform_type_s trs_inform;
+};
+
+struct trek_inform_type_s_64 {
+    int64_t status;
+    int64_t alloc_status;
+    int64_t iter;
+    int64_t n_vec;
+    float obj;
+    float x_norm;
+    float multiplier;
+    float radius;
+    float next_radius;
+    float error;
+    char bad_alloc[81];
+    struct trek_time_type_s time;
+    struct sls_inform_type_s_64 sls_inform;
+    struct sls_inform_type_s_64 sls_s_inform;
+    struct trs_inform_type_s_64 trs_inform;
+};
+
+void trek_initialize_s(void **data, struct trek_control_type_s *control, int32_t *status);
+void trek_initialize_s_64(void **data, struct trek_control_type_s_64 *control, int64_t *status);
+void trek_read_specfile_s(struct trek_control_type_s *control, char *specfile);
+void trek_read_specfile_s_64(struct trek_control_type_s_64 *control, char *specfile);
+void trek_import_s(struct trek_control_type_s *control, void **data, int32_t *status, int32_t n, char *H_type, int32_t H_ne, int32_t *H_row, int32_t *H_col, int32_t *H_ptr);
+void trek_import_s_64(struct trek_control_type_s_64 *control, void **data, int64_t *status, int64_t n, char *H_type, int64_t H_ne, int64_t *H_row, int64_t *H_col, int64_t *H_ptr);
+void trek_s_import_s(void **data, int32_t *status, int32_t n, char *S_type, int32_t S_ne, int32_t *S_row, int32_t *S_col, int32_t *S_ptr);
+void trek_s_import_s_64(void **data, int64_t *status, int64_t n, char *S_type, int64_t S_ne, int64_t *S_row, int64_t *S_col, int64_t *S_ptr);
+void trek_reset_control_s(struct trek_control_type_s *control, void **data, int32_t *status);
+void trek_reset_control_s_64(struct trek_control_type_s_64 *control, void **data, int64_t *status);
+void trek_solve_problem_s(void **data, int32_t *status, int32_t n, int32_t H_ne, float *H_val, float *c, float radius, float *x, int32_t S_ne, float *S_val);
+void trek_solve_problem_s_64(void **data, int64_t *status, int64_t n, int64_t H_ne, float *H_val, float *c, float radius, float *x, int64_t S_ne, float *S_val);
+void trek_information_s(void **data, struct trek_inform_type_s *inform, int32_t *status);
+void trek_information_s_64(void **data, struct trek_inform_type_s_64 *inform, int64_t *status);
+void trek_terminate_s(void **data, struct trek_control_type_s *control, struct trek_inform_type_s *inform);
+void trek_terminate_s_64(void **data, struct trek_control_type_s_64 *control, struct trek_inform_type_s_64 *inform);
 
 // C interface for TRB
 struct trb_control_type_s {

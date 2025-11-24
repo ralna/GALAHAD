@@ -1683,6 +1683,127 @@ void nodend_information_q_64(void **data, struct nodend_inform_type_q_64 *inform
 void nodend_terminate_q(void **data);
 void nodend_terminate_q_64(void **data);
 
+// C interface for NREK
+struct nrek_control_type_q {
+    bool f_indexing;
+    int32_t error;
+    int32_t out;
+    int32_t print_level;
+    int32_t eks_max;
+    int32_t it_max;
+    __float128 f;
+    __float128 increase;
+    __float128 stop_residual;
+    bool reorthogonalize;
+    bool s_version_52;
+    bool perturb_c;
+    bool stop_check_all_orders;
+    bool new_weight;
+    bool new_values;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char linear_solver[31];
+    char linear_solver_for_s[31];
+    char prefix[31];
+    struct sls_control_type_q sls_control;
+    struct sls_control_type_q sls_s_control;
+    struct rqs_control_type_q rqs_control;
+};
+
+struct nrek_control_type_q_64 {
+    bool f_indexing;
+    int64_t error;
+    int64_t out;
+    int64_t print_level;
+    int64_t eks_max;
+    int64_t it_max;
+    __float128 f;
+    __float128 increase;
+    __float128 stop_residual;
+    bool reorthogonalize;
+    bool s_version_52;
+    bool perturb_c;
+    bool stop_check_all_orders;
+    bool new_weight;
+    bool new_values;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char linear_solver[31];
+    char linear_solver_for_s[31];
+    char prefix[31];
+    struct sls_control_type_q_64 sls_control;
+    struct sls_control_type_q_64 sls_s_control;
+    struct rqs_control_type_q_64 rqs_control;
+};
+
+struct nrek_time_type_q {
+    __float128 total;
+    __float128 assemble;
+    __float128 analyse;
+    __float128 factorize;
+    __float128 solve;
+    __float128 clock_total;
+    __float128 clock_assemble;
+    __float128 clock_analyse;
+    __float128 clock_factorize;
+    __float128 clock_solve;
+};
+
+struct nrek_inform_type_q {
+    int32_t status;
+    int32_t alloc_status;
+    int32_t iter;
+    int32_t n_vec;
+    __float128 obj;
+    __float128 obj_regularized;
+    __float128 x_norm;
+    __float128 multiplier;
+    __float128 weight;
+    __float128 next_weight;
+    __float128 error;
+    char bad_alloc[81];
+    struct nrek_time_type_q time;
+    struct sls_inform_type_q sls_inform;
+    struct sls_inform_type_q sls_s_inform;
+    struct rqs_inform_type_q rqs_inform;
+};
+
+struct nrek_inform_type_q_64 {
+    int64_t status;
+    int64_t alloc_status;
+    int64_t iter;
+    int64_t n_vec;
+    __float128 obj;
+    __float128 obj_regularized;
+    __float128 x_norm;
+    __float128 multiplier;
+    __float128 weight;
+    __float128 next_weight;
+    __float128 error;
+    char bad_alloc[81];
+    struct nrek_time_type_q time;
+    struct sls_inform_type_q_64 sls_inform;
+    struct sls_inform_type_q_64 sls_s_inform;
+    struct rqs_inform_type_q_64 rqs_inform;
+};
+
+void nrek_initialize_q(void **data, struct nrek_control_type_q *control, int32_t *status);
+void nrek_initialize_q_64(void **data, struct nrek_control_type_q_64 *control, int64_t *status);
+void nrek_read_specfile_q(struct nrek_control_type_q *control, char *specfile);
+void nrek_read_specfile_q_64(struct nrek_control_type_q_64 *control, char *specfile);
+void nrek_import_q(struct nrek_control_type_q *control, void **data, int32_t *status, int32_t n, char *H_type, int32_t H_ne, int32_t *H_row, int32_t *H_col, int32_t *H_ptr);
+void nrek_import_q_64(struct nrek_control_type_q_64 *control, void **data, int64_t *status, int64_t n, char *H_type, int64_t H_ne, int64_t *H_row, int64_t *H_col, int64_t *H_ptr);
+void nrek_s_import_q(void **data, int32_t *status, int32_t n, char *S_type, int32_t S_ne, int32_t *S_row, int32_t *S_col, int32_t *S_ptr);
+void nrek_s_import_q_64(void **data, int64_t *status, int64_t n, char *S_type, int64_t S_ne, int64_t *S_row, int64_t *S_col, int64_t *S_ptr);
+void nrek_reset_control_q(struct nrek_control_type_q *control, void **data, int32_t *status);
+void nrek_reset_control_q_64(struct nrek_control_type_q_64 *control, void **data, int64_t *status);
+void nrek_solve_problem_q(void **data, int32_t *status, int32_t n, int32_t H_ne, __float128 *H_val, __float128 *c, __float128 power, __float128 weight, __float128 *x, int32_t S_ne, __float128 *S_val);
+void nrek_solve_problem_q_64(void **data, int64_t *status, int64_t n, int64_t H_ne, __float128 *H_val, __float128 *c, __float128 power, __float128 weight, __float128 *x, int64_t S_ne, __float128 *S_val);
+void nrek_information_q(void **data, struct nrek_inform_type_q *inform, int32_t *status);
+void nrek_information_q_64(void **data, struct nrek_inform_type_q_64 *inform, int64_t *status);
+void nrek_terminate_q(void **data, struct nrek_control_type_q *control, struct nrek_inform_type_q *inform);
+void nrek_terminate_q_64(void **data, struct nrek_control_type_q_64 *control, struct nrek_inform_type_q_64 *inform);
+
 // C interface for PRESOLVE
 struct presolve_control_type_q {
     bool f_indexing;
@@ -2942,6 +3063,7 @@ struct psls_control_type_q {
     bool get_norm_residual;
     bool space_critical;
     bool deallocate_error_fatal;
+    char symmetric_linear_solver[31];
     char definite_linear_solver[31];
     char prefix[31];
     struct sls_control_type_q sls_control;
@@ -2967,6 +3089,7 @@ struct psls_control_type_q_64 {
     bool get_norm_residual;
     bool space_critical;
     bool deallocate_error_fatal;
+    char symmetric_linear_solver[31];
     char definite_linear_solver[31];
     char prefix[31];
     struct sls_control_type_q_64 sls_control;
@@ -3413,6 +3536,125 @@ void trs_information_q(void **data, struct trs_inform_type_q *inform, int32_t *s
 void trs_information_q_64(void **data, struct trs_inform_type_q_64 *inform, int64_t *status);
 void trs_terminate_q(void **data, struct trs_control_type_q *control, struct trs_inform_type_q *inform);
 void trs_terminate_q_64(void **data, struct trs_control_type_q_64 *control, struct trs_inform_type_q_64 *inform);
+
+// C interface for TREK
+struct trek_control_type_q {
+    bool f_indexing;
+    int32_t error;
+    int32_t out;
+    int32_t print_level;
+    int32_t eks_max;
+    int32_t it_max;
+    __float128 f;
+    __float128 reduction;
+    __float128 stop_residual;
+    bool reorthogonalize;
+    bool s_version_52;
+    bool perturb_c;
+    bool stop_check_all_orders;
+    bool new_radius;
+    bool new_values;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char linear_solver[31];
+    char linear_solver_for_s[31];
+    char prefix[31];
+    struct sls_control_type_q sls_control;
+    struct sls_control_type_q sls_s_control;
+    struct trs_control_type_q trs_control;
+};
+
+struct trek_control_type_q_64 {
+    bool f_indexing;
+    int64_t error;
+    int64_t out;
+    int64_t print_level;
+    int64_t eks_max;
+    int64_t it_max;
+    __float128 f;
+    __float128 reduction;
+    __float128 stop_residual;
+    bool reorthogonalize;
+    bool s_version_52;
+    bool perturb_c;
+    bool stop_check_all_orders;
+    bool new_radius;
+    bool new_values;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char linear_solver[31];
+    char linear_solver_for_s[31];
+    char prefix[31];
+    struct sls_control_type_q_64 sls_control;
+    struct sls_control_type_q_64 sls_s_control;
+    struct trs_control_type_q_64 trs_control;
+};
+
+struct trek_time_type_q {
+    __float128 total;
+    __float128 assemble;
+    __float128 analyse;
+    __float128 factorize;
+    __float128 solve;
+    __float128 clock_total;
+    __float128 clock_assemble;
+    __float128 clock_analyse;
+    __float128 clock_factorize;
+    __float128 clock_solve;
+};
+
+struct trek_inform_type_q {
+    int32_t status;
+    int32_t alloc_status;
+    int32_t iter;
+    int32_t n_vec;
+    __float128 obj;
+    __float128 x_norm;
+    __float128 multiplier;
+    __float128 radius;
+    __float128 next_radius;
+    __float128 error;
+    char bad_alloc[81];
+    struct trek_time_type_q time;
+    struct sls_inform_type_q sls_inform;
+    struct sls_inform_type_q sls_s_inform;
+    struct trs_inform_type_q trs_inform;
+};
+
+struct trek_inform_type_q_64 {
+    int64_t status;
+    int64_t alloc_status;
+    int64_t iter;
+    int64_t n_vec;
+    __float128 obj;
+    __float128 x_norm;
+    __float128 multiplier;
+    __float128 radius;
+    __float128 next_radius;
+    __float128 error;
+    char bad_alloc[81];
+    struct trek_time_type_q time;
+    struct sls_inform_type_q_64 sls_inform;
+    struct sls_inform_type_q_64 sls_s_inform;
+    struct trs_inform_type_q_64 trs_inform;
+};
+
+void trek_initialize_q(void **data, struct trek_control_type_q *control, int32_t *status);
+void trek_initialize_q_64(void **data, struct trek_control_type_q_64 *control, int64_t *status);
+void trek_read_specfile_q(struct trek_control_type_q *control, char *specfile);
+void trek_read_specfile_q_64(struct trek_control_type_q_64 *control, char *specfile);
+void trek_import_q(struct trek_control_type_q *control, void **data, int32_t *status, int32_t n, char *H_type, int32_t H_ne, int32_t *H_row, int32_t *H_col, int32_t *H_ptr);
+void trek_import_q_64(struct trek_control_type_q_64 *control, void **data, int64_t *status, int64_t n, char *H_type, int64_t H_ne, int64_t *H_row, int64_t *H_col, int64_t *H_ptr);
+void trek_s_import_q(void **data, int32_t *status, int32_t n, char *S_type, int32_t S_ne, int32_t *S_row, int32_t *S_col, int32_t *S_ptr);
+void trek_s_import_q_64(void **data, int64_t *status, int64_t n, char *S_type, int64_t S_ne, int64_t *S_row, int64_t *S_col, int64_t *S_ptr);
+void trek_reset_control_q(struct trek_control_type_q *control, void **data, int32_t *status);
+void trek_reset_control_q_64(struct trek_control_type_q_64 *control, void **data, int64_t *status);
+void trek_solve_problem_q(void **data, int32_t *status, int32_t n, int32_t H_ne, __float128 *H_val, __float128 *c, __float128 radius, __float128 *x, int32_t S_ne, __float128 *S_val);
+void trek_solve_problem_q_64(void **data, int64_t *status, int64_t n, int64_t H_ne, __float128 *H_val, __float128 *c, __float128 radius, __float128 *x, int64_t S_ne, __float128 *S_val);
+void trek_information_q(void **data, struct trek_inform_type_q *inform, int32_t *status);
+void trek_information_q_64(void **data, struct trek_inform_type_q_64 *inform, int64_t *status);
+void trek_terminate_q(void **data, struct trek_control_type_q *control, struct trek_inform_type_q *inform);
+void trek_terminate_q_64(void **data, struct trek_control_type_q_64 *control, struct trek_inform_type_q_64 *inform);
 
 // C interface for TRB
 struct trb_control_type_q {
