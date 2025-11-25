@@ -3,9 +3,11 @@ libgalahad_src += files('nrek.F90')
 libgalahad_c_src += files('C/nrek_ciface.F90')
 
 libgalahad_python_src += [['nrek', files('Python/nrek_pyiface.c',
-                                        '../nodend/Python/nodend_pyiface.c',
-                                        '../sls/Python/sls_pyiface.c',
-                                        '../trs/Python/trs_pyiface.c')]]
+                                         '../nodend/Python/nodend_pyiface.c',
+                                         '../sls/Python/sls_pyiface.c',
+                                         '../rqs/Python/rqs_pyiface.c',
+                                         '../ir/Python/ir_pyiface.c',
+                                         '../sils/Python/sils_pyiface.c')]]
 
 libgalahad_cutest_src += files('usenrek.F90')
 
