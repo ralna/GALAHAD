@@ -1339,11 +1339,13 @@
 !  call the bound-constrained local minimizer
 
 !write(6,*) 'in status ', inform%TRB_inform%status,  inform%TRB_inform%iter
+write(6,*) ' bgo.before 1342 trb_inform%status ', inform%trb_inform%status
          CALL TRB_solve( nlp, data%control%TRB_control, inform%TRB_inform,     &
                          data%TRB_data, userdata, eval_F = eval_F,             &
                          eval_G = eval_G, eval_H = eval_H,                     &
                          eval_HPROD = eval_HPROD, eval_SHPROD = eval_SHPROD,   &
                          eval_PREC = eval_PREC )
+write(6,*) ' bgo.after 1348 trb_inform%status ', inform%trb_inform%status
 !write(6,*) 'out status ', inform%TRB_inform%status
 
 !  obtain further function information if required
@@ -3246,8 +3248,10 @@
 
 !  call the solver
 
+write(6,*) ' bgo.before 3249 bgo_inform%status ', data%bgo_inform%status
      CALL BGO_solve( data%nlp, data%bgo_control, data%bgo_inform,              &
                      data%bgo_data, data%userdata )
+write(6,*) ' bgo.after 3252 bgo_inform%status ', data%bgo_inform%status
 
 !  collect data for reverse communication
 
