@@ -4119,11 +4119,13 @@
 !  perform a generalized Lanczos iteration
 
 !            CALL GLTR_solve( nlp%n, data%radius_sub, data%gltr_model,         &
+write(6,*) ' trb.before 4122 gltr_inform%status ', inform%gltr_inform%status
              CALL GLTR_solve( nlp%n, one, data%gltr_model,                     &
                               data%S_sub( : nlp%n ),                           &
                               data%G_current( : nlp%n ), data%V( : nlp%n ),    &
                               data%GLTR_data, data%control%GLTR_control,       &
                               inform%GLTR_inform )
+write(6,*) ' trb.after 4128 gltr_inform%status ', inform%gltr_inform%status
 
 !write(6,"( ' s_sub = ', /, ( 5ES12.4 ) )" ) data%S_sub( : nlp%n )
 !write(6,*) ' case ', inform%GLTR_inform%status

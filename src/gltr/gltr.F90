@@ -1532,6 +1532,7 @@
 
 !  Update the solution estimate
 
+write(6,*) ' gltr 1535 itp1 itmax+1 ', itp1, data%itmax + 1
       data%rminvr = data%RMINVRS( itp1 )
       IF ( data%iter /= 0 ) THEN
         X = X + data%tau                                                       &
