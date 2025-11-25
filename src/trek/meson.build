@@ -3,9 +3,11 @@ libgalahad_src += files('trek.F90')
 libgalahad_c_src += files('C/trek_ciface.F90')
 
 libgalahad_python_src += [['trek', files('Python/trek_pyiface.c',
-                                        '../nodend/Python/nodend_pyiface.c',
-                                        '../sls/Python/sls_pyiface.c',
-                                        '../trs/Python/trs_pyiface.c')]]
+                                         '../nodend/Python/nodend_pyiface.c',
+                                         '../sls/Python/sls_pyiface.c',
+                                         '../trs/Python/trs_pyiface.c',
+                                         '../ir/Python/ir_pyiface.c',
+                                         '../sils/Python/sils_pyiface.c')]]
 
 libgalahad_cutest_src += files('usetrek.F90')
 

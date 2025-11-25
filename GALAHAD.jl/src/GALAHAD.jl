@@ -193,10 +193,10 @@ include("wrappers/ssls.jl")
 # expo requires bsc, tru, ssls, sls, sils, trs, ir, gltr, dps, psls, lms, sec, sha, nodend.
 include("wrappers/expo.jl")
 
-# trek requires sls, trs, nodend.
+# trek requires sls, trs, sils, ir, nodend.
 include("wrappers/trek.jl")
 
-# nrek requires sls, rqs, nodend.
+# nrek requires sls, rqs, sils, ir, nodend.
 include("wrappers/nrek.jl")
 
 end # module GALAHAD
