@@ -38,6 +38,7 @@ mapping_types_c2f = Dict(
   "char[81]" => "char[80]",
   "char[401]" => "char[400]",
   "char[501]" => "char[500]",
+  "char[3][81]" => "char[80[3]]",
 ) ∪ lazy_definitions
 
 function F_structures()
@@ -156,7 +157,7 @@ function C_structures()
   for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "src"))
     for file in files
       path = joinpath(root, file) |> normpath
-      if endswith(file, "_ciface.F90")
+      if endswith(file, "_ciface.F90") && !startswith(file, "bnls")
         code = read(path, String)
         lines = split(code, '\n')
         for (i, line) in enumerate(lines)
@@ -228,6 +229,7 @@ function H_structures()
         (file == "ssids_gpu_kernels_datatypes.h") && continue
         (file == "ssids_gpu_kernels_dtrsv.h") && continue
         (file == "galahad_icfs.h") && continue
+        (file == "galahad_bnls.h") && continue
         code = read(path, String)
         lines = split(code, '\n')
         for (i, line) in enumerate(lines)
