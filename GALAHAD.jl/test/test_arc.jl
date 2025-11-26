@@ -201,7 +201,7 @@ function test_arc(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
   @printf(" Fortran sparse matrix indexing\n\n")
 
   if mode == "direct"
-    @printf(" tests options for all-in-one storage format\n\n")
+    @printf(" arc tests options for all-in-one storage format\n\n")
 
     for d in 1:5
       # Initialize ARC
@@ -269,7 +269,7 @@ function test_arc(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
   end
 
   if mode == "reverse"
-    @printf(" tests reverse-communication options\n\n")
+    @printf(" arc tests reverse-communication options\n\n")
 
     # reverse-communication input/output
     eval_status = Ref{INT}()

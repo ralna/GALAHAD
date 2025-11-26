@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-20 AT 13:40 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-11-26 AT 14:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -1565,6 +1565,8 @@
 !  =======================================
 
   400 CONTINUE
+      IF ( data%dim_sub <= 0 ) GO TO 100
+
       X = zero ; inform%obj = control%f_0 ; data%U = zero
       inform%obj_regularized = control%f_0 +                                   &
         ( sigma / p ) * ( data%o_mnorm_2_p_eps ** ( p / two ) )

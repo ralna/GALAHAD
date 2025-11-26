@@ -35,7 +35,7 @@ function test_uls(::Type{T}, ::Type{INT}) where {T,INT}
   good_x = eps(Float64)^(1 / 3)
 
   @printf(" Fortran sparse matrix indexing\n\n")
-  @printf(" basic tests of storage formats\n\n")
+  @printf(" uls basic tests of storage formats\n\n")
   @printf(" storage  RHS   refine   RHST  refine\n")
 
   for d in 1:3

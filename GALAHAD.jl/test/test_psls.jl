@@ -7,7 +7,8 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_psls(::Type{T}, ::Type{INT}; dls::String="potr") where {T,INT}
+function test_psls(::Type{T}, ::Type{INT}; 
+                   sls::String="sytr", dls::String="potr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{psls_control_type{T,INT}}()

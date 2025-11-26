@@ -28,10 +28,10 @@ function test_nrek(::Type{T}, ::Type{INT}; dls::String="pbtr") where {T,INT}
   S_ptr = INT[1, 2, 3, 4]
   H_val = T[1.0, 2.0, 3.0, 4.0]
   S_val = T[1.0, 2.0, 1.0]
-  H_dense = T[1.0, 0.0, 2.0, 4.0, 0.0, 3.0]
-  S_dense = T[1.0, 0.0, 2.0, 0.0, 0.0, 1.0]
-  H_diag = T[1.0, 0.0, 2.0]
-  S_diag = T[1.0, 2.0, 1.0]
+  H_dense_val = T[1.0, 0.0, 2.0, 4.0, 0.0, 3.0]
+  S_dense_val = T[1.0, 0.0, 2.0, 0.0, 0.0, 1.0]
+  H_diag_val = T[1.0, 0.0, 2.0]
+  S_diag_val = T[1.0, 2.0, 1.0]
   c = T[0.0, 2.0, 0.0]
   power = T(3.0) # regularization power
 
@@ -128,11 +128,11 @@ function test_nrek(::Type{T}, ::Type{INT}; dls::String="pbtr") where {T,INT}
           if s_is == 1
             nrek_solve_problem(T, INT, data, status, n,
                                H_ne, H_val, c, power, weight, x,
-                               S_ne, S_val, 0, 0, C_NULL, C_NULL)
+                               S_ne, S_val)
           else
             nrek_solve_problem(T, INT, data, status, n,
                                H_ne, H_val, c, power, weight, x,
-                               0, C_NULL, 0, 0, C_NULL, C_NULL)
+                               0, C_NULL)
           end
         end
 
@@ -141,11 +141,11 @@ function test_nrek(::Type{T}, ::Type{INT}; dls::String="pbtr") where {T,INT}
           if s_is == 1
             nrek_solve_problem(T, INT, data, status, n,
                                H_ne, H_val, c, power, weight, x,
-                               S_ne, S_val, 0, 0, C_NULL, C_NULL)
+                               S_ne, S_val)
           else
             nrek_solve_problem(T, INT, data, status, n,
                                H_ne, H_val, c, power, weight, x,
-                               0, C_NULL, 0, 0, C_NULL, C_NULL)
+                               0, C_NULL)
           end
         end
 
@@ -154,11 +154,11 @@ function test_nrek(::Type{T}, ::Type{INT}; dls::String="pbtr") where {T,INT}
           if s_is == 1
             nrek_solve_problem(T, INT, data, status, n,
                                H_dense_ne, H_dense_val, c, power, weight, x,
-                               S_dense_ne, S_dense, 0, 0, C_NULL, C_NULL)
+                               S_dense_ne, S_dense_val)
           else
             nrek_solve_problem(T, INT, data, status, n,
                                H_dense_ne, H_dense_val, c, power, weight, x,
-                               0, C_NULL, 0, 0, C_NULL, C_NULL)
+                               0, C_NULL)
           end
         end
 
@@ -167,11 +167,11 @@ function test_nrek(::Type{T}, ::Type{INT}; dls::String="pbtr") where {T,INT}
           if s_is == 1
             nrek_solve_problem(T, INT, data, status, n,
                                n, H_diag_val, c, power, weight, x,
-                               n, S_diag, 0, 0, C_NULL, C_NULL)
+                               n, S_diag_val)
           else
             nrek_solve_problem(T, INT, data, status, n,
                                n, H_diag_val, c, power, weight, x,
-                               0, C_NULL, 0, 0, C_NULL, C_NULL)
+                               0, C_NULL)
           end
         end
 
