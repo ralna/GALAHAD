@@ -306,7 +306,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
   @printf(" Fortran sparse matrix indexing\n\n")
 
   if mode == "direct"
-    @printf(" tests options for all-in-one storage format\n\n")
+    @printf(" bgo tests options for all-in-one storage format\n\n")
 
     for d in 1:5
       # Initialize BGO
@@ -396,7 +396,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
   end
 
   if mode == "reverse"
-    @printf(" tests reverse-communication options\n\n")
+    @printf(" bgo tests reverse-communication options\n\n")
 
     # reverse-communication input/output
     eval_status = Ref{INT}()
@@ -421,11 +421,11 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
       @reset control[].trb_control.psls_control.definite_linear_solver = galahad_linear_solver(dls)
 
       # Set user-defined control options
+      # @reset control[].print_level = INT(1)
       @reset control[].attempts_max = INT(10000)
       @reset control[].max_evals = INT(20000)
       @reset control[].sampling_strategy = INT(3)
       @reset control[].trb_control.maxit = INT(100)
-      # @reset control[].print_level = CINT(1)
 
       # Start from 0
       x = T[0.0, 0.0, 0.0]

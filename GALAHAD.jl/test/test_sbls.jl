@@ -7,7 +7,8 @@ using Printf
 using Accessors
 using Quadmath
 
-function test_sbls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr") where {T,INT}
+function test_sbls(::Type{T}, ::Type{INT}; 
+                   sls::String="sytr", dls::String="potr") where {T,INT}
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{sbls_control_type{T,INT}}()

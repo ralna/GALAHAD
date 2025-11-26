@@ -3416,6 +3416,8 @@
 
            IF ( data%X_status( i ) == 4 ) data%X_status( i ) = 0
          END DO
+!write(6,*) '------------------------------------------------------------------'
+!write(6,*) ' cal p ', data%P( : nlp%n )
          IF ( data%control%accurate_bqp ) data%DX_bqp = zero
 
 !  the value of factorize controls whether a new factorization of the Hessian
@@ -3463,6 +3465,7 @@
 
 !  ------------------- start of generalized Cauchy point loop -----------------
 
+!write(6,*) ' p ', data%P( : nlp%n )
   410    CONTINUE
 
 !  if required, print a list of the nonzeros of P and HP
@@ -4086,12 +4089,14 @@
            IF ( .NOT. data%control%hessian_available .AND. data%reverse_hprod )&
              data%G_cauchy( : nlp%n ) = data%U( : nlp%n )
          END IF
+!write(6,*) ' G_cauchy ', data%G_cauchy( : nlp%n )
 
 !  build the reduced model, that is the model that only involves the 
 !  variables that are free at the Cauchy point. Start by resetting 
 !  components of G_cauchy for fixed variables to zero
 
            WHERE ( data%X_status /= 0 ) data%G_cauchy = zero
+!write(6,*) ' G_restricted ', data%G_cauchy( : nlp%n )
 
 !  set stopping tolerances
 
@@ -4114,21 +4119,23 @@
 !  Start of the generalized Lanczos iteration
 !  ..........................................
 
+!write(6,*) ' ----- # free variables = ', COUNT(  data%X_status == 0 )
   430      CONTINUE
 
 !  perform a generalized Lanczos iteration
 
+!data%control%GLTR_control%out = 6
+!data%control%GLTR_control%print_level = 2
 !            CALL GLTR_solve( nlp%n, data%radius_sub, data%gltr_model,         &
-write(6,*) ' trb.before 4122 gltr_inform%status ', inform%gltr_inform%status
              CALL GLTR_solve( nlp%n, one, data%gltr_model,                     &
                               data%S_sub( : nlp%n ),                           &
                               data%G_current( : nlp%n ), data%V( : nlp%n ),    &
                               data%GLTR_data, data%control%GLTR_control,       &
                               inform%GLTR_inform )
-write(6,*) ' trb.after 4128 gltr_inform%status ', inform%gltr_inform%status
 
-!write(6,"( ' s_sub = ', /, ( 5ES12.4 ) )" ) data%S_sub( : nlp%n )
-!write(6,*) ' case ', inform%GLTR_inform%status
+!write(6,"( ' trb: x_sub = ', /, ( 5ES12.4 ) )" ) data%S_sub( : nlp%n )
+!write(6,"( ' trb: v out = ', /, ( 5ES12.4 ) )" ) data%V( : nlp%n )
+!write(6,*) ' trb: gltr out status ', inform%GLTR_inform%status
              SELECT CASE( inform%GLTR_inform%status )
 
 !  form the preconditioned vector v -> M^-1 v
@@ -4235,6 +4242,7 @@ write(6,*) ' trb.after 4128 gltr_inform%status ', inform%gltr_inform%status
                  END WHERE
                END IF
              END IF
+!write(6,"( ' trb: v in = ', /, ( 5ES12.4 ) )" ) data%V( : nlp%n )
            GO TO 430
 
 !  End of the generalized Lanczos iteration
@@ -4690,6 +4698,9 @@ write(6,*) ' trb.after 4128 gltr_inform%status ', inform%gltr_inform%status
        ELSE
          data%poor_model = .TRUE.
          nlp%X( : nlp%n ) = data%X_current( : nlp%n )
+         IF ( data%diagonal_preconditioner .AND. .NOT. data%unconstrained )    &
+           data%H_diagonal( : nlp%n ) =                                        &
+             data%H_diagonal( : nlp%n ) * data%diagonal_max
        END IF
 
 !  return from reverse communication to obtain the gradient

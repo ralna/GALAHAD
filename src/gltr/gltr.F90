@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-12-18 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-11-26 AT 14:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -272,8 +272,9 @@
         PRIVATE
         INTEGER ( KIND = ip_ ) :: branch = 100
         TYPE ( RAND_seed ) :: seed
-        INTEGER ( KIND = ip_ ) :: iter, itm1, itmax, dim_sub, switch, titmax
-        INTEGER ( KIND = ip_ ) :: Lanczos_itmax, extra_vectors, tinfo, titer
+        INTEGER ( KIND = ip_ ) :: iter, itm1, itmax, dim_sub, switch
+        INTEGER ( KIND = ip_ ) :: Lanczos_itmax, extra_vectors
+        INTEGER ( KIND = ip_ ) :: ttrs_info, ttrs_iter, ttrs_itmax
         REAL ( KIND = rp_ ) :: alpha, beta, rminvr, rminvr_old
         REAL ( KIND = rp_ ) :: stop, normp, x_last
         REAL ( KIND = rp_ ) :: diag, offdiag, rtol,  pgnorm, radius2
@@ -691,6 +692,7 @@
         data%branch = 400
       END IF
 
+!write(6,*) ' ======== branch, status ',  data%branch, inform%status
       SELECT CASE ( data%branch )
       CASE ( 100 )
         GO TO 100
@@ -765,7 +767,7 @@
       IF ( inform%status /= 0 ) GO TO 960
 
       IF ( .NOT. control%steihaug_toint ) THEN
-        data%titmax = 100
+        data%ttrs_itmax = 100
 
 !  if required, open a file to write the Ritz values data
 
@@ -1112,7 +1114,7 @@
                    ABS( data%x_last * data%offdiag ),                          &
 !                  data%LAMBDA( data%itm1 ),  ABS( data%x_last ),              &
                    data%LAMBDA( data%itm1 ), data%offdiag,                     &
-                   data%titer, data%tinfo
+                   data%ttrs_iter, data%ttrs_info
           END IF
         END IF
       END IF
@@ -1192,18 +1194,20 @@
           END IF
 
           CALL GLTR_ttrs( dim_sub, data%D( : dim_sub - 1 ),                    &
-                     data%OFFD( : dim_sub - 1 ),                               &
-                     data%D_fact( : dim_sub - 1 ),                             &
-                     data%OFFD_fact( : dim_sub - 1 ),                          &
-                     data%C_sub( : dim_sub - 1 ), radius, data%rtol,           &
-                     data%interior, control%equality_problem,                  &
-                     data%titmax, data%try_warm, data%use_old,                 &
-                     inform%leftmost, data%LAMBDA( dim_sub - 1 ),              &
-                     data%MIN_f( dim_sub - 1 ), data%X_sub( : dim_sub - 1 ),   &
-                     data%tinfo, data%titer, data%U_sub( : dim_sub - 1 ),      &
-                     data%V( : dim_sub - 1 ), data%W( : dim_sub - 1 ),         &
-                     data%seed, data%printd, control%out, prefix,              &
-                     inform%hard_case, data%hard_case_step )
+                          data%OFFD( : dim_sub - 1 ),                          &
+                          data%D_fact( : dim_sub - 1 ),                        &
+                          data%OFFD_fact( : dim_sub - 1 ),                     &
+                          data%C_sub( : dim_sub - 1 ), radius, data%rtol,      &
+                          data%interior, control%equality_problem,             &
+                          data%ttrs_itmax, data%try_warm, data%use_old,        &
+                          inform%leftmost, data%LAMBDA( dim_sub - 1 ),         &
+                          data%MIN_f( dim_sub - 1 ),                           &
+                          data%X_sub( : dim_sub - 1 ),                         &
+                          data%ttrs_info, data%ttrs_iter,                      &
+                          data%U_sub( : dim_sub - 1 ),                         &
+                          data%V( : dim_sub - 1 ), data%W( : dim_sub - 1 ),    &
+                          data%seed, data%printd, control%out, prefix,         &
+                          inform%hard_case, data%hard_case_step )
 
 !         IF ( data%printi ) WRITE( control%out, 2020 )                        &
 !         WRITE( control%out, 2020 ) data%MIN_f(dim_sub-1), dim_sub, data%iter
@@ -1403,16 +1407,18 @@
 !  Solve the subproblem
 
         CALL GLTR_ttrs( data%iter, data%D( : data%itm1 ),                      &
-             data%OFFD( : data%itm1 ), data%D_fact( : data%itm1 ),             &
-             data%OFFD_fact( : data%itm1 ), data%C_sub( : data%itm1 ),         &
-             radius, data%rtol, data%interior, control%equality_problem,       &
-             data%titmax, data%try_warm,                                       &
-             data%use_old, inform%leftmost, data%LAMBDA( data%itm1 ),          &
-             data%MIN_f( data%itm1 ), data%X_sub( : data%itm1 ),               &
-             data%tinfo, data%titer, data%U_sub( : data%itm1 ),                &
-             data%V( : data%itm1 ), data%W( : data%itm1 ), data%seed,          &
-             data%printd, control%out,                                         &
-             prefix, inform%hard_case, data%hard_case_step )
+                        data%OFFD( : data%itm1 ), data%D_fact( : data%itm1 ),  &
+                        data%OFFD_fact( : data%itm1 ),                         &
+                        data%C_sub( : data%itm1 ), radius, data%rtol,          &
+                        data%interior, control%equality_problem,               &
+                        data%ttrs_itmax, data%try_warm, data%use_old,          &
+                        inform%leftmost, data%LAMBDA( data%itm1 ),             &
+                        data%MIN_f( data%itm1 ), data%X_sub( : data%itm1 ),    &
+                        data%ttrs_info, data%ttrs_iter,                        &
+                        data%U_sub( : data%itm1 ), data%V( : data%itm1 ),      &
+                        data%W( : data%itm1 ), data%seed,                      &
+                        data%printd, control%out, prefix, inform%hard_case,    &
+                        data%hard_case_step )
         data%try_warm = .TRUE.
 
         data%LAMBDA( data%iter ) = data%LAMBDA( data%itm1 )
@@ -1473,28 +1479,35 @@
   400 CONTINUE
       IF ( control%steihaug_toint ) GO TO 100
       IF ( data%prev_steihaug_toint ) GO TO 100
+      IF ( data%dim_sub <= 0 ) GO TO 100
 
       X = zero ; inform%obj = control%f_0 ; f = inform%obj ; data%U = zero
       inform%iter = 0 ; inform%iter_pass2 = 0
       data%interior = .NOT. control%boundary
       data%use_old = .FALSE. ; data%try_warm = .TRUE.
+      data%printi = control%out > 0 .AND. control%print_level >= 1
+      data%printd = control%out > 0 .AND. control%print_level >= 2
 
 !  Find the solution to the Lanczos TR subproblem with this radius
 
+!     write(6,*) ' GLTR_ttrs dim_sub ', data%dim_sub
       CALL GLTR_ttrs( data%dim_sub, data%D( : data%dim_sub - 1 ),              &
-                 data%OFFD( : data%dim_sub - 1 ),                              &
-                 data%D_fact( : data%dim_sub - 1 ),                            &
-                 data%OFFD_fact( : data%dim_sub - 1 ),                         &
-                 data%C_sub( : data%dim_sub - 1 ), radius, data%rtol,          &
-                 data%interior, control%equality_problem,                      &
-                 data%titmax, data%try_warm, data%use_old,                     &
-                 inform%leftmost, data%LAMBDA( data%dim_sub - 1 ),             &
-                 data%MIN_f( data%dim_sub - 1 ),                               &
-                 data%X_sub( : data%dim_sub - 1 ), data%tinfo, data%titer,     &
-                 data%U_sub( : data%dim_sub - 1 ),                             &
-                 data%V( : data%dim_sub - 1 ),                                 &
-                 data%W( : data%dim_sub - 1 ), data%seed, data%printd,         &
-                 control%out, prefix, inform%hard_case, data%hard_case_step )
+                      data%OFFD( : data%dim_sub - 1 ),                         &
+                      data%D_fact( : data%dim_sub - 1 ),                       &
+                      data%OFFD_fact( : data%dim_sub - 1 ),                    &
+                      data%C_sub( : data%dim_sub - 1 ), radius, data%rtol,     &
+                      data%interior, control%equality_problem,                 &
+                      data%ttrs_itmax, data%try_warm, data%use_old,            &
+                      inform%leftmost, data%LAMBDA( data%dim_sub - 1 ),        &
+                      data%MIN_f( data%dim_sub - 1 ),                          &
+                      data%X_sub( : data%dim_sub - 1 ),                        &
+                      data%ttrs_info, data%ttrs_iter,                          &
+                      data%U_sub( : data%dim_sub - 1 ),                        &
+                      data%V( : data%dim_sub - 1 ),                            &
+                      data%W( : data%dim_sub - 1 ), data%seed, data%printd,    &
+                      control%out, prefix, inform%hard_case,                   &
+                      data%hard_case_step )
+!write(6,*) ' GLTR_ttrs info ', data%ttrs_info
 
 !     IF ( data%printi ) WRITE( control%out, 2020 )                            &
 !        WRITE( control%out, 2020 ) data%MIN_f( data%dim_sub - 1 ),            &
@@ -1532,7 +1545,6 @@
 
 !  Update the solution estimate
 
-write(6,*) ' gltr 1535 itp1 itmax+1 ', itp1, data%itmax + 1
       data%rminvr = data%RMINVRS( itp1 )
       IF ( data%iter /= 0 ) THEN
         X = X + data%tau                                                       &
@@ -2328,8 +2340,8 @@ write(6,*) ' gltr 1535 itp1 itmax+1 ', itp1, data%itmax + 1
 !       END IF
       ELSE
         old_leftmost = zero
-        IF ( interior .AND. debug )                                            &
-          WRITE( out, "( A, 8X,'lambda',13X,'xnorm',15X,'radius' )" ) prefix
+        IF ( interior .AND. debug ) WRITE( out,                                &
+          "( A, 8X, 'lambda', 13X, 'xnorm', 15X, 'radius' )" ) prefix
       END IF
 
 !  It is now simply a matter of applying Newton's method starting from lambda

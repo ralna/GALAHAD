@@ -2,7 +2,7 @@
 # Simple code to test the Julia interface to VERSION
 
 using GALAHAD
-using GALAHAD_jll
+#using GALAHAD_jll
 using Test
 using Printf
 using Quadmath
