@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD NREK package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2025-11-21
+#  This version: 2025-11-27
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -18,7 +18,7 @@ PACKAGE = NREK
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_sls_deps make_sls make_ir make_norms make_mop \
+DEPENDENCIES = make_sls_deps make_sls make_mop make_ir make_norms \
                make_rqs
 
 #  other packages that depend on package

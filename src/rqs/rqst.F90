@@ -56,8 +56,8 @@
    DO i = 1, n_errors
      pass = errors( i )
      nn = n
-     sigma = one
      p = 3.0_rp_
+     sigma = one
      CALL RQS_initialize( data, control, inform )
      CALL WHICH_sls( control )
      control%error = 23 ; control%out = 23 ; control%print_level = 10

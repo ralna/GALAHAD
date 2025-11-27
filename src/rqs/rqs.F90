@@ -4062,7 +4062,7 @@
 !-----------------------------------------------
 
       INTEGER ( KIND = ip_ ) :: i, it, out, nroots, print_level, max_order
-      INTEGER ( KIND = ip_ ) :: n_lambda, i_hard
+      INTEGER ( KIND = ip_ ) :: n_lambda, i_hard, it_max
       REAL :: time_start, time_now, time_record
       REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record
       REAL ( KIND = rp_ ) :: lambda, lambda_l, lambda_u, delta_lambda, target
@@ -4127,6 +4127,14 @@
       printi = out > 0 .AND. print_level > 0
       printt = out > 0 .AND. print_level > 1
       printd = out > 0 .AND. print_level > 2
+
+!  place an upper bound on the number of iterations allowed
+
+      IF ( control%max_factorizations > 0 ) THEN
+        it_max = control%max_factorizations
+      ELSE
+        it_max = HUGE( 0 )
+      END IF
 
 !  reccord useful constants
 
@@ -4387,6 +4395,12 @@
       DO
         it = it + 1
 
+!  check to see if the iteration limit has been exceeded
+
+        IF ( it > it_max ) THEN
+          inform%status = GALAHAD_error_max_iterations
+          EXIT
+        END IF
 
 !  if H(lambda) is positive definite, solve  H(lambda) x = - c
 

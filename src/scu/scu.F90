@@ -171,6 +171,7 @@
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
       TYPE ( SCU_inform_type ), INTENT( OUT ) :: inform
 
+      data%class = 3
       inform%status = GALAHAD_ok
 
       RETURN

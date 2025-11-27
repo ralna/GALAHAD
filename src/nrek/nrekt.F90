@@ -56,6 +56,7 @@
    DO i = 1, n_errors
      pass = errors( i )
      nn = n
+     power = 3.0_rp_
      weight = one
      CALL NREK_initialize( data, control, inform )
      CALL WHICH_sls( control )
@@ -110,6 +111,7 @@
 
    WRITE( 6, "( /, ' ==== basic tests of storage formats ===== ', / )" )
 
+   power = 3.0_rp_
    n = 3 ; h_ne = 4 ; s_ne = 3 ; H%n = n ; S%n = n
    ALLOCATE( H%ptr( n + 1 ), S%ptr( n + 1 ), C( n ), X( n ) )
 

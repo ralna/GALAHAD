@@ -18,7 +18,7 @@ PACKAGE = TREK
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_sls_deps make_sls make_ir make_norms make_mop \
+DEPENDENCIES = make_sls_deps make_sls make_mop make_ir make_norms \
                make_trs
 
 #  other packages that depend on package
