@@ -13,8 +13,7 @@ jobs:
     strategy:
       matrix:
         # Note: builds on these are backward compatible
-        # macos-13 is an intel runner, macos-14 is apple silicon
-        os: [ubuntu-latest, macos-13, macos-14, windows-latest]
+        os: [ubuntu-latest, macos-15-intel, macos-15, windows-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -26,10 +25,10 @@ jobs:
       - name: Set macOS OpenBLAS paths
         if: runner.os == 'macOS'
         run: |
-          if [[ "${{matrix.os}}" == "macos-14" ]]; then
+          if [[ "${{matrix.os}}" == "macos-15" ]]; then
             echo PKG_CONFIG_PATH="/opt/homebrew/opt/openblas/lib/pkgconfig" >> $GITHUB_ENV
           fi
-          if [[ "${{matrix.os}}" == "macos-13" ]]; then
+          if [[ "${{matrix.os}}" == "macos-15-intel" ]]; then
             echo PKG_CONFIG_PATH="/usr/local/opt/openblas/lib/pkgconfig" >> $GITHUB_ENV
           fi
 
@@ -40,7 +39,7 @@ jobs:
         #   CIBW_SOME_OPTION: value
         env:
           # list of python versions and platforms to build on
-          CIBW_BUILD: cp3{10,11,12,13}-manylinux_x86_64 cp3{10,11,12,13}-macosx_x86_64 cp3{10,11,12,13}-macosx_arm64 cp3{10,11,12,13}-win_amd64
+          CIBW_BUILD: cp3{10,11,12,13,14}-manylinux_x86_64 cp3{10,11,12,13,14}-macosx_x86_64 cp3{10,11,12,13,14}-macosx_arm64 cp3{10,11,12,13,14}-win_amd64
 
           # build with gcc/gfortran on macOS
           CIBW_ENVIRONMENT_MACOS: CC="gcc-14" CXX="g++-14" FC="gfortran-14"
