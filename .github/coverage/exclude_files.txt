@@ -88,6 +88,8 @@ src/nls/nlst2.F90
 src/nls/nlsti.F90
 src/nodend/nodendt.F90
 src/nodend/nodendti.F90
+src/nrek/nrekt.F90
+src/nrek/nrekti.F90
 src/presolve/presolvet.F90
 src/presolve/presolveti.F90
 src/psls/pslst.F90
@@ -126,6 +128,8 @@ src/ssids/ssidst.F90
 src/svt/svtt.F90
 src/trb/trbt.F90
 src/trb/trbti.F90
+src/trek/trekt.F90
+src/trek/trekti.F90
 src/trs/trst.F90
 src/trs/trsti.F90
 src/tru/trut.F90
@@ -298,6 +302,8 @@ src/nodend/metis52/timers.c
 src/nodend/metis52/timing.c
 src/nodend/metis52/util.c
 src/nodend/metis52/wspace.c
+src/nrek/C/nrekt.c
+src/nrek/C/nrektf.c
 src/presolve/C/presolvet.c
 src/presolve/C/presolvetf.c
 src/psls/C/pslst.c
@@ -322,6 +328,8 @@ src/ssls/C/slst.c
 src/ssls/C/slstf.c
 src/trb/C/trbt.c
 src/trb/C/trbtf.c
+src/trek/C/trekt.c
+src/trek/C/trektf.c
 src/trs/C/trst.c
 src/trs/C/trstf.c
 src/tru/C/trut.c
