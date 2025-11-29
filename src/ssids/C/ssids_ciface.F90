@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-14 AT 13:10 GMT
+! THIS VERSION: GALAHAD 5.4 - 2025-11-29 AT 13:30 GMT
 
 #ifdef REAL_32
 #ifdef INTEGER_64
@@ -181,7 +181,7 @@
                                  fcontrol%nodend_control )
     fcontrol%nstream = ccontrol%nstream
     fcontrol%multiplier = ccontrol%multiplier
-    fcontrol%min_loadbalance = ccontrol%min_loadbalance
+    fcontrol%min_loadbalance = REAL( ccontrol%min_loadbalance )
     fcontrol%failed_pivot_method = ccontrol%failed_pivot_method
     RETURN
 

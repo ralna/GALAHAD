@@ -4,7 +4,7 @@
        generators.
 
 \date   Started 5/17/2007
-\author George
+\author George, slightly modified for GALAHAD: Nick Gould, 2025-11-29
 \version\verbatim $Id: random.c 11793 2012-04-04 21:03:02Z karypis $ \endverbatim
 */
 
@@ -13,12 +13,14 @@
 /*************************************************************************/
 /*! Create the various random number functions */
 /*************************************************************************/
+/*
 GK_MKRANDOM(gk_c,   size_t, char)
 GK_MKRANDOM(gk_i,   size_t, int)
 GK_MKRANDOM(gk_f,   size_t, float)
 GK_MKRANDOM(gk_d,   size_t, double)
 GK_MKRANDOM(gk_idx, size_t, gk_idx_t)
 GK_MKRANDOM(gk_z,   size_t, ssize_t)
+*/
 
 /*************************************************************************/
 /*! GKlib's built in random number generator for portability across 

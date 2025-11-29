@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-09-12 AT 08:50 GMT
+! THIS VERSION: GALAHAD 5.4 - 2025-11-29 AT 13:30 GMT
 ! (consistent with SPRAL up to issue #250)
 
 #include "galahad_modules.h"

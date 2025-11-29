@@ -118,7 +118,6 @@
 #define rsorti rsorti_52_64
 #define rsum rsum_52_64
 #define uvwsorti uvwsorti_52_64
-
 #define re_compile_pattern re_compile_pattern_52_64
 #define re_set_syntax re_set_syntax_52_64
 #define re_compile_fastmap re_compile_fastmap_52_64
@@ -235,7 +234,6 @@
 #define rsorti rsorti_52
 #define rsum rsum_52
 #define uvwsorti uvwsorti_52
-
 #define re_compile_pattern re_compile_pattern_52
 #define re_set_syntax re_set_syntax_52
 #define re_compile_fastmap re_compile_fastmap_52

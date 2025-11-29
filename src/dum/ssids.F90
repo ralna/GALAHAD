@@ -1,14 +1,18 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-09-12 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-11-29 AT 13:30 GMT
 
 #include "galahad_modules.h"
 
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   S S I D S   M O D U L E  -*-*-*-*-*-
 
  MODULE GALAHAD_SSIDS_precision
+
+   USE, INTRINSIC :: iso_c_binding
 !$ USE omp_lib
    USE GALAHAD_SYMBOLS
    USE GALAHAD_KINDS_precision, ONLY: ip_, ipc_, rp_, long_
-   USE, INTRINSIC :: iso_c_binding
+   USE GALAHAD_NODEND_precision, ONLY: NODEND_control_type,                    &
+                                       NODEND_inform_type
+
    IMPLICIT NONE
 
    PRIVATE
@@ -89,99 +93,27 @@
      INTEGER( KIND = ip_ ) :: unmatchable = 0
    END TYPE auction_inform
 
-! in subtree.f90
+! in ssids.f90
 
-   TYPE, ABSTRACT :: symbolic_subtree_base
-     INTEGER( KIND = ip_ ) :: dummy
-   END TYPE symbolic_subtree_base
+!  TYPE, ABSTRACT :: symbolic_subtree_base
+!    INTEGER( KIND = ip_ ) :: dummy
+!  END TYPE symbolic_subtree_base
 
-! in subtree.f90
-
-   TYPE, ABSTRACT :: numeric_subtree_base
-     INTEGER( KIND = ip_ ) :: dummy
-   END TYPE numeric_subtree_base
-
-! in akeep.f90
+!  TYPE, ABSTRACT :: numeric_subtree_base
+!    INTEGER( KIND = ip_ ) :: dummy
+!  END TYPE numeric_subtree_base
 
    TYPE symbolic_subtree_ptr
      INTEGER( KIND = ip_ ) :: exec_loc
 !    CLASS( symbolic_subtree_base ), POINTER :: ptr
    END TYPE symbolic_subtree_ptr
 
-! in fkeep.f90
-
    TYPE numeric_subtree_ptr
      INTEGER( KIND = ip_ ) :: dummy
 !    CLASS( numeric_subtree_base ), POINTER :: ptr
    END TYPE numeric_subtree_ptr
 
-! in inform.f90
-
-   TYPE, PUBLIC :: SSIDS_inform_type
-     INTEGER( KIND = ip_ ) :: flag = 0
-     INTEGER( KIND = ip_ ) :: matrix_dup = 0
-     INTEGER( KIND = ip_ ) :: matrix_missing_diag = 0
-     INTEGER( KIND = ip_ ) :: matrix_outrange = 0
-     INTEGER( KIND = ip_ ) :: matrix_rank = 0
-     INTEGER( KIND = ip_ ) :: maxdepth
-     INTEGER( KIND = ip_ ) :: maxfront
-     INTEGER( KIND = ip_ ) :: num_delay = 0
-     INTEGER( KIND = long_ ) :: num_factor = 0_long_
-     INTEGER( KIND = long_ ) :: num_flops = 0_long_
-     INTEGER( KIND = ip_ ) :: num_neg = 0
-     INTEGER( KIND = ip_ ) :: num_sup = 0
-     INTEGER( KIND = ip_ ) :: num_two = 0
-     INTEGER( KIND = ip_ ) :: stat = 0
-     TYPE( auction_inform ) :: auction
-     INTEGER( KIND = ip_ ) :: cuda_error
-     INTEGER( KIND = ip_ ) :: cublas_error
-     INTEGER( KIND = ip_ ) :: not_first_pass = 0
-     INTEGER( KIND = ip_ ) :: not_second_pass = 0
-     INTEGER( KIND = ip_ ) :: nparts = 0
-     INTEGER( KIND = long_ ) :: cpu_flops = 0_long_
-     INTEGER( KIND = long_ ) :: gpu_flops = 0_long_
-!  CONTAINS
-!     PROCEDURE, pass( this ) :: flagToCharacter
-   END TYPE SSIDS_inform_type
-
-! in akeep.f90
-
-   TYPE, PUBLIC :: SSIDS_akeep_type
-     LOGICAL :: check
-     INTEGER( KIND = ip_ ) :: n
-     INTEGER( KIND = ip_ ) :: ne
-     INTEGER( KIND = ip_ ) :: nnodes = -1
-     INTEGER( KIND = ip_ ) :: nparts
-     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: part
-     TYPE( symbolic_subtree_ptr ), dimension( : ), allocatable :: subtree
-     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: contrib_ptr
-     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: contrib_idx
-     INTEGER( KIND = ipc_ ), dimension( : ), allocatable :: invp
-     INTEGER( KIND = ip_ ), dimension( :,: ), allocatable :: nlist
-     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: nptr
-     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: rlist
-     INTEGER( KIND = long_ ), dimension( : ), allocatable :: rptr
-     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: sparent
-     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: sptr
-     INTEGER( KIND = ip_ ), allocatable :: ptr( : )
-     INTEGER( KIND = ip_ ), allocatable :: row( : )
-     INTEGER( KIND = ip_ ) :: lmap
-     INTEGER( KIND = ip_ ), allocatable :: map( : )
-     REAL( KIND = rp_ ), dimension( : ), allocatable :: scaling
-     TYPE( numa_region ), dimension( : ), allocatable :: topology
-     TYPE( SSIDS_inform_type ) :: inform
-   END TYPE SSIDS_akeep_type
-
-! in fkeep.f90
-
-   TYPE, PUBLIC :: SSIDS_fkeep_type
-     REAL( KIND = rp_ ), dimension( : ), allocatable :: scaling
-     LOGICAL :: pos_def
-     TYPE( numeric_subtree_ptr ), dimension( : ), allocatable :: subtree
-     TYPE( SSIDS_inform_type ) :: inform
-   END TYPE SSIDS_fkeep_type
-
-! in datatypes.f90
+! in types.f90
 
    TYPE, PUBLIC :: SSIDS_control_type
      INTEGER( KIND = ip_ ) :: print_level = 0
@@ -203,13 +135,78 @@
      INTEGER( KIND = ip_ ) :: pivot_method = 2
      REAL( KIND = rp_ ) :: small = 1e-20_rp_
      REAL( KIND = rp_ ) :: u = 0.01
-     INTEGER( KIND = ip_ ) :: nstream = 1
+     TYPE ( NODEND_control_type ) :: nodend_control
+     INTEGER( KIND = ip_ ) :: nstream = 1  ! the following are undocumented
      REAL( KIND = rp_ ) :: multiplier = 1.1
-!    TYPE( auction_options ) :: auction
+!    TYPE( MS_auction_control_type ) :: auction
      REAL :: min_loadbalance = 0.8
 !    CHARACTER( LEN = : ), allocatable :: rb_dump
      INTEGER( KIND = ip_ ) :: failed_pivot_method = 1
    END TYPE SSIDS_control_type
+
+   TYPE, PUBLIC :: SSIDS_inform_type
+     INTEGER( KIND = ip_ ) :: flag = 0
+     INTEGER( KIND = ip_ ) :: matrix_dup = 0
+     INTEGER( KIND = ip_ ) :: matrix_missing_diag = 0
+     INTEGER( KIND = ip_ ) :: matrix_outrange = 0
+     INTEGER( KIND = ip_ ) :: matrix_rank = 0
+     INTEGER( KIND = ip_ ) :: maxdepth
+     INTEGER( KIND = ip_ ) :: maxfront
+     INTEGER( KIND = ip_ ) :: maxsupernode = 0
+     INTEGER( KIND = ip_ ) :: num_delay = 0
+     INTEGER( KIND = long_ ) :: num_factor = 0_long_
+     INTEGER( KIND = long_ ) :: num_flops = 0_long_
+     INTEGER( KIND = ip_ ) :: num_neg = 0
+     INTEGER( KIND = ip_ ) :: num_sup = 0
+     INTEGER( KIND = ip_ ) :: num_two = 0
+     INTEGER( KIND = ip_ ) :: stat = 0
+     TYPE( auction_inform ) :: auction
+     INTEGER( KIND = ip_ ) :: cuda_error
+     INTEGER( KIND = ip_ ) :: cublas_error
+     TYPE( NODEND_inform_type ) :: nodend_inform
+     INTEGER( KIND = ip_ ) :: not_first_pass = 0
+     INTEGER( KIND = ip_ ) :: not_second_pass = 0
+     INTEGER( KIND = ip_ ) :: nparts = 0
+     INTEGER( KIND = long_ ) :: cpu_flops = 0_long_
+     INTEGER( KIND = long_ ) :: gpu_flops = 0_long_
+!  CONTAINS
+!     PROCEDURE, pass( this ) :: flagToCharacter
+   END TYPE SSIDS_inform_type
+
+! in ssids.f90
+
+   TYPE, PUBLIC :: SSIDS_akeep_type
+     LOGICAL :: check
+     INTEGER( KIND = ip_ ) :: n
+     INTEGER( KIND = ip_ ) :: ne
+     INTEGER( KIND = ip_ ) :: nnodes = - 1
+     INTEGER( KIND = ip_ ) :: nparts
+     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: part
+     TYPE( symbolic_subtree_ptr ), dimension( : ), allocatable :: subtree
+     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: contrib_ptr
+     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: contrib_idx
+     INTEGER( KIND = ipc_ ), dimension( : ), allocatable :: invp
+     INTEGER( KIND = ip_ ), dimension( :,: ), allocatable :: nlist
+     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: nptr
+     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: rlist
+     INTEGER( KIND = long_ ), dimension( : ), allocatable :: rptr
+     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: sparent
+     INTEGER( KIND = ip_ ), dimension( : ), allocatable :: sptr
+     INTEGER( KIND = ip_ ), allocatable :: ptr( : )
+     INTEGER( KIND = ip_ ), allocatable :: row( : )
+     INTEGER( KIND = ip_ ) :: lmap
+     INTEGER( KIND = ip_ ), allocatable :: map( : )
+     REAL( KIND = rp_ ), dimension( : ), allocatable :: scaling
+     TYPE( numa_region ), dimension( : ), allocatable :: topology
+     TYPE( SSIDS_inform_type ) :: inform
+   END TYPE SSIDS_akeep_type
+
+   TYPE, PUBLIC :: SSIDS_fkeep_type
+     REAL( KIND = rp_ ), dimension( : ), allocatable :: scaling
+     LOGICAL :: pos_def
+     TYPE( numeric_subtree_ptr ), dimension( : ), allocatable :: subtree
+     TYPE( SSIDS_inform_type ) :: inform
+   END TYPE SSIDS_fkeep_type
 
  CONTAINS
 

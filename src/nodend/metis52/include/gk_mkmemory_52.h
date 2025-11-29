@@ -3,7 +3,7 @@
 \brief Templates for memory allocation routines
 
 \date   Started 3/29/07
-\author George
+\author George, slightly modified for GALAHAD: Nick Gould, 2025-11-29
 \version\verbatim $Id: gk_mkmemory.h 10711 2011-08-31 22:23:04Z karypis $ \endverbatim
 */
 
@@ -138,5 +138,52 @@ void PRFX ## SetMatrix(TYPE **matrix, size_t ndim1, size_t ndim2, TYPE value)\
   void   PRFX ## SetMatrix(TYPE **matrix, size_t ndim1, size_t ndim2, TYPE value);\
 
 
+#define GK_MKALLOCM(PRFX, TYPE)\
+/*************************************************************************/\
+/*! The macro for gk_?malloc()-class of routines */\
+/**************************************************************************/\
+TYPE *PRFX ## malloc(size_t n, char *msg)\
+{\
+  return (TYPE *)gk_malloc(sizeof(TYPE)*n, msg);\
+}\
+
+
+#define GK_MKALLOCM_PROTO(PRFX, TYPE)\
+  TYPE  *PRFX ## malloc(size_t n, char *msg);\
+
+
+#define GK_MKALLOCS(PRFX, TYPE)\
+/*************************************************************************/\
+/*! The macro for gk_?smalloc()-class of routines */\
+/**************************************************************************/\
+TYPE *PRFX ## smalloc(size_t n, TYPE ival, char *msg)\
+{\
+  TYPE *ptr;\
+\
+  ptr = (TYPE *)gk_malloc(sizeof(TYPE)*n, msg);\
+  if (ptr == NULL) \
+    return NULL; \
+\
+  return PRFX ## set(n, ival, ptr); \
+}\
+\
+\
+/*************************************************************************/\
+/*! The macro for gk_?set()-class of routines */\
+/*************************************************************************/\
+TYPE *PRFX ## set(size_t n, TYPE val, TYPE *x)\
+{\
+  size_t i;\
+\
+  for (i=0; i<n; i++)\
+    x[i] = val;\
+\
+  return x;\
+}\
+
+#define GK_MKALLOCS_PROTO(PRFX, TYPE)\
+  TYPE  *PRFX ## smalloc(size_t n, TYPE ival, char *msg);\
+  TYPE  *PRFX ## set(size_t n, TYPE val, TYPE *x);\
 
 #endif
+

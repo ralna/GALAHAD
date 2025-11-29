@@ -3,7 +3,7 @@
 \brief This file contains function prototypes
 
 \date   Started 3/27/2007
-\author George
+\author George, slightly modified by Nick Gould, STFC-RAL, 2025-11-29, below
 \version\verbatim $Id: gk_proto.h 12591 2012-09-01 19:03:15Z karypis $ \endverbatim
 */
 
@@ -26,9 +26,6 @@ GK_MKBLAS_PROTO(gk_f,   float,    float)
 GK_MKBLAS_PROTO(gk_d,   double,   double)
 GK_MKBLAS_PROTO(gk_idx, gk_idx_t, gk_idx_t)
 
-
-
-
 /*-------------------------------------------------------------
  * io.c
  *-------------------------------------------------------------*/
@@ -43,9 +40,6 @@ int64_t *gk_i64readfilebin(char *fname, ssize_t *r_nelmnts);
 float *gk_freadfilebin(char *fname, ssize_t *r_nelmnts);
 size_t gk_fwritefilebin(char *fname, size_t n, float *a);
 double *gk_dreadfilebin(char *fname, ssize_t *r_nelmnts);
-
-
-
 
 /*-------------------------------------------------------------
  * fs.c
@@ -62,29 +56,29 @@ char *gk_getpathname(char *path);
 int gk_mkpath(char *);
 int gk_rmpath(char *);
 
-
-
 /*-------------------------------------------------------------
  * memory.c
  *-------------------------------------------------------------*/
-GK_MKALLOC_PROTO(gk_c,   char)
-GK_MKALLOC_PROTO(gk_i,   int)
-GK_MKALLOC_PROTO(gk_i32, int32_t)
-GK_MKALLOC_PROTO(gk_i64, int64_t)
-GK_MKALLOC_PROTO(gk_z,   ssize_t)
-GK_MKALLOC_PROTO(gk_f,   float)
-GK_MKALLOC_PROTO(gk_d,   double)
-GK_MKALLOC_PROTO(gk_idx, gk_idx_t)
+GK_MKALLOCM_PROTO(gk_c,   char)
+GK_MKALLOCM_PROTO(gk_i32, int32_t)
+GK_MKALLOCM_PROTO(gk_i64, int64_t)
+GK_MKALLOCM_PROTO(gk_z,   ssize_t)
+GK_MKALLOCM_PROTO(gk_f,   float)
+GK_MKALLOCM_PROTO(gk_d,   double)
+GK_MKALLOCM_PROTO(gk_dkv,   gk_dkv_t)
+GK_MKALLOCS_PROTO(gk_idx, gk_idx_t)
 
+/*
+GK_MKALLOC_PROTO(gk_i,   int)
 GK_MKALLOC_PROTO(gk_ckv,   gk_ckv_t)
 GK_MKALLOC_PROTO(gk_ikv,   gk_ikv_t)
 GK_MKALLOC_PROTO(gk_i32kv, gk_i32kv_t)
 GK_MKALLOC_PROTO(gk_i64kv, gk_i64kv_t)
 GK_MKALLOC_PROTO(gk_zkv,   gk_zkv_t)
 GK_MKALLOC_PROTO(gk_fkv,   gk_fkv_t)
-GK_MKALLOC_PROTO(gk_dkv,   gk_dkv_t)
 GK_MKALLOC_PROTO(gk_skv,   gk_skv_t)
 GK_MKALLOC_PROTO(gk_idxkv, gk_idxkv_t)
+*/
 
 void   gk_AllocMatrix(void ***, size_t, size_t , size_t);
 void   gk_FreeMatrix(void ***, size_t, size_t);
@@ -96,17 +90,12 @@ void   gk_free(void **ptr1,...);
 size_t gk_GetCurMemoryUsed();
 size_t gk_GetMaxMemoryUsed();
 
-
-
 /*-------------------------------------------------------------
  * seq.c
  *-------------------------------------------------------------*/
 gk_seq_t *gk_seq_ReadGKMODPSSM(char *file_name);
 gk_i2cc2i_t *gk_i2cc2i_create_common(char *alphabet);
 void gk_seq_init(gk_seq_t *seq);
-
-
-
 
 /*-------------------------------------------------------------
  * pdb.c
@@ -118,7 +107,6 @@ void gk_writefullatom(pdbf *p, char *fname);
 void gk_writebackbone(pdbf *p, char *fname);
 void gk_writealphacarbons(pdbf *p, char *fname);
 void gk_showcorruption(pdbf *p);
-
 
 /*-------------------------------------------------------------
  * error.c
@@ -135,7 +123,6 @@ void gk_NonLocalExit_Handler(int signum);
 char *gk_strerror(int errnum);
 void PrintBackTrace();
 
-
 /*-------------------------------------------------------------
  * util.c
  *-------------------------------------------------------------*/
@@ -144,7 +131,6 @@ void  gk_array2csr(size_t n, size_t range, int *array, int *ptr, int *ind);
 int   gk_log2(int);
 int   gk_ispow2(int);
 float gk_flog2(float);
-
 
 /*-------------------------------------------------------------
  * time.c
@@ -167,8 +153,6 @@ int     gk_strrcmp(char *s1, char *s2);
 char   *gk_time2str(time_t time);
 time_t  gk_str2time(char *str);
 int     gk_GetStringID(gk_StringMap_t *strmap, char *key);
-
-
 
 /*-------------------------------------------------------------
  * sort.c 
@@ -202,13 +186,11 @@ void gk_skvsortd(size_t, gk_skv_t *);
 void gk_idxkvsorti(size_t, gk_idxkv_t *);
 void gk_idxkvsortd(size_t, gk_idxkv_t *);
 
-
 /*-------------------------------------------------------------
  * Selection routines
  *-------------------------------------------------------------*/
 int  gk_dfkvkselect(size_t, int, gk_fkv_t *);
 int  gk_ifkvkselect(size_t, int, gk_fkv_t *);
-
 
 /*-------------------------------------------------------------
  * Priority queue 
@@ -219,7 +201,6 @@ GK_MKPQUEUE_PROTO(gk_i64pq, gk_i64pq_t, int64_t,  gk_idx_t)
 GK_MKPQUEUE_PROTO(gk_fpq,   gk_fpq_t,   float,    gk_idx_t)
 GK_MKPQUEUE_PROTO(gk_dpq,   gk_dpq_t,   double,   gk_idx_t)
 GK_MKPQUEUE_PROTO(gk_idxpq, gk_idxpq_t, gk_idx_t, gk_idx_t)
-
 
 /*-------------------------------------------------------------
  * HTable routines
@@ -234,7 +215,6 @@ int          HTable_GetNext(gk_HTable_t *htable, int key, int *val, int type);
 int          HTable_SearchAndDelete(gk_HTable_t *htable, int key);
 void         HTable_Destroy(gk_HTable_t *htable);
 int          HTable_HFunction(int nelements, int key);
- 
 
 /*-------------------------------------------------------------
  * Tokenizer routines
@@ -250,20 +230,20 @@ void decodeblock(unsigned char *in, unsigned char *out);
 void GKEncodeBase64(int nbytes, unsigned char *inbuffer, unsigned char *outbuffer);
 void GKDecodeBase64(int nbytes, unsigned char *inbuffer, unsigned char *outbuffer);
 
-
 /*-------------------------------------------------------------
  * random.c
  *-------------------------------------------------------------*/
+/*
 GK_MKRANDOM_PROTO(gk_c,   size_t, char)
 GK_MKRANDOM_PROTO(gk_i,   size_t, int)
 GK_MKRANDOM_PROTO(gk_f,   size_t, float)
 GK_MKRANDOM_PROTO(gk_d,   size_t, double)
 GK_MKRANDOM_PROTO(gk_idx, size_t, gk_idx_t)
 GK_MKRANDOM_PROTO(gk_z,   size_t, ssize_t)
+*/
 void gk_randinit(uint64_t);
 uint64_t gk_randint64(void);
 uint32_t gk_randint32(void);
-
 
 /*-------------------------------------------------------------
  * OpenMP fake functions
@@ -280,7 +260,6 @@ int omp_get_dynamic(void);
 void omp_set_nested(int nested);
 int omp_get_nested(void);
 #endif /* __OPENMP__ */
-
 
 /*-------------------------------------------------------------
  * CSR-related functions
@@ -312,8 +291,6 @@ int gk_csr_GetSimilarRows(gk_csr_t *mat, int nqterms, int *qind, float *qval,
         int simtype, int nsim, float minsim, gk_fkv_t *hits, int *_imarker,
         gk_fkv_t *i_cand);
 
-
-
 /* itemsets.c */
 void gk_find_frequent_itemsets(int ntrans, ssize_t *tranptr, int *tranind,
         int minfreq, int maxfreq, int minlen, int maxlen,
@@ -321,14 +298,12 @@ void gk_find_frequent_itemsets(int ntrans, ssize_t *tranptr, int *tranind,
                                 int ntrans, int *tranind),
         void *stateptr);
 
-
 /* evaluate.c */
 float ComputeAccuracy(int n, gk_fkv_t *list);
 float ComputeROCn(int n, int maxN, gk_fkv_t *list);
 float ComputeMedianRFP(int n, gk_fkv_t *list);
 float ComputeMean (int n, float *values);
 float ComputeStdDev(int  n, float *values);
-
 
 /* mcore.c */
 gk_mcore_t *gk_mcoreCreate(size_t coresize);
@@ -347,7 +322,6 @@ void gk_gkmcoreDel(gk_mcore_t *mcore, void *ptr);
 
 /* rw.c */
 int gk_rw_PageRank(gk_csr_t *mat, float lamda, float eps, int max_niter, float *pr);
-
 
 /* graph.c */
 gk_graph_t *gk_graph_Create();
@@ -368,9 +342,6 @@ void gk_graph_ComputeBestFOrdering0(gk_graph_t *graph, int v, int type,
 void gk_graph_ComputeBestFOrdering(gk_graph_t *graph, int v, int type,
               int32_t **r_perm, int32_t **r_iperm);
 void gk_graph_SingleSourceShortestPaths(gk_graph_t *graph, int v, void **r_sps);
-
-
-
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 09:50 GMT
+! THIS VERSION: GALAHAD 5.4 - 2025-11-29 AT 13:30 GMT
 
 !-*-*-*-*-*-  G A L A H A D _ S S I D S _ t y p e s   M O D U L E  *-*-*-*-*-
 

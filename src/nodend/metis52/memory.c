@@ -8,7 +8,7 @@ defined with the help of the macros in gk_memory.h. These macros
 can be used to define other memory allocation routines.
 
 \date   Started 4/3/2007
-\author George
+\author George, slightly modified for GALAHAD: Nick Gould, 2025-11-29
 \version\verbatim $Id: memory.c 21050 2017-05-25 03:53:58Z karypis $ \endverbatim
 */
 
@@ -17,38 +17,17 @@ can be used to define other memory allocation routines.
 /* This is for the global mcore that tracks all heap allocations */
 static __thread gk_mcore_t *gkmcore = NULL;
 
-
 /*************************************************************************/
 /*! Define the set of memory allocation routines for each data type */
 /**************************************************************************/
-GK_MKALLOC(gk_c,    char)
-GK_MKALLOC(gk_i,    int)
-GK_MKALLOC(gk_i8,   int8_t)
-GK_MKALLOC(gk_i16,  int16_t)
-GK_MKALLOC(gk_i32,  int32_t)
-GK_MKALLOC(gk_i64,  int64_t)
-GK_MKALLOC(gk_ui8,  uint8_t)
-GK_MKALLOC(gk_ui16, uint16_t)
-GK_MKALLOC(gk_ui32, uint32_t)
-GK_MKALLOC(gk_ui64, uint64_t)
-GK_MKALLOC(gk_z,    ssize_t)
-GK_MKALLOC(gk_zu,   size_t)
-GK_MKALLOC(gk_f,    float)
-GK_MKALLOC(gk_d,    double)
-GK_MKALLOC(gk_idx,  gk_idx_t)
-
-GK_MKALLOC(gk_ckv,   gk_ckv_t)
-GK_MKALLOC(gk_ikv,   gk_ikv_t)
-GK_MKALLOC(gk_i8kv,  gk_i8kv_t)
-GK_MKALLOC(gk_i16kv, gk_i16kv_t)
-GK_MKALLOC(gk_i32kv, gk_i32kv_t)
-GK_MKALLOC(gk_i64kv, gk_i64kv_t)
-GK_MKALLOC(gk_zkv,   gk_zkv_t)
-GK_MKALLOC(gk_zukv,  gk_zukv_t)
-GK_MKALLOC(gk_fkv,   gk_fkv_t)
-GK_MKALLOC(gk_dkv,   gk_dkv_t)
-GK_MKALLOC(gk_skv,   gk_skv_t)
-GK_MKALLOC(gk_idxkv, gk_idxkv_t)
+GK_MKALLOCM(gk_c,    char)
+GK_MKALLOCM(gk_i32,  int32_t)
+GK_MKALLOCM(gk_i64,  int64_t)
+GK_MKALLOCM(gk_z,    ssize_t)
+GK_MKALLOCM(gk_f,    float)
+GK_MKALLOCM(gk_d,    double)
+GK_MKALLOCM(gk_dkv,  gk_dkv_t)
+GK_MKALLOCS(gk_idx,  gk_idx_t)
 
 /*************************************************************************/
 /*! This function allocates a two-dimensional matrix.

@@ -1,6 +1,44 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.4 - 2025-11-29 AT 13:30 GMT
 
-#include "galahad_modules.h"
+#ifdef REAL_32
+#ifdef INTEGER_64
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_single_64
+#define GALAHAD_SSIDS_precision GALAHAD_SSIDS_single_64
+#define GALAHAD_SSIDS_precision_ciface GALAHAD_SSIDS_single_ciface_64
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_single_ciface_64
+#else
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_single
+#define GALAHAD_SSIDS_precision GALAHAD_SSIDS_single
+#define GALAHAD_SSIDS_precision_ciface GALAHAD_SSIDS_single_ciface
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_single_ciface
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_quadruple_64
+#define GALAHAD_SSIDS_precision GALAHAD_SSIDS_quadruple_64
+#define GALAHAD_SSIDS_precision_ciface GALAHAD_SSIDS_quadruple_ciface_64
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_quadruple_ciface_64
+#else
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_quadruple
+#define GALAHAD_SSIDS_precision GALAHAD_SSIDS_quadruple
+#define GALAHAD_SSIDS_precision_ciface GALAHAD_SSIDS_quadruple_ciface
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_quadruple_ciface
+#endif
+#else
+#ifdef INTEGER_64
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_double_64
+#define GALAHAD_SSIDS_precision GALAHAD_SSIDS_double_64
+#define GALAHAD_SSIDS_precision_ciface GALAHAD_SSIDS_double_ciface_64
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_double_ciface_64
+#else
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_double
+#define GALAHAD_SSIDS_precision GALAHAD_SSIDS_double
+#define GALAHAD_SSIDS_precision_ciface GALAHAD_SSIDS_double_ciface
+#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_double_ciface
+#endif
+#endif
+
+#include "galahad_cfunctions.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ S S I D S   C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -21,6 +59,11 @@
                                           => SSIDS_control_type,               &
                                         f_ssids_inform_type                    &
                                           => SSIDS_inform_type
+    USE GALAHAD_NODEND_precision_ciface, ONLY:                                 &
+        nodend_inform_type, nodend_control_type,                               &
+        copy_nodend_control_in => copy_control_in,                             &
+        copy_nodend_control_out => copy_control_out,                           &
+        copy_nodend_inform_out => copy_inform_out
 
     IMPLICIT NONE
 
@@ -29,6 +72,7 @@
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: ssids_control_type
+       INTEGER ( KIND = ipc_ ) :: array_base
        INTEGER ( KIND = ipc_ ) :: print_level
        INTEGER ( KIND = ipc_ ) :: unit_diagnostics
        INTEGER ( KIND = ipc_ ) :: unit_error
@@ -48,6 +92,7 @@
        INTEGER ( KIND = ipc_ ) :: pivot_method
        REAL ( KIND = rpc_ ) :: small
        REAL ( KIND = rpc_ ) :: u
+       TYPE ( nodend_control_type ) :: nodend_control
        INTEGER ( KIND = ipc_ ) :: nstream
        REAL ( KIND = rpc_ ) :: multiplier
 !     type(auction_control) :: auction
@@ -64,6 +109,7 @@
        INTEGER ( KIND = ipc_ ) :: matrix_rank
        INTEGER ( KIND = ipc_ ) :: maxdepth
        INTEGER ( KIND = ipc_ ) :: maxfront
+       INTEGER ( KIND = ipc_ ) :: maxsupernode
        INTEGER ( KIND = ipc_ ) :: num_delay
        INTEGER ( KIND = longc_ ) :: num_factor
        INTEGER ( KIND = longc_ ) :: num_flops
@@ -74,6 +120,7 @@
 !    type(auction_inform) :: auction
        INTEGER ( KIND = ipc_ ) :: cuda_error
        INTEGER ( KIND = ipc_ ) :: cublas_error
+       TYPE ( nodend_inform_type ) :: nodend_inform
        INTEGER ( KIND = ipc_ ) :: not_first_pass
        INTEGER ( KIND = ipc_ ) :: not_second_pass
        INTEGER ( KIND = ipc_ ) :: nparts
@@ -89,10 +136,12 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol )
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, cindexed )
     TYPE ( ssids_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_ssids_control_type ), INTENT( OUT ) :: fcontrol
+    LOGICAL, INTENT( OUT ) :: cindexed
 
+    cindexed = ccontrol%array_base == 0
     fcontrol%print_level = ccontrol%print_level
     fcontrol%unit_diagnostics = ccontrol%unit_diagnostics
     fcontrol%unit_error = ccontrol%unit_error
@@ -112,9 +161,11 @@
     fcontrol%pivot_method = ccontrol%pivot_method
     fcontrol%small = ccontrol%small
     fcontrol%u = ccontrol%u
+    CALL copy_nodend_control_in( ccontrol%nodend_control,                      &
+                                 fcontrol%nodend_control )
     fcontrol%nstream = ccontrol%nstream
     fcontrol%multiplier = ccontrol%multiplier
-    fcontrol%min_loadbalance = ccontrol%min_loadbalance
+    fcontrol%min_loadbalance = REAL( ccontrol%min_loadbalance )
     fcontrol%failed_pivot_method = ccontrol%failed_pivot_method
     RETURN
 
@@ -133,6 +184,7 @@
     cinform%matrix_rank = finform%matrix_rank
     cinform%maxdepth = finform%maxdepth
     cinform%maxfront = finform%maxfront
+    cinform%maxsupernode = finform%maxsupernode
     cinform%num_delay = finform%num_delay
     cinform%num_factor = finform%num_factor
     cinform%num_flops = finform%num_flops
@@ -142,6 +194,7 @@
     cinform%stat = finform%stat
     cinform%cuda_error = finform%cuda_error
     cinform%cublas_error = finform%cublas_error
+    CALL copy_nodend_inform_out( finform%nodend_inform, cinform%nodend_inform )
     cinform%not_first_pass = finform%not_first_pass
     cinform%not_second_pass = finform%not_second_pass
     cinform%nparts = finform%nparts
