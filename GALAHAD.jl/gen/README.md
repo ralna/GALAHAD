@@ -115,7 +115,7 @@ The possible values for `library` are:
 - `"hsl"`.
 
 The Julia wrappers are generated in the directory `GALAHAD.jl/src/wrappers`.
-If the `library` value is neither `hsl` nor `ssids`, we additionally create
+If the value of `library` is not `hsl`, we additionally create
 a `Julia` folder within the package's directory (`GALAHAD/src/$library`) and
 a symbolic link named `$library.jl`.
 This link points to `GALAHAD/GALAHAD.jl/src/wrappers/$library.jl`.
