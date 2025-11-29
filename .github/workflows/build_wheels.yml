@@ -13,8 +13,7 @@ jobs:
     strategy:
       matrix:
         # Note: builds on these are backward compatible
-        # macos-15-intel is an intel runner, macos-latest is apple silicon
-        os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]on in meson.yml)
+        os: [ubuntu-latest, macos-15-intel, macos-15, windows-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +25,7 @@ jobs:
       - name: Set macOS OpenBLAS paths
         if: runner.os == 'macOS'
         run: |
-          if [[ "${{matrix.os}}" == "macos-latest" ]]; then
+          if [[ "${{matrix.os}}" == "macos-15" ]]; then
             echo PKG_CONFIG_PATH="/opt/homebrew/opt/openblas/lib/pkgconfig" >> $GITHUB_ENV
           fi
           if [[ "${{matrix.os}}" == "macos-15-intel" ]]; then
