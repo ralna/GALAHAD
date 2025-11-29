@@ -30,7 +30,8 @@ OBJFILE64 = $(SRC:.c=_52_64.o)
 TESTOBJ = $(TEST:.c=_52.o)
 TESTOBJ64 = $(TEST:.c=_52_64.o)
 
-CFLAGSM = $(CFLAGS) -DNDEBUG -pg
+#CFLAGSM = $(CFLAGS) -DNDEBUG -pg
+CFLAGSM = $(CFLAGS) -DNDEBUG
 
 all: build$(HSL_64)
 	@printf ' %-21s\n' "MeTiS 5.2 procedures ($(IPRECIS)$(ISUCC)"

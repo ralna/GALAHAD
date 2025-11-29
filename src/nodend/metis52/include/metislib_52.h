@@ -20,7 +20,7 @@
   #include <omp.h>
 #endif
 
-#include <hsl_metis_52.h> /* changed from metis.h to allow extra hsl includes */
+#include <metis_52.h> /* changed from metis.h to allow extra GALAHAD includes */
 #include "rename_52.h" /* modified to provide unique 64-bit procedure names*/
 #include "gklib_defs_52.h"
 

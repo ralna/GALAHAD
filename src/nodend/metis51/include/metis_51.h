@@ -1,10 +1,11 @@
 /*!
-\file metis.h 
+\file metis_51.h based upon metis.h 
 \brief This file contains function prototypes and constant definitions for METIS
  *
 \author George
-\date   Started 8/9/02
+\date   Started 8/9/02, currently Version 5.1.0
 \version\verbatim $Id$\endverbatim
+ * modified by Nick Gould for GALAHAD version 2024-04-12
 */
 
 #ifndef _METIS_H_

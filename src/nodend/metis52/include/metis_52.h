@@ -1,5 +1,5 @@
 /*!
-\file hsl_metis.h based upon metis.h
+\file metis_52.h based upon metis.h
 \brief This file contains function prototypes and constant definitions for METIS
  *
 \author George
