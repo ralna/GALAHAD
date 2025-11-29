@@ -2,7 +2,7 @@
 # Simple code to test the Julia interface to VERSION
 
 using GALAHAD
-#using GALAHAD_jll
+using GALAHAD_jll
 using Test
 using Printf
 using Quadmath
@@ -10,12 +10,10 @@ using Quadmath
 function test_version(::Type{T}, ::Type{INT}) where {T,INT}
   version = version_galahad(T, INT)
   # @printf("GALAHAD_VERSION : %s\n", version)
-  if GALAHAD.GALAHAD_INSTALLATION == "YGGDRASIL"
-    version_jll = pkgversion(GALAHAD_jll)
-    @test version.major == version_jll.major
-    @test version.minor == version_jll.minor
-    @test version.patch == version_jll.patch
-  end
+  version_jll = pkgversion(GALAHAD_jll)
+  @test version.major == version_jll.major
+  @test version.minor == version_jll.minor
+  @test version.patch == version_jll.patch
 
   return 0
 end
