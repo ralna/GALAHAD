@@ -1,0 +1,40 @@
+name: Meson
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    name: Compilation with the dummy SSIDS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GALAHAD
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Meson and Ninja
+        run: pip install meson ninja
+
+      - name: Install compilers
+        uses: fortran-lang/setup-fortran@main
+        with:
+          compiler: "gcc"
+          version: "11"
+
+      - name: Setup GALAHAD
+        shell: bash
+        run: |
+          meson setup builddir_int32 --buildtype=debug -Dquadruple=true -Dint64=false -Dssids=false -Dlibblas= -Dliblapack=
+          meson setup builddir_int64 --buildtype=debug -Dquadruple=true -Dint64=true -Dssids=false -Dlibblas= -Dliblapack=
+
+      - name: Build GALAHAD
+        shell: bash
+        run: |
+          meson compile -C builddir_int32
+          meson compile -C builddir_int64
