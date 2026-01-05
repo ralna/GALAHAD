@@ -141,7 +141,9 @@ lm = cc.find_library('m', required : false)
 has_hwloch = cc.has_header('hwloc.h', include_directories : libhwloc_include)
 
 # Quadmath
-if build_quadruple
+is_arm_linux = (host_machine.system() == 'linux') and (host_machine.cpu_family() == 'arm' or host_machine.cpu_family() == 'aarch64')
+
+if build_quadruple and not is_arm_linux
   libquadmath = cc.find_library('quadmath', required : true)
 else
   libquadmath = cc.find_library('quadmath', required : false)

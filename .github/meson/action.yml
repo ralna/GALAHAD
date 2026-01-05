@@ -132,7 +132,7 @@ runs:
           INT64="true"
         fi
         QUADRUPLE="true"
-        if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel" ]]; then
+        if [[ "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel" ]]; then
           QUADRUPLE="false"
         fi
         cd ..
@@ -316,7 +316,7 @@ runs:
         if [[ "${{ inputs.compiler }}" == "nvidia-hpc" || ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
           SSIDS="false"
         fi
-        if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel" ]]; then
+        if [[ "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel" ]]; then
           QUADRUPLE="false"
         fi
         SANITIZER="none"
