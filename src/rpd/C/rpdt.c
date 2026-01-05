@@ -9,7 +9,6 @@
 #include "galahad_cfunctions.h"
 #include "galahad_rpd.h"
 #ifdef REAL_128
-#include <quadmath.h>
 #endif
 #define BUFSIZE 1000
 

@@ -12,7 +12,6 @@
 #include <limits>
 
 #ifdef REAL_128
-#include <quadmath.h>
 #endif
 
 #include "ssids_routines.h"

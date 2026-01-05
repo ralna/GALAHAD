@@ -7,7 +7,6 @@
 #include "galahad_cfunctions.h"
 #include "galahad_ccqp.h"
 #ifdef REAL_128
-#include <quadmath.h>
 #endif
 
 int main(void) {

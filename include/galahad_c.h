@@ -6,7 +6,6 @@ extern "C" {
 #endif
 
 #ifdef QUAD_REALS_EXIST
-#include <quadmath.h>
 #endif
 
 // include guard

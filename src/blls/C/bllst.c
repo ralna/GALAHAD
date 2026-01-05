@@ -8,7 +8,6 @@
 #include "galahad_cfunctions.h"
 #include "galahad_blls.h"
 #ifdef REAL_128
-#include <quadmath.h>
 #endif
 
 // Define imax

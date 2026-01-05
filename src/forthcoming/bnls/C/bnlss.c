@@ -8,7 +8,6 @@
 #include "galahad_precision.h"
 #include "galahad_bnls.h"
 #ifdef REAL_128
-#include <quadmath.h>
 #endif
 
 // Custom userdata struct

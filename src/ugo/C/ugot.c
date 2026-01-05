@@ -8,7 +8,6 @@
 #include "galahad_ugo.h"
 #include <string.h>
 #ifdef REAL_128
-#include <quadmath.h>
 #endif
 
 // Custom userdata struct

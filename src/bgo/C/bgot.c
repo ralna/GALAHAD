@@ -9,7 +9,6 @@
 #include "galahad_cfunctions.h"
 #include "galahad_bgo.h"
 #ifdef REAL_128
-#include <quadmath.h>
 #endif
 
 // Custom userdata struct
