@@ -304,6 +304,7 @@ runs:
           CUTEST_SINGLE=""
           CUTEST_DOUBLE=""
           CUTEST_QUADRUPLE=""
+          HSL=""
         fi
         if [[ "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "ubuntu-latest" ]]; then
           BLAS="mkl_rt"
