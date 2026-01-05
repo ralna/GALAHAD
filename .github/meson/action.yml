@@ -132,7 +132,7 @@ runs:
           INT64="true"
         fi
         QUADRUPLE="true"
-        if [[ "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel" ]]; then
+        if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel" ]]; then
           QUADRUPLE="false"
         fi
         cd ..
@@ -299,6 +299,11 @@ runs:
           MUMPS_SINGLE="smumps64"
           MUMPS_DOUBLE="dmumps64"
           HSL="hsl_subset_64"
+        fi
+        if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" ]]; then
+          CUTEST_SINGLE=""
+          CUTEST_DOUBLE=""
+          CUTEST_QUADRUPLE=""
         fi
         if [[ "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "ubuntu-latest" ]]; then
           BLAS="mkl_rt"
