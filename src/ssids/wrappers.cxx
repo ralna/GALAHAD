@@ -283,40 +283,40 @@ void host_trsm<float>(enum galahad::ssids::cpu::side side,
 extern "C" {
    void spral_c_qgemm_64(char* transa, char* transb, 
                          int64_t* m, int64_t* n, int64_t* k, 
-                         __float128* alpha, const __float128* a, int64_t* lda, 
-                         const __float128* b, int64_t* ldb, __float128 *beta, 
-                         __float128* c, int64_t* ldc);
-   void spral_c_qpotrf_64(char *uplo, int64_t *n, __float128 *a, 
+                         _Float128* alpha, const _Float128* a, int64_t* lda, 
+                         const _Float128* b, int64_t* ldb, _Float128 *beta, 
+                         _Float128* c, int64_t* ldc);
+   void spral_c_qpotrf_64(char *uplo, int64_t *n, _Float128 *a, 
                           int64_t *lda, int64_t *info);
-   void spral_c_qsytrf_64(char *uplo, int64_t *n, __float128 *a, 
-                          int64_t *lda, int64_t *ipiv, __float128 *work, 
+   void spral_c_qsytrf_64(char *uplo, int64_t *n, _Float128 *a, 
+                          int64_t *lda, int64_t *ipiv, _Float128 *work, 
                           int64_t *lwork, int64_t *info);
    void spral_c_qtrsm_64(char *side, char *uplo, char *transa, 
                          char *diag, int64_t *m, int64_t *n, 
-                         const __float128 *alpha, const __float128 *a, 
-                         int64_t *lda, __float128 *b, int64_t *ldb);
+                         const _Float128 *alpha, const _Float128 *a, 
+                         int64_t *lda, _Float128 *b, int64_t *ldb);
    void spral_c_qsyrk_64(char *uplo, char *trans, 
-                         int64_t *n, int64_t *k, __float128 *alpha, 
-                         const __float128 *a, int64_t *lda, __float128 *beta, 
-                         __float128 *c, int64_t *ldc);
+                         int64_t *n, int64_t *k, _Float128 *alpha, 
+                         const _Float128 *a, int64_t *lda, _Float128 *beta, 
+                         _Float128 *c, int64_t *ldc);
    void spral_c_qtrsv_64(char *uplo, char *trans, char *diag, 
-                         int64_t *n, const __float128 *a, int64_t *lda, 
-                         __float128 *x, int64_t *incx);
+                         int64_t *n, const _Float128 *a, int64_t *lda, 
+                         _Float128 *x, int64_t *incx);
    void spral_c_qgemv_64(char *trans, int64_t *m, int64_t *n, 
-                         const __float128* alpha, const __float128* a, 
-                         int64_t *lda, const __float128* x, int64_t* incx, 
-                         const __float128* beta, __float128* y, int64_t* incy);
+                         const _Float128* alpha, const _Float128* a, 
+                         int64_t *lda, const _Float128* x, int64_t* incx, 
+                         const _Float128* beta, _Float128* y, int64_t* incy);
 }
 
 namespace galahad { namespace ssids { namespace cpu {
 
 /* _GEMM */
 template <>
-void host_gemm_64<__float128>(enum galahad::ssids::cpu::operation transa, 
+void host_gemm_64<_Float128>(enum galahad::ssids::cpu::operation transa, 
                          enum galahad::ssids::cpu::operation transb, 
-                         int64_t m, int64_t n, int64_t k, __float128 alpha, 
-                         const __float128* a, int64_t lda, const __float128* b, 
-                         int64_t ldb, __float128 beta, __float128* c, 
+                         int64_t m, int64_t n, int64_t k, _Float128 alpha, 
+                         const _Float128* a, int64_t lda, const _Float128* b, 
+                         int64_t ldb, _Float128 beta, _Float128* c, 
                          int64_t ldc) {
    char ftransa = (transa==galahad::ssids::cpu::OP_N) ? 'N' : 'T';
    char ftransb = (transb==galahad::ssids::cpu::OP_N) ? 'N' : 'T';
@@ -326,11 +326,11 @@ void host_gemm_64<__float128>(enum galahad::ssids::cpu::operation transa,
 
 /* _GEMV */
 template <>
-void gemv_64<__float128>(enum galahad::ssids::cpu::operation trans, 
-                    int64_t m, int64_t n, __float128 alpha, 
-                    const __float128* a, 
-                    int64_t lda, const __float128* x, int64_t incx, 
-                    __float128 beta, __float128* y, int64_t incy) {
+void gemv_64<_Float128>(enum galahad::ssids::cpu::operation trans, 
+                    int64_t m, int64_t n, _Float128 alpha, 
+                    const _Float128* a, 
+                    int64_t lda, const _Float128* x, int64_t incx, 
+                    _Float128 beta, _Float128* y, int64_t incy) {
    char ftrans = (trans==galahad::ssids::cpu::OP_N) ? 'N' : 'T';
    spral_c_qgemv_64(&ftrans, &m, &n, &alpha, a, &lda, x, &incx, 
                  &beta, y, &incy);
@@ -338,8 +338,8 @@ void gemv_64<__float128>(enum galahad::ssids::cpu::operation trans,
 
 /* _POTRF */
 template<>
-int64_t lapack_potrf_64<__float128>(enum galahad::ssids::cpu::fillmode uplo, 
-                               int64_t n, __float128* a, int64_t lda) {
+int64_t lapack_potrf_64<_Float128>(enum galahad::ssids::cpu::fillmode uplo, 
+                               int64_t n, _Float128* a, int64_t lda) {
    char fuplo;
    switch(uplo) {
       case galahad::ssids::cpu::FILL_MODE_LWR: fuplo = 'L'; break;
@@ -353,9 +353,9 @@ int64_t lapack_potrf_64<__float128>(enum galahad::ssids::cpu::fillmode uplo,
 
 /* _SYTRF - Bunch-Kaufman factorization */
 template<>
-int64_t lapack_sytrf_64<__float128>(enum galahad::ssids::cpu::fillmode uplo, 
-                               int64_t n, __float128* a, int64_t lda, 
-                               int64_t *ipiv, __float128* work, int64_t lwork) {
+int64_t lapack_sytrf_64<_Float128>(enum galahad::ssids::cpu::fillmode uplo, 
+                               int64_t n, _Float128* a, int64_t lda, 
+                               int64_t *ipiv, _Float128* work, int64_t lwork) {
    char fuplo;
    switch(uplo) {
       case galahad::ssids::cpu::FILL_MODE_LWR: fuplo = 'L'; break;
@@ -369,11 +369,11 @@ int64_t lapack_sytrf_64<__float128>(enum galahad::ssids::cpu::fillmode uplo,
 
 /* _SYRK */
 template <>
-void host_syrk_64<__float128>(enum galahad::ssids::cpu::fillmode uplo, 
+void host_syrk_64<_Float128>(enum galahad::ssids::cpu::fillmode uplo, 
                          enum galahad::ssids::cpu::operation trans, 
-                         int64_t n, int64_t k, __float128 alpha, 
-                         const __float128* a, int64_t lda, __float128 beta, 
-                         __float128* c, int64_t ldc) {
+                         int64_t n, int64_t k, _Float128 alpha, 
+                         const _Float128* a, int64_t lda, _Float128 beta, 
+                         _Float128* c, int64_t ldc) {
    char fuplo = (uplo==galahad::ssids::cpu::FILL_MODE_LWR) ? 'L' : 'U';
    char ftrans = (trans==galahad::ssids::cpu::OP_N) ? 'N' : 'T';
    spral_c_qsyrk_64(&fuplo, &ftrans, &n, &k, &alpha, a, &lda, &beta, c, &ldc);
@@ -381,11 +381,11 @@ void host_syrk_64<__float128>(enum galahad::ssids::cpu::fillmode uplo,
 
 /* _TRSV */
 template <>
-void host_trsv_64<__float128>(enum galahad::ssids::cpu::fillmode uplo, 
+void host_trsv_64<_Float128>(enum galahad::ssids::cpu::fillmode uplo, 
                          enum galahad::ssids::cpu::operation trans, 
                          enum galahad::ssids::cpu::diagonal diag, 
-                         int64_t n, const __float128* a, int64_t lda, 
-                         __float128* x, int64_t incx) {
+                         int64_t n, const _Float128* a, int64_t lda, 
+                         _Float128* x, int64_t incx) {
    char fuplo = (uplo==galahad::ssids::cpu::FILL_MODE_LWR) ? 'L' : 'U';
    char ftrans = (trans==galahad::ssids::cpu::OP_N) ? 'N' : 'T';
    char fdiag = (diag==galahad::ssids::cpu::DIAG_UNIT) ? 'U' : 'N';
@@ -394,12 +394,12 @@ void host_trsv_64<__float128>(enum galahad::ssids::cpu::fillmode uplo,
 
 /* _TRSM */
 template <>
-void host_trsm_64<__float128>(enum galahad::ssids::cpu::side side, 
+void host_trsm_64<_Float128>(enum galahad::ssids::cpu::side side, 
                          enum galahad::ssids::cpu::fillmode uplo, 
                          enum galahad::ssids::cpu::operation transa, 
                          enum galahad::ssids::cpu::diagonal diag, 
-                         int64_t m, int64_t n, __float128 alpha, 
-                         const __float128* a, int64_t lda, __float128* b, 
+                         int64_t m, int64_t n, _Float128 alpha, 
+                         const _Float128* a, int64_t lda, _Float128* b, 
                          int64_t ldb) {
    char fside = (side==galahad::ssids::cpu::SIDE_LEFT) ? 'L' : 'R';
    char fuplo = (uplo==galahad::ssids::cpu::FILL_MODE_LWR) ? 'L' : 'U';
@@ -418,40 +418,40 @@ void host_trsm_64<__float128>(enum galahad::ssids::cpu::side side,
 extern "C" {
    void spral_c_qgemm(char* transa, char* transb, 
                       int* m, int* n, int* k, 
-                      __float128* alpha, const __float128* a, int* lda, 
-                      const __float128* b, int* ldb, __float128 *beta, 
-                      __float128* c, int* ldc);
-   void spral_c_qpotrf(char *uplo, int *n, __float128 *a, 
+                      _Float128* alpha, const _Float128* a, int* lda, 
+                      const _Float128* b, int* ldb, _Float128 *beta, 
+                      _Float128* c, int* ldc);
+   void spral_c_qpotrf(char *uplo, int *n, _Float128 *a, 
                        int *lda, int *info);
-   void spral_c_qsytrf(char *uplo, int *n, __float128 *a, 
-                       int *lda, int *ipiv, __float128 *work, 
+   void spral_c_qsytrf(char *uplo, int *n, _Float128 *a, 
+                       int *lda, int *ipiv, _Float128 *work, 
                        int *lwork, int *info);
    void spral_c_qtrsm(char *side, char *uplo, char *transa, 
                       char *diag, int *m, int *n, 
-                      const __float128 *alpha, const __float128 *a, 
-                      int *lda, __float128 *b, int *ldb);
+                      const _Float128 *alpha, const _Float128 *a, 
+                      int *lda, _Float128 *b, int *ldb);
    void spral_c_qsyrk(char *uplo, char *trans, 
-                      int *n, int *k, __float128 *alpha, 
-                      const __float128 *a, int *lda, __float128 *beta, 
-                      __float128 *c, int *ldc);
+                      int *n, int *k, _Float128 *alpha, 
+                      const _Float128 *a, int *lda, _Float128 *beta, 
+                      _Float128 *c, int *ldc);
    void spral_c_qtrsv(char *uplo, char *trans, char *diag, 
-                      int *n, const __float128 *a, int *lda, 
-                      __float128 *x, int *incx);
+                      int *n, const _Float128 *a, int *lda, 
+                      _Float128 *x, int *incx);
    void spral_c_qgemv(char *trans, int *m, int *n, 
-                      const __float128* alpha, const __float128* a, 
-                      int *lda, const __float128* x, int* incx, 
-                      const __float128* beta, __float128* y, int* incy);
+                      const _Float128* alpha, const _Float128* a, 
+                      int *lda, const _Float128* x, int* incx, 
+                      const _Float128* beta, _Float128* y, int* incy);
 }
 
 namespace galahad { namespace ssids { namespace cpu {
 
 /* _GEMM */
 template <>
-void host_gemm<__float128>(enum galahad::ssids::cpu::operation transa, 
+void host_gemm<_Float128>(enum galahad::ssids::cpu::operation transa, 
                       enum galahad::ssids::cpu::operation transb, 
-                      int m, int n, int k, __float128 alpha, 
-                      const __float128* a, int lda, const __float128* b, 
-                      int ldb, __float128 beta, __float128* c, int ldc) {
+                      int m, int n, int k, _Float128 alpha, 
+                      const _Float128* a, int lda, const _Float128* b, 
+                      int ldb, _Float128 beta, _Float128* c, int ldc) {
    char ftransa = (transa==galahad::ssids::cpu::OP_N) ? 'N' : 'T';
    char ftransb = (transb==galahad::ssids::cpu::OP_N) ? 'N' : 'T';
    spral_c_qgemm(&ftransa, &ftransb, &m, &n, &k, &alpha, a, &lda, 
@@ -460,10 +460,10 @@ void host_gemm<__float128>(enum galahad::ssids::cpu::operation transa,
 
 /* _GEMV */
 template <>
-void gemv<__float128>(enum galahad::ssids::cpu::operation trans, 
-                 int m, int n, __float128 alpha, const __float128* a, 
-                 int lda, const __float128* x, int incx, 
-                 __float128 beta, __float128* y, int incy) {
+void gemv<_Float128>(enum galahad::ssids::cpu::operation trans, 
+                 int m, int n, _Float128 alpha, const _Float128* a, 
+                 int lda, const _Float128* x, int incx, 
+                 _Float128 beta, _Float128* y, int incy) {
    char ftrans = (trans==galahad::ssids::cpu::OP_N) ? 'N' : 'T';
    spral_c_qgemv(&ftrans, &m, &n, &alpha, a, &lda, x, &incx, 
                  &beta, y, &incy);
@@ -471,8 +471,8 @@ void gemv<__float128>(enum galahad::ssids::cpu::operation trans,
 
 /* _POTRF */
 template<>
-int lapack_potrf<__float128>(enum galahad::ssids::cpu::fillmode uplo, 
-                        int n, __float128* a, int lda) {
+int lapack_potrf<_Float128>(enum galahad::ssids::cpu::fillmode uplo, 
+                        int n, _Float128* a, int lda) {
    char fuplo;
    switch(uplo) {
       case galahad::ssids::cpu::FILL_MODE_LWR: fuplo = 'L'; break;
@@ -486,9 +486,9 @@ int lapack_potrf<__float128>(enum galahad::ssids::cpu::fillmode uplo,
 
 /* _SYTRF - Bunch-Kaufman factorization */
 template<>
-int lapack_sytrf<__float128>(enum galahad::ssids::cpu::fillmode uplo, 
-                        int n, __float128* a, int lda, 
-                        int *ipiv, __float128* work, int lwork) {
+int lapack_sytrf<_Float128>(enum galahad::ssids::cpu::fillmode uplo, 
+                        int n, _Float128* a, int lda, 
+                        int *ipiv, _Float128* work, int lwork) {
    char fuplo;
    switch(uplo) {
       case galahad::ssids::cpu::FILL_MODE_LWR: fuplo = 'L'; break;
@@ -502,10 +502,10 @@ int lapack_sytrf<__float128>(enum galahad::ssids::cpu::fillmode uplo,
 
 /* _SYRK */
 template <>
-void host_syrk<__float128>(enum galahad::ssids::cpu::fillmode uplo, 
+void host_syrk<_Float128>(enum galahad::ssids::cpu::fillmode uplo, 
                       enum galahad::ssids::cpu::operation trans, 
-                      int n, int k, __float128 alpha, const __float128* a, 
-                      int lda, __float128 beta, __float128* c, int ldc) {
+                      int n, int k, _Float128 alpha, const _Float128* a, 
+                      int lda, _Float128 beta, _Float128* c, int ldc) {
    char fuplo = (uplo==galahad::ssids::cpu::FILL_MODE_LWR) ? 'L' : 'U';
    char ftrans = (trans==galahad::ssids::cpu::OP_N) ? 'N' : 'T';
    spral_c_qsyrk(&fuplo, &ftrans, &n, &k, &alpha, a, &lda, &beta, c, &ldc);
@@ -513,11 +513,11 @@ void host_syrk<__float128>(enum galahad::ssids::cpu::fillmode uplo,
 
 /* _TRSV */
 template <>
-void host_trsv<__float128>(enum galahad::ssids::cpu::fillmode uplo, 
+void host_trsv<_Float128>(enum galahad::ssids::cpu::fillmode uplo, 
                       enum galahad::ssids::cpu::operation trans, 
                       enum galahad::ssids::cpu::diagonal diag, 
-                      int n, const __float128* a, int lda, 
-                      __float128* x, int incx) {
+                      int n, const _Float128* a, int lda, 
+                      _Float128* x, int incx) {
    char fuplo = (uplo==galahad::ssids::cpu::FILL_MODE_LWR) ? 'L' : 'U';
    char ftrans = (trans==galahad::ssids::cpu::OP_N) ? 'N' : 'T';
    char fdiag = (diag==galahad::ssids::cpu::DIAG_UNIT) ? 'U' : 'N';
@@ -526,12 +526,12 @@ void host_trsv<__float128>(enum galahad::ssids::cpu::fillmode uplo,
 
 /* _TRSM */
 template <>
-void host_trsm<__float128>(enum galahad::ssids::cpu::side side, 
+void host_trsm<_Float128>(enum galahad::ssids::cpu::side side, 
                       enum galahad::ssids::cpu::fillmode uplo, 
                       enum galahad::ssids::cpu::operation transa, 
                       enum galahad::ssids::cpu::diagonal diag, 
-                      int m, int n, __float128 alpha, const __float128* a, 
-                      int lda, __float128* b, int ldb) {
+                      int m, int n, _Float128 alpha, const _Float128* a, 
+                      int lda, _Float128* b, int ldb) {
    char fside = (side==galahad::ssids::cpu::SIDE_LEFT) ? 'L' : 'R';
    char fuplo = (uplo==galahad::ssids::cpu::FILL_MODE_LWR) ? 'L' : 'U';
    char ftransa = (transa==galahad::ssids::cpu::OP_N) ? 'N' : 'T';

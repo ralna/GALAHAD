@@ -29,7 +29,7 @@ rpc_ fabs_(rpc_ x) {
      return fabss;
 #elif REAL_128
      double fabsd = fabs(double(x));
-     __float128 fabsq;
+     _Float128 fabsq;
      fabsq = fabsd;
      return fabsq;
 #else

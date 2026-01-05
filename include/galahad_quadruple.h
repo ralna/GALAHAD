@@ -17,7 +17,7 @@
 #ifndef GALAHAD_PRECISION_H
 #define GALAHAD_PRECISION_H
 
-typedef __float128 rpc_;  // working precision
+typedef _Float128 rpc_;  // working precision
 typedef float real_sp_;   // single precision
 
 // end include guard

@@ -23,7 +23,7 @@ namespace {
 #ifdef REAL_32
 typedef float T;
 #elif REAL_128
-typedef __float128 T;
+typedef _Float128 T;
 #else
 typedef double T;
 #endif

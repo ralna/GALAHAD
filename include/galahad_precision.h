@@ -28,8 +28,8 @@ typedef float real_wp_;  // working precision
 typedef float rpc_;  // working precision
 #elif REAL_128
 /** `real_wp_` is real working precision */
-typedef __float128 real_wp_;  // working precision
-typedef __float128 rpc_;  // working precision
+typedef _Float128 real_wp_;  // working precision
+typedef _Float128 rpc_;  // working precision
 #else
 /** `real_wp_` is the real working precision used */
 typedef double real_wp_;  // working precision

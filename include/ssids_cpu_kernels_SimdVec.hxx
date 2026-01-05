@@ -289,7 +289,7 @@ template <typename T>
 class SimdVec;
 
 template <>
-class SimdVec<__float128> {
+class SimdVec<_Float128> {
 public:
    /*******************************************
     * Properties of the type
@@ -304,7 +304,7 @@ public:
    /// Length of underlying vector type
    static const ipc_ vector_length = 1;
    /// Typedef for underlying vector type containing __float128s
-   typedef __float128 simd_precision_type;
+   typedef _Float128 simd_precision_type;
 #endif
 
    /*******************************************
@@ -315,7 +315,7 @@ public:
    SimdVec()
    {}
    /// Initialize all entries in vector to given scalar value
-   SimdVec(const __float128 initial_value)
+   SimdVec(const _Float128 initial_value)
    {
 #if defined(__AVX2__) || defined(__AVX__)
       val = _mm256_set1_pd(initial_value);
@@ -330,12 +330,12 @@ public:
    }
 #endif
    /// Initialize with another SimdVec
-   SimdVec(const SimdVec<__float128> &initial_value) {
+   SimdVec(const SimdVec<_Float128> &initial_value) {
       val = initial_value.val;
    }
 #if defined(__AVX2__) || defined(__AVX__)
    /// Initialize as a vector by specifying all entries (no version for non-avx)
-   SimdVec(__float128 x1, __float128 x2, __float128 x3, __float128 x4) {
+   SimdVec(_Float128 x1, _Float128 x2, _Float128 x3, _Float128 x4) {
       val = _mm256_set_pd(x4, x3, x2, x1); // Reversed order expected
    }
 #endif
@@ -346,7 +346,7 @@ public:
 
    /// Load from suitably aligned memory
    static
-   const SimdVec load_aligned(const __float128 *src) {
+   const SimdVec load_aligned(const _Float128 *src) {
 #if defined(__AVX2__) || defined(__AVX__)
       return SimdVec( _mm256_load_pd(src) );
 #else
@@ -356,7 +356,7 @@ public:
 
    /// Load from unaligned memory
    static
-   const SimdVec load_unaligned(const __float128 *src) {
+   const SimdVec load_unaligned(const _Float128 *src) {
 #if defined(__AVX2__) || defined(__AVX__)
       return SimdVec( _mm256_loadu_pd(src) );
 #else
@@ -365,7 +365,7 @@ public:
    }
 
    /// Extract value as array
-   void store_aligned(__float128 *dest) const {
+   void store_aligned(_Float128 *dest) const {
 #if defined(__AVX2__) || defined(__AVX__)
       _mm256_store_pd(dest, val);
 #else
@@ -374,7 +374,7 @@ public:
    }
 
    /// Extract value as array
-   void store_unaligned(__float128 *dest) const {
+   void store_unaligned(_Float128 *dest) const {
 #if defined(__AVX2__) || defined(__AVX__)
       _mm256_storeu_pd(dest, val);
 #else
@@ -431,8 +431,8 @@ public:
 
    /// Extract indvidual elements of vector (messy and inefficient)
    /// idx MUST be < vector_length.
-   __float128 operator[](size_t idx) const {
-      __float128
+   _Float128 operator[](size_t idx) const {
+      _Float128
 #if defined(__AVX512F__)
         __attribute__((aligned(64)))
 #elif defined(__AVX__)
@@ -466,7 +466,7 @@ public:
    }
 
    /// Multiply
-   // NB: don't override builtin operator*(__float128,float) in scalar case
+   // NB: don't override builtin operator*(_Float128,float) in scalar case
 #if defined(__AVX2__) || defined(__AVX__)
    friend
    SimdVec operator*(const SimdVec &lhs, const SimdVec &rhs) {

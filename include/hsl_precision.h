@@ -18,7 +18,7 @@
 typedef float rpc_;
 #define f_rpc_ "f"
 #elif REAL_128
-typedef __float128 rpc_;
+typedef _Float128 rpc_;
 #define f_rpc_ "Qf"
 #else
 typedef double rpc_;
