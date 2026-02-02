@@ -305,10 +305,10 @@ The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.
 at the point $\bmx$. The $i$-th component of
 {\tt C}, $i = 1, \ldots, m$, contains $\bmc_{i}(\bmx)$.
 
-\ittf{G} is a rank-one allocatable array of dimension {\tt m} and type
+\ittf{G} is a rank-one allocatable array of dimension {\tt n} and type
 \realdp, that holds the gradient $g(\bmx) = \nabla_x f(\bmx)$ of the
 objective function at the point $\bmx$. The $j$-th component of
-{\tt G}, $i = 1, \ldots, m$, contains $\partial f(\bmx)/\partial x_j$.
+{\tt G}, $i = 1, \ldots, n$, contains $\partial f(\bmx)/\partial x_j$.
 
 \ittf{J} is scalar variable of type {\tt SMT\_TYPE}
 that holds the Jacobian matrix $\bmJ(\bmx)$ (if it is available).
