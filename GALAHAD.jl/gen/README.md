@@ -4,6 +4,12 @@ This directory contains a script `wrapper.jl` that can be used to
 automatically generate Julia wrappers from the C headers of GALAHAD.
 This is done using [Clang.jl](https://github.com/JuliaInterop/Clang.jl).
 
+In addition, the script is used to generate the following C headers in the main `include` folder of `GALAHAD`:
+- `galahad_c_common.h`;
+- `galahad_c_single.h`;
+- `galahad_c_double.h`;
+- `galahad_c_quadruple.h`.
+
 # Usage
 
 Activate and instantiate the project environment in this folder
@@ -120,12 +126,16 @@ a `Julia` folder within the package's directory (`GALAHAD/src/$library`) and
 a symbolic link named `$library.jl`.
 This link points to `GALAHAD/GALAHAD.jl/src/wrappers/$library.jl`.
 
+Note that the C headers are only generated when `library="all"`, which corresponds to calling `main()` or `main("all")`.
+
 # Maintenance
 
 If a new package with a C interface is added, include an entry for it in
 the `main` function of `wrapper.jl`, in the variable `packages` of
-`rewriter.jl`, and in this `README.md`.  For instance, if the new
-package is named `abcd`, insert the following line in `wrapper.jl`:
+`rewriter.jl`, in the variable `ordered_packages` of `galahad_c.jl`,
+and in this `README.md`.
+For instance, if the new package is named `abcd`, insert the
+following line in `wrapper.jl`:
 
 ```julia
 (name == "all" || name == "abcd") && wrapper("abcd", ["$galahad/galahad_abcd.h"], optimized, run_sif=bool, run_qplib=bool)
