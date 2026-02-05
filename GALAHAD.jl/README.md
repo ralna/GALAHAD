@@ -75,17 +75,45 @@ using AppleAccelerate
 using GALAHAD
 ```
 
+## Local version of GALAHAD.jl
+
+If you want to add and test new features in `GALAHAD.jl`, you can use a local version with the following commands
+(if you are in the root folder of `GALAHAD.jl`):
+
+```julia
+using Pkg
+Pkg.develop(path="./GALAHAD.jl")
+Pkg.test("GALAHAD")
+````
+
+You can verify that the local version is being used if you see a path on the right of the version number with:
+
+```julia
+using Pkg
+Pkg.status("GALAHAD")
+```
+
+If you install `GALAHAD.jl` normally with the following command, the local version will no longer be tracked, and the latest version registered in the Julia General Registry will be used instead:
+
+```julia
+using Pkg
+Pkg.add("GALAHAD")
+```
+
 ## Custom shared libraries
 
 GALAHAD is already precompiled with [Yggdrasil](https://github.com/JuliaPackaging/Yggdrasil) for all platforms.
 The Julia package [GALAHAD_jll.jl](https://github.com/JuliaBinaryWrappers/GALAHAD_jll.jl)
-is a dependency of GALAHAD.jl and handles the automatic download of a
+is a dependency of `GALAHAD.jl` and handles the automatic download of a
 precompiled version of GALAHAD for you.
 
 To facilitate testing of new features by GALAHAD developers or enable
 advanced users to utilize commercial linear solvers like `PARDISO` or
 `WSMP`, it is also possible to bypass reliance on precompiled shared
 libraries.
+This is particularly relevant when new symbols required for upcoming GALAHAD
+packages have not yet been included in an official release and are therefore
+not available in the shared libraries provided by `GALAHAD_jll.jl`.
 
 To use your own installation of `GALAHAD`, set the environment variable
 `JULIA_GALAHAD_LIBRARY_PATH` to point to the folder that contains the
