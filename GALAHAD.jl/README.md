@@ -133,7 +133,14 @@ You can also define it directly from within Julia:
 ENV["JULIA_GALAHAD_LIBRARY_PATH"] = "/home/alexis/Applications/GALAHAD/lib"
 ```
 
-You can check whether you're using the default precompiled libraries (`"YGGDRASIL"`)
+If GALAHAD is linked with external dependencies (like `libHSL` or `MUMPS`), ensure that the dynamic loader can also locate them.
+Depending on your operating system, you may need to update one of the following environment variables:
+
+- `LD_LIBRARY_PATH` on Linux
+- `DYLD_LIBRARY_PATH` or `DYLD_FALLBACK_LIBRARY_PATH` on macOS
+- `PATH` on Windows
+
+You can check whether you are using the default precompiled libraries (`"YGGDRASIL"`)
 or your own local ones (`"CUSTOM"`) by inspecting the constant `GALAHAD_INSTALLATION` in `GALAHAD.jl`:
 ```julia
 using GALAHAD
