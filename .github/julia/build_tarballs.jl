@@ -9,7 +9,8 @@ version = VersionNumber(ENV["GALAHAD_RELEASE"])
 
 # Collection of sources required to complete build
 sources = [
-    GitSource(ENV["GALAHAD_URL"], ENV["GALAHAD_COMMIT"])
+    GitSource(ENV["GALAHAD_URL"], ENV["GALAHAD_COMMIT"]),
+    ArchiveSource("https://mumps-solver.org/MUMPS_5.8.2.tar.gz", "eb515aa688e6dbab414bb6e889ff4c8b23f1691a843c68da5230a33ac4db7039")
 ]
 
 # Bash recipe for building across all platforms
@@ -35,6 +36,54 @@ rm -r deps
 # Update Ninja
 cp ${host_prefix}/bin/ninja /usr/bin/ninja
 
+# Compile MUMPS
+cd $WORKSPACE/srcdir/MUMPS*
+
+makefile="Makefile.G95.SEQ"
+cp Make.inc/${makefile} Makefile.inc
+
+# Add `-fallow-argument-mismatch` if supported
+: >empty.f
+FFLAGS=()
+if gfortran -c -fallow-argument-mismatch empty.f >/dev/null 2>&1; then
+    FFLAGS+=("-fallow-argument-mismatch")
+fi
+rm -f empty.*
+
+if [[ "${target}" == *apple* ]]; then
+    SONAME="-install_name"
+else
+    SONAME="-soname"
+fi
+
+BLAS_LAPACK="-L${libdir} -lopenblas"
+
+make_args+=(OPTF="-O3"
+            OPTL="-O3"
+            OPTC="-O3"
+            CDEFS=-DAdd_
+            LMETISDIR=${libdir}
+            IMETIS=-I${includedir}
+            LMETIS="-L${libdir} -lmetis"
+            ORDERINGSF="-Dpord -Dmetis"
+            LIBEXT_SHARED=".${dlext}"
+            SHARED_OPT="-shared"
+            SONAME="${SONAME}"
+            CC="$CC ${CFLAGS[@]}"
+            FC="gfortran ${FFLAGS[@]}"
+            FL="gfortran"
+            RANLIB="echo"
+            LIBBLAS="${BLAS_LAPACK}"
+            LAPACK="${BLAS_LAPACK}")
+
+make -j${nproc} allshared "${make_args[@]}"
+
+mkdir ${includedir}/libseq
+cp include/*.h ${includedir}
+cp libseq/*.h ${includedir}/libseq
+cp lib/*.${dlext} ${libdir}
+
+# Compile GALAHAD
 cd ${WORKSPACE}/srcdir/GALAHAD
 
 if [[ "${target}" == *mingw* ]]; then
@@ -57,6 +106,7 @@ meson setup builddir_int32 --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
                            -Ddouble=true \
                            -Dquadruple=$QUADRUPLE \
                            -Dint64=false \
+                           -Dexamples=false \
                            -Dtests=false \
                            -Dbinaries=true \
                            -Dlibhsl=hsl_subset \
@@ -80,6 +130,7 @@ meson setup builddir_int64 --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
                            -Ddouble=true \
                            -Dquadruple=$QUADRUPLE \
                            -Dint64=true \
+                           -Dexamples=false \
                            -Dtests=false \
                            -Dbinaries=false \
                            -Dlibhsl=hsl_subset_64 \
@@ -97,6 +148,8 @@ platforms = expand_gfortran_versions(platforms)
 
 # The products that we will ensure are always built
 products = [
+    LibraryProduct("libsmumps", :libsmumps),
+    LibraryProduct("libdmumps", :libdmumps),
     LibraryProduct("libgalahad_single", :libgalahad_single),
     LibraryProduct("libgalahad_double", :libgalahad_double),
     # LibraryProduct("libgalahad_quadruple", :libgalahad_quadruple),
@@ -112,7 +165,7 @@ dependencies = [
     Dependency(PackageSpec(name="OpenBLAS32_jll", uuid="656ef2d0-ae68-5445-9ca0-591084a874a2")),
     Dependency(PackageSpec(name="OpenBLAS_jll", uuid="4536629a-c528-5b80-bd46-f80d51c5b363")),
     Dependency(PackageSpec(name="Hwloc_jll", uuid="e33a78d0-f292-5ffc-b300-72abe9b543c8")),
-    Dependency(PackageSpec(name="MUMPS_seq_jll", uuid="d7ed1dd3-d0ae-5e8e-bfb4-87a502085b8d"), compat="=5.4.1"),
+    Dependency(PackageSpec(name="METIS_jll", uuid="d00139f3-1899-568f-a2f0-47f597d42d70")),
     Dependency(PackageSpec(name="HSL_jll", uuid="017b0a0e-03f4-516a-9b91-836bbd1904dd")),
     Dependency(PackageSpec(name="CUTEst_jll", uuid="bb5f6f25-f23d-57fd-8f90-3ef7bad1d825"), compat="2.6.0"),
 ]
