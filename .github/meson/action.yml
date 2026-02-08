@@ -223,7 +223,7 @@ runs:
       run: |
         cd ..
         mkdir -p deps
-        VERSION_MUMPS="5.8.0"
+        VERSION_MUMPS="5.8.2"
         VERSION_METIS="5.1.2"
         VERSION_OPENBLAS32="0.3.27"
         VERSION_OPENBLAS="0.3.27"
