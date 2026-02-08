@@ -228,7 +228,7 @@ runs:
         VERSION_OPENBLAS32="0.3.27"
         VERSION_OPENBLAS="0.3.27"
         VERSION_CSL="1.3.1"
-        wget https://github.com/amontoison/MUMPS_seq_jll.jl/releases/download/MUMPS_seq-v${VERSION_MUMPS}%2B1/MUMPS_seq.v${VERSION_MUMPS}.$PLATFORM-libgfortran5.tar.gz
+        wget https://github.com/amontoison/MUMPS_seq_jll.jl/releases/download/MUMPS_seq-v${VERSION_MUMPS}%2B0/MUMPS_seq.v${VERSION_MUMPS}.$PLATFORM-libgfortran5.tar.gz
         tar -xzvf MUMPS_seq.v${VERSION_MUMPS}.$PLATFORM-libgfortran5.tar.gz -C deps
         wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v${VERSION_OPENBLAS}%2B1/OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz
         tar -xzvf OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz -C deps
