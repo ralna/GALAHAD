@@ -206,11 +206,10 @@ function generate_galahad_c()
                       "clls", "dgo", "dqp", "eqp", "lpa", "lpb", "lsqp", "nls", "qpa", "qpb", "slls",
                       "tru", "wcp", "llsr", "llst", "bllsb", "ssls", "expo", "nrek", "trek", "version")
 
-  if length(galahad_mp[variant]) != length(ordered_packages)
-    error("The values of the variables \"ordered_packages\" in \"galahad_c.jl\" and \"packages\" in \"rewriter.jl\" are inconsistent.")
-  end
-
   for variant in ("common", "single", "double", "quadruple")
+    if length(galahad_mp[variant]) != length(ordered_packages)
+      error("The values of the variables \"ordered_packages\" in \"galahad_c.jl\" and \"packages\" in \"rewriter.jl\" are inconsistent.")
+    end
     text_c = ""
     for (index, package) in enumerate(ordered_packages)
       val = galahad_mp[variant][package]
