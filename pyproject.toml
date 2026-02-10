@@ -50,7 +50,7 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://www.galahad.rl.ac.uk/"
-Download = "https://github.com/ralna/galahad//releases/"
-"Bug Tracker" = "https://github.com/ralna/galahad//issues/"
+Download = "https://github.com/ralna/galahad/releases/"
+"Bug Tracker" = "https://github.com/ralna/galahad/issues/"
 Documentation = "https://www.galahad.rl.ac.uk/"
 "Source Code" = "https://github.com/ralna/galahad/"
