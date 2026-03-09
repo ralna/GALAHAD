@@ -1493,10 +1493,15 @@
 
      pass = pass + 1
      IF ( pass <= multi_start ) THEN
+#ifdef REAL_128
+       IF ( out > 0 .AND. control%print_level == 0 ) WRITE( out,               &
+         "( ' pass = ', I8, ' objective function value = ', ES38.30, 1X,       &
+        &  ' status = ', I0 )" ) pass, inform%obj, inform%status
+#else
        IF ( out > 0 .AND. control%print_level == 0 ) WRITE( out,               &
          "( ' pass = ', I8, ' objective function value = ', ES22.14, 1X,       &
         &  ' status = ', I0 )" ) pass, inform%obj, inform%status
-
+#endif
        IF ( inform%obj < obj_best .AND. inform%status == 0 ) THEN
          obj_best = inform%obj
          WRITE( out, "( ' ', 38( '-*' ), '-' )" )
@@ -1702,7 +1707,11 @@
 !                 ' possibly infeasible. ' )
  2160  FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
  2170  FORMAT( 12X, A10, 6X, ES22.14 )
+#ifdef REAL_128
+ 2180  FORMAT( /, ' objective function value = ', ES38.30, / )
+#else
  2180  FORMAT( /, ' objective function value = ', ES22.14, / )
+#endif
  2190  FORMAT( /, ' ** Warning. Exit from LANCELOT with inform = ', I3 )
  2200  FORMAT( /, ' Evaluating element functions ' )
  2210  FORMAT( /, ' Evaluating derivatives of element functions ' )

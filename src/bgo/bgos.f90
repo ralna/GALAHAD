@@ -6,7 +6,7 @@
    TYPE ( BGO_control_type ) :: control
    TYPE ( BGO_inform_type ) :: inform
    TYPE ( BGO_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    EXTERNAL :: FUN, GRAD, HESS, HESSPROD
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, h_ne = 5
@@ -55,12 +55,12 @@
    END PROGRAM GALAHAD_BGO_EXAMPLE
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
-   USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
+   USE GALAHAD_USERDATA_double, ONLY: USERDATA_type
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), INTENT( OUT ) :: f
    REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp ) :: p, mag, freq
    p = userdata%real( 1 ) ; freq = userdata%real( 2 ) ; mag = userdata%real( 3 )
    f = ( X( 1 ) + X( 3 ) + p ) ** 2 +                                          &
@@ -71,12 +71,12 @@
    END SUBROUTINE FUN
 
    SUBROUTINE GRAD( status, X, userdata, G )    ! gradient of the objective
-   USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
+   USE GALAHAD_USERDATA_double, ONLY: USERDATA_type
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp ) :: p, mag, freq
    p = userdata%real( 1 ) ; freq = userdata%real( 2 ) ; mag = userdata%real( 3 )
    G( 1 ) = 2.0_wp * ( X( 1 ) + X( 3 ) + p )                                   &
@@ -89,12 +89,12 @@
    END SUBROUTINE GRAD
 
    SUBROUTINE HESS( status, X, userdata, H_Val ) ! Hessian of the objective
-   USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
+   USE GALAHAD_USERDATA_double, ONLY: USERDATA_type
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp ) :: mag, freq
    freq = userdata%real( 2 ) ; mag = userdata%real( 3 )
    H_val( 1 ) = 2.0_wp - mag * freq * freq * COS( freq * X( 1 ) )
@@ -107,12 +107,12 @@
    END SUBROUTINE HESS
 
    SUBROUTINE HESSPROD( status, X, userdata, U, V, got_h ) ! Hessian-vector prod
-   USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
+   USE GALAHAD_USERDATA_double, ONLY: USERDATA_type
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, V
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
    REAL ( KIND = wp ) :: mag, freq
    freq = userdata%real( 2 ) ; mag = userdata%real( 3 )

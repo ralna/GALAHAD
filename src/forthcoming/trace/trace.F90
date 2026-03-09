@@ -51,7 +51,7 @@
 
      PRIVATE
      PUBLIC :: TRACE_initialize, TRACE_read_specfile, TRACE_solve,             &
-               TRACE_terminate, NLPT_problem_type, GALAHAD_userdata_type,      &
+               TRACE_terminate, NLPT_problem_type, USERDATA_type,      &
                SMT_type, SMT_put
 
 !  do we wish to use TRACE or a traditional trust-region method (TRU)?
@@ -1298,7 +1298,7 @@
 !
 !  data is a scalar variable of type TRACE_data_type used for internal data.
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
+!  userdata is a scalar variable of type USERDATA_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -1378,7 +1378,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), INTENT( OUT ) :: f
        REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_F
      END INTERFACE
 
@@ -1388,7 +1388,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_G
      END INTERFACE
 
@@ -1398,7 +1398,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_H
      END INTERFACE
 
@@ -1409,7 +1409,7 @@
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
        END SUBROUTINE eval_HPROD
      END INTERFACE
@@ -1420,7 +1420,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_PREC
      END INTERFACE
 

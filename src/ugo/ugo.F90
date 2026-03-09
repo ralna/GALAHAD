@@ -320,7 +320,7 @@
        TYPE ( UGO_data_type ) :: ugo_data
        TYPE ( UGO_control_type ) :: ugo_control
        TYPE ( UGO_inform_type ) :: ugo_inform
-       TYPE ( GALAHAD_userdata_type ) :: userdata
+       TYPE ( USERDATA_type ) :: userdata
      END TYPE UGO_full_data_type
 
    CONTAINS
@@ -744,7 +744,7 @@ TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 !
 !  data is a scalar variable of type UGO_data_type used for internal data.
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
+!  userdata is a scalar variable of type USERDATA_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -798,7 +798,7 @@ TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      TYPE ( UGO_control_type ), INTENT( IN ) :: control
      TYPE ( UGO_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( UGO_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_FGH
 !    OPTIONAL :: eval_F, eval_FG, eval_FGH
      REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL :: x_extra
@@ -813,7 +813,7 @@ TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 !       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 !       REAL ( KIND = rp_ ), INTENT( OUT ) :: f
 !       REAL ( KIND = rp_ ), INTENT( IN ) :: x
-!       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+!       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
 !       END SUBROUTINE eval_F
 !     END INTERFACE
 
@@ -823,7 +823,7 @@ TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 !      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 !      REAL ( KIND = rp_ ), INTENT( OUT ) :: f, g
 !      REAL ( KIND = rp_ ), INTENT( IN ) :: x
-!      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+!      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
 !      END SUBROUTINE eval_FG
 !     END INTERFACE
 
@@ -833,7 +833,7 @@ TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), INTENT( OUT ) :: f, g, h
        REAL ( KIND = rp_ ), INTENT( IN ) :: x
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FGH
      END INTERFACE
 
@@ -2188,7 +2188,7 @@ TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( UGO_full_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = rp_ ), INTENT( INOUT ) :: x
      REAL ( KIND = rp_ ), INTENT( OUT ) :: f, g, h
 
@@ -2202,7 +2202,7 @@ TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), INTENT( OUT ) :: f, g, h
        REAL ( KIND = rp_ ), INTENT( IN ) :: x
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FGH
      END INTERFACE
 

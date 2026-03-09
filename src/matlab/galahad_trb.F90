@@ -177,7 +177,7 @@
 !  arguments for TRB
 
       TYPE ( NLPT_problem_type ) :: nlp
-      TYPE ( GALAHAD_userdata_type ) :: userdata
+      TYPE ( USERDATA_type ) :: userdata
       TYPE ( TRB_data_type ), SAVE :: data
       TYPE ( TRB_control_type ), SAVE :: control
       TYPE ( TRB_inform_type ) :: inform

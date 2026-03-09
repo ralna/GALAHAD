@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-10-20 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-01-31 AT 08:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -35,7 +35,7 @@
       USE GALAHAD_KINDS, ONLY : ip_
       IMPLICIT NONE
       PRIVATE :: ip_
-      PUBLIC :: SYMBOLS_status
+      PUBLIC :: SYMBOLS_status, SYMBOLS_success
 
 !-------------------------------------------------------------------------------
 !-------------------------------------------------------------------------------
@@ -537,8 +537,6 @@
 
    CONTAINS
 
-!-*-  G A L A H A D -  S Y M B O L S _ S T A T U S   S U B R O U T I N E  -*-
-
      SUBROUTINE SYMBOLS_status( status, out, prefix, routine )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -914,6 +912,42 @@
 !  End of subroutine SYMBOLS_status
 
      END SUBROUTINE SYMBOLS_status
+
+!-*-*-  G A L A H A D -  S Y M B O L S _ S U C C E S S   F U N C T I O N  -*-*-
+
+     FUNCTION SYMBOLS_success( status, not_max_iterations, not_time_limit )
+     LOGICAL :: SYMBOLS_success
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!  return true if the status code indicates success
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: status
+     LOGICAL, INTENT( IN ), OPTIONAL :: not_max_iterations, not_time_limit
+
+     SYMBOLS_success = status == GALAHAD_ok
+     IF ( PRESENT( not_max_iterations ) ) THEN
+       IF ( not_max_iterations .AND.                                           &
+            status == GALAHAD_error_max_iterations ) SYMBOLS_success = .FALSE.
+     END IF
+     IF ( PRESENT( not_time_limit ) ) THEN
+       IF ( not_time_limit .AND.                                               &
+            status == GALAHAD_error_time_limit ) SYMBOLS_success = .FALSE.
+     END IF
+
+     RETURN
+
+!  End of subroutine SYMBOLS_success
+
+     END FUNCTION SYMBOLS_success
+
+!-*-  G A L A H A D -  S Y M B O L S _ S T A T U S   S U B R O U T I N E  -*-
 
    END MODULE GALAHAD_SYMBOLS
 

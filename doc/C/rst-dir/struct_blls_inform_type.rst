@@ -22,6 +22,7 @@ blls_inform_type structure
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter<doxid-structblls__inform__type_iter>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`cg_iter<doxid-structblls__inform__type_cg_iter>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structblls__inform__type_obj>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`ls_obj<doxid-structblls__inform__type_ls_obj>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`norm_pg<doxid-structblls__inform__type_norm_pg>`;
 		char :ref:`bad_alloc<doxid-structblls__inform__type_bad_alloc>`[81];
 		struct :ref:`blls_time_type<doxid-structblls__time__type>` :ref:`time<doxid-structblls__inform__type_time>`;
@@ -96,7 +97,17 @@ number of CG iterations required
 
 	:ref:`rpc_<doxid-galahad__rpc_8h_>` obj
 
-current value of the objective function, r(x).
+current value of the regularized objective function, q(x).
+
+.. index:: pair: variable; ls_obj
+.. _doxid-structblls__inform__type_ls_obj:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` ls_obj
+
+current value of the least-squares function $\frac{1}{2} \| A_o x - b\|_W^2$. 
 
 .. index:: pair: variable; norm_pg
 .. _doxid-structblls__inform__type_norm_pg:

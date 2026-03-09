@@ -63,7 +63,7 @@
    TYPE ( TRIMSQP_control_type ) :: control
    TYPE ( TRIMSQP_inform_type ) :: inform
    TYPE ( TRIMSQP_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
 
    INTERFACE
       SUBROUTINE funFC_reverse(F, C, X, userdata)
@@ -71,7 +71,7 @@
         REAL ( kind = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
         REAL ( kind = rp_ ), INTENT( OUT ) :: F
         REAL ( kind = rp_ ), POINTER, DIMENSION( : ) :: C
-        TYPE ( GALAHAD_userdata_type ), OPTIONAL :: userdata
+        TYPE ( USERDATA_type ), OPTIONAL :: userdata
       END SUBROUTINE funFC_reverse
    END INTERFACE
 
@@ -80,7 +80,7 @@
         USE GALAHAD_USERDATA_precision
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
         REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: G
-        TYPE ( GALAHAD_userdata_type ), OPTIONAL :: userdata
+        TYPE ( USERDATA_type ), OPTIONAL :: userdata
       END SUBROUTINE funG_reverse
    END INTERFACE
 
@@ -89,7 +89,7 @@
         USE GALAHAD_USERDATA_precision
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
         REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: J_val
-        TYPE ( GALAHAD_userdata_type ), OPTIONAL :: userdata
+        TYPE ( USERDATA_type ), OPTIONAL :: userdata
       END SUBROUTINE funJ_reverse
    END INTERFACE
 
@@ -101,7 +101,7 @@
         REAL ( kind = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: Y
         REAL ( kind = rp_ ), ALLOCATABLE, DIMENSION( : ),                      &
                              INTENT( INOUT ) :: H_val
-        TYPE ( GALAHAD_userdata_type ), OPTIONAL :: userdata
+        TYPE ( USERDATA_type ), OPTIONAL :: userdata
       END SUBROUTINE funH_reverse
    END INTERFACE
 
@@ -405,7 +405,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
 
-   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), INTENT( OUT ) :: F
    REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: C
@@ -453,7 +453,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
 
-   TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
+   TYPE( USERDATA_type ), INTENT(INOUT) :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
    REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: G
 
@@ -502,7 +502,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
 
-   TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
+   TYPE( USERDATA_type ), INTENT(INOUT) :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: Jval
 
@@ -558,7 +558,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
 
-   TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
+   TYPE( USERDATA_type ), INTENT(INOUT) :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
    REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: G
    REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: Jval
@@ -625,7 +625,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  twelve = 12.0_rp_
 
-   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X, Y
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( INOUT ) :: Hval
 
@@ -684,8 +684,8 @@
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
 
-!  TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   TYPE( GALAHAD_userdata_type ), OPTIONAL :: userdata
+!  TYPE( USERDATA_type ), INTENT( INOUT ) :: userdata
+   TYPE( USERDATA_type ), OPTIONAL :: userdata
    REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), INTENT( OUT ) :: F
    REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: C
@@ -733,7 +733,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
 
-   TYPE( GALAHAD_userdata_type ), INTENT(INOUT), OPTIONAL :: userdata
+   TYPE( USERDATA_type ), INTENT(INOUT), OPTIONAL :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
    REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: G
 
@@ -782,7 +782,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
 
-   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: Jval
 
@@ -838,7 +838,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  twelve = 12.0_rp_
 
-   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ), OPTIONAL :: userdata
+   TYPE( USERDATA_type ), INTENT( INOUT ), OPTIONAL :: userdata
    REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X, Y
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( INOUT ) :: Hval
 

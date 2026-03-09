@@ -6,6 +6,8 @@ print("\n** python test: slls")
 # set parameters
 n = 10
 o = n + 1
+m = 1
+sigma = 1.0
 infinity = float("inf")
 
 #  describe A = (  I  ) and b = ( i * e )
@@ -36,23 +38,69 @@ options['print_level'] = 0
 #print("options:", options)
 
 # load data (and optionally non-default options)
-slls.load(n, o, Ao_type, Ao_ne, Ao_row, Ao_col, 0, Ao_ptr, options)
+slls.load(n, o, m, Ao_type, Ao_ne, Ao_row, Ao_col, 0, Ao_ptr, None, options)
 
 #  provide starting values (not crucial)
 
 x = np.empty(n)
-z = np.empty(n)
 for i in range(n):
   x[i] = 0.0
-  z[i] = 0.0
 
 # find minimizer
-#print("\n solve slls")
-x, r, z, g, x_stat \
-  = slls.solve_ls(n, o, Ao_ne, Ao_val, b, x, z)
+print("\n solve slls")
+x, y, z, r, g, x_stat \
+  = slls.solve(n, o, m, Ao_ne, Ao_val, b, sigma, x, None, None)
 print(" x:",x)
-print(" r:",r)
+print(" y:",y)
 print(" z:",z)
+print(" r:",r)
+print(" g:",g)
+print(" x_stat:",x_stat)
+
+# get information
+inform = slls.information()
+print(" r: %.4f" % inform['obj'])
+print('** slls exit status:', inform['status'])
+
+# deallocate internal data
+
+slls.terminate()
+
+# use an explicit cohort
+
+# allocate internal data and set default options
+options = slls.initialize()
+
+# set some non-default options
+options['print_level'] = 0
+#print("options:", options)
+
+cohort = np.empty(n, int)
+for i in range(n):
+  cohort[i] = 0
+
+# load data (and optionally non-default options)
+slls.load(n, o, m, Ao_type, Ao_ne, Ao_row, Ao_col, 0, Ao_ptr, cohort, options)
+
+#  provide starting values (not crucial)
+
+x_s = np.empty(n)
+for i in range(n):
+  x[i] = 0.0
+  x_s[i] = 0.0
+
+w = np.empty(o)
+for i in range(o):
+  w[i] = 1.0
+
+# find minimizer
+print("\n solve slls with an explicit cohort")
+x, y, z, r, g, x_stat \
+  = slls.solve(n, o, m, Ao_ne, Ao_val, b, sigma, x, w, x_s)
+print(" x:",x)
+print(" y:",y)
+print(" z:",z)
+print(" r:",r)
 print(" g:",g)
 print(" x_stat:",x_stat)
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-02-06 AT 10:40 GMT.
    PROGRAM GALAHAD_QPT_EXAMPLE
    USE GALAHAD_QPT_double                       ! double precision version
    IMPLICIT NONE
@@ -22,6 +22,7 @@
    p%X_l = (/ - 1.0_wp, - infinity, - infinity /) ! variable lower bound
    p%X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp ! start from zero
+   p%infinity = infinity
 !  sparse co-ordinate storage format
    CALL SMT_put( p%H%type, 'COORDINATE', s )  ! Specify co-ordinate
    CALL SMT_put( p%A%type, 'COORDINATE', s )  ! storage for H and A

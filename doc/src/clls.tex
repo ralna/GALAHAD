@@ -16,19 +16,21 @@
 \galsummary
 This package uses a primal-dual interior-point method to solve the
 {\bf polyhedrally-constrained regularized linear least-squares problem}
-\eqn{qp}{\mbox{minimize}\;\; \half \| \bmA_o \bmx - \bmb\|_W^2
- + \half \sigma \| \bmx \|^2}
-subject to the general linear constraints
+\eqn{qp}{\mbox{minimize}\;\; q(\bmx) = \half \| \bmA_o \bmx - \bmb\|_W^2
+ + \half \sigma \| \bmx - \bmx_s\|^2}
+subject to the {\bf general linear constraints}
 \disp{c_{i}^{l}  \leq  \bma_{i}^{T}\bmx  \leq  c_{i}^{u}, \;\;\;
  i = 1, \ldots , m,}
-and the simple bound constraints
+and the {\bf simple bound constraints}
 \disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
 where the norms $\|r\|_W = \sqrt{\sum_{i=1}^o w_i r_i^2}$
 and $\|x\| = \sqrt{\sum_{i=1}^n x_i^2}$,
-and the $o$ by $n$ matrix $\bmA_o$, the
-vectors $\bmb$, $\bma_{i}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$,
-$\bmx^{u}$ and the weights $w > 0$ and $\sigma \geq 0$ are given,
-Any of the constraint bounds $c_{i}^{l}$, $c_{i}^{u}$,
+and the $o$ by $n$ real {\bf design matrix} $\bmA_o$, the
+vector of {\bf observations} $\bmb$, as well as 
+the {\bf constraint rows} $\bma_{i}$ and vectors of {\bf constraint bounds}
+$\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$, $\bmx^{u}$, the {\bf shifts} $\bmx_s$, 
+and the {\bf weights} $w > 0$ and $\sigma \geq 0$ 
+are given. Any of the constraint bounds $c_{i}^{l}$, $c_{i}^{u}$,
 $x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
 Full advantage is taken of any zero coefficients in the matrix $\bmA_o$
 and the matrix $\bmA$ of vectors $\bma_{i}$.
@@ -71,7 +73,6 @@ If it is required to use more than one of the modules at the same time,
 the derived types
 {\tt SMT\_type},
 {\tt QPT\_problem\_type},
-{\tt NLPT\_userdata\-\_type},
 {\tt \packagename\_time\_type},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_inform\_type}
@@ -217,6 +218,10 @@ are:
 \ittf{m} is a scalar variable of type \integer,
  that holds the number of general linear constraints, $m$.
 
+\itt{regularization\_weight} is a scalar variable of type \realdp,,
+ that holds the value of the regularization weight, $\sigma$, if required.
+ By default {\tt regularization\_weight} is set to zero.
+
 \ittf{Ao} is scalar variable of type {\tt SMT\_TYPE}
 that holds the objective design matrix $\bmA_o$.
 The following components are used:
@@ -290,7 +295,8 @@ It need not be allocated when the other appropriate schemes are used.
 \end{description}
 
 \ittf{B} is a rank-one allocatable array type \realdp, that
-should be allocated to have length {\tt o}, and its $i$-th component
+should be allocated to have length {\tt o}, and used to hold
+the observations $\bmb$; its $i$-th component should be
 filled with the value $b_{i}$ for $i = 1, \ldots , o$.
 
 \ittf{A} is scalar variable of type {\tt SMT\_TYPE}
@@ -403,6 +409,18 @@ components of {\tt X\_u} to any value larger than that {\tt infinity},
 where {\tt infinity} is a component of the control array {\tt control}
 (see Section~\ref{typecontrol}).
 
+\ittf{W} is a rank-one allocatable array of type \realdp, that should
+be allocated to have length {\tt o} if any of the weights $\bmw$
+in the objective function is not one, and in this case
+filled with the value $w_{i}$ for $i = 1, \ldots , o$.
+If all the weights are one, {\tt W} need not be allocated.
+
+\ittf{X\_s} is a rank-one allocatable array of type \realdp, that should
+be allocated to have length {\tt n} if any of the shifts $\bmx_s$
+in the objective function is nonzero, and in this case
+filled with the value $(\bmx_s)_{i}$ for $i = 1, \ldots , n$.
+If all the shifts are zero, {\tt X\_s} need not be allocated.
+
 \ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
 \realdp,
 that holds the values $\bmx$ of the optimization variables.
@@ -425,8 +443,7 @@ corresponding to the general linear constraints (see Section~\ref{galmethod}).
 The $i$-th component of {\tt Y}, $i = 1,  \ldots ,  m$, contains $y_{i}$.
 
 \ittf{Z} is a rank-one allocatable array of dimension {\tt n} and type default
-\realdp, that holds
-the values $\bmz$ of estimates  of the dual variables
+\realdp, that holds the values $\bmz$ of estimates  of the dual variables
 corresponding to the simple bound constraints (see Section~\ref{galmethod}).
 The $j$-th component of {\tt Z}, $j = 1,  \ldots ,  n$, contains $z_{j}$.
 
@@ -988,7 +1005,12 @@ total number of threads used for parallel execution.
 gives the number of iterations performed.
 
 \ittf{obj} is a scalar variable of type \realdp, that holds the
-value of the objective function at the best estimate of the solution found.
+value of the regularized objective function $q(\bmx)$ at the 
+best estimate of the solution found.
+
+\itt{ls\_obj} is a scalar variable of type \realdp, that holds the value of 
+the least-squares function $\half \| \bmA_o \bmx - \bmb\|_W^2$ 
+at the best estimate of the solution found.
 
 \itt{primal\_infeasibility} is a scalar variable of type \realdp,
 that holds the norm of the violation of primal optimality
@@ -1138,7 +1160,7 @@ The constrained least-squares solution algorithm is called as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_solve( prob, data, control, inform[, regularization\_weight, w] )}
+{\tt CALL \packagename\_solve( prob, data, control, inform )}
 
 %\vspace*{-3mm}
 \begin{description}
@@ -1147,7 +1169,8 @@ The constrained least-squares solution algorithm is called as follows:
 (see Section~\ref{typeprob}).
 It is used to hold data about the problem being solved.
 The user must allocate all the array components,
-and set values for all components except {\tt prob\%C}.
+and set values for all components except {\tt prob\%C}
+and, if they are not required, {\tt prob\%W} and {\tt prob\%X\_s}.
 
 The components {\tt prob\%X}, {\tt prob\%Y} and {\tt prob\%Z}
 must be set to initial estimates of the primal variables, $\bmx$,
@@ -1190,16 +1213,6 @@ A successful call to
 {\tt \packagename\_solve}
 is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
-
-\ittf{regularization\_weight} is an \optional\ scalar variable of type
-\realdp, that holds the regularization weight, $\sigma \geq 0$.
-It need not be \present\ if $\sigma = 0$.
-
-\ittf{W} is an \optional\ rank-one allocatable array of dimension {\tt o} and
-type \realdp, that holds the positive residual weights, $w$. If it
-is \present, its $i$-th component must contain the value $w_{i}$ for
-$i = 1, \ldots , o$.
-If all the weights are one, {\tt W} need not be \present.
 
 \end{description}
 

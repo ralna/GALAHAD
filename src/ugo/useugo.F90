@@ -48,7 +48,8 @@
      TYPE ( UGO_inform_type ) :: inform
      TYPE ( UGO_data_type ) :: data
      TYPE ( NLPT_problem_type ) :: nlp
-     TYPE ( GALAHAD_userdata_type ) :: userdata
+!    TYPE ( USERDATA_type ) :: userdata
+     TYPE ( USERDATA_type ) :: userdata
      TYPE ( CUTEST_control_type ) :: cutest_control
      TYPE ( CUTEST_inform_type ) :: cutest_inform
 

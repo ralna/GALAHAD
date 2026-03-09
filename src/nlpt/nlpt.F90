@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-02-06 AT 09:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -43,7 +43,7 @@
       USE GALAHAD_SVT_precision
       USE GALAHAD_SMT_precision
       USE GALAHAD_USERDATA_precision, NLPT_USERDATA_type                       &
-                                        => GALAHAD_userdata_type
+                                        => USERDATA_type
       USE GALAHAD_TOOLS
       USE GALAHAD_SYMBOLS,                                                     &
           SILENT              => GALAHAD_SILENT,                               &
@@ -239,20 +239,59 @@
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: J_col
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: J_ptr
 
-        ! Four scalar variables of derived type SMT_type.  Used to hold the
+        ! number of residuals for least-squares objectives
+
+        INTEGER ( KIND = ip_ ) :: m_r
+
+        ! values of residuals for least-squares objectives
+
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: r
+
+        ! weights for least-squares objectives
+
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: w
+
+        ! the type of storage for Jr
+
+        INTEGER ( KIND = ip_ ) :: Jr_type
+
+        ! the number of nonzeroes in the nonlinear least-squares Jacobian
+
+        INTEGER ( KIND = ip_ ) :: Jr_ne
+
+        ! Jacobian of the least-squares residual
+
+        REAL ( KIND = rp_ ), ALLOCATABLE,  DIMENSION( : ) :: Jr_val
+
+        ! pointers for sparse least-squares Jacobian storage 
+        ! (sparse by rows, by columns or coordinate)
+
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Jr_row
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Jr_col
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Jr_ptr
+
+        ! number of cohorts
+
+        INTEGER ( KIND = ip_ ) :: m_c
+
+        !  simplex cohorts
+
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: COHORT
+
+        ! Five scalar variables of derived type SMT_type.  Used to hold the
         ! Jacobian of the (linear and nonlinear) residuals or constraints,
         ! the Hessian of the Lagrangian, and the matrix of products of each
         ! constraint Hessian with a vector.
         ! These will eventually replace all of the above.
 
-        TYPE ( SMT_type ) :: A, J, H, P
+        TYPE ( SMT_type ) :: Ao, A, J, Jr, H, P
 
         ! A scalar variable of derived type SVT_type.  Used to hold the
         ! the gradient as a sparse vector (although it may also be dense)
 
         TYPE ( SVT_type ) :: Go
 
-        ! the convential value of infinity (that is the value beyond which
+        ! the conventional value of infinity (that is the value beyond which
         ! bounds are assumed to be infinite)
 
         REAL ( KIND = rp_ ) :: infinity
@@ -1157,8 +1196,35 @@
    IF ( ALLOCATED( problem%J%row    ) ) DEALLOCATE( problem%J%row    )
    IF ( ALLOCATED( problem%J%col    ) ) DEALLOCATE( problem%J%col    )
    IF ( ALLOCATED( problem%J%ptr    ) ) DEALLOCATE( problem%J%ptr    )
+   IF ( ALLOCATED( problem%Jr_val   ) ) DEALLOCATE( problem%Jr_val    )
+   IF ( ALLOCATED( problem%Jr_row   ) ) DEALLOCATE( problem%Jr_row    )
+   IF ( ALLOCATED( problem%Jr_col   ) ) DEALLOCATE( problem%Jr_col    )
+   IF ( ALLOCATED( problem%Jr_ptr   ) ) DEALLOCATE( problem%Jr_ptr    )
+   IF ( ALLOCATED( problem%Jr%id    ) ) DEALLOCATE( problem%Jr%id     )
+   IF ( ALLOCATED( problem%Jr%type  ) ) DEALLOCATE( problem%Jr%type   )
+   IF ( ALLOCATED( problem%Jr%val   ) ) DEALLOCATE( problem%Jr%val    )
+   IF ( ALLOCATED( problem%Jr%row   ) ) DEALLOCATE( problem%Jr%row    )
+   IF ( ALLOCATED( problem%Jr%col   ) ) DEALLOCATE( problem%Jr%col    )
+   IF ( ALLOCATED( problem%Jr%ptr   ) ) DEALLOCATE( problem%Jr%ptr    )
+   IF ( ALLOCATED( problem%Ao%id    ) ) DEALLOCATE( problem%Ao%id     )
+   IF ( ALLOCATED( problem%Ao%type  ) ) DEALLOCATE( problem%Ao%type   )
+   IF ( ALLOCATED( problem%Ao%val   ) ) DEALLOCATE( problem%Ao%val    )
+   IF ( ALLOCATED( problem%Ao%row   ) ) DEALLOCATE( problem%Ao%row    )
+   IF ( ALLOCATED( problem%Ao%col   ) ) DEALLOCATE( problem%Ao%col    )
+   IF ( ALLOCATED( problem%Ao%ptr   ) ) DEALLOCATE( problem%Ao%ptr    )
+   IF ( ALLOCATED( problem%P%id     ) ) DEALLOCATE( problem%P%id     )
+   IF ( ALLOCATED( problem%P%type   ) ) DEALLOCATE( problem%P%type   )
+   IF ( ALLOCATED( problem%P%val    ) ) DEALLOCATE( problem%P%val    )
+   IF ( ALLOCATED( problem%P%row    ) ) DEALLOCATE( problem%P%row    )
+   IF ( ALLOCATED( problem%P%col    ) ) DEALLOCATE( problem%P%col    )
+   IF ( ALLOCATED( problem%P%ptr    ) ) DEALLOCATE( problem%P%ptr    )
    IF ( ALLOCATED( problem%y        ) ) DEALLOCATE( problem%y        )
+   IF ( ALLOCATED( problem%r        ) ) DEALLOCATE( problem%r        )
+   IF ( ALLOCATED( problem%w        ) ) DEALLOCATE( problem%w        )
    IF ( ALLOCATED( problem%gL       ) ) DEALLOCATE( problem%gL       )
+   IF ( ALLOCATED( problem%cohort   ) ) DEALLOCATE( problem%cohort   )
+   IF ( ALLOCATED( problem%Go%ind   ) ) DEALLOCATE( problem%Go%ind   )
+   IF ( ALLOCATED( problem%Go%val   ) ) DEALLOCATE( problem%Go%val   )
 
    IF ( plevel >= TRACE ) THEN
       IF ( plevel >= DETAILS ) WRITE( iout, 1002 )

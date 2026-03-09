@@ -40,6 +40,7 @@ int main(void) {
     ipc_ o = n + 1; // number of residuals
     ipc_ Ao_ne = 2 * n; // sparse Jacobian elements
     ipc_ Ao_dense_ne = o * n; // dense Jacobian elements
+    rpc_ regularization_weight = 1.0; // regularization weight
     // row-wise storage
     ipc_ Ao_row[Ao_ne]; // row indices,
     ipc_ Ao_col[Ao_ne]; // column indices
@@ -61,6 +62,7 @@ int main(void) {
     rpc_ r[o]; // residual
     rpc_ g[n]; // gradient
     rpc_ w[o]; // weights
+    rpc_ x_s[n]; // shifts
 
     // Set output storage
     ipc_ x_stat[n]; // variable status
@@ -82,6 +84,7 @@ int main(void) {
     //w[0] = 2.0;
     w[0] = 1.0;
     for( ipc_ i = 1; i < o; i++) w[i] = 1.0;
+    for( ipc_ i = 1; i < n; i++) x_s[i] = 0.5;
 
     // A by rows
 
@@ -169,8 +172,9 @@ int main(void) {
                 blls_import( &control, &data, &status, n, o,
                             "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL );
                 blls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_ne, Ao_val, b, x_l, x_u,
-                                    x, z, r, g, x_stat, w, prec );
+                                    Ao_ne, Ao_val, b, 
+                                    regularization_weight, x_l, x_u,
+                                    x, z, r, g, x_stat, w, x_s, prec );
                 break;
             case 2: // sparse by rows
                 strcpy( st, "SR" );
@@ -178,8 +182,9 @@ int main(void) {
                              "sparse_by_rows", Ao_ne, NULL, Ao_col,
                              Ao_ptr_ne, Ao_ptr );
                 blls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_ne, Ao_val, b, x_l, x_u,
-                                    x, z, r, g, x_stat, w, prec );
+                                    Ao_ne, Ao_val, b, 
+                                    regularization_weight, x_l, x_u,
+                                    x, z, r, g, x_stat, w, x_s, prec );
                 break;
             case 3: // dense
                 strcpy( st, "DD" );
@@ -187,8 +192,9 @@ int main(void) {
                              "dense", Ao_dense_ne,
                               NULL, NULL,0,  NULL );
                 blls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_dense_ne, Ao_dense, b, x_l, x_u,
-                                    x, z, r, g, x_stat, w, prec );
+                                    Ao_dense_ne, Ao_dense, b, 
+                                    regularization_weight, x_l, x_u,
+                                    x, z, r, g, x_stat, w, x_s, prec );
                 break;
             case 4: // dense by rows
                 strcpy( st, "DR" );
@@ -196,8 +202,9 @@ int main(void) {
                              "dense_by_rows", Ao_dense_ne,
                               NULL, NULL,0,  NULL );
                 blls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_dense_ne, Ao_dense, b, x_l, x_u,
-                                    x, z, r, g, x_stat, w, prec );
+                                    Ao_dense_ne, Ao_dense, b, 
+                                    regularization_weight, x_l, x_u,
+                                    x, z, r, g, x_stat, w, x_s, prec );
                 break;
             case 5: // sparse by columns
                 strcpy( st, "SC" );
@@ -205,8 +212,9 @@ int main(void) {
                              "sparse_by_columns", Ao_ne, Ao_by_col_row,
                              NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr );
                 blls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_ne, Ao_by_col_val, b, x_l, x_u,
-                                    x, z, r, g, x_stat, w, prec );
+                                    Ao_ne, Ao_by_col_val, b, 
+                                    regularization_weight, x_l, x_u,
+                                    x, z, r, g, x_stat, w, x_s, prec );
                 break;
             case 6: // dense by columns
                 strcpy( st, "DC" );
@@ -214,8 +222,9 @@ int main(void) {
                              "dense_by_columns", Ao_dense_ne,
                              NULL, NULL, 0, NULL);
                 blls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_dense_ne, Ao_by_col_dense, b, x_l, x_u,
-                                    x, z, r, g, x_stat, w, prec );
+                                    Ao_dense_ne, Ao_by_col_dense, b, 
+                                    regularization_weight, x_l, x_u,
+                                    x, z, r, g, x_stat, w, x_s, prec );
                 break;
             }
         blls_information( &data, &inform, &status );
@@ -271,9 +280,10 @@ int main(void) {
     blls_import_without_a( &control, &data, &status, n, o ) ;
     while(true){ // reverse-communication loop
         blls_solve_reverse_a_prod( &data, &status, &eval_status, n, o, b,
-                                   x_l, x_u, x, z, r, g, x_stat, v, p,
+                                   regularization_weight, x_l, x_u, 
+                                    x, z, r, g, x_stat, v, p,
                                    nz_v, &nz_v_start, &nz_v_end,
-                                   nz_p, nz_p_end, w );
+                                   nz_p, nz_p_end, w, x_s );
         if(status == 0){ // successful termination
             break;
         }else if(status < 0){ // error exit

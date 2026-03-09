@@ -20,17 +20,27 @@ a general objective function
 \eqn{qp}{\half \bmx^T \bmH \bmx + \bmg^T \bmx + f,}
 or sometimes a (shifted) squared-least-distance objective function,
 \eqn{lsqp}{\half \sum_{j=1}^n w_j^2 ( x_j^{ } - x_j^0 )^2 + \bmg^T \bmx + f,}
+or even the general, regularized, linear-least squares objective,
+\eqn{rls}{\half \| \bmA_o \bmx - \bmb\|_W^2
++ \half \sigma \|\bmx - \bmx_s\|_2^2,}
 subject to the general linear constraints
 \disp{c_{i}^{l}  \leq  \bma_{i}^{T}\bmx  \leq  c_{i}^{u}, \;\;\;
  i = 1, \ldots , m,}
 and the simple bound constraints
 \disp{x_{j}^{l} \leq x_{j}^{ } \leq x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
-where the $n$ by $n$ symmetric matrix $\bmH$,
-the vectors $\bmg$, $\bmw$, $\bmx^{0}$,
-$\bma_{i}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$,
-and $\bmx^{u}$, and the scalar $f$ are given.
-Full advantage is taken of any zero coefficients in the matrix $\bmH$ or the
-vectors $\bma_{i}$.
+or the non-overlapping regular simplex constraints
+\eqn{sc}{\bme_{\calC_i}^T \bmx_{\calC_i} = 1 \tim{and} \bmx_{\calC_i}
+ \geq 0 \tim{for} i = 1,\ldots,m_c,}
+where $\|\bmv\|_W^2 \equiv \sum_i w_i v_i^2$, and
+the $n$ by $n$ symmetric matrix $\bmH$, the  $o$ by $n$ 
+design matrix $\bmA_o$, the vectors $\bmg$, $\bmw$, $\bmx^{0}$,
+$\bma_{i}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$, $\bmx^{u}$, $\bmb$
+and $\bmx_s$, the scalars $f$ and $\sigma$, the non-overlapping
+integer sets of cohorts $\calC_i \subseteq \{1,\ldots,n\}$, for which
+$\calC_i \cap \calC_j = \emptyset$ for $1 \leq i < j \leq m_c$,
+are given.
+Full advantage is taken of any zero coefficients in the matrices 
+$\bmH$, $\bmA_o$ or the vectors $\bma_{i}$.
 Any of the constraint bounds $c_{i}^{l}$, $c_{i}^{u}$,
 $x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
 
@@ -78,13 +88,14 @@ must be renamed on one of the {\tt USE} statements.
 %%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galmatrix
-Both the Hessian matrix $\bmH$ and
+The Hessian matrix $\bmH$,
 the constraint Jacobian $\bmA$, the matrix
 whose rows are the vectors $\bma_{i}^{T}$, $i = 1, \ldots , m$,
+and the design matrix $\bmA_o$
 may be stored in a variety of input formats.
 
 \subsubsection{Dense storage format}\label{dense}
-The matrix $\bmA$ is stored as a compact
+The matrix $\bmA$ (and, if required, $\bmA_o$) is stored as a compact
 dense matrix by rows, that is, the values of the entries of each row in turn are
 stored in order within an appropriate real one-dimensional array.
 Component $n \ast (i-1) + j$ of the storage array {\tt A\%val} will hold the
@@ -153,8 +164,8 @@ no explicit entries needs be stored.
 
 \subsection{Optimality conditions\label{galopt}}
 
-The required solution $\bmx$ necessarily satisfies
-the primal optimality conditions
+The required solution $\bmx$ to \req{qp} or \req{lsqp}
+necessarily satisfies the primal optimality conditions
 \disp{\bmA \bmx = \bmc, \;\;
  \bmc^{l} \leq \bmc \leq \bmc^{u}, \tim{and}
  \bmx^{l} \leq\bmx \leq\bmx^{u},}
@@ -182,6 +193,18 @@ known as the Lagrange multipliers for
 the general linear constraints, and the dual variables for the bounds,
 respectively, and where the vector inequalities hold componentwise.
 
+For the problem \req{rls} with constraints \req{sc}, the primal
+optimality conditions are instead
+\disp{\bme_{\cal C_i}^T \bmx_{\cal C_i} = 1 \tim{and} \bmx_{\cal C_i}
+ \geq 0 \tim{for} i = 1,\ldots,m,}
+the dual optimality conditions become
+\disp{\bmA_o^T \bmW (\bmA_o \bmx - \bmb ) + \sigma (\bmx -\bmx_s)  = 
+ \sum_{i=1}^m \bme_{\calC_i} y_i  + \bmz,}
+for some Lagrange multipliers $\bmy$ and dual variables
+\disp{ \bmz \geq 0,}
+and the complementary slackness conditions are
+\disp{\bmx^T \bmz = 0,}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \input{kinds}
@@ -203,8 +226,8 @@ and $\bmH$. The components of {\tt SMT\_TYPE} used here are:
 
 \begin{description}
 
-\ittf{type} is an allocatable array of rank one and type default \character, that
-holds a string which indicates the storage scheme used.
+\ittf{type} is an allocatable array of rank one and type default \character, 
+that holds a string which indicates the storage scheme used.
 
 \ittf{m} is a scalar component of type \integer,
 that holds the number of rows in the matrix.
@@ -259,7 +282,8 @@ may be used to hold the name of the problem.
  problems with identical "structure" to be attempted, and \false\ if
  a previous problem with the same "structure" (but different
  numerical data) has been solved. Here, the term "structure" refers both to
- the sparsity patterns of the Jacobian matrices $\bmA$ involved
+ the sparsity patterns of the Jacobian and design matrices $\bmA$ and
+ $\bmA_o$ involved
  (but not their numerical values), to the zero/nonzero/infinity patterns
  (a bound is either zero, $\pm$ infinity, or a finite but arbitrary
  nonzero) of each of the constraint bounds, and to the variables and constraints
@@ -270,7 +294,14 @@ may be used to hold the name of the problem.
  that holds the number of optimization variables, $n$.
 
 \ittf{m} is a scalar variable of type \integer,
- that holds the number of general linear constraints, $m$.
+ that holds the number of general linear or simplex constraints, $m$.
+
+\ittf{o} is a scalar variable of type \integer,
+ that holds the number of residuals, $o$, if required.
+
+\itt{regularization\_weight} is a scalar variable of type \realdp,,
+ that holds the value of the regularization weight, $\sigma$, if required.
+ By default {\tt regularization\_weight} is set to zero.
 
 \itt{Hessian\_kind} is a scalar variable of type \integer,
 that is used to indicate what type of Hessian the problem involves.
@@ -287,9 +318,10 @@ component {\tt H} (see below).
 \itt{1} In this case, a least-distance problem of the form \req{lsqp}
 with weights $w_{j} = 1$ for $j = 1, \ldots , n$ is given.
 
-\itt{>1} In this case, a weighted least-distance problem of the form \req{lsqp}
+\itt{2} In this case, a weighted least-distance problem of the form \req{lsqp}
 with general weights $\bmw$ is given. The weights will be
 provided in the component {\tt WEIGHT} (see below).
+
 \end{description}
 
 \ittf{H} is scalar variable of type {\tt SMT\_TYPE}
@@ -376,7 +408,7 @@ other schemes are used.
 \end{description}
 If {\tt Hessian\_kind} $\geq 0$, the components of {\tt H} need not be set.
 
-\itt{WEIGHT} is a rank-one allocatable array type \realdp, that
+\itt{WEIGHT} is a rank-one allocatable array of type \realdp, that
 should be allocated to have length {\tt n}, and its $j$-th component
 filled with the value $w_{j}$ for $j = 1, \ldots , n$,
 whenever {\tt Hessian\_kind} $>1$.
@@ -499,7 +531,9 @@ on the general constraints. The $i$-th component of
 Infinite bounds are allowed by setting the corresponding
 components of {\tt C\_l} to any value smaller than {\tt -infinity},
 where {\tt infinity} is a  solver-dependent value that will be recognised as
-infinity.
+infinity. 
+When the constraints are non-overlapping regular simplices, \req{sc},
+{\tt C\_l} need not be allocated.
 
 \ittf{C\_u} is a rank-one allocatable array of dimension {\tt m} and type
 \realdp, that holds the vector of upper bounds $\bmc^{u}$
@@ -509,6 +543,8 @@ Infinite bounds are allowed by setting the corresponding
 components of {\tt C\_u} to any value larger than {\tt infinity},
 where {\tt infinity} is a  solver-dependent value that will be recognised as
 infinity.
+When the constraints are non-overlapping regular simplices, \req{sc},
+{\tt C\_c} need not be allocated.
 
 \ittf{DC\_l} is a rank-one allocatable array of dimension {\tt m} and type
 \realdp, that may hold the vector of parametric lower bounds
@@ -533,6 +569,8 @@ Infinite bounds are allowed by setting the corresponding
 components of {\tt X\_l} to any value smaller than {\tt -infinity},
 where {\tt infinity} is a  solver-dependent value that will be recognised as
 infinity.
+When the constraints are non-overlapping regular simplices, \req{sc},
+{\tt X\_l} need not be allocated.
 
 \ittf{X\_u} is a rank-one allocatable array of dimension {\tt n} and type
 \realdp, that holds
@@ -543,6 +581,8 @@ Infinite bounds are allowed by setting the corresponding
 components of {\tt X\_u} to any value larger than that {\tt infinity},
 where {\tt infinity} is a  solver-dependent value that will be recognised as
 infinity.
+When the constraints are non-overlapping regular simplices, \req{sc},
+{\tt X\_u} need not be allocated.
 
 \ittf{DX\_l} is a rank-one allocatable array of dimension {\tt n} and type
 \realdp, that may hold the vector of parametric lower bounds
@@ -557,6 +597,73 @@ $\delta \bmx^{u}$  on the variables. The $j$-th component of
 {\tt DX\_u}, $j = 1,  \ldots ,  n$, contains $\delta x_{j}^{u}$.
 Only components corresponding to finite upper bounds $x_{j}^{u}$
 need be set.
+
+\ittf{Ao} is scalar variable of type {\tt SMT\_TYPE}
+that holds the design matrix $\bmA_o$. The following components are used:
+
+\begin{description}
+
+\itt{Ao\%type} is an allocatable array of rank one and type default
+\character, that
+is used to indicate the storage scheme used. If the dense storage scheme
+(see Section~\ref{dense}) is used,
+the first five components of {\tt Ao\%type} must contain the
+string {\tt DENSE}.
+For the sparse co-ordinate scheme (see Section~\ref{coordinate}),
+the first ten components of {\tt Ao\%type} must contain the
+string {\tt COORDINATE}, while
+for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
+the first fourteen components of {\tt Ao\%type} must contain the
+string {\tt SPARSE\_BY\_ROWS}.
+
+Just as for {\tt Ao\%type} above, the procedure {\tt SMT\_put}
+may be used to allocate sufficient space and insert the required keyword
+into {\tt Ao\%type}.
+Once again, if {\tt prob} is of derived type {\tt \packagename\_problem\_type}
+and involves a design matrix we wish to store using the sparse row-wise
+storage scheme, we may simply
+%\vspace*{-2mm}
+{\tt
+\begin{verbatim}
+        CALL SMT_put( prob%Ao%type, 'SPARSE_BY_ROWS' )
+\end{verbatim}
+}
+%\vspace*{-4mm}
+\noindent
+
+\itt{Ao\%ne} is a scalar variable of type \integer, that
+holds the number of entries in $\bmA_o$
+in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
+It need not be set for either of the other two appropriate schemes.
+
+\itt{Ao\%val} is a rank-one allocatable array of type \realdp, that holds
+the values of the entries of the design matrix $\bmA_o$ in any of the
+appropriate storage schemes discussed in Section~\ref{galmatrix}.
+
+\itt{Ao\%row} is a rank-one allocatable array of type \integer,
+that holds the row indices of $\bmA_o$ in the sparse co-ordinate storage
+scheme (see Section~\ref{coordinate}).
+It need not be allocated for either of the other two appropriate schemes.
+
+\itt{Ao\%col} is a rank-one allocatable array variable of type \integer,
+that holds the column indices of $\bmA_o$ in either the sparse co-ordinate
+(see Section~\ref{coordinate}), or the sparse row-wise
+(see Section~\ref{rowwise}) storage scheme.
+It need not be allocated when the dense storage scheme is used.
+
+\itt{Ao\%ptr} is a rank-one allocatable array of dimension {\tt o+1} and type
+\integer, that holds the starting position of each row of $\bmA_o$, as well
+as the total number of entries plus one, in the sparse row-wise storage
+scheme (see Section~\ref{rowwise}). It need not be allocated when the
+other appropriate schemes are used.
+
+\end{description}
+
+\ittf{B} is a rank-one allocatable array type \realdp, that
+should be allocated to have length {\tt o}, and its $i$-th component
+filled with the value $b_{i}$ for $i = 1, \ldots , o$ for the
+objective function \req{rls}. 
+For other objectives, {\tt B} need not be allocated.
 
 \ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
 \realdp,
@@ -596,10 +703,14 @@ where {\tt infinity} is a  solver-dependent value that will be recognised as
 infinity.
 
 \ittf{C} is a rank-one allocatable array of dimension {\tt m} and type default
-\realdp, that holds
-the values $\bmA \bmx$ of the constraints.
+\realdp, that holds the values $\bmA \bmx$ of the constraints.
 The $i$-th component of {\tt C}, $i = 1,  \ldots ,  m$, contains
 $\bma_{i}^{T}\bmx \equiv (\bmA \bmx)_{i}$.
+
+\ittf{R} is a rank-one allocatable array of dimension {\tt o} and type default
+\realdp, that holds the values $\bmA_o \bmx - \bmb$ of the residuals.
+The $i$-th component of {\tt R}, $i = 1,  \ldots ,  o$, contains
+$(\bmA_o \bmx - \bmb)_{i}$.
 
 \itt{C\_status} is a rank-one allocatable array of dimension {\tt m} and type
 \integer, that holds the status of the problem constraints (active or
@@ -631,6 +742,35 @@ Infinite bounds are allowed by setting the corresponding
 components of {\tt Y\_u} to any value larger than that {\tt infinity},
 where {\tt infinity} is a  solver-dependent value that will be recognised as
 infinity.
+
+\itt{COHORT} is a rank-one array of type \integer, that should
+ be allocated to have length {\tt n} if the a simplex constraint set 
+\req{sc} is used, and if every variable is not contained in a single
+cohort. In this case, if variable $x_j$ is associated with cohort $\calC_i$, 
+$1 \leq i \leq m$, {\tt COHORT(j)} should be set to {\tt i}, while 
+if $x_j$ is unconstrained {\tt COHORT(j) = 0} should be assigned. 
+At least one value {\tt COHORT(j)} for $j = 1,\ldots\,n$ is expected to 
+take the value $i$ for every $1 \leq i \leq m$, that is no empty cohorts 
+are allowed. If all the variables are contained in a single cohort, 
+or if the constraint set is not \req{sc}, {\tt COHORT} need not be allocated.
+
+\ittf{W} is a rank-one allocatable array of type \realdp, that should
+be allocated to have length {\tt o} if any of the weights $\bmw$
+in the objective \req{rls} is not one, and in this case
+filled with the value $w_{i}$ for $i = 1, \ldots , o$.
+If all the weights are one, and for other objectives, {\tt W} 
+need not be allocated.
+
+\ittf{X\_s} is a rank-one allocatable array of type \realdp, that should
+be allocated to have length {\tt n} if any of the shifts $\bmx_s$
+in the objective \req{rls} is nonzero, and in this case
+filled with the value $(\bmx_s)_{i}$ for $i = 1, \ldots , n$.
+If all the shifts are zero, and for other objectives, {\tt X\_s} 
+need not be allocated.
+
+\itt{infinity} is a scalar variable of type \realdp,
+that holds the value of infinity, that is the value beyond which
+problem bounds are judged to be infinite.
 
 \end{description}
 
@@ -668,49 +808,9 @@ and
 we may use the following code segment:
 
 {\tt \small
-\begin{verbatim}
-   PROGRAM GALAHAD_QPT_EXAMPLE
-   USE GALAHAD_QPT_double                       ! double precision version
-   IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20 ! solver-dependent
-   TYPE ( QPT_problem_type ) :: p
-   INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
-! start problem data
-   ALLOCATE( p%name( 6 ) )
-   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
-   ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
-   ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
-   p%name = TRANSFER( 'QPprob', p%name )      ! name
-   p%new_problem_structure = .TRUE.           ! new structure
-   p%Hessian_kind = - 1 ; p%gradient_kind = - 1 ! generic quadratic program
-   p%n = n ; p%m = m ; p%f = 1.0_wp           ! dimensions & objective constant
-   p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)         ! objective gradient
-   p%C_l = (/ 1.0_wp, 2.0_wp /)               ! constraint lower bound
-   p%C_u = (/ 2.0_wp, 2.0_wp /)               ! constraint upper bound
-   p%X_l = (/ - 1.0_wp, - infinity, - infinity /) ! variable lower bound
-   p%X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
-   p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp ! start from zero
-!  sparse co-ordinate storage format
-   CALL SMT_put( p%H%type, 'COORDINATE' )  ! Specify co-ordinate
-   CALL SMT_put( p%A%type, 'COORDINATE' )  ! storage for H and A
-   ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
-   ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
-   p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /) ! Hessian H
-   p%H%row = (/ 1, 2, 3, 3 /)                     ! NB lower triangle
-   p%H%col = (/ 1, 2, 3, 1 /) ; p%H%ne = h_ne
-   p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
-   p%A%row = (/ 1, 1, 2, 2 /)
-   p%A%col = (/ 1, 2, 2, 3 /) ; p%A%ne = a_ne
-! problem data complete
-! now call minimizer ....
-! ...
-! ... minimization call completed. Deallocate arrays
-   DEALLOCATE( p%name, p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%A%val, p%A%row, p%A%col )
-   END PROGRAM GALAHAD_QPT_EXAMPLE
-\end{verbatim}
+\VerbatimInput{\packageexample}
 }
+\noindent
 \noindent
 The same problem may be handled holding the data in
 a sparse row-wise storage format by replacing the lines

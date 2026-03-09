@@ -596,7 +596,7 @@ PyObject* lsqp_make_inform_dict(const struct lsqp_inform_type *inform){
     PyDict_SetItemString(py_inform, "fdc_inform",
                          fdc_make_inform_dict(&inform->fdc_inform));
     PyDict_SetItemString(py_inform, "sbls_inform",
-                        sbls_make_inform_dict(&inform->sbls_inform));
+                         sbls_make_inform_dict(&inform->sbls_inform));
 
     return py_inform;
 }

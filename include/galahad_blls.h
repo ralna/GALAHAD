@@ -1,7 +1,7 @@
 //* \file galahad_blls.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-02-08 AT 13:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BLLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -23,10 +23,10 @@
 
   This package uses a preconditioned, projected-gradient method to solve the
    <b>bound-constrained regularized linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; r(x) = q(x) + \frac{1}{2} \sigma \|x\|^2  \;\;\mbox{where}\;\; q(x) = \frac{1}{2} \| A_o x - b\|_2^2 \f],
+  \f[\mbox{minimize}\;\; r(x) = q(x) + \frac{1}{2} \sigma \|x-x_s\|^2  \;\;\mbox{where}\;\; q(x) = \frac{1}{2} \| A_o x - b\|_W^2 \f],
 \manonly
   \n
-  minimize r(x) = q(x) + sigma ||x||^2, where q(x) := 1/2 || A x - b ||^2,
+  minimize r(x) = q(x) + sigma ||x-x_s||^2, where q(x) := 1/2 || A_o x - b ||_W^2,
   \n
 \endmanonly
   subject to the simple bound constraints
@@ -37,11 +37,12 @@
   \n
 \endmanonly
   where the \f$o\f$ by \f$n\f$ real matrix \f$A_o\f$, the vectors
-  \f$b\f$, \f$x^{l}\f$, \f$x^{u}\f$ and the non-negative weight
-  \f$\sigma\f$ are given.   Any of the constraint bounds \f$x_j^l\f$ and
+  \f$b\f$, \f$x^{l}\f$, \f$x^{u}\f$ and the shifts \f$x_s\f$ 
+  and non-negative weights \f$wf$ and \f$\sigma\f$ are given.   
+  Any of the constraint bounds \f$x_j^l\f$ and
   \f$x_j^u\f$ may be infinite.  Full advantage is taken of any zero
   coefficients of the Jacobian matrix \f$A\f$ of the <b>residuals</b>
-  \f$c(x) = A x - b\f$;  the matrix need not be provided as there are options
+  \f$r(x) = A_o x - b\f$;  the matrix need not be provided as there are options
   to obtain matrix-vector products involving \f$A\f$ and its transpose either
   by reverse communication or from a user-provided subroutine.
 
@@ -326,13 +327,6 @@ struct blls_control_type {
     ipc_ sif_file_device;
 
     /// \brief
-    /// the value of the non-negative regularization weight sigma, i.e., the
-    /// quadratic objective function q(x) will be regularized by adding
-    /// 1/2 weight ||x||^2; any value smaller than zero will be regarded
-    /// as zero.
-    rpc_ weight;
-
-    /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
     rpc_ infinity;
 
@@ -440,34 +434,9 @@ struct blls_time_type {
     rpc_ total;
 
     /// \brief
-    /// the CPU time spent analysing the required matrices prior to
-    /// factorization
-    rpc_ analyse;
-
-    /// \brief
-    /// the CPU time spent factorizing the required matrices
-    rpc_ factorize;
-
-    /// \brief
-    /// the CPU time spent in the linear solution phase
-    rpc_ solve;
-
-    /// \brief
     /// the total clock time spent in the package
     rpc_ clock_total;
 
-    /// \brief
-    /// the clock time spent analysing the required matrices prior to
-    /// factorization
-    rpc_ clock_analyse;
-
-    /// \brief
-    /// the clock time spent factorizing the required matrices
-    rpc_ clock_factorize;
-
-    /// \brief
-    /// the clock time spent in the linear solution phase
-    rpc_ clock_solve;
 };
 
 /**
@@ -496,8 +465,12 @@ struct blls_inform_type {
     ipc_ cg_iter;
 
     /// \brief
-    /// current value of the objective function, r(x).
+    /// current value of the regularized objective function, r(x).
     rpc_ obj;
+
+    /// \brief
+    /// current value of the objective function, q(x).
+    rpc_ ls_obj;
 
     /// \brief
     /// current value of the Euclidean norm of projected gradient of r(x).
@@ -709,6 +682,7 @@ void blls_solve_given_a( void **data,
                          ipc_ Ao_ne,
                          const rpc_ Ao_val[],
                          const rpc_ b[],
+                         rpc_ regularization_weight,
                          const rpc_ x_l[],
                          const rpc_ x_u[],
                          rpc_ x[],
@@ -717,6 +691,7 @@ void blls_solve_given_a( void **data,
                          rpc_ g[],
                          ipc_ x_stat[],
                          const rpc_ w[],
+                         const rpc_ x_s[],
                          galahad_constant_prec *eval_prec );
 
 /*!<
@@ -775,6 +750,9 @@ void blls_solve_given_a( void **data,
     holds the constant term \f$b\f$ in the residuals.
     The i-th component of b, i = 0, ... ,  o-1, contains  \f$b_i \f$.
 
+ @param[in] regularization_weight is a scalar of type rpc_, that
+    holds the non-negative regularization weight \f$\sigma \geq 0\f$.
+
  @param[in] x_l is a one-dimensional array of size n and type rpc_, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
@@ -805,10 +783,13 @@ void blls_solve_given_a( void **data,
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
 
- @param[in] w is an optional one-dimensional array of size m and type rpc_,
-   that holds the values \f$w\f$ of the weights on the residuals in the
-   least-squares objective function. It need not be set if the weights are
-   all ones, and in this case can be NULL.
+ @param[in] w is a one-dimensional array of size o and type rpc_, that
+   holds the vector of strictly-positive observation weights \f$w\f$.
+   If the weights are all one, w can be set to NULL.
+
+ @param[in] x_s is a one-dimensional array of size n and type rpc_, that
+   holds the vector of shifts \f$x_s\f$.
+   If the shifts are all zero, x_s can be set to NULL.
 
  @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
@@ -832,6 +813,7 @@ void blls_solve_reverse_a_prod( void **data,
                                 ipc_ n,
                                 ipc_ o,
                                 const rpc_ b[],
+                                rpc_ regularization_weight,
                                 const rpc_ x_l[],
                                 const rpc_ x_u[],
                                 rpc_ x[],
@@ -846,7 +828,8 @@ void blls_solve_reverse_a_prod( void **data,
                                 ipc_ *nz_v_end,
                                 const ipc_ nz_p[],
                                 ipc_ nz_p_end,
-                                const rpc_ w[] );
+                                const rpc_ w[],
+                                const rpc_ x_s[] );
 
 /*!<
  Solve the bound-constrained linear least-squares problem when the
@@ -970,6 +953,9 @@ void blls_solve_reverse_a_prod( void **data,
     holds the constant term \f$b\f$ in the residuals.
     The i-th component of b, i = 0, ... ,  o-1, contains  \f$b_i \f$.
 
+ @param[in] regularization_weight is a scalar of type rpc_, that
+    holds the non-negative regularization weight \f$\sigma \geq 0\f$.
+
  @param[in] x_l is a one-dimensional array of size n and type rpc_, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
@@ -1021,10 +1007,13 @@ void blls_solve_reverse_a_prod( void **data,
  @param[in] nz_p_end is a scalar of type ipc_, that
     is used for reverse communication (see status=4 above for details).
 
- @param[in] w is an optional one-dimensional array of size m and type rpc_,
-   that holds the values \f$w\f$ of the weights on the residuals in the
-   least-squares objective function. It need not be set if the weights are
-   all ones, and in this case can be NULL.
+ @param[in] w is a one-dimensional array of size o and type rpc_, that
+   holds the vector of strictly-positive observation weights \f$w\f$.
+   If the weights are all one, w can be set to NULL.
+
+ @param[in] x_s is a one-dimensional array of size n and type rpc_, that
+   holds the vector of shifts \f$x_s\f$.
+   If the shifts are all zero, x_s can be set to NULL.
 
 */
 

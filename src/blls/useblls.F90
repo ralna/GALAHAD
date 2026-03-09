@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 13:15 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-01-28 AT 14:50 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -82,7 +82,7 @@
 !  Specfile characteristics
 
       INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
-      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 21
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 22
       CHARACTER ( LEN = 16 ) :: specname = 'RUNBLLS'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNBLLS.SPC'
@@ -105,6 +105,7 @@
 !  write-result-summary                              NO
 !  result-summary-file-name                          BLLSRES.d
 !  result-summary-file-device                        47
+!  regularization-weight                             0.0
 !  perturb-bounds-by                                 0.0
 ! END RUNBLLS SPECIFICATIONS
 
@@ -125,6 +126,7 @@
       CHARACTER ( LEN = 30 ) :: sfilename = 'BLLSSOL.d'
 !     LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE.
+      REAL ( KIND = rp_ ) :: regularization_weight = zero
       REAL ( KIND = rp_ ) :: pert_bnd = zero
 
 !  Output file characteristics
@@ -140,7 +142,7 @@
       TYPE ( BLLS_data_type ) :: data
       TYPE ( BLLS_control_type ) :: BLLS_control
       TYPE ( BLLS_inform_type ) :: BLLS_inform
-      TYPE ( GALAHAD_userdata_type ) :: userdata
+      TYPE ( USERDATA_type ) :: userdata
       TYPE ( QPT_problem_type ) :: prob
 
 !  Allocatable arrays
@@ -150,9 +152,60 @@
       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u
       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C_l, C_u
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
 
       CALL CPU_TIME( time )
+
+!  ------------------ Open the specfile for runblls ----------------
+
+      INQUIRE( FILE = runspec, EXIST = is_specfile )
+      IF ( is_specfile ) THEN
+        OPEN( input_specfile, FILE = runspec, FORM = 'FORMATTED',              &
+              STATUS = 'OLD' )
+
+!   Define the keywords
+
+        spec( 1 )%keyword = 'write-problem-data'
+        spec( 2 )%keyword = 'problem-data-file-name'
+        spec( 3 )%keyword = 'problem-data-file-device'
+        spec( 4 )%keyword = 'write-initial-sif'
+        spec( 5 )%keyword = 'initial-sif-file-name'
+        spec( 6 )%keyword = 'initial-sif-file-device'
+!       spec( 8 )%keyword = 'scale-problem'
+!       spec( 13 )%keyword = 'solve-problem'
+        spec( 14 )%keyword = 'print-full-solution'
+        spec( 15 )%keyword = 'write-solution'
+        spec( 16 )%keyword = 'solution-file-name'
+        spec( 17 )%keyword = 'solution-file-device'
+        spec( 18 )%keyword = 'write-result-summary'
+        spec( 19 )%keyword = 'result-summary-file-name'
+        spec( 20 )%keyword = 'result-summary-file-device'
+        spec( 21 )%keyword = 'regularization-weight'
+        spec( 22 )%keyword = 'perturb-bounds-by'
+
+!   Read the specfile
+
+        CALL SPECFILE_read( input_specfile, specname, spec, lspec, errout )
+
+!   Interpret the result
+
+        CALL SPECFILE_assign_logical( spec( 1 ), write_problem_data, errout )
+        CALL SPECFILE_assign_string ( spec( 2 ), dfilename, errout )
+        CALL SPECFILE_assign_integer( spec( 3 ), dfiledevice, errout )
+        CALL SPECFILE_assign_logical( spec( 4 ), write_initial_sif, errout )
+        CALL SPECFILE_assign_string ( spec( 5 ), ifilename, errout )
+        CALL SPECFILE_assign_integer( spec( 6 ), ifiledevice, errout )
+!       CALL SPECFILE_assign_integer( spec( 8 ), scale, errout )
+!       CALL SPECFILE_assign_logical( spec( 13 ), do_solve, errout )
+        CALL SPECFILE_assign_logical( spec( 14 ), fulsol, errout )
+        CALL SPECFILE_assign_logical( spec( 15 ), write_solution, errout )
+        CALL SPECFILE_assign_string ( spec( 16 ), sfilename, errout )
+        CALL SPECFILE_assign_integer( spec( 17 ), sfiledevice, errout )
+        CALL SPECFILE_assign_logical( spec( 18 ), write_result_summary, errout )
+        CALL SPECFILE_assign_string ( spec( 19 ), rfilename, errout )
+        CALL SPECFILE_assign_integer( spec( 20 ), rfiledevice, errout )
+        CALL SPECFILE_assign_real( spec( 21 ), regularization_weight, errout )
+        CALL SPECFILE_assign_real( spec( 22 ), pert_bnd, errout )
+      END IF
 
 !  Determine the number of variables and constraints
 
@@ -180,6 +233,7 @@
 
       n_s = m - COUNT( EQUATN )
       prob%o = m ; prob%n = n + n_s
+      prob%regularization_weight = regularization_weight
 
 !  Determine the names of the problem, variables and constraints.
 
@@ -196,7 +250,7 @@
 
       ALLOCATE( prob%X( prob%n ), prob%X_l( prob%n ), prob%X_u( prob%n ),      &
                 prob%B( prob%o ), prob%R( prob%o ), prob%Z( prob%n ),          &
-                X_stat( prob%n ), STAT = alloc_stat )
+                prob%X_status( prob%n ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
         WRITE( out, 2150 ) 'prob%X etc', alloc_stat ; STOP
       END IF
@@ -254,56 +308,6 @@
 !  ------------------- problem set-up complete ----------------------
 
       CALL CPU_TIME( times )
-
-!  ------------------ Open the specfile for runblls ----------------
-
-      INQUIRE( FILE = runspec, EXIST = is_specfile )
-      IF ( is_specfile ) THEN
-        OPEN( input_specfile, FILE = runspec, FORM = 'FORMATTED',              &
-              STATUS = 'OLD' )
-
-!   Define the keywords
-
-        spec( 1 )%keyword = 'write-problem-data'
-        spec( 2 )%keyword = 'problem-data-file-name'
-        spec( 3 )%keyword = 'problem-data-file-device'
-        spec( 4 )%keyword = 'write-initial-sif'
-        spec( 5 )%keyword = 'initial-sif-file-name'
-        spec( 6 )%keyword = 'initial-sif-file-device'
-!       spec( 8 )%keyword = 'scale-problem'
-!       spec( 13 )%keyword = 'solve-problem'
-        spec( 14 )%keyword = 'print-full-solution'
-        spec( 15 )%keyword = 'write-solution'
-        spec( 16 )%keyword = 'solution-file-name'
-        spec( 17 )%keyword = 'solution-file-device'
-        spec( 18 )%keyword = 'write-result-summary'
-        spec( 19 )%keyword = 'result-summary-file-name'
-        spec( 20 )%keyword = 'result-summary-file-device'
-        spec( 21 )%keyword = 'perturb-bounds-by'
-
-!   Read the specfile
-
-        CALL SPECFILE_read( input_specfile, specname, spec, lspec, errout )
-
-!   Interpret the result
-
-        CALL SPECFILE_assign_logical( spec( 1 ), write_problem_data, errout )
-        CALL SPECFILE_assign_string ( spec( 2 ), dfilename, errout )
-        CALL SPECFILE_assign_integer( spec( 3 ), dfiledevice, errout )
-        CALL SPECFILE_assign_logical( spec( 4 ), write_initial_sif, errout )
-        CALL SPECFILE_assign_string ( spec( 5 ), ifilename, errout )
-        CALL SPECFILE_assign_integer( spec( 6 ), ifiledevice, errout )
-!       CALL SPECFILE_assign_integer( spec( 8 ), scale, errout )
-!       CALL SPECFILE_assign_logical( spec( 13 ), do_solve, errout )
-        CALL SPECFILE_assign_logical( spec( 14 ), fulsol, errout )
-        CALL SPECFILE_assign_logical( spec( 15 ), write_solution, errout )
-        CALL SPECFILE_assign_string ( spec( 16 ), sfilename, errout )
-        CALL SPECFILE_assign_integer( spec( 17 ), sfiledevice, errout )
-        CALL SPECFILE_assign_logical( spec( 18 ), write_result_summary, errout )
-        CALL SPECFILE_assign_string ( spec( 19 ), rfilename, errout )
-        CALL SPECFILE_assign_integer( spec( 20 ), rfiledevice, errout )
-        CALL SPECFILE_assign_real( spec( 21 ), pert_bnd, errout )
-      END IF
 
 !  Perturb bounds if required
 
@@ -380,7 +384,7 @@
      &  ', a_ne = ', I0 )" ) prob%o, prob%n, prob%Ao%ne
 
       IF ( printo ) CALL COPYRIGHT( out, '2020' )
-      X_stat = 0
+      prob%X_status = 0
 
 !  Solve the problem
 
@@ -389,8 +393,7 @@
       solv = ' BLLS'
       IF ( printo ) WRITE( out, " ( ' ** BLLS solver used ** ' ) " )
       BLLS_inform%status = 1
-      CALL BLLS_solve( prob, X_stat, data, BLLS_control, BLLS_inform,          &
-                       userdata )
+      CALL BLLS_solve( prob, data, BLLS_control, BLLS_inform, userdata )
       blls_status = BLLS_inform%status
 
       IF ( printo ) WRITE( out, " ( /, ' ** BLLS solver used ** ' ) " )
@@ -503,7 +506,7 @@
            m, n, BLLS_inform%iter, BLLS_inform%obj, blls_status, timet
       END IF
 
-      DEALLOCATE( prob%X, prob%X_l, prob%X_u, prob%B, prob%R, X_stat,          &
+      DEALLOCATE( prob%X, prob%X_l, prob%X_u, prob%B, prob%R, prob%X_status,   &
                   prob%Ao%val, prob%Ao%row, prob%Ao%col, VNAME,                &
                   STAT = alloc_stat )
       IF ( is_specfile ) CLOSE( input_specfile )

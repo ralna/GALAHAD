@@ -1,0 +1,9 @@
+ Fortran sparse matrix indexing
+
+ basic tests of sllsb storage formats
+
+CO:     7 iterations. Optimal objective value = 1.32 status = 0
+SR:     7 iterations. Optimal objective value = 1.32 status = 0
+SC:     7 iterations. Optimal objective value = 1.32 status = 0
+DR:     7 iterations. Optimal objective value = 1.32 status = 0
+DC:     7 iterations. Optimal objective value = 1.32 status = 0

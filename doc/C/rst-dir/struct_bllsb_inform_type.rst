@@ -27,6 +27,7 @@ bllsb_inform_type structure
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nbacts<doxid-structbllsb__inform__type_nbacts>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`threads<doxid-structbllsb__inform__type_threads>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structbllsb__inform__type_obj>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`ls_obj<doxid-structbllsb__inform__type_ls_obj>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`primal_infeasibility<doxid-structbllsb__inform__type_primal_infeasibility>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`dual_infeasibility<doxid-structbllsb__inform__type_dual_infeasibility>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`complementary_slackness<doxid-structbllsb__inform__type_complementary_slackness>`;
@@ -160,7 +161,17 @@ the number of threads used
 
 	:ref:`rpc_<doxid-galahad__rpc_8h_>` obj
 
-the value of the objective function at the best estimate of the solution determined by BLLSB_solve
+the value of the regularized objective function $q(x)$ at the best estimate of the solution determined by BLLSB_solve
+
+.. index:: pair: variable; ls_obj
+.. _doxid-structbllsb__inform__type_ls_obj:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` ls_obj
+
+the value of the least-squares function $\frac{1}{2} \| A_o x - b\|_W^2$ at the best estimate of the solution determined by BLLSB_solve
 
 .. index:: pair: variable; primal_infeasibility
 .. _doxid-structbllsb__inform__type_primal_infeasibility:

@@ -169,7 +169,7 @@
 !  arguments for ARC
 
       TYPE ( NLPT_problem_type ) :: nlp
-      TYPE ( GALAHAD_userdata_type ) :: userdata
+      TYPE ( USERDATA_type ) :: userdata
       TYPE ( ARC_data_type ), SAVE :: data
       TYPE ( ARC_control_type ), SAVE :: control
       TYPE ( ARC_inform_type ) :: inform

@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 4.3 - 2023-12-30 AT 15:20 GMT.
+!  THIS VERSION:  GALAHAD 5.5 - 2026-01-05 AT 08:50 GMT
 
 !-*-*-*-  G A L A H A D _ S L L S _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
 
@@ -52,7 +52,7 @@
       TYPE, PUBLIC :: SLLS_pointer_type
         mwPointer :: pointer
         mwPointer :: status, alloc_status, bad_alloc, factorization_status
-        mwPointer :: iter, cg_iter, obj, norm_pg
+        mwPointer :: iter, cg_iter, obj, norm_pg, lapack_error
         TYPE ( SLLS_time_pointer_type ) :: time_pointer
         TYPE ( SBLS_pointer_type ) :: SBLS_pointer
       END TYPE
@@ -330,13 +330,14 @@
 
       mwPointer :: mxCreateStructMatrix
 
-      INTEGER * 4, PARAMETER :: ninform = 10
+      INTEGER * 4, PARAMETER :: ninform = 11
       CHARACTER ( LEN = 21 ), PARAMETER :: finform( ninform ) = (/             &
            'status               ', 'alloc_status         ',                   &
            'bad_alloc            ', 'factorization_status ',                   &
            'iter                 ', 'cg_iter              ',                   &
            'obj                  ', 'norm_pg              ',                   &
-           'time                 ', 'SBLS_inform          ' /)
+           'lapack_error         ', 'time                 ',                   &
+           'SBLS_inform          ' /)
       INTEGER * 4, PARAMETER :: t_ninform = 4
       CHARACTER ( LEN = 21 ), PARAMETER :: t_finform( t_ninform ) = (/         &
            'total                ', 'analyse              ',                   &
@@ -370,6 +371,8 @@
         'obj', SLLS_pointer%obj )
       CALL MATLAB_create_real_component( SLLS_pointer%pointer,                 &
          'norm_pg', SLLS_pointer%norm_pg )
+      CALL MATLAB_create_integer_component( SLLS_pointer%pointer,              &
+        'lapack_error', SLLS_pointer%lapack_error )
 
 !  Define the components of sub-structure time
 
@@ -433,6 +436,8 @@
                                mxGetPr( SLLS_pointer%obj ) )
       CALL MATLAB_copy_to_ptr( SLLS_inform%norm_pg,                            &
                                mxGetPr( SLLS_pointer%norm_pg ) )
+      CALL MATLAB_copy_to_ptr( SLLS_inform%lapack_error,                       &
+                               mxGetPr( SLLS_pointer%lapack_error ) )
 
 !  time components
 

@@ -34,6 +34,7 @@ x_u = np.array([1.0,infinity,2.0])
 
 sigma = 1.0
 w = np.array([1.0,1.0,1.0,2.0])
+x_s = np.array([0.5,0.5,0.5])
 
 # allocate internal data and set default options
 options = clls.initialize()
@@ -54,14 +55,14 @@ z = np.array([0.0,0.0,0.0])
 
 # find optimum of clls
 print("\n problem: solve clls")
-x, r, c, y, z, x_stat, c_stat \
-  = clls.solve_clls(n, o, m, Ao_ne, Ao_val, b, sigma, A_ne, A_val, 
-                    c_l, c_u, x_l, x_u, x, y, z, w)
+x, y, z, r, c, x_stat, c_stat \
+  = clls.solve(n, o, m, Ao_ne, Ao_val, b, sigma, A_ne, A_val, 
+               c_l, c_u, x_l, x_u, x, y, z, w, x_s)
 print(" x:",x)
-print(" r:",r)
-print(" c:",c)
 print(" y:",y)
 print(" z:",z)
+print(" r:",r)
+print(" c:",c)
 print(" x_stat:",x_stat)
 print(" c_stat:",c_stat)
 

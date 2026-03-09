@@ -90,16 +90,17 @@ end
 
 export lhs_ihs
 
-function lhs_ihs(::Type{Float32}, ::Type{Int32}, n_dimen, n_points, seed, X, control,
-                 inform, data)
-  @ccall libgalahad_single.lhs_ihs_s(n_dimen::Int32, n_points::Int32, seed::Ptr{Int32},
-                                     X::Ptr{Int32}, control::Ptr{lhs_control_type{Int32}},
+function lhs_ihs(::Type{Float32}, ::Type{Int32}, n_dimen, n_points, seed, X,
+                 control, inform, data)
+  @ccall libgalahad_single.lhs_ihs_s(n_dimen::Int32, n_points::Int32,
+                                     seed::Ptr{Int32}, X::Ptr{Int32},
+                                     control::Ptr{lhs_control_type{Int32}},
                                      inform::Ptr{lhs_inform_type{Int32}},
                                      data::Ptr{Ptr{Cvoid}})::Cvoid
 end
 
-function lhs_ihs(::Type{Float32}, ::Type{Int64}, n_dimen, n_points, seed, X, control,
-                 inform, data)
+function lhs_ihs(::Type{Float32}, ::Type{Int64}, n_dimen, n_points, seed, X,
+                 control, inform, data)
   @ccall libgalahad_single_64.lhs_ihs_s_64(n_dimen::Int64, n_points::Int64,
                                            seed::Ptr{Int64}, X::Ptr{Int64},
                                            control::Ptr{lhs_control_type{Int64}},
@@ -107,34 +108,35 @@ function lhs_ihs(::Type{Float32}, ::Type{Int64}, n_dimen, n_points, seed, X, con
                                            data::Ptr{Ptr{Cvoid}})::Cvoid
 end
 
-function lhs_ihs(::Type{Float64}, ::Type{Int32}, n_dimen, n_points, seed, X, control,
-                 inform, data)
-  @ccall libgalahad_double.lhs_ihs(n_dimen::Int32, n_points::Int32, seed::Ptr{Int32},
-                                   X::Ptr{Int32}, control::Ptr{lhs_control_type{Int32}},
+function lhs_ihs(::Type{Float64}, ::Type{Int32}, n_dimen, n_points, seed, X,
+                 control, inform, data)
+  @ccall libgalahad_double.lhs_ihs(n_dimen::Int32, n_points::Int32,
+                                   seed::Ptr{Int32}, X::Ptr{Int32},
+                                   control::Ptr{lhs_control_type{Int32}},
                                    inform::Ptr{lhs_inform_type{Int32}},
                                    data::Ptr{Ptr{Cvoid}})::Cvoid
 end
 
-function lhs_ihs(::Type{Float64}, ::Type{Int64}, n_dimen, n_points, seed, X, control,
-                 inform, data)
-  @ccall libgalahad_double_64.lhs_ihs_64(n_dimen::Int64, n_points::Int64, seed::Ptr{Int64},
-                                         X::Ptr{Int64},
+function lhs_ihs(::Type{Float64}, ::Type{Int64}, n_dimen, n_points, seed, X,
+                 control, inform, data)
+  @ccall libgalahad_double_64.lhs_ihs_64(n_dimen::Int64, n_points::Int64,
+                                         seed::Ptr{Int64}, X::Ptr{Int64},
                                          control::Ptr{lhs_control_type{Int64}},
                                          inform::Ptr{lhs_inform_type{Int64}},
                                          data::Ptr{Ptr{Cvoid}})::Cvoid
 end
 
-function lhs_ihs(::Type{Float128}, ::Type{Int32}, n_dimen, n_points, seed, X, control,
-                 inform, data)
-  @ccall libgalahad_quadruple.lhs_ihs_q(n_dimen::Int32, n_points::Int32, seed::Ptr{Int32},
-                                        X::Ptr{Int32},
+function lhs_ihs(::Type{Float128}, ::Type{Int32}, n_dimen, n_points, seed, X,
+                 control, inform, data)
+  @ccall libgalahad_quadruple.lhs_ihs_q(n_dimen::Int32, n_points::Int32,
+                                        seed::Ptr{Int32}, X::Ptr{Int32},
                                         control::Ptr{lhs_control_type{Int32}},
                                         inform::Ptr{lhs_inform_type{Int32}},
                                         data::Ptr{Ptr{Cvoid}})::Cvoid
 end
 
-function lhs_ihs(::Type{Float128}, ::Type{Int64}, n_dimen, n_points, seed, X, control,
-                 inform, data)
+function lhs_ihs(::Type{Float128}, ::Type{Int64}, n_dimen, n_points, seed, X,
+                 control, inform, data)
   @ccall libgalahad_quadruple_64.lhs_ihs_q_64(n_dimen::Int64, n_points::Int64,
                                               seed::Ptr{Int64}, X::Ptr{Int64},
                                               control::Ptr{lhs_control_type{Int64}},

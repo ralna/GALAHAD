@@ -117,7 +117,8 @@ export lpb_initialize
 
 function lpb_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.lpb_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{lpb_control_type{Float32,Int32}},
+                                            control::Ptr{lpb_control_type{Float32,
+                                                                          Int32}},
                                             status::Ptr{Int32})::Cvoid
   new_control = @set control[].f_indexing = true
   control[] = new_control[]
@@ -136,7 +137,8 @@ end
 
 function lpb_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.lpb_initialize(data::Ptr{Ptr{Cvoid}},
-                                          control::Ptr{lpb_control_type{Float64,Int32}},
+                                          control::Ptr{lpb_control_type{Float64,
+                                                                        Int32}},
                                           status::Ptr{Int32})::Cvoid
   new_control = @set control[].f_indexing = true
   control[] = new_control[]
@@ -176,7 +178,8 @@ end
 export lpb_read_specfile
 
 function lpb_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
-  @ccall libgalahad_single.lpb_read_specfile_s(control::Ptr{lpb_control_type{Float32,Int32}},
+  @ccall libgalahad_single.lpb_read_specfile_s(control::Ptr{lpb_control_type{Float32,
+                                                                             Int32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
@@ -187,7 +190,8 @@ function lpb_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
 end
 
 function lpb_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
-  @ccall libgalahad_double.lpb_read_specfile(control::Ptr{lpb_control_type{Float64,Int32}},
+  @ccall libgalahad_double.lpb_read_specfile(control::Ptr{lpb_control_type{Float64,
+                                                                           Int32}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
@@ -211,57 +215,71 @@ end
 
 export lpb_import
 
-function lpb_import(::Type{Float32}, ::Type{Int32}, control, data, status, n, m, A_type,
-                    A_ne, A_row, A_col, A_ptr)
-  @ccall libgalahad_single.lpb_import_s(control::Ptr{lpb_control_type{Float32,Int32}},
-                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
-                                        m::Int32, A_type::Ptr{Cchar}, A_ne::Int32,
+function lpb_import(::Type{Float32}, ::Type{Int32}, control, data, status, n, m,
+                    A_type, A_ne, A_row, A_col, A_ptr)
+  @ccall libgalahad_single.lpb_import_s(control::Ptr{lpb_control_type{Float32,
+                                                                      Int32}},
+                                        data::Ptr{Ptr{Cvoid}},
+                                        status::Ptr{Int32}, n::Int32, m::Int32,
+                                        A_type::Ptr{Cchar}, A_ne::Int32,
                                         A_row::Ptr{Int32}, A_col::Ptr{Int32},
                                         A_ptr::Ptr{Int32})::Cvoid
 end
 
-function lpb_import(::Type{Float32}, ::Type{Int64}, control, data, status, n, m, A_type,
-                    A_ne, A_row, A_col, A_ptr)
-  @ccall libgalahad_single_64.lpb_import_s_64(control::Ptr{lpb_control_type{Float32,Int64}},
-                                              data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                              n::Int64, m::Int64, A_type::Ptr{Cchar},
+function lpb_import(::Type{Float32}, ::Type{Int64}, control, data, status, n, m,
+                    A_type, A_ne, A_row, A_col, A_ptr)
+  @ccall libgalahad_single_64.lpb_import_s_64(control::Ptr{lpb_control_type{Float32,
+                                                                            Int64}},
+                                              data::Ptr{Ptr{Cvoid}},
+                                              status::Ptr{Int64}, n::Int64,
+                                              m::Int64, A_type::Ptr{Cchar},
                                               A_ne::Int64, A_row::Ptr{Int64},
-                                              A_col::Ptr{Int64}, A_ptr::Ptr{Int64})::Cvoid
+                                              A_col::Ptr{Int64},
+                                              A_ptr::Ptr{Int64})::Cvoid
 end
 
-function lpb_import(::Type{Float64}, ::Type{Int32}, control, data, status, n, m, A_type,
-                    A_ne, A_row, A_col, A_ptr)
-  @ccall libgalahad_double.lpb_import(control::Ptr{lpb_control_type{Float64,Int32}},
-                                      data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
-                                      m::Int32, A_type::Ptr{Cchar}, A_ne::Int32,
-                                      A_row::Ptr{Int32}, A_col::Ptr{Int32},
+function lpb_import(::Type{Float64}, ::Type{Int32}, control, data, status, n, m,
+                    A_type, A_ne, A_row, A_col, A_ptr)
+  @ccall libgalahad_double.lpb_import(control::Ptr{lpb_control_type{Float64,
+                                                                    Int32}},
+                                      data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                      n::Int32, m::Int32, A_type::Ptr{Cchar},
+                                      A_ne::Int32, A_row::Ptr{Int32},
+                                      A_col::Ptr{Int32},
                                       A_ptr::Ptr{Int32})::Cvoid
 end
 
-function lpb_import(::Type{Float64}, ::Type{Int64}, control, data, status, n, m, A_type,
-                    A_ne, A_row, A_col, A_ptr)
-  @ccall libgalahad_double_64.lpb_import_64(control::Ptr{lpb_control_type{Float64,Int64}},
-                                            data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                            n::Int64, m::Int64, A_type::Ptr{Cchar},
+function lpb_import(::Type{Float64}, ::Type{Int64}, control, data, status, n, m,
+                    A_type, A_ne, A_row, A_col, A_ptr)
+  @ccall libgalahad_double_64.lpb_import_64(control::Ptr{lpb_control_type{Float64,
+                                                                          Int64}},
+                                            data::Ptr{Ptr{Cvoid}},
+                                            status::Ptr{Int64}, n::Int64,
+                                            m::Int64, A_type::Ptr{Cchar},
                                             A_ne::Int64, A_row::Ptr{Int64},
-                                            A_col::Ptr{Int64}, A_ptr::Ptr{Int64})::Cvoid
+                                            A_col::Ptr{Int64},
+                                            A_ptr::Ptr{Int64})::Cvoid
 end
 
-function lpb_import(::Type{Float128}, ::Type{Int32}, control, data, status, n, m, A_type,
-                    A_ne, A_row, A_col, A_ptr)
-  @ccall libgalahad_quadruple.lpb_import_q(control::Ptr{lpb_control_type{Float128,Int32}},
-                                           data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                           n::Int32, m::Int32, A_type::Ptr{Cchar},
+function lpb_import(::Type{Float128}, ::Type{Int32}, control, data, status, n,
+                    m, A_type, A_ne, A_row, A_col, A_ptr)
+  @ccall libgalahad_quadruple.lpb_import_q(control::Ptr{lpb_control_type{Float128,
+                                                                         Int32}},
+                                           data::Ptr{Ptr{Cvoid}},
+                                           status::Ptr{Int32}, n::Int32,
+                                           m::Int32, A_type::Ptr{Cchar},
                                            A_ne::Int32, A_row::Ptr{Int32},
-                                           A_col::Ptr{Int32}, A_ptr::Ptr{Int32})::Cvoid
+                                           A_col::Ptr{Int32},
+                                           A_ptr::Ptr{Int32})::Cvoid
 end
 
-function lpb_import(::Type{Float128}, ::Type{Int64}, control, data, status, n, m, A_type,
-                    A_ne, A_row, A_col, A_ptr)
+function lpb_import(::Type{Float128}, ::Type{Int64}, control, data, status, n,
+                    m, A_type, A_ne, A_row, A_col, A_ptr)
   @ccall libgalahad_quadruple_64.lpb_import_q_64(control::Ptr{lpb_control_type{Float128,
                                                                                Int64}},
-                                                 data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                                 n::Int64, m::Int64, A_type::Ptr{Cchar},
+                                                 data::Ptr{Ptr{Cvoid}},
+                                                 status::Ptr{Int64}, n::Int64,
+                                                 m::Int64, A_type::Ptr{Cchar},
                                                  A_ne::Int64, A_row::Ptr{Int64},
                                                  A_col::Ptr{Int64},
                                                  A_ptr::Ptr{Int64})::Cvoid
@@ -269,40 +287,48 @@ end
 
 export lpb_reset_control
 
-function lpb_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_single.lpb_reset_control_s(control::Ptr{lpb_control_type{Float32,Int32}},
+function lpb_reset_control(::Type{Float32}, ::Type{Int32}, control, data,
+                           status)
+  @ccall libgalahad_single.lpb_reset_control_s(control::Ptr{lpb_control_type{Float32,
+                                                                             Int32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Int32})::Cvoid
 end
 
-function lpb_reset_control(::Type{Float32}, ::Type{Int64}, control, data, status)
+function lpb_reset_control(::Type{Float32}, ::Type{Int64}, control, data,
+                           status)
   @ccall libgalahad_single_64.lpb_reset_control_s_64(control::Ptr{lpb_control_type{Float32,
                                                                                    Int64}},
                                                      data::Ptr{Ptr{Cvoid}},
                                                      status::Ptr{Int64})::Cvoid
 end
 
-function lpb_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_double.lpb_reset_control(control::Ptr{lpb_control_type{Float64,Int32}},
+function lpb_reset_control(::Type{Float64}, ::Type{Int32}, control, data,
+                           status)
+  @ccall libgalahad_double.lpb_reset_control(control::Ptr{lpb_control_type{Float64,
+                                                                           Int32}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Int32})::Cvoid
 end
 
-function lpb_reset_control(::Type{Float64}, ::Type{Int64}, control, data, status)
+function lpb_reset_control(::Type{Float64}, ::Type{Int64}, control, data,
+                           status)
   @ccall libgalahad_double_64.lpb_reset_control_64(control::Ptr{lpb_control_type{Float64,
                                                                                  Int64}},
                                                    data::Ptr{Ptr{Cvoid}},
                                                    status::Ptr{Int64})::Cvoid
 end
 
-function lpb_reset_control(::Type{Float128}, ::Type{Int32}, control, data, status)
+function lpb_reset_control(::Type{Float128}, ::Type{Int32}, control, data,
+                           status)
   @ccall libgalahad_quadruple.lpb_reset_control_q(control::Ptr{lpb_control_type{Float128,
                                                                                 Int32}},
                                                   data::Ptr{Ptr{Cvoid}},
                                                   status::Ptr{Int32})::Cvoid
 end
 
-function lpb_reset_control(::Type{Float128}, ::Type{Int64}, control, data, status)
+function lpb_reset_control(::Type{Float128}, ::Type{Int64}, control, data,
+                           status)
   @ccall libgalahad_quadruple_64.lpb_reset_control_q_64(control::Ptr{lpb_control_type{Float128,
                                                                                       Int64}},
                                                         data::Ptr{Ptr{Cvoid}},
@@ -311,77 +337,108 @@ end
 
 export lpb_solve_lp
 
-function lpb_solve_lp(::Type{Float32}, ::Type{Int32}, data, status, n, m, g, f, a_ne, A_val,
-                      c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
-  @ccall libgalahad_single.lpb_solve_lp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                          n::Int32, m::Int32, g::Ptr{Float32}, f::Float32,
+function lpb_solve_lp(::Type{Float32}, ::Type{Int32}, data, status, n, m, g, f,
+                      a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, x_stat,
+                      c_stat)
+  @ccall libgalahad_single.lpb_solve_lp_s(data::Ptr{Ptr{Cvoid}},
+                                          status::Ptr{Int32}, n::Int32,
+                                          m::Int32, g::Ptr{Float32}, f::Float32,
                                           a_ne::Int32, A_val::Ptr{Float32},
                                           c_l::Ptr{Float32}, c_u::Ptr{Float32},
                                           x_l::Ptr{Float32}, x_u::Ptr{Float32},
-                                          x::Ptr{Float32}, c::Ptr{Float32}, y::Ptr{Float32},
-                                          z::Ptr{Float32}, x_stat::Ptr{Int32},
+                                          x::Ptr{Float32}, c::Ptr{Float32},
+                                          y::Ptr{Float32}, z::Ptr{Float32},
+                                          x_stat::Ptr{Int32},
                                           c_stat::Ptr{Int32})::Cvoid
 end
 
-function lpb_solve_lp(::Type{Float32}, ::Type{Int64}, data, status, n, m, g, f, a_ne, A_val,
-                      c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
-  @ccall libgalahad_single_64.lpb_solve_lp_s_64(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                                n::Int64, m::Int64, g::Ptr{Float32},
+function lpb_solve_lp(::Type{Float32}, ::Type{Int64}, data, status, n, m, g, f,
+                      a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, x_stat,
+                      c_stat)
+  @ccall libgalahad_single_64.lpb_solve_lp_s_64(data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int64}, n::Int64,
+                                                m::Int64, g::Ptr{Float32},
                                                 f::Float32, a_ne::Int64,
-                                                A_val::Ptr{Float32}, c_l::Ptr{Float32},
-                                                c_u::Ptr{Float32}, x_l::Ptr{Float32},
-                                                x_u::Ptr{Float32}, x::Ptr{Float32},
-                                                c::Ptr{Float32}, y::Ptr{Float32},
-                                                z::Ptr{Float32}, x_stat::Ptr{Int64},
+                                                A_val::Ptr{Float32},
+                                                c_l::Ptr{Float32},
+                                                c_u::Ptr{Float32},
+                                                x_l::Ptr{Float32},
+                                                x_u::Ptr{Float32},
+                                                x::Ptr{Float32},
+                                                c::Ptr{Float32},
+                                                y::Ptr{Float32},
+                                                z::Ptr{Float32},
+                                                x_stat::Ptr{Int64},
                                                 c_stat::Ptr{Int64})::Cvoid
 end
 
-function lpb_solve_lp(::Type{Float64}, ::Type{Int32}, data, status, n, m, g, f, a_ne, A_val,
-                      c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
-  @ccall libgalahad_double.lpb_solve_lp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
-                                        m::Int32, g::Ptr{Float64}, f::Float64, a_ne::Int32,
-                                        A_val::Ptr{Float64}, c_l::Ptr{Float64},
-                                        c_u::Ptr{Float64}, x_l::Ptr{Float64},
-                                        x_u::Ptr{Float64}, x::Ptr{Float64}, c::Ptr{Float64},
+function lpb_solve_lp(::Type{Float64}, ::Type{Int32}, data, status, n, m, g, f,
+                      a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, x_stat,
+                      c_stat)
+  @ccall libgalahad_double.lpb_solve_lp(data::Ptr{Ptr{Cvoid}},
+                                        status::Ptr{Int32}, n::Int32, m::Int32,
+                                        g::Ptr{Float64}, f::Float64,
+                                        a_ne::Int32, A_val::Ptr{Float64},
+                                        c_l::Ptr{Float64}, c_u::Ptr{Float64},
+                                        x_l::Ptr{Float64}, x_u::Ptr{Float64},
+                                        x::Ptr{Float64}, c::Ptr{Float64},
                                         y::Ptr{Float64}, z::Ptr{Float64},
-                                        x_stat::Ptr{Int32}, c_stat::Ptr{Int32})::Cvoid
+                                        x_stat::Ptr{Int32},
+                                        c_stat::Ptr{Int32})::Cvoid
 end
 
-function lpb_solve_lp(::Type{Float64}, ::Type{Int64}, data, status, n, m, g, f, a_ne, A_val,
-                      c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
-  @ccall libgalahad_double_64.lpb_solve_lp_64(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                              n::Int64, m::Int64, g::Ptr{Float64},
-                                              f::Float64, a_ne::Int64, A_val::Ptr{Float64},
-                                              c_l::Ptr{Float64}, c_u::Ptr{Float64},
-                                              x_l::Ptr{Float64}, x_u::Ptr{Float64},
+function lpb_solve_lp(::Type{Float64}, ::Type{Int64}, data, status, n, m, g, f,
+                      a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, x_stat,
+                      c_stat)
+  @ccall libgalahad_double_64.lpb_solve_lp_64(data::Ptr{Ptr{Cvoid}},
+                                              status::Ptr{Int64}, n::Int64,
+                                              m::Int64, g::Ptr{Float64},
+                                              f::Float64, a_ne::Int64,
+                                              A_val::Ptr{Float64},
+                                              c_l::Ptr{Float64},
+                                              c_u::Ptr{Float64},
+                                              x_l::Ptr{Float64},
+                                              x_u::Ptr{Float64},
                                               x::Ptr{Float64}, c::Ptr{Float64},
                                               y::Ptr{Float64}, z::Ptr{Float64},
-                                              x_stat::Ptr{Int64}, c_stat::Ptr{Int64})::Cvoid
+                                              x_stat::Ptr{Int64},
+                                              c_stat::Ptr{Int64})::Cvoid
 end
 
-function lpb_solve_lp(::Type{Float128}, ::Type{Int32}, data, status, n, m, g, f, a_ne,
-                      A_val, c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
-  @ccall libgalahad_quadruple.lpb_solve_lp_q(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                             n::Int32, m::Int32, g::Ptr{Float128},
+function lpb_solve_lp(::Type{Float128}, ::Type{Int32}, data, status, n, m, g, f,
+                      a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, x_stat,
+                      c_stat)
+  @ccall libgalahad_quadruple.lpb_solve_lp_q(data::Ptr{Ptr{Cvoid}},
+                                             status::Ptr{Int32}, n::Int32,
+                                             m::Int32, g::Ptr{Float128},
                                              f::Cfloat128, a_ne::Int32,
-                                             A_val::Ptr{Float128}, c_l::Ptr{Float128},
-                                             c_u::Ptr{Float128}, x_l::Ptr{Float128},
-                                             x_u::Ptr{Float128}, x::Ptr{Float128},
-                                             c::Ptr{Float128}, y::Ptr{Float128},
-                                             z::Ptr{Float128}, x_stat::Ptr{Int32},
+                                             A_val::Ptr{Float128},
+                                             c_l::Ptr{Float128},
+                                             c_u::Ptr{Float128},
+                                             x_l::Ptr{Float128},
+                                             x_u::Ptr{Float128},
+                                             x::Ptr{Float128}, c::Ptr{Float128},
+                                             y::Ptr{Float128}, z::Ptr{Float128},
+                                             x_stat::Ptr{Int32},
                                              c_stat::Ptr{Int32})::Cvoid
 end
 
-function lpb_solve_lp(::Type{Float128}, ::Type{Int64}, data, status, n, m, g, f, a_ne,
-                      A_val, c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
+function lpb_solve_lp(::Type{Float128}, ::Type{Int64}, data, status, n, m, g, f,
+                      a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, x_stat,
+                      c_stat)
   @ccall libgalahad_quadruple_64.lpb_solve_lp_q_64(data::Ptr{Ptr{Cvoid}},
-                                                   status::Ptr{Int64}, n::Int64, m::Int64,
-                                                   g::Ptr{Float128}, f::Cfloat128,
-                                                   a_ne::Int64, A_val::Ptr{Float128},
-                                                   c_l::Ptr{Float128}, c_u::Ptr{Float128},
-                                                   x_l::Ptr{Float128}, x_u::Ptr{Float128},
-                                                   x::Ptr{Float128}, c::Ptr{Float128},
-                                                   y::Ptr{Float128}, z::Ptr{Float128},
+                                                   status::Ptr{Int64}, n::Int64,
+                                                   m::Int64, g::Ptr{Float128},
+                                                   f::Cfloat128, a_ne::Int64,
+                                                   A_val::Ptr{Float128},
+                                                   c_l::Ptr{Float128},
+                                                   c_u::Ptr{Float128},
+                                                   x_l::Ptr{Float128},
+                                                   x_u::Ptr{Float128},
+                                                   x::Ptr{Float128},
+                                                   c::Ptr{Float128},
+                                                   y::Ptr{Float128},
+                                                   z::Ptr{Float128},
                                                    x_stat::Ptr{Int64},
                                                    c_stat::Ptr{Int64})::Cvoid
 end
@@ -390,7 +447,8 @@ export lpb_information
 
 function lpb_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_single.lpb_information_s(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{lpb_inform_type{Float32,Int32}},
+                                             inform::Ptr{lpb_inform_type{Float32,
+                                                                         Int32}},
                                              status::Ptr{Int32})::Cvoid
 end
 
@@ -403,19 +461,22 @@ end
 
 function lpb_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_double.lpb_information(data::Ptr{Ptr{Cvoid}},
-                                           inform::Ptr{lpb_inform_type{Float64,Int32}},
+                                           inform::Ptr{lpb_inform_type{Float64,
+                                                                       Int32}},
                                            status::Ptr{Int32})::Cvoid
 end
 
 function lpb_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
   @ccall libgalahad_double_64.lpb_information_64(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{lpb_inform_type{Float64,Int64}},
+                                                 inform::Ptr{lpb_inform_type{Float64,
+                                                                             Int64}},
                                                  status::Ptr{Int64})::Cvoid
 end
 
 function lpb_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_quadruple.lpb_information_q(data::Ptr{Ptr{Cvoid}},
-                                                inform::Ptr{lpb_inform_type{Float128,Int32}},
+                                                inform::Ptr{lpb_inform_type{Float128,
+                                                                            Int32}},
                                                 status::Ptr{Int32})::Cvoid
 end
 
@@ -430,33 +491,42 @@ export lpb_terminate
 
 function lpb_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_single.lpb_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{lpb_control_type{Float32,Int32}},
-                                           inform::Ptr{lpb_inform_type{Float32,Int32}})::Cvoid
+                                           control::Ptr{lpb_control_type{Float32,
+                                                                         Int32}},
+                                           inform::Ptr{lpb_inform_type{Float32,
+                                                                       Int32}})::Cvoid
 end
 
 function lpb_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
   @ccall libgalahad_single_64.lpb_terminate_s_64(data::Ptr{Ptr{Cvoid}},
                                                  control::Ptr{lpb_control_type{Float32,
                                                                                Int64}},
-                                                 inform::Ptr{lpb_inform_type{Float32,Int64}})::Cvoid
+                                                 inform::Ptr{lpb_inform_type{Float32,
+                                                                             Int64}})::Cvoid
 end
 
 function lpb_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.lpb_terminate(data::Ptr{Ptr{Cvoid}},
-                                         control::Ptr{lpb_control_type{Float64,Int32}},
-                                         inform::Ptr{lpb_inform_type{Float64,Int32}})::Cvoid
+                                         control::Ptr{lpb_control_type{Float64,
+                                                                       Int32}},
+                                         inform::Ptr{lpb_inform_type{Float64,
+                                                                     Int32}})::Cvoid
 end
 
 function lpb_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
   @ccall libgalahad_double_64.lpb_terminate_64(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{lpb_control_type{Float64,Int64}},
-                                               inform::Ptr{lpb_inform_type{Float64,Int64}})::Cvoid
+                                               control::Ptr{lpb_control_type{Float64,
+                                                                             Int64}},
+                                               inform::Ptr{lpb_inform_type{Float64,
+                                                                           Int64}})::Cvoid
 end
 
 function lpb_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_quadruple.lpb_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{lpb_control_type{Float128,Int32}},
-                                              inform::Ptr{lpb_inform_type{Float128,Int32}})::Cvoid
+                                              control::Ptr{lpb_control_type{Float128,
+                                                                            Int32}},
+                                              inform::Ptr{lpb_inform_type{Float128,
+                                                                          Int32}})::Cvoid
 end
 
 function lpb_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
@@ -467,13 +537,15 @@ function lpb_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
                                                                                 Int64}})::Cvoid
 end
 
-function run_sif(::Val{:lpb}, ::Val{:single}, path_libsif::String, path_outsdif::String)
+function run_sif(::Val{:lpb}, ::Val{:single}, path_libsif::String,
+                 path_outsdif::String)
   cmd = setup_env_lbt(`$(GALAHAD_jll.runlpb_sif_single()) $path_libsif $path_outsdif`)
   run(cmd)
   return nothing
 end
 
-function run_sif(::Val{:lpb}, ::Val{:double}, path_libsif::String, path_outsdif::String)
+function run_sif(::Val{:lpb}, ::Val{:double}, path_libsif::String,
+                 path_outsdif::String)
   cmd = setup_env_lbt(`$(GALAHAD_jll.runlpb_sif_double()) $path_libsif $path_outsdif`)
   run(cmd)
   return nothing

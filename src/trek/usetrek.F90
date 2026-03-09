@@ -75,7 +75,7 @@
      INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, k, l
      INTEGER ( KIND = ip_ ) :: smt_stat, cutest_status
      REAL ( KIND = rp_ ) :: clock_total, clock_start
-     LOGICAL :: goth
+     LOGICAL :: goth, success
 
 !  functions
 
@@ -313,16 +313,19 @@
 
 !  loop over m instances
 
+     success = .FALSE.
      DO k = 1, m
 
 !  solve the problem
 
        CALL CLOCK_time( clock_start )
        inform%time%clock_total = 0.0_rp_
-       control%new_radius = k > 1
+       control%new_radius = k > 1 .AND. success
+!      control%new_values = k > 1 .AND. success
        CALL TREK_solve( n, H, G, RADIUS( k ), X, data, control, inform )
 !                       S = S )
        IF ( k < m ) RADIUS( k + 1 ) = inform%next_radius
+       success =  inform%status == 0
        IF ( control%print_level > 0 .AND. control%out > 0 )                    &
          WRITE( control%out, "( /, ' TREK used ' )" )
        IF ( control%print_level > 0 .AND. control%out > 0 )                    &

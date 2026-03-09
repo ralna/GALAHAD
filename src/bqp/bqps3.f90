@@ -9,7 +9,7 @@
    TYPE ( BQP_data_type ) :: data
    TYPE ( BQP_control_type ) :: control
    TYPE ( BQP_inform_type ) :: inform
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER, PARAMETER :: n = 3, h_ne = 4, h_all = 5
    INTEGER, PARAMETER :: len_integer = 2 * n + 3 + h_all, len_real = h_all
    INTEGER, PARAMETER :: nflag = 2, st_flag = 2, st_ptr = st_flag + n
@@ -64,7 +64,7 @@
      USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
      INTEGER, OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end

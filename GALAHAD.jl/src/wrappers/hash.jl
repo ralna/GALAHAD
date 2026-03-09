@@ -19,49 +19,50 @@ end
 
 export hash_initialize
 
-function hash_initialize(::Type{Float32}, ::Type{Int32}, nchar, length, data, control,
-                         inform)
+function hash_initialize(::Type{Float32}, ::Type{Int32}, nchar, length, data,
+                         control, inform)
   @ccall libgalahad_single.hash_initialize_s(nchar::Int32, length::Int32,
                                              data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{hash_control_type{Int32}},
                                              inform::Ptr{hash_inform_type{Int32}})::Cvoid
 end
 
-function hash_initialize(::Type{Float32}, ::Type{Int64}, nchar, length, data, control,
-                         inform)
+function hash_initialize(::Type{Float32}, ::Type{Int64}, nchar, length, data,
+                         control, inform)
   @ccall libgalahad_single_64.hash_initialize_s_64(nchar::Int64, length::Int64,
                                                    data::Ptr{Ptr{Cvoid}},
                                                    control::Ptr{hash_control_type{Int64}},
                                                    inform::Ptr{hash_inform_type{Int64}})::Cvoid
 end
 
-function hash_initialize(::Type{Float64}, ::Type{Int32}, nchar, length, data, control,
-                         inform)
+function hash_initialize(::Type{Float64}, ::Type{Int32}, nchar, length, data,
+                         control, inform)
   @ccall libgalahad_double.hash_initialize(nchar::Int32, length::Int32,
                                            data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{hash_control_type{Int32}},
                                            inform::Ptr{hash_inform_type{Int32}})::Cvoid
 end
 
-function hash_initialize(::Type{Float64}, ::Type{Int64}, nchar, length, data, control,
-                         inform)
+function hash_initialize(::Type{Float64}, ::Type{Int64}, nchar, length, data,
+                         control, inform)
   @ccall libgalahad_double_64.hash_initialize_64(nchar::Int64, length::Int64,
                                                  data::Ptr{Ptr{Cvoid}},
                                                  control::Ptr{hash_control_type{Int64}},
                                                  inform::Ptr{hash_inform_type{Int64}})::Cvoid
 end
 
-function hash_initialize(::Type{Float128}, ::Type{Int32}, nchar, length, data, control,
-                         inform)
+function hash_initialize(::Type{Float128}, ::Type{Int32}, nchar, length, data,
+                         control, inform)
   @ccall libgalahad_quadruple.hash_initialize_q(nchar::Int32, length::Int32,
                                                 data::Ptr{Ptr{Cvoid}},
                                                 control::Ptr{hash_control_type{Int32}},
                                                 inform::Ptr{hash_inform_type{Int32}})::Cvoid
 end
 
-function hash_initialize(::Type{Float128}, ::Type{Int64}, nchar, length, data, control,
-                         inform)
-  @ccall libgalahad_quadruple_64.hash_initialize_q_64(nchar::Int64, length::Int64,
+function hash_initialize(::Type{Float128}, ::Type{Int64}, nchar, length, data,
+                         control, inform)
+  @ccall libgalahad_quadruple_64.hash_initialize_q_64(nchar::Int64,
+                                                      length::Int64,
                                                       data::Ptr{Ptr{Cvoid}},
                                                       control::Ptr{hash_control_type{Int64}},
                                                       inform::Ptr{hash_inform_type{Int64}})::Cvoid

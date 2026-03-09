@@ -12,6 +12,7 @@ MAIN
 ! write-result-summary                              no
 ! result-summary-file-name                          SLLSRES.d
 ! result-summary-file-device                        47
+! regularization-weight                             0.0
 
 INCLUDE SLLS
 

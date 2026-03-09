@@ -54,7 +54,7 @@
      TYPE ( S2QP_control_type )             :: control
      TYPE ( S2QP_inform_type )              :: inform
      TYPE ( S2QP_data_type )                :: data
-     TYPE ( GALAHAD_userdata_type )         :: userdata
+     TYPE ( USERDATA_type )         :: userdata
      TYPE ( NLPT_problem_type )             :: nlp
      TYPE ( CUTEST_inform_type )  :: cutest_inform
      TYPE ( CUTEST_control_type ) :: cutest_control

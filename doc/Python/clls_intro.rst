@@ -4,13 +4,13 @@ purpose
 The ``clls`` package uses a **primal-dual interior-point crossover method** 
 to solve a **constrained linear least-squares** problem
 The aim is to minimize the (regularized) least-squares objective function
-$$q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x\|^2$$ 
+$$q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x-x_s\|^2$$ 
 subject to the general linear constraints and simple bounds
 $$c_l \leq A x \leq c_u \;\;\mbox{and} \;\; x_l \leq x \leq x_u,$$
 where the norms $\|r\|_W = \sqrt{\sum_{i=1}^o w_i r_i^2}$
 and $\|x\| = \sqrt{\sum_{i=1}^n x_i^2}$,
 $A_o$ and $A$ are, respectively, given  $o$ by $n$ and $m$ by $n$ 
-matrices, $b$, and $w$ are vectors, $\sigma \geq 0$ is a scalar, 
+matrices, $b$, $w$ and $x_s$ are vectors, $\sigma \geq 0$ is a scalar, 
 and any of the components 
 of the vectors $c_l$, $c_u$, $x_l$ or $x_u$ may be infinite.
 The method offers the choice of direct and iterative solution of the key
@@ -28,7 +28,7 @@ $$A x = c\;\;\mbox{(1a)}$$
 and
 $$c_l \leq c \leq c_u, \;\; x_l \leq x \leq x_u,\;\;\mbox{(1b)}$$
 the **dual optimality conditions**
-$$A_o^T W ( A_o x-b ) + \sigma x = A^{T} y + z,\;\;  
+$$A_o^T W ( A_o x-b ) + \sigma (x-x_s)  = A^{T} y + z,\;\;  
 y = y_l + y_u \;\;\mbox{and}\;\; z = z_l + z_u,\;\;\mbox{(2a)}$$
 and
 $$y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\; 

@@ -162,7 +162,7 @@
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
      control%FDC_control%use_sls = .TRUE.
      p%new_problem_structure = .TRUE.
-    IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
+     IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
        st = 'C'
        ALLOCATE( p%Ao%val( ao_ne ), p%Ao%row( ao_ne ), p%Ao%col( ao_ne ) )
        IF ( ALLOCATED( p%Ao%type ) ) DEALLOCATE( p%Ao%type )
@@ -188,8 +188,9 @@
        CALL SMT_put( p%Ao%type, 'DENSE_BY_COLUMNS', smt_stat )
      END IF
 
-!  test with new and existing data
+!  test with new and existing data - no regularization
 
+     p%new_problem_structure = .TRUE.
      DO i = 1, 2
        IF ( data_storage_type == 0 ) THEN          ! sparse co-ordinate storage
          p%Ao%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
@@ -202,26 +203,85 @@
          p%Ao%val = (/ 1.0_rp_, 0.0_rp_, 4.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,   &
                       0.0_rp_, 0.0_rp_, 3.0_rp_ /)
        END IF
-       p%X = 0.0_rp_ ;  p%Z = 0.0_rp_
+       p%X = 0.0_rp_ ; p%Z = 0.0_rp_
 !      control%print_level = 101
 !      control%print_level = 101
 !      control%min_diagonal = 0.000000000000001_rp_
        CALL BLLSB_solve( p, data, control, info )
-
        IF ( info%status == 0 ) THEN
-         WRITE( 6, "( A1,I1,':', I6,' iterations. Optimal objective value = ', &
-     &            F6.1, ' status = ', I6 )" ) st, i, info%iter,                &
+         WRITE( 6, "( A1, 'N', I1,':', I6,' iterations. Optimal objective',    &
+        &   ' value = ', F7.2, ' status = ', I6 )" ) st, i, info%iter,         &
                   info%obj, info%status
        ELSE
-         WRITE( 6, "( A1, I1,': BLLSB_solve exit status = ', I6 ) " )          &
+         WRITE( 6, "( A1, 'N', I1,': BLLSB_solve exit status = ', I6 ) " )     &
            st, i, info%status
        END IF
+     END DO
+
+!  test with new and existing data - regularization
+
+     p%regularization_weight = 0.01_rp_
+!    p%regularization_weight = 1.0_rp_
+     p%new_problem_structure = .TRUE.
+     DO i = 1, 2
+       IF ( data_storage_type == 0 ) THEN          ! sparse co-ordinate storage
+         p%Ao%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+       ELSE IF ( data_storage_type == - 1 ) THEN    !  sparse row-wise storage
+         p%Ao%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+       ELSE IF ( data_storage_type == - 2 ) THEN    !  dense storage
+         p%Ao%val = (/ 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,   &
+                      4.0_rp_, 0.0_rp_, 3.0_rp_ /)
+       ELSE IF ( data_storage_type == - 3 ) THEN    !  dense by column storage
+         p%Ao%val = (/ 1.0_rp_, 0.0_rp_, 4.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,   &
+                      0.0_rp_, 0.0_rp_, 3.0_rp_ /)
+       END IF
+       p%X = 0.0_rp_ ; p%Z = 0.0_rp_
+       CALL BLLSB_solve( p, data, control, info )
+       IF ( info%status == 0 ) THEN
+         WRITE( 6, "( A1, 'R', I1,':', I6,' iterations. Optimal objective',    &
+        &   ' value = ', F7.2, ' status = ', I6 )" ) st, i, info%iter,         &
+                  info%obj, info%status
+       ELSE
+         WRITE( 6, "( A1, 'R', I1,': BLLSB_solve exit status = ', I6 ) " )     &
+           st, i, info%status
+       END IF
+     END DO
+
+!  test with new and existing data - regularization, scaling and shifts
+
+     ALLOCATE( p%X_s( n ), p%W( o ) )
+     p%W = 1.0001_rp_ ; p%X_s = 0.0001_rp_
+     DO i = 1, 2
+       IF ( data_storage_type == 0 ) THEN          ! sparse co-ordinate storage
+         p%Ao%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+       ELSE IF ( data_storage_type == - 1 ) THEN    !  sparse row-wise storage
+         p%Ao%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+       ELSE IF ( data_storage_type == - 2 ) THEN    !  dense storage
+         p%Ao%val = (/ 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,   &
+                      4.0_rp_, 0.0_rp_, 3.0_rp_ /)
+       ELSE IF ( data_storage_type == - 3 ) THEN    !  dense by column storage
+         p%Ao%val = (/ 1.0_rp_, 0.0_rp_, 4.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,   &
+                      0.0_rp_, 0.0_rp_, 3.0_rp_ /)
+       END IF
+       p%X = 0.0_rp_ ; p%Z = 0.0_rp_
+       CALL BLLSB_solve( p, data, control, info )
+       IF ( info%status == 0 ) THEN
+         WRITE( 6, "( A1, 'S', I1,':', I6,' iterations. Optimal objective',    &
+        &   ' value = ', F7.2, ' status = ', I6 )" ) st, i, info%iter,         &
+                  info%obj, info%status
+       ELSE
+         WRITE( 6, "( A1, 'S', I1,': BLLSB_solve exit status = ', I6 ) " )     &
+           st, i, info%status
+       END IF
+
 !      STOP
      END DO
      CALL BLLSB_terminate( data, control, info )
      IF ( ALLOCATED( p%Ao%row ) ) DEALLOCATE( p%Ao%row )
      IF ( ALLOCATED( p%Ao%col ) ) DEALLOCATE( p%Ao%col )
      IF ( ALLOCATED( p%Ao%val ) ) DEALLOCATE( p%Ao%val )
+     DEALLOCATE( p%X_s, p%W )
+     p%regularization_weight = 0.0_rp_
 !    STOP
    END DO
    DEALLOCATE( p%B, p%X_l, p%X_u, p%X, p%Z, p%X_status, p%Ao%ptr )

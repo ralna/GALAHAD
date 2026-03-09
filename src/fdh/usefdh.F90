@@ -65,7 +65,7 @@
      CHARACTER ( LEN =  1 ) :: ptype
      CHARACTER ( LEN =  10 ) :: pname
      TYPE ( RAND_seed ) :: seed
-     TYPE ( GALAHAD_userdata_type ) :: userdata
+     TYPE ( USERDATA_type ) :: userdata
 
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW, COL
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_lower

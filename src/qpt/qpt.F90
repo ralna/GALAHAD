@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2025-01-24 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -27,7 +27,7 @@
 !     -----------------------------------------------------------------------
 !     |                                                                     |
 !     | Provide a derived data type for the (possible parametric)           |
-!     | quadratic programming problem                                       |
+!     | quadratic, or linear least-squares, programming problem             |
 !     |                                                                     |
 !     |    minimize 1/2 x(T) H x + g(T) x + f + theta dg(T) x               |
 !     |                                                                     |
@@ -37,17 +37,22 @@
 !     |                                                                     |
 !     |                           or                                        |
 !     |                                                                     |
-!     |       1/2  || A_o x - b ||^2 + 1/2 sigma || x ||^2                  |
+!     |       1/2  || A_o x - b ||_W^2 + 1/2 sigma || x - x_s ||^2          |
 !     |                                                                     |
 !     |    subject to c_l + theta dc_l <= A x <= c_u + theta dc_u           |
 !     |               x_l + theta dx_l <=  x  <= x_u + theta dx_u           |
 !     |               y_l + theta dy_l <=  y  <= y_u + theta dy_u           |
 !     |    and        z_l + theta dz_l <=  z  <= z_u + theta dz_u           |
 !     |                                                                     |
+!     |                           or                                        |
+!     |                                                                     |
+!     |               e_Ci^T x_Ci = 1, x_Ci >= 0, i = 1,..., m,             |
+!     |                                                                     |
 !     | for all 0 <= theta <= theta_max,                                    |
 !     |                                                                     |
-!     | where y are the multipliers associated with the linear constraints  |
-!     | and z the dual variables associated with the bounds.                |
+!     | where y are the multipliers associated with the linear constraints, |
+!     | z are the dual variables associated with the bounds, and the        |
+!     | Ci are non-overlapping index subsets of {1,...,n},                  |
 !     |                                                                     |
 !     | Additionally, the general linear constraints may be replaced by     |
 !     | the quadratic ones                                                  |
@@ -211,7 +216,7 @@
 
         REAL ( KIND = rp_ ) :: q = 0.0_rp_
 
-!  regularization weight, sigma
+!  value of the regularization weight, sigma
 
         REAL ( KIND = rp_ ) :: regularization_weight = 0.0_rp_
 
@@ -256,6 +261,10 @@
 !  observation names
 
         CHARACTER ( len = 10 ), ALLOCATABLE, DIMENSION( : ) :: O_names
+
+!  simplex cohorts
+
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: COHORT
 
 !  variables status
 
@@ -377,9 +386,13 @@
 
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WEIGHT
 
-!  Jacobian weights
+!  Jacobian and design matrix weights
 
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+
+!  regularization shifts
+
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_s
 
 !  matrices
 

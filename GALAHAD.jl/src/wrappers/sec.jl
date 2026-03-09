@@ -19,7 +19,8 @@ end
 export sec_initialize
 
 function sec_initialize(::Type{Float32}, ::Type{Int32}, control, status)
-  @ccall libgalahad_single.sec_initialize_s(control::Ptr{sec_control_type{Float32,Int32}},
+  @ccall libgalahad_single.sec_initialize_s(control::Ptr{sec_control_type{Float32,
+                                                                          Int32}},
                                             status::Ptr{Int32})::Cvoid
 end
 
@@ -30,7 +31,8 @@ function sec_initialize(::Type{Float32}, ::Type{Int64}, control, status)
 end
 
 function sec_initialize(::Type{Float64}, ::Type{Int32}, control, status)
-  @ccall libgalahad_double.sec_initialize(control::Ptr{sec_control_type{Float64,Int32}},
+  @ccall libgalahad_double.sec_initialize(control::Ptr{sec_control_type{Float64,
+                                                                        Int32}},
                                           status::Ptr{Int32})::Cvoid
 end
 
@@ -94,7 +96,8 @@ export sec_terminate
 
 function sec_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_single.sec_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{sec_control_type{Float32,Int32}},
+                                           control::Ptr{sec_control_type{Float32,
+                                                                         Int32}},
                                            inform::Ptr{sec_inform_type{Int32}})::Cvoid
 end
 
@@ -107,19 +110,22 @@ end
 
 function sec_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.sec_terminate(data::Ptr{Ptr{Cvoid}},
-                                         control::Ptr{sec_control_type{Float64,Int32}},
+                                         control::Ptr{sec_control_type{Float64,
+                                                                       Int32}},
                                          inform::Ptr{sec_inform_type{Int32}})::Cvoid
 end
 
 function sec_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
   @ccall libgalahad_double_64.sec_terminate_64(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{sec_control_type{Float64,Int64}},
+                                               control::Ptr{sec_control_type{Float64,
+                                                                             Int64}},
                                                inform::Ptr{sec_inform_type{Int64}})::Cvoid
 end
 
 function sec_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_quadruple.sec_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{sec_control_type{Float128,Int32}},
+                                              control::Ptr{sec_control_type{Float128,
+                                                                            Int32}},
                                               inform::Ptr{sec_inform_type{Int32}})::Cvoid
 end
 

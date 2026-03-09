@@ -6,7 +6,7 @@
    TYPE ( UGO_control_type ) :: control
    TYPE ( UGO_inform_type ) :: inform
    TYPE ( UGO_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    EXTERNAL :: FGH
    INTEGER ( KIND = ip_ ) :: prob
    REAL ( KIND = rp_ ) :: x_l, x_u, x, f, g, h, f_min, x_min
@@ -225,7 +225,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), INTENT( IN ) :: x
      REAL ( KIND = rp_ ), INTENT( OUT ) :: f, g, h
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
 
      INTEGER ( KIND = ip_ ) :: k
      REAL ( KIND = rp_ ) :: a, b, c, ca, c2, c3, c4, c5, c6, e, rk, rkp1, s, sa

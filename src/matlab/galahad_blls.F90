@@ -138,7 +138,7 @@
       TYPE ( BLLS_control_type ), SAVE :: control
       TYPE ( BLLS_inform_type ), SAVE :: inform
       TYPE ( BLLS_data_type ), SAVE :: data
-      TYPE ( GALAHAD_userdata_type ) :: userdata
+      TYPE ( USERDATA_type ) :: userdata
 
       mwPointer, ALLOCATABLE :: col_ptr( : )
 

@@ -61,7 +61,8 @@ end
 
 export nodend_initialize
 
-function nodend_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
+function nodend_initialize(::Type{Float32}, ::Type{Int32}, data, control,
+                           status)
   @ccall libgalahad_single.nodend_initialize_s(data::Ptr{Ptr{Cvoid}},
                                                control::Ptr{nodend_control_type{Int32}},
                                                status::Ptr{Int32})::Cvoid
@@ -70,7 +71,8 @@ function nodend_initialize(::Type{Float32}, ::Type{Int32}, data, control, status
   return Cvoid
 end
 
-function nodend_initialize(::Type{Float32}, ::Type{Int64}, data, control, status)
+function nodend_initialize(::Type{Float32}, ::Type{Int64}, data, control,
+                           status)
   @ccall libgalahad_single_64.nodend_initialize_s_64(data::Ptr{Ptr{Cvoid}},
                                                      control::Ptr{nodend_control_type{Int64}},
                                                      status::Ptr{Int64})::Cvoid
@@ -79,7 +81,8 @@ function nodend_initialize(::Type{Float32}, ::Type{Int64}, data, control, status
   return Cvoid
 end
 
-function nodend_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
+function nodend_initialize(::Type{Float64}, ::Type{Int32}, data, control,
+                           status)
   @ccall libgalahad_double.nodend_initialize(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{nodend_control_type{Int32}},
                                              status::Ptr{Int32})::Cvoid
@@ -88,7 +91,8 @@ function nodend_initialize(::Type{Float64}, ::Type{Int32}, data, control, status
   return Cvoid
 end
 
-function nodend_initialize(::Type{Float64}, ::Type{Int64}, data, control, status)
+function nodend_initialize(::Type{Float64}, ::Type{Int64}, data, control,
+                           status)
   @ccall libgalahad_double_64.nodend_initialize_64(data::Ptr{Ptr{Cvoid}},
                                                    control::Ptr{nodend_control_type{Int64}},
                                                    status::Ptr{Int64})::Cvoid
@@ -97,7 +101,8 @@ function nodend_initialize(::Type{Float64}, ::Type{Int64}, data, control, status
   return Cvoid
 end
 
-function nodend_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
+function nodend_initialize(::Type{Float128}, ::Type{Int32}, data, control,
+                           status)
   @ccall libgalahad_quadruple.nodend_initialize_q(data::Ptr{Ptr{Cvoid}},
                                                   control::Ptr{nodend_control_type{Int32}},
                                                   status::Ptr{Int32})::Cvoid
@@ -106,7 +111,8 @@ function nodend_initialize(::Type{Float128}, ::Type{Int32}, data, control, statu
   return Cvoid
 end
 
-function nodend_initialize(::Type{Float128}, ::Type{Int64}, data, control, status)
+function nodend_initialize(::Type{Float128}, ::Type{Int64}, data, control,
+                           status)
   @ccall libgalahad_quadruple_64.nodend_initialize_q_64(data::Ptr{Ptr{Cvoid}},
                                                         control::Ptr{nodend_control_type{Int64}},
                                                         status::Ptr{Int64})::Cvoid
@@ -137,71 +143,85 @@ function nodend_read_specfile(::Type{Float64}, ::Type{Int64}, control, specfile)
                                                       specfile::Ptr{Cchar})::Cvoid
 end
 
-function nodend_read_specfile(::Type{Float128}, ::Type{Int32}, control, specfile)
+function nodend_read_specfile(::Type{Float128}, ::Type{Int32}, control,
+                              specfile)
   @ccall libgalahad_quadruple.nodend_read_specfile_q(control::Ptr{nodend_control_type{Int32}},
                                                      specfile::Ptr{Cchar})::Cvoid
 end
 
-function nodend_read_specfile(::Type{Float128}, ::Type{Int64}, control, specfile)
+function nodend_read_specfile(::Type{Float128}, ::Type{Int64}, control,
+                              specfile)
   @ccall libgalahad_quadruple_64.nodend_read_specfile_q_64(control::Ptr{nodend_control_type{Int64}},
                                                            specfile::Ptr{Cchar})::Cvoid
 end
 
 export nodend_order
 
-function nodend_order(::Type{Float32}, ::Type{Int32}, control, data, status, n, perm,
-                      A_type, ne, A_row, A_col, A_ptr)
+function nodend_order(::Type{Float32}, ::Type{Int32}, control, data, status, n,
+                      perm, A_type, ne, A_row, A_col, A_ptr)
   @ccall libgalahad_single.nodend_order_s(control::Ptr{nodend_control_type{Int32}},
-                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                          n::Int32, perm::Ptr{Int32}, A_type::Ptr{Cchar},
-                                          ne::Int32, A_row::Ptr{Int32}, A_col::Ptr{Int32},
+                                          data::Ptr{Ptr{Cvoid}},
+                                          status::Ptr{Int32}, n::Int32,
+                                          perm::Ptr{Int32}, A_type::Ptr{Cchar},
+                                          ne::Int32, A_row::Ptr{Int32},
+                                          A_col::Ptr{Int32},
                                           A_ptr::Ptr{Int32})::Cvoid
 end
 
-function nodend_order(::Type{Float32}, ::Type{Int64}, control, data, status, n, perm,
-                      A_type, ne, A_row, A_col, A_ptr)
+function nodend_order(::Type{Float32}, ::Type{Int64}, control, data, status, n,
+                      perm, A_type, ne, A_row, A_col, A_ptr)
   @ccall libgalahad_single_64.nodend_order_s_64(control::Ptr{nodend_control_type{Int64}},
-                                                data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                                n::Int64, perm::Ptr{Int64},
+                                                data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int64}, n::Int64,
+                                                perm::Ptr{Int64},
                                                 A_type::Ptr{Cchar}, ne::Int64,
-                                                A_row::Ptr{Int64}, A_col::Ptr{Int64},
+                                                A_row::Ptr{Int64},
+                                                A_col::Ptr{Int64},
                                                 A_ptr::Ptr{Int64})::Cvoid
 end
 
-function nodend_order(::Type{Float64}, ::Type{Int32}, control, data, status, n, perm,
-                      A_type, ne, A_row, A_col, A_ptr)
+function nodend_order(::Type{Float64}, ::Type{Int32}, control, data, status, n,
+                      perm, A_type, ne, A_row, A_col, A_ptr)
   @ccall libgalahad_double.nodend_order(control::Ptr{nodend_control_type{Int32}},
-                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
-                                        perm::Ptr{Int32}, A_type::Ptr{Cchar}, ne::Int32,
-                                        A_row::Ptr{Int32}, A_col::Ptr{Int32},
+                                        data::Ptr{Ptr{Cvoid}},
+                                        status::Ptr{Int32}, n::Int32,
+                                        perm::Ptr{Int32}, A_type::Ptr{Cchar},
+                                        ne::Int32, A_row::Ptr{Int32},
+                                        A_col::Ptr{Int32},
                                         A_ptr::Ptr{Int32})::Cvoid
 end
 
-function nodend_order(::Type{Float64}, ::Type{Int64}, control, data, status, n, perm,
-                      A_type, ne, A_row, A_col, A_ptr)
+function nodend_order(::Type{Float64}, ::Type{Int64}, control, data, status, n,
+                      perm, A_type, ne, A_row, A_col, A_ptr)
   @ccall libgalahad_double_64.nodend_order_64(control::Ptr{nodend_control_type{Int64}},
-                                              data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                              n::Int64, perm::Ptr{Int64},
+                                              data::Ptr{Ptr{Cvoid}},
+                                              status::Ptr{Int64}, n::Int64,
+                                              perm::Ptr{Int64},
                                               A_type::Ptr{Cchar}, ne::Int64,
-                                              A_row::Ptr{Int64}, A_col::Ptr{Int64},
+                                              A_row::Ptr{Int64},
+                                              A_col::Ptr{Int64},
                                               A_ptr::Ptr{Int64})::Cvoid
 end
 
-function nodend_order(::Type{Float128}, ::Type{Int32}, control, data, status, n, perm,
-                      A_type, ne, A_row, A_col, A_ptr)
+function nodend_order(::Type{Float128}, ::Type{Int32}, control, data, status, n,
+                      perm, A_type, ne, A_row, A_col, A_ptr)
   @ccall libgalahad_quadruple.nodend_order_q(control::Ptr{nodend_control_type{Int32}},
-                                             data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                             n::Int32, perm::Ptr{Int32}, A_type::Ptr{Cchar},
-                                             ne::Int32, A_row::Ptr{Int32},
-                                             A_col::Ptr{Int32}, A_ptr::Ptr{Int32})::Cvoid
+                                             data::Ptr{Ptr{Cvoid}},
+                                             status::Ptr{Int32}, n::Int32,
+                                             perm::Ptr{Int32},
+                                             A_type::Ptr{Cchar}, ne::Int32,
+                                             A_row::Ptr{Int32},
+                                             A_col::Ptr{Int32},
+                                             A_ptr::Ptr{Int32})::Cvoid
 end
 
-function nodend_order(::Type{Float128}, ::Type{Int64}, control, data, status, n, perm,
-                      A_type, ne, A_row, A_col, A_ptr)
+function nodend_order(::Type{Float128}, ::Type{Int64}, control, data, status, n,
+                      perm, A_type, ne, A_row, A_col, A_ptr)
   @ccall libgalahad_quadruple_64.nodend_order_q_64(control::Ptr{nodend_control_type{Int64}},
                                                    data::Ptr{Ptr{Cvoid}},
                                                    status::Ptr{Int64}, n::Int64,
-                                                   perm::Ptr{Int64}, A_type::Ptr{Cchar},
+                                                   perm::Ptr{Int64},
+                                                   A_type::Ptr{Cchar},
                                                    ne::Int64, A_row::Ptr{Int64},
                                                    A_col::Ptr{Int64},
                                                    A_ptr::Ptr{Int64})::Cvoid
@@ -209,41 +229,48 @@ end
 
 export nodend_information
 
-function nodend_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
+function nodend_information(::Type{Float32}, ::Type{Int32}, data, inform,
+                            status)
   @ccall libgalahad_single.nodend_information_s(data::Ptr{Ptr{Cvoid}},
                                                 inform::Ptr{nodend_inform_type{Float32,
                                                                                Int32}},
                                                 status::Ptr{Int32})::Cvoid
 end
 
-function nodend_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
+function nodend_information(::Type{Float32}, ::Type{Int64}, data, inform,
+                            status)
   @ccall libgalahad_single_64.nodend_information_s_64(data::Ptr{Ptr{Cvoid}},
                                                       inform::Ptr{nodend_inform_type{Float32,
                                                                                      Int64}},
                                                       status::Ptr{Int64})::Cvoid
 end
 
-function nodend_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
+function nodend_information(::Type{Float64}, ::Type{Int32}, data, inform,
+                            status)
   @ccall libgalahad_double.nodend_information(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{nodend_inform_type{Float64,Int32}},
+                                              inform::Ptr{nodend_inform_type{Float64,
+                                                                             Int32}},
                                               status::Ptr{Int32})::Cvoid
 end
 
-function nodend_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
+function nodend_information(::Type{Float64}, ::Type{Int64}, data, inform,
+                            status)
   @ccall libgalahad_double_64.nodend_information_64(data::Ptr{Ptr{Cvoid}},
                                                     inform::Ptr{nodend_inform_type{Float64,
                                                                                    Int64}},
                                                     status::Ptr{Int64})::Cvoid
 end
 
-function nodend_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
+function nodend_information(::Type{Float128}, ::Type{Int32}, data, inform,
+                            status)
   @ccall libgalahad_quadruple.nodend_information_q(data::Ptr{Ptr{Cvoid}},
                                                    inform::Ptr{nodend_inform_type{Float128,
                                                                                   Int32}},
                                                    status::Ptr{Int32})::Cvoid
 end
 
-function nodend_information(::Type{Float128}, ::Type{Int64}, data, inform, status)
+function nodend_information(::Type{Float128}, ::Type{Int64}, data, inform,
+                            status)
   @ccall libgalahad_quadruple_64.nodend_information_q_64(data::Ptr{Ptr{Cvoid}},
                                                          inform::Ptr{nodend_inform_type{Float128,
                                                                                         Int64}},
@@ -276,13 +303,15 @@ function nodend_terminate(::Type{Float128}, ::Type{Int64}, data)
   @ccall libgalahad_quadruple_64.nodend_terminate_q_64(data::Ptr{Ptr{Cvoid}})::Cvoid
 end
 
-function run_sif(::Val{:nodend}, ::Val{:single}, path_libsif::String, path_outsdif::String)
+function run_sif(::Val{:nodend}, ::Val{:single}, path_libsif::String,
+                 path_outsdif::String)
   cmd = setup_env_lbt(`$(GALAHAD_jll.runnodend_sif_single()) $path_libsif $path_outsdif`)
   run(cmd)
   return nothing
 end
 
-function run_sif(::Val{:nodend}, ::Val{:double}, path_libsif::String, path_outsdif::String)
+function run_sif(::Val{:nodend}, ::Val{:double}, path_libsif::String,
+                 path_outsdif::String)
   cmd = setup_env_lbt(`$(GALAHAD_jll.runnodend_sif_double()) $path_libsif $path_outsdif`)
   run(cmd)
   return nothing

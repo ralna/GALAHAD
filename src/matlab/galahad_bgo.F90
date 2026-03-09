@@ -187,7 +187,7 @@
 !  arguments for BGO
 
       TYPE ( NLPT_problem_type ) :: nlp
-      TYPE ( GALAHAD_userdata_type ) :: userdata
+      TYPE ( USERDATA_type ) :: userdata
       TYPE ( BGO_data_type ), SAVE :: data
       TYPE ( BGO_control_type ), SAVE :: control
       TYPE ( BGO_inform_type ) :: inform

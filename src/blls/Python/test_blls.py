@@ -6,6 +6,7 @@ print("\n** python test: blls")
 # set parameters
 n = 10
 o = n + 1
+sigma = 1.0
 infinity = float("inf")
 
 #  describe A = (  I  ) and b = ( i * e )
@@ -28,12 +29,15 @@ for i in range(n):
   Ao_val[n+i] = 1.0
   b[i] = i + 1
 
-#  set the weights
+#  set the weights and shifts
 
 w = np.empty(o)
+x_s = np.empty(n)
 w[0] = 2.0
 for i in range(1,o):
   w[i] = 1.0
+for i in range(n):
+  x_s[i] = 0.0
 
 #  specify the bounds on the variables
 
@@ -67,11 +71,11 @@ for i in range(n):
 
 # find minimizer
 #print("\n solve blls")
-x, r, z, g, x_stat \
-  = blls.solve_ls(n, o, w, Ao_ne, Ao_val, b, x_l, x_u, x, z)
+x, z, r, g, x_stat \
+  = blls.solve(n, o, Ao_ne, Ao_val, b, sigma, x_l, x_u, x, z, w, x_s)
 print(" x:",x)
-print(" r:",r)
 print(" z:",z)
+print(" r:",r)
 print(" g:",g)
 print(" x_stat:",x_stat)
 

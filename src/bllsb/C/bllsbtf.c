@@ -26,6 +26,7 @@ int main(void) {
     rpc_ x_l[] = {-1.0, - INFINITY, - INFINITY}; // variable lower bound
     rpc_ x_u[] = {1.0, INFINITY, 2.0}; // variable upper bound
     rpc_ w[] = {1.0, 1.0, 1.0, 2.0}; // weights
+    rpc_ x_s[] = {0.5, 0.5, 0.5}; // shifts
 
     // Set output storage
     rpc_ r[o]; // residual values
@@ -62,8 +63,8 @@ int main(void) {
                 rpc_ Ao_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // vals
                 bllsb_import( &control, &data, &status, n, o,
                              "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL );
-                bllsb_solve_blls( &data, &status, n, o, Ao_ne, Ao_val, b,
-                                  sigma, x_l, x_u, x, r, z, x_stat, w );
+                bllsb_solve_given_a( &data, &status, n, o, Ao_ne, Ao_val, b,
+                                  sigma, x_l, x_u, x, z, r, x_stat, w, x_s );
                 }
                 break;
             case 2: // sparse by rows
@@ -77,8 +78,8 @@ int main(void) {
                 bllsb_import( &control, &data, &status, n, o,
                               "sparse_by_rows", Ao_ne, NULL, Ao_col,
                               Ao_ptr_ne, Ao_ptr );
-                bllsb_solve_blls( &data, &status, n, o, Ao_ne, Ao_val, b,
-                                  sigma, x_l, x_u, x, r, z, x_stat, w );
+                bllsb_solve_given_a( &data, &status, n, o, Ao_ne, Ao_val, b,
+                                  sigma, x_l, x_u, x, z, r, x_stat, w, x_s );
                 }
                 break;
             case 3: // sparse by columns
@@ -92,8 +93,8 @@ int main(void) {
                 bllsb_import( &control, &data, &status, n, o,
                                "sparse_by_columns", Ao_ne, Ao_row, NULL,
                                Ao_ptr_ne, Ao_ptr );
-                bllsb_solve_blls( &data, &status, n, o, Ao_ne, Ao_val, b,
-                                  sigma, x_l, x_u, x, r, z, x_stat, w );
+                bllsb_solve_given_a( &data, &status, n, o, Ao_ne, Ao_val, b,
+                                  sigma, x_l, x_u, x, z, r, x_stat, w, x_s );
                 }
                 break;
             case 4: // dense by rows
@@ -104,8 +105,8 @@ int main(void) {
                                        1.0, 0.0, 1.0, 0.0, 1.0, 0.0};
                 bllsb_import( &control, &data, &status, n, o,
                              "dense", Ao_ne, NULL, NULL, 0, NULL  );
-                bllsb_solve_blls( &data, &status, n, o, Ao_ne, Ao_dense, b,
-                                  sigma, x_l, x_u, x, r, z, x_stat, w );
+                bllsb_solve_given_a( &data, &status, n, o, Ao_ne, Ao_dense, b,
+                                  sigma, x_l, x_u, x, z, r, x_stat, w, x_s );
                 }
                 break;
             case 5: // dense by cols
@@ -116,8 +117,8 @@ int main(void) {
                                        0.0, 1.0, 0.0, 1.0, 1.0, 0.0};
                 bllsb_import( &control, &data, &status, n, o,
                              "dense_by_columns", Ao_ne, NULL, NULL, 0, NULL );
-                bllsb_solve_blls( &data, &status, n, o, Ao_ne, Ao_dense, b,
-                                  sigma, x_l, x_u, x, r, z, x_stat, w );
+                bllsb_solve_given_a( &data, &status, n, o, Ao_ne, Ao_dense, b,
+                                  sigma, x_l, x_u, x, z, r, x_stat, w, x_s );
                 }
                 break;
             }

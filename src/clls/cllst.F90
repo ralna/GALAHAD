@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-08-31 AT 10:40 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2025-01-25 AT 08:50 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CLLS_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -19,6 +19,7 @@
    symmetric_linear_solver = 'sytr '
 
 !go to 111
+!go to 999
    n = 3 ; o = 4 ; m = 2 ; ao_ne = 7 ; a_ne = 4
    ALLOCATE( p%B( o ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
@@ -128,7 +129,7 @@
      CALL CLLS_solve( p, data, control, info )
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &      F6.1, ' status = ', I6 )" ) status, info%iter,                     &
+     &      F7.2, ' status = ', I6 )" ) status, info%iter,                     &
               info%obj, info%status
      ELSE
        WRITE( 6, "(I2, ': CLLS_solve exit status = ', I6 )") status, info%status
@@ -147,6 +148,7 @@
 !  basic test of various storage formats
 !  =====================================
 
+!999 continue
    WRITE( 6, "( /, ' basic tests of storage formats ', / )" )
 
    n = 3 ; o = 3 ; m = 2 ; ao_ne = 4 ; a_ne = 4
@@ -164,6 +166,7 @@
    p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
 
    DO data_storage_type = - 3, 0
+!  DO data_storage_type = - 1, - 1
      CALL CLLS_initialize( data, control, info )
      control%infinity = infty
      control%restore_problem = 2
@@ -177,7 +180,7 @@
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
      control%FDC_control%use_sls = .TRUE.
      p%new_problem_structure = .TRUE.
-    IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
+     IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
        st = 'C'
        ALLOCATE( p%Ao%val( ao_ne ), p%Ao%row( ao_ne ), p%Ao%col( ao_ne ) )
        ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
@@ -219,8 +222,9 @@
        CALL SMT_put( p%A%type, 'DENSE_BY_COLUMNS', smt_stat )
      END IF
 
-!  test with new and existing data
+!  test with new and existing data - no regularization
 
+     p%new_problem_structure = .TRUE.
      DO i = 1, 2
        IF ( data_storage_type == 0 ) THEN          ! sparse co-ordinate storage
          p%Ao%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
@@ -242,17 +246,82 @@
 !      control%print_level = 101
 !      control%min_diagonal = 0.000000000000001_rp_
        CALL CLLS_solve( p, data, control, info )
-
        IF ( info%status == 0 ) THEN
-         WRITE( 6, "( A1,I1,':', I6,' iterations. Optimal objective value = ', &
-     &            F6.1, ' status = ', I6 )" ) st, i, info%iter,                &
+         WRITE( 6, "( A1, 'N', I1,':', I6,' iterations. Optimal objective',    &
+        &   ' value = ', F7.2, ' status = ', I6 )" ) st, i, info%iter,         &
                   info%obj, info%status
        ELSE
-         WRITE( 6, "( A1, I1,': CLLS_solve exit status = ', I6 ) " )           &
+         WRITE( 6, "( A1, 'N', I1,': CLLS_solve exit status = ', I6 ) " )      &
+           st, i, info%status
+       END IF
+     END DO
+
+!  test with new and existing data - regularization
+
+     p%regularization_weight = 0.01_rp_
+!    p%regularization_weight = 1.0_rp_
+     p%new_problem_structure = .TRUE.
+     DO i = 1, 2
+       IF ( data_storage_type == 0 ) THEN          ! sparse co-ordinate storage
+         p%Ao%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+       ELSE IF ( data_storage_type == - 1 ) THEN    !  sparse row-wise storage
+         p%Ao%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+       ELSE IF ( data_storage_type == - 2 ) THEN    !  dense storage
+         p%Ao%val = (/ 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,   &
+                      4.0_rp_, 0.0_rp_, 3.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /)
+       ELSE IF ( data_storage_type == - 3 ) THEN    !  dense by column storage
+         p%Ao%val = (/ 1.0_rp_, 0.0_rp_, 4.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,   &
+                      0.0_rp_, 0.0_rp_, 3.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_ /)
+       END IF
+       p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+       CALL CLLS_solve( p, data, control, info )
+       IF ( info%status == 0 ) THEN
+         WRITE( 6, "( A1, 'R', I1,':', I6,' iterations. Optimal objective',    &
+        &   ' value = ', F7.2, ' status = ', I6 )" ) st, i, info%iter,         &
+                  info%obj, info%status
+       ELSE
+         WRITE( 6, "( A1, 'R', I1,': CLLS_solve exit status = ', I6 ) " )      &
+           st, i, info%status
+       END IF
+     END DO
+
+!  test with new and existing data - regularization, scaling and shifts
+
+     ALLOCATE( p%X_s( n ), p%W( o ) )
+     p%W = 1.0001_rp_ ; p%X_s = 0.0001_rp_
+     DO i = 1, 2
+       IF ( data_storage_type == 0 ) THEN          ! sparse co-ordinate storage
+         p%Ao%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+       ELSE IF ( data_storage_type == - 1 ) THEN    !  sparse row-wise storage
+         p%Ao%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+       ELSE IF ( data_storage_type == - 2 ) THEN    !  dense storage
+         p%Ao%val = (/ 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,   &
+                      4.0_rp_, 0.0_rp_, 3.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /)
+       ELSE IF ( data_storage_type == - 3 ) THEN    !  dense by column storage
+         p%Ao%val = (/ 1.0_rp_, 0.0_rp_, 4.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,   &
+                      0.0_rp_, 0.0_rp_, 3.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_ /)
+       END IF
+       p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+       CALL CLLS_solve( p, data, control, info )
+       IF ( info%status == 0 ) THEN
+         WRITE( 6, "( A1, 'S', I1,':', I6,' iterations. Optimal objective',    &
+        &   ' value = ', F7.2, ' status = ', I6 )" ) st, i, info%iter,         &
+                  info%obj, info%status
+       ELSE
+         WRITE( 6, "( A1, 'S', I1,': CLLS_solve exit status = ', I6 ) " )      &
            st, i, info%status
        END IF
 !      STOP
      END DO
+!1 continue
      CALL CLLS_terminate( data, control, info )
      IF ( ALLOCATED( p%Ao%row ) ) DEALLOCATE( p%Ao%row )
      IF ( ALLOCATED( p%Ao%col ) ) DEALLOCATE( p%Ao%col )
@@ -260,6 +329,8 @@
      IF ( ALLOCATED( p%A%row ) ) DEALLOCATE( p%A%row )
      IF ( ALLOCATED( p%A%col ) ) DEALLOCATE( p%A%col )
      IF ( ALLOCATED( p%A%val ) ) DEALLOCATE( p%A%val )
+     DEALLOCATE( p%X_s, p%W )
+     p%regularization_weight = 0.0_rp_
 !    STOP
    END DO
    DEALLOCATE( p%B, p%X_l, p%X_u, p%C_l, p%C_u )
@@ -322,7 +393,7 @@
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) i, info%iter,                &
+     &                F7.2, ' status = ', I6 )" ) i, info%iter,                &
                       info%obj, info%status
      ELSE
        WRITE( 6, "( I2, ': CLLS_solve exit status = ', I6 ) " ) i, info%status
@@ -360,7 +431,7 @@
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) i, info%iter,                &
+     &                F7.2, ' status = ', I6 )" ) i, info%iter,                &
                       info%obj, info%status
      ELSE
        WRITE( 6, "( I2, ': CLLS_solve exit status = ', I6 ) " ) i, info%status
@@ -398,7 +469,7 @@
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) i, info%iter,                &
+     &                F7.2, ' status = ', I6 )" ) i, info%iter,                &
                       info%obj, info%status
 !      write(6,*) info%obj
      ELSE
@@ -493,7 +564,7 @@
    CLOSE( UNIT = scratch_out )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) 1, info%iter,                &
+     &                F7.2, ' status = ', I6 )" ) 1, info%iter,                &
                       info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': CLLS_solve exit status = ', I6 ) " ) 1, info%status
@@ -567,7 +638,7 @@
    CALL CLLS_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) 2, info%iter,                &
+     &                F7.2, ' status = ', I6 )" ) 2, info%iter,                &
                       info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': CLLS_solve exit status = ', I6 ) " ) 2, info%status
@@ -641,7 +712,7 @@
    CALL CLLS_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) 3, info%iter,                &
+     &                F7.2, ' status = ', I6 )" ) 3, info%iter,                &
                       info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': CLLS_solve exit status = ', I6 ) " ) 3, info%status
@@ -707,7 +778,7 @@
    CALL CLLS_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) 4, info%iter,                &
+     &                F7.2, ' status = ', I6 )" ) 4, info%iter,                &
                       info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': CLLS_solve exit status = ', I6 ) " ) 4, info%status
@@ -721,7 +792,7 @@
    CALL CLLS_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) 5, info%iter,                &
+     &                F7.2, ' status = ', I6 )" ) 5, info%iter,                &
                       info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': CLLS_solve exit status = ', I6 ) " ) 5, info%status

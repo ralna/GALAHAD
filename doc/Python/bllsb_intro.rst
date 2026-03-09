@@ -2,17 +2,27 @@ purpose
 -------
 
 The ``bllsb`` package uses a **primal-dual interior-point crossover method** 
-to solve a **bound-constrained linear least-squares problem**,
+to solve a given **simplex-constrained linear least-squares problem**.
 The aim is to minimize the (regularized) least-squares objective function
-$$q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x\|^2$$ 
-subject to the simple bounds
-$$x_l \leq x \leq x_u,$$
-where the norms $\|r\|_W = \sqrt{\sum_{i=1}^o w_i r_i^2}$
-and $\|x\| = \sqrt{\sum_{i=1}^n x_i^2}$,
-$A_o$ is a given  $o$ by $n$ matrix,
-$b$, and $w$ are vectors, $\sigma \geq 0$ is a scalar, 
-and any of the components 
-of the vectors $x_l$ or $x_u$ may be infinite.
+$$q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x-x_s\|^2$$ 
+where the variables $x$ are required to lie within the
+**regular simplex**
+$$e^T x = 1 \;\;\mbox{and}\;\; x \geq 0,$$
+or an intersection of **multiple non-overlapping regular simplices**
+$$e_{\cal C_i}^T x_{\cal C_i} = 1 \;\;\mbox{and}\;\; x_{\cal C_i}
+\geq 0 \;\;\mbox{for}\;\; i = 1,\ldots,m,$$
+where the $o$ by $n$ real **design matrix** $A_o$, 
+the vector $b$ of **observations**,
+the **shifts** $x_s$, 
+and the non-negative **weights** $w$ and $\sigma$ are given, 
+$e$ is the vector of ones, 
+the vector $v_{\cal C}$ is made up of those entries of $v$ indexed by
+the set $\cal C$, 
+the index sets of **cohorts** $\cal C_i \subseteq \{1,\ldots,n\}$
+for which $\cal C_i \cap \cal C_j = \emptyset$ for $1 \leq i, \neq j \leq m$,
+and where the Euclidean and weighted-Euclidean norms
+are given by $\|v\|_2^2 = v^T v$ and $\|v\|_W^2 = v^T W v$,
+respectively, with $W = \mbox{diag}(w)$.
 The method is most suitable for problems
 involving a large number of unknowns $x$.
 
@@ -25,15 +35,15 @@ Any required solution $x$ necessarily satisfies
 the **primal optimality conditions**
 $$x_l \leq x \leq x_u,\;\;\mbox{(1)}$$
 the **dual optimality conditions**
-$$A_o^T W ( A_o x-b ) + \sigma x = z,\;\;  
+$$A_o^T W ( A_o x-b ) + \sigma ( x - x_s )= z,\;\;  
 \mbox{and}\;\; z = z_l + z_u,\;\;\mbox{(2a)}$$
 and
 $$z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,\;\;\mbox{(2b)}$$
 and the **complementary slackness conditions**
 $$(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,\;\;\mbox{(3)}$$
 where the components of the vector $z$ are known as 
-the **dual variables** for the bounds
-where the vector inequalities hold component-wise,
+the **dual variables** for the bounds (1),
+the vector inequalities hold component-wise,
 and where $W$ is the diagonal matrix whose entries are the $w_j$.
 
 method
@@ -41,21 +51,21 @@ method
 
 Primal-dual interior point methods iterate towards a point that satisfies 
 these optimality conditions by ultimately aiming to satisfy
-(2a) and (3), while ensuring that (1) and (2b) are
+(1a), (2a) and (3), while ensuring that (1b) and (2b) are
 satisfied as strict inequalities at each stage.
 Appropriate norms of the amounts by
-which (2a) and (3) fail to be satisfied are known as the
+which (2a) and (2b) fail to be satisfied are known as the
 primal and dual infeasibility, and the violation of complementary slackness,
-respectively. The fact that (1) and (2b) are satisfied as strict
+respectively. The fact that (1b) and (2b) are satisfied as strict
 inequalities gives such methods their other title, namely
 interior-point methods.
 
 The method aims at each stage to reduce the
 overall violation of (2a) and (3),
 rather than reducing each of the terms individually. Given an estimate
-$v = (x, \; z, \; z^{l}, \; z^{u})$
+$v = (x, \; z)$
 of the primal-dual variables, a correction
-$\Delta v = \Delta (x, \;z,, \;z^{l} ,\;z^{u} )$
+$\Delta v = \Delta (x, \;z )$
 is obtained by solving a suitable linear system of Newton equations for the
 nonlinear systems (2a) and a parameterized ''residual
 trajectory'' perturbation of (3); residual trajectories

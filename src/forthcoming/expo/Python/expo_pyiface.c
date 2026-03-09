@@ -1,7 +1,7 @@
 //* \file expo_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.3 - 2025-07-27 AT 15:10 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_EXPO PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -178,8 +178,8 @@ static int eval_hl(int n, int m, int hne, const double x[], const double y[],
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool expo_update_control(struct expo_control_type *control,
-                               PyObject *py_options){
+bool expo_update_control(struct expo_control_type *control,
+                         PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -430,7 +430,8 @@ static bool expo_update_control(struct expo_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-static PyObject* expo_make_options_dict(const struct expo_control_type *control){
+// NB not static as it is used for nested options within other Python interfaces
+PyObject* expo_make_options_dict(const struct expo_control_type *control){
     PyObject *py_options = PyDict_New();
 
     PyDict_SetItemString(py_options, "error",
@@ -546,7 +547,8 @@ static PyObject* expo_make_time_dict(const struct expo_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* expo_make_inform_dict(const struct expo_inform_type *inform){
+// NB not static as it is used for nested options within other Python interfaces
+PyObject* expo_make_inform_dict(const struct expo_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",

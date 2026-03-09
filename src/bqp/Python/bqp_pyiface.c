@@ -1,7 +1,7 @@
 //* \file bqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -34,8 +34,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool bqp_update_control(struct bqp_control_type *control,
-                               PyObject *py_options){
+bool bqp_update_control(struct bqp_control_type *control,
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -323,7 +323,8 @@ static PyObject* bqp_make_time_dict(const struct bqp_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* bqp_make_inform_dict(const struct bqp_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* bqp_make_inform_dict(const struct bqp_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     // Set dictionaries from subservient packages

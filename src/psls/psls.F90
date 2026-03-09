@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 15:00 GMT
+! THIS VERSION: GALAHAD 5.5 - 2026-02-28 AT 09:50 GMT
 
 #include "galahad_modules.h"
 
@@ -1086,7 +1086,7 @@
 !  ensure that the diaginal is sufficiently positive
 
         data%DIAG( : data%n_sub ) =                                            &
-          MAX( data%DIAG( : data%n_sub ), control%min_diagonal )
+          MAX( ABS( data%DIAG( : data%n_sub ) ), control%min_diagonal )
 
 !  A band matrix will be used
 
@@ -3169,7 +3169,7 @@
 !  fit the data into the diagonal and ensure that the diagonal is
 !  sufficiently positive
 
-        P%val = MAX( A%val( : data%n ), control%min_diagonal )
+        P%val = MAX( ABS( A%val( : data%n ) ) , control%min_diagonal )
         GO TO 900
       END IF
 
@@ -3226,9 +3226,9 @@
           END DO
         END SELECT
 
-!  ensure that the diaginal is sufficiently positive
+!  ensure that the diagonal is sufficiently positive
 
-        P%val = MAX( P%val, control%min_diagonal )
+        P%val = MAX( ABS( P%val ), control%min_diagonal )
         GO TO 900
 
 !  A band matrix will be used

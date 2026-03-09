@@ -26,7 +26,6 @@ blls_control_type structure
           cg_maxit::INT
           arcsearch_max_steps::INT
           sif_file_device::INT
-          weight::T
           infinity::T
           stop_d::T
           identical_bounds_tol::T
@@ -208,16 +207,6 @@ the maximum number of steps allowed in a piecewise arcsearch (-ve=infini
 	INT sif_file_device
 
 the unit number to write generated SIF file describing the current probl
-
-.. index:: pair: variable; weight
-.. _doxid-structblls__control__type_weight:
-
-.. ref-code-block:: julia
-	:class: doxyrest-title-code-block
-
-	T weight
-
-the value of the non-negative regularization weight sigma, i.e., the quadratic objective function q(x) will be regularized by adding 1/2 weight \|\|x\|\|^2; any value smaller than zero will be regarded as zero.
 
 .. index:: pair: variable; infinity
 .. _doxid-structblls__control__type_infinity:

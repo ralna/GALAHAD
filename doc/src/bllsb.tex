@@ -16,13 +16,15 @@
 \galsummary
 This package uses a primal-dual interior-point method to solve the
 {\bf bound-constrained regularized linear least-squares problem}
-\eqn{qp}{\mbox{minimize}\;\; \half \| \bmA_o \bmx - \bmb\|_W^2
- + \half \sigma \| \bmx \|_2^2}
-subject to the simple bound constraints
+\disp{\mbox{minimize}\;\; q(\bmx) = \half \| \bmA_o \bmx - \bmb\|_W^2
+ + \half \sigma \| \bmx - \bmx_s \|_2^2}
+subject to the {\bf simple bound constraints}
 \disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
-where the $o$ by $n$ real matrix $\bmA_o$, the vectors 
-$\bmb$, $\bmx^{l}$, $\bmx^{u}$ and the non-negative weights $\bmw > 0$ and 
-$\sigma \geq 0$ are given, and where the Euclidean and weighted-Euclidean norms
+where the $o$ by $n$ real {\bf design matrix} $\bmA_o$, the vectors 
+of {\bf observations} $\bmb$ and 
+{\bf variable bounds} $\bmx^{l}$ and $\bmx^{u}$, the {\bf shifts} $\bmx_s$, 
+and the non-negative {\bf weights} $\bmw > 0$ and $\sigma \geq 0$ are given, 
+and where the Euclidean and weighted-Euclidean norms
 satisfy $\|\bmv\|_2^2 = \bmv^T \bmv$ and $\|\bmv\|_W^2 = \bmv^T \bmW \bmv$,
 respectively, with $\bmW = \mbox{diag}(\bmw)$.
 Any of the constraint bounds $x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
@@ -67,7 +69,6 @@ If it is required to use more than one of the modules at the same time,
 the derived types
 {\tt SMT\_type},
 {\tt QPT\_problem\_type},
-{\tt NLPT\_userdata\-\_type},
 {\tt \packagename\_time\_type},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_inform\_type}
@@ -207,6 +208,13 @@ are:
 \ittf{o} is a scalar variable of type \integer,
  that holds the number of observations, $o$.
 
+\ittf{m} is a scalar variable of type \integer,
+ that holds the number of cohorts, $m$.
+
+\itt{regularization\_weight} is a scalar variable of type \realdp,,
+ that holds the value of the regularization weight, $\sigma$, if required.
+ By default {\tt regularization\_weight} is set to zero.
+
 \ittf{Ao} is scalar variable of type {\tt SMT\_TYPE}
 that holds the objective design matrix $\bmA_o$.
 The following components are used:
@@ -280,7 +288,8 @@ It need not be allocated when the other appropriate schemes are used.
 \end{description}
 
 \ittf{B} is a rank-one allocatable array type \realdp, that
-should be allocated to have length {\tt o}, and its $i$-th component
+should be allocated to have length {\tt o}, and used to hold
+the observations $\bmb$; its $i$-th component should be
 filled with the value $b_{i}$ for $i = 1, \ldots , o$.
 
 \ittf{X\_l} is a rank-one allocatable array of dimension {\tt n} and type
@@ -302,6 +311,18 @@ Infinite bounds are allowed by setting the corresponding
 components of {\tt X\_u} to any value larger than that {\tt infinity},
 where {\tt infinity} is a component of the control array {\tt control}
 (see Section~\ref{typecontrol}).
+
+\ittf{W} is a rank-one allocatable array of type \realdp, that should
+be allocated to have length {\tt o} if any of the weights $\bmw$
+in the objective function is not one, and in this case
+filled with the value $w_{i}$ for $i = 1, \ldots , o$.
+If all the weights are one, {\tt W} need not be allocated.
+
+\ittf{X\_s} is a rank-one allocatable array of type \realdp, that should
+be allocated to have length {\tt n} if any of the shifts $\bmx_s$
+in the objective function is nonzero, and in this case
+filled with the value $(\bmx_s)_{i}$ for $i = 1, \ldots , n$.
+If all the shifts are zero, {\tt X\_s} need not be allocated.
 
 \ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
 \realdp,
@@ -854,7 +875,12 @@ total number of threads used for parallel execution.
 gives the number of iterations performed.
 
 \ittf{obj} is a scalar variable of type \realdp, that holds the
-value of the objective function at the best estimate of the solution found.
+value of the regularized objective function  $q(\bmx)$ at the 
+best estimate of the solution found.
+
+\itt{ls\_obj} is a scalar variable of type \realdp, that holds the value of 
+the least-squares function $\half \| \bmA_o \bmx - \bmb\|_W^2$ 
+at the best estimate of the solution found.
 
 \itt{primal\_infeasibility} is a scalar variable of type \realdp,
 that holds the norm of the violation of primal optimality
@@ -1000,11 +1026,11 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 %%%%%%%%% main solution subroutine %%%%%%
 
 \subsubsection{The least-squares subroutine}\label{qps}
-The constrained least-squares solution algorithm is called as follows:
+The bound-constrained least-squares solution algorithm is called as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_solve( prob, data, control, inform[, regularization\_weight, w] )}
+{\tt CALL \packagename\_solve( prob, data, control, inform )}
 
 %\vspace*{-3mm}
 \begin{description}
@@ -1013,7 +1039,8 @@ The constrained least-squares solution algorithm is called as follows:
 (see Section~\ref{typeprob}).
 It is used to hold data about the problem being solved.
 The user must allocate all the array components,
-and set values for all components.
+and set values for all components except,
+if they are not required, {\tt prob\%W} and {\tt prob\%X\_s}.
 
 The components {\tt prob\%X} and {\tt prob\%Z}
 must be set to initial estimates of the primal variables, $\bmx$,
@@ -1021,15 +1048,12 @@ Lagrange multipliers, $\bmy$, for the general constraints
 and dual variables for the bound constraints, $\bmz$, respectively.
 Inappropriate initial values will be altered, so the user should
 not be overly concerned if suitable values are not apparent, and may be
-content with merely setting {\tt prob\%X=0.0}, {\tt prob\%Y=0.0}
-and {\tt prob\%Z=0.0}.
+content with merely setting {\tt prob\%X=0.0} and {\tt prob\%Z=0.0}.
 %The component {\tt prob\%C} need not be set on entry.
 
-On exit, the components {\tt prob\%X} , {\tt prob\%C}, {\tt prob\%Y},
-and {\tt prob\%Z}
+On exit, the components {\tt prob\%X} , {\tt prob\%R} and {\tt prob\%Z}
 will contain the best estimates of the primal variables $\bmx$,
-the linear constraints $\bmA \bmx$,
-Lagrange multipliers, $\bmy$, for the general constraints
+the residuals $\bmr = \bmA_o \bmx - \bmb$,
 and dual variables for the bound constraints $\bmz$, respectively.
 \restrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $\geq 0$,
  {\tt prob\%Ao\_type} $\in \{${\tt 'DENSE'},
@@ -1056,16 +1080,6 @@ A successful call to
 {\tt \packagename\_solve}
 is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
-
-\itt{regularization\_weight} is an \optional\ scalar variable of type
-\realdp, that holds the regularization weight, $\sigma \geq 0$.
-It need not be \present\ if $\sigma = 0$.
-
-\ittf{W} is an \optional\ rank-one allocatable array of dimension {\tt o} and
-type \realdp, that holds the positive residual weights, $w$. If it
-is \present, its $i$-th component must contain the value $w_{i}$ for
-$i = 1, \ldots , o$.
-If all the weights are one, {\tt W} need not be \present.
 
 \end{description}
 
@@ -1413,7 +1427,7 @@ the primal optimality conditions
 \eqn{4.1}{\bmx^{l} \leq \bmx \leq \bmx^{u},}
 the dual optimality conditions
 \eqn{4.2a}{
- \bmA_o^T W ( \bmA_o \bmx - \bmb) + \sigma \bmx = \bmz,}
+ \bmA_o^T W ( \bmA_o \bmx - \bmb) + \sigma ( \bmx - \bmx_s ) = \bmz,}
 where
 \eqn{4.2b}{
  \bmz = \bmz^{l} + \bmz^{u}, \,\,

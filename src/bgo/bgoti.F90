@@ -8,7 +8,7 @@
    TYPE ( BGO_control_type ) :: control
    TYPE ( BGO_inform_type ) :: inform
    TYPE ( BGO_full_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
 !  EXTERNAL :: FUN, GRAD, HESS, HESSPROD, PREC
    INTEGER ( KIND = ip_ ) :: n, ne, nnz_v, nnz_u
    INTEGER ( KIND = ip_ ) :: status, data_storage_type, eval_status
@@ -341,11 +341,11 @@ CONTAINS
    END SUBROUTINE WHICH_sls
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
-   USE GALAHAD_USERDATA_precision, ONLY: GALAHAD_userdata_type
+   USE GALAHAD_USERDATA_precision, ONLY: USERDATA_type
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), INTENT( OUT ) :: f
    REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
    f = ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) ** 2 +                         &
@@ -356,11 +356,11 @@ CONTAINS
    END SUBROUTINE FUN
 
    SUBROUTINE GRAD( status, X, userdata, G )    ! gradient of the objective
-   USE GALAHAD_USERDATA_precision, ONLY: GALAHAD_userdata_type
+   USE GALAHAD_USERDATA_precision, ONLY: USERDATA_type
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
    G( 1 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) )                 &
@@ -373,11 +373,11 @@ CONTAINS
    END SUBROUTINE GRAD
 
    SUBROUTINE HESS( status, X, userdata, H_Val ) ! Hessian of the objective
-   USE GALAHAD_USERDATA_precision, ONLY: GALAHAD_userdata_type
+   USE GALAHAD_USERDATA_precision, ONLY: USERDATA_type
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
    H_val( 1 ) = 2.0_rp_ - mag * freq * freq * COS( freq * X( 1 ) )
@@ -390,11 +390,11 @@ CONTAINS
    END SUBROUTINE HESS
 
    SUBROUTINE HESS_dense( status, X, userdata, H_val ) ! Dense Hessian
-   USE GALAHAD_USERDATA_precision, ONLY: GALAHAD_userdata_type
+   USE GALAHAD_USERDATA_precision, ONLY: USERDATA_type
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
    H_val( 1 ) = 2.0_rp_ - mag * freq * freq * COS( freq * X( 1 ) )
@@ -408,11 +408,11 @@ CONTAINS
    END SUBROUTINE HESS_dense
 
    SUBROUTINE HESSPROD( status, X, userdata, U, V, got_h ) ! Hessian-vector prod
-   USE GALAHAD_USERDATA_precision, ONLY: GALAHAD_userdata_type
+   USE GALAHAD_USERDATA_precision, ONLY: USERDATA_type
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, V
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
@@ -426,11 +426,11 @@ CONTAINS
    END SUBROUTINE HESSPROD
 
    SUBROUTINE PREC( status, X, userdata, U, V ) ! apply preconditioner
-   USE GALAHAD_USERDATA_precision, ONLY: GALAHAD_userdata_type
+   USE GALAHAD_USERDATA_precision, ONLY: USERDATA_type
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
    U( 1 ) = 0.5_rp_ * V( 1 )
@@ -445,7 +445,7 @@ CONTAINS
 
    SUBROUTINE SHESSPROD( status, X, userdata, nnz_v, INDEX_nz_v, V,            &
                          nnz_u, INDEX_nz_u, U, got_h ) ! sparse Hess-vect prod
-   USE GALAHAD_USERDATA_precision, ONLY: GALAHAD_userdata_type
+   USE GALAHAD_USERDATA_precision, ONLY: USERDATA_type
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_v
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnz_u
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
@@ -454,7 +454,7 @@ CONTAINS
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
    INTEGER ( KIND = ip_ ) :: i, j
    REAL ( KIND = rp_ ), DIMENSION( 3 ) :: P
@@ -503,7 +503,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), INTENT( OUT ) :: f
    REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
    f = ( X( 3 ) + userdata%real( 1 ) ) ** 2 + X( 2 ) ** 2                      &
@@ -517,7 +517,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
    G( 1 ) = - mag * freq * SIN( freq * X( 1 ) ) + 1.0_rp_
@@ -532,7 +532,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
    H_val( 1 ) = - mag * freq * freq * COS( freq * X( 1 ) )
@@ -547,7 +547,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, V
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
@@ -569,7 +569,7 @@ CONTAINS
 !!$   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
 !!$   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
 !!$   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-!!$   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+!!$   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
 !!$   LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 !!$   INTEGER ( KIND = ip_ ) :: i, j
 !!$   REAL ( KIND = rp_ ), DIMENSION( 3 ) :: P

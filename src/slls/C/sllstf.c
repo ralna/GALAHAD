@@ -38,26 +38,32 @@ int main(void) {
     // Set problem data
     ipc_ n = 10; // dimension
     ipc_ o = n + 1; // number of residuals
+    ipc_ m = 1; // number of cohorts
+    rpc_ sigma = 1.0; // regularization weight
     ipc_ Ao_ne = 2 * n; // sparse Jacobian elements
     ipc_ Ao_dense_ne = o * n; // dense Jacobian elements
+    ipc_ cohort[n]; // cohorts
     // row-wise storage
-    ipc_ Ao_row[Ao_ne]; // row indices,
+    ipc_ Ao_row[Ao_ne]; // row indices
     ipc_ Ao_col[Ao_ne]; // column indices
     ipc_ Ao_ptr_ne = o+1; // row pointer length
     ipc_ Ao_ptr[Ao_ptr_ne]; // row pointers
     rpc_ Ao_val[Ao_ne]; // values
     rpc_ Ao_dense[Ao_dense_ne]; // dense values
     // column-wise storage
-    ipc_ Ao_by_col_row[Ao_ne]; // row indices,
+    ipc_ Ao_by_col_row[Ao_ne]; // row indices
     ipc_ Ao_by_col_ptr_ne = n+1; // column pointer length
     ipc_ Ao_by_col_ptr[Ao_by_col_ptr_ne]; // column pointers
     rpc_ Ao_by_col_val[Ao_ne]; // values
     rpc_ Ao_by_col_dense[Ao_dense_ne]; // dense values
     rpc_ b[o];  // linear term in the objective
     rpc_ x[n]; // variables
+    rpc_ y[m]; // Lagrange multipliers
     rpc_ z[n]; // dual variables
     rpc_ r[o]; // residual
     rpc_ g[n]; // gradient
+    rpc_ w[o]; // weights
+    rpc_ x_s[o]; // shifts
 
     // Set output storage
     ipc_ x_stat[n]; // variable status
@@ -113,7 +119,7 @@ int main(void) {
       l = l + 1;
       Ao_by_col_row[l] = o; Ao_by_col_val[l] = 1.0;
     }
-    Ao_by_col_ptr[n] = Ao_ne;
+    Ao_by_col_ptr[n] = Ao_ne + 1;
     l = - 1;
     for( ipc_ j = 0; j < n; j++)
     {
@@ -142,65 +148,67 @@ int main(void) {
 
         // Set user-defined control options
         control.f_indexing = true; // fortran sparse matrix indexing
+        // control.print_level = 1;
 
         // Start from 0
         for( ipc_ i = 0; i < n; i++) x[i] = 0.0;
-        for( ipc_ i = 0; i < n; i++) z[i] = 0.0;
 
         switch(d){
             case 1: // sparse co-ordinate storage
                 strcpy( st, "CO" );
-                slls_import( &control, &data, &status, n, o,
-                            "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL );
-                slls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_ne, Ao_val, b,
-                                    x, z, r, g, x_stat, prec );
+                slls_import( &control, &data, &status, n, o, m,
+                             "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL,
+                             NULL );
+                slls_solve_given_a( &data, &userdata, &status, n, o, m,
+                                    Ao_ne, Ao_val, b, sigma,
+                                    x, y, z, r, g, x_stat, NULL, NULL, prec );
                 break;
             case 2: // sparse by rows
                 strcpy( st, "SR" );
-                slls_import( &control, &data, &status, n, o,
+                slls_import( &control, &data, &status, n, o, m,
                              "sparse_by_rows", Ao_ne, NULL, Ao_col,
-                             Ao_ptr_ne, Ao_ptr );
-                slls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_ne, Ao_val, b,
-                                    x, z, r, g, x_stat, prec );
+                             Ao_ptr_ne, Ao_ptr, NULL );
+                slls_solve_given_a( &data, &userdata, &status, n, o, m,
+                                    Ao_ne, Ao_val, b, sigma,
+                                    x, y, z, r, g, x_stat, NULL, NULL, prec );
                 break;
             case 3: // dense by rows
                 strcpy( st, "DR" );
-                slls_import( &control, &data, &status, n, o,
+                slls_import( &control, &data, &status, n, o, m,
                              "dense_by_rows", Ao_dense_ne,
-                             NULL, NULL, 0, NULL );
-                slls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_dense_ne, Ao_dense, b,
-                                    x, z, r, g, x_stat, prec );
+                             NULL, NULL, 0, NULL, NULL );
+                slls_solve_given_a( &data, &userdata, &status, n, o, m,
+                                    Ao_dense_ne, Ao_dense, b, sigma,
+                                    x, y, z, r, g, x_stat, NULL, NULL, prec );
                 break;
             case 4: // sparse by columns
                 strcpy( st, "SC" );
-                slls_import( &control, &data, &status, n, o,
+                slls_import( &control, &data, &status, n, o, m,
                              "sparse_by_columns", Ao_ne, Ao_by_col_row,
-                             NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr );
-                slls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_ne, Ao_by_col_val, b,
-                                    x, z, r, g, x_stat, prec );
+                             NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr, NULL );
+                slls_solve_given_a( &data, &userdata, &status, n, o, m,
+                                    Ao_ne, Ao_by_col_val, b, sigma,
+                                    x, y, z, r, g, x_stat, NULL, NULL, prec );
                 break;
             case 5: // dense by columns
                 strcpy( st, "DC" );
-                slls_import( &control, &data, &status, n, o,
+                slls_import( &control, &data, &status, n, o, m,
                              "dense_by_columns", Ao_dense_ne,
-                             NULL, NULL, 0, NULL );
-                slls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_dense_ne, Ao_by_col_dense, b,
-                                    x, z, r, g, x_stat, prec );
+                             NULL, NULL, 0, NULL, NULL );
+                slls_solve_given_a( &data, &userdata, &status, n, o, m,
+                                    Ao_dense_ne, Ao_by_col_dense, b, sigma,
+                                    x, y, z, r, g, x_stat, NULL, NULL, prec );
                 break;
             }
         slls_information( &data, &inform, &status );
 
         if(inform.status == 0){
 #ifdef REAL_128
-// interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
-#include "galahad_pquad_sf.h"
+            printf("%s:%6" d_ipc_ " iterations. Optimal objective value = %5.2f"
+                   " status = %1" d_ipc_ "\n",
+                   st, inform.iter, (double)inform.obj, inform.status);
 #else
-            printf("%s:%6" d_ipc_ " iterations. Optimal objective value = %.2f"
+            printf("%s:%6" d_ipc_ " iterations. Optimal objective value = %5.2f"
                    " status = %1" d_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
 #endif
@@ -224,11 +232,11 @@ int main(void) {
     // reverse-communication input/output
     ipc_ on;
     on = imax( o, n );
-    ipc_ eval_status, nz_v_start, nz_v_end, nz_p_end;
-    ipc_ nz_v[on], nz_p[o], mask[o];
+    ipc_ eval_status, lvl, lvu, index, lp;
+    ipc_ iv[on], ip[o];
     rpc_ v[on], p[on];
 
-    nz_p_end = 0;
+    lp = 0;
 
     // Initialize SLLS
     slls_initialize( &data, &control, &status );
@@ -238,16 +246,14 @@ int main(void) {
 
     // Start from 0
     for( ipc_ i = 0; i < n; i++) x[i] = 0.0;
-    for( ipc_ i = 0; i < n; i++) z[i] = 0.0;
 
     strcpy( st, "RC" );
-    for( ipc_ i = 0; i < o; i++) mask[i] = 0;
-    slls_import_without_a( &control, &data, &status, n, o ) ;
+    slls_import_without_a( &control, &data, &status, n, o, m, NULL );
     while(true){ // reverse-communication loop
-        slls_solve_reverse_a_prod( &data, &status, &eval_status, n, o, b,
-                                   x, z, r, g, x_stat, v, p,
-                                   nz_v, &nz_v_start, &nz_v_end,
-                                   nz_p, nz_p_end );
+        slls_solve_reverse_a_prod( &data, &status, &eval_status, n, o, m,
+                                   b, sigma, x, y, z, r, g, x_stat, v, p,
+                                   iv, &lvl, &lvu, &index,
+                                   ip, lp, NULL, NULL );
         if(status == 0){ // successful termination
             break;
         }else if(status < 0){ // error exit
@@ -260,37 +266,24 @@ int main(void) {
           }
         }else if(status == 3){ // evaluate p = A^Tv
           for( ipc_ i = 0; i < n; i++) p[i] = v[i] + v[n];
-        }else if(status == 4){ // evaluate p = Av for sparse v
+        }else if(status == 4){ // evaluate p = index-th sparse column of A
+          lp = 0;
+          ip[lp] = index + 1;
+          p[lp] = 1.0;
+          lp = lp + 1;
+          ip[lp] = o;
+          p[lp] = 1.0;
+        }else if(status == 5){ // evaluate p = Av for sparse v
           p[n]=0.0;
           for( ipc_ i = 0; i < n; i++) p[i] = 0.0;
-          for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
-            i = nz_v[l]-1;
+          for( ipc_ l = lvl - 1; l < lvu; l++){
+            i = iv[l]-1;
             p[i] = v[i];
             p[n] = p[n] + v[i];
           }
-        }else if(status == 5){ // evaluate p = sparse Av for sparse v
-          nz_p_end = 0;
-          for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
-            i = nz_v[l]-1;
-            if (mask[i] == 0){
-              mask[i] = 1;
-              nz_p[nz_p_end] = i+1;
-              nz_p_end = nz_p_end + 1;
-              p[i] = v[i];
-            }
-            if (mask[n] == 0){
-              mask[n] = 1;
-              nz_p[nz_p_end] = o;
-              nz_p_end = nz_p_end + 1;
-              p[n] = v[i];
-            }else{
-              p[n] = p[n] + v[i];
-            }
-          }
-          for( ipc_ l = 0; l < nz_p_end; l++) mask[nz_p[l]-1] = 0;
         }else if(status == 6){ // evaluate p = sparse A^Tv
-          for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
-            i = nz_v[l]-1;
+          for( ipc_ l = lvl - 1; l < lvu; l++){
+            i = iv[l]-1;
             p[i] = v[i] + v[n];
           }
         }else if(status == 7){ // evaluate p = P^{-}v
@@ -308,10 +301,11 @@ int main(void) {
     // Print solution details
     if(inform.status == 0){
 #ifdef REAL_128
-// interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
-#include "galahad_pquad_sf.h"
+        printf("%s:%6" d_ipc_ " iterations. Optimal objective value = %5.2f"
+               " status = %1" d_ipc_ "\n",
+               st, inform.iter, (double)inform.obj, inform.status);
 #else
-        printf("%s:%6" d_ipc_ " iterations. Optimal objective value = %.2f"
+        printf("%s:%6" d_ipc_ " iterations. Optimal objective value = %5.2f"
                " status = %1" d_ipc_ "\n",
                st, inform.iter, inform.obj, inform.status);
 #endif
@@ -325,6 +319,46 @@ int main(void) {
     //printf("gradient: ");
     //for( ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
     //printf("\n");
+
+    // Delete internal workspace
+    slls_terminate( &data, &control, &inform );
+
+    printf("\n test of explicit cohort + weights + shifts options\n\n");
+
+    // Initialize SLLS
+    slls_initialize( &data, &control, &status );
+
+    // Set user-defined control options
+    control.f_indexing = true; // fortran sparse matrix indexing
+
+    for( ipc_ i = 0; i < n; i++) x[i] = 0.0;
+    for( ipc_ i = 0; i < n; i++) cohort[i] = 1;
+    for( ipc_ i = 0; i < o; i++) w[i] = 1.0;
+    for( ipc_ i = 0; i < n; i++) x_s[i] = 0.0;
+
+    strcpy( st, "CO" );
+    slls_import( &control, &data, &status, n, o, m,
+                 "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL,
+                 cohort );
+    slls_solve_given_a( &data, &userdata, &status, n, o, m,
+                        Ao_ne, Ao_val, b, sigma,
+                        x, y, z, r, g, x_stat, w, x_s, prec );
+    slls_information( &data, &inform, &status );
+
+    if(inform.status == 0){
+#ifdef REAL_128
+       printf("%s:%6" d_ipc_ " iterations. Optimal objective value = %5.2f"
+              " status = %1" d_ipc_ "\n",
+              st, inform.iter, (double)inform.obj, inform.status);
+#else
+       printf("%s:%6" d_ipc_ " iterations. Optimal objective value = %5.2f"
+              " status = %1" d_ipc_ "\n",
+              st, inform.iter, inform.obj, inform.status);
+#endif
+    }else{
+        printf("%s: SLLS_solve exit status = %1" d_ipc_ "\n", 
+               st, inform.status);
+    }
 
     // Delete internal workspace
     slls_terminate( &data, &control, &inform );

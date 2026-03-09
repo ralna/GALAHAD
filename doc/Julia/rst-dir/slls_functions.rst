@@ -74,8 +74,9 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_import(T, INT, control, data, status, n, o, 
-                             Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr)
+        function slls_import(T, INT, control, data, status, n, o, m,
+                             Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr,
+                             cohort)
 
 Import problem data into internal storage prior to solution.
 
@@ -138,6 +139,11 @@ Import problem data into internal storage prior to solution.
 		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
+		- m
+
+		- is a scalar variable of type INT that holds the number of cohorts. If all the variables lie in a single cohort, this value will be ignored.
+
+	*
 		- Ao_type
 
 		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme<details-a_storage__unsym>` used for the Jacobian $A_o$. It should be one of 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns'; lower or upper case variants are allowed.
@@ -167,13 +173,19 @@ Import problem data into internal storage prior to solution.
 
 		- is a one-dimensional array of size Ao_ptr_ne and type INT, that holds the starting position of each row of $A_o$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it holds the starting position of each column of $A_o$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
+	*
+		- cohort
+
+		- is a one-dimensional array of size n and type INT, that specifies which cohort each variable is associated with. If variable $x_j$ is associated with cohort $\cal C_i$, $1 \leq i \leq m$, cohort[j] should be set to i, while if $x_j$ is unconstrained cohort[j] = 0 should be assigned. At least one value cohort[j] for $j = 1,\ldots\,n$ is expected to take the value $i$ for every $1 \leq i \leq m$, that is no empty cohorts are allowed. If all the variables lie in a single cohort, cohort can be set as C_NULL.
+
 .. index:: pair: function; slls_import_without_a
 .. _doxid-galahad__slls_8h_1a419f9b0769b4389beffbbc5f7d0fd58c:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_import_without_a(T, INT, control, data, status, n, o)
+        function slls_import_without_a(T, INT, control, data, status, n, o,
+                                       m, cohort)
 
 Import problem data into internal storage prior to solution when $A_o$ is
 not explicitly available.
@@ -230,7 +242,17 @@ not explicitly available.
 	*
 		- o
 
-		- is a scalar variable of type INT that holds the number of residuals.
+		- is a scalar variable of type INT that holds the number of residuals (observations).
+
+	*
+		- m
+
+		- is a scalar variable of type INT that holds the number of cohorts. If all the variables lie in a single cohort, this value will be ignored.
+
+	*
+		- cohort
+
+		- is a one-dimensional array of size n and type INT, that specifies which cohort each variable is associated with. If variable $x_j$ is associated with cohort $\cal C_i$, $1 \leq i \leq m$, cohort[j] should be set to i, while if $x_j$ is unconstrained cohort[j] = 0 should be assigned. At least one value cohort[j] for $j = 1,\ldots\,n$ is expected to take the value $i$ for every $1 \leq i \leq m$, that is no empty cohorts are allowed. If all the variables lie in a single cohort, cohort can be set as C_NULL.
 
 .. index:: pair: function; slls_reset_control
 .. _doxid-galahad__slls_8h_1a96981ac9a0e3f44b2b38362fc3ab9991:
@@ -273,13 +295,12 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_solve_given_a(T, INT, data, userdata, status, n, o, 
-                                    Ao_ne, Ao_val, b, x, z, r, g, 
-                                    x_stat, eval_prec)
+        function slls_solve_given_a(T, INT, data, userdata, status, n, o, m,
+                                    Ao_ne, Ao_val, sigma, b, x, y, z, r, g, 
+                                    x_stat, w, x_s, eval_prec)
 
-Solve the bound-constrained linear least-squares problem when the
-Jacobian $A$ is available.
-
+Solve the simplex-constrained linear least-squares problem when the design
+matrix $A_o$ is available.
 
 .. rubric:: Parameters:
 
@@ -366,6 +387,11 @@ Jacobian $A$ is available.
 		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
+		- m
+
+		- is a scalar variable of type INT that holds the number of cohorts.
+
+	*
 		- Ao_ne
 
 		- is a scalar variable of type INT that holds the number of entries in the design matrix $A_o$.
@@ -381,9 +407,19 @@ Jacobian $A$ is available.
 		- is a one-dimensional array of size m and type T that holds the constant term $b$ in the residuals. The i-th component of ``b``, i = 1, ... , o, contains $b_i$.
 
 	*
+		- sigma
+
+		- is a scalar of type T that holds the non-negative regularization weight $\sigma \geq 0$.
+
+	*
 		- x
 
 		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
+
+	*
+		- y
+
+		- is a one-dimensional array of size m and type T that holds the values $y$ of the Lagrange multipliers. The i-th component of ``y``, i = 1, ... , o, contains $y_ji.
 
 	*
 		- z
@@ -404,6 +440,16 @@ Jacobian $A$ is available.
 		- x_stat
 
 		- is a one-dimensional array of size n and type INT that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+
+	*
+		- w
+
+		- is a one-dimensional array of size o and type T that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be C_NULL.
+
+	*
+		- x_s
+
+		- is a one-dimensional array of size n and type T that holds the values $x_s$ of the norm shifts in the least-squares objective function. It need not be set if the shifts are all zeros, and in this case can be C_NULL.
 
 	*
 		- eval_prec
@@ -430,13 +476,14 @@ Jacobian $A$ is available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function slls_solve_reverse_a_prod(T, INT, data, status, eval_status, n, o, b,
-                                           x_l, x_u, x, z, r, g, x_stat, v, p,
-                                           nz_v, nz_v_start, nz_v_end, nz_p, 
-                                           nz_p_end, w)
+        function slls_solve_reverse_a_prod(T, INT, data, status, eval_status,
+                                            n, o, m, b, sigma, 
+                                            x, y, z, r, g, x_stat, 
+                                            v, p, iv, lvl, lvu, index,
+                                            ip, lp, w, x_s)
 
-Solve the bound-constrained linear least-squares problem when the
-products of the Jacobian $A$ and its transpose with specified vectors
+Solve the simplex-constrained linear least-squares problem when the
+products of the design matrix $A_o$ and its transpose with specified vectors
 may be computed by the calling program.
 
 .. rubric:: Parameters:
@@ -536,11 +583,25 @@ may be computed by the calling program.
                     eval_status set to a nonzero value.
 
 		  * **4**
+                    The $j$-th column of the residual Jacobian $Av_o$ is 
+                    required from the user, where index holds the 
+                    value of $j$. The resulting **nonzeros** and their
+                    correspinding row indices of the j-th column of $Av_o$ 
+                    must be placed in p[1:lp] and ip[1:lp], 
+                    respectively, with lp set accordingly. Additionally 
+                    eval_status should be set to 0, and 
+                    slls_solve_reverse_a_prod re-entered with all 
+                    other arguments unchanged. If the column cannot be formed, 
+                    p, nz_out and nz_out_end need not be set, but 
+                    slls_solve_reverse_a_prod should be re-entered with 
+                    eval_status set to a nonzero value.
+
+		  * **5**
                     The product $A_o v$ of the design matrix $A_o$ with a
                     given sparse output vector $v$ is required from the
                     user. The nonzero components of the vector $v$ will
                     be stored as entries
-                    nz_in[nz_in_start-1:nz_in_end-1] of v and the
+                    iv[lvl:lvu] of v and the
                     product $A_ov$ must be returned in p, status_eval
                     should be set to 0, and slls_solve_reverse_a_prod
                     re-entered with all other arguments unchanged; The
@@ -549,30 +610,12 @@ may be computed by the calling program.
                     slls_solve_reverse_a_prod should be re-entered with
                     eval_status set to a nonzero value.
 
-		  * **5**
-                    The nonzero components of the product $A_ov$ of the
-                    design matrix $A_o$ with a given sparse output
-                    vector $v$ is required from the user. The nonzero
-                    components of the vector $v$ will be stored as
-                    entries nz_in[nz_in_start-1:nz_in_end-1] of v; the
-                    remaining components of v should be ignored. The
-                    resulting **nonzeros** in the product $A_ov$ must be
-                    placed in their appropriate comnponents of p, while
-                    a list of indices of the nonzeros placed in nz_out[0
-                    : nz_out_end-1] and the number of nonzeros recorded
-                    in nz_out_end. Additionally, status_eval should be
-                    set to 0, and slls_solve_reverse_a_prod re-entered
-                    with all other arguments unchanged. If the product
-                    cannot be formed, v, nz_out_end and nz_out need not
-                    be set, but slls_solve_reverse_a_prod should be
-                    re-entered with eval_status set to a nonzero value.
-
 		  * **6**
                     A subset of the product $A_o^Tv$ of the transpose of
                     the design matrix $A_o$ with a given output vector
                     $v$ is required from the user. The vector $v$ will
                     be stored in v and components
-                    nz_in[nz_in_start-1:nz_in_end-1] of the product
+                    iv[lvl:lvu] of the product
                     $A_o^Tv$ must be returned in the relevant components
                     of p (the remaining components should not be set),
                     status_eval should be set to 0, and
@@ -612,24 +655,34 @@ may be computed by the calling program.
 		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
+		- m
+
+		- is a scalar variable of type INT that holds the number of cohorts.
+
+	*
 		- b
 
 		- is a one-dimensional array of size m and type T that holds the constant term $b$ in the residuals. The i-th component of ``b``, i = 1, ... , o, contains $b_i$.
 
 	*
-		- x_l
+		- sigma
 
-		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of ``x_l``, j = 1, ... , n, contains $x^l_j$.
-
-	*
-		- x_u
-
-		- is a one-dimensional array of size n and type T that holds the upper bounds $x^l$ on the variables $x$. The j-th component of ``x_u``, j = 1, ... , n, contains $x^l_j$.
+		- is a scalar of type T that holds the non-negative regularization weight $\sigma \geq 0$.
 
 	*
 		- x
 
 		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
+
+	*
+		- y
+
+		- is a one-dimensional array of size m and type T that holds the values $y$ of the Lagrange multipliers. The i-th component of ``y``, i = 1, ... , o, contains $y_ji.
+
+	*
+		- z
+
+		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of ``z``, j = 1, ... , n, contains $z_j$.
 
 	*
 		- r
@@ -642,11 +695,6 @@ may be computed by the calling program.
 		- is a one-dimensional array of size n and type T that holds the values of the gradient $g = A_o^T W r$. The j-th component of ``g``, j = 1, ... , n, contains $g_j$.
 
 	*
-		- z
-
-		- is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of ``z``, j = 1, ... , n, contains $z_j$.
-
-	*
 		- x_stat
 
 		- is a one-dimensional array of size n and type INT that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
@@ -654,42 +702,52 @@ may be computed by the calling program.
 	*
 		- v
 
-		- is a one-dimensional array of size n and type T that is used for reverse communication (see status=2-4 above for details).
+		- is a one-dimensional array of size n and type T that is used for reverse communication (see status=2-7 above for details).
 
 	*
 		- p
 
-		- is a one-dimensional array of size n and type T that is used for reverse communication (see status=2-4 above for details).
+		- is a one-dimensional array of size n and type T that is used for reverse communication (see status=2-7 above for details).
 
 	*
-		- nz_v
+		- iv
 
-		- is a one-dimensional array of size n and type INT that is used for reverse communication (see status=3-4 above for details).
-
-	*
-		- nz_v_start
-
-		- is a scalar of type INT that is used for reverse communication (see status=3-4 above for details).
+		- is a one-dimensional array of size n and type INT that is used for reverse communication (see status=5-6 above for details).
 
 	*
-		- nz_v_end
+		- lvl
 
-		- is a scalar of type INT that is used for reverse communication (see status=3-4 above for details).
+		- is a scalar of type INT that is used for reverse communication (see status=5-6 above for details).
 
 	*
-		- nz_p
+		- lvu
+
+		- is a scalar of type INT that is used for reverse communication (see status=5-6 above for details).
+
+	*
+		- index
+
+		- is a scalar of type INT that is used for reverse communication (see status=4 above for details).
+
+	*
+		- ip
 
 		- is a one-dimensional array of size n and type INT that is used for reverse communication (see status=4 above for details).
 
 	*
-		- nz_p_end
+		- lp
 
 		- is a scalar of type INT that is used for reverse communication (see status=4 above for details).
 
 	*
 		- w
 
-		- is an optional one-dimensional array of size o and type T that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be C_NULL.
+		- is a one-dimensional array of size o and type T that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be C_NULL.
+
+	*
+		- x_s
+
+		- is a one-dimensional array of size n and type T that holds the values $x_s$ of the norm shifts in the least-squares objective function. It need not be set if the shifts are all zeros, and in this case can be C_NULL.
 
 .. index:: pair: function; slls_information
 .. _doxid-galahad__slls_8h_1a457b8ee7c630715bcb43427f254b555f:

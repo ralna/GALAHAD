@@ -15,7 +15,7 @@
    TYPE ( SLLS_data_type ) :: data_r
    TYPE ( SLLS_control_type ) :: control_r
    TYPE ( SLLS_inform_type ) :: inform_r
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER :: i, ne, pass
    REAL ( KIND = wp ) :: val, f, xi, b, a_max
    REAL ( KIND = wp ) :: a_11, a_12, a_22, r_1, r_2, alpha, beta

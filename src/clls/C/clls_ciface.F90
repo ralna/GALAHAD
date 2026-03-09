@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-12-20 AT 11:20 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-02-08 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -26,7 +26,7 @@
         f_clls_read_specfile  => CLLS_read_specfile,                           &
         f_clls_import         => CLLS_import,                                  &
         f_clls_reset_control  => CLLS_reset_control,                           &
-        f_clls_solve_clls     => CLLS_solve_clls,                              &
+        f_clls_solve_given_a  => CLLS_solve_given_a,                           &
         f_clls_information    => CLLS_information,                             &
         f_clls_terminate      => CLLS_terminate
 
@@ -175,6 +175,7 @@
       INTEGER ( KIND = ipc_ ) :: nbacts
       INTEGER ( KIND = ipc_ ) :: threads
       REAL ( KIND = rpc_ ) :: obj
+      REAL ( KIND = rpc_ ) :: ls_obj
       REAL ( KIND = rpc_ ) :: primal_infeasibility
       REAL ( KIND = rpc_ ) :: dual_infeasibility
       REAL ( KIND = rpc_ ) :: complementary_slackness
@@ -468,6 +469,7 @@
 
     ! Reals
     finform%obj = cinform%obj
+    finform%ls_obj = cinform%ls_obj
     finform%primal_infeasibility = cinform%primal_infeasibility
     finform%dual_infeasibility = cinform%dual_infeasibility
     finform%complementary_slackness = cinform%complementary_slackness
@@ -518,6 +520,7 @@
 
     ! Reals
     cinform%obj = finform%obj
+    cinform%ls_obj = finform%ls_obj
     cinform%primal_infeasibility = finform%primal_infeasibility
     cinform%dual_infeasibility = finform%dual_infeasibility
     cinform%complementary_slackness = finform%complementary_slackness
@@ -750,9 +753,10 @@
 !  C interface to fortran clls_solve_clls
 !  ------------------------------------
 
-  SUBROUTINE clls_solve_clls( cdata, status, n, o, m, aone, aoval, b,          &
-                              regularization_weight, ane, aval, cl, cu,        &
-                              xl, xu, x, r, c, y, z, xstat, cstat, w ) BIND( C )
+  SUBROUTINE clls_solve_given_a( cdata, status, n, o, m, aone, aoval, b,       &
+                                 regularization_weight, ane, aval,             &
+                                 cl, cu, xl, xu, x, y, z, r, c, xstat, cstat,  &
+                                 w, x_s ) BIND( C )
   USE GALAHAD_CLLS_precision_ciface
   IMPLICIT NONE
 
@@ -760,9 +764,9 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o, m, aone, ane
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: regularization_weight
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( aone ) :: aoval
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( o ) :: b
-  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: regularization_weight
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
@@ -773,6 +777,7 @@
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( m ) :: cstat
   REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( o ) :: w
+  REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( n ) :: x_s
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -785,11 +790,12 @@
 
 !  solve the qp
 
-  CALL f_clls_solve_clls( fdata, status, aoval, b, aval, cl, cu, xl, xu, x,    &
-                          r, c, y, z, xstat, cstat, regularization_weight, w )
+  CALL f_clls_solve_given_a( fdata, status, aoval, b, regularization_weight,   &
+                             aval, cl, cu, xl, xu, x, y, z, r, c,              &
+                             xstat, cstat, W = w, X_s = x_s )
   RETURN
 
-  END SUBROUTINE clls_solve_clls
+  END SUBROUTINE clls_solve_given_a
 
 !  --------------------------------------
 !  C interface to fortran clls_information

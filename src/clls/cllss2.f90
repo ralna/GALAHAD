@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-10-23 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2025-01-25 AT 08:50 GMT.
    PROGRAM GALAHAD_CLLS_EXAMPLE2
    USE GALAHAD_CLLS_double         ! double precision version
    IMPLICIT NONE
@@ -10,9 +10,8 @@
    TYPE ( CLLS_inform_type ) :: inform
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, o = 4, m = 2, ao_ne = 7, a_ne = 4
-   REAL ( KIND = wp ), DIMENSION( o ) :: W
 ! start problem data
-   ALLOCATE( p%B( o ), p%R( o ) )
+   ALLOCATE( p%B( o ), p%R( o ), p%W( o ) )
    ALLOCATE( p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
@@ -25,7 +24,7 @@
    p%X_l = (/ - 1.0_wp, - infinity, - infinity /) ! variable lower bound
    p%X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp ! start from zero
-   W = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)   ! weights
+   p%W = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)   ! weights
 !  sparse row storage format
    CALL SMT_put( p%Ao%type, 'SPARSE_BY_ROWS', s ) ! Specify sparse row
    CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )  ! storage for Ao and A
@@ -42,7 +41,7 @@
    control%symmetric_linear_solver = 'sytr '
    control%FDC_control%symmetric_linear_solver = 'sytr '
    control%infinity = infinity                        ! Set infinity
-   CALL CLLS_solve( p, data, control, inform, W = W ) ! Solve
+   CALL CLLS_solve( p, data, control, inform ) ! Solve
    IF ( inform%status == 0 ) THEN                     ! Successful return
      WRITE( 6, "( ' CLLS: ', I0, ' iterations  ', /,                           &
     &     ' Optimal objective value =',                                        &

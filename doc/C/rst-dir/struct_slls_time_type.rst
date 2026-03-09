@@ -17,9 +17,7 @@ slls_time_type structure
 		// components
 	
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structslls__time__type_total>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`analyse<doxid-structslls__time__type_analyse>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorize<doxid-structslls__time__type_factorize>`;
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`solve<doxid-structslls__time__type_solve>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structblls__time__type_clock_total>`;
 	};
 .. _details-structslls__time__type:
 
@@ -41,33 +39,13 @@ components
 
 the total CPU time spent in the package
 
-.. index:: pair: variable; analyse
-.. _doxid-structslls__time__type_analyse:
+.. index:: pair: variable; clock_total
+.. _doxid-structslls__time__type_clock_total:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`rpc_<doxid-galahad__rpc_8h_>` analyse
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_total
 
-the CPU time spent analysing the required matrices prior to factorization
-
-.. index:: pair: variable; factorize
-.. _doxid-structslls__time__type_factorize:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	:ref:`rpc_<doxid-galahad__rpc_8h_>` factorize
-
-the CPU time spent factorizing the required matrices
-
-.. index:: pair: variable; solve
-.. _doxid-structslls__time__type_solve:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	:ref:`rpc_<doxid-galahad__rpc_8h_>` solve
-
-the CPU time spent in the linear solution phase
+the total clock time spent in the package
 

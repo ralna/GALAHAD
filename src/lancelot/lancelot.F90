@@ -6010,7 +6010,11 @@
                   ' Required projected gradient norm = ', ES12.4, /,           &
                   '                   ', 12X,                                  &
                   ' Required constraint         norm = ', ES12.4 )
+#ifdef REAL_128
+ 2010  FORMAT( /, ' Objective function value  ', ES38.30 )
+#else
  2010  FORMAT( /, ' Objective function value  ', ES22.14 )
+#endif
  2020  FORMAT( /, ' There is no objective function ' )
  2030  FORMAT( /, ' Multiplier values ', /, ( 5ES12.4 ) )
  2040  FORMAT( /, ' ******** Updating multiplier estimates ********** ' )

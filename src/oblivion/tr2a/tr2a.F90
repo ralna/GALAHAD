@@ -44,7 +44,7 @@
 
      PRIVATE
      PUBLIC :: TR2A_initialize, TR2A_read_specfile, TR2A_solve,                &
-               TR2A_terminate, NLPT_problem_type, GALAHAD_userdata_type,       &
+               TR2A_terminate, NLPT_problem_type, USERDATA_type,       &
                TR2A_import, TR2A_solve_direct, TR2A_solve_reverse,             &
                TR2A_full_initialize, TR2A_full_terminate, TR2A_reset_control,  &
                TR2A_information
@@ -418,7 +418,7 @@
        TYPE ( TR2A_control_type ) :: tr2a_control
        TYPE ( TR2A_inform_type ) :: tr2a_inform
        TYPE ( NLPT_problem_type ) :: nlp
-       TYPE ( GALAHAD_userdata_type ) :: userdata
+       TYPE ( USERDATA_type ) :: userdata
      END TYPE TR2A_full_data_type
 
    CONTAINS
@@ -979,7 +979,7 @@
 !
 !  data is a scalar variable of type TR2A_data_type used for internal data.
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
+!  userdata is a scalar variable of type USERDATA_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -1028,7 +1028,7 @@
      TYPE ( TR2A_control_type ), INTENT( IN ) :: control
      TYPE ( TR2A_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( TR2A_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_F, eval_G, eval_H
 
 !----------------------------------
@@ -1041,7 +1041,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), INTENT( OUT ) :: f
        REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_F
      END INTERFACE
 
@@ -1051,7 +1051,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_G
      END INTERFACE
 
@@ -1061,7 +1061,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_H
      END INTERFACE
 
@@ -2650,7 +2650,7 @@ END DO
 
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( TR2A_full_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_F, eval_G

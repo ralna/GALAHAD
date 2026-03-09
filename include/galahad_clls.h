@@ -1,7 +1,7 @@
 //* \file galahad_clls.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-02-08 AT 13:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CLLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -23,11 +23,10 @@
 
   This package uses a primal-dual interior-point crossover method
   to solve the <b>constrained linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; f(x) = \frac{1}{2} \| A_o x - b \|_W^2
-    + \frac{1}{2} \sigma \| x \|^2 \f]
+  \f[\mbox{minimize}\;\; r(x) = q(x) + \frac{1}{2} \sigma \|x-x_s\|^2  \;\;\mbox{where}\;\; q(x) = \frac{1}{2} \| A_o x - b\|_W^2 \f],
 \manonly
   \n
-  minimize f(x) := 1/2 ||Ax-b||_W^2 + 1/2 sigma ||x||^2
+  minimize r(x) = q(x) + sigma ||x-x_s||^2, where q(x) := 1/2 || A_o x - b ||_W^2,
   \n
 \endmanonly
   subject to the general linear constraints
@@ -47,7 +46,8 @@
   where the norm \f$\|r\|_W = \sqrt{ \sum_{i=1}^o w_i r_i^2}\f$,
   the \f$o\f$ by \f$n\f$ design matrix \f$A_o\f$,
   the vectors \f$b\f$, \f$a_i\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$,
-  \f$x^u\f$, the diagonal weights $w_i$ and the scalar \f$\sigma\f$ are given.
+  \f$x^u\f$, the diagonal weights $w_i$, shifts $x_s$ and the scalar 
+  \f$\sigma\f$ are given.
   Any of the constraint bounds \f$c_i^l\f$, \f$c_i^u\f$,
   \f$x_j^l\f$ and \f$x_j^u\f$ may be infinite.
   Full advantage is taken of any zero coefficients in the matrix \f$A_o\f$
@@ -712,9 +712,14 @@ struct clls_inform_type {
     ipc_ threads;
 
     /// \brief
-    /// the value of the objective function at the best estimate of the solution
-    /// determined by CLLS_solve
+    /// the value of the regularized objective function r(x) at the best 
+    /// estimate of the solution determined by CLLS_solve
     rpc_ obj;
+
+    /// \brief
+    /// the value of the objective function q(x) at the best estimate of 
+    /// the solution determined by CLLS_solve
+    rpc_ ls_obj;
 
     /// \brief
     /// the value of the primal infeasibility
@@ -963,31 +968,32 @@ void clls_reset_control( struct clls_control_type *control,
   \li  0. The import was succesful.
  */
 
-//  *-*-*-*-*-*-*-*-*-*-   C L L S _ S O L V E _ C L L S   -*-*-*-*-*-*-*-*-*-*-
+//  -*-*-*-*-*-*-*-*-   C L L S _ S O L V E _ G I V E N _ A   -*-*-*-*-*-*-*-*-
 
-void clls_solve_clls( void **data,
-                      ipc_ *status,
-                      ipc_ n,
-                      ipc_ o,
-                      ipc_ m,
-                      ipc_ Ao_ne,
-                      const rpc_ Ao_val[],
-                      const rpc_ b[],
-                      rpc_ regularization_weight,
-                      ipc_ A_ne,
-                      const rpc_ A_val[],
-                      const rpc_ c_l[],
-                      const rpc_ c_u[],
-                      const rpc_ x_l[],
-                      const rpc_ x_u[],
-                      rpc_ x[],
-                      rpc_ r[],
-                      rpc_ c[],
-                      rpc_ y[],
-                      rpc_ z[],
-                      ipc_ x_stat[],
-                      ipc_ c_stat[],
-                      rpc_ w[] );
+void clls_solve_given_a( void **data,
+                         ipc_ *status,
+                         ipc_ n,
+                         ipc_ o,
+                         ipc_ m,
+                         ipc_ Ao_ne,
+                         const rpc_ Ao_val[],
+                         const rpc_ b[],
+                         rpc_ regularization_weight,
+                         ipc_ A_ne,
+                         const rpc_ A_val[],
+                         const rpc_ c_l[],
+                         const rpc_ c_u[],
+                         const rpc_ x_l[],
+                         const rpc_ x_u[],
+                         rpc_ x[],
+                         rpc_ y[],
+                         rpc_ z[],
+                         rpc_ r[],
+                         rpc_ c[],
+                         ipc_ x_stat[],
+                         ipc_ c_stat[],
+                         const rpc_ w[],
+                         const rpc_ x_s[] );
 
 /*!<
  Solve the constrained linear-least squares problem when the design matrix
@@ -1082,14 +1088,6 @@ void clls_solve_clls( void **data,
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[out] r is a one-dimensional array of size o and type rpc_, that
-    holds the residual \f$r(x) = A_o x - b\f$.
-    The i-th component of r, i = 0, ... ,  o-1, contains  \f$r_i(x) \f$.
-
- @param[out] c is a one-dimensional array of size m and type rpc_, that
-    holds the residual \f$c(x) = A x\f$.
-    The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
-
  @param[in,out] y is a one-dimensional array of size m and type rpc_, that
     holds the values \f$y\f$ of the Lagrange multipliers for the general
     linear constraints. The i-th component
@@ -1098,6 +1096,14 @@ void clls_solve_clls( void **data,
  @param[in,out] z is a one-dimensional array of size n and type rpc_, that
     holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
+
+ @param[out] r is a one-dimensional array of size o and type rpc_, that
+    holds the residual \f$r(x) = A_o x - b\f$.
+    The i-th component of r, i = 0, ... ,  o-1, contains  \f$r_i(x) \f$.
+
+ @param[out] c is a one-dimensional array of size m and type rpc_, that
+    holds the residual \f$c(x) = A x\f$.
+    The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
 
  @param[out] x_stat is a one-dimensional array of size n and type ipc_, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
@@ -1112,8 +1118,12 @@ void clls_solve_clls( void **data,
     is zero, it lies  between its bounds.
 
  @param[in] w is a one-dimensional array of size o and type rpc_, that
-   holds the vector of strictly-positive observation weights \f$w\f$.
-   If the weights are all one, w can be set to NULL.
+    holds the vector of strictly-positive observation weights \f$w\f$.
+    If the weights are all one, w can be set to NULL.
+
+ @param[in] x_s is a one-dimensional array of size n and type rpc_, that
+    holds the vector of shifts \f$x_s\f$.
+    If the shifts are all zero, x_s can be set to NULL.
 
 */
 

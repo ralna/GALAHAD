@@ -1,0 +1,252 @@
+
+ error exit tests 
+
+ -3: BNLS_solve exit status =     -3
+ -3: BNLS_solve exit status =     -3
+ -3: BNLS_solve exit status =     -3
+ -3: BNLS_solve exit status =     -3
+ -3: BNLS_solve exit status =     -3
+ -4: BNLS_solve exit status =     -4
+-17: BNLS_solve exit status =    -17
+-18: BNLS_solve exit status =    -18
+-19: BNLS_solve exit status =    -19
+-82: BNLS_solve exit status =    -82
+
+ test of availible options 
+
+ 1:    24 iterations. Optimal ||c|| =    1.0 status =      0
+ 2:    21 iterations. Optimal ||c|| =    1.0 status =      0
+ 3:    24 iterations. Optimal ||c|| =    1.0 status =      0
+ 4:    21 iterations. Optimal ||c|| =    1.0 status =      0
+ 5:     7 iterations. Optimal ||c|| =    1.0 status =      0
+ 6:     9 iterations. Optimal ||c|| =    1.0 status =      0
+ 7:     7 iterations. Optimal ||c|| =    1.0 status =      0
+ 8:     9 iterations. Optimal ||c|| =    1.0 status =      0
+ 9:     7 iterations. Optimal ||c|| =    1.0 status =      0
+10:     9 iterations. Optimal ||c|| =    1.0 status =      0
+11:     7 iterations. Optimal ||c|| =    1.0 status =      0
+12:     9 iterations. Optimal ||c|| =    1.0 status =      0
+13:    26 iterations. Optimal ||c|| =    1.0 status =      0
+14:    26 iterations. Optimal ||c|| =    1.0 status =      0
+15:    24 iterations. Optimal ||c|| =    1.0 status =      0
+16:    60 iterations. Optimal ||c|| =    1.0 status =      0
+17:    24 iterations. Optimal ||c|| =    1.0 status =      0
+
+ test of scaling, model & weighting options 
+
+0,-1,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+0,-1,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+1,-1,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+1,-1,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 0,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 0,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 0,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 0,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 1,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 1,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 1,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 1,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 2,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 2,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 2,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 2,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 3,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 3,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 3,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 3,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 4,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 4,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 4,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 4,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 5,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 5,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 5,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 5,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 6,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 6,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 6,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 6,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 7,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 7,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 7,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 7,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 8,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+0, 8,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 8,1,0:    60 iterations. Optimal objective value =    1.0 status =      0
+1, 8,1,1:    60 iterations. Optimal objective value =    1.0 status =      0
+0,-1,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+0,-1,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+1,-1,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+1,-1,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 0,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 0,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 0,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 0,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 1,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 1,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 1,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 1,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 2,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 2,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 2,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 2,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 3,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 3,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 3,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 3,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 4,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 4,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 4,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 4,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 5,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 5,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 5,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 5,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 6,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 6,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 6,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 6,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 7,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 7,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 7,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 7,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 8,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+0, 8,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 8,2,0:    70 iterations. Optimal objective value =    1.0 status =      0
+1, 8,2,1:    70 iterations. Optimal objective value =    1.0 status =      0
+0,-1,3,0:    24 iterations. Optimal objective value =    1.0 status =      0
+0,-1,3,1:    24 iterations. Optimal objective value =    1.0 status =      0
+1,-1,3,0:    24 iterations. Optimal objective value =    1.0 status =      0
+1,-1,3,1:    24 iterations. Optimal objective value =    1.0 status =      0
+0, 0,3,0:    24 iterations. Optimal objective value =    1.0 status =      0
+0, 0,3,1:    24 iterations. Optimal objective value =    1.0 status =      0
+1, 0,3,0:    24 iterations. Optimal objective value =    1.0 status =      0
+1, 0,3,1:    24 iterations. Optimal objective value =    1.0 status =      0
+0, 1,3,0:    21 iterations. Optimal objective value =    1.0 status =      0
+0, 1,3,1:    21 iterations. Optimal objective value =    1.0 status =      0
+1, 1,3,0:    21 iterations. Optimal objective value =    1.0 status =      0
+1, 1,3,1:    21 iterations. Optimal objective value =    1.0 status =      0
+0, 2,3,0:    21 iterations. Optimal objective value =    1.0 status =      0
+0, 2,3,1:    21 iterations. Optimal objective value =    1.0 status =      0
+1, 2,3,0:    21 iterations. Optimal objective value =    1.0 status =      0
+1, 2,3,1:    21 iterations. Optimal objective value =    1.0 status =      0
+0, 3,3,0:    26 iterations. Optimal objective value =    1.0 status =      0
+0, 3,3,1:    26 iterations. Optimal objective value =    1.0 status =      0
+1, 3,3,0:    26 iterations. Optimal objective value =    1.0 status =      0
+1, 3,3,1:    26 iterations. Optimal objective value =    1.0 status =      0
+0, 4,3,0:    26 iterations. Optimal objective value =    1.0 status =      0
+0, 4,3,1:    26 iterations. Optimal objective value =    1.0 status =      0
+1, 4,3,0:    26 iterations. Optimal objective value =    1.0 status =      0
+1, 4,3,1:    26 iterations. Optimal objective value =    1.0 status =      0
+0, 5,3,0:    26 iterations. Optimal objective value =    1.0 status =      0
+0, 5,3,1:    26 iterations. Optimal objective value =    1.0 status =      0
+1, 5,3,0:    26 iterations. Optimal objective value =    1.0 status =      0
+1, 5,3,1:    26 iterations. Optimal objective value =    1.0 status =      0
+0, 6,3,0:    26 iterations. Optimal objective value =    1.0 status =      0
+0, 6,3,1:    26 iterations. Optimal objective value =    1.0 status =      0
+1, 6,3,0:    26 iterations. Optimal objective value =    1.0 status =      0
+1, 6,3,1:    26 iterations. Optimal objective value =    1.0 status =      0
+0, 7,3,0:    26 iterations. Optimal objective value =    1.0 status =      0
+0, 7,3,1:    26 iterations. Optimal objective value =    1.0 status =      0
+1, 7,3,0:    26 iterations. Optimal objective value =    1.0 status =      0
+1, 7,3,1:    26 iterations. Optimal objective value =    1.0 status =      0
+0, 8,3,0:    26 iterations. Optimal objective value =    1.0 status =      0
+0, 8,3,1:    26 iterations. Optimal objective value =    1.0 status =      0
+1, 8,3,0:    26 iterations. Optimal objective value =    1.0 status =      0
+1, 8,3,1:    26 iterations. Optimal objective value =    1.0 status =      0
+0,-1,4,0:     8 iterations. Optimal objective value =    1.0 status =      0
+0,-1,4,1:     8 iterations. Optimal objective value =    1.0 status =      0
+1,-1,4,0:     8 iterations. Optimal objective value =    1.0 status =      0
+1,-1,4,1:     8 iterations. Optimal objective value =    1.0 status =      0
+0, 0,4,0:     8 iterations. Optimal objective value =    1.0 status =      0
+0, 0,4,1:     8 iterations. Optimal objective value =    1.0 status =      0
+1, 0,4,0:     8 iterations. Optimal objective value =    1.0 status =      0
+1, 0,4,1:     8 iterations. Optimal objective value =    1.0 status =      0
+0, 1,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 1,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 1,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 1,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 2,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 2,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 2,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 2,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 3,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 3,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 3,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 3,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 4,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 4,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 4,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 4,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 5,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 5,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 5,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 5,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 6,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 6,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 6,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 6,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 7,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 7,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 7,4,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 7,4,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0,-1,5,0:     7 iterations. Optimal objective value =    1.0 status =      0
+0,-1,5,1:     7 iterations. Optimal objective value =    1.0 status =      0
+1,-1,5,0:     7 iterations. Optimal objective value =    1.0 status =      0
+1,-1,5,1:     7 iterations. Optimal objective value =    1.0 status =      0
+0, 0,5,0:     7 iterations. Optimal objective value =    1.0 status =      0
+0, 0,5,1:     7 iterations. Optimal objective value =    1.0 status =      0
+1, 0,5,0:     7 iterations. Optimal objective value =    1.0 status =      0
+1, 0,5,1:     7 iterations. Optimal objective value =    1.0 status =      0
+0, 1,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 1,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 1,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 1,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 2,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 2,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 2,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 2,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 3,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 3,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 3,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 3,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 4,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 4,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 4,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 4,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 5,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 5,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 5,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 5,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 6,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 6,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 6,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 6,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 7,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 7,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 7,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 7,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 8,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+0, 8,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 8,5,0:     9 iterations. Optimal objective value =    1.0 status =      0
+1, 8,5,1:     9 iterations. Optimal objective value =    1.0 status =      0
+
+ full test of generic problems 
+
+ 1:    24 iterations. Optimal ||c|| =    1.0 status =      0
+ 2:    24 iterations. Optimal ||c|| =    1.0 status =      0
+ 3:    24 iterations. Optimal ||c|| =    1.0 status =      0
+ 4:    24 iterations. Optimal ||c|| =    1.0 status =      0
+ 5:    24 iterations. Optimal ||c|| =    1.0 status =      0
+ 6:    24 iterations. Optimal ||c|| =    1.0 status =      0
+
+ test of storage options
+
+C1:     7 iterations. Optimal ||c|| =    1.0 status =      0
+C2:     7 iterations. Optimal ||c|| =    1.0 status =      0
+R1:     7 iterations. Optimal ||c|| =    1.0 status =      0
+R2:     7 iterations. Optimal ||c|| =    1.0 status =      0
+D1:     7 iterations. Optimal ||c|| =    1.0 status =      0
+D2:     7 iterations. Optimal ||c|| =    1.0 status =      0
+
+ tests completed

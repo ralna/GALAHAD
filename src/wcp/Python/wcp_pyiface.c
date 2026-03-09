@@ -1,7 +1,7 @@
 //* \file wcp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:10 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_WCP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -38,7 +38,7 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool wcp_update_control(struct wcp_control_type *control,
+bool wcp_update_control(struct wcp_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -515,7 +515,8 @@ static PyObject* wcp_make_time_dict(const struct wcp_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* wcp_make_inform_dict(const struct wcp_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* wcp_make_inform_dict(const struct wcp_inform_type *inform){
     PyObject *py_inform = PyDict_New();
     PyDict_SetItemString(py_inform, "status",
                          PyLong_FromLong(inform->status));

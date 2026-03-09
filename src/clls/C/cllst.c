@@ -29,6 +29,7 @@ int main(void) {
     rpc_ x_l[] = {-1.0, - INFINITY, - INFINITY}; // variable lower bound
     rpc_ x_u[] = {1.0, INFINITY, 2.0}; // variable upper bound
     rpc_ w[] = {1.0, 1.0, 1.0, 2.0}; // weights
+    rpc_ x_s[] = {0.5, 0.5, 0.5}; // shifts
 
     // Set output storage
     rpc_ r[o]; // residual values
@@ -71,11 +72,12 @@ int main(void) {
                 ipc_ A_col[] = {0, 1, 1, 2}; // column indices
                 rpc_ A_val[] = {2.0, 1.0, 1.0, 1.0}; // values
                 clls_import( &control, &data, &status, n, o, m,
-                            "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL,
-                            "coordinate", A_ne, A_row, A_col, 0, NULL );
-                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_val, b,
-                                 sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
-                                 x, r, c, y, z, x_stat, c_stat, w );
+                             "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL,
+                             "coordinate", A_ne, A_row, A_col, 0, NULL );
+                clls_solve_given_a( &data, &status, n, o, m, Ao_ne, Ao_val, b,
+                                    sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
+                                    x, y, z, r, c, x_stat, c_stat, 
+                                    w, x_s );
                 }
                 break;
             case 2: // sparse by rows
@@ -96,9 +98,10 @@ int main(void) {
                              Ao_ptr_ne, Ao_ptr,
                              "sparse_by_rows", A_ne, NULL, A_col,
                              A_ptr_ne, A_ptr );
-                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_val, b,
-                                 sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
-                                 x, r, c, y, z, x_stat, c_stat, w );
+                clls_solve_given_a( &data, &status, n, o, m, Ao_ne, Ao_val, b,
+                                    sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
+                                    x, y, z, r, c, x_stat, c_stat, 
+                                    w, x_s );
                 }
                 break;
             case 3: // sparse by columns
@@ -119,9 +122,10 @@ int main(void) {
                              Ao_ptr_ne, Ao_ptr,
                              "sparse_by_columns", A_ne, A_row, NULL,
                              A_ptr_ne, A_ptr );
-                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_val, b,
-                                 sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
-                                 x, r, c, y, z, x_stat, c_stat, w );
+                clls_solve_given_a( &data, &status, n, o, m, Ao_ne, Ao_val, b,
+                                    sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
+                                    x, y, z, r, c, x_stat, c_stat, 
+                                    w, x_s );
                 }
                 break;
             case 4: // dense by rows
@@ -135,9 +139,10 @@ int main(void) {
                 clls_import( &control, &data, &status, n, o, m,
                              "dense", Ao_ne, NULL, NULL, 0, NULL,
                              "dense", A_ne, NULL, NULL, 0, NULL );
-                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_dense, b,
-                                 sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
-                                 x, r, c, y, z, x_stat, c_stat, w );
+                clls_solve_given_a( &data, &status, n, o, m, Ao_ne, Ao_dense, b,
+                                    sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
+                                    x, y, z, r, c, x_stat, c_stat, 
+                                    w, x_s );
                 }
                 break;
             case 5: // dense by cols
@@ -151,9 +156,10 @@ int main(void) {
                 clls_import( &control, &data, &status, n, o, m,
                              "dense_by_columns", Ao_ne, NULL, NULL, 0, NULL,
                              "dense_by_columns", A_ne, NULL, NULL, 0, NULL );
-                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_dense, b,
-                                 sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
-                                 x, r, c, y, z, x_stat, c_stat, w );
+                clls_solve_given_a( &data, &status, n, o, m, Ao_ne, Ao_dense, b,
+                                    sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
+                                    x, y, z, r, c, x_stat, c_stat, 
+                                    w, x_s );
                 }
                 break;
             }

@@ -12,15 +12,15 @@
    INTEGER :: DIAG( n ), ROW( nz )
    REAL ( KIND = wp ) ::  X1( n ), X2( n ), STEPSIZE( n ), G( n )
    REAL ( KIND = wp ) ::  H( nz )
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTERFACE
      SUBROUTINE GRAD( status, X, userdata, G )
-     USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
+     USE GALAHAD_USERDATA_double, ONLY: USERDATA_type
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      END SUBROUTINE GRAD
    END INTERFACE
 ! start problem data
@@ -68,12 +68,12 @@
    END PROGRAM GALAHAD_FDH_EXAMPLE
 ! internal subroutine to evaluate the gradient of the objective
    SUBROUTINE GRAD( status, X, userdata, G )
-   USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
+   USE GALAHAD_USERDATA_double, ONLY: USERDATA_type
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    G( 1 ) = 3.0_wp * ( X( 1 ) + userdata%real( 1 ) ) ** 2 + X( 4 )
    G( 2 ) = 3.0_wp * X( 2 ) ** 2 + X( 3 )
    G( 3 ) = 3.0_wp * X( 3 ) ** 2 + X( 2 ) + X( 4 )

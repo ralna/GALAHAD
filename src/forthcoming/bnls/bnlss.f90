@@ -6,7 +6,7 @@
    TYPE ( BNLS_control_type ) :: control
    TYPE ( BNLS_inform_type ) :: inform
    TYPE ( BNLS_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    EXTERNAL :: EVALC, EVALJ, EVALH, EVALP
    INTEGER :: s
    INTEGER, PARAMETER :: m = 2, n = 3, j_ne = 4, h_ne = 3, p_ne = 3
@@ -91,7 +91,7 @@
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
    REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: C
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp ) :: p
    p = userdata%real( 1 )
    C( 1 ) = X( 3 ) * X( 1 ) ** 2 + P
@@ -106,7 +106,7 @@
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: J_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp ) :: p
    p = userdata%real( 1 )
    J_val( 1 ) = 2.0_wp * X( 1 ) * X( 3 )
@@ -123,7 +123,7 @@
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp ) :: p
    p = userdata%real( 1 )
    H_val( 1 ) = 2.0_wp * X( 3 ) * Y( 1 )
@@ -140,7 +140,7 @@
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P_val
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
    P_val( 1 ) = 2.0_wp * ( X( 3 ) * V( 1 ) + X( 1 ) * V( 3 ) )
    P_val( 2 ) = 2.0_wp * X( 1 ) * V( 1 )

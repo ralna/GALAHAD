@@ -9,7 +9,7 @@
    TYPE ( BNLS_control_type ) :: control
    TYPE ( BNLS_inform_type ) :: inform
    TYPE ( BNLS_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
    REAL ( KIND = rp_ ), PARAMETER :: p = 1.0_rp_
    REAL ( KIND = rp_ ), PARAMETER :: mult = 1.0_rp_
@@ -950,7 +950,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: C
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      C( 1 ) = X( 1 ) ** 2 + userdata%real( 1 )
      C( 2 ) = X( 1 ) + X( 2 ) ** 2
      C( 3 ) = X( 1 ) - X( 2 )
@@ -962,7 +962,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: J_val
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      J_val( 1 ) = 2.0_rp_ * X( 1 )
      J_val( 2 ) = 1.0_rp_
      J_val( 3 ) = 2.0_rp_ * X( 2 )
@@ -976,7 +976,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      H_val( 1 ) = 2.0_rp_ * Y( 1 )
      H_val( 2 ) = 2.0_rp_ * Y( 2 )
      status = 0
@@ -989,7 +989,7 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
      IF ( transpose ) THEN
        U( 1 ) = U( 1 ) + 2.0_rp_ * X( 1 ) * V( 1 ) + V( 2 ) + V( 3 )
@@ -1008,7 +1008,7 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
      U( 1 ) = U( 1 ) + 2.0_rp_ * Y( 1 ) * V( 1 )
      U( 2 ) = U( 2 ) + 2.0_rp_ * Y( 2 ) * V( 2 )
@@ -1020,7 +1020,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, V
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
 !     U( 1 ) = 0.5_rp_ * V( 1 )
 !     U( 2 ) = 0.5_rp_ * V( 2 )
      U( 1 ) = V( 1 )
@@ -1033,7 +1033,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: J_val
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      J_val( 1 ) = 2.0_rp_ * X( 1 )
      J_val( 2 ) = 0.0_rp_
      J_val( 3 ) = 1.0_rp_
@@ -1048,7 +1048,7 @@
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      H_val( 1 ) = 2.0_rp_ * Y( 1 )
      H_val( 2 ) = 0.0_rp_
      H_val( 3 ) = 2.0_rp_ * Y( 2 )

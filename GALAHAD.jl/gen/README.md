@@ -100,7 +100,9 @@ The possible values for `library` are:
 - `"sha"`;
 - `"sils"`;
 - `"slls"`;
+- `"sllsb"`;
 - `"sls"`;
+- `"snls"`;
 - `"ssids`;
 - `"ssls`;
 - `"trb"`;

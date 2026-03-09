@@ -58,7 +58,7 @@
                BNLS_full_initialize, BNLS_full_terminate, BNLS_import,         &
                BNLS_information, BNLS_solve_with_mat, BNLS_solve_without_mat,  &
                BNLS_solve_reverse_with_mat, BNLS_solve_reverse_without_mat,    &
-               BNLS_reset_control, NLPT_problem_type, GALAHAD_userdata_type,   &
+               BNLS_reset_control, NLPT_problem_type, USERDATA_type,   &
                SMT_type, SMT_put
 
 !----------------------
@@ -662,7 +662,7 @@
        TYPE ( BNLS_control_type ) :: BNLS_control
        TYPE ( BNLS_inform_type ) :: BNLS_inform
        TYPE ( NLPT_problem_type ) :: nlp
-       TYPE ( GALAHAD_userdata_type ) :: userdata
+       TYPE ( USERDATA_type ) :: userdata
      END TYPE BNLS_full_data_type
 
    CONTAINS
@@ -1488,7 +1488,7 @@
 !  data is an a scalar variable of type BNLS_data_type used for
 !   internal data.
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be
+!  userdata is a scalar variable of type USERDATA_type which may be
 !   used to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -1570,7 +1570,7 @@
      TYPE ( BNLS_control_type ), INTENT( IN ) :: control
      TYPE ( BNLS_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( BNLS_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
      OPTIONAL :: eval_C, eval_J, eval_H, eval_JPROD, eval_SJPROD,              &
                  eval_HPROD, eval_SCALE
@@ -1585,7 +1585,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: C
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_C
      END INTERFACE
 
@@ -1595,7 +1595,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: J_val
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_J
      END INTERFACE
 
@@ -1605,7 +1605,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_H
      END INTERFACE
 
@@ -1617,7 +1617,7 @@
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
        END SUBROUTINE eval_JPROD
      END INTERFACE
@@ -1635,7 +1635,7 @@
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
        END SUBROUTINE eval_SJPROD
      END INTERFACE
@@ -1647,7 +1647,7 @@
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
        END SUBROUTINE eval_HPROD
      END INTERFACE
@@ -1658,7 +1658,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_SCALE
      END INTERFACE
 
@@ -5424,7 +5424,7 @@
 
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( BNLS_full_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
@@ -5477,7 +5477,7 @@
 
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( BNLS_full_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G

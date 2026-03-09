@@ -46,7 +46,7 @@
      PRIVATE
      PUBLIC :: CQPS_initialize, CQPS_read_specfile, CQPS_solve, CQPS_terminate,&
                CQPS_reverse_h_type, CQPS_reverse_a_type, CQPS_data_type,       &
-               GALAHAD_userdata_type, QPT_problem_type,                        &
+               USERDATA_type, QPT_problem_type,                        &
                SMT_type, SMT_put, SMT_get
 
 !----------------------
@@ -281,7 +281,7 @@
        TYPE ( BQP_data_type ) :: BQP_data
        TYPE ( BQPB_data_type ) :: BQPB_data
        TYPE ( PSLS_data_type ) :: PSLS_data
-       TYPE ( GALAHAD_userdata_type ) :: bqp_userdata
+       TYPE ( USERDATA_type ) :: bqp_userdata
        TYPE ( BQP_reverse_type ) :: bqp_reverse
 !      TYPE ( BQPB_reverse_type ) :: bqpb_reverse
      END TYPE CQPS_data_type
@@ -831,7 +831,7 @@
 !     time%factorize = the time spent factorizing the required matrices.
 !     time%solve = the time spent computing the search direction.
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be
+!  userdata is a scalar variable of type USERDATA_type which may be
 !   used to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -895,7 +895,7 @@
      TYPE ( CQPS_data_type ), INTENT( INOUT ) :: data
      TYPE ( CQPS_control_type ), INTENT( IN ) :: control
      TYPE ( CQPS_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      TYPE ( CQPS_reverse_h_type ), OPTIONAL, INTENT( INOUT ) :: reverse_h
      TYPE ( CQPS_reverse_a_type ), OPTIONAL, INTENT( INOUT ) :: reverse_a
      OPTIONAL :: eval_HPROD, eval_APROD
@@ -907,7 +907,7 @@
                               nz_v_end, NZ_prod, nz_prod_end )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: PROD
        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
@@ -922,7 +922,7 @@
        SUBROUTINE eval_APROD( status, userdata, transpose, V, PROD )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: PROD
        LOGICAL, INTENT( IN ) :: transpose

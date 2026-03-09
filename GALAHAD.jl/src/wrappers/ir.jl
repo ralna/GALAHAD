@@ -29,7 +29,8 @@ export ir_initialize
 
 function ir_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.ir_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{ir_control_type{Float32,Int32}},
+                                           control::Ptr{ir_control_type{Float32,
+                                                                        Int32}},
                                            status::Ptr{Int32})::Cvoid
 end
 
@@ -42,19 +43,22 @@ end
 
 function ir_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.ir_initialize(data::Ptr{Ptr{Cvoid}},
-                                         control::Ptr{ir_control_type{Float64,Int32}},
+                                         control::Ptr{ir_control_type{Float64,
+                                                                      Int32}},
                                          status::Ptr{Int32})::Cvoid
 end
 
 function ir_initialize(::Type{Float64}, ::Type{Int64}, data, control, status)
   @ccall libgalahad_double_64.ir_initialize_64(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{ir_control_type{Float64,Int64}},
+                                               control::Ptr{ir_control_type{Float64,
+                                                                            Int64}},
                                                status::Ptr{Int64})::Cvoid
 end
 
 function ir_initialize(::Type{Float128}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_quadruple.ir_initialize_q(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{ir_control_type{Float128,Int32}},
+                                              control::Ptr{ir_control_type{Float128,
+                                                                           Int32}},
                                               status::Ptr{Int32})::Cvoid
 end
 
@@ -69,31 +73,36 @@ export ir_information
 
 function ir_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_single.ir_information_s(data::Ptr{Ptr{Cvoid}},
-                                            inform::Ptr{ir_inform_type{Float32,Int32}},
+                                            inform::Ptr{ir_inform_type{Float32,
+                                                                       Int32}},
                                             status::Ptr{Int32})::Cvoid
 end
 
 function ir_information(::Type{Float32}, ::Type{Int64}, data, inform, status)
   @ccall libgalahad_single_64.ir_information_s_64(data::Ptr{Ptr{Cvoid}},
-                                                  inform::Ptr{ir_inform_type{Float32,Int64}},
+                                                  inform::Ptr{ir_inform_type{Float32,
+                                                                             Int64}},
                                                   status::Ptr{Int64})::Cvoid
 end
 
 function ir_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_double.ir_information(data::Ptr{Ptr{Cvoid}},
-                                          inform::Ptr{ir_inform_type{Float64,Int32}},
+                                          inform::Ptr{ir_inform_type{Float64,
+                                                                     Int32}},
                                           status::Ptr{Int32})::Cvoid
 end
 
 function ir_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
   @ccall libgalahad_double_64.ir_information_64(data::Ptr{Ptr{Cvoid}},
-                                                inform::Ptr{ir_inform_type{Float64,Int64}},
+                                                inform::Ptr{ir_inform_type{Float64,
+                                                                           Int64}},
                                                 status::Ptr{Int64})::Cvoid
 end
 
 function ir_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_quadruple.ir_information_q(data::Ptr{Ptr{Cvoid}},
-                                               inform::Ptr{ir_inform_type{Float128,Int32}},
+                                               inform::Ptr{ir_inform_type{Float128,
+                                                                          Int32}},
                                                status::Ptr{Int32})::Cvoid
 end
 
@@ -108,32 +117,42 @@ export ir_terminate
 
 function ir_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_single.ir_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                          control::Ptr{ir_control_type{Float32,Int32}},
-                                          inform::Ptr{ir_inform_type{Float32,Int32}})::Cvoid
+                                          control::Ptr{ir_control_type{Float32,
+                                                                       Int32}},
+                                          inform::Ptr{ir_inform_type{Float32,
+                                                                     Int32}})::Cvoid
 end
 
 function ir_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
   @ccall libgalahad_single_64.ir_terminate_s_64(data::Ptr{Ptr{Cvoid}},
-                                                control::Ptr{ir_control_type{Float32,Int64}},
-                                                inform::Ptr{ir_inform_type{Float32,Int64}})::Cvoid
+                                                control::Ptr{ir_control_type{Float32,
+                                                                             Int64}},
+                                                inform::Ptr{ir_inform_type{Float32,
+                                                                           Int64}})::Cvoid
 end
 
 function ir_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.ir_terminate(data::Ptr{Ptr{Cvoid}},
-                                        control::Ptr{ir_control_type{Float64,Int32}},
-                                        inform::Ptr{ir_inform_type{Float64,Int32}})::Cvoid
+                                        control::Ptr{ir_control_type{Float64,
+                                                                     Int32}},
+                                        inform::Ptr{ir_inform_type{Float64,
+                                                                   Int32}})::Cvoid
 end
 
 function ir_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
   @ccall libgalahad_double_64.ir_terminate_64(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{ir_control_type{Float64,Int64}},
-                                              inform::Ptr{ir_inform_type{Float64,Int64}})::Cvoid
+                                              control::Ptr{ir_control_type{Float64,
+                                                                           Int64}},
+                                              inform::Ptr{ir_inform_type{Float64,
+                                                                         Int64}})::Cvoid
 end
 
 function ir_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_quadruple.ir_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{ir_control_type{Float128,Int32}},
-                                             inform::Ptr{ir_inform_type{Float128,Int32}})::Cvoid
+                                             control::Ptr{ir_control_type{Float128,
+                                                                          Int32}},
+                                             inform::Ptr{ir_inform_type{Float128,
+                                                                        Int32}})::Cvoid
 end
 
 function ir_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)

@@ -1,46 +1,58 @@
 # Note: "hsl" is handled explicitly.
-packages = ("arc", "bgo", "blls", "bllsb", "bnls", "bqp", "bqpb", "bsc", "ccqp", "clls",
-            "convert", "cqp", "cro", "dgo", "dps", "dqp", "eqp", "expo", "fdc", "fit",
-            "glrt", "gls", "gltr", "hash", "ir", "l2rt", "lhs", "llsr", "llst", "lms",
-            "lpa", "lpb", "lsqp", "lsrt", "lstr", "nls", "nodend", "nrek", "presolve", "psls",
-            "qpa", "qpb", "roots", "rpd", "rqs", "sbls", "scu", "sec", "sha", "sils",
-            "slls", "sls", "ssids", "ssls", "trb", "trek", "trs", "tru", "ugo", "uls", "version", "wcp")
+packages = ("arc", "bgo", "blls", "bllsb", "bnls", "bqp", "bqpb", "bsc", 
+            "ccqp", "clls", "convert", "cqp", "cro", "dgo", "dps", "dqp", 
+            "eqp", "expo", "fdc", "fit", "glrt", "gls", "gltr", "hash", 
+            "ir", "l2rt", "lhs", "llsr", "llst", "lms", "lpa", "lpb", 
+            "lsqp", "lsrt", "lstr", "nls", "nodend", "nrek", "presolve", 
+            "psls", "qpa", "qpb", "roots", "rpd", "rqs", "sbls", "scu", 
+            "sec", "sha", "sils", "slls", "sllsb", "sls", "snls", "ssids", 
+            "ssls", "trb", "trek", "trs", "tru", "ugo", "uls", "version", "wcp")
 
-callbacks = ("galahad_f", "galahad_g", "galahad_h", "galahad_prec", "galahad_hprod", "galahad_shprod",
-             "galahad_constant_prec", "galahad_r", "galahad_jr", "galahad_hr", "galahad_jrprod",
-             "galahad_hrprod", "galahad_shrprod", "galahad_fc", "galahad_gj", "galahad_hl", "galahad_fgh")
+callbacks = ("galahad_f", "galahad_g", "galahad_h", "galahad_prec", "galahad_hprod", 
+             "galahad_shprod", "galahad_constant_prec", "galahad_r", "galahad_jr", 
+             "galahad_hr", "galahad_jrprod", "galahad_hrprod", "galahad_shrprod", 
+             "galahad_jr_prod", "galahad_jr_scol", "galahad_jr_sprod",
+             "galahad_fc", "galahad_gj", "galahad_hl", "galahad_fgh")
 
-types = ("control", "time", "inform", "history", "subproblem_control", "subproblem_inform", "ainfo", "finfo", "sinfo")
+types = ("control", "time", "inform", "history", "subproblem_control", 
+         "subproblem_inform", "ainfo", "finfo", "sinfo")
 
-nonparametric_structures_int = ("arc_time_type", "bgo_time_type", "blls_time_type", "bllsb_time_type",
-                                "bnls_time_type", "bqp_time_type", "bqpb_time_type", "ccqp_time_type",
-                                "clls_time_type", "convert_time_type", "cqp_time_type", "cro_time_type",
-                                "dgo_time_type", "dps_time_type", "dqp_time_type", "eqp_time_type",
-                                "fdc_time_type", "llsr_time_type", "llsr_history_type", "llst_time_type",
-                                "llst_history_type", "lms_time_type", "lpa_time_type", "lpb_time_type",
-                                "lsqp_time_type", "nls_time_type", "psls_time_type", "qpa_time_type",
-                                "qpb_time_type", "rqs_time_type", "rqs_history_type", "sbls_time_type",
-                                "scu_control_type", "slls_time_type", "sls_time_type", "trb_time_type",
-                                "trek_time_type", "nrek_time_type",
-                                "trs_time_type", "trs_history_type", "tru_time_type", "ugo_time_type",
-                                "wcp_time_type", "nodend_time_type", "expo_time_type", "ssls_time_type")
+nonparametric_structures_int = ("arc_time_type", "bgo_time_type", "blls_time_type", 
+                                "bllsb_time_type", "bnls_time_type", "bqp_time_type", 
+                                "bqpb_time_type", "ccqp_time_type", "clls_time_type", 
+                                "convert_time_type", "cqp_time_type", "cro_time_type",
+                                "dgo_time_type", "dps_time_type", "dqp_time_type", 
+                                "eqp_time_type", "fdc_time_type", "llsr_time_type", 
+                                "llsr_history_type", "llst_time_type", "llst_history_type", 
+                                "lms_time_type", "lpa_time_type", "lpb_time_type",
+                                "lsqp_time_type", "nls_time_type", "psls_time_type", 
+                                "qpa_time_type", "qpb_time_type", "rqs_time_type", 
+                                "rqs_history_type", "sbls_time_type", "scu_control_type", 
+                                "slls_time_type", "sllsb_time_type", "sls_time_type", 
+                                "snls_time_type", "trb_time_type", "trek_time_type", 
+                                "nrek_time_type", "trs_time_type", "trs_history_type", 
+                                "tru_time_type", "ugo_time_type", "wcp_time_type", 
+                                "nodend_time_type", "expo_time_type", "ssls_time_type")
 
-nonparametric_structures_float = ("bqp_time_type", "bsc_control_type", "convert_control_type", "fit_control_type",
-                                  "fit_inform_type", "gls_sinfo_type", "hash_control_type", "hash_inform_type",
-                                  "lhs_control_type", "lhs_inform_type", "lms_control_type", "ma48_sinfo",
-                                  "mc64_control", "mc64_info", "mc68_control", "mc68_info", "nodend_control_type",
-                                  "presolve_inform_type", "roots_inform_type", "rpd_control_type", "rpd_inform_type",
-                                  "scu_control_type", "scu_inform_type", "sec_inform_type", "sha_control_type",
-                                  "slls_time_type")
+nonparametric_structures_float = ("bqp_time_type", "bsc_control_type", "convert_control_type", 
+                                  "fit_control_type","fit_inform_type", "gls_sinfo_type", 
+                                  "hash_control_type", "hash_inform_type", "lhs_control_type", 
+                                  "lhs_inform_type", "lms_control_type", "ma48_sinfo",
+                                  "mc64_control", "mc64_info", "mc68_control", "mc68_info", 
+                                  "nodend_control_type", "presolve_inform_type", 
+                                  "roots_inform_type", "rpd_control_type", "rpd_inform_type", 
+                                  "scu_control_type", "scu_inform_type", "sec_inform_type", 
+                                  "sha_control_type", "slls_time_type")
 
 # Structures that don't have a field with rpc_ but have an inner structure with rpc_ as a field.
-special_structures_float = ("convert_inform_type", "cro_inform_type", "lms_inform_type", "ugo_inform_type",
-                            "uls_inform_type", "nodend_inform_type", "ssids_inform_type", "ssls_inform_type",
-                            "ssls_control_type")
+special_structures_float = ("convert_inform_type", "cro_inform_type", "lms_inform_type", 
+                            "ugo_inform_type", "uls_inform_type", "nodend_inform_type", 
+                            "ssids_inform_type", "ssls_inform_type", "ssls_control_type")
 
-hsl_structures = ("ma48_control", "ma48_ainfo", "ma48_finfo", "ma48_sinfo", "ma57_control", "ma57_ainfo",
-                  "ma57_finfo", "ma57_sinfo", "ma77_control", "ma77_info", "ma86_control", "ma86_info", "ma87_control",
-                  "ma87_info", "ma97_control", "ma97_info", "mc64_control", "mc64_info", "mc68_control", "mc68_info",
+hsl_structures = ("ma48_control", "ma48_ainfo", "ma48_finfo", "ma48_sinfo", "ma57_control", 
+                  "ma57_ainfo", "ma57_finfo", "ma57_sinfo", "ma77_control", "ma77_info", 
+                  "ma86_control", "ma86_info", "ma87_control", "ma87_info", "ma97_control", 
+                  "ma97_info", "mc64_control", "mc64_info", "mc68_control", "mc68_info",
                   "mi20_control", "mi20_solve_control", "mi20_info", "mi28_control", "mi28_info")
 
 include("galahad_c.jl")

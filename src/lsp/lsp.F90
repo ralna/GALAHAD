@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-01-22 AT 10:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -2702,7 +2702,7 @@
             DO k = prob%Ao%ptr( l ), prob%Ao%ptr( l + 1 ) - 1
               i = map%ao_map( prob%Ao%row( k ) )
               map%IW( i ) = map%IW( i ) + 1
-              prob%Ao%col( l ) = j
+!             prob%Ao%col( l ) = j
             END DO
           END DO
 
@@ -2716,7 +2716,9 @@
 !  undo the reordering of A_o
 
           CALL SORT_inplace_permute( map%ao_ne, map%ao_map_inverse,            &
-                                     X = prob%Ao%val, IX = prob%Ao%col )
+                                     X = prob%Ao%val )
+!         CALL SORT_inplace_permute( map%ao_ne, map%ao_map_inverse,            &
+!                                    X = prob%Ao%val, IX = prob%Ao%col )
 
 !  original column-wise storage
 

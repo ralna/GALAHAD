@@ -46,7 +46,8 @@ export lsrt_initialize
 
 function lsrt_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.lsrt_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                             control::Ptr{lsrt_control_type{Float32,Int32}},
+                                             control::Ptr{lsrt_control_type{Float32,
+                                                                            Int32}},
                                              status::Ptr{Int32})::Cvoid
 end
 
@@ -59,7 +60,8 @@ end
 
 function lsrt_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.lsrt_initialize(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{lsrt_control_type{Float64,Int32}},
+                                           control::Ptr{lsrt_control_type{Float64,
+                                                                          Int32}},
                                            status::Ptr{Int32})::Cvoid
 end
 
@@ -99,7 +101,8 @@ function lsrt_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
 end
 
 function lsrt_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
-  @ccall libgalahad_double.lsrt_read_specfile(control::Ptr{lsrt_control_type{Float64,Int32}},
+  @ccall libgalahad_double.lsrt_read_specfile(control::Ptr{lsrt_control_type{Float64,
+                                                                             Int32}},
                                               specfile::Ptr{Cchar})::Cvoid
 end
 
@@ -123,42 +126,48 @@ end
 
 export lsrt_import_control
 
-function lsrt_import_control(::Type{Float32}, ::Type{Int32}, control, data, status)
+function lsrt_import_control(::Type{Float32}, ::Type{Int32}, control, data,
+                             status)
   @ccall libgalahad_single.lsrt_import_control_s(control::Ptr{lsrt_control_type{Float32,
                                                                                 Int32}},
                                                  data::Ptr{Ptr{Cvoid}},
                                                  status::Ptr{Int32})::Cvoid
 end
 
-function lsrt_import_control(::Type{Float32}, ::Type{Int64}, control, data, status)
+function lsrt_import_control(::Type{Float32}, ::Type{Int64}, control, data,
+                             status)
   @ccall libgalahad_single_64.lsrt_import_control_s_64(control::Ptr{lsrt_control_type{Float32,
                                                                                       Int64}},
                                                        data::Ptr{Ptr{Cvoid}},
                                                        status::Ptr{Int64})::Cvoid
 end
 
-function lsrt_import_control(::Type{Float64}, ::Type{Int32}, control, data, status)
+function lsrt_import_control(::Type{Float64}, ::Type{Int32}, control, data,
+                             status)
   @ccall libgalahad_double.lsrt_import_control(control::Ptr{lsrt_control_type{Float64,
                                                                               Int32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Int32})::Cvoid
 end
 
-function lsrt_import_control(::Type{Float64}, ::Type{Int64}, control, data, status)
+function lsrt_import_control(::Type{Float64}, ::Type{Int64}, control, data,
+                             status)
   @ccall libgalahad_double_64.lsrt_import_control_64(control::Ptr{lsrt_control_type{Float64,
                                                                                     Int64}},
                                                      data::Ptr{Ptr{Cvoid}},
                                                      status::Ptr{Int64})::Cvoid
 end
 
-function lsrt_import_control(::Type{Float128}, ::Type{Int32}, control, data, status)
+function lsrt_import_control(::Type{Float128}, ::Type{Int32}, control, data,
+                             status)
   @ccall libgalahad_quadruple.lsrt_import_control_q(control::Ptr{lsrt_control_type{Float128,
                                                                                    Int32}},
                                                     data::Ptr{Ptr{Cvoid}},
                                                     status::Ptr{Int32})::Cvoid
 end
 
-function lsrt_import_control(::Type{Float128}, ::Type{Int64}, control, data, status)
+function lsrt_import_control(::Type{Float128}, ::Type{Int64}, control, data,
+                             status)
   @ccall libgalahad_quadruple_64.lsrt_import_control_q_64(control::Ptr{lsrt_control_type{Float128,
                                                                                          Int64}},
                                                           data::Ptr{Ptr{Cvoid}},
@@ -167,57 +176,71 @@ end
 
 export lsrt_solve_problem
 
-function lsrt_solve_problem(::Type{Float32}, ::Type{Int32}, data, status, m, n, power,
-                            weight, x, u, v)
-  @ccall libgalahad_single.lsrt_solve_problem_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                                m::Int32, n::Int32, power::Float32,
-                                                weight::Float32, x::Ptr{Float32},
-                                                u::Ptr{Float32}, v::Ptr{Float32})::Cvoid
+function lsrt_solve_problem(::Type{Float32}, ::Type{Int32}, data, status, m, n,
+                            power, weight, x, u, v)
+  @ccall libgalahad_single.lsrt_solve_problem_s(data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int32}, m::Int32,
+                                                n::Int32, power::Float32,
+                                                weight::Float32,
+                                                x::Ptr{Float32},
+                                                u::Ptr{Float32},
+                                                v::Ptr{Float32})::Cvoid
 end
 
-function lsrt_solve_problem(::Type{Float32}, ::Type{Int64}, data, status, m, n, power,
-                            weight, x, u, v)
+function lsrt_solve_problem(::Type{Float32}, ::Type{Int64}, data, status, m, n,
+                            power, weight, x, u, v)
   @ccall libgalahad_single_64.lsrt_solve_problem_s_64(data::Ptr{Ptr{Cvoid}},
-                                                      status::Ptr{Int64}, m::Int64,
-                                                      n::Int64, power::Float32,
-                                                      weight::Float32, x::Ptr{Float32},
+                                                      status::Ptr{Int64},
+                                                      m::Int64, n::Int64,
+                                                      power::Float32,
+                                                      weight::Float32,
+                                                      x::Ptr{Float32},
                                                       u::Ptr{Float32},
                                                       v::Ptr{Float32})::Cvoid
 end
 
-function lsrt_solve_problem(::Type{Float64}, ::Type{Int32}, data, status, m, n, power,
-                            weight, x, u, v)
-  @ccall libgalahad_double.lsrt_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                              m::Int32, n::Int32, power::Float64,
+function lsrt_solve_problem(::Type{Float64}, ::Type{Int32}, data, status, m, n,
+                            power, weight, x, u, v)
+  @ccall libgalahad_double.lsrt_solve_problem(data::Ptr{Ptr{Cvoid}},
+                                              status::Ptr{Int32}, m::Int32,
+                                              n::Int32, power::Float64,
                                               weight::Float64, x::Ptr{Float64},
-                                              u::Ptr{Float64}, v::Ptr{Float64})::Cvoid
+                                              u::Ptr{Float64},
+                                              v::Ptr{Float64})::Cvoid
 end
 
-function lsrt_solve_problem(::Type{Float64}, ::Type{Int64}, data, status, m, n, power,
-                            weight, x, u, v)
+function lsrt_solve_problem(::Type{Float64}, ::Type{Int64}, data, status, m, n,
+                            power, weight, x, u, v)
   @ccall libgalahad_double_64.lsrt_solve_problem_64(data::Ptr{Ptr{Cvoid}},
-                                                    status::Ptr{Int64}, m::Int64, n::Int64,
-                                                    power::Float64, weight::Float64,
-                                                    x::Ptr{Float64}, u::Ptr{Float64},
+                                                    status::Ptr{Int64},
+                                                    m::Int64, n::Int64,
+                                                    power::Float64,
+                                                    weight::Float64,
+                                                    x::Ptr{Float64},
+                                                    u::Ptr{Float64},
                                                     v::Ptr{Float64})::Cvoid
 end
 
-function lsrt_solve_problem(::Type{Float128}, ::Type{Int32}, data, status, m, n, power,
-                            weight, x, u, v)
+function lsrt_solve_problem(::Type{Float128}, ::Type{Int32}, data, status, m, n,
+                            power, weight, x, u, v)
   @ccall libgalahad_quadruple.lsrt_solve_problem_q(data::Ptr{Ptr{Cvoid}},
-                                                   status::Ptr{Int32}, m::Int32, n::Int32,
-                                                   power::Cfloat128, weight::Cfloat128,
-                                                   x::Ptr{Float128}, u::Ptr{Float128},
+                                                   status::Ptr{Int32}, m::Int32,
+                                                   n::Int32, power::Cfloat128,
+                                                   weight::Cfloat128,
+                                                   x::Ptr{Float128},
+                                                   u::Ptr{Float128},
                                                    v::Ptr{Float128})::Cvoid
 end
 
-function lsrt_solve_problem(::Type{Float128}, ::Type{Int64}, data, status, m, n, power,
-                            weight, x, u, v)
+function lsrt_solve_problem(::Type{Float128}, ::Type{Int64}, data, status, m, n,
+                            power, weight, x, u, v)
   @ccall libgalahad_quadruple_64.lsrt_solve_problem_q_64(data::Ptr{Ptr{Cvoid}},
-                                                         status::Ptr{Int64}, m::Int64,
-                                                         n::Int64, power::Cfloat128,
+                                                         status::Ptr{Int64},
+                                                         m::Int64, n::Int64,
+                                                         power::Cfloat128,
                                                          weight::Cfloat128,
-                                                         x::Ptr{Float128}, u::Ptr{Float128},
+                                                         x::Ptr{Float128},
+                                                         u::Ptr{Float128},
                                                          v::Ptr{Float128})::Cvoid
 end
 
@@ -225,7 +248,8 @@ export lsrt_information
 
 function lsrt_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_single.lsrt_information_s(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ptr{lsrt_inform_type{Float32,Int32}},
+                                              inform::Ptr{lsrt_inform_type{Float32,
+                                                                           Int32}},
                                               status::Ptr{Int32})::Cvoid
 end
 
@@ -238,7 +262,8 @@ end
 
 function lsrt_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_double.lsrt_information(data::Ptr{Ptr{Cvoid}},
-                                            inform::Ptr{lsrt_inform_type{Float64,Int32}},
+                                            inform::Ptr{lsrt_inform_type{Float64,
+                                                                         Int32}},
                                             status::Ptr{Int32})::Cvoid
 end
 
@@ -267,8 +292,10 @@ export lsrt_terminate
 
 function lsrt_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_single.lsrt_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{lsrt_control_type{Float32,Int32}},
-                                            inform::Ptr{lsrt_inform_type{Float32,Int32}})::Cvoid
+                                            control::Ptr{lsrt_control_type{Float32,
+                                                                           Int32}},
+                                            inform::Ptr{lsrt_inform_type{Float32,
+                                                                         Int32}})::Cvoid
 end
 
 function lsrt_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
@@ -281,22 +308,26 @@ end
 
 function lsrt_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.lsrt_terminate(data::Ptr{Ptr{Cvoid}},
-                                          control::Ptr{lsrt_control_type{Float64,Int32}},
-                                          inform::Ptr{lsrt_inform_type{Float64,Int32}})::Cvoid
+                                          control::Ptr{lsrt_control_type{Float64,
+                                                                         Int32}},
+                                          inform::Ptr{lsrt_inform_type{Float64,
+                                                                       Int32}})::Cvoid
 end
 
 function lsrt_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
   @ccall libgalahad_double_64.lsrt_terminate_64(data::Ptr{Ptr{Cvoid}},
                                                 control::Ptr{lsrt_control_type{Float64,
                                                                                Int64}},
-                                                inform::Ptr{lsrt_inform_type{Float64,Int64}})::Cvoid
+                                                inform::Ptr{lsrt_inform_type{Float64,
+                                                                             Int64}})::Cvoid
 end
 
 function lsrt_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_quadruple.lsrt_terminate_q(data::Ptr{Ptr{Cvoid}},
                                                control::Ptr{lsrt_control_type{Float128,
                                                                               Int32}},
-                                               inform::Ptr{lsrt_inform_type{Float128,Int32}})::Cvoid
+                                               inform::Ptr{lsrt_inform_type{Float128,
+                                                                            Int32}})::Cvoid
 end
 
 function lsrt_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
@@ -307,13 +338,15 @@ function lsrt_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
                                                                                   Int64}})::Cvoid
 end
 
-function run_sif(::Val{:lsrt}, ::Val{:single}, path_libsif::String, path_outsdif::String)
+function run_sif(::Val{:lsrt}, ::Val{:single}, path_libsif::String,
+                 path_outsdif::String)
   cmd = setup_env_lbt(`$(GALAHAD_jll.runlsrt_sif_single()) $path_libsif $path_outsdif`)
   run(cmd)
   return nothing
 end
 
-function run_sif(::Val{:lsrt}, ::Val{:double}, path_libsif::String, path_outsdif::String)
+function run_sif(::Val{:lsrt}, ::Val{:double}, path_libsif::String,
+                 path_outsdif::String)
   cmd = setup_env_lbt(`$(GALAHAD_jll.runlsrt_sif_double()) $path_libsif $path_outsdif`)
   run(cmd)
   return nothing

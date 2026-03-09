@@ -338,7 +338,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``clls.initialize``).
 
-   .. function:: clls.solve_clls(n, o, m, Ao_ne, Ao_val, b, sigma, A_ne, A_val, c_l, c_u, x_l, x_u, x, y, z, w)
+   .. function:: clls.solve(n, o, m, Ao_ne, Ao_val, b, sigma, A_ne, A_val, c_l, c_u, x_l, x_u, x, y, z, w, x_s)
 
       Find a solution to the constrained (regularized) linear least-squares 
       problem.
@@ -356,8 +356,8 @@ functions
       Ao_val : ndarray(Ao_ne)
           holds the values of the nonzeros in $A_o$ in the same order as 
           specified in the sparsity pattern in ``clls.load``.
-      b : ndarray(m)
-          holds the values of the linear term $g$ in the objective function.
+      b : ndarray(o)
+          holds the values of the observations $b$ in the objective function.
       sigma : float
           holds the regularization weight $\sigma \geq 0$.
       A_ne : int
@@ -399,32 +399,35 @@ functions
       w : ndarray(o)
           holds the positive regularization weights $w$. If unit weights are
           to be used, this can be replaced by None.
+      x_s : ndarray(n)
+          holds the shifts $x_s$. If zero shifts are
+          to be used, this can be replaced by None.
 
       **Returns:**
 
       x : ndarray(n)
           holds the values of the approximate minimizer $x$ after
           a successful call.
-      r : ndarray(o)
-          holds the values of the residuals $r(x) = A_ox-b$.
-      c : ndarray(m)
-          holds the values of the residuals $c(x) = Ax$.
       y : ndarray(m)
           holds the values of the Lagrange multipliers associated with the 
           general linear constraints.
       z : ndarray(n)
           holds the values of the dual variables associated with the 
           simple bound constraints.
-      c_stat : ndarray(m)
-          holds the return status for each constraint. The i-th component will 
-          be negative if the value of the $i$-th constraint $(Ax)_i$) lies on 
-          its lower bound, positive if it lies on its upper bound, and 
-          zero if it lies between bounds.
+      r : ndarray(o)
+          holds the values of the residuals $r(x) = A_ox-b$.
+      c : ndarray(m)
+          holds the values of the residuals $c(x) = Ax$.
       x_stat : ndarray(n)
           holds the return status for each variable. The i-th component will be
           negative if the $i$-th variable lies on its lower bound, 
           positive if it lies on its upper bound, and zero if it lies
           between bounds.
+      c_stat : ndarray(m)
+          holds the return status for each constraint. The i-th component will 
+          be negative if the value of the $i$-th constraint $(Ax)_i$) lies on 
+          its lower bound, positive if it lies on its upper bound, and 
+          zero if it lies between bounds.
 
    .. function:: [optional] clls.information()
 
@@ -533,8 +536,12 @@ functions
           threads : int
              the number of threads used.
           obj : float
-             the value of the objective function at the best estimate
-             of the solution determined by CLLS_solve.
+             the value of the regularized objective function $q(x)$ at the 
+             best estimate of the solution determined by CLLS_solve.
+          ls_obj : float
+             the value of the least-squares function 
+             $\frac{1}{2} \| A_o x - b\|_W^2$ at the 
+             best estimate of the solution determined by CLLS_solve.
           primal_infeasibility : float
              the value of the primal infeasibility.
           dual_infeasibility : float

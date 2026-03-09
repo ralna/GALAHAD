@@ -60,7 +60,7 @@
 
      PRIVATE
      PUBLIC :: QPF_initialize, QPF_read_specfile, QPF_solve,                   &
-               QPF_terminate, NLPT_problem_type, GALAHAD_userdata_type,        &
+               QPF_terminate, NLPT_problem_type, USERDATA_type,        &
                SMT_type, SMT_put
 
 !----------------------
@@ -999,7 +999,7 @@
 !
 !  data is a scalar variable of type QPF_data_type used for internal data.
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be
+!  userdata is a scalar variable of type USERDATA_type which may be
 !   used to pass user data to and from the eval_* subroutines (see below)
 !   Available components which may be allocated as required are:
 !
@@ -1071,7 +1071,7 @@
      TYPE ( QPF_control_type ), INTENT( IN ) :: control
      TYPE ( QPF_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( QPF_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_FC, eval_GJ, eval_HL, eval_HLPROD, eval_PREC
 
 !----------------------------------
@@ -1085,7 +1085,7 @@
        REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( kind = rp_ ), OPTIONAL, INTENT( OUT ) :: F
        REAL ( kind = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FC
 
        SUBROUTINE eval_GJ( status, X, userdata, G, J_val )
@@ -1094,7 +1094,7 @@
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G
        REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: J_val
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_GJ
 
        SUBROUTINE eval_HL( status, X, Y, userdata, H_val )
@@ -1102,7 +1102,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) ::H_val
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_HL
 
        SUBROUTINE eval_HLPROD( status, X, Y, userdata, U, V, got_h )
@@ -1111,7 +1111,7 @@
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
        END SUBROUTINE eval_HLPROD
 
@@ -1120,7 +1120,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_PREC
      END INTERFACE
 

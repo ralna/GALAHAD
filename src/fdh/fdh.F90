@@ -31,7 +31,7 @@
 
      PRIVATE
      PUBLIC :: FDH_initialize, FDH_read_specfile, FDH_analyse, FDH_estimate,   &
-               FDH_terminate, GALAHAD_userdata_type
+               FDH_terminate, USERDATA_type
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -909,7 +909,7 @@
       TYPE ( FDH_control_type ), INTENT( IN ) :: control
       TYPE ( FDH_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( FDH_data_type ), INTENT( INOUT ) :: data
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
       OPTIONAL :: eval_G
 
 !----------------------------------
@@ -922,7 +922,7 @@
         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+        TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
         END SUBROUTINE eval_G
       END INTERFACE
 

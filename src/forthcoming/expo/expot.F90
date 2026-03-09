@@ -9,7 +9,7 @@
    TYPE ( EXPO_control_type ) :: control
    TYPE ( EXPO_inform_type ) :: inform
    TYPE ( EXPO_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    EXTERNAL :: FC, GJ, HL, GJ_dense, HL_dense
    INTEGER ( KIND = ip_ ) :: i, s, data_storage_type
    CHARACTER ( LEN = 2 ) :: st
@@ -208,7 +208,7 @@ control%ssls_control%sls_control%generate_matrix_file = .TRUE.
    REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( kind = rp_ ), OPTIONAL, INTENT( OUT ) :: F
    REAL ( kind = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( kind = rp_ ) :: p
    p = userdata%real( 1 )
    f = X( 1 ) ** 2 + X( 2 ) ** 2
@@ -227,7 +227,7 @@ control%ssls_control%sls_control%generate_matrix_file = .TRUE.
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G
    REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: J_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( kind = rp_ ) :: p
    p = userdata%real( 1 )
    G( 1 ) = 2.0_rp_ * X( 1 )
@@ -251,7 +251,7 @@ control%ssls_control%sls_control%generate_matrix_file = .TRUE.
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( kind = rp_ ) :: p
    p = userdata%real( 1 )
    H_val( 1 ) = 2.0_rp_ - 2.0_rp_ * ( Y( 2 ) + p * Y( 3 ) + Y( 4 ) )
@@ -266,7 +266,7 @@ control%ssls_control%sls_control%generate_matrix_file = .TRUE.
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G
    REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: J_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( kind = rp_ ) :: p
    p = userdata%real( 1 )
    G( 1 ) = 2.0_rp_ * X( 1 )
@@ -290,7 +290,7 @@ control%ssls_control%sls_control%generate_matrix_file = .TRUE.
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( kind = rp_ ) :: p
    p = userdata%real( 1 )
    H_val( 1 ) = 2.0_rp_ - 2.0_rp_ * ( Y( 2 ) + p * Y( 3 ) + Y( 4 ) )

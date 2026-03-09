@@ -9,7 +9,7 @@
    TYPE ( DGO_control_type ) :: control
    TYPE ( DGO_inform_type ) :: inform
    TYPE ( DGO_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    EXTERNAL :: FUN, GRAD, HESS, HPROD
    INTEGER ( KIND = ip_ ) :: s, scratch_out
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, h_ne = 5
@@ -81,7 +81,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), INTENT( OUT ) :: f
    REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
    f = ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) ** 2 +                         &
@@ -97,7 +97,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
    G( 1 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) )                 &
@@ -114,7 +114,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
    Hval( 1 ) = 2.0_rp_ - mag * freq * freq * COS( freq * X( 1 ) )
@@ -132,7 +132,7 @@ CONTAINS
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_

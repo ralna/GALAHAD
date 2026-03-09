@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-12-29 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-02-03 AT 13:00 GMT.
    PROGRAM GALAHAD_BLLS_SECOND_EXAMPLE ! reverse commmunication interface
    USE GALAHAD_BLLS_double             ! double precision version
    IMPLICIT NONE
@@ -9,15 +9,14 @@
    TYPE ( BLLS_control_type ) :: control
    TYPE ( BLLS_inform_type ) :: inform
    TYPE ( BLLS_reverse_type ) :: reverse
-   TYPE ( GALAHAD_userdata_type ) :: userdata
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER :: i, j, k, l, nflag
    REAL ( KIND = wp ) :: val
    INTEGER, PARAMETER :: n = 3, o = 4, ao_ne = 5
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: Ao_row, Ao_ptr, FLAG
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Ao_val
 ! start problem data
-   ALLOCATE( p%B( o ), p%X_l( n ), p%X_u( n ), p%X( n ), X_stat( n ) )
+   ALLOCATE( p%B( o ), p%X_l( n ), p%X_u( n ), p%X( n ), p%X_status( n ) )
    p%n = n ; p%o = o                          ! dimensions
    p%B = (/ 0.0_wp, 2.0_wp, 1.0_wp, 2.0_wp /) ! right-hand side
    p%X_l = (/ - 1.0_wp, - infinity, 0.0_wp /) ! variable lower bound
@@ -31,14 +30,13 @@
 ! problem data complete
    CALL BLLS_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = infinity                   ! Set infinity
-   control%print_level = 1                       ! print one line/iteration
+!  control%print_level = 1                       ! print one line/iteration
    control%exact_arc_search = .FALSE.
    ALLOCATE( FLAG( n ) )
    nflag = 0 ; FLAG = 0  ! Flag if index already used in current (nflag) product
    inform%status = 1
 10 CONTINUE ! Solve problem - reverse commmunication loop
-     CALL BLLS_solve( p, X_stat, data, control, inform, userdata,              &
-                      reverse = reverse )
+     CALL BLLS_solve( p, data, control, inform, userdata, reverse = reverse )
 
      SELECT CASE ( inform%status )
      CASE ( 0 ) !  successful return
@@ -111,6 +109,6 @@
        WRITE( 6, "( /, ' BLLS_solve exit status = ', I0 ) " ) inform%status
      END SELECT
    CALL BLLS_terminate( data, control, inform )  !  delete workspace
-   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, p%R, p%G, X_stat, FLAG )
+   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, p%R, p%G, p%X_status, FLAG )
    DEALLOCATE( Ao_val, Ao_row, Ao_ptr )
    END PROGRAM GALAHAD_BLLS_SECOND_EXAMPLE

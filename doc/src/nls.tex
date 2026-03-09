@@ -69,7 +69,7 @@ and
 If it is required to use more than one of the modules at the same time, 
 the derived types
 {\tt SMT\_type},
-{\tt GALAHAD\_userdata\_type},
+{\tt USERDATA\_type},
 {\tt \packagename\_time\_\-type},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_inform\_type},
@@ -287,7 +287,7 @@ are:
 \ittf{n} is a scalar variable of type \integer,
  that holds the number of optimization variables, $n$.
 
-\ittf{m} is a scalar variable of type \integer,
+\ittf{o} is a scalar variable of type \integer,
  that holds the number of residual functions, $m$.
 
 %\itt{stabilisation\_weight}  is a scalar variable of type \realdp,
@@ -308,7 +308,7 @@ at the point $\bmx$. The $i$-th component of
 \ittf{G} is a rank-one allocatable array of dimension {\tt m} and type
 \realdp, that holds the gradient $g(\bmx) = \nabla_x f(\bmx)$ of the
 objective function at the point $\bmx$. The $j$-th component of
-{\tt G}, $i = 1, \ldots, m$, contains $\partial f(\bmx)/\partial x_j$.
+{\tt G}, $i = 1, \ldots, n$, contains $\partial f(\bmx)/\partial x_j$.
 
 \ittf{J} is scalar variable of type {\tt SMT\_TYPE}
 that holds the Jacobian matrix $\bmJ(\bmx)$ (if it is available).
@@ -1355,7 +1355,7 @@ it must not have been altered {\bf by the user} since the last call to
 {\tt \packagename\_initialize}.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the \optional\ subroutines
 {\tt eval\_C}, {\tt eval\_J}, {\tt eval\_H}, {\tt eval\_JPROD},
 {\tt eval\_HPROD}, {\tt eval\_HPRODS} and {\tt eval\_SCALE}
@@ -1512,7 +1512,7 @@ and to a non-zero value if the evaluation has not been possible.
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the subroutines
 {\tt eval\_C}, {\tt eval\_J}, {\tt eval\_H}, {\tt eval\_JPROD},
 {\tt eval\_HPROD}, {\tt eval\_HPRODS} and {\tt eval\_SCALE}
@@ -1551,7 +1551,7 @@ and to a non-zero value if the evaluation has not been possible.
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the subroutines
 {\tt eval\_C}, {\tt eval\_J}, {\tt eval\_H}, {\tt eval\_JPROD},
 {\tt eval\_HPROD}, {\tt eval\_HPRODS} and {\tt eval\_SCALE}
@@ -1597,7 +1597,7 @@ whose components contain the vector $\bmx$.
 whose components contain the vector $\bmy$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the subroutines
 {\tt eval\_C}, {\tt eval\_J}, {\tt eval\_H}, {\tt eval\_JPROD},
 {\tt eval\_HPROD}, {\tt eval\_HPRODS} and {\tt eval\_SCALE}
@@ -1642,7 +1642,7 @@ and to a non-zero value if the evaluation has not been possible.
 \realdp\ whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the subroutines
 {\tt eval\_C}, {\tt eval\_J}, {\tt eval\_H}, {\tt eval\_JPROD},
 {\tt eval\_HPROD}, {\tt eval\_HPRODS} and {\tt eval\_SCALE}
@@ -1704,7 +1704,7 @@ and to a non-zero value if the evaluation has not been possible.
 \realdp\ whose components contain the vector $\bmy$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the subroutines
 {\tt eval\_C}, {\tt eval\_J}, {\tt eval\_H}, {\tt eval\_JPROD},
 {\tt eval\_HPROD}, {\tt eval\_HPRODS} and {\tt eval\_SCALE}
@@ -1758,7 +1758,7 @@ and to a non-zero value if the evaluation has not been possible.
 \realdp\ whose components contain the vector $\bmv$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the subroutines
 {\tt eval\_C}, {\tt eval\_J}, {\tt eval\_H}, {\tt eval\_JPROD},
 {\tt eval\_HPROD}, {\tt eval\_HPRODS} and {\tt eval\_SCALE}
@@ -1814,7 +1814,7 @@ and to a non-zero value if the evaluation has not been possible.
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_C}, {\tt eval\_J},
 {\tt eval\_H} and {\tt eval\_SCALE}
@@ -2354,7 +2354,7 @@ we may use the following code:
 }
 \noindent
 Notice how the parameter $p$ is passed to the function evaluation
-routines via the {\tt real} component of the derived type {\tt userdata}.
+routines via the {\tt real} component of the derived type {\tt USERDATA\_type}.
 The code produces the following output:
 {\tt \small
 \VerbatimInput{\packageresults}

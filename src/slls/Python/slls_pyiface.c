@@ -1,7 +1,7 @@
 //* \file slls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-01-02 AT 08:30 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-02-06 AT 13:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SLLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -38,8 +38,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool slls_update_control(struct slls_control_type *control,
-                               PyObject *py_options){
+bool slls_update_control(struct slls_control_type *control,
+                         PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -137,12 +137,6 @@ static bool slls_update_control(struct slls_control_type *control,
         if(strcmp(key_name, "sif_file_device") == 0){
             if(!parse_int_option(value, "sif_file_device",
                                   &control->sif_file_device))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "weight") == 0){
-            if(!parse_double_option(value, "weight",
-                                  &control->weight))
                 return false;
             continue;
         }
@@ -305,8 +299,6 @@ PyObject* slls_make_options_dict(const struct slls_control_type *control){
                          PyLong_FromLong(control->arcsearch_max_steps));
     PyDict_SetItemString(py_options, "sif_file_device",
                          PyLong_FromLong(control->sif_file_device));
-    PyDict_SetItemString(py_options, "weight",
-                         PyFloat_FromDouble(control->weight));
     PyDict_SetItemString(py_options, "stop_d",
                          PyFloat_FromDouble(control->stop_d));
     PyDict_SetItemString(py_options, "stop_cg_relative",
@@ -345,7 +337,6 @@ PyObject* slls_make_options_dict(const struct slls_control_type *control){
                          sbls_make_options_dict(&control->sbls_control));
     PyDict_SetItemString(py_options, "convert_options",
                          convert_make_options_dict(&control->convert_control));
-
     return py_options;
 }
 
@@ -360,20 +351,8 @@ static PyObject* slls_make_time_dict(const struct slls_time_type *time){
 
     PyDict_SetItemString(py_time, "total",
                          PyFloat_FromDouble(time->total));
-    PyDict_SetItemString(py_time, "analyse",
-                         PyFloat_FromDouble(time->analyse));
-    PyDict_SetItemString(py_time, "factorize",
-                         PyFloat_FromDouble(time->factorize));
-    PyDict_SetItemString(py_time, "solve",
-                         PyFloat_FromDouble(time->solve));
-//    PyDict_SetItemString(py_time, "clock_total",
-//                         PyFloat_FromDouble(time->clock_total));
-//    PyDict_SetItemString(py_time, "clock_analyse",
-//                         PyFloat_FromDouble(time->clock_analyse));
-//    PyDict_SetItemString(py_time, "clock_factorize",
-//                         PyFloat_FromDouble(time->clock_factorize));
-//    PyDict_SetItemString(py_time, "clock_solve",
-//                         PyFloat_FromDouble(time->clock_solve));
+    PyDict_SetItemString(py_time, "clock_total",
+                         PyFloat_FromDouble(time->clock_total));
 
     return py_time;
 }
@@ -381,7 +360,8 @@ static PyObject* slls_make_time_dict(const struct slls_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* slls_make_inform_dict(const struct slls_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* slls_make_inform_dict(const struct slls_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -396,6 +376,8 @@ static PyObject* slls_make_inform_dict(const struct slls_inform_type *inform){
                          PyLong_FromLong(inform->cg_iter));
     PyDict_SetItemString(py_inform, "obj",
                          PyFloat_FromDouble(inform->obj));
+    PyDict_SetItemString(py_inform, "ls_obj",
+                         PyFloat_FromDouble(inform->ls_obj));
     PyDict_SetItemString(py_inform, "norm_pg",
                          PyFloat_FromDouble(inform->norm_pg));
     PyDict_SetItemString(py_inform, "bad_alloc",
@@ -410,6 +392,8 @@ static PyObject* slls_make_inform_dict(const struct slls_inform_type *inform){
                          sbls_make_inform_dict(&inform->sbls_inform));
     PyDict_SetItemString(py_inform, "convert_inform",
                          convert_make_inform_dict(&inform->convert_inform));
+    PyDict_SetItemString(py_inform, "lapack_error",
+                         PyLong_FromLong(inform->lapack_error));
 
     return py_inform;
 }
@@ -432,26 +416,26 @@ static PyObject* py_slls_initialize(PyObject *self){
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SLLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
 
 static PyObject* py_slls_load(PyObject *self, PyObject *args, PyObject *keywds){
-    PyArrayObject *py_Ao_row, *py_Ao_col, *py_Ao_ptr;
+    PyArrayObject *py_Ao_row, *py_Ao_col, *py_Ao_ptr, *py_cohort;
     PyObject *py_options = NULL;
-    int *Ao_row = NULL, *Ao_col = NULL, *Ao_ptr = NULL;
+    int *Ao_row = NULL, *Ao_col = NULL, *Ao_ptr = NULL, *cohort = NULL;
     const char *Ao_type;
-    int n, o, Ao_ne, Ao_ptr_ne;
+    int n, o, Ao_ne, Ao_ptr_ne, m;
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","o","Ao_type","Ao_ne","Ao_row",
-                             "Ao_col","Ao_ptr_ne","Ao_ptr",
-                             "options",NULL};
+    static char *kwlist[] = {"n", "o", "m", "Ao_type", "Ao_ne",
+                             "Ao_row", "Ao_col", "Ao_ptr_ne", "Ao_ptr",
+                             "cohort", "options", NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOiO|O",
-                                    kwlist, &n, &o,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiisiOOiO|OO",
+                                    kwlist, &n, &o, &m,
                                     &Ao_type, &Ao_ne, &py_Ao_row,
                                     &py_Ao_col, &Ao_ptr_ne, &py_Ao_ptr,
-                                    &py_options))
+                                    &py_cohort, &py_options))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -459,7 +443,8 @@ static PyObject* py_slls_load(PyObject *self, PyObject *args, PyObject *keywds){
     if(!(
         check_array_int("Ao_row", py_Ao_row, Ao_ne) &&
         check_array_int("Ao_col", py_Ao_col, Ao_ne) &&
-        check_array_int("Ao_ptr", py_Ao_ptr, Ao_ptr_ne)
+        check_array_int("Ao_ptr", py_Ao_ptr, Ao_ptr_ne) &&
+        check_array_int("cohort_ptr", py_cohort, n)
         ))
         return NULL;
 
@@ -484,6 +469,13 @@ static PyObject* py_slls_load(PyObject *self, PyObject *args, PyObject *keywds){
         for(int i = 0; i < Ao_ptr_ne; i++) Ao_ptr[i] = (int) Ao_ptr_long[i];
     }
 
+    // Convert 64bit integer cohort array to 32bit
+    if((PyObject *) py_cohort != Py_None){
+        cohort = malloc(n * sizeof(int));
+        long int *cohort_long = (long int *) PyArray_DATA(py_cohort);
+        for(int i = 0; i < n; i++) cohort[i] = (int) cohort_long[i];
+    }
+
     // Reset control options
     slls_reset_control(&control, &data, &status);
 
@@ -492,13 +484,14 @@ static PyObject* py_slls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Call slls_import
-    slls_import(&control, &data, &status, n, o,
-                Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr);
+    slls_import(&control, &data, &status, n, o, m,
+                Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr, cohort);
 
     // Free allocated memory
     if(Ao_row != NULL) free(Ao_row);
     if(Ao_col != NULL) free(Ao_col);
     if(Ao_ptr != NULL) free(Ao_ptr);
+    if(cohort != NULL) free(cohort);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -509,22 +502,27 @@ static PyObject* py_slls_load(PyObject *self, PyObject *args, PyObject *keywds){
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   SLLS_SOLVE_LS   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   SLLS_SOLVE   -*-*-*-*-*-*-*-*
 
-static PyObject* py_slls_solve_ls(PyObject *self, PyObject *args, PyObject *keywds){
+static PyObject* py_slls_solve(PyObject *self, PyObject *args, 
+                               PyObject *keywds){
     PyArrayObject *py_Ao_val;
-    PyArrayObject *py_b, *py_x, *py_z;
-    double *Ao_val, *b, *x, *z;
-    int n, o, Ao_ne;
+    PyArrayObject *py_b, *py_x, *py_w = NULL, *py_x_s = NULL;
+    double *Ao_val, *b, *x, *w = NULL, *x_s = NULL ;
+    int n, o, m, Ao_ne;
+    double sigma;
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
     // Parse positional arguments
-    static char *kwlist[] = {"n", "o", "Ao_ne", "Ao_val", "b", "x", "z", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOOOO", kwlist, &n, &o,
-                                    &Ao_ne, &py_Ao_val, &py_b, &py_x, &py_z))
+    static char *kwlist[] = {"n", "o", "m", "Ao_ne", "Ao_val", "b",
+                             "sigma", "x", "w", "x_s", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOOdO|OO", kwlist, 
+                                    &n, &o, &m,
+                                    &Ao_ne, &py_Ao_val, &py_b, &sigma,
+                                    &py_x, &py_w, &py_x_s))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -534,18 +532,37 @@ static PyObject* py_slls_solve_ls(PyObject *self, PyObject *args, PyObject *keyw
         return NULL;
     if(!check_array_double("x", py_x, n))
         return NULL;
-    if(!check_array_double("z", py_z, n))
-        return NULL;
+    if(py_w != NULL) {
+      if((PyObject *) py_w != Py_None){
+        if(!check_array_double("w", py_w, o))
+            return NULL;
+        w = (double *) PyArray_DATA(py_w);
+      }  
+    }
+    if(py_x_s != NULL) {
+      if((PyObject *) py_w != Py_None){
+        if(!check_array_double("x_s", py_x_s, n))
+            return NULL;
+        x_s = (double *) PyArray_DATA(py_x_s);
+      }
+    }
 
     // Get array data pointer
     Ao_val = (double *) PyArray_DATA(py_Ao_val);
     b = (double *) PyArray_DATA(py_b);
     x = (double *) PyArray_DATA(py_x);
-    z = (double *) PyArray_DATA(py_z);
 
    // Create NumPy output arrays
-    npy_intp ndim[] = {n}; // size of g and x_stat
-    npy_intp odim[] = {o}; // size of c
+    npy_intp ndim[] = {n}; // size of z, g and x_stat
+    npy_intp odim[] = {o}; // size of r
+    npy_intp mdim[] = {m}; // size of y
+
+    PyArrayObject *py_y =
+      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
+    double *y = (double *) PyArray_DATA(py_y);
+    PyArrayObject *py_z =
+      (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
+    double *z = (double *) PyArray_DATA(py_z);
     PyArrayObject *py_r =
       (PyArrayObject *) PyArray_SimpleNew(1, odim, NPY_DOUBLE);
     double *r = (double *) PyArray_DATA(py_r);
@@ -558,8 +575,8 @@ static PyObject* py_slls_solve_ls(PyObject *self, PyObject *args, PyObject *keyw
 
     // Call slls_solve_direct
     status = 1; // set status to 1 on entry
-    slls_solve_given_a(&data, NULL, &status, n, o, Ao_ne, Ao_val,
-                       b, x, z, r, g, x_stat, NULL);
+    slls_solve_given_a(&data, NULL, &status, n, o, m, Ao_ne, Ao_val,
+                       b, sigma, x, y, z, r, g, x_stat, w, x_s, NULL);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < o; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
@@ -573,9 +590,9 @@ static PyObject* py_slls_solve_ls(PyObject *self, PyObject *args, PyObject *keyw
     if(!check_error_codes(status))
         return NULL;
 
-    // Return x, z, r, g and x_stat
+    // Return x, y, z, r, g and x_stat
     PyObject *solve_ls_return;
-    solve_ls_return = Py_BuildValue("OOOOO", py_x, py_z, py_r, py_g,
+    solve_ls_return = Py_BuildValue("OOOOOO", py_x, py_y, py_z, py_r, py_g,
                                      py_x_stat);
     Py_INCREF(solve_ls_return);
     return solve_ls_return;
@@ -618,7 +635,7 @@ static PyObject* py_slls_terminate(PyObject *self){
 static PyMethodDef slls_module_methods[] = {
     {"initialize", (PyCFunction) py_slls_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_slls_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_ls", (PyCFunction) py_slls_solve_ls, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve", (PyCFunction) py_slls_solve, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_slls_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_slls_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
@@ -632,11 +649,11 @@ PyDoc_STRVAR(slls_module_doc,
 "solve a given bound-constrained linear least-squares problem.\n"
 "The aim is to minimize the regularized linear least-squares\n"
 "objective function\n"
-"q(x) =  1/2 || A_o x - b||_W^2 + sigma/2 ||x||_2^2 \n"
+"q(x) =  1/2 || A_o x - b||_W^2 + sigma/2 ||x-x_s||_2^2 \n"
 "where x is required to lie in the regular simplex\n"
 "e^T x = 1, x >= 0,\n"
 "where the o by n matrix A_o, the vector \n"
-"b and the non-negative weights w and \n"
+"b, the shift x_s, and the non-negative weights w and \n"
 "sigma are given, e is the vector of ones\n"
 "and where the Euclidean and weighted-Euclidean norms\n"
 "are given by ||v||_2^2 = v^T v and ||v||_W^2 = v^T W v,\n"

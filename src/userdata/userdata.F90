@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-02-19 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -26,7 +26,8 @@
 !  The GALAHAD_userdata_type derived type
 !  ======================================
 
-     TYPE, PUBLIC :: GALAHAD_userdata_type
+!    TYPE, PUBLIC :: GALAHAD_userdata_type
+     TYPE, PUBLIC :: USERDATA_type
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: integer
        REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: real
        COMPLEX ( KIND = cp_ ), ALLOCATABLE, DIMENSION( : ) :: complex
@@ -39,7 +40,16 @@
          DIMENSION( : ) :: complex_pointer => NULL( )
        CHARACTER, POINTER, DIMENSION( : ) :: character_pointer => NULL( )
        LOGICAL, POINTER, DIMENSION( : ) :: logical_pointer => NULL( )
-     END TYPE GALAHAD_userdata_type
+     END TYPE USERDATA_type
+!    END TYPE GALAHAD_userdata_type
+
+!  extends the GALAHAD_userdata_type so that it can be refered to as
+!  the more conventional USERDATA_type
+
+      TYPE, PUBLIC, EXTENDS( USERDATA_type ) :: GALAHAD_userdata_type
+      END TYPE GALAHAD_userdata_type
+!     TYPE, PUBLIC, EXTENDS( GALAHAD_userdata_type ) :: USERDATA_type
+!     END TYPE USERDATA_type
 
 !  End of module GALAHAD_USERDATA
 

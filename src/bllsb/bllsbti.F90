@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-12-23 AT 14:25 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-01-25 AT 11:50 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_BLLSB_interface_test
    USE GALAHAD_KINDS_precision
@@ -13,7 +13,7 @@
    INTEGER ( KIND = ip_ ) :: data_storage_type, status
    REAL ( KIND = rp_ ) :: regularization_weight
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B, R, W
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B, R, W, X_s
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_row, Ao_col, Ao_ptr
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_val
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
@@ -27,14 +27,15 @@
 
    n = 3 ; o = 4 ; ao_ne = 7
    ao_dense_ne = o * n
-   ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), X_stat( n ) )
+   ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), X_stat( n ), X_s( n ) )
    ALLOCATE( B( o ), R( o ), W( o ) )
    B = (/ 2.0_rp_, 2.0_rp_, 3.0_rp_, 1.0_rp_ /)  ! observations
    X_l = (/ - 1.0_rp_, - infinity, - infinity /) ! variable lower bound
    X_u = (/ 1.0_rp_, infinity, 2.0_rp_ /)        ! variable upper bound
    X = 0.0_rp_ ; Z = 0.0_rp_                     ! start from zero
    W = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 2.0_rp_ /)  ! weights of one and two
-   regularization_weight = 0.0_rp_               ! no regularization
+   X_s = (/ 0.5_rp_, 0.5_rp_, 0.5_rp_ /)         ! shifts of half
+   regularization_weight = 1.0_rp_               ! unit regularization
 
 ! vector problem data complete
 
@@ -99,10 +100,9 @@
                          Ao_dense_ne, Ao_row, Ao_col, Ao_ptr )
      END SELECT
      IF ( status == 0 ) THEN
-       CALL BLLSB_solve_blls( data, status, Ao_val, B,                         &
-                              X_l, X_u, X, R, Z, X_stat,                       &
-                              regularization_weight = regularization_weight,   &
-                              W = W )
+       CALL BLLSB_solve_given_a( data, status, Ao_val, B,                      &
+                                 regularization_weight, X_l, X_u,              &
+                                 X, Z, R, X_stat, W = W, X_s = X_s )
      END IF
      DEALLOCATE( Ao_val, Ao_row, Ao_col, Ao_ptr )
      CALL BLLSB_information( data, inform, status )
@@ -114,7 +114,7 @@
      END IF
      CALL BLLSB_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( X, B, R, Z, W, X_l, X_u, X_stat )
+   DEALLOCATE( X, B, R, Z, W, X_l, X_u, X_s, X_stat )
    WRITE( 6, "( /, ' tests completed' )" )
 
    END PROGRAM GALAHAD_BLLSB_interface_test

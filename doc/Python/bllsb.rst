@@ -307,7 +307,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``bllsb.initialize``).
 
-   .. function:: bllsb.solve_blls(n, o, Ao_ne, Ao_val, b, sigma, x_l, x_u, x, z, w)
+   .. function:: bllsb.solve(n, o, Ao_ne, Ao_val, b, sigma, x_l, x_u, x, z, w, x_s)
 
       Find a solution to the bound-constrained (regularized) linear 
       least-squares problem.
@@ -347,17 +347,20 @@ functions
       w : ndarray(o)
           holds the positive regularization weights $w$. If unit weights are
           to be used, this can be replaced by None.
+      x_s : ndarray(n)
+          holds the shifts $x_s$. If zero shifts are
+          to be used, this can be replaced by None.
 
       **Returns:**
 
       x : ndarray(n)
           holds the values of the approximate minimizer $x$ after
           a successful call.
-      r : ndarray(o)
-          holds the values of the residuals $r(x) = A_ox-b$.
       z : ndarray(n)
           holds the values of the dual variables associated with the 
           simple bound constraints.
+      r : ndarray(o)
+          holds the values of the residuals $r(x) = A_ox-b$.
       x_stat : ndarray(n)
           holds the return status for each variable. The i-th component will be
           negative if the $i$-th variable lies on its lower bound, 
@@ -462,8 +465,12 @@ functions
           threads : int
              the number of threads used.
           obj : float
-             the value of the objective function at the best estimate
-             of the solution determined by BLLSB_solve.
+             the value of the regularized objective function $q(x)$ at the 
+             best estimate of the solution determined by BLLSB_solve.
+          ls_obj : float
+             the value of the least-squares function 
+             $\frac{1}{2} \| A_o x - b\|_W^2$ at the 
+             best estimate of the solution determined by BLLSB_solve.
           primal_infeasibility : float
              the value of the primal infeasibility.
           dual_infeasibility : float

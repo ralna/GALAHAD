@@ -972,7 +972,12 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 solved. It must not have been altered {\bf by the user} since the last call to 
 {\tt \packagename\_initialize}.
 
-\itt{userdata}
+\itt{userdata} is a scalar \intentinout\ argument of type
+{\tt USERDATA\_type} whose components may be used
+to communicate user-supplied data
+(see Section~\ref{typeuserdata})
+to and from the \optional\ subroutines
+{\tt eval\_FC} etc, (see below).
 
 \itt{eval\_FC} is an \optional\ rank-one \intentin\ pointer array of type 
  \realdp,  that holds \ldots

@@ -1,7 +1,7 @@
 //* \file blls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:10 GMT.
+ * THIS VERSION: GALAHAD 5,5 - 2026-03-06 AT 13:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BLLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -38,8 +38,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool blls_update_control(struct blls_control_type *control,
-                               PyObject *py_options){
+bool blls_update_control(struct blls_control_type *control,
+                         PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -137,12 +137,6 @@ static bool blls_update_control(struct blls_control_type *control,
         if(strcmp(key_name, "sif_file_device") == 0){
             if(!parse_int_option(value, "sif_file_device",
                                   &control->sif_file_device))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "weight") == 0){
-            if(!parse_double_option(value, "weight",
-                                  &control->weight))
                 return false;
             continue;
         }
@@ -317,8 +311,6 @@ PyObject* blls_make_options_dict(const struct blls_control_type *control){
                          PyLong_FromLong(control->arcsearch_max_steps));
     PyDict_SetItemString(py_options, "sif_file_device",
                          PyLong_FromLong(control->sif_file_device));
-    PyDict_SetItemString(py_options, "weight",
-                         PyFloat_FromDouble(control->weight));
     PyDict_SetItemString(py_options, "infinity",
                          PyFloat_FromDouble(control->infinity));
     PyDict_SetItemString(py_options, "stop_d",
@@ -376,20 +368,8 @@ static PyObject* blls_make_time_dict(const struct blls_time_type *time){
 
     PyDict_SetItemString(py_time, "total",
                          PyFloat_FromDouble(time->total));
-    PyDict_SetItemString(py_time, "analyse",
-                         PyFloat_FromDouble(time->analyse));
-    PyDict_SetItemString(py_time, "factorize",
-                         PyFloat_FromDouble(time->factorize));
-    PyDict_SetItemString(py_time, "solve",
-                         PyFloat_FromDouble(time->solve));
     PyDict_SetItemString(py_time, "clock_total",
                          PyFloat_FromDouble(time->clock_total));
-    PyDict_SetItemString(py_time, "clock_analyse",
-                         PyFloat_FromDouble(time->clock_analyse));
-    PyDict_SetItemString(py_time, "clock_factorize",
-                         PyFloat_FromDouble(time->clock_factorize));
-    PyDict_SetItemString(py_time, "clock_solve",
-                         PyFloat_FromDouble(time->clock_solve));
 
     return py_time;
 }
@@ -397,7 +377,8 @@ static PyObject* blls_make_time_dict(const struct blls_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* blls_make_inform_dict(const struct blls_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* blls_make_inform_dict(const struct blls_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -412,6 +393,8 @@ static PyObject* blls_make_inform_dict(const struct blls_inform_type *inform){
                          PyLong_FromLong(inform->cg_iter));
     PyDict_SetItemString(py_inform, "obj",
                          PyFloat_FromDouble(inform->obj));
+    PyDict_SetItemString(py_inform, "ls_obj",
+                         PyFloat_FromDouble(inform->ls_obj));
     PyDict_SetItemString(py_inform, "norm_pg",
                          PyFloat_FromDouble(inform->norm_pg));
     PyDict_SetItemString(py_inform, "bad_alloc",
@@ -525,23 +508,28 @@ static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   BLLS_SOLVE_LS   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   BLLS_SOLVE   -*-*-*-*-*-*-*-*
 
-static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args, PyObject *keywds){
-    PyArrayObject *py_w, *py_Ao_val;
+static PyObject* py_blls_solve(PyObject *self, PyObject *args, PyObject *keywds){
+    PyArrayObject *py_Ao_val;
     PyArrayObject *py_b, *py_x_l, *py_x_u, *py_x, *py_z;
-    double *w, *Ao_val, *b, *x_l, *x_u, *x, *z;
+    PyArrayObject *py_w = NULL, *py_x_s = NULL;
+    double *Ao_val, *b, *x_l, *x_u, *x, *z;
+    double *w = NULL, *x_s = NULL ;
     int n, o, Ao_ne;
+    double sigma;
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
     // Parse positional arguments
-    static char *kwlist[] = {"n","o","w","Ao_ne","Ao_val","b","x_l","x_u","x","z",NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOiOOOOOO", kwlist, &n, &o, &py_w,
-                                    &Ao_ne, &py_Ao_val, &py_b, &py_x_l, &py_x_u,
-                                    &py_x, &py_z))
+    static char *kwlist[] = {"n", "o", "Ao_ne", "Ao_val", "b", "sigma",
+                             "x_l", "x_u", "x", "z", "w", "x_s", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOOdOOOO|OO", kwlist, 
+                                    &n, &o, &Ao_ne, &py_Ao_val, &py_b, &sigma,
+                                    &py_x_l, &py_x_u, &py_x, &py_z, 
+                                    &py_w, &py_x_s))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -557,8 +545,20 @@ static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args, PyObject *keyw
         return NULL;
     if(!check_array_double("z", py_z, n))
         return NULL;
-    if(!check_array_double("w", py_w, o))
-        return NULL;
+    if(py_w != NULL) {
+      if((PyObject *) py_w != Py_None){
+        if(!check_array_double("w", py_w, o))
+            return NULL;
+        w = (double *) PyArray_DATA(py_w);
+      }  
+    }
+    if(py_x_s != NULL) {
+      if((PyObject *) py_w != Py_None){
+        if(!check_array_double("x_s", py_x_s, n))
+            return NULL;
+        x_s = (double *) PyArray_DATA(py_x_s);
+      }
+    }
 
     // Get array data pointer
     Ao_val = (double *) PyArray_DATA(py_Ao_val);
@@ -567,7 +567,6 @@ static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args, PyObject *keyw
     x_u = (double *) PyArray_DATA(py_x_u);
     x = (double *) PyArray_DATA(py_x);
     z = (double *) PyArray_DATA(py_z);
-    w = (double *) PyArray_DATA(py_w);
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of g and x_stat
@@ -584,8 +583,8 @@ static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args, PyObject *keyw
 
     // Call blls_solve_direct
     status = 1; // set status to 1 on entry
-    blls_solve_given_a(&data, NULL, &status, n, o, Ao_ne, Ao_val,
-                       b, x_l, x_u, x, z, r, g, x_stat, w, NULL);
+    blls_solve_given_a(&data, NULL, &status, n, o, Ao_ne, Ao_val, b, sigma,
+                       x_l, x_u, x, z, r, g, x_stat, w, x_s, NULL);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < o; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
@@ -644,7 +643,7 @@ static PyObject* py_blls_terminate(PyObject *self){
 static PyMethodDef blls_module_methods[] = {
     {"initialize", (PyCFunction) py_blls_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_blls_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_ls", (PyCFunction) py_blls_solve_ls, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve", (PyCFunction) py_blls_solve, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_blls_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_blls_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
@@ -658,11 +657,11 @@ PyDoc_STRVAR(blls_module_doc,
 "solve a given bound-constrained linear least-squares problem.\n"
 "The aim is to minimize the regularized linear least-squares\n"
 "objective function\n"
-"q(x) =  1/2 || A_o x - b||_W^2 + sigma/2 ||x||_2^2 \n"
+"q(x) =  1/2 || A_o x - b||_W^2 + sigma/2 ||x-x_s||_2^2 \n"
 "subject to the simple bounds\n"
 "x_l <= x <= x_u,\n"
 "where the o by n matrix A_o, the vectors \n"
-"b, x_l, x_u and the non-negative weights w and \n"
+"b, x_l, x_u, x_s and the non-negative weights w and \n"
 "sigma are given, and where the Euclidean and weighted-Euclidean norms\n"
 "are given by ||v||_2^2 = v^T v and ||v||_W^2 = v^T W v,\n"
 "respectively, with W = diag(w). Any of the components of \n"

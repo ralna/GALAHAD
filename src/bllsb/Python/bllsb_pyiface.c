@@ -1,7 +1,7 @@
 //* \file bllsb_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.2 - 2023-12-23 AT 13:40 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BLLSB PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -51,8 +51,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool bllsb_update_control(struct bllsb_control_type *control,
-                               PyObject *py_options){
+bool bllsb_update_control(struct bllsb_control_type *control,
+                          PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -599,7 +599,8 @@ static PyObject* bllsb_make_time_dict(const struct bllsb_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* bllsb_make_inform_dict(const struct bllsb_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* bllsb_make_inform_dict(const struct bllsb_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -624,6 +625,8 @@ static PyObject* bllsb_make_inform_dict(const struct bllsb_inform_type *inform){
                          PyLong_FromLong(inform->threads));
     PyDict_SetItemString(py_inform, "obj",
                          PyFloat_FromDouble(inform->obj));
+    PyDict_SetItemString(py_inform, "ls_obj",
+                         PyFloat_FromDouble(inform->ls_obj));
     PyDict_SetItemString(py_inform, "primal_infeasibility",
                          PyFloat_FromDouble(inform->primal_infeasibility));
     PyDict_SetItemString(py_inform, "dual_infeasibility",
@@ -767,12 +770,14 @@ static PyObject* py_bllsb_load(PyObject *self, PyObject *args, PyObject *keywds)
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   BLLSB_SOLVE_BLLS   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   BLLSB_SOLVE   -*-*-*-*-*-*-*-*
 
-static PyObject* py_bllsb_solve_blls(PyObject *self, PyObject *args, PyObject *keywds){
-    PyArrayObject *py_Ao_val, *py_b, *py_x_l, *py_x_u, *py_w;
+static PyObject* py_bllsb_solve(PyObject *self, PyObject *args, PyObject *keywds){
+    PyArrayObject *py_Ao_val, *py_b, *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_z;
-    double *Ao_val, *b, *x_l, *x_u, *w, *x, *z;
+    PyArrayObject *py_w = NULL, *py_x_s = NULL;
+    double *Ao_val, *b, *x_l, *x_u, *x, *z;
+    double *w = NULL, *x_s = NULL;
     int n, o, Ao_ne;
     double sigma;
 
@@ -781,10 +786,12 @@ static PyObject* py_bllsb_solve_blls(PyObject *self, PyObject *args, PyObject *k
         return NULL;
 
     // Parse positional arguments
-    static char *kwlist[] = {"n","o","Ao_ne","Ao_val","b","sigma","x_l","x_u","x","z","w",NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOOdOOOOO", kwlist, &n, &o,
-                                    &Ao_ne, &py_Ao_val, &py_b, &sigma,
-                                    &py_x_l, &py_x_u, &py_x, &py_z, &py_w))
+    static char *kwlist[] = {"n", "o", "Ao_ne", "Ao_val", "b", "sigma",
+                             "x_l", "x_u", "x", "z", "w", "x_s", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOOdOOOO|OO", kwlist, 
+                                    &n, &o, &Ao_ne, &py_Ao_val, &py_b, &sigma,
+                                    &py_x_l, &py_x_u, &py_x, &py_z, 
+                                    &py_w, &py_x_s))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -800,8 +807,20 @@ static PyObject* py_bllsb_solve_blls(PyObject *self, PyObject *args, PyObject *k
         return NULL;
     if(!check_array_double("z", py_z, n))
         return NULL;
-    if(!check_array_double("w", py_w, o))
-        return NULL;
+    if(py_w != NULL) {
+      if((PyObject *) py_w != Py_None){
+        if(!check_array_double("w", py_w, o))
+            return NULL;
+        w = (double *) PyArray_DATA(py_w);
+      }  
+    }
+    if(py_x_s != NULL) {
+      if((PyObject *) py_w != Py_None){
+        if(!check_array_double("x_s", py_x_s, n))
+            return NULL;
+        x_s = (double *) PyArray_DATA(py_x_s);
+      }
+    }
 
     // Get array data pointer
     Ao_val = (double *) PyArray_DATA(py_Ao_val);
@@ -810,7 +829,6 @@ static PyObject* py_bllsb_solve_blls(PyObject *self, PyObject *args, PyObject *k
     x_u = (double *) PyArray_DATA(py_x_u);
     x = (double *) PyArray_DATA(py_x);
     z = (double *) PyArray_DATA(py_z);
-    w = (double *) PyArray_DATA(py_w);
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
@@ -824,8 +842,8 @@ static PyObject* py_bllsb_solve_blls(PyObject *self, PyObject *args, PyObject *k
 
     // Call bllsb_solve_direct
     status = 1; // set status to 1 on entry
-    bllsb_solve_blls(&data, &status, n, o, Ao_ne, Ao_val, b, sigma,
-                     x_l, x_u, x, r, z, x_stat, w);
+    bllsb_solve_given_a(&data, &status, n, o, Ao_ne, Ao_val, b, sigma,
+                        x_l, x_u, x, z, r, x_stat, w, x_s);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
@@ -839,11 +857,11 @@ static PyObject* py_bllsb_solve_blls(PyObject *self, PyObject *args, PyObject *k
     if(!check_error_codes(status))
         return NULL;
 
-    // Return x, r, z and x_stat
+    // Return x, z, r, and x_stat
     PyObject *solve_bllsb_return;
 
     // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_bllsb_return = Py_BuildValue("OOOO", py_x, py_r, py_z, py_x_stat);
+    solve_bllsb_return = Py_BuildValue("OOOO", py_x, py_z, py_r, py_x_stat);
     Py_INCREF(solve_bllsb_return);
     return solve_bllsb_return;
 
@@ -887,7 +905,7 @@ static PyObject* py_bllsb_terminate(PyObject *self){
 static PyMethodDef bllsb_module_methods[] = {
     {"initialize", (PyCFunction) py_bllsb_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_bllsb_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_bllsb", (PyCFunction) py_bllsb_solve_blls, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve", (PyCFunction) py_bllsb_solve, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_bllsb_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_bllsb_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

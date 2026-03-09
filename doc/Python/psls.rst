@@ -56,8 +56,8 @@ functions
 
              * **1**
 
-               $A$ is replaced by the diagonal,  $P$ = diag( max(
-               $A$, ``min_diagonal`` ) ).
+               $A$ is replaced by the diagonal,  $P$ = diag( max( $|$ diag
+               $(A)|$, ``min_diagonal`` ) ).
 
              * **2**
 

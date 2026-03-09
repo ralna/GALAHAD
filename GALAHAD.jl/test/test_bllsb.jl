@@ -21,6 +21,7 @@ function test_bllsb(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
   x_l = T[-1.0, -Inf, -Inf]  # variable lower bound
   x_u = T[1.0, Inf, 2.0]  # variable upper bound
   w = T[1.0, 1.0, 1.0, 2.0]  # weights
+  x_s = T[0.0, 0.0, 0.0]  # shifts
 
   # Set output storage
   r = zeros(T, o) # residual values
@@ -56,8 +57,8 @@ function test_bllsb(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
       bllsb_import(T, INT, control, data, status, n, o,
                    "coordinate", Ao_ne, Ao_row, Ao_col, INT(0), C_NULL)
 
-      bllsb_solve_blls(T, INT, data, status, n, o, Ao_ne, Ao_val, b,
-                       sigma, x_l, x_u, x, r, z, x_stat, w)
+      bllsb_solve_given_a(T, INT, data, status, n, o, Ao_ne, Ao_val, b,
+                          sigma, x_l, x_u, x, z, r, x_stat, w, x_s)
     end
 
     # sparse by rows
@@ -74,8 +75,8 @@ function test_bllsb(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
                    "sparse_by_rows", Ao_ne, C_NULL, Ao_col,
                    Ao_ptr_ne, Ao_ptr)
 
-      bllsb_solve_blls(T, INT, data, status, n, o, Ao_ne, Ao_val, b,
-                       sigma, x_l, x_u, x, r, z, x_stat, w)
+      bllsb_solve_given_a(T, INT, data, status, n, o, Ao_ne, Ao_val, b,
+                          sigma, x_l, x_u, x, z, r, x_stat, w, x_s)
     end
 
     # sparse by columns
@@ -91,8 +92,8 @@ function test_bllsb(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
                    "sparse_by_columns", Ao_ne, Ao_row, C_NULL,
                    Ao_ptr_ne, Ao_ptr)
 
-      bllsb_solve_blls(T, INT, data, status, n, o, Ao_ne, Ao_val, b,
-                       sigma, x_l, x_u, x, r, z, x_stat, w)
+      bllsb_solve_given_a(T, INT, data, status, n, o, Ao_ne, Ao_val, b,
+                          sigma, x_l, x_u, x, z, r, x_stat, w, x_s)
     end
 
     if d == 4 # dense by rows
@@ -103,8 +104,8 @@ function test_bllsb(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
       bllsb_import(T, INT, control, data, status, n, o,
                    "dense", Ao_ne, C_NULL, C_NULL, INT(0), C_NULL)
 
-      bllsb_solve_blls(T, INT, data, status, n, o, Ao_ne, Ao_dense, b,
-                       sigma, x_l, x_u, x, r, z, x_stat, w)
+      bllsb_solve_given_a(T, INT, data, status, n, o, Ao_ne, Ao_dense, b,
+                          sigma, x_l, x_u, x, z, r, x_stat, w, x_s)
     end
 
     if d == 5 # dense by cols
@@ -115,8 +116,8 @@ function test_bllsb(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
       bllsb_import(T, INT, control, data, status, n, o,
                    "dense_by_columns", Ao_ne, C_NULL, C_NULL, INT(0), C_NULL)
 
-      bllsb_solve_blls(T, INT, data, status, n, o, Ao_ne, Ao_dense, b,
-                       sigma, x_l, x_u, x, r, z, x_stat, w)
+      bllsb_solve_given_a(T, INT, data, status, n, o, Ao_ne, Ao_dense, b,
+                          sigma, x_l, x_u, x, z, r, x_stat, w, x_s)
     end
 
     bllsb_information(T, INT, data, inform, status)

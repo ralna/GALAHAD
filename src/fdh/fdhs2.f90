@@ -15,7 +15,7 @@
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) ::  X1, X2, STEPSIZE, G, H
 !  REAL ( KIND = wp ) ::  X1( n ), X2( n ), STEPSIZE( n ), G( n )
 !  REAL ( KIND = wp ) ::  H( nz )
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTERFACE
      SUBROUTINE GRAD( status, X, userdata, G )
      USE GALAHAD_USERDATA_double
@@ -23,7 +23,7 @@
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      END SUBROUTINE GRAD
    END INTERFACE
 ! start problem data
@@ -87,7 +87,7 @@
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    G( 1 ) = 3.0_wp * ( X( 1 ) + userdata%real( 1 ) ) ** 2 + X( 4 )
    G( 2 ) = 3.0_wp * X( 2 ) ** 2 + X( 3 )
    G( 3 ) = 3.0_wp * X( 3 ) ** 2 + X( 2 ) + X( 4 )

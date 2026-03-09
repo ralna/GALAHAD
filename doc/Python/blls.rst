@@ -88,11 +88,6 @@ functions
           sif_file_device : int
              the unit number to write generated SIF file describing the
              current problem.
-          weight : float
-             the value of the non-negative regularization weight $\sigma$, 
-             i.e., the quadratic objective function $q(x)$ will be regularized 
-             by adding $1/2 \sigma \|x\|_2^2$; any value of weight smaller
-             than zero will be regarded as zero.
           infinity : float
              any bound larger than infinity in modulus will be regarded
              as infinite.
@@ -201,7 +196,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``blls.initialize``).
 
-   .. function:: blls.solve_ls(n, o, w, Ao_ne, Ao_val, b, x_l, x_u, x, z)
+   .. function:: blls.solve(n, o, Ao_ne, Ao_val, b, sigma, x_l, x_u, x, z, w, x_s)
 
       Find a solution to the bound-constraind regularized linear least-squares
       problem involving the least-squares objective function $q(x)$.
@@ -212,8 +207,6 @@ functions
           holds the number of variables.
       o : int
           holds the number of residuals.
-      w : ndarray(o)
-          holds the weights $w$ in the objective function.
       Ao_ne : int
           holds the number of entries in the constraint Jacobian $A_o$.
       Ao_val : ndarray(Ao_ne)
@@ -223,6 +216,8 @@ functions
       b : ndarray(o)
           holds the values of the observation vector $b$ in the 
           objective function.
+      sigma : float
+          holds the regularization weight $\sigma \geq 0$.
       x_l : ndarray(n)
           holds the values of the lower bounds $x_l$ on the variables.
           The lower bound on any component of $x$ that is unbounded from 
@@ -240,6 +235,12 @@ functions
           associated with the simple bound constraints, if known.
           This is not crucial, and if no suitable value is known, then any
           value, such as $z=0$, suffices and will be adjusted accordingly.
+      w : ndarray(o)
+          holds the positive regularization weights $w$. If unit weights are
+          to be used, this can be replaced by None.
+      x_s : ndarray(n)
+          holds the shifts $x_s$. If zero shifts are
+          to be used, this can be replaced by None.
 
       **Returns:**
 
@@ -340,7 +341,10 @@ functions
           cg_iter : int
              number of CG iterations required.
           obj : float
-             current value of the objective function, $r(x)$.
+             current value of the regularized objective function, $q(x)$.
+          ls_obj : float
+             current value of the least-squares function, 
+             $\half \| \bmA_o \bmx - \bmb\|_W^2$.
           norm_pg : float
              current value of the Euclidean norm of projected gradient 
              of $r(x)$.
@@ -348,13 +352,8 @@ functions
              dictionary containing timing information:
                total : float
                   the total CPU time spent in the package.
-               analyse : float
-                  the CPU time spent analysing the required matrices prior
-                  to factorization.
-               factorize : float
-                  the CPU time spent factorizing the required matrices.
-               solve : float
-                  the CPU time spent computing the search direction.
+               clock_total : float
+                  the total clock time spent in the package.
           sbls_inform : dict
              inform parameters for SBLS (see ``sbls.information``).
           convert_inform : dict

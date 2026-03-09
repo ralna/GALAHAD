@@ -1,7 +1,7 @@
 //* \file qpb_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_QPB PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -50,8 +50,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool qpb_update_control(struct qpb_control_type *control,
-                               PyObject *py_options){
+bool qpb_update_control(struct qpb_control_type *control,
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -662,7 +662,8 @@ static PyObject* qpb_make_time_dict(const struct qpb_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* qpb_make_inform_dict(const struct qpb_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* qpb_make_inform_dict(const struct qpb_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",

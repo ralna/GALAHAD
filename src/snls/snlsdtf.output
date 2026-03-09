@@ -1,0 +1,6 @@
+ fortran sparse matrix indexing
+
+ SNLS(JF):     5 iterations. Optimal objective value =  5.50 status = 0
+ SNLS(PF):     5 iterations. Optimal objective value =  5.50 status = 0
+ SNLS(JR):     5 iterations. Optimal objective value =  5.50 status = 0
+ SNLS(PR):     5 iterations. Optimal objective value =  5.50 status = 0

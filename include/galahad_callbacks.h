@@ -15,30 +15,64 @@ extern "C" {
 
 // ARC, BGO, DGO, TRB, TRU
 typedef ipc_ galahad_f( ipc_ n, const rpc_ x[], rpc_ *f, const void *userdata );
-typedef ipc_ galahad_g( ipc_ n, const rpc_ x[], rpc_ g[], const void *userdata );
-typedef ipc_ galahad_h( ipc_ n, ipc_ ne, const rpc_ x[], rpc_ h[], const void *userdata );
-typedef ipc_ galahad_prec( ipc_ n, const rpc_ x[], rpc_ u[], const rpc_ v[], const void *userdata );
-typedef ipc_ galahad_hprod( ipc_ n, const rpc_ x[], rpc_ u[], const rpc_ v[], bool got_h, const void *userdata );
-typedef ipc_ galahad_shprod( ipc_ n, const rpc_ x[], ipc_ nnz_v, const ipc_ index_nz_v[], const rpc_ v[], ipc_ *nnz_u, ipc_ index_nz_u[], rpc_ u[], bool got_h, const void *userdata );
+typedef ipc_ galahad_g( ipc_ n, const rpc_ x[], rpc_ g[], 
+                        const void *userdata );
+typedef ipc_ galahad_h( ipc_ n, ipc_ ne, const rpc_ x[], rpc_ h[], 
+                        const void *userdata );
+typedef ipc_ galahad_prec( ipc_ n, const rpc_ x[], rpc_ u[], const rpc_ v[], 
+                           const void *userdata );
+typedef ipc_ galahad_hprod( ipc_ n, const rpc_ x[], rpc_ u[], 
+                            const rpc_ v[], bool got_h, const void *userdata );
+typedef ipc_ galahad_shprod( ipc_ n, const rpc_ x[], ipc_ nnz_v, 
+                             const ipc_ index_nz_v[], const rpc_ v[], 
+                             ipc_ *nnz_u, ipc_ index_nz_u[], rpc_ u[], 
+                             bool got_h, const void *userdata );
 
 // BLLS, SLLS
-typedef ipc_ galahad_constant_prec( ipc_ n, const rpc_ v[], rpc_ p[], const void *userdata );
+typedef ipc_ galahad_constant_prec( ipc_ n, const rpc_ v[], rpc_ p[], 
+                                    const void *userdata );
+
+// NLS, BNLS, SNLS
+typedef ipc_ galahad_r( ipc_ n, ipc_ m, const rpc_ x[], rpc_ r[], 
+                        const void *userdata );
+typedef ipc_ galahad_jr( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jr[], 
+                         const void *userdata );
 
 // NLS
-typedef ipc_ galahad_r( ipc_ n, ipc_ m, const rpc_ x[], rpc_ r[], const void *userdata );
-typedef ipc_ galahad_jr( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jr[], const void *userdata );
-typedef ipc_ galahad_hr( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[], rpc_ hr[], const void *userdata );
-typedef ipc_ galahad_jrprod( ipc_ n, ipc_ m, const rpc_ x[], const bool transpose, rpc_ u[], const rpc_ v[], bool got_j, const void *userdata );
-typedef ipc_ galahad_hrprod( ipc_ n, ipc_ m, const rpc_ x[], const rpc_ y[], rpc_ u[], const rpc_ v[], bool got_h, const void *userdata );
-typedef ipc_ galahad_shrprod( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[], const rpc_ v[], rpc_ pval[], bool got_h, const void *userdata );
+typedef ipc_ galahad_hr( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], 
+                         const rpc_ y[], rpc_ hr[], const void *userdata );
+typedef ipc_ galahad_jrprod( ipc_ n, ipc_ m, const rpc_ x[], 
+                             const bool transpose, rpc_ u[], const rpc_ v[], 
+                             bool got_j, const void *userdata );
+typedef ipc_ galahad_hrprod( ipc_ n, ipc_ m, const rpc_ x[], const rpc_ y[], 
+                             rpc_ u[], const rpc_ v[], bool got_h, 
+                             const void *userdata );
+typedef ipc_ galahad_shrprod( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[], 
+                              const rpc_ v[], rpc_ pval[], bool got_h, 
+                              const void *userdata );
+
+// BNLS, SNLS
+typedef ipc_ galahad_jr_prod( ipc_ n, ipc_ m_r, const rpc_ x[], 
+                              const bool transpose, const rpc_ v[], rpc_ p[], 
+                              bool got_jr, const void *userdata );
+typedef ipc_ galahad_jr_scol( ipc_ n, ipc_ m_r, const rpc_ x[], ipc_ index,
+                              rpc_ val[], ipc_ row[], ipc_ nz, bool got_jr,
+                              const void *userdata );
+typedef ipc_ galahad_jr_sprod( ipc_ n, ipc_ m_r, const rpc_ x[], bool transpose,
+                               const rpc_ v[], rpc_ p[], const ipc_ free[],
+                               ipc_ n_free, bool got_jr, const void *userdata );
 
 // EXPO
-typedef ipc_ galahad_fc( ipc_ n, ipc_ m, const rpc_ x[], rpc_ *f, rpc_ c[], const void *userdata );
-typedef ipc_ galahad_gj( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ g[], rpc_ j[], const void *userdata );
-typedef ipc_ galahad_hl( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[], rpc_ h[], const void *userdata );
+typedef ipc_ galahad_fc( ipc_ n, ipc_ m, const rpc_ x[], rpc_ *f, rpc_ c[], 
+                         const void *userdata );
+typedef ipc_ galahad_gj( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ g[], 
+                         rpc_ j[], const void *userdata );
+typedef ipc_ galahad_hl( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], 
+                         const rpc_ y[], rpc_ h[], const void *userdata );
 
 // UGO
-typedef ipc_ galahad_fgh( rpc_ x, rpc_ *f, rpc_ *g, rpc_ *h, const void *userdata );
+typedef ipc_ galahad_fgh( rpc_ x, rpc_ *f, rpc_ *g, rpc_ *h, 
+                          const void *userdata );
 
 #ifdef __cplusplus
 }
