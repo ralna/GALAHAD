@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-02-08 AT 13:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -16,18 +16,18 @@
 
     MODULE GALAHAD_CLLS_precision
 
-!      -----------------------------------------------
-!     | Minimize the least-squares objective function |
-!     |                                               |
-!     |  1/2 || A_o x - b ||^2 + 1/2 weight || x ||^2 |
-!     |                                               |
-!     | subject to the linear constraints and bounds  |
-!     |                                               |
-!     |             c_l <= A x <= c_u                 |
-!     |             x_l <=  x <= x_u                  |
-!     |                                               |
-!     | using an infeasible-point primal-dual method  |
-!      -----------------------------------------------
+!      -----------------------------------------------------------
+!     | Minimize the regularized least-squares objective function |
+!     |                                                           |
+!     |   1/2 || A_o x - b ||_W^2 + 1/2 sigma || x - x_s ||^2     |
+!     |                                                           |
+!     | subject to the linear constraints and bounds              |
+!     |                                                           |
+!     |             c_l <= A x <= c_u                             |
+!     |             x_l <=  x  <= x_u                             |
+!     |                                                           |
+!     | using an infeasible-point primal-dual method              |
+!      -----------------------------------------------------------
 
       USE GALAHAD_KINDS_precision
 !$    USE omp_lib
@@ -68,7 +68,7 @@
                 QPT_problem_type, SMT_type, SMT_put, SMT_get,                  &
                 CLLS_AX, CLLS_data_type, CLLS_dims_type, CLLS_indicators,      &
                 CLLS_full_initialize, CLLS_full_terminate,                     &
-                CLLS_import, CLLS_solve_clls,                                  &
+                CLLS_import, CLLS_solve_given_a,                               &
                 CLLS_reset_control, CLLS_information
 
 !----------------------
@@ -524,6 +524,11 @@
 !   determined by CLLS_solve
 
         REAL ( KIND = rp_ ) :: obj = HUGE( one )
+
+!  the value of the  least-squares function, 1/2 || A_o x - b ||_W^2,
+!   at the best estimate of the solution determined by CLLS_solve
+
+        REAL ( KIND = rp_ ) :: ls_obj = HUGE( one )
 
 !  the value of the primal infeasibility
 
@@ -1178,14 +1183,13 @@
 
 !-*-*-*-*-*-*-*-*-*-   C L L S _ S O L V E  S U B R O U T I N E   -*-*-*-*-*-*-*
 
-      SUBROUTINE CLLS_solve( prob, data, control, inform,                      &
-                             regularization_weight, W )
+      SUBROUTINE CLLS_solve( prob, data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Minimize the linear least-squares objective function
+!  Minimize the regularized linear least-squares objective function
 !
-!         1/2 || A_o x - b ||_W^2 + 1/2 weight || x ||^2
+!         1/2 || A_o x - b ||_W^2 + 1/2 sigma || x - x_s ||^2
 !
 !  where
 !
@@ -1207,20 +1211,24 @@
 !   information about the problem on input, and its solution on output.
 !   The following components must be set:
 !
-!   %new_problem_structure is a LOGICAL variable, which must be set to
+!   %new_problem_structure is a LOGICAL variable, that must be set to
 !    .TRUE. by the user if this is the first problem with this "structure"
 !    to be solved since the last call to CLLS_initialize, and .FALSE. if
 !    a previous call to a problem with the same "structure" (but different
 !    numerical data) was made.
 !
-!   %n is an INTEGER variable, which must be set by the user to the
+!   %n is an INTEGER variable, that must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
 !
-!   %o is an INTEGER variable, which must be set by the user to the
+!   %o is an INTEGER variable, that must be set by the user to the
 !    number of observations, o.  RESTRICTION: o >= 1
 !
-!   %m is an INTEGER variable, which must be set by the user to the
+!   %m is an INTEGER variable, that must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
+!
+!   %regularization_weight is a REAL variable, that may be set by the user
+!    to the value of the non-negative regularization weight. It takes the 
+!    default value of zero
 !
 !   %Ao is a structure of type SMT_type used to hold the design matrix A_o.
 !    Five storage formats are permitted:
@@ -1275,9 +1283,17 @@
 !                    by column with each the entries in each column in order
 !                    of increasing row indicies.
 !
-!   %B is a REAL array of length o, which must be set by the user to the value
+!   %B is a REAL array of length o, that must be set by the user to the value
 !    of the observations, b. The i-th component of B, i = 1, ...., o should
 !    contain the value of b_i.
+!
+!   %W is a REAL array of length %o, that may be set by the user
+!    to the values of the components of the weights w.
+!    If %W is unallocated, the weights will all be taken to be 1.0.
+!
+!   %X_s is a REAL array of length %n, that may be set by the user
+!    to the values of the components of the shifts x_s. 
+!    If %X_s is unallocated, the shifts will all be taken to be 0.0.
 !
 !   %A is a structure of type SMT_type used to hold the constraint matrix A.
 !    Five storage formats are permitted:
@@ -1332,26 +1348,13 @@
 !                    by column with each the entries in each column in order
 !                    of increasing row indicies.
 !
-!
 !    On exit, the components will most likely have been reordered.
 !    The output  matrix will be stored by rows, according to scheme (ii) above.
 !    However, if scheme (i) is used for input, the output A%row will contain
 !    the row numbers corresponding to the values in A%val, and thus in this
 !    case the output matrix will be available in both formats (i) and (ii).
 !
-!   %X is a REAL array of length %n, which must be set by the user
-!    to estimaes of the solution, x. On successful exit, it will contain
-!    the required solution, x.
-!
-!   %R is a REAL array of length %o, which is used to store the values of
-!    the residuals A_o x - b. It need not be set on entry. On exit, it will
-!    have been filled with appropriate values.
-!
-!   %C is a REAL array of length %m, which is used to store the values of
-!    A x. It need not be set on entry. On exit, it will have been filled
-!    with appropriate values.
-!
-!   %C_l, %C_u are REAL arrays of length %n, which must be set by the user
+!   %C_l, %C_u are REAL arrays of length %n, that must be set by the user
 !    to the values of the arrays c_l and c_u of lower and upper bounds on A x.
 !    Any bound c_l_i or c_u_i larger than or equal to control%infinity in
 !    absolute value will be regarded as being infinite (see the entry
@@ -1362,13 +1365,7 @@
 !    control%infinity. On exit, %C_l and %C_u will most likely have been
 !    reordered.
 !
-!   %Y is a REAL array of length %m, which must be set by the user to
-!    appropriate estimates of the values of the Lagrange multipliers
-!    corresponding to the general constraints c_l <= A x <= c_u.
-!    On successful exit, it will contain the required vector of Lagrange
-!    multipliers.
-!
-!   %X_l, %X_u are REAL arrays of length %n, which must be set by the user
+!   %X_l, %X_u are REAL arrays of length %n, that must be set by the user
 !    to the values of the arrays x_l and x_u of lower and upper bounds on x.
 !    Any bound x_l_i or x_u_i larger than or equal to control%infinity in
 !    absolute value will be regarded as being infinite (see the entry
@@ -1379,13 +1376,31 @@
 !    control%infinity. On exit, %X_l and %X_u will most likely have been
 !    reordered.
 !
-!   %Z is a REAL array of length %n, which must be set by the user to
+!   %X is a REAL array of length %n, that must be set by the user
+!    to estimaes of the solution, x. On successful exit, it will contain
+!    the required solution, x.
+!
+!   %R is a REAL array of length %o, that is used to store the values of
+!    the residuals A_o x - b. It need not be set on entry. On exit, it will
+!    have been filled with appropriate values.
+!
+!   %C is a REAL array of length %m, that is used to store the values of
+!    A x. It need not be set on entry. On exit, it will have been filled
+!    with appropriate values.
+!
+!   %Y is a REAL array of length %m, that must be set by the user to
+!    appropriate estimates of the values of the Lagrange multipliers
+!    corresponding to the general constraints c_l <= A x <= c_u.
+!    On successful exit, it will contain the required vector of Lagrange
+!    multipliers.
+!
+!   %Z is a REAL array of length %n, that must be set by the user to
 !    appropriate estimates of the values of the dual variables
 !    (Lagrange multipliers corresponding to the simple bound constraints
 !    x_l <= x <= x_u). On successful exit, it will contain
 !   the required vector of dual variables.
 !
-!   %C_status is an INTEGER array of length %m, which will be set on exit to
+!   %C_status is an INTEGER array of length %m, that will be set on exit to
 !    indicate the likely ultimate status of the constraints. Possible values are
 !    C_status( i ) < 0, the i-th constraint is likely in the active set,
 !                       on its lower bound,
@@ -1394,7 +1409,7 @@
 !                  = 0, the i-th constraint is likely not in the active set
 !    It need not be set on entry.
 !
-!   %X_status is an INTEGER array of length %n, which will be set on exit to
+!   %X_status is an INTEGER array of length %n, that will be set on exit to
 !    indicate the likely ultimate status of the simple bound constraints.
 !    Possible values are
 !    X_status( i ) < 0, the i-th bound constraint is likely in the active set,
@@ -1405,7 +1420,7 @@
 !                       set
 !    It need not be set on entry.
 !
-!  data is a structure of type CLLS_data_type which holds private internal data
+!  data is a structure of type CLLS_data_type that holds private internal data
 !
 !  control is a structure of type CLLS_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
@@ -1461,14 +1476,6 @@
 !
 !  On exit from CLLS_solve, other components of inform are given in the preamble
 !
-!  regularization_weight is an OPTIONAL REAL, that may be set by the user
-!   to the value of the non-negative regularization weight. If it is absent,
-!   the regularization weight will be zero.
-!
-!  W is an OPTIONAL REAL array of length prob%o, that may be set by the user
-!   to the values of the components of the weights W. If it is absent,
-!   the weights will all be taken to be 1.0.
-!
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
@@ -1477,11 +1484,6 @@
       TYPE ( CLLS_data_type ), INTENT( INOUT ) :: data
       TYPE ( CLLS_control_type ), INTENT( IN ) :: control
       TYPE ( CLLS_inform_type ), INTENT( OUT ) :: inform
-
-!  optional dummy argument
-
-      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: regularization_weight
-      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( prob%o ) :: W
 
 !  Local variables
 
@@ -1492,7 +1494,7 @@
       REAL ( KIND = rp_ ) :: clock_analyse, clock_factorize, cro_clock_matrix
       REAL ( KIND = rp_ ) :: av_bnd, weight
 !     REAL ( KIND = rp_ ) :: fixed_sum, xi
-      LOGICAL :: printi, remap_freed, reset_bnd
+      LOGICAL :: printi, remap_freed, reset_bnd, present_weights, present_shifts
 !     LOGICAL :: printa
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1553,8 +1555,9 @@
       printi = control%out > 0 .AND. control%print_level >= 1
 !     printa = control%out > 0 .AND. control%print_level >= 101
 
-      IF ( PRESENT( regularization_weight ) ) THEN
-        weight = regularization_weight
+!     write(6,*) ' sigma ', prob%regularization_weight
+      IF ( prob%regularization_weight > zero ) THEN
+        weight = prob%regularization_weight
       ELSE
         weight = zero
       END IF
@@ -1570,13 +1573,32 @@
         GO TO 800
       END IF
 
-      IF ( PRESENT( W ) ) THEN
-        IF ( MINVAL( W ) <= zero ) THEN
-          inform%status = GALAHAD_error_restrictions
-          IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) prefix, inform%status
-          GO TO 800
+!  check to see if there are (positive) weights and/or shifts
+
+      IF ( ALLOCATED( prob%W ) ) THEN
+        IF ( SIZE( prob%W ) >= prob%o ) THEN
+          IF ( MINVAL( prob%W ) <= zero ) THEN
+            inform%status = GALAHAD_error_restrictions
+            IF ( control%error > 0 .AND. control%print_level > 0 )             &
+              WRITE( control%error, 2010 ) prefix, inform%status
+            GO TO 800
+          END IF
+          present_weights = .TRUE.
+        ELSE
+          present_weights = .FALSE.
         END IF
+      ELSE
+        present_weights = .FALSE.
+      END IF
+      IF ( ALLOCATED( prob%X_s ) ) THEN
+        IF ( SIZE( prob%X_s ) >= prob%n ) THEN
+!         write(6,*) ' X_s ', prob%X_s
+          present_shifts = .TRUE.
+        ELSE
+          present_shifts = .FALSE.
+        END IF
+      ELSE
+        present_shifts = .FALSE.
       END IF
 
 !  if required, write out problem
@@ -1642,9 +1664,9 @@
         CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
           data%ao_ne = prob%o * prob%n
         CASE ( 'SPARSE_BY_ROWS' )
-          data%ao_ne = prob%AO%ptr( prob%m + 1 ) - 1
+          data%ao_ne = prob%Ao%ptr( prob%o + 1 ) - 1
         CASE ( 'SPARSE_BY_COLUMNS' )
-          data%ao_ne = prob%AO%ptr( prob%n + 1 ) - 1
+          data%ao_ne = prob%Ao%ptr( prob%n + 1 ) - 1
         CASE ( 'COORDINATE' )
           data%ao_ne = prob%Ao%ne
         END SELECT
@@ -1723,6 +1745,7 @@
         inform%time%preprocess = inform%time%preprocess + time_now - time_record
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
+!write(6,*) ' x%map ', data%LSP_map%x_map
 
 !  test for satisfactory termination
 
@@ -1743,9 +1766,9 @@
         CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
           data%ao_ne = prob%o * prob%n
         CASE ( 'SPARSE_BY_ROWS' )
-          data%ao_ne = prob%AO%ptr( prob%m + 1 ) - 1
+          data%ao_ne = prob%Ao%ptr( prob%o + 1 ) - 1
         CASE ( 'SPARSE_BY_COLUMNS' )
-          data%ao_ne = prob%AO%ptr( prob%n + 1 ) - 1
+          data%ao_ne = prob%Ao%ptr( prob%n + 1 ) - 1
         CASE ( 'COORDINATE' )
           data%ao_ne = prob%Ao%ne
         END SELECT
@@ -1927,13 +1950,13 @@
 
 !  allocate arrays to indicate which constraints have been freed
 
-          array_name = 'clls: data%C_freed'
-          CALL SPACE_resize_array( n_depen, data%C_freed,                      &
-                 inform%status, inform%alloc_status, array_name = array_name,  &
-                 deallocate_error_fatal = control%deallocate_error_fatal,      &
-                 exact_size = control%space_critical,                          &
-                 bad_alloc = inform%bad_alloc, out = control%error )
-          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        array_name = 'clls: data%C_freed'
+        CALL SPACE_resize_array( n_depen, data%C_freed,                        &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
 !  free the constraint bounds as required
 
@@ -2084,29 +2107,120 @@
 !  Solve the problem
 !  =================
 
-      CALL CLLS_solve_main( data%LSP_dims, prob%n, prob%o, prob%m, weight,     &
-                            prob%Ao%val, prob%Ao%row, prob%Ao%ptr, prob%B,     &
-                            prob%A%val, prob%A%col, prob%A%ptr,                &
-                            prob%C_l, prob%C_u, prob%X_l, prob%X_u,            &
-                            prob%R, prob%C, prob%X, prob%Y, prob%Z,            &
-                            prob%C_status, prob%X_status,                      &
-                            data%GRAD_L, data%DIST_X_l, data%DIST_X_u,         &
-                            data%Z_l, data%Z_u, data%BARRIER_X,                &
-                            data%Y_l, data%DIST_C_l, data%Y_u,                 &
-                            data%DIST_C_u, data%C, data%BARRIER_C,             &
-                            data%SCALE_C, data%RHS, data%R_last, data%C_last,  &
-                            data%X_last, data%Y_last, data%Z_last,             &
-                            data%K_sls, data%X_free,                           &
-                            data%order, data%X_coef, data%C_coef,              &
-                            data%Y_coef, data%Y_l_coef, data%Y_u_coef,         &
-                            data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,       &
-                            data%CS_coef, data%COEF,                           &
-                            data%ROOTS, data%ROOTS_data,                       &
-                            data%DX_zh, data%DC_zh, data%DY_zh, data%DY_l_zh,  &
-                            data%DY_u_zh, data%DZ_l_zh, data%DZ_u_zh,          &
-                            data%OPT_alpha, data%OPT_merit,                    &
-                            data%SLS_data, data%SLS_pounce_data,               &
-                            prefix, control, inform, data%K_sls_pounce, W )
+      IF ( present_weights ) THEN
+        IF ( present_shifts ) THEN
+          CALL CLLS_solve_main( data%LSP_dims, prob%n, prob%o, prob%m, weight, &
+                                prob%Ao%val, prob%Ao%row, prob%Ao%ptr, prob%B, &
+                                prob%A%val, prob%A%col, prob%A%ptr,            &
+                                prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
+                                prob%R, prob%C, prob%X, prob%Y, prob%Z,        &
+                                prob%C_status, prob%X_status,                  &
+                                data%GRAD_L, data%DIST_X_l, data%DIST_X_u,     &
+                                data%Z_l, data%Z_u, data%BARRIER_X,            &
+                                data%Y_l, data%DIST_C_l, data%Y_u,             &
+                                data%DIST_C_u, data%C, data%BARRIER_C,         &
+                                data%SCALE_C, data%RHS,                        &
+                                data%R_last, data%C_last,                      &
+                                data%X_last, data%Y_last, data%Z_last,         &
+                                data%K_sls, data%X_free,                       &
+                                data%order, data%X_coef, data%C_coef,          &
+                                data%Y_coef, data%Y_l_coef, data%Y_u_coef,     &
+                                data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,   &
+                                data%CS_coef, data%COEF,                       &
+                                data%ROOTS, data%ROOTS_data,                   &
+                                data%DX_zh, data%DC_zh,                        &
+                                data%DY_zh, data%DY_l_zh,                      &
+                                data%DY_u_zh, data%DZ_l_zh, data%DZ_u_zh,      &
+                                data%OPT_alpha, data%OPT_merit,                &
+                                data%SLS_data, data%SLS_pounce_data,           &
+                                prefix, control, inform, data%K_sls_pounce,    &
+                                W = prob%W( : prob%o ),                        &
+                                X_s = prob%X_s( : prob%n ) )
+        ELSE
+          CALL CLLS_solve_main( data%LSP_dims, prob%n, prob%o, prob%m, weight, &
+                                prob%Ao%val, prob%Ao%row, prob%Ao%ptr, prob%B, &
+                                prob%A%val, prob%A%col, prob%A%ptr,            &
+                                prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
+                                prob%R, prob%C, prob%X, prob%Y, prob%Z,        &
+                                prob%C_status, prob%X_status,                  &
+                                data%GRAD_L, data%DIST_X_l, data%DIST_X_u,     &
+                                data%Z_l, data%Z_u, data%BARRIER_X,            &
+                                data%Y_l, data%DIST_C_l, data%Y_u,             &
+                                data%DIST_C_u, data%C, data%BARRIER_C,         &
+                                data%SCALE_C, data%RHS,                        &
+                                data%R_last, data%C_last,                      &
+                                data%X_last, data%Y_last, data%Z_last,         &
+                                data%K_sls, data%X_free,                       &
+                                data%order, data%X_coef, data%C_coef,          &
+                                data%Y_coef, data%Y_l_coef, data%Y_u_coef,     &
+                                data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,   &
+                                data%CS_coef, data%COEF,                       &
+                                data%ROOTS, data%ROOTS_data,                   &
+                                data%DX_zh, data%DC_zh,                        &
+                                data%DY_zh, data%DY_l_zh,                      &
+                                data%DY_u_zh, data%DZ_l_zh, data%DZ_u_zh,      &
+                                data%OPT_alpha, data%OPT_merit,                &
+                                data%SLS_data, data%SLS_pounce_data,           &
+                                prefix, control, inform, data%K_sls_pounce,    &
+                                W = prob%W( : prob%o ) )
+        END IF 
+      ELSE
+        IF ( present_shifts ) THEN
+          CALL CLLS_solve_main( data%LSP_dims, prob%n, prob%o, prob%m, weight, &
+                                prob%Ao%val, prob%Ao%row, prob%Ao%ptr, prob%B, &
+                                prob%A%val, prob%A%col, prob%A%ptr,            &
+                                prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
+                                prob%R, prob%C, prob%X, prob%Y, prob%Z,        &
+                                prob%C_status, prob%X_status,                  &
+                                data%GRAD_L, data%DIST_X_l, data%DIST_X_u,     &
+                                data%Z_l, data%Z_u, data%BARRIER_X,            &
+                                data%Y_l, data%DIST_C_l, data%Y_u,             &
+                                data%DIST_C_u, data%C, data%BARRIER_C,         &
+                                data%SCALE_C, data%RHS,                        &
+                                data%R_last, data%C_last,                      &
+                                data%X_last, data%Y_last, data%Z_last,         &
+                                data%K_sls, data%X_free,                       &
+                                data%order, data%X_coef, data%C_coef,          &
+                                data%Y_coef, data%Y_l_coef, data%Y_u_coef,     &
+                                data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,   &
+                                data%CS_coef, data%COEF,                       &
+                                data%ROOTS, data%ROOTS_data,                   &
+                                data%DX_zh, data%DC_zh,                        &
+                                data%DY_zh, data%DY_l_zh,                      &
+                                data%DY_u_zh, data%DZ_l_zh, data%DZ_u_zh,      &
+                                data%OPT_alpha, data%OPT_merit,                &
+                                data%SLS_data, data%SLS_pounce_data,           &
+                                prefix, control, inform, data%K_sls_pounce,    &
+                                X_s = prob%X_s( : prob%n ) )
+        ELSE
+          CALL CLLS_solve_main( data%LSP_dims, prob%n, prob%o, prob%m, weight, &
+                                prob%Ao%val, prob%Ao%row, prob%Ao%ptr, prob%B, &
+                                prob%A%val, prob%A%col, prob%A%ptr,            &
+                                prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
+                                prob%R, prob%C, prob%X, prob%Y, prob%Z,        &
+                                prob%C_status, prob%X_status,                  &
+                                data%GRAD_L, data%DIST_X_l, data%DIST_X_u,     &
+                                data%Z_l, data%Z_u, data%BARRIER_X,            &
+                                data%Y_l, data%DIST_C_l, data%Y_u,             &
+                                data%DIST_C_u, data%C, data%BARRIER_C,         &
+                                data%SCALE_C, data%RHS,                        &
+                                data%R_last, data%C_last,                      &
+                                data%X_last, data%Y_last, data%Z_last,         &
+                                data%K_sls, data%X_free,                       &
+                                data%order, data%X_coef, data%C_coef,          &
+                                data%Y_coef, data%Y_l_coef, data%Y_u_coef,     &
+                                data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,   &
+                                data%CS_coef, data%COEF,                       &
+                                data%ROOTS, data%ROOTS_data,                   &
+                                data%DX_zh, data%DC_zh,                        &
+                                data%DY_zh, data%DY_l_zh,                      &
+                                data%DY_u_zh, data%DZ_l_zh, data%DZ_u_zh,      &
+                                data%OPT_alpha, data%OPT_merit,                &
+                                data%SLS_data, data%SLS_pounce_data,           &
+                                prefix, control, inform, data%K_sls_pounce )
+        END IF 
+      END IF 
+
 
       inform%time%analyse = inform%time%analyse +                              &
         inform%FDC_inform%time%analyse - time_analyse
@@ -2252,9 +2366,8 @@
                                   X, Y, Z, C_stat, X_Stat, GRAD_L,             &
                                   DIST_X_l, DIST_X_u, Z_l, Z_u, BARRIER_X,     &
                                   Y_l, DIST_C_l, Y_u, DIST_C_u, C, BARRIER_C,  &
-                                  SCALE_C, RHS, &
-                                  R_last, C_last, X_last, Y_last, Z_last,      &
-                                  K_sls, X_free,   &
+                                  SCALE_C, RHS, R_last, C_last, X_last,        &
+                                  Y_last, Z_last, K_sls, X_free,               &
                                   order, X_coef, C_coef, Y_coef, Y_l_coef,     &
                                   Y_u_coef, Z_l_coef, Z_u_coef, BINOMIAL,      &
                                   CS_coef, COEF, ROOTS, ROOTS_data,            &
@@ -2262,7 +2375,7 @@
                                   DY_u_zh, DZ_l_zh, DZ_u_zh,                   &
                                   OPT_alpha, OPT_merit, SLS_data,              &
                                   SLS_pounce_data, prefix, control, inform,    &
-                                  K_sls_pounce, W )
+                                  K_sls_pounce, W, X_s )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -2398,7 +2511,7 @@
 !
 !  weight is a REAL variable, that must be set to the regularization weight.
 !    RESTRICTION: weight >= 0
-
+!
 !  Ao_row//ptr/val is used to hold the matrix A_o by columns. In particular:
 !      Ao_row( : )   the row indices of the components of A_o
 !      Ao_ptr( : )   pointers to the start of each column, and past the end of
@@ -2465,6 +2578,10 @@
 !  W is an OPTIONAL REAL array of length o, that, if PRESENT, must be set
 !   by the user to the values of the vector of weights W. If W is absent,
 !   weights of 1.0 will be used.
+!
+!  X_s is an OPTIONAL REAL array of length prob%n, that may be set by the user
+!   to the values of the components of the shifts x_s. If it is absent,
+!   the shiifts will all be taken to be 0.0.
 !
 !  The remaining arguments are used as internal workspace, and need not be
 !  set on entry
@@ -2562,6 +2679,7 @@
 !  optional dummy argument
 
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: W
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: X_s
 
 !  Parameters
 
@@ -2598,7 +2716,7 @@
       REAL ( KIND = rp_ ) :: rnbnds, rnbnds_x, rnbnds_c
       LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
       LOGICAL :: printt, printi, printe, printd, printw, set_printp, printp
-      LOGICAL :: maxpiv, guarantee, optimal, present_weight
+      LOGICAL :: maxpiv, guarantee, optimal, present_weights, present_shifts
 !     LOGICAL :: root_arc
       LOGICAL :: puiseux, get_stat, stat_known
       LOGICAL :: use_scale_c = .FALSE.
@@ -2838,7 +2956,8 @@
 
 !  set control parameters
 
-      present_weight = PRESENT( W )
+      present_weights = PRESENT( W )
+      present_shifts = PRESENT( X_s )
       muzero_fixed = control%muzero_fixed
       prfeas = MAX( control%prfeas, epsmch )
       dufeas = MAX( control%dufeas, epsmch )
@@ -2934,7 +3053,7 @@
 
 !  input the 4,4 block, -W^{-1}
 
-      IF ( present_weight ) THEN
+      IF ( present_weights ) THEN
         DO i = npncpm + 1, npncpm + o
           l = l + 1
           K_sls%row( l ) = i ; K_sls%col( l ) = i
@@ -3277,13 +3396,21 @@
 
 !  compute the objective function
 
-      IF ( present_weight ) THEN
-        inform%obj = half * DOT_PRODUCT( R, W * R )
+      IF ( present_weights ) THEN
+        inform%ls_obj = half * DOT_PRODUCT( R, W * R )
       ELSE
-        inform%obj = half * DOT_PRODUCT( R, R )
+        inform%ls_obj = half * DOT_PRODUCT( R, R )
       END IF
-      IF ( weight > zero )                                                     &
-        inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
+      IF ( weight > zero ) THEN
+        IF ( present_shifts ) THEN
+          inform%obj                                                           &
+            = inform%ls_obj + half * weight * DOT_PRODUCT( X - X_s, X - X_s )
+        ELSE
+          inform%obj = inform%ls_obj + half * weight * DOT_PRODUCT( X, X )
+        END IF
+      ELSE
+        inform%obj = inform%ls_obj
+      END IF
 
 !  test to see if we are feasible
 
@@ -3306,7 +3433,7 @@
                                      A_ne, A_val, A_col, A_ptr,                &
                                      DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,   &
                                      GRAD_L( dims%x_s : dims%x_e ),            &
-                                     control%getdua, dufeas, W )
+                                     control%getdua, dufeas, W, X_s )
 
 !  evaluate the merit function
 
@@ -3612,7 +3739,11 @@
         CALL CLLS_abs_AoX( o, R_last, n, Ao_ne, Ao_val, Ao_row, Ao_ptr,        &
                            n, X, ' ' )
         IF ( weight > zero ) THEN
-          RHS( : n ) = weight * ABS( X )
+          IF ( present_shifts ) THEN
+            RHS( : n ) = weight * ABS( X - X_S )
+          ELSE
+            RHS( : n ) = weight * ABS( X )
+          END IF
         ELSE
           RHS( : n ) = zero
         END IF
@@ -5734,7 +5865,7 @@
                                          DIST_X_l, DIST_X_u,                   &
                                          DIST_C_l, DIST_C_u,                   &
                                          GRAD_L( dims%x_s : dims%x_e ),        &
-                                         control%getdua, dufeas, W )
+                                         control%getdua, dufeas, W, X_s )
 
 !  evaluate the primal and dual infeasibility and merit function
 
@@ -5792,13 +5923,21 @@
 
 !  ... and the objective function
 
-            IF ( present_weight ) THEN
-              inform%obj = half * DOT_PRODUCT( R, W * R )
+            IF ( present_weights ) THEN
+              inform%ls_obj = half * DOT_PRODUCT( R, W * R )
             ELSE
-              inform%obj = half * DOT_PRODUCT( R, R )
+              inform%ls_obj = half * DOT_PRODUCT( R, R )
             END IF
-            IF ( weight > zero )                                               &
-              inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
+            IF ( weight > zero ) THEN
+              IF ( present_shifts ) THEN
+                inform%obj = inform%ls_obj                                     &
+                               + half * weight * DOT_PRODUCT( X - X_s, X - X_s )
+              ELSE
+                inform%obj = inform%ls_obj + half * weight * DOT_PRODUCT( X, X )
+              END IF
+            ELSE
+              inform%obj = inform%ls_obj
+            END IF
 
             IF ( .NOT. inform%feasible ) THEN
               IF ( printi ) WRITE( out, 2070 ) prefix
@@ -5972,7 +6111,7 @@
                                        A_ne, A_val, A_col, A_ptr,              &
                                        DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u, &
                                        GRAD_L( dims%x_s : dims%x_e ),          &
-                                       control%getdua, dufeas, W )
+                                       control%getdua, dufeas, W, X_s )
 
 !  update the values of the merit function, the gradient of the Lagrangian,
 !  and the constraint residuals
@@ -5993,13 +6132,21 @@
 
 !  ... and the objective function
 
-        IF ( present_weight ) THEN
-          inform%obj = half * DOT_PRODUCT( R, W * R )
+        IF ( present_weights ) THEN
+          inform%ls_obj = half * DOT_PRODUCT( R, W * R )
         ELSE
-          inform%obj = half * DOT_PRODUCT( R, R )
+          inform%ls_obj = half * DOT_PRODUCT( R, R )
         END IF
-        IF ( weight > zero )                                                   &
-          inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
+        IF ( weight > zero ) THEN
+          IF ( present_shifts ) THEN
+            inform%obj                                                         &
+              = inform%ls_obj + half * weight * DOT_PRODUCT( X - X_s, X - X_s )
+          ELSE
+            inform%obj = inform%ls_obj + half * weight * DOT_PRODUCT( X, X )
+          END IF
+        ELSE
+          inform%obj = inform%ls_obj
+        END IF
 
 !  evaluate the merit function
 
@@ -6229,7 +6376,8 @@
                               B, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u,      &
                               X_last, R_last, C_last, Y_last, Z_last,          &
                               C_stat, X_Stat, X_free, RHS, K_sls_pounce,       &
-                              SLS_pounce_data, control, inform, optimal, W )
+                              SLS_pounce_data, control, inform, optimal,       &
+                              W, X_s )
             IF ( printd ) THEN
               WRITE( out, "( ' X before ', /, ( 5ES12.4 ) )" ) X
               WRITE( out, "( ' X ', /, ( 5ES12.4 ) )" ) X_last
@@ -6411,7 +6559,7 @@
                             B, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u,        &
                             X_last, R_last, C_last, Y_last, Z_last,            &
                             C_stat, X_Stat, X_free, RHS, K_sls_pounce,         &
-                            SLS_pounce_data, control, inform, optimal, W )
+                            SLS_pounce_data, control, inform, optimal, W, X_s )
           IF ( optimal ) THEN
             IF ( printi ) WRITE( out, "( A,                                    &
            &   '  pounce successful, optimal solution found' )" ) prefix
@@ -6431,13 +6579,21 @@
 
 !  ... the objective function ...
 
-      IF ( present_weight ) THEN
-        inform%obj = half * DOT_PRODUCT( R, W * R )
+      IF ( present_weights ) THEN
+        inform%ls_obj = half * DOT_PRODUCT( R, W * R )
       ELSE
-        inform%obj = half * DOT_PRODUCT( R, R )
+        inform%ls_obj = half * DOT_PRODUCT( R, R )
       END IF
-      IF ( weight > zero )                                                     &
-        inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
+      IF ( weight > zero ) THEN
+        IF ( present_shifts ) THEN
+          inform%obj                                                           &
+            = inform%ls_obj + half * weight * DOT_PRODUCT( X - X_s, X - X_s )
+        ELSE
+          inform%obj = inform%ls_obj + half * weight * DOT_PRODUCT( X, X )
+        END IF
+      ELSE
+        inform%obj = inform%ls_obj
+      END IF
 
 !  ... the distances to the bounds ...
 
@@ -6483,7 +6639,7 @@
                                      A_ne, A_val, A_col, A_ptr,                &
                                      DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,   &
                                      GRAD_L( dims%x_s : dims%x_e ),            &
-                                     .FALSE., dufeas, W )
+                                     .FALSE., dufeas, W, X_s )
 
 !  ... the norm of the projected gradient ...
 
@@ -7209,10 +7365,38 @@
 
      CALL CLLS_terminate( data%clls_data, control, inform )
 
+!  reset the regularization weight to zero
+
+     data%prob%regularization_weight = zero
+
 !  deallocate any internal problem arrays
 
-     array_name = 'clls: data%prob%X'
-     CALL SPACE_dealloc_array( data%prob%X,                                    &
+     array_name = 'clls: data%prob%B'
+     CALL SPACE_dealloc_array( data%prob%B,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'clls: data%prob%W'
+     CALL SPACE_dealloc_array( data%prob%W,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'clls: data%prob%X_s'
+     CALL SPACE_dealloc_array( data%prob%X_s,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'clls: data%prob%C_l'
+     CALL SPACE_dealloc_array( data%prob%C_l,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'clls: data%prob%C_u'
+     CALL SPACE_dealloc_array( data%prob%C_u,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -7225,6 +7409,12 @@
 
      array_name = 'clls: data%prob%X_u'
      CALL SPACE_dealloc_array( data%prob%X_u,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'clls: data%prob%X'
+     CALL SPACE_dealloc_array( data%prob%X,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -7249,18 +7439,6 @@
 
      array_name = 'clls: data%prob%C'
      CALL SPACE_dealloc_array( data%prob%C,                                    &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'clls: data%prob%C_l'
-     CALL SPACE_dealloc_array( data%prob%C_l,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'clls: data%prob%C_u'
-     CALL SPACE_dealloc_array( data%prob%C_u,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -7348,7 +7526,7 @@
       SUBROUTINE CLLS_pounce( n, o, m, weight, Ao_val, Ao_row, Ao_ptr,         &
                               B, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u, X,   &
                               R, C, Y, Z, C_stat, X_stat, X_free, SOL, K_sls,  &
-                              SLS_data, control, inform, optimal, W )
+                              SLS_data, control, inform, optimal, W, X_s )
 
 !  Dummy arguments
 
@@ -7385,6 +7563,7 @@
 !  optional dummy argument
 
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: W
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: X_s
 
 !  construct the equality-constrained linear least-squares problem according
 !   to the variables and constraints that are predicted to be active via
@@ -7419,7 +7598,7 @@
       REAL ( KIND = rp_ ) :: clock_analyse, clock_factorize, clock_solve
       REAL ( KIND = rp_ ) :: ci, ei
       REAL ( KIND = rp_ ) :: feas = epsmch * 100.0_rp_
-      LOGICAL :: x_feas, c_feas, y_feas, z_feas, present_weight
+      LOGICAL :: x_feas, c_feas, y_feas, z_feas, present_weights
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  Using the sets B = { i | X_stat( i ) = 0 }, F = { i | X_stat( i ) /= 0 }
@@ -7442,7 +7621,7 @@
 
 !     z_B = weight x_B + Ao_B^T r - A_AB^T y_A                              (3)
 
-      present_weight = PRESENT( W )
+      present_weights = PRESENT( W )
 
 !  1. Set up the matrices and right-hand sides involved
 
@@ -7471,7 +7650,11 @@
             ELSE
               X( j ) = X_u( j )
             END IF
-            Z( j ) = weight * X( j ) ! initialize z_B = weight x_B
+            IF ( PRESENT( X_s ) ) THEN ! initialize z_B = weight ( x_B - x_sB )
+              Z( j ) = weight * ( X( j ) - X_s( j ) ) 
+            ELSE
+              Z( j ) = weight * X( j )
+            END IF
           END IF
         END DO
 
@@ -7581,7 +7764,7 @@
 
 !  the 2,2 block - W^{-1}
 
-        IF ( present_weight ) THEN
+        IF ( present_weights ) THEN
           DO j = n_free + 1, nfpo
             l = l + 1
             K_sls%row( l ) = j ;  K_sls%col( l ) = j
@@ -7717,7 +7900,7 @@
 
 !  the 2,2 block - W^{-1}
 
-        IF ( present_weight ) THEN
+        IF ( present_weights ) THEN
           DO j = n + 1, npo
             l = l + 1
             K_sls%row( l ) = j ;  K_sls%col( l ) = j
@@ -7841,7 +8024,13 @@
 
 !  recover x
 
-        X( : n_free ) = SOL( : n_free )
+!       X( : n_free ) = SOL( : n_free )
+
+        DO j = 1, n
+          IF ( X_stat( j ) == 0 ) THEN ! free variable
+            X( j ) = SOL( X_free( j ) )
+          END IF
+        END DO
 
 !  recover r
 
@@ -8037,7 +8226,7 @@
                                            A_ne, A_val, A_col, A_ptr,          &
                                            DIST_X_l, DIST_X_u, DIST_C_l,       &
                                            DIST_C_u, GRAD_L,                   &
-                                           getdua, dufeas, W )
+                                           getdua, dufeas, W, X_s )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -8084,6 +8273,7 @@
 !  optional dummy argument
 
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: W
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: X_s
 
 !  Local variables
 
@@ -8095,7 +8285,11 @@
       IF ( weight == zero ) THEN
         GRAD_L = zero
       ELSE
-        GRAD_L = weight * X
+        IF ( PRESENT( X_s ) ) THEN
+          GRAD_L = weight * ( X - X_s )
+        ELSE
+          GRAD_L = weight * X
+        END IF
       END IF
 
 !  add the Ao^T W r term
@@ -9315,11 +9509,12 @@
 
      END SUBROUTINE CLLS_reset_control
 
-!-*-*-  G A L A H A D -  C L L S _ s o l v e _ c l l s  S U B R O U T I N E  -*-
+!-  G A L A H A D -  C L L S _ s o l v e _ g i v e n _ a  S U B R O U T I N E  -
 
-     SUBROUTINE CLLS_solve_clls( data, status, Ao_val, B, A_val, C_l, C_u,     &
-                                 X_l, X_u, X, R, C, Y, Z, X_stat, C_stat,      &
-                                 regularization_weight, W )
+     SUBROUTINE CLLS_solve_given_a( data, status, Ao_val, B,                   &
+                                    regularization_weight, A_val, C_l, C_u,    &
+                                    X_l, X_u, X, Y, Z, R, C, X_stat, C_stat,   &
+                                    W, X_s )
 
 !  solve the constrained linear least-squares problem whose structure was
 !  previously imported. See CLLS_solve for a description of the required
@@ -9341,6 +9536,9 @@
 !  B is a rank-one array of dimension o and type default
 !   real, that holds the vector of linear terms of the observations, b.
 !   The i-th component of B, i = 1, ... , o, contains (b)_i.
+!
+!  regularization_weight is an optional scalar of type default real that
+!   holds the value of the non-negative regularization weight, sigma.
 !
 !  A_val is a rank-one array of type default real, that holds the values of
 !   the constraint Jacobian A in the storage scheme specified in clls_import.
@@ -9369,14 +9567,6 @@
 !   real, that holds the vector of the primal variables, x.
 !   The j-th component of X, j = 1, ... , n, contains (x)_j.
 !
-!  R is a rank-one array of dimension m and type default
-!   real, that holds the vector of residuals Ao x - b.
-!   The i-th component of R, i = 1, ... , m, contains (Ao x - b)_i.
-!
-!  C is a rank-one array of dimension m and type default
-!   real, that holds the vector of the constraints A x.
-!   The i-th component of C, i = 1, ... , m, contains (A x)_i.
-!
 !  Y is a rank-one array of dimension m and type default
 !   real, that holds the vector of the Lagrange multipliers, y.
 !   The i-th component of Y, i = 1, ... , m, contains (y)_i.
@@ -9384,6 +9574,14 @@
 !  Z is a rank-one array of dimension n and type default
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
+!
+!  R is a rank-one array of dimension m and type default
+!   real, that holds the vector of residuals Ao x - b.
+!   The i-th component of R, i = 1, ... , m, contains (Ao x - b)_i.
+!
+!  C is a rank-one array of dimension m and type default
+!   real, that holds the vector of the constraints A x.
+!   The i-th component of C, i = 1, ... , m, contains (A x)_i.
 !
 !  X_stat is a rank-one array of dimension n and type default integer,
 !   that mwill be set on exit to indicate which constraints are in the final
@@ -9403,17 +9601,19 @@
 !                    on its upper bound, and
 !               = 0, the i-th constraint is not in the working set
 !
-!  regularization_weight is an optional scalar of type default real that
-!   may be set to the value of the non-negative regularization weight.
-!   If it is absent, the regularization weight will be zero.
-!
 !  W is an optional rank-one array of type default real that may be
 !   set to the values of the components of the weights W.
 !   The i-th component of W, i = 1, ... , o, contains (w)_i.
 !   If it is absent, the weights will all be taken to be 1.0.
+!
+!  X_s is an optional rank-one array of type default real that may be
+!   set to the values of the components of the shifts X_s.
+!   The j-th component of X_s, i = 1, ... , n, contains (x_s)_i.
+!   If it is absent, the shifts will all be taken to be 0.0.
 
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( CLLS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = rp_ ), INTENT( IN ) :: regularization_weight
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: Ao_val
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: B
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
@@ -9422,16 +9622,26 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: R, C
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: C_stat, X_stat
-     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: regularization_weight
+
+!  optional arguments
+
      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( data%prob%o ) :: W
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ),                              &
+                                    DIMENSION( data%prob%n ) :: X_s
 
 !  local variables
 
-     INTEGER ( KIND = ip_ ) :: m, o, n
+     INTEGER ( KIND = ip_ ) :: m, o, n, error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
 
      n = data%prob%n ; o = data%prob%o ; m = data%prob%m
+
+!  save the regularization weight
+
+     data%prob%regularization_weight = regularization_weight
 
 !  save the observations
 
@@ -9450,8 +9660,8 @@
 !  save the initial primal and dual variables and Lagrange multipliers
 
      data%prob%X( : n ) = X( : n )
-     data%prob%Z( : n ) = Z( : n )
      data%prob%Y( : m ) = Y( : m )
+     data%prob%Z( : n ) = Z( : n )
 
 !  save the objective design matrix Ao entries
 
@@ -9463,17 +9673,45 @@
      IF ( data%prob%A%ne > 0 )                                                 &
        data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
 
+!  save the weights if they are present
+
+     IF ( PRESENT( W ) ) THEN
+       array_name = 'clls: data%prob%W'
+       CALL SPACE_resize_array( o, data%prob%W,                                &
+              data%clls_inform%status, data%clls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+            bad_alloc = data%clls_inform%bad_alloc, out = error )
+       IF ( data%clls_inform%status /= 0 ) GO TO 900
+       data%prob%W( : o ) = W( : o )
+     END IF
+
+!  save the shifts if they are present
+
+     IF ( PRESENT( X_s ) ) THEN
+       array_name = 'clls: data%prob%W'
+       CALL SPACE_resize_array( n, data%prob%X_s,                              &
+              data%clls_inform%status, data%clls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+            bad_alloc = data%clls_inform%bad_alloc, out = error )
+       IF ( data%clls_inform%status /= 0 ) GO TO 900
+       data%prob%X_s( : n ) = X_s( : n )
+     END IF
+
 !  call the solver
 
      CALL CLLS_solve( data%prob, data%clls_data, data%clls_control,            &
-                      data%clls_inform, regularization_weight, W )
+                      data%clls_inform )
 
 !  recover the optimal primal and dual variables, Lagrange multipliers,
 !  constraint values and status values for constraints and simple bounds
 
      X( : n ) = data%prob%X( : n )
-     Z( : n ) = data%prob%Z( : n )
      Y( : m ) = data%prob%Y( : m )
+     Z( : n ) = data%prob%Z( : n )
      IF ( ALLOCATED( data%prob%C ) ) THEN
        C( : m ) = data%prob%C( : m )
      ELSE
@@ -9484,23 +9722,29 @@
      ELSE
        R( : o ) = infinity
      END IF
-     IF ( ALLOCATED( data%prob%C_status ) ) THEN
-       C_stat( : m ) = data%prob%C_status( : m )
-     ELSE
-       C_stat( : m ) = 0
-     END IF
      IF ( ALLOCATED( data%prob%X_status ) ) THEN
        X_stat( : n ) = data%prob%X_status( : n )
      ELSE
        X_stat( : n ) = 0
      END IF
+     IF ( ALLOCATED( data%prob%C_status ) ) THEN
+       C_stat( : m ) = data%prob%C_status( : m )
+     ELSE
+       C_stat( : m ) = 0
+     END IF
 
      status = data%clls_inform%status
      RETURN
 
-!  End of subroutine CLLS_solve_clls
+!  error returns
 
-     END SUBROUTINE CLLS_solve_clls
+ 900 CONTINUE
+     status = data%clls_inform%status
+     RETURN
+
+!  End of subroutine CLLS_solve_given_a
+
+     END SUBROUTINE CLLS_solve_given_a
 
 !-  G A L A H A D -  C L L S _ i n f o r m a t i o n   S U B R O U T I N E  -
 

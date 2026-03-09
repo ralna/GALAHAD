@@ -229,7 +229,7 @@
 !  arguments for NLS
 
       TYPE ( NLPT_problem_type ) :: nlp
-      TYPE ( GALAHAD_userdata_type ) :: userdata
+      TYPE ( USERDATA_type ) :: userdata
       TYPE ( NLS_data_type ), SAVE :: data
       TYPE ( NLS_control_type ), SAVE :: control
       TYPE ( NLS_inform_type ) :: inform

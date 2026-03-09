@@ -86,6 +86,7 @@ MAT_TRB = $(MAT_GLTR) $(MAT_TRS) $(MAT_PSLS) $(MAT_LMS) $(MAT_SHA) \
           $(MLG)(galahad_trb_matlab_types.o)
 MAT_TRS = $(MAT_IR) $(MLG)(galahad_trs_matlab_types.o)
 MAT_TREK = $(MAT_TRS) $(MLG)(galahad_trek_matlab_types.o)
+MAT_TESTBED =  $(MAT_BASIC) $(MLG)(galahad_testbed_matlab_types.o)
 MAT_NREK = $(MAT_RQS) $(MLG)(galahad_nrek_matlab_types.o)
 MAT_TRU = $(MAT_GLTR) $(MAT_TRS) $(MAT_PSLS) $(MAT_LMS) $(MAT_SHA) \
           $(MLG)(galahad_tru_matlab_types.o)
@@ -710,6 +711,18 @@ galahad_trek.$(MEXEXT): galahad_trek.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_trek"
 	$(MEX) galahad_trek.F90 -output galahad_trek $(MEXFLAGS)
 	$(LN) -fs $(MEXOUTDIR)/galahad_trek.$(MEXEXT) .
+	@printf '[ OK ]\n'
+
+#  testbed
+
+testbed: $(MAT_TESTBED) galahad_testbed.$(MEXEXT)
+
+galahad_testbed.$(MEXEXT): galahad_testbed.F90
+#	( cd ../testbed ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+#                     testbed_silent PRECIS=double PWD=$(PWD)/../testbed )
+	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_testbed"
+	$(MEX) galahad_testbed.F90 -output galahad_testbed $(MEXFLAGS)
+	$(LN) -fs $(MEXOUTDIR)/galahad_testbed.$(MEXEXT) .
 	@printf '[ OK ]\n'
 
 #  trs
@@ -1687,6 +1700,24 @@ $(MLG)(galahad_trek_matlab_types.o): galahad_trek_matlab_types.F90
 	$(MRMARFILE) galahad_tru_matlab_types.o
 	$(MVMODS)
 	$(RM) $(USES_TREK)
+	@printf '[ OK ]\n'
+
+# testbed
+
+galahad_testbed_matlab_types.o: $(MLG)(galahad_testbed_matlab_types.o)
+
+$(MLG)(galahad_testbed_matlab_types.o): galahad_testbed_matlab_types.F90
+#	( cd ../testbed ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+#                     testbed_silent PRECIS=double PWD=$(PWD)/../testbed )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_testbed_matlab_types"
+	$(CP) galahad_testbed_matlab_types.F90 \
+           $(OBJ)/galahad_testbed_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_testbed_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_testbed_matlab_types.o
+	$(RM) $(OBJ)/galahad_testbed_matlab_types.o \
+              $(OBJ)/galahad_testbed_matlab_types.F90
+	$(MVMODS)
+	$(RM) $(USES_TESTBED)
 	@printf '[ OK ]\n'
 
 # trs

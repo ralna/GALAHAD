@@ -1,7 +1,7 @@
 //* \file eqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:50 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 12:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_EQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -42,8 +42,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool eqp_update_control(struct eqp_control_type *control,
-                               PyObject *py_options){
+bool eqp_update_control(struct eqp_control_type *control,
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -401,7 +401,8 @@ static PyObject* eqp_make_time_dict(const struct eqp_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* eqp_make_inform_dict(const struct eqp_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* eqp_make_inform_dict(const struct eqp_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",

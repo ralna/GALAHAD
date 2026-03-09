@@ -138,7 +138,7 @@
 !  arguments for UGO
 
       REAL ( KIND = wp ) :: x_l, x_u, x, f, g, h
-      TYPE ( GALAHAD_userdata_type ) :: userdata
+      TYPE ( USERDATA_type ) :: userdata
       TYPE ( UGO_data_type ), SAVE :: data
       TYPE ( UGO_control_type ), SAVE :: control
       TYPE ( UGO_inform_type ) :: inform

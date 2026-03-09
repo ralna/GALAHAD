@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 13:55 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-03-04 AT 08:50 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -105,6 +105,7 @@
 !  write-result-summary                              NO
 !  result-summary-file-name                          SLLSRES.d
 !  result-summary-file-device                        47
+!  regularization-weight                             0.0
 ! END RUNSLLS SPECIFICATIONS
 
 !  Default values for specfile-defined parameters
@@ -124,6 +125,7 @@
       CHARACTER ( LEN = 30 ) :: sfilename = 'SLLSSOL.d'
 !     LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE.
+      REAL ( KIND = rp_ ) :: regularization_weight = zero
 
 !  Output file characteristics
 
@@ -138,7 +140,7 @@
       TYPE ( SLLS_data_type ) :: data
       TYPE ( SLLS_control_type ) :: SLLS_control
       TYPE ( SLLS_inform_type ) :: SLLS_inform
-      TYPE ( GALAHAD_userdata_type ) :: userdata
+      TYPE ( USERDATA_type ) :: userdata
       TYPE ( QPT_problem_type ) :: prob
 
 !  Allocatable arrays
@@ -148,9 +150,58 @@
       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u
       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C_l, C_u
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
 
       CALL CPU_TIME( time )
+
+!  ------------------ Open the specfile for runslls ----------------
+
+      INQUIRE( FILE = runspec, EXIST = is_specfile )
+      IF ( is_specfile ) THEN
+        OPEN( input_specfile, FILE = runspec, FORM = 'FORMATTED',              &
+              STATUS = 'OLD' )
+
+!   Define the keywords
+
+        spec( 1 )%keyword = 'write-problem-data'
+        spec( 2 )%keyword = 'problem-data-file-name'
+        spec( 3 )%keyword = 'problem-data-file-device'
+        spec( 4 )%keyword = 'write-initial-sif'
+        spec( 5 )%keyword = 'initial-sif-file-name'
+        spec( 6 )%keyword = 'initial-sif-file-device'
+!       spec( 8 )%keyword = 'scale-problem'
+!       spec( 13 )%keyword = 'solve-problem'
+        spec( 14 )%keyword = 'print-full-solution'
+        spec( 15 )%keyword = 'write-solution'
+        spec( 16 )%keyword = 'solution-file-name'
+        spec( 17 )%keyword = 'solution-file-device'
+        spec( 18 )%keyword = 'write-result-summary'
+        spec( 19 )%keyword = 'result-summary-file-name'
+        spec( 20 )%keyword = 'result-summary-file-device'
+        spec( 21 )%keyword = 'regularization-weight'
+
+!   Read the specfile
+
+        CALL SPECFILE_read( input_specfile, specname, spec, lspec, errout )
+
+!   Interpret the result
+
+        CALL SPECFILE_assign_logical( spec( 1 ), write_problem_data, errout )
+        CALL SPECFILE_assign_string ( spec( 2 ), dfilename, errout )
+        CALL SPECFILE_assign_integer( spec( 3 ), dfiledevice, errout )
+        CALL SPECFILE_assign_logical( spec( 4 ), write_initial_sif, errout )
+        CALL SPECFILE_assign_string ( spec( 5 ), ifilename, errout )
+        CALL SPECFILE_assign_integer( spec( 6 ), ifiledevice, errout )
+!       CALL SPECFILE_assign_integer( spec( 8 ), scale, errout )
+!       CALL SPECFILE_assign_logical( spec( 13 ), do_solve, errout )
+        CALL SPECFILE_assign_logical( spec( 14 ), fulsol, errout )
+        CALL SPECFILE_assign_logical( spec( 15 ), write_solution, errout )
+        CALL SPECFILE_assign_string ( spec( 16 ), sfilename, errout )
+        CALL SPECFILE_assign_integer( spec( 17 ), sfiledevice, errout )
+        CALL SPECFILE_assign_logical( spec( 18 ), write_result_summary, errout )
+        CALL SPECFILE_assign_string ( spec( 19 ), rfilename, errout )
+        CALL SPECFILE_assign_integer( spec( 20 ), rfiledevice, errout )
+        CALL SPECFILE_assign_real( spec( 21 ), regularization_weight, errout )
+      END IF
 
 !  Determine the number of variables and constraints
 
@@ -178,6 +229,7 @@
 
       n_s = o - COUNT( EQUATN )
       prob%o = o ; prob%n = n + n_s
+      prob%regularization_weight = regularization_weight
 
 !  Determine the names of the problem, variables and constraints.
 
@@ -193,7 +245,7 @@
 !  allocate problem arrays
 
       ALLOCATE( prob%X( prob%n ), prob%B( prob%o ), prob%C( prob%o ),          &
-                prob%Z( prob%n ), X_stat( prob%n ), STAT = alloc_stat )
+                prob%Z( prob%n ), prob%X_status( prob%n ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
         WRITE( out, 2150 ) 'prob%X etc', alloc_stat ; STOP
       END IF
@@ -245,54 +297,6 @@
 !  ------------------- problem set-up complete ----------------------
 
       CALL CPU_TIME( times )
-
-!  ------------------ Open the specfile for runslls ----------------
-
-      INQUIRE( FILE = runspec, EXIST = is_specfile )
-      IF ( is_specfile ) THEN
-        OPEN( input_specfile, FILE = runspec, FORM = 'FORMATTED',              &
-              STATUS = 'OLD' )
-
-!   Define the keywords
-
-        spec( 1 )%keyword = 'write-problem-data'
-        spec( 2 )%keyword = 'problem-data-file-name'
-        spec( 3 )%keyword = 'problem-data-file-device'
-        spec( 4 )%keyword = 'write-initial-sif'
-        spec( 5 )%keyword = 'initial-sif-file-name'
-        spec( 6 )%keyword = 'initial-sif-file-device'
-!       spec( 8 )%keyword = 'scale-problem'
-!       spec( 13 )%keyword = 'solve-problem'
-        spec( 14 )%keyword = 'print-full-solution'
-        spec( 15 )%keyword = 'write-solution'
-        spec( 16 )%keyword = 'solution-file-name'
-        spec( 17 )%keyword = 'solution-file-device'
-        spec( 18 )%keyword = 'write-result-summary'
-        spec( 19 )%keyword = 'result-summary-file-name'
-        spec( 20 )%keyword = 'result-summary-file-device'
-
-!   Read the specfile
-
-        CALL SPECFILE_read( input_specfile, specname, spec, lspec, errout )
-
-!   Interpret the result
-
-        CALL SPECFILE_assign_logical( spec( 1 ), write_problem_data, errout )
-        CALL SPECFILE_assign_string ( spec( 2 ), dfilename, errout )
-        CALL SPECFILE_assign_integer( spec( 3 ), dfiledevice, errout )
-        CALL SPECFILE_assign_logical( spec( 4 ), write_initial_sif, errout )
-        CALL SPECFILE_assign_string ( spec( 5 ), ifilename, errout )
-        CALL SPECFILE_assign_integer( spec( 6 ), ifiledevice, errout )
-!       CALL SPECFILE_assign_integer( spec( 8 ), scale, errout )
-!       CALL SPECFILE_assign_logical( spec( 13 ), do_solve, errout )
-        CALL SPECFILE_assign_logical( spec( 14 ), fulsol, errout )
-        CALL SPECFILE_assign_logical( spec( 15 ), write_solution, errout )
-        CALL SPECFILE_assign_string ( spec( 16 ), sfilename, errout )
-        CALL SPECFILE_assign_integer( spec( 17 ), sfiledevice, errout )
-        CALL SPECFILE_assign_logical( spec( 18 ), write_result_summary, errout )
-        CALL SPECFILE_assign_string ( spec( 19 ), rfilename, errout )
-        CALL SPECFILE_assign_integer( spec( 20 ), rfiledevice, errout )
-      END IF
 
 !  If required, print out the (raw) problem data
 
@@ -348,8 +352,8 @@
       WRITE( out, "( /, ' problem dimensions:  o = ', I0, ', n = ', I0,        &
      &  ', Ao_ne = ', I0 )" ) prob%o, prob%n, prob%Ao%ne
 
-      IF ( printo ) CALL COPYRIGHT( out, '2020' )
-      X_stat = 0
+      IF ( printo ) CALL COPYRIGHT( out, '2026' )
+      prob%X_status = 0
 
 !  Solve the problem
 
@@ -358,8 +362,7 @@
       solv = ' SLLS'
       IF ( printo ) WRITE( out, " ( ' ** SLLS solver used ** ' ) " )
       SLLS_inform%status = 1
-      CALL SLLS_solve( prob, X_stat, data, SLLS_control, SLLS_inform,          &
-                       userdata )
+      CALL SLLS_solve( prob, data, SLLS_control, SLLS_inform, userdata )
       slls_status = SLLS_inform%status
 
       IF ( printo ) WRITE( out, " ( /, ' ** SLLS solver used ** ' ) " )
@@ -450,7 +453,7 @@
            o, n, SLLS_inform%iter, SLLS_inform%obj, slls_status, timet
       END IF
 
-      DEALLOCATE( prob%X, prob%B, prob%R, prob%G, X_stat,                      &
+      DEALLOCATE( prob%X, prob%B, prob%R, prob%G, prob%X_status,               &
                   prob%Ao%val, prob%Ao%row, prob%Ao%col, prob%Ao%type,         &
                   VNAME, STAT = alloc_stat )
       IF ( is_specfile ) CLOSE( input_specfile )

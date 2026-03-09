@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-05-21 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-02-25 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,18 +15,18 @@
 
    MODULE GALAHAD_BLLS_precision
 
-!        -------------------------------------------------------------------
-!        |                                                                  |
-!        | Solve the bound-constrained linear-least-squares problem         |
-!        |                                                                  |
-!        |    minimize   1/2 || A_o x - b ||_W^2 + 1/2 weight || x ||^2     |
-!        |    subject to     x_l <= x <= x_u,                               |
-!        |                                                                  |
-!        | where ||v|| and ||r||_W^2 are the Euclidean & weighted Euclidean |
-!        | norms defined by ||v||^2 = v^T v and ||r||_W^2 = r^T W r, using  |
-!        | a preconditioned projected conjugate-gradient approach           |
-!        |                                                                  |
-!        --------------------------------------------------------------------
+!        ---------------------------------------------------------------------
+!        |                                                                    |
+!        | Solve the bound-constrained linear-least-squares problem           |
+!        |                                                                    |
+!        |    minimize   1/2 || A_o x - b ||_W^2 + 1/2 sigma || x - x_s ||^2  |
+!        |    subject to     x_l <= x <= x_u,                                 |
+!        |                                                                    |
+!        | where ||v|| and ||r||_W^2 are the Euclidean & weighted Euclidean   |
+!        | norms defined by ||v||^2 = v^T v and ||r||_W^2 = r^T W r, using    |
+!        | a preconditioned projected conjugate-gradient approach             |
+!        |                                                                    |
+!        ----------------------------------------------------------------------
 
      USE GALAHAD_KINDS_precision
      USE GALAHAD_CLOCK
@@ -53,7 +53,7 @@
                BLLS_subproblem_data_type, BLLS_exact_arc_search,               &
                BLLS_inexact_arc_search, BLLS_import, BLLS_import_without_a,    &
                BLLS_solve_given_a, BLLS_solve_reverse_a_prod,                  &
-               BLLS_reset_control, BLLS_information, GALAHAD_userdata_type,    &
+               BLLS_reset_control, BLLS_information, USERDATA_type,    &
                QPT_problem_type, SMT_type, SMT_put, SMT_get
 
 !----------------------
@@ -128,8 +128,8 @@
        INTEGER ( KIND = ip_ ) :: maxit = 1000
 
 !  cold_start should be set to 0 if a warm start is required (with variables
-!   assigned according to X_stat, see below), and to any other value if the
-!   values given in prob%X suffice
+!   assigned according to prob%X_status, see below), and to any other value 
+!   if the values given in prob%X suffice
 
        INTEGER ( KIND = ip_ ) :: cold_start = 1
 
@@ -157,10 +157,6 @@
 !  the unit number to write generated SIF file describing the current problem
 
        INTEGER ( KIND = ip_ ) :: sif_file_device = 52
-
-!  the objective function will be regularized by adding 1/2 weight ||x||^2
-
-       REAL ( KIND = rp_ ) :: weight = zero
 
 !  any bound larger than infinity in modulus will be regarded as infinite
 
@@ -268,33 +264,10 @@
 
        REAL ( KIND = rp_ ) :: total = 0.0
 
-!  time for the analysis phase
-
-       REAL ( KIND = rp_ ) :: analyse = 0.0
-
-!  time for the factorization phase
-
-       REAL ( KIND = rp_ ) :: factorize = 0.0
-
-!  time for the linear solution phase
-
-       REAL ( KIND = rp_ ) :: solve = 0.0
-
 !  total clock time
 
        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
-!  clock time for the analysis phase
-
-       REAL ( KIND = rp_ ) :: clock_analyse = 0.0
-
-!  clock time for the factorization phase
-
-       REAL ( KIND = rp_ ) :: clock_factorize = 0.0
-
-!  clock time for the linear solution phase
-
-       REAL ( KIND = rp_ ) :: clock_solve = 0.0
      END TYPE BLLS_time_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -332,6 +305,10 @@
 
        REAL ( KIND = rp_ ) :: obj = infinity
 
+!  current value of the  least-squares function, 1/2 || A_o x - b ||_W^2
+
+       REAL ( KIND = rp_ ) :: ls_obj = infinity
+
 !  current value of the projected gradient
 
        REAL ( KIND = rp_ ) :: norm_pg = infinity
@@ -368,10 +345,10 @@
        REAL ( KIND = rp_ ) :: f_s, f_c, f_i, f_l, f_q, gamma, gamma_a, gamma_f
        REAL ( KIND = rp_ ) :: rho_c, rho_i, rho_l, rho_q, phi_s, phi_i
        REAL ( KIND = rp_ ) :: mu, mu_a, mu_f
-       LOGICAL :: printp, printw, printd, printdd, debug
+       LOGICAL :: printp, printw, printd, printdd, debug, recompute
        LOGICAL :: present_a, present_asprod, reverse_asprod, present_afprod
        LOGICAL :: reverse_afprod, reverse_prec, present_prec, present_dprec
-       LOGICAL :: recompute, regularization, preconditioned, w_eq_identity
+       LOGICAL :: regularization, preconditioned, w_eq_identity, shifts
        CHARACTER ( LEN = 1 ) :: direction
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FREE, P_used
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_d, NZ_out
@@ -405,14 +382,14 @@
        INTEGER ( KIND = ip_ ) :: n_free, branch, cg_iter, preconditioner
        INTEGER ( KIND = ip_ ) :: nz_in_start, nz_in_end, nz_out_end, maxit
        INTEGER ( KIND = ip_ ) :: segments, max_segments, steps, max_steps
-       REAL ( KIND = RP_ ) :: time_start, clock_start
+       REAL ( KIND = rp_ ) :: time_start, clock_start
        REAL ( KIND = rp_ ) :: norm_step, step, stop_cg, old_gnrmsq, pnrmsq
        REAL ( KIND = rp_ ) :: alpha_0, alpha_max, alpha_new, f_new, phi_new
        REAL ( KIND = rp_ ) :: weight, stabilisation_weight
        REAL ( KIND = rp_ ) :: regularization_weight
        LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
        LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe
-       LOGICAL :: reverse, reverse_prod, explicit_a, use_aprod, header
+       LOGICAL :: reverse, reverse_prod, explicit_a, use_aprod, header, shifts
        LOGICAL :: direct_subproblem_solve, steepest_descent, w_eq_identity
        CHARACTER ( LEN = 6 ) :: string_cg_iter
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_status
@@ -431,12 +408,12 @@
 
       TYPE, PUBLIC :: BLLS_full_data_type
         LOGICAL :: f_indexing = .TRUE.
-        LOGICAL :: explicit_a
+        LOGICAL :: explicit_a = .FALSE.
         TYPE ( BLLS_data_type ) :: BLLS_data
         TYPE ( BLLS_control_type ) :: BLLS_control
         TYPE ( BLLS_inform_type ) :: BLLS_inform
         TYPE ( QPT_problem_type ) :: prob
-        TYPE ( GALAHAD_userdata_type ) :: userdata
+        TYPE ( USERDATA_type ) :: userdata
         TYPE ( BLLS_reverse_type ) :: reverse
       END TYPE BLLS_full_data_type
 
@@ -542,7 +519,6 @@
 !  maximum-number-of-cg-iterations-per-iteration     1000
 !  maximum-number-of-arcsearch-steps                -1
 !  sif-file-device                                   52
-!  regularization-weight                             0.0D+0
 !  infinity-value                                    1.0D+19
 !  dual-accuracy-required                            1.0D-5
 !  complementary-slackness-accuracy-required         1.0D-5
@@ -589,8 +565,7 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: change_max = ratio_cg_vs_sd + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: cg_maxit = change_max + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: arcsearch_max_steps = cg_maxit + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: weight = arcsearch_max_steps + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: infinity = weight + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: infinity = arcsearch_max_steps + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_d = infinity + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: identical_bounds_tol = stop_d + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_cg_relative                     &
@@ -647,7 +622,6 @@
 
 !  real key-words
 
-     spec( weight )%keyword = 'regularization-weight'
      spec( infinity )%keyword = 'infinity-value'
      spec( stop_d )%keyword = 'dual-accuracy-required'
      spec( identical_bounds_tol )%keyword = 'identical-bounds-tolerance'
@@ -731,9 +705,6 @@
 
 !  set real value
 
-     CALL SPECFILE_assign_value( spec( weight ),                               &
-                                 control%weight,                               &
-                                 control%error )
      CALL SPECFILE_assign_value( spec( infinity ),                             &
                                  control%infinity,                             &
                                  control%error )
@@ -813,15 +784,14 @@
 
 !-*-*-*-*-*-*-*-   B L L S _ S O L V E  S U B R O U T I N E   -*-*-*-*-*-*-*-*-
 
-     SUBROUTINE BLLS_solve( prob, X_stat, data, control, inform, userdata,     &
-                            W, reverse, eval_APROD, eval_ASPROD, eval_AFPROD,  &
-                            eval_PREC )
+     SUBROUTINE BLLS_solve( prob, data, control, inform, userdata, reverse,    &
+                            eval_APROD, eval_ASPROD, eval_AFPROD, eval_PREC )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Solve the linear least-squares problem
 !
-!     minimize     q(x) = 1/2 || A_o x - b ||_W^2 + weight / 2 || x ||^2
+!     minimize     q(x) = 1/2 || A_o x - b ||_W^2 + weight / 2 || x - x_s ||^2
 !
 !     subject to   (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
 !
@@ -846,6 +816,10 @@
 !
 !   %o is an INTEGER variable, which must be set by the user to the
 !    number of residuals, o. RESTRICTION: %o >= 1
+!
+!   %regularization_weight is a REAL variable, that may be set by the user
+!    to the value of the non-negative regularization weight. It takes the 
+!    default value of zero
 !
 !   %Ao is a structure of type SMT_type used to hold A_o if available).
 !    Five storage formats are permitted:
@@ -910,6 +884,14 @@
 !    objective function. The i-th component of B, i = 1, ...., o,
 !    should contain the value of b_i.
 !
+!   %W is a REAL array of length %o, that may be set by the user
+!    to the values of the components of the weights w.
+!    If %W is unallocated, the weights will all be taken to be 1.0.
+!
+!   %X_s is a REAL array of length %n, that may be set by the user
+!    to the values of the components of the shifts x_s. 
+!    If %X_s is unallocated, the shifts will all be taken to be 0.0.
+!
 !   %X_l, %X_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays x_l and x_u of lower and upper bounds on x.
 !    Any bound x_l_i or x_u_i larger than or equal to control%infinity in
@@ -934,18 +916,16 @@
 !    variables, i.e., Lagrange multipliers corresponding to the simple bound
 !    constraints x_l <= x <= x_u.
 !
-!  X_stat is a INTEGER array of length n, which may be set by the user
-!   on entry to BLLS_solve to indicate which of the simple bound constraints
-!   are to be included in the initial working set. If this facility is required,
-!   the component control%cold_start must be set to 0 on entry; X_stat
-!   need not be set if control%cold_start is nonzero. On exit,
-!   X_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are
-!   X_stat( i ) < 0, the i-th bound constraint is in the working set,
-!                    on its lower bound,
-!               > 0, the i-th bound constraint is in the working set
-!                    on its upper bound, and
-!               = 0, the i-th bound constraint is not in the working set
+!   %X_status is an INTEGER array of length %n, that will be set on exit to
+!    indicate the likely ultimate status of the simple bound constraints.
+!    Possible values are
+!    %X_status( i ) < 0, the i-th bound constraint is likely in the active set,
+!                        on its lower bound,
+!                   > 0, the i-th bound constraint is likely in the active set
+!                        on its upper bound, and
+!                   = 0, the i-th bound constraint is likely not in the active
+!                        set
+!    It need not be set on entry.
 !
 !  data is a structure of type BLLS_data_type which holds private internal data
 !
@@ -1058,7 +1038,7 @@
 !   On exit from BLLS_solve, other components of inform are set as described
 !   in the comments to BQP_inform_type, see above
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
+!  userdata is a scalar variable of type USERDATA_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -1072,10 +1052,6 @@
 !    complex_pointer is a rank-one pointer array of type default complex.
 !    character_pointer is a rank-one pointer array of type default character.
 !    logical_pointer is a rank-one pointer array of type default logical.
-!
-!  W is an optional rank-one array of type default real that if present
-!   must be of length prob%o and filled with the weights w_i > 0. If W is
-!   absent, weights of one will be used.
 !
 !  reverse is an OPTIONAL structure of type BLLS_reverse_type which is used to
 !   pass intermediate data to and from BLLS_solve. This will only be necessary
@@ -1139,12 +1115,10 @@
 !  dummy arguments
 
      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( prob%n ) :: X_stat
      TYPE ( BLLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( BLLS_control_type ), INTENT( IN ) :: control
      TYPE ( BLLS_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
      OPTIONAL :: eval_APROD, eval_ASPROD, eval_AFPROD, eval_PREC
 
@@ -1154,7 +1128,7 @@
        SUBROUTINE eval_APROD( status, userdata, transpose, V, P )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        LOGICAL, INTENT( IN ) :: transpose
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P
@@ -1166,7 +1140,7 @@
                                nz_in_end, NZ_out, nz_out_end )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
@@ -1181,7 +1155,7 @@
        SUBROUTINE eval_AFPROD( status, userdata, transpose, V, P, FREE, n_free )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        LOGICAL, INTENT( IN ) :: transpose
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_free
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: FREE
@@ -1194,7 +1168,7 @@
        SUBROUTINE eval_PREC( status, userdata, V, P )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
        END SUBROUTINE eval_PREC
@@ -1249,8 +1223,7 @@
 
 !  set initial timing breakdowns
 
-     inform%time%total = 0.0 ; inform%time%analyse = 0.0
-     inform%time%factorize = 0.0 ; inform%time%solve = 0.0
+     inform%time%total = 0.0 ; inform%time%clock_total = 0.0
 
 !  check that optional arguments are consistent -
 
@@ -1308,7 +1281,12 @@
      data%direct_subproblem_solve = data%explicit_a .AND.                      &
                                     control%direct_subproblem_solve
      data%header = .TRUE.
-     data%weight = MAX( control%weight, zero )
+
+     IF ( prob%regularization_weight > zero ) THEN
+       data%weight = prob%regularization_weight
+     ELSE
+       data%weight = zero
+     END IF
 
      inform%iter = - 1
 
@@ -1388,18 +1366,30 @@
 
 !  see if W = I
 
-       data%w_eq_identity = .NOT. PRESENT( W )
-       IF ( .NOT. data%w_eq_identity ) THEN
-         IF ( COUNT( W( : prob%o ) <= zero ) > 0 ) THEN
-           IF ( control%error > 0 ) WRITE( control%error,                      &
-             "( A, ' error: input entries of W must be strictly positive' )" ) &
-             prefix
-           inform%status = GALAHAD_error_restrictions
-           GO TO 910
-         ELSE IF ( COUNT( W( : prob%o ) == one ) == prob%o ) THEN
-           data%w_eq_identity = .TRUE.
-         END IF
+     IF ( ALLOCATED( prob%W ) ) THEN
+       data%w_eq_identity = SIZE( prob%W ) < prob%o
+     ELSE
+       data%w_eq_identity = .TRUE.
+     END IF
+     IF ( .NOT. data%w_eq_identity ) THEN
+       IF ( COUNT( prob%W( : prob%o ) <= zero ) > 0 ) THEN
+         IF ( control%error > 0 ) WRITE( control%error,                        &
+           "( A, ' error: input entries of W must be strictly positive' )" )   &
+           prefix
+         inform%status = GALAHAD_error_restrictions
+         GO TO 910
+       ELSE IF ( COUNT( prob%W( : prob%o ) == one ) == prob%o ) THEN
+         data%w_eq_identity = .TRUE.
        END IF
+     END IF
+
+!  see if X_s = 0
+
+     IF ( ALLOCATED( prob%X_s ) ) THEN
+        data%shifts = SIZE( prob%X_s ) >= prob%n
+     ELSE
+       data%shifts = .FALSE.
+     END IF
 
 !  if required, write out problem
 
@@ -1409,7 +1399,7 @@
        IF ( data%w_eq_identity ) THEN
          WRITE( control%out, "( ' W = identity' )" )
        ELSE
-         WRITE( control%out, "( ' W = ', /, ( 5ES12.4 ) )" ) W( : prob%o )
+         WRITE( control%out, "( ' W = ', /, ( 5ES12.4 ) )" ) prob%W( : prob%o )
        END IF
        IF ( data%explicit_a ) THEN
          SELECT CASE ( SMT_get( prob%Ao%type ) )
@@ -1460,10 +1450,10 @@
          prob%X_l( i ) = av_bnd ; prob%X_u( i ) = av_bnd
          reset_bnd = .TRUE.
        ELSE IF ( control%cold_start == 0 ) THEN
-         IF ( X_stat( i ) < 0 ) THEN
+         IF ( prob%X_status( i ) < 0 ) THEN
             prob%X_l( i ) =  prob%X_l( i )
            reset_bnd = .TRUE.
-         ELSE IF ( X_stat( i ) > 0 ) THEN
+         ELSE IF ( prob%X_status( i ) > 0 ) THEN
             prob%X_l( i ) =  prob%X_u( i )
            reset_bnd = .TRUE.
          END IF
@@ -1534,7 +1524,7 @@
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
      array_name = 'blls: data%X_status'
-     CALL SPACE_resize_array( prob%n, data%X_status, inform%status,     &
+     CALL SPACE_resize_array( prob%n, data%X_status, inform%status,            &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -1618,11 +1608,12 @@
 !      IF ( .NOT. data%w_eq_identity ) THEN
 !        DO j = 1, prob%n
 !          DO k = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
-!            data%Ao%val( k ) = data%Ao%val( k ) * SQRT( W( data%Ao%row( k ) ) )
+!            data%Ao%val( k )                                                  &
+!              = data%Ao%val( k ) * SQRT( prob%W( data%Ao%row( k ) ) )
 !          END DO
 !        END DO
 !        DO i = 1, prob%o
-!          prob%B( i ) = prob%B( i ) * SQRT( W( i ) )
+!          prob%B( i ) = prob%B( i ) * SQRT( prob%W( i ) )
 !        END DO
 !      END IF
      END IF
@@ -1641,8 +1632,8 @@
        ELSE
          data%DIAG( : prob%n ) = one
        END IF
-       IF ( control%weight > zero ) data%DIAG( : prob%n ) =                    &
-          data%DIAG( : prob%n ) + control%weight
+       IF ( data%weight > zero ) data%DIAG( : prob%n ) =                       &
+          data%DIAG( : prob%n ) + data%weight
 !write(6,"( ' diag ', 4ES12.4 )" )  data%DIAG( : prob%n )
        IF ( data%set_printm ) WRITE( data%out,                                 &
          "( /, A, ' diagonal preconditioner, min, max =', 2ES11.4 )" ) prefix, &
@@ -1676,7 +1667,7 @@
                 exact_size = control%space_critical,                           &
                 bad_alloc = inform%bad_alloc, out = control%error )
          IF ( inform%status /= GALAHAD_ok ) GO TO 910
-         data%H_sbls%val( : prob%o ) = one / W( : prob%o )
+         data%H_sbls%val( : prob%o ) = one / prob%W( : prob%o )
        END IF
        data%H_sbls%m = prob%o ; data%H_sbls%n = prob%o
 
@@ -1718,7 +1709,7 @@
 !  regularized case
 
        data%stabilisation_weight                                               &
-         = MAX( control%weight, control%stabilisation_weight, zero )
+         = MAX( data%weight, control%stabilisation_weight, zero )
        IF ( data%stabilisation_weight > zero ) THEN
          CALL SMT_put( data%C_sbls%type, 'SCALED_IDENTITY', inform%alloc_status)
          IF ( inform%alloc_status /= 0 ) THEN
@@ -1769,8 +1760,8 @@
 
  110 CONTINUE ! mock iteration loop
        CALL CPU_TIME( time ) ; CALL CLOCK_time( clock_now )
-        inform%time%total = time - data%time_start
-        inform%time%clock_total = clock_now - data%clock_start
+       inform%time%total = time - data%time_start
+       inform%time%clock_total = clock_now - data%clock_start
 
 !  set the print levels for the iteration
 
@@ -1830,7 +1821,7 @@
              prob%G( j ) = g_j
            END DO
          ELSE
-           data%R( : prob%o ) = W( : prob%o ) * prob%R( : prob%o )
+           data%R( : prob%o ) = prob%W( : prob%o ) * prob%R( : prob%o )
            DO j = 1, prob%n
              g_j = zero
              DO k = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
@@ -1844,7 +1835,7 @@
          IF ( data%w_eq_identity ) THEN
            CALL eval_APROD( data%eval_status, userdata, .TRUE., prob%R, prob%G )
          ELSE
-           data%R( : prob%o ) = W( : prob%o ) * prob%R( : prob%o )
+           data%R( : prob%o ) = prob%W( : prob%o ) * prob%R( : prob%o )
            CALL eval_APROD( data%eval_status, userdata, .TRUE., data%R, prob%G )
          END IF
          IF ( data%eval_status /= GALAHAD_ok ) THEN
@@ -1855,7 +1846,7 @@
          IF ( data%w_eq_identity ) THEN
            reverse%V( : prob%o ) = prob%R( : prob%o )
          ELSE
-           data%R( : prob%o ) = W( : prob%o ) * prob%R( : prob%o )
+           data%R( : prob%o ) = prob%W( : prob%o ) * prob%R( : prob%o )
            reverse%V( : prob%o ) = data%R( : prob%o )
          END IF
          reverse%transpose = .TRUE.
@@ -1870,20 +1861,22 @@
 !  compute the objective function
 
        IF ( data%w_eq_identity ) THEN
-         inform%obj                                                            &
+         inform%ls_obj                                                         &
            = half * DOT_PRODUCT( prob%R( : prob%o ), prob%R( : prob%o ) )
        ELSE
-         inform%obj                                                            &
+         inform%ls_obj                                                         &
            = half * DOT_PRODUCT( prob%R( : prob%o ), data%R( : prob%o ) )
        END IF
 
 !  adjust the value and gradient to account for any regularization term
 
-       IF ( control%weight > zero ) THEN
-         inform%obj = inform%obj + half * control%weight *                     &
+       IF ( data%weight > zero ) THEN
+         inform%obj = inform%ls_obj + half * data%weight *                     &
            DOT_PRODUCT( prob%X( : prob%n ), prob%X( : prob%n ) )
          prob%G( : prob%n )                                                    &
-           = prob%G( : prob%n ) + control%weight * prob%X( : prob%n )
+           = prob%G( : prob%n ) + data%weight * prob%X( : prob%n )
+       ELSE
+         inform%obj = inform%ls_obj
        END IF
 
 !  record the dual variables
@@ -2102,42 +2095,42 @@
          IF (  data%explicit_a ) THEN
            IF ( data%preconditioner == 0 ) THEN
              CALL BLLS_cgls( prob%o, prob%n, data%weight,                      &
-                             data%f_new, data%X_new, data%R,                   &
+                             data%phi_new, data%X_new, data%R,                 &
                              data%X_status, control%stop_cg_relative,          &
                              control%stop_cg_absolute, data%cg_iter,           &
                              control%cg_maxit, control%out,                    &
                              control%print_level, prefix,                      &
                              data%subproblem_data, userdata,                   &
                              data%cgls_status, inform%alloc_status,            &
-                             inform%bad_alloc, Ao_ptr = data%Ao%ptr,           &
-                             Ao_row = data%Ao%row, Ao_val = data%Ao%val,       &
-                             W = W )
+                             inform%bad_alloc, prob%W, prob%X_s,               &
+                             Ao_ptr = data%Ao%ptr, Ao_row = data%Ao%row,       &
+                             Ao_val = data%Ao%val )
            ELSE IF ( data%preconditioner == 1 ) THEN
              CALL BLLS_cgls( prob%o, prob%n, data%weight,                      &
-                             data%f_new, data%X_new, data%R,                   &
+                             data%phi_new, data%X_new, data%R,                 &
                              data%X_status, control%stop_cg_relative,          &
                              control%stop_cg_absolute, data%cg_iter,           &
                              control%cg_maxit, control%out,                    &
                              control%print_level, prefix,                      &
                              data%subproblem_data, userdata,                   &
                              data%cgls_status, inform%alloc_status,            &
-                             inform%bad_alloc, Ao_ptr = data%Ao%ptr,           &
-                             Ao_row = data%Ao%row, Ao_val = data%Ao%val,       &
-                             preconditioned = .TRUE.,                          &
-                             W = W, DPREC = data%DIAG )
+                             inform%bad_alloc, prob%W, prob%X_s,               &
+                             Ao_ptr = data%Ao%ptr, Ao_row = data%Ao%row,       &
+                             Ao_val = data%Ao%val, preconditioned = .TRUE.,    &
+                             DPREC = data%DIAG )
            ELSE
              CALL BLLS_cgls( prob%o, prob%n, data%weight,                      &
-                             data%f_new, data%X_new, data%R,                   &
+                             data%phi_new, data%X_new, data%R,                 &
                              data%X_status, control%stop_cg_relative,          &
                              control%stop_cg_absolute, data%cg_iter,           &
                              control%cg_maxit, control%out,                    &
                              control%print_level, prefix,                      &
                              data%subproblem_data, userdata,                   &
                              data%cgls_status, inform%alloc_status,            &
-                             inform%bad_alloc, Ao_ptr = data%Ao%ptr,           &
-                             Ao_row = data%Ao%row, Ao_val = data%Ao%val,       &
-                             reverse = reverse, preconditioned = .TRUE.,       &
-                             W = W, eval_PREC = eval_PREC )
+                             inform%bad_alloc, prob%W, prob%X_s,               &
+                             Ao_ptr = data%Ao%ptr, Ao_row = data%Ao%row,       &
+                             Ao_val = data%Ao%val, reverse = reverse,          &
+                             preconditioned = .TRUE., eval_PREC = eval_PREC )
            END IF
 
 !  ... or products via the user's subroutine or reverse communication ...
@@ -2145,39 +2138,39 @@
          ELSE
            IF ( data%preconditioner == 0 ) THEN
              CALL BLLS_cgls( prob%o, prob%n, data%weight,                      &
-                             data%f_new, data%X_new, data%R,                   &
+                             data%phi_new, data%X_new, data%R,                 &
                              data%X_status, control%stop_cg_relative,          &
                              control%stop_cg_absolute, data%cg_iter,           &
                              control%cg_maxit, control%out,                    &
                              control%print_level, prefix,                      &
                              data%subproblem_data, userdata,                   &
                              data%cgls_status, inform%alloc_status,            &
-                             inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
-                             W = W, reverse = reverse )
+                             inform%bad_alloc, prob%W, prob%X_s,               &
+                             eval_AFPROD = eval_AFPROD, reverse = reverse )
            ELSE IF ( data%preconditioner == 1 ) THEN
              CALL BLLS_cgls( prob%o, prob%n, data%weight,                      &
-                             data%f_new, data%X_new, data%R,                   &
+                             data%phi_new, data%X_new, data%R,                 &
                              data%X_status, control%stop_cg_relative,          &
                              control%stop_cg_absolute, data%cg_iter,           &
                              control%cg_maxit, control%out,                    &
                              control%print_level, prefix,                      &
                              data%subproblem_data, userdata,                   &
                              data%cgls_status, inform%alloc_status,            &
-                             inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
-                             reverse = reverse, preconditioned = .TRUE.,       &
-                             W = W, DPREC = data%DIAG )
+                             inform%bad_alloc, prob%W, prob%X_s,               &
+                             eval_AFPROD = eval_AFPROD, reverse = reverse,     &
+                             preconditioned = .TRUE., DPREC = data%DIAG )
            ELSE
              CALL BLLS_cgls( prob%o, prob%n, data%weight,                      &
-                             data%f_new, data%X_new, data%R,                   &
+                             data%phi_new, data%X_new, data%R,                 &
                              data%X_status, control%stop_cg_relative,          &
                              control%stop_cg_absolute, data%cg_iter,           &
                              control%cg_maxit, control%out,                    &
                              control%print_level, prefix,                      &
                              data%subproblem_data, userdata,                   &
                              data%cgls_status, inform%alloc_status,            &
-                             inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
-                             reverse = reverse, preconditioned = .TRUE.,       &
-                             W = W, eval_PREC = eval_PREC )
+                             inform%bad_alloc, prob%W, prob%X_s,               &
+                             eval_AFPROD = eval_AFPROD, reverse = reverse,     &
+                             preconditioned = .TRUE., eval_PREC = eval_PREC )
            END IF
          END IF
 
@@ -2262,9 +2255,10 @@
                                          data%arc_search_status,               &
                                          inform%alloc_status,                  &
                                          inform%bad_alloc,                     &
+                                         prob%W, prob%X_s,                     &
                                          Ao_ptr = data%Ao%ptr,                 &
                                          Ao_row = data%Ao%row,                 &
-                                         Ao_val = data%Ao%val, W = W )
+                                         Ao_val = data%Ao%val )
 
 !  ... or products via the user's subroutine or reverse communication ...
 
@@ -2284,8 +2278,9 @@
                                          data%arc_search_status,               &
                                          inform%alloc_status,                  &
                                          inform%bad_alloc,                     &
+                                         prob%W, prob%X_s,                     &
                                          eval_ASPROD = eval_ASPROD,            &
-                                         W = W, reverse = reverse )
+                                         reverse = reverse )
            END IF
 
 !   ... or inexact arc_search ...
@@ -2314,10 +2309,11 @@
                                            data%arc_search_status,             &
                                            inform%alloc_status,                &
                                            inform%bad_alloc,                   &
+                                           prob%W, prob%X_s,                   &
                                            Ao_ptr = data%Ao%ptr,               &
                                            Ao_row = data%Ao%row,               &
                                            Ao_val = data%Ao%val,               &
-                                           W = W, B = prob%B )
+                                           B = prob%B )
 
 !  ... or products via the user's subroutine or reverse communication
 
@@ -2341,8 +2337,9 @@
                                            data%arc_search_status,             &
                                            inform%alloc_status,                &
                                            inform%bad_alloc,                   &
+                                           prob%W, prob%X_s,                   &
                                            eval_ASPROD = eval_ASPROD,          &
-                                           W = W, reverse = reverse,           &
+                                           reverse = reverse,                  &
                                            B = prob%B )
            END IF
          END IF
@@ -2398,6 +2395,7 @@
 !  record the new point in x
 
        prob%X( : prob%n ) = data%X_new( : prob%n )
+       inform%ls_obj = data%f_new
        inform%obj = data%phi_new
 
 !  record the number of variables that have changed status
@@ -2426,15 +2424,17 @@
 !  successful return
 
  900 CONTINUE
-     DO i = 1, prob%n
-       IF ( data%X_status( i ) == 0 ) THEN
-         X_stat( i ) = 0
-       ELSE IF ( data%X_status( i ) == 1 ) THEN
-         X_stat( i ) = - 1
-       ELSE
-         X_stat( i ) = 1
-       END IF
-     END DO
+     IF ( ALLOCATED( prob%X_status ) ) THEN
+       DO i = 1, prob%n
+         IF ( data%X_status( i ) == 0 ) THEN
+           prob%X_status( i ) = 0
+         ELSE IF ( data%X_status( i ) == 1 ) THEN
+           prob%X_status( i ) = - 1
+         ELSE
+           prob%X_status( i ) = 1
+         END IF
+       END DO
+     END IF
      CALL CPU_TIME( time ) ; CALL CLOCK_time( clock_now )
      inform%time%total = time - data%time_start
      inform%time%clock_total = clock_now - data%clock_start
@@ -3060,25 +3060,25 @@
 ! -*-*-  B L L S _ E X A C T _ A R C _ S E A R C H   S U B R O U T I N E  -*-*-
 
      SUBROUTINE BLLS_exact_arc_search( o, n, weight, X_l, X_u, bnd_inf,        &
-                                       X_s, R_s, D_s, X_status,                &
+                                       X, R, D, X_status,                      &
                                        feas_tol, alpha_max, max_segments,      &
                                        out, print_level, prefix,               &
                                        X_alpha, f_alpha, phi_alpha, alpha,     &
                                        segment, data, userdata, status,        &
-                                       alloc_status, bad_alloc,                &
+                                       alloc_status, bad_alloc, W, X_s,        &
                                        Ao_ptr, Ao_row, Ao_val, eval_ASPROD,    &
-                                       W, reverse )
+                                       reverse )
 
-!  Find the arc minimizer in the direction d_s from x_s of the regularized
+!  Find the arc minimizer in the direction d from x of the regularized
 !  least-squares objective function
 
 !    phi(x) = f(x) + weight * rho(x), where
 !      f(x) = 1/2 || A_o x - b ||_2^2 and
-!      rho(x) = 1/2 || x ||^2,
+!      rho(x) = 1/2 || x - x_s ||^2,
 
 !  within the feasible "box" x_l <= x <= x_u
 
-!  Define the arc x(alpha) = projection of x_s + alpha * d_s into the
+!  Define the arc x(alpha) = projection of x + alpha * d into the
 !  feasible box. The arc minimizer is the first minimizer of the objective
 !  function for points lying on x(alpha), with 0 <= alpha <= alpha_max
 
@@ -3094,7 +3094,7 @@
 !  of the array NZ_d
 
 !  At the initial point, variables within feas_tol of their bounds and
-!  for which the search direction d_s points out of the box will be fixed
+!  for which the search direction d points out of the box will be fixed
 
 !  Based on CAUCHY_get_exact_gcp from LANCELOT B
 
@@ -3108,11 +3108,11 @@
 !  X_l, X_u (REAL arrays) the lower and upper bounds on the variables
 !  bnd_inf (REAL) any BND larger than bnd_inf in modulus is infinite
 !          ** this variable is not altered by the subroutine
-!  X_s     (REAL array of length at least n) the point x_s from which
+!  X       (REAL array of length at least n) the point x from which
 !           the search arc commences
-!  R_s     (REAL array of length at least m) the residual A x_s - b
-!  D_s     (REAL array of length at least n) the arc vector d_s
-!  feas_tol (REAL) a tolerance on allowed infeasibility of x_s
+!  R       (REAL array of length at least m) the residual A x - b
+!  D       (REAL array of length at least n) the arc vector d
+!  feas_tol (REAL) a tolerance on allowed infeasibility of x
 !  alpha_max (REAL) the largest arc length permitted
 !  max_segments  (INTEGER) the maximum number of segments to be investigated
 !  out    (INTEGER) the fortran output channel number to be used
@@ -3142,7 +3142,7 @@
 !          If X_status( i ) = 3, 4, the i-th variable is fixed at X_alpha(i)
 !          ** this variable is not altered by the subroutine.
 !  segment (INTEGER) the number of segments investigated
-!  userdata (structure of type GALAHAD_userdata_type) that may be used to pass
+!  userdata (structure of type USERDATA_type) that may be used to pass
 !          data to and from the optional eval_* subroutines
 !  alloc_status  (INTEGER) status of the most recent array (de)allocation
 !  bad_alloc (CHARACTER string of length 80) that provides information
@@ -3186,6 +3186,13 @@
 !
 !  data (structure of type BLLS_subproblem_data_type)
 !
+!  ALLOCATABLE ARGUMENTS
+!
+!  W       (REAL array of length o) positive diagonal weights if allocated,
+!           otherwise all taken to be one
+!  X_s     (REAL array of length n) the values of the (nonzeros) shifts
+!           if allocated
+!
 !  OPTIONAL ARGUMENTS
 !
 !  Ao_val   (REAL array of length Ao_ptr( n + 1 ) - 1) the values of the
@@ -3198,7 +3205,6 @@
 !          the last entry in A
 !  eval_ASPROD subroutine that performs products with A, see the argument
 !           list for BLLS_solve
-!  W       (REAL array of length o) positive diagonal weights (absent = I)
 !  reverse (structure of type BLLS_reverse_type) used to communicate
 !           reverse communication data to and from the subroutine.
 !
@@ -3215,18 +3221,19 @@
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       CHARACTER ( LEN = 80 ), INTENT( OUT ) :: bad_alloc
       INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: X_status
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_s, X_l, X_u, D_s
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( o ) :: R_s
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, D
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( o ) :: R
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X_alpha
       TYPE ( BLLS_subproblem_data_type ), INTENT( INOUT ) :: data
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( IN ), DIMENSION( : ) :: W
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( IN ), DIMENSION( : ) :: X_s
 
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
                                         DIMENSION( n + 1 ) :: Ao_ptr
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_row
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_val
       OPTIONAL :: eval_ASPROD
-      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: W
       TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
 
 !  interface blocks
@@ -3236,7 +3243,7 @@
                                 nz_in_end, NZ_out, nz_out_end )
         USE GALAHAD_USERDATA_precision
         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+        TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
         INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
@@ -3252,10 +3259,10 @@
 !  On the initial call to the subroutine the following variables MUST BE SET
 !  by the user:
 
-!      n, H, X_l, X_u, X_s, R_s, D_s, alpha_max, feas_tol, max_segments,
+!      n, H, X_l, X_u, X, R, D, alpha_max, feas_tol, max_segments,
 !      out, print_level, prefix
 
-!  If the i-th variable is required to be fixed at its initial value, X_s(i),
+!  If the i-th variable is required to be fixed at its initial value, X(i),
 !   X_status(i) must be set to 3 or more
 
 !  local variables
@@ -3304,10 +3311,22 @@
         status = GALAHAD_error_optional ; GO TO 900
       END IF
 
-!  check if regularization is necessary
+!  check if regularization is necessary and if non-unit weights have been given
 
       data%regularization = weight > zero
-      data%w_eq_identity = .NOT. PRESENT( W )
+      IF ( ALLOCATED( W ) ) THEN
+        data%w_eq_identity = SIZE( W ) < o
+      ELSE
+        data%w_eq_identity = .TRUE.
+      END IF
+
+!  see if shifts x_s have been provided
+
+      IF ( ALLOCATED( X_s ) ) THEN
+        data%shifts = SIZE( X_s ) >= n
+      ELSE
+        data%shifts = .FALSE.
+      END IF
 
 !  set printing controls
 
@@ -3354,8 +3373,8 @@
 
 !     IF ( print_level >= 100 ) THEN
 !       DO i = 1, n
-!         WRITE( out, "( A, ' Var low V up D_s', I6, 4ES12.4 )" )              &
-!           prefix, i, X_l( i ), X_s( i ), X_u( i ), D_s( i )
+!         WRITE( out, "( A, ' Var low V up  D', I6, 4ES12.4 )" )               &
+!           prefix, i, X_l( i ), X( i ), X_u( i ), D( i )
 !       END DO
 !     END IF
 
@@ -3373,28 +3392,28 @@
 
 !  record the status of the variables
 
-      IF ( data%printdd ) WRITE( out, "( A, '     i     X_l         X_s',      &
-     & '         X_u         D_s    stat' )" ) prefix
+      IF ( data%printdd ) WRITE( out, "( A, '     i     X_l          X ',      &
+     & '         X_u          D     stat' )" ) prefix
 
 !  count the number of free (in nbreak) and fixed variables at the base point
 
       data%n_break = 0 ; data%n_fixed = 0 ; n_zero = n + 1 ; n_freed = 0
       DO i = 1, n
         IF ( data%printdd ) WRITE( out, "( A, I6, 4ES12.4, I3 )" )             &
-          prefix, i, X_l( i ), X_s( i ), X_u( i ), D_s( i ), X_status( i )
+          prefix, i, X_l( i ), X( i ), X_u( i ), D( i ), X_status( i )
 
 !  check to see whether the variable is fixed
 
         IF ( X_status( i ) <= 2 ) THEN
           X_status( i ) = 0
-          xupper = X_u( i ) - X_s( i ) <= feas_tol
-          xlower = X_s( i ) - X_l( i ) <= feas_tol
+          xupper = X_u( i ) - X( i ) <= feas_tol
+          xlower = X( i ) - X_l( i ) <= feas_tol
 
 !  the variable lies between its bounds. Check to see if the search
 !  direction is zero
 
           IF ( .NOT. ( xupper .OR. xlower ) ) THEN
-            IF ( ABS( D_s( i ) ) > epsmch ) GO TO 110
+            IF ( ABS( D( i ) ) > epsmch ) GO TO 110
             n_zero = n_zero - 1
             data%NZ_d( n_zero ) = i
 
@@ -3402,7 +3421,7 @@
 
           ELSE
             IF ( xlower ) THEN
-              IF ( D_s( i ) > epsmch ) THEN
+              IF ( D( i ) > epsmch ) THEN
                 n_freed = n_freed + 1
                 GO TO 110
               END IF
@@ -3411,7 +3430,7 @@
 !  the variable lies close to its upper bound
 
             ELSE
-              IF ( D_s( i ) < - epsmch ) THEN
+              IF ( D( i ) < - epsmch ) THEN
                 n_freed = n_freed + 1
                 GO TO 110
               END IF
@@ -3427,7 +3446,7 @@
   110   CONTINUE
 
 !  if the variable is free, set up the pointers to the nonzeros in the vector
-!  d_s ready for calculating q = H * p
+!  d ready for calculating q = H * p
 
         data%n_break = data%n_break + 1
         data%NZ_d( data%n_break ) = i
@@ -3449,13 +3468,13 @@
 !  record the values of f(x) and rho(x) at the starting point
 
       IF ( data%w_eq_identity ) THEN
-        f_alpha = half * DOT_PRODUCT( R_s( : o ), R_s( : o ) )
+        f_alpha = half * DOT_PRODUCT( R( : o ), R( : o ) )
       ELSE
-        data%U( : o ) = W( : o ) * R_s( : o )
-        f_alpha = half * DOT_PRODUCT( R_s( : o ), data%U( : o ) )
+        data%U( : o ) = W( : o ) * R( : o )
+        f_alpha = half * DOT_PRODUCT( R( : o ), data%U( : o ) )
       END IF
       IF ( data%regularization ) THEN
-        data%rho_alpha = half * DOT_PRODUCT( X_s( : n ), X_s( : n ) )
+        data%rho_alpha = half * DOT_PRODUCT( X( : n ), X( : n ) )
         phi_alpha = f_alpha + weight * data%rho_alpha
       ELSE
         phi_alpha = f_alpha
@@ -3536,17 +3555,17 @@
 
       DO j = data%nz_d_start, data%nz_d_end
         i = data%NZ_d( j )
-        IF ( D_s( i ) > epsmch ) THEN
+        IF ( D( i ) > epsmch ) THEN
           IF ( X_u( i ) >= bnd_inf ) THEN
             alpha = alpha_max
           ELSE
-            alpha = ( X_u( i ) - X_s( i ) ) / D_s( i )
+            alpha = ( X_u( i ) - X( i ) ) / D( i )
           END IF
         ELSE
           IF ( X_l( i ) <= - bnd_inf ) THEN
             alpha = alpha_max
           ELSE
-            alpha = ( X_l( i ) - X_s( i ) ) / D_s( i )
+            alpha = ( X_l( i ) - X( i ) ) / D( i )
           END IF
         END IF
         data%BREAK_points( j ) = alpha
@@ -3557,7 +3576,7 @@
       CALL SORT_heapsort_build( data%n_break, data%BREAK_points,               &
                                 inform_sort, ix = data%NZ_d )
 
-!  compute p = A v, where v contains the non-fixed components of d_s
+!  compute p = A v, where v contains the non-fixed components of d
 
 !  a) evaluation directly via A
 
@@ -3569,7 +3588,7 @@
             IF ( data%printdd ) WRITE( out, "( ' index ', I0,                  &
            &   ' out of range [1,n=', I0, '] = ', I0 )" ) j, n
           ELSE
-            s = D_s( j )
+            s = D( j )
             DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
               i = Ao_row( l )
               data%P( i ) = data%P( i ) + Ao_val( l ) * s
@@ -3580,7 +3599,7 @@
 !  b) evaluation via matrix-vector product call
 
       ELSE IF ( data%present_asprod ) THEN
-        CALL eval_ASPROD( status, userdata, V = D_s, P = data%P,               &
+        CALL eval_ASPROD( status, userdata, V = D, P = data%P,                 &
                           NZ_in = data%NZ_d, nz_in_start = data%nz_d_start,    &
                           nz_in_end = data%nz_d_end )
         IF ( status /= GALAHAD_ok ) THEN
@@ -3595,7 +3614,7 @@
         DO k = data%nz_d_start, data%nz_d_end
           j = data%NZ_d( k )
           reverse%NZ_in( k ) = j
-          reverse%V( j ) = D_s( j )
+          reverse%V( j ) = D( j )
         END DO
         data%branch = 180 ; status = 3
         RETURN
@@ -3617,11 +3636,11 @@
 !  the start of the piecewise linear arc
 
       IF ( data%w_eq_identity ) THEN
-        data%f_alpha_dash = DOT_PRODUCT( R_s( : o ), data%P( : o ) )
+        data%f_alpha_dash = DOT_PRODUCT( R( : o ), data%P( : o ) )
         data%f_alpha_dashdash = DOT_PRODUCT( data%P( : o ), data%P( : o ) )
       ELSE
         data%U( : o ) = W( : o ) * data%P( : o ) ! u is y in paper
-        data%f_alpha_dash = DOT_PRODUCT( R_s( : o ), data%U( : o ) )
+        data%f_alpha_dash = DOT_PRODUCT( R( : o ), data%U( : o ) )
         data%f_alpha_dashdash = DOT_PRODUCT( data%P( : o ), data%U( : o ) )
       END IF
       IF ( data%f_alpha_dashdash < h_zero ) data%f_alpha_dashdash = zero
@@ -3632,11 +3651,11 @@
 
       IF ( data%regularization ) THEN
         data%rho_alpha_dash =                                                  &
-          DOT_PRODUCT( X_s( data%NZ_d( data%nz_d_start : data%nz_d_end ) ),    &
-                       D_s( data%NZ_d( data%nz_d_start : data%nz_d_end ) ) )
+          DOT_PRODUCT( X( data%NZ_d( data%nz_d_start : data%nz_d_end ) ),      &
+                       D( data%NZ_d( data%nz_d_start : data%nz_d_end ) ) )
         data%rho_alpha_dashdash =                                              &
-          DOT_PRODUCT( D_s( data%NZ_d( data%nz_d_start : data%nz_d_end ) ),    &
-                       D_s( data%NZ_d( data%nz_d_start : data%nz_d_end ) ) )
+          DOT_PRODUCT( D( data%NZ_d( data%nz_d_start : data%nz_d_end ) ),      &
+                       D( data%NZ_d( data%nz_d_start : data%nz_d_end ) ) )
 
 !  record the derivatives of phi
 
@@ -3652,7 +3671,7 @@
 
       IF ( data%printdd ) WRITE( out,                                          &
         "( A, ' Current search direction ', /, ( 6X, 4( I6, ES12.4 ) ) )" )    &
-         prefix, ( data%NZ_d( i ), D_s( data%NZ_d( i ) ),                      &
+         prefix, ( data%NZ_d( i ), D( data%NZ_d( i ) ),                        &
                      i = data%nz_d_start, data%nz_d_end )
 
 !  initialize alpha, u and s
@@ -3787,7 +3806,7 @@
           IF ( segment > 1 ) THEN
             DO k = data%nz_d_start, data%nz_d_end
               j = data%NZ_d( k )
-              data%W( j ) = data%W( j ) + alpha_current * D_s( j )
+              data%W( j ) = data%W( j ) + alpha_current * D( j )
             END DO
           ELSE
             data%W( : n ) = zero
@@ -3827,7 +3846,7 @@
 
 !  indicate the status of the newly-fixed variable
 
-          IF ( D_s( ibreak ) < zero ) THEN
+          IF ( D( ibreak ) < zero ) THEN
             X_status( ibreak ) = 1
           ELSE
             X_status( ibreak ) = 2
@@ -3852,7 +3871,7 @@
 
         alpha = alpha_current + data%delta_alpha
 
-!  compute p = A v, where v contains the components of d_s that have been
+!  compute p = A v, where v contains the components of d that have been
 !  fixed in the current segment. The nonzeros of p are in positions
 !  NZ_out(1:nz_out_end). p_used(i) = segment if and only if variable i
 !  is fixed in that segment
@@ -3868,7 +3887,7 @@
               IF ( data%printdd ) WRITE( out, "( ' index ', I0,                &
              &   ' out of range [1,n=', I0, '] = ', I0 )" ) j, n
             ELSE
-              s = D_s( j )
+              s = D( j )
               DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
                 i = Ao_row( l )
                 IF ( data%P_used( i ) < segment ) THEN
@@ -3884,7 +3903,7 @@
 !  b) evaluation via matrix-vector product call
 
         ELSE IF ( data%present_asprod ) THEN
-          CALL eval_ASPROD( status, userdata, V = D_s, P = data%P,             &
+          CALL eval_ASPROD( status, userdata, V = D, P = data%P,               &
                             NZ_in = data%NZ_d, nz_in_start = data%nz_d_start,  &
                             nz_in_end = data%nz_d_end, NZ_out = data%NZ_out,   &
                             nz_out_end = data%nz_out_end )
@@ -3900,7 +3919,7 @@
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
             reverse%NZ_in( k ) = j
-            reverse%V( j ) = D_s( j )
+            reverse%V( j ) = D( j )
           END DO
           data%branch = 220 ; status = 4
           RETURN
@@ -3932,7 +3951,7 @@
           DO j = 1, data%nz_out_end
             i = data%NZ_out( j )
             data%f_alpha_dash = data%f_alpha_dash - data%P( i )                &
-              * ( R_s( i ) + data%U( i ) + data%alpha_next * data%S( i ) )
+              * ( R( i ) + data%U( i ) + data%alpha_next * data%S( i ) )
             data%f_alpha_dashdash = data%f_alpha_dashdash                      &
               + data%P( i ) * ( data%P( i ) - two * data%S( i ) )
             data%S( i ) = data%S( i ) - data%P( i )
@@ -3941,7 +3960,7 @@
           DO j = 1, data%nz_out_end
             i = data%NZ_out( j )
             data%f_alpha_dash = data%f_alpha_dash - W( i ) * data%P( i )       &
-              * ( R_s( i ) + data%U( i ) + data%alpha_next * data%S( i ) )
+              * ( R( i ) + data%U( i ) + data%alpha_next * data%S( i ) )
             data%f_alpha_dashdash = data%f_alpha_dashdash                      &
               + W( i ) * data%P( i ) * ( data%P( i ) - two * data%S( i ) )
             data%S( i ) = data%S( i ) - data%P( i )
@@ -3955,9 +3974,9 @@
             + data%delta_alpha * data%rho_alpha_dashdash
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
-            data%rho_alpha_dash = data%rho_alpha_dash - D_s( j )               &
-              * ( X_s( j ) + data%W( j ) + data%alpha_next * D_s( j ) )
-            data%rho_alpha_dashdash = data%rho_alpha_dashdash - D_s( j ) ** 2
+            data%rho_alpha_dash = data%rho_alpha_dash - D( j )                 &
+              * ( X( j ) + data%W( j ) + data%alpha_next * D( j ) )
+            data%rho_alpha_dashdash = data%rho_alpha_dashdash - D( j ) ** 2
           END DO
 
 !  compute the first and second derivatives of phi(x(alpha))
@@ -3983,7 +4002,7 @@
                              < - SQRT( epsmch ) * phi_alpha_dash_old .OR.      &
                                data%phi_alpha_dashdash <= zero .OR. data%printw
 
-!  Compute s = A v, where v are the components of d_s that have not been fixed
+!  Compute s = A v, where v are the components of d that have not been fixed
 
         IF ( data%recompute ) THEN
 
@@ -3997,7 +4016,7 @@
                 IF ( data%printdd ) WRITE( out, "( ' index ', I0,              &
                &   ' out of range [1,n=', I0, '] = ', I0 )" ) j, n
               ELSE
-                s = D_s( j )
+                s = D( j )
                 DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
                   i = Ao_row( l )
                   data%S( i ) = data%S( i ) + Ao_val( l ) * s
@@ -4008,7 +4027,7 @@
 !  b) evaluation via matrix-vector product call
 
           ELSE IF ( data%present_asprod ) THEN
-            CALL eval_ASPROD( status, userdata, V = D_s, P = data%S,           &
+            CALL eval_ASPROD( status, userdata, V = D, P = data%S,             &
                               NZ_in = data%NZ_d, nz_in_start = data%nz_d_start,&
                               nz_in_end = data%nz_d_end )
             IF ( status /= GALAHAD_ok ) THEN
@@ -4023,7 +4042,7 @@
             DO k = data%nz_d_start, data%nz_d_end
               j = data%NZ_d( k )
               reverse%NZ_in( k ) = j
-              reverse%V( j ) = D_s( j )
+              reverse%V( j ) = D( j )
             END DO
             data%branch = 240 ; status = 3
             RETURN
@@ -4045,19 +4064,19 @@
 
           sts = DOT_PRODUCT( data%S( : o ), data%S( : o ) )
 
-!  compute rts = r^T s, where r = A ( x_i+1 - x_s ) + r_s, and
-!  x_i+1 = Proj(x_s + alpha_i+1 d_s)
+!  compute rts = r^T s, where r = A ( x_i+1 - x ) + r, and
+!  x_i+1 = Proj(x + alpha_i+1 d)
 
 !  a) evaluation directly via A
 
           IF ( data%present_a ) THEN
-            rts = DOT_PRODUCT( R_s, data%S( : o ) )
+            rts = DOT_PRODUCT( R, data%S( : o ) )
             DO j = 1, n
               ll = Ao_ptr( j ) ; lu = Ao_ptr( j + 1 ) - 1
               IF ( ll <= lu ) THEN
                 s = DOT_PRODUCT( data%S( Ao_row( ll : lu ) ), Ao_val( ll : lu ))
                 dx = MAX( X_l( j ), MIN( X_u( j ),                             &
-                        X_s( j ) + data%alpha_next * D_s( j ) ) ) - X_s( j )
+                        X( j ) + data%alpha_next * D( j ) ) ) - X( j )
                 rts = rts + s * dx
               END IF
             END DO
@@ -4065,11 +4084,11 @@
 !  b) evaluation via matrix-vector product call
 
           ELSE IF ( data%present_asprod ) THEN
-            X_alpha = MAX( X_l, MIN( X_u, X_s + data%alpha_next * D_s ) ) - X_s
-!           data%R = R_s
+            X_alpha = MAX( X_l, MIN( X_u, X + data%alpha_next * D ) ) - X
+!           data%R = R
 !           DO j = 1, n
 !             dx = MAX( X_l( j ), MIN( X_u( j ),                               &
-!                     X_s( j ) + data%alpha_next * D_s( j ) ) ) - X_s( j )
+!                     X( j ) + data%alpha_next * D( j ) ) ) - X( j )
 !             DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
 !               i = Ao_row( l )
 !               R( i ) = R( i ) + Ao_val( l ) * dx
@@ -4079,14 +4098,14 @@
             IF ( status /= GALAHAD_ok ) THEN
               status = GALAHAD_error_evaluation ; GO TO 900
             END IF
-            data%R = data%R + R_s
+            data%R = data%R + R
             rts = DOT_PRODUCT( data%R( : o ), data%S( : o ) )
 
 !  c) evaluation via reverse communication
 
           ELSE
             reverse%V( : n )                                                   &
-              = MAX( X_l, MIN( X_u, X_s + data%alpha_next * D_s ) ) - X_s
+              = MAX( X_l, MIN( X_u, X + data%alpha_next * D ) ) - X
             data%branch = 260 ; status = 2
             RETURN
           END IF
@@ -4100,7 +4119,7 @@
             IF ( reverse%eval_status /= GALAHAD_ok ) THEN
               status = GALAHAD_error_evaluation ; GO TO 900
             END IF
-            reverse%P( : o ) = reverse%P( : o ) + R_s
+            reverse%P( : o ) = reverse%P( : o ) + R
             rts = DOT_PRODUCT( reverse%P( : o ), data%S( : o ) )
           END IF
 
@@ -4117,17 +4136,17 @@
 
           data%f_alpha_dash = rts ; data%f_alpha_dashdash = sts
 
-!  compute vtv = v^T v and vtx = v^T x_i+1, where v are the components of d_s
-!  that have not been fixed and x_i+1 = Proj(x_s + alpha_i+1 d_s)
+!  compute vtv = v^T v and vtx = v^T x_i+1, where v are the components of d
+!  that have not been fixed and x_i+1 = Proj(x + alpha_i+1 d)
 
           IF ( data%regularization ) THEN
             vtv = zero ; vtx = zero
             DO l =  data%nz_d_start, data%nz_d_end
              j =  data%NZ_d( l )
-             s =  D_s( j )
+             s =  D( j )
              vtv = vtv + s ** 2
              vtx = vtx + s * MAX( X_l( j ), MIN( X_u( j ),                     &
-                                  X_s( j ) + data%alpha_next * D_s( j ) ) )
+                                  X( j ) + data%alpha_next * D( j ) ) )
             END DO
 
             IF ( data%printw ) WRITE( out, "(                                  &
@@ -4185,7 +4204,7 @@
 !  record the value of the arc minimizer
 
   800 CONTINUE
-      X_alpha = MAX( X_l, MIN( X_u, X_s + alpha * D_s ) )
+      X_alpha = MAX( X_l, MIN( X_u, X + alpha * D ) )
       RETURN
 
 !  error returns
@@ -4205,37 +4224,37 @@
 ! -*-  B L L S _ I N E X A C T _ A R C _ S E A R C H   S U B R O U T I N E  -*-
 
       SUBROUTINE BLLS_inexact_arc_search( o, n, weight, X_l, X_u, bnd_inf,     &
-                                          X_s, R_s, D_s, X_status,             &
+                                          X, R, D, X_status,                   &
                                           feas_tol, alpha_max, alpha_0,        &
                                           beta, eta, max_steps, advance,       &
                                           out, print_level, prefix,            &
                                           X_alpha, f_alpha, phi_alpha, alpha,  &
                                           steps, data, userdata, status,       &
-                                          alloc_status, bad_alloc,             &
+                                          alloc_status, bad_alloc, W, X_s,     &
                                           Ao_ptr, Ao_row, Ao_val, eval_ASPROD, &
-                                          W, reverse, B )
+                                          reverse, B )
 
-!  Find an approximation to the arc minimizer in the direction d_s from x_s
+!  Find an approximation to the arc minimizer in the direction d from x
 !  of the regularized least-squares objective function
 
 !    phi(x) = f(x) + weight * rho(x), where
 !      f(x) = 1/2 || A x - b ||_W^2 and
-!      rho(x) = 1/2 || x ||^2,
+!      rho(x) = 1/2 || x - x_s ||^2,
 
 !  within the feasible "box" x_l <= x <= x_u
 
-!  Define the arc x(alpha) = projection of x_s + alpha * d_s into the
+!  Define the arc x(alpha) = projection of x + alpha * d into the
 !  feasible box. The approximation to the arc minimizer we seek is a
 !  point x(alpha_i) for which the Armijo condition
 
 !      phi(x(alpha_i)) <= linear(x(alpha_i),eta)
-!                      = f(x_s) + eta * nabla f(x_s)^T (x(alpha_i) - x_s)   (*)
+!                      = f(x_s) + eta * nabla f(x_s)^T (x(alpha_i) - x)   (*)
 
 !  where alpha_i = \alpha_0 * beta^i for some integer i is satisfied
 
 !  Proceed as follows:
 
-!  1) if the minimizer of phi(x) along x_s + alpha * d_s lies on the search arc,
+!  1) if the minimizer of phi(x) along x + alpha * d lies on the search arc,
 !     this is the required point. Otherwise,
 
 !  2) from some specified alpha_0, check whether (*) is satisfied with i = 0.
@@ -4268,7 +4287,7 @@
 !  of the array NZ_d
 
 !  At the initial point, variables within feas_tol of their bounds and
-!  for which the search direction d_s points out of the box will be fixed
+!  for which the search direction d points out of the box will be fixed
 
 !  ------------------------------- dummy arguments -----------------------
 !
@@ -4279,11 +4298,11 @@
 !  weight      (REAL) the positive regularization weight (<= zero is zero)
 !  X_l, X_u    (REAL arrays) the lower and upper bounds on the variables
 !  bnd_inf     (REAL) any BND larger than bnd_inf in modulus is infinite
-!  X_s         (REAL array of length at least n) the point x_s from which
+!  X           (REAL array of length at least n) the point x from which
 !                the search arc commences
-!  R_s         (REAL array of length at least m) the residual A x_s - b
-!  D_s         (REAL array of length at least n) the arc vector d_s
-!  feas_tol    (REAL) a tolerance on allowed infeasibility of x_s
+!  R           (REAL array of length at least m) the residual A x - b
+!  D           (REAL array of length at least n) the arc vector d
+!  feas_tol    (REAL) a tolerance on allowed infeasibility of x
 !  alpha_0     (REAL) initial arc length
 !  alpha_max   (REAL) the largest arc length permitted (alpha_max >= alpha_0)
 !  beta        (REAL) arc length reduction factor in (0,1)
@@ -4303,7 +4322,7 @@
 !                 at the arc minimizer
 !  alpha       (REAL) the optimal arc length
 !  steps       (INTEGER) the number of steps taken
-!  userdata     (structure of type GALAHAD_userdata_type) that may be used to
+!  userdata     (structure of type USERDATA_type) that may be used to
 !               pass data to and from the optional eval_* subroutines
 !  alloc_status (INTEGER) status of the most recent array (de)allocation
 !  bad_alloc    (CHARACTER string of length 80) that provides information
@@ -4354,6 +4373,13 @@
 !
 !  data (structure of type BLLS_subproblem_data_type)
 !
+!  ALLOCATABLE ARGUMENTS
+!
+!  W       (REAL array of length o) positive diagonal weights if allocated,
+!           otherwise all taken to be one
+!  X_s     (REAL array of length n) the values of the (nonzeros) shifts
+!           if allocated
+!
 !  OPTIONAL ARGUMENTS
 !
 !  Ao_val   (REAL array of length Ao_ptr( n + 1 ) - 1) the values of the
@@ -4367,7 +4393,6 @@
 !  weight  (REAL) the positive regularization weight (absent = zero)
 !  eval_ASPROD subroutine that performs products with A
 !           and its transpose, see the argument list for BLLS_solve
-!  W       (REAL array of length o) positive diagonal weights (absent = I)
 !  reverse (structure of type BLLS_reverse_type) used to communicate
 !           reverse communication data to and from the subroutine.
 !
@@ -4385,18 +4410,19 @@
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       CHARACTER ( LEN = 80 ), INTENT( OUT ) :: bad_alloc
       INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: X_status
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_s, X_l, X_u, D_s
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( o ) :: R_s
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, D
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( o ) :: R
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X_alpha
       TYPE ( BLLS_subproblem_data_type ), INTENT( INOUT ) :: data
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( IN ), DIMENSION( : ) :: W
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( IN ), DIMENSION( : ) :: X_s
 
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
                                         DIMENSION( n + 1 ) :: Ao_ptr
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_row
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_val
       OPTIONAL :: eval_ASPROD
-      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: W
       TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: B
 
@@ -4407,7 +4433,7 @@
                                 nz_in_end, NZ_out, nz_out_end )
         USE GALAHAD_USERDATA_precision
         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+        TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
         INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
@@ -4423,10 +4449,10 @@
 !  On the initial call to the subroutine the following variables MUST BE SET
 !  by the user:
 
-!      n, H, X_l, X_u, X_s, R_s, D_s, feas_tol, alpha_0, beta, eta, advance
+!      n, H, X_l, X_u, X, R, D, feas_tol, alpha_0, beta, eta, advance
 !      out, print_level, prefix
 
-!  If the i-th variable is required to be fixed at its initial value, X_s(i),
+!  If the i-th variable is required to be fixed at its initial value, X(i),
 !   X_status(i) must be set to 3 or more
 
 !  local variables
@@ -4481,10 +4507,22 @@
         status = GALAHAD_error_optional ; GO TO 900
       END IF
 
-!  check if regularization is necessary
+!  check if regularization is necessary and if non-unit weights have been given
 
       data%regularization = weight > zero
-      data%w_eq_identity = .NOT. PRESENT( W )
+      IF ( ALLOCATED( W ) ) THEN
+        data%w_eq_identity = SIZE( W ) < o
+      ELSE
+        data%w_eq_identity = .TRUE.
+      END IF
+
+!  see if shifts x_s have been provided
+
+      IF ( ALLOCATED( X_s ) ) THEN
+        data%shifts = SIZE( X_s ) >= n
+      ELSE
+        data%shifts = .FALSE.
+      END IF
 
 !  check for other optional arguments
 
@@ -4535,13 +4573,13 @@
 
       IF ( print_level >= 100 ) THEN
         DO i = 1, n
-          WRITE( out, "( A, ' Var low V up D_s', I6, 4ES12.4 )" )              &
-            prefix, i, X_l( i ), X_s( i ), X_u( i ), D_s( i )
+          WRITE( out, "( A, ' Var low V up  D', I6, 4ES12.4 )" )               &
+            prefix, i, X_l( i ), X( i ), X_u( i ), D( i )
         END DO
       END IF
 
 !  allocate workspace array NZ_d that holds the components of the base-free
-!  and -fixed components of d_s, as well as W
+!  and -fixed components of d, as well as W
 
       array_name = 'blls_exact_arc_search: data%NZ_d'
       CALL SPACE_resize_array( n, data%NZ_d, status, alloc_status,             &
@@ -4556,7 +4594,7 @@
 !  record the status of the variables
 
       IF ( data%printdd ) WRITE( out,                                          &
-        "( A, '    j      X_l        X_s          X_u         D_s' )" ) prefix
+        "( A, '    j      X_l         X           X_u          D' )" ) prefix
 
 !  count the number of free (base_free) variables at the base point,
 !  and the base-fixed set
@@ -4568,32 +4606,32 @@
       data%base_free = 0 ; base_fixed = n + 1
       DO j = 1, n
         IF ( data%printdd ) WRITE( out, "( A, I6, 5ES12.4 )" )                 &
-          prefix, j, X_l( j ), X_s( j ), X_u( j ), D_s( j )
+          prefix, j, X_l( j ), X( j ), X_u( j ), D( j )
 
 !  check to see whether the variable is fixed
 
         IF ( X_status( j ) <= 2 ) THEN
-          xupper = X_u( j ) - X_s( j ) <= feas_tol
-          xlower = X_s( j ) - X_l( j ) <= feas_tol
+          xupper = X_u( j ) - X( j ) <= feas_tol
+          xlower = X( j ) - X_l( j ) <= feas_tol
 
 !  the variable lies between its bounds. Check to see if the search
 !  direction is zero
 
           IF ( .NOT. ( xupper .OR. xlower ) ) THEN
-            IF ( ABS( D_s( j ) ) > epsmch ) GO TO 20
+            IF ( ABS( D( j ) ) > epsmch ) GO TO 20
 
 !  the variable lies close to its lower bound. Check if the search direction
 !  points into the feasible region
 
           ELSE
             IF ( xlower ) THEN
-              IF ( D_s( j ) > epsmch ) GO TO 20
+              IF ( D( j ) > epsmch ) GO TO 20
 
 !  the variable lies close to its upper bound. Check if the search direction
 !  points into the feasible region
 
             ELSE
-              IF ( D_s( j ) < - epsmch ) GO TO 20
+              IF ( D( j ) < - epsmch ) GO TO 20
             END IF
           END IF
         END IF
@@ -4603,7 +4641,7 @@
 
         base_fixed = base_fixed - 1
         data%NZ_d( base_fixed ) = i
-        X_alpha( j ) = X_s( j )
+        X_alpha( j ) = X( j )
         CYCLE
 
 !  the variable is base free; set_As( 1 : base_free ) gives the
@@ -4633,21 +4671,21 @@
           prefix, 0, n - base_fixed + 1, zero, data%phi_s
       END IF
 
-!  compute the initial objective value from the input residual r_s = A x_s - b
+!  compute the initial objective value from the input residual r = A x - b
 
-!    f(x_s) = 1/2 || r_s||_W^2,
+!    f(x_s) = 1/2 || r||_W^2,
 
       IF ( data%w_eq_identity ) THEN
-        data%f_s = half * DOT_PRODUCT( R_s, R_s )
+        data%f_s = half * DOT_PRODUCT( R, R )
       ELSE
-        data%W( : o ) = W( : o ) * R_s( : o ) ! use as temporary store
-        data%f_s = half * DOT_PRODUCT( R_s, data%W )
+        data%W( : o ) = W( : o ) * R( : o ) ! use as temporary store
+        data%f_s = half * DOT_PRODUCT( R, data%W )
       END IF
 
-!    phi(x_s) = 1/2 || r_s||^2 + 1/2 weight || x_s||^2,
+!    phi(x_s) = 1/2 || r ||^2 + 1/2 weight || x - x_s ||^2,
 
       IF ( data%regularization ) THEN
-        data%phi_s = data%f_s + half * weight * DOT_PRODUCT( X_s, X_s )
+        data%phi_s = data%f_s + half * weight * DOT_PRODUCT( X, X )
       ELSE
         data%phi_s = data%f_s
       END IF
@@ -4766,7 +4804,7 @@
 !    alpha_b_j = { ([x_l]_j - [x_s]_j)/[d]_j if [d_s]_j < 0 for j = 1 , ... , n
 !                {          0                if [d_s]_j = 0
 
-!  compute the initial search point x_0 = P_x[x_s + alpha_0 d_s]
+!  compute the initial search point x_0 = P_x[x_s + alpha_0 d]
 !  and the end of the arc
 
 !              { [x_s]_j if j in set_As
@@ -4775,7 +4813,7 @@
 
       DO jj = 1, data%base_free
         j = data%NZ_d( jj )
-        xs = X_s( j ) ; ds = D_s( j )
+        xs = X( j ) ; ds = D( j )
         IF ( ds > epsmch ) THEN
           xb = X_u( j )
           IF ( xb >= bnd_inf ) THEN
@@ -4795,7 +4833,7 @@
         END IF
         data%BREAK_points( jj ) = alpha_b
 
-!  compute the direction to the end of the arc, s = x_b - x_s,
+!  compute the direction to the end of the arc, s = x_b - x,
 
         data%S( j ) = xb - xs
       END DO
@@ -4815,8 +4853,8 @@
 
 !  initialize the active and free vectors
 
-!    x^A_0 = x_s + s^A_0 with s^A_0 = s_{set_A_0}
-!    and d^F_0 = d_s_{set_F_0}
+!    x^A_0 = x + s^A_0 with s^A_0 = s_{set_A_0}
+!    and d^F_0 = d_{set_F_0}
 
 !  as well as the scalars,
 
@@ -4825,10 +4863,10 @@
 
       IF ( data%regularization ) THEN
         data%mu_a = zero
-        data%X_a( : n ) = X_s( : n )
+        data%X_a( : n ) = X( : n )
         DO jj = 1, data%n_a0
           j = data%NZ_d( jj )
-          xs = X_s( j )  ; s = data%S( j )
+          xs = X( j )  ; s = data%S( j )
           data%X_a( j ) = xs + s
           data%mu_a = data%mu_a + xs * s
         END DO
@@ -4838,7 +4876,7 @@
         data%D_f( : n ) = zero
         DO jj = data%n_a0 + 1, data%base_free
           j = data%NZ_d( jj )
-          xs = X_s( j )  ; ds = D_s( j )
+          xs = X( j )  ; ds = D( j )
           data%D_f( j ) = ds
           data%rho_l = data%rho_l + xs * ds
           data%rho_q = data%rho_q + ds ** 2
@@ -4849,7 +4887,7 @@
 !  and compute the matrix-vector products
 
 !    p_0 = A_{set_A_0} s_{set_A_0}
-!    q_0 = A_{set_F_0} d_s_{set_F_0}
+!    q_0 = A_{set_F_0} d_{set_F_0}
 
 !  a) evaluation directly via A
 
@@ -4870,7 +4908,7 @@
 
         DO jj = data%n_a0 + 1, data%base_free
           j = data%NZ_d( jj )
-          ds = D_s( j )
+          ds = D( j )
           DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
             i = Ao_row( l )
             data%Q( i ) = data%Q( i ) + Ao_val( l ) * ds
@@ -4895,7 +4933,7 @@
 ! indices in set_F_0
 
         IF ( data%base_free >= data%n_a0 + 1 ) THEN
-          CALL eval_ASPROD( status, userdata, V = D_s, P = data%Q,             &
+          CALL eval_ASPROD( status, userdata, V = D, P = data%Q,               &
                             NZ_in = data%NZ_d, nz_in_start = data%n_a0 + 1,    &
                             nz_in_end = data%base_free )
           IF ( status /= GALAHAD_ok ) THEN
@@ -4942,7 +4980,7 @@
           DO k = reverse%nz_in_start, reverse%nz_in_end
             j = data%NZ_d( k )
             reverse%NZ_in( k ) = j
-            reverse%V( j ) = D_s( j )
+            reverse%V( j ) = D( j )
             END DO
           data%branch = 90 ; status = 3
           RETURN
@@ -4965,9 +5003,9 @@
 
 !  compute the corresponding residuals
 
-!    rA_0 = r_s + p_0 and rF_0 = q_0
+!    rA_0 = r + p_0 and rF_0 = q_0
 
-      data%R_a( : o ) = R_s( : o ) + data%P( : o )
+      data%R_a( : o ) = R( : o ) + data%P( : o )
       data%R_f( : o ) = data%Q( : o )
 
 !  initialize
@@ -4976,21 +5014,21 @@
 
 !  as well as
 
-!    gamma_a_0 = <p_0,r_s> and  gamma_f_0 = <q_0,r_s>
+!    gamma_a_0 = <p_0,r> and  gamma_f_0 = <q_0,r>
 
       IF ( data%w_eq_identity ) THEN
         data%f_c = DOT_PRODUCT( data%R_a( : o ), data%R_a( : o ) )
         data%f_l = DOT_PRODUCT( data%R_a( : o ), data%R_f( : o ) )
         data%f_q = DOT_PRODUCT( data%R_f( : o ), data%R_f( : o ) )
-        data%gamma_a = DOT_PRODUCT( data%P( : o ), R_s( : o ) )
-        data%gamma_f = DOT_PRODUCT( data%Q( : o ), R_s( : o ) )
+        data%gamma_a = DOT_PRODUCT( data%P( : o ), R( : o ) )
+        data%gamma_f = DOT_PRODUCT( data%Q( : o ), R( : o ) )
       ELSE
         data%W( : o ) = W( : o ) * data%R_a( : o ) ! use as temporary store
         data%f_c = DOT_PRODUCT( data%R_a( : o ), data%W( : o ) )
         data%W( : o ) = W( : o ) * data%R_f( : o ) ! reuse as temporary store
         data%f_l = DOT_PRODUCT( data%R_a( : o ), data%W( : o ) )
         data%f_q = DOT_PRODUCT( data%R_f( : o ), data%W( : o ) )
-        data%W( : o ) = W( : o ) * R_s( : o ) ! reuse as temporary store
+        data%W( : o ) = W( : o ) * R( : o ) ! reuse as temporary store
         data%gamma_a = DOT_PRODUCT( data%P( : o ), data%W( : o ) )
         data%gamma_f = DOT_PRODUCT( data%Q( : o ), data%W( : o ) )
       END IF
@@ -5049,7 +5087,7 @@
 !  for debugging, recompute the objective value
 
         IF ( data%debug .AND. data%printp ) THEN
-          data%X_debug( : n ) = MAX( X_l, MIN( X_u, X_s + alpha * D_s ) )
+          data%X_debug( : n ) = MAX( X_l, MIN( X_u, X + alpha * D ) )
 
 !  a) evaluation directly via A
 
@@ -5180,12 +5218,12 @@
 !  Compute
 
 !    p_{i+1} = A_{set_I_{i+1}} s_{set_I_{i+1}}
-!    q_{i+1} = A_{set_I_{i+1}} d_s_{set_I_{}+1}
+!    q_{i+1} = A_{set_I_{i+1}} d_{set_I_{}+1}
 
 !  a) evaluation directly via A
 
           IF ( data%present_a ) THEN
-            s = data%S( j ) ; ds = D_s( j )
+            s = data%S( j ) ; ds = D( j )
             DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
               i = Ao_row( l )
               IF ( data%P_used( i ) < data%step ) THEN
@@ -5210,7 +5248,7 @@
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
-          CALL eval_ASPROD( status, userdata, V = D_s, P = data%Q,             &
+          CALL eval_ASPROD( status, userdata, V = D, P = data%Q,               &
                             NZ_in = data%NZ_d, nz_in_start = data%nz_d_start,  &
                             nz_in_end = data%nz_d_end, NZ_out = data%NZ_out,   &
                             nz_out_end = data%nz_out_end )
@@ -5246,7 +5284,7 @@
 
           DO k = reverse%nz_in_start, reverse%nz_in_end
             j = data%NZ_d( k )
-            reverse%V( j ) = D_s( j )
+            reverse%V( j ) = D( j )
           END DO
           data%branch = 320 ; status = 4
           RETURN
@@ -5272,7 +5310,7 @@
           DO j = 1, data%nz_out_end
             i = data%NZ_out( j )
             pi = data%P( i ) ; qi = data%Q( i )
-            rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R_s( i )
+            rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R( i )
 
 !  update
 
@@ -5284,8 +5322,8 @@
             data%f_l = data%f_l + qi * rai - pi * rfi - qi * pi
             data%f_q = data%f_q + two * qi * rfi + qi ** 2
 
-!    gamma_a_{i+1} = gamma_a_i - <p_{i+1},r_s> and
-!    gamma_f_{i+1} = gamma_f_i + <q_{i+1},r_s>
+!    gamma_a_{i+1} = gamma_a_i - <p_{i+1},r> and
+!    gamma_f_{i+1} = gamma_f_i + <q_{i+1},r>
 
             data%gamma_a = data%gamma_a - pi * rsi
             data%gamma_f = data%gamma_f + qi * rsi
@@ -5302,7 +5340,7 @@
             i = data%NZ_out( j )
             pi = data%P( i ) ; qi = data%Q( i )
             wi = W( i ) ; yi = wi * pi ; zi = wi * qi
-            rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R_s( i )
+            rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R( i )
 
 !  update
 
@@ -5314,8 +5352,8 @@
             data%f_l = data%f_l + zi * rai - yi * rfi - zi * pi
             data%f_q = data%f_q + two * zi * rfi + zi * qi
 
-!    gamma_a_{i+1} = gamma_a_i - <y_{i+1},r_s> and
-!    gamma_f_{i+1} = gamma_f_i + <z_{i+1},r_s>
+!    gamma_a_{i+1} = gamma_a_i - <y_{i+1},r> and
+!    gamma_f_{i+1} = gamma_f_i + <z_{i+1},r>
 
             data%gamma_a = data%gamma_a - yi * rsi
             data%gamma_f = data%gamma_f + zi * rsi
@@ -5334,8 +5372,8 @@
 
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
-            s = data%S( j ) ; ds = D_s( j )
-            xaj = data%X_a( j ) ; dfj = data%D_f( j ) ; xs = X_s( j )
+            s = data%S( j ) ; ds = D( j )
+            xaj = data%X_a( j ) ; dfj = data%D_f( j ) ; xs = X( j )
 
 !  update
 
@@ -5402,12 +5440,12 @@
 !  Compute
 
 !    p_{i+1} = A_{set_J_{i+1}} s_{set_J_{i+1}}
-!    q_{i+1} = A_{set_J_{i+1}} d_s_{set_J_{}+1}
+!    q_{i+1} = A_{set_J_{i+1}} d_{set_J_{}+1}
 
 !  a) evaluation directly via A
 
           IF ( data%present_a ) THEN
-            s = data%S( j ) ; ds = D_s( j )
+            s = data%S( j ) ; ds = D( j )
             DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
               i = Ao_row( l )
               IF ( data%P_used( i ) < data%step ) THEN
@@ -5432,7 +5470,7 @@
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
-          CALL eval_ASPROD( status, userdata, V = D_s, P = data%Q,             &
+          CALL eval_ASPROD( status, userdata, V = D, P = data%Q,               &
                             NZ_in = data%NZ_d, nz_in_start = data%nz_d_start,  &
                             nz_in_end = data%nz_d_end, NZ_out = data%NZ_out,   &
                             nz_out_end = data%nz_out_end )
@@ -5468,7 +5506,7 @@
 
           DO k = reverse%nz_in_start, reverse%nz_in_end
             j = data%NZ_d( k )
-            reverse%V( j ) = D_s( j )
+            reverse%V( j ) = D( j )
           END DO
           data%branch = 420 ; status = 4
           RETURN
@@ -5494,7 +5532,7 @@
           DO j = 1, data%nz_out_end
             i = data%NZ_out( j )
             pi = data%P( i ) ; qi = data%Q( i )
-            rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R_s( i )
+            rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R( i )
 
 !  update
 
@@ -5507,8 +5545,8 @@
              data%f_l = data%f_l - qi * rai + pi * rfi - qi * pi
              data%f_q = data%f_q - two * qi * rfi + qi ** 2
 
-!    gamma_a_{i+1} = gamma_a_i + <p_{i+1},r_s> and
-!    gamma_f_{i+1} = gamma_f_i - <q_{i+1},r_s>
+!    gamma_a_{i+1} = gamma_a_i + <p_{i+1},r> and
+!    gamma_f_{i+1} = gamma_f_i - <q_{i+1},r>
 
              data%gamma_a = data%gamma_a + pi * rsi
              data%gamma_f = data%gamma_f - qi * rsi
@@ -5526,7 +5564,7 @@
             i = data%NZ_out( j )
             pi = data%P( i ) ; qi = data%Q( i )
             wi = W( i ) ; yi = wi * pi ; zi = wi * qi
-            rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R_s( i )
+            rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R( i )
 
 !  update
 
@@ -5539,8 +5577,8 @@
              data%f_l = data%f_l - zi * rai + yi * rfi - zi * pi
              data%f_q = data%f_q - two * zi * rfi + zi * qi
 
-!    gamma_a_{i+1} = gamma_a_i + <y_{i+1},r_s> and
-!    gamma_f_{i+1} = gamma_f_i - <z_{i+1},r_s>
+!    gamma_a_{i+1} = gamma_a_i + <y_{i+1},r> and
+!    gamma_f_{i+1} = gamma_f_i - <z_{i+1},r>
 
              data%gamma_a = data%gamma_a + yi * rsi
              data%gamma_f = data%gamma_f - zi * rsi
@@ -5560,8 +5598,8 @@
 
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
-            s = data%S( j ) ; ds = D_s( j )
-            xaj = data%X_a( j ) ; dfj = data%D_f( j ) ; xs = X_s( j )
+            s = data%S( j ) ; ds = D( j )
+            xaj = data%X_a( j ) ; dfj = data%D_f( j ) ; xs = X( j )
 
 !  update
 
@@ -5640,7 +5678,7 @@
 !  for debugging, recompute the objective value
 
           IF ( data%debug .AND. data%printp ) THEN
-            data%X_debug( : n ) = MAX( X_l, MIN( X_u, X_s + alpha * D_s ) )
+            data%X_debug( : n ) = MAX( X_l, MIN( X_u, X + alpha * D ) )
 
 !  a) evaluation directly via A
 
@@ -5717,15 +5755,15 @@
 !  record the value of the arc minimizer
 
   800 CONTINUE
-      X_alpha = MAX( X_l, MIN( X_u, X_s + alpha * D_s ) )
+      X_alpha = MAX( X_l, MIN( X_u, X + alpha * D ) )
 
 !  record the status of the minimizer
 
       IF ( data%printdd ) WRITE( out,                                          &
-        "( A, '    j      X_l        X_s          X_u' )" ) prefix
+        "( A, '    j      X_l         X           X_u' )" ) prefix
       DO j = 1, n
         IF ( data%printdd ) WRITE( out, "( A, I6, 5ES12.4 )" )                 &
-          prefix, j, X_l( j ), X_alpha( j ), X_u( j ), D_s( j )
+          prefix, j, X_l( j ), X_alpha( j ), X_u( j ), D( j )
 
 !  leave fixed variables alone
 
@@ -5777,18 +5815,18 @@
                             stop_cg_relative, stop_cg_absolute,                &
                             iter, maxit, out, print_level, prefix,             &
                             data, userdata, status, alloc_status, bad_alloc,   &
-                            Ao_ptr, Ao_row, Ao_val, eval_AFPROD, eval_PREC,    &
-                            DPREC, W, reverse, preconditioned, B )
+                            W, X_s, Ao_ptr, Ao_row, Ao_val, eval_AFPROD,       &
+                            eval_PREC, DPREC, reverse, preconditioned, B )
 
 !  Find the minimizer of the constrained (regularized) least-squares
 !  objective function
-
-!    f(x) =  1/2 || A_o x - b ||_W^2 + 1/2 weight * ||x||_2^2
-
+!
+!    f(x) =  1/2 || A_o x - b ||_W^2 + 1/2 weight * || x -x_s ||_2^2
+!
 !  for which certain components of x are fixed at their input values
-
+!
 !  IF FIXED( I ) /= 0, the I-th variable is fixed at the input X
-
+!
 !  ------------------------------- dummy arguments -----------------------
 !
 !  INPUT arguments that are not altered by the subroutine
@@ -5814,7 +5852,7 @@
 !  OUTPUT arguments that need not be set on entry to the subroutine
 !
 !  iter   (INTEGER) the number of iterations performed
-!  userdata (structure of type GALAHAD_userdata_type) that may be used to pass
+!  userdata (structure of type USERDATA_type) that may be used to pass
 !          data to and from the optional eval_* subroutines
 !  alloc_status  (INTEGER) status of the most recent array (de)allocation
 !  bad_alloc (CHARACTER string of length 80) that provides information
@@ -5862,13 +5900,20 @@
 !
 !  data (structure of type BLLS_subproblem_data_type)
 !
+!  ALLOCATABLE ARGUMENTS
+!
+!  W       (REAL array of length o) positive diagonal weights if allocated,
+!           otherwise all taken to be one
+!  X_s     (REAL array of length n) the values of the (nonzeros) shifts
+!           if allocated
+!
 !  OPTIONAL ARGUMENTS
 !
-!  Ao_val   (REAL array of length Ao_ptr( n + 1 ) - 1) the values of the
+!  Ao_val  (REAL array of length Ao_ptr( n + 1 ) - 1) the values of the
 !          nonzeros of A, stored by consecutive columns
-!  Ao_row   (INTEGER array of length Ao_ptr( n + 1 ) - 1) the row indices
+!  Ao_row  (INTEGER array of length Ao_ptr( n + 1 ) - 1) the row indices
 !          of the nonzeros of A, stored by consecutive columns
-!  Ao_ptr   (INTEGER array of length n + 1) the starting positions in
+!  Ao_ptr  (INTEGER array of length n + 1) the starting positions in
 !          Ao_val and Ao_row of the i-th column of A, for i = 1,...,n,
 !          with Ao_ptr(n+1) pointin to the storage location 1 beyond
 !          the last entry in A
@@ -5877,14 +5922,13 @@
 !           list for BLLS_solve
 !  eval_PREC subroutine that performs the preconditioning operation p = P v
 !            see the argument list for BLLS_solve
-!  W       (REAL array of length o) positive diagonal weights (absent = I)
 !  DPREC   (REAL array of length n) the values of a diagonal preconditioner
 !           that aims to approximate A^T W A
 !  preconditioned (LOGICAL) present and set true is there a preconditioner
 !  reverse (structure of type BLLS_reverse_type) used to communicate
 !           reverse communication data to and from the subroutine
 !  B       (REAL array of length o) rhs vector b only for debugging
-
+!
 !  ------------------ end of dummy arguments --------------------------
 
 !  dummy arguments
@@ -5901,14 +5945,15 @@
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( o ) :: R
       TYPE ( BLLS_subproblem_data_type ), INTENT( INOUT ) :: data
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( IN ), DIMENSION( : ) :: W
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( IN ), DIMENSION( : ) :: X_s
 
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
                                         DIMENSION( n + 1 ) :: Ao_ptr
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_row
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_val
       OPTIONAL :: eval_AFPROD, eval_PREC
-      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: W
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: DPREC
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: B
       LOGICAL, OPTIONAL, INTENT( IN ) :: preconditioned
@@ -5921,7 +5966,7 @@
                                 FREE, n_free )
         USE GALAHAD_USERDATA_precision
         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+        TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
         LOGICAL, INTENT( IN ) :: transpose
         INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_free
         INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: FREE
@@ -5934,7 +5979,7 @@
         SUBROUTINE eval_PREC( status, userdata, V, P )
         USE GALAHAD_USERDATA_precision
         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+        TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
         END SUBROUTINE eval_PREC
@@ -5945,10 +5990,10 @@
 !  On the initial call to the subroutine the following variables MUST BE SET
 !  by the user:
 
-!      n, H, X_l, X_u, X_s, R_s, D_s, alpha_max, feas_tol, max_segments,
+!      n, H, X_l, X_u, X, R, alpha_max, feas_tol, max_segments,
 !      out, print_level, prefix
 
-!  If the i-th variable is required to be fixed at its initial value, X_s(i),
+!  If the i-th variable is required to be fixed at its initial value, X(i),
 !   FIXED(i) must be set to 3 or more
 
 !  local variables
@@ -6009,10 +6054,22 @@
 
       data%debug = PRESENT( B )
 
-!  check if regularization is necessary
+!  check if regularization is necessary and if non-unit weights have been given
 
       data%regularization = weight > zero
-      data%w_eq_identity = .NOT. PRESENT( W )
+      IF ( ALLOCATED( W ) ) THEN
+        data%w_eq_identity = SIZE( W ) < o
+      ELSE
+        data%w_eq_identity = .TRUE.
+      END IF
+
+!  see if shifts x_s have been provided
+
+      IF ( ALLOCATED( X_s ) ) THEN
+        data%shifts = SIZE( X_s ) >= n
+      ELSE
+        data%shifts = .FALSE.
+      END IF
 
 !  set printing controls
 
@@ -6643,6 +6700,15 @@
             bad_alloc = data%blls_inform%bad_alloc, out = error )
      IF ( data%blls_inform%status /= 0 ) GO TO 900
 
+     array_name = 'blls: data%prob%Z'
+     CALL SPACE_resize_array( n, data%prob%Z,                                  &
+            data%blls_inform%status, data%blls_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%blls_inform%bad_alloc, out = error )
+     IF ( data%blls_inform%status /= 0 ) GO TO 900
+
      array_name = 'blls: data%prob%G'
      CALL SPACE_resize_array( n, data%prob%G,                                  &
             data%blls_inform%status, data%blls_inform%alloc_status,            &
@@ -6688,8 +6754,8 @@
             bad_alloc = data%blls_inform%bad_alloc, out = error )
      IF ( data%blls_inform%status /= 0 ) GO TO 900
 
-     array_name = 'blls: data%prob%Z'
-     CALL SPACE_resize_array( n, data%prob%Z,                                  &
+     array_name = 'blls: data%prob%X_status'
+     CALL SPACE_resize_array( n, data%prob%X_status,                           &
             data%blls_inform%status, data%blls_inform%alloc_status,            &
             array_name = array_name,                                           &
             deallocate_error_fatal = deallocate_error_fatal,                   &
@@ -7033,7 +7099,8 @@
 !-  G A L A H A D -  B L L S _ s o l v e _ g i v e n _ a  S U B R O U T I N E  -
 
      SUBROUTINE BLLS_solve_given_a( data, userdata, status, Ao_val, B,         &
-                                    X_l, X_u, X, Z, R, G, X_stat, W, eval_PREC )
+                                    regularization_weight, X_l, X_u,           &
+                                    X, Z, R, G, X_stat, W, X_s, eval_PREC )
 
 !  solve the bound-constrained linear least-squares problem whose structure
 !  was previously imported. See BLLS_solve for a description of the required
@@ -7045,7 +7112,7 @@
 
 !  data is a scalar variable of type BLLS_full_data_type used for internal data
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be
+!  userdata is a scalar variable of type USERDATA_type which may be
 !   used to pass user data to and from the eval_PREC subroutine (see below).
 !   Available coomponents which may be allocated as required are:
 !
@@ -7070,6 +7137,9 @@
 !  B is a rank-one array of dimension o and type default
 !   real, that holds the vector of observations, b.
 !   The i-th component of B, i = 1, ... , o, contains (b)_i.
+!
+!  regularization_weight is an optional scalar of type default real that
+!   holds the value of the non-negative regularization weight, sigma.
 !
 !  X_l, X_u are rank-one arrays of dimension n, that hold the values of
 !   the lower and upper bounds, x_l and x_u, on the variables x.
@@ -7110,9 +7180,15 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  W is an OPTIONAL rank-one array of dimension o and type default real,
-!   that holds the vector of weights, w, If W is not present, weights of
-!   one will be used.
+!  W is an optional rank-one array of type default real that may be
+!   set to the values of the components of the weights W.
+!   The i-th component of W, i = 1, ... , o, contains (w)_i.
+!   If it is absent, the weights will all be taken to be 1.0.
+!
+!  X_s is an optional rank-one array of type default real that may be
+!   set to the values of the components of the shifts X_s.
+!   The j-th component of X_s, j = 1, ... , n, contains (x_s)_j.
+!   If it is absent, the shifts will all be taken to be 0.0.
 !
 !  eval_PREC is an OPTIONAL subroutine which if present must have the arguments
 !   given below (see the interface blocks). The product P^{-1} * v of the given
@@ -7125,14 +7201,20 @@
 
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( BLLS_full_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = rp_ ), INTENT( IN ) :: regularization_weight
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: Ao_val
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: B
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: R, G
-     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: X_stat
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ), OPTIONAL :: W
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( INOUT ) :: X_stat
+
+!  optional arguments
+
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( data%prob%o ) :: W
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ),                              &
+                                    DIMENSION( data%prob%n ) :: X_s
      OPTIONAL :: eval_PREC
 
 !  interface blocks
@@ -7141,7 +7223,7 @@
        SUBROUTINE eval_PREC( status, userdata, V, P )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
        END SUBROUTINE eval_PREC
@@ -7149,7 +7231,9 @@
 
 !  local variables
 
-     INTEGER ( KIND = ip_ ) :: n, o
+     INTEGER ( KIND = ip_ ) :: n, o, error
+     CHARACTER ( LEN = 80 ) :: array_name
+     LOGICAL :: deallocate_error_fatal, space_critical
 
 !  check that space for the constraint Jacobian has been provided
 
@@ -7158,6 +7242,10 @@
 !  recover the dimensions
 
      n = data%prob%n ; o = data%prob%o
+
+!  save the regularization weight
+
+     data%prob%regularization_weight = regularization_weight
 
 !  save the observations
 
@@ -7172,16 +7260,46 @@
 
      data%prob%X( : n ) = X( : n )
      data%prob%Z( : n ) = Z( : n )
+     IF ( data%blls_control%cold_start == 0 )                                  &
+       data%prob%X_status( : n ) = X_stat( : n )
 
 !  save the Jacobian entries
 
      IF ( data%prob%Ao%ne > 0 )                                                &
        data%prob%Ao%val( : data%prob%Ao%ne ) = Ao_val( : data%prob%Ao%ne )
 
+!  save the weights if they are present
+
+     IF ( PRESENT( W ) ) THEN
+       array_name = 'blls: data%prob%W'
+       CALL SPACE_resize_array( o, data%prob%W,                                &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+            bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+       data%prob%W( : o ) = W( : o )
+     END IF
+
+!  save the shifts if they are present
+
+     IF ( PRESENT( X_s ) ) THEN
+       array_name = 'blls: data%prob%W'
+       CALL SPACE_resize_array( n, data%prob%X_s,                              &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+            bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+       data%prob%X_s( : n ) = X_s( : n )
+     END IF
+
 !  call the solver
 
-     CALL BLLS_solve( data%prob, X_stat, data%blls_data, data%blls_control,    &
-                      data%blls_inform, userdata, W = W, eval_PREC = eval_PREC )
+     CALL BLLS_solve( data%prob, data%blls_data, data%blls_control,            &
+                      data%blls_inform, userdata, eval_PREC = eval_PREC )
      status = data%blls_inform%status
 
 !  recover the optimal primal and dual variables
@@ -7193,6 +7311,10 @@
 
      R( : o ) = data%prob%R( : o )
      G( : n ) = data%prob%G( : n )
+
+!  recover the status of x
+
+     X_stat( : n ) = data%prob%X_status( : n )
 
      RETURN
 
@@ -7208,10 +7330,11 @@
 
 !- G A L A H A D -  B L L S _ s o l v e _ r e v e r s e _ a _ p r o d SUBROUTINE
 
-     SUBROUTINE BLLS_solve_reverse_a_prod( data, status, eval_status,          &
-                                           B, X_l, X_u, X, Z, R, G, X_stat,    &
-                                           V, P, NZ_in, nz_in_start,           &
-                                           nz_in_end, NZ_out, nz_out_end, W )
+     SUBROUTINE BLLS_solve_reverse_a_prod( data, status, eval_status, B,       &
+                                           regularization_weight, X_l, X_u,    &
+                                           X, Z, R, G, X_stat, V, P,           &
+                                           NZ_in, nz_in_start, nz_in_end,      &
+                                           NZ_out, nz_out_end, W, X_s )
 
 !  solve the bound-constrained linear least-squares problem whose structure
 !  was previously imported, and for which the action of A and its traspose
@@ -7338,9 +7461,15 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  W is an OPTIONAL rank-one array of dimension o and type default real,
-!   that holds the vector of weights, w, If W is not present, weights of
-!   one will be used.
+!  W is an optional rank-one array of type default real that may be
+!   set to the values of the components of the weights W.
+!   The i-th component of W, i = 1, ... , o, contains (w)_i.
+!   If it is absent, the weights will all be taken to be 1.0.
+!
+!  X_s is an optional rank-one array of type default real that may be
+!   set to the values of the components of the shifts X_s.
+!   The j-th component of X_s, j = 1, ... , n, contains (x_s)_j.
+!   If it is absent, the shifts will all be taken to be 0.0.
 !
 !  The remaining components V, ... , nz_out_end need not be set
 !  on initial entry, but must be set as instructed by status as above.
@@ -7348,18 +7477,24 @@
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: eval_status
      TYPE ( BLLS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = rp_ ), INTENT( IN ) :: regularization_weight
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: B
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: R, G
-     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: X_stat
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( INOUT ) :: X_stat
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nz_out_end
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nz_in_start, nz_in_end
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: NZ_out
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: NZ_in
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: P
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: V
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ), OPTIONAL :: W
+
+!  optional arguments
+
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( data%prob%o ) :: W
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ),                              &
+                                    DIMENSION( data%prob%n ) :: X_s
 
 !  local variables
 
@@ -7370,6 +7505,10 @@
 !  recover the dimensions
 
      n = data%prob%n ; o = data%prob%o
+
+!  save the regularization weight
+
+     data%prob%regularization_weight = regularization_weight
 
      SELECT CASE ( status )
 
@@ -7390,6 +7529,36 @@
 
        data%prob%X( : n ) = X( : n )
        data%prob%Z( : n ) = Z( : n )
+       IF ( data%blls_control%cold_start == 0 )                                &
+         data%prob%X_status( : n ) = X_stat( : n )
+
+!  save the weights if they are present
+
+       IF ( PRESENT( W ) ) THEN
+         array_name = 'blls: data%prob%W'
+         CALL SPACE_resize_array( o, data%prob%W,                              &
+                data%blls_inform%status, data%blls_inform%alloc_status,        &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+         IF ( data%blls_inform%status /= 0 ) GO TO 900
+         data%prob%W( : o ) = W( : o )
+       END IF
+
+!  save the shifts if they are present
+
+       IF ( PRESENT( X_s ) ) THEN
+         array_name = 'blls: data%prob%W'
+         CALL SPACE_resize_array( n, data%prob%X_s,                            &
+                data%blls_inform%status, data%blls_inform%alloc_status,        &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+         IF ( data%blls_inform%status /= 0 ) GO TO 900
+         data%prob%X_s( : n ) = X_s( : n )
+       END IF
 
 !  allocate space for reverse-communication data
 
@@ -7467,9 +7636,8 @@
 
 !  call the solver
 
-     CALL BLLS_solve( data%prob, X_stat, data%blls_data, data%blls_control,    &
-                      data%blls_inform, data%userdata, W = W,                  &
-                      reverse = data%reverse )
+     CALL BLLS_solve( data%prob, data%blls_data, data%blls_control,            &
+                      data%blls_inform, data%userdata, reverse = data%reverse )
      status = data%blls_inform%status
 
 !  recover the optimal primal and dual variables
@@ -7481,6 +7649,10 @@
 
      R( : o ) = data%prob%R( : o )
      G( : n ) = data%prob%G( : n )
+
+!  recover the status of x
+
+     X_stat( : n ) = data%prob%X_status( : n )
 
 !  record Jacobian-vector product information for reverse communication
 

@@ -34,7 +34,7 @@
         f_dgo_terminate                 => DGO_terminate
 
     USE GALAHAD_USERDATA_precision, ONLY:                                      &
-        f_galahad_userdata_type => GALAHAD_userdata_type
+        f_galahad_userdata_type => USERDATA_type
 
     USE GALAHAD_TRB_precision_ciface, ONLY:                                    &
         trb_inform_type,                                                       &

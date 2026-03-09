@@ -9,7 +9,7 @@
    TYPE ( TRB_control_type ) :: control
    TYPE ( TRB_inform_type ) :: inform
    TYPE ( TRB_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
 !  EXTERNAL :: FUN, GRAD, HESS, HESSPROD, PREC
    INTEGER ( KIND = ip_ ) :: i, j, smt_stat, scratch_out, data_storage_type
    LOGICAL :: alive
@@ -443,7 +443,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), INTENT( OUT ) :: f
    REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    f = ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) ** 2 +                         &
        ( X( 2 ) + X( 3 ) ) ** 2 + COS( X( 1 ) )
    status = 0
@@ -455,7 +455,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    G( 1 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) - SIN( X( 1 ) )
    G( 2 ) = 2.0_rp_ * ( X( 2 ) + X( 3 ) )
    G( 3 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +               &
@@ -469,7 +469,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    Hval( 1 ) = 2.0_rp_ - COS( X( 1 ) )
    Hval( 2 ) = 2.0_rp_
    Hval( 3 ) = 2.0_rp_
@@ -484,7 +484,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    Hval( 1 ) = 2.0_rp_ - COS( X( 1 ) )
    Hval( 2 ) = 2.0_rp_
    Hval( 3 ) = 2.0_rp_
@@ -500,7 +500,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), INTENT( OUT ) :: f
    REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    f = COS( X( 1 ) ) + ( X( 2 ) + userdata%real( 1 ) ) ** 2 + X( 3 ) ** 2
    status = 0
    RETURN
@@ -511,7 +511,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    G( 1 ) = - SIN( X( 1 ) )
    G( 2 ) = 2.0_rp_ * ( X( 2 ) + userdata%real( 1 ) )
    G( 3 ) = 2.0_rp_ * X( 3 )
@@ -524,7 +524,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    Hval( 1 ) = - COS( X( 1 ) )
    Hval( 2 ) = 2.0_rp_
    Hval( 3 ) = 2.0_rp_
@@ -537,7 +537,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, V
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
    U( 1 ) = U( 1 ) + 2.0_rp_ * ( V( 1 ) + V( 3 ) ) - COS( X( 1 ) ) * V( 1 )
    U( 2 ) = U( 2 ) + 2.0_rp_ * ( V( 2 ) + V( 3 ) )
@@ -551,7 +551,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    U( 1 ) = 0.5_rp_ * V( 1 )
    U( 2 ) = 0.5_rp_ * V( 2 )
    U( 3 ) = 0.25_rp_ * V( 3 )
@@ -570,7 +570,7 @@ CONTAINS
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
    INTEGER ( KIND = ip_ ) :: i, j
    REAL ( KIND = rp_ ), DIMENSION( 3 ) :: P

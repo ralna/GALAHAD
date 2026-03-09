@@ -1,7 +1,7 @@
 #  standard GALAHAD compilation and run instructions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-11-13
+#  This version: 2026-01-07
 
 #  compilation agenda for package
 
@@ -132,6 +132,9 @@ $(PACKAGE)DS4 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s4_double.o
 $(PACKAGE)DS5 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s5_double.o
 $(PACKAGE)DS6 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s6_double.o
 $(PACKAGE)DS7 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s7_double.o
+$(PACKAGE)DS8 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s8_double.o
+$(PACKAGE)DS9 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s9_double.o
+$(PACKAGE)DS10 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s10_double.o
 $(PACKAGE)DT2 = $($(PACKAGE)OBJECTSD) $(TESTDEPS) $(OBJD)/$(package)t2_double.o
 $(PACKAGE)DTI = $($(PACKAGE)OBJECTSD) $(TESTDEPS) $(OBJD)/$(package)ti_double.o
 
@@ -163,6 +166,7 @@ $(PACKAGE)DS464 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s4_double_64.o
 $(PACKAGE)DS564 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s5_double_64.o
 $(PACKAGE)DS664 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s6_double_64.o
 $(PACKAGE)DS764 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s7_double_64.o
+$(PACKAGE)DS864 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s8_double_64.o
 $(PACKAGE)DT264 = $($(PACKAGE)OBJECTSD64) $(TESTDEPS64) \
                   $(OBJD64)/$(package)t2_double_64.o
 $(PACKAGE)DTI64 = $($(PACKAGE)OBJECTSD64) $(TESTDEPS64) \
@@ -199,6 +203,9 @@ R$(PACKAGE)DS4 = $(OBJD)/$(package)s4_double.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS5 = $(OBJD)/$(package)s5_double.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS6 = $(OBJD)/$(package)s6_double.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS7 = $(OBJD)/$(package)s7_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS8 = $(OBJD)/$(package)s8_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS9 = $(OBJD)/$(package)s9_double.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS10 = $(OBJD)/$(package)s10_double.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DT2 = $(OBJD)/$(package)t2_double.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DTI = $(OBJD)/$(package)ti_double.o -L$(OBJD) $(LIBS)
 
@@ -227,6 +234,7 @@ R$(PACKAGE)DS464 = $(OBJD64)/$(package)s4_double_64.o -L$(OBJD64) $(LIBS)
 R$(PACKAGE)DS564 = $(OBJD64)/$(package)s5_double_64.o -L$(OBJD64) $(LIBS)
 R$(PACKAGE)DS664 = $(OBJD64)/$(package)s6_double_64.o -L$(OBJD64) $(LIBS)
 R$(PACKAGE)DS764 = $(OBJD64)/$(package)s7_double_64.o -L$(OBJD64) $(LIBS)
+R$(PACKAGE)DS864 = $(OBJD64)/$(package)s8_double_64.o -L$(OBJD64) $(LIBS)
 R$(PACKAGE)DT264 = $(OBJD64)/$(package)t2_double_64.o -L$(OBJD64) $(LIBS)
 R$(PACKAGE)DTI64 = $(OBJD64)/$(package)ti_double_64.o -L$(OBJD64) $(LIBS)
 
@@ -257,6 +265,7 @@ $(PACKAGE)CSS4 = $($(PACKAGE)OBJECTSCS) $(OBJS)/$(package)cs4_single.o
 $(PACKAGE)CSS5 = $($(PACKAGE)OBJECTSCS) $(OBJS)/$(package)cs5_single.o
 $(PACKAGE)CSS6 = $($(PACKAGE)OBJECTSCS) $(OBJS)/$(package)cs6_single.o
 $(PACKAGE)CSS7 = $($(PACKAGE)OBJECTSCS) $(OBJS)/$(package)cs7_single.o
+$(PACKAGE)CSS8 = $($(PACKAGE)OBJECTSCS) $(OBJS)/$(package)cs8_single.o
 $(PACKAGE)CSTI = $($(PACKAGE)OBJECTSCS) $(TESTDEPS) \
                  $(OBJS)/$(package)cti_single.o
 $(PACKAGE)CSTF = $($(PACKAGE)OBJECTSCS) $(TESTDEPS) \
@@ -272,6 +281,7 @@ $(PACKAGE)CDS4 = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs4_double.o
 $(PACKAGE)CDS5 = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs5_double.o
 $(PACKAGE)CDS6 = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs6_double.o
 $(PACKAGE)CDS7 = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs7_double.o
+$(PACKAGE)CDS8 = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs8_double.o
 $(PACKAGE)CDT2 = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) \
                  $(OBJD)/$(package)ct2_double.o
 $(PACKAGE)CDT3 = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) \
@@ -292,6 +302,7 @@ $(PACKAGE)CQS4 = $($(PACKAGE)OBJECTSCQ) $(OBJQ)/$(package)cs4_quadruple.o
 $(PACKAGE)CQS5 = $($(PACKAGE)OBJECTSCQ) $(OBJQ)/$(package)cs5_quadruple.o
 $(PACKAGE)CQS6 = $($(PACKAGE)OBJECTSCQ) $(OBJQ)/$(package)cs6_quadruple.o
 $(PACKAGE)CQS7 = $($(PACKAGE)OBJECTSCQ) $(OBJQ)/$(package)cs7_quadruple.o
+$(PACKAGE)CQS8 = $($(PACKAGE)OBJECTSCQ) $(OBJQ)/$(package)cs8_quadruple.o
 $(PACKAGE)CQTI = $($(PACKAGE)OBJECTSCQ) $(TESTDEPS) \
                  $(OBJQ)/$(package)cti_quadruple.o
 $(PACKAGE)CQTF = $($(PACKAGE)OBJECTSCQ) $(TESTDEPS) \
@@ -308,6 +319,7 @@ $(PACKAGE)CSS464 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs4_single_64.o
 $(PACKAGE)CSS564 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs5_single_64.o
 $(PACKAGE)CSS664 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs6_single_64.o
 $(PACKAGE)CSS764 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs7_single_64.o
+$(PACKAGE)CSS864 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs8_single_64.o
 $(PACKAGE)CSTI64 = $($(PACKAGE)OBJECTSCS64) $(TESTDEPS) \
                    $(OBJS64)/$(package)cti_single_64.o
 $(PACKAGE)CSTF64 = $($(PACKAGE)OBJECTSCS64) $(TESTDEPS) \
@@ -324,6 +336,7 @@ $(PACKAGE)CDS464 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs4_double_64.o
 $(PACKAGE)CDS564 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs5_double_64.o
 $(PACKAGE)CDS664 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs6_double_64.o
 $(PACKAGE)CDS764 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs7_double_64.o
+$(PACKAGE)CDS864 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs8_double_64.o
 $(PACKAGE)CDT264 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
                    $(OBJD64)/$(package)ct2_double_64.o
 $(PACKAGE)CDT364 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
@@ -350,6 +363,8 @@ $(PACKAGE)CQS664 = $($(PACKAGE)OBJECTSCQ64) \
                    $(OBJQ64)/$(package)cs6_quadruple_64.o
 $(PACKAGE)CQS764 = $($(PACKAGE)OBJECTSCQ64) \
                    $(OBJQ64)/$(package)cs7_quadruple_64.o
+$(PACKAGE)CQS864 = $($(PACKAGE)OBJECTSCQ64) \
+                   $(OBJQ64)/$(package)cs8_quadruple_64.o
 $(PACKAGE)CQTI64 = $($(PACKAGE)OBJECTSCQ64) $(TESTDEPS) \
                    $(OBJQ64)/$(package)cti_quadruple_64.o
 $(PACKAGE)CQTF64 = $($(PACKAGE)OBJECTSCQ64) $(TESTDEPS) \
@@ -365,6 +380,7 @@ R$(PACKAGE)CSS4 = $(OBJS)/$(package)cs4_single.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSS5 = $(OBJS)/$(package)cs5_single.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSS6 = $(OBJS)/$(package)cs6_single.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSS7 = $(OBJS)/$(package)cs7_single.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSS8 = $(OBJS)/$(package)cs8_single.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CTI = $(OBJS)/$(package)cti_single.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSTI = $(OBJS)/$(package)cti_single.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSTF = $(OBJS)/$(package)ctf_single.o -L$(OBJS) $(CLIBS)
@@ -378,6 +394,7 @@ R$(PACKAGE)CDS4 = $(OBJD)/$(package)cs4_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDS5 = $(OBJD)/$(package)cs5_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDS6 = $(OBJD)/$(package)cs6_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDS7 = $(OBJD)/$(package)cs7_double.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDS8 = $(OBJD)/$(package)cs8_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDT2 = $(OBJD)/$(package)ct2_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDT3 = $(OBJD)/$(package)ct3_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDTI = $(OBJD)/$(package)cti_double.o -L$(OBJD) $(CLIBS)
@@ -392,6 +409,7 @@ R$(PACKAGE)CQS4 = $(OBJQ)/$(package)cs4_quadruple.o -L$(OBJQ) $(CLIBS)
 R$(PACKAGE)CQS5 = $(OBJQ)/$(package)cs5_quadruple.o -L$(OBJQ) $(CLIBS)
 R$(PACKAGE)CQS6 = $(OBJQ)/$(package)cs6_quadruple.o -L$(OBJQ) $(CLIBS)
 R$(PACKAGE)CQS7 = $(OBJQ)/$(package)cs7_quadruple.o -L$(OBJQ) $(CLIBS)
+R$(PACKAGE)CQS8 = $(OBJQ)/$(package)cs8_quadruple.o -L$(OBJQ) $(CLIBS)
 R$(PACKAGE)CQTI = $(OBJQ)/$(package)cti_quadruple.o -L$(OBJQ) $(CLIBS)
 R$(PACKAGE)CQTF = $(OBJQ)/$(package)ctf_quadruple.o -L$(OBJQ) $(CLIBS)
 R$(PACKAGE)CQTM = $(OBJQ)/$(package)ctm_quadruple.o -L$(OBJQ) $(CLIBS)
@@ -404,6 +422,7 @@ R$(PACKAGE)CSS464 = $(OBJS64)/$(package)cs4_single_64.o -L$(OBJS64) $(CLIBS)
 R$(PACKAGE)CSS564 = $(OBJS64)/$(package)cs5_single_64.o -L$(OBJS64) $(CLIBS)
 R$(PACKAGE)CSS664 = $(OBJS64)/$(package)cs6_single_64.o -L$(OBJS64) $(CLIBS)
 R$(PACKAGE)CSS764 = $(OBJS64)/$(package)cs7_single_64.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CSS864 = $(OBJS64)/$(package)cs8_single_64.o -L$(OBJS64) $(CLIBS)
 R$(PACKAGE)CTI64 = $(OBJS64)/$(package)cti_single_64.o -L$(OBJS64) $(CLIBS)
 R$(PACKAGE)CSTI64 = $(OBJS64)/$(package)cti_single_64.o -L$(OBJS64) $(CLIBS)
 R$(PACKAGE)CSTF64 = $(OBJS64)/$(package)ctf_single_64.o -L$(OBJS64) $(CLIBS)
@@ -417,6 +436,7 @@ R$(PACKAGE)CDS464 = $(OBJD64)/$(package)cs4_double_64.o -L$(OBJD64) $(CLIBS)
 R$(PACKAGE)CDS564 = $(OBJD64)/$(package)cs5_double_64.o -L$(OBJD64) $(CLIBS)
 R$(PACKAGE)CDS664 = $(OBJD64)/$(package)cs6_double_64.o -L$(OBJD64) $(CLIBS)
 R$(PACKAGE)CDS764 = $(OBJD64)/$(package)cs7_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDS864 = $(OBJD64)/$(package)cs8_double_64.o -L$(OBJD64) $(CLIBS)
 R$(PACKAGE)CDT264 = $(OBJD64)/$(package)ct2_double_64.o -L$(OBJD64) $(CLIBS)
 R$(PACKAGE)CDT364 = $(OBJD64)/$(package)ct3_double_64.o -L$(OBJD64) $(CLIBS)
 R$(PACKAGE)CDTI64 = $(OBJD64)/$(package)cti_double_64.o -L$(OBJD64) $(CLIBS)
@@ -431,6 +451,7 @@ R$(PACKAGE)CQS464 = $(OBJQ64)/$(package)cs4_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 R$(PACKAGE)CQS564 = $(OBJQ64)/$(package)cs5_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 R$(PACKAGE)CQS664 = $(OBJQ64)/$(package)cs6_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 R$(PACKAGE)CQS764 = $(OBJQ64)/$(package)cs7_quadruple_64.o -L$(OBJQ64) $(CLIBS)
+R$(PACKAGE)CQS864 = $(OBJQ64)/$(package)cs8_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 R$(PACKAGE)CQTI64 = $(OBJQ64)/$(package)cti_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 R$(PACKAGE)CQTF64 = $(OBJQ64)/$(package)ctf_quadruple_64.o -L$(OBJQ64) $(CLIBS)
 R$(PACKAGE)CQTM64 = $(OBJQ64)/$(package)ctm_quadruple_64.o -L$(OBJQ64) $(CLIBS)
@@ -953,6 +974,15 @@ $(package)ds_valgrind: $($(PACKAGE)DS)
 	cat $(package)ds_valgrind.output
 	rm ./run_$(package)
 
+$(package)ds_gdb: $($(PACKAGE)DS)
+	echo ""
+	echo " Exhaustive gdb test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
+
 $(package)ds2: $($(PACKAGE)DS2)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)DS2)
@@ -998,6 +1028,15 @@ $(package)ds4: $($(PACKAGE)DS4)
 	cat $(package)ds4.output
 	rm ./run_$(package)
 
+$(package)ds4_gdb: $($(PACKAGE)DS4)
+	echo ""
+	echo " Exhaustive gdb test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS4)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
+
 $(package)ds5: $($(PACKAGE)DS5)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)DS5)
@@ -1023,6 +1062,60 @@ $(package)ds7: $($(PACKAGE)DS7)
 	- ./run_$(package)
 #	- ./run_$(package) > $(package)ds7.output 2>&1
 #	cat $(package)ds7.output
+	rm ./run_$(package)
+
+$(package)ds8: $($(PACKAGE)DS8)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS8)
+	$(RMOOC)
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)ds8.output 2>&1
+#	cat $(package)ds8.output
+	rm ./run_$(package)
+
+$(package)ds8_gdb: $($(PACKAGE)DS8)
+	echo ""
+	echo " Exhaustive gdb test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS8)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
+
+$(package)ds9: $($(PACKAGE)DS9)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS9)
+	$(RMOOC)
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)ds9.output 2>&1
+#	cat $(package)ds9.output
+	rm ./run_$(package)
+
+$(package)ds9_gdb: $($(PACKAGE)DS9)
+	echo ""
+	echo " Exhaustive gdb test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS9)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
+
+$(package)ds10: $($(PACKAGE)DS10)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS10)
+	$(RMOOC)
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)ds10.output 2>&1
+#	cat $(package)ds10.output
+	rm ./run_$(package)
+
+$(package)ds10_gdb: $($(PACKAGE)DS10)
+	echo ""
+	echo " Exhaustive gdb test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS10)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
 	rm ./run_$(package)
 
 $(package)qs: $($(PACKAGE)QS)
@@ -1178,6 +1271,15 @@ $(package)ds7_64: $($(PACKAGE)DS764)
 	cat $(package)ds764.output
 	rm ./run_$(package)
 
+$(package)ds8_64: $($(PACKAGE)DS864)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS864)
+	$(RMOOC)
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)ds864.output 2>&1
+	cat $(package)ds864.output
+	rm ./run_$(package)
+
 $(package)qs_64: $($(PACKAGE)QS64)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)QS64)
@@ -1268,6 +1370,14 @@ $(package)css7: $($(PACKAGE)CSS7)
 	cat $(package)cqs7.output
 	rm ./run_$(package)
 
+$(package)css8: $($(PACKAGE)CSS8)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS8)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cqs8.output 2>&1
+	cat $(package)cqs8.output
+	rm ./run_$(package)
+
 $(package)cds: $($(PACKAGE)CDS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS)
@@ -1324,6 +1434,14 @@ $(package)cds7: $($(PACKAGE)CDS7)
 	cat $(package)cds7.output
 	rm ./run_$(package)
 
+$(package)cds8: $($(PACKAGE)CDS8)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS8)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds8.output 2>&1
+	cat $(package)cds8.output
+	rm ./run_$(package)
+
 $(package)cqs: $($(PACKAGE)CQS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CQS)
@@ -1378,6 +1496,14 @@ $(package)cqs7: $($(PACKAGE)CQS7)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cqs7.output 2>&1
 	cat $(package)cqs7.output
+	rm ./run_$(package)
+
+$(package)cqs8: $($(PACKAGE)CQS8)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CQS8)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cqs8.output 2>&1
+	cat $(package)cqs8.output
 	rm ./run_$(package)
 
 $(package)css64: $($(PACKAGE)CSS64)
@@ -1492,6 +1618,14 @@ $(package)cds764: $($(PACKAGE)CDS764)
 	cat $(package)cds764.output
 	rm ./run_$(package)
 
+$(package)cds864: $($(PACKAGE)CDS864)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS864)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds864.output 2>&1
+	cat $(package)cds864.output
+	rm ./run_$(package)
+
 $(package)cqs64: $($(PACKAGE)CQS64)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CQS64)
@@ -1546,6 +1680,14 @@ $(package)cqs764: $($(PACKAGE)CQS764)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cqs764.output 2>&1
 	cat $(package)cqs764.output
+	rm ./run_$(package)
+
+$(package)cqs864: $($(PACKAGE)CQS864)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CQS864)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cqs864.output 2>&1
+	cat $(package)cqs864.output
 	rm ./run_$(package)
 
 #  run full (comprehensive) example tests
@@ -1678,6 +1820,15 @@ $(package)dt_gdb: $($(PACKAGE)DT)
 	echo " Exhaustive gdb test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)DT)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
+
+$(package)dt2_gdb: $($(PACKAGE)DT2)
+	echo ""
+	echo " Exhaustive gdb test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DT2)
 	$(RMOOC)
 	- gdb $(GDB) ./run_$(package)
 	rm ./run_$(package)
@@ -2141,6 +2292,14 @@ $(package)cdt_gdb: $($(PACKAGE)CDT)
 	- gdb $(GDB) ./run_$(package)
 	rm ./run_$(package)
 
+$(package)cdtf_gdb: $($(PACKAGE)CDTF)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDTF)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
 
 $(package)cqt: $($(PACKAGE)CQT)
 	echo ""

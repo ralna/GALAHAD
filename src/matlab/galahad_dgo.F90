@@ -187,7 +187,7 @@
 !  arguments for DGO
 
       TYPE ( NLPT_problem_type ) :: nlp
-      TYPE ( GALAHAD_userdata_type ) :: userdata
+      TYPE ( USERDATA_type ) :: userdata
       TYPE ( DGO_data_type ), SAVE :: data
       TYPE ( DGO_control_type ), SAVE :: control
       TYPE ( DGO_inform_type ) :: inform

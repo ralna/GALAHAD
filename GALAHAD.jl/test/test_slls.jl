@@ -41,6 +41,8 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
   # Set problem data
   n = INT(10)  # dimension
   o = n + INT(1)  # number of residuals
+  m = INT(1)  # number of cohorts
+  sigma = one(T) # regularization weight
   Ao_ne = 2 * n # sparse Jacobian elements
   Ao_dense_ne = o * n # dense Jacobian elements
   # row-wise storage
@@ -58,6 +60,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
   Ao_by_col_dense = zeros(T, Ao_dense_ne) # dense values
   b = zeros(T, o)  # linear term in the objective
   x = zeros(T, n) # variables
+  y = zeros(T, m) # Lagrange multipliers
   z = zeros(T, n) # dual variables
   r = zeros(T, o) # residual
   g = zeros(T, n) # gradient
@@ -142,46 +145,64 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       # Linear solvers
       @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
       @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver(dls)
+#      @reset control[].print_level = INT(3)
 
       # Start from 0
       for i = 1:n
         x[i] = zero(T)
-        z[i] = zero(T)
       end
 
       # sparse co-ordinate storage
       if d == 1
         st = "CO"
-        slls_import(T, INT, control, data, status, n, o, "coordinate", Ao_ne, Ao_row, Ao_col, INT(0), C_NULL)
-        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_ne, Ao_val, b, x, z, r, g, x_stat, prec_ptr)
+        slls_import(T, INT, control, data, status, n, o, m, "coordinate", 
+                    Ao_ne, Ao_row, Ao_col, INT(0), C_NULL, C_NULL)
+        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, m, Ao_ne, 
+                           Ao_val, b, sigma, x, y, z, r, g, x_stat, 
+                           C_NULL, C_NULL, prec_ptr)
       end
 
       # sparse by rows
       if d == 2
         st = "SR"
-        slls_import(T, INT, control, data, status, n, o, "sparse_by_rows", Ao_ne, C_NULL, Ao_col, Ao_ptr_ne, Ao_ptr)
-        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_ne, Ao_val, b, x, z, r, g, x_stat, prec_ptr)
+        slls_import(T, INT, control, data, status, n, o, m, "sparse_by_rows", 
+                     Ao_ne, C_NULL, Ao_col, Ao_ptr_ne, Ao_ptr, C_NULL)
+        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, m, 
+                           Ao_ne, Ao_val, b, sigma, x, y, z, r, g, x_stat, 
+                           C_NULL, C_NULL, prec_ptr)
       end
 
       # dense by rows
       if d == 3
         st = "DR"
-        slls_import(T, INT, control, data, status, n, o, "dense_by_rows", Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
-        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_dense_ne, Ao_dense, b, x, z, r, g, x_stat, prec_ptr)
+        slls_import(T, INT, control, data, status, n, o, m, "dense_by_rows", 
+                    Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL, C_NULL)
+        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, m, 
+                           Ao_dense_ne, Ao_dense, b, sigma, 
+                           x, y, z, r, g, x_stat, 
+                           C_NULL, C_NULL, prec_ptr)
       end
 
       # sparse by columns
       if d == 4
         st = "SC"
-        slls_import(T, INT, control, data, status, n, o, "sparse_by_columns", Ao_ne, Ao_by_col_row, C_NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr)
-        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_ne, Ao_by_col_val, b, x, z, r, g, x_stat, prec_ptr)
+        slls_import(T, INT, control, data, status, n, o, m, "sparse_by_columns",
+                    Ao_ne, Ao_by_col_row, C_NULL, 
+                    Ao_by_col_ptr_ne, Ao_by_col_ptr, C_NULL)
+        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, m, Ao_ne, 
+                           Ao_by_col_val, b, sigma, x, y, z, r, g, x_stat, 
+                           C_NULL, C_NULL, prec_ptr)
       end
 
       # dense by columns
       if d == 5
         st = "DC"
-        slls_import(T, INT, control, data, status, n, o, "dense_by_columns", Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
-        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_dense_ne, Ao_by_col_dense, b, x, z, r, g, x_stat, prec_ptr)
+        slls_import(T, INT, control, data, status, n, o, m, "dense_by_columns", 
+                    Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL, C_NULL)
+        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, m, 
+                           Ao_dense_ne, Ao_by_col_dense, 
+                           b, sigma, x, y, z, r, g, x_stat, 
+                           C_NULL, C_NULL, prec_ptr)
       end
 
       slls_information(T, INT, data, inform, status)
@@ -204,15 +225,14 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     # reverse-communication input/output
     on = max(o, n)
     eval_status = Ref{INT}()
-    nz_v_start = Ref{INT}()
-    nz_v_end = Ref{INT}()
-    nz_p_end = Ref{INT}()
-    nz_v = zeros(INT, on)
-    nz_p = zeros(INT, o)
-    mask = zeros(INT, o)
+    lvl = Ref{INT}()
+    lvu = Ref{INT}()
+    lp = Ref{INT}()
+    iv = zeros(INT, on)
+    ip = zeros(INT, o)
     v = zeros(T, on)
     p = zeros(T, on)
-    nz_p_end = INT(1)
+    lp = INT(1)
 
     # Initialize SLLS
     slls_initialize(T, INT, data, control, status)
@@ -224,22 +244,17 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     # Start from 0
     for i in 1:n
       x[i] = 0.0
-      z[i] = 0.0
     end
 
     st = "RC"
-    for i in 1:o
-      mask[i] = 0
-    end
 
-    slls_import_without_a(T, INT, control, data, status, n, o)
+    slls_import_without_a(T, INT, control, data, status, n, o, m, C_NULL)
 
     terminated = false
     while !terminated # reverse-communication loop
-      slls_solve_reverse_a_prod(T, INT, data, status, eval_status, n, o, b,
-                                x, z, r, g, x_stat, v, p,
-                                nz_v, nz_v_start, nz_v_end,
-                                nz_p, nz_p_end)
+      slls_solve_reverse_a_prod(T, INT, data, status, eval_status, n, o, m,
+                                b, sigma, x, y, z, r, g, x_stat, v, p,
+                                iv, lvl, lvu, index, ip, lp, C_NULL, C_NULL)
       if status[] == 0 # successful termination
         terminated = true
       elseif status[] < 0 # error exit
@@ -254,37 +269,25 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         for i in 1:n
           p[i] = v[i] + v[o]
         end
-      elseif status[] == 4 # evaluate p = Av for sparse v
+      elseif status[] == 4 # evaluate the lvl-th sparse column of Ao 
+        lp = 1
+        ip[lp] = index
+        p[lp] = 1.0
+        lp = lp + 1
+        ip[lp] = o
+        p[lp] = 1.0
+      elseif status[] == 5 # evaluate p = Av for sparse v
         for i in 1:o
           p[i] = 0.0
         end
-        for l in nz_v_start[]:nz_v_end[]
-          i = nz_v[l]
+        for l in lvl[]:lvu[]
+          i = iv[l]
           p[i] = v[i]
           p[o] = p[o] + v[i]
         end
-      elseif status[] == 5 # evaluate p = sparse Av for sparse v
-        nz_p_end = 0
-        for l in nz_v_start[]:nz_v_end[]
-          i = nz_v[l]
-          nz_p_end = nz_p_end + 1
-          nz_p[nz_p_end] = i
-          p[i] = v[i]
-          if mask[i] == 0
-            mask[i] = 1
-            nz_p_end = nz_p_end + 1
-            nz_p[nz_p_end] = o
-            p[o] = v[i]
-          else
-            p[o] = p[o] + v[i]
-          end
-        end
-        for l in 1:nz_p_end
-          mask[nz_p[l]] = 0
-        end
       elseif status[] == 6 # evaluate p = sparse A^Tv
-        for l in nz_v_start[]:nz_v_end[]
-          i = nz_v[l]
+        for l in lvl[]:lvu[]
+          i = iv[l]
           p[i] = v[i] + v[o]
         end
       elseif status[] == 7 # evaluate p = P^{-}v

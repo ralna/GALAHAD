@@ -57,7 +57,8 @@ export dps_initialize
 
 function dps_initialize(::Type{Float32}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_single.dps_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ptr{dps_control_type{Float32,Int32}},
+                                            control::Ptr{dps_control_type{Float32,
+                                                                          Int32}},
                                             status::Ptr{Int32})::Cvoid
   new_control = @set control[].f_indexing = true
   control[] = new_control[]
@@ -76,7 +77,8 @@ end
 
 function dps_initialize(::Type{Float64}, ::Type{Int32}, data, control, status)
   @ccall libgalahad_double.dps_initialize(data::Ptr{Ptr{Cvoid}},
-                                          control::Ptr{dps_control_type{Float64,Int32}},
+                                          control::Ptr{dps_control_type{Float64,
+                                                                        Int32}},
                                           status::Ptr{Int32})::Cvoid
   new_control = @set control[].f_indexing = true
   control[] = new_control[]
@@ -116,7 +118,8 @@ end
 export dps_read_specfile
 
 function dps_read_specfile(::Type{Float32}, ::Type{Int32}, control, specfile)
-  @ccall libgalahad_single.dps_read_specfile_s(control::Ptr{dps_control_type{Float32,Int32}},
+  @ccall libgalahad_single.dps_read_specfile_s(control::Ptr{dps_control_type{Float32,
+                                                                             Int32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
@@ -127,7 +130,8 @@ function dps_read_specfile(::Type{Float32}, ::Type{Int64}, control, specfile)
 end
 
 function dps_read_specfile(::Type{Float64}, ::Type{Int32}, control, specfile)
-  @ccall libgalahad_double.dps_read_specfile(control::Ptr{dps_control_type{Float64,Int32}},
+  @ccall libgalahad_double.dps_read_specfile(control::Ptr{dps_control_type{Float64,
+                                                                           Int32}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
@@ -151,95 +155,118 @@ end
 
 export dps_import
 
-function dps_import(::Type{Float32}, ::Type{Int32}, control, data, status, n, H_type, ne,
-                    H_row, H_col, H_ptr)
-  @ccall libgalahad_single.dps_import_s(control::Ptr{dps_control_type{Float32,Int32}},
-                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
-                                        H_type::Ptr{Cchar}, ne::Int32, H_row::Ptr{Int32},
-                                        H_col::Ptr{Int32}, H_ptr::Ptr{Int32})::Cvoid
+function dps_import(::Type{Float32}, ::Type{Int32}, control, data, status, n,
+                    H_type, ne, H_row, H_col, H_ptr)
+  @ccall libgalahad_single.dps_import_s(control::Ptr{dps_control_type{Float32,
+                                                                      Int32}},
+                                        data::Ptr{Ptr{Cvoid}},
+                                        status::Ptr{Int32}, n::Int32,
+                                        H_type::Ptr{Cchar}, ne::Int32,
+                                        H_row::Ptr{Int32}, H_col::Ptr{Int32},
+                                        H_ptr::Ptr{Int32})::Cvoid
 end
 
-function dps_import(::Type{Float32}, ::Type{Int64}, control, data, status, n, H_type, ne,
-                    H_row, H_col, H_ptr)
-  @ccall libgalahad_single_64.dps_import_s_64(control::Ptr{dps_control_type{Float32,Int64}},
-                                              data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                              n::Int64, H_type::Ptr{Cchar}, ne::Int64,
-                                              H_row::Ptr{Int64}, H_col::Ptr{Int64},
+function dps_import(::Type{Float32}, ::Type{Int64}, control, data, status, n,
+                    H_type, ne, H_row, H_col, H_ptr)
+  @ccall libgalahad_single_64.dps_import_s_64(control::Ptr{dps_control_type{Float32,
+                                                                            Int64}},
+                                              data::Ptr{Ptr{Cvoid}},
+                                              status::Ptr{Int64}, n::Int64,
+                                              H_type::Ptr{Cchar}, ne::Int64,
+                                              H_row::Ptr{Int64},
+                                              H_col::Ptr{Int64},
                                               H_ptr::Ptr{Int64})::Cvoid
 end
 
-function dps_import(::Type{Float64}, ::Type{Int32}, control, data, status, n, H_type, ne,
-                    H_row, H_col, H_ptr)
-  @ccall libgalahad_double.dps_import(control::Ptr{dps_control_type{Float64,Int32}},
-                                      data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32}, n::Int32,
-                                      H_type::Ptr{Cchar}, ne::Int32, H_row::Ptr{Int32},
-                                      H_col::Ptr{Int32}, H_ptr::Ptr{Int32})::Cvoid
+function dps_import(::Type{Float64}, ::Type{Int32}, control, data, status, n,
+                    H_type, ne, H_row, H_col, H_ptr)
+  @ccall libgalahad_double.dps_import(control::Ptr{dps_control_type{Float64,
+                                                                    Int32}},
+                                      data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
+                                      n::Int32, H_type::Ptr{Cchar}, ne::Int32,
+                                      H_row::Ptr{Int32}, H_col::Ptr{Int32},
+                                      H_ptr::Ptr{Int32})::Cvoid
 end
 
-function dps_import(::Type{Float64}, ::Type{Int64}, control, data, status, n, H_type, ne,
-                    H_row, H_col, H_ptr)
-  @ccall libgalahad_double_64.dps_import_64(control::Ptr{dps_control_type{Float64,Int64}},
-                                            data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                            n::Int64, H_type::Ptr{Cchar}, ne::Int64,
-                                            H_row::Ptr{Int64}, H_col::Ptr{Int64},
+function dps_import(::Type{Float64}, ::Type{Int64}, control, data, status, n,
+                    H_type, ne, H_row, H_col, H_ptr)
+  @ccall libgalahad_double_64.dps_import_64(control::Ptr{dps_control_type{Float64,
+                                                                          Int64}},
+                                            data::Ptr{Ptr{Cvoid}},
+                                            status::Ptr{Int64}, n::Int64,
+                                            H_type::Ptr{Cchar}, ne::Int64,
+                                            H_row::Ptr{Int64},
+                                            H_col::Ptr{Int64},
                                             H_ptr::Ptr{Int64})::Cvoid
 end
 
-function dps_import(::Type{Float128}, ::Type{Int32}, control, data, status, n, H_type, ne,
-                    H_row, H_col, H_ptr)
-  @ccall libgalahad_quadruple.dps_import_q(control::Ptr{dps_control_type{Float128,Int32}},
-                                           data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                           n::Int32, H_type::Ptr{Cchar}, ne::Int32,
+function dps_import(::Type{Float128}, ::Type{Int32}, control, data, status, n,
+                    H_type, ne, H_row, H_col, H_ptr)
+  @ccall libgalahad_quadruple.dps_import_q(control::Ptr{dps_control_type{Float128,
+                                                                         Int32}},
+                                           data::Ptr{Ptr{Cvoid}},
+                                           status::Ptr{Int32}, n::Int32,
+                                           H_type::Ptr{Cchar}, ne::Int32,
                                            H_row::Ptr{Int32}, H_col::Ptr{Int32},
                                            H_ptr::Ptr{Int32})::Cvoid
 end
 
-function dps_import(::Type{Float128}, ::Type{Int64}, control, data, status, n, H_type, ne,
-                    H_row, H_col, H_ptr)
+function dps_import(::Type{Float128}, ::Type{Int64}, control, data, status, n,
+                    H_type, ne, H_row, H_col, H_ptr)
   @ccall libgalahad_quadruple_64.dps_import_q_64(control::Ptr{dps_control_type{Float128,
                                                                                Int64}},
-                                                 data::Ptr{Ptr{Cvoid}}, status::Ptr{Int64},
-                                                 n::Int64, H_type::Ptr{Cchar}, ne::Int64,
-                                                 H_row::Ptr{Int64}, H_col::Ptr{Int64},
+                                                 data::Ptr{Ptr{Cvoid}},
+                                                 status::Ptr{Int64}, n::Int64,
+                                                 H_type::Ptr{Cchar}, ne::Int64,
+                                                 H_row::Ptr{Int64},
+                                                 H_col::Ptr{Int64},
                                                  H_ptr::Ptr{Int64})::Cvoid
 end
 
 export dps_reset_control
 
-function dps_reset_control(::Type{Float32}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_single.dps_reset_control_s(control::Ptr{dps_control_type{Float32,Int32}},
+function dps_reset_control(::Type{Float32}, ::Type{Int32}, control, data,
+                           status)
+  @ccall libgalahad_single.dps_reset_control_s(control::Ptr{dps_control_type{Float32,
+                                                                             Int32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Int32})::Cvoid
 end
 
-function dps_reset_control(::Type{Float32}, ::Type{Int64}, control, data, status)
+function dps_reset_control(::Type{Float32}, ::Type{Int64}, control, data,
+                           status)
   @ccall libgalahad_single_64.dps_reset_control_s_64(control::Ptr{dps_control_type{Float32,
                                                                                    Int64}},
                                                      data::Ptr{Ptr{Cvoid}},
                                                      status::Ptr{Int64})::Cvoid
 end
 
-function dps_reset_control(::Type{Float64}, ::Type{Int32}, control, data, status)
-  @ccall libgalahad_double.dps_reset_control(control::Ptr{dps_control_type{Float64,Int32}},
+function dps_reset_control(::Type{Float64}, ::Type{Int32}, control, data,
+                           status)
+  @ccall libgalahad_double.dps_reset_control(control::Ptr{dps_control_type{Float64,
+                                                                           Int32}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Int32})::Cvoid
 end
 
-function dps_reset_control(::Type{Float64}, ::Type{Int64}, control, data, status)
+function dps_reset_control(::Type{Float64}, ::Type{Int64}, control, data,
+                           status)
   @ccall libgalahad_double_64.dps_reset_control_64(control::Ptr{dps_control_type{Float64,
                                                                                  Int64}},
                                                    data::Ptr{Ptr{Cvoid}},
                                                    status::Ptr{Int64})::Cvoid
 end
 
-function dps_reset_control(::Type{Float128}, ::Type{Int32}, control, data, status)
+function dps_reset_control(::Type{Float128}, ::Type{Int32}, control, data,
+                           status)
   @ccall libgalahad_quadruple.dps_reset_control_q(control::Ptr{dps_control_type{Float128,
                                                                                 Int32}},
                                                   data::Ptr{Ptr{Cvoid}},
                                                   status::Ptr{Int32})::Cvoid
 end
 
-function dps_reset_control(::Type{Float128}, ::Type{Int64}, control, data, status)
+function dps_reset_control(::Type{Float128}, ::Type{Int64}, control, data,
+                           status)
   @ccall libgalahad_quadruple_64.dps_reset_control_q_64(control::Ptr{dps_control_type{Float128,
                                                                                       Int64}},
                                                         data::Ptr{Ptr{Cvoid}},
@@ -248,117 +275,146 @@ end
 
 export dps_solve_tr_problem
 
-function dps_solve_tr_problem(::Type{Float32}, ::Type{Int32}, data, status, n, ne, H_val, c,
-                              f, radius, x)
-  @ccall libgalahad_single.dps_solve_tr_problem_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                                  n::Int32, ne::Int32, H_val::Ptr{Float32},
+function dps_solve_tr_problem(::Type{Float32}, ::Type{Int32}, data, status, n,
+                              ne, H_val, c, f, radius, x)
+  @ccall libgalahad_single.dps_solve_tr_problem_s(data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Int32}, n::Int32,
+                                                  ne::Int32,
+                                                  H_val::Ptr{Float32},
                                                   c::Ptr{Float32}, f::Float32,
-                                                  radius::Float32, x::Ptr{Float32})::Cvoid
+                                                  radius::Float32,
+                                                  x::Ptr{Float32})::Cvoid
 end
 
-function dps_solve_tr_problem(::Type{Float32}, ::Type{Int64}, data, status, n, ne, H_val, c,
-                              f, radius, x)
+function dps_solve_tr_problem(::Type{Float32}, ::Type{Int64}, data, status, n,
+                              ne, H_val, c, f, radius, x)
   @ccall libgalahad_single_64.dps_solve_tr_problem_s_64(data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Int64}, n::Int64,
-                                                        ne::Int64, H_val::Ptr{Float32},
-                                                        c::Ptr{Float32}, f::Float32,
+                                                        status::Ptr{Int64},
+                                                        n::Int64, ne::Int64,
+                                                        H_val::Ptr{Float32},
+                                                        c::Ptr{Float32},
+                                                        f::Float32,
                                                         radius::Float32,
                                                         x::Ptr{Float32})::Cvoid
 end
 
-function dps_solve_tr_problem(::Type{Float64}, ::Type{Int32}, data, status, n, ne, H_val, c,
-                              f, radius, x)
-  @ccall libgalahad_double.dps_solve_tr_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                                n::Int32, ne::Int32, H_val::Ptr{Float64},
+function dps_solve_tr_problem(::Type{Float64}, ::Type{Int32}, data, status, n,
+                              ne, H_val, c, f, radius, x)
+  @ccall libgalahad_double.dps_solve_tr_problem(data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int32}, n::Int32,
+                                                ne::Int32, H_val::Ptr{Float64},
                                                 c::Ptr{Float64}, f::Float64,
-                                                radius::Float64, x::Ptr{Float64})::Cvoid
+                                                radius::Float64,
+                                                x::Ptr{Float64})::Cvoid
 end
 
-function dps_solve_tr_problem(::Type{Float64}, ::Type{Int64}, data, status, n, ne, H_val, c,
-                              f, radius, x)
+function dps_solve_tr_problem(::Type{Float64}, ::Type{Int64}, data, status, n,
+                              ne, H_val, c, f, radius, x)
   @ccall libgalahad_double_64.dps_solve_tr_problem_64(data::Ptr{Ptr{Cvoid}},
-                                                      status::Ptr{Int64}, n::Int64,
-                                                      ne::Int64, H_val::Ptr{Float64},
-                                                      c::Ptr{Float64}, f::Float64,
+                                                      status::Ptr{Int64},
+                                                      n::Int64, ne::Int64,
+                                                      H_val::Ptr{Float64},
+                                                      c::Ptr{Float64},
+                                                      f::Float64,
                                                       radius::Float64,
                                                       x::Ptr{Float64})::Cvoid
 end
 
-function dps_solve_tr_problem(::Type{Float128}, ::Type{Int32}, data, status, n, ne, H_val,
-                              c, f, radius, x)
+function dps_solve_tr_problem(::Type{Float128}, ::Type{Int32}, data, status, n,
+                              ne, H_val, c, f, radius, x)
   @ccall libgalahad_quadruple.dps_solve_tr_problem_q(data::Ptr{Ptr{Cvoid}},
-                                                     status::Ptr{Int32}, n::Int32,
-                                                     ne::Int32, H_val::Ptr{Float128},
-                                                     c::Ptr{Float128}, f::Cfloat128,
+                                                     status::Ptr{Int32},
+                                                     n::Int32, ne::Int32,
+                                                     H_val::Ptr{Float128},
+                                                     c::Ptr{Float128},
+                                                     f::Cfloat128,
                                                      radius::Cfloat128,
                                                      x::Ptr{Float128})::Cvoid
 end
 
-function dps_solve_tr_problem(::Type{Float128}, ::Type{Int64}, data, status, n, ne, H_val,
-                              c, f, radius, x)
+function dps_solve_tr_problem(::Type{Float128}, ::Type{Int64}, data, status, n,
+                              ne, H_val, c, f, radius, x)
   @ccall libgalahad_quadruple_64.dps_solve_tr_problem_q_64(data::Ptr{Ptr{Cvoid}},
-                                                           status::Ptr{Int64}, n::Int64,
-                                                           ne::Int64, H_val::Ptr{Float128},
-                                                           c::Ptr{Float128}, f::Cfloat128,
+                                                           status::Ptr{Int64},
+                                                           n::Int64, ne::Int64,
+                                                           H_val::Ptr{Float128},
+                                                           c::Ptr{Float128},
+                                                           f::Cfloat128,
                                                            radius::Cfloat128,
                                                            x::Ptr{Float128})::Cvoid
 end
 
 export dps_solve_rq_problem
 
-function dps_solve_rq_problem(::Type{Float32}, ::Type{Int32}, data, status, n, ne, H_val, c,
-                              f, power, weight, x)
-  @ccall libgalahad_single.dps_solve_rq_problem_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                                  n::Int32, ne::Int32, H_val::Ptr{Float32},
+function dps_solve_rq_problem(::Type{Float32}, ::Type{Int32}, data, status, n,
+                              ne, H_val, c, f, power, weight, x)
+  @ccall libgalahad_single.dps_solve_rq_problem_s(data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Int32}, n::Int32,
+                                                  ne::Int32,
+                                                  H_val::Ptr{Float32},
                                                   c::Ptr{Float32}, f::Float32,
-                                                  power::Float32, weight::Float32,
+                                                  power::Float32,
+                                                  weight::Float32,
                                                   x::Ptr{Float32})::Cvoid
 end
 
-function dps_solve_rq_problem(::Type{Float32}, ::Type{Int64}, data, status, n, ne, H_val, c,
-                              f, power, weight, x)
+function dps_solve_rq_problem(::Type{Float32}, ::Type{Int64}, data, status, n,
+                              ne, H_val, c, f, power, weight, x)
   @ccall libgalahad_single_64.dps_solve_rq_problem_s_64(data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Int64}, n::Int64,
-                                                        ne::Int64, H_val::Ptr{Float32},
-                                                        c::Ptr{Float32}, f::Float32,
-                                                        power::Float32, weight::Float32,
+                                                        status::Ptr{Int64},
+                                                        n::Int64, ne::Int64,
+                                                        H_val::Ptr{Float32},
+                                                        c::Ptr{Float32},
+                                                        f::Float32,
+                                                        power::Float32,
+                                                        weight::Float32,
                                                         x::Ptr{Float32})::Cvoid
 end
 
-function dps_solve_rq_problem(::Type{Float64}, ::Type{Int32}, data, status, n, ne, H_val, c,
-                              f, power, weight, x)
-  @ccall libgalahad_double.dps_solve_rq_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                                n::Int32, ne::Int32, H_val::Ptr{Float64},
-                                                c::Ptr{Float64}, f::Float64, power::Float64,
-                                                weight::Float64, x::Ptr{Float64})::Cvoid
+function dps_solve_rq_problem(::Type{Float64}, ::Type{Int32}, data, status, n,
+                              ne, H_val, c, f, power, weight, x)
+  @ccall libgalahad_double.dps_solve_rq_problem(data::Ptr{Ptr{Cvoid}},
+                                                status::Ptr{Int32}, n::Int32,
+                                                ne::Int32, H_val::Ptr{Float64},
+                                                c::Ptr{Float64}, f::Float64,
+                                                power::Float64, weight::Float64,
+                                                x::Ptr{Float64})::Cvoid
 end
 
-function dps_solve_rq_problem(::Type{Float64}, ::Type{Int64}, data, status, n, ne, H_val, c,
-                              f, power, weight, x)
+function dps_solve_rq_problem(::Type{Float64}, ::Type{Int64}, data, status, n,
+                              ne, H_val, c, f, power, weight, x)
   @ccall libgalahad_double_64.dps_solve_rq_problem_64(data::Ptr{Ptr{Cvoid}},
-                                                      status::Ptr{Int64}, n::Int64,
-                                                      ne::Int64, H_val::Ptr{Float64},
-                                                      c::Ptr{Float64}, f::Float64,
-                                                      power::Float64, weight::Float64,
+                                                      status::Ptr{Int64},
+                                                      n::Int64, ne::Int64,
+                                                      H_val::Ptr{Float64},
+                                                      c::Ptr{Float64},
+                                                      f::Float64,
+                                                      power::Float64,
+                                                      weight::Float64,
                                                       x::Ptr{Float64})::Cvoid
 end
 
-function dps_solve_rq_problem(::Type{Float128}, ::Type{Int32}, data, status, n, ne, H_val,
-                              c, f, power, weight, x)
+function dps_solve_rq_problem(::Type{Float128}, ::Type{Int32}, data, status, n,
+                              ne, H_val, c, f, power, weight, x)
   @ccall libgalahad_quadruple.dps_solve_rq_problem_q(data::Ptr{Ptr{Cvoid}},
-                                                     status::Ptr{Int32}, n::Int32,
-                                                     ne::Int32, H_val::Ptr{Float128},
-                                                     c::Ptr{Float128}, f::Cfloat128,
-                                                     power::Cfloat128, weight::Cfloat128,
+                                                     status::Ptr{Int32},
+                                                     n::Int32, ne::Int32,
+                                                     H_val::Ptr{Float128},
+                                                     c::Ptr{Float128},
+                                                     f::Cfloat128,
+                                                     power::Cfloat128,
+                                                     weight::Cfloat128,
                                                      x::Ptr{Float128})::Cvoid
 end
 
-function dps_solve_rq_problem(::Type{Float128}, ::Type{Int64}, data, status, n, ne, H_val,
-                              c, f, power, weight, x)
+function dps_solve_rq_problem(::Type{Float128}, ::Type{Int64}, data, status, n,
+                              ne, H_val, c, f, power, weight, x)
   @ccall libgalahad_quadruple_64.dps_solve_rq_problem_q_64(data::Ptr{Ptr{Cvoid}},
-                                                           status::Ptr{Int64}, n::Int64,
-                                                           ne::Int64, H_val::Ptr{Float128},
-                                                           c::Ptr{Float128}, f::Cfloat128,
+                                                           status::Ptr{Int64},
+                                                           n::Int64, ne::Int64,
+                                                           H_val::Ptr{Float128},
+                                                           c::Ptr{Float128},
+                                                           f::Cfloat128,
                                                            power::Cfloat128,
                                                            weight::Cfloat128,
                                                            x::Ptr{Float128})::Cvoid
@@ -366,108 +422,133 @@ end
 
 export dps_resolve_tr_problem
 
-function dps_resolve_tr_problem(::Type{Float32}, ::Type{Int32}, data, status, n, c, f,
-                                radius, x)
+function dps_resolve_tr_problem(::Type{Float32}, ::Type{Int32}, data, status, n,
+                                c, f, radius, x)
   @ccall libgalahad_single.dps_resolve_tr_problem_s(data::Ptr{Ptr{Cvoid}},
-                                                    status::Ptr{Int32}, n::Int32,
-                                                    c::Ptr{Float32}, f::Float32,
-                                                    radius::Float32, x::Ptr{Float32})::Cvoid
+                                                    status::Ptr{Int32},
+                                                    n::Int32, c::Ptr{Float32},
+                                                    f::Float32, radius::Float32,
+                                                    x::Ptr{Float32})::Cvoid
 end
 
-function dps_resolve_tr_problem(::Type{Float32}, ::Type{Int64}, data, status, n, c, f,
-                                radius, x)
+function dps_resolve_tr_problem(::Type{Float32}, ::Type{Int64}, data, status, n,
+                                c, f, radius, x)
   @ccall libgalahad_single_64.dps_resolve_tr_problem_s_64(data::Ptr{Ptr{Cvoid}},
-                                                          status::Ptr{Int64}, n::Int64,
-                                                          c::Ptr{Float32}, f::Float32,
+                                                          status::Ptr{Int64},
+                                                          n::Int64,
+                                                          c::Ptr{Float32},
+                                                          f::Float32,
                                                           radius::Float32,
                                                           x::Ptr{Float32})::Cvoid
 end
 
-function dps_resolve_tr_problem(::Type{Float64}, ::Type{Int32}, data, status, n, c, f,
-                                radius, x)
-  @ccall libgalahad_double.dps_resolve_tr_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                                  n::Int32, c::Ptr{Float64}, f::Float64,
-                                                  radius::Float64, x::Ptr{Float64})::Cvoid
+function dps_resolve_tr_problem(::Type{Float64}, ::Type{Int32}, data, status, n,
+                                c, f, radius, x)
+  @ccall libgalahad_double.dps_resolve_tr_problem(data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Int32}, n::Int32,
+                                                  c::Ptr{Float64}, f::Float64,
+                                                  radius::Float64,
+                                                  x::Ptr{Float64})::Cvoid
 end
 
-function dps_resolve_tr_problem(::Type{Float64}, ::Type{Int64}, data, status, n, c, f,
-                                radius, x)
+function dps_resolve_tr_problem(::Type{Float64}, ::Type{Int64}, data, status, n,
+                                c, f, radius, x)
   @ccall libgalahad_double_64.dps_resolve_tr_problem_64(data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Int64}, n::Int64,
-                                                        c::Ptr{Float64}, f::Float64,
+                                                        status::Ptr{Int64},
+                                                        n::Int64,
+                                                        c::Ptr{Float64},
+                                                        f::Float64,
                                                         radius::Float64,
                                                         x::Ptr{Float64})::Cvoid
 end
 
-function dps_resolve_tr_problem(::Type{Float128}, ::Type{Int32}, data, status, n, c, f,
-                                radius, x)
+function dps_resolve_tr_problem(::Type{Float128}, ::Type{Int32}, data, status,
+                                n, c, f, radius, x)
   @ccall libgalahad_quadruple.dps_resolve_tr_problem_q(data::Ptr{Ptr{Cvoid}},
-                                                       status::Ptr{Int32}, n::Int32,
-                                                       c::Ptr{Float128}, f::Cfloat128,
+                                                       status::Ptr{Int32},
+                                                       n::Int32,
+                                                       c::Ptr{Float128},
+                                                       f::Cfloat128,
                                                        radius::Cfloat128,
                                                        x::Ptr{Float128})::Cvoid
 end
 
-function dps_resolve_tr_problem(::Type{Float128}, ::Type{Int64}, data, status, n, c, f,
-                                radius, x)
+function dps_resolve_tr_problem(::Type{Float128}, ::Type{Int64}, data, status,
+                                n, c, f, radius, x)
   @ccall libgalahad_quadruple_64.dps_resolve_tr_problem_q_64(data::Ptr{Ptr{Cvoid}},
-                                                             status::Ptr{Int64}, n::Int64,
-                                                             c::Ptr{Float128}, f::Cfloat128,
+                                                             status::Ptr{Int64},
+                                                             n::Int64,
+                                                             c::Ptr{Float128},
+                                                             f::Cfloat128,
                                                              radius::Cfloat128,
                                                              x::Ptr{Float128})::Cvoid
 end
 
 export dps_resolve_rq_problem
 
-function dps_resolve_rq_problem(::Type{Float32}, ::Type{Int32}, data, status, n, c, f,
-                                power, weight, x)
+function dps_resolve_rq_problem(::Type{Float32}, ::Type{Int32}, data, status, n,
+                                c, f, power, weight, x)
   @ccall libgalahad_single.dps_resolve_rq_problem_s(data::Ptr{Ptr{Cvoid}},
-                                                    status::Ptr{Int32}, n::Int32,
-                                                    c::Ptr{Float32}, f::Float32,
-                                                    power::Float32, weight::Float32,
+                                                    status::Ptr{Int32},
+                                                    n::Int32, c::Ptr{Float32},
+                                                    f::Float32, power::Float32,
+                                                    weight::Float32,
                                                     x::Ptr{Float32})::Cvoid
 end
 
-function dps_resolve_rq_problem(::Type{Float32}, ::Type{Int64}, data, status, n, c, f,
-                                power, weight, x)
+function dps_resolve_rq_problem(::Type{Float32}, ::Type{Int64}, data, status, n,
+                                c, f, power, weight, x)
   @ccall libgalahad_single_64.dps_resolve_rq_problem_s_64(data::Ptr{Ptr{Cvoid}},
-                                                          status::Ptr{Int64}, n::Int64,
-                                                          c::Ptr{Float32}, f::Float32,
-                                                          power::Float32, weight::Float32,
+                                                          status::Ptr{Int64},
+                                                          n::Int64,
+                                                          c::Ptr{Float32},
+                                                          f::Float32,
+                                                          power::Float32,
+                                                          weight::Float32,
                                                           x::Ptr{Float32})::Cvoid
 end
 
-function dps_resolve_rq_problem(::Type{Float64}, ::Type{Int32}, data, status, n, c, f,
-                                power, weight, x)
-  @ccall libgalahad_double.dps_resolve_rq_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Int32},
-                                                  n::Int32, c::Ptr{Float64}, f::Float64,
-                                                  power::Float64, weight::Float64,
+function dps_resolve_rq_problem(::Type{Float64}, ::Type{Int32}, data, status, n,
+                                c, f, power, weight, x)
+  @ccall libgalahad_double.dps_resolve_rq_problem(data::Ptr{Ptr{Cvoid}},
+                                                  status::Ptr{Int32}, n::Int32,
+                                                  c::Ptr{Float64}, f::Float64,
+                                                  power::Float64,
+                                                  weight::Float64,
                                                   x::Ptr{Float64})::Cvoid
 end
 
-function dps_resolve_rq_problem(::Type{Float64}, ::Type{Int64}, data, status, n, c, f,
-                                power, weight, x)
+function dps_resolve_rq_problem(::Type{Float64}, ::Type{Int64}, data, status, n,
+                                c, f, power, weight, x)
   @ccall libgalahad_double_64.dps_resolve_rq_problem_64(data::Ptr{Ptr{Cvoid}},
-                                                        status::Ptr{Int64}, n::Int64,
-                                                        c::Ptr{Float64}, f::Float64,
-                                                        power::Float64, weight::Float64,
+                                                        status::Ptr{Int64},
+                                                        n::Int64,
+                                                        c::Ptr{Float64},
+                                                        f::Float64,
+                                                        power::Float64,
+                                                        weight::Float64,
                                                         x::Ptr{Float64})::Cvoid
 end
 
-function dps_resolve_rq_problem(::Type{Float128}, ::Type{Int32}, data, status, n, c, f,
-                                power, weight, x)
+function dps_resolve_rq_problem(::Type{Float128}, ::Type{Int32}, data, status,
+                                n, c, f, power, weight, x)
   @ccall libgalahad_quadruple.dps_resolve_rq_problem_q(data::Ptr{Ptr{Cvoid}},
-                                                       status::Ptr{Int32}, n::Int32,
-                                                       c::Ptr{Float128}, f::Cfloat128,
-                                                       power::Cfloat128, weight::Cfloat128,
+                                                       status::Ptr{Int32},
+                                                       n::Int32,
+                                                       c::Ptr{Float128},
+                                                       f::Cfloat128,
+                                                       power::Cfloat128,
+                                                       weight::Cfloat128,
                                                        x::Ptr{Float128})::Cvoid
 end
 
-function dps_resolve_rq_problem(::Type{Float128}, ::Type{Int64}, data, status, n, c, f,
-                                power, weight, x)
+function dps_resolve_rq_problem(::Type{Float128}, ::Type{Int64}, data, status,
+                                n, c, f, power, weight, x)
   @ccall libgalahad_quadruple_64.dps_resolve_rq_problem_q_64(data::Ptr{Ptr{Cvoid}},
-                                                             status::Ptr{Int64}, n::Int64,
-                                                             c::Ptr{Float128}, f::Cfloat128,
+                                                             status::Ptr{Int64},
+                                                             n::Int64,
+                                                             c::Ptr{Float128},
+                                                             f::Cfloat128,
                                                              power::Cfloat128,
                                                              weight::Cfloat128,
                                                              x::Ptr{Float128})::Cvoid
@@ -477,7 +558,8 @@ export dps_information
 
 function dps_information(::Type{Float32}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_single.dps_information_s(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{dps_inform_type{Float32,Int32}},
+                                             inform::Ptr{dps_inform_type{Float32,
+                                                                         Int32}},
                                              status::Ptr{Int32})::Cvoid
 end
 
@@ -490,19 +572,22 @@ end
 
 function dps_information(::Type{Float64}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_double.dps_information(data::Ptr{Ptr{Cvoid}},
-                                           inform::Ptr{dps_inform_type{Float64,Int32}},
+                                           inform::Ptr{dps_inform_type{Float64,
+                                                                       Int32}},
                                            status::Ptr{Int32})::Cvoid
 end
 
 function dps_information(::Type{Float64}, ::Type{Int64}, data, inform, status)
   @ccall libgalahad_double_64.dps_information_64(data::Ptr{Ptr{Cvoid}},
-                                                 inform::Ptr{dps_inform_type{Float64,Int64}},
+                                                 inform::Ptr{dps_inform_type{Float64,
+                                                                             Int64}},
                                                  status::Ptr{Int64})::Cvoid
 end
 
 function dps_information(::Type{Float128}, ::Type{Int32}, data, inform, status)
   @ccall libgalahad_quadruple.dps_information_q(data::Ptr{Ptr{Cvoid}},
-                                                inform::Ptr{dps_inform_type{Float128,Int32}},
+                                                inform::Ptr{dps_inform_type{Float128,
+                                                                            Int32}},
                                                 status::Ptr{Int32})::Cvoid
 end
 
@@ -517,33 +602,42 @@ export dps_terminate
 
 function dps_terminate(::Type{Float32}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_single.dps_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ptr{dps_control_type{Float32,Int32}},
-                                           inform::Ptr{dps_inform_type{Float32,Int32}})::Cvoid
+                                           control::Ptr{dps_control_type{Float32,
+                                                                         Int32}},
+                                           inform::Ptr{dps_inform_type{Float32,
+                                                                       Int32}})::Cvoid
 end
 
 function dps_terminate(::Type{Float32}, ::Type{Int64}, data, control, inform)
   @ccall libgalahad_single_64.dps_terminate_s_64(data::Ptr{Ptr{Cvoid}},
                                                  control::Ptr{dps_control_type{Float32,
                                                                                Int64}},
-                                                 inform::Ptr{dps_inform_type{Float32,Int64}})::Cvoid
+                                                 inform::Ptr{dps_inform_type{Float32,
+                                                                             Int64}})::Cvoid
 end
 
 function dps_terminate(::Type{Float64}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_double.dps_terminate(data::Ptr{Ptr{Cvoid}},
-                                         control::Ptr{dps_control_type{Float64,Int32}},
-                                         inform::Ptr{dps_inform_type{Float64,Int32}})::Cvoid
+                                         control::Ptr{dps_control_type{Float64,
+                                                                       Int32}},
+                                         inform::Ptr{dps_inform_type{Float64,
+                                                                     Int32}})::Cvoid
 end
 
 function dps_terminate(::Type{Float64}, ::Type{Int64}, data, control, inform)
   @ccall libgalahad_double_64.dps_terminate_64(data::Ptr{Ptr{Cvoid}},
-                                               control::Ptr{dps_control_type{Float64,Int64}},
-                                               inform::Ptr{dps_inform_type{Float64,Int64}})::Cvoid
+                                               control::Ptr{dps_control_type{Float64,
+                                                                             Int64}},
+                                               inform::Ptr{dps_inform_type{Float64,
+                                                                           Int64}})::Cvoid
 end
 
 function dps_terminate(::Type{Float128}, ::Type{Int32}, data, control, inform)
   @ccall libgalahad_quadruple.dps_terminate_q(data::Ptr{Ptr{Cvoid}},
-                                              control::Ptr{dps_control_type{Float128,Int32}},
-                                              inform::Ptr{dps_inform_type{Float128,Int32}})::Cvoid
+                                              control::Ptr{dps_control_type{Float128,
+                                                                            Int32}},
+                                              inform::Ptr{dps_inform_type{Float128,
+                                                                          Int32}})::Cvoid
 end
 
 function dps_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
@@ -554,13 +648,15 @@ function dps_terminate(::Type{Float128}, ::Type{Int64}, data, control, inform)
                                                                                 Int64}})::Cvoid
 end
 
-function run_sif(::Val{:dps}, ::Val{:single}, path_libsif::String, path_outsdif::String)
+function run_sif(::Val{:dps}, ::Val{:single}, path_libsif::String,
+                 path_outsdif::String)
   cmd = setup_env_lbt(`$(GALAHAD_jll.rundps_sif_single()) $path_libsif $path_outsdif`)
   run(cmd)
   return nothing
 end
 
-function run_sif(::Val{:dps}, ::Val{:double}, path_libsif::String, path_outsdif::String)
+function run_sif(::Val{:dps}, ::Val{:double}, path_libsif::String,
+                 path_outsdif::String)
   cmd = setup_env_lbt(`$(GALAHAD_jll.rundps_sif_double()) $path_libsif $path_outsdif`)
   run(cmd)
   return nothing

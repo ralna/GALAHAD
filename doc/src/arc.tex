@@ -57,7 +57,7 @@ and Ph. L. Toint, The University of Namur, Belgium.
 If it is required to use more than one of the modules at the same time, 
 the derived types
 {\tt SMT\_type},
-{\tt GALAHAD\_userdata\ \_type},
+{\tt USERDATA\_type},
 {\tt \packagename\_time\_\-type},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_inform\_type},
@@ -1042,7 +1042,7 @@ it must not have been altered {\bf by the user} since the last call to
 {\tt \packagename\_initialize}.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the
 \optional\ subroutines
 {\tt eval\_F}, {\tt eval\_G},
@@ -1166,7 +1166,7 @@ and to a non-zero value if the evaluation has not been possible.
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
@@ -1205,7 +1205,7 @@ and to a non-zero value if the evaluation has not been possible.
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
@@ -1245,7 +1245,7 @@ and to a non-zero value if the evaluation has not been possible.
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
@@ -1289,7 +1289,7 @@ and to a non-zero value if the evaluation has not been possible.
 \realdp\ whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt SERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
@@ -1342,7 +1342,7 @@ and to a non-zero value if the evaluation has not been possible.
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt GALAHAD\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H} and {\tt eval\_PREC}
@@ -1824,7 +1824,7 @@ we may use the following code:
 }
 \noindent
 Notice how the parameter $p$ is passed to the function evaluation
-routines via the {\tt real} component of the derived type {\tt userdata}.
+routines via the {\tt real} component of the derived type {\tt USERDATA\_type}.
 The code produces the following output:
 {\tt \small
 \VerbatimInput{\packageresults}

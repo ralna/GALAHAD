@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-12-23 AT 14:20 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-02-08 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -26,7 +26,7 @@
         f_bllsb_read_specfile  => BLLSB_read_specfile,                         &
         f_bllsb_import         => BLLSB_import,                                &
         f_bllsb_reset_control  => BLLSB_reset_control,                         &
-        f_bllsb_solve_blls     => BLLSB_solve_blls,                            &
+        f_bllsb_solve_given_a  => BLLSB_solve_given_a,                         &
         f_bllsb_information    => BLLSB_information,                           &
         f_bllsb_terminate      => BLLSB_terminate
 
@@ -175,6 +175,7 @@
       INTEGER ( KIND = ipc_ ) :: nbacts
       INTEGER ( KIND = ipc_ ) :: threads
       REAL ( KIND = rpc_ ) :: obj
+      REAL ( KIND = rpc_ ) :: ls_obj
       REAL ( KIND = rpc_ ) :: primal_infeasibility
       REAL ( KIND = rpc_ ) :: dual_infeasibility
       REAL ( KIND = rpc_ ) :: complementary_slackness
@@ -468,6 +469,7 @@
 
     ! Reals
     finform%obj = cinform%obj
+    finform%ls_obj = cinform%ls_obj
     finform%primal_infeasibility = cinform%primal_infeasibility
     finform%dual_infeasibility = cinform%dual_infeasibility
     finform%complementary_slackness = cinform%complementary_slackness
@@ -518,6 +520,7 @@
 
     ! Reals
     cinform%obj = finform%obj
+    cinform%ls_obj = finform%ls_obj
     cinform%primal_infeasibility = finform%primal_infeasibility
     cinform%dual_infeasibility = finform%dual_infeasibility
     cinform%complementary_slackness = finform%complementary_slackness
@@ -742,9 +745,9 @@
 !  C interface to fortran bllsb_solve_blls
 !  ---------------------------------------
 
-  SUBROUTINE bllsb_solve_blls( cdata, status, n, o, aone, aoval, b,            &
-                               regularization_weight, xl, xu, x, r, z,         &
-                               xstat, w ) BIND( C )
+  SUBROUTINE bllsb_solve_given_a( cdata, status, n, o, aone, aoval, b,         &
+                                  regularization_weight, xl, xu, x, z, r,      &
+                                  xstat, w, x_s ) BIND( C )
   USE GALAHAD_BLLSB_precision_ciface
   IMPLICIT NONE
 
@@ -752,14 +755,15 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o, aone
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: regularization_weight
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( aone ) :: aoval
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( o ) :: b
-  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: regularization_weight
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
   REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
   REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( o ) :: r
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( o ) :: w
+  REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( n ) :: x_s
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -772,11 +776,11 @@
 
 !  solve the qp
 
-  CALL f_bllsb_solve_blls( fdata, status, aoval, b, xl, xu, x,                 &
-                            r, z, xstat, regularization_weight, w )
+  CALL f_bllsb_solve_given_a( fdata, status, aoval, b, regularization_weight,  &
+                              xl, xu, x, z, r, xstat, w, x_s )
   RETURN
 
-  END SUBROUTINE bllsb_solve_blls
+  END SUBROUTINE bllsb_solve_given_a
 
 !  ----------------------------------------
 !  C interface to fortran bllsb_information

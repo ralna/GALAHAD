@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-12-29 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-01-29 AT 13:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,17 +15,17 @@
 
     MODULE GALAHAD_BLLSB_precision
 
-!      ------------------------------------------------
-!     | Minimize the least-squares objective function  |
-!     |                                                |
-!     |  1/2 || A_o x - b ||^2 + 1/2 weight || x ||^2  |
-!     |                                                |
-!     | subject to the bound constraints               |
-!     |                                                |
-!     |             x_l <=  x <= x_u                   |
-!     |                                                |
-!     | using an infeasible-point primal-dual method   |
-!      ------------------------------------------------
+!      ----------------------------------------------------------
+!     | Minimize the regularizedleast-squares objective function |
+!     |                                                          |
+!     |   1/2 || A_o x - b ||_W^2 + 1/2 sigma || x - x_s ||^2    |
+!     |                                                          |
+!     | subject to the bound constraints                         |
+!     |                                                          |
+!     |             x_l <=  x <= x_u                             |
+!     |                                                          |
+!     | using an infeasible-point primal-dual method             |
+!      ----------------------------------------------------------
 
 !  ** This is essentially a wrapper for GALAHAD_CLLS with m = a_ne = 0 **
 
@@ -65,7 +65,7 @@
                 BLLSB_terminate, BLLSB_control_type, BLLSB_data_type,          &
                 BLLSB_time_type, BLLSB_inform_type, BLLSB_information,         &
                 BLLSB_full_initialize, BLLSB_full_terminate,                   &
-                BLLSB_import, BLLSB_solve_blls, BLLSB_reset_control,           &
+                BLLSB_import, BLLSB_solve_given_a, BLLSB_reset_control,        &
                 QPT_problem_type, SMT_type, SMT_put, SMT_get
 
 !----------------------
@@ -79,6 +79,12 @@
      INTERFACE BLLSB_terminate
        MODULE PROCEDURE BLLSB_terminate, BLLSB_full_terminate
      END INTERFACE BLLSB_terminate
+
+!----------------------
+!   P a r a m e t e r s
+!----------------------
+
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -617,14 +623,13 @@
 
 !-*-*-*-*-*-*-*-*-   B L L S B _ S O L V E  S U B R O U T I N E   -*-*-*-*-*-*-
 
-      SUBROUTINE BLLSB_solve( prob, data, control, inform,                     &
-                              regularization_weight, W )
+      SUBROUTINE BLLSB_solve( prob, data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Minimize the linear least-squares objective function
+!  Minimize the regularized linear least-squares objective function
 !
-!         1/2 || A_o x - b ||_W^2 + 1/2 weight || x ||^2
+!         1/2 || A_o x - b ||_W^2 + 1/2 sigma || x - x_s ||^2
 !
 !  where
 !
@@ -644,21 +649,25 @@
 !   information about the problem on input, and its solution on output.
 !   The following components must be set:
 !
-!   %new_problem_structure is a LOGICAL variable, which must be set to
+!   %new_problem_structure is a LOGICAL variable, that must be set to
 !    .TRUE. by the user if this is the first problem with this "structure"
 !    to be solved since the last call to BLLSB_initialize, and .FALSE. if
 !    a previous call to a problem with the same "structure" (but different
 !    numerical data) was made.
 !
-!   %n is an INTEGER variable, which must be set by the user to the
+!   %n is an INTEGER variable, that must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
 !
-!   %o is an INTEGER variable, which must be set by the user to the
+!   %o is an INTEGER variable, that must be set by the user to the
 !    number of observations, o.  RESTRICTION: o >= 1
+!
+!   %regularization_weight is a REAL variable, that may be set by the user
+!    to the value of the non-negative regularization weight. It takes the 
+!    default value of zero
 !
 !   %Ao is a structure of type SMT_type used to hold the design matrix A_o.
 !    Five storage formats are permitted:
-!
+
 !    i) sparse, co-ordinate
 !
 !       In this case, the following must be set:
@@ -709,19 +718,19 @@
 !                    by column with each the entries in each column in order
 !                    of increasing row indicies.
 !
-!   %B is a REAL array of length o, which must be set by the user to the value
+!   %B is a REAL array of length o, that must be set by the user to the value
 !    of the observations, b. The i-th component of B, i = 1, ...., o should
 !    contain the value of b_i.
 !
-!   %X is a REAL array of length %n, which must be set by the user
-!    to estimaes of the solution, x. On successful exit, it will contain
-!    the required solution, x.
+!   %W is a REAL array of length %o, that may be set by the user
+!    to the values of the components of the weights w.
+!    If %W is unallocated, the weights will all be taken to be 1.0.
 !
-!   %R is a REAL array of length %o, which is used to store the values of
-!    the residuals A_o x - b. It need not be set on entry. On exit, it will
-!    have been filled with appropriate values.
+!   %X_s is a REAL array of length %n, that may be set by the user
+!    to the values of the components of the shifts x_s. 
+!    If %X_s is unallocated, the shifts will all be taken to be 0.0.
 !
-!   %X_l, %X_u are REAL arrays of length %n, which must be set by the user
+!   %X_l, %X_u are REAL arrays of length %n, that must be set by the user
 !    to the values of the arrays x_l and x_u of lower and upper bounds on x.
 !    Any bound x_l_i or x_u_i larger than or equal to control%infinity in
 !    absolute value will be regarded as being infinite (see the entry
@@ -732,13 +741,21 @@
 !    control%infinity. On exit, %X_l and %X_u will most likely have been
 !    reordered.
 !
-!   %Z is a REAL array of length %n, which must be set by the user to
+!   %X is a REAL array of length %n, that must be set by the user
+!    to estimaes of the solution, x. On successful exit, it will contain
+!    the required solution, x.
+!
+!   %R is a REAL array of length %o, that is used to store the values of
+!    the residuals A_o x - b. It need not be set on entry. On exit, it will
+!    have been filled with appropriate values.
+!
+!   %Z is a REAL array of length %n, that must be set by the user to
 !    appropriate estimates of the values of the dual variables
 !    (Lagrange multipliers corresponding to the simple bound constraints
 !    x_l <= x <= x_u). On successful exit, it will contain
 !   the required vector of dual variables.
 !
-!   %X_status is an INTEGER array of length %n, which will be set on exit to
+!   %X_status is an INTEGER array of length %n, that will be set on exit to
 !    indicate the likely ultimate status of the simple bound constraints.
 !    Possible values are
 !    X_status( i ) < 0, the i-th bound constraint is likely in the active set,
@@ -749,7 +766,7 @@
 !                       set
 !    It need not be set on entry.
 !
-!  data is a structure of type BLLSB_data_type which holds private internal data
+!  data is a structure of type BLLSB_data_type that holds private internal data
 !
 !  control is a structure of type BLLSB_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
@@ -807,10 +824,6 @@
 !   to the value of the non-negative regularization weight. If it is absent,
 !   the regularization weight will be zero.
 !
-!  W is an OPTIONAL REAL array of length prob%o, that may be set by the user
-!   to the values of the components of the weights W. If it is absent,
-!   the weights will all be taken to be 1.0.
-!
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
@@ -819,11 +832,6 @@
       TYPE ( BLLSB_data_type ), INTENT( INOUT ) :: data
       TYPE ( BLLSB_control_type ), INTENT( IN ) :: control
       TYPE ( BLLSB_inform_type ), INTENT( OUT ) :: inform
-
-!  optional dummy argument
-
-      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: regularization_weight
-      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( prob%o ) :: W
 
 !  Local variables
 
@@ -905,8 +913,7 @@
 
 !  now call the generic interior-point constrained linear least-squares solver
 
-      CALL CLLS_solve( prob, data, control, inform,                            &
-                       regularization_weight = regularization_weight, W = W )
+      CALL CLLS_solve( prob, data, control, inform )
 
 !  save status values while arrays are deallocated
 
@@ -1061,10 +1068,38 @@
 
      CALL BLLSB_terminate( data%bllsb_data, control, inform )
 
+!  reset the regularization weight to zero
+
+     data%prob%regularization_weight = zero
+
 !  deallocate any internal problem arrays
 
-     array_name = 'bllsb: data%prob%X'
-     CALL SPACE_dealloc_array( data%prob%X,                                    &
+     array_name = 'clls: data%prob%B'
+     CALL SPACE_dealloc_array( data%prob%B,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'clls: data%prob%W'
+     CALL SPACE_dealloc_array( data%prob%W,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'clls: data%prob%X_s'
+     CALL SPACE_dealloc_array( data%prob%X_s,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bllsb: data%prob%C_l'
+     CALL SPACE_dealloc_array( data%prob%C_l,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bllsb: data%prob%C_u'
+     CALL SPACE_dealloc_array( data%prob%C_u,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -1081,6 +1116,12 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'bllsb: data%prob%X'
+     CALL SPACE_dealloc_array( data%prob%X,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'bllsb: data%prob%Z'
      CALL SPACE_dealloc_array( data%prob%Z,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -1089,18 +1130,6 @@
 
      array_name = 'bllsb: data%prob%R'
      CALL SPACE_dealloc_array( data%prob%R,                                    &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bllsb: data%prob%C_l'
-     CALL SPACE_dealloc_array( data%prob%C_l,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bllsb: data%prob%C_u'
-     CALL SPACE_dealloc_array( data%prob%C_u,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -1534,10 +1563,11 @@
 
      END SUBROUTINE BLLSB_reset_control
 
-!-*-  G A L A H A D -  B L L S B _ s o l v e _ b l l s   S U B R O U T I N E -*-
+!  G A L A H A D -  B L L S B _ s o l v e _ g i v e n _ a   S U B R O U T I N E 
 
-     SUBROUTINE BLLSB_solve_blls( data, status, Ao_val, B, X_l, X_u, X, R, Z,  &
-                                  X_stat, regularization_weight, W )
+     SUBROUTINE BLLSB_solve_given_a( data, status, Ao_val, B,                  &
+                                     regularization_weight, X_l, X_u,          &
+                                     X, Z, R, X_stat, W, X_s )
 
 !  solve the constrained linear least-squares problem whose structure was
 !  previously imported. See BLLSB_solve for a description of the required
@@ -1560,6 +1590,9 @@
 !   real, that holds the vector of linear terms of the observations, b.
 !   The i-th component of B, i = 1, ... , o, contains (b)_i.
 !
+!  regularization_weight is an optional scalar of type default real that
+!   holds the value of the non-negative regularization weight, sigma.
+!
 !  X_l, X_u are rank-one arrays of dimension n, that hold the values of
 !   the lower and upper bounds, c_l and c_u, on the variables x.
 !   Any bound x_l(i) or x_u(i) larger than or equal to control%infinity in
@@ -1574,16 +1607,16 @@
 !   real, that holds the vector of the primal variables, x.
 !   The j-th component of X, j = 1, ... , n, contains (x)_j.
 !
-!  R is a rank-one array of dimension m and type default
-!   real, that holds the vector of residuals Ao x - b.
-!   The i-th component of R, i = 1, ... , m, contains (Ao x - b)_i.
-!
 !  Z is a rank-one array of dimension n and type default
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
+!  R is a rank-one array of dimension o and type default
+!   real, that holds the vector of residuals Ao x - b.
+!   The i-th component of R, i = 1, ... , m, contains (Ao x - b)_i.
+!
 !  X_stat is a rank-one array of dimension n and type default integer,
-!   that mwill be set on exit to indicate which constraints are in the final
+!   that mwill be set on exit to indicate that constraints are in the final
 !   working set. Possible exit values are
 !   X_stat( i ) < 0, the i-th bound constraint is in the working set,
 !                    on its lower bound,
@@ -1591,33 +1624,45 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  regularization_weight is an optional scalar of type default real that
-!   may be set to the value of the non-negative regularization weight.
-!   If it is absent, the regularization weight will be zero.
-!
 !  W is an optional rank-one array of type default real that may be
 !   set to the values of the components of the weights W.
 !   The i-th component of W, i = 1, ... , o, contains (w)_i.
 !   If it is absent, the weights will all be taken to be 1.0.
+!
+!  X_s is an optional rank-one array of type default real that may be
+!   set to the values of the components of the shifts X_s.
+!   The j-th component of X_s, j = 1, ... , n, contains (x_s)_j.
+!   If it is absent, the shifts will all be taken to be 0.0.
 
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( BLLSB_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = rp_ ), INTENT( IN ) :: regularization_weight
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: Ao_val
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: B
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: R
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: X_stat
-     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: regularization_weight
+ 
+!  optional arguments
+
      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( data%prob%o ) :: W
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ),                              &
+                                    DIMENSION( data%prob%n ) :: X_s
 
 !  local variables
 
-     INTEGER ( KIND = ip_ ) :: n, o
+     INTEGER ( KIND = ip_ ) :: n, o, error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
 
      n = data%prob%n ; o = data%prob%o
+
+!  save the regularization weight
+
+     data%prob%regularization_weight = regularization_weight
 
 !  save the observations
 
@@ -1638,13 +1683,41 @@
      IF ( data%prob%Ao%ne > 0 )                                                &
        data%prob%Ao%val( : data%prob%Ao%ne ) = Ao_val( : data%prob%Ao%ne )
 
+!  save the weights if they are present
+
+     IF ( PRESENT( W ) ) THEN
+       array_name = 'bllsb: data%prob%W'
+       CALL SPACE_resize_array( o, data%prob%W,                                &
+              data%bllsb_inform%status, data%bllsb_inform%alloc_status,        &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+            bad_alloc = data%bllsb_inform%bad_alloc, out = error )
+       IF ( data%bllsb_inform%status /= 0 ) GO TO 900
+       data%prob%W( : o ) = W( : o )
+     END IF
+
+!  save the shifts if they are present
+
+     IF ( PRESENT( X_s ) ) THEN
+       array_name = 'bllsb: data%prob%W'
+       CALL SPACE_resize_array( n, data%prob%X_s,                              &
+              data%bllsb_inform%status, data%bllsb_inform%alloc_status,        &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+            bad_alloc = data%bllsb_inform%bad_alloc, out = error )
+       IF ( data%bllsb_inform%status /= 0 ) GO TO 900
+       data%prob%X_s( : n ) = X_s( : n )
+     END IF
+
 !  call the solver
 
      CALL BLLSB_solve( data%prob, data%bllsb_data, data%bllsb_control,         &
-                       data%bllsb_inform, regularization_weight, W )
+                       data%bllsb_inform )
 
 !  recover the optimal primal and dual variables, Lagrange multipliers,
-!  constraint values and status values for constraints and simple bounds
+!  constraint values and status values for the simple bounds
 
      X( : n ) = data%prob%X( : n )
      Z( : n ) = data%prob%Z( : n )
@@ -1654,9 +1727,15 @@
      status = data%bllsb_inform%status
      RETURN
 
-!  End of subroutine BLLSB_solve_blls
+!  error returns
 
-     END SUBROUTINE BLLSB_solve_blls
+ 900 CONTINUE
+     status = data%bllsb_inform%status
+     RETURN
+
+!  End of subroutine BLLSB_solve_given_a
+
+     END SUBROUTINE BLLSB_solve_given_a
 
 !-  G A L A H A D -  B L L S B _ i n f o r m a t i o n   S U B R O U T I N E  -
 

@@ -14,12 +14,12 @@ PACKAGE = ALL_QP
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_qpd_deps make_qpd make_lls make_mi28 \
+DEPENDENCIES = make_qpd_deps make_qpd make_lls make_lsp make_mi28 \
                make_convert make_checkpoint make_qpa make_lsqp \
                make_qpb make_eqp make_rpd make_cqp make_qpc make_dqp \
-               make_cdqp make_dlp make_l1qp make_userdata \
+               make_cdqp make_dlp make_l1qp make_userdata make_reverse \
                make_qp make_blls make_clls make_bllsb \
-               make_slls make_bqp make_bqpb \
+               make_slls make_sllsb make_bqp make_bqpb \
                make_la04 make_lpa make_lpb make_icfs \
                make_lancelot_psls make_psls make_pdqp
 
@@ -34,7 +34,8 @@ CDEPENDENCIES = make_ciface_common make_ciface_sbls_deps \
                 make_ciface_dqp make_ciface_eqp make_ciface_bqp \
                 make_ciface_bqpb make_ciface_lsqp make_ciface_lpa \
                 make_ciface_lpb make_ciface_convert make_ciface_blls \
-                make_ciface_clls make_ciface_bllsb make_ciface_slls
+                make_ciface_clls make_ciface_bllsb \
+                make_ciface_slls make_ciface_sllsb
 
 
 #  auxiliary packages that the python interface to the current package depends
@@ -53,8 +54,8 @@ PYDEPENDENCIES = make_pyiface_sils make_pyiface_gls \
                  make_pyiface_eqp make_pyiface_blls \
                  make_pyiface_clls make_pyiface_bllsb \
                  make_pyiface_lpa make_pyiface_lpb \
+                 make_pyiface_slls make_pyiface_sllsb \
                  make_pyiface_presolve
-#                make_pyiface_slls
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -69,7 +70,8 @@ CUTESTDEPS = $(CUTEST_TESTS) $(TESTDEPS) \
              make_bqpb_cutest make_cqp_cutest make_dqp_cutest \
              make_cdqp_cutest make_qp_cutest make_dlp_cutest \
              make_lpa_cutest make_lpb_cutest make_lls_cutest \
-             make_clls_cutest make_bllsb_cutest make_slls_cutest \
+             make_clls_cutest make_bllsb_cutest \
+             make_slls_cutest make_sllsb_cutest \
              make_l1qp_cutest make_presolve_cutest
 
 #  packages that are needed for AMPL interfaces (prepend with make_)
@@ -99,7 +101,7 @@ TEST = make_eqp_test make_qpa_test make_qpb_test \
        make_cdqp_test make_qp_test make_dlp_test \
        make_lpa_test make_lpb_test make_clls_test \
        make_l1qp_test make_lsp_test make_rpd_test \
-       make_slls_test
+       make_slls_test make_sllsb_test
 
 #      make_lls_test
 
@@ -110,7 +112,7 @@ TESTS = make_eqp_tests make_qpa_tests make_qpb_tests \
         make_bqpb_tests make_cqp_tests make_dqp_tests \
         make_cdqp_tests make_qp_tests make_dlp_tests \
         make_lpa_tests make_lpb_tests make_lls_tests \
-        make_l1qp_tests make_slls_tests
+        make_l1qp_tests make_slls_tests make_sllsb_tests
 
 #  test everything except CUTEst and QPLIB to be performed (prepend with make_)
 
@@ -119,7 +121,7 @@ TEST_FULL = make_eqp_test_full make_qpa_test_full make_qpb_test_full \
             make_bqpb_test_full make_cqp_test_full make_dqp_test_full \
             make_cdqp_test_full make_qp_test_full make_dlp_test_full \
             make_lpa_test_full make_lpb_test_full make_l1qp_test_full \
-            make_clls_test_full make_slls_test_full
+            make_clls_test_full make_slls_test_full make_sllsb_test_full
 #           make_lls_test_full
 
 #  specification documentation tests to be performed (prepend with make_)
@@ -130,7 +132,7 @@ TEST_SPEC = make_eqp_test_spec make_qpa_test_spec make_qpb_test_spec \
        make_cdqp_test_spec make_qp_test_spec make_dlp_test_spec \
        make_lpa_test_spec make_lpb_test_spec make_clls_test_spec \
        make_l1qp_test_spec  make_lsp_test_spec make_rpd_test_spec \
-       make_slls_test_spec
+       make_slls_test_spec make_sllsb_test_spec
 #      make_lls_test_spec
 
 #  tests of C interfaces to be performed (prepend with make_)
@@ -139,7 +141,7 @@ TEST_CIFACE = make_ciface_eqp_test make_ciface_qpa_test make_ciface_lsqp_test \
               make_ciface_qpb_test make_ciface_blls_test make_ciface_bqp_test \
               make_ciface_bqpb_test make_ciface_cqp_test make_ciface_dqp_test \
               make_ciface_lpa_test make_ciface_lpb_test make_ciface_rpd_test \
-              make_ciface_clls_test make_ciface_slls_test
+              make_ciface_clls_test make_ciface_slls_test make_ciface_sllsb_test
 #             make_ciface_qpc_test make_ciface_cdqp_test make_ciface_qp_test
 #             make_ciface_dlp_test make_ciface_lls_test make_ciface_l1qp_test
 #             make_ciface_pdqp_test make_ciface_cqps_test
@@ -153,11 +155,12 @@ TEST_PYIFACE = make_pyiface_lpa_test make_pyiface_lpb_test \
                make_pyiface_bqpb_test make_pyiface_cqp_test \
                make_pyiface_dqp_test make_pyiface_rpd_test \
                make_pyiface_cro_test make_pyiface_presolve_test \
-               make_pyiface_slls_test make_pyiface_clls_test
+               make_pyiface_slls_test make_pyiface_sllsb_test \
+               make_pyiface_clls_test
 
 #  all packages in the QP section
 
-PACKAGES = eqp qpa lsqp qpb qpc blls bqp bqpb slls clls cqp dqp cdqp qp \
+PACKAGES = eqp qpa lsqp qpb qpc blls bqp bqpb slls sllsb clls cqp dqp cdqp qp \
            dlp lpa lpb lls rpd l1qp pdqp cqps
 
 #  ===========================================================================
@@ -468,6 +471,11 @@ make_slls_cutest:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls_cutest_addon \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+
+make_sllsb_cutest:
+	( cd $(GALAHAD)/src/sllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sllsb_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sllsb )
 
 make_nodend_cutest:
 	( cd $(GALAHAD)/src/nodend ; \
@@ -805,6 +813,11 @@ make_slls_test:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
 
+make_sllsb_test:
+	( cd $(GALAHAD)/src/sllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sllsb )
+
 #  comprehensive and CUTEst tests
 
 make_blls_tests:
@@ -917,6 +930,11 @@ make_slls_tests:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
 
+make_sllsb_tests:
+	( cd $(GALAHAD)/src/sllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sllsb )
+
 #  all tests except CUTEst and QPLIB ones
 
 make_blls_test_full:
@@ -1023,6 +1041,11 @@ make_slls_test_full:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+
+make_sllsb_test_full:
+	( cd $(GALAHAD)/src/sllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sllsb )
 
 #  specification documentation tests
 
@@ -1140,6 +1163,11 @@ make_slls_test_spec:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+
+make_sllsb_test_spec:
+	( cd $(GALAHAD)/src/sllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sllsb )
 
 #  comprehensive C interface tests
 
@@ -1259,6 +1287,11 @@ make_ciface_slls_test:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
 
+make_ciface_sllsb_test:
+	( cd $(GALAHAD)/src/sllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sllsb )
+
 #  comprehensive python interface tests
 
 make_pyiface_blls_test:
@@ -1345,3 +1378,8 @@ make_pyiface_slls_test:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+
+make_pyiface_sllsb_test:
+	( cd $(GALAHAD)/src/sllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sllsb )

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-02-08 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -33,7 +33,7 @@
         f_blls_terminate            => BLLS_terminate
 
     USE GALAHAD_USERDATA_precision, ONLY:                                      &
-        f_galahad_userdata_type => GALAHAD_userdata_type
+        f_galahad_userdata_type => USERDATA_type
 
     USE GALAHAD_SBLS_precision_ciface, ONLY:                                   &
         sbls_inform_type,                                                      &
@@ -73,7 +73,6 @@
       INTEGER ( KIND = ipc_ ) :: cg_maxit
       INTEGER ( KIND = ipc_ ) :: arcsearch_max_steps
       INTEGER ( KIND = ipc_ ) :: sif_file_device
-      REAL ( KIND = rpc_ ) :: weight
       REAL ( KIND = rpc_ ) :: infinity
       REAL ( KIND = rpc_ ) :: stop_d
       REAL ( KIND = rpc_ ) :: identical_bounds_tol
@@ -99,13 +98,7 @@
 
     TYPE, BIND( C ) :: blls_time_type
       REAL ( KIND = rpc_ ) :: total
-      REAL ( KIND = rpc_ ) :: analyse
-      REAL ( KIND = rpc_ ) :: factorize
-      REAL ( KIND = rpc_ ) :: solve
       REAL ( KIND = rpc_ ) :: clock_total
-      REAL ( KIND = rpc_ ) :: clock_analyse
-      REAL ( KIND = rpc_ ) :: clock_factorize
-      REAL ( KIND = rpc_ ) :: clock_solve
     END TYPE blls_time_type
 
     TYPE, BIND( C ) :: blls_inform_type
@@ -115,6 +108,7 @@
       INTEGER ( KIND = ipc_ ) :: iter
       INTEGER ( KIND = ipc_ ) :: cg_iter
       REAL ( KIND = rpc_ ) :: obj
+      REAL ( KIND = rpc_ ) :: ls_obj
       REAL ( KIND = rpc_ ) :: norm_pg
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       TYPE ( blls_time_type ) :: time
@@ -171,7 +165,6 @@
     fcontrol%sif_file_device = ccontrol%sif_file_device
 
     ! Reals
-    fcontrol%weight = ccontrol%weight
     fcontrol%infinity = ccontrol%infinity
     fcontrol%stop_d = ccontrol%stop_d
     fcontrol%identical_bounds_tol = ccontrol%identical_bounds_tol
@@ -238,7 +231,6 @@
     ccontrol%sif_file_device = fcontrol%sif_file_device
 
     ! Reals
-    ccontrol%weight = fcontrol%weight
     ccontrol%infinity = fcontrol%infinity
     ccontrol%stop_d = fcontrol%stop_d
     ccontrol%identical_bounds_tol = fcontrol%identical_bounds_tol
@@ -287,9 +279,7 @@
 
     ! Reals
     ftime%total = ctime%total
-    ftime%analyse = ctime%analyse
-    ftime%factorize = ctime%factorize
-    ftime%solve = ctime%solve
+    ftime%clock_total = ctime%clock_total
     RETURN
 
     END SUBROUTINE copy_time_in
@@ -302,9 +292,7 @@
 
     ! Reals
     ctime%total = ftime%total
-    ctime%analyse = ftime%analyse
-    ctime%factorize = ftime%factorize
-    ctime%solve = ftime%solve
+    ctime%clock_total = ftime%clock_total
     RETURN
 
     END SUBROUTINE copy_time_out
@@ -325,6 +313,7 @@
 
     ! Reals
     finform%obj = cinform%obj
+    finform%ls_obj = cinform%ls_obj
     finform%norm_pg = cinform%norm_pg
 
     ! Derived types
@@ -358,6 +347,7 @@
 
     ! Reals
     cinform%obj = finform%obj
+    cinform%ls_obj = finform%ls_obj
     cinform%norm_pg = finform%norm_pg
 
     ! Derived types
@@ -612,8 +602,8 @@
 !  -----------------------------------------
 
   SUBROUTINE blls_solve_given_a( cdata, cuserdata, status, n, o, aone, aoval,  &
-                                 b, xl, xu, x, z, r, g, xstat, w,              &
-                                 ceval_prec ) BIND( C )
+                                 b, regularization_weight, xl, xu, x, z, r, g, &
+                                 xstat, w, x_s, ceval_prec ) BIND( C )
   USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
@@ -621,8 +611,9 @@
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( INOUT ) :: cuserdata
-  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o, aone
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: regularization_weight
   REAL ( KIND = rpc_ ), DIMENSION( aone ), INTENT( IN ) :: aoval
   REAL ( KIND = rpc_ ), DIMENSION( o ), INTENT( IN ) :: b
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: xl, xu
@@ -630,7 +621,8 @@
   REAL ( KIND = rpc_ ), DIMENSION( o ), INTENT( OUT ) :: r
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: g
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
-  REAL ( KIND = rpc_ ), DIMENSION( o ), INTENT( IN ), OPTIONAL :: w
+  REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( o ) :: w
+  REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( n ) :: x_s
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_prec
 
 !  local variables
@@ -657,15 +649,10 @@
 
 !  solve the bound-constrained least-squares problem
 
-  IF ( PRESENT( w ) ) THEN
-    CALL f_blls_solve_given_a( fdata, fuserdata, status, aoval, b, xl, xu,     &
-                               x, z, r, g, xstat, W = w,                       &
-                               eval_PREC = wrap_eval_prec )
-   ELSE
-    CALL f_blls_solve_given_a( fdata, fuserdata, status, aoval, b, xl, xu,     &
-                               x, z, r, g, xstat,                              &
-                               eval_PREC = wrap_eval_prec )
-   END IF
+  CALL f_blls_solve_given_a( fdata, fuserdata, status, aoval, b,               &
+                             regularization_weight, xl, xu, x, z, r, g,        &
+                             xstat, W = w, X_s = x_s,                          &
+                             eval_PREC = wrap_eval_prec )
 
   RETURN
 
@@ -695,17 +682,19 @@
 !  ------------------------------------------------
 
   SUBROUTINE blls_solve_reverse_a_prod( cdata, status, eval_status, n, o, b,   &
-                                        xl, xu, x, z, r, g, xstat, v, p,       &
-                                        nz_v, nz_v_start, nz_v_end,            &
-                                        nz_p, nz_p_end, w ) BIND( C )
+                                        regularization_weight, xl, xu, x, z,   &
+                                        r, g, xstat, v, p, nz_v, nz_v_start,   &
+                                        nz_v_end, nz_p, nz_p_end,              &
+                                        w, x_s ) BIND( C )
   USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: regularization_weight
   REAL ( KIND = rpc_ ), DIMENSION( o ), INTENT( IN ) :: b
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: xl, xu
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
@@ -718,7 +707,8 @@
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( MAX( n, o ) ) :: nz_v
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( MAX( n, o ) ) :: p
   REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( MAX( n, o ) ) :: v
-  REAL ( KIND = rpc_ ), DIMENSION( o ), INTENT( IN ), OPTIONAL :: w
+  REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( o ) :: w
+  REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( n ) :: x_s
 
 !  local variables
 
@@ -736,15 +726,19 @@
 !  solve the bound-constrained least-squares problem by reverse communication
 
   IF ( f_indexing ) THEN
-    CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b, xl, xu,   &
+    CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b,           &
+                                      regularization_weight, xl, xu,           &
                                       x, z, r, g, xstat, v, p,                 &
                                       nz_v, nz_v_start, nz_v_end,              &
-                                      nz_p, nz_p_end, W = w )
+                                      nz_p, nz_p_end,                          &
+                                      W = w, X_s = x_s )
   ELSE
-    CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b, xl, xu,   &
+    CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b,           &
+                                      regularization_weight, xl, xu,           &
                                       x, z, r, g, xstat, v, p,                 &
                                       nz_v, nz_v_start, nz_v_end,              &
-                                      nz_p( : nz_p_end ) + 1, nz_p_end, W = w )
+                                      nz_p( : nz_p_end ) + 1, nz_p_end,        &
+                                      W = w, X_s = x_s )
     IF ( status == 4 .OR. status == 5 .OR. status == 6 ) then
       nz_v( nz_v_start : nz_v_end ) = nz_v( nz_v_start : nz_v_end ) - 1
     END IF

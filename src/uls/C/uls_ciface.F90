@@ -161,7 +161,7 @@
     fcontrol%stop_if_singular = ccontrol%stop_if_singular
 
     ! Strings
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
     END DO

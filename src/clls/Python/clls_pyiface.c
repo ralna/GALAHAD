@@ -1,7 +1,7 @@
 //* \file clls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.0 - 2024-06-16 AT 09:50 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 12:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CLLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -51,8 +51,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool clls_update_control(struct clls_control_type *control,
-                               PyObject *py_options){
+bool clls_update_control(struct clls_control_type *control,
+                         PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -599,7 +599,8 @@ static PyObject* clls_make_time_dict(const struct clls_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* clls_make_inform_dict(const struct clls_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* clls_make_inform_dict(const struct clls_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -624,6 +625,8 @@ static PyObject* clls_make_inform_dict(const struct clls_inform_type *inform){
                          PyLong_FromLong(inform->threads));
     PyDict_SetItemString(py_inform, "obj",
                          PyFloat_FromDouble(inform->obj));
+    PyDict_SetItemString(py_inform, "ls_obj",
+                         PyFloat_FromDouble(inform->ls_obj));
     PyDict_SetItemString(py_inform, "primal_infeasibility",
                          PyFloat_FromDouble(inform->primal_infeasibility));
     PyDict_SetItemString(py_inform, "dual_infeasibility",
@@ -636,14 +639,14 @@ static PyObject* clls_make_inform_dict(const struct clls_inform_type *inform){
                          PyBool_FromLong(inform->feasible));
 
     // include checkpoint arrays
-    npy_intp cdim[] = {16}; 
+    npy_intp idim[] = {16}; 
     PyArrayObject *py_iter = 
-      (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_INT);
+      (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_INT);
     int *iter = (int *) PyArray_DATA(py_iter); 
     for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];  
     PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
     PyArrayObject *py_time = 
-      (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_DOUBLE);
+      (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_DOUBLE);
     double *time = (double *) PyArray_DATA(py_time); 
     for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];  
     PyDict_SetItemString(py_inform, "checkpointsTime", (PyObject *) py_time);
@@ -804,13 +807,15 @@ static PyObject* py_clls_load(PyObject *self, PyObject *args, PyObject *keywds){
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   CLLS_SOLVE_CLLS   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   CLLS_SOLVE   -*-*-*-*-*-*-*-*
 
-static PyObject* py_clls_solve_clls(PyObject *self, PyObject *args, PyObject *keywds){
+static PyObject* py_clls_solve(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_Ao_val, *py_b, *py_A_val;
-    PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u, *py_w;
+    PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_y, *py_z;
-    double *Ao_val, *b, *A_val, *c_l, *c_u, *x_l, *x_u, *w, *x, *y, *z;
+    PyArrayObject *py_w = NULL, *py_x_s = NULL;
+    double *Ao_val, *b, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
+    double *w = NULL, *x_s = NULL ;
     int n, o, m, Ao_ne, A_ne;
     double sigma;
 
@@ -819,16 +824,17 @@ static PyObject* py_clls_solve_clls(PyObject *self, PyObject *args, PyObject *ke
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","o","m", "Ao_ne","Ao_val", "b", "sigma", 
+    static char *kwlist[] = {"n", "o", "m", "Ao_ne","Ao_val", "b", "sigma", 
                              "A_ne","A_val", "c_l", "c_u", "x_l", "x_u", 
-                             "x", "y", "z", "w", NULL};
+                             "x", "y", "z", "w", "x_s", NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOOdiOOOOOOOOO",
-                                    kwlist, &n, &o, &m,
-                                    &Ao_ne, &py_Ao_val, &py_b, &sigma, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOOdiOOOOOOOO|OO",
+                                    kwlist, &n, &o, &m, 
+                                    &Ao_ne, &py_Ao_val, &py_b, &sigma,
                                     &A_ne, &py_A_val,
                                     &py_c_l, &py_c_u, &py_x_l, &py_x_u,
-                                    &py_x, &py_y, &py_z, &py_w))
+                                    &py_x, &py_y, &py_z, 
+                                    &py_w, &py_x_s))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -852,8 +858,20 @@ static PyObject* py_clls_solve_clls(PyObject *self, PyObject *args, PyObject *ke
         return NULL;
     if(!check_array_double("z", py_z, n))
         return NULL;
-    if(!check_array_double("w", py_w, o))
-        return NULL;
+    if(py_w != NULL) {
+      if((PyObject *) py_w != Py_None){
+        if(!check_array_double("w", py_w, o))
+            return NULL;
+        w = (double *) PyArray_DATA(py_w);
+      }  
+    }
+    if(py_x_s != NULL) {
+      if((PyObject *) py_w != Py_None){
+        if(!check_array_double("x_s", py_x_s, n))
+            return NULL;
+        x_s = (double *) PyArray_DATA(py_x_s);
+      }
+    }
 
     // Get array data pointer
     Ao_val = (double *) PyArray_DATA(py_Ao_val);
@@ -866,7 +884,6 @@ static PyObject* py_clls_solve_clls(PyObject *self, PyObject *args, PyObject *ke
     x = (double *) PyArray_DATA(py_x);
     y = (double *) PyArray_DATA(py_y);
     z = (double *) PyArray_DATA(py_z);
-    w = (double *) PyArray_DATA(py_w);
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
@@ -887,9 +904,10 @@ static PyObject* py_clls_solve_clls(PyObject *self, PyObject *args, PyObject *ke
 
     // Call clls_solve_direct
     status = 1; // set status to 1 on entry
-    clls_solve_clls(&data, &status, n, o, m, 
-                    Ao_ne, Ao_val, b, sigma, A_ne, A_val, 
-                    c_l, c_u, x_l, x_u, x, r, c, y, z, x_stat, c_stat, w);
+    clls_solve_given_a(&data, &status, n, o, m, 
+                       Ao_ne, Ao_val, b, sigma, A_ne, A_val, 
+                       c_l, c_u, x_l, x_u, x, y, z, r, c, x_stat, c_stat, 
+                       w, x_s);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
@@ -903,11 +921,11 @@ static PyObject* py_clls_solve_clls(PyObject *self, PyObject *args, PyObject *ke
     if(!check_error_codes(status))
         return NULL;
 
-    // Return x, r, c, y, z, x_stat and c_stat
+    // Return x, y, z, r, c, x_stat and c_stat
     PyObject *solve_clls_return;
 
     // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_clls_return = Py_BuildValue("OOOOOOO", py_x, py_r, py_c, py_y, py_z, 
+    solve_clls_return = Py_BuildValue("OOOOOOO", py_x, py_y, py_z, py_r, py_c, 
                                                  py_x_stat, py_c_stat);
     Py_INCREF(solve_clls_return);
     return solve_clls_return;
@@ -952,7 +970,7 @@ static PyObject* py_clls_terminate(PyObject *self){
 static PyMethodDef clls_module_methods[] = {
     {"initialize", (PyCFunction) py_clls_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_clls_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_clls", (PyCFunction) py_clls_solve_clls, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve", (PyCFunction) py_clls_solve, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_clls_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_clls_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
@@ -965,12 +983,12 @@ PyDoc_STRVAR(clls_module_doc,
 "The clls package uses a primal-dual interior-point method to solve the\n"
 "convex quadratic programming problem to minimize the regularized linear\n"
 "least-squares objective\n"
-"q(x) = 1/2 ||Ao x - b||_W^2 + sigma/2 ||x||^2,\n"
+"q(x) = 1/2 ||Ao x - b||_W^2 + sigma/2 ||x-x_s||^2,\n"
 "subject to the general linear constraints\n"
 "c_i^l  <=  a_i^Tx  <= c_i^u, i = 1, ... , m\n"
 "and the simple bound constraints\n"
 "x_j^l  <=  x_j  <= x_j^u, j = 1, ... , n,\n"
-"where the o by n matrix Ao, the vectors b, w, a_i, c^l, c^u," 
+"where the o by n matrix Ao, the vectors b, w, x_s, a_i, c^l, c^u," 
 "x^l, x^u and the regularization weight sigma >= 0 are given,\n"
 "and the norms are defined by ||v||_W^2 = v^T W v and ||v||^2 = v^T v,\n"
 "where W is the digonal matrix whose entries are the components of w > 0\n"

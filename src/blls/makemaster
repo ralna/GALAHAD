@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD BLLS package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2023-05-11
+#  This version: 2026-02-16
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -18,7 +18,7 @@ PACKAGE = BLLS
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_qpd_deps make_qpd make_convert make_userdata
+DEPENDENCIES = make_qpd_deps make_qpd make_convert make_userdata make_reverse
 
 #  other packages that depend on package
 

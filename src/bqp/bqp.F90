@@ -44,7 +44,7 @@
      PRIVATE
      PUBLIC :: BQP_initialize, BQP_read_specfile, BQP_solve, BQP_terminate,    &
                BQP_reverse_type, BQP_data_type, BQP_arcsearch_data_type,       &
-               BQP_full_initialize, BQP_full_terminate, GALAHAD_userdata_type, &
+               BQP_full_initialize, BQP_full_terminate, USERDATA_type, &
                BQP_import, BQP_import_without_h, BQP_solve_given_h,            &
                BQP_solve_reverse_h_prod, BQP_reset_control, BQP_information,   &
                QPT_problem_type, SMT_type, SMT_put, SMT_get
@@ -353,7 +353,7 @@
         TYPE ( BQP_control_type ) :: BQP_control
         TYPE ( BQP_inform_type ) :: BQP_inform
         TYPE ( QPT_problem_type ) :: prob
-        TYPE ( GALAHAD_userdata_type ) :: userdata
+        TYPE ( USERDATA_type ) :: userdata
         TYPE ( BQP_reverse_type ) :: reverse
       END TYPE BQP_full_data_type
 
@@ -880,7 +880,7 @@
 !   On exit from BQP_solve, other components of inform are set as described
 !   in the comments to BQP_inform_type, see above
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be
+!  userdata is a scalar variable of type USERDATA_type which may be
 !   used to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -935,7 +935,7 @@
      TYPE ( BQP_data_type ), INTENT( INOUT ) :: data
      TYPE ( BQP_control_type ), INTENT( IN ) :: control
      TYPE ( BQP_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      TYPE ( BQP_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
      OPTIONAL :: eval_HPROD
 !    OPTIONAL :: eval_HPROD, eval_PREC
@@ -947,7 +947,7 @@
                               nz_v_end, NZ_prod, nz_prod_end )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: PROD
        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
@@ -962,7 +962,7 @@
 !      SUBROUTINE eval_PREC( status, userdata, V, PV )
 !      USE GALAHAD_USERDATA_precision
 !      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-!      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+!      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
 !      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
 !      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: PV
 !      END SUBROUTINE eval_PREC
@@ -2528,7 +2528,7 @@
 !  n_free (INTEGER) the number of free variables at the initial point
 !  data   (BQP_arcsearch_data_type) private data that must be preserved between
 !          calls
-!  userdata (GALAHAD_userdata_type) user provided data for use in eval_HPROD
+!  userdata (USERDATA_type) user provided data for use in eval_HPROD
 !  H      (SMT_type) optionaly, the whole of H stored by rows
 !  H_PROD subroutine, optionally, compute H * vector products
 
@@ -2552,7 +2552,7 @@
      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X_t
      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: P, HP
      TYPE ( BQP_arcsearch_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      TYPE ( SMT_type ), OPTIONAL, INTENT( IN ) :: H
      OPTIONAL :: eval_HPROD
 
@@ -2563,7 +2563,7 @@
                               nz_v_end, NZ_prod, nz_prod_end )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: PROD
        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
@@ -3239,7 +3239,7 @@
 !  n_free  (INTEGER) the number of free variables at the initial point
 !  data   (BQP_arcsearch_data_type) private data that must be preserved between
 !          calls
-!  userdata (GALAHAD_userdata_type) user provided data for use in eval_HPROD
+!  userdata (USERDATA_type) user provided data for use in eval_HPROD
 !  H      (SMT_type) optionaly, the whole of H stored by rows
 !  H_PROD subroutine, optionally, compute H * vector products
 
@@ -3263,7 +3263,7 @@
      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X_t
      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: P, HP
      TYPE ( BQP_arcsearch_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      TYPE ( SMT_type ), OPTIONAL, INTENT( IN ) :: H
      OPTIONAL :: eval_HPROD
 
@@ -3274,7 +3274,7 @@
                               nz_v_end, NZ_prod, nz_prod_end )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: PROD
        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end

@@ -41,7 +41,7 @@ PROGRAM S2QP_example
   TYPE ( S2QP_control_type ) :: control
   TYPE ( S2QP_inform_type ) :: inform
   TYPE ( S2QP_data_type ) :: data
-  TYPE ( GALAHAD_userdata_type ) :: userdata
+  TYPE ( USERDATA_type ) :: userdata
   EXTERNAL fun_FC, fun_GJ, fun_H
 
   ! Set problem dimensions.
@@ -205,7 +205,7 @@ PROGRAM S2QP_example
    REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ) :: F
    REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
    INTEGER, INTENT( OUT ) :: status
-   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE( USERDATA_type ), INTENT( INOUT ) :: userdata
 
    ! local variables
 
@@ -244,7 +244,7 @@ PROGRAM S2QP_example
    REAL ( KIND = wp ), intent(out), OPTIONAL, DIMENSION( : ) :: G
    REAL ( KIND = wp ), intent(out), OPTIONAL, DIMENSION( : ) :: Jval
    INTEGER, INTENT( OUT ) :: status
-   TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
+   TYPE( USERDATA_type ), INTENT(INOUT) :: userdata
 
    ! local variables
 
@@ -297,7 +297,7 @@ PROGRAM S2QP_example
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
    INTEGER, INTENT( OUT ) :: status
-   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE( USERDATA_type ), INTENT( INOUT ) :: userdata
 
    ! local variables
 

@@ -17,13 +17,21 @@
 This package uses a preconditioned, projected-gradient method
 to solve the {\bf simplex-constrained regularized linear least-squares problem}
 \disp{\mbox{minimize}\;\; q(\bmx) = \half \| \bmA_o \bmx - \bmb\|_W^2
-+ \half \sigma \|\bmx\|_2^2,}
++ \half \sigma \|\bmx - \bmx_s\|_2^2,}
 where the variables $\bmx$ are required to lie within the
 {\bf regular simplex}
 \disp{\bme^T \bmx = 1 \tim{and} \bmx \geq 0,}
-where the $o$ by $n$ real matrix $\bmA_o$, the vector $\bmb$
-and the non-negative weights $\bmw$ and $\sigma$ are given, 
-where $\bme$ is the vector of ones, 
+or an intersection of {\bf multiple non-overlapping regular simplices}
+\disp{\bme_{\calC_i}^T \bmx_{\calC_i} = 1 \tim{and} \bmx_{\calC_i}
+ \geq 0 \tim{for} i = 1,\ldots,m,}
+where the $o$ by $n$ real {\bf design matrix} $\bmA_o$, the vector $\bmb$
+of {\bf observations}, the {\bf shifts} $\bmx_s$,
+and the non-negative {\bf weights} $\bmw$ and $\sigma$ are given, 
+$\bme$ is the vector of ones, 
+the vector $\bmv_{\calC}$ is made up of those entries of $\bmv$ indexed by
+the set $\calC$, 
+the index sets of {\bf cohorts} $\calC_i \subseteq \{1,\ldots,n\}$
+for which $\calC_i \cap \calC_j = \emptyset$ for $1 \leq i, \neq j \leq m$,
 and where the Euclidean and weighted-Euclidean norms
 are given by $\|\bmv\|_2^2 = \bmv^T \bmv$ and $\|\bmv\|_W^2 = \bmv^T \bmW \bmv$,
 respectively, with $\bmW = \mbox{diag}(\bmw)$.
@@ -47,7 +55,8 @@ or from a user-provided subroutine.
 {\tt GALAHAD\_SBLS},
 {\tt GALAHAD\_QPT},
 {\tt GALAHAD\_QPD},
-{\tt GALAHAD\_USERDATA}.
+{\tt GALAHAD\_USERDATA},
+{\tt GALAHAD\_REVERSE},
 {\tt GALAHAD\_SPECFILE}.
 \galdate July 2022.
 \galorigin N. I. M. Gould, STFC-Rutherford Appleton Laboratory.
@@ -64,7 +73,7 @@ If it is required to use more than one of the modules at the same time,
 the derived types
 {\tt SMT\_type},
 {\tt QPT\_problem\_type},
-{\tt NLPT\_userdata\-\_type},
+{\tt USERDATA\-\_type},
 {\tt \packagename\_time\_type},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_inform\_type}
@@ -203,6 +212,13 @@ are:
 \ittf{o} is a scalar variable of type \integer,
  that holds the number of residuals, $o$.
 
+\ittf{m} is a scalar variable of type \integer,
+ that holds the number of cohorts, $m$.
+
+\itt{regularization\_weight} is a scalar variable of type \realdp,,
+ that holds the value of the regularization weight, $\sigma$, if required.
+ By default {\tt regularization\_weight} is set to zero.
+
 \ittf{Ao} is scalar variable of type {\tt SMT\_TYPE}
 that holds the design matrix $\bmA_o$ (if it is available).
 The following components are used here:
@@ -291,8 +307,45 @@ other schemes are used.
 \end{description}
 
 \ittf{B} is a rank-one allocatable array of dimension {\tt o} and type
-\realdp, that holds the constant term $\bmb$ in the residuals.
+\realdp, that holds the vector of observations $\bmb$ in the residuals.
 The $i$-th component of {\tt B}, $i = 1, \ldots, o$, contains $\bmb_{i}$.
+
+\itt{COHORT} is a rank-one allocatable array of dimension {\tt n} and type
+\integer, that specifies with which cohort variable $x_j$, $j = 1,\ldots,n$, 
+is associated. If variable $x_j$ is associated with cohort $\calC_i$, 
+$1 \leq i \leq m$, {\tt COHORT(j)} should be set to {\tt i}, while if $x_j$ 
+is unconstrained {\tt COHORT(j) = 0} should be assigned. At least one value 
+{\tt COHORT(j)} for $j = 1,\ldots\,n$ is expected to take the value $i$ 
+for every $1 \leq i \leq m$, that is no empty cohorts are allowed.
+If {\tt COHORT} is not allocated, a single cohort containing all of
+the variables will be used instead, i.e., a single unit simplex is employed.
+
+\ittf{W} is a rank-one allocatable array of dimension {\tt o} and type default
+\realdp, that holds the values of the weights, $\bmw$.
+The $i$-th component of {\tt W}, $i = 1,  \ldots ,  o$, contains $w_{i}$.
+If {\tt W} is not allocated, weights of one will be assumed.
+
+\ittf{X\_s} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds the values of the shifts, $\bmx_s$.
+The $j$-th component of {\tt X\_s}, $j = 1,  \ldots ,  n$, contains ${x_s}_{j}$.
+If {\tt X\_s} is not allocated, shifts of zero will be assumed.
+
+\ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
+\realdp,that holds the values $\bmx$ of the optimization variables.
+The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.
+
+\ittf{Y} is a rank-one allocatable array of dimension {\tt m} (or {\tt 1} if
+a single unit simplex is implied) and type default \realdp, that holds
+the values $\bmy$ of estimates of the Lagrange multipliers
+corresponding to the equality constraint for each cohort 
+(see Section~\ref{galmethod}).
+The $i$-th component of {\tt Y}, $i = 1,  \ldots ,  m$, contains $y_{i}$.
+
+\ittf{Z} is a rank-one allocatable array of dimension {\tt n} and type default
+\realdp, that holds
+the values $\bmz$ of estimates  of the dual variables
+corresponding to the non-negativity constraints (see Section~\ref{galmethod}).
+The $j$-th component of {\tt Z}, $j = 1,  \ldots ,  n$, contains $z_{j}$.
 
 \ittf{R} is a rank-one allocatable array of dimension {\tt o} and type
 \realdp, that holds the residuals, $\bmr(\bmx) = \bmA_o \bmx - \bmb$,
@@ -304,16 +357,25 @@ at the point $\bmx$. The $i$-th component of
  $\bmg(\bmx) = \bmA_o^T \bmW \bmr(\bmx)$, at the point $\bmx$. 
 The $j$-th component of {\tt G}, $j = 1, \ldots, n$, contains $\bmg_{j}(\bmx)$.
 
-\ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
-\realdp,
-that holds the values $\bmx$ of the optimization variables.
-The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.
-
-\ittf{Z} is a rank-one allocatable array of dimension {\tt n} and type default
-\realdp, that holds
-the values $\bmz$ of estimates  of the dual variables
-corresponding to the non-negativity constraints (see Section~\ref{galmethod}).
-The $j$-th component of {\tt Z}, $j = 1,  \ldots ,  n$, contains $z_{j}$.
+\itt{X\_status} is a rank-one allocatable array argument of dimension {\tt n}
+and type \integer, that indicates which of the non-negativity constraints
+are in the current active set. Possible values for
+{\tt X\_status(j)}, {\tt j}$=1, \ldots ,$ {\tt n}, and their meanings are
+\begin{description}
+\itt{<0} the $j$-th non-negativity constraint
+is in the active set, at the value zero, and
+\itt{0}  the $j$-th  non-negativity constraint is not in the active set,
+or the associated variable is unconstrained.
+\end{description}
+When {\tt control\%crossover} is \true, more specific values are
+\begin{description}
+\itt{-1} the $j$-th  non-negativity constraint
+is both independent and active with the value zero,
+\itt{-2} the $j$-th  non-negativity constraint
+is at the value zero but linearly dependent on others,
+\itt{0} the $j$-th non-negativity constraint is not in the active set,
+or the associated variable is unconstrained.
+\end{description}
 
 \end{description}
 
@@ -409,11 +471,6 @@ that specifies the maximum number of steps allowed in an individual
 piecewise arc search.
 The default is {\tt arcsearch\_max\_steps = 1000}, and a negative value
 removes the limit.
-
-\itt{weight} is a scalar variable of type \realdp, that is used to
-specify the weight $\sigma$ that controls regularization of the objective 
-function. Any value smaller than $0$ will be regarded as zero.
-The default is {\tt weight =} $0.0$.
 
 \itt{stop\_d} is a scalar variable of type default
 \realdp, that holds the
@@ -518,16 +575,10 @@ The components of
 are:
 \begin{description}
 \itt{total} is a scalar variable of type default \real, that gives
- the total time spent in the package.
+ the total CPU time spent in the package.
 
-\itt{analyse} is a scalar variable of type default \real, that gives
- the time spent analysing the required matrices prior to factorization.
-
-\itt{factorize} is a scalar variable of type default \real, that gives
- the time spent factorizing the required matrices.
-
-\itt{solve} is a scalar variable of type default \real, that gives
- the time spent computing the search direction.
+\itt{clock\_total} is a scalar variable of type default \real, that gives
+ the total clock time spent in the package.
 
 \end{description}
 
@@ -566,7 +617,12 @@ gives the return status from the matrix factorization.
 gives the number of iterations performed.
 
 \ittf{obj} is a scalar variable of type \realdp, that holds the
-value of the objective function at the best estimate of the solution found.
+value of the regularized objective function $q(\bmx)$ at the 
+best estimate of the solution found.
+
+\itt{ls\_obj} is a scalar variable of type \realdp, that holds the value of 
+the least-squares function $\half \| \bmA_o \bmx - \bmb\|_W^2$ 
+at the best estimate of the solution found.
 
 \ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
 whose components are used to hold elapsed CPU times for the various parts
@@ -580,6 +636,11 @@ performed by the package
 {\tt \libraryname\_SBLS}.
 See the documentation for {\tt \libraryname\_SBLS} for further details.
 
+\itt{lapack\_error} is a scalar variable of type \integer,
+that corresponds to the output value {\tt info} returned from
+the LAPACK routines {\tt S/D/QPOTRF/S},
+{\tt S/D/QSYTRF/S} and {\tt S/D/QPBTRF/S}
+See the documentation for LAPACK for further details.
 \end{description}
 
 %%%%%%%%%%% data type %%%%%%%%%%%
@@ -597,70 +658,53 @@ to the final call to
 
 %%%%%%%%%%% userdata type %%%%%%%%%%%
 
-\subsubsection{The derived data type for holding user data}\label{typeuserdata}
-The derived data type
-{\tt NLPT\_userdata\_type}
-is available to allow the user to pass data to and from user-supplied
-matrix-vector product and preconditioning
-subroutines (see Section~\ref{fdv}).
-Components of variables of type {\tt NLPT\_userdata\-\_type} may be allocated as
-necessary. The following components are available:
-
-\begin{description}
-\itt{integer} is a rank-one allocatable array of type \integer.
-\ittf{real} is a rank-one allocatable array of type default  \realdp
-\itt{complex} is a rank-one allocatable array of type default \complexdp.
-\itt{character} is a rank-one allocatable array of type default \character.
-\itt{logical} is a rank-one allocatable array of type default \logical.
-\itt{integer\_pointer} is a rank-one pointer array of type \integer.
-\itt{real\_pointer} is a rank-one pointer array of type default  \realdp
-\itt{complex\_pointer} is a rank-one pointer array of type default \complexdp.
-\itt{character\_pointer} is a rank-one pointer array of type default \character.
-\itt{logical\_pointer} is a rank-one pointer array of type default \logical.
-\end{description}
+\input{userdata_type}
 
 %%%%%%%%%%% reverse type %%%%%%%%%%%
 
 \subsubsection{The derived data type for holding reverse-communication data}\label{typereverse}
 The derived data type
-{\tt \packagename\_reverse\_type}
+{\tt REVERSE\_type}
 is used to hold data needed for reverse communication when this is
 required.
 The components of
-{\tt \packagename\_reverse\_type}
+{\tt REVERSE\_type}
 are:
 
 \begin{description}
 
-\itt{nz\_v\_start} is a scalar variable of type \integer, that
-may be used to hold the starting position in {\tt NZ\_v} (see below)
+\itt{lvl} is a scalar variable of type \integer, that
+may be used to hold the starting position in {\tt V} (see below)
 of the list of indices of nonzero components of $\bmv$.
 
-\itt{nz\_v\_end} is a scalar variable of type \integer, that
-may be used to hold the finishing position in {\tt NZ\_v} (see below)
+\itt{lvu} is a scalar variable of type \integer, that
+may be used to hold the finishing position in {\tt V} (see below)
 of the list of indices of nonzero components of $\bmv$.
 
-\itt{NZ\_v} is a rank-one allocatable array of dimension $n$
+\itt{IV} is a rank-one allocatable array of dimension $n$
 and type \integer, that may be used to hold the indices of the
 nonzero components of $\bmv$. If used, components
-{\tt NZ\_v(nz\_v\_start:nz\_v\_end)} of {\tt V} (see below) will be nonzero.
+{\tt IV(lvl:lvu)} of {\tt V} (see below) will be nonzero.
 
 \itt{V} is a rank-one allocatable array of dimension $n$
-and type \realdp, that is used to hold the components of the
-output vector $\bmv$.
+and type \realdp, that is used to hold the components of an
+input vector $\bmv$.
+
+\itt{index} is a scalar variable of type \integer, that
+may be used to hold a column index of $\bmA_o$ if required.
+
+\itt{lp} is a scalar variable of type \integer, that
+is used to record the finishing position in 
+{\tt P} and {\tt IP} (see below)
+of the list of indices of nonzero components a requested operation on $\bmv$.
 
 \itt{P} is a rank-one allocatable array of dimension $o$
 and type \realdp, that is used to record the components of the
-resulting vector $\bmA_o \bmv$.
+vector that results from a requested operation on $\bmv$.
 
-\itt{nz\_p\_end} is a scalar variable of type \integer, that
-is used to record the finishing position in {\tt NZ\_p} (see below)
-of the list of indices of nonzero components of $\bmA_o \bmv$ if required.
-
-\itt{NZ\_p} is a rank-one allocatable array of dimension $n$
+\itt{IP} is a rank-one allocatable array of dimension $n$
 and type \integer, that is used to record the list of
-indices of nonzero components of $\bmA_o \bmv$ if required. Components
-{\tt NZ\_p(1:nz\_prod\_end)} of {\tt P} should then be nonzero.
+indices of nonzero components of a requested operation on $\bmv$.
 
 \end{description}
 
@@ -723,14 +767,13 @@ as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_solve( prob, X\_stat, data, control, inform, userdata[,
-W, reverse, %eval\_APROD, eval\_ASPROD] )}
-\&}
+{\tt CALL \packagename\_solve( prob, data, control, inform, userdata[,
+reverse, \&}
 \vspace*{-1mm}
 
 \hspace{37mm}
 {\tt
-eval\_APROD, eval\_ASPROD, eval\_AFPROD, eval\_PREC] )}
+ eval\_APROD, eval\_ASCOL, eval\_AFPROD, eval\_PREC] )}
 
 \vspace*{-3mm}
 \begin{description}
@@ -748,46 +791,34 @@ is appropriate for the user's application;
 if the effect of $\bmA_o$ and its transpose are only available to form products
 via reverse communication (see {\tt reverse} below)
 or with a set of user-supplied subroutines (see {\tt eval\_APROD}
-{\tt eval\_ASPROD} and {\tt eval\_AFPROD} below), {\tt prob\%Ao} is not needed.
+{\tt eval\_ASCOL} and {\tt eval\_AFPROD} below), {\tt prob\%Ao} is not needed.
 
-The components {\tt prob\%X}
-must be set to initial estimates of the primal variables, $\bmx$.
+The components {\tt prob\%X}, {\tt prob\%Y} and {\tt prob\%Z}
+must be set to initial estimates of the primal variables, $\bmx$,
+Lagrange multipliers, $\bmy$, for the simplex equality constraints
+and dual variables for the bound constraints, $\bmz$, respectively.
 Inappropriate initial values will be altered, so the user should
 not be overly concerned if suitable values are not apparent, and may be
-content with merely setting {\tt prob\%X=0.0}.
-The components {\tt prob\%C}, {\tt prob\%G} and {\tt prob\%Z}
+content with merely setting {\tt prob\%X=0.0}, {\tt prob\%Y=0.0}
+and {\tt prob\%Z=0.0}.
+The components {\tt prob\%G} and {\tt prob\%R}
 need not be set or allocated on entry.
 
-On exit, the components {\tt prob\%X} and {\tt prob\%Z}
+On exit, the components {\tt prob\%X}, {\tt prob\%Y} and {\tt prob\%Z}
 will contain the best estimates of the primal variables $\bmx$,
+Lagrange multipliers for the simplex equality constraints $\bmy$
 and dual variables for the bound constraints $\bmz$, respectively.
 The components {\tt prob\%R} and {\tt prob\%G}
 will contain the residuals $\bmr(\bmx)$
 and gradients $\bmg(\bmx)$ at $\bmx$, respectively.
+The component {\tt X\_status} will indicate the status of each variable.
+
 \restrictions {\tt prob\%n} $> 0$, {\tt prob\%o} $> 0$
-              and (if $\bmA_o$ is provided) {\tt prob\%A\%ne} $\geq 0$.
+              and (if $\bmA_o$ is provided) {\tt prob\%Ao\%ne} $\geq 0$.
               {\tt prob\%Ao\_type} $\in 
-               \{${\tt 'DENSE\_BY\_ROWS'}, {\tt 'DENSE\_BY\_COLUMNS'},
+               \{${\tt 'DENSE\_\-BY\_ROWS'}, {\tt 'DENSE\_BY\_COLUMNS'},
                   {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'}, 
                   {\tt SPARSE\_BY\_COLUMNS}$\}$.
-
-\itt{X\_stat} is a rank-one \intentinout\ array argument of dimension {\tt prob\%n}
-and type \integer, that indicates which of the simple bound
-constraints are in the current working set. Possible values for
-{\tt X\_stat(j)}, {\tt j}$=1, \ldots ,$ {\tt prob\%n}, and their meanings are
-\begin{description}
-\itt{<0} the $j$-th simple bound constraint
-is in the working set, on its lower bound,
-\itt{>0} the $j$-th simple bound constraint
-is in the working set, on its upper bound, and
-\itt{0}  the $j$-th simple bound constraint is not in the working set.
-\end{description}
-Suitable values must be supplied if
-{\tt control\%slls\_control\%cold\_start = 0} on entry,
-but need not be provided for other input values of {\tt control\%cold\_start}.
-Inappropriate values will be ignored.
-On exit, {\tt X\_stat} will contain values appropriate for the ultimate
-working set.
 
 \itt{data} is a scalar \intentinout\ argument of type
 {\tt \packagename\_data\_type}
@@ -812,22 +843,18 @@ For other return values of {\tt status}, see Sections~\ref{reverse} and
 \ref{galerrors}.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data
 (see Section~\ref{typeuserdata})
 to and from the \optional\ subroutines
- {\tt eval\_APROD} and {\tt eval\_ASPROD} (see below).
-
-\ittf{W} is an \optional\ rank-one \intentinout\ array argument of dimension 
-{\tt prob\%n} and type \realdp\ that if present contains the weights
-$\bmw$. If {\tt W} is absent, weights of one will be used instead.
+ {\tt eval\_APROD} and {\tt eval\_ASCOL} (see below).
 
 \itt{reverse} is an \optional\ scalar \intentinout\ argument of type
-{\tt \packagename\_reverse\_type}
+{\tt REVERSE\_type}
 (see Section~\ref{typereverse}).
 It is used to communicate reverse-communication data between the
 subroutine and calling program.
-If {\tt reverse} is \present\ and {\tt eval\%APROD} or {\tt eval\%ASPROD}
+If {\tt reverse} is \present\ and {\tt eval\%APROD} or {\tt eval\%ASPCOL}
 (see below) are absent, the user should monitor {\tt inform\%status} on exit
 (see Section~\ref{reverse}).
 
@@ -844,16 +871,15 @@ to obtain Jacobian-vector products if {\tt reverse} is \present\ or
 otherwise require that the user has provided all relevant
 components of {\tt prob\%A}.
 
-\itt{eval\_ASPROD} is an \optional\
-user-supplied subroutine whose purpose is to evaluate the value of the
-product $\bmA_o \bmv$  involving the Jacobian and a given {\em sparse}
-vector $\bmv$.
+\itt{eval\_ASCOL} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the value of a
+specified column of the Jacobian $\bmA_o$.
 See Section~\ref{jvps} for details.
-If {\tt eval\_ASPROD} is present,
+If {\tt eval\_ASCOL} is present,
 it must be declared {\tt EXTERNAL} in the calling program.
-If {\tt eval\_ASPROD} is absent, \solver\ will use reverse communication
+If {\tt eval\_ASCOL} is absent, \solver\ will use reverse communication
 (see Section~\ref{reverse})
-to obtain Jacobian-sparse-vector products if {\tt reverse} is \present\ or
+to obtain columns of the Jacobian if {\tt reverse} is \present\ or
 otherwise require that the user has provided all relevant
 components of {\tt prob\%A}.
 
@@ -867,7 +893,7 @@ If {\tt eval\_AFPROD} is present,
 it must be declared {\tt EXTERNAL} in the calling program.
 If {\tt eval\_AFPROD} is absent, \solver\ will use reverse communication
 (see Section~\ref{reverse})
-to obtain Jacobian-sparse-vector products if {\tt reverse} is \present\ or
+2to obtain Jacobian-sparse-vector products if {\tt reverse} is \present\ or
 otherwise require that the user has provided all relevant
 components of {\tt prob\%A}.
 
@@ -953,7 +979,7 @@ sum $\bmp + \bmA_o \bmv$ or $\bmp + \bmA_o^T\bmv$
 and to a non-zero value if the evaluation has not been possible.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the subroutines
 {\tt eval\_APROD}
 (see Section~\ref{typeuserdata}).
@@ -976,85 +1002,45 @@ $\bmp + \bmA_o^T \bmv$ when {\tt \%transpose} is \true.
 
 %%%%%%%%%%%%%%%%%%%%%% Jacobian-vector products %%%%%%%%%%%%%%%%%%%%%%
 
-\subsubsection{Jacobian-sparse-vector products via internal evaluation\label{jvps}}
+\subsubsection{Columns of the Jacobian via internal evaluation\label{jvps}}
 
-If the argument {\tt eval\_ASPROD} is present when calling \solver, the
+If the argument {\tt eval\_ASCOL} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
-product of the Jacobian $\bmA_o$ with a given vector $\bmv$.
+a specified column of the Jacobian $\bmA_o$.
 The routine must be specified as
 
 \def\baselinestretch{0.8}
 {\tt \begin{verbatim}
-       SUBROUTINE eval_ASPROD( status, userdata, V, P[, NZ_in, nz_in_start, nz_in_end,     &
-                               NZ_out, nz_out_end] )
+       SUBROUTINE eval_ASCOL( status, userdata, index, P, IP, lp )
 \end{verbatim} }
 \def\baselinestretch{1.0}
 \noindent whose arguments are as follows:
 
 \begin{description}
 \itt{status} is a scalar \intentout\ argument of type \integer,
-that should be set to 0 if the routine has been able to evaluate the
-product $\bmA_o \bmv$
-and to a non-zero value if the evaluation has not been possible.
+that should be set to 0 if the routine has been able to evaluate the desired 
+columns of $\bmA_o$ and to a non-zero value if the evaluation has not 
+been possible.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutine (see Section~\ref{typeuserdata}).
 
-\ittf{V} is a rank-one \intentin\ array argument of type \realdp\
-whose components contain the vector $\bmv$.
-If components
-{\tt nz\_in\_start},
-{\tt nz\_in\_end}
-and
-{\tt NZ\_in}
-(see below) are \present,
-only components {\tt NZ\_in(nz\_in\_start:nz\_in\_end)} of {\tt V}
-will be nonzero and the remaining components of {\tt V} should be
-ignored. Otherwise, all components of {\tt V} should be presumed to be nonzero.
+\ittf{index} is a scalar \intentout\ argument of type \integer,
+that should be set to the index of the required column of $\bmA_o$.
 
 \ittf{P} is a rank-one \intentout\ array argument of type \realdp\
-whose components on output contain the required components of $\bmA_o \bmv$.
-If components
-{\tt nz\_out\_end}
-and
-{\tt NZ\_out}
-(see below) are \present,
-only the nonzero components {\tt NZ\_out(1:nz\_out\_end)} of {\tt P}
-need be assigned.
-Otherwise, all components of {\tt P} must be set.
+whose first {\tt out\_end} components on output contain the 
+nonzeros of the {\tt index}-th column of $\bmA_o$.
 
-\itt{nz\_in\_start} is an \optional\ scalar variable of type \integer,
-that, if \present, holds the starting position in {\tt NZ\_in}
-of the list of indices of nonzero components of $\bmv$.
+\itt{IP} is an \intentinout\ rank-one array of dimension at least
+{\tt out\_end} and type \integer, that must be set to record the list
+of indices of nonzero components of the {\tt index}-th column of $\bmA_o$.
 
-\itt{nz\_in\_end} is an \optional\ scalar variable of type \integer,
-that, if \present, holds the finishing position in {\tt NZ\_in}
-of the list of indices of nonzero components of $\bmv$.
-
-\itt{NZ\_in} is an \optional\  rank-one array of dimension $n$
-and type \integer, that, if \present, holds the indices of the
-nonzero components of $\bmv$. If any of
-{\tt nz\_in\_start},
-{\tt nz\_in\_end}
-and
-{\tt NZ\_in}
-are absent, all components of {\tt V} are assumed to be nonzero.
-
-\itt{nz\_out\_end} is an \optional\ scalar variable of type \integer,
-that, if \present, must be set to record the number of non-zeros in
-$\bmA_o \bmv$.
-
-\itt{NZ\_out} is an \optional\ rank-one array of dimension $o$
-and type \integer, that, if \present, must be set to record the list
-of indices of nonzero components of $\bmA_o \bmv$.
-If either of
-{\tt nz\_out\_end}
-and
-{\tt NZ\_out}
-are absent, all components of {\tt P} should be set even if they are zero.
-
+\itt{lp} is an \intentinout\ scalar variable of type \integer,
+that must be set to record the number of non-zeros in the {\tt col}-th column
+of $\bmA_o$.
 
 \end{description}
 
@@ -1079,11 +1065,11 @@ The routine must be specified as
 \begin{description}
 \itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate the
-sum $\bmA_o \bmv$ or $\bmA_o^T\bmv$
+product $\bmp = \bmA_o \bmv$ or $\bmp = \bmA_o^T\bmv$
 and to a non-zero value if the evaluation has not been possible.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the subroutines
 {\tt eval\_APROD}
 (see Section~\ref{typeuserdata}).
@@ -1148,7 +1134,7 @@ product $\bmP^{-1} \bmv$,
 and to a non-zero value if the evaluation has not been possible.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the subroutines
 {\tt eval\_APROD}
 (see Section~\ref{typeuserdata}).
@@ -1183,7 +1169,7 @@ Possible values of {\tt inform\%status} and the information required are
      involving the product of the residual Jacobian, $\bmA_o$,
      with a given vector $\bmv$.
      The vector $\bmv$ is given in {\tt reverse\%V}, and the
-     product $\bmA_o \bmv$ should be written to {\tt reverse\%P},
+     product $\bmp = \bmA_o \bmv$ should be written to {\tt reverse\%P},
      and  {\tt reverse\%eval\_status} should be set to 0.
      If the user is unable to evaluate the product,
      the user need not set {\tt reverse\%P}, but
@@ -1193,41 +1179,37 @@ Possible values of {\tt inform\%status} and the information required are
      involving the product of the transpose of the residual
      Jacobian, $\bmA_o$,  with a given vector $\bmv$.
      The vector $\bmv$ is given in {\tt reverse\%V}, and the
-     product $\bmA_o^T \bmv$ should be written to {\tt reverse\%P},
+     product $\bmp = \bmA_o^T \bmv$ should be written to {\tt reverse\%P},
      and  {\tt reverse\%eval\_status} should be set to 0.
      If the user is unable to evaluate the product,
      the user need not set {\tt reverse\%P}, but
      should then set {\tt reverse\%eval\_status} to a non-zero value.
 
-\ittf{4.} The user should compute the matrix-vector product $\bmA_o \bmv$
+\ittf{4.} The user should compute the nonzero components of the $j$-th
+     column of the matrix $\bmA_o$, where {\tt reverse\%index}
+     holds the index $j$. The values and corresponding row indices of 
+     the selected column should be set in 
+     {\tt reverse\-\%P(1:reverse\%lp)} and {\tt reverse\%IP(1:reverse\%lp)}
+     respectively, and {\tt reverse\%lp} set accordingly.
+     The component {\tt reverse\%eval\_status} should set to 0 unless the
+     user is unable to provide the selected column, in which case
+     {\tt reverse\%eval\_status} should be set to a non-zero value, and the
+     remaining components left unaltered.
+
+\ittf{5.} The user should compute the matrix-vector product $\bmp = \bmA_o \bmv$
      using the vector $\bmv$ whose nonzero components are stored in positions
-     {\tt reverse\%NZ\_in(reverse\%nz\_in\_start:reverse\%nz\_in\_end)}
-     of {\tt reverse\%V}. The remaining components of
-     {\tt reverse\%V} should be ignored.
+     {\tt reverse\%IV(reverse\%lvl:reverse\%lvu)} of {\tt reverse\%V}. 
+     The remaining components of {\tt reverse\%V} should be ignored.
+     The resulting vector $\bmp$ should be assigned to {\tt reverse\%P}.
      The component {\tt reverse\%eval\_status} should set to 0 unless the
      user is unable to evaluate the product, in which case
      {\tt reverse\%eval\_status} should be set to a non-zero value, and the
      remaining components left unaltered.
 
-\ittf{5.} The user should compute the nonzero components of the
-     matrix-vector product $\bmA_o \bmv$ using the vector $\bmv$ whose
-     nonzero components are stored in positions
-     {\tt reverse\%NZ\_in(reverse\%nz\_in\_start:reverse\%nz\_in\_end)}
-     of \linebreak {\tt reverse\%V}. The remaining components of
-     {\tt reverse\%V} should be ignored. The nonzero components must
-     occupy positions
-     {\tt reverse\%NZ\_out(1:reverse\%nz\_out\_end)} of {\tt reverse\%P},
-     and the components
-     {\tt reverse\%NZ\_out} and {\tt reverse\%nz\_out\_end} must be set.
-     The component {\tt reverse\%eval\_status} should set to 0 unless the
-     user is unable to evaluate the product, in which case
-     {\tt reverse\%eval\_status} should be set to a non-zero value, and the
-      remaining components left unaltered.
-
 \ittf{6.} The user should compute the matrix-vector product $\bmA_o^T \bmv$
      using the vector $\bmv$ given in {\tt reverse\%V}. The components
      $(\bmA_o^T \bmv)_j$ of the product $\bmA_o^T \bmv$, for
-     {\tt j = reverse\%NZ\_in(reverse\%nz\_in\_start:reverse\%nz\_in\_end)},
+     {\tt j = reverse\%IV(reverse\%lvl:reverse\%lvu)},
      should be written to {\tt reverse\%P(j)}.
      The component {\tt reverse\%eval\_status} should set to 0 unless the
      user is unable to evaluate the product, in which case
@@ -1238,7 +1220,7 @@ Possible values of {\tt inform\%status} and the information required are
      involving a symmetric, positive definite preconditioner $\bmP$ 
      and a given vector $\bmv$
      The vector $\bmv$ is given in {\tt reverse\%V}, and the
-     product $\bmP^{-1} \bmv$ should be written to {\tt reverse\%P},
+     product $\bmp = \bmP^{-1} \bmv$ should be written to {\tt reverse\%P},
      and  {\tt reverse\%eval\_status} should be set to 0.
      If the user is unable to evaluate the product,
      the user need not set {\tt reverse\%P}, but
@@ -1247,8 +1229,6 @@ Possible values of {\tt inform\%status} and the information required are
      has set {\tt control\%preconditioner = 2}.
 
 \end{description}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1348,8 +1328,6 @@ each value must be separated from its keyword by at least one blank.
 Values must not contain more than 30 characters, and
 each line of the specfile is limited to 80 characters,
 including the blanks separating keyword and value.
-
-
 
 The portion of the specification file used by
 {\tt \packagename\_read\_specfile}
@@ -1519,7 +1497,8 @@ variables and Lagrange multiplier.
 {\tt GALAHAD\_SBLS}, \newline
 {\tt GALAHAD\_QPT},
 {\tt GALAHAD\_QPD},
-{\tt GALAHAD\_USERDATA} and
+{\tt GALAHAD\_USERDATA},
+{\tt GALAHAD\_REVERSE} and
 {\tt GALAHAD\_SPECFILE}.
 \galio Output is under control of the arguments
  {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
@@ -1536,11 +1515,12 @@ The package is thread-safe.
 \galmethod
 The required solution $\bmx$ necessarily satisfies
 the primal optimality conditions
-\eqn{4.1}{\bme^T \bmx = 1 \tim{and} \bmx \geq 0,}
+\eqn{4.1}{\bme_{\cal C_i}^T \bmx_{\cal C_i} = 1 \tim{and} \bmx_{\cal C_i}
+ \geq 0 \tim{for} i = 1,\ldots,m,}
 the dual optimality conditions
 \eqn{4.2a}{\bmA_o^T \bmW (\bmA_o \bmx - \bmb ) + \sigma x = 
- \lambda \bme + \bmz,}
-for some scalar Lagrange multiplier $\lambda$ and dual variables
+ \sum_{i=1}^m \bme_{\calC_i} y_i  + \bmz,}
+for some Lagrange multipliers $\bmy$ and dual variables
 \eqn{4.2b}{ \bmz \geq 0,}
 and the complementary slackness conditions
 \eqn{4.3}{\bmx^T \bmz = 0,}
@@ -1562,12 +1542,12 @@ in a direction that provides an approximate minimizer of the objective
 over a subspace comprising the currently free-variables. The latter is
 computed either using an appropriate sparse factorization by the
 package {\tt GALAHAD\_SBLS}, or by the
-conjugate-gradient least-squares (CGLS) method; tt may be necessary to
+conjugate-gradient least-squares (CGLS) method; it may be necessary to
 regularize the subproblem very slightly to avoid a ill-posedness.
 Thereafter, a piecewise linesearch (arc search) is carried out along
 the arc $\bmx(\alpha) = P( \bmx + \alpha \bms)$ for $\alpha > 0$,
 where the projection operator $P(\bmv)$ gives the nearest point to $\bmv$ 
-within the regular simplex;
+within the intersection of specified simplices;
 thus this arc bends the search direction into the feasible region.
 The arc search is performed either exactly, by passing through a set
 of increasing breakpoints at which it changes direction, or inexactly,
@@ -1584,9 +1564,8 @@ Full details are provided in
 \vspace*{1mm}
 
 \noindent
-N. I. M. Gould (2022).
-Linear least-squares over the unit simplex.
-In preparation.
+H.\ Al Daas, J.\ M.\ Fowkes, N.\ I.\ M.\ Gould and J.\ Huntley (2026).
+Linear least-squares over unit simplices, RAL-NA-2026-1.
 
 %%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1598,9 +1577,7 @@ within the simplex
 \disp{ x_1 + x_2 + x_3 = 1, \;\; x_1, x_2, x_3 \geq 0.}
 Then, on writing the data for this problem as
 \disp{\bmA_o = \mat{ccc}{1 & & \\ 1 & 1 &   \\ &  & 1 \\ &  & 1}, \;\;
- \bmb = \vect{ 0 \\ 2 \\ 1  \\ 2}, \;\;
-\bmx^{l} = \vect{ -1 \\ - \infty \\ 0 } \tim{and}
-\bmx^{u} = \vect{ \infty \\ 1 \\ 2 }}
+\tim{and} \bmb = \vect{ 0 \\ 2 \\ 1  \\ 2}}
 in sparse coordinate format, we may use the following code:
 
 {\tt \small
@@ -1654,8 +1631,8 @@ a dense-by-rows storage format with the replacement lines
 ! dense storage format
    CALL SMT_put( p%A%type, 'DENSE_BY_ROWS', s )  ! Specify dense-by-rows
    ALLOCATE( p%A%val( m * n  )
-   p%A%val = (/ 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, &
-                1.0_wp, 0.0_wp, 01.0_wp, 1.0_wp /)
+   p%A%val = (/ 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, &
+                0.0_wp, 1.0_wp, 0.0_wp, 01.0_wp, 1.0_wp /)
 ! problem data complete
 \end{verbatim}
 }
@@ -1666,8 +1643,8 @@ or a dense-by-columns storage format using the replacement
 ! dense storage format
    CALL SMT_put( p%A%type, 'DENSE_BY_COLUMS', s )  ! Specify dense-by-columns
    ALLOCATE( p%A%val( m * n  )
-   p%A%val = (/ 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, &
-                0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
+   p%A%val = (/ 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 0.0_wp, &
+                0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
 ! problem data complete
 \end{verbatim}
 }
@@ -1699,11 +1676,38 @@ products as follows:
 This produces the same output.
 Now notice how the matrix $\bmA_o$ is passed to the matrix-vector product
 evaluation routines via the {\tt integer} and
-{\tt real} components of the derived type {\tt userdata}.
+{\tt real} components of the derived type {\tt USERDATA\_type}.
 
 %This produces the following output:
 %%{\tt \small
 %\VerbatimInput{\packageresultsc}
 %}
 %\noindent
+
+Now, suppose instead that we wish to minimize
+\disp{
+\half \left\| \vect{x_1 \\ x_1 + x_2 - 2 \\ x_3 + x_2 - 1 \\ x_4 + x_3 - 2 \\
+x_5 + x_4 - 1 \\ x_5 - 2} \right\|_2^2}
+within the two non-overlapping simplices 
+\disp{ x_1 + x_4 = 1, \;\; x_2 + x_5 = 1, \;\; x_1, x_2, x_4, x_5 \geq 0.}
+Then, on writing the data for this problem as
+\disp{\bmA_o = \mat{ccccc}{1 & & \\ 1 & 1 \\ & 1 & 1 \\ 
+& & 1 & 1  \\ & & & 1 & 1 \\ & & & & 1}, \;\;
+\tim{and} \bmb = \vect{0 \\ 2 \\ 1  \\ 2 \\ 1 \\ 2}}
+in sparse coordinate format, and noticing that the constraints
+involve two cohorts $\{1,4\}$ and $\{2,5\}$ with no constraint on
+variable $x_3$, we may use the following code:
+
+{\tt \small
+\VerbatimInput{\packageexampled}
+}
+\noindent
+%Notice that storage for the Hessian is now not needed.
+%This produces the same output.
+This produces the following output: \vspace*{-2mm}
+{\tt \small
+\VerbatimInput{\packageresultsd}
+}
+\noindent
+
 \end{document}

@@ -837,7 +837,7 @@ CONTAINS
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
     TYPE ( NLPT_problem_type ), INTENT( INOUT ) :: nlp
-    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ), OPTIONAL :: userdata
+    TYPE ( USERDATA_type ), INTENT( INOUT ), OPTIONAL :: userdata
     TYPE ( TRIMSQP_control_type ), INTENT( INOUT ) :: control
     TYPE ( TRIMSQP_inform_type ), INTENT( INOUT ) :: inform
     TYPE ( TRIMSQP_data_type ), INTENT( INOUT ) :: data
@@ -851,7 +851,7 @@ CONTAINS
          REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
          REAL ( kind = rp_ ), OPTIONAL, INTENT( OUT ) :: F
          REAL ( kind = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-         TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+         TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FC
 
        SUBROUTINE eval_G( status, X, userdata, G )
@@ -859,7 +859,7 @@ CONTAINS
          INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
          REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
          REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-         TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+         TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_G
 
        SUBROUTINE eval_J( status, X, userdata, J_val )
@@ -867,7 +867,7 @@ CONTAINS
          INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
          REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
          REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: J_val
-         TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+         TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_J
 
        SUBROUTINE eval_HL(status, X, Y, userdata, Hval )
@@ -875,7 +875,7 @@ CONTAINS
          INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
          REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
          REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
-         TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+         TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_HL
 
     END INTERFACE

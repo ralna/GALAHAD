@@ -54,7 +54,7 @@ If it is required to use more than one of the modules at the same time,
 the derived types
 {\tt SMT\_type}, 
 {\tt QPT\_problem\_type}, 
-{\tt NLPT\_userdata\-\_type},
+{\tt USERDATA\-\_type},
 {\tt \packagename\_time\_type}, 
 {\tt \packagename\_control\_type}, 
 {\tt \packagename\_inform\_type} 
@@ -559,27 +559,7 @@ to the final call to
 
 %%%%%%%%%%% userdata type %%%%%%%%%%%
 
-\subsubsection{The derived data type for holding user data}\label{typeuserdata}
-The derived data type 
-{\tt NLPT\_userdata\_type} 
-is available to allow the user to pass data to and from user-supplied 
-matrix-vector product and preconditioning 
-subroutines (see Section~\ref{fdv}).
-Components of variables of type {\tt NLPT\_userdata\-\_type} may be allocated as
-necessary. The following components are available:
-
-\begin{description}
-\itt{integer} is a rank-one allocatable array of type \integer.
-\ittf{real} is a rank-one allocatable array of type default  \realdp
-\itt{complex} is a rank-one allocatable array of type default \complexdp.
-\itt{character} is a rank-one allocatable array of type default \character.
-\itt{logical} is a rank-one allocatable array of type default \logical.
-\itt{integer\_pointer} is a rank-one pointer array of type \integer.
-\itt{real\_pointer} is a rank-one pointer array of type default  \realdp
-\itt{complex\_pointer} is a rank-one pointer array of type default \complexdp.
-\itt{character\_pointer} is a rank-one pointer array of type default \character.
-\itt{logical\_pointer} is a rank-one pointer array of type default \logical.
-\end{description}
+\input{userdata_type}
 
 %%%%%%%%%%% reverse type %%%%%%%%%%%
 
@@ -767,7 +747,7 @@ For other return values of {\tt status}, see Sections~\ref{reverse} and
 \ref{galerrors}.
 
 \itt{userdata} is a scalar \intentinout\ argument of type 
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data 
 (see Section~\ref{typeuserdata})
 to and from the \optional\ subroutine
@@ -864,7 +844,7 @@ product $\bmH \bmv$
 and to a non-zero value if the evaluation has not been possible.
 
 \itt{userdata} is a scalar \intentinout\ argument of type 
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt USERDATA\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutine (see Section~\ref{typeuserdata}). 
 
@@ -1400,7 +1380,7 @@ products as follows:
 \noindent
 Now notice how the matrix $\bmH$ is passed to the matrix-vector product 
 evaluation routine via the {\tt integer} and 
-{\tt real} components of the derived type {\tt userdata}.
+{\tt real} components of the derived type {\tt USERDATA\_type}.
 
 %This produces the following output:
 %%{\tt \small

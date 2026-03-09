@@ -43,7 +43,7 @@
 
      PRIVATE
      PUBLIC :: GSM_initialize, GSM_read_specfile, GSM_solve, GSM_solve_full,   &
-               GSM_terminate, NLPT_problem_type, GALAHAD_userdata_type,        &
+               GSM_terminate, NLPT_problem_type, USERDATA_type,        &
                GSM_import, GSM_solve_direct, GSM_solve_reverse,                &
                GSM_full_initialize, GSM_full_terminate, GSM_reset_control,     &
                GSM_information
@@ -438,7 +438,7 @@
        TYPE ( GSM_control_type ) :: gsm_control
        TYPE ( GSM_inform_type ) :: gsm_inform
        TYPE ( NLPT_problem_type ) :: nlp
-       TYPE ( GALAHAD_userdata_type ) :: userdata
+       TYPE ( USERDATA_type ) :: userdata
      END TYPE GSM_full_data_type
 
    CONTAINS
@@ -970,7 +970,7 @@
 !
 !  data is a scalar variable of type GSM_data_type used for internal data.
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
+!  userdata is a scalar variable of type USERDATA_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -1011,7 +1011,7 @@
      TYPE ( GSM_control_type ), INTENT( IN ) :: control
      TYPE ( GSM_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( GSM_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_F, eval_G
 
 !----------------------------------
@@ -1024,7 +1024,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), INTENT( OUT ) :: f
        REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_F
      END INTERFACE
 
@@ -1034,7 +1034,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_G
      END INTERFACE
 
@@ -1899,7 +1899,7 @@
 !
 !  data is a scalar variable of type GSM_data_type used for internal data.
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
+!  userdata is a scalar variable of type USERDATA_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -1940,7 +1940,7 @@
      TYPE ( GSM_control_type ), INTENT( IN ) :: control
      TYPE ( GSM_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( GSM_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_F, eval_G
 
 !----------------------------------
@@ -1953,7 +1953,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), INTENT( OUT ) :: f
        REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_F
      END INTERFACE
 
@@ -1963,7 +1963,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_G
      END INTERFACE
 
@@ -2864,7 +2864,7 @@
 !
 !  data is a scalar variable of type GSM_data_type used for internal data.
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
+!  userdata is a scalar variable of type USERDATA_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -2905,7 +2905,7 @@
      TYPE ( GSM_control_type ), INTENT( IN ) :: control
      TYPE ( GSM_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( GSM_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_F, eval_G
 
 !----------------------------------
@@ -2918,7 +2918,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), INTENT( OUT ) :: f
        REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_F
      END INTERFACE
 
@@ -2928,7 +2928,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_G
      END INTERFACE
 
@@ -4268,7 +4268,7 @@ end if
 
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( GSM_full_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_F, eval_G

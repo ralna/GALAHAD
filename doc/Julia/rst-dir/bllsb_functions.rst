@@ -209,10 +209,10 @@ Reset control parameters after import if required.
         :class: doxyrest-title-code-block
 
         function bllsb_solve_blls(T, INT, data, status, n, o,
-                                  Ao_ne, Ao_val, b, sigma, 
-                                  x_l, x_u, x, r, z, x_stat, w)
+                                  Ao_ne, Ao_val, b, sigma, x_l, x_u, 
+                                  x, z, r, x_stat, w, x_s)
 
-Solve the linearly-constrained regularized linear least-squares problem.
+Solve the bound-constrained regularized linear least-squares problem.
 
 .. rubric:: Parameters:
 
@@ -340,14 +340,14 @@ Solve the linearly-constrained regularized linear least-squares problem.
                 - is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
 
         *
-                - r
-
-                - is a one-dimensional array of size o and type T that holds the residual $r(x) = A_o x - b$. The i-th component of ``b``, i = 1, ... , o, contains $r_i(x)$.
-
-        *
                 - z
 
                 - is a one-dimensional array of size n and type T that holds the values $z$ of the dual variables. The j-th component of ``z``, j = 1, ... , n, contains $z_j$.
+
+        *
+                - r
+
+                - is a one-dimensional array of size o and type T that holds the residual $r(x) = A_o x - b$. The i-th component of ``b``, i = 1, ... , o, contains $r_i(x)$.
 
         *
                 - x_stat
@@ -357,7 +357,12 @@ Solve the linearly-constrained regularized linear least-squares problem.
         *
                 - w
 
-                - is a one-dimensional array of size o and type T that holds the values $w$ of strictly-positive observation weights. The i-th component of w, i = 0, ... , o-1, contains $w_i$. If the weights are all one, w can be set to C_NULL.
+                - is a one-dimensional array of size o and type T that holds the values $w$ of strictly-positive observation weights. The i-th component of w, i = 1, ... , o, contains $w_i$. If the weights are all one, w can be set to C_NULL.
+
+        *
+                - x_s
+
+                - is a one-dimensional array of size n and type T that holds the values $x_s$ of the shifts. The j-th component of w, j = 1, ... , n, contains ${x_s}_j$. If the shifts are all zero, x_s can be set to C_NULL.
 
 
 .. index:: pair: function; bllsb_information

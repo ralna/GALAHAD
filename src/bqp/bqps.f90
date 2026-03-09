@@ -8,7 +8,7 @@
    TYPE ( BQP_data_type ) :: data
    TYPE ( BQP_control_type ) :: control
    TYPE ( BQP_inform_type ) :: inform
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, h_ne = 4
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_stat

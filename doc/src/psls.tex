@@ -319,7 +319,7 @@ indicates the preconditioner required. Possible values are
 \itt{0}  the preconditioner is chosen automatically (forthcoming,
          and currently defaults to {\tt 1}).
 \itt{1}  $\bmA$ is replaced by the diagonal, 
-         $\bmP$ = diag( max( $\bmA$, {\tt min\_diagonal} ) ) (see below).
+         $\bmP$ = diag( max( $|$ diag $(\bmA)|$, {\tt min\_diagonal} ) ) (see below).
 \itt{2}  $\bmA$ is replaced by the band 
          $\bmP$ = band( $\bmA$ ) with semi-bandwidth {\tt semi\_bandwidth}
          (see below).

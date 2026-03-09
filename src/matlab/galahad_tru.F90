@@ -169,7 +169,7 @@
 !  arguments for TRU
 
       TYPE ( NLPT_problem_type ) :: nlp
-      TYPE ( GALAHAD_userdata_type ) :: userdata
+      TYPE ( USERDATA_type ) :: userdata
       TYPE ( TRU_data_type ), SAVE :: data
       TYPE ( TRU_control_type ), SAVE :: control
       TYPE ( TRU_inform_type ) :: inform

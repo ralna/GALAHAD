@@ -60,7 +60,7 @@ overview of functions provided
 		void **data,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` o
 	);
 
 	void :ref:`blls_reset_control<doxid-galahad__blls_8h_1a96981ac9a0e3f44b2b38362fc3ab9991>`(
@@ -78,6 +78,7 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` Ao_ne,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` Ao_val[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` b[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` regularization_weight,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
@@ -86,6 +87,7 @@ overview of functions provided
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` x_stat[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` w[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_s[]
 		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_prec
 	);
 
@@ -96,6 +98,7 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` o,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` b[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` regularization_weight,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
@@ -110,7 +113,8 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *nz_v_end,
 		const :ref:`ipc_<doxid-galahad__ipc_8h_>` nz_p[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` nz_p_end,
-		const :ref:`rpc_<doxid-galahad__rpc_8h_>` w[]
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` w[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_s[]
 	);
 
 	void :ref:`blls_information<doxid-galahad__blls_8h_1a457b8ee7c630715bcb43427f254b555f>`(void **data, struct :ref:`blls_inform_type<doxid-structblls__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
@@ -517,6 +521,7 @@ Reset control parameters after import if required.
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` Ao_ne,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` Ao_val[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` b[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` regularization_weight,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
@@ -525,6 +530,7 @@ Reset control parameters after import if required.
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` x_stat[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` w[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_s[]
 		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_prec
 	)
 
@@ -630,6 +636,11 @@ Solve the bound-constrained linear least-squares problem when the design matrix 
 		- is a one-dimensional array of size o and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the constant term $b$ in the residuals. The i-th component of b, i = 0, ... , o-1, contains $b_i$.
 
 	*
+		- regularization_weight
+
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the non-negative regularization weight $\sigma \geq 0$.
+
+	*
 		- x_l
 
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
@@ -657,7 +668,7 @@ Solve the bound-constrained linear least-squares problem when the design matrix 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the gradient $g = A^T c$. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the gradient $g = A_o^T c$. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- x_stat
@@ -668,6 +679,11 @@ Solve the bound-constrained linear least-squares problem when the design matrix 
 		- w
 
 		- is an optional one-dimensional array of size o and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.
+
+	*
+		- x_s
+
+		- is an optional one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x_s$ of the shifts in the least-squares objective function. It need not be set if the shifts are all zeros, and in this case can be NULL.
 
 	*
 		- eval_prec
@@ -695,6 +711,7 @@ Solve the bound-constrained linear least-squares problem when the design matrix 
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` o,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` b[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` regularization_weight,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
@@ -709,7 +726,8 @@ Solve the bound-constrained linear least-squares problem when the design matrix 
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *nz_v_end,
 		const :ref:`ipc_<doxid-galahad__ipc_8h_>` nz_p[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` nz_p_end,
-		const :ref:`rpc_<doxid-galahad__rpc_8h_>` w[]
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` w[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_s[]
 	)
 
 Solve the bound-constrained linear least-squares problem when the products of the Jacobian $A_o$ and its transpose with specified vectors may be computed by the calling program.
@@ -818,7 +836,7 @@ Solve the bound-constrained linear least-squares problem when the products of th
                     $A_o$ with a given sparse output vector
                     $v$ is required from the user. The nonzero
                     components of the vector $v$ will be stored as
-                    entries nz_in[nz_in_start-1:nz_in_end-1] of v and
+                    entries nz_v[nz_v_start-1:nz_v_end-1] of v and
                     the product $A_ov$ must be returned in p,
                     status_eval should be set to 0, and
                     blls_solve_reverse_a_prod re-entered with all other
@@ -834,16 +852,16 @@ Solve the bound-constrained linear least-squares problem when the products of th
                     output vector $v$ is required from the
                     user. The nonzero components of the vector $v$
                     will be stored as entries
-                    nz_in[nz_in_start-1:nz_in_end-1] of v; the remaining
+                    nz_v[nz_v_start-1:nz_v_end-1] of v; the remaining
                     components of v should be ignored. The resulting
                     **nonzeros** in the product $A_ov$ must be
                     placed in their appropriate comnponents of p, while
-                    a list of indices of the nonzeros placed in nz_out[0
-                    : nz_out_end-1] and the number of nonzeros recorded
-                    in nz_out_end. Additionally, status_eval should be
+                    a list of indices of the nonzeros placed in nz_p[0
+                    : nz_p_end-1] and the number of nonzeros recorded
+                    in nz_p_end. Additionally, status_eval should be
                     set to 0, and blls_solve_reverse_a_prod re-entered
                     with all other arguments unchanged. If the product
-                    cannot be formed, v, nz_out_end and nz_out need not
+                    cannot be formed, v, nz_p_end and nz_p need not
                     be set, but blls_solve_reverse_a_prod should be
                     re-entered with eval_status set to a nonzero value.
 		  
@@ -852,7 +870,7 @@ Solve the bound-constrained linear least-squares problem when the products of th
                     transpose of the design matrix $A_o$ with a
                     given output vector $v$ is required from the
                     user. The vector $v$ will be stored in v and
-                    components nz_in[nz_in_start-1:nz_in_end-1] of the
+                    components nz_v[nz_v_start-1:nz_v_end-1] of the
                     product $A_o^Tv$ must be returned in the
                     relevant components of p (the remaining components
                     should not be set), status_eval should be set to 0,
@@ -897,6 +915,11 @@ Solve the bound-constrained linear least-squares problem when the products of th
 		- is a one-dimensional array of size o and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the constant term $b$ in the residuals. The i-th component of b, i = 0, ... , o-1, contains $b_i$.
 
 	*
+		- regularization_weight
+
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the non-negative regularization weight $\sigma \geq 0$.
+
+	*
 		- x_l
 
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
@@ -912,19 +935,19 @@ Solve the bound-constrained linear least-squares problem when the products of th
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
+		- z
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+
+	*
 		- r
 
-		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the residuals $r = A x - b$. The i-th component of r, i = 0, ... , o-1, contains $r_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the residuals $r = A_o x - b$. The i-th component of r, i = 0, ... , o-1, contains $r_i$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the gradient $g = A^T W r$. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
-
-	*
-		- z
-
-		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the gradient $g = A_o^T W r$. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- x_stat
@@ -970,6 +993,11 @@ Solve the bound-constrained linear least-squares problem when the products of th
 		- w
 
 		- is an optional one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.
+
+	*
+		- x_s
+
+		- is an optional one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x_s$ of the shifts in the least-squares objective function. It need not be set if the shifts are all zeros, and in this case can be NULL.
 
 .. index:: pair: function; blls_information
 .. _doxid-galahad__blls_8h_1a457b8ee7c630715bcb43427f254b555f:

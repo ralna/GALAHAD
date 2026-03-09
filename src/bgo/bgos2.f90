@@ -6,7 +6,7 @@
    TYPE ( BGO_control_type ) :: control
    TYPE ( BGO_inform_type ) :: inform
    TYPE ( BGO_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, h_ne = 5
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp

@@ -22,7 +22,7 @@ DEPENDENCIES = make_qpd_deps make_qpd make_checkpoint make_rpd make_cqp
 
 #  other packages that depend on package
 
-DEPENDS = bllsb
+DEPENDS = bllsb sllsb
 
 #  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)

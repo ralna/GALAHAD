@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-10-04 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-01-22 AT 11:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CLLS_interface_test
    USE GALAHAD_KINDS_precision
@@ -13,7 +13,7 @@
    INTEGER ( KIND = ip_ ) :: data_storage_type, status
    REAL ( KIND = rp_ ) :: regularization_weight
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B, R, W
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B, R, W, X_s
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val
@@ -30,7 +30,7 @@
 
    n = 3 ; o = 4 ; m = 2 ; ao_ne = 7 ; a_ne = 4
    ao_dense_ne = o * n ; a_dense_ne = m * n
-   ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), X_stat( n ) )
+   ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), X_stat( n ), X_s( n ) )
    ALLOCATE( C( m ), Y( m ), C_l( m ), C_u( m ), C_stat( m ) )
    ALLOCATE( B( o ), R( o ), W( o ) )
    B = (/ 2.0_rp_, 2.0_rp_, 3.0_rp_, 1.0_rp_ /)  ! observations
@@ -40,7 +40,8 @@
    X_u = (/ 1.0_rp_, infinity, 2.0_rp_ /)        ! variable upper bound
    X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_       ! start from zero
    W = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 2.0_rp_ /)  ! weights of one and two
-   regularization_weight = 0.0_rp_               ! no regularization
+   X_s = (/ 0.5_rp_, 0.5_rp_, 0.5_rp_ /)         ! shifts of half
+   regularization_weight = 1.0_rp_               ! unit regularization
 
 ! vector problem data complete
 
@@ -129,10 +130,10 @@
                          'dense_by_columns', A_dense_ne, A_row, A_col, A_ptr )
      END SELECT
      IF ( status == 0 ) THEN
-       CALL CLLS_solve_clls( data, status, Ao_val, B, A_val, C_l, C_u,         &
-                             X_l, X_u, X, R, C, Y, Z, X_stat, C_stat,          &
-                             regularization_weight = regularization_weight,    &
-                             W = W )
+       CALL CLLS_solve_given_a( data, status, Ao_val, B,                       &
+                                regularization_weight, A_val, C_l, C_u,        &
+                                X_l, X_u, X, Y, Z, R, C, X_stat, C_stat,       &
+                                W = W, X_s = X_s )
      END IF
      DEALLOCATE( Ao_val, Ao_row, Ao_col, Ao_ptr )
      DEALLOCATE( A_val, A_row, A_col, A_ptr )
@@ -145,7 +146,7 @@
      END IF
      CALL CLLS_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( X, C, B, R, Y, Z, W, X_l, X_u, C_l, C_u, X_stat, C_stat )
+   DEALLOCATE( X, C, B, R, Y, Z, W, X_l, X_u, X_s, C_l, C_u, X_stat, C_stat )
    WRITE( 6, "( /, ' tests completed' )" )
 
    END PROGRAM GALAHAD_CLLS_interface_test

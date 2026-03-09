@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD SLLS package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2022-05-26
+#  This version: 2026-02-16
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -18,11 +18,11 @@ PACKAGE = SLLS
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_qpd_deps make_qpd make_convert make_userdata
+DEPENDENCIES = make_qpd_deps make_qpd make_convert make_userdata make_reverse
 
 #  other packages that depend on package
 
-DEPENDS =
+DEPENDS = snls
 
 #  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)
@@ -34,6 +34,15 @@ CDEPENDENCIES = make_ciface_common make_sbls_deps make_ciface_sbls \
 #  other C interface packages that depend on current interface package
 
 CDEPENDS =
+
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES = make_pyiface_sbls make_pyiface_gltr make_pyiface_fdc
+
+#  other python interface packages that depend on current interface package
+
+PYDEPENDS = snls
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

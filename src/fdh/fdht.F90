@@ -8,14 +8,14 @@
    TYPE ( FDH_control_type ) :: control
    TYPE ( FDH_inform_type ) :: inform
    TYPE ( FDH_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTERFACE
      SUBROUTINE GRAD( status, X, userdata, G )
      USE GALAHAD_USERDATA_precision
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      END SUBROUTINE GRAD
    END INTERFACE
 
@@ -248,7 +248,7 @@
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    INTEGER ( KIND = ip_ ) :: i, ic, ir, n, nz, ldiag, lrow
    REAL ( KIND = rp_ ) :: hi
    n = userdata%integer( 1 ) ; nz = userdata%integer( 2 )

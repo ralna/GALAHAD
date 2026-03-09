@@ -52,6 +52,11 @@ make_bllsb:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bllsb.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
 
+make_bnls:
+	( cd $(GALAHAD)/src/bnls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bnls.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bnls )
+
 make_bqp:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqp.o \
@@ -512,6 +517,11 @@ make_rb:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) rb.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rb )
 
+make_reverse:
+	( cd $(GALAHAD)/src/reverse ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) reverse.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/reverse )
+
 make_roots:
 	( cd $(GALAHAD)/src/roots ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) roots.o \
@@ -539,6 +549,16 @@ make_slls:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+
+make_sllsb:
+	( cd $(GALAHAD)/src/sllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sllsb.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sllsb )
+
+make_snls:
+	( cd $(GALAHAD)/src/snls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) snls.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/snls )
 
 make_ssls_deps: make_sls_deps make_sls make_lmt make_qpt
 
@@ -849,6 +869,11 @@ make_all_bllsb:
 	( cd $(GALAHAD)/src/bllsb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bllsb_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+
+make_all_bnls:
+	( cd $(GALAHAD)/src/bnls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bnls_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bnls )
 
 make_all_bqp:
 	( cd $(GALAHAD)/src/bqp ; \
@@ -1231,6 +1256,11 @@ make_all_rb:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) rb_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rb )
 
+make_all_reverse:
+	( cd $(GALAHAD)/src/reverse ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) reverse_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/reverse )
+
 make_all_roots:
 	( cd $(GALAHAD)/src/roots ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) roots_silent \
@@ -1255,6 +1285,16 @@ make_all_slls:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+
+make_all_sllsb:
+	( cd $(GALAHAD)/src/sllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sllsb_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sllsb )
+
+make_all_snls:
+	( cd $(GALAHAD)/src/snls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) snls_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/snls )
 
 make_all_ssls:
 	( cd $(GALAHAD)/src/ssls ; \
@@ -1467,6 +1507,11 @@ make_ciface_bllsb:
 	( cd $(GALAHAD)/src/bllsb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bllsb_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+
+make_ciface_bnls:
+	( cd $(GALAHAD)/src/bnls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bnls_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bnls )
 
 make_ciface_bqp:
 	( cd $(GALAHAD)/src/bqp ; \
@@ -1962,6 +2007,16 @@ make_ciface_slls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
 
+make_ciface_sllsb:
+	( cd $(GALAHAD)/src/sllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sllsb_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sllsb )
+
+make_ciface_snls:
+	( cd $(GALAHAD)/src/snls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) snls_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/snls )
+
 make_ciface_smt:
 	( cd $(GALAHAD)/src/smt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) smt_ciface.o \
@@ -2175,6 +2230,11 @@ make_pyiface_bllsb:
 	( cd $(GALAHAD)/src/bllsb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bllsb_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+
+make_pyiface_bnls:
+	( cd $(GALAHAD)/src/bnls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bnls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bnls )
 
 make_pyiface_bqp:
 	( cd $(GALAHAD)/src/bqp ; \
@@ -2658,6 +2718,16 @@ make_pyiface_slls:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+
+make_pyiface_sllsb:
+	( cd $(GALAHAD)/src/sllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sllsb_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sllsb )
+
+make_pyiface_snls:
+	( cd $(GALAHAD)/src/snls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) snls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/snls )
 
 make_pyiface_smt:
 	( cd $(GALAHAD)/src/smt ; \

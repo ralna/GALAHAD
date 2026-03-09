@@ -1,7 +1,7 @@
 //* \file galahad_bllsb.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-02-08 AT 13:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BLLSB C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -22,13 +22,13 @@
   \subsection bllsb_purpose Purpose
 
   This package uses a primal-dual interior-point crossover method
-  to solve the <b>constrained linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; f(x) = \frac{1}{2} \| A_o x - b \|_W^2
-    + \frac{1}{2} \sigma \| x \|^2 \f]
+  to solve the <b>bound-constrained linear least-squares problem</b>
+  \f[\mbox{minimize}\;\; r(x) = q(x) + \frac{1}{2} \sigma \|x-x_s\|^2  \;\;\mbox{where}\;\; q(x) = \frac{1}{2} \| A_o x - b\|_W^2 \f],
 \manonly
   \n
-  minimize f(x) := 1/2 ||Ax-b||_W^2 + 1/2 sigma ||x||^2
+  minimize r(x) = q(x) + sigma ||x-x_s||^2, where q(x) := 1/2 || A_o x - b ||_W^2,
   \n
+\endmanonly
   subject to the simple bound constraints
   \f[x_j^l  \leq  x_j \leq x_j^u, \;\;\; j = 1, \ldots , n,\f]
 \manonly
@@ -39,7 +39,8 @@
   where the norm \f$\|r\|_W = \sqrt{ \sum_{i=1}^o w_i r_i^2}\f$,
   the \f$o\f$ by \f$n\f$ design matrix \f$A_o\f$,
   the vectors \f$b\f$, \f$x^l\f$,
-  \f$x^u\f$, the diagonal weights $w_i$ and the scalar \f$\sigma\f$ are given.
+  \f$x^u\f$, the diagonal weights $w_i$, shifts  ${x_s)_i$,
+  and the scalar \f$\sigma\f$ are given.
   Any of the constraint bounds \f$x_j^l\f$ and \f$x_j^u\f$ may be infinite.
   Full advantage is taken of any zero coefficients in the matrix \f$A_o\f$.
 
@@ -65,10 +66,10 @@
   \n
 \endmanonly
   the dual optimality conditions
-  \f[\mbox{(2a) $\hspace{3mm} A_o^T W ( A_o x-b ) + \sigma x = z\f]
+  \f[\mbox{(2a) $\hspace{3mm} A_o^T W ( A_o x-b ) + \sigma ( x -x_s) = z\f]
 \manonly
   \n
-  (2a) A_o^T W ( A_o x - b ) + \sigma x = z
+  (2a) A_o^T W ( A_o x - b ) + \sigma ( x - x_s ) = z
   \n
 \endmanonly
   where
@@ -687,9 +688,14 @@ struct bllsb_inform_type {
     ipc_ threads;
 
     /// \brief
-    /// the value of the objective function at the best estimate of the solution
-    /// determined by BLLSB_solve
+    /// the value of the regularized objective function r(x) at the best 
+    /// estimate of the solution determined by BLLSB_solve
     rpc_ obj;
+
+    /// \brief
+    /// the value of the objective function q(x) at the best estimate of 
+    /// the solution determined by BLLSB_solve
+    rpc_ ls_obj;
 
     /// \brief
     /// the value of the primal infeasibility
@@ -893,23 +899,24 @@ void bllsb_reset_control( struct bllsb_control_type *control,
   \li  0. The import was succesful.
  */
 
-//  *-*-*-*-*-*-*-*-*-   B L L S B _ S O L V E _ B L L S   -*-*-*-*-*-*-*-*-*-
+//  -*-*-*-*-*-*-*-*-   B L L S B _ S O L V E _ G I V E N _ A   -*-*-*-*-*-*-*-
 
-void bllsb_solve_blls( void **data,
-                       ipc_ *status,
-                       ipc_ n,
-                       ipc_ o,
-                       ipc_ Ao_ne,
-                       const rpc_ Ao_val[],
-                       const rpc_ b[],
-                       rpc_ regularization_weight,
-                       const rpc_ x_l[],
-                       const rpc_ x_u[],
-                       rpc_ x[],
-                       rpc_ r[],
-                       rpc_ z[],
-                       ipc_ x_stat[],
-                       rpc_ w[] );
+void bllsb_solve_given_a( void **data,
+                          ipc_ *status,
+                          ipc_ n,
+                          ipc_ o,
+                          ipc_ Ao_ne,
+                          const rpc_ Ao_val[],
+                          const rpc_ b[],
+                          rpc_ regularization_weight,
+                          const rpc_ x_l[],
+                          const rpc_ x_u[],
+                          rpc_ x[],
+                          rpc_ r[],
+                          rpc_ z[],
+                          ipc_ x_stat[],
+                          const rpc_ w[],
+                          const rpc_ x_s[] );
 
 /*!<
  Solve the constrained linear-least squares problem when the design matrix
@@ -959,9 +966,6 @@ void bllsb_solve_blls( void **data,
  @param[in] o is a scalar variable of type ipc_, that holds the number of
     residuals.
 
- @param[in] m is a scalar variable of type ipc_, that holds the number of
-    general linear constraints.
-
   @param[in] ao_ne is a scalar variable of type ipc_, that holds the number of
     entries in the objective design matrix \f$A_o\f$.
 
@@ -1005,6 +1009,10 @@ void bllsb_solve_blls( void **data,
  @param[in] w is a one-dimensional array of size o and type rpc_, that
    holds the vector of strictly-positive observation weights \f$w\f$.
    If the weights are all one, w can be set to NULL.
+
+ @param[in] x_s is a one-dimensional array of size n and type rpc_, that
+   holds the vector of shifts \f$x_s\f$.
+   If the shifts are all zero, x_s can be set to NULL.
 
 */
 

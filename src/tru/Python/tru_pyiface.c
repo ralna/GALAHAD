@@ -1,7 +1,7 @@
 //* \file tru_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:30 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_TRU PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *

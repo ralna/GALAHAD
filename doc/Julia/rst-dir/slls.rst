@@ -65,10 +65,10 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to solve a bound-constrained 
+This is an example of how to use the package to solve a simplex-constrained 
 linear least-squares problem; the code is available in 
 $GALAHAD/src/slls/Julia/test_slls.jl .
-A variety of supported Hessian and constraint matrix storage formats are shown.
+A variety of supported  design matrix storage formats are shown.
 
 .. include :: ../../../src/slls/Julia/test_slls.jl
    :code: julia

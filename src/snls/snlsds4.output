@@ -1,0 +1,14 @@
+  Problem:  (n = 5, o = 4, m = 2)
+  SNLS stopping tolerances (c,J'c/c) = 1.00E-06 1.00E-06
+
+        (a=accept r=reject)
+    It         f       ||pg||      ratio   weight   step  it slls    time
+     0    3.9686E+00 2.9881E-01
+     1 a  7.8455E+00 2.9881E-01  1.0E+00 1.0E+02 1.7E-02        5    0.00
+     2 a  7.5469E+00 2.9916E-01  1.1E+00 1.0E+01 1.6E-01        3    0.00
+     3 a  5.5003E+00 5.5680E-03  1.4E+00 1.0E+00 9.5E-01        5    0.00
+     4 a  5.5000E+00 5.0499E-04  1.0E+00 1.0E-01 2.2E-02        1    0.00
+     5 a  5.5000E+00 4.9987E-06  1.0E+00 1.0E-02 2.2E-03        1    0.00
+     6 a  5.5000E+00 4.9937E-09  1.0E+00 1.0E-03 2.2E-05        1    0.00
+ SNLS: 6 iterations - optimal objective value =  5.5000E+00
+ Optimal solution =   1.0000E+00  1.0000E+00  1.0000E+00  0.0000E+00  0.0000E+00

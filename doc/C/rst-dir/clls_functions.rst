@@ -77,13 +77,14 @@ overview of functions provided
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` r[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` r[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` x_stat[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` c_stat[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` w[]
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` w[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_s[]
 	);
 
 	void :ref:`clls_information<doxid-galahad__clls_8h_1adfb7589696e4e07fdb65f02bc42c5daf>`(void **data, struct :ref:`clls_inform_type<doxid-structclls__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
@@ -457,13 +458,14 @@ Reset control parameters after import if required.
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` r[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` r[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` x_stat[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` c_stat[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` w[]
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` w[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_s[]
 	)
 
 Solve the linearly-constrained regularized linear least-squares problem.
@@ -627,6 +629,16 @@ Solve the linearly-constrained regularized linear least-squares problem.
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
+		- y
+
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $y$ of the Lagrange multipliers for the general linear constraints. The i-th component of y, i = 0, ... , m-1, contains $y_i$.
+
+	*
+		- z
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+
+	*
 		- r
 
 		- is a one-dimensional array of size o and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the residuals $r(x)=A_0x-b$. The i-th component of r, i = 0, ... , o-1, contains $r_i$.
@@ -635,16 +647,6 @@ Solve the linearly-constrained regularized linear least-squares problem.
 		- c
 
 		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the residual $c(x)$. The i-th component of c, j = 0, ... , n-1, contains $c_j(x)$.
-
-	*
-		- y
-
-		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $y$ of the Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains $y_j$.
-
-	*
-		- z
-
-		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- x_stat
@@ -660,6 +662,11 @@ Solve the linearly-constrained regularized linear least-squares problem.
 		- w
 
 		- is a one-dimensional array of size o and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $w$ of strictly-positive observation weights. The i-th component of w, i = 0, ... , o-1, contains $w_i$. If the weights are all one, w can be set to NULL.
+
+	*
+		- x_s
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x_s$ of shifts. The j-th component of x_s, j = 0, ... , n-1, contains ${x_s}_j$. If the shifts are all zero, x_s can be set to NULL.
 
 .. index:: pair: function; clls_information
 .. _doxid-galahad__clls_8h_1adfb7589696e4e07fdb65f02bc42c5daf:

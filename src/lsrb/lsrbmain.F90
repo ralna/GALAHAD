@@ -64,7 +64,7 @@
     TYPE ( mi35_control ) :: control_mi35
     TYPE ( mi35_info ) :: info_mi35
     TYPE ( QPT_problem_type ) :: p
-    TYPE ( GALAHAD_userdata_type ) :: userdata
+    TYPE ( USERDATA_type ) :: userdata
     TYPE ( BLLS_data_type ) :: BLLS_data
     TYPE ( BLLS_control_type ) :: BLLS_control
     TYPE ( BLLS_inform_type ) :: BLLS_inform

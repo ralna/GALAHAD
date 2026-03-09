@@ -22,7 +22,7 @@ DEPENDENCIES = make_sbls_deps
 
 #  other packages that depend on package
 
-DEPENDS = bqpb cqp dqp eqp lpb lsqp qpb wcp
+DEPENDS = bqpb cqp cro dqp eqp lpb lsqp qpb wcp
 
 #  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)

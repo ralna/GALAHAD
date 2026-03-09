@@ -6,7 +6,7 @@
    TYPE ( QPF_control_type ) :: control
    TYPE ( QPF_inform_type ) :: inform
    TYPE ( QPF_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    EXTERNAL :: FC, GJ, HL
    INTEGER :: s
    INTEGER, PARAMETER :: n = 2, m = 5, j_ne = 10, h_ne = 2
@@ -67,7 +67,7 @@
    REAL ( kind = rp ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( kind = rp ), OPTIONAL, INTENT( OUT ) :: F
    REAL ( kind = rp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = rp ) :: r
    r = userdata%real( 1 )
    f = X( 1 ) ** 2 + X( 2 ) ** 2
@@ -86,7 +86,7 @@
    REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G
    REAL ( KIND = rp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: J_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = rp ) :: r
    r = userdata%real( 1 )
    G( 1 ) = 2.0_rp * X( 1 )
@@ -109,7 +109,7 @@
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X, Y
    REAL ( KIND = rp ), DIMENSION( : ), INTENT( OUT ) ::H_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
    REAL ( KIND = rp ) :: r
    r = userdata%real( 1 )

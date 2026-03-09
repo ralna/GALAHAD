@@ -1085,7 +1085,7 @@
  !-----------------------------------------------------------------------------
 
  TYPE ( NLPT_problem_type ),  INTENT( INOUT ) :: nlp
- TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+ TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
  TYPE ( S2QP_control_type ),  INTENT( INOUT ) :: control
  TYPE ( S2QP_inform_type ),   INTENT( INOUT ) :: inform
  TYPE ( S2QP_data_type ),     INTENT( INOUT ) :: data
@@ -1097,21 +1097,21 @@
       REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
       REAL ( kind = rp_ ), OPTIONAL, INTENT( OUT ) :: F
       REAL ( kind = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_FC
     SUBROUTINE eval_GJ(status, X, userdata, G, J_val)
       USE GALAHAD_USERDATA_precision
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
       REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G, J_val
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_GJ
     SUBROUTINE eval_HL(status, X, Y, userdata, Hval )
       USE GALAHAD_USERDATA_precision
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) ::Hval
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_HL
  END INTERFACE
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-12-27 AT 13:10 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2025-01-25 AT 10:30 GMT.
    PROGRAM GALAHAD_BLLSB_EXAMPLE3
    USE GALAHAD_BLLSB_double         ! double precision version
    IMPLICIT NONE
@@ -10,9 +10,8 @@
    TYPE ( BLLSB_inform_type ) :: inform
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, o = 4, ao_ne = 7
-   REAL ( KIND = wp ), DIMENSION( o ) :: W
 ! start problem data
-   ALLOCATE( p%B( o ), p%R( o ) )
+   ALLOCATE( p%B( o ), p%R( o ), p%W( o ) )
    ALLOCATE( p%X_l( n ), p%X_u( n ), p%X( n ), p%Z( n ), p%X_status( n ) )
    p%new_problem_structure = .TRUE.           ! new structure
    p%n = n ; p%o = o                          ! dimensions
@@ -20,7 +19,7 @@
    p%X_l = (/ - 1.0_wp, - infinity, - infinity /) ! variable lower bound
    p%X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
    p%X = 0.0_wp ; p%Z = 0.0_wp                ! start from zero
-   W = (/ 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp /)   ! weights
+   p%W = (/ 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp /) ! weights
 !  dense storage format
    CALL SMT_put( p%Ao%type, 'DENSE', s ) ! Specify dense
    ALLOCATE( p%Ao%val( o * n ) )
@@ -29,9 +28,9 @@
 ! problem data complete
    CALL BLLSB_initialize( data, control, inform ) ! Initialize control params
 !  control%print_level = 1
-   control%infinity = infinity                        ! Set infinity
-   CALL BLLSB_solve( p, data, control, inform, W = W ) ! Solve
-   IF ( inform%status == 0 ) THEN                     !  Successful return
+   control%infinity = infinity                  ! Set infinity
+   CALL BLLSB_solve( p, data, control, inform ) ! Solve
+   IF ( inform%status == 0 ) THEN               !  Successful return
      WRITE( 6, "( ' BLLSB: ', I0, ' iterations  ', /,                          &
     &     ' Optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &

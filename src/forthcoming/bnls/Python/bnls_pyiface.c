@@ -1,7 +1,7 @@
 //* \file bnls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.1 - 2024-07-14 AT 14:10 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BNLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -219,7 +219,7 @@ static int eval_hprods(int n, int m, int pne, const double x[], const double v[]
 
 /* Update the subproblem control options: use C defaults but update any
    passed via Python*/
-static bool bnls_update_subproblem_control(
+bool bnls_update_subproblem_control(
                                struct bnls_subproblem_control_type *control,
                                PyObject *py_options){
 
@@ -543,7 +543,7 @@ static bool bnls_update_subproblem_control(
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool bnls_update_control(struct bnls_control_type *control,
+bool bnls_update_control(struct bnls_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -980,7 +980,8 @@ static PyObject* bnls_make_subproblem_options_dict(const struct
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-static PyObject* bnls_make_options_dict(const struct bnls_control_type *control){
+// NB not static as it is used for nested options within other Python interfaces
+PyObject* bnls_make_options_dict(const struct bnls_control_type *control){
     PyObject *py_options = PyDict_New();
 
     PyDict_SetItemString(py_options, "error",
@@ -1183,7 +1184,8 @@ static PyObject* bnls_make_subproblem_inform_dict(
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* bnls_make_inform_dict(const struct bnls_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* bnls_make_inform_dict(const struct bnls_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",

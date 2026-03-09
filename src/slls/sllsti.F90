@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-04-05 AT 08:40 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-02-14 AT 15:55 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SLLS_interface_test
    USE GALAHAD_KINDS_precision
@@ -10,30 +10,28 @@
    TYPE ( SLLS_inform_type ) :: inform
    TYPE ( SLLS_full_data_type ) :: data
    INTEGER ( KIND = ip_ ) :: n, o, Ao_ne, Ao_dense_ne, eval_status
-   INTEGER ( KIND = ip_ ) :: i, j, l, nm, data_storage_type, status
+   INTEGER ( KIND = ip_ ) :: i, j, l, m, nm, data_storage_type, status
+   REAL ( KIND = rp_ ) :: sigma  = 1.0_rp_
    INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null_
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, B, C, G
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Y, Z, B, R, G, W, X_s
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_row, Ao_col, Ao_ptr
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_val, Ao_dense
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_by_col_row
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_by_col_ptr
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_by_col_val
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_by_col_dense
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
-   INTEGER ( KIND = ip_ ) :: nz_in_start, nz_in_end, nz_out_end
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: nz_in, nz_out
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat, COHORT
+   INTEGER ( KIND = ip_ ) :: lvl, lvu, lp, index
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IV, IP
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, P
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MASK
 
    CHARACTER ( len = 3 ) :: st
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
 
-! set up problem data for min || A x - b || with
-!   A = (  I  )  and b = (   e   )
-!       ( e^T )          ( n + 1 )
+! set up problem data for min || A_o x - b || with e^T x = 1, x >= 0
 
-   n = 10 ; o = n + 1 ; Ao_ne = 2 * n ; Ao_dense_ne = o * n
-   ALLOCATE( X( n ), Z( n ), G( n ), B( o ), C( o ), X_stat( n ) )
+   n = 10 ; o = n + 1 ; Ao_ne = 2 * n ; Ao_dense_ne = o * n ; m = 1
+   ALLOCATE( X( n ), Y( m ), Z( n ), G( n ), B( o ), R( o ), X_stat( n ) )
    B( : o ) = 1.0_rp_ ! observations
    DO i = 1, n
      B( i ) = REAL( i, KIND = rp_ )
@@ -107,70 +105,69 @@
    DO data_storage_type = 1, 5
      CALL SLLS_initialize( data, control, inform )
      CALL WHICH_sls( control )
-     X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
+     X = 0.0_rp_ ! start from zero
+     inform%status = 1
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = ' CO'
-       CALL SLLS_import( control, data, status, n, o, 'coordinate',            &
+       CALL SLLS_import( control, data, status, n, o, m, 'coordinate',         &
                          Ao_ne, Ao_row, Ao_col, null_ )
        CALL SLLS_solve_given_a( data, userdata, status, Ao_val, B,             &
-                                X, Z, C, G, X_stat )
+                                sigma, X, Y, Z, R, G, X_stat )
 !      WRITE( 6, "( ' x = ', 5ES12.4, /, 5X, 5ES12.4 )" ) X
      CASE ( 2 ) ! sparse by rows
         st = ' SR'
-        CALL SLLS_import( control, data, status, n, o, 'sparse_by_rows',       &
+        CALL SLLS_import( control, data, status, n, o, m, 'sparse_by_rows',    &
                           Ao_ne, null_, Ao_col, Ao_ptr )
        CALL SLLS_solve_given_a( data, userdata, status, Ao_val, B,             &
-                                X, Z, C, G, X_stat )
+                                sigma, X, Y, Z, R, G, X_stat )
      CASE ( 3 ) ! dense_by_rows
        st = ' DR'
-       CALL SLLS_import( control, data, status, n, o, 'dense_by_rows',         &
+       CALL SLLS_import( control, data, status, n, o, m, 'dense_by_rows',      &
                                   Ao_ne, null_, null_, null_ )
        CALL SLLS_solve_given_a( data, userdata, status, Ao_dense, B,           &
-                                X, Z, C, G, X_stat )
+                                sigma, X, Y, Z, R, G, X_stat )
      CASE ( 4 ) ! sparse by cols
        st = ' SC'
-       CALL SLLS_import( control, data, status, n, o, 'sparse_by_columns',     &
+       CALL SLLS_import( control, data, status, n, o, m, 'sparse_by_columns',  &
                                   Ao_ne, Ao_by_col_row, null_, Ao_by_col_ptr )
        CALL SLLS_solve_given_a( data, userdata, status, Ao_by_col_val, B,      &
-                                X, Z, C, G, X_stat )
+                                sigma, X, Y, Z, R, G, X_stat )
      CASE ( 5 ) ! dense_by_cols
        st = ' DC'
-       CALL SLLS_import( control, data, status, n, o, 'dense_by_columns',      &
+       CALL SLLS_import( control, data, status, n, o, m, 'dense_by_columns',   &
                          Ao_ne, null_, null_, null_ )
        CALL SLLS_solve_given_a( data, userdata, status, Ao_by_col_dense, B,    &
-                                X, Z, C, G, X_stat )
+                                sigma, X, Y, Z, R, G, X_stat )
      END SELECT
      CALL SLLS_information( data, inform, status )
      IF ( inform%status == 0 ) THEN
-       WRITE( 6, "( A3, ':', I6, ' iterations. Optimal objective value = ',    &
+       WRITE( 6, "( A3, ':', I6, ' iteration(s). Optimal objective value = ',  &
      &    F6.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
      ELSE
        WRITE( 6, "( A3, ': SLLS_solve exit status = ', I0 ) " ) st,inform%status
      END IF
      CALL SLLS_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( Ao_val, Ao_row, Ao_col, Ao_ptr, Ao_dense )
+!  DEALLOCATE( Ao_val, Ao_row, Ao_col, Ao_ptr, Ao_dense )
    DEALLOCATE( Ao_by_col_val, Ao_by_col_row, Ao_by_col_ptr, Ao_by_col_dense )
 
    WRITE( 6, "( /, ' test of reverse-communication interface', / )" )
 
    nm = MAX( n, o )
-   ALLOCATE( nz_in( nm ), nz_out( o ), V( nm ), P( nm ), MASK( o ) )
+   ALLOCATE( IV( nm ), IP( o ), V( nm ), P( nm ) )
    CALL SLLS_initialize( data, control, inform )
    CALL WHICH_sls( control )
-   X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
-   MASK = 0
+   X = 0.0_rp_ ! start from zero
    st = ' RC'
 !  control%print_level = 1
 !  control%maxit = 5
-   CALL SLLS_import_without_a( control, data, status, n, o )
+   CALL SLLS_import_without_a( control, data, status, n, o, m )
    status = 1
    DO
-     CALL SLLS_solve_reverse_a_prod( data, status, eval_status, B,             &
-                                     X, Z, C, G, X_stat, V, P,                 &
-                                     nz_in, nz_in_start, nz_in_end,            &
-                                     nz_out, nz_out_end )
+     CALL SLLS_solve_reverse_a_prod( data, status, eval_status, B, sigma,      &
+                                     X, Y, Z, R, G, X_stat, V, P,              &
+                                     IV, lvl, lvu, index, IP, lp )
 !    write(6, "( ' status = ', I0 )" ) status
      SELECT CASE( status )
      CASE ( : 0 )
@@ -179,38 +176,28 @@
        P( : n ) = V( : n )
        P( o ) = SUM( V( : n ) )
        eval_status = 0
-     CASE ( 3 ) ! A^T v
+     CASE ( 3 ) ! Ao^T v
        P( : n ) = V( : n ) + V( o )
        eval_status = 0
-     CASE ( 4 ) ! A v using sparse v
+     CASE ( 4 ) ! sparse column of Ao
+       lp = 1
+       IP( lp ) = index
+       P( lp ) = 1.0_rp_
+       lp = lp + 1
+       IP( lp ) = o
+       P( lp ) = 1.0_rp_
+       eval_status = 0
+     CASE ( 5 ) ! Ao v using sparse v
        P( : o ) = 0.0_rp_
-       DO l = nz_in_start, nz_in_end
-         i = nz_in( l )
+       DO l = lvl, lvu
+         i = IV( l )
          P( i ) = V( i )
          P( o ) = P( o ) + V( i )
        END DO
        eval_status = 0
-     CASE ( 5 ) ! sparse A v using sparse v
-       nz_out_end = 0
-       DO l = nz_in_start, nz_in_end
-         i = nz_in( l )
-         nz_out_end = nz_out_end + 1
-         nz_out( nz_out_end ) = i
-         P( i ) = V( i )
-         IF ( MASK( i ) == 0 ) THEN
-           MASK( i ) = 1
-           nz_out_end = nz_out_end + 1
-           nz_out( nz_out_end ) = o
-           P( o ) = V( i )
-         ELSE
-           P( o ) = P( o ) + V( i )
-         END IF
-       END DO
-       MASK( nz_out( : nz_out_end ) ) = 0
-       eval_status = 0
-     CASE ( 6 ) ! sparse A^T v
-       DO l = nz_in_start, nz_in_end
-         i = nz_in( l )
+     CASE ( 6 ) ! sparse Ao^T v
+       DO l = lvl, lvu
+         i = IV( l )
          P( i ) = V( i ) + V( o )
        END DO
        eval_status = 0
@@ -218,18 +205,49 @@
    END DO
    CALL SLLS_information( data, inform, status )
    IF ( inform%status == 0 ) THEN
-     WRITE( 6, "( A3, ':', I6, ' iterations. Optimal objective value = ',    &
+     WRITE( 6, "( A3, ':', I6, ' iteration(s). Optimal objective value = ',    &
    &    F6.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
    ELSE
      WRITE( 6, "( A3, ': SLLS_solve exit status = ', I0 ) " ) st, inform%status
    END IF
    CALL SLLS_terminate( data, control, inform )  ! delete internal workspace
-   DEALLOCATE( B, X, Z, C, G, X_stat, NZ_in, NZ_out, V, P, MASK )
+   DEALLOCATE( Y )
+
+   WRITE( 6, "( /, ' test of explicit cohort + weights + shifts interface', /)")
+
+   m = 1
+   ALLOCATE( Y( m ), COHORT( n ), W( o ), X_s( n ) )
+   COHORT = 1 ! all variables in a single cohort
+   W = 1.0_rp_ ! weight of one
+   X_s = 0.0_rp_ ! shifts of zero
+   CALL SLLS_initialize( data, control, inform )
+   CALL WHICH_sls( control )
+   X = 0.0_rp_ ! start from zero
+   st = ' CO'
+   CALL SLLS_import( control, data, status, n, o, m, 'coordinate',             &
+                     Ao_ne, Ao_row, Ao_col, null_, COHORT = COHORT )
+   CALL SLLS_solve_given_a( data, userdata, status, Ao_val, B, sigma,          &
+                            X, Y, Z, R, G, X_stat, W = W, X_s = X_s )
+   CALL SLLS_information( data, inform, status )
+   IF ( inform%status == 0 ) THEN
+     WRITE( 6, "( A3, ':', I6, ' iteration(s). Optimal objective value = ',    &
+   &    F6.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
+   ELSE
+     WRITE( 6, "( A3, ': SLLS_solve exit status = ', I0 ) " ) st, inform%status
+   END IF
+   CALL SLLS_terminate( data, control, inform )  ! delete internal workspace
+!write(6,"( ' x: ', 5ES10.2, /, ( 4X, 5ES10.2 ) )" ) X
+!write(6,"( ' y: ', 5ES10.2 )" ) Y
+!write(6,"( ' z: ', 5ES10.2, /, ( 4X, 5ES10.2 ) )" ) Z
+!write(6,"( ' g: ', 5ES10.2, /, ( 4X, 5ES10.2 ) )" ) G
+   DEALLOCATE( Ao_val, Ao_row, Ao_col, Ao_ptr, Ao_dense )
+   DEALLOCATE( B, X, Y, Z, R, G, X_stat, W, X_s, IV, IP, V, P )
+   WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS
      SUBROUTINE WHICH_sls( control )
      TYPE ( SLLS_control_type ) :: control
-#include "galahad_sls_defaults.h"
+#include "galahad_sls_defaults_ls.h"
      control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%definite_linear_solver = definite_linear_solver
      END SUBROUTINE WHICH_sls

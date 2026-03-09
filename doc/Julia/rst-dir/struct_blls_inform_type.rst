@@ -17,6 +17,7 @@ blls_inform_type structure
           iter::INT
           cg_iter::INT
           obj::T
+          ls_obj::T
           norm_pg::T
           bad_alloc::NTuple{81,Cchar}
           time::blls_time_type{T}
@@ -91,7 +92,17 @@ number of CG iterations required
 
 	T obj
 
-current value of the objective function, r(x).
+current value of the objective function, $q(x)$.
+
+.. index:: pair: variable; ls_obj
+.. _doxid-structblls__inform__type_ls_obj:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	T ls_obj
+
+current value of the least-squares function, $\frac{1}{2} \| A_o x - b\|_W^2$.
 
 .. index:: pair: variable; norm_pg
 .. _doxid-structblls__inform__type_norm_pg:
@@ -101,7 +112,7 @@ current value of the objective function, r(x).
 
 	T norm_pg
 
-current value of the Euclidean norm of projected gradient of r(x).
+current value of the Euclidean norm of projected gradient of $q(x)$.
 
 .. index:: pair: variable; bad_alloc
 .. _doxid-structblls__inform__type_bad_alloc:
