@@ -907,6 +907,8 @@ test_$(package)_cifaces_quadruple_64: $(package)cqt_64 $(package)cqtf_64
 test_$(package)_pyiface: test_pyiface
 test_pyiface: $(package)_pyiface
 	python Python/test_$(package).py
+test_pyiface_gdb: $(package)_pyiface
+	- gdb  $(GDB) --args python Python/test_$(package).py
 
 #  run specification document example tests
 

@@ -1,7 +1,7 @@
 project(
   'GALAHAD',
   'c', 'cpp', 'fortran',
-  version: '5.4.0',
+  version: '5.5.0',
   license: 'BSD-3',
   meson_version: '>= 0.63.0',
   default_options: [
@@ -478,6 +478,7 @@ subdir('src/sils')
 subdir('src/slls')
 subdir('src/sllsb')
 subdir('src/sls')
+subdir('src/snls')
 subdir('src/ssls')
 subdir('src/ssids')
 subdir('src/svt')
