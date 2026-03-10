@@ -21,7 +21,6 @@ libgalahad_cutest_src += files('usesnls.F90')
 galahad_cutest_binaries += [['runsnls_sif', files('runsnls_sif.F90')]]
 
 galahad_tests += [['snls', 'snlst', files('snlst.F90')],
-                  ['snls', 'snlst2', files('snlst2.F90')],
                   ['snls', 'snlsti', files('snlsti.F90')]]
 
 galahad_c_tests += [['snls', 'snlst_c', files('C/snlst.c')],
@@ -31,7 +30,8 @@ galahad_python_tests += [['snls', 'snls_py', files('Python/test_snls.py')]]
 
 galahad_examples += [['snlss', files('snlss.f90')],
                      ['snlss2', files('snlss2.f90')],
-                     ['snlss3', files('snlss3.f90')]]
+                     ['snlss3', files('snlss3.f90')],
+                     ['snlss4', files('snlss4.f90')]]
 
 galahad_c_examples += [['snlss_c', files('C/snlss.c')],
                        ['snlss2_c', files('C/snlss2.c')],
