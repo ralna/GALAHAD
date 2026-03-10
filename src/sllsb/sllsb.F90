@@ -969,6 +969,11 @@
       prob%C_l( 1 : prob%m ) = one
       prob%C_u( 1 : prob%m ) = one
 
+!  set initial dual variables and Lagrange multipliers
+
+      prob%Y( 1 : prob%m ) = zero
+      prob%Z( 1 : prob%n ) = zero
+
 !  record the cohort matrix by rows
 
       IF ( ALLOCATED( prob%COHORT ) .AND. prob%m >= 1 ) THEN
