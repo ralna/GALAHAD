@@ -259,12 +259,10 @@
 
            SELECT CASE ( SMT_get( A%type ) )
 
-           CASE ( 'DENSE', 'DENSE_BY_COLUMNS' )
-              WRITE( i_dev, 1009 ) &
-                    ( A%val(i), i = 1, m*n )
+           CASE ( 'DENSE', 'DENSE_BY_COLUMNS', 'DENSE_BY_ROWS' )
+              WRITE( i_dev, 1009 ) ( A%val(i), i = 1, m*n )
            CASE ( 'SPARSE_BY_ROWS' )
-              WRITE( i_dev, 1010 ) &
-                   ( A%col(i), A%val(i), i=1,A%ptr(m+1)-1 )
+              WRITE( i_dev, 1010 ) ( A%col(i), A%val(i), i=1,A%ptr(m+1)-1 )
               WRITE( i_dev, 1011 ) A%ptr( 1:m+1 )
            CASE ( 'SPARSE_BY_COLUMNS' )
               WRITE( i_dev, 1012 ) ( A%row(i), A%val(i), i = 1, A%ptr(n+1)-1 )
@@ -346,7 +344,7 @@
      ! Storage type GALAHAD_DENSE (by rows)
      ! ************************************
 
-     CASE ( 'DENSE' )
+     CASE ( 'DENSE', 'DENSE_BY_ROWS' )
         IF ( symm ) THEN
            nA = 1
            IF ( alpha == one ) THEN
@@ -1021,12 +1019,10 @@
 
      SELECT CASE ( SMT_get( A%type ) )
 
-     CASE ( 'DENSE' )
-        WRITE( i_dev, 1009 ) &
-             ( A%val(i), i = 1, m*n )
+     CASE ( 'DENSE', 'DENSE_BY_ROWS' )
+        WRITE( i_dev, 1009 ) ( A%val(i), i = 1, m*n )
      CASE ( 'SPARSE_BY_ROWS' )
-        WRITE( i_dev, 1010 ) &
-             ( A%col(i), A%val(i), i=1,A%ptr(m+1)-1 )
+        WRITE( i_dev, 1010 ) ( A%col(i), A%val(i), i=1,A%ptr(m+1)-1 )
         WRITE( i_dev, 1011 ) A%ptr( 1:m+1 )
      CASE ( 'SPARSE_BY_COLUMNS' )
         WRITE( i_dev, 1012 ) &

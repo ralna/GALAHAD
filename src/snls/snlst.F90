@@ -11,7 +11,7 @@
    TYPE ( USERDATA_type ) :: userdata
    TYPE ( REVERSE_type ) :: reverse
 !  EXTERNAL :: EVALR, EVALJr, EVALJr_prod, EVALJr_scol, EVALJr_sprod
-   INTEGER ( KIND = ip_ ) :: i, j, s, error, cohort, solver
+   INTEGER ( KIND = ip_ ) :: i, j, s, error, cohort, solver, mode
    INTEGER, PARAMETER :: n = 5, m_r = 4, jr_ne = 8
    REAL ( KIND = rp_ ) :: val
    REAL ( KIND = rp_ ), PARAMETER :: p = 4.0_rp_
@@ -101,6 +101,74 @@
      END SELECT
    END DO
 
+   WRITE( 6, "( /, ' SNLS - test of storage formats', / )" )
+
+   nlp%n = n ; nlp%m_r = m_r ; nlp%Jr%ne = jr_ne
+   ALLOCATE( nlp%X( n ), userdata%real( 1 ) )
+   userdata%real( 1 ) = p
+
+   DO mode = 1, 5
+     CALL SNLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
+!    control%print_level = 1                    ! print one line/iteration
+     control%jacobian_available = 2                
+     control%subproblem_solver = 1
+     nlp%Jr%m = m_r ; nlp%Jr%n = n
+     nlp%X = [ 0.5_rp_, 0.5_rp_, 0.5_rp_, 0.5_rp_, 0.5_rp_ ]
+     SELECT CASE ( mode )
+     CASE ( 1 ) ! A by columns
+       CALL SMT_put( nlp%Jr%type, 'SPARSE_BY_COLUMNS', s )
+       ALLOCATE( nlp%Jr%row( jr_ne ), nlp%Jr%ptr( n + 1 ) )
+       nlp%Jr%row = [ 1, 1, 2, 2, 3, 3, 4, 4 ]
+       nlp%Jr%ptr = [ 1, 2, 4, 6, 8, 9 ]
+     CASE ( 2 ) ! A by rows
+       CALL SMT_put( nlp%Jr%type, 'SPARSE_BY_ROWS', s )
+       ALLOCATE( nlp%Jr%col( jr_ne ), nlp%Jr%ptr( m_r + 1 ) )
+       nlp%Jr%col = [ 1, 2, 2, 3, 3, 4, 4, 5 ]
+       nlp%Jr%ptr( : m_r + 1 ) = [ 1, 3, 5, 7, 9 ]
+     CASE ( 3 ) ! A coordinate
+       CALL SMT_put( nlp%Jr%type, 'COORDINATE', s )
+       ALLOCATE( nlp%Jr%row( jr_ne ), nlp%Jr%col( jr_ne ) )
+       nlp%Jr%ne = jr_ne
+       nlp%Jr%row = [ 1, 1, 2, 2, 3, 3, 4, 4 ] 
+       nlp%Jr%col = [ 1, 2, 2, 3, 3, 4, 4, 5 ]
+     CASE ( 4 ) ! A dense by columns
+       CALL SMT_put( nlp%Jr%type, 'DENSE_BY_COLUMNS', s )
+     CASE ( 5 ) ! A dense by rows
+       CALL SMT_put( nlp%Jr%type, 'DENSE_BY_ROWS', s )
+     END SELECT
+
+     inform%status = 1
+     SELECT CASE ( mode )
+     CASE ( 1 : 3 ) ! A by columns
+       CALL SNLS_solve( nlp, control, inform, data, userdata,                  &
+                        eval_R = EVALR, eval_Jr = EVALJr )
+     CASE ( 4 ) ! A dense by columns
+       CALL SNLS_solve( nlp, control, inform, data, userdata,                  &
+                        eval_R = EVALR, eval_Jr = EVALJr_dense_by_cols )
+     CASE ( 5 ) ! A dense by rows
+       CALL SNLS_solve( nlp, control, inform, data, userdata,                  &
+                        eval_R = EVALR, eval_Jr = EVALJr_dense_by_rows )
+     END SELECT
+    
+     IF ( inform%status == 0 ) THEN
+       WRITE( 6, "( ' SNLS(', I1, '): ', I2, ' iterations -',                  &
+      &             ' optimal objective value =', ES12.4 )" )                  &
+           mode, inform%iter, inform%obj
+     ELSE
+       WRITE( 6, "( ' SNLS(', I1, '): exit status = ', I6 ) " )                &
+           mode, inform%status
+     END IF
+     CALL SNLS_terminate( data, control, inform )
+
+     DEALLOCATE( nlp%Jr%type )
+     IF ( ALLOCATED( nlp%Jr%val ) ) DEALLOCATE( nlp%Jr%val )
+     IF ( ALLOCATED( nlp%Jr%row ) ) DEALLOCATE( nlp%Jr%row )
+     IF ( ALLOCATED( nlp%Jr%col ) ) DEALLOCATE( nlp%Jr%col )
+     IF ( ALLOCATED( nlp%Jr%ptr ) ) DEALLOCATE( nlp%Jr%ptr )
+   END DO
+   DEALLOCATE( nlp%X, nlp%G, nlp%R, userdata%real )
+
    WRITE( 6, "( /, ' SNLS - test of input modes and options', / )" )
 
    nlp%n = n ; nlp%m_r = m_r ; nlp%Jr%ne = jr_ne
@@ -141,8 +209,8 @@
          CALL SMT_put( nlp%Jr%type, 'COORDINATE', s )
          ALLOCATE( nlp%Jr%val( jr_ne ) )
          ALLOCATE( nlp%Jr%row( jr_ne ), nlp%Jr%col( jr_ne ) )
-         nlp%Jr%row = (/ 1, 1, 2, 2, 3, 3, 4, 4 /) 
-         nlp%Jr%col = (/ 1, 2, 2, 3, 3, 4, 4, 5 /)
+         nlp%Jr%row = [ 1, 1, 2, 2, 3, 3, 4, 4 ] 
+         nlp%Jr%col = [ 1, 2, 2, 3, 3, 4, 4, 5 ]
          control%jacobian_available = 2                
          control%subproblem_solver = 1
          inform%status = 1
@@ -154,8 +222,8 @@
          CALL SMT_put( nlp%Jr%type, 'COORDINATE', s )
          ALLOCATE( nlp%Jr%val( jr_ne ) )
          ALLOCATE( nlp%Jr%row( jr_ne ), nlp%Jr%col( jr_ne ) )
-         nlp%Jr%row = (/ 1, 1, 2, 2, 3, 3, 4, 4 /) 
-         nlp%Jr%col = (/ 1, 2, 2, 3, 3, 4, 4, 5 /)
+         nlp%Jr%row = [ 1, 1, 2, 2, 3, 3, 4, 4 ] 
+         nlp%Jr%col = [ 1, 2, 2, 3, 3, 4, 4, 5 ]
          control%jacobian_available = 2                
          control%subproblem_solver = 2
          inform%status = 1
@@ -167,8 +235,8 @@
          CALL SMT_put( nlp%Jr%type, 'COORDINATE', s )
          ALLOCATE( nlp%Jr%val( jr_ne ) )
          ALLOCATE( nlp%Jr%row( jr_ne ), nlp%Jr%col( jr_ne ) )
-         nlp%Jr%row = (/ 1, 1, 2, 2, 3, 3, 4, 4 /) 
-         nlp%Jr%col = (/ 1, 2, 2, 3, 3, 4, 4, 5 /)
+         nlp%Jr%row = [ 1, 1, 2, 2, 3, 3, 4, 4 ] 
+         nlp%Jr%col = [ 1, 2, 2, 3, 3, 4, 4, 5 ]
          control%jacobian_available = 2                
          control%subproblem_solver = 1
          inform%status = 1
@@ -204,8 +272,8 @@
          CALL SMT_put( nlp%Jr%type, 'COORDINATE', s )
          ALLOCATE( nlp%Jr%val( jr_ne ) )
          ALLOCATE( nlp%Jr%row( jr_ne ), nlp%Jr%col( jr_ne ) )
-         nlp%Jr%row = (/ 1, 1, 2, 2, 3, 3, 4, 4 /) 
-         nlp%Jr%col = (/ 1, 2, 2, 3, 3, 4, 4, 5 /)
+         nlp%Jr%row = [ 1, 1, 2, 2, 3, 3, 4, 4 ] 
+         nlp%Jr%col = [ 1, 2, 2, 3, 3, 4, 4, 5 ]
          control%jacobian_available = 2                
          control%subproblem_solver = 2
          inform%status = 1
@@ -394,8 +462,6 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Jr_val
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-     REAL ( KIND = rp_ ) :: p
-     p = userdata%real( 1 )
      Jr_val( 1 ) = X( 2 )
      Jr_val( 2 ) = X( 1 )
      Jr_val( 3 ) = X( 3 )
@@ -407,6 +473,66 @@
      status = 0
      RETURN
      END SUBROUTINE EVALJr
+
+     SUBROUTINE EVALJr_dense_by_rows( status, X, userdata, Jr_val ) ! Jacobian
+     USE GALAHAD_USERDATA_precision
+     INTEGER, INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Jr_val
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+     Jr_val( 1 ) = X( 2 )
+     Jr_val( 2 ) = X( 1 )
+     Jr_val( 3 ) = 0.0_rp_
+     Jr_val( 4 ) = 0.0_rp_
+     Jr_val( 5 ) = 0.0_rp_
+     Jr_val( 6 ) = 0.0_rp_
+     Jr_val( 7 ) = X( 3 )
+     Jr_val( 8 ) = X( 2 )
+     Jr_val( 9 ) = 0.0_rp_
+     Jr_val( 10 ) = 0.0_rp_
+     Jr_val( 11 ) = 0.0_rp_
+     Jr_val( 12 ) = 0.0_rp_
+     Jr_val( 13 ) = X( 4 )
+     Jr_val( 14 ) = X( 3 )
+     Jr_val( 15 ) = 0.0_rp_
+     Jr_val( 16 ) = 0.0_rp_
+     Jr_val( 17 ) = 0.0_rp_
+     Jr_val( 18 ) = 0.0_rp_
+     Jr_val( 19 ) = X( 5 )
+     Jr_val( 20 ) = X( 4 )
+     status = 0
+     RETURN
+     END SUBROUTINE EVALJr_dense_by_rows
+
+     SUBROUTINE EVALJr_dense_by_cols( status, X, userdata, Jr_val ) ! Jacobian
+     USE GALAHAD_USERDATA_precision
+     INTEGER, INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Jr_val
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+     Jr_val( 1 ) = X( 2 )
+     Jr_val( 2 ) = 0.0_rp_
+     Jr_val( 3 ) = 0.0_rp_
+     Jr_val( 4 ) = 0.0_rp_
+     Jr_val( 5 ) = X( 1 )
+     Jr_val( 6 ) = X( 3 )
+     Jr_val( 7 ) = 0.0_rp_
+     Jr_val( 8 ) = 0.0_rp_
+     Jr_val( 9 ) = 0.0_rp_
+     Jr_val( 10 ) = X( 2 )
+     Jr_val( 11 ) = X( 4 )
+     Jr_val( 12 ) = 0.0_rp_
+     Jr_val( 13 ) = 0.0_rp_
+     Jr_val( 14 ) = 0.0_rp_
+     Jr_val( 15 ) = X( 3 )
+     Jr_val( 16 ) = X( 5 )
+     Jr_val( 17 ) = 0.0_rp_
+     Jr_val( 18 ) = 0.0_rp_
+     Jr_val( 19 ) = 0.0_rp_
+     Jr_val( 20 ) = X( 4 )
+     status = 0
+     RETURN
+     END SUBROUTINE EVALJr_dense_by_cols
 
      SUBROUTINE EVALJr_prod( status, X, userdata, transpose, V, P, got_jr )
      USE GALAHAD_USERDATA_precision
