@@ -1505,7 +1505,7 @@
            l = l + 1
          END IF
        END DO
-!      WRITE( 6, "( ' size cohorts', 5( ' ', I0 ) )" ) data%S_ptr
+!      WRITE( 6, "( ' size cohorts', 5( ' ', I0 ) )" ) l, data%S_ptr
 
 !  record the maximum number
 
@@ -2330,6 +2330,7 @@
 !  set up the block matrices. Copy the free columns of A into the rows
 !  of AT
 
+!        IF ( data%n_free <= 12 ) write(6,"( ' free ', 12I5 )" ) data%FREE( : data%n_free )
          nap = 0
          DO i = 1, data%n_free
            j = data%FREE( i )
@@ -2491,7 +2492,7 @@
 
 !  where lambda = q_F^T e_F / v_F^T e_F                  (e)
 
-         ELSE
+         ELSE  ! single cohort
 
 !  set up the right-hand side vector for system (d)
 
@@ -4868,9 +4869,10 @@
 
       segment = 1
       IF ( summary ) WRITE( out,  "( A, ' segment   phi_0       phi_1     ',   &
-     &             '  phi_2       t_break       t_opt' )" ) prefix
+     &             '  phi_2       t_break       t_opt    fixed' )" ) prefix
 
   100 CONTINUE
+if(summary) write(6,"( ' free(2) ', I0 )" ) free(2)
 
 !       IF ( debug ) THEN
 !         WRITE( out,  "( ' s = ', /, ( 5ES12.4 ) )" ) S
@@ -4935,9 +4937,9 @@
             END IF
           END IF
         END DO
-        IF ( summary ) WRITE( out,  "( A, I8, 5ES12.4 )" ) prefix, segment,    &
-          data%phi_0, phi_1, phi_2, data%t_total + data%t_break,               &
-          data%t_total + t_opt
+        IF ( summary ) WRITE( out,  "( A, I8, 5ES12.4, 1X, I0 )" ) prefix,     &
+          segment, data%phi_0, phi_1, phi_2, data%t_total + data%t_break,      &
+          data%t_total + t_opt, FREE( i_fixed )
 !       IF ( data%t_break == t_max .AND. debug )                               &
 !         WRITE( out,  "( ' s = ', /, ( 5ES12.4 ) )" ) S
 
@@ -5103,12 +5105,13 @@
 
       n_free = 0
       DO j = 1, n
-        IF ( X( j ) >= x_zero ) THEN
+        IF ( COHORT( j ) <= 0 .OR. X( j ) >= x_zero ) THEN
           n_free = n_free + 1
           FREE( n_free ) = j
         END IF
       END DO
 
+!     IF ( n_free <= 12 ) write(6,"( ' ** free ', 12I5 )" ) FREE( : n_free )
       status = 0
 
       RETURN

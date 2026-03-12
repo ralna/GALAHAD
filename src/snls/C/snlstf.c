@@ -92,7 +92,7 @@ int main(void) {
     if(inform.status == 0){
         printf(" SNLS(JF):%6" d_ipc_ " iterations. Optimal objective value"
                " = %5.2f status = %1" d_ipc_ "\n",
-               inform.iter, inform.obj, inform.status);
+               inform.iter, (double)inform.obj, inform.status);
     }else{
         printf(" SNLS(JF): exit status = %1" d_ipc_ "\n", inform.status);
     }
@@ -125,7 +125,7 @@ int main(void) {
     if(inform.status == 0){
         printf(" SNLS(PF):%6" d_ipc_ " iterations. Optimal objective value"
                " = %5.2f status = %1" d_ipc_ "\n",
-               inform.iter, inform.obj, inform.status);
+               inform.iter, (double)inform.obj, inform.status);
     }else{
         printf(" SNLS(PF): exit status = %1" d_ipc_ "\n", inform.status);
     }
@@ -181,7 +181,7 @@ int main(void) {
     if(inform.status == 0){
         printf(" SNLS(JR):%6" d_ipc_ " iterations. Optimal objective value"
                " = %5.2f status = %1" d_ipc_ "\n",
-               inform.iter, inform.obj, inform.status);
+               inform.iter, (double)inform.obj, inform.status);
     }else{
         printf(" SNLS(JR): exit status = %1" d_ipc_ "\n", inform.status);
     }
@@ -240,7 +240,7 @@ int main(void) {
     if(inform.status == 0){
         printf(" SNLS(PR):%6" d_ipc_ " iterations. Optimal objective value"
                " = %5.2f status = %1" d_ipc_ "\n",
-               inform.iter, inform.obj, inform.status);
+               inform.iter, (double)inform.obj, inform.status);
     } else {
         printf(" SNLS(PR): exit status = %1" d_ipc_ "\n", inform.status);
     }

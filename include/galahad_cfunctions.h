@@ -80,7 +80,7 @@
 #define bllsb_read_specfile bllsb_read_specfile_s_64
 #define bllsb_import bllsb_import_s_64
 #define bllsb_reset_control bllsb_reset_control_s_64
-#define bllsb_solve_blls bllsb_solve_blls_s_64
+#define bllsb_solve_given_a bllsb_solve_given_a_s_64
 #define bllsb_information bllsb_information_s_64
 #define bllsb_terminate bllsb_terminate_s_64
 #define bqpb_initialize bqpb_initialize_s_64
@@ -119,7 +119,7 @@
 #define clls_read_specfile clls_read_specfile_s_64
 #define clls_import clls_import_s_64
 #define clls_reset_control clls_reset_control_s_64
-#define clls_solve_clls clls_solve_clls_s_64
+#define clls_solve_given_a clls_solve_given_a_s_64
 #define clls_information clls_information_s_64
 #define clls_terminate clls_terminate_s_64
 #define convert_information convert_information_s_64
@@ -703,7 +703,7 @@
 #define bllsb_read_specfile bllsb_read_specfile_q_64
 #define bllsb_import bllsb_import_q_64
 #define bllsb_reset_control bllsb_reset_control_q_64
-#define bllsb_solve_blls bllsb_solve_blls_q_64
+#define bllsb_solve_given_a bllsb_solve_given_a_q_64
 #define bllsb_information bllsb_information_q_64
 #define bllsb_terminate bllsb_terminate_q_64
 #define bqpb_initialize bqpb_initialize_q_64
@@ -742,7 +742,7 @@
 #define clls_read_specfile clls_read_specfile_q_64
 #define clls_import clls_import_q_64
 #define clls_reset_control clls_reset_control_q_64
-#define clls_solve_clls clls_solve_clls_q_64
+#define clls_solve_given_a clls_solve_given_a_q_64
 #define clls_information clls_information_q_64
 #define clls_terminate clls_terminate_q_64
 #define convert_information convert_information_q_64
@@ -1326,7 +1326,7 @@
 #define bllsb_read_specfile bllsb_read_specfile_64
 #define bllsb_import bllsb_import_64
 #define bllsb_reset_control bllsb_reset_control_64
-#define bllsb_solve_blls bllsb_solve_blls_64
+#define bllsb_solve_given_a bllsb_solve_given_a_64
 #define bllsb_information bllsb_information_64
 #define bllsb_terminate bllsb_terminate_64
 #define bqpb_initialize bqpb_initialize_64
@@ -1365,7 +1365,7 @@
 #define clls_read_specfile clls_read_specfile_64
 #define clls_import clls_import_64
 #define clls_reset_control clls_reset_control_64
-#define clls_solve_clls clls_solve_clls_64
+#define clls_solve_given_a clls_solve_given_a_64
 #define clls_information clls_information_64
 #define clls_terminate clls_terminate_64
 #define convert_information convert_information_64
@@ -1951,7 +1951,7 @@
 #define bllsb_read_specfile bllsb_read_specfile_s
 #define bllsb_import bllsb_import_s
 #define bllsb_reset_control bllsb_reset_control_s
-#define bllsb_solve_blls bllsb_solve_blls_s
+#define bllsb_solve_given_a bllsb_solve_given_a_s
 #define bllsb_information bllsb_information_s
 #define bllsb_terminate bllsb_terminate_s
 #define bqpb_initialize bqpb_initialize_s
@@ -1990,7 +1990,7 @@
 #define clls_read_specfile clls_read_specfile_s
 #define clls_import clls_import_s
 #define clls_reset_control clls_reset_control_s
-#define clls_solve_clls clls_solve_clls_s
+#define clls_solve_given_a clls_solve_given_a_s
 #define clls_information clls_information_s
 #define clls_terminate clls_terminate_s
 #define convert_information convert_information_s
@@ -2574,7 +2574,7 @@
 #define bllsb_read_specfile bllsb_read_specfile_q
 #define bllsb_import bllsb_import_q
 #define bllsb_reset_control bllsb_reset_control_q
-#define bllsb_solve_blls bllsb_solve_blls_q
+#define bllsb_solve_given_a bllsb_solve_given_a_q
 #define bllsb_information bllsb_information_q
 #define bllsb_terminate bllsb_terminate_q
 #define bqpb_initialize bqpb_initialize_q
@@ -2613,7 +2613,7 @@
 #define clls_read_specfile clls_read_specfile_q
 #define clls_import clls_import_q
 #define clls_reset_control clls_reset_control_q
-#define clls_solve_clls clls_solve_clls_q
+#define clls_solve_given_a clls_solve_given_a_q
 #define clls_information clls_information_q
 #define clls_terminate clls_terminate_q
 #define convert_information convert_information_q
