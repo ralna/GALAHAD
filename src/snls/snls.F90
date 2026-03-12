@@ -1351,7 +1351,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: i, ic, ir, j, l
+     INTEGER ( KIND = ip_ ) :: i, ic, ir, j, jr_ne, l
      REAL ( KIND = rp_ ) :: ared, prered, rounding, obj, val
      LOGICAL :: alive
      CHARACTER ( LEN = 6 ) :: char_iter, char_facts, char_sit
@@ -1498,7 +1498,8 @@
 
      IF ( data%jacobian_available ) THEN
        SELECT CASE ( SMT_get( nlp%Jr%type ) )
-       CASE ( 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' )
+       CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',                    &
+              'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS', 'COORDINATE' )
        CASE DEFAULT
          IF ( control%error > 0 ) WRITE( control%error,                        &
            "( A, ' error: input J%type ', A, ' not permitted' )" )             &
@@ -1703,7 +1704,7 @@
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
+              bad_alloc = inform%bad_alloc, out = data%control%error )
        IF ( inform%status /= 0 ) GO TO 980
        data%GN_model%W( : nlp%m_r ) = nlp%W( : nlp%m_r )
      END IF
@@ -1711,6 +1712,30 @@
 !  set Ao appropriately in the least-squares storage format
 
      IF ( data%jacobian_available ) THEN
+
+!  make space for Jr%val
+
+       SELECT CASE( SMT_get( nlp%Jr%type ) )
+       CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
+         nlp%Jr%ne = nlp%m_r * nlp%n
+       CASE ( 'SPARSE_BY_ROWS' )
+         nlp%Jr%ne = nlp%Jr%ptr( nlp%m_r + 1 ) - 1
+       CASE ( 'SPARSE_BY_COLUMNS' )
+         nlp%Jr%ne = nlp%Jr%ptr( nlp%n + 1 ) - 1
+!      CASE ( 'COORDINATE' )
+!        nlp%Jr%ne = nlp%Jr%ne
+       END SELECT
+
+       array_name = 'snls: nlp%J%val'
+       CALL SPACE_resize_array( nlp%Jr%ne, nlp%Jr%val,                         &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+!  make space for data%GN_model%Ao
+
        SELECT CASE ( SMT_get( nlp%Jr%type ) )
        CASE ( 'coordinate', 'COORDINATE' )
          IF ( .NOT. ( ALLOCATED( nlp%Jr%row ) .AND.                            &
