@@ -39,7 +39,7 @@ end
 
 export slls_time_type
 
-struct slls_time_type
+struct slls_time_type{T}
   total::T
   clock_total::T
 end
@@ -56,7 +56,7 @@ struct slls_inform_type{T,INT}
   ls_obj::T
   norm_pg::T
   bad_alloc::NTuple{81,Cchar}
-  time::slls_time_type
+  time::slls_time_type{T}
   sbls_inform::sbls_inform_type{T,INT}
   convert_inform::convert_inform_type{T,INT}
   lapack_error::INT

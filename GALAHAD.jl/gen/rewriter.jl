@@ -42,7 +42,7 @@ nonparametric_structures_float = ("bqp_time_type", "bsc_control_type", "convert_
                                   "nodend_control_type", "presolve_inform_type", 
                                   "roots_inform_type", "rpd_control_type", "rpd_inform_type", 
                                   "scu_control_type", "scu_inform_type", "sec_inform_type", 
-                                  "sha_control_type", "slls_time_type")
+                                  "sha_control_type")
 
 # Structures that don't have a field with rpc_ but have an inner structure with rpc_ as a field.
 special_structures_float = ("convert_inform_type", "cro_inform_type", "lms_inform_type", 

@@ -209,7 +209,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
 
       if inform[].status == 0
         @printf("%s:%6i iterations. Optimal objective value = %.2f, status = %1i\n",
-                st, inform[].iter, inform[].obj, inform[].status)
+                st, inform[].iter, (double)inform[].obj, inform[].status)
       else
         @printf("%s: SLLS_solve exit status = %1i\n", st, inform[].status)
       end
@@ -227,6 +227,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     eval_status = Ref{INT}()
     lvl = Ref{INT}()
     lvu = Ref{INT}()
+    index = Ref{INT}()
     lp = Ref{INT}()
     iv = zeros(INT, on)
     ip = zeros(INT, o)
@@ -269,9 +270,9 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         for i in 1:n
           p[i] = v[i] + v[o]
         end
-      elseif status[] == 4 # evaluate the lvl-th sparse column of Ao 
+      elseif status[] == 4 # evaluate the index-th sparse column of Ao 
         lp = 1
-        ip[lp] = index
+        ip[lp] = index[]
         p[lp] = 1.0
         lp = lp + 1
         ip[lp] = o
@@ -307,7 +308,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     # Print solution details
     if inform[].status == 0
       @printf("%s:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
-              st, inform[].iter, inform[].obj, inform[].status)
+              st, inform[].iter, (double)inform[].obj, inform[].status)
     else
       @printf("%s: SLLS_solve exit status = %1i\n", st, inform[].status)
     end

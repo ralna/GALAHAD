@@ -30,5 +30,5 @@ galahad_python_tests += [['sllsb', 'sllsb_py', files('Python/test_sllsb.py')]]
 
 galahad_examples += [['sllsbs', files('sllsbs.f90')],
                      ['sllsbs2', files('sllsbs2.f90')],
-                     ['sllsbs3', files('sllsbs3.f90')],
+                     #['sllsbs3', files('sllsbs3.f90')],
                      ['sllsbs4', files('sllsbs4.f90')]]
