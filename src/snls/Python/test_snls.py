@@ -48,7 +48,7 @@ def eval_jr(x):
 x = np.array([0.5,0.5,0.5,0.5,0.5])
 
 # find minimizer
-print("\n solve snls")
+print("\n sparse solve snls")
 x, y, z, r, g, x_stat = snls.solve(n, m_r, m_c, x, eval_r, Jr_ne, eval_jr, w)
 print(" x:",x)
 print(" y:",y)
@@ -92,7 +92,7 @@ snls.load(n, m_r, m_c, Jr_type, Jr_ne, Jr_row, Jr_col, 0, Jr_ptr,
 
 # define the dense Jacobian
 def eval_jr_dense(x):
-    return np.array([x[1], x[0], 0,0,  0,0,  0,0,
+    return np.array([x[1], x[0], 0.0,  0.0,  0.0,
                      0.0,  x[2], x[1], 0.0,  0.0,
                      0.0,  0.0,  x[3], x[2], 0.0,
                      0.0,  0.0,  0.0,  x[4], x[3]])
@@ -101,7 +101,7 @@ def eval_jr_dense(x):
 x = np.array([0.5,0.5,0.5,0.5,0.5])
 
 # find minimizer
-print("\n solve snls")
+print("\n dense solve snls")
 x, y, z, r, g, x_stat = snls.solve(n, m_r, m_c, x, eval_r, Jr_ne, eval_jr_dense, w)
 print(" x:",x)
 print(" y:",y)
