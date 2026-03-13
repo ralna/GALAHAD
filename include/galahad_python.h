@@ -240,7 +240,8 @@ static inline bool check_array_double(char *name, PyArrayObject *arr, int n){
          PyArray_TYPE(arr)==NPY_DOUBLE &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
         PyErr_Format(PyExc_TypeError,
-                     "%s must be a 1D double array of length %i", name, n);
+                     "%s must be a 1D double array of length %i not given %i", 
+                     name, n, PyArray_DIM(arr,0));
         return false;
     }
     return true;
@@ -267,7 +268,8 @@ static inline bool check_array_int(char *name, PyArrayObject *arr, int n){
          PyArray_TYPE(arr)==NPY_LONG &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
         PyErr_Format(PyExc_TypeError,
-                     "%s must be a 1D int array of length %i", name, n);
+                     "%s must be a 1D int array of length %i not given %i", 
+                      name, n, PyArray_DIM(arr,0));
         return false;
     }
     return true;
