@@ -8142,8 +8142,8 @@ if(summary) write(6,"( ' free(2) ', I0 )" ) free(2)
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
 !   -3. The restriction n > 0, o >= 0 or requirement that Ao_type contains
-!       its relevant string 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',
-!       'COORDINATE', 'SPARSE_BY_ROWS', or 'SPARSE_BY_COLUMNS'
+!       its relevant string 'dense', 'dense_by_rows', 'dense_by_columns',
+!       'sparse_by_rows', 'sparse_by_columns' or 'coordinate'
 !       has been violated.
 !
 !  n is a scalar variable of type default integer, that holds the number of
@@ -8156,8 +8156,9 @@ if(summary) write(6,"( ' free(2) ', I0 )" ) free(2)
 !   cohorts
 !
 !  Ao_type is a character string that specifies the design matrix storage
-!   scheme used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
-!   or 'absent', the latter if m = 0; lower or upper case variants are allowed
+!   scheme used. It should be one of 'dense', 'dense_by_rows', 'dense_by_cols', 
+!   'sparse_by_rows', 'sparse_by_cols' or 'coordinate';  lower or upper case 
+!   variants are allowed
 !
 !  Ao_ne is a scalar variable of type default integer, that holds the number of
 !   entries in Ao in the sparse co-ordinate storage scheme. It need not be set

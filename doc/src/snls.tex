@@ -149,7 +149,8 @@ of a given $\bmx$ to the simplex constraint set $\calC(\bmx)$.
 
 %%%%%%%%%%%%%%%%%%%%%% matrix storage formats %%%%%%%%%%%%%%%%%%%%%%%%
 
-\galmatrix The matrices $\bmJ_r(\bmx)$ and $\bmH(\bmx,\bmy)$
+\galmatrix The $m_r$ by $n$ unsymmetric matrix $\bmJ_r(\bmx)$ and 
+the symmetric $n$ by $n$ matrix $\bmH(\bmx,\bmy)$
 (as required and when available) may be stored in a variety of input formats.
 
 \subsubsection{Dense storage format}\label{dense}
@@ -157,13 +158,20 @@ The matrix $\bmJ_r$ is stored as a compact
 dense matrix by rows, that is, the values of the entries of each row in turn are
 stored in order within an appropriate real one-dimensional array.
 Component $n \ast (i-1) + j$ of the storage array {\tt  Jr\%val} will hold 
-the value ${\bmJ_r}_{i,j}$ for $i = 1, \ldots , o$, $j = 1, \ldots , n$. 
+the value ${\bmJ_r}_{i,j}$ for $i = 1, \ldots , m_r$, $j = 1, \ldots , n$. 
 Since $\bmH$ is symmetric, only the lower triangular
 part (that is the part $\bmH_{ij}$ for $1 \leq j \leq i \leq n$)
 should be stored. In this case the lower triangle will be stored by rows,
 that is component $i \ast (i-1)/2 + j$ of the storage array {\tt H\%val} will
 hold the value $\bmH_{ij}$ (and, by symmetry, $\bmH_{ji}$) for $1 \leq j
 \leq i \leq n$.
+
+\subsubsection{Dense column-wise storage format}\label{dense-column}
+The matrix $\bmJ_r$ is stored as a compact
+dense matrix by columns, that is, the values of the entries of each column
+in turn are stored in order within an appropriate real one-dimensional array.
+Component $m_r \ast (j-1) + i$ of the storage array {\tt  Jr\%val} will 
+hold the value ${\bmJ_r}_{i,j}$ for $i = 1, \ldots , m_r$, $j = 1, \ldots , n$.
 
 \subsubsection{Sparse co-ordinate storage format}\label{coordinate}
 Only the nonzero entries of the matrices are stored. For the $l$-th
@@ -229,8 +237,9 @@ Eight derived data types are accessible from the package.
 %%%%%%%%%%% matrix data type %%%%%%%%%%%
 
 \subsubsection{The derived data type for holding matrices}\label{typesmt}
-The derived data type {\tt SMT\_TYPE} is used to hold the Hessian matrix $\bmH$
-if this is available. The components of {\tt SMT\_TYPE} used here are:
+The derived data type {\tt SMT\_TYPE} is used to hold any 
+unsymmetric matrix $\bmA$ or symmetric one $\bmH$ if these are available. 
+The components of {\tt SMT\_TYPE} used here are:
 
 \begin{description}
 
@@ -249,9 +258,8 @@ content depends on the type of matrix to be stored (see \S\ref{typeprob}).
 
 \ittf{val} is a rank-one allocatable array of type \realdp\,
 and dimension at least {\tt ne}, that holds the values of the entries.
-Each pair of off-diagonal entries $h_{ij} = h_{ji}$ of the {\em symmetric}
-matrix $\bmH$ is represented as a single entry
-(see \S\ref{dense}--\ref{diagonal}).
+If the matrix is symmetric, each pair of off-diagonal entries $h_{ij} = h_{ji}$ 
+is represented as a single entry (see \S\ref{dense}--\ref{diagonal}).
 Any duplicated entries that appear in the sparse
 co-ordinate or row-wise schemes will be summed.
 
@@ -265,7 +273,9 @@ and dimension at least {\tt ne}, that may hold the column indices of the entries
 
 \ittf{ptr} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt m + 1}, that may hold the pointers to
-the first entry in each row (see \S\ref{rowwise}--\ref{columnwise}).
+the first entry in each row, or dimension at least {\tt n + 1}, that may hold 
+the pointers to the first entry in each column, as required
+(see \S\ref{rowwise}--\ref{columnwise}).
 
 \end{description}
 
@@ -302,15 +312,21 @@ The following components are used here:
 
 \itt{Jr\%type} is an allocatable array of rank one and type default
 \character, that
-is used to indicate the storage scheme used. If the dense storage scheme
+is used to indicate the storage scheme used. If the dense-by-row storage scheme
 (see Section~\ref{dense}) is used,
 the first five components of {\tt Jr\%type} must contain the
-string {\tt DENSE}.
+string {\tt DENSE} or (or the first thirteen contain{\tt DENSE\_BY\_ROWS}), 
+while if a  dense-by-column storage scheme (see Section~\ref{dense-column}) 
+is desired, the first sixteen components must contain the string 
+{\tt DENSE\_BY\_COLUMNS}.
 For the sparse co-ordinate scheme (see Section~\ref{coordinate}),
 the first ten components of {\tt Jr\%type} must contain the
 string {\tt COORDINATE},
-and for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
-the first fourteen components of {\tt Jr\%type} must contain the
+for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
+its first fourteen components must contain the
+string {\tt SPARSE\_BY\_ROWS}.
+and for the sparse row-wise storage scheme (see Section~\ref{columnwise}),
+the first seventeen components of {\tt Jr\%type} must contain the
 string {\tt SPARSE\_BY\_ROWS}.
 
 For convenience, the procedure {\tt SMT\_put}
@@ -333,7 +349,7 @@ for further details on the use of {\tt SMT\_put}.
 \itt{Jr\%ne} is a scalar variable of type \integer, that
 holds the number of entries in $\bmJ_r$
 in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
-It need not be set for any of the other two schemes.
+It need not be set for any of the other four schemes.
 
 \itt{Jr\%val} is a rank-one allocatable array of type \realdp, that holds
 the values of the entries of the Jacobian matrix $\bmJ_r$ in any of the
@@ -341,19 +357,23 @@ storage schemes discussed in Section~\ref{galmatrix}.
 
 \itt{Jr\%row} is a rank-one allocatable array of type \integer,
 that holds the row indices of $\bmJ_r$ in the sparse co-ordinate storage
-scheme (see Section~\ref{coordinate}).
-It need not be allocated for any of the other two schemes.
+scheme (see Section~\ref{coordinate}), or the sparse column-wise
+(see Section~\ref{columnwise}) storage scheme.
+It need not be allocated for the other dense sparse schemes.
 
 \itt{Jr\%col} is a rank-one allocatable array variable of type \integer,
 that holds the column indices of $\bmJ_r$ in either the sparse co-ordinate
 (see Section~\ref{coordinate}), or the sparse row-wise
 (see Section~\ref{rowwise}) storage scheme.
-It need not be allocated when the dense storage scheme is used.
+It need not be allocated for the other dense sparse schemes.
 
-\itt{Jr\%ptr} is a rank-one allocatable array of dimension {\tt m+1} and type
+\itt{Jr\%ptr} is a rank-one allocatable array of dimension {\tt m\_r+1} and type
 \integer, that holds the starting position of each row of $\bmJ_r$, as well
 as the total number of entries plus one, in the sparse row-wise storage
-scheme (see Section~\ref{rowwise}). It need not be allocated when the
+scheme (see Section~\ref{rowwise}). It should be of dimension {\tt n+1} and type
+\integer to hold the starting position of each column of $\bmJ_r$, as well
+as the total number of entries plus one, in the sparse column-wise scheme
+(see Section~\ref{columnwise}). It need not be allocated when the
 other schemes are used.
 
 \end{description}

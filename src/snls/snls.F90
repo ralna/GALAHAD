@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-03-07 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-03-13 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -1036,9 +1036,10 @@
 !        array is written on unit control%error and the returned allocation
 !        status and a string containing the name of the offending array
 !        are held in inform%alloc_status and inform%bad_alloc respectively.
-!    -3. The restriction nlp%n > 0 or requirement that nlp%H_type contains
-!        its relevant string 'DENSE', 'COORDINATE' or 'SPARSE_BY_ROWS'
-!          has been violated.
+!    -3. The restriction nlp%n > 0 or requirement that nlp%Jr%type contains
+!        its relevant string 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLS', 
+!        'SPARSE_BY_ROWS', 'SPARSE_BY_COLS' or 'COORDINATE'
+!         has been violated.
 !    -7. The objective function appears to be unbounded from below
 !    -9. The analysis phase of the factorization failed; the return status
 !        from the factorization package is given in the component
@@ -1351,7 +1352,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: i, ic, ir, j, jr_ne, l
+     INTEGER ( KIND = ip_ ) :: i, ic, ir, j, l
      REAL ( KIND = rp_ ) :: ared, prered, rounding, obj, val
      LOGICAL :: alive
      CHARACTER ( LEN = 6 ) :: char_iter, char_facts, char_sit
@@ -4050,8 +4051,8 @@
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
 !   -3. The restriction n > 0, m_r >= 0 or requirement that Jr_type contains
-!       its relevant string 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',
-!       'COORDINATE', 'SPARSE_BY_ROWS', or 'SPARSE_BY_COLUMNS'
+!       its relevant string 'dense', 'dense_by_rows', 'dense_by_columns',
+!       'sparse_by_rows', 'sparse_by_columns' or 'coordinate'
 !       has been violated.
 !
 !  n is a scalar variable of type default integer, that holds the number of
@@ -4064,8 +4065,9 @@
 !   cohorts
 !
 !  Jr_type is a character string that specifies the design matrix storage
-!   scheme used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
-!   or 'absent', the latter if m = 0; lower or upper case variants are allowed
+!   scheme used. It should be one of 'dense', 'dense_by_rows', 'dense_by_cols', 
+!   'sparse_by_rows', 'sparse_by_cols' or 'coordinate';  lower or upper case 
+!   variants are allowed
 !
 !  Jr_ne is a scalar variable of type default integer, that holds the number of
 !   entries in Jr in the sparse co-ordinate storage scheme. It need not be set
@@ -4271,7 +4273,7 @@
          data%nlp%Jr%row( : data%nlp%Jr%ne ) = Jr_row( : data%nlp%Jr%ne ) + 1
        END IF
 
-     CASE ( 'dense_by_rows', 'DENSE_BY_ROWS' )
+     CASE ( 'dense', 'DENSE', 'dense_by_rows', 'DENSE_BY_ROWS' )
        CALL SMT_put( data%nlp%Jr%type, 'DENSE_BY_ROWS',                        &
                      data%snls_inform%alloc_status )
        data%nlp%Jr%n = n ; data%nlp%Jr%m = m_r
