@@ -3179,6 +3179,9 @@
 #define galahad_jrprod galahad_jrprod_s_64
 #define galahad_hrprod galahad_hrprod_s_64
 #define galahad_shrprod galahad_shrprod_s_64
+#define galahad_jr_prod galahad_jr_prod_s_64
+#define galahad_jr_scol galahad_jr_scol_s_64
+#define galahad_jr_sprod galahad_jr_sprod_s_64
 #define galahad_fc galahad_fc_s_64
 #define galahad_gj galahad_gj_s_64
 #define galahad_hl galahad_hl_s_64
@@ -3195,6 +3198,9 @@
 #define galahad_jrprod galahad_jrprod_q_64
 #define galahad_hrprod galahad_hrprod_q_64
 #define galahad_shrprod galahad_shrprod_q_64
+#define galahad_jr_prod galahad_jr_prod_q_64
+#define galahad_jr_scol galahad_jr_scol_q_64
+#define galahad_jr_sprod galahad_jr_sprod_q_64
 #define galahad_fc galahad_fc_q_64
 #define galahad_gj galahad_gj_q_64
 #define galahad_hl galahad_hl_q_64
@@ -3211,6 +3217,9 @@
 #define galahad_jrprod galahad_jrprod_64
 #define galahad_hrprod galahad_hrprod_64
 #define galahad_shrprod galahad_shrprod_64
+#define galahad_jr_prod galahad_jr_prod_64
+#define galahad_jr_scol galahad_jr_scol_64
+#define galahad_jr_sprod galahad_jr_sprod_64
 #define galahad_fc galahad_fc_64
 #define galahad_gj galahad_gj_64
 #define galahad_hl galahad_hl_64
@@ -3229,6 +3238,9 @@
 #define galahad_jrprod galahad_jrprod_s
 #define galahad_hrprod galahad_hrprod_s
 #define galahad_shrprod galahad_shrprod_s
+#define galahad_jr_prod galahad_jr_prod_s
+#define galahad_jr_scol galahad_jr_scol_s
+#define galahad_jr_sprod galahad_jr_sprod_s
 #define galahad_fc galahad_fc_s
 #define galahad_gj galahad_gj_s
 #define galahad_hl galahad_hl_s
@@ -3245,6 +3257,9 @@
 #define galahad_jrprod galahad_jrprod_q
 #define galahad_hrprod galahad_hrprod_q
 #define galahad_shrprod galahad_shrprod_q
+#define galahad_jr_prod galahad_jr_prod_q
+#define galahad_jr_scol galahad_jr_scol_q
+#define galahad_jr_sprod galahad_jr_sprod_q
 #define galahad_fc galahad_fc_q
 #define galahad_gj galahad_gj_q
 #define galahad_hl galahad_hl_q
