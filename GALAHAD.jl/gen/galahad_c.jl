@@ -16,8 +16,8 @@ typedef $ipc_ galahad_jrprod$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, co
 typedef $ipc_ galahad_hrprod$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, const $rpc_ x[], const $rpc_ y[], $rpc_ u[], const $rpc_ v[], bool got_h, const void *userdata);
 typedef $ipc_ galahad_shrprod$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, $ipc_ pne, const $rpc_ x[], const $rpc_ v[], $rpc_ pval[], bool got_h, const void *userdata);
 typedef $ipc_ galahad_jr_prod$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, const $rpc_ x[], const bool transpose, const $rpc_ v[], $rpc_ p[], bool got_j, const void *userdata);
-typedef $ipc_ galahad_jr_scol$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m,  const $rpc_ x[], $ipc_ index, $rpc_ val[], $ipc_ row[], $ipc_ nz, bool got_j, const void *userdata);
-typedef $ipc_ galahad_jr_sprod$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m,  const $rpc_ x[], const bool transpose, const $rpc_ v[], $rpc_ p[], const $ipc_ free[], $ipc_ n_free, bool got_j, const void *userdata);
+typedef $ipc_ galahad_jr_scol$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, const $rpc_ x[], $ipc_ index, $rpc_ val[], $ipc_ row[], $ipc_ nz, bool got_j, const void *userdata);
+typedef $ipc_ galahad_jr_sprod$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, const $rpc_ x[], const bool transpose, const $rpc_ v[], $rpc_ p[], const $ipc_ free[], $ipc_ n_free, bool got_j, const void *userdata);
 typedef $ipc_ galahad_fc$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, const $rpc_ x[], $rpc_ *f, $rpc_ c[], const void *userdata);
 typedef $ipc_ galahad_gj$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, $ipc_ jne, const $rpc_ x[], $rpc_ g[], $rpc_ j[], const void *userdata);
 typedef $ipc_ galahad_hl$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, $ipc_ hne, const $rpc_ x[], const $rpc_ y[], $rpc_ h[], const void *userdata);

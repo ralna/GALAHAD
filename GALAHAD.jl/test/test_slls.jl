@@ -209,7 +209,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
 
       if inform[].status == 0
         @printf("%s:%6i iterations. Optimal objective value = %.2f, status = %1i\n",
-                st, inform[].iter, (double)inform[].obj, inform[].status)
+                st, inform[].iter, inform[].obj, inform[].status)
       else
         @printf("%s: SLLS_solve exit status = %1i\n", st, inform[].status)
       end
@@ -308,7 +308,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     # Print solution details
     if inform[].status == 0
       @printf("%s:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
-              st, inform[].iter, (double)inform[].obj, inform[].status)
+              st, inform[].iter, inform[].obj, inform[].status)
     else
       @printf("%s: SLLS_solve exit status = %1i\n", st, inform[].status)
     end
