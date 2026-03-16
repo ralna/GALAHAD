@@ -42,3 +42,10 @@ jobs:
           echo "https://github.com/ralna/GALAHAD/blob/master/GALAHAD.jl/gen/README.md";
           exit 1;
           }
+
+      - name: Check galahad.h with Clang.jl
+        shell: bash
+        run: |
+          cd GALAHAD.jl/gen
+          julia --color=no --project -e 'using Pkg; Pkg.instantiate()'
+          julia --color=no --project -e 'include("wrapper.jl"); check_galahad_headers()'
