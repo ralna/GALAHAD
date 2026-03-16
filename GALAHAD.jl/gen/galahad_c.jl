@@ -244,3 +244,25 @@ function check_galahad_c()
   build!(ctx, BUILDSTAGE_NO_PRINTING)
   return nothing
 end
+
+function check_galahad_headers()
+  include_dir = joinpath(ENV["GALAHAD"], "include")
+  options = load_options(joinpath(@__DIR__, "galahad.toml"))
+  options["general"]["library_name"] = "libgalahad"
+
+  for T in ("Float32", "Float64", "Float128")
+    for INT in ("Int32", "Int64")
+      args = get_default_args()
+      push!(args, "-I$include_dir")
+      (T == "Float32") && push!(args, "-DREAL_32")
+      (T == "Float128") && push!(args, "-DREAL_128")
+      (INT == "Int64") && push!(args, "-DINTEGER_64")
+
+      galahad_headers = joinpath(include_dir, "galahad.h")
+      headers = [galahad_headers]
+      ctx = create_context(headers, args, options)
+      build!(ctx, BUILDSTAGE_NO_PRINTING)
+    end
+  end
+  return nothing
+end

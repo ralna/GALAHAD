@@ -49,6 +49,7 @@ if build_ciface
                            'galahad_lstr.h',
                            'galahad_nls.h',
                            'galahad_nodend.h',
+                           'galahad_nrek.h',
                            'galahad_precision.h',
                            'galahad_presolve.h',
                            'galahad_psls.h',
@@ -67,10 +68,12 @@ if build_ciface
                            'galahad_ssids.h',
                            'galahad_ssls.h',
                            'galahad_trb.h',
+                           'galahad_trek.h',
                            'galahad_trs.h',
                            'galahad_tru.h',
                            'galahad_ugo.h',
                            'galahad_uls.h',
+                           'galahad_version.h',
                            'galahad_wcp.h')
 endif
 
@@ -79,7 +82,8 @@ if build_pythoniface
 endif
 
 if not libhsl.found()
-  galahad_headers += files('hsl_ma48.h',
+  galahad_headers += files('hsl_precision.h',
+                           'hsl_ma48.h',
                            'hsl_ma57.h',
                            'hsl_ma77.h',
                            'hsl_ma86.h',
