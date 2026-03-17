@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-02-26 AT 09:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-03-17 AT 08:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -2155,7 +2155,7 @@
 !  compute the norm of the projected gradient
 
        val = MIN( one, one / TWO_NORM( prob%G( : prob%n ) ) )
-       data%S = prob%X - val * prob%G( : prob%n )
+       data%S = prob%X( : prob%n ) - val * prob%G( : prob%n )
        IF ( data%multiple_simplices ) THEN
 !write(6,"( ' ! x            ', 5ES12.4 )" ) prob%X
 !write(6,"( ' ! x-alpha g    ', 5ES12.4 )" ) data%S
@@ -2167,7 +2167,7 @@
        ELSE
          CALL SLLS_project_onto_simplex( prob%n, data%S, data%X_new, i )
        END IF
-       inform%norm_pg = MAXVAL( ABS( data%X_new - prob%X ) )
+       inform%norm_pg = MAXVAL( ABS( data%X_new - prob%X( : prob%n ) ) )
 !write(6,"( ' ! ||pg|| ', ES12.4 )" ) inform%norm_pg
 
 !write(6,"( ' etx etxnew = ', 2ES12.4 )" ) SUM( prob%X ), SUM( data%X_new )
@@ -4236,7 +4236,8 @@
         t_opt = zero ; f_opt = data%f_0 ; phi_opt = data%phi_0 ; status = - 1
         RETURN
       END IF
-      data%phi_1_stop = 100.0_rp_ * epsmch * REAL( n, KIND = rp_ )
+!     data%phi_1_stop = 100.0_rp_ * epsmch * REAL( n, KIND = rp_ )
+      data%phi_1_stop = epsmch * SQRT( REAL( n, KIND = rp_ ) )
 
 !  project the initial point x onto Delta^n
 
@@ -4363,19 +4364,13 @@
           phi_1 = f_1 ; phi_2 = f_2
         END IF
 
-!  stop if the slope is positive
-
-        IF ( phi_1 > - data%phi_1_stop ) THEN
-          t_opt = data%t_total ; f_opt = data%f_0 ; phi_opt = data%phi_0
-          IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES12.4, ' at t =',   &
-         &    ES11.4, ' at start of segment ', I0 )" )                         &
-                prefix, phi_opt, t_opt, segment
-          GO TO 900
-        END IF
-
 !  compute the step to the minimizer along the segment
 
-        t_opt = - phi_1 / phi_2
+        IF ( phi_2 /= zero ) THEN
+          t_opt = - phi_1 / phi_2
+        ELSE
+          t_opt = infinity
+        END IF
 
 !  compute the step along s to the boundary of Delta^n, as well as the
 !  index i_fixed of the position in FREE of the variable that meets its bound
@@ -4399,6 +4394,16 @@
           data%t_total + t_opt
 !       IF ( data%t_break == t_max .AND. debug )                               &
 !         WRITE( out,  "( ' s = ', /, ( 5ES12.4 ) )" ) S
+
+!  stop if the slope is positive
+
+        IF ( phi_1 > - data%phi_1_stop ) THEN
+          t_opt = data%t_total ; f_opt = data%f_0 ; phi_opt = data%phi_0
+          IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES12.4, ' at t =',   &
+         &    ES11.4, ' at start of segment ', I0 )" )                         &
+                prefix, phi_opt, t_opt, segment
+          GO TO 900
+        END IF
 
 !  stop if the minimizer on the segment occurs before the end of the segment
 
@@ -4761,7 +4766,9 @@
         t_opt = zero ; f_opt = data%f_0 ; phi_opt = data%phi_0 ; status = - 1
         RETURN
       END IF
-      data%phi_1_stop = 100.0_rp_ * epsmch * REAL( n, KIND = rp_ )
+!     data%phi_1_stop = 100.0_rp_ * epsmch * REAL( n, KIND = rp_ )
+      data%phi_1_stop = epsmch * SQRT( REAL( n, KIND = rp_ ) )
+!     data%phi_1_stop = zero
 
 !  project the initial point x onto Delta^n
 
@@ -4872,7 +4879,6 @@
      &             '  phi_2       t_break       t_opt    fixed' )" ) prefix
 
   100 CONTINUE
-if(summary) write(6,"( ' free(2) ', I0 )" ) free(2)
 
 !       IF ( debug ) THEN
 !         WRITE( out,  "( ' s = ', /, ( 5ES12.4 ) )" ) S
@@ -4904,19 +4910,13 @@ if(summary) write(6,"( ' free(2) ', I0 )" ) free(2)
           phi_2 = f_2
         END IF
 
-!  stop if the slope is positive
-
-        IF ( phi_1 > - data%phi_1_stop ) THEN
-          t_opt = data%t_total ; f_opt = data%f_0 ; phi_opt = data%phi_0
-          IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES12.4, ' at t =',   &
-         &    ES11.4, ' at start of segment ', I0 )" )                         &
-                prefix, phi_opt, t_opt, segment
-          GO TO 900
-        END IF
-
 !  compute the step to the minimizer along the segment
 
-        t_opt = - phi_1 / phi_2
+        IF ( phi_2 /= zero ) THEN
+          t_opt = - phi_1 / phi_2
+        ELSE
+          t_opt = infinity
+        END IF
 
 !  compute the step along s to the boundary of Delta^n, as well as the
 !  index i_fixed of the position in FREE of the variable that meets its bound
@@ -4942,6 +4942,17 @@ if(summary) write(6,"( ' free(2) ', I0 )" ) free(2)
           data%t_total + t_opt, FREE( i_fixed )
 !       IF ( data%t_break == t_max .AND. debug )                               &
 !         WRITE( out,  "( ' s = ', /, ( 5ES12.4 ) )" ) S
+
+!  stop if the slope is positive
+
+!       IF ( phi_1 > - data%phi_1_stop ) THEN
+        IF ( phi_1 >= - data%phi_1_stop ) THEN
+          t_opt = data%t_total ; f_opt = data%f_0 ; phi_opt = data%phi_0
+          IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES12.4, ' at t =',   &
+         &    ES11.4, ' at start of segment ', I0 )" )                         &
+                prefix, phi_opt, t_opt, segment
+          GO TO 900
+        END IF
 
 !  stop if the minimizer on the segment occurs before the end of the segment
 
