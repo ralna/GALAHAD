@@ -56,11 +56,12 @@ typedef ipc_ galahad_jr_prod( ipc_ n, ipc_ m_r, const rpc_ x[],
                               const bool transpose, const rpc_ v[], rpc_ p[], 
                               bool got_jr, const void *userdata );
 typedef ipc_ galahad_jr_scol( ipc_ n, ipc_ m_r, const rpc_ x[], ipc_ index,
-                              rpc_ val[], ipc_ row[], ipc_ nz, bool got_jr,
-                              const void *userdata );
-typedef ipc_ galahad_jr_sprod( ipc_ n, ipc_ m_r, const rpc_ x[], bool transpose,
-                               const rpc_ v[], rpc_ p[], const ipc_ free[],
-                               ipc_ n_free, bool got_jr, const void *userdata );
+                              rpc_ val[], ipc_ row[], ipc_ nz, 
+                              bool got_jr, const void *userdata );
+typedef ipc_ galahad_jr_sprod( ipc_ n, ipc_ m_r, const rpc_ x[], 
+                               const bool transpose, const rpc_ v[], rpc_ p[], 
+                               const ipc_ free[], ipc_ n_free, 
+                               bool got_jr, const void *userdata );
 
 // EXPO
 typedef ipc_ galahad_fc( ipc_ n, ipc_ m, const rpc_ x[], rpc_ *f, rpc_ c[], 

@@ -14,9 +14,11 @@ Least-Squares
 GALAHAD [1]_ is a suite of open-source routines for large-scale continuous
 optimization.  Currently there is a single package designed to find a local
 minimizer of a sum-of-squares function whose variables may take any values,
-a second pair that target linear problems with simple bounds on the variables,
-another pair for which the feasible region is an intersection of regular 
-simplices, and a final one for which the constraints are linear (polyhedral).
+a second for the case where the variables are constrained by non-overlapping 
+simplex constraints, two more that target linear problems with simple bounds 
+on the variables, another pair for which the feasible region is an 
+intersection of regular simplices, and a final one for which the constraints 
+are linear (polyhedral).
 
 .. toctree::
    :maxdepth: 1
@@ -29,6 +31,7 @@ simplices, and a final one for which the constraints are linear (polyhedral).
    NLS - unconstrained local nonlinear least-squares using a regularization method<nls>
    SLLS - simplex-constrained linear least-squares using a preconditioned, projected-gradient method <slls>
    SLLSB - simplex-constrained linear least-squares using an interior-point method <sllsb>
+   SNLS - simplex-constrained nonlinear least-squares using a regularization method <snls>
 
 References
 ^^^^^^^^^^

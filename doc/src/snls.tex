@@ -32,7 +32,7 @@ the index sets of {\bf cohorts} $\calC_i \subseteq \{1,\ldots,n\}$
 for which $\calC_i \cap \calC_j = \emptyset$ for $1 \leq i, \neq j \leq m_c$,
 The method offers the choice of projected-gradient and interior-point
 iteration to solve the key regularization subproblems,
- and is most suitable for large problems.
+and is most suitable for large problems.
 First derivatives of the {\bf residual function}
 $\bmr(\bmx)$ must be available, either directly as the Jacobian matrix 
 $\bmJ_r(\bmx) = \nabla \bmr(\bmx)$ or via the action of this matrix
@@ -145,7 +145,7 @@ of these derivatives (and their transposes) with specified vectors are possible
 
 The method makes considerable use of efficient available methods for computing 
 the projection $P[\bmx]$, that is defined to be the closest (two-norm) point 
-of a given $\bmx$ to the simplex constraint set $\calC(\bmx)$.
+of a given $\bmx$ to the simplex constraint set $\calC(\bmx)$. 
 
 %%%%%%%%%%%%%%%%%%%%%% matrix storage formats %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -315,7 +315,7 @@ The following components are used here:
 is used to indicate the storage scheme used. If the dense-by-row storage scheme
 (see Section~\ref{dense}) is used,
 the first five components of {\tt Jr\%type} must contain the
-string {\tt DENSE} or (or the first thirteen contain{\tt DENSE\_BY\_ROWS}), 
+string {\tt DENSE} or (or the first thirteen contain {\tt DENSE\_BY\_ROWS}), 
 while if a  dense-by-column storage scheme (see Section~\ref{dense-column}) 
 is desired, the first sixteen components must contain the string 
 {\tt DENSE\_BY\_COLUMNS}.
@@ -325,9 +325,9 @@ string {\tt COORDINATE},
 for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
 its first fourteen components must contain the
 string {\tt SPARSE\_BY\_ROWS}.
-and for the sparse row-wise storage scheme (see Section~\ref{columnwise}),
+and for the sparse column-wise storage scheme (see Section~\ref{columnwise}),
 the first seventeen components of {\tt Jr\%type} must contain the
-string {\tt SPARSE\_BY\_ROWS}.
+string {\tt SPARSE\_BY\_COLUMNS}.
 
 For convenience, the procedure {\tt SMT\_put}
 may be used to allocate sufficient space and insert the required keyword
@@ -589,9 +589,9 @@ subproblem. Possible values are:
 \itt{$\leq$ 1} A projected-gradient method using {\tt GALAHAD\_SLLS} 
 will be used.
 \itt{2} An interior-point method using {\tt GALAHAD\_SLLSB} will be used.
-\itt{$\geq$ 3} An interior-point method will initially be used,  but a
-switch to a projected-gradient method subsequently occur 
-(see {\tt \%stop\_pg\_switch}.
+\itt{$\geq$ 3} An interior-point method will initially be used, but a
+switch to a projected-gradient method will occur when sufficient progress
+has occurred (see {\tt \%stop\_pg\_switch}).
 \end{description}
 The default is {\tt subproblem\_solver = 1}.
 
@@ -719,7 +719,7 @@ The defaults are
 that is used to specify the value of the two-norm of the projected gradient,
 required before a switch is made from the Gauss-Newton model to the Newton 
 one when {\tt \%newton\_acceleration} is \true.
-The default is %{\tt switch\_to\_newton = 0.1}. 
+%The default is {\tt switch\_to\_newton = 0.1}. 
 {\bf Not yet implemented.}
 
 \itt{cpu\_time\_limit} is a scalar variable of type \realdp,
@@ -1115,8 +1115,9 @@ taken to be $1.0$.
 \noindent
 \restrictions {\tt nlp\%n} $> 0$, {\tt nlp\%m\_r} $> 0$ and
 {\tt nlp\%Jr\%type} $\in \{
-  \mbox{\tt 'DENSE'}, \mbox{\tt 'COORDINATE'}, \mbox{\tt 'SPARSE\_BY\_ROWS'}
- \}$ 
+  \mbox{\tt 'DENSE'}, {\tt 'DENSE\_BY\_ROWS'}, {\tt 'DENSE\_BY\_COLUMNS'},
+  \mbox{\tt 'COORDINATE'}, \mbox{\tt 'SPARSE\_BY\_ROWS'},
+  \mbox{\tt 'SPARSE\_BY\_COLUMNS'} \}$ 
 %and
 %{\tt nlp\%H\%type} $\in \{
 %  \mbox{\tt 'DENSE'}, \mbox{\tt 'COORDINATE'}, \mbox{\tt 'SPARSE\_BY\_ROWS'},
@@ -1573,7 +1574,6 @@ Possible values of {\tt inform\%status} and the information required are
      Jacobian is undefined at $\bmx$---the user need not set {\tt reverse\%P}, 
      but should then set {\tt reverse\%eval\_status} to a non-zero value.
 
-
 \ittf{6.} The user should compute the $j$-th column of $\bmJ_r(\bmx)$, with
      $j$ provided in {\tt reverse\%index}, at the point $\bmx$ given in 
      {\tt nlp\%X}. The resulting {\em nonzeros} and their corresponding 
@@ -1648,7 +1648,12 @@ and {\tt inform\%bad\_alloc}, respectively.
   The restriction {\tt nlp\%n} $> 0$ and {\tt nlp\%m\_r} $> 0$,
   or requirements that
   {\tt nlp\%Jr\%type}  contains its relevant string
-  \mbox{\tt 'DENSE'}, \mbox{\tt 'COORDINATE'} 
+  \mbox{\tt 'DENSE'}, 
+  \mbox{\tt 'DENSE\_BY\_ROWS'}, 
+  \mbox{\tt 'DENSE\_BY\_COLUMNS'}, 
+  \mbox{\tt 'SPARSE\_BY\_ROWS'}, 
+  \mbox{\tt 'SPARSE\_BY\_COLUMNS'}, 
+  \mbox{\tt 'COORDINATE'} 
   has been violated.
 
 %\itt{-3.} At least one of the arrays
@@ -1912,6 +1917,12 @@ The package is thread-safe.
 %%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galmethod
+The primal optimality conditions \req{c} and dual optimality conditions
+\[\bmJ_r^T(\bmx) \bmW \bmr(\bmx) = \sum_{i=1}^{m_c} \bme_{\calC_i} y_i + \bmz\]
+necessarily hold at an optimal point $\bmx$ for some Lagrange multipliers 
+$\bmy$ and dual variables $\bmz \geq 0$, where additionally $\bmx$ and $\bmz$ 
+satisfy the complementarity conditions $x_i z_i = 0$ for $i=1,\ldots,n$.
+
 An adaptive regularization method is used.
 In this, an improvement to a current
 estimate of the required minimizer, $\bmx_k$ is sought by computing a

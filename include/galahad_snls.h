@@ -645,8 +645,8 @@ void snls_import( struct snls_control_type *control,
  @param[in]  Jr_ptr_ne is a scalar variable of type ipc_, that holds the
    length of the pointer array if sparse row or column storage scheme is
    used for \f$J_r\f$. For the sparse row scheme,  Jr_ptr_ne should be at least
-   o+1, while for the sparse column scheme,  it should be at least n+1,
-   It need not be set when the other schemes are used.
+   o+1, while for the sparse column scheme, it should be at least n+1,
+   It should be set to 0 when the other schemes are used.
 
  @param[in]  Jr_ptr is a one-dimensional array of size o+1 and type ipc_,
    that holds the starting position of each row of \f$J_r\f$, as well as the
@@ -660,10 +660,10 @@ void snls_import( struct snls_control_type *control,
  @param[in]  cohort is a one-dimensional array of size n and type ipc_,
     that specifies which cohort each variable is assigned to.
     If variable $x_j$ is associated with cohort $\cal C_i$, 
-    $0 \leq i \leq m-1$, cohort[j] should be set to i, while 
-    if $x_j$ is unconstrained cohort[j] = 0 should be assigned. 
+    $0 \leq i \leq m_r-1$, cohort[j] should be set to i, while 
+    if $x_j$ is unconstrained cohort[j] = -1 should be assigned. 
     At least one value cohort[j] for $j = 0,\ldots\,n-1$ is expected 
-    to take the value $i$ for every $0 \leq i \leq m-1$, that is 
+    to take the value $i$ for every $0 \leq i \leq m_r-1$, that is 
     no empty cohorts are allowed. If all the variables lie in a
     single simplex, cohort can be set to NULL.
 
@@ -680,7 +680,7 @@ void snls_import_without_jac( struct snls_control_type *control,
                               const ipc_ cohort[]);
 
 /*!<
- Import problem data excluding the structure of \f$J_r(x)\f$,
+ Import problem data, excluding the structure of \f$J_r(x)\f$,
  into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
@@ -761,11 +761,8 @@ void snls_solve_with_jac( void **data,
                           const rpc_ w[]);
 
 /*!<
- Find a local minimizer of a given function using a trust-region method.
-
- This call is for the case where \f$H = \nabla_{xx}f(x)\f$ is
- provided specifically, and all function/derivative information is
- available by function calls.
+ Solve the simplex-constrained nonlinear least-squares problem when
+ the Jacobian \f$J_r(x)\f$ is available  by function calls.
 
  @param[in,out] data holds private internal data
 
@@ -839,16 +836,15 @@ void snls_solve_with_jac( void **data,
     The j-th component of g, j = 0, ... , n-1, contains \f$g_j(x)\f$.
 
  @param[in,out] x_stat is a one-dimensional array of size n and type ipc_, that
-    gives the optimal status of the problem variables. If x_stat(j) is negative,
-    the variable \f$x_j\f$ most likely lies on its lower bound, if it is
-    positive, it lies on its upper bound, and if it is zero, it lies
-    between its bounds.
+    gives the optimal status of the problem variables. If x_stat[j] is negative,
+    the variable \f$x_j\f$ most likely lies at its zero lower bound, 
+    while if it is zero, \f$x_j\f$ is free of its bound (or unconstrained).
 
  @param eval_r is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_r( ipc_ n, ipc_ m, const rpc_ x[], rpc_ r[],
-                   const void *userdata )
+        ipc_ eval_r( ipc_ n, ipc_ m_r, const rpc_ x[], rpc_ r[],
+                     const void *userdata )
    \endcode
    The componnts of the residual function \f$r(x)\f$ evaluated at x=\f$x\f$
    must be assigned to r, and the function return value set to 0. If the
@@ -982,17 +978,17 @@ void snls_solve_with_jacprod( void **data,
  @param eval_r is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_r( ipc_ n, const rpc_ x[], rpc_ c[], const void *userdata )
+        ipc_ eval_r( ipc_ n, const rpc_ x[], rpc_ r[], const void *userdata )
    \endcode
    The componnts of the residual function \f$c(x)\f$ evaluated at x=\f$x\f$
-   must be assigned to c, and the function return value set to 0. If the
+   must be assigned to r, and the function return value set to 0. If the
    evaluation is impossible at x, return should be set to a nonzero value.
    Data may be passed into \c eval_r via the structure \c userdata.
 
  @param eval_jr_prod is a user-supplied function that must have the following
    signature:
    \code
-      ipc_ eval_jr_prod( ipc_ n, ipc_ m_r, const rpc_ x[], bool transpose,
+      ipc_ eval_jr_prod( ipc_ n, ipc_ m_r, const rpc_ x[], const bool transpose,
                          const rpc_ v[], rpc_ p[], bool got_jr,
                          const void *userdata )
    \endcode
@@ -1019,11 +1015,12 @@ void snls_solve_with_jacprod( void **data,
  @param eval_jr_sprod is a user-supplied function that must have the following
    signature:
    \code
-      ipc_ eval_jr_sprod( ipc_ n, ipc_ m_r, const rpc_ x[], bool transpose,
-                          const rpc_ v[], rpc_ p[], const ipc_ free,
-                          ipc_ n_free, bool got_jr, const void *userdata )
+      ipc_ eval_jr_sprod( ipc_ n, ipc_ m_r, const rpc_ x[], 
+                          const bool transpose, const rpc_ v[], rpc_ p[], 
+                          const ipc_ free[], ipc_ n_free, bool got_jr, 
+                          const void *userdata )
    \endcode
-   The product\f$J_r(x) v\f$ (if tranpose is false) or \f$J_r^T(x) v\f$ 
+   The product \f$J_r(x) v\f$ (if tranpose is false) or \f$J_r^T(x) v\f$ 
    (if tranpose is true) bewteen the Jacobian 
    \f$J_r(x) = \nabla_{x}r(x)\f$ or its tranpose with the vector v=\f$v\f$
    must be returned in u, and the function return value set to 0. If
@@ -1060,9 +1057,8 @@ void snls_solve_reverse_with_jac( void **data,
                                   const rpc_ w[]);
 
 /*!<
- Solve the simplex-constrained nonlinear least-squares problem when the
- products of the Jacobian \f$J_r(x)\f$ and its transpose
- with specified vectors may be computed by the calling program.
+ Solve the simplex-constrained nonlinear least-squares problem when
+ the Jacobian \f$J_r(x)\f$ may be computed by the calling program.
 
  @param[in,out] data holds private internal data
 
@@ -1097,6 +1093,8 @@ void snls_solve_reverse_with_jac( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
+  \li -82. The user has forced termination of solver by removing the file 
+         named control.alive_file from unit unit control.alive_unit.
 
  @param status (continued)
   \li  2. The user should compute the vector of residuals \f$r(x)\f$ at
@@ -1231,6 +1229,8 @@ void snls_solve_reverse_with_jacprod( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
+  \li -82. The user has forced termination of solver by removing the file 
+         named control.alive_file from unit unit control.alive_unit.
 
  @param status (continued)
   \li  2. The user should compute the vector of residuals \f$r(x)\f$ at
@@ -1243,7 +1243,7 @@ void snls_solve_reverse_with_jacprod( void **data,
          to a non-zero value.
 
   \li  4. The product \f$p = J_r(x) v\f$ of the residual Jacobian 
-       \f$J_r(x)\f$ with a given
+       \f$J_r(x)\f$ at the point \f$x\f$ indicated in x with a given
        output vector \f$v\f$ is required from the user. The vector \f$v\f$
        will be  stored in v and the product \f$Av\f$ must be returned in p,
        eval_status should be set to 0, and snls_solve_reverse_with_jacprod
@@ -1334,25 +1334,25 @@ void snls_solve_reverse_with_jacprod( void **data,
     is used for reverse communication (see status=2-7 above for details)
 
  @param[out] iv is a one-dimensional array of size n and type ipc_, that
-    is used for reverse communication (see status=5-6 above for details)
+    is used for reverse communication (see status=7-8 above for details)
 
  @param[out] lvl is a scalar of type ipc_, that
-    is used for reverse communication (see status=5-6 above for details)
+    is used for reverse communication (see status=7-8 above for details)
 
  @param[out] lvu is a scalar of type ipc_, that
-    is used for reverse communication (see status=5-6 above for details)
+    is used for reverse communication (see status=7-8 above for details)
 
  @param[out] index is a scalar of type ipc_, that
-    is used for reverse communication (see status=4 above for details)
+    is used for reverse communication (see status=6 above for details)
 
  @param[in] p is a one-dimensional array of size n and type rpc_, that
-    is used for reverse communication (see status=2-7 above for details)
+    is used for reverse communication (see status=2-8 above for details)
 
  @param[in] ip is a one-dimensional array of size n and type ipc_, that
-    is used for reverse communication (see status=4 above for details)
+    is used for reverse communication (see status=6 above for details)
 
  @param[in] lp is a scalar of type ipc_, that
-    is used for reverse communication (see status=4 above for details)
+    is used for reverse communication (see status=6 above for details)
 
  @param[in] w is a one-dimensional array of size m_r and type rpc_, that
     holds the values of the weights \f$w\f$. The j-th component of w, 
@@ -1404,9 +1404,7 @@ void snls_terminate( void **data,
    \example snlst.c
    This is an example of how to use the package to solve a simplex-constrained
    nonlinear least-squares problem.
-   A variety of supported Jacobian storage formats are shown. An example
-   of preconditioning, in this case with the identity matrix which
-   actually achieves nothing, is also illustrated.
+   A variety of supported Jacobian storage formats are shown. 
 
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.

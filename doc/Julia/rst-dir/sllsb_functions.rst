@@ -138,10 +138,10 @@ Import problem data into internal storage prior to solution.
 
                 - is a scalar variable of type INT that holds the number of residuals.
 
-	*
-		- m
+        *
+                - m
 
-		- is a scalar variable of type INT that holds the number of cohorts. If all the variables lie in a single cohort, this value will be ignored.
+                - is a scalar variable of type INT that holds the number of cohorts. If all the variables lie in a single cohort, this value will be ignored.
 
         *
                 - Ao_type
@@ -173,10 +173,10 @@ Import problem data into internal storage prior to solution.
 
                 - is a one-dimensional array of size n+1 and type INT that holds the starting position of each row of $A_o$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type INT that holds the starting position of each column of $A_o$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
-	*
-		- cohort
+        *
+                - cohort
 
-		- is a one-dimensional array of size n and type INT, that specifies which cohort each variable is associated with. If variable $x_j$ is associated with cohort $\cal C_i$, $1 \leq i \leq m$, cohort[j] should be set to i, while if $x_j$ is unconstrained cohort[j] = 0 should be assigned. At least one value cohort[j] for $j = 1,\ldots\,n$ is expected to take the value $i$ for every $1 \leq i \leq m$, that is no empty cohorts are allowed. If all the variables lie in a single cohort, cohort can be set as C_NULL.
+                - is a one-dimensional array of size n and type INT, that specifies which cohort each variable is associated with. If variable $x_j$ is associated with cohort $\cal C_i$, $1 \leq i \leq m$, cohort[j] should be set to i, while if $x_j$ is unconstrained cohort[j] = 0 should be assigned. At least one value cohort[j] for $j = 1,\ldots\,n$ is expected to take the value $i$ for every $1 \leq i \leq m$, that is no empty cohorts are allowed. If all the variables lie in a single cohort, cohort can be set as C_NULL.
 
 .. index:: pair: function; sllsb_reset_control
 .. _doxid-galahad__sllsb_8h_1a9f7ccb0cffa909a2be7556edda430190:

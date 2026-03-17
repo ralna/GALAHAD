@@ -5,13 +5,13 @@ The ``snls`` package uses a **regularization method** to solve
 a given **simplex-constrained nonlinear least-squares problem**.
 The aim is to minimize the least-squares objective function
 $$f(x) :=
-\frac{1}{2} \sum_{i=0}^{m_r-1} w_i r_i^2(x) \equiv \frac{1}{2} \|r(x)\|^2_W$$
+\frac{1}{2} \sum_{i=1}^{m_r} w_i r_i^2(x) \equiv \frac{1}{2} \|r(x)\|^2_W$$
 where the variables $x$ are required to lie within the
 **regular simplex**
 $$e^T x = 1 \;\;\mbox{and}\;\; x \geq 0,$$
 or an intersection of **multiple non-overlapping regular simplices**
 $$e_{\cal C_i}^T x_{\cal C_i}^{} = 1 \;\;\mbox{and}\;\; x_{\cal C_i}^{}
-\geq 0 \;\;\mbox{for}\;\; i = 0,\ldots,m_c-1, \hspace{10mm} \mbox{(1)}$$
+\geq 0 \;\;\mbox{for}\;\; i = 1,\ldots,m_c, \hspace{10mm} \mbox{(1)}$$
 where the non-negative **weights** $w$ are given, $e$ is the vector of ones, 
 the vector $v_{\cal C}$ is made up of those entries of $v$ indexed by
 the set $\cal C$, 
@@ -31,10 +31,10 @@ terminology
 -----------
 
 The **primal optimality** conditions (1) and **dual optimality** conditions
-$$J_r^T(x) W r(x) = \sum_{i=0}^{m_c-1} e_{\cal C_i}^{} y_i + z$$
+$$J_r^T(x) W r(x) = \sum_{i=1}^{m_c} e_{\cal C_i}^{} y_i + z$$
 necessarily hold at an optimal point $x$ for some **Lagrange multipliers** 
 $y$ and **dual variables** $z \geq 0$, where additionally $x$ and $z$ 
-satisfy the **complementarity** conditions $x_i z_i = 0$ for $i=0,\ldots,n-1$.
+satisfy the **complementarity** conditions $x_i z_i = 0$ for $i=1,\ldots,n$.
 
 The algorithm used by the package is iterative. From the current best estimate
 of the minimizer $x_k$, a trial improved point $x_k + s_k$ is sought.
@@ -52,9 +52,9 @@ Various models are provided, and each has different derivative requirements.
 We denote the $m$ by $n$ residual **Jacobian**
 $J(x) \equiv \nabla_x c(x)$ as the matrix  whose $i,j$-th component
 $$J(x)_{i,j} := \partial r_i(x) / \partial x_j \;\;
-\mbox{for $i=0,\ldots,m_r$ and $j=0,\ldots,n-1$.}$$
+\mbox{for $i=1,\ldots,m_r$ and $j=1,\ldots,n$.}$$
 For a given $m_r$-vector $y$, the **weighted-residual Hessian** is the sum
-$$H(x,y) := \sum_{\ell=0}^{m_r-1} y_{\ell} H_{\ell}(x), \;\; \mbox{where}\;\; H_{\ell}(x)_{i,j} := \partial^2 r_{\ell}(x) / \partial x_i \partial x_j \;\; \mbox{for $i,j=0,\ldots,n-1$}$$
+$$H(x,y) := \sum_{\ell=1}^{m_r} y_{\ell} H_{\ell}(x), \;\; \mbox{where}\;\; H_{\ell}(x)_{i,j} := \partial^2 r_{\ell}(x) / \partial x_i \partial x_j \;\; \mbox{for $i,j=1,\ldots,n$}$$
 is the Hessian of $r_\ell(x)$.
 The models $t_k(s)$ provided are,
 
