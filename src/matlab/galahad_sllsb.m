@@ -1,53 +1,56 @@
-% GALAHAD_BLLSB -
+% GALAHAD_SLLSB -
 %
 %  Given an o by n matrix A_o, an o by o diagonal scaling matrix W,
 %  an o-vector b, a constant sigma >= 0, and n-vectors x_l <= x_u,
-%  find a local minimizer of the (REGULARIZED) BOUND-CONSTRAINED
+%  find a local minimizer of the (REGULARIZED) SIMPLEX-CONSTRAINED
 %  LINEAR LEAST-SQUARES problem
 %    minimize 0.5 * || A_o x - b||_W^2 + 0.5 * sigma ||x-x_s||^2
-%    subject to x_l <= x <= x_u,
+%    subject to sum_{C_j} x_i = 1, x_{C_j} >= 0 for j = 1,...,m
 %  where ||v||^2 = v' v and ||v||_W^2 = v' W v, using an interior-point method
 %  Advantage is taken of sparse A_o.
 %
 %  Simple usage -
 %
-%  to solve the constrained linear least-squares problem
+%  to solve the simplex-constrained linear least-squares problem
 %   [ x, inform, aux ]
-%    = galahad_bllsb( A_o, b, sigma, x_l, x_u, w, x_s, control )
+%    = galahad_sllsb( A_o, b, sigma, cohort, w, x_s, control )
 %
 %  Sophisticated usage -
 %
 %  to initialize data and control structures prior to solution
 %   [ control ]
-%    = galahad_bllsb( 'initial' )
+%    = galahad_sllsb( 'initial' )
 %
-%  to solve the convex quadratic program using existing data structures
+%  to solve the problem using existing data structures
 %   [ x, inform, aux ]
-%    = galahad_bllsb( 'existing', A_o, b, sigma, x_l, x_u, w, x_s, control )
+%    = galahad_sllsb( 'existing', A_o, b, sigma, cohort, w, x_s, control )
 %
 %  to remove data structures after solution
-%   galahad_bllsb( 'final' )
+%   galahad_sllsb( 'final' )
 %
 %  Usual Input -
 %    A_o: the o by n matrix A_o
 %    b: the o-vector b
 %    sigma: the regularization parameter sigma >= 0
-%    x_l: the n-vector x_l. The value -inf should be used for infinite bounds
-%    x_u: the n-vector x_u. The value inf should be used for infinite bounds
 %
 %  Optional Input - (either or both may be given, with w before control)
-%    w: the (diagonal) components of the diagonal scaling matrix W
+%    cohort: the cohorts, so that variable x_i is in cohort C_j if 
+%       cohort[i] = j, and x_i is not constrained if cohort[i] = 0 
 %    w: the o-vector of weights w for which W=diag(w) (= 1 if w is 
 %       not specified)
+%       ** N.B. If n=o and both w and cohort are provided, cohort 
+%          must proceed w in the calling sequence
 %    x_s: the n-vector of shifts x_s (= 0 if x_s is not specified)
-%       ** N.B. If x_s is required and n=o, w and x_s should 
-%          both be provided in that order, even if defaults are used. 
+%       ** N.B. If x_s is required and n=o, cohort, w and x_s should 
+%          all be provided in that order, even if defaults are used. 
+%          Otherwise, if cohort and x_s are both required, cohort 
+%          must proceed x_s in the calling sequence
 %    control: a structure containing control parameters.
 %      The components are of the form control.value, where
 %      value is the name of the corresponding component of
-%      the derived type BLLSB_CONTROL as described in the
-%      manual for the fortran 90 package GALAHAD_BLLSB.
-%      See: http://galahad.rl.ac.uk/galahad-www/doc/bllsb.pdf
+%      the derived type SLLSB_CONTROL as described in the
+%      manual for the fortran 90 package GALAHAD_SLLSB.
+%      See: http://galahad.rl.ac.uk/galahad-www/doc/sllsb.pdf
 %
 %  Usual Output -
 %   x: a local minimizer
@@ -57,9 +60,9 @@
 %   inform: a structure containing information parameters
 %      The components are of the form inform.value, where
 %      value is the name of the corresponding component of
-%      the derived type BLLSB_INFORM as described in the manual for
-%      the fortran 90 package GALAHAD_BLLSB.
-%      See: http://galahad.rl.ac.uk/galahad-www/doc/bllsb.pdf
+%      the derived type SLLSB_INFORM as described in the manual for
+%      the fortran 90 package GALAHAD_SLLSB.
+%      See: http://galahad.rl.ac.uk/galahad-www/doc/sllsb.pdf
 %  aux: a structure containing Lagrange multipliers and constraint status
 %   aux.r: values of the residuals A_o * x - b
 %   aux.z: dual variables corresponding to the bound constraints
@@ -69,4 +72,4 @@
 %           x_stat(i) = 0 if (x_i)_i < (x)_i < (x_u)_i
 %           x_stat(i) > 0 if (x_u)_i = (x)_i
 %
-% This version copyright Nick Gould for GALAHAD productions 24/December/2023
+% This version copyright Nick Gould for GALAHAD productions 24/March/2026

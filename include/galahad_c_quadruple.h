@@ -8623,8 +8623,8 @@ void sllsb_import_q(struct sllsb_control_type_q *control, void **data, int32_t *
 void sllsb_import_q_64(struct sllsb_control_type_q_64 *control, void **data, int64_t *status, int64_t n, int64_t o, int64_t m, char *Ao_type, int64_t Ao_ne, int64_t *Ao_row, int64_t *Ao_col, int64_t Ao_ptr_ne, int64_t *Ao_ptr, int64_t *cohort);
 void sllsb_reset_control_q(struct sllsb_control_type_q *control, void **data, int32_t *status);
 void sllsb_reset_control_q_64(struct sllsb_control_type_q_64 *control, void **data, int64_t *status);
-void sllsb_solve_given_a_q(void **data, int32_t *status, int32_t n, int32_t o, int32_t m, int32_t Ao_ne, __float128 *Ao_val, __float128 *b, __float128 regularization_weight, __float128 *x, __float128 *r, __float128 *y, __float128 *z, int32_t *x_stat, __float128 *w, __float128 *x_s);
-void sllsb_solve_given_a_q_64(void **data, int64_t *status, int64_t n, int64_t o, int64_t m, int64_t Ao_ne, __float128 *Ao_val, __float128 *b, __float128 regularization_weight, __float128 *x, __float128 *r, __float128 *y, __float128 *z, int64_t *x_stat, __float128 *w, __float128 *x_s);
+void sllsb_solve_given_a_q(void **data, int32_t *status, int32_t n, int32_t o, int32_t m, int32_t Ao_ne, __float128 *Ao_val, __float128 *b, __float128 regularization_weight, __float128 *x, __float128 *y, __float128 *z, __float128 *r, int32_t *x_stat, __float128 *w, __float128 *x_s);
+void sllsb_solve_given_a_q_64(void **data, int64_t *status, int64_t n, int64_t o, int64_t m, int64_t Ao_ne, __float128 *Ao_val, __float128 *b, __float128 regularization_weight, __float128 *x, __float128 *y, __float128 *z, __float128 *r, int64_t *x_stat, __float128 *w, __float128 *x_s);
 void sllsb_information_q(void **data, struct sllsb_inform_type_q *inform, int32_t *status);
 void sllsb_information_q_64(void **data, struct sllsb_inform_type_q_64 *inform, int64_t *status);
 void sllsb_terminate_q(void **data, struct sllsb_control_type_q *control, struct sllsb_inform_type_q *inform);

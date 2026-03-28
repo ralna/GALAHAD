@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-03-13 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-03-28 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -424,7 +424,7 @@
        INTEGER ( KIND = ip_ ) :: len_history, ibound, ipoint, icp, lbfgs_mem
        INTEGER ( KIND = ip_ ) :: nskip_lbfgs, nskip_prec, non_monotone_history
        INTEGER ( KIND = ip_ ) :: print_gap, max_diffs, latest_diff, total_diffs
-       INTEGER ( KIND = ip_ ) :: total_facts, h_ne, s_ne, max_hist, nf
+       INTEGER ( KIND = ip_ ) :: total_facts, h_ne, s_ne, max_hist, nf, n_free
        INTEGER ( KIND = ip_ ) :: ref( 1 )
        REAL ( KIND = rp_ ) :: time_start, time_record, time_now
        REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now, delta
@@ -1355,7 +1355,7 @@
      INTEGER ( KIND = ip_ ) :: i, ic, ir, j, l
      REAL ( KIND = rp_ ) :: ared, prered, rounding, obj, val
      LOGICAL :: alive
-     CHARACTER ( LEN = 6 ) :: char_iter, char_facts, char_sit
+     CHARACTER ( LEN = 6 ) :: char_iter, char_facts, char_sit, char_free
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -1855,7 +1855,7 @@
          data%GN_model%Ao%row( : data%GN_model%Ao%ne )                         &
            = nlp%Jr%row( : data%GN_model%Ao%ne )
 
-       CASE ( 'dense_by_rows', 'DENSE_BY_ROWS' )
+       CASE ( 'dense', 'DENSE', 'dense_by_rows', 'DENSE_BY_ROWS' )
          CALL SMT_put( data%GN_model%Ao%type, 'DENSE_BY_ROWS',                 &
                        inform%alloc_status )
          data%GN_model%Ao%n = nlp%n ; data%GN_model%Ao%m = nlp%m_r
@@ -2192,14 +2192,17 @@
      data%poor_model = .FALSE.
      data%minimum_weight = data%control%minimum_weight
      data%got_jr = .FALSE.
-
+!write(6,*) ' a ', data%reverse_r 
 ! evaluate the residual function r(x) at the initial point
 
      IF ( data%reverse_r ) THEN
        data%branch = 30 ; inform%status = 2 ; RETURN
      ELSE
+!write(6,*) ' b '
+!write(6,*) ' x ', nlp%X
        CALL eval_R( data%eval_status, nlp%X( : nlp%n ), userdata,              &
                     nlp%R( : nlp%m_r ) )
+!write(6,*) ' c '
        IF ( data%eval_status /= 0 ) THEN
          inform%bad_eval = 'eval_R'
          IF ( control%error > 0 ) WRITE( control%error,                        &
@@ -2415,21 +2418,22 @@
                END IF
                data%print_1st_header = .FALSE.
                char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
+               char_free = ADJUSTR( STRING_integer_6( data%n_free ) )
                IF ( data%solve_projection ) THEN
                  char_facts = ADJUSTR( STRING_integer_6( data%total_facts ) )
                  WRITE( data%out,  "( A, A6, 1X, 2A1, ES11.4, '    NaN    ',   &
-                &  ES9.1,  2ES8.1, 1X, A6, F8.2 )" )                           &
+                &  ES9.1,  2ES8.1, 1X, 2A6, F8.2 )" )                          &
                     prefix, char_iter, data%accept,  data%hard,                &
                     inform%norm_r, data%ratio, data%old_weight, data%s_norm,   &
-                    char_facts, data%clock_now
+                    char_facts, char_free, data%clock_now
                ELSE
                  char_sit =                                                    &
                     ADJUSTR( STRING_integer_6( inform%SLLS_inform%iter ) )
                  WRITE( data%out, "( A, A6, 1X, 2A1, ES11.4, '    NaN    ',    &
-                &  ES9.1, 2ES8.1, 1X, A6, F8.2 )" ) prefix,                    &
+                &  ES9.1, 2ES8.1, 1X, 2A6, F8.2 )" ) prefix,                   &
                     char_iter, data%accept, data%perturb,                      &
                     inform%norm_r, data%ratio, data%old_weight, data%s_norm,   &
-                    char_sit, data%clock_now
+                    char_sit, char_free, data%clock_now
                END IF
              END IF
              inform%obj = data%obj_current
@@ -2569,9 +2573,10 @@
            ELSE
              char_sit = ADJUSTR( STRING_integer_6( inform%SLLSB_inform%iter ) )
            END IF
+           char_free = ADJUSTR( STRING_integer_6( data%n_free ) )
            WRITE( data%out, 2140 ) prefix, char_iter, data%accept,             &
               data%perturb, obj, inform%norm_pg, data%ratio, data%old_weight,  &
-              data%s_norm, char_sit, data%clock_now
+              data%s_norm, char_sit, char_free, data%clock_now
          ELSE
            WRITE( data%out, 2150 ) prefix,                                     &
                   char_iter, inform%norm_r, inform%norm_pg
@@ -2992,6 +2997,10 @@
          inform%status = GALAHAD_error_tiny_step ; GO TO 990
        END IF
 
+!  count how many variables are perportedly free
+
+       data%n_free = COUNT( data%GN_model%X_status( : nlp%n ) == 0 )
+
 !  record the change (decrease) in the model
 
        data%dm = inform%obj - data%model
@@ -3116,20 +3125,21 @@
            END IF
            data%print_1st_header = .FALSE.
            char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
+           char_free = ADJUSTR( STRING_integer_6( data%n_free ) )
            IF ( data%solve_projection ) THEN
              char_facts                                                        &
                = ADJUSTR( STRING_integer_6( inform%SLLS_inform%iter ) )
 !              = ADJUSTR( STRING_integer_6( data%total_facts ) )
              WRITE( data%out,  "( A, A6, 1X, 2A1, '    NaN           -    ',   &
-            &  '    - Inf ',  2ES8.1, 1X, A6, F8.2 )" )                        &
-                prefix, char_iter, data%accept, data%hard,                     &
-                inform%weight, data%s_norm, char_facts, data%clock_now
+            &  '    - Inf ',  2ES8.1, 1X, 2A6, F8.2 )" )                       &
+                prefix, char_iter, data%accept, data%hard, inform%weight,      &
+                data%s_norm, char_facts, char_free, data%clock_now
            ELSE
              char_sit = ADJUSTR( STRING_integer_6( inform%SLLSB_inform%iter ) )
              WRITE( data%out, "( A, A6, 1X, 2A1, '    NaN           -    ',    &
-            &  '    - Inf ', 2ES8.1, 1X, A6, F8.2 )" ) prefix, char_iter,      &
+            &  '    - Inf ', 2ES8.1, 1X, 2A6, F8.2 )" ) prefix, char_iter,     &
                 data%accept, data%perturb,                                     &
-                inform%weight, data%s_norm, char_sit, data%clock_now
+                inform%weight, data%s_norm, char_sit, char_free, data%clock_now
            END IF
          END IF
 
@@ -3255,9 +3265,11 @@
                  char_sit                                                      &
                    = ADJUSTR( STRING_integer_6( inform%SLLSB_inform%iter ) )
                END IF
+               char_free = ADJUSTR( STRING_integer_6( data%n_free ) )
                WRITE( data%out, 2140 ) prefix, char_iter, data%accept,         &
                   data%perturb, obj, inform%norm_pg, data%ratio,               &
-                  data%old_weight, data%s_norm, char_sit, data%clock_now
+                  data%old_weight, data%s_norm, char_sit, char_free,           &
+                  data%clock_now
              ELSE
                WRITE( data%out, 2150 ) prefix,                                 &
                       char_iter, inform%norm_r, inform%norm_pg
@@ -3480,14 +3492,14 @@
  2050 FORMAT( A, ' .          ........... ...........' )
  2090 FORMAT( A, '        (a=accept r=reject)' )
  2100 FORMAT( A, '    It        r        ||pg||    ',                          &
-             ' ratio   weight   step  it sllsb    time' )
+             ' ratio   weight  step it sllsb #free  time' )
  2110 FORMAT( A, '    It        f        ||pg||    ',                          &
-             ' ratio   weight   step  it sllsb    time' )
+             ' ratio   weight  step it sllsb #free  time' )
  2120 FORMAT( A, '    It         r       ||pg||    ',                          &
-             ' ratio   weight   step   it slls    time' )
+             ' ratio   weight  step it slls #free   time' )
  2130 FORMAT( A, '    It         f       ||pg||    ',                          &
-             ' ratio   weight   step   it slls    time' )
- 2140 FORMAT( A, A6, 1X, 2A1, 2ES11.4, ES9.1, 2ES8.1, 3X, A6, F8.2 )
+             ' ratio   weight  step it slls #free   time' )
+ 2140 FORMAT( A, A6, 1X, 2A1, 2ES11.4, ES9.1, 2ES8.1, A6, A6, F8.2 )
  2150 FORMAT( A, A6, 3X, 2ES11.4 )
 
  !  End of subroutine SNLS_solve

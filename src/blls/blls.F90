@@ -1449,12 +1449,12 @@
          av_bnd = half * ( prob%X_l( i ) + prob%X_u( i ) )
          prob%X_l( i ) = av_bnd ; prob%X_u( i ) = av_bnd
          reset_bnd = .TRUE.
-       ELSE IF ( control%cold_start == 0 ) THEN
+       ELSE IF ( control%cold_start == 0 .AND. ALLOCATED( prob%X_status ) ) THEN
          IF ( prob%X_status( i ) < 0 ) THEN
-            prob%X_l( i ) =  prob%X_l( i )
+            prob%X_l( i ) = prob%X_l( i )
            reset_bnd = .TRUE.
          ELSE IF ( prob%X_status( i ) > 0 ) THEN
-            prob%X_l( i ) =  prob%X_u( i )
+            prob%X_l( i ) = prob%X_u( i )
            reset_bnd = .TRUE.
          END IF
        END IF

@@ -37,7 +37,7 @@
 %      The components are of the form control.value, where
 %      value is the name of the corresponding component of
 %      the derived type SILS_CONTROL as described in the
-%      manual for the fortran 90 package GALAHARS_SILS.
+%      manual for the fortran 90 package GALAHAD_SILS.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/sils.pdf
 %
 %  Usual Output -
@@ -49,7 +49,7 @@
 %      The components are of the form inform.value, where
 %      value is the name of the corresponding component of
 %      the derived type SILS_AINFO/FINFO/SINFO as described
-%      in the manual for the fortran 90 package GALAHARS_SILS.
+%      in the manual for the fortran 90 package GALAHAD_SILS.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/sils.pdf
 %
 % This version copyright Nick Gould for GALAHAD productions 12/July/2007

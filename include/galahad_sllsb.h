@@ -925,9 +925,9 @@ void sllsb_solve_given_a( void **data,
                           const rpc_ b[],
                           rpc_ regularization_weight,
                           rpc_ x[],
-                          rpc_ r[],
                           rpc_ y[],
                           rpc_ z[],
+                          rpc_ r[],
                           ipc_ x_stat[],
                           const rpc_ w[],
                           const rpc_ x_s[] );
@@ -998,13 +998,9 @@ void sllsb_solve_given_a( void **data,
  @param[in] regularization_weight is a scalar of type rpc_, that
     holds the non-negative regularization weight \f$\sigma \geq 0\f$.
 
- @param[out] r is a one-dimensional array of size o and type rpc_, that
-    holds the residual \f$r(x) = A_o x - b\f$.
-    The i-th component of r, i = 0, ... ,  o-1, contains  \f$r_i(x) \f$.
-
- @param[out] c is a one-dimensional array of size m and type rpc_, that
-    holds the residual \f$c(x) = A x\f$.
-    The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
+ @param[out] x is a one-dimensional array of size n and type rpc_, that
+    holds the variables \f$x\f$.
+    The j-th component of x, j = 0, ... ,  n-1, contains  \f$(x) \f$.
 
  @param[in,out] y is a one-dimensional array of size m and type rpc_, that
     holds the values \f$y\f$ of the Lagrange multipliers for the general
@@ -1015,14 +1011,15 @@ void sllsb_solve_given_a( void **data,
     holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
+ @param[out] r is a one-dimensional array of size o and type rpc_, that
+    holds the residual \f$r(x) = A_o x - b\f$.
+    The i-th component of r, i = 0, ... ,  o-1, contains  \f$r_i(x) \f$.
+
  @param[out] x_stat is a one-dimensional array of size n and type ipc_, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
-
- @param[in] regularization_weight is a scalar of type rpc_, that
-    holds the non-negative regularization weight \f$\sigma \geq 0\f$.
 
  @param[in] w is a one-dimensional array of size o and type rpc_, that
    holds the vector of strictly-positive observation weights \f$w\f$.

@@ -36,6 +36,7 @@
    control%maxit = 20      ! maximum of 20 iterations
    control%symmetric_linear_solver = 'sytr '
    control%FDC_control%symmetric_linear_solver = 'sytr '
+   control%print_level = 1
    inform%status = 1
    CALL SLLSB_solve( p, data, control, inform )
    IF ( inform%status == 0 ) THEN  !  Successful return

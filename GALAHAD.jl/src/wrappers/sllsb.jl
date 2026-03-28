@@ -365,8 +365,8 @@ end
 export sllsb_solve_given_a
 
 function sllsb_solve_given_a(::Type{Float32}, ::Type{Int32}, data, status, n, o,
-                             m, Ao_ne, Ao_val, b, regularization_weight, x, r,
-                             y, z, x_stat, w, x_s)
+                             m, Ao_ne, Ao_val, b, regularization_weight, x, y,
+                             z, r, x_stat, w, x_s)
   @ccall libgalahad_single.sllsb_solve_given_a_s(data::Ptr{Ptr{Cvoid}},
                                                  status::Ptr{Int32}, n::Int32,
                                                  o::Int32, m::Int32,
@@ -375,17 +375,17 @@ function sllsb_solve_given_a(::Type{Float32}, ::Type{Int32}, data, status, n, o,
                                                  b::Ptr{Float32},
                                                  regularization_weight::Float32,
                                                  x::Ptr{Float32},
-                                                 r::Ptr{Float32},
                                                  y::Ptr{Float32},
                                                  z::Ptr{Float32},
+                                                 r::Ptr{Float32},
                                                  x_stat::Ptr{Int32},
                                                  w::Ptr{Float32},
                                                  x_s::Ptr{Float32})::Cvoid
 end
 
 function sllsb_solve_given_a(::Type{Float32}, ::Type{Int64}, data, status, n, o,
-                             m, Ao_ne, Ao_val, b, regularization_weight, x, r,
-                             y, z, x_stat, w, x_s)
+                             m, Ao_ne, Ao_val, b, regularization_weight, x, y,
+                             z, r, x_stat, w, x_s)
   @ccall libgalahad_single_64.sllsb_solve_given_a_s_64(data::Ptr{Ptr{Cvoid}},
                                                        status::Ptr{Int64},
                                                        n::Int64, o::Int64,
@@ -394,33 +394,33 @@ function sllsb_solve_given_a(::Type{Float32}, ::Type{Int64}, data, status, n, o,
                                                        b::Ptr{Float32},
                                                        regularization_weight::Float32,
                                                        x::Ptr{Float32},
-                                                       r::Ptr{Float32},
                                                        y::Ptr{Float32},
                                                        z::Ptr{Float32},
+                                                       r::Ptr{Float32},
                                                        x_stat::Ptr{Int64},
                                                        w::Ptr{Float32},
                                                        x_s::Ptr{Float32})::Cvoid
 end
 
 function sllsb_solve_given_a(::Type{Float64}, ::Type{Int32}, data, status, n, o,
-                             m, Ao_ne, Ao_val, b, regularization_weight, x, r,
-                             y, z, x_stat, w, x_s)
+                             m, Ao_ne, Ao_val, b, regularization_weight, x, y,
+                             z, r, x_stat, w, x_s)
   @ccall libgalahad_double.sllsb_solve_given_a(data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Int32}, n::Int32,
                                                o::Int32, m::Int32, Ao_ne::Int32,
                                                Ao_val::Ptr{Float64},
                                                b::Ptr{Float64},
                                                regularization_weight::Float64,
-                                               x::Ptr{Float64}, r::Ptr{Float64},
-                                               y::Ptr{Float64}, z::Ptr{Float64},
+                                               x::Ptr{Float64}, y::Ptr{Float64},
+                                               z::Ptr{Float64}, r::Ptr{Float64},
                                                x_stat::Ptr{Int32},
                                                w::Ptr{Float64},
                                                x_s::Ptr{Float64})::Cvoid
 end
 
 function sllsb_solve_given_a(::Type{Float64}, ::Type{Int64}, data, status, n, o,
-                             m, Ao_ne, Ao_val, b, regularization_weight, x, r,
-                             y, z, x_stat, w, x_s)
+                             m, Ao_ne, Ao_val, b, regularization_weight, x, y,
+                             z, r, x_stat, w, x_s)
   @ccall libgalahad_double_64.sllsb_solve_given_a_64(data::Ptr{Ptr{Cvoid}},
                                                      status::Ptr{Int64},
                                                      n::Int64, o::Int64,
@@ -429,9 +429,9 @@ function sllsb_solve_given_a(::Type{Float64}, ::Type{Int64}, data, status, n, o,
                                                      b::Ptr{Float64},
                                                      regularization_weight::Float64,
                                                      x::Ptr{Float64},
-                                                     r::Ptr{Float64},
                                                      y::Ptr{Float64},
                                                      z::Ptr{Float64},
+                                                     r::Ptr{Float64},
                                                      x_stat::Ptr{Int64},
                                                      w::Ptr{Float64},
                                                      x_s::Ptr{Float64})::Cvoid
@@ -439,7 +439,7 @@ end
 
 function sllsb_solve_given_a(::Type{Float128}, ::Type{Int32}, data, status, n,
                              o, m, Ao_ne, Ao_val, b, regularization_weight, x,
-                             r, y, z, x_stat, w, x_s)
+                             y, z, r, x_stat, w, x_s)
   @ccall libgalahad_quadruple.sllsb_solve_given_a_q(data::Ptr{Ptr{Cvoid}},
                                                     status::Ptr{Int32},
                                                     n::Int32, o::Int32,
@@ -448,9 +448,9 @@ function sllsb_solve_given_a(::Type{Float128}, ::Type{Int32}, data, status, n,
                                                     b::Ptr{Float128},
                                                     regularization_weight::Cfloat128,
                                                     x::Ptr{Float128},
-                                                    r::Ptr{Float128},
                                                     y::Ptr{Float128},
                                                     z::Ptr{Float128},
+                                                    r::Ptr{Float128},
                                                     x_stat::Ptr{Int32},
                                                     w::Ptr{Float128},
                                                     x_s::Ptr{Float128})::Cvoid
@@ -458,7 +458,7 @@ end
 
 function sllsb_solve_given_a(::Type{Float128}, ::Type{Int64}, data, status, n,
                              o, m, Ao_ne, Ao_val, b, regularization_weight, x,
-                             r, y, z, x_stat, w, x_s)
+                             y, z, r, x_stat, w, x_s)
   @ccall libgalahad_quadruple_64.sllsb_solve_given_a_q_64(data::Ptr{Ptr{Cvoid}},
                                                           status::Ptr{Int64},
                                                           n::Int64, o::Int64,
@@ -468,9 +468,9 @@ function sllsb_solve_given_a(::Type{Float128}, ::Type{Int64}, data, status, n,
                                                           b::Ptr{Float128},
                                                           regularization_weight::Cfloat128,
                                                           x::Ptr{Float128},
-                                                          r::Ptr{Float128},
                                                           y::Ptr{Float128},
                                                           z::Ptr{Float128},
+                                                          r::Ptr{Float128},
                                                           x_stat::Ptr{Int64},
                                                           w::Ptr{Float128},
                                                           x_s::Ptr{Float128})::Cvoid

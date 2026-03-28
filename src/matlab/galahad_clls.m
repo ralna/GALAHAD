@@ -5,7 +5,7 @@
 %  n-vectors x_l <= x_u and m-vectors c_l <= c_u,
 %  find a local minimizer of the (REGULARIZED) LINEARLY-CONSTRAINED
 %  LINEAR LEAST-SQUARES problem
-%    minimize 0.5 * || A x - b||_W^2 + 0.5 * sigma ||x||^2
+%    minimize 0.5 * || A x - b||_W^2 + 0.5 * sigma ||x-x_s||^2
 %    subject to c_l <= A * x <= c_u and x_l <= x <= x_u
 %  and where ||v||^2 = v' v and ||v||_W^2 = v' W v.
 %  Advantage is taken of sparse A_o and A.
@@ -14,7 +14,7 @@
 %
 %  to solve the constrained linear least-squares problem
 %   [ x, inform, aux ]
-%    = galahad_clls( A_o, b, sigma, A, c_l, c_u, x_l, x_u, w, control )
+%    = galahad_clls( A_o, b, sigma, A, c_l, c_u, x_l, x_u, w, x_s, control )
 %
 %  Sophisticated usage -
 %
@@ -25,7 +25,7 @@
 %  to solve the convex quadratic program using existing data structures
 %   [ x, inform, aux ]
 %    = galahad_clls( 'existing', A_o, b, sigma, A, c_l, c_u, x_l, x_u, ...
-%                    w, control )
+%                    w, x_s, control )
 %
 %  to remove data structures after solution
 %   galahad_clls( 'final' )
@@ -41,12 +41,16 @@
 %    x_u: the n-vector x_u. The value inf should be used for infinite bounds
 %
 %  Optional Input - (either or both may be given, with w before control)
-%    w: the (diagonal) components of the diagonal scaling matrix W
+%    w: the o-vector of weights w for which W=diag(w) (= 1 if w is 
+%       not specified)
+%    x_s: the n-vector of shifts x_s (= 0 if x_s is not specified)
+%       ** N.B. If x_s is required and n=o, w and x_s should 
+%          both be provided in that order, even if defaults are used. 
 %    control: a structure containing control parameters.
 %      The components are of the form control.value, where
 %      value is the name of the corresponding component of
 %      the derived type CLLS_CONTROL as described in the
-%      manual for the fortran 90 package GALAHARS_CLLS.
+%      manual for the fortran 90 package GALAHAD_CLLS.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/clls.pdf
 %
 %  Usual Output -
@@ -58,7 +62,7 @@
 %      The components are of the form inform.value, where
 %      value is the name of the corresponding component of
 %      the derived type CLLS_INFORM as described in the manual for
-%      the fortran 90 package GALAHARS_CLLS.
+%      the fortran 90 package GALAHAD_CLLS.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/clls.pdf
 %  aux: a structure containing Lagrange multipliers and constraint status
 %   aux.r: values of the residuals A_o * x - b
@@ -67,13 +71,13 @@
 %        c_l <= A * x <= c_u
 %   aux.z: dual variables corresponding to the bound constraints
 %        x_l <= x <= x_u
-%   aux.c_stat: vector indicating the status of the general constraints
-%           c_stat(i) < 0 if (c_l)_i = (A * x)_i
-%           c_stat(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i
-%           c_stat(i) > 0 if (c_u)_i = (A * x)_i
-%   aux.x_stat: vector indicating the status of the bound constraints
-%           x_stat(i) < 0 if (x_l)_i = (x)_i
-%           x_stat(i) = 0 if (x_i)_i < (x)_i < (x_u)_i
-%           x_stat(i) > 0 if (x_u)_i = (x)_i
+%   aux.c_status: vector indicating the status of the general constraints
+%        c_status(i) < 0 if (c_l)_i = (A * x)_i
+%        c_status(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i
+%        c_status(i) > 0 if (c_u)_i = (A * x)_i
+%   aux.x_status: vector indicating the status of the bound constraints
+%        x_status(i) < 0 if (x_l)_i = (x)_i
+%        x_status(i) = 0 if (x_i)_i < (x)_i < (x_u)_i
+%        x_status(i) > 0 if (x_u)_i = (x)_i
 %
-% This version copyright Nick Gould for GALAHAD productions 18/December/2023
+% This version copyright Nick Gould for GALAHAD productions 25/March/2026

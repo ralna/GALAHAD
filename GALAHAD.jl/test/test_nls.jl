@@ -16,6 +16,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
 
   # compute the residuals
   function res(x::Vector{T}, c::Vector{T}, userdata::userdata_nls{T})
+    println(x)
     c[1] = x[1]^2 + userdata.p
     c[2] = x[1] + x[2]^2
     c[3] = x[1] - x[2]

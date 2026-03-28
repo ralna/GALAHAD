@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 4.2 - 2023-12-19 AT 16:20 GMT.
+!  THIS VERSION: GALAHAD 5.5 - 2026-03-24 AT 13:40 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
@@ -22,7 +22,7 @@
 !
 !  to solve the constrained linear least-squares problem
 !   [ x, inform, aux ]
-!    = galahad_clls( A_o, b, sigma, A, c_l, c_u, x_l, x_u, w, control )
+!    = galahad_clls( A_o, b, sigma, A, c_l, c_u, x_l, x_u, w, x_s, control )
 !
 !  Sophisticated usage -
 !
@@ -33,7 +33,7 @@
 !  to solve the same problem using existing data structures
 !   [ x, inform, aux ]
 !    = galahad_clls( 'existing', A_o, b, sigma, A, c_l, c_u, x_l, x_u, ...
-!                     w, control )
+!                     w, x_s, control )
 !
 !  to remove data structures after solution
 !   galahad_clls( 'final' )
@@ -49,12 +49,16 @@
 !    x_u: the n-vector x_u. The value inf should be used for infinite bounds
 !
 !  Optional Input (either or both may be given, with w before control)
-!    w: the (diagonal) components of the diagonal scaling matrix W
+!    w: the o-vector of weights w for which W=diag(w) (= 1 if w is 
+!       not specified)
+!    x_s: the n-vector of shifts x_s (= 0 if x_s is not specified)
+!       ** N.B. If x_s is required and n=o, w and x_s should 
+!          both be provided in that order, even if defaults are used. 
 !    control: a structure containing control parameters.
 !      The components are of the form control.value, where
 !      value is the name of the corresponding component of
 !      the derived type CLLS_CONTROL as described in the
-!      manual for the fortran 90 package GALAHARS_CLLS.
+!      manual for the fortran 90 package GALAHAD_CLLS.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/clls.pdf
 !
 !  Usual Output -
@@ -66,7 +70,7 @@
 !      The components are of the form inform.value, where
 !      value is the name of the corresponding component of
 !      the derived type CLLS_INFORM as described in the manual for
-!      the fortran 90 package GALAHARS_CLLS.
+!      the fortran 90 package GALAHAD_CLLS.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/clls.pdf
 !  aux: a structure containing Lagrange multipliers and constraint status
 !   aux.r: values of the residuals A_o * x - b
@@ -75,14 +79,14 @@
 !        c_l <= A * x <= c_u
 !   aux.z: dual variables corresponding to the bound constraints
 !        x_l <= x <= x_u
-!   aux.c_stat: vector indicating the status of the general constraints
-!           c_stat(i) < 0 if (c_l)_i = (A * x)_i
-!           c_stat(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i
-!           c_stat(i) > 0 if (c_u)_i = (A * x)_i
-!   aux.x_stat: vector indicating the status of the bound constraints
-!           x_stat(i) < 0 if (x_l)_i = (x)_i
-!           x_stat(i) = 0 if (x_i)_i < (x)_i < (x_u)_i
-!           x_stat(i) > 0 if (x_u)_i = (x)_i
+!   aux.c_status: vector indicating the status of the general constraints
+!           c_status(i) < 0 if (c_l)_i = (A * x)_i
+!           c_status(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i
+!           c_status(i) > 0 if (c_u)_i = (A * x)_i
+!   aux.x_status: vector indicating the status of the bound constraints
+!           x_status(i) < 0 if (x_l)_i = (x)_i
+!           x_status(i) = 0 if (x_i)_i < (x)_i < (x_u)_i
+!           x_status(i) > 0 if (x_u)_i = (x)_i
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
@@ -112,9 +116,10 @@
       mwPointer :: plhs( * ), prhs( * )
 
       INTEGER, PARAMETER :: slen = 30
-      LOGICAL :: mxIsChar, mxIsStruct
+      LOGICAL :: mxIsChar, mxIsStruct, mxIsClass
       mwSize :: mxGetString
       mwSize :: mxIsNumeric
+      mwSize :: mxGetN
       mwPointer :: mxCreateStructMatrix, mxGetPr
 
       INTEGER ::  mexPrintf
@@ -124,20 +129,22 @@
 
 !  local variables
 
-      INTEGER :: i, info
+      INTEGER :: i, n_v, info
       INTEGER * 4 :: i4
       mwSize :: ao_arg, b_arg, a_arg, cl_arg, cu_arg, xl_arg, xu_arg
-      mwSize :: sigma_arg, w_arg, c_arg, x_arg, i_arg, aux_arg
+      mwSize :: sigma_arg, w_arg, xs_arg, c_arg, optional_arg
+      mwSize :: x_arg, i_arg, aux_arg
       mwSize :: s_len
-      mwPointer :: b_pr, sigma_pr, cl_pr, cu_pr, xl_pr, xu_pr, w_pr
+      mwPointer :: b_pr, sigma_pr, cl_pr, cu_pr, xl_pr, xu_pr, w_pr, xs_pr
       mwPointer :: ao_in, b_in, a_in, cl_in, cu_in, xl_in, xu_in
-      mwPointer :: sigma_in, w_in, c_in
-      mwPointer :: x_pr, y_pr, z_pr, c_stat_pr, x_stat_pr, c_pr, r_pr
+      mwPointer :: sigma_in, w_in, xs_in, c_in, i_in
+      mwPointer :: x_pr, y_pr, z_pr, c_status_pr, x_status_pr, c_pr, r_pr
       mwPointer :: aux_r_pr, aux_c_pr, aux_y_pr, aux_z_pr
-      mwPointer :: aux_c_stat_pr, aux_x_stat_pr
+      mwPointer :: aux_c_status_pr, aux_x_status_pr
 
+      CHARACTER ( LEN = 1 ) :: array
       CHARACTER ( len = 80 ) :: char_output_unit, filename
-      LOGICAL :: opened, w_present, initial_set = .FALSE.
+      LOGICAL :: opened, initial_set = .FALSE.
       INTEGER :: iores
 
       CHARACTER ( len = 8 ) :: mode
@@ -146,8 +153,9 @@
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
 
       mwSize, PARAMETER :: naux = 6
-      CHARACTER ( LEN = 6 ), PARAMETER :: faux( naux ) = (/                    &
-           'r     ', 'c     ', 'y     ', 'z     ', 'c_stat', 'x_stat' /)
+      CHARACTER ( LEN = 8 ), PARAMETER :: faux( naux ) = (/                    &
+           'r       ', 'c       ', 'y       ', 'z       ',                     &
+           'c_status', 'x_status' /)
 
 !  arguments for CLLS
 
@@ -170,10 +178,9 @@
           IF ( nrhs < 2 )                                                      &
             CALL mexErrMsgTxt( ' Too few input arguments to galahad_clls' )
           ao_arg = 2 ; b_arg = 3 ; sigma_arg = 4 ; a_arg = 5
-          cl_arg = 6 ; cu_arg = 7 ; xl_arg = 8 ; xu_arg = 9
-          w_arg = 10 ; c_arg = 11
+          cl_arg = 6 ; cu_arg = 7 ; xl_arg = 8 ; xu_arg = 9 ; optional_arg = 10
           x_arg = 1 ; i_arg = 2 ; aux_arg = 3
-          IF ( nrhs > c_arg )                                                  &
+          IF ( nrhs > 12 )                                                     &
             CALL mexErrMsgTxt( ' Too many input arguments to galahad_clls' )
         END IF
       ELSE
@@ -181,10 +188,9 @@
         IF ( nrhs < 2 )                                                        &
           CALL mexErrMsgTxt( ' Too few input arguments to galahad_clls' )
         ao_arg = 1 ; b_arg = 2 ; sigma_arg = 3 ; a_arg = 4
-        cl_arg = 5 ; cu_arg = 6 ; xl_arg = 7 ; xu_arg = 8
-        w_arg = 9 ; c_arg = 10
+        cl_arg = 5 ; cu_arg = 6 ; xl_arg = 7 ; xu_arg = 8 ; optional_arg = 9
         x_arg = 1 ; i_arg = 2 ; aux_arg = 3
-        IF ( nrhs > c_arg )                                                    &
+        IF ( nrhs > 11 )                                                       &
           CALL mexErrMsgTxt( ' Too many input arguments to galahad_clls' )
       END IF
 
@@ -216,47 +222,9 @@
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
 
-!  If the third argument is present, extract the input control data
-
-        s_len = slen
-!       IF ( nrhs == c_arg ) THEN
-!         c_in = prhs( c_arg )
-!         IF ( .NOT. mxIsStruct( c_in ) )                                      &
-!           CALL mexErrMsgTxt( ' last input argument must be a structure' )
-!         CALL CLLS_matlab_control_set( c_in, control, s_len )
-!       END IF
-        IF ( nrhs > sigma_arg ) THEN
-          c_in = prhs( nrhs )
-          IF ( mxIsStruct( c_in ) )                                            &
-            CALL CLLS_matlab_control_set( c_in, control, s_len )
-        END IF
-
-!  Open i/o units
-
-        IF ( control%error > 0 ) THEN
-          WRITE( char_output_unit, "( I0 )" ) control%error
-          filename = "output_clls." // TRIM( char_output_unit )
-           OPEN( control%error, FILE = filename, FORM = 'FORMATTED',           &
-                 STATUS = 'REPLACE', IOSTAT = iores )
-        END IF
-
-        IF ( control%out > 0 ) THEN
-          INQUIRE( control%out, OPENED = opened )
-          IF ( .NOT. opened ) THEN
-            WRITE( char_output_unit, "( I0 )" ) control%out
-            filename = "output_clls." // TRIM( char_output_unit )
-            OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
-                     STATUS = 'REPLACE', IOSTAT = iores )
-          END IF
-        END IF
-
-!  Create inform output structure
-
-        CALL CLLS_matlab_inform_create( plhs( i_arg ), CLLS_pointer )
-
 !  Import the problem data
 
-         p%new_problem_structure = .TRUE.
+        p%new_problem_structure = .TRUE.
 
 !  Check to ensure the input for Ao is a number
 
@@ -335,39 +303,105 @@
         CALL MATLAB_copy_from_ptr( cu_pr, p%C_u, p%m )
         p%C_u = MIN( p%C_u, 10.0_wp * CONTROL%infinity )
 
+!  Sort through optional arguments
+
+        w_arg = - 1 ; xs_arg = - 1 ; c_arg = - 1
+        DO i = optional_arg, nrhs
+          i_in = prhs( i )
+
+!  Input optional control data
+
+          IF ( mxIsStruct( i_in ) ) THEN ! input control
+            c_arg = i
+            c_in = i_in
+            s_len = slen
+            CALL CLLS_matlab_control_set( c_in, control, s_len )
+
+!  Input optional array argument
+
+          ELSE IF ( mxIsClass( i_in, 'double') ) THEN
+            IF ( w_arg > 0 .AND. xs_arg > 0 ) CALL mexErrMsgTxt(               &
+              ' array input arguments cohort, w and x_s already provided' )
+            n_v = INT( mxGetN( i_in ) )
+            IF ( p%n /= p%o ) THEN
+              IF ( n_v == p%o ) THEN  ! argument is w
+                array = 'w'
+              ELSE IF ( n_v == p%n ) THEN ! argument is x_s
+                array = 'x'
+              ELSE ! argument not recognised
+                CALL mexErrMsgTxt( ' array input argument not recognised' )
+              END IF              
+            ELSE
+              IF ( n_v == p%n ) THEN  ! argument is x_s or w
+                IF ( w_arg < 0 ) THEN
+                  array = 'w'
+                ELSE IF ( xs_arg < 0 ) THEN
+                  array = 'x'
+                ELSE
+                  CALL mexErrMsgTxt( ' too may optional array input arguments' )
+                END IF
+              ELSE ! argument not recognised
+                CALL mexErrMsgTxt( ' arrays input argument incorrect size' )
+              END IF              
+            END IF
+
 !  Input w
 
-        w_present = .FALSE.
-        IF ( nrhs > sigma_arg ) THEN
-          w_in = prhs( w_arg )
-          IF ( mxIsNumeric( w_in ) /= 0 ) THEN
-            w_present = .TRUE.
-            ALLOCATE( W( p%o ), STAT = info )
-            w_pr = mxGetPr( w_in )
-            CALL MATLAB_copy_from_ptr( w_pr, W, p%o )
+            IF ( array == 'w' ) THEN
+              w_arg = i
+              w_in = i_in
+              w_pr = mxGetPr( w_in )
+              ALLOCATE( p%W( p%o ), STAT = info )
+              CALL MATLAB_copy_from_ptr( w_pr, p%W, p%o )
+
+!  Input x_s
+
+            ELSE
+              xs_arg = i
+              xs_in = i_in
+              xs_pr = mxGetPr( xs_in )
+              ALLOCATE( p%X_s( p%n ), STAT = info )
+              CALL MATLAB_copy_from_ptr( xs_pr, p%X_s, p%n )
+            END IF
+          ELSE
+            CALL mexErrMsgTxt( ' Unknown optional argument' )
+          END IF
+        END DO
+
+!  Open i/o units
+
+        IF ( control%error > 0 ) THEN
+          WRITE( char_output_unit, "( I0 )" ) control%error
+          filename = "output_clls." // TRIM( char_output_unit )
+           OPEN( control%error, FILE = filename, FORM = 'FORMATTED',           &
+                 STATUS = 'REPLACE', IOSTAT = iores )
+        END IF
+
+        IF ( control%out > 0 ) THEN
+          INQUIRE( control%out, OPENED = opened )
+          IF ( .NOT. opened ) THEN
+            WRITE( char_output_unit, "( I0 )" ) control%out
+            filename = "output_clls." // TRIM( char_output_unit )
+            OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
+                     STATUS = 'REPLACE', IOSTAT = iores )
           END IF
         END IF
+
+!  Create inform output structure
+
+        CALL CLLS_matlab_inform_create( plhs( i_arg ), CLLS_pointer )
 
 !  Allocate space for the solution
 
         ALLOCATE( p%X( p%n ), p%Z( p%n ), p%Y( p%m ), STAT = info )
+        p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
 
-        p%X = 0.0_wp
-        p%Y = 0.0_wp
-        p%Z = 0.0_wp
-
-!  Solve the QP
+!  Solve the linearly-constrained least-squares problem
 
 !       WRITE( str, "( ' print_level = ', I0 )" ) control%print_level
 !       i = mexPrintf( TRIM( str ) // ACHAR( 10 ) )
 
-        IF ( w_present ) THEN
-          CALL CLLS_solve( p, data, control, inform,                           &
-                           regularization_weight = sigma, W = W )
-        ELSE
-          CALL CLLS_solve( p, data, control, inform,                           &
-                           regularization_weight = sigma )
-        END IF
+        CALL CLLS_solve( p, data, control, inform )
 
 !  Print details to Matlab window
 
@@ -409,9 +443,9 @@
           CALL MATLAB_create_real_component( plhs( aux_arg ),                  &
             'z', p%n, aux_z_pr )
           CALL MATLAB_create_integer_component( plhs( aux_arg ),               &
-            'c_stat', p%m, aux_c_stat_pr )
+            'c_status', p%m, aux_c_status_pr )
           CALL MATLAB_create_integer_component( plhs( aux_arg ),               &
-            'x_stat', p%n, aux_x_stat_pr )
+            'x_status', p%n, aux_x_status_pr )
 
 !  copy the values
 
@@ -423,10 +457,10 @@
           CALL MATLAB_copy_to_ptr( p%Y, y_pr, p%m )
           z_pr = mxGetPr( aux_z_pr )
           CALL MATLAB_copy_to_ptr( p%Z, z_pr, p%n )
-          c_stat_pr = mxGetPr( aux_c_stat_pr )
-          CALL MATLAB_copy_to_ptr( p%C_status, c_stat_pr, p%m )
-          x_stat_pr = mxGetPr( aux_x_stat_pr )
-          CALL MATLAB_copy_to_ptr( p%X_status, x_stat_pr, p%n )
+          c_status_pr = mxGetPr( aux_c_status_pr )
+          CALL MATLAB_copy_to_ptr( p%C_status, c_status_pr, p%m )
+          x_status_pr = mxGetPr( aux_x_status_pr )
+          CALL MATLAB_copy_to_ptr( p%X_status, x_status_pr, p%n )
 
         END IF
 
@@ -461,6 +495,7 @@
         IF ( ALLOCATED( p%C_status ) ) DEALLOCATE( p%C_status, STAT = info )
         IF ( ALLOCATED( p%X_status ) ) DEALLOCATE( p%X_status, STAT = info )
         IF ( ALLOCATED( W ) ) DEALLOCATE( W, STAT = info )
+        IF ( ALLOCATED( p%X_s ) ) DEALLOCATE( p%X_S, STAT = info )
         CALL CLLS_terminate( data, control, inform )
       END IF
 

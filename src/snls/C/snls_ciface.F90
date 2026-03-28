@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-03-08 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-03-28 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -762,7 +762,7 @@
 
   CONTAINS
 
-!  eval_c wrapper
+!  eval_r wrapper
 
     SUBROUTINE wrap_eval_r( status, x, userdata, r )
     INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
@@ -778,7 +778,7 @@
 
     END SUBROUTINE wrap_eval_r
 
-!  eval_j wrapper
+!  eval_jr wrapper
 
     SUBROUTINE wrap_eval_jr( status, x, userdata, jr_val )
     INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
