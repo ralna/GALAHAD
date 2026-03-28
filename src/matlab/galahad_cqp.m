@@ -41,7 +41,7 @@
 %      The components are of the form control.value, where
 %      value is the name of the corresponding component of
 %      the derived type CQP_CONTROL as described in the
-%      manual for the fortran 90 package GALAHARS_CQP.
+%      manual for the fortran 90 package GALAHAD_CQP.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/cqp.pdf
 %
 %  Usual Output -
@@ -53,7 +53,7 @@
 %      The components are of the form inform.value, where
 %      value is the name of the corresponding component of
 %      the derived type CQP_INFORM as described in the manual for
-%      the fortran 90 package GALAHARS_CQP.
+%      the fortran 90 package GALAHAD_CQP.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/cqp.pdf
 %  aux: a structure containing Lagrange multipliers and constraint status
 %   aux.c: values of the constraints A * x

@@ -8623,8 +8623,8 @@ void sllsb_import(struct sllsb_control_type *control, void **data, int32_t *stat
 void sllsb_import_64(struct sllsb_control_type_64 *control, void **data, int64_t *status, int64_t n, int64_t o, int64_t m, char *Ao_type, int64_t Ao_ne, int64_t *Ao_row, int64_t *Ao_col, int64_t Ao_ptr_ne, int64_t *Ao_ptr, int64_t *cohort);
 void sllsb_reset_control(struct sllsb_control_type *control, void **data, int32_t *status);
 void sllsb_reset_control_64(struct sllsb_control_type_64 *control, void **data, int64_t *status);
-void sllsb_solve_given_a(void **data, int32_t *status, int32_t n, int32_t o, int32_t m, int32_t Ao_ne, double *Ao_val, double *b, double regularization_weight, double *x, double *r, double *y, double *z, int32_t *x_stat, double *w, double *x_s);
-void sllsb_solve_given_a_64(void **data, int64_t *status, int64_t n, int64_t o, int64_t m, int64_t Ao_ne, double *Ao_val, double *b, double regularization_weight, double *x, double *r, double *y, double *z, int64_t *x_stat, double *w, double *x_s);
+void sllsb_solve_given_a(void **data, int32_t *status, int32_t n, int32_t o, int32_t m, int32_t Ao_ne, double *Ao_val, double *b, double regularization_weight, double *x, double *y, double *z, double *r, int32_t *x_stat, double *w, double *x_s);
+void sllsb_solve_given_a_64(void **data, int64_t *status, int64_t n, int64_t o, int64_t m, int64_t Ao_ne, double *Ao_val, double *b, double regularization_weight, double *x, double *y, double *z, double *r, int64_t *x_stat, double *w, double *x_s);
 void sllsb_information(void **data, struct sllsb_inform_type *inform, int32_t *status);
 void sllsb_information_64(void **data, struct sllsb_inform_type_64 *inform, int64_t *status);
 void sllsb_terminate(void **data, struct sllsb_control_type *control, struct sllsb_inform_type *inform);

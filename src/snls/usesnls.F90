@@ -300,12 +300,12 @@
         BACKSPACE( rfiledevice )
         IF ( inform%status == GALAHAD_ok .OR.                                  &
              inform%status == GALAHAD_error_unbounded ) THEN
-          WRITE( rfiledevice, 2050 ) nlp%pname, nlp%o, nlp%n,                  &
+          WRITE( rfiledevice, 2050 ) nlp%pname, nlp%m_r, nlp%n,                &
             inform%norm_r, inform%norm_pg, inform%iter,                        &
             inform%jr_eval, inform%inner_iter,                                 &
             inform%time%clock_total, inform%status
         ELSE
-          WRITE( rfiledevice, 2050 ) nlp%pname, nlp%o, nlp%n,                  &
+          WRITE( rfiledevice, 2050 ) nlp%pname, nlp%m_r, nlp%n,                &
             inform%norm_r, inform%norm_pg, - inform%iter,                      &
             - inform%jr_eval, inform%inner_iter,                               &
             - inform%time%clock_total, inform%status
@@ -337,11 +337,11 @@
      &  ' ||J''r/r||   its     #g      #cg   time stat' )" )
       IF ( inform%status == GALAHAD_ok .OR.                                    &
            inform%status == GALAHAD_error_unbounded ) THEN
-        WRITE( errout, 2050 ) nlp%pname, nlp%o, nlp%n, inform%norm_r,          &
+        WRITE( errout, 2050 ) nlp%pname, nlp%m_r, nlp%n, inform%norm_r,        &
           inform%norm_pg, inform%iter, inform%jr_eval,                         &
           inform%inner_iter, inform%time%clock_total, inform%status
       ELSE
-        WRITE( errout, 2050 ) nlp%pname, nlp%o, nlp%n, inform%norm_r,          &
+        WRITE( errout, 2050 ) nlp%pname, nlp%m_r, nlp%n, inform%norm_r,        &
           inform%norm_pg, - inform%iter, - inform%jr_eval,                     &
           inform%inner_iter, - inform%time%clock_total, inform%status
       END IF

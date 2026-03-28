@@ -40,7 +40,7 @@
 %      The components are of the form control.value, where
 %      value is the name of the corresponding component of
 %      the derived type LPA_CONTROL as described in the
-%      manual for the fortran 90 package GALAHARS_LPA.
+%      manual for the fortran 90 package GALAHAD_LPA.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/lpa.pdf
 %
 %  Usual Output -
@@ -52,7 +52,7 @@
 %      The components are of the form inform.value, where
 %      value is the name of the corresponding component of
 %      the derived type LPA_INFORM as described in the manual for
-%      the fortran 90 package GALAHARS_LPA.
+%      the fortran 90 package GALAHAD_LPA.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/lpa.pdf
 %  aux: a structure containing Lagrange multipliers and constraint status
 %   aux.c: values of the constraints A * x

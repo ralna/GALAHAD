@@ -32,6 +32,7 @@
       INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
       INTEGER * 4, PARAMETER :: i4_1 = 1
       INTEGER, PARAMETER :: int4 = KIND( i4_1 )
+      LOGICAL :: debug = .FALSE.
 
     CONTAINS
 
@@ -130,14 +131,16 @@
         a_cpr_pr = mxGetJc( a_in )
 
 !--------------open print from fortran--------
-filename = "output_galahad.89"
-INQUIRE( FILE = filename, EXIST = filexx )
-IF ( filexx ) THEN
-   OPEN( 89, FILE = filename, FORM = 'FORMATTED', &
-          STATUS = 'OLD', POSITION = 'APPEND', IOSTAT = iores )
-ELSE
-   OPEN( 89, FILE = filename, FORM = 'FORMATTED', &
-           STATUS = 'NEW', IOSTAT = iores )
+IF ( debug ) THEN
+  filename = "output_galahad.89"
+  INQUIRE( FILE = filename, EXIST = filexx )
+  IF ( filexx ) THEN
+     OPEN( 89, FILE = filename, FORM = 'FORMATTED', &
+            STATUS = 'OLD', POSITION = 'APPEND', IOSTAT = iores )
+  ELSE
+     OPEN( 89, FILE = filename, FORM = 'FORMATTED', &
+             STATUS = 'NEW', IOSTAT = iores )
+  END IF
 END IF
 !--------------open print---------------------
 
@@ -148,10 +151,12 @@ END IF
         col_ptr = col_ptr + 1
         A%row = A%row + i4_1
 
-WRITE(89, "(' n ', I0 )" ) A%n
-WRITE(89, "(' a_row ', /, 6( 1X,  I11 ) )" ) A%row( :  A%ne )
-WRITE(89, "(' row_ptr ', /, 6( 1X,  I11 ) )" ) row_ptr( :  A%ne )
-WRITE(89, "(' col_ptr ', /, 6( 1X,  I11 ) )" ) col_ptr( :  A%n + 1 )
+IF ( debug ) THEN
+  WRITE(89, "(' n ', I0 )" ) A%n
+  WRITE(89, "(' a_row ', /, 6( 1X,  I11 ) )" ) A%row( :  A%ne )
+  WRITE(89, "(' row_ptr ', /, 6( 1X,  I11 ) )" ) row_ptr( :  A%ne )
+  WRITE(89, "(' col_ptr ', /, 6( 1X,  I11 ) )" ) col_ptr( :  A%n + 1 )
+END IF
 
 !--------------print---------------------
 !REWIND( 89, err = 500 )
@@ -219,12 +224,14 @@ WRITE(89, "(' col_ptr ', /, 6( 1X,  I11 ) )" ) col_ptr( :  A%n + 1 )
       A%ne = INT( l, KIND = int4 )
 
 !-------------- more print---------------
-!BACKSPACE(89)
-WRITE(89, "(' coordinate' )" )
-WRITE(89, "(' n, ne ', I0, 1X, I0 )" ) A%n, A%ne
-WRITE(89, "(' a_row, col, val ', /, 2( 1X,  2I11, ES12.4 ) )" ) &
-( A%row(i),a%col(i),a%val(i), i = 1, A%ne )
-CLOSE(89)
+IF ( debug ) THEN
+! BACKSPACE(89)
+  WRITE(89, "(' coordinate' )" )
+  WRITE(89, "(' n, ne ', I0, 1X, I0 )" ) A%n, A%ne
+  WRITE(89, "(' a_row, col, val ', /, 2( 1X,  2I11, ES12.4 ) )" ) &
+  ( A%row(i),a%col(i),a%val(i), i = 1, A%ne )
+  CLOSE(89)
+END IF
 !--------------print---------------------
 
       RETURN

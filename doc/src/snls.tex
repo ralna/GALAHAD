@@ -459,6 +459,11 @@ for every $1 \leq i \leq m$, that is no empty cohorts are allowed.
 If {\tt COHORT} is not allocated, a single cohort containing all of
 the variables will be used instead, i.e., a single unit simplex is employed.
 
+\ittf{W} is a rank-one allocatable array of dimension {\tt m\_r} and 
+type default \realdp, that holds the values of the weights, $\bmw$.
+The $i$-th component of {\tt W}, $i = 1, \ldots , m_r$, contains $w_{i}$.
+If {\tt W} is not allocated, weights of one will be assumed.
+
 \ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
 \realdp, that holds the values $\bmx$ of the optimization variables.
 The $j$-th component of {\tt X}, $j = 1, \ldots, n$, contains $x_{j}$.
@@ -1537,10 +1542,10 @@ Possible values of {\tt inform\%status} and the information required are
 \ittf{2.} The user should compute the vector of residual functions
      $\bmr(\bmx)$ at the point $\bmx$ indicated in {\tt nlp\%X}.
      The required value should be set in {\tt nlp\%R}, and
-     {\tt data\%eval\_status} should be set to 0. If the user is
+     {\tt reverse\%eval\_status} should be set to 0. If the user is
      unable to evaluate $\bmr(\bmx)$---for instance, if one or more of the
      residual functions is undefined at $\bmx$---the user need not set
-     {\tt nlp\%R}, but should then set {\tt data\%eval\_status}
+     {\tt nlp\%R}, but should then set {\tt reverse\%eval\_status}
      to a non-zero value.
 
 \ittf{3.} The user should compute the Jacobian matrix $\bmJ_r(\bmx)$ of the
@@ -1548,11 +1553,11 @@ Possible values of {\tt inform\%status} and the information required are
      The $l$-th component of the Jacobian stored according to the scheme
      input in the remainder of {\tt nlp\%Jr} (see Section~\ref{typeprob})
      should be set in {\tt nlp\%Jr\%val(l)}, for $l = 1, \ldots,$
-     {\tt  nlp\%Jr\%ne} and {\tt data\%eval\_status} should be set to 0.
+     {\tt  nlp\%Jr\%ne} and {\tt reverse\%eval\_status} should be set to 0.
      If the user is unable to  evaluate a component of $\bmJ_r(\bmx)$---for
      instance, if a component of the Jacobian is
      undefined at $\bmx$---the user need not set {\tt nlp\%Jr\%val}, but
-     should then set {\tt data\%eval\_status} to a non-zero value.
+     should then set {\tt reverse\%eval\_status} to a non-zero value.
 
 \ittf{4.} The user should compute the product $\bmp = \bmJ_r(\bmx) \bmv$
      involving the residual Jacobian $\bmJ_r(\bmx)$ at the point $\bmx$, given

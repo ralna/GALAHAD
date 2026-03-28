@@ -1500,7 +1500,8 @@
 
 !  functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -1547,7 +1548,7 @@
       inform%obj = - one
       inform%non_negligible_pivot = zero
       inform%feasible = .FALSE.
-!$    inform%threads = OMP_GET_MAX_THREADS( )
+!$    inform%threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
       cro_clock_matrix = 0.0_rp_
 
 !  basic single line of output per iteration
@@ -5787,7 +5788,6 @@
          &                     2ES24.16 )" ) prefix, iorder, alpha, merit_trial
         END DO step
 
-
 !  if the complementarity is small enough, try a pounce to the solution
 
         IF ( mu <= control%mu_pounce .AND. alpha < one ) THEN
@@ -6555,19 +6555,28 @@
             "( A,  '  changes in predicted X/C_stat = ',                       &
           &    I0, ', ', I0, ', pouncing for solution ...' )" )                &
              prefix, b_change, c_change
+          i = inform%status
           CALL CLLS_pounce( n, o, m, weight, Ao_val, Ao_row, Ao_ptr,           &
                             B, A_val, A_col, A_ptr, C_l, C_u, X_l, X_u,        &
                             X_last, R_last, C_last, Y_last, Z_last,            &
                             C_stat, X_Stat, X_free, RHS, K_sls_pounce,         &
                             SLS_pounce_data, control, inform, optimal, W, X_s )
+
+!  if the pounce succeeded, record the accurate solution
+
           IF ( optimal ) THEN
             IF ( printi ) WRITE( out, "( A,                                    &
            &   '  pounce successful, optimal solution found' )" ) prefix
             X = X_last ; R = R_last ; C_res = C_last ; Y = Y_last ; Z = Z_last
             stat_known = .TRUE.
+
+!  if the pounce succeeded, revert to the existing approximate solution
+
           ELSE
             IF ( printi ) WRITE( out, "( A,                                    &
-           &   '  pounce unsuccessful, status = ', I0 )" ) prefix, inform%status
+           & '  pounce unsuccessful, status = ', I0,                           &
+           & ' reverting to current' )" ) prefix, inform%status
+           inform%status = i
           END IF
         END IF
       END IF

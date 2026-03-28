@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 4.3 - 2023-12-30 AT 15:45 GMT.
+!  THIS VERSION: GALAHAD 5.5 - 2026-03-25 AT 12:30 GMT.
 
 !-*-*-*-  G A L A H A D _ B L L S _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
 
@@ -46,8 +46,7 @@
 
       TYPE, PUBLIC :: BLLS_time_pointer_type
         mwPointer :: pointer
-        mwPointer :: total, analyse, factorize, solve
-        mwPointer :: clock_total, clock_analyse, clock_factorize, clock_solve
+        mwPointer :: total, clock_total
       END TYPE
 
       TYPE, PUBLIC :: BLLS_pointer_type
@@ -127,9 +126,6 @@
         CASE( 'arcsearch_max_steps' )
           CALL MATLAB_get_value( ps, 'arcsearch_max_steps',                    &
                                  pc, BLLS_control%arcsearch_max_steps )
-        CASE( 'weight' )
-          CALL MATLAB_get_value( ps, 'weight',                                 &
-                                 pc, BLLS_control%weight )
         CASE( 'infinity' )
           CALL MATLAB_get_value( ps, 'infinity',                               &
                                  pc, BLLS_control%infinity )
@@ -220,7 +216,7 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 31
+      INTEGER * 4, PARAMETER :: ninform = 30
       CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
          'error                          ', 'out                            ', &
          'print_level                    ', 'start_print                    ', &
@@ -228,7 +224,6 @@
          'maxit                          ', 'cold_start                     ', &
          'preconditioner                 ', 'change_max                     ', &
          'cg_maxit                       ', 'arcsearch_max_steps            ', &
-         'weight                         ',                                    &
          'infinity                       ', 'stop_d                         ', &
          'identical_bounds_tol           ', 'stop_cg_relative               ', &
          'stop_cg_absolute               ', 'alpha_max                      ', &
@@ -275,8 +270,6 @@
                                   BLLS_control%cg_maxit )
       CALL MATLAB_fill_component( pointer, 'arcsearch_max_steps',              &
                                   BLLS_control%arcsearch_max_steps )
-      CALL MATLAB_fill_component( pointer, 'weight',                           &
-                                  BLLS_control%weight )
       CALL MATLAB_fill_component( pointer, 'infinity',                         &
                                   BLLS_control%infinity )
       CALL MATLAB_fill_component( pointer, 'stop_d',                           &
@@ -355,12 +348,9 @@
            'iter                 ', 'cg_iter              ',                   &
            'obj                  ', 'norm_pg              ',                   &
            'time                 ', 'SBLS_inform          ' /)
-      INTEGER * 4, PARAMETER :: t_ninform = 8
+      INTEGER * 4, PARAMETER :: t_ninform = 2
       CHARACTER ( LEN = 21 ), PARAMETER :: t_finform( t_ninform ) = (/         &
-           'total                ', 'analyse              ',                   &
-           'factorize            ', 'solve                ',                   &
-           'clock_total          ', 'clock_analyse        ',                   &
-           'clock_factorize      ', 'clock_solve          '         /)
+           'total                ', 'clock_total          '         /)
 
 !  create the structure
 
@@ -398,19 +388,7 @@
       CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
         'total', BLLS_pointer%time_pointer%total )
       CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
-        'analyse', BLLS_pointer%time_pointer%analyse )
-      CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
-        'factorize', BLLS_pointer%time_pointer%factorize )
-      CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
-        'solve', BLLS_pointer%time_pointer%solve )
-      CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
         'clock_total', BLLS_pointer%time_pointer%clock_total )
-      CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
-        'clock_analyse', BLLS_pointer%time_pointer%clock_analyse )
-      CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
-        'clock_factorize', BLLS_pointer%time_pointer%clock_factorize )
-      CALL MATLAB_create_real_component( BLLS_pointer%time_pointer%pointer,    &
-        'clock_solve', BLLS_pointer%time_pointer%clock_solve )
 
 !  Define the components of sub-structure SBLS_inform
 
@@ -466,20 +444,8 @@
 
       CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%total, wp ),             &
                                mxGetPr( BLLS_pointer%time_pointer%total ) )
-      CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%analyse, wp ),           &
-                               mxGetPr( BLLS_pointer%time_pointer%analyse ) )
-      CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%factorize, wp ),         &
-                               mxGetPr( BLLS_pointer%time_pointer%factorize ) )
-      CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%solve, wp ),             &
-                               mxGetPr( BLLS_pointer%time_pointer%solve ) )
       CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%clock_total, wp ),       &
                          mxGetPr( BLLS_pointer%time_pointer%clock_total ) )
-      CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%clock_analyse, wp ),     &
-                         mxGetPr( BLLS_pointer%time_pointer%clock_analyse ) )
-      CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%clock_factorize, wp ),   &
-                         mxGetPr( BLLS_pointer%time_pointer%clock_factorize ) )
-      CALL MATLAB_copy_to_ptr( REAL( BLLS_inform%time%clock_solve, wp ),       &
-                         mxGetPr( BLLS_pointer%time_pointer%clock_solve ) )
 
 !  positive-definite linear solvers
 

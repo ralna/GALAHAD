@@ -143,6 +143,7 @@ $(PACKAGE)ST = $($(PACKAGE)OBJECTSS) $(TESTDEPS) $(OBJS)/$(package)t_single.o
 $(PACKAGE)SS2 = $($(PACKAGE)OBJECTSS) $(OBJS)/$(package)s2_single.o
 $(PACKAGE)SS3 = $($(PACKAGE)OBJECTSS) $(OBJS)/$(package)s3_single.o
 $(PACKAGE)SS4 = $($(PACKAGE)OBJECTSS) $(OBJS)/$(package)s4_single.o
+$(PACKAGE)SS5 = $($(PACKAGE)OBJECTSS) $(OBJS)/$(package)s5_single.o
 $(PACKAGE)ST2 = $($(PACKAGE)OBJECTSS) $(TESTDEPS) $(OBJS)/$(package)t2_single.o
 $(PACKAGE)STI = $($(PACKAGE)OBJECTSS) $(TESTDEPS) $(OBJS)/$(package)ti_single.o
 
@@ -151,6 +152,8 @@ $(PACKAGE)QT = $($(PACKAGE)OBJECTSQ) $(TESTDEPS) $(OBJQ)/$(package)t_quadruple.o
 $(PACKAGE)QS2 = $($(PACKAGE)OBJECTSQ) $(OBJQ)/$(package)s2_quadruple.o
 $(PACKAGE)QS3 = $($(PACKAGE)OBJECTSQ) $(OBJQ)/$(package)s3_quadruple.o
 $(PACKAGE)QS4 = $($(PACKAGE)OBJECTSQ) $(OBJQ)/$(package)s4_quadruple.o
+$(PACKAGE)QS8 = $($(PACKAGE)OBJECTSQ) $(OBJQ)/$(package)s8_quadruple.o
+$(PACKAGE)QS9 = $($(PACKAGE)OBJECTSQ) $(OBJQ)/$(package)s9_quadruple.o
 $(PACKAGE)QT2 = $($(PACKAGE)OBJECTSQ) $(TESTDEPS) \
                 $(OBJQ)/$(package)t2_quadruple.o
 $(PACKAGE)QTI = $($(PACKAGE)OBJECTSQ) $(TESTDEPS) \
@@ -178,6 +181,7 @@ $(PACKAGE)ST64 = $($(PACKAGE)OBJECTSS64) $(TESTDEPS64) \
 $(PACKAGE)SS264 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s2_single_64.o
 $(PACKAGE)SS364 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s3_single_64.o
 $(PACKAGE)SS464 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s4_single_64.o
+$(PACKAGE)SS564 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s5_single_64.o
 $(PACKAGE)ST264 = $($(PACKAGE)OBJECTSS64) $(TESTDEPS64) \
                   $(OBJS64)/$(package)t2_single_64.o
 $(PACKAGE)STI64 = $($(PACKAGE)OBJECTSS64) $(TESTDEPS64) \
@@ -214,6 +218,7 @@ R$(PACKAGE)ST = $(OBJS)/$(package)t_single.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS2 = $(OBJS)/$(package)s2_single.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS3 = $(OBJS)/$(package)s3_single.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS4 = $(OBJS)/$(package)s4_single.o -L$(OBJS) $(LIBS)
+R$(PACKAGE)SS5 = $(OBJS)/$(package)s5_single.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)ST2 = $(OBJS)/$(package)t2_single.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)STI = $(OBJS)/$(package)ti_single.o -L$(OBJS) $(LIBS)
 
@@ -222,6 +227,8 @@ R$(PACKAGE)QT = $(OBJQ)/$(package)t_quadruple.o -L$(OBJQ) $(LIBS)
 R$(PACKAGE)QS2 = $(OBJQ)/$(package)s2_quadruple.o -L$(OBJQ) $(LIBS)
 R$(PACKAGE)QS3 = $(OBJQ)/$(package)s3_quadruple.o -L$(OBJQ) $(LIBS)
 R$(PACKAGE)QS4 = $(OBJQ)/$(package)s4_quadruple.o -L$(OBJQ) $(LIBS)
+R$(PACKAGE)QS8 = $(OBJQ)/$(package)s8_quadruple.o -L$(OBJQ) $(LIBS)
+R$(PACKAGE)QS9 = $(OBJQ)/$(package)s9_quadruple.o -L$(OBJQ) $(LIBS)
 R$(PACKAGE)QT2 = $(OBJQ)/$(package)t2_quadruple.o -L$(OBJQ) $(LIBS)
 R$(PACKAGE)QTI = $(OBJQ)/$(package)ti_quadruple.o -L$(OBJQ) $(LIBS)
 
@@ -243,6 +250,7 @@ R$(PACKAGE)ST64 = $(OBJS64)/$(package)t_single_64.o -L$(OBJS64) $(LIBS)
 R$(PACKAGE)SS264 = $(OBJS64)/$(package)s2_single_64.o -L$(OBJS64) $(LIBS)
 R$(PACKAGE)SS364 = $(OBJS64)/$(package)s3_single_64.o -L$(OBJS64) $(LIBS)
 R$(PACKAGE)SS464 = $(OBJS64)/$(package)s4_single_64.o -L$(OBJS64) $(LIBS)
+R$(PACKAGE)SS564 = $(OBJS64)/$(package)s5_single_64.o -L$(OBJS64) $(LIBS)
 R$(PACKAGE)ST264 = $(OBJS64)/$(package)t2_single_64.o -L$(OBJS64) $(LIBS)
 R$(PACKAGE)STI64 = $(OBJS64)/$(package)ti_single_64.o -L$(OBJS64) $(LIBS)
 
@@ -958,6 +966,14 @@ $(package)ss4: $($(PACKAGE)SS4)
 	cat $(package)s4.output
 	rm ./run_$(package)
 
+$(package)ss5: $($(PACKAGE)SS5)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)SS5)
+	$(RMOOC)
+	- ./run_$(package) > $(package)s5.output 2>&1
+	cat $(package)s5.output
+	rm ./run_$(package)
+
 $(package)ds: $($(PACKAGE)DS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)DS)
@@ -1152,6 +1168,24 @@ $(package)qs4: $($(PACKAGE)QS4)
 	cat $(package)q4.output
 	rm ./run_$(package)
 
+$(package)qs8: $($(PACKAGE)QS8)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)QS8)
+	$(RMOOC)
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)q8.output 2>&1
+#	cat $(package)q8.output
+	rm ./run_$(package)
+
+$(package)qs9: $($(PACKAGE)QS9)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)QS9)
+	$(RMOOC)
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)q9.output 2>&1
+#	cat $(package)q9.output
+	rm ./run_$(package)
+
 $(package)ss_64: $($(PACKAGE)SS64)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)SS64)
@@ -1182,6 +1216,14 @@ $(package)ss4_64: $($(PACKAGE)SS464)
 	$(RMOOC)
 	- ./run_$(package) > $(package)s464.output 2>&1
 	cat $(package)s464.output
+	rm ./run_$(package)
+
+$(package)ss5_64: $($(PACKAGE)SS564)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)SS564)
+	$(RMOOC)
+	- ./run_$(package) > $(package)s564.output 2>&1
+	cat $(package)s564.output
 	rm ./run_$(package)
 
 $(package)ds_64: $($(PACKAGE)DS64)
@@ -1711,8 +1753,9 @@ $(package)st2: $($(PACKAGE)ST2)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)ST2)
 	$(RMOOC)
-	- ./run_$(package) > $(package)st2.output 2>&1
-	cat $(package)st2.output
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)st2.output 2>&1
+#	cat $(package)st2.output
 	rm ./run_$(package)
 
 $(package)st_valgrind: $($(PACKAGE)ST)
@@ -1791,9 +1834,9 @@ $(package)dt2: $($(PACKAGE)DT2)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)DT2)
 	$(RMOOC)
-#	- ./run_$(package) 2>/dev/null
-	- ./run_$(package) > $(package)dt2.output 2>&1
-	cat $(package)dt2.output
+	- ./run_$(package) 2>/dev/null
+#	- ./run_$(package) > $(package)dt2.output 2>&1
+#	cat $(package)dt2.output
 	rm ./run_$(package)
 
 $(package)dt_keep: $($(PACKAGE)DT)

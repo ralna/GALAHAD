@@ -1,7 +1,7 @@
 % test galahad_bllsb
-% Nick Gould for GALAHAD productions 27/December/2023
+% Nick Gould for GALAHAD productions 24/March/2026
 
-clear A_o A control inform
+clear A_o SAo A SA b x_l x_u w x_s control inform
 
 n = 5 ;
 o = n + 1 ;
@@ -20,7 +20,7 @@ end
 
 fprintf('solve dense example \n')
 
-control.SLS_control.definite_linear_solver = 'ma57' ;
+%control.SLS_control.definite_linear_solver = 'ma57' ;
 %control.SBLS_control.out = 6 ;
 %control.SLS_control.print_level = 1 ;
 control.out = 6 ;
@@ -37,21 +37,23 @@ SA_o = sparse(A_o) ;
 
 [ control ] = galahad_bllsb( 'initial' ) ;
 control.print_level = 0 ;
-[ x, inform, aux ] = galahad_bllsb( 'existing', A_o, b, 0.0, x_l, x_u, control ) ;
+[ x, inform, aux ] = galahad_bllsb( 'existing', SA_o, b, 0.0, ...
+                                    x_l, x_u, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - bllsb: optimal f =', inform.obj, '- status =', inform.status ) )
 galahad_bllsb( 'final' )
 
-%  solve the example with explicit weights
+%  solve the example with explicit weights and shifts
 
-fprintf('solve example with weights\n')
+fprintf('solve sparse example all options\n')
 
-w(1:o)= 2.0 ;
+w(1:o)= 1.0 ;
+x_s(1:n) = 1.0;
 
 [ control ] = galahad_bllsb( 'initial' ) ;
 control.print_level = 0 ;
-[ x, inform, aux ] = galahad_bllsb( 'existing', A_o, b, 0.0, ...
-                                     x_l, x_u, w, control ) ;
+[ x, inform, aux ] = galahad_bllsb( 'existing', SA_o, b, 0.0, ...
+                                     x_l, x_u, w, x_s, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - bllsb: optimal f =', inform.obj, '- status =', inform.status ) )
 galahad_bllsb( 'final' )
