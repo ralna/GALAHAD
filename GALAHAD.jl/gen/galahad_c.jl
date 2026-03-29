@@ -2,28 +2,48 @@ mapping = Dict("Cvoid" => "void", "Cchar" => "char", "Bool" => "bool", "Int32" =
                "Float32" => "float", "Float64" => "double", "Float128" => "__float128", "Cfloat128" => "__float128")
 
 function string_callbacks(ipc_::String, rpc_::String, integer_suffix::String, real_suffix::String)
-str = "typedef $ipc_ galahad_f$(real_suffix)$(integer_suffix)($ipc_ n, const $rpc_ x[], $rpc_ *f, const void *userdata);
-typedef $ipc_ galahad_g$(real_suffix)$(integer_suffix)($ipc_ n, const $rpc_ x[], $rpc_ g[], const void *userdata);
-typedef $ipc_ galahad_h$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ ne, const $rpc_ x[], $rpc_ h[], const void *userdata);
-typedef $ipc_ galahad_prec$(real_suffix)$(integer_suffix)($ipc_ n, const $rpc_ x[], $rpc_ u[], const $rpc_ v[], const void *userdata);
-typedef $ipc_ galahad_hprod$(real_suffix)$(integer_suffix)($ipc_ n, const $rpc_ x[], $rpc_ u[], const $rpc_ v[], bool got_h, const void *userdata);
-typedef $ipc_ galahad_shprod$(real_suffix)$(integer_suffix)($ipc_ n, const $rpc_ x[], $ipc_ nnz_v, const $ipc_ index_nz_v[], const $rpc_ v[], $ipc_ *nnz_u, $ipc_ index_nz_u[], $rpc_ u[], bool got_h, const void *userdata);
-typedef $ipc_ galahad_constant_prec$(real_suffix)$(integer_suffix)($ipc_ n, const $rpc_ v[], $rpc_ p[], const void *userdata);
-typedef $ipc_ galahad_r$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, const $rpc_ x[], $rpc_ r[], const void *userdata);
-typedef $ipc_ galahad_jr$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, $ipc_ jne, const $rpc_ x[], $rpc_ jr[], const void *userdata);
-typedef $ipc_ galahad_hr$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, $ipc_ hne, const $rpc_ x[], const $rpc_ y[], $rpc_ hr[], const void *userdata);
-typedef $ipc_ galahad_jrprod$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, const $rpc_ x[], const bool transpose, $rpc_ u[], const $rpc_ v[], bool got_j, const void *userdata);
-typedef $ipc_ galahad_hrprod$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, const $rpc_ x[], const $rpc_ y[], $rpc_ u[], const $rpc_ v[], bool got_h, const void *userdata);
-typedef $ipc_ galahad_shrprod$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, $ipc_ pne, const $rpc_ x[], const $rpc_ v[], $rpc_ pval[], bool got_h, const void *userdata);
-typedef $ipc_ galahad_jr_prod$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, const $rpc_ x[], const bool transpose, const $rpc_ v[], $rpc_ p[], bool got_j, const void *userdata);
-typedef $ipc_ galahad_jr_scol$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m,  const $rpc_ x[], $ipc_ index, $rpc_ val[], $ipc_ row[], $ipc_ nz, bool got_j, const void *userdata);
-typedef $ipc_ galahad_jr_sprod$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m,  const $rpc_ x[], const bool transpose, const $rpc_ v[], $rpc_ p[], const $ipc_ free[], $ipc_ n_free, bool got_j, const void *userdata);
-typedef $ipc_ galahad_fc$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, const $rpc_ x[], $rpc_ *f, $rpc_ c[], const void *userdata);
-typedef $ipc_ galahad_gj$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, $ipc_ jne, const $rpc_ x[], $rpc_ g[], $rpc_ j[], const void *userdata);
-typedef $ipc_ galahad_hl$(real_suffix)$(integer_suffix)($ipc_ n, $ipc_ m, $ipc_ hne, const $rpc_ x[], const $rpc_ y[], $rpc_ h[], const void *userdata);
-typedef $ipc_ galahad_fgh$(real_suffix)$(integer_suffix)($rpc_ x, $rpc_ *f, $rpc_ *g, $rpc_ *h, const void *userdata);\n\n"
-return str
-end
+  path_galahad_callbacks = joinpath(ENV["GALAHAD"], "include", "galahad_callbacks.h")
+  header = read(path_galahad_callbacks, String)
+  header = replace(header, r"\n\s+" => " ")
+  lines = split(header, '\n')
+  out = String[]
+  pattern = r"typedef\s+(\w+)\s+(\w+)\s*\((.*?)\);"
+  list_callbacks = String[]
+  for line in lines
+    line = strip(line)
+    isempty(line) && continue
+    startswith(line, "//") && continue
+    m = match(pattern, line)
+    if m !== nothing
+      rettype, name, args = m.captures
+      rettype = replace(rettype, "ipc_" => ipc_, "rpc_" => rpc_)
+      args    = replace(args,    "ipc_" => ipc_, "rpc_" => rpc_)
+      newname = name * real_suffix * integer_suffix
+      signature = "typedef $rettype $newname($args);"
+      signature = replace(signature, "( " => "(")
+      signature = replace(signature, " )" => ")")
+      signature = replace(signature, ",  " => ", ")
+      push!(out, signature)
+      push!(list_callbacks, name)
+    end
+  end
+
+  # validation
+  missing_in_header = setdiff(callbacks, list_callbacks)
+  missing_in_callbacks = setdiff(list_callbacks, callbacks)
+  if !isempty(missing_in_header) || !isempty(missing_in_callbacks)
+    msg = ""
+    for cb in missing_in_header
+      msg = msg * "Callback `$cb` (from `callbacks` in GALAHAD.jl/gen/rewriter.jl) not found in `galahad_callbacks.h` or not parsed correctly.\n"
+    end
+    for cb in missing_in_callbacks
+      msg = msg * "Callback `$cb` (from `galahad_callbacks.h`) missing in the variable `callbacks` in GALAHAD.jl/gen/rewriter.jl. Please add it.\n"
+    end
+    error("--- Callback mismatch detected ---\n" * msg)
+  end
+
+  return join(out, "\n") * "\n\n"
+end 
 
 function finalize_header_c(text::String, variant::String)
   begin_guard = "// include guard\n#ifndef GALAHAD_C_$(uppercase(variant))_H\n#define GALAHAD_C_$(uppercase(variant))_H\n\n"
