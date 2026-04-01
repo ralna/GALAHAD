@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-02-25 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -7239,6 +7239,12 @@
 
      IF ( .NOT. data%explicit_a ) GO TO 900
 
+!  record relevant control variables
+
+     error = data%blls_control%error
+     space_critical = data%blls_control%space_critical
+     deallocate_error_fatal = data%blls_control%space_critical
+
 !  recover the dimensions
 
      n = data%prob%n ; o = data%prob%o
@@ -7532,6 +7538,12 @@
        IF ( data%blls_control%cold_start == 0 )                                &
          data%prob%X_status( : n ) = X_stat( : n )
 
+!  record relevant control variables
+
+       error = data%blls_control%error
+       space_critical = data%blls_control%space_critical
+       deallocate_error_fatal = data%blls_control%space_critical
+
 !  save the weights if they are present
 
        IF ( PRESENT( W ) ) THEN
@@ -7561,10 +7573,6 @@
        END IF
 
 !  allocate space for reverse-communication data
-
-       error = data%blls_control%error
-       space_critical = data%blls_control%space_critical
-       deallocate_error_fatal = data%blls_control%space_critical
 
        array_name = 'blls: data%reverse%NZ_out'
        CALL SPACE_resize_array( n, data%reverse%NZ_out,                        &

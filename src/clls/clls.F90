@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-02-08 AT 13:20 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 10:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -9643,6 +9643,12 @@
      INTEGER ( KIND = ip_ ) :: m, o, n, error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
+
+!  record relevant control variables
+
+     error = data%clls_control%error
+     space_critical = data%clls_control%space_critical
+     deallocate_error_fatal = data%clls_control%space_critical
 
 !  recover the dimensions
 

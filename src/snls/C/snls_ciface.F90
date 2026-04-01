@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-03-28 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-03-30 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -221,7 +221,6 @@
 
     ! Integers
     fcontrol%error = ccontrol%error
-    fcontrol%error = ccontrol%error
     fcontrol%out = ccontrol%out
     fcontrol%print_level = ccontrol%print_level
     fcontrol%start_print = ccontrol%start_print
@@ -255,6 +254,7 @@
     fcontrol%clock_time_limit = ccontrol%clock_time_limit
 
     ! Logicals
+    fcontrol%newton_acceleration = ccontrol%newton_acceleration
     fcontrol%magic_step = ccontrol%magic_step
     fcontrol%print_obj = ccontrol%print_obj
     fcontrol%space_critical = ccontrol%space_critical
@@ -291,7 +291,6 @@
 
     ! Integers
     ccontrol%error = fcontrol%error
-    ccontrol%error = fcontrol%error
     ccontrol%out = fcontrol%out
     ccontrol%print_level = fcontrol%print_level
     ccontrol%start_print = fcontrol%start_print
@@ -325,6 +324,7 @@
     ccontrol%clock_time_limit = fcontrol%clock_time_limit
 
     ! Logicals
+    ccontrol%newton_acceleration = fcontrol%newton_acceleration
     ccontrol%magic_step = fcontrol%magic_step
     ccontrol%print_obj = fcontrol%print_obj
     ccontrol%space_critical = fcontrol%space_critical
@@ -334,7 +334,7 @@
     CALL copy_slls_control_out( fcontrol%slls_control,                         &
                                 ccontrol%slls_control )
     CALL copy_sllsb_control_out( fcontrol%sllsb_control,                       &
-                               ccontrol%sllsb_control )
+                                 ccontrol%sllsb_control )
 
     ! Strings
     l = LEN( fcontrol%alive_file )

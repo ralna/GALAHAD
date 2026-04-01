@@ -20,10 +20,8 @@
 
 !go to 111
    n = 3 ; o = 4 ; ao_ne = 7
-   ALLOCATE( p%B( o ), p%X_l( n ), p%X_u( n ) )
-   ALLOCATE( p%X( n ), p%Z( n ) )
-   ALLOCATE( p%Ao%ptr( o + 1 ) )
-   ALLOCATE( p%X_status( n ) )
+   ALLOCATE( p%B( o ), p%X_l( n ), p%X_u( n ), p%X( n ), p%Z( n ) )
+   ALLOCATE( p%Ao%ptr( o + 1 ), p%X_status( n ) )
 
 !  ================
 !  error exit tests
@@ -129,7 +127,8 @@
 
    END DO
    CALL BLLSB_terminate( data, control, info )
-   DEALLOCATE( p%B, p%X_l, p%X_u, p%X, p%Z, p%X_status, p%Ao%ptr )
+   DEALLOCATE( p%B, p%X_l, p%X_u, p%X, p%Z, p%R, p%X_status )
+   DEALLOCATE( p%Ao%ptr, p%Ao%type )
 
 !  =====================================
 !  basic test of various storage formats
@@ -284,7 +283,8 @@
      p%regularization_weight = 0.0_rp_
 !    STOP
    END DO
-   DEALLOCATE( p%B, p%X_l, p%X_u, p%X, p%Z, p%X_status, p%Ao%ptr )
+   DEALLOCATE( p%B, p%X_l, p%X_u, p%X, p%Z, p%R, p%X_status )
+   DEALLOCATE( p%Ao%ptr, p%Ao%type )
 
 !stop
 !  =============================
@@ -413,7 +413,7 @@
    DEALLOCATE( p%Z, STAT = i )
    DEALLOCATE( p%X_status, STAT = i )
    DEALLOCATE( p%Ao%ptr, STAT = i )
-   DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, STAT = i )
+   DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, p%Ao%type, STAT = i )
 !stop
 
 !  ============================
@@ -471,7 +471,7 @@
      WRITE( 6, "( I2, ': BLLSB_solve exit status = ', I6 ) " ) 1, info%status
    END IF
    CALL BLLSB_terminate( data, control, info )
-   DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, p%Ao%ptr )
+   DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, p%Ao%ptr, p%Ao%type )
    DEALLOCATE( p%B, p%X_l, p%X_u, p%X, p%Z, p%R, p%X_status )
 
 !  Second problem
@@ -515,8 +515,8 @@
      WRITE( 6, "( I2, ': BLLSB_solve exit status = ', I6 ) " ) 2, info%status
    END IF
    CALL BLLSB_terminate( data, control, info )
-   DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, p%Ao%ptr )
-   DEALLOCATE( p%B, p%X_l, p%X_u, p%X, p%Z, p%X_status )
+   DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, p%Ao%ptr, p%Ao%type )
+   DEALLOCATE( p%B, p%X_l, p%X_u, p%X, p%Z, p%R, p%X_status )
 
 !  Third problem
 
@@ -560,7 +560,7 @@
    END IF
    CALL BLLSB_terminate( data, control, info )
    DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, p%Ao%ptr, p%Ao%type )
-   DEALLOCATE( p%B, p%X_l, p%X_u, p%X, p%Z, p%X_status )
+   DEALLOCATE( p%B, p%X_l, p%X_u, p%X, p%Z, p%R, p%X_status )
 
 !  Fourth and Fifth problems
 
@@ -617,8 +617,8 @@
    END IF
 
    CALL BLLSB_terminate( data, control, info )
-   DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, p%Ao%ptr )
-   DEALLOCATE( p%B, p%X_l, p%X_u, p%X, p%Z, p%X_status )
+   DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, p%Ao%ptr, p%Ao%type )
+   DEALLOCATE( p%B, p%X_l, p%X_u, p%X, p%Z, p%R, p%X_status )
    WRITE( 6, "( /, ' tests completed' )" )
 
    END PROGRAM GALAHAD_BLLSB_EXAMPLE

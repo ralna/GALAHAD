@@ -12,6 +12,8 @@ mutable struct userdata_blls{T}
   scale::T
 end
 
+Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_blls) = pointer_from_objref(userdata)
+
 function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Apply preconditioner
@@ -36,7 +38,6 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
 
   # Set user data
   userdata = userdata_blls{T}(1)
-  userdata_ptr = pointer_from_objref(userdata)
 
   # Set problem data
   n = INT(10)  # dimension
@@ -177,7 +178,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         st = "CO"
         blls_import(T, INT, control, data, status, n, o, "coordinate", 
                     Ao_ne, Ao_row, Ao_col, INT(0), C_NULL)
-        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, 
+        blls_solve_given_a(T, INT, data, userdata, status, n, o,
                            Ao_ne, Ao_val, 
                            b, sigma, x_l, x_u, x, z, r, g, x_stat, 
                            w, x_s, prec_ptr)
@@ -188,7 +189,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         st = "SR"
         blls_import(T, INT, control, data, status, n, o, "sparse_by_rows", 
                     Ao_ne, C_NULL, Ao_col, Ao_ptr_ne, Ao_ptr)
-        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, 
+        blls_solve_given_a(T, INT, data, userdata, status, n, o,
                            Ao_ne, Ao_val, 
                            b, sigma, x_l, x_u, x, z, r, g, x_stat, 
                            w, x_s, prec_ptr)
@@ -199,7 +200,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         st = "DD"
         blls_import(T, INT, control, data, status, n, o, "dense", 
                     Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
-        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, 
+        blls_solve_given_a(T, INT, data, userdata, status, n, o,
                            Ao_dense_ne, Ao_dense, 
                            b, sigma, x_l, x_u, x, z, r, g, x_stat, 
                            w, x_s, prec_ptr)
@@ -210,7 +211,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         st = "DR"
         blls_import(T, INT, control, data, status, n, o, "dense_by_rows",
                     Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
-        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, 
+        blls_solve_given_a(T, INT, data, userdata, status, n, o,
                            Ao_dense_ne, Ao_dense, 
                            b, sigma, x_l, x_u, x, z, r, g, x_stat, 
                            w, x_s, prec_ptr)
@@ -222,7 +223,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         blls_import(T, INT, control, data, status, n, o, "sparse_by_columns", 
                     Ao_ne, Ao_by_col_row, C_NULL, 
                     Ao_by_col_ptr_ne, Ao_by_col_ptr)
-        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, 
+        blls_solve_given_a(T, INT, data, userdata, status, n, o,
                            Ao_ne, Ao_by_col_val, 
                            b, sigma, x_l, x_u, x, z, r, g, x_stat, 
                            w, x_s, prec_ptr)
@@ -233,7 +234,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         st = "DC"
         blls_import(T, INT, control, data, status, n, o, "dense_by_columns", 
                     Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
-        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, 
+        blls_solve_given_a(T, INT, data, userdata, status, n, o,
                            Ao_dense_ne, Ao_by_col_dense, 
                            b, sigma, x_l, x_u, x, z, r, g, x_stat, 
                            w, x_s, prec_ptr)

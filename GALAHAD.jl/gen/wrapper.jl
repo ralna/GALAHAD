@@ -3,12 +3,13 @@ using Clang
 using Clang.Generators
 using JuliaFormatter
 
+include("rewriter.jl")
+include("galahad_c.jl")
+
 # Support for quadruple precision
 struct JuliaCfloat128 <: Clang.Generators.AbstractJuliaSIT end
 Clang.Generators.tojulia(x::CLFloat128) = JuliaCfloat128()
 Clang.Generators.translate(jlty::JuliaCfloat128, options = Dict()) = :Float128
-
-include("rewriter.jl")
 
 function run_sif_wrapper(name::String, precision::String)
 str = "function run_sif(::Val{:$name}, ::Val{:$precision}, path_libsif::String, path_outsdif::String)
@@ -114,7 +115,6 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool;
   return nothing
 end
 
-# Change the default value of `mp` to `true` if we want to regenerate `galahad_c.h`.
 function main(name::String="all"; optimized::Bool=true)
   haskey(ENV, "GALAHAD") || error("The environment variable GALAHAD is not defined.")
   galahad = joinpath(ENV["GALAHAD"], "include")

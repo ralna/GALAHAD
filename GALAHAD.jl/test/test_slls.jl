@@ -12,6 +12,8 @@ mutable struct userdata_slls{T}
   scale::T
 end
 
+Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_slls) = pointer_from_objref(userdata)
+
 function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Apply preconditioner
@@ -36,7 +38,6 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
 
   # Set user data
   userdata = userdata_slls{T}(1)
-  userdata_ptr = pointer_from_objref(userdata)
 
   # Set problem data
   n = INT(10)  # dimension
@@ -155,31 +156,31 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       # sparse co-ordinate storage
       if d == 1
         st = "CO"
-        slls_import(T, INT, control, data, status, n, o, m, "coordinate", 
+        slls_import(T, INT, control, data, status, n, o, m, "coordinate",
                     Ao_ne, Ao_row, Ao_col, INT(0), C_NULL, C_NULL)
-        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, m, Ao_ne, 
-                           Ao_val, b, sigma, x, y, z, r, g, x_stat, 
+        slls_solve_given_a(T, INT, data, userdata, status, n, o, m, Ao_ne,
+                           Ao_val, b, sigma, x, y, z, r, g, x_stat,
                            C_NULL, C_NULL, prec_ptr)
       end
 
       # sparse by rows
       if d == 2
         st = "SR"
-        slls_import(T, INT, control, data, status, n, o, m, "sparse_by_rows", 
+        slls_import(T, INT, control, data, status, n, o, m, "sparse_by_rows",
                      Ao_ne, C_NULL, Ao_col, Ao_ptr_ne, Ao_ptr, C_NULL)
-        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, m, 
-                           Ao_ne, Ao_val, b, sigma, x, y, z, r, g, x_stat, 
+        slls_solve_given_a(T, INT, data, userdata, status, n, o, m,
+                           Ao_ne, Ao_val, b, sigma, x, y, z, r, g, x_stat,
                            C_NULL, C_NULL, prec_ptr)
       end
 
       # dense by rows
       if d == 3
         st = "DR"
-        slls_import(T, INT, control, data, status, n, o, m, "dense_by_rows", 
+        slls_import(T, INT, control, data, status, n, o, m, "dense_by_rows",
                     Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL, C_NULL)
-        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, m, 
-                           Ao_dense_ne, Ao_dense, b, sigma, 
-                           x, y, z, r, g, x_stat, 
+        slls_solve_given_a(T, INT, data, userdata, status, n, o, m,
+                           Ao_dense_ne, Ao_dense, b, sigma,
+                           x, y, z, r, g, x_stat,
                            C_NULL, C_NULL, prec_ptr)
       end
 
@@ -187,21 +188,21 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       if d == 4
         st = "SC"
         slls_import(T, INT, control, data, status, n, o, m, "sparse_by_columns",
-                    Ao_ne, Ao_by_col_row, C_NULL, 
+                    Ao_ne, Ao_by_col_row, C_NULL,
                     Ao_by_col_ptr_ne, Ao_by_col_ptr, C_NULL)
-        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, m, Ao_ne, 
-                           Ao_by_col_val, b, sigma, x, y, z, r, g, x_stat, 
+        slls_solve_given_a(T, INT, data, userdata, status, n, o, m, Ao_ne,
+                           Ao_by_col_val, b, sigma, x, y, z, r, g, x_stat,
                            C_NULL, C_NULL, prec_ptr)
       end
 
       # dense by columns
       if d == 5
         st = "DC"
-        slls_import(T, INT, control, data, status, n, o, m, "dense_by_columns", 
+        slls_import(T, INT, control, data, status, n, o, m, "dense_by_columns",
                     Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL, C_NULL)
-        slls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, m, 
-                           Ao_dense_ne, Ao_by_col_dense, 
-                           b, sigma, x, y, z, r, g, x_stat, 
+        slls_solve_given_a(T, INT, data, userdata, status, n, o, m,
+                           Ao_dense_ne, Ao_by_col_dense,
+                           b, sigma, x, y, z, r, g, x_stat,
                            C_NULL, C_NULL, prec_ptr)
       end
 

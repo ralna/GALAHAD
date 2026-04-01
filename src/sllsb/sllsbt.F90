@@ -505,7 +505,7 @@
    END IF
 
    CALL SLLSB_terminate( data, control, info )
-   DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col )
+   DEALLOCATE( p%Ao%type, p%Ao%val, p%Ao%row, p%Ao%col, p%Ao%ptr )
    DEALLOCATE( p%B, p%X, p%Y, p%Z, p%R, p%X_status )
    WRITE( 6, "( /, ' tests completed' )" )
 

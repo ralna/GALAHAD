@@ -12,6 +12,8 @@ mutable struct userdata_ugo{T}
   a::T
 end
 
+Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_ugo) = pointer_from_objref(userdata)
+
 function test_ugo(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
   # Test problem objective
   function objf(x::T, userdata::userdata_ugo{T})
@@ -56,7 +58,6 @@ function test_ugo(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
 
   # Set user data
   userdata = userdata_ugo{T}(10)
-  userdata_ptr = pointer_from_objref(userdata)
 
   # Initialize UGO
   status = Ref{INT}()
@@ -85,7 +86,7 @@ function test_ugo(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
   # Solve the problem: min f(x), x_l ≤ x ≤ x_u
   if mode == "direct"
     # Call UGO_solve
-    ugo_solve_direct(T, INT, data, userdata_ptr, status, x, f, g, h, eval_fgh_ptr)
+    ugo_solve_direct(T, INT, data, userdata, status, x, f, g, h, eval_fgh_ptr)
   end
 
   if mode == "reverse"

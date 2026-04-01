@@ -12,11 +12,12 @@ mutable struct userdata_nls{T}
   p::T
 end
 
+Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_nls) = pointer_from_objref(userdata)
+
 function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # compute the residuals
   function res(x::Vector{T}, c::Vector{T}, userdata::userdata_nls{T})
-    println(x)
     c[1] = x[1]^2 + userdata.p
     c[2] = x[1] + x[2]^2
     c[3] = x[1] - x[2]
@@ -198,7 +199,6 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
 
   # Set user data
   userdata = userdata_nls{T}(1)
-  userdata_ptr = pointer_from_objref(userdata)
 
   # Set problem data
   n = INT(2)  # variables
@@ -256,7 +256,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "coordinate", h_ne, H_row, H_col, C_NULL,
                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
-        nls_solve_with_mat(T, INT, data, userdata_ptr, status,
+        nls_solve_with_mat(T, INT, data, userdata, status,
                            n, m, x, c, g, res_ptr, j_ne, jac_ptr,
                            h_ne, hess_ptr, p_ne, rhessprods_ptr)
       end
@@ -269,7 +269,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
-        nls_solve_with_mat(T, INT, data, userdata_ptr, status,
+        nls_solve_with_mat(T, INT, data, userdata, status,
                            n, m, x, c, g, res_ptr, j_ne, jac_ptr,
                            h_ne, hess_ptr, p_ne, rhessprods_ptr)
       end
@@ -282,7 +282,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "dense", h_ne_dense, C_NULL, C_NULL, C_NULL,
                    "dense", p_ne_dense, C_NULL, C_NULL, C_NULL, W)
 
-        nls_solve_with_mat(T, INT, data, userdata_ptr, status,
+        nls_solve_with_mat(T, INT, data, userdata, status,
                            n, m, x, c, g, res_ptr, j_ne_dense, jac_dense_ptr,
                            h_ne_dense, hess_dense_ptr, p_ne_dense, rhessprods_dense_ptr)
       end
@@ -295,7 +295,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "diagonal", n, C_NULL, C_NULL, C_NULL,
                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
-        nls_solve_with_mat(T, INT, data, userdata_ptr, status,
+        nls_solve_with_mat(T, INT, data, userdata, status,
                            n, m, x, c, g, res_ptr, j_ne, jac_ptr,
                            n, hess_ptr, p_ne, rhessprods_ptr)
       end
@@ -308,7 +308,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "absent", h_ne, C_NULL, C_NULL, C_NULL,
                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
-        nls_solve_without_mat(T, INT, data, userdata_ptr, status,
+        nls_solve_without_mat(T, INT, data, userdata, status,
                               n, m, x, c, g, res_ptr, jacprod_ptr,
                               hessprod_ptr, p_ne, rhessprods_ptr)
       end
@@ -557,7 +557,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                  "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
                  "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
-      nls_solve_with_mat(T, INT, data, userdata_ptr, status,
+      nls_solve_with_mat(T, INT, data, userdata, status,
                          n, m, x, c, g, res_ptr, j_ne, jac_ptr,
                          h_ne, hess_ptr, p_ne, rhessprods_ptr)
 
@@ -598,7 +598,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                  "absent", h_ne, C_NULL, C_NULL, C_NULL,
                  "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
-      nls_solve_without_mat(T, INT, data, userdata_ptr, status,
+      nls_solve_without_mat(T, INT, data, userdata, status,
                             n, m, x, c, g, res_ptr, jacprod_ptr,
                             hessprod_ptr, p_ne, rhessprods_ptr)
 

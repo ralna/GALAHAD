@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-01-29 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -1123,6 +1123,13 @@
 !     IF ( control%deallocate_error_fatal .AND.                                &
 !          inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'sllsb: prob%C_status'
+      CALL SPACE_dealloc_array( prob%C_status,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
 !  restore status values
 
       inform%status = status
@@ -1814,6 +1821,12 @@
      INTEGER ( KIND = ip_ ) :: n, o, m, error
      LOGICAL :: deallocate_error_fatal, space_critical, w_present, x_s_present
      CHARACTER ( LEN = 80 ) :: array_name
+
+!  record relevant control variables
+
+     error = data%sllsb_control%error
+     space_critical = data%sllsb_control%space_critical
+     deallocate_error_fatal = data%sllsb_control%space_critical
 
 !  record whether W and X_s are present
 

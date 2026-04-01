@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-01-22 AT 10:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 09:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -3106,6 +3106,13 @@
 
       array_name = 'lsp: map%ptr_a_fixed'
       CALL SPACE_dealloc_array( map%ptr_a_fixed,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lsp: map%ao_type_original'
+      CALL SPACE_dealloc_array( map%ao_type_original,                          &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &

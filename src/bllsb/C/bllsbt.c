@@ -118,7 +118,7 @@ int main(void) {
                 bllsb_import( &control, &data, &status, n, o,
                              "dense_by_columns", Ao_ne, NULL, NULL, 0, NULL );
                 bllsb_solve_given_a( &data, &status, n, o, Ao_ne, Ao_dense, b,
-                                  sigma, x_l, x_u, x, z, r, x_stat, w, x_s );
+                                     sigma, x_l, x_u, x, z, r, x_stat, w, x_s );
                 }
                 break;
             }

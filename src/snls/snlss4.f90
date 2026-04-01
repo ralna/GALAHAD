@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_SNLS_EXAMPLE4 !  GALAHAD 5.5 - 2026-02-22 AT 14:30 GMT
+   PROGRAM GALAHAD_SNLS_EXAMPLE4 !  GALAHAD 5.5 - 2026-04-01 AT 14:40 GMT.
    USE GALAHAD_SNLS_double                      ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -116,6 +116,8 @@
        EXIT
      END SELECT
    END DO
+! delete internal workspace
+   CALL SNLS_terminate( data, control, inform, reverse = reverse )
    DEALLOCATE( nlp%X, nlp%G, nlp%R, nlp%COHORT )
    DEALLOCATE( userdata%real, userdata%integer )
    END PROGRAM GALAHAD_SNLS_EXAMPLE4
