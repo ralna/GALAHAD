@@ -12,6 +12,8 @@ mutable struct userdata_tru{T}
   p::T
 end
 
+Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_tru) = pointer_from_objref(userdata)
+
 function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Objective function
@@ -184,7 +186,6 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
 
   # Set user data
   userdata = userdata_tru{T}(4)
-  userdata_ptr = pointer_from_objref(userdata)
 
   # Set problem data
   n = INT(3)  # dimension
@@ -225,35 +226,35 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         st = 'C'
         # @reset control[].print_level = INT(1)
         tru_import(T, INT, control, data, status, n, "coordinate", ne, H_row, H_col, C_NULL)
-        tru_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g, ne, fun_ptr, grad_ptr, hess_ptr, prec_ptr)
+        tru_solve_with_mat(T, INT, data, userdata, status, n, x, g, ne, fun_ptr, grad_ptr, hess_ptr, prec_ptr)
       end
 
       # sparse by rows
       if d == 2
         st = 'R'
         tru_import(T, INT, control, data, status, n, "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
-        tru_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g, ne, fun_ptr, grad_ptr, hess_ptr, prec_ptr)
+        tru_solve_with_mat(T, INT, data, userdata, status, n, x, g, ne, fun_ptr, grad_ptr, hess_ptr, prec_ptr)
       end
 
       # dense
       if d == 3
         st = 'D'
         tru_import(T, INT, control, data, status, n, "dense", ne_dense, C_NULL, C_NULL, C_NULL)
-        tru_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g, ne_dense, fun_ptr, grad_ptr, hess_dense_ptr, prec_ptr)
+        tru_solve_with_mat(T, INT, data, userdata, status, n, x, g, ne_dense, fun_ptr, grad_ptr, hess_dense_ptr, prec_ptr)
       end
 
       # diagonal
       if d == 4
         st = 'I'
         tru_import(T, INT, control, data, status, n, "diagonal", n, C_NULL, C_NULL, C_NULL)
-        tru_solve_with_mat(T, INT,  data, userdata_ptr, status, n, x, g, n, fun_diag_ptr, grad_diag_ptr, hess_diag_ptr, prec_ptr)
+        tru_solve_with_mat(T, INT,  data, userdata, status, n, x, g, n, fun_diag_ptr, grad_diag_ptr, hess_diag_ptr, prec_ptr)
       end
 
       # access by products
       if d == 5
         st = 'P'
         tru_import(T, INT, control, data, status, n, "absent", ne, C_NULL, C_NULL, C_NULL)
-        tru_solve_without_mat(T, INT, data, userdata_ptr, status, n, x, g, fun_ptr, grad_ptr, hessprod_ptr, prec_ptr)
+        tru_solve_without_mat(T, INT, data, userdata, status, n, x, g, fun_ptr, grad_ptr, hessprod_ptr, prec_ptr)
       end
 
       tru_information(T, INT, data, inform, status)

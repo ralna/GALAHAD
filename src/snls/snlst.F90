@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-02-22 AT 15:40 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 14:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SNLS_TESTS
    USE GALAHAD_KINDS_precision
@@ -167,7 +167,7 @@
      IF ( ALLOCATED( nlp%Jr%col ) ) DEALLOCATE( nlp%Jr%col )
      IF ( ALLOCATED( nlp%Jr%ptr ) ) DEALLOCATE( nlp%Jr%ptr )
    END DO
-   DEALLOCATE( nlp%X, nlp%G, nlp%R, userdata%real )
+   DEALLOCATE( nlp%X, nlp%Y, nlp%Z, nlp%G, nlp%R, nlp%X_status, userdata%real )
 
    WRITE( 6, "( /, ' SNLS - test of input modes and options', / )" )
 
@@ -410,7 +410,14 @@
          WRITE( 6, "( ' SNLS(', I1, A3, '): exit status = ', I6 ) " )          &
              cohort, c_solver, inform%status
        END IF
-       CALL SNLS_terminate( data, control, inform )
+
+       SELECT CASE( solver )
+       CASE( 3, 4, 6 )
+         CALL SNLS_terminate( data, control, inform, reverse = reverse )
+       CASE DEFAULT
+         CALL SNLS_terminate( data, control, inform )
+       END SELECT
+
        SELECT CASE( solver )
        CASE( 1 : 4 )
          DEALLOCATE( nlp%Jr%type, nlp%Jr%val, nlp%Jr%row, nlp%Jr%col )
@@ -422,7 +429,8 @@
      END SELECT
    END DO ! cohort loop
    IF ( ALLOCATED( nlp%COHORT ) ) DEALLOCATE( nlp%COHORT )
-   DEALLOCATE( nlp%X, nlp%G, nlp%R, userdata%real, userdata%integer )
+   DEALLOCATE( nlp%X, nlp%Y, nlp%Z, nlp%G, nlp%R, nlp%X_status )
+   DEALLOCATE( userdata%real, userdata%integer )
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS

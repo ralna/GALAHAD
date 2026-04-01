@@ -1,7 +1,7 @@
 //* \file galahad_snls.h */
 
 /*
- * THIS VERSION: GALAHAD 5.5 - 2026-03-08 AT 09:20 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-30 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SNLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -525,10 +525,6 @@ struct snls_inform_type {
     /// \brief
     /// inform values for sllsb
     struct sllsb_inform_type sllsb_inform;
-
-    /// \brief
-    /// the output flag from LAPACK routines
-    ipc_ lapack_error;
 
 };
 

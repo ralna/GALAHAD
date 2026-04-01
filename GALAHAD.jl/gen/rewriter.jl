@@ -55,8 +55,6 @@ hsl_structures = ("ma48_control", "ma48_ainfo", "ma48_finfo", "ma48_sinfo", "ma5
                   "ma97_info", "mc64_control", "mc64_info", "mc68_control", "mc68_info",
                   "mi20_control", "mi20_solve_control", "mi20_info", "mi28_control", "mi28_info")
 
-include("galahad_c.jl")
-
 function rewrite!(path::String, name::String, optimized::Bool)
   structures = (name == "version") ? "" : "# Structures for $name\n"
   text = read(path, String)

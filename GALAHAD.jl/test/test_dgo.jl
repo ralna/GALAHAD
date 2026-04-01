@@ -14,6 +14,8 @@ mutable struct userdata_dgo{T}
   mag::T
 end
 
+Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_dgo) = pointer_from_objref(userdata)
+
 function test_dgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Objective function
@@ -285,7 +287,6 @@ function test_dgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
 
   # Set user data
   userdata = userdata_dgo{T}(4.0, 10.0, 1000.0)
-  userdata_ptr = pointer_from_objref(userdata)
 
   # Set problem data
   n = INT(3)  # dimension
@@ -330,7 +331,7 @@ function test_dgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         dgo_import(T, INT, control, data, status, n, x_l, x_u,
                    "coordinate", ne, H_row, H_col, C_NULL)
 
-        dgo_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g,
+        dgo_solve_with_mat(T, INT, data, userdata, status, n, x, g,
                            ne, fun_ptr, grad_ptr, hess_ptr,
                            hessprod_ptr, prec_ptr)
       end
@@ -341,7 +342,7 @@ function test_dgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         dgo_import(T, INT, control, data, status, n, x_l, x_u,
                    "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
 
-        dgo_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g,
+        dgo_solve_with_mat(T, INT, data, userdata, status, n, x, g,
                            ne, fun_ptr, grad_ptr, hess_ptr,
                            hessprod_ptr, prec_ptr)
       end
@@ -352,7 +353,7 @@ function test_dgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         dgo_import(T, INT, control, data, status, n, x_l, x_u,
                    "dense", ne_dense, C_NULL, C_NULL, C_NULL)
 
-        dgo_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g,
+        dgo_solve_with_mat(T, INT, data, userdata, status, n, x, g,
                            ne_dense, fun_ptr, grad_ptr, hess_dense_ptr,
                            hessprod_ptr, prec_ptr)
       end
@@ -363,7 +364,7 @@ function test_dgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         dgo_import(T, INT, control, data, status, n, x_l, x_u,
                    "diagonal", n, C_NULL, C_NULL, C_NULL)
 
-        dgo_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g,
+        dgo_solve_with_mat(T, INT, data, userdata, status, n, x, g,
                            n, fun_diag_ptr, grad_diag_ptr, hess_diag_ptr,
                            hessprod_diag_ptr, prec_ptr)
       end
@@ -374,7 +375,7 @@ function test_dgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         dgo_import(T, INT, control, data, status, n, x_l, x_u,
                    "absent", ne, C_NULL, C_NULL, C_NULL)
 
-        dgo_solve_without_mat(T, INT, data, userdata_ptr, status, n, x, g,
+        dgo_solve_without_mat(T, INT, data, userdata, status, n, x, g,
                               fun_ptr, grad_ptr, hessprod_ptr, shessprod_ptr, prec_ptr)
       end
 

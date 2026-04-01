@@ -12,6 +12,8 @@ mutable struct userdata_trb{T}
   p::T
 end
 
+Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_trb) = pointer_from_objref(userdata)
+
 function test_trb(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Objective function
@@ -238,7 +240,6 @@ function test_trb(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
 
   # Set user data
   userdata = userdata_trb{T}(4)
-  userdata_ptr = pointer_from_objref(userdata)
 
   # Set problem data
   n = INT(3)  # dimension
@@ -274,35 +275,35 @@ function test_trb(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
       if d == 1
         st = 'C'
         trb_import(T, INT, control, data, status, n, "coordinate", ne, H_row, H_col, C_NULL)
-        trb_solve_with_mat(T, INT, data, userdata_ptr, status, n, x_l, x_u, x, g, ne, fun_ptr, grad_ptr, hess_ptr, prec_ptr)
+        trb_solve_with_mat(T, INT, data, userdata, status, n, x_l, x_u, x, g, ne, fun_ptr, grad_ptr, hess_ptr, prec_ptr)
       end
 
       # sparse by rows
       if d == 2
         st = 'R'
         trb_import(T, INT, control, data, status, n, "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
-        trb_solve_with_mat(T, INT, data, userdata_ptr, status, n, x_l, x_u, x, g, ne, fun_ptr, grad_ptr, hess_ptr, prec_ptr)
+        trb_solve_with_mat(T, INT, data, userdata, status, n, x_l, x_u, x, g, ne, fun_ptr, grad_ptr, hess_ptr, prec_ptr)
       end
 
       # dense
       if d == 3
         st = 'D'
         trb_import(T, INT, control, data, status, n, "dense", ne_dense, C_NULL, C_NULL, C_NULL)
-        trb_solve_with_mat(T, INT, data, userdata_ptr, status, n, x_l, x_u, x, g, ne_dense, fun_ptr, grad_ptr, hess_dense_ptr, prec_ptr)
+        trb_solve_with_mat(T, INT, data, userdata, status, n, x_l, x_u, x, g, ne_dense, fun_ptr, grad_ptr, hess_dense_ptr, prec_ptr)
       end
 
       # diagonal
       if d == 4
         st = 'I'
         trb_import(T, INT, control, data, status, n, "diagonal", n, C_NULL, C_NULL, C_NULL)
-        trb_solve_with_mat(T, INT, data, userdata_ptr, status, n, x_l, x_u, x, g, n, fun_diag_ptr, grad_diag_ptr, hess_diag_ptr, prec_ptr)
+        trb_solve_with_mat(T, INT, data, userdata, status, n, x_l, x_u, x, g, n, fun_diag_ptr, grad_diag_ptr, hess_diag_ptr, prec_ptr)
       end
 
       # access by products
       if d == 5
         st = 'P'
         trb_import(T, INT, control, data, status, n, "absent", ne, C_NULL, C_NULL, C_NULL)
-        trb_solve_without_mat(T, INT, data, userdata_ptr, status, n, x_l, x_u, x, g, fun_ptr, grad_ptr, hessprod_ptr, shessprod_ptr, prec_ptr)
+        trb_solve_without_mat(T, INT, data, userdata, status, n, x_l, x_u, x, g, fun_ptr, grad_ptr, hessprod_ptr, shessprod_ptr, prec_ptr)
       end
 
       # Record solution information

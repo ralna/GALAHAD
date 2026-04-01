@@ -73,7 +73,6 @@ struct snls_inform_type{T,INT}
   time::snls_time_type{T}
   slls_inform::slls_inform_type{T,INT}
   sllsb_inform::sllsb_inform_type{T,INT}
-  lapack_error::INT
 end
 
 export snls_initialize

@@ -285,6 +285,7 @@
     cinform%rank = finform%rank
     cinform%structural_rank = finform%structural_rank
     cinform%pivot_control = finform%pivot_control
+    cinform%iterative_refinements = finform%iterative_refinements
     cinform%lapack_error = finform%lapack_error
 
     ! Logicals

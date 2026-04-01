@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-05-05 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2025-03-30 AT 13:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -84,6 +84,7 @@
     TYPE ( f_scu_inform_type ), INTENT( OUT ) :: finform
 
     ! Integers
+    finform%status = cinform%status
     finform%alloc_status = cinform%alloc_status
     finform%inertia( 1 : 3 ) = cinform%inertia( 1 : 3 )
     RETURN

@@ -43,7 +43,7 @@ function string_callbacks(ipc_::String, rpc_::String, integer_suffix::String, re
   end
 
   return join(out, "\n") * "\n\n"
-end 
+end
 
 function finalize_header_c(text::String, variant::String)
   begin_guard = "// include guard\n#ifndef GALAHAD_C_$(uppercase(variant))_H\n#define GALAHAD_C_$(uppercase(variant))_H\n\n"

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-03-28 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -1395,7 +1395,9 @@
 
   10 CONTINUE
      CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
+     data%set_printi = control%out > 0 .AND. control%print_level >= 1
      data%set_printw = control%out > 0 .AND. control%print_level >= 4
+     data%printi = data%set_printi ; data%printw = data%set_printw
      IF ( data%set_printw )                                                    &
        WRITE( control%out, "( A, ' statement 10' )" ) prefix
 
@@ -1949,7 +1951,7 @@
          IF ( inform%status /= GALAHAD_ok ) GO TO 980
 
          array_name = 'snls: reverse%p'
-         CALL SPACE_resize_array( MAX( nlp%m_r, nlp%n ), reverse%p,              &
+         CALL SPACE_resize_array( MAX( nlp%m_r, nlp%n ), reverse%p,            &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -2692,7 +2694,8 @@
            inform%bad_eval = 'eval_Jr_prod'
            inform%status = GALAHAD_error_evaluation ; GO TO 990
          END IF
-         data%GN_model%B( : nlp%m_r ) = reverse%p( : nlp%m_r ) - nlp%R( : nlp%m_r )
+         data%GN_model%B( : nlp%m_r )                                          &
+           = reverse%p( : nlp%m_r ) - nlp%R( : nlp%m_r )
        END IF
 
 !  store the regularization weight 
@@ -3550,7 +3553,7 @@
 
 !-*-*-  G A L A H A D -  S N L S _ t e r m i n a t e  S U B R O U T I N E -*-*-
 
-     SUBROUTINE SNLS_terminate( data, control, inform )
+     SUBROUTINE SNLS_terminate( data, control, inform, reverse )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -3565,6 +3568,7 @@
      TYPE ( SNLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SNLS_control_type ), INTENT( IN ) :: control
      TYPE ( SNLS_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( REVERSE_type ), OPTIONAL, INTENT( INOUT ) :: reverse
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -3572,6 +3576,16 @@
 
      LOGICAL :: alive
      CHARACTER ( LEN = 80 ) :: array_name
+
+!  Deallocate all those required for reverse communication
+
+     IF ( PRESENT( reverse ) ) THEN
+       CALL REVERSE_terminate( reverse, inform%status, inform%alloc_status,    &
+          bad_alloc = inform%bad_alloc, out = control%error,                   &
+          deallocate_error_fatal = control%deallocate_error_fatal )
+       IF ( control%deallocate_error_fatal .AND.                               &
+            inform%status /= GALAHAD_ok ) RETURN
+     END IF
 
 !  Deallocate all remaining allocated arrays
 
@@ -4665,10 +4679,6 @@
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
-     error = data%snls_control%error
-     space_critical = data%snls_control%space_critical
-     deallocate_error_fatal = data%snls_control%deallocate_error_fatal
-
 !  recover data from reverse communication
 
      data%snls_inform%status = status
@@ -4676,6 +4686,13 @@
      SELECT CASE ( data%snls_inform%status )
      CASE ( 1 )
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+
+!  record relevant control variables
+
+       error = data%snls_control%error
+       space_critical = data%snls_control%space_critical
+       deallocate_error_fatal = data%snls_control%space_critical
+
        IF ( PRESENT( W ) ) THEN
          array_name = 'snls: data%nlp%W'
          CALL SPACE_resize_array( data%nlp%m_r, data%nlp%W,                    &

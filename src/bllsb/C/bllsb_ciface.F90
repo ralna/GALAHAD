@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-02-08 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-03-30 AT 13:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -341,6 +341,7 @@
     ccontrol%gamma_c = fcontrol%gamma_c
     ccontrol%gamma_f = fcontrol%gamma_f
     ccontrol%reduce_infeas = fcontrol%reduce_infeas
+    ccontrol%identical_bounds_tol = fcontrol%identical_bounds_tol
     ccontrol%mu_pounce = fcontrol%mu_pounce
     ccontrol%indicator_tol_p = fcontrol%indicator_tol_p
     ccontrol%indicator_tol_pd = fcontrol%indicator_tol_pd

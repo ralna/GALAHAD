@@ -91,7 +91,8 @@
      CASE DEFAULT ! error returns
        WRITE( 6, "( /, ' SLLS_solve exit status = ', I0 ) " ) inform%status
      END SELECT
-   CALL SLLS_terminate( data, control, inform )  !  delete workspace
+!  delete workspace
+   CALL SLLS_terminate( data, control, inform, reverse = reverse )
    DEALLOCATE( p%B, p%X, p%Y, p%Z, p%R, p%X_status )
    DEALLOCATE( Ao_val, Ao_row, Ao_ptr )
    END PROGRAM GALAHAD_SLLS_SECOND_EXAMPLE

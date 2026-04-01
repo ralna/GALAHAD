@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-03-17 AT 08:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -1695,7 +1695,7 @@
 
      IF ( data%reverse ) THEN
        array_name = 'slls: reverse%iv'
-       CALL SPACE_resize_array( prob%n, reverse%iv, inform%status,         &
+       CALL SPACE_resize_array( prob%n, reverse%iv, inform%status,             &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1703,7 +1703,7 @@
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'slls: reverse%ip'
-       CALL SPACE_resize_array( prob%o, reverse%ip, inform%status,        &
+       CALL SPACE_resize_array( prob%o, reverse%ip, inform%status,             &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1711,7 +1711,7 @@
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'slls: reverse%v'
-       CALL SPACE_resize_array( MAX( prob%o, prob%n ), reverse%v,         &
+       CALL SPACE_resize_array( MAX( prob%o, prob%n ), reverse%v,              &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1719,7 +1719,7 @@
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'slls: reverse%p'
-       CALL SPACE_resize_array( MAX( prob%o, prob%n ), reverse%p,        &
+       CALL SPACE_resize_array( MAX( prob%o, prob%n ), reverse%p,              &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1800,8 +1800,8 @@
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
-       array_name = 'slls: prob%Y'
      ELSE
+       array_name = 'slls: prob%Y'
        CALL SPACE_resize_array( 1, prob%Y, inform%status,                      &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -3264,8 +3264,22 @@
 
 !  Deallocate all remaining allocated arrays
 
+     array_name = 'slls: data%Ao%type'
+     CALL SPACE_dealloc_array( data%Ao%type,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND.                                 &
+          inform%status /= GALAHAD_ok ) RETURN
+
      array_name = 'slls: data%Ao%ptr'
      CALL SPACE_dealloc_array( data%Ao%ptr,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND.                                 &
+          inform%status /= GALAHAD_ok ) RETURN
+
+     array_name = 'slls: data%Ao%row'
+     CALL SPACE_dealloc_array( data%Ao%row,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -3406,6 +3420,27 @@
 
      array_name = 'slls: data%X_c_proj'
      CALL SPACE_dealloc_array( data%X_c_proj,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND.                                 &
+          inform%status /= GALAHAD_ok ) RETURN
+
+     array_name = 'slls: data%H_sbls%type'
+     CALL SPACE_dealloc_array( data%H_sbls%type,                               &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND.                                 &
+          inform%status /= GALAHAD_ok ) RETURN
+
+     array_name = 'slls: data%C_sbls%type'
+     CALL SPACE_dealloc_array( data%C_sbls%type,                               &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND.                                 &
+          inform%status /= GALAHAD_ok ) RETURN
+
+     array_name = 'slls: data%AT_sbls%type'
+     CALL SPACE_dealloc_array( data%AT_sbls%type,                              &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -8588,6 +8623,12 @@
 
      IF ( .NOT. data%explicit_a ) GO TO 900
 
+!  record relevant control variables
+
+     error = data%slls_control%error
+     space_critical = data%slls_control%space_critical
+     deallocate_error_fatal = data%slls_control%space_critical
+
 !  recover the dimensions
 
      n = data%prob%n ; o = data%prob%o
@@ -8856,6 +8897,12 @@
 !      data%prob%Z( : n ) = Z( : n )
        IF ( data%slls_control%cold_start == 0 )                                &
          data%prob%X_status( : n ) = X_stat( : n )
+
+!  record relevant control variables
+
+       error = data%slls_control%error
+       space_critical = data%slls_control%space_critical
+       deallocate_error_fatal = data%slls_control%space_critical
 
 !  save the weights if they are present
 

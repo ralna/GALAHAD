@@ -12,6 +12,8 @@ mutable struct userdata_expo{T}
   p::T
 end
 
+Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_expo) = pointer_from_objref(userdata)
+
 function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="sytr") where {T,INT}
 
   # compute the objective and constraints
@@ -135,7 +137,6 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
 
   # Set user data
   userdata = userdata_expo{T}(9)
-  userdata_ptr = pointer_from_objref(userdata)
 
   # Set problem data
   n = INT(2)  # variables
@@ -197,7 +198,7 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
                     "coordinate", h_ne, H_row, H_col, C_NULL )
 
         expo_solve_hessian_direct(T, INT, data,
-                                  userdata_ptr, status, n, m, j_ne, h_ne,
+                                  userdata, status, n, m, j_ne, h_ne,
                                   c_l, c_u, x_l, x_u, x, y, z, c, gl,
                                   eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
       end
@@ -210,7 +211,7 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
                     "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr )
 
         expo_solve_hessian_direct(T, INT, data,
-                                  userdata_ptr, status, n, m, j_ne, h_ne,
+                                  userdata, status, n, m, j_ne, h_ne,
                                   c_l, c_u, x_l, x_u, x, y, z, c, gl,
                                   eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
       end
@@ -223,7 +224,7 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
                     "dense", h_ne_dense, C_NULL, C_NULL, C_NULL )
 
         expo_solve_hessian_direct(T, INT, data,
-                                  userdata_ptr, status, n, m, j_ne_dense, h_ne_dense,
+                                  userdata, status, n, m, j_ne_dense, h_ne_dense,
                                   c_l, c_u, x_l, x_u, x, y, z, c, gl,
                                   eval_fc_ptr, eval_gj_dense_ptr, eval_hl_dense_ptr)
       end
@@ -236,7 +237,7 @@ function test_expo(::Type{T}, ::Type{INT}; mode::String="direct", sls::String="s
                     "diagonal", n, C_NULL, C_NULL, C_NULL )
 
         expo_solve_hessian_direct(T, INT, data,
-                                  userdata_ptr, status, n, m, j_ne, n,
+                                  userdata, status, n, m, j_ne, n,
                                   c_l, c_u, x_l, x_u, x, y, z, c, gl,
                                   eval_fc_ptr, eval_gj_ptr, eval_hl_ptr)
       end

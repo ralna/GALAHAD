@@ -254,7 +254,12 @@
              END DO
              DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%ptr, p%Ao%type )
            END SELECT
-           CALL SLLS_terminate( data, control, inform )  !  delete workspace
+           SELECT CASE ( mode ) ! delete workspace
+           CASE( 4, 6 ) 
+             CALL SLLS_terminate( data, control, inform, reverse = reverse )
+           CASE DEFAULT
+             CALL SLLS_terminate( data, control, inform )
+           END SELECT
          END DO
        END DO
 !      CYCLE
@@ -554,14 +559,21 @@
              END DO
              DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%ptr, p%Ao%type )
            END SELECT
-           CALL SLLS_terminate( data, control, inform )  !  delete workspace
+           SELECT CASE ( mode ) ! delete workspace
+           CASE( 4, 6 ) 
+             CALL SLLS_terminate( data, control, inform, reverse = reverse )
+           CASE DEFAULT
+             CALL SLLS_terminate( data, control, inform )
+           END SELECT
          END DO
        END DO
 !      CYCLE
        IF ( shift == 1 ) DEALLOCATE( p%X_s )
      END DO
+     IF ( weight == 1 ) DEALLOCATE( p%W )
    END DO
    DEALLOCATE( p%B, p%X, p%Z, DIAG, p%COHORT )
+   DEALLOCATE( A2_val, A2_row, A2_ptr )
 
 !  ================
 !  error exit tests
@@ -646,6 +658,7 @@
    userdata%real( st_val + 1 : st_val + a_ne ) = A_val( : a_ne )
    userdata%integer( nflag ) = 0
    userdata%integer( st_flag + 1 : st_flag + on ) = 0
+   CALL SLLS_initialize( data, control, inform )
 
    p%X = 0.0_rp_
    control%exact_arc_search = .FALSE.
@@ -672,8 +685,11 @@
                     eval_APROD = APROD, eval_ASCOL = ASCOL,                    &
                     eval_AFPROD = AFPROD_broken )
    WRITE( 6, "( ' SLLS_solve bad AFPROD exit status = ', I0 ) " ) inform%status
+   CALL SLLS_terminate( data, control, inform )  !  delete workspace
+
+
    DEALLOCATE( userdata%integer, userdata%real )
-   DEALLOCATE( p%B, p%X, p%Z, p%R, p%G )
+   DEALLOCATE( p%B, p%X, p%Y, p%Z, p%R, p%G )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_ptr_row )
    WRITE( 6, "( /, ' tests completed' )" )
 

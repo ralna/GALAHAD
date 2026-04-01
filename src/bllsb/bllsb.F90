@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-01-29 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 13:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -986,6 +986,13 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'bllsb: prob%C_status'
+      CALL SPACE_dealloc_array( prob%C_status,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
 !  restore status values
 
       inform%status = status
@@ -1074,19 +1081,19 @@
 
 !  deallocate any internal problem arrays
 
-     array_name = 'clls: data%prob%B'
+     array_name = 'bllsb: data%prob%B'
      CALL SPACE_dealloc_array( data%prob%B,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'clls: data%prob%W'
+     array_name = 'bllsb: data%prob%W'
      CALL SPACE_dealloc_array( data%prob%W,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'clls: data%prob%X_s'
+     array_name = 'bllsb: data%prob%X_s'
      CALL SPACE_dealloc_array( data%prob%X_s,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
@@ -1656,6 +1663,12 @@
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
+!  record relevant control variables
+
+     error = data%bllsb_control%error
+     space_critical = data%bllsb_control%space_critical
+     deallocate_error_fatal = data%bllsb_control%space_critical
+
 !  recover the dimensions
 
      n = data%prob%n ; o = data%prob%o
@@ -1692,7 +1705,7 @@
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-            bad_alloc = data%bllsb_inform%bad_alloc, out = error )
+              bad_alloc = data%bllsb_inform%bad_alloc, out = error )
        IF ( data%bllsb_inform%status /= 0 ) GO TO 900
        data%prob%W( : o ) = W( : o )
      END IF
@@ -1700,13 +1713,13 @@
 !  save the shifts if they are present
 
      IF ( PRESENT( X_s ) ) THEN
-       array_name = 'bllsb: data%prob%W'
+       array_name = 'bllsb: data%prob%X_s'
        CALL SPACE_resize_array( n, data%prob%X_s,                              &
               data%bllsb_inform%status, data%bllsb_inform%alloc_status,        &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
               exact_size = space_critical,                                     &
-            bad_alloc = data%bllsb_inform%bad_alloc, out = error )
+              bad_alloc = data%bllsb_inform%bad_alloc, out = error )
        IF ( data%bllsb_inform%status /= 0 ) GO TO 900
        data%prob%X_s( : n ) = X_s( : n )
      END IF

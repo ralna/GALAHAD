@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2025-01-25 AT 08:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2025-04-01 AT 10:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CLLS_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -334,7 +334,7 @@
 !    STOP
    END DO
    DEALLOCATE( p%B, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%R, p%C_status, p%X_status )
    DEALLOCATE( p%Ao%ptr, p%A%ptr )
 !stop
 !  =============================
@@ -482,6 +482,7 @@
    DEALLOCATE( p%Y, STAT = i )
    DEALLOCATE( p%Z, STAT = i )
    DEALLOCATE( p%C, STAT = i )
+   DEALLOCATE( p%R, STAT = i )
    DEALLOCATE( p%C_status, p%X_status, STAT = i )
    DEALLOCATE( p%Ao%ptr, p%A%ptr, STAT = i )
    DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, STAT = i )
@@ -573,7 +574,7 @@
    DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%B, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%R, p%C_status, p%X_status )
    DEALLOCATE( p%Ao%ptr, p%A%ptr )
 
 !  Second problem
@@ -647,7 +648,7 @@
    DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%B, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%R, p%C_status, p%X_status )
    DEALLOCATE( p%Ao%ptr, p%A%ptr )
 
 !  Third problem
@@ -722,7 +723,7 @@
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%A%type, p%Ao%type )
    DEALLOCATE( p%B, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%R, p%C_status, p%X_status )
    DEALLOCATE( p%Ao%ptr, p%A%ptr )
 
 !  Fourth and Fifth problems
@@ -803,7 +804,7 @@
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%A%type, p%Ao%type )
    DEALLOCATE( p%B, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%R, p%C_status, p%X_status )
    DEALLOCATE( p%Ao%ptr, p%A%ptr )
    WRITE( 6, "( /, ' tests completed' )" )
 
