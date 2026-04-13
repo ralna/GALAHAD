@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-07-20 AT 09:00 GMT
+! THIS VERSION: GALAHAD 5.5 - 2026-04-12 AT 14:00 GMT
 
 #include "galahad_modules.h"
 
@@ -72,10 +72,10 @@
 
 ! MA27 internal integer controls
 
-       INTEGER ( KIND = ip_ ) :: ICNTL( 30 ) =                                 &
-          (/ 6, 6, 0, 2139062143, 1, 32639, 32639, 32639, 32639, 14,           &
-             9, 8, 8, 9, 10, 32639, 32639, 32639, 32689, 24,                   &
-             11, 9, 8, 9, 10, 0, 0, 0, 0, 0 /)
+       INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL =                      &
+          [ 6, 6, 0, 2139062143, 1, 32639, 32639, 32639, 32639, 14,            &
+            9, 8, 8, 9, 10, 32639, 32639, 32639, 32689, 24,                   &
+            11, 9, 8, 9, 10, 0, 0, 0, 0, 0 ]
 
 ! Unit for error messages
 
@@ -162,8 +162,8 @@
 
 ! MA27 internal real controls
 
-       REAL ( KIND = rp_ ) :: CNTL( 5 ) =                                      &
-          (/ 0.1_rp_,  1.0_rp_,  0.0_rp_,  0.0_rp_,  0.0_rp_ /)
+       REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL =                           &
+          [ 0.1_rp_,  1.0_rp_,  0.0_rp_,  0.0_rp_,  0.0_rp_ ]
 
 ! Factor by which arrays sizes are to be increased if they are too small
 

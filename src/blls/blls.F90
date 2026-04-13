@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-08 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,18 +15,18 @@
 
    MODULE GALAHAD_BLLS_precision
 
-!        ---------------------------------------------------------------------
-!        |                                                                    |
-!        | Solve the bound-constrained linear-least-squares problem           |
-!        |                                                                    |
-!        |    minimize   1/2 || A_o x - b ||_W^2 + 1/2 sigma || x - x_s ||^2  |
-!        |    subject to     x_l <= x <= x_u,                                 |
-!        |                                                                    |
-!        | where ||v|| and ||r||_W^2 are the Euclidean & weighted Euclidean   |
-!        | norms defined by ||v||^2 = v^T v and ||r||_W^2 = r^T W r, using    |
-!        | a preconditioned projected conjugate-gradient approach             |
-!        |                                                                    |
-!        ----------------------------------------------------------------------
+!      ---------------------------------------------------------------------
+!      |                                                                    |
+!      | Solve the bound-constrained linear-least-squares problem           |
+!      |                                                                    |
+!      |    minimize   1/2 || A_o x - b ||_W^2 + 1/2 sigma || x - x_s ||^2  |
+!      |    subject to        x_l <= x <= x_u,                              |
+!      |                                                                    |
+!      | where ||v|| and ||r||_W^2 are the Euclidean & weighted Euclidean   |
+!      | norms defined by ||v||^2 = v^T v and ||r||_W^2 = r^T W r, using    |
+!      | a preconditioned projected conjugate-gradient approach             |
+!      |                                                                    |
+!      ----------------------------------------------------------------------
 
      USE GALAHAD_KINDS_precision
      USE GALAHAD_CLOCK
@@ -53,7 +53,7 @@
                BLLS_subproblem_data_type, BLLS_exact_arc_search,               &
                BLLS_inexact_arc_search, BLLS_import, BLLS_import_without_a,    &
                BLLS_solve_given_a, BLLS_solve_reverse_a_prod,                  &
-               BLLS_reset_control, BLLS_information, USERDATA_type,    &
+               BLLS_reset_control, BLLS_information, USERDATA_type,            &
                QPT_problem_type, SMT_type, SMT_put, SMT_get
 
 !----------------------
@@ -353,7 +353,7 @@
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FREE, P_used
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_d, NZ_out
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G, P, Q, R, S, U, W
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R_a, R_f, X_a, D_f
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R_a, R_f, E_a, D_f
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BREAK_points
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_debug, R_debug
      END TYPE BLLS_subproblem_data_type
@@ -1386,7 +1386,7 @@
 !  see if X_s = 0
 
      IF ( ALLOCATED( prob%X_s ) ) THEN
-        data%shifts = SIZE( prob%X_s ) >= prob%n
+       data%shifts = SIZE( prob%X_s ) >= prob%n
      ELSE
        data%shifts = .FALSE.
      END IF
@@ -1871,10 +1871,18 @@
 !  adjust the value and gradient to account for any regularization term
 
        IF ( data%weight > zero ) THEN
-         inform%obj = inform%ls_obj + half * data%weight *                     &
-           DOT_PRODUCT( prob%X( : prob%n ), prob%X( : prob%n ) )
-         prob%G( : prob%n )                                                    &
-           = prob%G( : prob%n ) + data%weight * prob%X( : prob%n )
+         IF ( data%shifts ) THEN
+           inform%obj = inform%ls_obj + half * data%weight *                   &
+             DOT_PRODUCT( prob%X( : prob%n ) - prob%X_s( : prob%n ),           &
+                          prob%X( : prob%n ) - prob%X_s( : prob%n ) )
+           prob%G( : prob%n ) = prob%G( : prob%n )                             &
+             + data%weight * ( prob%X( : prob%n ) - prob%X_s( : prob%n ) )
+         ELSE
+           inform%obj = inform%ls_obj + half * data%weight *                   &
+             DOT_PRODUCT( prob%X( : prob%n ), prob%X( : prob%n ) )
+           prob%G( : prob%n ) = prob%G( : prob%n )                             &
+             + data%weight * prob%X( : prob%n )
+         END IF
        ELSE
          inform%obj = inform%ls_obj
        END IF
@@ -1887,11 +1895,12 @@
 
 !  compute the norm of the projected gradient
 
-       val = MIN( one, one / TWO_NORM( prob%G( : prob%n ) ) )
+       val = TWO_NORM( prob%G( : prob%n ) )
+       IF ( val /= zero ) val = MIN( one, one / val )
        inform%norm_pg =                                                        &
          MAXVAL( ABS( MAX( prob%X_l( : prob%n ),                               &
-                           MIN( prob%X( : prob%n ) - val * prob%G( : prob%n ), &
-                                prob%X_u( : prob%n ) ) ) - prob%X( : prob%n ) ))
+                      MIN( prob%X( : prob%n ) - val * prob%G( : prob%n ),      &
+                           prob%X_u( : prob%n ) ) ) - prob%X( : prob%n ) ) )
 
 !  print details of the current iteration
 
@@ -1978,8 +1987,8 @@
 !  compute the search direction by minimizing the objective over
 !  the free subspace by solving the related augmented system
 
-!    (  W^-1       A_F   ) (  y  ) = (   b - A x  )
-!    ( A_F^T  - weight I ) ( s_F )   ( weight x_F )
+!    (  W^-1       A_F   ) (  y  ) = (        b - A x         )
+!    ( A_F^T  - weight I ) ( s_F )   ( weight ( x_F - x_s_F ) )
 
        IF ( data%direct_subproblem_solve ) THEN
 
@@ -1999,8 +2008,13 @@
 
 !  include components of the right-hand side vector
 
-             data%SBLS_sol( prob%o + data%n_free ) =                           &
-               data%stabilisation_weight * prob%X( j )
+             IF ( data%shifts ) THEN
+               data%SBLS_sol( prob%o + data%n_free ) =                         &
+                 data%stabilisation_weight * ( prob%X( j ) - prob%X_s( j ) )
+             ELSE
+               data%SBLS_sol( prob%o + data%n_free ) =                         &
+                 data%stabilisation_weight * prob%X( j )
+             END IF
            END IF
          END DO
          data%AT_sbls%ptr( data%n_free + 1 ) = nap + 1
@@ -3002,8 +3016,8 @@
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'blls: data%X_a'
-     CALL SPACE_dealloc_array( data%X_a,                                       &
+     array_name = 'blls: data%E_a'
+     CALL SPACE_dealloc_array( data%E_a,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -3474,7 +3488,12 @@
         f_alpha = half * DOT_PRODUCT( R( : o ), data%U( : o ) )
       END IF
       IF ( data%regularization ) THEN
-        data%rho_alpha = half * DOT_PRODUCT( X( : n ), X( : n ) )
+        IF ( data%shifts ) THEN
+          data%rho_alpha = half * DOT_PRODUCT( X( : n ) - X_s( : n ),          &
+                                               X( : n ) - X_s( : n ) )
+        ELSE
+          data%rho_alpha = half * DOT_PRODUCT( X( : n ), X( : n ) )
+        END IF
         phi_alpha = f_alpha + weight * data%rho_alpha
       ELSE
         phi_alpha = f_alpha
@@ -3650,9 +3669,16 @@
 !  1/2||x(alpha)||^2 at the start of the piecewise linear arc
 
       IF ( data%regularization ) THEN
-        data%rho_alpha_dash =                                                  &
-          DOT_PRODUCT( X( data%NZ_d( data%nz_d_start : data%nz_d_end ) ),      &
-                       D( data%NZ_d( data%nz_d_start : data%nz_d_end ) ) )
+        IF ( data%shifts ) THEN
+          data%rho_alpha_dash =                                                &
+            DOT_PRODUCT( X( data%NZ_d( data%nz_d_start : data%nz_d_end ) ) -   &
+                         X_s( data%NZ_d( data%nz_d_start : data%nz_d_end ) ),  &
+                         D( data%NZ_d( data%nz_d_start : data%nz_d_end ) ) )
+        ELSE
+          data%rho_alpha_dash =                                                &
+            DOT_PRODUCT( X( data%NZ_d( data%nz_d_start : data%nz_d_end ) ),    &
+                         D( data%NZ_d( data%nz_d_start : data%nz_d_end ) ) )
+        END IF
         data%rho_alpha_dashdash =                                              &
           DOT_PRODUCT( D( data%NZ_d( data%nz_d_start : data%nz_d_end ) ),      &
                        D( data%NZ_d( data%nz_d_start : data%nz_d_end ) ) )
@@ -3974,8 +4000,13 @@
             + data%delta_alpha * data%rho_alpha_dashdash
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
-            data%rho_alpha_dash = data%rho_alpha_dash - D( j )                 &
-              * ( X( j ) + data%W( j ) + data%alpha_next * D( j ) )
+            IF ( data%shifts ) THEN
+              data%rho_alpha_dash = data%rho_alpha_dash - D( j )               &
+                * ( X( j ) - X_s( j ) + data%W( j ) + data%alpha_next * D( j ) )
+            ELSE
+              data%rho_alpha_dash = data%rho_alpha_dash - D( j )               &
+                * ( X( j ) + data%W( j ) + data%alpha_next * D( j ) )
+            END IF
             data%rho_alpha_dashdash = data%rho_alpha_dashdash - D( j ) ** 2
           END DO
 
@@ -4142,11 +4173,17 @@
           IF ( data%regularization ) THEN
             vtv = zero ; vtx = zero
             DO l =  data%nz_d_start, data%nz_d_end
-             j =  data%NZ_d( l )
-             s =  D( j )
-             vtv = vtv + s ** 2
-             vtx = vtx + s * MAX( X_l( j ), MIN( X_u( j ),                     &
-                                  X( j ) + data%alpha_next * D( j ) ) )
+              j =  data%NZ_d( l )
+              s =  D( j )
+              vtv = vtv + s ** 2
+!             IF ( data%shifts ) THEN
+!               vtx = vtx + s * ( MAX( X_l( j ), MIN( X_u( j ),                &
+!                                      X( j ) + data%alpha_next * D( j ) ) )   &
+!                                 - X_s( j ) )
+!             ELSE
+                vtx = vtx + s * MAX( X_l( j ), MIN( X_u( j ),                  &
+                                     X( j ) + data%alpha_next * D( j ) ) )
+!             END IF  
             END DO
 
             IF ( data%printw ) WRITE( out, "(                                  &
@@ -4459,7 +4496,7 @@
 
       INTEGER ( KIND = ip_ ) :: i, j, jj, k, l, inform_sort, base_fixed
       REAL ( KIND = rp_ ) :: pi, qi, wi, yi, zi, rai, rfi, rsi, s
-      REAL ( KIND = rp_ ) :: alpha_b, ds, xb, xs, xaj, dfj, rho_alpha
+      REAL ( KIND = rp_ ) :: alpha_b, ds, xb, xs, eaj, es, dfj, rho_alpha
       LOGICAL :: printi, xlower, xupper
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -4685,7 +4722,11 @@
 !    phi(x_s) = 1/2 || r ||^2 + 1/2 weight || x - x_s ||^2,
 
       IF ( data%regularization ) THEN
-        data%phi_s = data%f_s + half * weight * DOT_PRODUCT( X, X )
+        IF ( data%shifts ) THEN
+          data%phi_s = data%f_s + half * weight * DOT_PRODUCT( X - X_s, X - X_s)
+        ELSE
+          data%phi_s = data%f_s + half * weight * DOT_PRODUCT( X, X )
+        END IF
       ELSE
         data%phi_s = data%f_s
       END IF
@@ -4740,8 +4781,8 @@
       IF ( status /= GALAHAD_ok ) GO TO 900
 
       IF ( data%regularization ) THEN
-        array_name = 'blls_inexact_arc_search: data%X_a'
-        CALL SPACE_resize_array( n, data%X_a, status, alloc_status,            &
+        array_name = 'blls_inexact_arc_search: data%E_a'
+        CALL SPACE_resize_array( n, data%E_a, status, alloc_status,            &
                array_name = array_name, bad_alloc = bad_alloc, out = out )
         IF ( status /= GALAHAD_ok ) GO TO 900
 
@@ -4863,24 +4904,28 @@
 
       IF ( data%regularization ) THEN
         data%mu_a = zero
-        data%X_a( : n ) = X( : n )
+        IF ( data%shifts ) THEN
+          data%E_a( : n ) = X( : n ) - X_s( : n )
+        ELSE
+          data%E_a( : n ) = X( : n )
+        END IF
         DO jj = 1, data%n_a0
           j = data%NZ_d( jj )
-          xs = X( j )  ; s = data%S( j )
-          data%X_a( j ) = xs + s
-          data%mu_a = data%mu_a + xs * s
+          es = data%E_a( j ) ; s = data%S( j )
+          data%E_a( j ) = es + s
+          data%mu_a = data%mu_a + es * s
         END DO
-        data%rho_c = DOT_PRODUCT( data%X_a( : n ), data%X_a( : n ) )
+        data%rho_c = DOT_PRODUCT( data%E_a( : n ), data%E_a( : n ) )
 
         data%rho_l = zero ; data%rho_q = zero ; data%mu_f = zero
         data%D_f( : n ) = zero
         DO jj = data%n_a0 + 1, data%base_free
           j = data%NZ_d( jj )
-          xs = X( j )  ; ds = D( j )
+          es = data%E_a( j ) ; ds = D( j )
           data%D_f( j ) = ds
-          data%rho_l = data%rho_l + xs * ds
+          data%rho_l = data%rho_l + es * ds
           data%rho_q = data%rho_q + ds ** 2
-          data%mu_f = data%mu_f + xs * ds
+          data%mu_f = data%mu_f + es * ds
         END DO
       END IF
 
@@ -5373,7 +5418,12 @@
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
             s = data%S( j ) ; ds = D( j )
-            xaj = data%X_a( j ) ; dfj = data%D_f( j ) ; xs = X( j )
+            eaj = data%E_a( j ) ; dfj = data%D_f( j )
+            IF ( data%shifts ) THEN
+              es = X( j ) - X_s( j )
+            ELSE
+              es = X( j )
+            END IF
 
 !  update
 
@@ -5381,18 +5431,18 @@
 !    rhol_{i+1} = rhol_i + <d_{i+1},xA_i> - <s_{i+1},dF_i> - <d_{i+1},s_{i+1>}
 !    and rhoq_{i+1} = rhoq_i + 2 <d_{i+1},dF_i> + ||d_{i+1}||^2
 
-            data%rho_c = data%rho_c - two * s * xaj + s ** 2
-            data%rho_l = data%rho_l + ds * xaj - s * dfj - ds * s
+            data%rho_c = data%rho_c - two * s * eaj + s ** 2
+            data%rho_l = data%rho_l + ds * eaj - s * dfj - ds * s
             data%rho_q = data%rho_q + two * ds * dfj + ds ** 2
 
 !    mu_a_{i+1} = mu_a_i - <s_{i+1},x_s> and mu_f_{i+1} = mu_f_i + <d_{i+1},x_s>
 
-            data%mu_a = data%mu_a - s * xs
-            data%mu_f = data%mu_f + ds * xs
+            data%mu_a = data%mu_a - s * es
+            data%mu_f = data%mu_f + ds * es
 
 !    xA_{i+1} = xA_i - s_{i+1} and  dF_{i+1} = dF_i + d_{i+1}
 
-            data%X_a( j ) = xaj - s ; data%D_f( j ) = dfj + ds
+            data%E_a( j ) = eaj - s ; data%D_f( j ) = dfj + ds
           END DO
         END IF
 
@@ -5599,7 +5649,12 @@
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
             s = data%S( j ) ; ds = D( j )
-            xaj = data%X_a( j ) ; dfj = data%D_f( j ) ; xs = X( j )
+            eaj = data%E_a( j ) ; dfj = data%D_f( j )
+            IF ( data%shifts ) THEN
+              es = X( j ) - X_s( j )
+            ELSE
+              es = X( j )
+            END IF
 
 !  update
 
@@ -5607,18 +5662,18 @@
 !    rhol_{i+1} = rhol_i - <d_{i+1},xA_i> + <s_{i+1},dF_i> - <d_{i+1},s_{i+1>}
 !    and rhoq_{i+1} = rhoq_i - 2 <d_{i+1},dF_i> + ||d_{i+1}||^2
 
-            data%rho_c = data%rho_c + two * s * xaj + s ** 2
-            data%rho_l = data%rho_l - ds * xaj + s * dfj - ds * s
+            data%rho_c = data%rho_c + two * s * eaj + s ** 2
+            data%rho_l = data%rho_l - ds * eaj + s * dfj - ds * s
             data%rho_q = data%rho_q - two * ds * dfj + ds ** 2
 
 !    mu_a_{i+1} = mu_a_i + <s_{i+1},x_s> and mu_f_{i+1} = mu_f_i - <d_{i+1},x_s>
 
-            data%mu_a = data%mu_a + s * xs
-            data%mu_f = data%mu_f - ds * xs
+            data%mu_a = data%mu_a + s * es
+            data%mu_f = data%mu_f - ds * es
 
 !    xA_{i+1} = xA_i + s_{i+1} and  dF_{i+1} = dF_i - d_{i+1}
 
-            data%X_a( j ) = xaj + s ; data%D_f( j ) = dfj - ds
+            data%E_a( j ) = eaj + s ; data%D_f( j ) = dfj - ds
           END DO
         END IF
 
@@ -6219,14 +6274,26 @@
 !  include the gradient of the regularization term if present
 
       IF ( data%regularization ) THEN
-        IF ( data%n_free < n ) THEN
-          data%G( data%FREE( : data%n_free ) ) =                               &
-            data%G( data%FREE( : data%n_free ) ) +                             &
-              weight * X( data%FREE( : data%n_free ) )
+        IF ( data%shifts ) THEN
+          IF ( data%n_free < n ) THEN
+            data%G( data%FREE( : data%n_free ) ) =                             &
+              data%G( data%FREE( : data%n_free ) ) +                           &
+                weight * ( X( data%FREE( : data%n_free ) ) -                   &
+                           X_s( data%FREE( : data%n_free ) ) )
+          ELSE
+            data%G( : n ) = data%G( : n ) + weight * ( X - X_s )
+          END IF
+          f = f + half * weight * TWO_NORM( X - X_s ) ** 2
         ELSE
-          data%G( : n ) = data%G( : n ) + weight * X
+          IF ( data%n_free < n ) THEN
+            data%G( data%FREE( : data%n_free ) ) =                             &
+              data%G( data%FREE( : data%n_free ) ) +                           &
+                weight * X( data%FREE( : data%n_free ) )
+          ELSE
+            data%G( : n ) = data%G( : n ) + weight * X
+          END IF
+          f = f + half * weight * TWO_NORM( X ) ** 2
         END IF
-        f = f + half * weight * TWO_NORM( X ) ** 2
       END IF
 
 !  set the initial preconditioned gradient
@@ -6489,12 +6556,23 @@
 !  include the gradient of the regularization term if present
 
         IF ( data%regularization ) THEN
-          IF ( data%n_free < n ) THEN
-            data%G( data%FREE( : data%n_free ) ) =                             &
-              data%G( data%FREE( : data%n_free ) ) +                           &
-                weight * X( data%FREE( : data%n_free ) )
+          IF ( data%shifts ) THEN
+            IF ( data%n_free < n ) THEN
+              data%G( data%FREE( : data%n_free ) ) =                           &
+                data%G( data%FREE( : data%n_free ) ) +                         &
+                  weight * ( X( data%FREE( : data%n_free ) ) -                 &
+                             X_s( data%FREE( : data%n_free ) ) )
+            ELSE
+              data%G( : n ) = data%G( : n ) + weight * ( X - X_s )
+            END IF
           ELSE
-            data%G( : n ) = data%G( : n ) + weight * X
+            IF ( data%n_free < n ) THEN
+              data%G( data%FREE( : data%n_free ) ) =                           &
+                data%G( data%FREE( : data%n_free ) ) +                         &
+                  weight * X( data%FREE( : data%n_free ) )
+            ELSE
+              data%G( : n ) = data%G( : n ) + weight * X
+            END IF
           END IF
         END IF
 

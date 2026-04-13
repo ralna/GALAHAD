@@ -1,5 +1,53 @@
+ constraints are the intersection of 2 non-overlapping simplices
 
- SLLS: 6 iterations  
- Optimal objective value =  6.7143E+00
- Optimal solution =  0.0000E+00  8.5714E-01  4.2857E-01  1.0000E+00  1.4286E-01
- Lagrange multiplier estimates =  4.2857E-01  2.8571E-01
+ diagonal preconditioner, min, max = 2.1000E+00 2.1000E+00
+
+         S=steepest descent, F=factorization used
+
+  #its   #cg            f           proj gr     step    #free change   time
+     0     -  1.18250000000000E+01 3.005E-01      -         -      -    0.0
+
+ steepest descent search direction
+
+ segment    phi_0       phi_1       phi_2      t_break       t_opt   fixed
+       1  1.1825E+01 -1.1300E+00  2.2818E+00  2.3452E+00  4.9520E-01 1
+ phi_opt = 1.15452191235060E+01 at t = 4.95203257511239E-01 in segment 1
+
+  #its   #cg            f           proj gr     step    #free change   time
+     1     S  1.15452191235060E+01 2.209E-01 2.112E-01     12      -    0.0
+
+ steepest descent search direction
+
+ segment    phi_0       phi_1       phi_2      t_break       t_opt   fixed
+       1  1.1545E+01 -7.0167E-01  2.8606E+00  2.4038E+00  2.4529E-01 1
+ phi_opt = 1.14591643421733E+01 at t = 2.45286442270197E-01 in segment 1
+
+  #its   #cg            f           proj gr     step    #free change   time
+     2     S  1.14591643421732E+01 1.771E-01 1.020E-01     12      0    0.0
+
+ augmented system search direction
+
+ segment    phi_0       phi_1       phi_2      t_break       t_opt   fixed
+       1  1.1459E+01 -9.7818E-01  6.2345E-01  3.0797E-01  1.5690E+00 1
+       2  1.1187E+01 -1.4145E-01  5.2667E-01  7.7390E-01  5.7655E-01 2
+ phi_opt = 1.11684827450622E+01 at t = 5.76548744080473E-01 in segment 2
+
+  #its   #cg            f           proj gr     step    #free change   time
+     3     F  1.11684827450622E+01 5.585E-02 2.732E-01     11      1    0.0
+
+ augmented system search direction
+
+ segment    phi_0       phi_1       phi_2      t_break       t_opt   fixed
+       1  1.1168E+01 -1.5215E-01  2.1161E+00  1.0895E+00  7.1899E-02 4
+ phi_opt = 1.11630131355241E+01 at t = 7.18993656763907E-02 in segment 1
+
+  #its   #cg            f           proj gr     step    #free change   time
+     4     F  1.11630131355241E+01 8.049E-16 4.179E-02     11      0    0.0
+
+ SLLS: 4 iterations  
+ Optimal objective value =  1.1163E+01
+ Optimal solution =
+  5.8870E-17  1.0175E-01 -2.8752E-01  2.9445E-01  3.0738E-01
+ -1.5014E-01  3.7732E-01  3.4402E-01 -1.5607E-01  3.2823E-01
+  2.4686E-01 -3.1102E-01
+ Lagrange multiplier estimates = -4.0150E-01  5.0119E-01

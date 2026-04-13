@@ -20,8 +20,7 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
 
   # compute the residuals
   function res(x::Vector{T}, r::Vector{T}, userdata::userdata_snls{T})
-    p = userdata.p
-    r[1] = x[1] * x[2] - p
+    r[1] = x[1] * x[2] - userdata.p
     r[2] = x[2] * x[3] - 1.0
     r[3] = x[3] * x[4] - 1.0
     r[4] = x[4] * x[5] - 1.0
@@ -136,6 +135,7 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
                     got_jr::Bool, userdata::userdata_snls{T})
 
     if (transpose)
+      resize!(p, n)
       for i in 1:n_free
         j = free[i]
         if j == 1
@@ -147,7 +147,7 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
         end
       end
     else
-      p = zeros(T, m_r)
+      resize!(p, m_r)
       for i in 1:n_free
         j = free[i]
         val = v[j]
@@ -161,7 +161,6 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
         end
       end
     end
-    got_jr = true
     return INT(0)
   end
 
@@ -288,14 +287,14 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   mrn = max(m_r, n)
   lp = zero(INT)
   eval_status = Ref{INT}()
-  lvl = zero(INT)
-  lvu = zero(INT)
-  index = zero(INT)
+  lvl = Ref{INT}(0)
+  lvu = Ref{INT}(0)
+  index = Ref{INT}(0)
   iv = Vector{INT}(undef, mrn)
   ip = Vector{INT}(undef, mrn)
   v = Vector{T}(undef, mrn)
   p = Vector{T}(undef, mrn)
-  got_jr = Bool(0)
+  got_jr = false
 
   # solve when Jacobian is available via reverse access
   # ---------------------------------------------------
@@ -364,11 +363,10 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   x = fill(T(0.5), n) # initial guess
   snls_import_without_jac(T, INT, control, data, status, n, m_r, m_c, cohort)
   terminated = false
-  while  !terminated # reverse-communication loop
+  while !terminated # reverse-communication loop
     snls_solve_reverse_with_jacprod(T, INT, data, status, eval_status,
                                     n, m_r, m_c, x, y, z, r, g, x_stat,
                                     v, iv, lvl, lvu, index, p, ip, lp, w)
-    #@printf(" status = %1d\n", status[])
     if status[] == 0 # successful termination
       terminated = true
     elseif status[] < 0 # error exit
@@ -381,12 +379,12 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
     elseif status[] == 5 # evaluate p = Jr' v
       eval_status[] = jacprod(x, true, v, p, got_jr, userdata)
     elseif status[] == 6 # find the index-th column of Jr
-      eval_status[] = jaccol(n, x, index, p, ip, lp, got_jr, userdata)
+      eval_status[] = jaccol(n, x, index[], p, ip, lp, got_jr, userdata)
     elseif status[] == 7 # evaluate p = J_o sparse(v)
-      eval_status[] = sjacprod(n, m_r, x, false, v, p, iv, lvu, got_jr, 
+      eval_status[] = sjacprod(n, m_r, x, false, v, p, iv, lvu[], got_jr,
                                userdata)
     elseif status[] == 8 # evaluate p = sparse(Jr' v)
-      eval_status[] = sjacprod(n, m_r, x, true, v, p, iv, lvu, got_jr, 
+      eval_status[] = sjacprod(n, m_r, x, true, v, p, iv, lvu[], got_jr,
                                userdata)
     else
       @printf(" the value %1d of status should not occur\n", status)

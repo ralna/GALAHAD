@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-12 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -20,7 +20,7 @@
 !    |                                                                     |
 !    | Solve the multiply-simplex-constrained linear-least-squares problem |
 !    |                                                                     |
-!    |   minimize   1/2 || A_o x - b ||_W^2 + weight / 2 || x - x_s ||^2   |
+!    |   minimize   1/2 || Ao x - b ||_W^2 + weight / 2 || x - x_s ||^2    |
 !    |   subject to    e_Ci^T x_Ci = 1, x_Ci >= 0, i = 1,..., m,           |
 !    |                                                                     |
 !    | where the Ci are non-overlapping index subsets of {1,...,n}, ||v||  |
@@ -88,6 +88,7 @@
      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
 
      REAL ( KIND = rp_ ), PARAMETER :: x_zero = ten * epsmch
+     REAL ( KIND = rp_ ), PARAMETER :: d_zero = ten * epsmch
      REAL ( KIND = rp_ ), PARAMETER :: g_zero = ten * epsmch
      REAL ( KIND = rp_ ), PARAMETER :: h_zero = ten * epsmch
      REAL ( KIND = rp_ ), PARAMETER :: epstl2 = ten * epsmch
@@ -97,6 +98,8 @@
      REAL ( KIND = rp_ ), PARAMETER :: mu_search = 0.1_rp_
      REAL ( KIND = rp_ ), PARAMETER :: fixed_tol = ten ** ( -15 )
      REAL ( KIND = rp_ ), PARAMETER :: eta = 0.01_rp_
+
+     LOGICAL, PARAMETER :: debug_br = .FALSE.
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -305,7 +308,7 @@
 
        REAL ( KIND = rp_ ) :: obj = infinity
 
-!  current value of the  least-squares function, 1/2 || A_o x - b ||_W^2
+!  current value of the  least-squares function, 1/2 || Ao x - b ||_W^2
 
        REAL ( KIND = rp_ ) :: ls_obj = infinity
 
@@ -340,7 +343,7 @@
 !  - - - - - - - - - - - - - - -
 
      TYPE :: SLLS_search_data_type
-       INTEGER ( KIND = ip_ ) :: ic, m, step
+       INTEGER ( KIND = ip_ ) :: branch, i_free, ic, m, step
        REAL ( KIND = rp_ ) :: ete, f_0, phi_0, phi_1_stop, gamma, rtr, xtx
        REAL ( KIND = rp_ ) :: s_fixed, x_s_fixed, t, t_break, t_total
        REAL ( KIND = rp_ ) :: rho_0, rho_1, rho_2, xi
@@ -348,6 +351,7 @@
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IP, I_len
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: P, rhom_0
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: rhom_1, rhom_2, xim
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B, R  !! remove !!
      END TYPE SLLS_search_data_type
 
 !  - - - - - - - - - - - - - - -
@@ -390,9 +394,9 @@
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FREE, S_ind, S_ptr
        LOGICAL ( KIND = lp_ ), ALLOCATABLE, DIMENSION( : ) :: FIXED, FIXED_old
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, R, SBLS_sol
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D, AD, S, AE, DIAG
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D, AS, S, AE, DIAG
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_c, X_c_proj
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: VT, EVT, Y
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: AEC, VT, EVT, Y
        TYPE ( SMT_type ) :: Ao, H_sbls, AT_sbls, C_sbls
        TYPE ( SLLS_subproblem_data_type ) :: subproblem_data
        TYPE ( SLLS_search_data_type ) :: search_data
@@ -451,7 +455,6 @@
 
      control%stop_d = epsmch ** 0.33_rp_
      control%stop_cg_absolute = SQRT( epsmch )
-
      RETURN
 
 !  end of SLLS_initialize
@@ -1453,6 +1456,15 @@
        END IF
      END IF
 
+!  for debugging
+
+IF ( debug_br ) THEN
+DEALLOCATE( data%search_data%B, data%search_data%R, STAT = i )
+ALLOCATE( data%search_data%B( prob%o ), data%search_data%R( prob%o ), STAT = i )
+write(6,*) ' temporarily allocated search_data%B, R, status = ', i
+data%search_data%B( : prob%o ) = prob%B( : prob%o )
+END IF
+
 !  if required, use the initial variable status implied by X_status
 
      IF ( control%cold_start == 0 ) THEN
@@ -1643,8 +1655,8 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
-     array_name = 'slls: data%AD'
-     CALL SPACE_resize_array( prob%o, data%AD, inform%status,                  &
+     array_name = 'slls: data%AS'
+     CALL SPACE_resize_array( prob%o, data%AS, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -1730,6 +1742,14 @@
      IF ( data%multiple_simplices ) THEN
        array_name = 'slls: prob%Y'
        CALL SPACE_resize_array( prob%m, prob%Y, inform%status,                 &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+       IF ( inform%status /= GALAHAD_ok ) GO TO 910
+
+       array_name = 'slls: data%AEC'
+       CALL SPACE_resize_array( prob%o, prob%m, data%AEC, inform%status,       &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -2231,7 +2251,7 @@
 
        IF ( data%steepest_descent ) THEN
          IF ( data%printm )  WRITE( data%out,                                  &
-           "( /, A, ' steepest descent search direction', / )" ) prefix
+           "( /, A, ' steepest descent search direction' )" ) prefix
 
 !  assign the search direction
 
@@ -2326,11 +2346,12 @@
 !    ( Ao_F^T  - weight I ) ( q_F )   ( weight x_F )
 
        IF ( data%direct_subproblem_solve ) THEN
+         IF ( data%printm )  WRITE( data%out,                                  &
+           "( /, A, ' augmented system search direction' )" ) prefix
 
 !  set up the block matrices. Copy the free columns of A into the rows
 !  of AT
 
-!        IF ( data%n_free <= 12 ) write(6,"( ' free ', 12I5 )" ) data%FREE( : data%n_free )
          nap = 0
          DO i = 1, data%n_free
            j = data%FREE( i )
@@ -2525,7 +2546,7 @@
          END IF
 
 !write(6,*) ' ----------- nfree ', data%n_free
-         IF ( data%printm ) WRITE( data%out, "( ' dtg, dtd = ', 2ES12.4 )" )   &
+         IF ( data%printw ) WRITE( data%out, "( ' dtg, dtd = ', 2ES12.4 )" )   &
            DOT_PRODUCT( data%D( : prob%n ), prob%G( : prob%n ) ),              &
            DOT_PRODUCT( data%D( : prob%n ), data%D( : prob%n ) )
          data%string_cg_iter = '     F'
@@ -2809,14 +2830,6 @@
 !  perform an exact arc search
 
        IF ( .NOT. control%exact_arc_search ) GO TO 440
-!      GO TO 440
-
-       IF ( data%multiple_simplices ) THEN
-
-
-!  form A u (store in AE)
-
-       END IF
 
 !  re-entry point after the A u product
 
@@ -2826,6 +2839,7 @@
 
 !  SBLS_sol is used as a surrogate for AE
 
+       data%D = data%D / TWO_NORM( data%D )
        data%SBLS_sol( : prob%o ) = data%AE( : prob%o ) 
 
  420   CONTINUE ! mock arc search loop
@@ -2842,10 +2856,10 @@
                                           prob%COHORT, data%S_ptr, data%S_ind, &
                                           data%weight, data%out,               &
                                           data%printm, data%printd,            &
- !                                        .TRUE., .FALSE.,                     &
+!                                         .TRUE., .FALSE.,                     &
                                           prefix, data%arc_search_status,      &
-                                          data%X_new, data%R, data%D, data%AD, &
-                                          data%sbls_sol, data%segment,         &
+                                          data%X_new, data%R, data%D, data%AS, &
+                                          data%AEC, data%segment,              &
                                           data%n_free, data%FREE,              &
                                           data%search_data, userdata,          &
                                           data%f_new, data%phi_new,            &
@@ -2862,8 +2876,8 @@
                                           data%weight, data%out,               &
                                           data%printm, data%printd,            &
                                           prefix, data%arc_search_status,      &
-                                          data%X_new, data%R, data%D, data%AD, &
-                                          data%sbls_sol, data%segment,         &
+                                          data%X_new, data%R, data%D, data%AS, &
+                                          data%AEC, data%segment,              &
                                           data%n_free, data%FREE,              &
                                           data%search_data, userdata,          &
                                           data%f_new, data%phi_new,            &
@@ -2885,7 +2899,7 @@
                                          data%out, data%printm, data%printd,   &
 !                                        data%out, .TRUE., .FALSE.,            &
                                          prefix, data%arc_search_status,       &
-                                         data%X_new, data%R, data%D, data%AD,  &
+                                         data%X_new, data%R, data%D, data%AS,  &
                                          data%sbls_sol, data%segment,          &
                                          data%n_free, data%FREE,               &
                                          data%search_data, userdata,           &
@@ -2901,7 +2915,7 @@
              CALL SLLS_exact_arc_search( prob%n, prob%o, data%weight,          &
                                          data%out, data%printm, data%printd,   &
                                          prefix, data%arc_search_status,       &
-                                         data%X_new, data%R, data%D, data%AD,  &
+                                         data%X_new, data%R, data%D, data%AS,  &
                                          data%sbls_sol, data%segment,          &
                                          data%n_free, data%FREE,               &
                                          data%search_data, userdata,           &
@@ -3355,8 +3369,8 @@
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'slls: data%AD'
-     CALL SPACE_dealloc_array( data%AD,                                        &
+     array_name = 'slls: data%AS'
+     CALL SPACE_dealloc_array( data%AS,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -3364,6 +3378,13 @@
 
      array_name = 'slls: data%AE'
      CALL SPACE_dealloc_array( data%AE,                                        &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND.                                 &
+          inform%status /= GALAHAD_ok ) RETURN
+
+     array_name = 'slls: data%AEC'
+     CALL SPACE_dealloc_array( data%AEC,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -4082,7 +4103,7 @@
 ! -*-*-*- S L L S _ E X A C T _ A R C _ S E A R C H  S U B R O U T I N E -*-*-*-
 
       SUBROUTINE SLLS_exact_arc_search( n, o, weight, out, summary, debug,     &
-                                        prefix, status, X, R, D, AD, AE,       &
+                                        prefix, status, X, R, D, AS, AE,       &
                                         segment, n_free, FREE, data, userdata, &
                                         f_opt, phi_opt, t_opt, X_s,            &
                                         Ao_val, Ao_row, Ao_ptr, reverse,       &
@@ -4092,7 +4113,7 @@
 !  projection path P( x + t d ) from a given x in Delta and direction d as
 !  t increases from zero, and P(v) projects v onto Delta, and stop at the
 !  first (local) minimizer of
-!    1/2 || A P( x + t d ) - b ||^2 + 1/2 weight || P( x + t d ) - x_s ||^2
+!    1/2 || Ao P( x + t d ) - b ||^2 + 1/2 weight || P( x + t d ) - x_s ||^2
 
 !  ------------------------------- dummy arguments -----------------------
 !
@@ -4113,7 +4134,7 @@
 !            Possible output values are:
 !            0 a successful exit
 !            < 0 an error exit
-!            [1,n] the user should provide data for the status-th column of A
+!            [1,n] the user should provide data for the status-th column of Ao
 !                and re-enter the subroutine with all non-optional arguments
 !                unchanged. Row indices and values for the nonzero components
 !                of the column should be provided in reverse%ip(:nz) and
@@ -4121,14 +4142,14 @@
 !                these arrays should be allocated before use, and lengths of
 !                at most o suffice. This value of status will only occur if
 !                Ao_val, Ao_row and Ao_ptr are absent
-!            >n the user should form the vector p = A v and re-enter the 
+!            >n the user should form the vector p = Ao v and re-enter the 
 !                subroutine with all non-optional arguments unchanged. 
 !                v will be provided in reverse%v(:n), and the product 
 !                p must be returned in reverse%p(:n)
 !  X        (REAL array of length at least n) the initial point x
-!  R        (REAL array of length at least o) the residual A x - b
+!  R        (REAL array of length at least o) the residual Ao x - b
 !  D        (REAL array of length at least n) the direction d
-!  AD       (REAL array of length at least o) used as workspace
+!  AS       (REAL array of length at least o) used as workspace
 !  AE       (REAL array of length at least o) the vector A e where e is the
 !           vector of ones, but subsequently used as workspace
 !  segment  (INTEGER) the number of segments searched
@@ -4154,18 +4175,18 @@
 !  OPTIONAL ARGUMENTS
 !
 !  Ao_val   (REAL array of length Ao_ptr( n + 1 ) - 1) the values of the
- !           nonzeros of A, stored by consecutive columns. N.B. If present,
+!            nonzeros of Ao, stored by consecutive columns. N.B. If present,
 !            Ao_row and Ao_ptr must also be present
 !  Ao_row   (INTEGER array of length Ao_ptr( n + 1 ) - 1) the row indices
-!            of the nonzeros of A, stored by consecutive columns
+!            of the nonzeros of Ao, stored by consecutive columns
 !  Ao_ptr   (INTEGER array of length n + 1) the starting positions in
-!            Ao_val and Ao_row of the i-th column of A, for i = 1,...,n,
+!            Ao_val and Ao_row of the i-th column of Ao, for i = 1,...,n,
 !            with Ao_ptr(n+1) pointin to the storage location 1 beyond
-!            the last entry in A
+!            the last entry in Ao
 !  reverse (structure of type reverse_type) data that is provided by the
 !           user when prompted by status > 0
-!  eval_aprod (subroutine) that provides products with A(see slls_solve)
-!  eval_ascol (subroutine) that provides a sparse column of A(see slls_solve)
+!  eval_aprod (subroutine) that provides products with Ao(see slls_solve)
+!  eval_ascol (subroutine) that provides a sparse column of Ao(see slls_solve)
 !
 !  ------------------ end of dummy arguments --------------------------
 
@@ -4179,7 +4200,7 @@
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: FREE
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, D
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( o ) :: R, AD, AE
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( o ) :: R, AS, AE
       TYPE ( SLLS_search_data_type ), INTENT( INOUT ) :: data
       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
       REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( IN ), DIMENSION( : ) :: X_s
@@ -4222,7 +4243,7 @@
       REAL ( KIND = rp_ ) :: a, d_j, f_1, f_2, phi_1, phi_2, t
       REAL ( KIND = rp_ ) :: t_max = ten ** 20
 !     REAL ( KIND = rp_ ), DIMENSION( n ) :: V, PROJ
-!     REAL ( KIND = rp_ ), DIMENSION( o ) :: AE_tmp, AD_tmp
+!     REAL ( KIND = rp_ ), DIMENSION( o ) :: AE_tmp, AS_tmp
 
 !  if a re-entry occurs, branch to the appropriate place in the code
 
@@ -4304,15 +4325,15 @@
 
       IF ( data%gamma /= zero ) D = D - data%gamma
 
-!  compute As (and store in AD)
+!  compute As
 
        IF ( data%present_a ) THEN
-         AD( : o ) = zero
+         AS( : o ) = zero
          DO j = 1, n
            d_j = D( j )
            DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
              i = Ao_row( l )
-             AD( i ) = AD( i ) + Ao_val( l ) * d_j
+             AS( i ) = AS( i ) + Ao_val( l ) * d_j
            END DO
          END DO
        ELSE IF ( data%reverse_a ) THEN
@@ -4320,8 +4341,8 @@
          reverse%transpose = .FALSE.
          status = n + 1 ; RETURN
        ELSE
-         AD( : o ) = zero
-         CALL eval_APROD( status, userdata, .FALSE., D, AD )
+         AS( : o ) = zero
+         CALL eval_APROD( status, userdata, .FALSE., D, AS )
          IF ( status /= GALAHAD_ok ) THEN
            status = GALAHAD_error_evaluation ; RETURN
          END IF
@@ -4330,7 +4351,7 @@
 !  re-entry point after forming the A d product
 
   10   CONTINUE
-       IF ( data%reverse_a ) AD( : o ) = reverse%p( : o )
+       IF ( data%reverse_a ) AS( : o ) = reverse%p( : o )
 
 !  initialize f_0 = 1/2 || A x - b ||^2 and 
 !  phi_0 = f_0 + 1/2 weight || x - x_s ||^2
@@ -4368,31 +4389,31 @@
 !  main loop (mock do loop to allow reverse communication)
 
       segment = 1
-      IF ( summary ) WRITE( out,  "( A, ' segment   phi_0       phi_1     ',   &
-     &             '  phi_2       t_break       t_opt' )" ) prefix
+      IF ( summary ) WRITE( out, "( /, A, ' segment    phi_0       phi_1    ', &
+     &             '   phi_2      t_break       t_opt' )" ) prefix
   100 CONTINUE
 !       IF ( debug ) THEN
 !         WRITE( out,  "( ' s = ', /, ( 5ES12.4 ) )" ) S
-!         WRITE( out,  "( ' Ad = ', /, ( 5ES12.4 ) )" ) AD
-!         AD_tmp = zero ; AE_tmp = zero
+!         WRITE( out,  "( ' as = ', /, ( 5ES12.4 ) )" ) AS
+!         AS_tmp = zero ; AE_tmp = zero
 !         DO i_fixed = 1, n_free
 !           j = FREE( i_fixed )
 !           s_j = D( j )
 !           DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
 !             i = Ao_row( l ) ; a = Ao_val( l )
 !             AE_tmp( i ) = AE_tmp( i ) + a
-!             AD_tmp( i ) = AD_tmp( i ) + a * s_j
+!             AS_tmp( i ) = AS_tmp( i ) + a * s_j
 !           END DO
 !         END DO
 !         WRITE( out,  "( ' D = ', /, ( 5ES12.4 ) )" ) D
-!         WRITE( out,  "( ' Ad_tmp = ', /, ( 5ES12.4 ) )" ) AD_tmp
+!         WRITE( out,  "( ' as_tmp = ', /, ( 5ES12.4 ) )" ) AS_tmp
 !         WRITE( out,  "( ' Ae = ', /, ( 5ES12.4 ) )" ) AE
 !         WRITE( out,  "( ' Ae_tmp = ', /, ( 5ES12.4 ) )" ) AE_tmp
 !       END IF
 
 !  compute the slope f_1/phi_1 and curvature f_2/phi_2 along the current segment
 
-        f_1 = DOT_PRODUCT( R, AD ) ; f_2 = DOT_PRODUCT( AD, AD )
+        f_1 = DOT_PRODUCT( R, AS ) ; f_2 = DOT_PRODUCT( AS, AS )
         IF ( weight > zero ) THEN
           phi_1 = f_1 + weight * data%rho_1 ; phi_2 = f_2 + weight * data%rho_2
         ELSE
@@ -4434,8 +4455,8 @@
 
         IF ( phi_1 > - data%phi_1_stop ) THEN
           t_opt = data%t_total ; f_opt = data%f_0 ; phi_opt = data%phi_0
-          IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES12.4, ' at t =',   &
-         &    ES11.4, ' at start of segment ', I0 )" )                         &
+          IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES21.14, ' at t =',  &
+         &    ES21.14, ' at start of segment ', I0 )" )                        &
                 prefix, phi_opt, t_opt, segment
           GO TO 900
         END IF
@@ -4451,8 +4472,8 @@
 !           IF ( debug ) WRITE( out, "( ' x ', I8, ES12.4 )" ) j, X( j )
           END DO
           t_opt = data%t_total + t_opt
-          IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES12.4, ' at t =',   &
-         &   ES11.4, ' in segment ', I0 )" ) prefix, phi_opt, t_opt, segment
+          IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES21.14, ' at t =',  &
+         &   ES21.14, ' in segment ', I0 )" ) prefix, phi_opt, t_opt, segment
           GO TO 900
         END IF
 
@@ -4525,35 +4546,33 @@
 
   200   CONTINUE
 
-!  update r, Ae and Ad
+!  update r, Ae and As
 
+        R = R + data%t_break * AS
         IF ( data%present_a ) THEN
           DO l = Ao_ptr( now_fixed ), Ao_ptr( now_fixed + 1 ) - 1
             i = Ao_row( l ) ; a = Ao_val( l )
             AE( i ) = AE( i ) - a
-            AD( i ) = AD( i ) - data%s_fixed * a
+            AS( i ) = AS( i ) - data%s_fixed * a
           END DO
         ELSE IF ( data%reverse_as ) THEN
           DO l = 1, reverse%lp
             i = reverse%ip( l ) ; a = reverse%p( l )
             AE( i ) = AE( i ) - a
-            AD( i ) = AD( i ) - data%s_fixed * a
+            AS( i ) = AS( i ) - data%s_fixed * a
           END DO
         ELSE
           CALL eval_ASCOL( status, userdata, now_fixed, data%P, data%IP, lp )
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; RETURN
           END IF
-
           DO l = 1, lp
             i = data%IP( l ) ; a = data%P( l )
             AE( i ) = AE( i ) - a
-            AD( i ) = AD( i ) - data%s_fixed * a
+            AS( i ) = AS( i ) - data%s_fixed * a
           END DO
         END IF
-
-        R = R + data%t_break * AD
-        AD = AD + data%gamma * AE
+        AS = AS + data%gamma * AE
 
 !  update rho_0, rho_1 and rho_2 if required
 
@@ -4601,7 +4620,7 @@
 
       SUBROUTINE SLLSM_exact_arc_search( n, o, m, n_c, COHORT, S_ptr, S_ind,   &
                                          weight, out, summary, debug, prefix,  &
-                                         status, X, R, D, AD, AE, segment,     &
+                                         status, X, R, D, AS, AEC, segment,    &
                                          n_free, FREE, data, userdata,         &
                                          f_opt, phi_opt, t_opt, X_s,           &
                                          Ao_val, Ao_row, Ao_ptr, reverse,      &
@@ -4612,7 +4631,7 @@
 !  Follow the projection path P( x + t d ) from a given x in the intersection 
 !  Delta of the Delta_i and direction d as t increases from zero, and P(v) 
 !  projects v onto Delta, and stop at the first (local) minimizer of
-!    1/2 || A P( x + t d ) - b ||^2 + 1/2 weight || P( x + t d ) - x_s ||^2
+!    1/2 || Ao P( x + t d ) - b ||^2 + 1/2 weight || P( x + t d ) - x_s ||^2
 
 !  ------------------------------- dummy arguments -----------------------
 !
@@ -4643,7 +4662,7 @@
 !            Possible output values are:
 !            0 a successful exit
 !            < 0 an error exit
-!            [1,n] the user should provide data for the status-th column of A
+!            [1,n] the user should provide data for the status-th column of Ao
 !                and re-enter the subroutine with all non-optional arguments
 !                unchanged. Row indices and values for the nonzero components
 !                of the column should be provided in reverse%ip(:nz) and
@@ -4652,11 +4671,12 @@
 !                at most o suffice. This value of status will only occur if
 !                Ao_val, Ao_row and Ao_ptr are absent
 !  X        (REAL array of length at least n) the initial point x
-!  R        (REAL array of length at least o) the residual A x - b
+!  R        (REAL array of length at least o) the residual Ao x - b
 !  D        (REAL array of length at least n) the direction d
-!  AD       (REAL array of length at least o) a vector used as workspace
-!  AE       (REAL array of length at least o) the vector A e where e is the
-!           vector of ones, but subsequently used as workspace
+!  AS       (REAL array of length at least o) a vector used as workspace
+!  AEC      (rank-2 REAL array of length at least (o,m)) the vector Ao_C e_C 
+!            where e_C are the vectors of ones for each cohort, but 
+!            subsequently used as workspace
 !  segment  (INTEGER) the number of segments searched
 !  n_free   (INTEGER) the number of free variables (i.e., variables not at zero)
 !  FREE     (INTEGER array of length at least n) FREE(:n_free) are the indices
@@ -4680,14 +4700,14 @@
 !  OPTIONAL ARGUMENTS
 !
 !  Ao_val   (REAL array of length Ao_ptr( n + 1 ) - 1) the values of the
-!            nonzeros of A, stored by consecutive columns. N.B. If present,
+!            nonzeros of Ao, stored by consecutive columns. N.B. If present,
 !            Ao_row and Ao_ptr must also be present
 !  Ao_row   (INTEGER array of length Ao_ptr( n + 1 ) - 1) the row indices
-!            of the nonzeros of A, stored by consecutive columns
+!            of the nonzeros of Ao, stored by consecutive columns
 !  Ao_ptr   (INTEGER array of length n + 1) the starting positions in
-!            Ao_val and Ao_row of the i-th column of A, for i = 1,...,n,
+!            Ao_val and Ao_row of the i-th column of Ao, for i = 1,...,n,
 !            with Ao_ptr(n+1) pointin to the storage location 1 beyond
-!            the last entry in A
+!            the last entry in Ao
 !  reverse (structure of type reverse_type) data that is provided by the
 !           user when prompted by status > 0
 !  eval_aprod (subroutine) that provides products with A(see slls_solve)
@@ -4707,7 +4727,8 @@
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: S_ptr
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: FREE
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, D
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( o ) :: R, AD, AE
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( o ) :: R, AS
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( o, m ) :: AEC
       TYPE ( SLLS_search_data_type ), INTENT( INOUT ) :: data
       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
       REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( IN ), DIMENSION( : ) :: X_s
@@ -4745,19 +4766,30 @@
 
 !  local variables
 
-      INTEGER ( KIND = ip_ ) :: i, j, l, l_j, lp, i_fixed, now_fixed
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, l_j, lp, i_free, i_fixed, now_fixed
 !     REAL ( KIND = rp_ ) :: s_j
       REAL ( KIND = rp_ ) :: a, x_j, d_j, f_1, f_2, phi_1, phi_2, t
       REAL ( KIND = rp_ ) :: t_max = ten ** 20
+      REAL ( KIND = rp_ ) :: ls_obj, r_obj, obj
 !     REAL ( KIND = rp_ ), DIMENSION( n ) :: V
 !     REAL ( KIND = rp_ ), DIMENSION( n ) :: V, PROJ
-!     REAL ( KIND = rp_ ), DIMENSION( o ) :: AE_tmp, AD_tmp
+!     REAL ( KIND = rp_ ), DIMENSION( o ) :: AE_tmp, AS_tmp
 !     REAL ( KIND = rp_ ), DIMENSION( m ) :: C
 
 !  if a re-entry occurs, branch to the appropriate place in the code
 
-      IF ( status > n ) GO TO 10
-      IF ( status > 0 ) GO TO 200
+      IF ( status /= 0 ) THEN
+        SELECT CASE ( data%branch )
+        CASE ( 10 ) ; GO TO 10
+        CASE ( 90 ) ; GO TO 90
+        CASE ( 200 ) ; GO TO 200
+        END SELECT
+      END IF
+
+!write(66,*) ' X, D '
+!DO i = 1, n
+! write(66, "( I4, 2ES16.8 )" ) i, X(i), D(i)
+!END DO
 
 !  see if shifts x_s have been provided
 
@@ -4841,25 +4873,35 @@
             SUM( D( S_ind( S_ptr( i ) : l ) ) ) / REAL( l_j, KIND = rp_ )
         END IF  
       END DO
- 
-!  compute As (and store in AD)
+!write(6,*) ' ||d|| = ', TWO_NORM( D )
+
+!  set any tiny components of d to zero
+
+      DO j = 1, n
+        IF ( ABS( X( j ) ) <= x_zero ) X( j ) = zero
+        IF ( ABS( D( j ) ) <= d_zero ) D( j ) = zero
+        IF ( .FALSE. ) &
+          WRITE(6,"( ' i, d, cohort ', I3, ES12.4, I2 )") j, D( j ), COHORT( j )
+      END DO
+
+!  compute As
 
       IF ( data%present_a ) THEN
-        AD( : o ) = zero
+        AS( : o ) = zero
         DO j = 1, n
           d_j = D( j )
           DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
             i = Ao_row( l )
-            AD( i ) = AD( i ) + Ao_val( l ) * d_j
+            AS( i ) = AS( i ) + Ao_val( l ) * d_j
           END DO
         END DO
       ELSE IF ( data%reverse_a ) THEN
         reverse%v( : n ) = D( : n )
         reverse%transpose = .FALSE.
-        status = n + 1 ; RETURN
+        data%branch = 10 ; status = n + 1 ; RETURN
       ELSE
-        AD( : o ) = zero
-        CALL eval_APROD( status, userdata, .FALSE., D, AD )
+        AS( : o ) = zero
+        CALL eval_APROD( status, userdata, .FALSE., D, AS )
         IF ( status /= GALAHAD_ok ) THEN
           status = GALAHAD_error_evaluation ; RETURN
         END IF
@@ -4868,7 +4910,7 @@
 !  re-entry point after forming the A d product
 
   10  CONTINUE
-      IF ( data%reverse_a ) AD( : o ) = reverse%p( : o )
+      IF ( data%reverse_a ) AS( : o ) = reverse%p( : o )
 
 !  initialize f_0 = 1/2 || A x - b ||^2 + 1/2 weight || x - x_s ||^2, and
 !  if there is a regularization term, initialize rhom_1 = (x - x_s)^T s,
@@ -4907,36 +4949,140 @@
       n_free = n
       FREE = (/ ( j, j = 1, n ) /)
 
+!     IF ( .FALSE. ) THEN
+      IF ( .TRUE. ) THEN
+        n_free = 0
+        data%I_len( 1 : m ) = 0
+        DO j = 1, n
+          IF ( .NOT. ( X( j ) == zero .AND. D( j ) <= zero ) ) THEN
+            n_free = n_free + 1
+            FREE( n_free ) = j
+            k = COHORT( j )
+            IF ( k > 0 ) data%I_len( k ) = data%I_len( k ) + 1
+          END IF
+        END DO
+!       WRITE( 6, * ) ' n_free = ', n_free
+      END IF
+
+!  store the vectors A_Cj e_Cj in AEC
+
+      AEC = zero
+      IF ( data%reverse_a ) THEN ! return to calculate the j-th column of Ao
+        DO i_free = 1, n_free
+          j = FREE( i_free )
+          IF ( COHORT( j ) > 0 ) THEN
+            data%i_free = i_free ; data%branch = 90 ; status = j ; RETURN
+          END IF
+        END DO
+        j = n + 1
+      ELSE IF ( data%present_a ) THEN ! sum the appropriate columns of Ao
+        DO i_free = 1, n_free
+          j = FREE( i_free )
+          k = COHORT( j )
+          IF ( k > 0 ) THEN
+            DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+              i = Ao_row( l )
+              AEC( i, k ) = AEC( i, k ) + Ao_val( l )
+            END DO
+          END IF
+        END DO     
+      ELSE
+        DO i_free = 1, n_free
+          j = FREE( i_free )
+          k = COHORT( j )
+          IF ( k > 0 ) THEN ! calculate the j-th column of Ao and sum them
+            CALL eval_ASCOL( status, userdata, j, data%P, data%IP, lp )
+            IF ( status /= GALAHAD_ok ) THEN
+              status = GALAHAD_error_evaluation ; RETURN
+            END IF
+            DO l = 1, lp
+              i = data%IP( l )
+              AEC( i, k ) = AEC( i, k ) + data%IP( l )
+            END DO
+          END IF
+        END DO     
+      END IF 
+
+!  re-enter with the required column of Ao
+
+   90 CONTINUE
+      IF ( data%reverse_a ) THEN
+        IF ( status <= n ) THEN ! add the j-th column of Ao as appropriate 
+          k = COHORT( status )
+          DO l = 1, reverse%lp
+            i = reverse%ip( l )
+            AEC( i, k ) = AEC( i, k ) - reverse%p( l )
+          END DO
+          DO i_free = data%i_free + 1, n_free ! return to get the next column
+            j = FREE( i_free )
+            IF ( COHORT( j ) > 0 ) THEN
+              data%i_free = i_free ; data%branch = 90 ; status = j ; RETURN
+            END IF
+          END DO
+        END IF
+      END IF
+
 !  main loop (mock do loop to allow reverse communication)
 
       segment = 1
-      IF ( summary ) WRITE( out,  "( A, ' segment   phi_0       phi_1     ',   &
-     &             '  phi_2       t_break       t_opt    fixed' )" ) prefix
+      IF ( summary ) WRITE( out, "( /, A, ' segment    phi_0       phi_1    ', &
+     &             '   phi_2      t_break       t_opt   fixed' )" ) prefix
 
   100 CONTINUE
 
+!  debug printing
+
+        IF ( debug_br ) THEN
+          IF ( .NOT. data%reverse_a ) THEN
+            data%R( : o ) = - data%B( : o )
+            IF ( data%present_a ) THEN
+              DO j = 1, n
+                d_j = X( j )
+                DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+                  i = Ao_row( l )
+                  data%R( i ) = data%R( i ) + Ao_val( l ) * d_j
+                END DO
+              END DO
+            ELSE
+              CALL eval_APROD( status, userdata, .FALSE., X, data%R )
+            END IF 
+            ls_obj = half * DOT_PRODUCT( data%R( : o ), data%R( : o ) )
+            IF ( data%shifts ) THEN
+              r_obj = DOT_PRODUCT( X( : n ) - X_s( : n ), X( : n ) - X_s( : n ))
+            ELSE
+              r_obj = DOT_PRODUCT( X( : n ), X( : n ) )
+            END IF
+            obj = ls_obj + half * weight * r_obj
+            WRITE( 6, "( ' rec, true phi = ', 2ES22.14 )" ) data%phi_0, obj
+            DO i = 1, n
+              WRITE( 6, "( ' rec, true r = ', I3, 2ES22.14 )" ) &
+                  i, R( i ), data%R( i )
+            END DO
+          END IF
+        END IF
+
 !       IF ( debug ) THEN
 !         WRITE( out,  "( ' s = ', /, ( 5ES12.4 ) )" ) S
-!         WRITE( out,  "( ' Ad = ', /, ( 5ES12.4 ) )" ) AD
-!         AD_tmp = zero ; AE_tmp = zero
+!         WRITE( out,  "( ' As = ', /, ( 5ES12.4 ) )" ) AS
+!         AS_tmp = zero ; AE_tmp = zero
 !         DO i_fixed = 1, n_free
 !           j = FREE( i_fixed )
 !           s_j = D( j )
 !           DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
 !             i = Ao_row( l ) ; a = Ao_val( l )
 !             AE_tmp( i ) = AE_tmp( i ) + a
-!             AD_tmp( i ) = AD_tmp( i ) + a * s_j
+!             AS_tmp( i ) = AS_tmp( i ) + a * s_j
 !           END DO
 !         END DO
 !         WRITE( out,  "( ' D = ', /, ( 5ES12.4 ) )" ) D
-!         WRITE( out,  "( ' Ad_tmp = ', /, ( 5ES12.4 ) )" ) AD_tmp
+!         WRITE( out,  "( ' As_tmp = ', /, ( 5ES12.4 ) )" ) AS_tmp
 !         WRITE( out,  "( ' Ae = ', /, ( 5ES12.4 ) )" ) AE
 !         WRITE( out,  "( ' Ae_tmp = ', /, ( 5ES12.4 ) )" ) AE_tmp
 !       END IF
 
 !  compute the slope phi_1 and curvature phi_2 along the current segment
 
-        f_1 = DOT_PRODUCT( R, AD ) ; f_2 = DOT_PRODUCT( AD, AD )
+        f_1 = DOT_PRODUCT( R, AS ) ; f_2 = DOT_PRODUCT( AS, AS )
         IF ( weight > zero ) THEN
           phi_1 = f_1 + weight * SUM( data%rhom_1( 0 : m ) )
           phi_2 = f_2 + weight * SUM( data%rhom_2( 0 : m ) )
@@ -4959,6 +5105,7 @@
 
         IF ( debug )                                                           &
           WRITE( out,  "( A, 14X, '  t           x           s' )" ) prefix
+        i_fixed = 0
         data%t_break = t_max
         DO i = 1, n_free
           j = FREE( i )
@@ -4970,23 +5117,36 @@
             IF ( t < data%t_break ) THEN
               i_fixed = i ; data%t_break = t ; data%ic = COHORT( j )
             END IF
+
+          ELSE IF ( X( j ) == zero .AND. D( j ) == zero ) THEN
+            t = zero
+            IF ( debug )                                                       &
+              WRITE( out,  "( A, I8, 3ES12.4 )" ) prefix, j, t, X( j ), D( j )
+            IF ( t < data%t_break ) THEN
+              i_fixed = i ; data%t_break = t ; data%ic = COHORT( j )
+            END IF
           END IF
         END DO
-        IF ( summary ) WRITE( out,  "( A, I8, 5ES12.4, 1X, I0 )" ) prefix,     &
-          segment, data%phi_0, phi_1, phi_2, data%t_total + data%t_break,      &
-          data%t_total + t_opt, FREE( i_fixed )
-!       IF ( data%t_break == t_max .AND. debug )                               &
-!         WRITE( out,  "( ' s = ', /, ( 5ES12.4 ) )" ) S
+
+        IF ( i_fixed > 0 ) THEN
+          IF ( summary ) WRITE( out,  "( A, I8, 5ES12.4, 1X, I0 )" ) prefix,   &
+            segment, data%phi_0, phi_1, phi_2, data%t_total + data%t_break,    &
+            data%t_total + t_opt, FREE( i_fixed )
 
 !  stop if the slope is positive
 
-!       IF ( phi_1 > - data%phi_1_stop ) THEN
-        IF ( phi_1 >= - data%phi_1_stop ) THEN
-          t_opt = data%t_total ; f_opt = data%f_0 ; phi_opt = data%phi_0
-          IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES12.4, ' at t =',   &
-         &    ES11.4, ' at start of segment ', I0 )" )                         &
-                prefix, phi_opt, t_opt, segment
-          GO TO 900
+!         IF ( phi_1 > - data%phi_1_stop ) THEN
+          IF ( phi_1 >= - data%phi_1_stop ) THEN
+            t_opt = data%t_total ; f_opt = data%f_0 ; phi_opt = data%phi_0
+            IF ( summary ) WRITE( out, "( A, ' phi_opt =', ES21.14, ' at t =', &
+           &    ES21.14, ' at start of segment ', I0 )" )                      &
+                  prefix, phi_opt, t_opt, segment
+            GO TO 900
+          END IF
+        ELSE
+          IF ( summary ) WRITE( out, "( A, I8, 5ES12.4, 1X, I0 )" ) prefix,    &
+            segment, data%phi_0, phi_1, phi_2, data%t_total + data%t_break,    &
+            data%t_total + t_opt, 0
         END IF
 
 !  stop if the minimizer on the segment occurs before the end of the segment
@@ -5000,8 +5160,8 @@
 !           IF ( debug ) WRITE( out, "( ' x ', I8, ES12.4 )" ) j, X( j )
           END DO
           t_opt = data%t_total + t_opt
-          IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES12.4, ' at t =',   &
-         &   ES11.4, ' in segment ', I0 )" ) prefix, phi_opt, t_opt, segment
+          IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES21.14, ' at t =',  &
+         &   ES21.14, ' in segment ', I0 )" ) prefix, phi_opt, t_opt, segment
           GO TO 900
         END IF
 
@@ -5044,6 +5204,18 @@
         END DO
         D( now_fixed ) = zero
 
+        IF ( .FALSE. ) THEN
+        DO j = 1, n
+          IF ( j == now_fixed ) THEN
+            WRITE( 6, "( ' i, x, *d, cohort ', I3, 2ES12.4, I2 )" )            &
+              j, X( j ), D( j ), COHORT( j )
+          ELSE
+            WRITE( 6, "( ' i, x,  d, cohort ', I3, 2ES12.4, I2 )" )            &
+              j, X( j ), D( j ), COHORT( j )
+         END IF
+       END DO
+       END IF
+ 
 !  compare calculated and recurred breakpoint
 
 !       IF ( debug ) THEN
@@ -5067,42 +5239,65 @@
 !  if the fixed column of A is only availble by reverse communication, get it
 
         IF ( data%reverse_as ) THEN
-          status = now_fixed ; RETURN
+          data%branch = 200 ; status = now_fixed ; RETURN
         END IF
 
-!  re-enter with the required column
+!  re-enter with the required column of Ao
 
   200   CONTINUE
+        IF ( data%reverse_as ) now_fixed = status
 
-!  update r, Ae and Ad
+!  update r, Aec and As
 
+        R = R + data%t_break * AS
+        k = COHORT( now_fixed )
         IF ( data%present_a ) THEN
           DO l = Ao_ptr( now_fixed ), Ao_ptr( now_fixed + 1 ) - 1
             i = Ao_row( l ) ; a = Ao_val( l )
-            AE( i ) = AE( i ) - a
-            AD( i ) = AD( i ) - data%s_fixed * a
+            AEC( i, k ) = AEC( i, k ) - a
+            AS( i ) = AS( i ) - data%s_fixed * a
           END DO
         ELSE IF ( data%reverse_as ) THEN
           DO l = 1, reverse%lp
             i = reverse%ip( l ) ; a = reverse%p( l )
-            AE( i ) = AE( i ) - a
-            AD( i ) = AD( i ) - data%s_fixed * a
+            AEC( i, k ) = AEC( i, k ) - a
+            AS( i ) = AS( i ) - data%s_fixed * a
           END DO
         ELSE
           CALL eval_ASCOL( status, userdata, now_fixed, data%P, data%IP, lp )
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; RETURN
           END IF
-
           DO l = 1, lp
             i = data%IP( l ) ; a = data%P( l )
-            AE( i ) = AE( i ) - a
-            AD( i ) = AD( i ) - data%s_fixed * a
+            AEC( i, k ) = AEC( i, k ) - a
+            AS( i ) = AS( i ) - data%s_fixed * a
           END DO
         END IF
 
-        R = R + data%t_break * AD
-        AD = AD + data%gamma * AE
+!       R = R + data%t_break * AS
+        AS = AS + data%gamma * AEC( :, k )
+
+        IF ( .FALSE. ) THEN
+          data%R( : o ) = zero
+          IF ( data%present_a ) THEN
+            DO j = 1, n
+              d_j = D( j )
+              DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+                i = Ao_row( l )
+                data%R( i ) = data%R( i ) + Ao_val( l ) * d_j
+              END DO
+            END DO
+          ELSE
+            CALL eval_APROD( status, userdata, .FALSE., D, data%R )
+          END IF 
+          DO i = 1, m
+            WRITE( 6, "( ' rec, true Ad = ', I3, 2ES22.14 )" )                 &
+              i, AS( i ), data%R( i )
+          END DO
+        END IF
+
+
 
 !  update rhom_0, rhom_1 and rhom_2 if required. Loop over cohorts
 
@@ -5147,6 +5342,12 @@
 
   900 CONTINUE
 
+!write(66,*) ' X sol '
+!DO i = 1, n
+! write(66, "( I4, ES16.8 )" ) i, X(i)
+!!write(66, * ) i, X(i)
+!END DO
+
 !  record free variables
 
       n_free = 0
@@ -5183,7 +5384,7 @@
 !  t_0 > 0, to find an approximate local minimizer of the regularized
 !  least-squares objective
 !
-!    f(x) = 1/2 || A_o x - b ||^2 + 1/2 weight || x - x_s ||^2 for x = P(x(t))
+!    f(x) = 1/2 || Ao x - b ||^2 + 1/2 weight || x - x_s ||^2 for x = P(x(t))
 !
 !  The approximation to the arc minimizer we seek is a point x(t_i) for
 !  which the Armijo condition
@@ -5552,7 +5753,7 @@
 !  values of t, from an initial value t_0 > 0, to find an approximate local 
 !  minimizer of the regularized least-squares objective
 !
-!    f(x) = 1/2 || A_o x - b ||^2 + 1/2 weight || x - x_s ||^2 for x = P(x(t))
+!    f(x) = 1/2 || Ao x - b ||^2 + 1/2 weight || x - x_s ||^2 for x = P(x(t))
 !
 !  The approximation to the arc minimizer we seek is a point x(t_i) for
 !  which the Armijo condition
@@ -5926,7 +6127,7 @@
 !  Find the minimizer of the constrained (regularized) least-squares
 !  objective function
 
-!    f(x) =  1/2 || A_o x - b ||_2^2 + 1/2 weight * ||x - x_s||_2^2
+!    f(x) =  1/2 || Ao x - b ||_2^2 + 1/2 weight * ||x - x_s||_2^2
 
 !  for which certain components of x are fixed at zero, and the remainder
 !  sum to zero
@@ -6874,7 +7075,7 @@
 !  Find the minimizer of the constrained (regularized) least-squares
 !  objective function
 
-!    f(x) =  1/2 || A_o x - b ||_2^2 + 1/2 weight * ||x - x_s||_2^2
+!    f(x) =  1/2 || Ao x - b ||_2^2 + 1/2 weight * ||x - x_s||_2^2
 
 !  for which certain components of x are fixed at zero, and the remainder
 !  sum to zero

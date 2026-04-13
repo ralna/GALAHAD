@@ -13,7 +13,6 @@ ugo_inform_type structure
 
         struct ugo_inform_type{T,INT}
           status::INT
-          eval_status::INT
           alloc_status::INT
           bad_alloc::NTuple{81,Cchar}
           iter::INT
@@ -41,16 +40,6 @@ components
 	INT status
 
 return status. See UGO_solve for details
-
-.. index:: pair: variable; eval_status
-.. _doxid-structugo__inform__type_eval_status:
-
-.. ref-code-block:: julia
-	:class: doxyrest-title-code-block
-
-	INT eval_status
-
-evaluation status for reverse communication interface
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structugo__inform__type_alloc_status:

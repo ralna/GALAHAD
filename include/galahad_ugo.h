@@ -281,10 +281,6 @@ struct ugo_inform_type {
     ipc_ status;
 
     /// \brief
-    /// evaluation status for reverse communication interface
-    ipc_ eval_status;
-
-    /// \brief
     /// the status of the last attempted allocation/deallocation
     ipc_ alloc_status;
 
