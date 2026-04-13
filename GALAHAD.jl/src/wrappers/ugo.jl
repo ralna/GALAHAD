@@ -42,7 +42,6 @@ export ugo_inform_type
 
 struct ugo_inform_type{T,INT}
   status::INT
-  eval_status::INT
   alloc_status::INT
   bad_alloc::NTuple{81,Cchar}
   iter::INT

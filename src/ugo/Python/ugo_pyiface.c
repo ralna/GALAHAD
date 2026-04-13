@@ -359,8 +359,6 @@ PyObject* ugo_make_inform_dict(const struct ugo_inform_type *inform){
     // Set int inform entries
     PyDict_SetItemString(py_inform, "status",
                          PyLong_FromLong(inform->status));
-    PyDict_SetItemString(py_inform, "eval_status",
-                         PyLong_FromLong(inform->eval_status));
     PyDict_SetItemString(py_inform, "alloc_status",
                          PyLong_FromLong(inform->alloc_status));
     PyDict_SetItemString(py_inform, "iter",

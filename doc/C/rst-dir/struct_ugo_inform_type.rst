@@ -17,7 +17,6 @@ ugo_inform_type structure
 		// components
 	
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structugo__inform__type_status>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`eval_status<doxid-structugo__inform__type_eval_status>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structugo__inform__type_alloc_status>`;
 		char :ref:`bad_alloc<doxid-structugo__inform__type_bad_alloc>`[81];
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter<doxid-structugo__inform__type_iter>`;
@@ -45,16 +44,6 @@ components
 	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 return status. See UGO_solve for details
-
-.. index:: pair: variable; eval_status
-.. _doxid-structugo__inform__type_eval_status:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_status
-
-evaluation status for reverse communication interface
 
 .. index:: pair: variable; alloc_status
 .. _doxid-structugo__inform__type_alloc_status:

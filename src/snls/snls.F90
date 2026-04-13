@@ -2710,6 +2710,19 @@
 
        data%GN_model%X_s = nlp%X
 
+if ( .FALSE. ) THEN
+open(78)
+write(78,*) data%GN_model%n, data%GN_model%o, data%GN_model%m
+write(78,*) data%GN_model%Ao%val
+write(78,*) data%GN_model%B
+write(78,*) data%GN_model%COHORT
+write(78,*) data%GN_model%regularization_weight
+write(78,*) data%GN_model%X
+write(78,*) data%GN_model%X_s
+close(78)
+end if
+
+
 !  ============================================================================
 !  2. Calculate the search direction, s_k
 !  ============================================================================

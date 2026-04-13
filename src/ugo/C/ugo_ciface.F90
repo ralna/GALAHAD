@@ -79,7 +79,6 @@
 
     TYPE, BIND( C ) :: ugo_inform_type
       INTEGER ( KIND = ipc_ ) :: status
-      INTEGER ( KIND = ipc_ ) :: eval_status
       INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = ipc_ ) :: iter

@@ -1027,18 +1027,19 @@ been possible.
 to communicate user-supplied data to and from the
 subroutine (see Section~\ref{typeuserdata}).
 
-\ittf{index} is a scalar \intentout\ argument of type \integer,
+\itt{index} is a scalar \intentout\ argument of type \integer,
 that should be set to the index of the required column of $\bmA_o$.
 
 \ittf{P} is a rank-one \intentout\ array argument of type \realdp\
-whose first {\tt out\_end} components on output contain the 
+whose first {\tt lp} components on output contain the 
 nonzeros of the {\tt index}-th column of $\bmA_o$.
 
-\itt{IP} is an \intentinout\ rank-one array of dimension at least
-{\tt out\_end} and type \integer, that must be set to record the list
-of indices of nonzero components of the {\tt index}-th column of $\bmA_o$.
+\ittf{IP} is an \intentinout\ rank-one array of dimension at least
+{\tt lp} and type \integer, that must be set to record the list
+of indices of nonzero components of the {\tt index}-th column of $\bmA_o$,
+corresponding to the values stored in {\tt P}.
 
-\itt{lp} is an \intentinout\ scalar variable of type \integer,
+\ittf{lp} is an \intentinout\ scalar variable of type \integer,
 that must be set to record the number of non-zeros in the {\tt col}-th column
 of $\bmA_o$.
 
