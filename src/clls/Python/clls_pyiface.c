@@ -369,6 +369,13 @@ bool clls_update_control(struct clls_control_type *control,
                 return false;
             continue;
         }
+        if(strcmp(key_name, "symmetric_linear_solver") == 0){
+            if(!parse_char_option(value, "symmetric_linear_solver",
+                                  control->symmetric_linear_solver,
+                                  sizeof(control->symmetric_linear_solver)))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "sif_file_name") == 0){
             if(!parse_char_option(value, "sif_file_name",
                                   control->sif_file_name,
@@ -537,6 +544,8 @@ PyObject* clls_make_options_dict(const struct clls_control_type *control){
                          PyBool_FromLong(control->generate_sif_file));
     PyDict_SetItemString(py_options, "generate_qplib_file",
                          PyBool_FromLong(control->generate_qplib_file));
+    PyDict_SetItemString(py_options, "symmetric_linear_solver",
+                         PyUnicode_FromString(control->symmetric_linear_solver));
     PyDict_SetItemString(py_options, "sif_file_name",
                          PyUnicode_FromString(control->sif_file_name));
     PyDict_SetItemString(py_options, "qplib_file_name",

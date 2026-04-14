@@ -7,7 +7,7 @@ matrix storage
 
 The **unsymmetric** $m$ by $n$ and $o$ by $n$ matrices $A$ and $A_o$ 
 may be presented and stored in a variety of convenient input formats. 
-Let $A$ be $A_o$ (with $o$ instead of $m$ and Ao_ instead of A_) 
+Let $A$ be $A_o$ (with $o$ instead of $m$ and $A_o$ instead of $A$) 
 below as appropriate.
 
 *Dense* storage format:

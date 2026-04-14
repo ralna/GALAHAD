@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 5.5 - 2026-03-24 AT 13:20 GMT.
+!  THIS VERSION: GALAHAD 5.5 - 2026-04-14 AT 13:20 GMT.
 
 !-*-*-  G A L A H A D _ S L L S B _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
 
@@ -235,6 +235,10 @@
         CASE( 'deallocate_error_fatal' )
           CALL MATLAB_get_value( ps, 'deallocate_error_fatal',                 &
                                  pc, SLLSB_control%deallocate_error_fatal )
+        CASE( 'symmetric_linear_solver' )
+          CALL galmxGetCharacter( ps, 'symmetric_linear_solver',               &
+                                  pc, SLLSB_control%symmetric_linear_solver,   &
+                                  len )
         CASE( 'prefix' )
           CALL galmxGetCharacter( ps, 'prefix',                                &
                                   pc, SLLSB_control%prefix, len )
@@ -289,7 +293,7 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 49
+      INTEGER * 4, PARAMETER :: ninform = 50
       CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
          'error                          ', 'out                            ', &
          'print_level                    ', 'start_print                    ', &
@@ -314,9 +318,9 @@
          'every_order                    ', 'feasol                         ', &
          'balance_initial_complentarity  ', 'crossover                      ', &
          'reduced_pounce_system          ', 'space_critical                 ', &
-         'deallocate_error_fatal         ', 'prefix                         ', &
-         'FDC_control                    ', 'SLS_control                    ', &
-         'SLS_pounce_control             ' /)
+         'deallocate_error_fatal         ', 'symmetric_linear_solver        ', &
+         'prefix                         ', 'FDC_control                    ', &
+         'SLS_control                    ', 'SLS_pounce_control             ' /)
 
 !  create the structure
 
@@ -420,6 +424,8 @@
                                   SLLSB_control%space_critical )
       CALL MATLAB_fill_component( pointer, 'deallocate_error_fatal',           &
                                   SLLSB_control%deallocate_error_fatal )
+      CALL MATLAB_fill_component( pointer, 'symmetric_linear_solver',          &
+                                  SLLSB_control%symmetric_linear_solver )
       CALL MATLAB_fill_component( pointer, 'prefix',                           &
                                   SLLSB_control%prefix )
 

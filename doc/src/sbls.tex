@@ -77,7 +77,7 @@ and
 {\tt \packagename\_data\_type}
 (\S\ref{galtypes})
 and the subroutines
-{\tt \packagename\_initialize},
+{\tt \packagename\_\-initialize},
 {\tt \packagename\_\-form\_and\_factorize},
 {\tt \packagename\_\-solve},
 {\tt \packagename\_terminate},
@@ -985,7 +985,7 @@ and {\tt inform\%bad\_alloc} respectively.
 \itt{\galerrrestrictions.} One of the restrictions
    {\tt prob\%n} $> 0$ or {\tt prob\%m} $\geq  0$
     or requirements that {\tt prob\%A\_type}, {\tt prob\%H\_type} and
-    {\tt prob\%C\_type} contain its relevant string
+    {\tt prob\%C\_\-type} contain its relevant string
     {\tt 'DENSE'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'},
     {\tt 'DIAGONAL'}, {\tt 'SCALED\_IDENTITY'}, {\tt 'IDENTITY'},
     {\tt 'ZERO'} or {\tt 'NONE'}
@@ -999,21 +999,21 @@ and {\tt inform\%bad\_alloc} respectively.
 
 \itt{\galerranalysis.} An error was reported by {\tt SLS\_analyse}. The return
 status from {\tt SLS\_analyse} is given in
-{\tt inform\%SLS\_inform\%status}.
+{\tt inform\%SLS\_inform\%\-status}.
 See the documentation for the \galahad\ package {\tt SLS} for further details.
 
 \itt{\galerrfactorization.} An error was reported by {\tt SLS\_factorize}.
 The return status from {\tt SLS\_factorize} is given in
-{\tt inform\%SLS\_inform\%status}.
+{\tt inform\%SLS\_\-inform\%status}.
 See the documentation for the \galahad\ package {\tt SLS} for further details.
 
 \itt{\galerrsolve.} An error was reported by {\tt SLS\_solve}. The return
-status from {\tt SLS\_solve} is given in {\tt inform\%SLS\_inform\%status}.
+status from {\tt SLS\_solve} is given in {\tt inform\%\-SLS\_inform\%status}.
 See the documentation for the \galahad\ package {\tt SLS} for further details.
 
 \itt{\galerrulsfactorization.} An error was reported by {\tt ULS\_factorize}.
 The return status from {\tt ULS\_factorize} is given in
-{\tt inform\%uls\_factorize\_\-status}.
+{\tt inform\%uls\_\-factorize\_\-status}.
 See the documentation for the \galahad\ package {\tt ULS} for further details.
 
 \itt{\galerrulssolve.} An error was reported by {\tt ULS\_solve}. The return
