@@ -243,6 +243,9 @@ functions
           generate_qplib_file : bool
              if ``generate_qplib_file`` is True, a QPLIB file
              describing the current problem is to be generated.
+          symmetric_linear_solver : str
+             symmetric (indefinite) linear equation solver. 
+             For current choices, see ``sls.initialize``.
           sif_file_name : str
              name of generated SIF file containing input problem.
           qplib_file_name : str

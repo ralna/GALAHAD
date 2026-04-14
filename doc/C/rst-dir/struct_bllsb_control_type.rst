@@ -69,6 +69,7 @@ bllsb_control_type structure
 		bool :ref:`deallocate_error_fatal<doxid-structbllsb__control__type_deallocate_error_fatal>`;
 		bool :ref:`generate_sif_file<doxid-structbllsb__control__type_generate_sif_file>`;
 		bool :ref:`generate_qplib_file<doxid-structbllsb__control__type_generate_qplib_file>`;
+		char :ref:`symmetric_linear_solver<doxid-structbllsb__control__type_symmetric_linear_solver>`[31];
 		char :ref:`sif_file_name<doxid-structbllsb__control__type_sif_file_name>`[31];
 		char :ref:`qplib_file_name<doxid-structbllsb__control__type_qplib_file_name>`[31];
 		char :ref:`prefix<doxid-structbllsb__control__type_prefix>`[31];
@@ -626,7 +627,7 @@ if .reduced_pounce_system is true, eliminate fixed variables when solving the li
 
 	bool space_critical
 
-if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time
+if .space_critical is true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
 .. _doxid-structbllsb__control__type_deallocate_error_fatal:
@@ -646,7 +647,7 @@ if .deallocate_error_fatal is true, any array/pointer deallocation error will te
 
 	bool generate_sif_file
 
-if .generate_sif_file is .true. if a SIF file describing the current problem is to be generated
+if .generate_sif_file is true, a SIF file describing the current problem is to be generated
 
 .. index:: pair: variable; generate_qplib_file
 .. _doxid-structbllsb__control__type_generate_qplib_file:
@@ -656,7 +657,17 @@ if .generate_sif_file is .true. if a SIF file describing the current problem is 
 
 	bool generate_qplib_file
 
-if .generate_qplib_file is .true. if a QPLIB file describing the current problem is to be generated
+if .generate_qplib_file is true, a QPLIB file describing the current problem is to be generated
+
+.. index:: pair: variable; symmetric_linear_solver
+.. _doxid-structbllsb__control__type_symmetric_linear_solver:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	char symmetric_linear_solver[31]
+
+the name of the symmetric-indefinite linear equation solver used. Possible choices are currently: 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl_pardiso', 'pastix', 'wsmp', and 'sytr', although only 'sytr' and, for OMP 4.0-compliant compilers, 'ssids' are installed by default; others are easily installed (see README.external). More details of the capabilities of each solver are provided in the documentation for :ref:`galahad_sls<details-sls__solvers>`.
 
 .. index:: pair: variable; sif_file_name
 .. _doxid-structbllsb__control__type_sif_file_name:

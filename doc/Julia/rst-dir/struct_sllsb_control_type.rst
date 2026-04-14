@@ -62,6 +62,7 @@ sllsb_control_type structure
           deallocate_error_fatal::Bool
           generate_sif_file::Bool
           generate_qplib_file::Bool
+          symmetric_linear_solver::NTuple{31,Cchar}
           sif_file_name::NTuple{31,Cchar}
           qplib_file_name::NTuple{31,Cchar}
           prefix::NTuple{31,Cchar}
@@ -590,7 +591,7 @@ if .reduced_pounce_system is true,  eliminate fixed variables when solving the l
 
 	Bool space_critical
 
-if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time
+if .space_critical is true, every effort will be made to use as little space as possible. This may result in longer computation time
 
 .. index:: pair: variable; deallocate_error_fatal
 .. _doxid-structsllsb__control__type_deallocate_error_fatal:
@@ -610,7 +611,7 @@ if .deallocate_error_fatal is true, any array/pointer deallocation error will te
 
 	Bool generate_sif_file
 
-if .generate_sif_file is .true. if a SIF file describing the current problem is to be generated
+if .generate_sif_file is true, a SIF file describing the current problem is to be generated
 
 .. index:: pair: variable; generate_qplib_file
 .. _doxid-structsllsb__control__type_generate_qplib_file:
@@ -620,7 +621,17 @@ if .generate_sif_file is .true. if a SIF file describing the current problem is 
 
 	Bool generate_qplib_file
 
-if .generate_qplib_file is .true. if a QPLIB file describing the current problem is to be generated
+if .generate_qplib_file is true, a QPLIB file describing the current problem is to be generated
+
+.. index:: pair: variable; symmetric_linear_solver
+.. _doxid-structsllsb__control__type_symmetric_linear_solver:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	NTuple{31,Cchar} symmetric_linear_solver
+
+symmetric (indefinite) linear equation solver
 
 .. index:: pair: variable; sif_file_name
 .. _doxid-structsllsb__control__type_sif_file_name:

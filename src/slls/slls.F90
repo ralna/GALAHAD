@@ -4325,6 +4325,13 @@ END IF
 
       IF ( data%gamma /= zero ) D = D - data%gamma
 
+!  set any tiny components of x and d to zero
+
+      DO j = 1, n
+        IF ( ABS( X( j ) ) <= x_zero ) X( j ) = zero
+        IF ( ABS( D( j ) ) <= d_zero ) D( j ) = zero
+      END DO
+
 !  compute As
 
        IF ( data%present_a ) THEN
@@ -4384,7 +4391,7 @@ END IF
 !  FREE(:n_free) are indices of variables that are free
 
       n_free = n
-      FREE = (/ ( j, j = 1, n ) /)
+      FREE = [ ( j, j = 1, n ) ]
 
 !  main loop (mock do loop to allow reverse communication)
 
@@ -4875,7 +4882,7 @@ END IF
       END DO
 !write(6,*) ' ||d|| = ', TWO_NORM( D )
 
-!  set any tiny components of d to zero
+!  set any tiny components of x and d to zero
 
       DO j = 1, n
         IF ( ABS( X( j ) ) <= x_zero ) X( j ) = zero
@@ -4946,23 +4953,20 @@ END IF
 
 !  FREE(:n_free) are indices of variables that are free
 
-      n_free = n
-      FREE = (/ ( j, j = 1, n ) /)
+!     n_free = n
+!     FREE = [ ( j, j = 1, n ) ]
 
-!     IF ( .FALSE. ) THEN
-      IF ( .TRUE. ) THEN
-        n_free = 0
-        data%I_len( 1 : m ) = 0
-        DO j = 1, n
-          IF ( .NOT. ( X( j ) == zero .AND. D( j ) <= zero ) ) THEN
-            n_free = n_free + 1
-            FREE( n_free ) = j
-            k = COHORT( j )
-            IF ( k > 0 ) data%I_len( k ) = data%I_len( k ) + 1
-          END IF
-        END DO
-!       WRITE( 6, * ) ' n_free = ', n_free
-      END IF
+      n_free = 0
+      data%I_len( 1 : m ) = 0
+      DO j = 1, n
+        IF ( .NOT. ( X( j ) == zero .AND. D( j ) <= zero ) ) THEN
+          n_free = n_free + 1
+          FREE( n_free ) = j
+          k = COHORT( j )
+          IF ( k > 0 ) data%I_len( k ) = data%I_len( k ) + 1
+        END IF
+      END DO
+!     WRITE( 6, * ) ' n_free = ', n_free
 
 !  store the vectors A_Cj e_Cj in AEC
 
