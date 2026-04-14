@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-12 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-14 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -4238,7 +4238,7 @@ END IF
 
 !  local variables
 
-      INTEGER ( KIND = ip_ ) :: i, j, l, i_fixed, now_fixed, lp
+      INTEGER ( KIND = ip_ ) :: i, j, l, i_free, i_fixed, now_fixed, lp
 !     REAL ( KIND = rp_ ) :: s_j
       REAL ( KIND = rp_ ) :: a, d_j, f_1, f_2, phi_1, phi_2, t
       REAL ( KIND = rp_ ) :: t_max = ten ** 20
@@ -4249,6 +4249,14 @@ END IF
 
       IF ( status > n ) GO TO 10
       IF ( status > 0 ) GO TO 200
+
+      IF ( status /= 0 ) THEN
+        SELECT CASE ( data%branch )
+        CASE ( 10 ) ; GO TO 10
+        CASE ( 90 ) ; GO TO 90
+        CASE ( 200 ) ; GO TO 200
+        END SELECT
+      END IF
 
 !  see if shifts x_s have been provided
 
@@ -4346,7 +4354,7 @@ END IF
        ELSE IF ( data%reverse_a ) THEN
          reverse%v( : n ) = D( : n )
          reverse%transpose = .FALSE.
-         status = n + 1 ; RETURN
+         data%branch = 10 ; status = n + 1 ; RETURN
        ELSE
          AS( : o ) = zero
          CALL eval_APROD( status, userdata, .FALSE., D, AS )
@@ -4390,8 +4398,66 @@ END IF
 
 !  FREE(:n_free) are indices of variables that are free
 
-      n_free = n
-      FREE = [ ( j, j = 1, n ) ]
+!     n_free = n
+!     FREE = [ ( j, j = 1, n ) ]
+
+      n_free = 0
+      DO j = 1, n
+        IF ( .NOT. ( X( j ) == zero .AND. D( j ) <= zero ) ) THEN
+          n_free = n_free + 1
+          FREE( n_free ) = j
+        END IF
+      END DO
+!     WRITE( 6, * ) ' n_free = ', n_free
+      IF ( n_free == n ) GO TO 90
+
+!  store the vector A_free e_free in AE
+
+      AE = zero
+      IF ( data%reverse_a ) THEN ! return to calculate the j-th column of Ao
+        DO i_free = 1, n_free
+          j = FREE( i_free )
+          data%i_free = i_free ; data%branch = 90 ; status = j ; RETURN
+        END DO
+        j = n + 1
+      ELSE IF ( data%present_a ) THEN ! sum the appropriate columns of Ao
+        DO i_free = 1, n_free
+          j = FREE( i_free )
+          DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+            i = Ao_row( l )
+            AE( i ) = AE( i) + Ao_val( l )
+          END DO
+        END DO     
+      ELSE
+        DO i_free = 1, n_free
+          j = FREE( i_free )
+          ! calculate the j-th column of Ao and sum them
+          CALL eval_ASCOL( status, userdata, j, data%P, data%IP, lp )
+          IF ( status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; RETURN
+          END IF
+          DO l = 1, lp
+            i = data%IP( l )
+            AE( i ) = AE( i ) + data%P( l )
+          END DO
+        END DO     
+      END IF 
+
+!  re-enter with the required column of Ao
+
+   90 CONTINUE
+      IF ( data%reverse_a .AND. n_free < n ) THEN
+        IF ( status <= n ) THEN ! add the j-th column of Ao as appropriate 
+          DO l = 1, reverse%lp
+            i = reverse%ip( l )
+            AE( i ) = AE( i ) - reverse%p( l )
+          END DO
+          DO i_free = data%i_free + 1, n_free ! return to get the next column
+            j = FREE( i_free )
+            data%i_free = i_free ; data%branch = 90 ; status = j ; RETURN
+          END DO
+        END IF
+      END IF
 
 !  main loop (mock do loop to allow reverse communication)
 
@@ -4546,7 +4612,7 @@ END IF
 !  if the fixed column of A is only availble by reverse communication, get it
 
         IF ( data%reverse_as ) THEN
-          status = now_fixed ; RETURN
+           data%branch = 200 ; status = now_fixed ; RETURN
         END IF
 
 !  re-enter with the required column
@@ -5001,7 +5067,7 @@ END IF
             END IF
             DO l = 1, lp
               i = data%IP( l )
-              AEC( i, k ) = AEC( i, k ) + data%IP( l )
+              AEC( i, k ) = AEC( i, k ) + data%P( l )
             END DO
           END IF
         END DO     
