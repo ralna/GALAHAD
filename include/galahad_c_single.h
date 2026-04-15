@@ -16,9 +16,9 @@ typedef int32_t galahad_hr_s(int32_t n, int32_t m, int32_t hne, const float x[],
 typedef int32_t galahad_jrprod_s(int32_t n, int32_t m, const float x[], const bool transpose, float u[], const float v[], bool got_j, const void *userdata);
 typedef int32_t galahad_hrprod_s(int32_t n, int32_t m, const float x[], const float y[], float u[], const float v[], bool got_h, const void *userdata);
 typedef int32_t galahad_shrprod_s(int32_t n, int32_t m, int32_t pne, const float x[], const float v[], float pval[], bool got_h, const void *userdata);
-typedef int32_t galahad_jr_prod_s(int32_t n, int32_t m, const float x[], const bool transpose, const float v[], float p[], bool got_j, const void *userdata);
-typedef int32_t galahad_jr_scol_s(int32_t n, int32_t m,  const float x[], int32_t index, float val[], int32_t row[], int32_t nz, bool got_j, const void *userdata);
-typedef int32_t galahad_jr_sprod_s(int32_t n, int32_t m,  const float x[], const bool transpose, const float v[], float p[], const int32_t free[], int32_t n_free, bool got_j, const void *userdata);
+typedef int32_t galahad_jr_prod_s(int32_t n, int32_t m_r, const float x[], const bool transpose, const float v[], float p[], bool got_jr, const void *userdata);
+typedef int32_t galahad_jr_scol_s(int32_t n, int32_t m_r, const float x[], int32_t index, float val[], int32_t row[], int32_t nz, bool got_jr, const void *userdata);
+typedef int32_t galahad_jr_sprod_s(int32_t n, int32_t m_r, const float x[], const bool transpose, const float v[], float p[], const int32_t free[], int32_t n_free, bool got_jr, const void *userdata);
 typedef int32_t galahad_fc_s(int32_t n, int32_t m, const float x[], float *f, float c[], const void *userdata);
 typedef int32_t galahad_gj_s(int32_t n, int32_t m, int32_t jne, const float x[], float g[], float j[], const void *userdata);
 typedef int32_t galahad_hl_s(int32_t n, int32_t m, int32_t hne, const float x[], const float y[], float h[], const void *userdata);
@@ -37,9 +37,9 @@ typedef int64_t galahad_hr_s_64(int64_t n, int64_t m, int64_t hne, const float x
 typedef int64_t galahad_jrprod_s_64(int64_t n, int64_t m, const float x[], const bool transpose, float u[], const float v[], bool got_j, const void *userdata);
 typedef int64_t galahad_hrprod_s_64(int64_t n, int64_t m, const float x[], const float y[], float u[], const float v[], bool got_h, const void *userdata);
 typedef int64_t galahad_shrprod_s_64(int64_t n, int64_t m, int64_t pne, const float x[], const float v[], float pval[], bool got_h, const void *userdata);
-typedef int64_t galahad_jr_prod_s_64(int64_t n, int64_t m, const float x[], const bool transpose, const float v[], float p[], bool got_j, const void *userdata);
-typedef int64_t galahad_jr_scol_s_64(int64_t n, int64_t m,  const float x[], int64_t index, float val[], int64_t row[], int64_t nz, bool got_j, const void *userdata);
-typedef int64_t galahad_jr_sprod_s_64(int64_t n, int64_t m,  const float x[], const bool transpose, const float v[], float p[], const int64_t free[], int64_t n_free, bool got_j, const void *userdata);
+typedef int64_t galahad_jr_prod_s_64(int64_t n, int64_t m_r, const float x[], const bool transpose, const float v[], float p[], bool got_jr, const void *userdata);
+typedef int64_t galahad_jr_scol_s_64(int64_t n, int64_t m_r, const float x[], int64_t index, float val[], int64_t row[], int64_t nz, bool got_jr, const void *userdata);
+typedef int64_t galahad_jr_sprod_s_64(int64_t n, int64_t m_r, const float x[], const bool transpose, const float v[], float p[], const int64_t free[], int64_t n_free, bool got_jr, const void *userdata);
 typedef int64_t galahad_fc_s_64(int64_t n, int64_t m, const float x[], float *f, float c[], const void *userdata);
 typedef int64_t galahad_gj_s_64(int64_t n, int64_t m, int64_t jne, const float x[], float g[], float j[], const void *userdata);
 typedef int64_t galahad_hl_s_64(int64_t n, int64_t m, int64_t hne, const float x[], const float y[], float h[], const void *userdata);
@@ -2189,7 +2189,6 @@ struct ugo_time_type_s {
 
 struct ugo_inform_type_s {
     int32_t status;
-    int32_t eval_status;
     int32_t alloc_status;
     char bad_alloc[81];
     int32_t iter;
@@ -2201,7 +2200,6 @@ struct ugo_inform_type_s {
 
 struct ugo_inform_type_s_64 {
     int64_t status;
-    int64_t eval_status;
     int64_t alloc_status;
     char bad_alloc[81];
     int64_t iter;
@@ -8630,6 +8628,165 @@ void sllsb_information_s_64(void **data, struct sllsb_inform_type_s_64 *inform, 
 void sllsb_terminate_s(void **data, struct sllsb_control_type_s *control, struct sllsb_inform_type_s *inform);
 void sllsb_terminate_s_64(void **data, struct sllsb_control_type_s_64 *control, struct sllsb_inform_type_s_64 *inform);
 
+// C interface for BNLS
+struct bnls_control_type_s {
+    bool f_indexing;
+    int32_t error;
+    int32_t out;
+    int32_t print_level;
+    int32_t start_print;
+    int32_t stop_print;
+    int32_t print_gap;
+    int32_t maxit;
+    int32_t alive_unit;
+    char alive_file[31];
+    int32_t jacobian_available;
+    int32_t subproblem_solver;
+    int32_t non_monotone;
+    int32_t weight_update_strategy;
+    float infinity;
+    float stop_r_absolute;
+    float stop_r_relative;
+    float stop_pg_absolute;
+    float stop_pg_relative;
+    float stop_s;
+    float stop_pg_switch;
+    float initial_weight;
+    float minimum_weight;
+    float eta_successful;
+    float eta_very_successful;
+    float eta_too_successful;
+    float weight_decrease_min;
+    float weight_decrease;
+    float weight_increase;
+    float weight_increase_max;
+    float switch_to_newton;
+    float cpu_time_limit;
+    float clock_time_limit;
+    bool newton_acceleration;
+    bool magic_step;
+    bool print_obj;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char prefix[31];
+    struct slls_control_type_s slls_control;
+    struct sllsb_control_type_s sllsb_control;
+};
+
+struct bnls_control_type_s_64 {
+    bool f_indexing;
+    int64_t error;
+    int64_t out;
+    int64_t print_level;
+    int64_t start_print;
+    int64_t stop_print;
+    int64_t print_gap;
+    int64_t maxit;
+    int64_t alive_unit;
+    char alive_file[31];
+    int64_t jacobian_available;
+    int64_t subproblem_solver;
+    int64_t non_monotone;
+    int64_t weight_update_strategy;
+    float infinity;
+    float stop_r_absolute;
+    float stop_r_relative;
+    float stop_pg_absolute;
+    float stop_pg_relative;
+    float stop_s;
+    float stop_pg_switch;
+    float initial_weight;
+    float minimum_weight;
+    float eta_successful;
+    float eta_very_successful;
+    float eta_too_successful;
+    float weight_decrease_min;
+    float weight_decrease;
+    float weight_increase;
+    float weight_increase_max;
+    float switch_to_newton;
+    float cpu_time_limit;
+    float clock_time_limit;
+    bool newton_acceleration;
+    bool magic_step;
+    bool print_obj;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char prefix[31];
+    struct slls_control_type_s_64 slls_control;
+    struct sllsb_control_type_s_64 sllsb_control;
+};
+
+struct bnls_time_type_s {
+    float total;
+    float slls;
+    float sllsb;
+    float clock_total;
+    float clock_slls;
+    float clock_sllsb;
+};
+
+struct bnls_inform_type_s {
+    int32_t status;
+    int32_t alloc_status;
+    char bad_alloc[81];
+    char bad_eval[13];
+    int32_t iter;
+    int32_t inner_iter;
+    int32_t r_eval;
+    int32_t jr_eval;
+    float obj;
+    float norm_r;
+    float norm_g;
+    float norm_pg;
+    float weight;
+    struct bnls_time_type_s time;
+    struct slls_inform_type_s slls_inform;
+    struct sllsb_inform_type_s sllsb_inform;
+};
+
+struct bnls_inform_type_s_64 {
+    int64_t status;
+    int64_t alloc_status;
+    char bad_alloc[81];
+    char bad_eval[13];
+    int64_t iter;
+    int64_t inner_iter;
+    int64_t r_eval;
+    int64_t jr_eval;
+    float obj;
+    float norm_r;
+    float norm_g;
+    float norm_pg;
+    float weight;
+    struct bnls_time_type_s time;
+    struct slls_inform_type_s_64 slls_inform;
+    struct sllsb_inform_type_s_64 sllsb_inform;
+};
+
+void bnls_initialize_s(void **data, struct bnls_control_type_s *control, struct bnls_inform_type_s *inform);
+void bnls_initialize_s_64(void **data, struct bnls_control_type_s_64 *control, struct bnls_inform_type_s_64 *inform);
+void bnls_read_specfile_s(struct bnls_control_type_s *control, char *specfile);
+void bnls_read_specfile_s_64(struct bnls_control_type_s_64 *control, char *specfile);
+void bnls_import_s(struct bnls_control_type_s *control, void **data, int32_t *status, int32_t n, int32_t m_r, char *Jr_type, int32_t Jr_ne, int32_t *Jr_row, int32_t *Jr_col, int32_t Jr_ptr_ne, int32_t *Jr_ptr);
+void bnls_import_s_64(struct bnls_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t m_r, char *Jr_type, int64_t Jr_ne, int64_t *Jr_row, int64_t *Jr_col, int64_t Jr_ptr_ne, int64_t *Jr_ptr);
+void bnls_import_without_jac_s(struct bnls_control_type_s *control, void **data, int32_t *status, int32_t n, int32_t m_r);
+void bnls_import_without_jac_s_64(struct bnls_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t m_r);
+void bnls_reset_control_s(struct bnls_control_type_s *control, void **data, int32_t *status);
+void bnls_reset_control_s_64(struct bnls_control_type_s_64 *control, void **data, int64_t *status);
+void bnls_solve_with_jac_s(void **data, void *userdata, int32_t *status, int32_t n, int32_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int32_t *x_stat, galahad_r_s *eval_r, int32_t jr_ne, galahad_jr_s *eval_jr, float *w);
+void bnls_solve_with_jac_s_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int64_t *x_stat, galahad_r_s_64 *eval_r, int64_t jr_ne, galahad_jr_s_64 *eval_jr, float *w);
+void bnls_solve_with_jacprod_s(void **data, void *userdata, int32_t *status, int32_t n, int32_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int32_t *x_stat, galahad_r_s *eval_r, galahad_jr_prod_s *eval_jr_prod, galahad_jr_scol_s *eval_jr_scol, galahad_jr_sprod_s *eval_jr_sprod, float *w);
+void bnls_solve_with_jacprod_s_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int64_t *x_stat, galahad_r_s_64 *eval_r, galahad_jr_prod_s_64 *eval_jr_prod, galahad_jr_scol_s_64 *eval_jr_scol, galahad_jr_sprod_s_64 *eval_jr_sprod, float *w);
+void bnls_solve_reverse_with_jac_s(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int32_t *x_stat, int32_t jr_ne, float *jr_val, float *w);
+void bnls_solve_reverse_with_jac_s_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int64_t *x_stat, int64_t jr_ne, float *jr_val, float *w);
+void bnls_solve_reverse_with_jacprod_s(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int32_t *x_stat, float *v, int32_t *iv, int32_t *lvl, int32_t *lvu, int32_t *index, float *p, int32_t *ip, int32_t lp, float *w);
+void bnls_solve_reverse_with_jacprod_s_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int64_t *x_stat, float *v, int64_t *iv, int64_t *lvl, int64_t *lvu, int64_t *index, float *p, int64_t *ip, int64_t lp, float *w);
+void bnls_information_s(void **data, struct bnls_inform_type_s *inform, int32_t *status);
+void bnls_information_s_64(void **data, struct bnls_inform_type_s_64 *inform, int64_t *status);
+void bnls_terminate_s(void **data, struct bnls_control_type_s *control, struct bnls_inform_type_s *inform);
+void bnls_terminate_s_64(void **data, struct bnls_control_type_s_64 *control, struct bnls_inform_type_s_64 *inform);
+
 // C interface for SNLS
 struct snls_control_type_s {
     bool f_indexing;
@@ -8743,7 +8900,6 @@ struct snls_inform_type_s {
     struct snls_time_type_s time;
     struct slls_inform_type_s slls_inform;
     struct sllsb_inform_type_s sllsb_inform;
-    int32_t lapack_error;
 };
 
 struct snls_inform_type_s_64 {
@@ -8763,7 +8919,6 @@ struct snls_inform_type_s_64 {
     struct snls_time_type_s time;
     struct slls_inform_type_s_64 slls_inform;
     struct sllsb_inform_type_s_64 sllsb_inform;
-    int64_t lapack_error;
 };
 
 void snls_initialize_s(void **data, struct snls_control_type_s *control, struct snls_inform_type_s *inform);

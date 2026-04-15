@@ -1,1 +1,1 @@
-../../../../GALAHAD.jl/test/test_bnls.jl
+../../../GALAHAD.jl/test/test_bnls.jl
