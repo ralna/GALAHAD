@@ -6,12 +6,13 @@ function meson_check_headers()
 
   folder_headers = joinpath(@__DIR__, "..", "..", "include")
   path_galahad_h = joinpath(folder_headers, "meson.build")
+  path_galahad_jl = joinpath(@__DIR__, "..", "..", "GALAHAD.jl")
   content = read(path_galahad_h, String)
 
   excluded_headers = ["galahad_single.h", "galahad_double.h", "galahad_quadruple.h",
                       "hsl_kinds.h", "hsl_metis.h", "hsl_subset.h", "cutest_routines.h",
                       "galahad_kinds.h", "galahad_blas.h", "galahad_lapack.h",
-                      "galahad_elgrra.h", "galahad_icfs.h", "galahad_bnls.h"]
+                      "galahad_elgrra.h", "galahad_icfs.h"]
 
   for file in readdir(folder_headers)
     !endswith(file, ".h") && continue
@@ -145,10 +146,90 @@ function meson_check_files()
   return p
 end
 
+function julia_check_wrappers()
+  println("--- Julia -- wrappers ---")
+  q = 0
+
+  path_packages = joinpath(@__DIR__, "..", "..", "src")
+  path_wrappers_jl = joinpath(@__DIR__, "..", "..", "GALAHAD.jl", "src", "wrappers")
+
+  for package in readdir(path_packages)
+    (package == "dum") && continue
+    (package == "common") && continue
+    path_local_package = joinpath(path_packages, package)
+    !isdir(path_local_package) && continue
+    local_C_folder = joinpath(path_local_package, "C")
+    if isdir(local_C_folder)
+      path_julia_wrapper = joinpath(path_wrappers_jl, "$package.jl")
+      if !isfile(path_julia_wrapper)
+        q = q + 1
+        println("Please add the file `$package.jl` in GALAHAD/GALAHAD.jl/src/wrappers.")
+        println("Please read the file GALAHAD/GALAHAD.jl/gen/README.md for more details.")
+        println()
+      end
+    end
+  end
+
+  path_galahad_julia = joinpath(@__DIR__, "..", "..", "GALAHAD.jl", "src", "GALAHAD.jl")
+  local_content = read(path_galahad_julia, String)
+  for file in readdir(path_wrappers_jl)
+    if !occursin("include(\"wrappers/$file\")", local_content)
+      q = q + 1
+      println("Please add `include(\"wrappers/$file\")` in GALAHAD/GALAHAD.jl/src/GALAHAD.jl.")
+      println()
+    end
+  end
+
+  return q
+end
+
+function julia_check_tests()
+  println("--- Julia -- tests ---")
+  r = 0
+
+  folder_headers = joinpath(@__DIR__, "..", "..", "include")
+  path_packages = joinpath(@__DIR__, "..", "..", "src")
+  path_tests_jl = joinpath(@__DIR__, "..", "..", "GALAHAD.jl", "test")
+
+  for package in readdir(path_packages)
+    (package == "dum") && continue
+    (package == "common") && continue
+    path_local_package = joinpath(path_packages, package)
+    !isdir(path_local_package) && continue
+    local_C_folder = joinpath(path_local_package, "C")
+    package_header = joinpath(folder_headers, "galahad_$package.h")
+    if isdir(local_C_folder) && isfile(package_header)
+      path_julia_test = joinpath(path_tests_jl, "test_$package.jl")
+      if !isfile(path_julia_test)
+        r = r + 1
+        println("Please add the file `test_$package.jl` in GALAHAD/GALAHAD.jl/test.")
+        println()
+      end
+    end
+  end
+
+  path_runtests_julia = joinpath(@__DIR__, "..", "..", "GALAHAD.jl", "test", "runtests.jl")
+  local_content = read(path_runtests_julia, String)
+  for file in readdir(path_tests_jl)
+    (file == "runtests.jl") && continue
+    if !occursin("include(\"$file\")", local_content)
+      r = r + 1
+      println("Please add `include(\"$file\")` in GALAHAD/GALAHAD.jl/test/runtests.jl.")
+      println()
+    end
+  end
+
+  return r
+end
+
 n = meson_check_headers()
 m = meson_check_packages()
 p = meson_check_files()
+q = julia_check_wrappers()
+r = julia_check_tests()
 
 @test m == 0
 @test n == 0
 @test p == 0
+@test q == 0
+@test r == 0

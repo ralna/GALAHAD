@@ -12,11 +12,12 @@ mutable struct userdata_bnls{T}
   p::T
 end
 
+Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_bnls) = pointer_from_objref(userdata)
+
 function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
   # compute the residuals
   function res(x::Vector{T}, c::Vector{T}, userdata::userdata_bnls{T})
-    p = userdata.p
-    c[1] = x[1] * x[1] + p
+    c[1] = x[1] * x[1] + userdata.p
     c[2] = x[1] + x[2] * x[2]
     c[3] = x[1] - x[2]
     return INT(0)

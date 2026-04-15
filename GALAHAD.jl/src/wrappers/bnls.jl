@@ -40,19 +40,19 @@ struct bnls_control_type{T,INT}
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
-  blls_control::blls_control_type{T,INT}
-  bllsb_control::bllsb_control_type{T,INT}
+  slls_control::slls_control_type{T,INT}
+  sllsb_control::sllsb_control_type{T,INT}
 end
 
 export bnls_time_type
 
 struct bnls_time_type{T}
   total::T
-  blls::T
-  bllsb::T
+  slls::T
+  sllsb::T
   clock_total::T
-  clock_blls::T
-  clock_bllsb::T
+  clock_slls::T
+  clock_sllsb::T
 end
 
 export bnls_inform_type
@@ -72,8 +72,8 @@ struct bnls_inform_type{T,INT}
   norm_pg::T
   weight::T
   time::bnls_time_type{T}
-  blls_inform::blls_inform_type{T,INT}
-  bllsb_inform::bllsb_inform_type{T,INT}
+  slls_inform::slls_inform_type{T,INT}
+  sllsb_inform::sllsb_inform_type{T,INT}
 end
 
 export bnls_initialize
@@ -185,28 +185,24 @@ end
 export bnls_import
 
 function bnls_import(::Type{Float32}, ::Type{Int32}, control, data, status, n,
-                     m_r, Jr_type, Jr_ne, Jr_row, Jr_col, Jr_ptr_ne,
-                     Jr_ptr)
+                     m_r, Jr_type, Jr_ne, Jr_row, Jr_col, Jr_ptr_ne, Jr_ptr)
   @ccall libgalahad_single.bnls_import_s(control::Ptr{bnls_control_type{Float32,
                                                                         Int32}},
                                          data::Ptr{Ptr{Cvoid}},
                                          status::Ptr{Int32}, n::Int32,
-                                         m_r::Int32, 
-                                         Jr_type::Ptr{Cchar}, Jr_ne::Int32,
-                                         Jr_row::Ptr{Int32}, Jr_col::Ptr{Int32},
-                                         Jr_ptr_ne::Int32, 
+                                         m_r::Int32, Jr_type::Ptr{Cchar},
+                                         Jr_ne::Int32, Jr_row::Ptr{Int32},
+                                         Jr_col::Ptr{Int32}, Jr_ptr_ne::Int32,
                                          Jr_ptr::Ptr{Int32})::Cvoid
 end
 
 function bnls_import(::Type{Float32}, ::Type{Int64}, control, data, status, n,
-                     m_r, Jr_type, Jr_ne, Jr_row, Jr_col, Jr_ptr_ne,
-                     Jr_ptr)
+                     m_r, Jr_type, Jr_ne, Jr_row, Jr_col, Jr_ptr_ne, Jr_ptr)
   @ccall libgalahad_single_64.bnls_import_s_64(control::Ptr{bnls_control_type{Float32,
                                                                               Int64}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Int64}, n::Int64,
-                                               m_r::Int64,
-                                               Jr_type::Ptr{Cchar},
+                                               m_r::Int64, Jr_type::Ptr{Cchar},
                                                Jr_ne::Int64, Jr_row::Ptr{Int64},
                                                Jr_col::Ptr{Int64},
                                                Jr_ptr_ne::Int64,
@@ -218,10 +214,10 @@ function bnls_import(::Type{Float64}, ::Type{Int32}, control, data, status, n,
   @ccall libgalahad_double.bnls_import(control::Ptr{bnls_control_type{Float64,
                                                                       Int32}},
                                        data::Ptr{Ptr{Cvoid}},
-                                       status::Ptr{Int32}, n::Int32,
-                                       m_r::Int32, Jr_type::Ptr{Cchar},
-                                       Jr_ne::Int32, Jr_row::Ptr{Int32},
-                                       Jr_col::Ptr{Int32}, Jr_ptr_ne::Int32,
+                                       status::Ptr{Int32}, n::Int32, m_r::Int32,
+                                       Jr_type::Ptr{Cchar}, Jr_ne::Int32,
+                                       Jr_row::Ptr{Int32}, Jr_col::Ptr{Int32},
+                                       Jr_ptr_ne::Int32,
                                        Jr_ptr::Ptr{Int32})::Cvoid
 end
 
@@ -231,9 +227,8 @@ function bnls_import(::Type{Float64}, ::Type{Int64}, control, data, status, n,
                                                                             Int64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Int64}, n::Int64,
-                                             m_r::Int64,
-                                             Jr_type::Ptr{Cchar}, Jr_ne::Int64,
-                                             Jr_row::Ptr{Int64},
+                                             m_r::Int64, Jr_type::Ptr{Cchar},
+                                             Jr_ne::Int64, Jr_row::Ptr{Int64},
                                              Jr_col::Ptr{Int64},
                                              Jr_ptr_ne::Int64,
                                              Jr_ptr::Ptr{Int64})::Cvoid
@@ -245,16 +240,15 @@ function bnls_import(::Type{Float128}, ::Type{Int32}, control, data, status, n,
                                                                            Int32}},
                                             data::Ptr{Ptr{Cvoid}},
                                             status::Ptr{Int32}, n::Int32,
-                                            m_r::Int32,
-                                            Jr_type::Ptr{Cchar}, Jr_ne::Int32,
-                                            Jr_row::Ptr{Int32},
+                                            m_r::Int32, Jr_type::Ptr{Cchar},
+                                            Jr_ne::Int32, Jr_row::Ptr{Int32},
                                             Jr_col::Ptr{Int32},
                                             Jr_ptr_ne::Int32,
                                             Jr_ptr::Ptr{Int32})::Cvoid
 end
 
 function bnls_import(::Type{Float128}, ::Type{Int64}, control, data, status, n,
-                     m_r, Jr_type, Jr_ne, Jr_row, Jr_col, Jr_ptr_ne,Jr_ptr)
+                     m_r, Jr_type, Jr_ne, Jr_row, Jr_col, Jr_ptr_ne, Jr_ptr)
   @ccall libgalahad_quadruple_64.bnls_import_q_64(control::Ptr{bnls_control_type{Float128,
                                                                                  Int64}},
                                                   data::Ptr{Ptr{Cvoid}},
@@ -276,7 +270,7 @@ function bnls_import_without_jac(::Type{Float32}, ::Type{Int32}, control, data,
                                                                                     Int32}},
                                                      data::Ptr{Ptr{Cvoid}},
                                                      status::Ptr{Int32},
-                                                     n::Int32, 
+                                                     n::Int32,
                                                      m_r::Int32)::Cvoid
 end
 
@@ -286,7 +280,7 @@ function bnls_import_without_jac(::Type{Float32}, ::Type{Int64}, control, data,
                                                                                           Int64}},
                                                            data::Ptr{Ptr{Cvoid}},
                                                            status::Ptr{Int64},
-                                                           n::Int64, 
+                                                           n::Int64,
                                                            m_r::Int64)::Cvoid
 end
 
@@ -305,7 +299,7 @@ function bnls_import_without_jac(::Type{Float64}, ::Type{Int64}, control, data,
                                                                                         Int64}},
                                                          data::Ptr{Ptr{Cvoid}},
                                                          status::Ptr{Int64},
-                                                         n::Int64, 
+                                                         n::Int64,
                                                          m_r::Int64)::Cvoid
 end
 
@@ -315,7 +309,7 @@ function bnls_import_without_jac(::Type{Float128}, ::Type{Int32}, control, data,
                                                                                        Int32}},
                                                         data::Ptr{Ptr{Cvoid}},
                                                         status::Ptr{Int32},
-                                                        n::Int32, 
+                                                        n::Int32,
                                                         m_r::Int32)::Cvoid
 end
 
@@ -382,13 +376,12 @@ end
 export bnls_solve_with_jac
 
 function bnls_solve_with_jac(::Type{Float32}, ::Type{Int32}, data, userdata,
-                             status, n, m_r, x_l, x_u, x, z, r, g, x_stat, eval_r,
-                             jr_ne, eval_jr, w)
+                             status, n, m_r, x_l, x_u, x, z, r, g, x_stat,
+                             eval_r, jr_ne, eval_jr, w)
   @ccall libgalahad_single.bnls_solve_with_jac_s(data::Ptr{Ptr{Cvoid}},
                                                  userdata::Ptr{Cvoid},
                                                  status::Ptr{Int32}, n::Int32,
-                                                 m_r::Int32,
-                                                 x_l::Ptr{Float32},
+                                                 m_r::Int32, x_l::Ptr{Float32},
                                                  x_u::Ptr{Float32},
                                                  x::Ptr{Float32},
                                                  z::Ptr{Float32},
@@ -402,8 +395,8 @@ function bnls_solve_with_jac(::Type{Float32}, ::Type{Int32}, data, userdata,
 end
 
 function bnls_solve_with_jac(::Type{Float32}, ::Type{Int64}, data, userdata,
-                             status, n, m_r, x_l, x_u, x, z, r, g, x_stat, eval_r,
-                             jr_ne, eval_jr, w)
+                             status, n, m_r, x_l, x_u, x, z, r, g, x_stat,
+                             eval_r, jr_ne, eval_jr, w)
   @ccall libgalahad_single_64.bnls_solve_with_jac_s_64(data::Ptr{Ptr{Cvoid}},
                                                        userdata::Ptr{Cvoid},
                                                        status::Ptr{Int64},
@@ -422,17 +415,15 @@ function bnls_solve_with_jac(::Type{Float32}, ::Type{Int64}, data, userdata,
 end
 
 function bnls_solve_with_jac(::Type{Float64}, ::Type{Int32}, data, userdata,
-                             status, n, m_r, x_l, x_u, x, z, r, g, x_stat, eval_r,
-                             jr_ne, eval_jr, w)
+                             status, n, m_r, x_l, x_u, x, z, r, g, x_stat,
+                             eval_r, jr_ne, eval_jr, w)
   @ccall libgalahad_double.bnls_solve_with_jac(data::Ptr{Ptr{Cvoid}},
                                                userdata::Ptr{Cvoid},
                                                status::Ptr{Int32}, n::Int32,
-                                               m_r::Int32,
-                                               x_l::Ptr{Float64},
+                                               m_r::Int32, x_l::Ptr{Float64},
                                                x_u::Ptr{Float64},
-                                               x::Ptr{Float64},
-                                               z::Ptr{Float64}, r::Ptr{Float64},
-                                               g::Ptr{Float64},
+                                               x::Ptr{Float64}, z::Ptr{Float64},
+                                               r::Ptr{Float64}, g::Ptr{Float64},
                                                x_stat::Ptr{Int32},
                                                eval_r::Ptr{Cvoid}, jr_ne::Int32,
                                                eval_jr::Ptr{Cvoid},
@@ -440,8 +431,8 @@ function bnls_solve_with_jac(::Type{Float64}, ::Type{Int32}, data, userdata,
 end
 
 function bnls_solve_with_jac(::Type{Float64}, ::Type{Int64}, data, userdata,
-                             status, n, m_r, x_l, x_u, x, z, r, g, x_stat, eval_r,
-                             jr_ne, eval_jr, w)
+                             status, n, m_r, x_l, x_u, x, z, r, g, x_stat,
+                             eval_r, jr_ne, eval_jr, w)
   @ccall libgalahad_double_64.bnls_solve_with_jac_64(data::Ptr{Ptr{Cvoid}},
                                                      userdata::Ptr{Cvoid},
                                                      status::Ptr{Int64},
@@ -460,8 +451,8 @@ function bnls_solve_with_jac(::Type{Float64}, ::Type{Int64}, data, userdata,
 end
 
 function bnls_solve_with_jac(::Type{Float128}, ::Type{Int32}, data, userdata,
-                             status, n, m_r, x_l, x_u, x, z, r, g, x_stat, eval_r,
-                             jr_ne, eval_jr, w)
+                             status, n, m_r, x_l, x_u, x, z, r, g, x_stat,
+                             eval_r, jr_ne, eval_jr, w)
   @ccall libgalahad_quadruple.bnls_solve_with_jac_q(data::Ptr{Ptr{Cvoid}},
                                                     userdata::Ptr{Cvoid},
                                                     status::Ptr{Int32},
@@ -480,8 +471,8 @@ function bnls_solve_with_jac(::Type{Float128}, ::Type{Int32}, data, userdata,
 end
 
 function bnls_solve_with_jac(::Type{Float128}, ::Type{Int64}, data, userdata,
-                             status, n, m_r, x_l, x_u, x, z, r, g, x_stat, eval_r,
-                             jr_ne, eval_jr, w)
+                             status, n, m_r, x_l, x_u, x, z, r, g, x_stat,
+                             eval_r, jr_ne, eval_jr, w)
   @ccall libgalahad_quadruple_64.bnls_solve_with_jac_q_64(data::Ptr{Ptr{Cvoid}},
                                                           userdata::Ptr{Cvoid},
                                                           status::Ptr{Int64},
@@ -637,8 +628,8 @@ end
 export bnls_solve_reverse_with_jac
 
 function bnls_solve_reverse_with_jac(::Type{Float32}, ::Type{Int32}, data,
-                                     status, eval_status, n, m_r, x_l, x_u, x, z,
-                                     r, g, x_stat, jr_ne, jr_val, w)
+                                     status, eval_status, n, m_r, x_l, x_u, x,
+                                     z, r, g, x_stat, jr_ne, jr_val, w)
   @ccall libgalahad_single.bnls_solve_reverse_with_jac_s(data::Ptr{Ptr{Cvoid}},
                                                          status::Ptr{Int32},
                                                          eval_status::Ptr{Int32},
@@ -656,8 +647,8 @@ function bnls_solve_reverse_with_jac(::Type{Float32}, ::Type{Int32}, data,
 end
 
 function bnls_solve_reverse_with_jac(::Type{Float32}, ::Type{Int64}, data,
-                                     status, eval_status, n, m_r, x_l, x_u, x, z,
-                                     r, g, x_stat, jr_ne, jr_val, w)
+                                     status, eval_status, n, m_r, x_l, x_u, x,
+                                     z, r, g, x_stat, jr_ne, jr_val, w)
   @ccall libgalahad_single_64.bnls_solve_reverse_with_jac_s_64(data::Ptr{Ptr{Cvoid}},
                                                                status::Ptr{Int64},
                                                                eval_status::Ptr{Int64},
@@ -676,8 +667,8 @@ function bnls_solve_reverse_with_jac(::Type{Float32}, ::Type{Int64}, data,
 end
 
 function bnls_solve_reverse_with_jac(::Type{Float64}, ::Type{Int32}, data,
-                                     status, eval_status, n, m_r, x_l, x_u, x, z,
-                                     r, g, x_stat, jr_ne, jr_val, w)
+                                     status, eval_status, n, m_r, x_l, x_u, x,
+                                     z, r, g, x_stat, jr_ne, jr_val, w)
   @ccall libgalahad_double.bnls_solve_reverse_with_jac(data::Ptr{Ptr{Cvoid}},
                                                        status::Ptr{Int32},
                                                        eval_status::Ptr{Int32},
@@ -695,8 +686,8 @@ function bnls_solve_reverse_with_jac(::Type{Float64}, ::Type{Int32}, data,
 end
 
 function bnls_solve_reverse_with_jac(::Type{Float64}, ::Type{Int64}, data,
-                                     status, eval_status, n, m_r, x_l, x_u, x, z,
-                                     r, g, x_stat, jr_ne, jr_val, w)
+                                     status, eval_status, n, m_r, x_l, x_u, x,
+                                     z, r, g, x_stat, jr_ne, jr_val, w)
   @ccall libgalahad_double_64.bnls_solve_reverse_with_jac_64(data::Ptr{Ptr{Cvoid}},
                                                              status::Ptr{Int64},
                                                              eval_status::Ptr{Int64},
@@ -715,8 +706,8 @@ function bnls_solve_reverse_with_jac(::Type{Float64}, ::Type{Int64}, data,
 end
 
 function bnls_solve_reverse_with_jac(::Type{Float128}, ::Type{Int32}, data,
-                                     status, eval_status, n, m_r, x_l, x_u, x, z,
-                                     r, g, x_stat, jr_ne, jr_val, w)
+                                     status, eval_status, n, m_r, x_l, x_u, x,
+                                     z, r, g, x_stat, jr_ne, jr_val, w)
   @ccall libgalahad_quadruple.bnls_solve_reverse_with_jac_q(data::Ptr{Ptr{Cvoid}},
                                                             status::Ptr{Int32},
                                                             eval_status::Ptr{Int32},
@@ -735,8 +726,8 @@ function bnls_solve_reverse_with_jac(::Type{Float128}, ::Type{Int32}, data,
 end
 
 function bnls_solve_reverse_with_jac(::Type{Float128}, ::Type{Int64}, data,
-                                     status, eval_status, n, m_r, x_l, x_u, x, z,
-                                     r, g, x_stat, jr_ne, jr_val, w)
+                                     status, eval_status, n, m_r, x_l, x_u, x,
+                                     z, r, g, x_stat, jr_ne, jr_val, w)
   @ccall libgalahad_quadruple_64.bnls_solve_reverse_with_jac_q_64(data::Ptr{Ptr{Cvoid}},
                                                                   status::Ptr{Int64},
                                                                   eval_status::Ptr{Int64},
@@ -757,8 +748,8 @@ end
 export bnls_solve_reverse_with_jacprod
 
 function bnls_solve_reverse_with_jacprod(::Type{Float32}, ::Type{Int32}, data,
-                                         status, eval_status, n, m_r, x_l, x_u, x,
-                                         z, r, g, x_stat, v, iv, lvl, lvu,
+                                         status, eval_status, n, m_r, x_l, x_u,
+                                         x, z, r, g, x_stat, v, iv, lvl, lvu,
                                          index, p, ip, lp, w)
   @ccall libgalahad_single.bnls_solve_reverse_with_jacprod_s(data::Ptr{Ptr{Cvoid}},
                                                              status::Ptr{Int32},
@@ -776,8 +767,6 @@ function bnls_solve_reverse_with_jacprod(::Type{Float32}, ::Type{Int32}, data,
                                                              iv::Ptr{Int32},
                                                              lvl::Ptr{Int32},
                                                              lvu::Ptr{Int32},
-                                                             index_l::Ptr{Int32},
-                                                             index_u::Ptr{Int32},
                                                              index::Ptr{Int32},
                                                              p::Ptr{Float32},
                                                              ip::Ptr{Int32},
@@ -786,8 +775,8 @@ function bnls_solve_reverse_with_jacprod(::Type{Float32}, ::Type{Int32}, data,
 end
 
 function bnls_solve_reverse_with_jacprod(::Type{Float32}, ::Type{Int64}, data,
-                                         status, eval_status, n, m_r, x_l, x_u, x,
-                                         z, r, g, x_stat, v, iv, lvl, lvu,
+                                         status, eval_status, n, m_r, x_l, x_u,
+                                         x, z, r, g, x_stat, v, iv, lvl, lvu,
                                          index, p, ip, lp, w)
   @ccall libgalahad_single_64.bnls_solve_reverse_with_jacprod_s_64(data::Ptr{Ptr{Cvoid}},
                                                                    status::Ptr{Int64},
@@ -805,8 +794,6 @@ function bnls_solve_reverse_with_jacprod(::Type{Float32}, ::Type{Int64}, data,
                                                                    iv::Ptr{Int64},
                                                                    lvl::Ptr{Int64},
                                                                    lvu::Ptr{Int64},
-                                                                   index_l::Ptr{Int64},
-                                                                   index_u::Ptr{Int64},
                                                                    index::Ptr{Int64},
                                                                    p::Ptr{Float32},
                                                                    ip::Ptr{Int64},
@@ -815,8 +802,8 @@ function bnls_solve_reverse_with_jacprod(::Type{Float32}, ::Type{Int64}, data,
 end
 
 function bnls_solve_reverse_with_jacprod(::Type{Float64}, ::Type{Int32}, data,
-                                         status, eval_status, n, m_r, x_l, x_u, x,
-                                         z, r, g, x_stat, v, iv, lvl, lvu,
+                                         status, eval_status, n, m_r, x_l, x_u,
+                                         x, z, r, g, x_stat, v, iv, lvl, lvu,
                                          index, p, ip, lp, w)
   @ccall libgalahad_double.bnls_solve_reverse_with_jacprod(data::Ptr{Ptr{Cvoid}},
                                                            status::Ptr{Int32},
@@ -833,8 +820,6 @@ function bnls_solve_reverse_with_jacprod(::Type{Float64}, ::Type{Int32}, data,
                                                            iv::Ptr{Int32},
                                                            lvl::Ptr{Int32},
                                                            lvu::Ptr{Int32},
-                                                           index_l::Ptr{Int32},
-                                                           index_u::Ptr{Int32},
                                                            index::Ptr{Int32},
                                                            p::Ptr{Float64},
                                                            ip::Ptr{Int32},
@@ -843,8 +828,8 @@ function bnls_solve_reverse_with_jacprod(::Type{Float64}, ::Type{Int32}, data,
 end
 
 function bnls_solve_reverse_with_jacprod(::Type{Float64}, ::Type{Int64}, data,
-                                         status, eval_status, n, m_r, x_l, x_u, x,
-                                         z, r, g, x_stat, v, iv, lvl, lvu,
+                                         status, eval_status, n, m_r, x_l, x_u,
+                                         x, z, r, g, x_stat, v, iv, lvl, lvu,
                                          index, p, ip, lp, w)
   @ccall libgalahad_double_64.bnls_solve_reverse_with_jacprod_64(data::Ptr{Ptr{Cvoid}},
                                                                  status::Ptr{Int64},
@@ -862,8 +847,6 @@ function bnls_solve_reverse_with_jacprod(::Type{Float64}, ::Type{Int64}, data,
                                                                  iv::Ptr{Int64},
                                                                  lvl::Ptr{Int64},
                                                                  lvu::Ptr{Int64},
-                                                                 index_l::Ptr{Int64},
-                                                                 index_u::Ptr{Int64},
                                                                  index::Ptr{Int64},
                                                                  p::Ptr{Float64},
                                                                  ip::Ptr{Int64},
@@ -872,8 +855,8 @@ function bnls_solve_reverse_with_jacprod(::Type{Float64}, ::Type{Int64}, data,
 end
 
 function bnls_solve_reverse_with_jacprod(::Type{Float128}, ::Type{Int32}, data,
-                                         status, eval_status, n, m_r, x_l, x_u, x,
-                                         z, r, g, x_stat, v, iv, lvl, lvu,
+                                         status, eval_status, n, m_r, x_l, x_u,
+                                         x, z, r, g, x_stat, v, iv, lvl, lvu,
                                          index, p, ip, lp, w)
   @ccall libgalahad_quadruple.bnls_solve_reverse_with_jacprod_q(data::Ptr{Ptr{Cvoid}},
                                                                 status::Ptr{Int32},
@@ -891,8 +874,6 @@ function bnls_solve_reverse_with_jacprod(::Type{Float128}, ::Type{Int32}, data,
                                                                 iv::Ptr{Int32},
                                                                 lvl::Ptr{Int32},
                                                                 lvu::Ptr{Int32},
-                                                                index_l::Ptr{Int32},
-                                                                index_u::Ptr{Int32},
                                                                 index::Ptr{Int32},
                                                                 p::Ptr{Float128},
                                                                 ip::Ptr{Int32},
@@ -901,8 +882,8 @@ function bnls_solve_reverse_with_jacprod(::Type{Float128}, ::Type{Int32}, data,
 end
 
 function bnls_solve_reverse_with_jacprod(::Type{Float128}, ::Type{Int64}, data,
-                                         status, eval_status, n, m_r, x_l, x_u, x,
-                                         z, r, g, x_stat, v, iv, lvl, lvu,
+                                         status, eval_status, n, m_r, x_l, x_u,
+                                         x, z, r, g, x_stat, v, iv, lvl, lvu,
                                          index, p, ip, lp, w)
   @ccall libgalahad_quadruple_64.bnls_solve_reverse_with_jacprod_q_64(data::Ptr{Ptr{Cvoid}},
                                                                       status::Ptr{Int64},
