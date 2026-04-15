@@ -51,7 +51,7 @@ mapping_field_c2f = Dict(
 )
 
 # Packages that are not ready but some headers are already in the folder `include`
-excluded_packages = ("bnls", "icfs")
+excluded_packages = ("icfs",)
 
 # Fields that are only in the Fortran structures
 excluded_fortran_fields = Dict(

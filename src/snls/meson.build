@@ -39,4 +39,3 @@ galahad_examples += [['snlss', files('snlss.f90')],
                      ['snlss2', files('snlss2.f90')],
                      ['snlss3', files('snlss3.f90')],
                      ['snlss4', files('snlss4.f90')]]
-
