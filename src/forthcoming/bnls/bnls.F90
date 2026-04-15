@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-10-10 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,16 +8,14 @@
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released GALAHAD Version 2.7. October 27th 2015
+!   originally released GALAHAD Version 5.5 April 14th 2026
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_BNLS_precision
 
-     USE GALAHAD_KINDS_precision
-
-!     --------------------------------------------------------------------
+     --------------------------------------------------------------------
 !    |                                                                    |
 !    |   BNLS, an algorithm for nonlinear least-squares                   |
 !    |                                                                    |
@@ -35,19 +33,18 @@
 !    |                                                                    |
 !     --------------------------------------------------------------------
 
+     USE GALAHAD_KINDS_precision
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
      USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
      USE GALAHAD_USERDATA_precision
+     USE GALAHAD_REVERSE_precision
      USE GALAHAD_SPECFILE_precision
-     USE GALAHAD_PSLS_precision
      USE GALAHAD_QPT_precision
      USE GALAHAD_BLLS_precision
      USE GALAHAD_BLLSB_precision
-     USE GALAHAD_BSC_precision
      USE GALAHAD_SPACE_precision
-     USE GALAHAD_ROOTS_precision
-     USE GALAHAD_MOP_precision, ONLY: mop_Ax, mop_column_2_norms
+     USE GALAHAD_MOP_precision, ONLY: mop_Ax
      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
      USE GALAHAD_STRING, ONLY: STRING_integer_6
 
@@ -56,10 +53,10 @@
      PRIVATE
      PUBLIC :: BNLS_initialize, BNLS_read_specfile, BNLS_solve, BNLS_terminate,&
                BNLS_full_initialize, BNLS_full_terminate, BNLS_import,         &
-               BNLS_information, BNLS_solve_with_mat, BNLS_solve_without_mat,  &
-               BNLS_solve_reverse_with_mat, BNLS_solve_reverse_without_mat,    &
-               BNLS_reset_control, NLPT_problem_type, USERDATA_type,   &
-               SMT_type, SMT_put
+               BNLS_import_without_jac, BNLS_information, BNLS_solve_with_jac, &
+               BNLS_solve_with_jacprod, BNLS_solve_reverse_with_jac,           &
+               BNLS_solve_reverse_with_jacprod, BNLS_reset_control,            &
+               NLPT_problem_type, USERDATA_type, REVERSE_type, SMT_type, SMT_put
 
 !----------------------
 !   I n t e r f a c e s
@@ -92,6 +89,7 @@
      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: hundred = 100.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: sixteen = 16.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenm3 = ten ** ( - 3 )
      REAL ( KIND = rp_ ), PARAMETER :: tenm6 = ten ** ( - 6 )
      REAL ( KIND = rp_ ), PARAMETER :: tenm8 = ten ** ( - 8 )
      REAL ( KIND = rp_ ), PARAMETER :: point9 = 0.9_rp_
@@ -110,32 +108,6 @@
 !    REAL ( KIND = rp_ ), PARAMETER :: theta = half
      REAL ( KIND = rp_ ), PARAMETER :: theta = point1
      REAL ( KIND = rp_ ), PARAMETER :: weight_zero = epsmch
-
-!  models
-
-     INTEGER ( KIND = ip_ ), PARAMETER  :: dynamic_model = 0
-     INTEGER ( KIND = ip_ ), PARAMETER  :: first_order_model = 1
-     INTEGER ( KIND = ip_ ), PARAMETER  :: diagonal_hessian_model = 2
-     INTEGER ( KIND = ip_ ), PARAMETER  :: gauss_newton_model = 3
-     INTEGER ( KIND = ip_ ), PARAMETER  :: newton_model = 4
-     INTEGER ( KIND = ip_ ), PARAMETER  :: gauss_to_newton_model = 5
-
-!  regularization norms
-
-     INTEGER ( KIND = ip_ ), PARAMETER  :: user_regularization = - 3
-     INTEGER ( KIND = ip_ ), PARAMETER  :: lmbfgs_regularization = - 2
-     INTEGER ( KIND = ip_ ), PARAMETER  :: euclidean_regularization = - 1
-     INTEGER ( KIND = ip_ ), PARAMETER  :: automatic_regularization = 0
-     INTEGER ( KIND = ip_ ), PARAMETER  :: diagonal_jtj_regularization = 1
-     INTEGER ( KIND = ip_ ), PARAMETER  :: diagonal_hessian_regularization = 2
-     INTEGER ( KIND = ip_ ), PARAMETER  :: band_regularization = 3
-     INTEGER ( KIND = ip_ ), PARAMETER  :: reordered_band_regularization = 4
-     INTEGER ( KIND = ip_ ), PARAMETER  :: schnabel_eskow_regularization = 5
-     INTEGER ( KIND = ip_ ), PARAMETER  :: gmps_regularization = 6
-     INTEGER ( KIND = ip_ ), PARAMETER  :: lin_more_regularization = 7
-     INTEGER ( KIND = ip_ ), PARAMETER  :: mi28_regularization = 8
-     INTEGER ( KIND = ip_ ), PARAMETER  :: munksgaard_regularization = 9
-     INTEGER ( KIND = ip_ ), PARAMETER  :: expanding_band_regularization = 10
 
 !  weight update strategies
 
@@ -195,45 +167,13 @@
 
        INTEGER ( KIND = ip_ ) :: jacobian_available = 1
 
-!   is the Hessian matrix of second derivatives available (>= 2), is access
-!    only via matrix-vector products (=1) or is it not available (<=0) ?
-
-       INTEGER ( KIND = ip_ ) :: hessian_available = 0
-
-!   specify the model used. Possible values are
+!   specify method to be used to solve the subproblem
 !
-!      0  dynamic (*not yet implemented*)
-!      1  first-order (no Hessian)
-!      2  barely second-order (identity Hessian)
-!      3  Gauss-Newton (J^T J Hessian)
-!      4  second-order (exact Hessian)
-!      5  Gauss-Newton to Newton transition
+!     1  use a projection method (BLLS)
+!     2  use an interior-point method (BLLSB)
+!     3  start with an interior-point method but later switch to projection
 
-       INTEGER ( KIND = ip_ ) :: model = gauss_newton_model
-
-!   specify the norm used when regularizing the model problem. The norm is
-!    defined via ||v||^2 = v^T S v,  and will also define the preconditioner
-!    used for iterative methods. Possible values for S are
-!
-!     -3  user's own regularization norm
-!     -2  S = limited-memory BFGS matrix (with
-!          %PSLS_control%lbfgs_vectors history) (*not yet implemented*)
-!     -1  identity (= Euclidan two-norm)
-!      0  automatic (*not yet implemented*)
-!      1  diagonal, S = diag( max( JTJ Hessian, %PSLS_contro%min_diagonal ) )
-!      2  diagonal, S = diag( max( Hessian, %PSLS_contro%min_diagonal ) )
-!      3  banded, S = band( Hessian ) with semi-bandwidth
-!           %PSLS_control%semi_bandwidth
-!      4  re-ordered band, P=band(order(A)) with semi-bandwidth
-!           %PSLS_control%semi_bandwidth
-!      5  full factorization, S = Hessian, Schnabel-Eskow modification
-!      6  full factorization, S = Hessian, GMPS modification (*not yet *)
-!      7  incomplete factorization of Hessian, Lin-More'
-!      8  incomplete factorization of Hessian, HSL_MI28
-!      9  incomplete factorization of Hessian, Munskgaard (*not yet *)
-!     10  expanding band of Hessian (*not yet implemented*)
-
-       INTEGER ( KIND = ip_ ) :: norm = euclidean_regularization
+       INTEGER ( KIND = ip_ ) :: subproblem_solver = 1
 
 !   non-monotone <= 0 monotone strategy used, anything else non-monotone
 !     strategy with this history length used
@@ -246,26 +186,40 @@
 
        INTEGER ( KIND = ip_ ) :: weight_update_strategy = weight_update_basic
 
+!   any bound larger than infinity in modulus will be regarded as infinite
+
+       REAL ( KIND = rp_ ) :: infinity = ten ** 19
+
 !   overall convergence tolerances. The iteration will terminate when
-!      ||c||_2 <= MAX( %stop_c_absolute, %stop_c_relative * ||c_initial||_2
-!     or when the norm of the gradient g = J^T(x) c(x) / ||c(x)||_2 of ||c||_2,
-!      ||g||_2 <= MAX( %stop_g_absolute, %stop_g_relative * ||g_initial||_2,
+!      ||r||_2 <= MAX( %stop_r_absolute, %stop_r_relative * ||r_initial||_2
+!     or when the norm of the projected gradient pg = P[x-J^T(x) r(x)]-x] 
+!     of ||r||_2 satisfies ||pg||_2 <= 
+!       MAX( %stop_pg_absolute, %stop_pg_relative * ||pg_initial||_2,
 !     or if the step is less than %stop_s
 
 #ifdef REAL_32
-       REAL ( KIND = rp_ ) :: stop_c_absolute = ten ** ( - 3 )
-       REAL ( KIND = rp_ ) :: stop_g_absolute = ten ** ( - 3 )
+       REAL ( KIND = rp_ ) :: stop_r_absolute = tenm3
 #else
-       REAL ( KIND = rp_ ) :: stop_c_absolute = tenm6
-       REAL ( KIND = rp_ ) :: stop_g_absolute = tenm6
+       REAL ( KIND = rp_ ) :: stop_r_absolute = tenm6
 #endif
-       REAL ( KIND = rp_ ) :: stop_c_relative = - one
-       REAL ( KIND = rp_ ) :: stop_g_relative = - one
+       REAL ( KIND = rp_ ) :: stop_r_relative = - one
+#ifdef REAL_32
+       REAL ( KIND = rp_ ) :: stop_pg_absolute = tenm3
+#else
+       REAL ( KIND = rp_ ) :: stop_pg_absolute = tenm6
+#endif
+       REAL ( KIND = rp_ ) :: stop_pg_relative = - one
        REAL ( KIND = rp_ ) :: stop_s = epsmch
 
-!   the regularization power (<2 => chosen according to the model)
+!     The iteration will switch from an interior-point to a projection solver
+!     when subproblem_solver = 3 if ||pg||_2 satisfies ||pg||_2 <= 
+!       MAX( %stop_pg_absolute, %stop_pg_switch * ||pg_initial||_2,
 
-       REAL ( KIND = rp_ ) :: power = - one
+#ifdef REAL_32
+       REAL ( KIND = rp_ ) :: stop_pg_switch = point01
+#else
+       REAL ( KIND = rp_ ) :: stop_pg_switch = tenm3
+#endif
 
 !   initial value for the regularization weight  (-ve => 1/||g_0||)
 
@@ -274,11 +228,6 @@
 !   minimum permitted regularization weight
 
        REAL ( KIND = rp_ ) :: minimum_weight = tenm8
-
-!   initial value for the inner regularization weight for tensor GN (-ve => 0)
-
-       REAL ( KIND = rp_ ) :: initial_inner_weight = 0.0_rp_
-!      REAL ( KIND = rp_ ) :: initial_inner_weight = 0.0001_rp_
 
 !   a potential iterate will only be accepted if the actual decrease
 !    f - f(x_new) is larger than %eta_successful times that predicted
@@ -304,20 +253,11 @@
        REAL ( KIND = rp_ ) :: weight_increase = ten
        REAL ( KIND = rp_ ) :: weight_increase_max = hundred
 
-!  expert parameters as suggested in Gould, Porcelli and Toint, "Updating the
-!   regularization parameter in the adaptive cubic regularization algorithm",
-!   RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011),
-!      http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf
-!  (these are denoted beta, epsilon_chi and alpha_max in the paper)
+!   the value of the two-norm of the projected gradient required before
+!   a switch is made from the Gauss-Newton to the Newton model when 
+!   %newton_acceleration is .TRUE. (Not yet implemented)
 
-       REAL ( KIND = rp_ ) :: reduce_gap = point01
-       REAL ( KIND = rp_ ) :: tiny_gap = tenm8
-       REAL ( KIND = rp_ ) :: large_root = two
-
-!  if the Gauss-Newto to Newton model is specified, switch to Newton as
-!   soon as the norm of the gradient g is smaller than switch_to_newton
-
-       REAL ( KIND = rp_ ) :: switch_to_newton = 0.1_rp_
+       REAL ( KIND = rp_ ) :: switch_to_newton = point1
 
 !   the maximum CPU time allowed (-ve means infinite)
 
@@ -327,20 +267,17 @@
 
        REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
-!   use a direct (factorization) or (preconditioned) iterative method to
-!    find the search direction
+!   should second derivatives be used to accelerate the convergence of the 
+!   algorithm? (Not yet implemented)
 
-       LOGICAL :: subproblem_direct = .FALSE.
-
-!   should the weight be renormalized to account for a change in scaling?
-
-       LOGICAL :: renormalize_weight = .FALSE.
+       LOGICAL :: newton_acceleration = .FALSE.
 
 !   allow the user to perform a "magic" step to improve the objective
 
        LOGICAL :: magic_step = .FALSE.
 
-!   print values of the objective/gradient rather than ||c|| and its gradient
+!   print values of the objective/projected gradient rather than ||r|| and 
+!   the projected gradient
 
        LOGICAL :: print_obj = .FALSE.
 
@@ -368,18 +305,6 @@
 
        TYPE ( BLLSB_control_type ) :: BLLSB_control
 
-!  control parameters for PSLS
-
-       TYPE ( PSLS_control_type ) :: PSLS_control
-
-!  control parameters for BSC
-
-       TYPE ( BSC_control_type ) :: BSC_control
-
-!  control parameters for ROOTS
-
-       TYPE ( ROOTS_control_type ) :: ROOTS_control
-
      END TYPE BNLS_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
@@ -390,43 +315,27 @@
 
 !  the total CPU time spent in the package
 
-       REAL ( KIND = sp_ ) :: total = 0.0
+       REAL ( KIND = rp_ ) :: total = 0.0
 
-!  the CPU time spent preprocessing the problem
+!  the total CPU time spent in the blls package
 
-       REAL ( KIND = sp_ ) :: preprocess = 0.0
+       REAL ( KIND = rp_ ) :: blls = 0.0
 
-!  the CPU time spent analysing the required matrices prior to factorization
+!  the total CPU time spent in the bllsb package
 
-       REAL ( KIND = sp_ ) :: analyse = 0.0
-
-!  the CPU time spent factorizing the required matrices
-
-       REAL ( KIND = sp_ ) :: factorize = 0.0
-
-!  the CPU time spent computing the search direction
-
-       REAL ( KIND = sp_ ) :: solve = 0.0
+       REAL ( KIND = rp_ ) :: bllsb = 0.0
 
 !  the total clock time spent in the package
 
        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
-!  the clock time spent preprocessing the problem
+!  the clock time spent in the blls package
 
-       REAL ( KIND = rp_ ) :: clock_preprocess = 0.0
+       REAL ( KIND = rp_ ) :: clock_blls = 0.0
 
-!  the clock time spent analysing the required matrices prior to factorization
+!  the clock time spent in the bllsb package
 
-       REAL ( KIND = rp_ ) :: clock_analyse = 0.0
-
-!  the clock time spent factorizing the required matrices
-
-       REAL ( KIND = rp_ ) :: clock_factorize = 0.0
-
-!  the clock time spent computing the search direction
-
-       REAL ( KIND = rp_ ) :: clock_solve = 0.0
+       REAL ( KIND = rp_ ) :: clock_bllsb = 0.0
 
      END TYPE BNLS_time_type
 
@@ -438,7 +347,7 @@
 
 !  return status. See BNLS_solve for details
 
-       INTEGER ( KIND = ip_ ) :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 1  ! initial entry
 
 !  the status of the last attempted allocation/deallocation
 
@@ -456,62 +365,40 @@
 
        INTEGER ( KIND = ip_ ) :: iter = 0
 
-!  the total number of CG iterations performed
+!  the total number of inner iterations performed
 
-       INTEGER ( KIND = ip_ ) :: cg_iter = 0
+       INTEGER ( KIND = ip_ ) :: inner_iter = 0
 
-!  the total number of evaluations of the residual function c(x)
+!  the total number of evaluations of the residual function r(x)
 
-       INTEGER ( KIND = ip_ ) :: c_eval = 0
+       INTEGER ( KIND = ip_ ) :: r_eval = 0
 
-!  the total number of evaluations of the Jacobian J(x) of c(x)
+!  the total number of evaluations of the Jacobian J(x) of r(x)
 
-       INTEGER ( KIND = ip_ ) :: j_eval = 0
+       INTEGER ( KIND = ip_ ) :: jr_eval = 0
 
-!  the total number of evaluations of the scaled Hessian H(x,y) of c(x)
-
-       INTEGER ( KIND = ip_ ) :: h_eval = 0
-
-!  the maximum number of factorizations in a sub-problem solve
-
-       INTEGER ( KIND = ip_ ) :: factorization_max = 0
-
-!  the return status from the factorization
-
-       INTEGER ( KIND = ip_ ) :: factorization_status = 0
-
-!   the maximum number of entries in the factors
-
-       INTEGER ( KIND = long_ ) :: max_entries_factors = 0
-
-!  the total integer workspace required for the factorization
-
-       INTEGER ( KIND = long_ ) :: factorization_integer = - 1
-
-!  the total real workspace required for the factorization
-
-       INTEGER ( KIND = long_ ) :: factorization_real = - 1
-
-!  the average number of factorizations per sub-problem solve
-
-       REAL ( KIND = rp_ ) :: factorization_average = zero
-
-!  the value of the objective function 1/2||c(x)||^2_W at the best estimate of
+!  the value of the objective function 1/2||r(x)||^2_W at the best estimate of
 !   the solution, x, determined by BNLS_solve
 
        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
-!  the norm of the residual ||c(x)||_W at the best estimate of the solution,
+!  the norm of the residual ||r(x)||_W at the best estimate of the solution,
 !   x, determined by BNLS_solve
 
-       REAL ( KIND = rp_ ) :: norm_c = HUGE( one )
+       REAL ( KIND = rp_ ) :: norm_r = HUGE( one )
 
-!  the norm of the gradient of ||c(x)||_W of the objective function
+!  the norm of the gradient of ||r(x)||_W of the objective function
 !   at the best estimate, x, of the solution determined by BNLS_solve
 
        REAL ( KIND = rp_ ) :: norm_g = HUGE( one )
 
-!  the final regularization weight used
+!  the norm of the projected gradient ||P[x - alpha g(x)]-x||_W of the 
+!   objective function into the feasible set at the best estimate, x, 
+!   of the solution determined by BNLS_solve
+
+       REAL ( KIND = rp_ ) :: norm_pg = HUGE( one )
+
+!  the current regularization weight used
 
        REAL ( KIND = rp_ ) :: weight = one
 
@@ -527,39 +414,7 @@
 
        TYPE ( BLLSB_inform_type ) :: BLLSB_inform
 
-!  inform parameters for PSLS
-
-       TYPE ( PSLS_inform_type ) :: PSLS_inform
-
-!  inform parameters for BSC
-
-       TYPE ( BSC_inform_type ) :: BSC_inform
-
-!  inform parameters for ROOTS
-
-       TYPE ( ROOTS_inform_type ) :: ROOTS_inform
-
      END TYPE BNLS_inform_type
-
-!  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-!   regularization derived type, sigma ||.||_S^p / p, where ||x||_S^2 = x^T S x
-!  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-     TYPE, PUBLIC :: NLS_regularization_data_type
-
-! the stabilisation weight, sigma (if any)
-
-        REAL ( KIND = rp_ ) :: weight = 0.0_rp_
-
-! the stabilisation power, p
-
-        REAL ( KIND = rp_ ) :: power = 2.0_rp_
-
-!  the stabilisation scaling matrix, S
-
-       TYPE ( SMT_type ) :: matrix
-
-     END TYPE NLS_regularization_data_type
 
 !  - - - - - - - - - -
 !   data derived type
@@ -567,65 +422,49 @@
 
      TYPE, PUBLIC :: BNLS_data_type
        INTEGER ( KIND = ip_ ) :: branch = 1
-       INTEGER ( KIND = ip_ ) :: branch_newton = 1
        INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print
        INTEGER ( KIND = ip_ ) :: print_level
        INTEGER ( KIND = ip_ ) :: print_level_blls, print_level_bllsb
        INTEGER ( KIND = ip_ ) :: len_history, ibound, ipoint, icp, lbfgs_mem
        INTEGER ( KIND = ip_ ) :: nskip_lbfgs, nskip_prec, non_monotone_history
        INTEGER ( KIND = ip_ ) :: print_gap, max_diffs, latest_diff, total_diffs
-       INTEGER ( KIND = ip_ ) :: total_facts, h_ne, s_ne, max_hist, jtj_ne
-       INTEGER ( KIND = ip_ ) :: regularization_type, model_used, ref( 1 )
-       REAL :: time_start, time_record, time_now
-       REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now, delta, power
+       INTEGER ( KIND = ip_ ) :: total_facts, h_ne, s_ne, max_hist, nf, n_free
+       INTEGER ( KIND = ip_ ) :: ref( 1 )
+       REAL ( KIND = rp_ ) :: time_start, time_record, time_now
+       REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now, delta
        REAL ( KIND = rp_ ) :: f_ref, f_trial, f_best, m_best, model, ratio, rp
        REAL ( KIND = rp_ ) :: weight, old_weight, weight_trial, etat, ometat
        REAL ( KIND = rp_ ) :: df, stg, hstbs, s_norm, weight_max, xtsx_current
-       REAL ( KIND = rp_ ) :: stop_c, stop_g, s_new_norm, norm_c_trial
+       REAL ( KIND = rp_ ) :: dm, stop_r, stop_pg, stop_pg_switch
+       REAL ( KIND = rp_ ) :: s_new_norm, norm_r_trial
        REAL ( KIND = rp_ ) :: a0, a1, a2, a3, a4, steplength, g_norm, phi, xtsx
        REAL ( KIND = rp_ ) :: inner_weight, s_norm_successful, final_weight
-       REAL ( KIND = rp_ ) :: minimum_weight, obj_current, norm_c_current
-       LOGICAL :: printi, printt, printd, printw, printm, gauss_to_newton_model
+       REAL ( KIND = rp_ ) :: minimum_weight, obj_current, norm_r_current
+       LOGICAL :: printi, printt, printd, printw, printm
        LOGICAL :: print_iteration_header, print_1st_header
        LOGICAL :: set_printi, set_printt, set_printd, set_printm, set_printw
-       LOGICAL :: monotone, new_point, got_j, got_h, poor_model, reduce, n_or_gn
-       LOGICAL :: reverse_c, reverse_j, reverse_h, reverse_jprod, reverse_hprod
-       LOGICAL :: reverse_scale, reverse_hprods, non_trivial_regularization
-       LOGICAL :: successful, transpose, form_regularization, f_is_nan, g_is_nan
-       LOGICAL :: hessian_available, jacobian_available, re_entry
-       LOGICAL :: w_eq_identity, step_accepted
-       CHARACTER ( LEN = 1 ) :: negcur = ' '
+       LOGICAL :: monotone, new_point, got_jr, got_h, poor_model, n_or_gn
+       LOGICAL :: reverse_r, reverse_jr, reverse_jr_prod, reverse_jr_scol
+       LOGICAL :: reverse_jr_sprod, reverse_internal
+       LOGICAL :: successful, transpose, reduce, f_is_nan, g_is_nan
+       LOGICAL :: jacobian_available, re_entry, multiple_simplices
+       LOGICAL :: w_eq_identity, step_accepted, solve_projection
        CHARACTER ( LEN = 1 ) :: perturb = ' '
        CHARACTER ( LEN = 1 ) :: hard = ' '
        CHARACTER ( LEN = 1 ) :: accept = ' '
-       TYPE ( BLLSB_history_type ), DIMENSION( history_max ) :: history
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PAST
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PTR
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ORDER
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_map
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Hs_map
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: S_map
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_current
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_current
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R_current
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_current
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SX
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SV
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D_hist
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: F_hist
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JS
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: HSHS
 
        TYPE ( QPT_problem_type ) :: GN_model
-       TYPE ( SMT_type ) :: JT
-       TYPE ( SMT_type ) :: H
-       TYPE ( NLS_regularization_data_type ) :: regularization
 
 !  copys of controls and informs
 
@@ -635,34 +474,22 @@
 !  data for BLLS
 
        TYPE ( BLLS_data_type ) :: BLLS_data
-       TYPE ( BLLS_reverse_type ) :: reverse
+       TYPE ( REVERSE_type ) :: reverse
 
 !  data for BLLSB
 
        TYPE ( BLLSB_data_type ) :: BLLSB_data
 
-!  data for PSLS
-
-       TYPE ( PSLS_data_type ) :: PSLS_data
-
-!  data for BSC
-
-       TYPE ( BSC_data_type ) :: BSC_data
-
-!  data for ROOTS
-
-       TYPE ( ROOTS_data_type ) :: ROOTS_data
-
      END TYPE BNLS_data_type
 
      TYPE, PUBLIC :: BNLS_full_data_type
        LOGICAL :: f_indexing = .TRUE.
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
        TYPE ( BNLS_data_type ) :: BNLS_data
        TYPE ( BNLS_control_type ) :: BNLS_control
        TYPE ( BNLS_inform_type ) :: BNLS_inform
        TYPE ( NLPT_problem_type ) :: nlp
        TYPE ( USERDATA_type ) :: userdata
+       TYPE ( REVERSE_type ) :: reverse
      END TYPE BNLS_full_data_type
 
    CONTAINS
@@ -706,31 +533,12 @@
 !  initalize BLLSB components
 
      CALL BLLSB_initialize( data%BLLSB_data, control%BLLSB_control,            &
-                           inform%BLLSB_inform )
+                            inform%BLLSB_inform )
      control%BLLSB_control%prefix = '" - BLLSB:"                   '
-
-!  initalize PSLS components
-
-     CALL PSLS_initialize( data%PSLS_data, control%PSLS_control,               &
-                           inform%PSLS_inform )
-     control%PSLS_control%prefix = '" - PSLS:"                    '
-
-!  initalize BSC components
-
-     CALL BSC_initialize( data%BSC_data, control%BSC_control,                  &
-                          inform%BSC_inform )
-     control%BSC_control%prefix = '" - BSC:"                     '
-
-!  initalize ROOTS components
-
-     CALL ROOTS_initialize( data%ROOTS_data, control%ROOTS_control,            &
-                            inform%ROOTS_inform )
-     control%ROOTS_control%tol = epsmch ** 0.75
-     control%ROOTS_control%prefix = '" - ROOTS:"                   '
 
 !  initial private data. Set branch for initial entry
 
-     data%branch = 1 ; data%branch_newton = 1
+     data%branch = 1
 
      RETURN
 
@@ -790,20 +598,18 @@
 !  stop-print                                      -1
 !  iterations-between-printing                     1
 !  jacobian-available                              2
-!  hessian-available                               2
+!  subproblem-solver                               1
 !  history-length-for-non-monotone-descent         0
-!  model-used                                      2
-!  norm-used                                       1
 !  weight-update-strategy                          0
+!  infinity-value                                  1.0D+19
 !  absolute-residual-accuracy-required             1.0D-8
 !  relative-residual-reduction-required            2.0D-16
 !  absolute-gradient-accuracy-required             1.0D-5
 !  relative-gradient-reduction-required            1.0D-8
 !  minimum-step-allowed                            2.0D-16
-!  regularization-power                            -1.0D+0
+!  relative-gradient-switch-tolerance              1.0D-3
 !  initial-regularization-weight                   1.0D+0
 !  minimum-regularization-weight                   1.0D-9
-!  initial-inner-regularization-weight             0.0D+0
 !  successful-iteration-tolerance                  0.01
 !  very-successful-iteration-tolerance             0.9
 !  too-successful-iteration-tolerance              2.0
@@ -811,16 +617,11 @@
 !  regularization-weight-decrease-factor           0.5
 !  regularization-weight-increase-factor           2.0
 !  regularization-weight-maximum-increase-factor   100.0
-!  reduce-gap                                      0.01
-!  large-root                                      2.0
-!  tiny-gap                                        1.0D-8
-!  switch-to-newton-tolerance                      0.1
 !  maximum-cpu-time-limit                          -1.0
 !  maximum-clock-time-limit                        -1.0
-!  sub-problem-direct                              no
+!  try-newton-acceleration                         no
 !  choose-magic-step                               no
 !  print-objective                                 no
-!  renormalize-weight                              no
 !  space-critical                                  no
 !  deallocate-error-fatal                          no
 !  alive-filename                                  ALIVE.d
@@ -849,26 +650,24 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: maxit = print_gap + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: alive_unit = maxit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: jacobian_available = alive_unit + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: hessian_available                    &
+     INTEGER ( KIND = ip_ ), PARAMETER :: subproblem_solver                    &
                                             = jacobian_available + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: model = hessian_available + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: norm = model + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: non_monotone = norm + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: non_monotone = subproblem_solver + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: weight_update_strategy               &
                                             = non_monotone + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: stop_c_absolute                      &
+     INTEGER ( KIND = ip_ ), PARAMETER :: infinity                             &
                                             = weight_update_strategy + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: stop_c_relative = stop_c_absolute + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: stop_g_absolute = stop_c_relative + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: stop_g_relative = stop_g_absolute + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: stop_s = stop_g_relative + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: power = stop_s + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: initial_weight = power + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_r_absolute = infinity + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_r_relative = stop_r_absolute + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_pg_absolute = stop_r_relative + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_pg_relative                     &
+                                            = stop_pg_absolute + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_s = stop_pg_relative + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_pg_switch = stop_s + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_weight = stop_pg_switch + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: minimum_weight = initial_weight + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: initial_inner_weight                 &
-                                            = minimum_weight + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: eta_successful                       &
-                                            = initial_inner_weight + 1
+                                            = minimum_weight + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: eta_very_successful                  &
                                             = eta_successful + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: eta_too_successful                   &
@@ -880,17 +679,12 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: weight_increase = weight_decrease + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: weight_increase_max                  &
                                             = weight_increase + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: reduce_gap = weight_increase_max + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: tiny_gap = reduce_gap + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: large_root = tiny_gap + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: switch_to_newton = large_root + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = switch_to_newton + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                       &
+                                            = weight_increase_max + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: subproblem_direct                    &
+     INTEGER ( KIND = ip_ ), PARAMETER :: newton_acceleration                  &
                                             = clock_time_limit + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: renormalize_weight                   &
-                                            = subproblem_direct + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: magic_step = renormalize_weight + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: magic_step = newton_acceleration + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: print_obj = magic_step + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = print_obj + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
@@ -917,24 +711,21 @@
      spec( maxit )%keyword = 'maximum-number-of-iterations'
      spec( alive_unit )%keyword = 'alive-device'
      spec( jacobian_available )%keyword = 'jacobian-available'
-     spec( hessian_available )%keyword = 'hessian-available'
-     spec( model )%keyword = 'model-used'
-     spec( norm )%keyword = 'norm-used'
+     spec( subproblem_solver )%keyword = 'subproblem-solver'
      spec( non_monotone )%keyword = 'history-length-for-non-monotone-descent'
      spec( weight_update_strategy )%keyword = 'weight-update-strategy'
 
 !  Real key-words
 
-     spec( stop_c_absolute )%keyword = 'absolute-residual-accuracy-required'
-     spec( stop_c_relative )%keyword = 'relative-residual-reduction-required'
-     spec( stop_g_absolute )%keyword = 'absolute-gradient-accuracy-required'
-     spec( stop_g_relative )%keyword = 'relative-gradient-reduction-required'
+     spec( infinity )%keyword = 'infinity-value'
+     spec( stop_r_absolute )%keyword = 'absolute-residual-accuracy-required'
+     spec( stop_r_relative )%keyword = 'relative-residual-reduction-required'
+     spec( stop_pg_absolute )%keyword = 'absolute-gradient-accuracy-required'
+     spec( stop_pg_relative )%keyword = 'relative-gradient-reduction-required'
      spec( stop_s )%keyword = 'minimum-step-allowed'
-     spec( power )%keyword = 'regularization-power'
+     spec( stop_pg_switch )%keyword = 'relative-gradient-switch-tolerance'
      spec( initial_weight )%keyword = 'initial-regularization-weight'
      spec( minimum_weight )%keyword = 'minimum-regularization-weight'
-     spec( initial_inner_weight )%keyword =                                    &
-         'initial-inner-regularization-weight'
      spec( eta_successful )%keyword = 'successful-iteration-tolerance'
      spec( eta_very_successful )%keyword = 'very-successful-iteration-tolerance'
      spec( eta_too_successful )%keyword = 'too-successful-iteration-tolerance'
@@ -944,19 +735,14 @@
      spec( weight_increase )%keyword = 'regularization-weight-increase-factor'
      spec( weight_increase_max )%keyword =                                     &
        'regularization-weight-maximum-increase-factor'
-     spec( reduce_gap )%keyword = 'reduce-gap'
-     spec( tiny_gap )%keyword = 'tiny-gap'
-     spec( large_root )%keyword = 'large-root'
-     spec( switch_to_newton )%keyword = 'switch-to-newton-tolerance'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
 
 !  Logical key-words
 
-     spec( subproblem_direct )%keyword = 'sub-problem-direct'
+     spec( newton_acceleration )%keyword = 'try-newton-acceleration'
      spec( magic_step )%keyword = 'choose-magic-step'
      spec( print_obj )%keyword = 'print-objective'
-     spec( renormalize_weight )%keyword = 'renormalize-weight'
      spec( space_critical )%keyword = 'space-critical'
      spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
 
@@ -1005,14 +791,8 @@
      CALL SPECFILE_assign_value( spec( jacobian_available ),                   &
                                  control%jacobian_available,                   &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( hessian_available ),                    &
-                                 control%hessian_available,                    &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( model ),                                &
-                                 control%model,                                &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( norm ),                                 &
-                                 control%norm,                                 &
+     CALL SPECFILE_assign_value( spec( subproblem_solver ),                    &
+                                 control%subproblem_solver,                    &
                                  control%error )
      CALL SPECFILE_assign_value( spec( non_monotone ),                         &
                                  control%non_monotone,                         &
@@ -1023,32 +803,32 @@
 
 !  Set real values
 
-     CALL SPECFILE_assign_value( spec( stop_c_absolute ),                      &
-                                 control%stop_c_absolute,                      &
+     CALL SPECFILE_assign_value( spec( infinity ),                             &
+                                 control%infinity,                             &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( stop_c_relative ),                      &
-                                 control%stop_c_relative,                      &
+     CALL SPECFILE_assign_value( spec( stop_r_absolute ),                      &
+                                 control%stop_r_absolute,                      &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( stop_g_absolute ),                      &
-                                 control%stop_g_absolute,                      &
+     CALL SPECFILE_assign_value( spec( stop_r_relative ),                      &
+                                 control%stop_r_relative,                      &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( stop_g_relative ),                      &
-                                 control%stop_g_relative,                      &
+     CALL SPECFILE_assign_value( spec( stop_pg_absolute ),                     &
+                                 control%stop_pg_absolute,                     &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( stop_pg_relative ),                     &
+                                 control%stop_pg_relative,                     &
                                  control%error )
      CALL SPECFILE_assign_value( spec( stop_s ),                               &
                                  control%stop_s,                               &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( power ),                                &
-                                 control%power,                                &
+     CALL SPECFILE_assign_value( spec( stop_pg_switch),                        &
+                                 control%stop_pg_switch,                       &
                                  control%error )
      CALL SPECFILE_assign_value( spec( initial_weight ),                       &
                                  control%initial_weight,                       &
                                  control%error )
      CALL SPECFILE_assign_value( spec( minimum_weight ),                       &
                                  control%minimum_weight,                       &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( initial_inner_weight ),                 &
-                                 control%initial_inner_weight,                 &
                                  control%error )
      CALL SPECFILE_assign_value( spec( eta_successful ),                       &
                                  control%eta_successful,                       &
@@ -1071,18 +851,6 @@
      CALL SPECFILE_assign_value( spec( weight_increase_max ),                  &
                                  control%weight_increase_max,                  &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( reduce_gap ),                           &
-                                 control%reduce_gap,                           &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( tiny_gap ),                             &
-                                 control%tiny_gap,                             &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( large_root ),                           &
-                                 control%large_root,                           &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( switch_to_newton ),                     &
-                                 control%switch_to_newton,                     &
-                                 control%error )
      CALL SPECFILE_assign_value( spec( cpu_time_limit ),                       &
                                  control%cpu_time_limit,                       &
                                  control%error )
@@ -1092,17 +860,14 @@
 
 !  Set logical values
 
-     CALL SPECFILE_assign_value( spec( subproblem_direct ),                    &
-                                 control%subproblem_direct,                    &
+     CALL SPECFILE_assign_value( spec( newton_acceleration ),                  &
+                                 control%newton_acceleration,                  &
                                  control%error )
      CALL SPECFILE_assign_value( spec( magic_step ),                           &
                                  control%magic_step,                           &
                                  control%error )
      CALL SPECFILE_assign_value( spec( print_obj ),                            &
                                  control%print_obj,                            &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( renormalize_weight ),                   &
-                                 control%renormalize_weight,                   &
                                  control%error )
      CALL SPECFILE_assign_value( spec( space_critical ),                       &
                                  control%space_critical,                       &
@@ -1127,15 +892,9 @@
               alt_specname = TRIM( alt_specname ) // '-BLLS' )
        CALL BLLSB_read_specfile( control%BLLSB_control, device,                &
               alt_specname = TRIM( alt_specname ) // '-BLLSB' )
-       CALL PSLS_read_specfile( control%PSLS_control, device,                  &
-              alt_specname = TRIM( alt_specname ) // '-PSLS'  )
-       CALL ROOTS_read_specfile( control%ROOTS_control, device,                &
-              alt_specname = TRIM( alt_specname ) // '-ROOTS' )
      ELSE
        CALL BLLS_read_specfile( control%BLLS_control, device )
        CALL BLLSB_read_specfile( control%BLLSB_control, device )
-       CALL PSLS_read_specfile( control%PSLS_control, device )
-       CALL ROOTS_read_specfile( control%ROOTS_control, device )
      END IF
 
      RETURN
@@ -1146,20 +905,24 @@
 
 !-*-*-*-*-  G A L A H A D -  B N L S _ s o l v e  S U B R O U T I N E  -*-*-*-*-
 
-     SUBROUTINE BNLS_solve( nlp, control, inform, data, userdata,              &
-                            W, eval_C, eval_J, eval_H, eval_JPROD,             &
-                            eval_SJPROD, eval_HPROD, eval_SCALE )
+     SUBROUTINE BNLS_solve( nlp, control, inform, data, userdata, reverse,     &
+                            eval_R, eval_Jr, eval_Jr_prod, eval_Jr_scol,       &
+                            eval_Jr_sprod )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 !  BNLS_solve, a regularization method for finding a local unconstrained
 !    minimizer of a nonlinear least-squares objective,
-!      f(x) = 1/2 ||c(x)||_W^2
-!    subject to the simple bounds
-!      (x_l)_i <= x_i <= (x_u)_i
-!    where W is a positive-definite matrix and ||c||_W^2 = c^T W c
+!
+!      f(x) = 1/2 ||r(x)||_W^2
+!
+!    subject to the simple bound constraints
+!
+!       (x_l)_i <= x_i <= (x_u)_i
+!
+!    where W is a positive-definite matrix, ||r||_W^2 = r^T W r.
 
-!  This variant implements Newton, Gauss-Newton methods or hybrids of both
+!  This variant implements a Gauss-Newton-type method
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
@@ -1174,23 +937,23 @@
 !  n is a scalar variable of type default integer, that holds the number of
 !   variables
 !
-!  m is a scalar variable of type default integer, that holds the number of
+!  m_r is a scalar variable of type default integer, that holds the number of
 !   residuals
 !
-!  C is a rank-one allocatable array of dimension m and type default real,
-!   that holds the residuals c(x). The i-th component of C, i = 1,  ... ,  m,
-!   contains c_i(x).
+!  R is a rank-one allocatable array of dimension m and type default real,
+!   that holds the residuals r(x). The i-th component of R, i = 1,  ... ,  m_r,
+!   contains r_i(x).
 !
-!  J is scalar variable of type SMT_TYPE that holds the Jacobian matrix
+!  Jr is scalar variable of type SMT_TYPE that holds the Jacobian matrix
 !   J(x) = nabla r(x), i.e., J_i,j(x) = d r_i(x) / d x_j. The following
 !   components are used here:
 !
-!   J%type is an allocatable array of rank one and type default character, that
-!    is used to indicate the storage scheme used. If the dense storage scheme
-!    is used, the first five components of J%type must contain the string DENSE.
-!    For the sparse co-ordinate scheme, the first ten components of J%type must
+!   Jr%type is an allocatable array of rank one and type default character, that
+!    is used to indicate the storage scheme used. If the dense storage scheme is
+!    used, the first five components of Jr%type must contain the string DENSE.
+!    For the sparse co-ordinate scheme, the first ten components of Jr%type must
 !    contain the string COORDINATE, and for the sparse row-wise storage scheme,
-!    the first fourteen components of J%type must contain the string
+!    the first fourteen components of Jr%type must contain the string
 !    SPARSE_BY_ROWS.
 !
 !    For convenience, the procedure SMT_put may be used to allocate sufficient
@@ -1198,92 +961,65 @@
 !    of derived type packagename_problem_type and involves a Jacobian we wish
 !    to store using the co-ordinate scheme, we may simply
 !
-!         CALL SMT_put( nlp%J%type, 'COORDINATE', stat )
+!         CALL SMT_put( nlp%Jr%type, 'COORDINATE', stat )
 !
 !    See the documentation for the galahad package SMT for further details on
 !    the use of SMT_put.
 
-!   J%ne is a scalar variable of type default integer, that holds the number
+!   Jr%ne is a scalar variable of type default integer, that holds the number
 !    of entries in the Jacobian J(x) in the sparse co-ordinate storage scheme.
 !    It need not be set for any of the other two schemes.
 !
-!   J%val is a rank-one allocatable array of type default real, that holds
+!   Jr%val is a rank-one allocatable array of type default real, that holds
 !    the values of the entries in the Jacobian J(x) in any of the available
 !    storage schemes.
 !
-!   J%row is a rank-one allocatable array of type default integer, that holds
+!   Jr%row is a rank-one allocatable array of type default integer, that holds
 !    the row indices in the Jacobian J(x) in the sparse co-ordinate storage
 !    scheme. It need not be allocated for any of the other two schemes.
 !
-!   J%col is a rank-one allocatable array variable of type default integer,
+!   Jr%col is a rank-one allocatable array variable of type default integer,
 !    that holds the column indices of the Jacobian J(x) in either
 !    the sparse co-ordinate, or the sparse row-wise storage scheme.
 !    It need not be allocated when the dense scheme is used.
 !
-!   J%ptr is a rank-one allocatable array of dimension m+1 and type default
+!   Jr%ptr is a rank-one allocatable array of dimension m+1 and type default
 !    integer, that holds the starting position of each row of Jacobian J(x),
-!    as well as J%ptr(m+1) = the total number of entries plus one, in the
+!    as well as Jr%ptr(m+1) = the total number of entries plus one, in the
 !    sparse row-wise storage scheme. It need not be allocated when the other
 !    schemes are used.
-!
-!  H(x,y) is scalar variable of type SMT_TYPE that holds the scaled Hessian
-!   matrix H(x,y) = sum_{i=1}^m y_i(x) H_i(x), where H_i(x) is the Hessian
-!   of c_i(x) and y is given. The following components are used here:
-!
-!   H%type is an allocatable array of rank one and type default character, that
-!    is used to indicate the storage scheme used. If the dense storage scheme
-!    is used, the first five components of H%type must contain the string DENSE.
-!    For the sparse co-ordinate scheme, the first ten components of H%type must
-!    contain the string COORDINATE, for the sparse row-wise storage scheme, the
-!    first fourteen components of H%type must contain the string SPARSE_BY_ROWS,
-!    and for the diagonal storage scheme, the first eight components of H%type
-!    must contain the string DIAGONAL.
-!
-!    For convenience, the procedure SMT_put may be used to allocate sufficient
-!    space and insert the required keyword into H%type. For example, if nlp is
-!    of derived type packagename_problem_type and involves a Hessian we wish to
-!    store using the co-ordinate scheme, we may simply
-!
-!         CALL SMT_put( nlp%H%type, 'COORDINATE', stat )
-!
-!    See the documentation for the galahad package SMT for further details on
-!    the use of SMT_put.
-
-!   H%ne is a scalar variable of type default integer, that holds the number of
-!    entries in the lower triangular part of H(x) in the sparse co-ordinate
-!    storage scheme. It need not be set for any of the other three schemes.
-!
-!   H%val is a rank-one allocatable array of type default real, that holds
-!    the values of the entries of the lower triangular part of the Hessian
-!    matrix H in any of the available storage schemes.
-!
-!   H%row is a rank-one allocatable array of type default integer, that holds
-!    the row indices of the lower triangular part of H(x) in the sparse
-!    co-ordinate storage scheme. It need not be allocated for any of the other
-!    three schemes.
-!
-!   H%col is a rank-one allocatable array variable of type default integer,
-!    that holds the column indices of the lower triangular part of H(x) in
-!    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
-!    need not be allocated when the dense or diagonal storage schemes are used.
-!
-!   H%ptr is a rank-one allocatable array of dimension n+1 and type default
-!    integer, that holds the starting position of each row of the lower
-!    triangular part of H(x), as well as H%ptr(n+1) = the total number of
-!    entries plus one, in the sparse row-wise storage scheme. It need not be
-!    allocated when the other schemes are used.
 !
 !  X_l is a rank-one allocatable array of dimension n and type default real,
 !   that holds the values x_l of the lower bounds on the optimization
 !   variables x. The j-th component of X_l, j = 1, ... , n, contains (x_l)j.
+!   Any bound X_l(j) smaller than or equal to -control%infinity will be 
+!   regarded as being infinite (see the entry control%infinity). Thus, an 
+!   infinite lower bound may be specified by setting the appropriate component 
+!   of X_l to a value smaller than -control%infinity
 !
 !  X_u is a rank-one allocatable array of dimension n and type default real,
 !   that holds the values x_u of the upper bounds on the optimization
 !   variables x. The j-th component of X_u, j = 1, ... , n, contains (x_u)j.
+!   Any bound X_u(j) larger than or equal to control%infinity will be 
+!   regarded as being infinite (see the entry control%infinity). Thus, an 
+!   infinite upper bound may be specified by setting the appropriate component 
+!   of X_u to a value greater than control%infinity
 !
 !  X is a rank-one allocatable array of dimension n and type default real, that
 !   holds the values x of the optimization variables. The j-th component of
 !   X, j = 1, ... , n, contains x_j.
+!
+!  Z is a rank-one allocatable array of dimension n and type default real, that
+!   holds the values z of the dual variables for the non-neagtivity constraints.
+!   The j-th component of Z, j = 1, ... , n, contains z_j.
+!
+!  R is a rank-one allocatable array of dimension m_r and type default real, 
+!   that holds the values r(x) of the residuals. The i-th component of R, 
+!   i = 1, ... , m_r, contains r_i(x).
+!
+!  G is a rank-one allocatable array of dimension n and type default real, that
+!   holds the values g(x) = Jr^T r(x) of the gradient of the objective function.
+!   The j-th component of G, j = 1, ... , n, contains g_j(x).
 !
 !  pname is a scalar variable of type default character and length 10, which
 !   contains the ``name'' of the problem for printing. The default ``empty''
@@ -1292,12 +1028,6 @@
 !  VNAMES is a rank-one allocatable array of dimension n and type default
 !   character and length 10, whose j-th entry contains the ``name'' of the j-th
 !   variable for printing. This is only used  if ``debug''printing
-!   control%print_level > 4) is requested, and will be ignored if the array is
-!   not allocated.
-!
-!  CNAMES is a rank-one allocatable array of dimension m and type default
-!   character and length 10, whose i-th entry contains the ``name'' of the i-th
-!   residual for printing. This is only used  if ``debug''printing
 !   control%print_level > 4) is requested, and will be ignored if the array is
 !   not allocated.
 !
@@ -1321,9 +1051,10 @@
 !        array is written on unit control%error and the returned allocation
 !        status and a string containing the name of the offending array
 !        are held in inform%alloc_status and inform%bad_alloc respectively.
-!    -3. The restriction nlp%n > 0 or requirement that prob%H_type contains
-!        its relevant string 'DENSE', 'COORDINATE' or 'SPARSE_BY_ROWS'
-!          has been violated.
+!    -3. The restriction nlp%n > 0 or requirement that nlp%Jr%type contains
+!        its relevant string 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLS', 
+!        'SPARSE_BY_ROWS', 'SPARSE_BY_COLS' or 'COORDINATE'
+!         has been violated.
 !    -7. The objective function appears to be unbounded from below
 !    -9. The analysis phase of the factorization failed; the return status
 !        from the factorization package is given in the component
@@ -1343,65 +1074,75 @@
 !   -40. The user has forced termination of solver by removing the file named
 !        control%alive_file from unit unit control%alive_unit.
 !
-!     2. The user should compute the residual function value c(x) at the point
+!     2. The user should compute the residual function value r(x) at the point
 !        x indicated in nlp%X and then re-enter the subroutine. The value of
-!        the i-th component of the residual should be set in nlp%C(i), for i =
-!        1, ..., m and data%eval_status should be set to 0. If the user is
-!        unable to evaluate a component of c(x) - for instance, if the function
-!        is undefined at x - the user need not set nlp%C, but should then set
-!        data%eval_status to a non-zero value.
-!     3. The user should compute the Jacobian of the residual function J(x) =
-!        nabla_x c(x) at the point x indicated in nlp%X  and then re-enter the
+!        the i-th component of the residual should be set in nlp%R(i), for i =
+!        1, ..., m_r and reverse%eval_status should be set to 0. If the user is
+!        unable to evaluate a component of r(x) - for instance, if the function
+!        is undefined at x - the user need not set nlp%R, but should then set
+!        reverse%eval_status to a non-zero value.
+!
+!     3. The user should compute the Jacobian of the residual function Jr(x) =
+!        nabla_x r(x) at the point x indicated in nlp%X  and then re-enter the
 !        subroutine. The value l-th component of the Jacobian stored according
-!        to the scheme input in the remainder of nlp%J should be set in
-!        nlp%J%val(l), for l = 1, ..., nlp%J%ne and data%eval_status should
+!        to the scheme input in the remainder of nlp%Jr should be set in
+!        nlp%Jr%val(l), for l = 1, ..., nlp%Jr%ne and reverse%eval_status should
 !        be set to 0. If the user is unable to evaluate a component of J(x) -
 !        for instance if a component of the Jacobian is undefined at x - the
-!        user need not set nlp%J%val, but should then set data%eval_status
+!        user need not set nlp%Jr%val, but should then set reverse%eval_status
 !        to a non-zero value.
-!     4. The user should compute the weighted Hessian of the residual function
-!        H(x,y) = sum_{i=1}^m y_i nabla_xx y_i(x) at the point x indicated
-!        in nlp%X with weights y given by data%Y, and then re-enter the
-!        subroutine. The value l-th component of H(x,y) stored according to
-!        the scheme input in the remainder of nlp%H should be set in
-!        nlp%H%val(l), for l = 1, ..., nlp%H%ne and data%eval_status should
-!        be set to 0. If the user is unable to evaluate a component of H(x,y) -
-!        for instance, if a component of the Hessian is undefined at (x,y) - the
-!        user need not set nlp%H%val, but should then set data%eval_status
-!        to a non-zero value.
-!     5. The user should compute the product J(x)v (when transpose = .FALSE.)
-!        or J^T(x)v (when transpose = .TRUE.) of the Jacobian of the residual
-!        function J(x) (or its traspose) at the point x indicated in nlp%X
-!        with the vector v, and add the result to the vector u and then re-enter
-!        the subroutine. The logical transpose and vectors u and v are given
-!        in data%transpose, data%U and data%V respectively, the
-!        resulting vector u + J(x) or u + J^T(x)v as appropriate should be set
-!        in data%U and data%eval_status should be set to 0. If the user
-!        is unable to evaluate the product - for instance, if a component of
-!        J(x) is undefined at x - the user need not alter data%U, but
-!        should then set data%eval_status to a non-zero value.
-!     6. The user should compute the product H(x,y)v of the Hessian of
-!        the residual function H(x,y) at the point (x,y) indicated in nlp%X
-!        and data%Y with the vector v and add the result to the vector u
-!        and then re-enter the subroutine. The vectors u and v are given in
-!        data%U and data%V respectively, the resulting vector
-!        u + H(x,y)v should be set in data%U and  data%eval_status
-!        should be set to 0. If the user is unable to evaluate the product -
-!        for instance, if a component of H(x,y) is undefined at (x,y) - the
-!        user need not alter data%U, but should then set
-!        data%eval_status to a non-zero value.
-!     7. Not used by this subroutine.
-!     8. The user should compute the product u = S(x)v of their preconditioner
-!        S(x) at the point x indicated in nlp%X with the vector v. The vectors
-!        v is given in data%V, the resulting vector u = S(x)v should be set
-!        in data%U and data%eval status should be set to 0. If the user is
-!        unable to evaluate the product—for instance, if a component of the
-!        preconditioner is undefined at x—the user need not set data%U, but
-!        should then set data%eval statusto a non-zero value.
+!
+!     4. The product Jr(x) * v of the matrix Jr(x) at the point x indicated 
+!        in nlp%X with a given vector v is required from the user. The vector 
+!        v will be provided in reverse%v and the required product must be 
+!        returned in reverse%p. BNLS_solve must then be re-entered with 
+!        reverse%eval_status set to 0, and any remaining arguments unchanged. 
+!        Should the user be unable to form the product, this should be flagged 
+!        by setting reverse%eval_status to a nonzero value
+!
+!     5. The product Jr(x)^T * v of the transpose of the matrix Jr(x) at the 
+!        point x indicated in nlp%X with a given vector v is required from
+!        the user. The vector v will be provided in reverse%v and the required 
+!        product must be returned in reverse%p. BNLS_solve must then be
+!        re-entered with reverse%eval_status set to 0, and any remaining 
+!        arguments unchanged. Should the user be unable to form the product, 
+!        this should be flagged by setting reverse%eval_status to a nonzero 
+!        value
+!
+!     6. The j-th column of Jr(x) at the point x indicated in nlp%X is 
+!        required from the user, where reverse%index holds the value of j. 
+!        The resulting NONZEROS and their corresponding row indices of the 
+!        j-th column of Jr must be placed in reverse%p( 1 : reverse%lp ) and
+!        reverse%ip( 1 : reverse%lp ) with reverse%lp set accordingly. 
+!        BNLS_solve should then be re-entered with all other arguments 
+!        unchanged. Once again reverse%eval_status should be set to zero 
+!        unless the column cannot be formed, in which case a nonzero value 
+!        should be returned.
+!
+!     7. The product J(x) * v of the matrix J(x) at the point x indicated in 
+!        nlp%X with a given sparse vector v is required from the user. Only 
+!        components reverse%iv( reverse%lvl : reverse%lvu ) of the vector v 
+!        stored in reverse%v are nonzero. The required product should be 
+!        returned in reverse%p. BNLS_solve must then be re-entered with all 
+!        other arguments unchanged. Typically v will be very sparse (i.e., 
+!        reverse%lvu - reverse%lvl will be small). reverse%eval_status should 
+!        be set to zero unless the product cannot be formed, in which case 
+!        a nonzero value should be returned.
+!
+!     8. Specified components of the product Jr(x)^T * v of the transpose of
+!        the matrix Jr(x) at the point x indicated in nlp%X with a given vector
+!        v stored in reverse%v are requiredfrom the user. Only components 
+!        indexed by reverse%iv( reverse%lvl : reverse%lvu ) of the product 
+!        should be computed, and these should be recorded in
+!        reverse%p( reverse%iv( reverse%lvl : reverse%lvu ) )
+!        and BNLS_solve then re-entered with all other arguments unchanged.
+!        reverse%eval_status should be set to zero unless the product cannot
+!        be formed, in which case a nonzero value should be returned.
+!
 !     9. The user has the opportunity to replace the estimate x in nlp%X
 !        by a value x_better for which f(x_better) <= f(x). If the user
 !        choses to do so, she should replace nlp%X by x_better and also
-!        record c(x_better) in nlp%C.
+!        record r(x_better) in nlp%R.
 !
 !  alloc_status is a scalar variable of type default integer, that gives
 !   the status of the last attempted array allocation or deallocation.
@@ -1415,37 +1156,25 @@
 !  iter is a scalar variable of type default integer, that holds the
 !   number of iterations performed.
 !
-!  cg_iter is a scalar variable of type default integer, that gives the
-!   total number of conjugate-gradient iterations required.
+!  inner_iter is a scalar variable of type default integer, that gives the
+!   total number of inner iterations required.
 !
-!  factorization_status is a scalar variable of type default integer, that
-!   gives the return status from the matrix factorization.
-!
-!  factorization_integer is a scalar variable of type default integer,
-!   that gives the amount of integer storage used for the matrix factorization.
-!
-!  factorization_real is a scalar variable of type default integer,
-!   that gives the amount of real storage used for the matrix factorization.
-!
-!  c_eval is a scalar variable of type default integer, that gives the
+!  r_eval is a scalar variable of type default integer, that gives the
 !   total number of residual function evaluations performed.
 !
-!  j_eval is a scalar variable of type default integer, that gives the
+!  jr_eval is a scalar variable of type default integer, that gives the
 !   total number of residual Jacobian evaluations performed.
 !
-!  h_eval is a scalar variable of type default integer, that gives the
-!   total number of scaled Hessian evaluations performed.
-!
 !  obj is a scalar variable of type default real, that holds the
-!   value of the objective function 1/2 ||c(x)||_2^2 at the best estimate
+!   value of the objective function 1/2 ||r(x)||_2^2 at the best estimate
 !   of the solution found.
 !
-!  norm_c is a scalar variable of type default real, that holds the value of
-!   the norm of the residual function ||c(x)||_2 at the best estimate of the
+!  norm_r is a scalar variable of type default real, that holds the value of
+!   the norm of the residual function ||r(x)||_2 at the best estimate of the
 !   solution found.
 !
 !  norm_g is a scalar variable of type default real, that holds the value of
-!   the norm of the residual function gradient ||J^T(x)c(x)||_2/||c(x)||_2
+!   the norm of the residual function gradient ||J^T(x)r(x)||_2/||r(x)||_2
 !   at the best estimate of the solution found.
 !
 !  time is a scalar variable of type BNLS_time_type whose components are
@@ -1457,33 +1186,20 @@
 !    total is a scalar variable of type default real, that gives
 !     the total CPU time spent in the package.
 !
-!    preprocess is a scalar variable of type default real, that gives the
-!      CPU time spent reordering the problem to standard form prior to solution.
+!    blls is a scalar variable of type default real, that gives
+!      the total CPU time spent in the blls package.
 !
-!    analyse is a scalar variable of type default real, that gives
-!      the CPU time spent analysing required matrices prior to factorization.
-!
-!    factorize is a scalar variable of type default real, that gives
-!      the CPU time spent factorizing the required matrices.
-!
-!    solve is a scalar variable of type default real, that gives
-!     the CPU time spent using the factors to solve relevant linear equations.
+!    bllsb is a scalar variable of type default real, that gives
+!      the total CPU time spent in the bllsb package.
 !
 !    clock_total is a scalar variable of type default real, that gives
 !     the total clock time spent in the package.
 !
-!    clock_preprocess is a scalar variable of type default real, that gives
-!      the clock time spent reordering the problem to standard form prior
-!      to solution.
+!    clock_blls is a scalar variable of type default real, that gives
+!      the clock time spent in the blls package.
 !
-!    clock_analyse is a scalar variable of type default real, that gives
-!      the clock time spent analysing required matrices prior to factorization.
-!
-!    clock_factorize is a scalar variable of type default real, that gives
-!      the clock time spent factorizing the required matrices.
-!
-!    clock_solve is a scalar variable of type default real, that gives
-!     the clock time spent using the factors to solve relevant linear equations.
+!    clock_bllsb is a scalar variable of type default real, that gives
+!      the clock time spent in the bllsb package.
 !
 !  data is an a scalar variable of type BNLS_data_type used for
 !   internal data.
@@ -1503,62 +1219,67 @@
 !    character_pointer is a rank-one pointer array of type default character.
 !    logical_pointer is a rank-one pointer array of type default logical.
 !
-!  W is an optional rank-one array of type default real that if present
-!   must be of length nlp%m and filled with the weights w_i > 0. If W is
-!   absent, weights of one will be used.
-!
-!  eval_C is an optional subroutine which if present must have the arguments
+!  reverse is an OPTIONAL structure of type REVERSE_type which is used
+!   to pass intermediate data to and from BNLS_solve. This will only be 
+!   necessary if reverse-communication is to be used to form matrix-vector 
+!   products of the form Jr * v, find columns of Jr or compute preconditioning 
+!   steps of the form P^{-1} * v. If reverse is present (and eval_Jr_prod,
+!   eval_Jr_scol, eval_Jr_sprod or eval_prec is absent), reverse communication 
+!   will be used and the user must monitor the value of inform%status (see 
+!   above) to await instructions about required  matrix-vector products.
+
+!  eval_R is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The value of the residual
-!   function c(x) evaluated at x=X must be returned in C, and the status
+!   function r(x) evaluated at x=X must be returned in R, and the status
 !   variable set to 0. If the evaluation is impossible at X, status should
-!   be set to a nonzero value. If eval_C is not present, BNLS_solve will
+!   be set to a nonzero value. If eval_R is not present, BNLS_solve will
 !   return to the user with inform%status = 2 each time an evaluation is
 !   required.
 !
-!  eval_J is an optional subroutine which if present must have the arguments
+!  eval_Jr is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The nonzeros of the Jacobian
-!   nabla_x c(x) of the residual function evaluated at x=X must be returned in
-!   J_val in the same order as presented in nlp%J,, and the status variable set
-!   to 0. If the evaluation is impossible at X, status should be set to a
-!   nonzero value. If eval_J is not present, BNLS_solve will return to the
+!   nabla_x r(x) of the residual function evaluated at x=X must be returned in
+!   Jr_val in the same order as presented in nlp%Jr,, and the status variable
+!   set to 0. If the evaluation is impossible at X, status should be set to a
+!   nonzero value. If eval_Jr is not present, BNLS_solve will return to the
 !   user with inform%status = 3 each time an evaluation is required.
 !
-!  eval_H is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). The nonzeros of the weighted Hessian
-!   H(x,y) = sum_i y_i nabla_xx c_i(x) of the residual function evaluated at
-!   x=X and y=Y must be returned in H_val in the same order as presented in
-!   nlp%H, and the status variable set to 0. If the evaluation is impossible
-!   at X, status should be set to a nonzero value. If eval_H is not present,
-!   BNLS_solve will return to the user with inform%status = 4 each time an
-!   evaluation is required.
-!
-!  eval_JPROD is an optional subroutine which if present must have the
-!   arguments given below (see the interface blocks). The sum u + J(x) v,
-!   (when transpose=.FALSE.) or u + J^T(x) v (when transpose=.TRUE.)
-!   of the Jacobian (or its transpose) evaluated  at x=X with the vector v=V
-!   and the vector u=U must be returned in U, and the status variable set to 0.
+!  eval_Jr_prod is an optional subroutine which if present must have the
+!   arguments given below (see the interface blocks). The product p = Jr(x) v,
+!   (when transpose=.FALSE.) or p = Jr^T(x) v (when transpose=.TRUE.)
+!   of the Jacobian (or its transpose) evaluated at x=X with the vector v=V
+!   and the vector p must be returned in P, and the status variable set to 0.
 !   If the evaluation is impossible at X, status should be set to a nonzero
-!   value. If eval_JPROD is not present, BNLS_solve will return to the user
+!   value. If eval_Jr_prod is not present, BNLS_solve will return to the user
 !   with inform%status = 5 each time an evaluation is required. The Jacobian
-!   has already been evaluated or used at x=X if got_j is .TRUE.
+!   has already been evaluated or used at x=X if got_jr is .TRUE.
 !
-!  eval_HPROD is an optional subroutine which if present must have the
-!   arguments given below (see the interface blocks). The sum u + H(x,y) v,
-!   where H(x,y) = sum_i y_i nabla_xx c_i(x), of u=U and the product of the
-!   weighted Hessian HC(x,y) evaluated at x=X and y=Y with the vector v=V,
-!   and the vector u=U must be returned in U, and the status variable set to 0.
-!   If the evaluation is impossible at X, status should be set to a nonzero
-!   value. If eval_HPROD is not present, BNLS_solve will return to the user
-!   with inform%status = 6 each time an evaluation is required. The Hessian
-!   has already been evaluated or used at x=X if got_h is .TRUE.
+!  eval_Jr_scol is an optional subroutine which if present must have the
+!   arguments given below (see the interface blocks). The index-th column of Jr
+!   evaluated at x=X should be returned in VAL as a spare vector. Specifically,
+!   the NONZEROS in the index-th column of Jr must be placed in their
+!   appropriate comnponents of VAL, while a list of row indices of the
+!   nonzeros placed in ROW( 1 : nz ). The status variable should 
+!   be set to 0 unless the column is unavailable in which case status should 
+!   be set to a nonzero value. If eval_Jr_scol is not present, BNLS_solve will 
+!   either return to the user each time an evaluation is required 
+!   (see reverse above) or form the product directly from user-provided nlp%Jr.
+!   The Jacobian has already been evaluated or used at x=X if got_jr is .TRUE.
 !
-!  eval_SCALE is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). The product u = S(x) v of the
-!   user's scaling matrix S(x) evaluated at x=X with the vector v=V, the result
-!   u must be retured in U, and the status variable set to 0. If the evaluation
-!   is impossible at X, status should be set to a nonzero value. If eval_SCALE
-!   is not present, BNLS_solve will return to the user with inform%status = 8
-!   each time an evaluation is required.
+!  eval_Jr_sprod is an optional subroutine which if present must have the
+!   arguments given below (see the interface blocks). The product J(x) * v
+!   (if transpose is .FALSE.) or Jr(x)^T v (if transpose is .TRUE.) involving
+!   the given Jacobian J(x) evaluated at x=X and the vector v stored in V must 
+!   be returned in P. If transpose is .FALSE., only the components of V with
+!   indices FREE(:n_free) should be used, the remaining components should be
+!   treated as zero. If transpose is .TRUE., all of V should be used, but
+!   only the components P(IFREE(:nfree) need be computed, the remainder will
+!   be ignored. The status variable should be set to 0 unless the product
+!   is impossible in which case status should be set to a nonzero value.
+!   If eval_Jr_sprod is not present, BNLS_solve will either return to the user
+!   each time an evaluation is required (see reverse above) or form the
+!   product directly from user-provided %Jr. The Jacobian has already been 
+!   evaluated or used at x=X if got_jr is .TRUE.
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -1571,106 +1292,85 @@
      TYPE ( BNLS_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( BNLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-     REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
-     OPTIONAL :: eval_C, eval_J, eval_H, eval_JPROD, eval_SJPROD,              &
-                 eval_HPROD, eval_SCALE
+     TYPE ( REVERSE_type ), OPTIONAL, INTENT( INOUT ) :: reverse
+     OPTIONAL :: eval_R, eval_Jr, eval_Jr_prod, eval_Jr_scol, eval_Jr_sprod
 
 !----------------------------------
 !   I n t e r f a c e   B l o c k s
 !----------------------------------
 
      INTERFACE
-       SUBROUTINE eval_C( status, X, userdata, C )
+       SUBROUTINE eval_R( status, X, userdata, R )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: C
        TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_C
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: R
+       END SUBROUTINE eval_R
      END INTERFACE
 
      INTERFACE
-       SUBROUTINE eval_J( status, X, userdata, J_val )
+       SUBROUTINE eval_Jr( status, X, userdata, Jr_val )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: J_val
        TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_J
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: Jr_val
+       END SUBROUTINE eval_Jr
      END INTERFACE
 
      INTERFACE
-       SUBROUTINE eval_H( status, X, Y, userdata, H_val )
+       SUBROUTINE eval_Jr_prod( status, X, userdata, transpose, V, P, got_jr )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_H
-     END INTERFACE
-
-     INTERFACE
-       SUBROUTINE eval_JPROD( status, X, userdata, transpose, U, V, got_j )
-       USE GALAHAD_USERDATA_precision
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        LOGICAL, INTENT( IN ) :: transpose
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
-       END SUBROUTINE eval_JPROD
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
+       LOGICAL, OPTIONAL, INTENT( IN ) :: got_jr
+       END SUBROUTINE eval_Jr_prod
      END INTERFACE
 
      INTERFACE
-       SUBROUTINE eval_SJPROD( status, X, userdata, transpose, nnz_v,          &
-                               INDEX_nz_v, V, nnz_u, INDEX_nz_u, U, got_j )
+       SUBROUTINE eval_Jr_scol( status, X, userdata, index, VAL, ROW, nz,      &
+                                got_jr )
        USE GALAHAD_USERDATA_precision
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_v
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnz_u
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: index
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: VAL
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( INOUT ) :: ROW
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: nz
+       LOGICAL, OPTIONAL, INTENT( IN ) :: got_jr
+       END SUBROUTINE eval_Jr_scol
+     END INTERFACE
+
+     INTERFACE
+       SUBROUTINE eval_Jr_sprod( status, X, userdata, transpose, V, P,         &
+                                 FREE, n_free, got_jr )
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        LOGICAL, INTENT( IN ) :: transpose
-       INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
-       INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
-       END SUBROUTINE eval_SJPROD
-     END INTERFACE
-
-     INTERFACE
-       SUBROUTINE eval_HPROD( status, X, Y, userdata, U, V, got_h )
-       USE GALAHAD_USERDATA_precision
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-       END SUBROUTINE eval_HPROD
-     END INTERFACE
-
-     INTERFACE
-       SUBROUTINE eval_SCALE( status, X, userdata, U, V )
-       USE GALAHAD_USERDATA_precision
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
-       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_SCALE
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: FREE
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_free
+       LOGICAL, OPTIONAL, INTENT( IN ) :: got_jr
+       END SUBROUTINE eval_Jr_sprod
      END INTERFACE
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: i, j, ic, ir, l, facts_this_solve
-     REAL ( KIND = rp_ ) :: ared, prered, rounding, val
-
+     INTEGER ( KIND = ip_ ) :: i, ic, ir, j, l
+     REAL ( KIND = rp_ ) :: ared, prered, rounding, obj, val
      LOGICAL :: alive
-     CHARACTER ( LEN = 6 ) :: char_iter, char_facts, char_sit, char_sit2
+     CHARACTER ( LEN = 6 ) :: char_iter, char_facts, char_sit, char_free
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -1696,20 +1396,12 @@
        GO TO 30
      CASE ( 110 ) ! initial Jacobian evaluation or Jacobian transpose vect prod
        GO TO 110
-     CASE ( 120 ) ! Hessian evaluation
-       GO TO 120
-     CASE ( 230 ) ! Jacobian vector product
-       GO TO 230
-     CASE ( 240 ) ! Jacobian transpose vector product
-       GO TO 240
-     CASE ( 250 ) ! Hessian-vector or scaling-matrix product
-       GO TO 250
+     CASE ( 180 ) ! Jacobian vector product
+       GO TO 180
+     CASE ( 220 ) ! Jacobian vector product or Jacobian column
+       GO TO 220
      CASE ( 320 ) ! residual evaluation
        GO TO 320
-     CASE ( 380 ) ! allow the user to compute a "magic" step
-       GO TO 380
-     CASE ( 390 ) ! norm scaling after a "magic" step
-       GO TO 390
      END SELECT
 
 !  ============================================================================
@@ -1718,16 +1410,18 @@
 
   10 CONTINUE
      CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
+     data%set_printi = control%out > 0 .AND. control%print_level >= 1
      data%set_printw = control%out > 0 .AND. control%print_level >= 4
+     data%printi = data%set_printi ; data%printw = data%set_printw
      IF ( data%set_printw )                                                    &
        WRITE( control%out, "( A, ' statement 10' )" ) prefix
 
 !  ensure that input parameters are within allowed ranges
 
-     IF ( nlp%n <= 0 .OR. nlp%m <= 0 ) THEN
+     IF ( nlp%n <= 0 .OR. nlp%m_r <= 0 ) THEN
        IF ( control%error > 0 ) WRITE( control%error,                          &
-         "( A, ' error: input m, n = ', I0, ', ', I0, ' not permitted' )" )    &
-         prefix, nlp%m , nlp%n
+         "( A, ' error: input m_r, n = ', I0, ', ', I0, ' not permitted' )" )  &
+         prefix, nlp%m_r , nlp%n
        inform%status = GALAHAD_error_restrictions
        GO TO 990
      END IF
@@ -1736,16 +1430,16 @@
 
      IF ( control%jacobian_available <= 0 ) THEN
        IF ( control%error > 0 ) WRITE( control%error,                          &
-         "( A, ' error: jacobian must be available in some form' )" ) prefix
+         "( A, ' error: Jacobian must be available in some form' )" ) prefix
        inform%status = GALAHAD_error_restrictions
        GO TO 990
      END IF
 
 !  see if W = I
 
-     data%w_eq_identity = .NOT. PRESENT( W )
+     data%w_eq_identity = .NOT. ALLOCATED( nlp%W )
      IF ( .NOT. data%w_eq_identity ) THEN
-       IF ( COUNT( W( : nlp%m ) <= zero ) > 0 ) THEN
+       IF ( COUNT( nlp%W( : nlp%m_r ) <= zero ) > 0 ) THEN
          IF ( control%error > 0 ) WRITE( control%error,                        &
            "( A, ' error: input entries of W must be strictly positive' )" )   &
            prefix
@@ -1754,218 +1448,80 @@
        END IF
      END IF
 
-!  check that the simple bounds are consistent
-
-     DO i = 1, nlp%n
-       IF ( nlp%X_l( i ) > nlp%X_u( i ) ) THEN
-         IF ( control%error > 0 ) WRITE( control%error,                        &
-           "( A, ' error: a variable lower bound is larger than its upper' )" )&
-           prefix
-         inform%status = GALAHAD_error_bad_bounds
-         GO TO 990
-       END IF
-     END DO
-
 !  record controls and ensure that data is consistent
 
      data%control = control
      data%non_monotone_history = data%control%non_monotone
      IF ( data%non_monotone_history <= 0 ) data%non_monotone_history = 1
      data%monotone = data%non_monotone_history == 1
-     data%control%initial_inner_weight                                         &
-       = MAX( data%control%initial_inner_weight, zero )
      data%etat = half * ( data%control%eta_very_successful +                   &
                           data%control%eta_successful )
      data%ometat = one - data%etat
      data%successful = .TRUE.
-     data%negcur = ' '
      data%ratio = - one
      data%total_facts = 0
      data%nskip_prec = nskip_prec_max
      data%reduce = .FALSE.
 
-     inform%iter = 0 ; inform%cg_iter = 0
-     inform%c_eval = 0 ; inform%j_eval = 0 ; inform%h_eval = 0
-     inform%factorization_max = 0 ; inform%factorization_status = 0
-     inform%max_entries_factors = 0 ; inform%factorization_average = zero
-     inform%factorization_integer = 0 ; inform%factorization_integer = 0
+     inform%iter = 0 ; inform%inner_iter = 0
+     inform%r_eval = 0 ; inform%jr_eval = 0
 
 !  decide how much reverse communication is required
 
-     data%reverse_c = .NOT. PRESENT( eval_C )
+     data%reverse_r = .NOT. PRESENT( eval_R )
 
 !  check to see if the Jacobian is available explicitly or only via its
 !  action on a vector, and whether reverse communication will be required
 
      data%jacobian_available                                                   &
-       = data%control%jacobian_available >= 2 .OR. PRESENT( eval_J )
+       = ALLOCATED( nlp%Jr%type ) .AND. data%control%jacobian_available >= 2
      IF ( data%jacobian_available ) THEN
-       data%reverse_j = .NOT. PRESENT( eval_J )
+       data%reverse_jr = .NOT. PRESENT( eval_Jr )
      ELSE
-       data%reverse_j = .FALSE.
-       data%control%subproblem_direct = .FALSE.
-       IF ( data%control%norm >= 0 )                                           &
-         data%control%norm = euclidean_regularization
+       data%reverse_jr = .FALSE.
+
+!  check to see if other operations with Jr are provided
+
+       data%reverse_jr_prod = .NOT. PRESENT( eval_Jr_prod )
+       data%reverse_jr_scol = .NOT. PRESENT( eval_Jr_scol )
+       data%reverse_jr_sprod = .NOT. PRESENT( eval_Jr_sprod )
+       IF ( data%reverse_jr_prod .OR. data%reverse_jr_scol .OR.                &
+            data%reverse_jr_sprod ) THEN
+         IF ( .NOT. PRESENT( reverse ) ) THEN
+           IF ( control%error > 0 ) WRITE( control%error,                      &
+             "( A, ' error: reverse must be present if',                       &
+            &      ' eval_Jr_prod etc is absent' )" ) prefix
+           inform%status = GALAHAD_error_optional
+           GO TO 990
+         END IF
+         data%reverse_internal = .FALSE.
+       ELSE
+         data%reverse_internal = .TRUE.
+       END IF
      END IF
-     data%reverse_jprod = .NOT. PRESENT( eval_JPROD )
 
-     IF ( data%control%model /= first_order_model .AND.                        &
-          data%control%model /= diagonal_hessian_model .AND.                   &
-          data%control%model /= gauss_newton_model )  THEN
-        WRITE( 6, "( ** Warning - Newton model not currently suuported' )" )
-        WRITE( 6, "(    switching to Gauss-Newton model' )" )
-        data%control%model = gauss_newton_model
-     END IF
+!  solve the subproblem by projection if requested or if the Jacobian is only
+!  accessible by products
 
-!  check to see if the Hessian is available explicitly, available via its
-!  action on a vector, or is unavailable, and whether reverse communication
-!  will be required
-
-     data%hessian_available = data%control%hessian_available >= 2
-     IF ( data%hessian_available ) THEN
-       data%reverse_h = .NOT. PRESENT( eval_H )
-     ELSE IF ( data%control%hessian_available == 1 ) THEN
-       data%reverse_h = .FALSE.
-       IF ( data%control%model /= first_order_model .AND.                      &
-            data%control%model /= diagonal_hessian_model .AND.                 &
-            data%control%model /= gauss_newton_model )                         &
-         data%control%subproblem_direct = .FALSE.
-     ELSE
-       IF ( data%control%model /= first_order_model .AND.                      &
-            data%control%model /= diagonal_hessian_model .AND.                 &
-            data%control%model /= gauss_newton_model )                         &
-         data%control%model = gauss_newton_model
-     END IF
-     data%reverse_hprod = .NOT. PRESENT( eval_HPROD )
-
-!  initialize the model to Gauss-Newton if the Gauss-Newton to Newton
-!  strategy has been specified
-
-     data%gauss_to_newton_model =                                              &
-       data%control%model == gauss_to_newton_model
-     data%map_h_to_jtj = data%hessian_available .AND.                          &
-                         ( data%gauss_to_newton_model .OR.                     &
-                           data%control%model == newton_model )
-     data%model_used = data%control%model
-     IF ( data%gauss_to_newton_model )                                         &
-       data%control%model = gauss_newton_model
-     data%hessian_computed = data%hessian_available .AND.                      &
-       data%control%model == newton_model
+     data%solve_projection = data%control%subproblem_solver == 1               &
+       .OR. .NOT. data%jacobian_available
 
 !  record the problem dimensions
 
      IF ( data%jacobian_available ) THEN
-        nlp%J%m = nlp%m ; nlp%J%n = nlp%n
+        nlp%Jr%m = nlp%m_r ; nlp%Jr%n = nlp%n
      END IF
-
-!  check that the Hessian is specified in a permitted format
-
-     IF ( data%hessian_available ) THEN
-       SELECT CASE ( SMT_get( nlp%H%type ) )
-       CASE ( 'DIAGONAL', 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE',             &
-              'IDENTITY', 'SCALE_IDENTITY', 'NONE', 'ZERO' )
-       CASE DEFAULT
-         IF ( control%error > 0 ) WRITE( control%error,                        &
-           "( A, ' error: input H%type ', A, ' not permitted' )" )             &
-             prefix, SMT_get( nlp%H%type )
-         inform%status = GALAHAD_error_restrictions
-         GO TO 990
-       END SELECT
-     END IF
-
-!  find the number of nonzeros in the Hessian
-
-     IF ( data%map_h_to_jtj ) THEN
-       nlp%H%n = nlp%n ; nlp%H%m = nlp%n
-       SELECT CASE (  SMT_get( nlp%H%type ) )
-       CASE ( 'DIAGONAL' )
-         nlp%H%ne = nlp%n
-       CASE ( 'DENSE' )
-         IF ( MOD(  nlp%n, 2 ) == 0 ) THEN
-           nlp%H%ne = ( nlp%n / 2 ) * ( nlp%n + 1 )
-         ELSE
-           nlp%H%ne = nlp%n * ( ( nlp%n + 1 ) / 2 )
-         END IF
-       CASE ( 'SPARSE_BY_ROWS' )
-         nlp%H%ne = nlp%H%ptr( nlp%n + 1 ) - 1
-       CASE ( 'NONE' )
-         nlp%H%ne = 0
-       END SELECT
-     END IF
-
-!  decide whether to form the scaling matrix and make model-specific choices
-
-     IF ( data%control%model == newton_model ) THEN
-       data%form_regularization                                                &
-         = data%jacobian_available .AND. data%hessian_available
-     ELSE IF ( data%control%model == gauss_newton_model ) THEN
-       data%form_regularization = data%jacobian_available
-     ELSE
-       IF ( data%control%norm >= 0 )                                           &
-         data%control%norm = euclidean_regularization
-       data%form_regularization = .FALSE.
-     END IF
-     data%reverse_scale = .NOT. PRESENT( eval_SCALE )
-     data%regularization_type = data%control%norm
-
-!  set the power for the regularization
-
-     IF ( control%power >= two ) THEN
-       data%power = control%power
-     ELSE
-       SELECT CASE ( data%control%model )
-       CASE ( first_order_model, diagonal_hessian_model,                       &
-              gauss_newton_model, gauss_to_newton_model )
-         data%power = two
-       CASE DEFAULT
-         data%power = three
-       END SELECT
-     END IF
-
-!write(6,*) data%control%model, data%control%hessian_available
-
-!  set specific controls for the sub-problem solvers
-
-!write(6,*) ' ** subproblem scaling type ', data%regularization_type
-!     data%regularization_type = data%control%norm
-!write(6,*) ' ** subproblem scaling type ', data%regularization_type
-!write(6,*) ' ** subproblem regularization type ', data%regularization_type
-     data%control%BLLS_control%unitm                                           &
-       = data%regularization_type == euclidean_regularization
-     SELECT CASE ( data%regularization_type )
-     CASE ( diagonal_hessian_regularization )
-       data%control%PSLS_control%preconditioner = 1
-     CASE ( band_regularization )
-       data%control%PSLS_control%preconditioner = 2
-     CASE ( reordered_band_regularization )
-       data%control%PSLS_control%preconditioner = 3
-     CASE ( schnabel_eskow_regularization )
-       data%control%PSLS_control%preconditioner = 4
-     CASE ( gmps_regularization )
-       data%control%PSLS_control%preconditioner = 5
-     CASE ( lin_more_regularization )
-       data%control%PSLS_control%preconditioner = 6
-     CASE ( mi28_regularization )
-       data%control%PSLS_control%preconditioner = 7
-     CASE ( munksgaard_regularization )
-       data%control%PSLS_control%preconditioner = 8
-     CASE ( expanding_band_regularization )
-       data%control%PSLS_control%preconditioner = 9
-     CASE DEFAULT
-       data%control%PSLS_control%preconditioner = - 1
-     END SELECT
-     data%control%PSLS_control%new_structure = .TRUE.
-     data%control%BLLSB_control%initial_multiplier = zero
 
 !  check that the Jacobian is specified in a permitted format
 
      IF ( data%jacobian_available ) THEN
-       SELECT CASE ( SMT_get( nlp%J%type ) )
-       CASE ( 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' )
+       SELECT CASE ( SMT_get( nlp%Jr%type ) )
+       CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',                    &
+              'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS', 'COORDINATE' )
        CASE DEFAULT
          IF ( control%error > 0 ) WRITE( control%error,                        &
            "( A, ' error: input J%type ', A, ' not permitted' )" )             &
-             prefix, SMT_get( nlp%J%type )
+             prefix, SMT_get( nlp%Jr%type )
          inform%status = GALAHAD_error_restrictions
          GO TO 990
        END SELECT
@@ -1980,7 +1536,7 @@
          OPEN( control%alive_unit, FILE = control%alive_file,                  &
                FORM = 'FORMATTED', STATUS = 'NEW' )
          REWIND control%alive_unit
-         WRITE( control%alive_unit, "( ' GALAHAD rampages onwards ' )" )
+         WRITE( control%alive_unit, "( ' GALAHAD rampages onwards' )" )
          CLOSE( control%alive_unit )
        END IF
      END IF
@@ -1995,6 +1551,32 @@
             bad_alloc = inform%bad_alloc, out = data%control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
+     array_name = 'bnls: nlp%R'
+     CALL SPACE_resize_array( nlp%m_r, nlp%R, inform%status,                   &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'bnls: nlp%Z'
+     CALL SPACE_resize_array( nlp%n, nlp%Z, inform%status,                     &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+     nlp%Z( : nlp%n ) = zero
+
+     array_name = 'bnls: nlp%X_status'
+     CALL SPACE_resize_array( nlp%n, nlp%X_status, inform%status,              &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+     nlp%X_status( : nlp%n ) = 0
+
      array_name = 'bnls: data%X_current'
      CALL SPACE_resize_array( nlp%n, data%X_current, inform%status,            &
             inform%alloc_status, array_name = array_name,                      &
@@ -2003,8 +1585,8 @@
             bad_alloc = inform%bad_alloc, out = data%control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'bnls: data%C_current'
-     CALL SPACE_resize_array( nlp%m, data%C_current, inform%status,            &
+     array_name = 'bnls: data%R_current'
+     CALL SPACE_resize_array( nlp%m_r, data%R_current, inform%status,          &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = data%control%deallocate_error_fatal,      &
             exact_size = data%control%space_critical,                          &
@@ -2027,43 +1609,10 @@
             bad_alloc = inform%bad_alloc, out = data%control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'bnls: data%U'
-     CALL SPACE_resize_array( MAX( nlp%n, nlp%m ), data%U, inform%status,      &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'bnls: data%V'
-     CALL SPACE_resize_array( MAX( nlp%n, nlp%m ), data%V, inform%status,      &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'bnls: data%W'
-     CALL SPACE_resize_array( nlp%n, data%W, inform%status,                    &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'bnls: data%Y'
-     CALL SPACE_resize_array( nlp%m, data%Y, inform%status,                    &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
      IF ( .NOT. data%monotone ) THEN
        array_name = 'bnls: data%F_hist'
        CALL SPACE_resize_array( data%non_monotone_history + 1, data%F_hist,    &
-              inform%status,                                                   &
-              inform%alloc_status, array_name = array_name,                    &
+              inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
@@ -2071,46 +1620,6 @@
 
        array_name = 'bnls: data%D_hist'
        CALL SPACE_resize_array( data%non_monotone_history + 1, data%D_hist,    &
-              inform%status,                                                   &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-     END IF
-
-!  ensure that parameters are set correctly for the diagonal-Hessian model case
-
-     IF ( data%control%subproblem_direct .AND.                                 &
-          data%control%model == diagonal_hessian_model ) THEN
-       data%H%n = nlp%n ; data%H%m = nlp%n ; data%H%ne = nlp%n
-       CALL SMT_put( data%H%type, 'DIAGONAL', inform%alloc_status )
-       IF ( inform%alloc_status /= 0 ) THEN
-         inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
-
-       array_name = 'bnls: H%val'
-       CALL SPACE_resize_array( nlp%n, data%H%val, inform%status,              &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-       data%H%val = one
-     END IF
-
-!  provide space for the regularization
-
-     IF ( data%regularization_type == diagonal_jtj_regularization ) THEN
-       data%regularization%matrix%m = nlp%n
-       data%regularization%matrix%n = nlp%n
-       data%regularization%matrix%ne = nlp%n
-       CALL SMT_put( data%regularization%matrix%type, 'DIAGONAL',              &
-                     inform%alloc_status )
-       IF ( inform%alloc_status /= 0 ) THEN
-         inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
-
-       array_name = 'bnls: data%regularization%matrix%val'
-       CALL SPACE_resize_array( nlp%n, data%regularization%matrix%val,         &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
@@ -2118,105 +1627,360 @@
        IF ( inform%status /= 0 ) GO TO 980
      END IF
 
-!  compute the number of nonzeros in J
+!  allocate space to hold the simplex-constrained regularized linear 
+!  least-squares subproblem
 
-     IF ( data%regularization_type > diagonal_jtj_regularization .OR.          &
-          ( data%control%subproblem_direct .AND.                               &
-            ( data%control%model == gauss_newton_model .OR.                    &
-              data%control%model == newton_model ) ) ) THEN
-       nlp%J%n = nlp%n ; nlp%J%m = nlp%m
-       SELECT CASE ( SMT_get( nlp%J%type ) )
-       CASE ( 'DENSE' )
-         nlp%J%ne = nlp%J%m * nlp%J%n
-       CASE ( 'SPARSE_BY_ROWS' )
-         nlp%J%ne = nlp%J%ptr( nlp%m + 1 ) - 1
-       END SELECT
+     data%GN_model%n = nlp%n ; data%GN_model%o = nlp%m_r
+     data%GN_model%m = nlp%m_c
 
-!  an assembled Hessian approximation is required to compute the scaling matrix,
-!  so provide J(transpose) = JT
+     array_name = 'bnls: data%GN_model%B'
+     CALL SPACE_resize_array( nlp%m_r, data%GN_model%B,                        &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
 
-       data%JT%n = nlp%m ; data%JT%m = nlp%n ; data%JT%ne = nlp%J%ne
-       CALL SMT_put( data%JT%type, 'COORDINATE', inform%alloc_status )
-       IF ( inform%alloc_status /= 0 ) THEN
-         inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
+     array_name = 'bnls: data%GN_model%X_l'
+     CALL SPACE_resize_array( nlp%n, data%GN_model%X_l,                        &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
 
-       array_name = 'bnls: data%JT%row'
-       CALL SPACE_resize_array( data%JT%ne, data%JT%row, inform%status,        &
-              inform%alloc_status, array_name = array_name,                    &
+     array_name = 'bnls: data%GN_model%X_u'
+     CALL SPACE_resize_array( nlp%n, data%GN_model%X_u,                        &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'bnls: data%GN_model%X'
+     CALL SPACE_resize_array( nlp%n, data%GN_model%X,                          &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'bnls: data%GN_model%Z'
+     CALL SPACE_resize_array( nlp%n, data%GN_model%Z,                          &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'bnls: data%GN_model%R'
+     CALL SPACE_resize_array( nlp%m_r, data%GN_model%R,                        &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'bnls: data%GN_model%G'
+     CALL SPACE_resize_array( nlp%n, data%GN_model%G,                          &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'bnls: data%GN_model%X_status'
+     CALL SPACE_resize_array( nlp%n, data%GN_model%X_status,                   &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'bnls: data%GN_model%X_s'
+     CALL SPACE_resize_array( nlp%n, data%GN_model%X_s,                        &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+          bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980                      
+                                                                        
+!  save the weights if they are present
+
+     IF ( ALLOCATED( nlp%W ) ) THEN
+       array_name = 'bnls: data%GN_model%W'
+       CALL SPACE_resize_array( nlp%m_r, data%GN_model%W,                      &
+              inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
               bad_alloc = inform%bad_alloc, out = data%control%error )
        IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'bnls: data%JT%col'
-       CALL SPACE_resize_array( data%JT%ne, data%JT%col, inform%status,        &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'bnls: data%JT%val'
-       CALL SPACE_resize_array( data%JT%ne, data%JT%val, inform%status,        &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-!  assign the row and column indices of JT
-
-       SELECT CASE ( SMT_get( nlp%J%type ) )
-       CASE ( 'DENSE' )
-         l = 0
-         DO i = 1, nlp%m
-           DO j = 1, nlp%n
-             l = l + 1
-             data%JT%row( l ) = j ; data%JT%col( l ) = i
-           END DO
-         END DO
-       CASE ( 'SPARSE_BY_ROWS' )
-         DO i = 1, nlp%m
-           DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
-             data%JT%row( l ) = nlp%J%col( l ) ; data%JT%col( l ) = i
-           END DO
-         END DO
-       CASE ( 'COORDINATE' )
-         DO l = 1, nlp%J%ne
-           data%JT%row( l ) = nlp%J%col( l )
-           data%JT%col( l ) = nlp%J%row( l )
-         END DO
-       END SELECT
+       data%GN_model%W( : nlp%m_r ) = nlp%W( : nlp%m_r )
      END IF
 
-     IF ( data%regularization_type > diagonal_jtj_regularization .OR.          &
-          ( data%control%subproblem_direct .AND.                               &
-            ( data%control%model == gauss_newton_model .OR.                    &
-              data%control%model == newton_model ) ) ) THEN
+!  set Ao appropriately in the least-squares storage format
 
-!  record the sparsity pattern of J^T J in data%H
+     IF ( data%jacobian_available ) THEN
 
-       data%control%BSC_control%new_a = 3
-       data%control%BSC_control%extra_space_s = 0
-       data%control%BSC_control%s_also_by_column = data%map_h_to_jtj
-       CALL BSC_form( nlp%n, nlp%m, data%JT, data%H, data%BSC_data,            &
-                      data%control%BSC_control, inform%BSC_inform )
-       data%control%BSC_control%new_a = 1
+!  make space for Jr%val
 
-!   if required, find a mapping for the entries of H(x,c) into the existing
-!   structure in data%H for J^T J; the sparsity pattern of H(x,c) lies
-!   within that of J^T J
+       SELECT CASE( SMT_get( nlp%Jr%type ) )
+       CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
+         nlp%Jr%ne = nlp%m_r * nlp%n
+       CASE ( 'SPARSE_BY_ROWS' )
+         nlp%Jr%ne = nlp%Jr%ptr( nlp%m_r + 1 ) - 1
+       CASE ( 'SPARSE_BY_COLUMNS' )
+         nlp%Jr%ne = nlp%Jr%ptr( nlp%n + 1 ) - 1
+!      CASE ( 'COORDINATE' )
+!        nlp%Jr%ne = nlp%Jr%ne
+       END SELECT
 
-       IF ( data%map_h_to_jtj ) THEN
-         CALL BNLS_set_map( data%H, nlp%H, data%IW, data%PTR, data%ROW,        &
-                           data%ORDER, .TRUE.,                                 &
-                           data%control%deallocate_error_fatal,                &
-                           data%control%space_critical,  data%control%error,   &
-                           data%H_map, inform%status, inform%alloc_status,     &
-                           inform%bad_alloc )
+       array_name = 'bnls: nlp%J%val'
+       CALL SPACE_resize_array( nlp%Jr%ne, nlp%Jr%val,                         &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+!  make space for data%GN_model%Ao
+
+       SELECT CASE ( SMT_get( nlp%Jr%type ) )
+       CASE ( 'coordinate', 'COORDINATE' )
+         IF ( .NOT. ( ALLOCATED( nlp%Jr%row ) .AND.                            &
+                      ALLOCATED( nlp%Jr%col ) ) ) THEN
+           inform%status = GALAHAD_error_optional
+           GO TO 990
+         END IF
+         CALL SMT_put( data%GN_model%Ao%type, 'COORDINATE',                    &
+                       inform%alloc_status )
+         data%GN_model%Ao%n = nlp%n ; data%GN_model%Ao%m = nlp%m_r
+         data%GN_model%Ao%ne = nlp%Jr%ne
+
+         array_name = 'bnls: data%GN_model%Ao%row'
+         CALL SPACE_resize_array( data%GN_model%Ao%ne, data%GN_model%Ao%row,   &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = data%control%deallocate_error_fatal,  &
+                exact_size = data%control%space_critical,                      &
+                bad_alloc = inform%bad_alloc, out = data%control%error )
          IF ( inform%status /= 0 ) GO TO 980
+
+         array_name = 'bnls: data%GN_model%Ao%col'
+         CALL SPACE_resize_array( data%GN_model%Ao%ne, data%GN_model%Ao%col,   &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = data%control%deallocate_error_fatal,  &
+                exact_size = data%control%space_critical,                      &
+                bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         array_name = 'bnls: data%GN_model%Ao%val'
+         CALL SPACE_resize_array( data%GN_model%Ao%ne, data%GN_model%Ao%val,   &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = data%control%deallocate_error_fatal,  &
+                exact_size = data%control%space_critical,                      &
+                bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         data%GN_model%Ao%row( : data%GN_model%Ao%ne )                         &
+           = nlp%Jr%row( : data%GN_model%Ao%ne )
+         data%GN_model%Ao%col( : data%GN_model%Ao%ne )                         &
+           = nlp%Jr%col( : data%GN_model%Ao%ne )
+
+       CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+         IF ( .NOT. ( ALLOCATED( nlp%Jr%ptr ) .AND.                            &
+                      ALLOCATED( nlp%Jr%col ) ) ) THEN
+           inform%status = GALAHAD_error_optional
+           GO TO 990
+         END IF
+         CALL SMT_put( data%GN_model%Ao%type, 'SPARSE_BY_ROWS',                &
+                       inform%alloc_status )
+         data%GN_model%Ao%n = nlp%n ; data%GN_model%Ao%m = nlp%m_r
+         data%GN_model%Ao%ne = nlp%Jr%ptr( nlp%m_r + 1 ) - 1
+
+         array_name = 'bnls: data%GN_model%Ao%ptr'
+         CALL SPACE_resize_array( nlp%m_r + 1, data%GN_model%Ao%ptr,           &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = data%control%deallocate_error_fatal,  &
+                exact_size = data%control%space_critical,                      &
+                bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         array_name = 'bnls: data%GN_model%Ao%col'
+         CALL SPACE_resize_array( data%GN_model%Ao%ne, data%GN_model%Ao%col,   &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = data%control%deallocate_error_fatal,  &
+                exact_size = data%control%space_critical,                      &
+                bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         array_name = 'bnls: data%GN_model%Ao%val'
+         CALL SPACE_resize_array( data%GN_model%Ao%ne, data%GN_model%Ao%val,   &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = data%control%deallocate_error_fatal,  &
+                exact_size = data%control%space_critical,                      &
+                bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+           data%GN_model%Ao%ptr( : nlp%m_r + 1 ) = nlp%Jr%ptr( : nlp%m_r + 1 )
+           data%GN_model%Ao%col( : data%GN_model%Ao%ne )                       &
+             = nlp%Jr%col( : data%GN_model%Ao%ne )
+
+       CASE ( 'sparse_by_columns', 'SPARSE_BY_COLUMNS' )
+         IF ( .NOT. ( ALLOCATED( nlp%Jr%ptr ) .AND.                            &
+                      ALLOCATED( nlp%Jr%row ) ) ) THEN
+           inform%status = GALAHAD_error_optional
+           GO TO 990
+         END IF
+         CALL SMT_put( data%GN_model%Ao%type, 'SPARSE_BY_COLUMNS',             &
+                       inform%alloc_status )
+         data%GN_model%Ao%n = nlp%n ; data%GN_model%Ao%m = nlp%m_r
+         data%GN_model%Ao%ne = nlp%Jr%ptr( nlp%n + 1 ) - 1
+         array_name = 'bnls: data%GN_model%Ao%ptr'
+         CALL SPACE_resize_array( nlp%n + 1, data%GN_model%Ao%ptr,             &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = data%control%deallocate_error_fatal,  &
+                exact_size = data%control%space_critical,                      &
+                bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         array_name = 'bnls: data%GN_model%Ao%row'
+         CALL SPACE_resize_array( data%GN_model%Ao%ne, data%GN_model%Ao%row,   &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = data%control%deallocate_error_fatal,  &
+                exact_size = data%control%space_critical,                      &
+                bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         array_name = 'bnls: data%GN_model%Ao%val'
+         CALL SPACE_resize_array( data%GN_model%Ao%ne, data%GN_model%Ao%val,   &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = data%control%deallocate_error_fatal,  &
+                exact_size = data%control%space_critical,                      &
+                bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         data%GN_model%Ao%ptr( : nlp%n + 1 ) = nlp%Jr%ptr( : nlp%n + 1 )
+         data%GN_model%Ao%row( : data%GN_model%Ao%ne )                         &
+           = nlp%Jr%row( : data%GN_model%Ao%ne )
+
+       CASE ( 'dense', 'DENSE', 'dense_by_rows', 'DENSE_BY_ROWS' )
+         CALL SMT_put( data%GN_model%Ao%type, 'DENSE_BY_ROWS',                 &
+                       inform%alloc_status )
+         data%GN_model%Ao%n = nlp%n ; data%GN_model%Ao%m = nlp%m_r
+         data%GN_model%Ao%ne = nlp%m_r * nlp%n
+
+         array_name = 'bnls: data%GN_model%Ao%val'
+         CALL SPACE_resize_array( data%GN_model%Ao%ne, data%GN_model%Ao%val,   &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = data%control%deallocate_error_fatal,  &
+                exact_size = data%control%space_critical,                      &
+                bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+       CASE ( 'dense_by_columns', 'DENSE_BY_COLUMNS' )
+         CALL SMT_put( data%GN_model%Ao%type, 'DENSE_BY_COLUMNS',              &
+                       inform%alloc_status )
+         data%GN_model%Ao%n = nlp%n ; data%GN_model%Ao%m = nlp%m_r
+         data%GN_model%Ao%ne = nlp%m_r * nlp%n
+
+         array_name = 'bnls: data%GN_model%Ao%val'
+         CALL SPACE_resize_array( data%GN_model%Ao%ne, data%GN_model%Ao%val,   &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = data%control%deallocate_error_fatal,  &
+                exact_size = data%control%space_critical,                      &
+                bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+       CASE DEFAULT
+         inform%status = GALAHAD_error_unknown_storage
+         GO TO 990
+       END SELECT
+
+!  allocate space for components of reverse, if needed
+
+     ELSE
+       IF ( data%reverse_internal ) THEN
+         array_name = 'bnls: data%reverse%iv'
+         CALL SPACE_resize_array( nlp%n, data%reverse%iv, inform%status,       &
+                inform%alloc_status, array_name = array_name,                  &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= GALAHAD_ok ) GO TO 980
+
+         array_name = 'bnls: data%reverse%ip'
+         CALL SPACE_resize_array( nlp%m_r, data%reverse%ip, inform%status,     &
+                inform%alloc_status, array_name = array_name,                  &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= GALAHAD_ok ) GO TO 980
+
+         array_name = 'bnls: data%reverse%v'
+         CALL SPACE_resize_array( MAX( nlp%m_r, nlp%n ), data%reverse%v,       &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= GALAHAD_ok ) GO TO 980
+
+         array_name = 'bnls: data%reverse%p'
+         CALL SPACE_resize_array( MAX( nlp%m_r, nlp%n ), data%reverse%p,       &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= GALAHAD_ok ) GO TO 980
+       ELSE
+         array_name = 'bnls: reverse%iv'
+         CALL SPACE_resize_array( nlp%n, reverse%iv, inform%status,            &
+                inform%alloc_status, array_name = array_name,                  &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= GALAHAD_ok ) GO TO 980
+
+         array_name = 'bnls: reverse%ip'
+         CALL SPACE_resize_array( nlp%m_r, reverse%ip, inform%status,          &
+                inform%alloc_status, array_name = array_name,                  &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= GALAHAD_ok ) GO TO 980
+
+         array_name = 'bnls: reverse%v'
+         CALL SPACE_resize_array( MAX( nlp%m_r, nlp%n ), reverse%v,            &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= GALAHAD_ok ) GO TO 980
+
+         array_name = 'bnls: reverse%p'
+         CALL SPACE_resize_array( MAX( nlp%m_r, nlp%n ), reverse%p,            &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= GALAHAD_ok ) GO TO 980
        END IF
      END IF
+
+!  check that the simple bounds are consistent
+
+     DO j = 1, nlp%n
+       IF ( nlp%X_l( j ) > nlp%X_u( j ) ) THEN
+         IF ( control%error > 0 ) WRITE( control%error,                        &
+           "( A, ' error: a variable lower bound is larger than its upper' )" )&
+           prefix
+         inform%status = GALAHAD_error_bad_bounds
+         GO TO 990
+       END IF
+
+!  project the given initial point into the feasible box
+
+       nlp%X( j ) = MIN( MAX( nlp%X( j ), nlp%X_l( j ) ), nlp%X_u( j ) )
+     END DO
 
 !  control the output printing
 
@@ -2287,38 +2051,50 @@
      END IF
      data%step_accepted = .FALSE.
      data%poor_model = .FALSE.
-     data%s_norm_successful = one
      data%minimum_weight = data%control%minimum_weight
+     data%got_jr = .FALSE.
+!write(6,*) ' a ', data%reverse_r 
+! evaluate the residual function r(x) at the initial point
 
-! evaluate the residual function c(x) at the initial point
-
-     IF ( data%reverse_c ) THEN
+     IF ( data%reverse_r ) THEN
        data%branch = 30 ; inform%status = 2 ; RETURN
      ELSE
-       CALL eval_C( data%eval_status, nlp%X( : nlp%n ), userdata,              &
-                    nlp%C( : nlp%m ) )
+!write(6,*) ' b '
+!write(6,*) ' x ', nlp%X
+       CALL eval_R( data%eval_status, nlp%X( : nlp%n ), userdata,              &
+                    nlp%R( : nlp%m_r ) )
+!write(6,*) ' c '
        IF ( data%eval_status /= 0 ) THEN
-         inform%bad_eval = 'eval_C'
-         inform%status = GALAHAD_error_evaluation ; GO TO 900
+         inform%bad_eval = 'eval_R'
+         IF ( control%error > 0 ) WRITE( control%error,                        &
+           "( A, ' error: reported eval_R evaluation' )" ) prefix
+         inform%status = GALAHAD_error_evaluation ; GO TO 990
        END IF
      END IF
 
-!  return from reverse communication with the residual function value c(x)
+!  return from reverse communication with the residual function value r(x)
 
   30 CONTINUE
 !    CALL CLOCK_time( data%clock_now )
 !    write(6,*) ' 30 elapsed', data%clock_now - data%clock_start
      IF ( data%printw ) WRITE( data%out, "( A, ' statement 30' )" ) prefix
-     inform%c_eval = inform%c_eval + 1
+     inform%r_eval = inform%r_eval + 1
+
+     IF ( data%reverse_r ) THEN
+       IF ( reverse%eval_status /= 0 ) THEN
+         inform%bad_eval = 'eval_R'
+         inform%status = GALAHAD_error_evaluation ; GO TO 990
+       END IF
+     END IF
+
      IF ( data%w_eq_identity ) THEN
-       data%Y( : nlp%m ) = nlp%C( : nlp%m )
-       inform%norm_c = TWO_NORM( nlp%C( : nlp%m ) )
-       inform%obj = half * inform%norm_c ** 2
+       data%Y( : nlp%m_r ) = nlp%R( : nlp%m_r )
+       inform%norm_r = TWO_NORM( nlp%R( : nlp%m_r ) )
+       inform%obj = half * inform%norm_r ** 2
      ELSE
-!write(6,*) ' w ', W( : nlp%m )
-       data%Y( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
-       val = DOT_PRODUCT( data%Y( : nlp%m ), nlp%C( : nlp%m ) )
-       inform%norm_c = SQRT( val )
+       data%Y( : nlp%m_r ) = nlp%W( : nlp%m_r ) * nlp%R( : nlp%m_r )
+       val = DOT_PRODUCT( data%Y( : nlp%m_r ), nlp%R( : nlp%m_r ) )
+       inform%norm_r = SQRT( val )
        inform%obj = half * val
      END IF
 
@@ -2326,7 +2102,6 @@
 
 !    data%f_is_nan = IEEE_IS_NAN( inform%obj )
      data%f_is_nan = inform%obj /= inform%obj
-!write(6,*) ' objective is NaN? ', data%f_is_nan
 
      IF ( data%f_is_nan ) THEN
        IF ( data%printi ) WRITE( data%out,                                     &
@@ -2337,14 +2112,14 @@
 
 !  compute the residual stopping tolerance
 
-     data%stop_c = MAX( MAX( control%stop_c_absolute, zero ),                  &
-                        MAX( control%stop_c_relative, zero ) * inform%norm_c,  &
+     data%stop_r = MAX( MAX( control%stop_r_absolute, zero ),                  &
+                        MAX( control%stop_r_relative, zero ) * inform%norm_r,  &
                         epsmch )
 
 !  stop in the unlikely event that the initial residual is already small
 
-     IF ( inform%norm_c <= data%stop_c ) THEN
-       inform%status = GALAHAD_ok ; GO TO 910
+     IF ( inform%norm_r <= data%stop_r ) THEN
+       inform%status = GALAHAD_ok ; GO TO 900
      END IF
 
 !  initialize the history of objective values
@@ -2363,40 +2138,35 @@
 !      write(6,*) ' 100 elapsed', data%clock_now - data%clock_start
        IF ( data%printw ) WRITE( data%out, "( A, ' statement 100' )" ) prefix
 
-!  evaluate the Jacobian J(x) of c(x)
+!  evaluate the Jacobian Jr(x) of r(x)
 
-!write(6,*) ' data%poor_model ', data%poor_model
        IF ( .NOT. data%poor_model ) THEN
-!write(6,*) ' data%jacobian_available ', data%jacobian_available
          IF ( data%jacobian_available ) THEN
-           IF ( data%reverse_j ) THEN
+           IF ( data%reverse_jr ) THEN
              data%branch = 110 ; inform%status = 3 ; RETURN
            ELSE
-             CALL eval_J( data%eval_status, nlp%X( : nlp%n ), userdata,        &
-                          nlp%J%val )
+             CALL eval_Jr( data%eval_status, nlp%X( : nlp%n ), userdata,       &
+                           nlp%Jr%val )
              IF ( data%eval_status /= 0 ) THEN
-               inform%bad_eval = 'eval_J'
-               inform%status = GALAHAD_error_evaluation ; GO TO 900
+               inform%bad_eval = 'eval_Jr'
+               inform%status = GALAHAD_error_evaluation ; GO TO 990
              END IF
            END IF
 
-!  otherwise evaluate the product g = J^T(x) W c(x)
+!  otherwise evaluate the product g = Jr^T(x) W r(x)
 
          ELSE
-           data%transpose = .TRUE.
-           IF ( data%reverse_jprod ) THEN
-             data%U( : nlp%n ) = zero ; data%V( : nlp%m ) = data%Y( : nlp%m )
-!write(6,*) ' c ',  nlp%C( : nlp%m )
-!write(6,*) ' v ',  data%V( : nlp%m )
+           IF ( data%reverse_jr_prod ) THEN
+             reverse%V( : nlp%m_r ) = data%Y( : nlp%m_r )
+             reverse%transpose = .TRUE.
              data%branch = 110 ; inform%status = 5 ; RETURN
            ELSE
-             nlp%G( : nlp%n ) = zero
-             CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ), userdata,    &
-                              data%transpose, nlp%G( : nlp%n ),                &
-                              data%Y( : nlp%m ), .FALSE. )
+             CALL eval_Jr_prod( data%eval_status, nlp%X( : nlp%n ), userdata,  &
+                                .TRUE., data%Y( : nlp%m_r ),                   &
+                                nlp%G( : nlp%n ), .FALSE. )
              IF ( data%eval_status /= 0 ) THEN
-               inform%bad_eval = 'eval_JPROD'
-               inform%status = GALAHAD_error_evaluation ; GO TO 900
+               inform%bad_eval = 'eval_Jr_prod'
+               inform%status = GALAHAD_error_evaluation ; GO TO 990
              END IF
            END IF
          END IF
@@ -2411,26 +2181,40 @@
        IF ( data%printw ) WRITE( data%out, "( A, ' statement 110' )" ) prefix
 
        IF ( .NOT. data%poor_model ) THEN
-         inform%j_eval = inform%j_eval + 1
-
-!  compute the product g = J^T(x) W c(x) from J(x) if necessary
+         inform%jr_eval = inform%jr_eval + 1
 
          IF ( data%jacobian_available ) THEN
-           CALL mop_Ax( one, nlp%J, data%Y( : nlp%m ), zero, nlp%G( : nlp%n ), &
-                        out = data%out, error = data%control%error,            &
-                        print_level = 0_ip_, transpose = .TRUE. )
+           IF ( data%reverse_jr ) THEN
+             IF ( reverse%eval_status /= 0 ) THEN
+               inform%bad_eval = 'eval_Jr'
+               inform%status = GALAHAD_error_evaluation ; GO TO 990
+             END IF
+           END IF
          ELSE
-           IF ( data%reverse_jprod ) nlp%G( : nlp%n ) = data%U( : nlp%n )
+           IF ( data%reverse_jr_prod ) THEN
+             IF ( reverse%eval_status /= 0 ) THEN
+               inform%bad_eval = 'eval_Jr_prod'
+               inform%status = GALAHAD_error_evaluation ; GO TO 990
+             END IF
+           END IF
          END IF
 
-!write(6,*) ' x ',  nlp%X( : nlp%n )
-!write(6,*) ' g ',  nlp%G( : nlp%n )
+!  compute the product g = J^T(x) W r(x) from J(x) if necessary
+
+         IF ( data%jacobian_available ) THEN
+           CALL mop_Ax( one, nlp%Jr, data%Y( : nlp%m_r ), zero,                &
+                        nlp%G( : nlp%n ), out = data%out,                      &
+                        error = data%control%error, print_level = 0_ip_,       &
+                        transpose = .TRUE. )
+         ELSE
+           IF ( data%reverse_jr_prod ) nlp%G( : nlp%n ) = reverse%P( : nlp%n )
+         END IF
 
 !  compute the gradient of ||g(x)||
 
          data%g_norm = TWO_NORM( nlp%G( : nlp%n ) )
-         IF ( inform%norm_c > zero ) THEN
-           inform%norm_g = data%g_norm / inform%norm_c
+         IF ( inform%norm_r > zero ) THEN
+           inform%norm_g = data%g_norm / inform%norm_r
          ELSE
            inform%norm_g = zero
          END IF
@@ -2445,7 +2229,7 @@
              data%poor_model = .FALSE.
              data%accept = 'r'
              nlp%X( : nlp%n ) = data%X_current( : nlp%n )
-             nlp%C( : nlp%m ) = data%C_current( : nlp%m )
+             nlp%R( : nlp%m_r ) = data%R_current( : nlp%m_r )
 
 !  control printing for the NaN case
 
@@ -2468,10 +2252,10 @@
                data%control%BLLSB_control%print_level = 0
              END IF
              data%print_iteration_header = data%print_level > 1 .OR.           &
-               ( data%control%BLLS_control%print_level > 0 .AND. .NOT.         &
-                 data%control%subproblem_direct ) .OR.                         &
-               ( data%control%BLLSB_control%print_level > 0 .AND.              &
-                 data%control%subproblem_direct )
+               ( data%control%BLLS_control%print_level > 0 .AND.               &
+                 data%solve_projection ) .OR.                                  &
+               ( data%control%BLLSB_control%print_level > 0 .AND. .NOT.        &
+                 data%solve_projection )
 
 !  print one-line summary
 
@@ -2479,11 +2263,11 @@
                 IF ( data%print_iteration_header .OR.                          &
                      data%print_1st_header ) THEN
                  WRITE( data%out, 2090 ) prefix
-                 IF ( data%control%subproblem_direct ) THEN
+                 IF ( data%solve_projection ) THEN
                    IF ( data%control%print_obj ) THEN
-                     WRITE( data%out, 2170 ) prefix
+                     WRITE( data%out, 2130 ) prefix
                    ELSE
-                     WRITE( data%out, 2160 ) prefix
+                     WRITE( data%out, 2120 ) prefix
                    END IF
                  ELSE
                    IF ( data%control%print_obj ) THEN
@@ -2495,35 +2279,35 @@
                END IF
                data%print_1st_header = .FALSE.
                char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
-               IF ( data%control%subproblem_direct ) THEN
+               char_free = ADJUSTR( STRING_integer_6( data%n_free ) )
+               IF ( data%solve_projection ) THEN
                  char_facts = ADJUSTR( STRING_integer_6( data%total_facts ) )
-                 WRITE( data%out,  "( A, A6, 1X, 3A1, ES11.4, '    NaN    ',   &
-                &  ES9.1,  2ES8.1, 1X, A6, F8.2 )" )                           &
-                    prefix, char_iter, data%accept, data%negcur, data%hard,    &
-                    inform%norm_c, data%ratio, data%old_weight, data%s_norm,   &
-                    char_facts, data%clock_now
+                 WRITE( data%out,  "( A, A6, 1X, 2A1, ES11.4, '    NaN    ',   &
+                &  ES9.1,  2ES8.1, 1X, 2A6, F8.2 )" )                          &
+                    prefix, char_iter, data%accept,  data%hard,                &
+                    inform%norm_r, data%ratio, data%old_weight, data%s_norm,   &
+                    char_facts, char_free, data%clock_now
                ELSE
                  char_sit =                                                    &
                     ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter ) )
-                 char_sit2 =                                                   &
-                    ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter_pass2 ) )
-                 WRITE( data%out, "( A, A6, 1X, 3A1, ES11.4, '    NaN    ',    &
+                 WRITE( data%out, "( A, A6, 1X, 2A1, ES11.4, '    NaN    ',    &
                 &  ES9.1, 2ES8.1, 1X, 2A6, F8.2 )" ) prefix,                   &
-                    char_iter, data%accept, data%negcur, data%perturb,         &
-                    inform%norm_c, data%ratio, data%old_weight, data%s_norm,   &
-                    char_sit, char_sit2, data%clock_now
+                    char_iter, data%accept, data%perturb,                      &
+                    inform%norm_r, data%ratio, data%old_weight, data%s_norm,   &
+                    char_sit, char_free, data%clock_now
                END IF
              END IF
              inform%obj = data%obj_current
-             inform%norm_c = data%norm_c_current
+             inform%norm_r = data%norm_R_current
 
 !  check to see if we are still "alive"
 
              IF ( data%control%alive_unit > 0 ) THEN
                INQUIRE( FILE = data%control%alive_file, EXIST = alive )
                IF ( .NOT. alive ) THEN
-                 inform%status = GALAHAD_error_alive
-                 RETURN
+                 IF ( control%error > 0 ) WRITE( control%error,                &
+                  "( A, ' error: alive file removed' )" ) prefix
+                 inform%status = GALAHAD_error_alive ; GO TO 990
                END IF
              END IF
 
@@ -2532,7 +2316,9 @@
              inform%iter = inform%iter + 1
              IF ( inform%iter > data%control%maxit .AND.                       &
                   data%step_accepted ) THEN
-               inform%status = GALAHAD_error_max_iterations ; GO TO 900
+               IF ( control%error > 0 ) WRITE( control%error,                  &
+                "( A, ' error: iteration limit exceeded' )" ) prefix
+               inform%status = GALAHAD_error_max_iterations ; GO TO 990
              END IF
 
 !  increase the regularization weight and try again
@@ -2542,10 +2328,27 @@
            ELSE
              IF ( data%printi ) WRITE( data%out,                               &
                 "( A, ' initial gradient value is a NaN' )" ) prefix
-             inform%bad_eval = 'eval_JPROD'
+             inform%bad_eval = 'eval_Jr_prod'
              inform%status = GALAHAD_error_evaluation ; GO TO 990
            END IF
          END IF
+
+!  compute the norm of the projected gradient
+
+         val = MIN( one, one / TWO_NORM( nlp%G( : nlp%n ) ) )
+         data%S = nlp%X - val * nlp%G( : nlp%n )
+         IF ( data%multiple_simplices ) THEN
+           CALL BLLS_project_onto_simplices( nlp%n, nlp%m_c,                   &
+                                             data%BLLS_data%n_c,               &
+                                             data%BLLS_data%S_ptr,             &
+                                             data%BLLS_data%S_ind, data%S,     &
+                                             data%X_current,                   &
+                                             data%BLLS_data%X_c,               &
+                                             data%BLLS_data%X_c_proj, i )
+         ELSE
+           CALL BLLS_project_onto_simplex( nlp%n, data%S, data%X_current, i )
+         END IF
+         inform%norm_pg = MAXVAL( ABS( data%X_current - nlp%X ) )
 
 !  reset the initial weight to ||g|| if no sensible value is given
 
@@ -2555,15 +2358,17 @@
 
 !  compute the gradient stopping tolerance
 
-           data%stop_g = MAX( MAX( control%stop_g_absolute, zero ),            &
-             MAX( control%stop_g_relative, zero ) * inform%norm_g, epsmch )
+           data%stop_pg = MAX( MAX( control%stop_pg_absolute, zero ),          &
+             MAX( control%stop_pg_relative, zero ) * inform%norm_pg, epsmch )
+           data%stop_pg_switch = MAX( MAX( control%stop_pg_absolute, zero ),   &
+             MAX( control%stop_pg_switch, zero ) * inform%norm_pg, epsmch )
 
            IF ( data%printi ) THEN
              WRITE( data%out, "( A, '  Problem: ', A, ' (n = ', I0,            &
-            &  ', m = ',I0, ')', /, A,                                         &
-            &   '  BNLS stopping tolerances (c,J''c/c) =', 2ES9.2, / )" )      &
-               prefix, TRIM( nlp%pname ), nlp%n, nlp%m,                        &
-               prefix, data%stop_c, data%stop_g
+            &  ', m_r = ', I0, ', m_c = ', I0, ')', /, A,                      &
+            &   '  BNLS stopping tolerances (r,P[-J''r]) =', 2ES9.2, / )" )    &
+               prefix, TRIM( nlp%pname ), nlp%n, nlp%m_r, nlp%m_c,             &
+               prefix, data%stop_r, data%stop_pg
            END IF
          END IF
        END IF
@@ -2588,21 +2393,21 @@
          data%control%BLLSB_control%print_level = 0
        END IF
        data%print_iteration_header = data%print_level > 1 .OR.                 &
-         ( data%control%BLLS_control%print_level > 0 .AND. .NOT.               &
-           data%control%subproblem_direct ) .OR.                               &
-         ( data%control%BLLSB_control%print_level > 0 .AND.                    &
-           data%control%subproblem_direct )
+         ( data%control%BLLS_control%print_level > 0 .AND.                     &
+           data%solve_projection ) .OR.                                        &
+         ( data%control%BLLSB_control%print_level > 0 .AND. .NOT.              &
+           data%solve_projection )
 
 !  print one-line summary
 
        IF ( data%printi ) THEN
-          IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
+         IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
            WRITE( data%out, 2090 ) prefix
-           IF ( data%control%subproblem_direct ) THEN
+           IF ( data%solve_projection ) THEN
              IF ( data%control%print_obj ) THEN
-               WRITE( data%out, 2170 ) prefix
+               WRITE( data%out, 2130 ) prefix
              ELSE
-               WRITE( data%out, 2160 ) prefix
+               WRITE( data%out, 2120 ) prefix
              END IF
            ELSE
              IF ( data%control%print_obj ) THEN
@@ -2614,59 +2419,28 @@
          END IF
 
          data%print_1st_header = .FALSE.
-         CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+         CALL CPU_TIME( data%time_now ) ; CALL CLOCK_time( data%clock_now )
          data%time_now = data%time_now - data%time_start
          data%clock_now = data%clock_now - data%clock_start
          char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
-         IF ( inform%iter > 0 ) THEN
-           IF ( data%control%subproblem_direct ) THEN
-             char_facts =                                                      &
-               ADJUSTR( STRING_integer_6( data%total_facts ) )
-             IF ( data%control%print_obj ) THEN
-               WRITE( data%out, 2120 ) prefix, char_iter, data%accept,         &
-                  data%negcur, data%hard, inform%obj,                          &
-                  inform%norm_g, data%ratio, data%old_weight,                  &
-                  data%s_norm, char_facts, data%clock_now
-             ELSE
-               WRITE( data%out, 2120 ) prefix, char_iter, data%accept,         &
-                  data%negcur, data%hard, inform%norm_c,                       &
-                  inform%norm_g, data%ratio, data%old_weight,                  &
-                  data%s_norm, char_facts, data%clock_now
-             END IF
-           ELSE
-             char_sit = ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter ) )
-             char_sit2 =                                                       &
-                ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter_pass2 ) )
-             IF ( data%control%print_obj ) THEN
-               WRITE( data%out, 2130 ) prefix, char_iter, data%accept,         &
-                  data%negcur, data%perturb, inform%obj,                       &
-                  inform%norm_g, data%ratio, data%old_weight, data%s_norm,     &
-                  char_sit, char_sit2, data%clock_now
-             ELSE
-               WRITE( data%out, 2130 ) prefix, char_iter, data%accept,         &
-                  data%negcur, data%perturb, inform%norm_c,                    &
-                  inform%norm_g, data%ratio, data%old_weight, data%s_norm,     &
-                  char_sit, char_sit2, data%clock_now
-             END IF
-           END IF
+         IF ( data%control%print_obj ) THEN
+           obj = inform%obj
          ELSE
-           IF ( data%control%subproblem_direct ) THEN
-             IF ( data%control%print_obj ) THEN
-               WRITE( data%out, 2140 ) prefix,                                 &
-                  char_iter, inform%obj, inform%norm_g
-             ELSE
-               WRITE( data%out, 2140 ) prefix,                                 &
-                  char_iter, inform%norm_c, inform%norm_g
-             END IF
+           obj = inform%norm_r
+         END IF
+         IF ( inform%iter > 0 ) THEN
+           IF ( data%solve_projection ) THEN
+             char_sit = ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter ) )
            ELSE
-             IF ( data%control%print_obj ) THEN
-               WRITE( data%out, 2150 ) prefix,                                 &
-                  char_iter, inform%obj, inform%norm_g
-             ELSE
-               WRITE( data%out, 2150 ) prefix,                                 &
-                  char_iter, inform%norm_c, inform%norm_g
-             END IF
+             char_sit = ADJUSTR( STRING_integer_6( inform%BLLSB_inform%iter ) )
            END IF
+           char_free = ADJUSTR( STRING_integer_6( data%n_free ) )
+           WRITE( data%out, 2140 ) prefix, char_iter, data%accept,             &
+              data%perturb, obj, inform%norm_pg, data%ratio, data%old_weight,  &
+              data%s_norm, char_sit, char_free, data%clock_now
+         ELSE
+           WRITE( data%out, 2150 ) prefix,                                     &
+                  char_iter, inform%norm_r, inform%norm_pg
          END IF
        END IF
 
@@ -2676,67 +2450,52 @@
 
 !  stop if the gradient is small enough
 
-       IF ( inform%norm_c <= data%stop_c .OR.                                  &
-            inform%norm_g <= data%stop_g ) THEN
+       IF ( inform%norm_r <= data%stop_r .OR.                                  &
+            inform%norm_pg <= data%stop_pg ) THEN
          inform%status = GALAHAD_ok ; GO TO 900
        END IF
 
-!  stop if the gradient is swamped by the Hessian
+!  switch from an interior-point to a projection iteration
 
-!      IF ( data%control%hessian_available .AND. inform%iter > 0 ) THEN
-!        IF ( inform%norm_g <= MIN( one,                                       &
-!             MAXVAL( ABS( data%H%val( : data%H%ne ) ) ) * epsmch ) ) THEN
-!         write(6,*) ' stopping as g is too ill-conditioned to make ',         &
-!        &   'further progress!'
-!         write(6,*) inform%norm_g,                                            &
-!           MAXVAL( ABS( nlp%H%val( : nlp%H%ne ) ) ) * epsmch
-!         inform%status = GALAHAD_error_ill_conditioned ; GO TO 900
-!         END IF
-!       END IF
+       IF ( control%subproblem_solver == 3 .AND. .NOT. data%solve_projection   &
+            .AND. inform%norm_pg <= data%stop_pg_switch ) THEN
+         data%solve_projection = .TRUE.
+         IF ( data%printi ) THEN
+           IF ( data%control%print_obj ) THEN
+             WRITE( data%out, 2130 ) prefix
+           ELSE
+             WRITE( data%out, 2120 ) prefix
+           END IF
+         END IF
+       END IF
 
 !  check to see if we are still "alive"
 
        IF ( data%control%alive_unit > 0 ) THEN
          INQUIRE( FILE = data%control%alive_file, EXIST = alive )
          IF ( .NOT. alive ) THEN
-           inform%status = GALAHAD_error_alive
-           RETURN
+           IF ( control%error > 0 ) WRITE( control%error,                      &
+             "( A, ' error: alive file removed' )" ) prefix
+           inform%status = GALAHAD_error_alive ; GO TO 990
          END IF
        END IF
 
 !  check to see if the iteration limit has been exceeded
 
        inform%iter = inform%iter + 1
-       IF ( inform%iter > data%control%maxit .AND. data%step_accepted ) THEN
-         inform%status = GALAHAD_error_max_iterations ; GO TO 900
-       END IF
-!      write(6,*) inform%norm_c, data%stop_c, inform%norm_g, data%stop_g
-
-!  check to see if the Gauss-Newton model should be exchanged for a Newton one
-
-       IF ( data%gauss_to_newton_model ) THEN
-         IF ( inform%norm_g < data%control%switch_to_newton ) THEN
-           IF ( data%control%model == gauss_newton_model ) THEN
-             IF ( control%power < two ) data%power = three
-             data%control%model = newton_model
-             data%control%BSC_control%new_a = 2
-             data%control%BSC_control%extra_space_s = 0
-             data%form_regularization                                          &
-               = data%jacobian_available .AND. data%hessian_available
-             data%print_1st_header = .TRUE.
-             IF ( data%printi ) WRITE( data%out,                               &
-               "( /, A, '  ... switching to Newton model', / )" ) prefix
-           END IF
-         END IF
+       IF ( inform%iter > data%control%maxit ) THEN
+        IF ( control%error > 0 ) WRITE( control%error,                         &
+          "( A, ' error: iteration limit exceeded' )" ) prefix
+         inform%status = GALAHAD_error_max_iterations ; GO TO 990
        END IF
 
 !  debug printing for X and G
 
        IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
          WRITE ( data%out, 2040 ) prefix, TRIM( nlp%pname ), nlp%n
-         WRITE ( data%out, 2000 ) prefix, inform%c_eval, prefix, inform%j_eval,&
-           prefix, inform%h_eval, prefix, inform%iter, prefix, inform%cg_iter, &
-           prefix, inform%obj, prefix, inform%norm_g
+         WRITE ( data%out, 2000 ) prefix, inform%r_eval, prefix,               &
+           inform%jr_eval, prefix, inform%iter, prefix, inform%inner_iter,     &
+           prefix, inform%obj, prefix, inform%norm_pg
          WRITE ( data%out, 2010 ) prefix
 !        l = nlp%n
          l = 2
@@ -2760,392 +2519,204 @@
          END DO
        END IF
 
-!  recompute the scaled Hessian if it has changed
+!  store the values of the Jacobian, J_k, and the observations b = J_k x_k - r_k
 
-       data%perturb = ' '
-       IF ( data%new_point ) THEN
-         data%nskip_prec = data%nskip_prec + 1
-         data%got_h = .FALSE.
-         data%hessian_computed = data%hessian_available .AND.                  &
-           data%control%model == newton_model .AND.                            &
-           data%nskip_prec > nskip_prec_max
-
-!  form the scaled Hessian or a scaling matrix based on the scaled Hessian
-
-         IF ( data%hessian_computed ) THEN
-           IF ( data%reverse_h ) THEN
-             data%branch = 120 ; inform%status = 4 ; RETURN
-           ELSE
-             CALL eval_H( data%eval_status, nlp%X( : nlp%n ),                  &
-                          data%Y( : nlp%m ), userdata,                         &
-                          nlp%H%val( : nlp%H%ne ) )
-             IF ( data%eval_status /= 0 ) THEN
-               inform%bad_eval = 'eval_H'
-               inform%status = GALAHAD_error_evaluation ; GO TO 900
-             END IF
-           END IF
-         END IF
-       END IF
-
-!  return from reverse communication with the scaled Hessian
-
- 120   CONTINUE
-       IF ( data%printw ) WRITE( data%out, "( A, ' statement 120' )" ) prefix
-
-!  the Hessian has changed
-
-       IF ( data%new_point ) THEN
-         IF ( data%hessian_computed ) THEN
-           inform%h_eval = inform%h_eval + 1  ; data%got_h = .TRUE.
-
-!  debug printing for H
-
-           IF ( data%printd ) THEN
-             WRITE( data%out, "( A, ' Scaled Hessian' )" ) prefix
-             DO l = 1, nlp%H%ne
-               WRITE( data%out, "( A, 2I7, ES24.16 )" ) prefix,                &
-                 nlp%H%row( l ), nlp%H%col( l ), nlp%H%val( l )
-             END DO
-           END IF
-         END IF
-
-!  if required, form the Hessian to provide a scaling matrix
-
-         IF ( data%regularization_type > diagonal_jtj_regularization .OR.      &
-              ( data%control%subproblem_direct .AND.                           &
-                ( data%control%model == gauss_newton_model .OR.                &
-                  data%control%model == newton_model ) ) ) THEN
-
-!  form the transpose of the Jacobian
-
-           data%JT%val( : data%JT%ne ) = nlp%J%val( : data%JT%ne )
-
-!  form J^T W J in H
-
-           IF ( data%w_eq_identity ) THEN
-             CALL BSC_form( nlp%n, nlp%m, data%JT, data%H, data%BSC_data,      &
-                            data%control%BSC_control, inform%BSC_inform )
-           ELSE
-             CALL BSC_form( nlp%n, nlp%m, data%JT, data%H, data%BSC_data,      &
-                            data%control%BSC_control, inform%BSC_inform,       &
-                            D = W( : nlp%m ) )
-           END IF
-
-!  append the values of H(x,Wc) if they are required
-
-           IF ( data%hessian_computed ) THEN
-             DO l = 1, nlp%H%ne
-               j =  data%H_map( l )
-               data%H%val( j ) = data%H%val( j ) + nlp%H%val( l )
-             END DO
-           END IF
-         END IF
-
-!        write(6,"( 5ES12.4 )" ) ( nlp%G( l ), l = 1, nlp%n )
-!        write(6,"( ( 2I8, ES12.4 ) )" ) ( data%H%row( l ), data%H%col( l ),   &
-!                                          data%H%val( l ), l = 1,  data%H%ne )
-
-!  if the Hessian has changed, recompute the scaling matrix
-
-!  recompute the scaling matrix
-
-!  the search-direction subproblem will be solved directly
-
-         IF ( data%control%subproblem_direct ) THEN
-
-!  build the scaling matrix
-
-           IF ( data%regularization_type > diagonal_jtj_regularization .AND.   &
-                data%form_regularization ) THEN
-             IF ( data%printt ) WRITE( data%out,                               &
-                   "( A, ' Computing scaling matrix' )" ) prefix
-             CALL PSLS_build( data%H, data%regularization%matrix,              &
-               data%PSLS_data, data%control%PSLS_control, inform%PSLS_inform )
-
-!  check for error returns
-
-             IF ( inform%PSLS_inform%status /= 0 ) THEN
-               inform%status = inform%PSLS_inform%status ; GO TO 900
-             END IF
-
-             data%non_trivial_regularization  = .TRUE.
-             IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
-
-!  build the scaling matrix as the diagonal matrix whose entries are
-!  the squares of the two-norms of the columns of J
-
-           ELSE IF ( data%regularization_type == diagonal_jtj_regularization   &
-                     .AND. data%form_regularization ) THEN
-             CALL mop_column_2_norms( nlp%J,                                   &
-                    data%regularization%matrix%val( : nlp%n ), W = W )
-             data%regularization%matrix%val( : nlp%n )                         &
-               = data%regularization%matrix%val( : nlp%n ) ** 2
-             data%non_trivial_regularization = .TRUE.
-!            write(6,"( ' scaling ', /, ( 5ES12.4 ) )" )                       &
-!              data%regularization%matrix%val( : nlp%n )
-           ELSE
-             data%non_trivial_regularization = .FALSE.
-           END IF
-           data%control%PSLS_control%new_structure = .FALSE.
-
-!  the search-direction subproblem will be solved iteratively
-
+       IF ( data%jacobian_available ) THEN
+         data%GN_model%Ao%val = nlp%Jr%val
+         data%GN_model%B = - nlp%R
+         CALL mop_Ax( one, nlp%Jr, nlp%X( : nlp%n ), one,                      &
+                      data%GN_model%B( : nlp%m_r ), out = data%out,            &
+                      error = data%control%error, print_level = 0_ip_,         &
+                      transpose = .FALSE. )
+       ELSE
+         IF ( data%reverse_jr_prod ) THEN
+           reverse%v( : nlp%n ) = nlp%X( : nlp%n )
+           reverse%transpose = .FALSE.
+           inform%status = 4 ; data%branch = 180 ; RETURN
          ELSE
-           IF ( data%nskip_prec > nskip_prec_max ) THEN
-             IF ( data%regularization_type > diagonal_jtj_regularization .AND. &
-                  data%form_regularization ) THEN
-
-!  form and factorize the scaling matrix obtained from H
-
-               IF ( data%printt ) WRITE( data%out,                             &
-                     "( A, ' Computing scaling matrix' )" ) prefix
-               CALL PSLS_form_and_factorize( data%H, data%PSLS_data,           &
-                 data%control%PSLS_control, inform%PSLS_inform )
-
-!  check for error returns
-
-               IF ( inform%PSLS_inform%status /= 0 ) THEN
-                 inform%status = inform%PSLS_inform%status ; GO TO 900
-               END IF
-               inform%factorization_integer =                                  &
-                 MAX( inform%factorization_integer,                            &
-                      inform%PSLS_inform%factorization_integer )
-               inform%factorization_real =                                     &
-                 MAX( inform%factorization_real,                               &
-                      inform%PSLS_inform%factorization_real )
-
-               IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
-               data%control%PSLS_control%new_structure = .FALSE.
-
-!  build the scaling matrix as the diagonal matrix whose entries are
-!  the squares of the two-norms of the columns of J
-
-             ELSE IF ( data%regularization_type ==                             &
-               diagonal_jtj_regularization .AND. data%form_regularization ) THEN
-               CALL mop_column_2_norms( nlp%J,                                 &
-                      data%regularization%matrix%val( : nlp%n ), W = W )
-               data%regularization%matrix%val( : nlp%n )                       &
-                 = data%regularization%matrix%val( : nlp%n ) ** 2
-             END IF
-             data%nskip_prec = 0
+           CALL eval_Jr_prod( data%eval_status, nlp%X, userdata,               &
+                              .FALSE., nlp%X, data%GN_model%B, data%got_jr )
+           IF ( data%eval_status /= 0 ) THEN
+             inform%bad_eval = 'eval_Jr_prod'
+             inform%status = GALAHAD_error_evaluation ; GO TO 990
            END IF
+           data%GN_model%B = data%GN_model%B - nlp%R
+           data%got_jr = .TRUE.
          END IF
        END IF
+
+!  return from reverse communication with the Jacobian-vector product
+
+   180 CONTINUE
+       IF ( .NOT. data%jacobian_available .AND. data%reverse_jr_prod ) THEN
+         IF ( reverse%eval_status /= 0 ) THEN
+           inform%bad_eval = 'eval_Jr_prod'
+           inform%status = GALAHAD_error_evaluation ; GO TO 990
+         END IF
+         data%GN_model%B( : nlp%m_r )                                          &
+           = reverse%p( : nlp%m_r ) - nlp%R( : nlp%m_r )
+       END IF
+
+!  store the regularization weight 
+
+       data%GN_model%regularization_weight = inform%weight
+
+!  store initial guesses for x and z
+
+       data%GN_model%X = nlp%X ; data%GN_model%Z = zero
+
+!  store the shift x_s
+
+       data%GN_model%X_s = nlp%X
+
+if ( .FALSE. ) THEN
+open(78)
+write(78,*) data%GN_model%n, data%GN_model%o, data%GN_model%m
+write(78,*) data%GN_model%Ao%val
+write(78,*) data%GN_model%B
+write(78,*) data%GN_model%regularization_weight
+write(78,*) data%GN_model%X
+write(78,*) data%GN_model%X_s
+close(78)
+end if
+
+
+!  ============================================================================
+!  2. Calculate the search direction, s_k
+!  ============================================================================
+
+!  find s_k to (approximately) solve the sub-problem
+
+!   s_k = arg min 1/2|| J_k s + r_k ||_W^2 + 1/2 weight ||s||^2 
+!            s
+!         s.t. x_k + s in C(x_k + s)
+
+!  or (more usefully)
+
+!   x_k^+ = arg min 1/2 || J_k x + r_k - J_k x_k ||_W^2 +
+!                   1/2 weight || x - x_k ||^2
+!              x
+!           s.t. x in C(x)
 
    190 CONTINUE
        IF ( data%printw ) WRITE( data%out, "( A, ' statement 190' )" ) prefix
 !      write(6,*) ' f ', inform%obj
 
-!  ============================================================================
-!  2. Calculate the search direction, s
-!  ============================================================================
+!  2a. solution using projection with available Jr
+!  -----------------------------------------------
 
-!  2a. Direct solution
-!  -------------------
+       IF ( data%solve_projection ) THEN
+         IF ( data%jacobian_available ) THEN
+           inform%BLLS_inform%status = 1
+           data%control%BLLS_control%stop_d                                    &
+             = MIN( control%BLLS_control%stop_d, point1 * inform%norm_pg )
+           CALL CPU_TIME( data%time_record )
+           CALL CLOCK_time( data%clock_record )
+           CALL BLLS_solve( data%GN_model, data%BLLS_data,                     &
+                            data%control%BLLS_control, inform%BLLS_inform,     &
+                            userdata )
+           CALL CPU_TIME( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+           inform%time%blls                                                    &
+             = inform%time%blls + data%time_now - data%time_record
+           inform%time%clock_blls                                              &
+             = inform%time%clock_blls + data%clock_now - data%clock_record
+           inform%inner_iter = inform%inner_iter + inform%BLLS_inform%iter
+           data%model = inform%BLLS_inform%ls_obj
+           GO TO 300
+         END IF
 
-!      write(6,*) ' direct? ', data%control%subproblem_direct
-       IF ( data%control%subproblem_direct ) THEN
+!  2b. solution using an interior-point method
+!  -------------------------------------------
+
+       ELSE
+         inform%BLLSB_inform%status = 1
+         CALL CPU_TIME( data%time_record )
+         CALL CLOCK_time( data%clock_record )
          CALL BLLSB_solve( data%GN_model, data%BLLSB_data,                     &
-                           control%BLLSB_control, inform%BLLSB_inform,         &
-                           regularization_weight = inform%weight, W = W )
+                           data%control%BLLSB_control, inform%BLLSB_inform )
+         CALL CPU_TIME( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+         inform%time%bllsb                                                     &
+           = inform%time%bllsb + data%time_now - data%time_record
+         inform%time%clock_bllsb                                               &
+           = inform%time%clock_bllsb + data%clock_now - data%clock_record
+         inform%inner_iter = inform%inner_iter + inform%BLLSB_inform%iter
+         data%model = inform%BLLSB_inform%ls_obj
          GO TO 300
        END IF
 
-!  2b. Iterative solution
-!  ----------------------
+!  2c. solution using projection with suitable products with Jr
+!  ------------------------------------------------------------
 
-       data%control%BLLS_control%stop_relative                                 &
-         = MIN( data%control%BLLS_control%stop_relative, inform%norm_g ** 0.1 )
-
-!      data%model = zero
-       data%model = inform%obj
-       data%control%BLLS_control%f_0 = inform%obj
-       data%S( : nlp%n ) = zero
-       data%G_current( : nlp%n ) = nlp%G( : nlp%n )
        inform%BLLS_inform%status = 1
-!      data%control%BLLS_control%print_level = 1
-       ALLOCATE( FLAG( MAX( o, n ) ) )
-       nf = 0 ; FLAG = 0
-       data%got_j = .TRUE.
+       data%control%BLLS_control%stop_d                                        &
+         = MIN( control%BLLS_control%stop_d, point1 * inform%norm_pg )
+       CALL CPU_TIME( data%time_record ) ; CALL CLOCK_time( data%clock_record )
+       IF ( data%reverse_internal ) GO TO 230
 
-!  Start of the generalized Lanczos iteration
-!  ..........................................
+!  solve problem with a reverse commmunication loop
 
-  210  CONTINUE
-
-!  perform a generalized Lanczos iteration
-
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 210, BLLS_',    &
-        &  'inform%status = ', I0 )" ) prefix, inform%BLLS_inform%status
-
-
-         CALL BLLS_solve( data%GN_model, X_stat, data%BLLSB_data,              &
+ 210   CONTINUE
+         CALL BLLS_solve( data%GN_model, data%BLLS_data,                       &
                           data%control%BLLS_control, inform%BLLS_inform,       &
-                          userdata, reverse = data%reverse, W = W )
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement > 210, BLLS_',  &
-        &  'inform%status = ', I0 )" ) prefix, inform%BLLS_inform%status
+                          userdata, reverse = reverse )
 
-!  branch to perform required computation before re-entering BLLS
+         SELECT CASE ( inform%BLLS_inform%status )
 
-         SELECT CASE( inform%BLLS_inform%status )
-         CASE ( : 0 ) !  termination return
-           WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ',     &
-          &  I0, ', status = ', I0,', objective = ', F6.4 ) " )                &
-              mode, exact_arc_search, inform%status, inform%obj
-           EXIT
+!  termination return
 
-!  compute p = J(x) * v
-
-         CASE ( 2 )
-           data%reverse%P( : nlp%m ) = 0.0_rp_
-           CALL eval_JPROD( data%reverse%eval_status, nlp%X,                   &
-                            userdata, .FALSE.,                                 &
-                            data%reverse%P, data%reverse%V, data%got_j )
-           data%got_j = .TRUE.
-
-!  compute p = J^T(x) * v
-
-         CASE ( 3 )
-           data%reverse%P( : nlp%n ) = 0.0_rp_
-           CALL eval_JPROD( data%reverse%eval_status, nlp%X,                   &
-                            userdata, .TRUE.,                                  &
-                            data%reverse%P, data%reverse%V, data%got_j )
-           data%got_j = .TRUE.
-
-!  compute p = J(x) * sparse v
-
-         CASE ( 4 )
-           data%reverse%P( : nlp%n ) = 0.0_rp_
-           CALL eval_SJPROD( data%reverse%eval_status, nlp%X,                  &
-                             userdata, .FALSE., data%reverse%nz_in_end         &
-                               - data%reverse%nz_in_start + 1,                 &
-                             data%reverse%NZ_in( data%reverse%nz_in_start :    &
-                                                 data%reverse%nz_in_end ),     &
-                             data%reverse%V, nnz_u, INDEX_nz_u, U, got_j )
-
-
-           data%reverse%P( : o ) = 0.0_rp_
-           DO l = data%reverse%nz_in_start, data%reverse%nz_in_end
-             j = data%reverse%NZ_in( l )
-             val = data%reverse%V( j )
-             DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
-               i = Ao_row( k )
-               data%reverse%P( i ) = data%reverse%P( i ) + Ao_val( k ) * val
-             END DO
-           END DO
-
-!  compute sparse( J(x) * sparse v )
-
-         CASE ( 5 )
-           nf = nf + 1
-           data%reverse%nz_out_end = 0
-           DO l = data%reverse%nz_in_start, data%reverse%nz_in_end
-             j = data%reverse%NZ_in( l )
-             val = data%reverse%V( j )
-             DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
-               i = Ao_row( k )
-               IF ( FLAG( i ) < nf ) THEN
-                 FLAG( i ) = nf
-                 data%reverse%P( i ) = Ao_val( k ) * val
-                 data%reverse%nz_out_end = data%reverse%nz_out_end + 1
-                 data%reverse%NZ_out( data%reverse%nz_out_end ) = i
-               ELSE
-                 data%reverse%P( i ) = data%reverse%P( i ) + Ao_val( k ) * val
-               END IF
-             END DO
-           END DO
-
-!  compute sparse( J^T(x) * v )
-
-         CASE ( 6 )
-           data%reverse%P( : n ) = 0.0_rp_
-           DO l = data%reverse%nz_in_start, data%reverse%nz_in_end
-             j = data%reverse%NZ_in( l )
-             val = 0.0_rp_
-             DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
-               val = val + Ao_val( k ) * data%reverse%V( Ao_row( k ) )
-             END DO
-             data%reverse%P( j ) = val
-           END DO
-         END SELECT
-
-
-
-!  form the preconditioned gradient
-
-         CASE ( 2 )
-
-!  form the Hessian-vector product v <- u = H v
-
-         CASE ( 3 )
-!write(6,*) ' model = ', data%control%model
-           SELECT CASE( data%control%model )
-
-!  linear model
-
-           CASE ( first_order_model )
-             data%V( : nlp%n ) = zero
-
-!  quadratic model with diagonal Hessian
-
-           CASE ( diagonal_hessian_model )
-             IF ( .NOT. data%w_eq_identity )                                   &
-               data%V( : nlp%n ) = W( : nlp%n ) * data%V( : nlp%n )
-
-!  quadratic model with true Hessian
-
-           CASE ( newton_model, gauss_newton_model )
-             data%W( : nlp%n ) = data%V( : nlp%n )
-
-!  if the Jacobian has been calculated, form the product v <- J v directly
-
-!write(6,*) ' available ', data%jacobian_available
-!write(6,*) ' w  ', data%W
-             IF ( data%jacobian_available ) THEN
-               CALL mop_Ax( one, nlp%J, data%W( : nlp%n ), zero,               &
-                            data%V( : nlp%m ), out = data%out,                 &
-                            error = data%control%error, print_level = 0_ip_,   &
-                            transpose = .FALSE. )
-
-!  if the Jacobian is unavailable, obtain a matrix-free product
-
-             ELSE
-               data%transpose = .FALSE.
-               IF ( data%reverse_jprod ) THEN
-!write(6,*) ' via reverse'
-                 data%V( : nlp%n ) = data%W( : nlp%n )
-                 data%U( : nlp%m ) = zero
-                 data%branch = 230 ; inform%status = 5 ; RETURN
-               ELSE
-!write(6,*) ' via jprod'
-                 data%V( : nlp%m ) = zero
-                 CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
-                                  userdata, data%transpose,                    &
-                                  data%V( : nlp%m ), data%W( : nlp%n ),        &
-                                  got_j = data%got_j )
-!write(6,*) ' trans  ', data%transpose
-!write(6,*) ' w  ', data%W
-!write(6,*) ' v  ', data%V
-                 IF ( data%eval_status /= 0 ) THEN
-                   inform%bad_eval = 'eval_JPROD'
-                   inform%status = GALAHAD_error_evaluation ; GO TO 900
-                 END IF
-               END IF
-             END IF
-
-           END SELECT
-
-!  restore the gradient
-
-         CASE ( 4 )
-           data%G_current( : nlp%n ) = nlp%G( : nlp%n )
-
-!  successful return
-
-         CASE ( GALAHAD_ok, GALAHAD_warning_on_boundary,                       &
-                GALAHAD_error_max_iterations )
-           data%model = inform%BLLS_inform%obj
+         CASE ( : 0 )
+           data%model = inform%BLLS_inform%ls_obj
            GO TO 260
+
+!  compute Jr * v or Jr^T * v
+
+         CASE ( 2, 3 ) 
+           IF ( data%reverse_jr_prod ) THEN
+             inform%status = inform%BLLS_inform%status + 2
+             data%branch = 220 ; RETURN
+           ELSE
+             CALL eval_Jr_prod( inform%status, nlp%X, userdata,                &
+                                reverse%transpose, reverse%V, reverse%P,       &
+                                data%got_jr )
+             IF ( inform%status /= 0 ) THEN
+               inform%bad_eval = 'eval_Jr_prod'
+               inform%status = GALAHAD_error_evaluation ; GO TO 990
+             END IF
+             data%got_jr = .TRUE.
+           END IF
+
+!  compute the index-th column of Jr
+
+         CASE ( 4 )
+           IF ( data%reverse_jr_scol ) THEN
+             inform%status = inform%BLLS_inform%status + 2
+             data%branch = 220 ; RETURN
+           ELSE
+             CALL eval_Jr_scol( inform%status, nlp%X, userdata, reverse%index, &
+                                reverse%P, reverse%IP, reverse%lp, data%got_jr )
+             IF ( inform%status /= 0 ) THEN
+               inform%bad_eval = 'eval_Jr_scol'
+               inform%status = GALAHAD_error_evaluation ; GO TO 990
+             END IF
+             data%got_jr = .TRUE.
+           END IF
+
+ !  compute Jr * sparse v or sparse( Jr^T * v )
+
+         CASE ( 5, 6 )
+           IF ( data%reverse_jr_sprod ) THEN
+             inform%status = inform%BLLS_inform%status + 2
+             data%branch = 220 ; RETURN
+           ELSE
+             CALL eval_Jr_sprod( inform%status, nlp%X, userdata,               &
+                                 reverse%transpose, reverse%V, reverse%P,      &
+                                 reverse%IV, reverse%lvu, data%got_jr )
+             IF ( inform%status /= 0 ) THEN
+               inform%bad_eval = 'evalJr_sprod'
+               inform%status = GALAHAD_error_evaluation ; GO TO 990
+             END IF
+             data%got_jr = .TRUE.
+           END IF
 
 !  error returns
 
@@ -3154,150 +2725,120 @@
            &  A, ' Error return from BLLS, status = ', I0 )" ) prefix,         &
              inform%BLLS_inform%status
            inform%status = inform%BLLS_inform%status
-           GO TO 900
+           GO TO 990
          END SELECT
+
+!  check that the evaluation succeeded
+
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%status = GALAHAD_error_evaluation ; GO TO 990
+         END IF
+         GO TO 210
 
 !  return from reverse communication with the Jacobian-vector product
 
-   230   CONTINUE
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 230, BLLS_',    &
+   220   CONTINUE
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement 220, BLLS_',    &
         &  'inform%status = ', I0 )" ) prefix, inform%BLLS_inform%status
-         IF ( inform%BLLS_inform%status == 3 .AND.                             &
-              ( data%control%model == newton_model .OR.                        &
-                data%control%model == gauss_newton_model ) ) THEN
 
-!  if the Jacobian has been calculated, form the product u = J^T W v directly
-
-!write(6,*) ' v  ', data%V
-           IF ( data%jacobian_available ) THEN
-             IF ( data%w_eq_identity ) THEN
-               CALL mop_Ax( one, nlp%J, data%V( : nlp%m ), zero,               &
-                            data%U( : nlp%n ), out = data%out,                 &
-                            error = data%control%error, print_level = 0_ip_,   &
-                            transpose = .TRUE. )
-             ELSE
-               CALL mop_Ax( one, nlp%J, W( : nlp%m ) * data%V( : nlp%m ),      &
-                            zero, data%U( : nlp%n ), out = data%out,           &
-                            error = data%control%error, print_level = 0_ip_,   &
-                            transpose = .TRUE. )
-             END IF
-
-!  if the Jacobian is unavailable, obtain a matrix-free product
-
-           ELSE
-             data%transpose = .TRUE.
-             IF ( data%reverse_jprod ) THEN
-               IF ( data%w_eq_identity ) THEN
-                  data%V( : nlp%m ) = data%U( : nlp%m )
-               ELSE
-                  data%V( : nlp%m ) = W( : nlp%m ) * data%U( : nlp%m )
-               END IF
-!write(6,*) ' v  ', data%V
-               data%U( : nlp%n ) = zero
-               data%branch = 240 ; inform%status = 5 ; RETURN
-             ELSE
-               data%U( : nlp%n ) = zero
-               IF ( data%w_eq_identity ) THEN
-                 CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
-                                  userdata, data%transpose, data%U( : nlp%n ), &
-                                  data%V( : nlp%m ), got_j = data%got_j )
-                 IF ( data%eval_status /= 0 ) THEN
-                   inform%bad_eval = 'eval_JPROD'
-                   inform%status = GALAHAD_error_evaluation ; GO TO 900
-                 END IF
-               ELSE
-                 CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
-                                  userdata, data%transpose, data%U( : nlp%n ), &
-                                  W( : nlp%m ) * data%V( : nlp%m ),            &
-                                  got_j = data%got_j )
-                 IF ( data%eval_status /= 0 ) THEN
-                   inform%bad_eval = 'eval_JPROD'
-                   inform%status = GALAHAD_error_evaluation ; GO TO 900
-                 END IF
-               END IF
-             END IF
-           END IF
+         IF ( reverse%eval_status /= 0 ) THEN
+           inform%bad_eval = 'evalJr_prods'
+           inform%status = GALAHAD_error_evaluation ; GO TO 990
          END IF
 
-!  return from reverse communication with the Jacobian transpose-vector
-!  product
+!  end of the reverse commmunication loop
 
-   240   CONTINUE
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 240, BLLS_',    &
-        &  'inform%status = ', I0 )" ) prefix, inform%BLLS_inform%status
-         IF ( inform%BLLS_inform%status == 3 .AND.                             &
-              data%control%model == newton_model ) THEN
-           IF ( .NOT. data%hessian_available .AND.                             &
-                .NOT. data%got_h ) inform%h_eval = inform%h_eval + 1
-
-!  if the Hessian has been calculated, form the product directly
-
-           IF ( data%hessian_available ) THEN
-             CALL mop_Ax( one, nlp%H, data%W( : nlp%n ), one,                  &
-                          data%U( : nlp%n ), data%out, data%control%error,     &
-                          0_ip_, symmetric = .TRUE. )
-
-!  if the Hessian is unavailable, obtain a matrix-free product
-
-           ELSE
-             IF ( data%reverse_hprod ) THEN
-               data%V( : nlp%n ) = data%W( : nlp%n )
-               data%branch = 250 ; inform%status = 6 ; RETURN
-             ELSE
-               CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ),            &
-                                data%Y( : nlp%m ), userdata,                   &
-                                data%U( : nlp%n ), data%W( : nlp%n ),          &
-                                got_h = data%got_h )
-               IF ( data%eval_status /= 0 ) THEN
-                 inform%bad_eval = 'eval_HPROD'
-                 inform%status = GALAHAD_error_evaluation ; GO TO 900
-               END IF
-               data%got_h = .TRUE.
-             END IF
-           END IF
-         END IF
-
-!  return from reverse communication with the Hessian-vector product
-!  or preconditioned vector
-
-   250   CONTINUE
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 250, BLLS_',    &
-        &  'inform%status = ', I0 )" ) prefix, inform%BLLS_inform%status
-         IF ( inform%BLLS_inform%status == 3 ) THEN
-           IF ( data%control%model == newton_model .OR.                        &
-                data%control%model == gauss_newton_model ) THEN
-             data%V( : nlp%n ) = data%U( : nlp%n )
-           END IF
-         END IF
-
-         IF ( inform%BLLS_inform%status == 2 .AND. data%reverse_scale .AND.    &
-              data%regularization_type == user_regularization ) THEN
-           data%V( : nlp%n ) = data%U( : nlp%n )
-         END IF
        GO TO 210
 
-!  End of the generalized Lanczos iteration
-!  ........................................
+!  solve problem with an internal reverse commmunication loop with
+
+ 230   CONTINUE
+
+!write(6,*) ' blls in  ', inform%BLLS_inform%status
+         CALL BLLS_solve( data%GN_model, data%BLLS_data,                       &
+                          data%control%BLLS_control, inform%BLLS_inform,       &
+                          userdata, reverse = data%reverse )
+!write(6,*) ' blls out ', inform%BLLS_inform%status
+
+         SELECT CASE ( inform%BLLS_inform%status )
+
+!  termination return
+
+         CASE ( : 0 )
+           data%model = inform%BLLS_inform%ls_obj
+           GO TO 260
+
+!  compute Jr * v or Jr^T * v
+
+         CASE ( 2, 3 ) 
+           CALL eval_Jr_prod( inform%status, nlp%X, userdata,                  &
+                              data%reverse%transpose, data%reverse%V,          &
+                              data%reverse%P, data%got_jr )
+           IF ( inform%status /= 0 ) THEN
+             inform%bad_eval = 'eval_Jr_prod'
+             inform%status = GALAHAD_error_evaluation ; GO TO 990
+           END IF
+           data%got_jr = .TRUE.
+
+!  compute the index-th column of Jr
+
+         CASE ( 4 )
+           CALL eval_Jr_scol( inform%status, nlp%X, userdata,                  &
+                              data%reverse%index, data%reverse%P,              &
+                              data%reverse%IP, data%reverse%lp, data%got_jr )
+           IF ( inform%status /= 0 ) THEN
+             inform%bad_eval = 'eval_Jr_scol'
+             inform%status = GALAHAD_error_evaluation ; GO TO 990
+           END IF
+           data%got_jr = .TRUE.
+
+ !  compute Jr * sparse v or sparse( Jr^T * v )
+
+         CASE ( 5, 6 )
+           CALL eval_Jr_sprod( inform%status, nlp%X, userdata,                 &
+                               data%reverse%transpose, data%reverse%V,         &
+                               data%reverse%P, data%reverse%IV,                &
+                               data%reverse%lvu, data%got_jr )
+           IF ( inform%status /= 0 ) THEN
+             inform%bad_eval = 'evalJr_sprod'
+             inform%status = GALAHAD_error_evaluation ; GO TO 990
+           END IF
+           data%got_jr = .TRUE.
+
+!  error returns
+
+         CASE DEFAULT
+           IF ( data%printt ) WRITE( data%out, "( /,                           &
+           &  A, ' Error return from BLLS, status = ', I0 )" ) prefix,         &
+             inform%BLLS_inform%status
+           inform%status = inform%BLLS_inform%status
+           GO TO 990
+         END SELECT
+
+!  check that the evaluation succeeded
+
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%status = GALAHAD_error_evaluation ; GO TO 990
+         END IF
+         GO TO 230
+
+!  end of the reverse commmunication loop
+
+       GO TO 230
+
+!  end of the solution 2c iteration
+!  ................................
 
    260 CONTINUE
        IF ( data%printw ) WRITE( data%out, "( A, ' statement 260' )" ) prefix
-!write(6,*) ' model ', data%model
-       data%model = data%model - inform%obj
-
-!  Record whether there is negative curvature or if the boundary is encountered
-
-       IF ( inform%BLLS_inform%negative_curvature ) THEN
-         data%negcur = 'n'
-       ELSE
-         data%negcur = ' '
-       END IF
-       data%s_norm = inform%BLLS_inform%xpo_norm
-!      write(6,*) ' s_norm ', data%s_norm
+       CALL CPU_TIME( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+       inform%time%blls = inform%time%blls + data%time_now - data%time_record
+       inform%time%clock_blls                                                  &
+         = inform%time%clock_blls + data%clock_now - data%clock_record
 
 !      Record the total number of Lanczos iterations
 
-       inform%cg_iter = inform%cg_iter +                                       &
-         inform%BLLS_inform%iter + inform%BLLS_inform%iter_pass2
+       inform%inner_iter = inform%inner_iter + inform%BLLS_inform%iter
        IF ( data%printt ) WRITE( data%out,                                     &
           "( /, A, ' CG iterations required = ', I8 )" )                       &
             prefix, inform%BLLS_inform%iter
@@ -3315,27 +2856,28 @@
 !        END DO
 !      END IF
 
+!  recover the step
+
+       data%S( : nlp%n ) = data%GN_model%X( : nlp%n ) - nlp%X( : nlp%n )
+!write(6,"( ' s = ', 2ES12.4 )" ) data%S( : nlp%n )
+       data%s_norm = TWO_NORM( data%S( : nlp%n ) )
+!      WRITE( 6, "( ' s_norm ', ES12.4 )" ) data%s_norm
+!      WRITE( 6, "( ' ||s|| = ', ES12.4 )" ) MAXVAL( ABS( data%S( : nlp%n ) ) )
+
 !  see if the correction will make any difference
 
        IF ( MAXVAL( ABS( data%S( : nlp%n ) ) / MAX( one, nlp%X( : nlp%n ) ) )  &
             <= data%control%stop_s ) THEN
-         inform%status = GALAHAD_error_tiny_step ; GO TO 900
+         inform%status = GALAHAD_error_tiny_step ; GO TO 990
        END IF
 
-!   CALL mop_Ax( one, nlp%J,  data%S( : nlp%n ), zero,                         &
-!                data%V( : nlp%m ), out = data%out,                            &
-!                error = data%control%error, print_level = 0_ip_,              &
-!                transpose = .FALSE. )
-!   data%U( : nlp%n ) = zero
-!   CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ),                       &
-!                    nlp%C( : nlp%m ), userdata,                               &
-!                    data%U( : nlp%n ), data%S( : nlp%n ),                     &
-!                    got_h = data%got_h )
-!    WRITE(6,*) ' ||Js||^2/||s||^2, ||c|| ',                                   &
-!    ( TWO_NORM( data%V( : nlp%m ) ) / TWO_NORM( data%S( : nlp%m ) ) ) **2,    &
-!    DOT_PRODUCT( data%S( : nlp%m ), data%U( : nlp%n ) ) /                     &
-!      TWO_NORM( data%S( : nlp%m ) ) **2
-!    TWO_NORM( nlp%C( : nlp%m ) )
+!  count how many variables are perportedly free
+
+       data%n_free = COUNT( data%GN_model%X_status( : nlp%n ) == 0 )
+
+!  record the change (decrease) in the model
+
+       data%dm = inform%obj - data%model
 
 !  compute the slope and curvature along the step
 
@@ -3346,25 +2888,24 @@
 !  record the current point
 
        data%X_current( : nlp%n ) = nlp%X( : nlp%n )
-       data%C_current( : nlp%m ) = nlp%C( : nlp%m )
+       data%R_current( : nlp%m_r ) = nlp%R( : nlp%m_r )
        data%obj_current = inform%obj
-       data%norm_c_current = inform%norm_c
+       data%norm_R_current = inform%norm_r
 
 !  form the trial point
 
-!write(6,"( ' s = ', 2ES12.4 )" ) data%S( : nlp%n )
-       nlp%X( : nlp%n ) = data%X_current( : nlp%n ) + data%S( : nlp%n )
+       nlp%X( : nlp%n ) = data%GN_model%X( : nlp%n )
 
 !  evaluate the objective function at the trial point
 
-       IF ( data%reverse_c ) THEN
+       IF ( data%reverse_r ) THEN
          data%branch = 320 ; inform%status = 2 ; RETURN
        ELSE
-         CALL eval_C( data%eval_status, nlp%X( : nlp%n ), userdata,            &
-                      nlp%C( : nlp%m ) )
+         CALL eval_R( data%eval_status, nlp%X( : nlp%n ), userdata,            &
+                      nlp%R( : nlp%m_r ) )
          IF ( data%eval_status /= 0 ) THEN
-           inform%bad_eval = 'eval_C'
-           inform%status = GALAHAD_error_evaluation ; GO TO 900
+           inform%bad_eval = 'eval_R'
+           inform%status = GALAHAD_error_evaluation ; GO TO 990
          END IF
        END IF
 
@@ -3372,22 +2913,30 @@
 
    320 CONTINUE
        IF ( data%printw ) WRITE( data%out, "( A, ' statement 320' )" ) prefix
-       inform%c_eval = inform%c_eval + 1
+       inform%r_eval = inform%r_eval + 1
+
+       IF ( data%reverse_r ) THEN
+         IF ( reverse%eval_status /= 0 ) THEN
+           inform%bad_eval = 'eval_R'
+           inform%status = GALAHAD_error_evaluation ; GO TO 990
+         END IF
+       END IF
+
        IF ( data%w_eq_identity ) THEN
-         data%Y( : nlp%m ) = nlp%C( : nlp%m )
-         data%norm_c_trial = TWO_NORM( nlp%C( : nlp%m ) )
-         data%f_trial = half * data%norm_c_trial ** 2
+         data%Y( : nlp%m_r ) = nlp%R( : nlp%m_r )
+         data%norm_r_trial = TWO_NORM( nlp%R( : nlp%m_r ) )
+         data%f_trial = half * data%norm_r_trial ** 2
        ELSE
-         data%Y( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
-         val = DOT_PRODUCT( data%Y( : nlp%m ), nlp%C( : nlp%m ) )
-         data%norm_c_trial = SQRT( val )
+         data%Y( : nlp%m_r ) = nlp%W( : nlp%m_r ) * nlp%R( : nlp%m_r )
+         val = DOT_PRODUCT( data%Y( : nlp%m_r ), nlp%R( : nlp%m_r ) )
+         data%norm_r_trial = SQRT( val )
          data%f_trial = half * val
        END IF
 
 !      IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
 !        WRITE( data%out, "( /, A, ' name                  C' )" ) prefix
-!        DO i = 1, nlp%m
-!          WRITE( data%out, "(  A, 1X, I10, ES22.14 )" )  prefix, i, nlp%C( i )
+!        DO i = 1, nlp%m_r
+!          WRITE( data%out, "(  A, 1X, I10, ES22.14 )" )  prefix, i, nlp%R( i )
 !        END DO
 !      END IF
 
@@ -3402,7 +2951,7 @@
          data%poor_model = .TRUE.
          data%accept = 'r'
          nlp%X( : nlp%n ) = data%X_current( : nlp%n )
-         nlp%C( : nlp%m ) = data%C_current( : nlp%m )
+         nlp%R( : nlp%m_r ) = data%R_current( : nlp%m_r )
 
 !  control printing for the NaN case
 
@@ -3424,21 +2973,21 @@
            data%control%BLLSB_control%print_level = 0
          END IF
          data%print_iteration_header = data%print_level > 1 .OR.               &
-           ( data%control%BLLS_control%print_level > 0 .AND. .NOT.             &
-             data%control%subproblem_direct ) .OR.                             &
-           ( data%control%BLLSB_control%print_level > 0 .AND.                  &
-             data%control%subproblem_direct )
+           ( data%control%BLLS_control%print_level > 0 .AND.                   &
+             data%solve_projection ) .OR.                                      &
+           ( data%control%BLLSB_control%print_level > 0 .AND. .NOT.            &
+             data%solve_projection )
 
 !  print one-line summary
 
          IF ( data%printi ) THEN
            IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
              WRITE( data%out, 2090 ) prefix
-             IF ( data%control%subproblem_direct ) THEN
+             IF ( data%solve_projection ) THEN
                IF ( data%control%print_obj ) THEN
-                 WRITE( data%out, 2170 ) prefix
+                 WRITE( data%out, 2130 ) prefix
                ELSE
-                 WRITE( data%out, 2160 ) prefix
+                 WRITE( data%out, 2120 ) prefix
                END IF
              ELSE
                IF ( data%control%print_obj ) THEN
@@ -3450,20 +2999,21 @@
            END IF
            data%print_1st_header = .FALSE.
            char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
-           IF ( data%control%subproblem_direct ) THEN
-             char_facts = ADJUSTR( STRING_integer_6( data%total_facts ) )
-             WRITE( data%out,  "( A, A6, 1X, 3A1, '    NaN           -    ',   &
-            &  '    - Inf ',  2ES8.1, 1X, A6, F8.2 )" )                        &
-                prefix, char_iter, data%accept, data%negcur, data%hard,        &
-                inform%weight, data%s_norm, char_facts, data%clock_now
+           char_free = ADJUSTR( STRING_integer_6( data%n_free ) )
+           IF ( data%solve_projection ) THEN
+             char_facts                                                        &
+               = ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter ) )
+!              = ADJUSTR( STRING_integer_6( data%total_facts ) )
+             WRITE( data%out,  "( A, A6, 1X, 2A1, '    NaN           -    ',   &
+            &  '    - Inf ',  2ES8.1, 1X, 2A6, F8.2 )" )                       &
+                prefix, char_iter, data%accept, data%hard, inform%weight,      &
+                data%s_norm, char_facts, char_free, data%clock_now
            ELSE
-             char_sit = ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter ) )
-             char_sit2 =                                                       &
-                ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter_pass2 ) )
-             WRITE( data%out, "( A, A6, 1X, 3A1, '    NaN           -    ',    &
+             char_sit = ADJUSTR( STRING_integer_6( inform%BLLSB_inform%iter ) )
+             WRITE( data%out, "( A, A6, 1X, 2A1, '    NaN           -    ',    &
             &  '    - Inf ', 2ES8.1, 1X, 2A6, F8.2 )" ) prefix, char_iter,     &
-                data%accept, data%negcur, data%perturb,                        &
-                inform%weight, data%s_norm, char_sit, char_sit2, data%clock_now
+                data%accept, data%perturb,                                     &
+                inform%weight, data%s_norm, char_sit, char_free, data%clock_now
            END IF
          END IF
 
@@ -3472,8 +3022,9 @@
          IF ( data%control%alive_unit > 0 ) THEN
            INQUIRE( FILE = data%control%alive_file, EXIST = alive )
            IF ( .NOT. alive ) THEN
-             inform%status = GALAHAD_error_alive
-             RETURN
+             IF ( control%error > 0 ) WRITE( control%error,                    &
+               "( A, ' error: alive file removed' )" ) prefix
+             inform%status = GALAHAD_error_alive ; GO TO 990
            END IF
          END IF
 
@@ -3481,7 +3032,9 @@
 
          inform%iter = inform%iter + 1
          IF ( inform%iter > data%control%maxit .AND. data%step_accepted ) THEN
-           inform%status = GALAHAD_error_max_iterations ; GO TO 900
+           IF ( control%error > 0 ) WRITE( control%error,                      &
+             "( A, ' error: iteration limit exceeded' )" ) prefix
+           inform%status = GALAHAD_error_max_iterations ; GO TO 990
          END IF
 
 !  increase the regularization weight and try again
@@ -3490,10 +3043,10 @@
          GO TO 190
        END IF
 
-!  compute the change in objective
+!  compute the change in the objective function
 
        data%df = inform%obj - data%f_trial
-!      if (data%printi) write(6,*) ' dm, df ', - data%model, data%df
+!      if (data%printi) write(6,*) ' dm, df ', data%dm, data%df
 
 !  compute the ratio of actual to predicted reduction over the current iteration
 
@@ -3502,7 +3055,7 @@
          MAX( one, ABS( inform%obj ) ) * REAL( nlp%n, KIND = rp_ ) * epsmch
 
        ared = data%df + rounding
-       prered = - data%model + rounding
+       prered = data%dm + rounding
        IF ( ABS( ared ) < teneps .AND. ABS( inform%obj ) > teneps )            &
          ared = prered
 !write(6,*) ' ared, pred ', ared, prered
@@ -3534,27 +3087,33 @@
          data%poor_model = .FALSE.
          data%accept = 'a'
          data%step_accepted = .TRUE.
-         inform%norm_c = data%norm_c_trial
+!        data%s_norm_successful = data%s_norm
+         data%got_jr = .FALSE.
+
+!  save the new estimated solution characteristics
+
+         inform%norm_r = data%norm_r_trial
          inform%obj = data%f_trial
-         data%s_norm_successful = data%s_norm
+         nlp%Z( : nlp%n ) = data%GN_model%Z( : nlp%n )
+         nlp%X_status( : nlp%n ) = data%GN_model%X_status( : nlp%n )
 
 !  stop if the residual is sufficiently small
 
-         IF ( inform%norm_c <= data%stop_c ) THEN
+         IF ( inform%norm_r <= data%stop_r ) THEN
 
 !  print one-line summary
 
            IF ( data%printi ) THEN
-             CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+             CALL CPU_TIME( data%time_now ) ; CALL CLOCK_time( data%clock_now )
              data%time_now = data%time_now - data%time_start
              data%clock_now = data%clock_now - data%clock_start
              IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
                WRITE( data%out, 2090 ) prefix
-               IF ( data%control%subproblem_direct ) THEN
+               IF ( data%solve_projection ) THEN
                  IF ( data%control%print_obj ) THEN
-                   WRITE( data%out, 2170 ) prefix
+                   WRITE( data%out, 2130 ) prefix
                  ELSE
-                   WRITE( data%out, 2160 ) prefix
+                   WRITE( data%out, 2120 ) prefix
                  END IF
                ELSE
                  IF ( data%control%print_obj ) THEN
@@ -3566,65 +3125,30 @@
              END IF
              data%print_1st_header = .FALSE.
              char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
-             IF ( inform%iter > 0 ) THEN
-               IF ( data%control%subproblem_direct ) THEN
-                 char_facts =                                                  &
-                   ADJUSTR( STRING_integer_6( data%total_facts ) )
-                 IF ( data%control%print_obj ) THEN
-                   WRITE( data%out, 2120 ) prefix, char_iter, data%accept,     &
-                      data%negcur, data%hard, inform%obj,                      &
-                      inform%norm_g, data%ratio, data%old_weight,              &
-                      data%s_norm, char_facts, data%clock_now
-                 ELSE
-                   WRITE( data%out, 2120 ) prefix, char_iter, data%accept,     &
-                      data%negcur, data%hard, inform%norm_c,                   &
-                      inform%norm_g, data%ratio, data%old_weight,              &
-                      data%s_norm, char_facts, data%clock_now
-                 END IF
-               ELSE
-                 char_sit = ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter))
-                 char_sit2 =                                                   &
-                    ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter_pass2 ) )
-                 IF ( data%control%print_obj ) THEN
-                   WRITE( data%out, 2130 ) prefix, char_iter, data%accept,     &
-                      data%negcur, data%perturb, inform%obj,                   &
-                      inform%norm_g, data%ratio, data%old_weight, data%s_norm, &
-                      char_sit, char_sit2, data%clock_now
-                 ELSE
-                   WRITE( data%out, 2130 ) prefix, char_iter, data%accept,     &
-                      data%negcur, data%perturb, inform%norm_c,                &
-                      inform%norm_g, data%ratio, data%old_weight, data%s_norm, &
-                      char_sit, char_sit2, data%clock_now
-                 END IF
-               END IF
+             IF ( data%control%print_obj ) THEN
+               obj = inform%obj
              ELSE
-               IF ( data%control%subproblem_direct ) THEN
-                 IF ( data%control%print_obj ) THEN
-                   WRITE( data%out, 2140 ) prefix,                             &
-                      char_iter, inform%obj, inform%norm_g
-                 ELSE
-                   WRITE( data%out, 2140 ) prefix,                             &
-                      char_iter, inform%norm_c, inform%norm_g
-                 END IF
+               obj = inform%norm_r
+             END IF
+             IF ( inform%iter > 0 ) THEN
+               IF ( data%solve_projection ) THEN
+                 char_sit                                                      &
+                   = ADJUSTR( STRING_integer_6( inform%BLLS_inform%iter ) )
                ELSE
-                 IF ( data%control%print_obj ) THEN
-                   WRITE( data%out, 2150 ) prefix,                             &
-                        char_iter, inform%obj, inform%norm_g
-                 ELSE
-                   WRITE( data%out, 2150 ) prefix,                             &
-                        char_iter, inform%norm_c, inform%norm_g
-                 END IF
+                 char_sit                                                      &
+                   = ADJUSTR( STRING_integer_6( inform%BLLSB_inform%iter ) )
                END IF
+               char_free = ADJUSTR( STRING_integer_6( data%n_free ) )
+               WRITE( data%out, 2140 ) prefix, char_iter, data%accept,         &
+                  data%perturb, obj, inform%norm_pg, data%ratio,               &
+                  data%old_weight, data%s_norm, char_sit, char_free,           &
+                  data%clock_now
+             ELSE
+               WRITE( data%out, 2150 ) prefix,                                 &
+                      char_iter, inform%norm_r, inform%norm_pg
              END IF
            END IF
            inform%status = GALAHAD_ok ; GO TO 900
-         END IF
-
-!  if a "magic" step is permitted, return to the user to allow for this
-!  opportunity
-
-         IF ( data%control%magic_step ) THEN
-           data%branch = 380 ; inform%status = 9 ; RETURN
          END IF
 
 !  the new point is not acceptable
@@ -3633,40 +3157,15 @@
          data%poor_model = .TRUE.
          data%accept = 'r'
          nlp%X( : nlp%n ) = data%X_current( : nlp%n )
-         nlp%C( : nlp%m ) = data%C_current( : nlp%m )
+         nlp%R( : nlp%m_r ) = data%R_current( : nlp%m_r )
          IF ( data%w_eq_identity ) THEN
-           data%Y( : nlp%m ) = nlp%C( : nlp%m )
+           data%Y( : nlp%m_r ) = nlp%R( : nlp%m_r )
          ELSE
-           data%Y( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
+           data%Y( : nlp%m_r ) = nlp%W( : nlp%m_r ) * nlp%R( : nlp%m_r )
          END IF
          data%new_point = .FALSE.
        END IF
 
-!  return after possible magic step
-
-  380  CONTINUE
-       IF ( data%printw ) WRITE( data%out, "( A, ' statement 380' )" ) prefix
-
-!  update the objective function value to account for the magic step
-
-       IF ( data%ratio >= data%control%eta_successful .AND.                    &
-            data%control%magic_step ) THEN
-         inform%c_eval = inform%c_eval + 1
-         IF ( data%w_eq_identity ) THEN
-           data%Y( : nlp%m ) = nlp%C( : nlp%m )
-           inform%norm_c = TWO_NORM( nlp%C( : nlp%m ) )
-           inform%obj = half * inform%norm_c ** 2
-         ELSE
-           data%Y( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
-           val = DOT_PRODUCT( data%Y( : nlp%m ), nlp%C( : nlp%m ) )
-           inform%norm_c = SQRT( val )
-           inform%obj = half * val
-         END IF
-       END IF
-
-!  return from reverse communication with the scaled vector u = S(x) x
-
-  390  CONTINUE
        IF ( data%ratio >= data%control%eta_successful ) THEN
 
 !  update the history
@@ -3727,28 +3226,13 @@
                data%control%weight_decrease * inform%weight )
            END IF
          END IF
-!      CASE ( weight_update_gpt )
-!        CALL ARC_adjust_weight( inform%weight, data%model, data%stg,          &
-!                                data%hstbs, data%s_norm, data%ratio,          &
-!                                data%ARC_control )
-!        inform%weight = MAX( data%minimum_weight, inform%weight )
-
-!        IF ( data%ratio < control%eta_successful ) THEN
-!          IF ( data%control%subproblem_direct ) THEN
-!            val = two * inform%BLLSB_inform%pole / data%s_norm_successful
-!          ELSE
-!            val = - two * inform%BLLS_inform%leftmost /data%s_norm_successful
-!          END IF
-!          inform%weight = MAX( inform%weight, val )
-!        END IF
        CASE DEFAULT
          IF ( data%ratio < data%control%eta_successful ) THEN
            inform%weight = data%control%weight_increase * inform%weight
            IF ( data%control%weight_update_strategy ==                         &
-                  weight_update_increase .AND.                                 &
-                data%control%model == gauss_newton_model ) THEN
+                weight_update_increase ) THEN
              IF ( data%s_norm <= ten ** ( - 4 ) .AND.                          &
-                  inform%norm_g < inform%norm_c ) THEN
+                  inform%norm_pg < inform%norm_r ) THEN
                data%minimum_weight = MAX( data%minimum_weight, inform%weight )
                IF ( data%printi ) WRITE( data%out, "( A, ' increasing min ',   &
               &  'weight to', ES9.2 )" ) prefix, data%minimum_weight
@@ -3761,47 +3245,11 @@
          END IF
        END SELECT
 
-       IF ( data%ratio >= data%control%eta_successful ) THEN
-         IF ( data%control%norm /= euclidean_regularization ) THEN
-           IF ( data%control%renormalize_weight ) THEN
-             IF ( data%control%subproblem_direct ) THEN
-               data%s_new_norm = data%s_norm
-             ELSE
-               IF ( data%regularization_type >                                 &
-                    diagonal_jtj_regularization ) THEN
-                 data%s_new_norm = PSLS_norm( data%H, data%S, data%PSLS_data,  &
-                     data%control%PSLS_control, inform%PSLS_inform )
-                 IF ( inform%PSLS_inform%status ==                             &
-                      GALAHAD_error_norm_unknown ) THEN
-                   data%s_new_norm = data%s_norm
-                 ELSE IF ( inform%PSLS_inform%status /= 0 ) THEN
-                   GO TO 980
-                 END IF
-               ELSE IF ( data%regularization_type ==                           &
-                         diagonal_jtj_regularization ) THEN
-                 data%s_new_norm = SQRT( DOT_PRODUCT( data%S( : nlp%n ),       &
-                   data%regularization%matrix%val( : nlp%n )                   &
-                     * data%S( : nlp%n ) ) )
-               END IF
-             END IF
-             IF ( data%printt )                                                &
-               WRITE( data%out, "( A, ' ratio new, old norms = ', ES12.4 )" )  &
-                 prefix, data%s_new_norm / data%s_norm
-           ELSE
-             data%s_new_norm = data%s_norm
-           END IF
-
-!  if the norm has changed, adjust the weight accordingly
-
-           inform%weight = inform%weight * ( data%s_new_norm / data%s_norm )
-           data%s_norm = data%s_new_norm
-         END IF
-       END IF
 !      write(6,*) ' weight update ', inform%weight
 
 !  record the clock time
 
-       CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+       CALL CPU_TIME( data%time_now ) ; CALL CLOCK_time( data%clock_now )
        data%time_now = data%time_now - data%time_start
        data%clock_now = data%clock_now - data%clock_start
        IF ( data%printt ) WRITE( data%out, "( /, A, ' Time so far = ', 0P,     &
@@ -3810,7 +3258,9 @@
               data%time_now > data%control%cpu_time_limit ) .OR.               &
             ( data%control%clock_time_limit >= zero .AND.                      &
               data%clock_now > data%control%clock_time_limit ) ) THEN
-         inform%status = GALAHAD_error_cpu_limit ; GO TO 900
+         IF ( control%error > 0 ) WRITE( control%error,                        &
+           "( A, ' error: time limit exceeded' )" ) prefix
+         inform%status = GALAHAD_error_cpu_limit ; GO TO 990
        END IF
 
 !write(6,*) ' f ', data%f_trial, data%ratio
@@ -3822,28 +3272,25 @@
 !  ============================================================================
 
  900 CONTINUE
-     IF ( data%printw ) WRITE( data%out, "( A, ' statement 900' )" ) prefix
+     IF ( data%printw ) WRITE( data%out, "( A, ' statement 910' )" ) prefix
+     CALL CPU_TIME( data%time_record ) ; CALL CLOCK_time( data%clock_record )
+     inform%time%total = data%time_record - data%time_start
+     inform%time%clock_total = data%clock_record - data%clock_start
 
 !  print details of solution
 
-     IF ( inform%norm_c > zero ) THEN
-       inform%norm_g = TWO_NORM( nlp%G( : nlp%n ) ) / inform%norm_c
+     IF ( inform%norm_r > zero ) THEN
+       inform%norm_g = TWO_NORM( nlp%G( : nlp%n ) ) / inform%norm_r
      ELSE
        inform%norm_g = zero
      END IF
 !    write(6,*) ' final weight = ', inform%weight
 
- 910 CONTINUE
-     IF ( data%printw ) WRITE( data%out, "( A, ' statement 910' )" ) prefix
-     CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
-     inform%time%total = data%time_record - data%time_start
-     inform%time%clock_total = data%clock_record - data%clock_start
-
      IF ( data%printi ) THEN
 
 !      WRITE ( data%out, 2040 ) nlp%pname, nlp%n
-!      WRITE ( data%out, 2000 ) inform%c_eval, inform%j_eval, inform%h_eval,   &
-!         inform%iter, inform%cg_iter, inform%obj, inform%norm_g
+!      WRITE ( data%out, 2000 ) inform%r_eval, inform%jr_eval, &
+!         inform%iter, inform%inner_iter, inform%obj, inform%norm_g
 !      WRITE ( data%out, 2010 )
 !      IF ( data%print_level > 3 ) THEN
 !         l = nlp%n
@@ -3863,128 +3310,14 @@
 !      END DO
 
        WRITE( data%out, "( /, A, '  Problem: ', A, ' (n = ', I0, ', m = ', I0, &
-    &   ')', /, A, '  BNLS stopping tolerances (c,J''c/c) =', 2ES9.2 )" )      &
-          prefix, TRIM( nlp%pname ), nlp%n, nlp%m, prefix,                     &
-          data%stop_c, data%stop_g
+    &   ')', /, A, '  BNLS stopping tolerances (r,P[-J''r]) =', 2ES9.2 )" )    &
+          prefix, TRIM( nlp%pname ), nlp%n, nlp%m_r, prefix,                     &
+          data%stop_r, data%stop_pg
        IF ( .NOT. data%monotone ) WRITE( data%out,                             &
            "( A, '  Non-monotone method used (history = ', I0, ')' )" )        &
          prefix, data%non_monotone_history
-       IF ( data%gauss_to_newton_model .AND. data%control%model ==             &
-            newton_model ) data%control%model = gauss_to_newton_model
-       SELECT CASE( data%model_used )
-       CASE ( first_order_model )
-         WRITE( data%out, "( A, '  First-order model used' )" ) prefix
-       CASE ( diagonal_hessian_model )
-         WRITE( data%out, "( A, '  Second-order model with identity',          &
-        &  ' Hessian used' )" ) prefix
-       CASE ( gauss_newton_model )
-         WRITE( data%out, "( A, '  Gauss-Newton model used' )" ) prefix
-       CASE ( newton_model )
-         WRITE( data%out, "( A, '  Second-order (Newton) model used' )" ) prefix
-       CASE ( gauss_to_newton_model )
-         WRITE( data%out, "( A, '  Gauss-Newton-to-Newton model used' )") prefix
-       END SELECT
-       WRITE( data%out, "( A, '  Regularization power =', F4.1 )" )            &
-          prefix, data%power
        IF ( data%control%magic_step )                                          &
          WRITE( data%out, "( A, '  Magic step used' )" ) prefix
-       IF ( data%control%subproblem_direct ) THEN
-         IF ( inform%BLLSB_inform%dense_factorization ) THEN
-           WRITE( data%out,                                                    &
-           "( A, '  Direct solution (eigen solver SYSV',                       &
-          &      ') of the regularization sub-problem' )" ) prefix
-         ELSE
-           WRITE( data%out,                                                    &
-           "( A, '  Direct solution (solver ', A,                              &
-          &      ') of the regularization sub-problem' )" )                    &
-              prefix, TRIM( data%control%BLLSB_control%definite_linear_solver )
-         END IF
-         SELECT CASE ( data%regularization_type )
-         CASE ( user_regularization )
-           WRITE( data%out, "( A, '  User-defined regularization used' )" )    &
-             prefix
-         CASE ( euclidean_regularization )
-           WRITE( data%out, "( A, '  Euclidean regularization used' )" ) prefix
-         CASE ( diagonal_jtj_regularization )
-           WRITE( data%out, "( A, '  Diagonal (JTJ) regularization used' )" )  &
-             prefix
-         CASE ( diagonal_hessian_regularization )
-           WRITE( data%out, "( A, '  Diagonal (H) regularization used' )" )    &
-             prefix
-         CASE ( band_regularization )
-           WRITE( data%out, "( A, '  Band regularization (semi-bandwidth ',    &
-          &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( reordered_band_regularization )
-           WRITE( data%out, "( A, ' Reordered band regularization',            &
-          &   ' (semi-bandwidth ', I0, ') used' )" ) prefix,                   &
-             inform%PSLS_inform%semi_bandwidth_used
-         CASE ( schnabel_eskow_regularization, gmps_regularization,            &
-                lin_more_regularization, mi28_regularization )
-           WRITE( data%out, "( A, '  Modified full matrix regularization',     &
-          & ' used' )" ) prefix
-         END SELECT
-         WRITE( data%out, "( A, '  Number of factorization = ', I0,            &
-        &     ', factorization time = ', F0.2, ' seconds'  )" ) prefix,        &
-           inform%BLLSB_inform%factorizations,                                   &
-           inform%BLLSB_inform%time%clock_factorize
-         IF ( TRIM( data%control%BLLSB_control%definite_linear_solver ) ==       &
-              'pbtr' ) THEN
-           WRITE( data%out, "( A, '  Max entries in factors = ', I0,           &
-          & ', semi-bandwidth = ', I0  )" ) prefix, inform%max_entries_factors,&
-              inform%BLLSB_inform%SLS_inform%semi_bandwidth
-         ELSE
-           WRITE( data%out, "( A, '  Max entries in factors = ', I0 )" )       &
-             prefix, inform%max_entries_factors
-         END IF
-       ELSE
-         WRITE( data%out,                                                      &
-           "( A, '  Iterative solution of the regularization sub-problem' )" ) &
-              prefix
-         IF ( data%regularization_type > 0 )                                   &
-           WRITE( data%out, "( A, '  Hessian semi-bandwidth (original,',       &
-          &     ' re-ordered) = ', I0, ', ', I0 )" ) prefix,                   &
-             inform%PSLS_inform%semi_bandwidth,                                &
-             inform%PSLS_inform%reordered_semi_bandwidth
-         SELECT CASE ( data%regularization_type )
-         CASE ( user_regularization )
-           WRITE( data%out, "( A, '  User-defined regularization used' )" )    &
-             prefix
-         CASE ( euclidean_regularization )
-           WRITE( data%out, "( A, '  Euclidean regularization used' )" ) prefix
-         CASE ( diagonal_jtj_regularization )
-           WRITE( data%out, "( A, '  Diagonal (JTJ) regularization used' )" )  &
-             prefix
-         CASE ( diagonal_hessian_regularization )
-           WRITE( data%out, "( A, '  Diagonal (H) regularization used' )" )    &
-             prefix
-         CASE ( band_regularization )
-           WRITE( data%out, "( A, '  Band regularization (semi-bandwidth ',    &
-          &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( reordered_band_regularization )
-           WRITE( data%out, "( A, ' Reordered band regularization',            &
-          &    ' (semi-bandwidth ', I0, ') used' )" ) prefix,                  &
-               inform%PSLS_inform%semi_bandwidth_used
-         CASE ( schnabel_eskow_regularization )
-           WRITE( data%out, "( A, '  SE (solver ', A, ') full',                &
-          &  ' regularization used' )" ) prefix,                               &
-           TRIM( data%control%PSLS_control%definite_linear_solver )
-         CASE ( gmps_regularization )
-           WRITE( data%out, "( A, '  GMPS (solver ', A, ') full',              &
-          &    ' regularization used' )" ) prefix,                             &
-               TRIM( data%control%PSLS_control%definite_linear_solver )
-         CASE ( lin_more_regularization )
-           WRITE( data%out, "( A, '  Lin-More''(', I0, ') incomplete',         &
-          & ' Cholesky factorization regularization used ' )" )                &
-            prefix, data%control%PSLS_control%icfs_vectors
-         CASE ( mi28_regularization )
-           WRITE( data%out, "( A, '  HSL_MI28(', I0, ',', I0, ') incomplete',  &
-           & ' Cholesky factorization regularization used ' )" ) prefix,       &
-            data%control%PSLS_control%mi28_lsize,                              &
-            data%control%PSLS_control%mi28_rsize
-         END SELECT
-         IF ( data%control%renormalize_weight ) WRITE( data%out,               &
-            "( A, '  Weight renormalized' )" ) prefix
-       END IF
        WRITE ( data%out, "( A, '  Total time = ', 0P, F0.2, ' seconds', / )" ) &
          prefix, inform%time%clock_total
      END IF
@@ -3995,16 +3328,20 @@
 !  Error returns
 !  -------------
 
+!  allocation and deallocation errors
+
  980 CONTINUE
      IF ( data%printw ) WRITE( data%out, "( A, ' statement 980' )" ) prefix
-     CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
+     CALL CPU_TIME( data%time_record ) ; CALL CLOCK_time( data%clock_record )
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
      RETURN
 
+!  other errors
+
  990 CONTINUE
      IF ( data%printw ) WRITE( data%out, "( A, ' statement 990' )" ) prefix
-     CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
+     CALL CPU_TIME( data%time_record ) ; CALL CLOCK_time( data%clock_record )
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
      IF ( data%printi ) THEN
@@ -4017,29 +3354,26 @@
 
  2000 FORMAT( /, A, ' # function evaluations  = ', I10,                        &
               /, A, ' # gradient evaluations  = ', I10,                        &
-              /, A, ' # Hessian evaluations   = ', I10,                        &
               /, A, ' # major  iterations     = ', I10,                        &
               /, A, ' # minor (cg) iterations = ', I10,                        &
              //, A, ' objective value         = ', ES22.14,                    &
-              /, A, ' gradient norm           = ', ES12.4 )
+              /, A, ' projected gradient norm = ', ES12.4 )
  2010 FORMAT( /, A, ' name                  X                   G ' )
  2020 FORMAT(  A, 1X, A10, 2ES22.14 )
  2030 FORMAT(  A, 1X, I10, 2ES22.14 )
  2040 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
  2050 FORMAT( A, ' .          ........... ...........' )
- 2090 FORMAT( A, '        (a=accept r=reject n=-ve curvature h=hard case)' )
- 2100 FORMAT( A, '    It         c        J''c/c     ',                        &
-             ' ratio   weight    step pass 1 pass 2   time' )
- 2110 FORMAT( A, '    It         f          g      ',                          &
-             ' ratio   weight    step pass 1 pass 2   time' )
- 2120 FORMAT( A, A6, 1X, 3A1, 2ES11.4, ES9.1, 2ES8.1, 1X, A6, F8.2 )
- 2130 FORMAT( A, A6, 1X, 3A1, 2ES11.4, ES9.1, 2ES8.1, 1X, 2A6, F8.2 )
- 2140 FORMAT( A, A6, 4X, 2ES11.4 )
- 2150 FORMAT( A, A6, 4X, 2ES11.4 )
- 2160 FORMAT( A, '    It         c        J''c/c     ',                        &
-             ' ratio   weight   step  # fact    time' )
- 2170 FORMAT( A, '    It         f           g      ',                         &
-             ' ratio   weight   step  # fact    time' )
+ 2090 FORMAT( A, '        (a=accept r=reject)' )
+ 2100 FORMAT( A, '    It        r        ||pg||    ',                          &
+             ' ratio   weight  step it bllsb #free  time' )
+ 2110 FORMAT( A, '    It        f        ||pg||    ',                          &
+             ' ratio   weight  step it bllsb #free  time' )
+ 2120 FORMAT( A, '    It         r       ||pg||    ',                          &
+             ' ratio   weight  step it blls #free   time' )
+ 2130 FORMAT( A, '    It         f       ||pg||    ',                          &
+             ' ratio   weight  step it blls #free   time' )
+ 2140 FORMAT( A, A6, 1X, 2A1, 2ES11.4, ES9.1, 2ES8.1, A6, A6, F8.2 )
+ 2150 FORMAT( A, A6, 3X, 2ES11.4 )
 
  !  End of subroutine BNLS_solve
 
@@ -4087,261 +3421,9 @@
 !
 !     END SUBROUTINE BNLS_update_history
 
-!-*-*-*-  G A L A H A D -  B N L S _ s e t _ m a p  S U B R O U T I N E  -*-*-*-
-
-     SUBROUTINE BNLS_set_map( A, B, IW, PTR, ROW, ORDER, b_in_a,               &
-                              deallocate_error_fatal, space_critical, out,     &
-                              MAP, status, alloc_status, bad_alloc )
-
-!  find a mapping of the entries of the matrix B into A, or vice versa - the
-!  sparsity pattern of the relevant one is presumed to be a subset of the other,
-!  and b_in_a should be set true iff it is B in A that is required. A should
-!  be stored by columns (either as a sparse or dense matrix) while B can
-!  be in any supported GALAHAD format.
-
-!-----------------------------------------------
-!   D u m m y   A r g u m e n t s
-!-----------------------------------------------
-
-     INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-     LOGICAL, INTENT( IN ) :: b_in_a, deallocate_error_fatal, space_critical
-     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: alloc_status
-     INTEGER ( KIND = ip_ ), INTENT( INOUT ), ALLOCATABLE,                     &
-                             DIMENSION( : ) :: IW, PTR, ROW, ORDER, MAP
-     CHARACTER ( LEN = 80 ), INTENT( INOUT ) :: bad_alloc
-     TYPE ( SMT_type ), INTENT( IN ) :: A, B
-
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     INTEGER ( KIND = ip_ ) :: i, j, l, ll
-     LOGICAL :: b_dense
-     CHARACTER ( LEN = 80 ) :: array_name
-
-!    write(6,*) ' B in A? ', b_in_a
-!    write(6,*) ' type A, B ', SMT_get( A%type ), ' ', SMT_get( B%type )
-!  First order B by columns. Assign workspace as well as space for the required
-!  mapping, MAP
-
-     array_name = 'bnls: IW'
-     CALL SPACE_resize_array( B%m, IW, status, alloc_status,                   &
-            array_name = array_name,                                           &
-            deallocate_error_fatal = deallocate_error_fatal,                   &
-            exact_size = space_critical, bad_alloc = bad_alloc, out = out )
-     IF ( status /= 0 ) RETURN
-
-     array_name = 'bnls: PTR'
-     CALL SPACE_resize_array( B%n + 1, PTR, status, alloc_status,              &
-            array_name = array_name,                                           &
-            deallocate_error_fatal = deallocate_error_fatal,                   &
-            exact_size = space_critical, bad_alloc = bad_alloc, out = out )
-
-     array_name = 'bnls: ROW'
-     CALL SPACE_resize_array( B%ne, ROW, status, alloc_status,                 &
-            array_name = array_name,                                           &
-            deallocate_error_fatal = deallocate_error_fatal,                   &
-            exact_size = space_critical, bad_alloc = bad_alloc, out = out )
-
-     array_name = 'bnls: ORDER'
-     CALL SPACE_resize_array( B%ne, ORDER, status, alloc_status,               &
-            array_name = array_name,                                           &
-            deallocate_error_fatal = deallocate_error_fatal,                   &
-            exact_size = space_critical, bad_alloc = bad_alloc, out = out )
-
-     array_name = 'bnls: MAP'
-     CALL SPACE_resize_array( B%ne, MAP, status, alloc_status,                 &
-            array_name = array_name,                                           &
-            deallocate_error_fatal = deallocate_error_fatal,                   &
-            exact_size = space_critical, bad_alloc = bad_alloc, out = out )
-
-!  count the numbers of entries in each column of B
-
-     SELECT CASE ( SMT_get( B%type ) )
-     CASE ( 'DENSE' )
-       DO j = 1, B%n
-         PTR( j + 1 ) = B%n + 1 - j
-       END DO
-     CASE ( 'SPARSE_BY_ROWS' )
-       PTR( 2 : B%n + 1 ) = 0
-       DO i = 1, B%n
-         DO l = B%ptr( i ), B%ptr( i + 1 ) - 1
-           j = B%col( l ) + 1
-           PTR( j ) = PTR( j ) + 1
-         END DO
-       END DO
-     CASE ( 'COORDINATE' )
-       PTR( 2 : B%n + 1 ) = 0
-       DO l = 1, B%ne
-         j = B%col( l ) + 1
-         PTR( j ) = PTR( j ) + 1
-       END DO
-     CASE ( 'DIAGONAL', 'SCALED_IDENTITY', 'IDENTITY' )
-       PTR( 2 : B%n + 1 ) = 1
-     END SELECT
-
-!  set the starting addresses for each column of B
-
-     PTR( 1 ) = 1
-     DO i = 2, B%n + 1
-       PTR( i ) = PTR( i ) + PTR( i - 1 )
-     END DO
-
-!  compute the column ordering of B
-
-     SELECT CASE ( SMT_get( B%type ) )
-     CASE ( 'DENSE' )
-       l = 0
-       DO i = 1, B%n
-         DO j = 1, i
-           l = l + 1
-           ll = PTR( j )
-           ROW( ll ) = i
-           ORDER( ll ) = l
-           PTR( j ) = ll + 1
-         END DO
-       END DO
-     CASE ( 'SPARSE_BY_ROWS' )
-       DO i = 1, B%n
-         DO l = B%ptr( i ), B%ptr( i + 1 ) - 1
-           j = B%col( l )
-           ll = PTR( j )
-           ROW( ll ) = i
-           ORDER( ll ) = l
-           PTR( j ) = ll + 1
-         END DO
-       END DO
-     CASE ( 'COORDINATE' )
-       DO l = 1, B%ne
-         j = B%col( l )
-         ll = PTR( j )
-         ROW( ll ) = B%row( l )
-         ORDER( ll ) = l
-         PTR( j ) = ll + 1
-       END DO
-     CASE ( 'DIAGONAL', 'SCALED_IDENTITY', 'IDENTITY' )
-       DO l = 1, B%n
-         j = l
-         ll = PTR( j )
-         ROW( ll ) = j
-         ORDER( ll ) = l
-         PTR( j ) = ll + 1
-       END DO
-     END SELECT
-
-!  reset the starting addresses for each column of B
-
-     DO i = B%n, 1, - 1
-       PTR( i + 1 ) = PTR( i )
-     END DO
-     PTR( 1 ) = 1
-
-!  for each column in turn, find the position in A of each entry of B
-
-     IW( : B%m ) = 0
-
-     IF ( b_in_a ) THEN
-       IF ( SMT_get( A%type ) == 'SPARSE_BY_COLUMNS' .OR.                      &
-            SMT_get( A%type ) == 'COORDINATE' ) THEN
-         DO j = 1, A%n
-           DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
-             IW( A%row( l ) ) = l
-           END DO
-           DO l = PTR( j ), PTR( j + 1 ) - 1
-             MAP( ORDER( l ) ) = IW( ROW( l ) )
-           END DO
-           DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
-             IW( A%row( l ) ) = 0
-           END DO
-         END DO
-       ELSE ! dense A
-         ll = 0
-         DO j = 1, A%n
-           DO i = 1, A%m
-             ll = ll + 1
-             IW( i ) = ll
-           END DO
-           DO l = PTR( j ), PTR( j + 1 ) - 1
-             MAP( ORDER( l ) ) = IW( ROW( l ) )
-           END DO
-           IW( : A%m ) = 0
-         END DO
-       END IF
-
-!  for each column in turn, find the position in B of each entry of A
-
-     ELSE
-       b_dense = SMT_get( B%type ) == 'DENSE'
-       ll = 0
-       IF ( SMT_get( A%type ) == 'SPARSE_BY_COLUMNS' .OR.                      &
-            SMT_get( A%type ) == 'COORDINATE' ) THEN
-         DO j = 1, B%n
-           DO l = PTR( j ), PTR( j + 1 ) - 1
-             IW( ROW( l ) ) = ORDER( l )
-           END DO
-           IF ( b_dense ) THEN
-             DO i = 1, B%m
-               ll = ll + 1
-               MAP( ll ) = IW( i )
-             END DO
-           ELSE
-             DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
-               MAP( l ) = IW( A%row( l ) )
-             END DO
-           END IF
-           DO l = PTR( j ), PTR( j + 1 ) - 1
-             IW( ROW( l ) ) = 0
-           END DO
-         END DO
-       ELSE ! dense A by columns
-         DO j = 1, B%n
-           DO l = PTR( j ), PTR( j + 1 ) - 1
-             IW( ROW( l ) ) = ORDER( l )
-           END DO
-           DO i = 1, B%m
-             ll = ll + 1
-             MAP( ll ) = IW( i )
-           END DO
-           DO l = PTR( j ), PTR( j + 1 ) - 1
-             IW( ROW( l ) ) = 0
-           END DO
-         END DO
-       END IF
-     END IF
-
-!  discard the workspace
-
-     array_name = 'bnls: PTR'
-     CALL SPACE_dealloc_array( PTR, status, alloc_status,                      &
-        array_name = array_name, bad_alloc = bad_alloc, out = out )
-     IF ( deallocate_error_fatal .AND. status /= GALAHAD_ok ) RETURN
-
-     array_name = 'bnls: ROW'
-     CALL SPACE_dealloc_array( ROW, status, alloc_status,                      &
-        array_name = array_name, bad_alloc = bad_alloc, out = out )
-     IF ( deallocate_error_fatal .AND. status /= GALAHAD_ok ) RETURN
-
-     array_name = 'bnls: ORDER'
-     CALL SPACE_dealloc_array( ORDER, status, alloc_status,                    &
-        array_name = array_name, bad_alloc = bad_alloc, out = out )
-     IF ( deallocate_error_fatal .AND. status /= GALAHAD_ok ) RETURN
-
-     array_name = 'bnls: IW'
-     CALL SPACE_dealloc_array( IW, status, alloc_status,                       &
-        array_name = array_name, bad_alloc = bad_alloc, out = out )
-     IF ( deallocate_error_fatal .AND. status /= GALAHAD_ok ) RETURN
-
-     status = GALAHAD_ok
-     RETURN
-
-!  end of subroutine BNLS_set_map
-
-     END SUBROUTINE BNLS_set_map
-
 !-*-*-  G A L A H A D -  B N L S _ t e r m i n a t e  S U B R O U T I N E -*-*-
 
-     SUBROUTINE BNLS_terminate( data, control, inform )
+     SUBROUTINE BNLS_terminate( data, control, inform, reverse )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -4356,6 +3438,7 @@
      TYPE ( BNLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( BNLS_control_type ), INTENT( IN ) :: control
      TYPE ( BNLS_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( REVERSE_type ), OPTIONAL, INTENT( INOUT ) :: reverse
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -4364,48 +3447,34 @@
      LOGICAL :: alive
      CHARACTER ( LEN = 80 ) :: array_name
 
+!  Deallocate all those required for reverse communication
+
+     IF ( PRESENT( reverse ) ) THEN
+       CALL REVERSE_terminate( reverse, inform%status, inform%alloc_status,    &
+          bad_alloc = inform%bad_alloc, out = control%error,                   &
+          deallocate_error_fatal = control%deallocate_error_fatal )
+       IF ( control%deallocate_error_fatal .AND.                               &
+            inform%status /= GALAHAD_ok ) RETURN
+     END IF
+
 !  Deallocate all remaining allocated arrays
 
 !  integer arrays
 
-     array_name = 'bnls: data%IW'
-     CALL SPACE_dealloc_array( data%IW,                                        &
+     array_name = 'bnls: data%GN_model%Ao%row'
+     CALL SPACE_dealloc_array( data%GN_model%Ao%row,                           &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%PAST'
-     CALL SPACE_dealloc_array( data%PAST,                                      &
+     array_name = 'bnls: data%GN_model%Ao%col'
+     CALL SPACE_dealloc_array( data%GN_model%Ao%col,                           &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%ROW'
-     CALL SPACE_dealloc_array( data%ROW,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%PTR'
-     CALL SPACE_dealloc_array( data%PTR,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%ORDER'
-     CALL SPACE_dealloc_array( data%ORDER,                                     &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%H_map'
-     CALL SPACE_dealloc_array( data%H_map,                                     &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%Hs_map'
-     CALL SPACE_dealloc_array( data%Hs_map,                                    &
+     array_name = 'bnls: data%GN_model%Ao%ptr'
+     CALL SPACE_dealloc_array( data%GN_model%Ao%ptr,                           &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -4418,8 +3487,8 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%C_current'
-     CALL SPACE_dealloc_array( data%C_current,                                 &
+     array_name = 'bnls: data%R_current'
+     CALL SPACE_dealloc_array( data%R_current,                                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -4436,38 +3505,8 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%U'
-     CALL SPACE_dealloc_array( data%U,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%V'
-     CALL SPACE_dealloc_array( data%V,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%W'
-     CALL SPACE_dealloc_array( data%W,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
      array_name = 'bnls: data%Y'
      CALL SPACE_dealloc_array( data%Y,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%SX'
-     CALL SPACE_dealloc_array( data%SX,                                        &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%SV'
-     CALL SPACE_dealloc_array( data%SV,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -4484,116 +3523,78 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%JS'
-     CALL SPACE_dealloc_array( data%JS,                                        &
+     array_name = 'bnls: data%GN_model%B'
+     CALL SPACE_dealloc_array( data%GN_model%B,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%HSHS'
-     CALL SPACE_dealloc_array( data%HSHS,                                      &
+     array_name = 'bnls: data%GN_model%X'
+     CALL SPACE_dealloc_array( data%GN_model%X,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%JT%row'
-     CALL SPACE_dealloc_array( data%JT%row,                                    &
+     array_name = 'bnls: data%GN_model%Y'
+     CALL SPACE_dealloc_array( data%GN_model%Y,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%JT%col'
-     CALL SPACE_dealloc_array( data%JT%col,                                    &
+     array_name = 'bnls: data%GN_model%Z'
+     CALL SPACE_dealloc_array( data%GN_model%Z,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%JT%val'
-     CALL SPACE_dealloc_array( data%JT%val,                                    &
+     array_name = 'bnls: data%GN_model%R'
+     CALL SPACE_dealloc_array( data%GN_model%R,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%JT%type'
-     CALL SPACE_dealloc_array( data%JT%type,                                   &
+     array_name = 'bnls: data%GN_model%G'
+     CALL SPACE_dealloc_array( data%GN_model%G,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%H%row'
-     CALL SPACE_dealloc_array( data%H%row,                                     &
+     array_name = 'bnls: data%GN_model%X_status'
+     CALL SPACE_dealloc_array( data%GN_model%X_status,                         &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%H%col'
-     CALL SPACE_dealloc_array( data%H%col,                                     &
+     array_name = 'bnls: data%GN_model%X_s'
+     CALL SPACE_dealloc_array( data%GN_model%X_s,                              &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+                                                                        
+     array_name = 'bnls: data%GN_model%W'
+     CALL SPACE_dealloc_array( data%GN_model%W,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%H%val'
-     CALL SPACE_dealloc_array( data%H%val,                                     &
+     array_name = 'bnls: data%GN_model%Ao%val'
+     CALL SPACE_dealloc_array( data%GN_model%Ao%val,                           &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%H%type'
-     CALL SPACE_dealloc_array( data%H%type,                                    &
+!  characacter arrays
+
+     array_name = 'bnls: data%GN_model%Ao%type'
+     CALL SPACE_dealloc_array( data%GN_model%Ao%type,                          &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%regularization%matrix%ptr'
-     CALL SPACE_dealloc_array( data%regularization%matrix%ptr,                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%regularization%matrix%row'
-     CALL SPACE_dealloc_array( data%regularization%matrix%row,                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%regularization%matrix%col'
-     CALL SPACE_dealloc_array( data%regularization%matrix%col,                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%regularization%matrix%val'
-     CALL SPACE_dealloc_array( data%regularization%matrix%val,                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%regularization%matrix%type'
-     CALL SPACE_dealloc_array( data%regularization%matrix%type,                &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-!  Deallocate all arrays allocated within PSLS
-
-     CALL PSLS_terminate( data%PSLS_data, data%control%PSLS_control,           &
-                          inform%PSLS_inform )
-     inform%status = inform%PSLS_inform%status
-     IF ( inform%status /= 0 ) THEN
-       inform%alloc_status = inform%PSLS_inform%alloc_status
-       inform%bad_alloc = inform%PSLS_inform%bad_alloc
-       IF ( control%deallocate_error_fatal ) RETURN
-     END IF
-
-!  Deallocate all arrays allocated within BSC
-
-     CALL BSC_terminate( data%BSC_data, control%BSC_control, inform%BSC_inform )
-     inform%status = inform%BSC_inform%status
-     IF ( inform%status /= 0 ) THEN
-       inform%alloc_status = inform%BSC_inform%alloc_status
-       inform%bad_alloc = inform%BSC_inform%bad_alloc
-       IF ( control%deallocate_error_fatal ) RETURN
-     END IF
+     CALL REVERSE_terminate( data%reverse, inform%status, inform%alloc_status, &
+                             bad_alloc = inform%bad_alloc,                     &
+                             out = control%error, deallocate_error_fatal =     &
+                             control%deallocate_error_fatal )
 
 !  Deallocate all arrays allocated within BLLS
 
@@ -4671,8 +3672,14 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%nlp%C'
-     CALL SPACE_dealloc_array( data%nlp%C,                                     &
+     array_name = 'bnls: data%nlp%Z'
+     CALL SPACE_dealloc_array( data%nlp%Z,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bnls: data%nlp%R'
+     CALL SPACE_dealloc_array( data%nlp%R,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -4683,71 +3690,46 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%W'
-     CALL SPACE_dealloc_array( data%W,                                         &
+     array_name = 'bnls: data%nlp%W'
+     CALL SPACE_dealloc_array( data%nlp%W,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%nlp%J%row'
-     CALL SPACE_dealloc_array( data%nlp%J%row,                                 &
+     array_name = 'bnls: data%nlp%Jr%row'
+     CALL SPACE_dealloc_array( data%nlp%Jr%row,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%nlp%J%col'
-     CALL SPACE_dealloc_array( data%nlp%J%col,                                 &
+     array_name = 'bnls: data%nlp%Jr%col'
+     CALL SPACE_dealloc_array( data%nlp%Jr%col,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%nlp%J%ptr'
-     CALL SPACE_dealloc_array( data%nlp%J%ptr,                                 &
+     array_name = 'bnls: data%nlp%Jr%ptr'
+     CALL SPACE_dealloc_array( data%nlp%Jr%ptr,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%nlp%J%val'
-     CALL SPACE_dealloc_array( data%nlp%J%val,                                 &
+     array_name = 'bnls: data%nlp%Jr%val'
+     CALL SPACE_dealloc_array( data%nlp%Jr%val,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%nlp%J%type'
-     CALL SPACE_dealloc_array( data%nlp%J%type,                                &
+     array_name = 'bnls: data%nlp%Jr%type'
+     CALL SPACE_dealloc_array( data%nlp%Jr%type,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bnls: data%nlp%P%row'
-     CALL SPACE_dealloc_array( data%nlp%P%row,                                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%nlp%P%col'
-     CALL SPACE_dealloc_array( data%nlp%P%col,                                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%nlp%P%ptr'
-     CALL SPACE_dealloc_array( data%nlp%P%ptr,                                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%nlp%P%val'
-     CALL SPACE_dealloc_array( data%nlp%P%val,                                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'bnls: data%nlp%P%type'
-     CALL SPACE_dealloc_array( data%nlp%P%type,                                &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+     CALL REVERSE_terminate( data%reverse, inform%status, inform%alloc_status, &
+                             bad_alloc = inform%bad_alloc,                     &
+                             out = control%error, deallocate_error_fatal =     &
+                             control%deallocate_error_fatal )
 
      RETURN
 
@@ -4763,12 +3745,9 @@
 ! =============================================================================
 ! -----------------------------------------------------------------------------
 
-!-*-*-*-  G A L A H A D -  B N L S _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+! G A L A H A D -  B N L S _ i m p o r t _ w i t h o u t _ j a c  S U B R OUTINE
 
-     SUBROUTINE BNLS_import( control, data, status, n, m,                      &
-                             J_type, J_ne, J_row, J_col, J_ptr,                &
-                             H_type, H_ne, H_row, H_col, H_ptr,                &
-                             P_type, P_ne, P_row, P_col, P_ptr, W )
+     SUBROUTINE BNLS_import_without_jac( control, data, status, n, m_r )
 
 !  import fixed problem data into internal storage prior to solution.
 !  Arguments are as follows:
@@ -4791,158 +3770,57 @@
 !       array is written on unit control.error and the returned allocation
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
-!   -3. The restriction n > 0 or requirement that type contains
-!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
-!       'DIAGONAL' or 'ABSENT' has been violated.
-!  -79. An optional array required by storage type H_type or P_type is missing
+!   -3. The restriction n > 0 has been violated.
 !
 !  n is a scalar variable of type default integer, that holds the number of
-!   variables
+!   variables (columns of Jr)
 !
-!  m is a scalar variable of type default integer, that holds the number of
-!   residuals
+!  m_r is a scalar variable of type default integer, that holds the number of
+!   residuals (rows of Jr)
 !
-!  J_type is a character string that specifies the Jacobian storage scheme
-!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
-!   or 'absent', the latter if access to the Jacobian is via matrix-vector
-!   products; lower or upper case variants are allowed
-!
-!  J_ne is a scalar variable of type default integer, that holds the number of
-!   entries in J in the sparse co-ordinate storage scheme. It need not be set
-!  for any of the other schemes.
-!
-!  J_row is a rank-one array of type default integer, that holds the row
-!   indices J in the sparse co-ordinate storage scheme. It need not be set
-!   for any of the other schemes, and in this case can be of length 0
-!
-!  J_col is a rank-one array of type default integer, that holds the column
-!   indices of J in either the sparse co-ordinate, or the sparse row-wise
-!   storage scheme. It need not be set when the dense scheme is used, and
-!   in this case can be of length 0
-!
-!  J_ptr is a rank-one array of dimension n+1 and type default integer,
-!   that holds the starting position of each row of J, as well as the total
-!   number of entries plus one, in the sparse row-wise storage scheme.
-!   It need not be set when the other schemes are used, and in this case
-!   can be of length 0
-!
-!   ******************************************************************
-!   ** NB The following H_ arguments are optional and need only be  **
-!   **    supplied when the Newton or tensor-Newton method is used  **
-!   ******************************************************************
-!
-!  H_type is a character string that specifies the Hessian storage scheme
-!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
-!   'diagonal' or 'absent', the latter if access to the Hessian is via
-!   matrix-vector products; lower or upper case variants are allowed.
-!
-!  H_ne is a scalar variable of type default integer, that holds the number of
-!   entries in the lower triangular part of H in the sparse co-ordinate
-!   storage scheme. It need not be set for any of the other three schemes.
-!
-!  H_row is a rank-one array of type default integer, that holds
-!   the row indices of the lower triangular part of H in the sparse
-!   co-ordinate storage scheme. It need not be set for any of the other
-!   three schemes, and in this case can be of length 0
-!
-!  H_col is a rank-one array of type default integer,
-!   that holds the column indices of the lower triangular part of H in either
-!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
-!   be set when the dense or diagonal storage schemes are used, and in this
-!   case can be of length 0
-!
-!  H_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the lower
-!   triangular part of H, as well as the total number of entries plus one,
-!   in the sparse row-wise storage scheme. It need not be set when the
-!   other schemes are used, and in this case can be of length 0
-!
-!   **************************************************************
-!   ** NB The following P_ arguments are optional and need only **
-!   **    be supplied when the tensor-Newton method is used     **
-!   **************************************************************
-!
-!  P_type is a character string that specifies the residual-Hessians-vector
-!   product matrix storage scheme used. It should be one of 'dense_by_columns,
-!   'coordinate', 'sparse_by_columns', or 'absent', the latter if access to
-!   the Jacobian is via matrix-vector products; lower or upper case variants
-!   are allowed **NB 'coordinate' has not yet been implemented **
-!
-!  P_ne is a scalar variable of type default integer, that holds the number of
-!   entries in J in the sparse co-ordinate storage scheme. It need not be set
-!  for any of the other schemes.
-!
-!  P_row is a rank-one array of type default integer, that holds the row
-!   indices of P in either the sparse co-ordinate, or the sparse column-wise
-!   storage scheme. It need not be set when the dense scheme is used, and
-!   in this case can be of length 0
-!
-!  P_col is a rank-one array of type default integer, that holds the column
-!   indices P in the sparse co-ordinate storage scheme. It need not be set
-!   for any of the other schemes, and in this case can be of length 0
-!
-!  P_ptr is a rank-one array of dimension n+1 and type default integer,
-!   that holds the starting position of each column of P, as well as the total
-!   number of entries plus one, in the sparse column-wise storage scheme.
-!   It need not be set when the other schemes are used, and in this case
-!   can be of length 0
-!
-!  W is an optional rank-one array of dimension m and type default
-!   real, that holds the vector of weights w attached to the residuals
-!   in the least-squares objective function.
-!   If W is present, the i-th component of W, i = 1, ... , m, contains (w)i.
-!   If W is not present, weights of one will be used
-
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
      TYPE ( BNLS_control_type ), INTENT( INOUT ) :: control
      TYPE ( BNLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, J_ne
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m_r
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-     CHARACTER ( LEN = * ), INTENT( IN ), OPTIONAL :: J_type
-     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ),                     &
-                                             OPTIONAL :: J_row, J_col, J_ptr
-     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: H_ne, P_ne
-     CHARACTER ( LEN = * ), INTENT( IN ), OPTIONAL :: H_type
-     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ),                     &
-                                             OPTIONAL :: H_row, H_col, H_ptr
-     CHARACTER ( LEN = * ), INTENT( IN ), OPTIONAL :: P_type
-     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ),                     &
-                                             OPTIONAL :: P_row, P_col, P_ptr
-     REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( m ), OPTIONAL :: W
 
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
-     LOGICAL :: newton, tensor_newton
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  copy control to data
 
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
      data%bnls_control = control
-
-!  check for the expected matrices
-
-     IF ( PRESENT( H_type ) ) THEN
-       newton = .TRUE.
-       IF ( PRESENT( P_type ) ) THEN
-         tensor_newton = .TRUE.
-       ELSE
-         tensor_newton = .FALSE.
-       END IF
-     ELSE
-       newton = .FALSE.
-       tensor_newton = .FALSE.
-     END IF
 
      error = data%bnls_control%error
      space_critical = data%bnls_control%space_critical
-     deallocate_error_fatal = data%bnls_control%deallocate_error_fatal
+     deallocate_error_fatal = data%bnls_control%space_critical
 
-!  allocate space if required
+!  allocate vector space if required
+
+     array_name = 'bnls: data%nlp%X_l'
+     CALL SPACE_resize_array( n, data%nlp%X_l,                                 &
+            data%bnls_inform%status, data%bnls_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%bnls_inform%bad_alloc, out = error )
+     IF ( data%bnls_inform%status /= 0 ) GO TO 900
+
+     array_name = 'bnls: data%nlp%X_u'
+     CALL SPACE_resize_array( n, data%nlp%X_u,                                 &
+            data%bnls_inform%status, data%bnls_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%bnls_inform%bad_alloc, out = error )
+     IF ( data%bnls_inform%status /= 0 ) GO TO 900
 
      array_name = 'bnls: data%nlp%X'
      CALL SPACE_resize_array( n, data%nlp%X,                                   &
@@ -4953,8 +3831,17 @@
             bad_alloc = data%bnls_inform%bad_alloc, out = error )
      IF ( data%bnls_inform%status /= 0 ) GO TO 900
 
-     array_name = 'bnls: data%nlp%C'
-     CALL SPACE_resize_array( m, data%nlp%C,                                   &
+     array_name = 'bnls: data%nlp%Z'
+     CALL SPACE_resize_array( n, data%nlp%Z,                                   &
+            data%bnls_inform%status, data%bnls_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%bnls_inform%bad_alloc, out = error )
+     IF ( data%bnls_inform%status /= 0 ) GO TO 900
+
+     array_name = 'bnls: data%nlp%R'
+     CALL SPACE_resize_array( m_r, data%nlp%R,                                 &
             data%bnls_inform%status, data%bnls_inform%alloc_status,            &
             array_name = array_name,                                           &
             deallocate_error_fatal = deallocate_error_fatal,                   &
@@ -4971,25 +3858,140 @@
             bad_alloc = data%bnls_inform%bad_alloc, out = error )
      IF ( data%bnls_inform%status /= 0 ) GO TO 900
 
-!  put data into the required components of the nlpt storage type
+     array_name = 'bnls: data%nlp%X_status'
+     CALL SPACE_resize_array( n, data%nlp%X_status,                            &
+            data%bnls_inform%status, data%bnls_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%bnls_inform%bad_alloc, out = error )
+     IF ( data%bnls_inform%status /= 0 ) GO TO 900
 
-     data%nlp%n = n ; data%nlp%m = m
+!  put data into the required components of the qpt storage type
 
-!  set J appropriately in the nlpt storage type
+     data%nlp%n = n ; data%nlp%m_r = m_r
 
-     SELECT CASE ( J_type )
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%bnls_inform%status
+     RETURN
+
+!  End of subroutine BNLS_import_without_jac
+
+     END SUBROUTINE BNLS_import_without_jac
+
+!-*-*-*-  G A L A H A D -  B N L S _ i m p o r t _ S U B R O U T I N E -*-*-*-
+
+     SUBROUTINE BNLS_import( control, data, status, n, m_r, Jr_type,          &
+                             Jr_ne, Jr_row, Jr_col, Jr_ptr )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to BNLS_solve
+!
+!  data is a scalar variable of type BNLS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m_r >= 0 or requirement that Jr_type contains
+!       its relevant string 'dense', 'dense_by_rows', 'dense_by_columns',
+!       'sparse_by_rows', 'sparse_by_columns' or 'coordinate'
+!       has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables (columns of Jr)
+!
+!  m_r is a scalar variable of type default integer, that holds the number of
+!   residuals (rows of Jr)
+!
+!  Jr_type is a character string that specifies the design matrix storage
+!   scheme used. It should be one of 'dense', 'dense_by_rows', 'dense_by_cols', 
+!   'sparse_by_rows', 'sparse_by_cols' or 'coordinate';  lower or upper case 
+!   variants are allowed
+!
+!  Jr_ne is a scalar variable of type default integer, that holds the number of
+!   entries in Jr in the sparse co-ordinate storage scheme. It need not be set
+!  for any of the other schemes.
+!
+!  Jr_row is a rank-one array of type default integer, that holds the row
+!   indices Jr in the sparse co-ordinate storage scheme. It need not be set
+!   for any of the other schemes, and in this case can be of length 0
+!
+!  Jr_col is a rank-one array of type default integer, that holds the column
+!   indices of Jr in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
+!   in this case can be of length 0
+!
+!  Jr_ptr is a rank-one array of dimension max(o+1,n+1) and type default
+!   integer, that holds the starting position of each row of J, as well as the
+!   total number of entries plus one, in the sparse row-wise storage scheme,
+!   or the starting position of each column of Jr, as well as the total
+!   number of entries plus one, in the sparse column-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
+!   can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BNLS_control_type ), INTENT( INOUT ) :: control
+     TYPE ( BNLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m_r, Jr_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: Jr_type
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: Jr_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: Jr_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: Jr_ptr
+
+!  local variables
+
+     INTEGER ( KIND = ip_ ) :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+
+!  assign space for vector data
+
+     CALL BNLS_import_without_jac( control, data, status, n, m_r )
+     IF ( status /= GALAHAD_ready_to_solve ) GO TO 900
+
+     error = data%bnls_control%error
+     space_critical = data%bnls_control%space_critical
+     deallocate_error_fatal = data%bnls_control%space_critical
+
+!  set Jr appropriately in the nlp storage type
+
+     SELECT CASE ( Jr_type )
      CASE ( 'coordinate', 'COORDINATE' )
-       IF ( .NOT. ( PRESENT( J_row ) .AND. PRESENT( J_col ) ) ) THEN
+       IF ( .NOT. ( PRESENT( Jr_row ) .AND. PRESENT( Jr_col ) ) ) THEN
          data%bnls_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
-       CALL SMT_put( data%nlp%J%type, 'COORDINATE',                            &
+       CALL SMT_put( data%nlp%Jr%type, 'COORDINATE',                           &
                      data%bnls_inform%alloc_status )
-       data%nlp%J%n = n ; data%nlp%J%m = m
-       data%nlp%J%ne = J_ne
+       data%nlp%Jr%n = n ; data%nlp%Jr%m = m_r
+       data%nlp%Jr%ne = Jr_ne
 
-       array_name = 'bnls: data%nlp%J%row'
-       CALL SPACE_resize_array( data%nlp%J%ne, data%nlp%J%row,                 &
+       array_name = 'bnls: data%nlp%Jr%row'
+       CALL SPACE_resize_array( data%nlp%Jr%ne, data%nlp%Jr%row,               &
               data%bnls_inform%status, data%bnls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -4997,8 +3999,8 @@
               bad_alloc = data%bnls_inform%bad_alloc, out = error )
        IF ( data%bnls_inform%status /= 0 ) GO TO 900
 
-       array_name = 'bnls: data%nlp%J%col'
-       CALL SPACE_resize_array( data%nlp%J%ne, data%nlp%J%col,                 &
+       array_name = 'bnls: data%nlp%Jr%col'
+       CALL SPACE_resize_array( data%nlp%Jr%ne, data%nlp%Jr%col,               &
               data%bnls_inform%status, data%bnls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5006,8 +4008,8 @@
               bad_alloc = data%bnls_inform%bad_alloc, out = error )
        IF ( data%bnls_inform%status /= 0 ) GO TO 900
 
-       array_name = 'bnls: data%nlp%J%val'
-       CALL SPACE_resize_array( data%nlp%J%ne, data%nlp%J%val,                 &
+       array_name = 'bnls: data%nlp%Jr%val'
+       CALL SPACE_resize_array( data%nlp%Jr%ne, data%nlp%Jr%val,               &
               data%bnls_inform%status, data%bnls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5016,29 +4018,29 @@
        IF ( data%bnls_inform%status /= 0 ) GO TO 900
 
        IF ( data%f_indexing ) THEN
-         data%nlp%J%row( : data%nlp%J%ne ) = J_row( : data%nlp%J%ne )
-         data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne )
+         data%nlp%Jr%row( : data%nlp%Jr%ne ) = Jr_row( : data%nlp%Jr%ne )
+         data%nlp%Jr%col( : data%nlp%Jr%ne ) = Jr_col( : data%nlp%Jr%ne )
        ELSE
-         data%nlp%J%row( : data%nlp%J%ne ) = J_row( : data%nlp%J%ne ) + 1
-         data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne ) + 1
+         data%nlp%Jr%row( : data%nlp%Jr%ne ) = Jr_row( : data%nlp%Jr%ne ) + 1
+         data%nlp%Jr%col( : data%nlp%Jr%ne ) = Jr_col( : data%nlp%Jr%ne ) + 1
        END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
-       IF ( .NOT. ( PRESENT( J_col ) .AND. PRESENT( J_ptr ) ) ) THEN
+       IF ( .NOT. ( PRESENT( Jr_ptr ) .AND. PRESENT( Jr_col ) ) ) THEN
          data%bnls_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
-       CALL SMT_put( data%nlp%J%type, 'SPARSE_BY_ROWS',                        &
+       CALL SMT_put( data%nlp%Jr%type, 'SPARSE_BY_ROWS',                       &
                      data%bnls_inform%alloc_status )
-       data%nlp%J%n = n ; data%nlp%J%m = m
+       data%nlp%Jr%n = n ; data%nlp%Jr%m = m_r
        IF ( data%f_indexing ) THEN
-         data%nlp%J%ne = J_ptr( m + 1 ) - 1
+         data%nlp%Jr%ne = Jr_ptr( m_r + 1 ) - 1
        ELSE
-         data%nlp%J%ne = J_ptr( m + 1 )
+         data%nlp%Jr%ne = Jr_ptr( m_r + 1 )
        END IF
 
-       array_name = 'bnls: data%nlp%J%ptr'
-       CALL SPACE_resize_array( m + 1, data%nlp%J%ptr,                         &
+       array_name = 'bnls: data%nlp%Jr%ptr'
+       CALL SPACE_resize_array( m_r + 1, data%nlp%Jr%ptr,                      &
               data%bnls_inform%status, data%bnls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5046,8 +4048,8 @@
               bad_alloc = data%bnls_inform%bad_alloc, out = error )
        IF ( data%bnls_inform%status /= 0 ) GO TO 900
 
-       array_name = 'bnls: data%nlp%J%col'
-       CALL SPACE_resize_array( data%nlp%J%ne, data%nlp%J%col,                 &
+       array_name = 'bnls: data%nlp%Jr%col'
+       CALL SPACE_resize_array( data%nlp%Jr%ne, data%nlp%Jr%col,               &
               data%bnls_inform%status, data%bnls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5055,8 +4057,8 @@
               bad_alloc = data%bnls_inform%bad_alloc, out = error )
        IF ( data%bnls_inform%status /= 0 ) GO TO 900
 
-       array_name = 'bnls: data%nlp%J%val'
-       CALL SPACE_resize_array( data%nlp%J%ne, data%nlp%J%val,                 &
+       array_name = 'bnls: data%nlp%Jr%val'
+       CALL SPACE_resize_array( data%nlp%Jr%ne, data%nlp%Jr%val,               &
               data%bnls_inform%status, data%bnls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5065,21 +4067,28 @@
        IF ( data%bnls_inform%status /= 0 ) GO TO 900
 
        IF ( data%f_indexing ) THEN
-         data%nlp%J%ptr( : m + 1 ) = J_ptr( : m + 1 )
-         data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne )
+         data%nlp%Jr%ptr( : m_r + 1 ) = Jr_ptr( : m_r + 1 )
+         data%nlp%Jr%col( : data%nlp%Jr%ne ) = Jr_col( : data%nlp%Jr%ne )
        ELSE
-         data%nlp%J%ptr( : m + 1 ) = J_ptr( : m + 1 ) + 1
-         data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne ) + 1
+         data%nlp%Jr%ptr( : m_r + 1 ) = Jr_ptr( : m_r + 1 ) + 1
+         data%nlp%Jr%col( : data%nlp%Jr%ne ) = Jr_col( : data%nlp%Jr%ne ) + 1
        END IF
 
-     CASE ( 'dense', 'DENSE' )
-       CALL SMT_put( data%nlp%J%type, 'DENSE',                                 &
+     CASE ( 'sparse_by_columns', 'SPARSE_BY_COLUMNS' )
+       IF ( .NOT. ( PRESENT( Jr_ptr ) .AND. PRESENT( Jr_row ) ) ) THEN
+         data%bnls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%nlp%Jr%type, 'SPARSE_BY_COLUMNS',                    &
                      data%bnls_inform%alloc_status )
-       data%nlp%J%n = n ; data%nlp%J%m = m
-       data%nlp%J%ne = m * n
-
-       array_name = 'bnls: data%nlp%J%val'
-       CALL SPACE_resize_array( data%nlp%J%ne, data%nlp%J%val,                 &
+       data%nlp%Jr%n = n ; data%nlp%Jr%m = m_r
+       IF ( data%f_indexing ) THEN
+         data%nlp%Jr%ne = Jr_ptr( n + 1 ) - 1
+       ELSE
+         data%nlp%Jr%ne = Jr_ptr( n + 1 )
+       END IF
+       array_name = 'bnls: data%nlp%Jr%ptr'
+       CALL SPACE_resize_array( n + 1, data%nlp%Jr%ptr,                        &
               data%bnls_inform%status, data%bnls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5087,286 +4096,69 @@
               bad_alloc = data%bnls_inform%bad_alloc, out = error )
        IF ( data%bnls_inform%status /= 0 ) GO TO 900
 
-     CASE ( 'absent', 'ABSENT' )
-       data%bnls_control%jacobian_available = 1
+       array_name = 'bnls: data%nlp%Jr%row'
+       CALL SPACE_resize_array( data%nlp%Jr%ne, data%nlp%Jr%row,               &
+              data%bnls_inform%status, data%bnls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bnls_inform%bad_alloc, out = error )
+       IF ( data%bnls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'bnls: data%nlp%Jr%val'
+       CALL SPACE_resize_array( data%nlp%Jr%ne, data%nlp%Jr%val,               &
+              data%bnls_inform%status, data%bnls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bnls_inform%bad_alloc, out = error )
+       IF ( data%bnls_inform%status /= 0 ) GO TO 900
+
+       IF ( data%f_indexing ) THEN
+         data%nlp%Jr%ptr( : n + 1 ) = Jr_ptr( : n + 1 )
+         data%nlp%Jr%row( : data%nlp%Jr%ne ) = Jr_row( : data%nlp%Jr%ne )
+       ELSE
+         data%nlp%Jr%ptr( : n + 1 ) = Jr_ptr( : n + 1 ) + 1
+         data%nlp%Jr%row( : data%nlp%Jr%ne ) = Jr_row( : data%nlp%Jr%ne ) + 1
+       END IF
+
+     CASE ( 'dense', 'DENSE', 'dense_by_rows', 'DENSE_BY_ROWS' )
+       CALL SMT_put( data%nlp%Jr%type, 'DENSE_BY_ROWS',                        &
+                     data%bnls_inform%alloc_status )
+       data%nlp%Jr%n = n ; data%nlp%Jr%m = m_r
+       data%nlp%Jr%ne = m_r * n
+
+       array_name = 'bnls: data%nlp%Jr%val'
+       CALL SPACE_resize_array( data%nlp%Jr%ne, data%nlp%Jr%val,               &
+              data%bnls_inform%status, data%bnls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bnls_inform%bad_alloc, out = error )
+       IF ( data%bnls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'dense_by_columns', 'DENSE_BY_COLUMNS' )
+       CALL SMT_put( data%nlp%Jr%type, 'DENSE_BY_COLUMNS',                     &
+                     data%bnls_inform%alloc_status )
+       data%nlp%Jr%n = n ; data%nlp%Jr%m = m_r
+       data%nlp%Jr%ne = m_r * n
+
+       array_name = 'bnls: data%nlp%Jr%val'
+       CALL SPACE_resize_array( data%nlp%Jr%ne, data%nlp%Jr%val,               &
+              data%bnls_inform%status, data%bnls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bnls_inform%bad_alloc, out = error )
+       IF ( data%bnls_inform%status /= 0 ) GO TO 900
+
      CASE DEFAULT
        data%bnls_inform%status = GALAHAD_error_unknown_storage
        GO TO 900
      END SELECT
 
-!  if present, set H appropriately in the nlpt storage type
-
-     IF ( newton ) THEN
-       SELECT CASE ( H_type )
-       CASE ( 'coordinate', 'COORDINATE' )
-         IF ( .NOT. ( PRESENT( H_ne ) .AND. PRESENT( H_row ) .AND.             &
-                      PRESENT( H_col ) ) ) THEN
-           data%bnls_inform%status = GALAHAD_error_optional
-           GO TO 900
-         END IF
-         CALL SMT_put( data%nlp%H%type, 'COORDINATE',                          &
-                       data%bnls_inform%alloc_status )
-         data%nlp%H%n = n
-         data%nlp%H%ne = H_ne
-
-         array_name = 'bnls: data%nlp%H%row'
-         CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%row,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-         array_name = 'bnls: data%nlp%H%col'
-         CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%col,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-         array_name = 'bnls: data%nlp%H%val'
-         CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-         IF ( data%f_indexing ) THEN
-           data%nlp%H%row( : data%nlp%H%ne ) = H_row( : data%nlp%H%ne )
-           data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
-         ELSE
-           data%nlp%H%row( : data%nlp%H%ne ) = H_row( : data%nlp%H%ne ) + 1
-           data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne ) + 1
-         END IF
-
-       CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
-         IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
-           data%bnls_inform%status = GALAHAD_error_optional
-           GO TO 900
-         END IF
-         CALL SMT_put( data%nlp%H%type, 'SPARSE_BY_ROWS',                      &
-                       data%bnls_inform%alloc_status )
-         data%nlp%H%n = n
-         IF ( data%f_indexing ) THEN
-           data%nlp%H%ne = H_ptr( n + 1 ) - 1
-         ELSE
-           data%nlp%H%ne = H_ptr( n + 1 )
-         END IF
-
-         array_name = 'bnls: data%nlp%H%ptr'
-         CALL SPACE_resize_array( n + 1, data%nlp%H%ptr,                       &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-         array_name = 'bnls: data%nlp%H%col'
-         CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%col,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-         array_name = 'bnls: data%nlp%H%val'
-         CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-         IF ( data%f_indexing ) THEN
-           data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
-           data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
-         ELSE
-           data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 ) + 1
-           data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne ) + 1
-         END IF
-
-       CASE ( 'dense', 'DENSE' )
-         CALL SMT_put( data%nlp%H%type, 'DENSE',                               &
-                       data%bnls_inform%alloc_status )
-         data%nlp%H%n = n
-         data%nlp%H%ne = ( n * ( n + 1 ) ) / 2
-
-         array_name = 'bnls: data%nlp%H%val'
-         CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-       CASE ( 'diagonal', 'DIAGONAL' )
-         CALL SMT_put( data%nlp%H%type, 'DIAGONAL',                            &
-                       data%bnls_inform%alloc_status )
-         data%nlp%H%n = n
-         data%nlp%H%ne = n
-
-         array_name = 'bnls: data%nlp%H%val'
-         CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-       CASE ( 'absent', 'ABSENT' )
-         data%bnls_control%hessian_available = 1
-       CASE DEFAULT
-         data%bnls_inform%status = GALAHAD_error_unknown_storage
-         GO TO 900
-       END SELECT
-     END IF
-
-!  if present, set P appropriately in the nlpt storage type
-
-     IF ( tensor_newton ) THEN
-       SELECT CASE ( P_type )
-       CASE ( 'coordinate', 'COORDINATE' )
-         IF ( .NOT. ( PRESENT( P_ne ) .AND. PRESENT( P_row ) .AND.             &
-                      PRESENT( P_col ) ) ) THEN
-           data%bnls_inform%status = GALAHAD_error_optional
-           GO TO 900
-         END IF
-         CALL SMT_put( data%nlp%J%type, 'COORDINATE',                          &
-                       data%bnls_inform%alloc_status )
-         data%nlp%P%n = m ; data%nlp%P%m = n
-         data%nlp%P%ne = P_ne
-
-         array_name = 'bnls: data%nlp%P%row'
-         CALL SPACE_resize_array( data%nlp%P%ne, data%nlp%P%row,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-         array_name = 'bnls: data%nlp%P%col'
-         CALL SPACE_resize_array( data%nlp%P%ne, data%nlp%P%col,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-         array_name = 'bnls: data%nlp%P%val'
-         CALL SPACE_resize_array( data%nlp%P%ne, data%nlp%P%val,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-         IF ( data%f_indexing ) THEN
-           data%nlp%P%row( : data%nlp%P%ne ) = P_row( : data%nlp%P%ne )
-           data%nlp%P%col( : data%nlp%P%ne ) = P_col( : data%nlp%P%ne )
-         ELSE
-           data%nlp%P%row( : data%nlp%P%ne ) = P_row( : data%nlp%P%ne ) + 1
-           data%nlp%P%col( : data%nlp%P%ne ) = P_col( : data%nlp%P%ne ) + 1
-         END IF
-
-       CASE ( 'sparse_by_columns', 'SPARSE_BY_COLUMNS' )
-         IF ( .NOT. ( PRESENT( P_ptr ) .AND. PRESENT( P_row ) ) ) THEN
-           data%bnls_inform%status = GALAHAD_error_optional
-           GO TO 900
-         END IF
-         CALL SMT_put( data%nlp%P%type, 'SPARSE_BY_COLUMNS',                   &
-                       data%bnls_inform%alloc_status )
-         data%nlp%P%n = m ; data%nlp%P%m = n
-         IF ( data%f_indexing ) THEN
-           data%nlp%P%ne = P_ptr( m + 1 ) - 1
-         ELSE
-           data%nlp%P%ne = P_ptr( m + 1 )
-         END IF
-
-         array_name = 'bnls: data%nlp%P%ptr'
-         CALL SPACE_resize_array( m + 1, data%nlp%P%ptr,                       &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-         array_name = 'bnls: data%nlp%P%row'
-         CALL SPACE_resize_array( data%nlp%P%ne, data%nlp%P%row,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-         array_name = 'bnls: data%nlp%P%val'
-         CALL SPACE_resize_array( data%nlp%P%ne, data%nlp%P%val,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-         IF ( data%f_indexing ) THEN
-           data%nlp%P%ptr( : m + 1 ) = P_ptr( : m + 1 )
-           data%nlp%P%row( : data%nlp%P%ne ) = P_row( : data%nlp%P%ne )
-         ELSE
-           data%nlp%P%ptr( : m + 1 ) = P_ptr( : m + 1 ) + 1
-           data%nlp%P%row( : data%nlp%P%ne ) = P_row( : data%nlp%P%ne ) + 1
-         END IF
-
-       CASE ( 'dense', 'DENSE', 'dense_by_columns', 'DENSE_BY_COLUMNS' )
-         CALL SMT_put( data%nlp%P%type, 'DENSE_BY_COLUMNS',                    &
-                       data%bnls_inform%alloc_status )
-         data%nlp%P%n = m ; data%nlp%P%m = n
-         data%nlp%P%ne = m * n
-
-         array_name = 'bnls: data%nlp%P%val'
-         CALL SPACE_resize_array( data%nlp%P%ne, data%nlp%P%val,               &
-                data%bnls_inform%status, data%bnls_inform%alloc_status,        &
-                array_name = array_name,                                       &
-                deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
-                bad_alloc = data%bnls_inform%bad_alloc, out = error )
-         IF ( data%bnls_inform%status /= 0 ) GO TO 900
-
-       CASE ( 'absent', 'ABSENT' )
-       CASE DEFAULT
-         data%bnls_inform%status = GALAHAD_error_unknown_storage
-         GO TO 900
-       END SELECT
-     END IF
-
-!  save non-trivial weights
-
-     IF ( PRESENT( W ) ) THEN
-       array_name = 'bnls: data%W'
-       CALL SPACE_resize_array( m, data%W,                                     &
-              data%bnls_inform%status, data%bnls_inform%alloc_status,          &
-              array_name = array_name,                                         &
-              deallocate_error_fatal = deallocate_error_fatal,                 &
-              exact_size = space_critical,                                     &
-              bad_alloc = data%bnls_inform%bad_alloc, out = error )
-       IF ( data%bnls_inform%status /= 0 ) GO TO 900
-       data%W( : m ) = W( : m )
-     END IF
-
      status = GALAHAD_ready_to_solve
+     data%bnls_inform%status = 1
      RETURN
 
 !  error returns
@@ -5407,16 +4199,15 @@
 
      END SUBROUTINE BNLS_reset_control
 
-!-  G A L A H A D -  B N L S _ s o l v e _ w i t h _ m a t  S U B R O U T I N E
+!-  G A L A H A D -  B N L S _ s o l v e _ w i t h _ j a c  S U B R O U T I N E
 
-     SUBROUTINE BNLS_solve_with_mat( data, userdata, status, X, C, G,          &
-                                     eval_C, eval_J, eval_H )
+     SUBROUTINE BNLS_solve_with_jac( data, userdata, status, X, Z, R, G,       &
+                                     X_stat, eval_R, eval_Jr, W )
 
 !  solve the nonlinear least-squares problem previously imported when access
-!  to residual, Jacobian, Hessian and residual-Hessians vector product
-!  operations are available via subroutine calls. See BNLS_solve for a
-!  description of the required arguments. The variable status is a proxy
-!  for inform%status
+!  to residual and Jacobian operations are available via subroutine calls. 
+!  See BNLS_solve for a description of the required arguments. The variable 
+!  status is a proxy for inform%status
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -5425,51 +4216,85 @@
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( BNLS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = rp_ ), DIMENSION( : ) , INTENT( IN ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Z
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: R
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-     EXTERNAL :: eval_C, eval_J, eval_H
-     OPTIONAL :: eval_H
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: X_stat
+     REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( : ), INTENT( IN ) :: W
+     EXTERNAL :: eval_R, eval_Jr
+
+!  local variables
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  assign input X
 
      data%bnls_inform%status = status
-     IF ( data%bnls_inform%status == 1 )                                       &
+     IF ( data%bnls_inform%status == 1 ) THEN
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+       data%nlp%X_l( : data%nlp%n ) = X_l( : data%nlp%n )
+       data%nlp%X_u( : data%nlp%n ) = X_u( : data%nlp%n )
+
+!  add space for, and assign, diagonal weights if required
+
+       IF ( PRESENT( W ) ) THEN
+         array_name = 'bnls: data%nlp%W'
+         CALL SPACE_resize_array( data%nlp%m_r, data%nlp%W,                    &
+                status, data%bnls_inform%alloc_status,                         &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = data%bnls_control%space_critical,     &
+                exact_size = data%bnls_control%space_critical,                 &
+                bad_alloc = data%bnls_inform%bad_alloc,                        &
+                out = data%bnls_control%error )
+         IF ( status /= 0 ) GO TO 900
+         data%nlp%W( : data%nlp%m_r ) = W( : data%nlp%m_r )
+       END IF
+     END IF
 
 !  call the solver
 
-     IF ( ALLOCATED( data%W ) ) THEN
-       CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,         &
-                        data%bnls_data, userdata, W = data%W,                  &
-                        eval_C = eval_C, eval_J = eval_J,                      &
-                        eval_H = eval_H )
-     ELSE
-       CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,         &
-                        data%bnls_data, userdata,                              &
-                        eval_C = eval_C, eval_J = eval_J,                      &
-                        eval_H = eval_H )
-     END IF
+     CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,           &
+                      data%bnls_data, userdata,                                &
+                      eval_R = eval_R, eval_Jr = eval_Jr )
+     status = data%bnls_inform%status
+
+!  recover the optimal primal and dual variables, and Lagrange multipliers
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
-     C( : data%nlp%m ) = data%nlp%C( : data%nlp%m )
+     Z( : data%nlp%n ) = data%nlp%Z( : data%nlp%n )
+
+!  recover the residual value and gradient
+
+     R( : data%nlp%m_r ) = data%nlp%R( : data%nlp%m_r )
      G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
-     status = data%bnls_inform%status
+
+!  recover the status of x
+
+     X_stat( : data%nlp%n ) = data%nlp%X_status( : data%nlp%n )
 
      RETURN
 
-!  end of subroutine BNLS_solve_with_mat
+!  error returns
 
-     END SUBROUTINE BNLS_solve_with_mat
+ 900 CONTINUE
+     RETURN
 
-! - G A L A H A D -  B N L S _ s o l v e _ without _ m a t  S U B R O U T I N E 
+!  end of subroutine BNLS_solve_with_jac
 
-     SUBROUTINE BNLS_solve_without_mat( data, userdata, status, X, C, G,       &
-                                        eval_C, eval_JPROD, eval_HPROD )
+     END SUBROUTINE BNLS_solve_with_jac
+
+! - G A L A H A D -  B N L S _ s o l v e _ with _ jacprod  S U B R O U T I N E 
+
+     SUBROUTINE BNLS_solve_with_jacprod( data, userdata, status, X, Z,         &
+                                         R, G, X_stat, eval_R, eval_Jr_PROD,   &
+                                         eval_Jr_SCOL, eval_Jr_SPROD, W )
 
 !  solve the nonlinear least-squares problem previously imported when access
-!  to residual, Jacobian, Hessian-vector and residual-Hessians vector product
-!  operations are available via subroutine calls. See BNLS_solve for a
-!  description of the required arguments. The variable status is a proxy
-!  for inform%status
+!  to residual, and Jacobian-vector product operations are available via 
+!  subroutine calls. See BNLS_solve for a description of the required 
+!  arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -5478,51 +4303,86 @@
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( BNLS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = rp_ ), DIMENSION( : ) , INTENT( IN ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Z
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: R
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-     EXTERNAL :: eval_C, eval_JPROD, eval_HPROD
-     OPTIONAL :: eval_HPROD
+     REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( : ), INTENT( IN ) :: W
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: X_stat
+     EXTERNAL :: eval_R, eval_Jr_PROD, eval_Jr_SCOL, eval_Jr_SPROD
+
+!  local variables
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  assign input X
 
      data%bnls_inform%status = status
-     IF ( data%bnls_inform%status == 1 )                                       &
+     IF ( data%bnls_inform%status == 1 ) THEN
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+       data%nlp%X_l( : data%nlp%n ) = X_l( : data%nlp%n )
+       data%nlp%X_u( : data%nlp%n ) = X_u( : data%nlp%n )
+
+!  add space for, and assign, diagonal weights if required
+
+       IF ( PRESENT( W ) ) THEN
+         array_name = 'bnls: data%nlp%W'
+         CALL SPACE_resize_array( data%nlp%m_r, data%nlp%W,                    &
+                status, data%bnls_inform%alloc_status,                         &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = data%bnls_control%space_critical,     &
+                exact_size = data%bnls_control%space_critical,                 &
+                bad_alloc = data%bnls_inform%bad_alloc,                        &
+                out = data%bnls_control%error )
+         IF ( status /= 0 ) GO TO 900
+         data%nlp%W( : data%nlp%m_r ) = W( : data%nlp%m_r )
+       END IF
+     END IF
 
 !  call the solver
 
-     IF ( ALLOCATED( data%W ) ) THEN
-       CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,         &
-                       data%bnls_data, userdata, W = data%W,                   &
-                       eval_C = eval_C, eval_JPROD = eval_JPROD,               &
-                       eval_HPROD = eval_HPROD )
-     ELSE
-       CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,         &
-                       data%bnls_data, userdata,                               &
-                       eval_C = eval_C, eval_JPROD = eval_JPROD,               &
-                       eval_HPROD = eval_HPROD )
-     END IF
+     CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,           &
+                      data%bnls_data, userdata, eval_R = eval_R,               &
+                      eval_Jr_prod = eval_Jr_PROD,                             &
+                      eval_Jr_scol = eval_Jr_SCOL,                             &
+                      eval_Jr_sprod = eval_Jr_SPROD )
+     status = data%bnls_inform%status
+
+!  recover the optimal primal and dual variables, and Lagrange multipliers
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
-     C( : data%nlp%m ) = data%nlp%C( : data%nlp%m )
+     Z( : data%nlp%n ) = data%nlp%Z( : data%nlp%n )
+
+!  recover the residual value and gradient
+
+     R( : data%nlp%m_r ) = data%nlp%R( : data%nlp%m_r )
      G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
-     status = data%bnls_inform%status
+
+!  recover the status of x
+
+     X_stat( : data%nlp%n ) = data%nlp%X_status( : data%nlp%n )
 
      RETURN
 
-!  end of subroutine BNLS_solve_without_mat
+!  error returns
 
-     END SUBROUTINE BNLS_solve_without_mat
+ 900 CONTINUE
+     RETURN
 
-!-  G A L A H A D -  B N L S _ s o l v e _ reverse _ M A T  S U B R O U T I N E 
+!  end of subroutine BNLS_solve_with_jacprod
 
-     SUBROUTINE BNLS_solve_reverse_with_mat( data, status, eval_status, X, C,  &
-                                             G, J_val, Y, H_val, V, P_val )
+     END SUBROUTINE BNLS_solve_with_jacprod
+
+!-  G A L A H A D -  B N L S _ s o l v e _ reverse _ with _ jac  S U B R OUTINE 
+
+     SUBROUTINE BNLS_solve_reverse_with_jac( data, status, eval_status, X,     &
+                                             Z, R, G, X_stat, Jr_val, W )
 
 !  solve the nonlinear least-squares problem previously imported when access
-!  to residual, Jacobian, Hessian and residual-Hessians vector product
-!  operations are available via reverse communications. See BNLS_solve for a
-!  description of the required arguments. The variable status is a proxy
-!  for inform%status
+!  to residual and Jacobians are available via reverse communications. 
+!  See BNLS_solve for a description of the required arguments. The variable 
+!  status is a proxy for inform%status
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -5531,14 +4391,18 @@
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( BNLS_full_data_type ), INTENT( INOUT ) :: data
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: eval_status
+     REAL ( KIND = rp_ ), DIMENSION( : ) , INTENT( IN ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Z
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: R
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: J_val
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ), OPTIONAL :: Y
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ), OPTIONAL :: H_val
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ), OPTIONAL :: V
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ), OPTIONAL :: P_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: Jr_val
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: X_stat
+     REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( : ), INTENT( IN ) :: W
+
+!  local variables
+
+     CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover data from reverse communication
 
@@ -5547,67 +4411,72 @@
      SELECT CASE ( data%bnls_inform%status )
      CASE ( 1 )
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+       data%nlp%X_l( : data%nlp%n ) = X_l( : data%nlp%n )
+       data%nlp%X_u( : data%nlp%n ) = X_u( : data%nlp%n )
+       IF ( PRESENT( W ) ) THEN
+         array_name = 'bnls: data%nlp%W'
+         CALL SPACE_resize_array( data%nlp%m_r, data%nlp%W,                    &
+                status, data%bnls_inform%alloc_status,                         &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = data%bnls_control%space_critical,     &
+                exact_size = data%bnls_control%space_critical,                 &
+                bad_alloc = data%bnls_inform%bad_alloc,                        &
+                out = data%bnls_control%error )
+         IF ( status /= 0 ) GO TO 900
+         data%nlp%W( : data%nlp%m_r ) = W( : data%nlp%m_r )
+       END IF
      CASE ( 2 )
-       data%bnls_data%eval_status = eval_status
-       IF ( eval_status == 0 ) data%nlp%C( : data%nlp%m ) = C( : data%nlp%m )
+       data%reverse%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%nlp%R( : data%nlp%m_r ) = R( : data%nlp%m_r )
      CASE( 3 )
-       data%bnls_data%eval_status = eval_status
+       data%reverse%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
-         data%nlp%J%val( : data%nlp%J%ne ) = J_val( : data%nlp%J%ne )
-     CASE( 4 )
-       data%bnls_data%eval_status = eval_status
-       IF ( eval_status == 0 )                                                 &
-         data%nlp%H%val( : data%nlp%H%ne ) = H_val( : data%nlp%H%ne )
-     CASE( 7 )
-       data%bnls_data%eval_status = eval_status
-       IF ( eval_status == 0 )                                                 &
-         data%nlp%P%val( : data%nlp%P%ne ) = P_val( : data%nlp%P%ne )
+         data%nlp%Jr%val( : data%nlp%Jr%ne ) = Jr_val( : data%nlp%Jr%ne )
      END SELECT
 
 !  call the solver
 
-     IF ( ALLOCATED( data%W ) ) THEN
-       CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,         &
-                        data%bnls_data, data%userdata, W = data%W )
-     ELSE
-       CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,         &
-                        data%bnls_data, data%userdata )
-     END IF
+     CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,           &
+                      data%bnls_data, data%userdata, reverse = data%reverse )
 
 !  collect data for reverse communication
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
      SELECT CASE ( data%bnls_inform%status )
      CASE( 0 )
-       C( : data%nlp%m ) = data%nlp%C( : data%nlp%m )
+       Z( : data%nlp%n ) = data%nlp%Z( : data%nlp%n )
+       R( : data%nlp%m_r ) = data%nlp%R( : data%nlp%m_r )
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
-     CASE( 4 )
-       Y( : data%nlp%m ) = data%bnls_data%Y( : data%nlp%m )
-     CASE( 7 )
-       V( : data%nlp%n ) = data%bnls_data%V( : data%nlp%n )
-     CASE( 5, 6 )
+       X_stat( : data%nlp%n ) = data%nlp%X_status( : data%nlp%n )
+     CASE( 4, 5, 6, 7 )
        WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
          data%bnls_inform%status
      END SELECT
      status = data%bnls_inform%status
 
+!  error returns
+
+ 900 CONTINUE
      RETURN
 
-!  end of subroutine BNLS_solve_reverse_with_mat
+     RETURN
 
-     END SUBROUTINE BNLS_solve_reverse_with_mat
+!  end of subroutine BNLS_solve_reverse_with_jac
 
-!-  G A L A H A D -  B N L S _ s o l v e _ reverse _ no _ mat  S U B R O U TI NE
+     END SUBROUTINE BNLS_solve_reverse_with_jac
 
-     SUBROUTINE BNLS_solve_reverse_without_mat( data, status, eval_status,     &
-                                                X, C, G, transpose, U, V,      &
-                                                Y, P_val )
+!-  G A L A H A D -  B N L S _ s o l v e _ reverse _ with _ jacprod  SUBROUTINE
+
+     SUBROUTINE BNLS_solve_reverse_with_jacprod( data, status, eval_status,    &
+                                                 X_l, X_u, X, Z, R, G, X_stat, &
+                                                 V, IV, lvl, lvu, index,       &
+                                                 P, IP, lp, W )
 
 !  solve the nonlinear least-squares problem previously imported when access
-!  to residual, Jacobian, Hessian-vector and residual-Hessians vector product
-!  operations are available via reverse communications. See BNLS_solve for a
-!  description of the required arguments. The variable status is a proxy
-!  for inform%status
+!  to residual and Jacobian-vector product operations are available via 
+!  reverse communications. See BNLS_solve for a description of the required 
+!  arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -5616,14 +4485,25 @@
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( BNLS_full_data_type ), INTENT( INOUT ) :: data
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: eval_status
-     LOGICAL, INTENT( INOUT ) :: transpose
+     REAL ( KIND = rp_ ), DIMENSION( : ) , INTENT( IN ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Z
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: R
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: V
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ), OPTIONAL :: Y
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ), OPTIONAL :: P_val
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( INOUT ) :: X_stat
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: V
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: IV
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: lvl, lvu, index
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: P
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: IP
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: lp
+     REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( : ), INTENT( IN ) :: W
+
+!  local variables
+
+     INTEGER ( KIND = ip_ ) :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover data from reverse communication
 
@@ -5632,71 +4512,158 @@
      SELECT CASE ( data%bnls_inform%status )
      CASE ( 1 )
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
-     CASE ( 2 )
-       data%bnls_data%eval_status = eval_status
-       IF ( eval_status == 0 ) data%nlp%C( : data%nlp%m ) = C( : data%nlp%m )
+       data%nlp%X_l( : data%nlp%n ) = X_l( : data%nlp%n )
+       data%nlp%X_u( : data%nlp%n ) = X_u( : data%nlp%n )
+
+!  record relevant control variables
+
+       error = data%bnls_control%error
+       space_critical = data%bnls_control%space_critical
+       deallocate_error_fatal = data%bnls_control%space_critical
+
+       IF ( PRESENT( W ) ) THEN
+         array_name = 'bnls: data%nlp%W'
+         CALL SPACE_resize_array( data%nlp%m_r, data%nlp%W,                    &
+              status, data%bnls_inform%alloc_status, array_name = array_name,  &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bnls_inform%bad_alloc, out = error )
+         IF ( status /= 0 ) GO TO 900
+         data%nlp%W( : data%nlp%m_r ) = W( : data%nlp%m_r )
+       END IF
+
+       array_name = 'bnls: data%reverse%iv'
+       CALL SPACE_resize_array( data%nlp%n, data%reverse%iv,                   &
+              status, data%bnls_inform%alloc_status, array_name = array_name,  &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bnls_inform%bad_alloc, out = error )
+       IF ( status /= 0 ) GO TO 900
+
+       array_name = 'bnls: data%reverse%ip'
+       CALL SPACE_resize_array( data%nlp%m_r, data%reverse%ip,                 &
+              status, data%bnls_inform%alloc_status, array_name = array_name,  &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bnls_inform%bad_alloc, out = error )
+       IF ( status /= 0 ) GO TO 900
+
+       array_name = 'bnls: data%reverse%v'
+       CALL SPACE_resize_array( MAX( data%nlp%m_r, data%nlp%n ),               &
+              data%reverse%v,                                                  &
+              status, data%bnls_inform%alloc_status, array_name = array_name,  &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bnls_inform%bad_alloc, out = error )
+       IF ( status /= 0 ) GO TO 900
+
+       array_name = 'bnls: data%reverse%p'
+       CALL SPACE_resize_array( MAX( data%nlp%m_r, data%nlp%n ),               &
+              data%reverse%p,                                                  &
+              status, data%bnls_inform%alloc_status, array_name = array_name,  &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bnls_inform%bad_alloc, out = error )
+       IF ( status /= 0 ) GO TO 900
+     CASE( 2 )
+       data%reverse%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%nlp%R( : data%nlp%m_r ) = R( : data%nlp%m_r )
+     CASE( 3 )
+       WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
+         data%bnls_inform%status
+     CASE( 4 )
+       data%reverse%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%reverse%P( : data%nlp%m_r ) = P( : data%nlp%m_r )
      CASE( 5 )
-       data%bnls_data%eval_status = eval_status
+       data%reverse%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%reverse%P( : data%nlp%n ) = P( : data%nlp%n )
+     CASE( 6 )
+       data%reverse%eval_status = eval_status
        IF ( eval_status == 0 ) THEN
-         IF ( data%bnls_data%transpose ) THEN
-           data%bnls_data%U( : data%nlp%n ) = U( : data%nlp%n )
+         data%reverse%lp = lp
+         data%reverse%P( : lp ) = P( : lp )
+         IF ( data%f_indexing ) THEN
+           data%reverse%IP( : lp ) = IP( : lp )
          ELSE
-           data%bnls_data%U( : data%nlp%m ) = U( : data%nlp%m )
+           data%reverse%IP( : lp ) = IP( : lp ) + 1
          END IF
        END IF
-     CASE( 6 )
-       data%bnls_data%eval_status = eval_status
-       IF ( eval_status == 0 )                                                 &
-         data%bnls_data%U( : data%nlp%n ) = U( : data%nlp%n )
      CASE( 7 )
-       data%bnls_data%eval_status = eval_status
+       data%reverse%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
-         data%nlp%P%val( : data%nlp%P%ne ) = P_val( : data%nlp%P%ne )
+         data%reverse%P( : data%nlp%m_r ) = P( : data%nlp%m_r )
+     CASE( 8 )
+       data%reverse%eval_status = eval_status
+       IF ( eval_status == 0 ) THEN
+         IF ( .NOT. data%f_indexing ) THEN
+           lvl = data%reverse%lvl ; lvu = data%reverse%lvu
+           IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
+         END IF
+         data%reverse%P( IV( lvl : lvu ) ) = P( IV( lvl : lvu ) )
+       END IF
      END SELECT
 
 !  call the solver
 
-     IF ( ALLOCATED( data%W ) ) THEN
-       CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,         &
-                        data%bnls_data, data%userdata, W = data%W )
-     ELSE
-       CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,         &
-                        data%bnls_data, data%userdata )
-     END IF
+     CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,           &
+                      data%bnls_data, data%userdata, reverse = data%reverse )
 
 !  collect data for reverse communication
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
      SELECT CASE ( data%bnls_inform%status )
      CASE( 0 )
-       C( : data%nlp%m ) = data%nlp%C( : data%nlp%m )
+       Z( : data%nlp%n ) = data%nlp%Z( : data%nlp%n )
+       R( : data%nlp%m_r ) = data%nlp%R( : data%nlp%m_r )
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+       X_stat( : data%nlp%n ) = data%nlp%X_status( : data%nlp%n )
      CASE( 2 )
-     CASE( 3, 4 )
+     CASE( 3 )
        WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
          data%bnls_inform%status
+     CASE( 4 )
+       V( : data%nlp%n ) = data%reverse%V( : data%nlp%n )
      CASE( 5 )
-       transpose = data%bnls_data%transpose
-       IF ( transpose ) THEN
-         U( : data%nlp%n ) = data%bnls_data%U( : data%nlp%n )
-         V( : data%nlp%m ) = data%bnls_data%V( : data%nlp%m )
-       ELSE
-         U( : data%nlp%m ) = data%bnls_data%U( : data%nlp%m )
-         V( : data%nlp%n ) = data%bnls_data%V( : data%nlp%n )
-       END IF
+       V( : data%nlp%m_r ) = data%reverse%V( : data%nlp%m_r )
      CASE( 6 )
-       Y( : data%nlp%m ) = data%bnls_data%Y( : data%nlp%m )
-       V( : data%nlp%n ) = data%bnls_data%V( : data%nlp%n )
+       IF ( data%f_indexing ) THEN
+         index = data%reverse%index
+       ELSE
+         index = data%reverse%index - 1
+       END IF
      CASE( 7 )
-       V( : data%nlp%n ) = data%bnls_data%V( : data%nlp%n )
+       lvl = data%reverse%lvl ; lvu = data%reverse%lvu
+       IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
+       V( IV( lvl : lvu ) ) = data%reverse%V( IV( lvl : lvu ) )
+       IF ( .NOT. data%f_indexing ) THEN
+         IV( lvl : lvu ) = IV( lvl : lvu ) - 1
+!        lvl = lvl - 1 ; lvu = lvu - 1
+       END IF
+     CASE( 8 )
+       lvl = data%reverse%lvl ; lvu = data%reverse%lvu
+       V( : data%nlp%m_r ) = data%reverse%V( : data%nlp%m_r )
+       IF ( data%f_indexing ) THEN
+         IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
+       ELSE
+         IV( lvl : lvu ) = data%reverse%IV( lvl : lvu ) - 1
+!        lvl = lvl - 1 ; lvu = lvu - 1
+       END IF
      END SELECT
      status = data%bnls_inform%status
 
      RETURN
 
-!  end of subroutine BNLS_solve_reverse_without_mat
+!  error returns
 
-     END SUBROUTINE BNLS_solve_reverse_without_mat
+ 900 CONTINUE
+     RETURN
+
+!  end of subroutine BNLS_solve_reverse_with_jacprod
+
+     END SUBROUTINE BNLS_solve_reverse_with_jacprod
 
 !-  G A L A H A D -  B N L S _ i n f o r m a t i o n   S U B R O U T I N E  -
 

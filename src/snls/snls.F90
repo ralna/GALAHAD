@@ -1002,6 +1002,10 @@
 !   holds the values z of the dual variables for the non-neagtivity constraints.
 !   The j-th component of Z, j = 1, ... , n, contains z_j.
 !
+!  R is a rank-one allocatable array of dimension m_r and type default real, 
+!   that holds the values r(x) of the residuals. The i-th component of R, 
+!   i = 1, ... , m_r, contains r_i(x).
+!
 !  G is a rank-one allocatable array of dimension n and type default real, that
 !   holds the values g(x) = Jr^T r(x) of the gradient of the objective function.
 !   The j-th component of G, j = 1, ... , n, contains g_j(x).
