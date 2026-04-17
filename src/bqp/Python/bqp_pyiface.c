@@ -514,11 +514,7 @@ static PyObject* py_bqp_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
         return NULL;
 
     // Return x, z and x_stat
-    PyObject *solve_qp_return;
-    solve_qp_return = Py_BuildValue("NNN", py_x, py_z, py_x_stat);
-    Py_INCREF(solve_qp_return);
-    return solve_qp_return;
-
+    return Py_BuildValue("NNN", py_x, py_z, py_x_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BQP_INFORMATION   -*-*-*-*-*-*-*-*

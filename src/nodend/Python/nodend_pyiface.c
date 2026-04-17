@@ -489,10 +489,7 @@ static PyObject* py_nodend_order(PyObject *self, PyObject *args, PyObject *keywd
         return NULL;
 
     // Return perm
-    PyObject *solve_nodend_return;
-    solve_nodend_return = Py_BuildValue("N", py_perm);
-    Py_INCREF(solve_nodend_return);
-    return solve_nodend_return;
+    return Py_BuildValue("N", py_perm);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   NODEND_INFORMATION   -*-*-*-*-*-*-*-*-

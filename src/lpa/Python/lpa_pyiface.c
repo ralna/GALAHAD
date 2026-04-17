@@ -577,13 +577,8 @@ static PyObject* py_lpa_solve_lp(PyObject *self, PyObject *args, PyObject *keywd
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *solve_lp_return;
-
-    // solve_lp_return = Py_BuildValue("N", py_x);
-    solve_lp_return = Py_BuildValue("NNNNNN", py_x, py_c, py_y, py_z,
+    return Py_BuildValue("NNNNNN", py_x, py_c, py_y, py_z,
                                               py_x_stat, py_c_stat);
-    Py_INCREF(solve_lp_return);
-    return solve_lp_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LPA_INFORMATION   -*-*-*-*-*-*-*-*

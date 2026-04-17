@@ -54,7 +54,6 @@ static PyObject *py_eval_c = NULL;
 static PyObject *py_eval_j = NULL;
 static PyObject *py_eval_h = NULL;
 static PyObject *py_eval_hprods = NULL;
-static PyObject *nls_solve_return = NULL;
 //static PyObject *py_c = NULL;
 //static PyObject *py_g = NULL;
 
@@ -1495,9 +1494,7 @@ static PyObject* py_nls_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x, c and g
-    nls_solve_return = Py_BuildValue("NNN", py_x, py_c, py_g);
-    Py_XINCREF(nls_solve_return);
-    return nls_solve_return;
+    return Py_BuildValue("NNN", py_x, py_c, py_g);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   NLS_INFORMATION   -*-*-*-*-*-*-*-*

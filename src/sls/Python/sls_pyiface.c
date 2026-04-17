@@ -879,10 +879,7 @@ static PyObject* py_sls_solve_system(PyObject *self, PyObject *args, PyObject *k
         return NULL;
 
     // Return x
-    PyObject *solve_system_return;
-    solve_system_return = Py_BuildValue("N", py_sol);
-    Py_INCREF(solve_system_return);
-    return solve_system_return;
+    return Py_BuildValue("N", py_sol);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SLS_PARTIAL_SOLVE_SYSTEM  -*-*-*-*-*-*-*-*
@@ -927,10 +924,7 @@ static PyObject* py_sls_partial_solve_system(PyObject *self, PyObject *args, PyO
                         NPY_DOUBLE, (void *) sol); // create NumPy x array
 
     // Return x
-    PyObject *solve_system_return;
-    solve_system_return = Py_BuildValue("N", py_x);
-    Py_INCREF(solve_system_return);
-    return solve_system_return;
+    return Py_BuildValue("N", py_x);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SLS_INFORMATION   -*-*-*-*-*-*-*-*

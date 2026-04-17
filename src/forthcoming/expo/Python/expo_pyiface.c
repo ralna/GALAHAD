@@ -45,7 +45,6 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_fc = NULL;
 static PyObject *py_eval_gj = NULL;
 static PyObject *py_eval_hl = NULL;
-static PyObject *expo_solve_return = NULL;
 
 /* C eval_* function wrappers */
 static int eval_fc(int n, int m, const double x[], double *f, double c[],
@@ -56,7 +55,7 @@ static int eval_fc(int n, int m, const double x[], double *f, double c[],
     PyObject *py_x = PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(O)", py_x);
+    PyObject *arglist = Py_BuildValue("(N)", py_x);
 
     // Call Python eval_fc
     PyObject *result = PyObject_CallObject(py_eval_fc, arglist);
@@ -97,7 +96,7 @@ static int eval_gj(int n, int m, int jne, const double x[],
        PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(O)", py_x);
+    PyObject *arglist = Py_BuildValue("(N)", py_x);
 
     // Call Python eval_gj
     PyObject *result = PyObject_CallObject(py_eval_gj, arglist);
@@ -145,7 +144,7 @@ static int eval_hl(int n, int m, int hne, const double x[], const double y[],
        PyArray_SimpleNewFromData(1, ydim, NPY_DOUBLE, (void *) y);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(OO)", py_x, py_y);
+    PyObject *arglist = Py_BuildValue("(NN)", py_x, py_y);
 
     // Call Python eval_hl
     PyObject *result = PyObject_CallObject(py_eval_hl, arglist);
@@ -598,7 +597,7 @@ static PyObject* py_expo_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = expo_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   EXPO_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -809,9 +808,7 @@ static PyObject* py_expo_solve(PyObject *self, PyObject *args, PyObject *keywds)
         return NULL;
 
     // Return x, y, z, c and gl
-    expo_solve_return = Py_BuildValue("OOOOO", py_x, py_y, py_z, py_c, py_gl);
-    Py_XINCREF(expo_solve_return);
-    return expo_solve_return;
+    return Py_BuildValue("NNNNN", py_x, py_y, py_z, py_c, py_gl);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   EXPO_INFORMATION   -*-*-*-*-*-*-*-*
@@ -827,7 +824,7 @@ static PyObject* py_expo_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = expo_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   EXPO_TERMINATE   -*-*-*-*-*-*-*-*-*-*

@@ -742,16 +742,11 @@ static PyObject* py_rqs_solve_problem(PyObject *self, PyObject *args,
         return NULL;
 
     // Return x and possibly y
-    PyObject *solve_problem_return;
-
     if(load_a_called) {
-      solve_problem_return = Py_BuildValue("NN", py_x, py_y);
+        return Py_BuildValue("NN", py_x, py_y);
     } else {
-      solve_problem_return = Py_BuildValue("N", py_x);
+        return Py_BuildValue("N", py_x);
     }
-    Py_INCREF(solve_problem_return);
-    return solve_problem_return;
-
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   RQS_INFORMATION   -*-*-*-*-*-*-*-*

@@ -864,13 +864,8 @@ static PyObject* py_dqp_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *solve_qp_return;
-
-    // solve_qp_return = Py_BuildValue("N", py_x);
-    solve_qp_return = Py_BuildValue("NNNNNN", py_x, py_c, py_y, py_z,
-                                              py_x_stat, py_c_stat);
-    Py_INCREF(solve_qp_return);
-    return solve_qp_return;
+    return Py_BuildValue("NNNNNN", py_x, py_c, py_y, py_z,
+                                   py_x_stat, py_c_stat);
 
 }
 //  *-*-*-*-*-*-*-*-*-*-   DQP_SOLVE_SLDQP   -*-*-*-*-*-*-*-*
@@ -966,11 +961,8 @@ static PyObject* py_dqp_solve_sldqp(PyObject *self, PyObject *args, PyObject *ke
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *solve_sldqp_return;
-    solve_sldqp_return = Py_BuildValue("NNNNNN", py_x, py_c, py_y, py_z,
-                                                 py_x_stat, py_c_stat);
-    Py_INCREF(solve_sldqp_return);
-    return solve_sldqp_return;
+    return Py_BuildValue("NNNNNN", py_x, py_c, py_y, py_z,
+                                    py_x_stat, py_c_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DQP_INFORMATION   -*-*-*-*-*-*-*-*
