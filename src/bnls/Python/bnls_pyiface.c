@@ -41,7 +41,6 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_r = NULL;
 static PyObject *py_eval_jr = NULL;
 static PyObject *py_eval_h = NULL;
-static PyObject *bnls_solve_return = NULL;
 //static PyObject *py_c = NULL;
 //static PyObject *py_g = NULL;
 
@@ -767,12 +766,9 @@ static PyObject* py_bnls_solve(PyObject *self, PyObject *args, PyObject *keywds)
     if(!check_error_codes(status))
         return NULL;
 
-   // Return x, z, r, g and x_stat
-    bnls_solve_return = Py_BuildValue("NNNNN", py_x, py_z, py_r, py_g,
-                                      py_x_stat);
-    Py_INCREF(bnls_solve_return);
-    return bnls_solve_return;
-
+    // Return x, z, r, g and x_stat
+    return Py_BuildValue("NNNNN", py_x, py_z, py_r, py_g,
+                                    py_x_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BNLS_INFORMATION   -*-*-*-*-*-*-*-*

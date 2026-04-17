@@ -591,11 +591,8 @@ static PyObject* py_slls_solve(PyObject *self, PyObject *args,
         return NULL;
 
     // Return x, y, z, r, g and x_stat
-    PyObject *solve_ls_return;
-    solve_ls_return = Py_BuildValue("NNNNNN", py_x, py_y, py_z, py_r, py_g,
+    return Py_BuildValue("NNNNNN", py_x, py_y, py_z, py_r, py_g,
                                      py_x_stat);
-    Py_INCREF(solve_ls_return);
-    return solve_ls_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SLLS_INFORMATION   -*-*-*-*-*-*-*-*

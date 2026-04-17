@@ -931,14 +931,8 @@ static PyObject* py_clls_solve(PyObject *self, PyObject *args, PyObject *keywds)
         return NULL;
 
     // Return x, y, z, r, c, x_stat and c_stat
-    PyObject *solve_clls_return;
-
-    // solve_qp_return = Py_BuildValue("N", py_x);
-    solve_clls_return = Py_BuildValue("NNNNNNN", py_x, py_y, py_z, py_r, py_c,
-                                                 py_x_stat, py_c_stat);
-    Py_INCREF(solve_clls_return);
-    return solve_clls_return;
-
+    return Py_BuildValue("NNNNNNN", py_x, py_y, py_z, py_r, py_c,
+                                    py_x_stat, py_c_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   CLLS_INFORMATION   -*-*-*-*-*-*-*-*

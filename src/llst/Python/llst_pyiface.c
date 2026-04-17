@@ -574,12 +574,7 @@ static PyObject* py_llst_solve_problem(PyObject *self, PyObject *args,
         return NULL;
 
     // Return x
-    PyObject *solve_problem_return;
-
-    solve_problem_return = Py_BuildValue("N", py_x);
-    Py_INCREF(solve_problem_return);
-    return solve_problem_return;
-
+    return Py_BuildValue("N", py_x);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LLST_INFORMATION   -*-*-*-*-*-*-*-*

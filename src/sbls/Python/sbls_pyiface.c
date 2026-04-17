@@ -723,10 +723,7 @@ static PyObject* py_sbls_solve_system(PyObject *self, PyObject *args, PyObject *
         return NULL;
 
     // Return x
-    PyObject *solve_system_return;
-    solve_system_return = Py_BuildValue("N", py_sol);
-    Py_INCREF(solve_system_return);
-    return solve_system_return;
+    return Py_BuildValue("N", py_sol);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SBLS_INFORMATION   -*-*-*-*-*-*-*-*

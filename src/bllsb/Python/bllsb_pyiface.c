@@ -867,13 +867,7 @@ static PyObject* py_bllsb_solve(PyObject *self, PyObject *args, PyObject *keywds
         return NULL;
 
     // Return x, z, r, and x_stat
-    PyObject *solve_bllsb_return;
-
-    // solve_qp_return = Py_BuildValue("N", py_x);
-    solve_bllsb_return = Py_BuildValue("NNNN", py_x, py_z, py_r, py_x_stat);
-    Py_INCREF(solve_bllsb_return);
-    return solve_bllsb_return;
-
+    return Py_BuildValue("NNNN", py_x, py_z, py_r, py_x_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BLLSB_INFORMATION   -*-*-*-*-*-*-*-*

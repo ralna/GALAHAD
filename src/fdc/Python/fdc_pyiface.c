@@ -367,12 +367,8 @@ static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
     free(A_ptr);
 
     // Return n_depen, depen and inform
-    PyObject *find_dependent_rows_return;
     PyObject *py_inform = fdc_make_inform_dict(&inform);
-    find_dependent_rows_return =
-      Py_BuildValue("iNN", n_depen, py_depen, py_inform);
-    Py_INCREF(find_dependent_rows_return);
-    return find_dependent_rows_return;
+    return Py_BuildValue("iNN", n_depen, py_depen, py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   FDC_TERMINATE   -*-*-*-*-*-*-*-*-*-*

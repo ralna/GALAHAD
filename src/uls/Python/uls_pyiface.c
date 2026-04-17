@@ -483,10 +483,7 @@ static PyObject* py_uls_solve_system(PyObject *self, PyObject *args, PyObject *k
         return NULL;
 
     // Return x
-    PyObject *solve_system_return;
-    solve_system_return = Py_BuildValue("N", py_sol);
-    Py_INCREF(solve_system_return);
-    return solve_system_return;
+    return Py_BuildValue("N", py_sol);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   ULS_INFORMATION   -*-*-*-*-*-*-*-*

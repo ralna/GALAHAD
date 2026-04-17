@@ -61,7 +61,6 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
-static PyObject *tru_solve_return = NULL;
 // static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
@@ -845,9 +844,7 @@ static PyObject* py_tru_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x and g
-    tru_solve_return = Py_BuildValue("NN", py_x, py_g);
-    Py_XINCREF(tru_solve_return);
-    return tru_solve_return;
+    return Py_BuildValue("NN", py_x, py_g);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   TRU_INFORMATION   -*-*-*-*-*-*-*-*

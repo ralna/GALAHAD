@@ -845,13 +845,7 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args, PyObject *keyw
         return NULL;
 
     // Return x, z and x_stat
-    PyObject *solve_qp_return;
-
-    // solve_qp_return = Py_BuildValue("N", py_x);
-    solve_qp_return = Py_BuildValue("NNN", py_x, py_z, py_x_stat);
-    Py_INCREF(solve_qp_return);
-    return solve_qp_return;
-
+    return Py_BuildValue("NNN", py_x, py_z, py_x_stat);
 }
 //  *-*-*-*-*-*-*-*-*-*-   BQPB_SOLVE_SLDQP   -*-*-*-*-*-*-*-*
 
@@ -922,10 +916,7 @@ static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args, PyObject *k
         return NULL;
 
     // Return x, z, and x_stat
-    PyObject *solve_sldqp_return;
-    solve_sldqp_return = Py_BuildValue("NNN", py_x, py_z, py_x_stat);
-    Py_INCREF(solve_sldqp_return);
-    return solve_sldqp_return;
+    return Py_BuildValue("NNN", py_x, py_z, py_x_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BQPB_INFORMATION   -*-*-*-*-*-*-*-*

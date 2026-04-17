@@ -53,7 +53,6 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
-static PyObject *trb_solve_return = NULL;
 //static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
@@ -891,9 +890,7 @@ static PyObject* py_trb_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x and g
-    trb_solve_return = Py_BuildValue("NN", py_x, py_g);
-    Py_XINCREF(trb_solve_return);
-    return trb_solve_return;
+    return Py_BuildValue("NN", py_x, py_g);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   TRB_INFORMATION   -*-*-*-*-*-*-*-*

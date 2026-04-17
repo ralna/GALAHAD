@@ -787,11 +787,8 @@ static PyObject* py_lsqp_solve_qp(PyObject *self, PyObject *args, PyObject *keyw
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *solve_qp_return;
-    solve_qp_return = Py_BuildValue("NNNNNN", py_x, py_c, py_y, py_z,
+    return Py_BuildValue("NNNNNN", py_x, py_c, py_y, py_z,
                                                  py_x_stat, py_c_stat);
-    Py_INCREF(solve_qp_return);
-    return solve_qp_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LSQP_INFORMATION   -*-*-*-*-*-*-*-*
