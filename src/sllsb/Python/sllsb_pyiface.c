@@ -649,17 +649,17 @@ PyObject* sllsb_make_inform_dict(const struct sllsb_inform_type *inform){
 
     // include checkpoint arrays (commented out as these cause a segfault!)
     int ii = 16;
-    npy_intp idim[] = {ii}; 
-    //PyArrayObject *py_iter = 
+    npy_intp idim[] = {ii};
+    //PyArrayObject *py_iter =
     //  (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_INT);
-    //int *iter = (int *) PyArray_DATA(py_iter); 
-    //for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];  
+    //int *iter = (int *) PyArray_DATA(py_iter);
+    //for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];
     //PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
 
-    //PyArrayObject *py_time = 
+    //PyArrayObject *py_time =
     // (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_DOUBLE);
-    //double *time = (double *) PyArray_DATA(py_time); 
-    //for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];  
+    //double *time = (double *) PyArray_DATA(py_time);
+    //for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];
     //PyDict_SetItemString(py_inform, "checkpointsTime", (PyObject *) py_time);
 
     // Set time nested dictionary
@@ -697,7 +697,7 @@ static PyObject* py_sllsb_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = sllsb_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SLLSB_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -792,7 +792,7 @@ static PyObject* py_sllsb_load(PyObject *self, PyObject *args, PyObject *keywds)
 
 //  *-*-*-*-*-*-*-*-*-*-   SLLSB_SOLVE   -*-*-*-*-*-*-*-*
 
-static PyObject* py_sllsb_solve(PyObject *self, PyObject *args, 
+static PyObject* py_sllsb_solve(PyObject *self, PyObject *args,
                                 PyObject *keywds){
     PyArrayObject *py_Ao_val, *py_b;
     PyArrayObject *py_x, *py_y, *py_z;
@@ -807,10 +807,10 @@ static PyObject* py_sllsb_solve(PyObject *self, PyObject *args,
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n", "o", "m", "Ao_ne","Ao_val", "b", "sigma", 
+    static char *kwlist[] = {"n", "o", "m", "Ao_ne","Ao_val", "b", "sigma",
                              "x", "y", "z", "w", "x_s", NULL};
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOOdOOO|OO",
-                                    kwlist, &n, &o, &m, 
+                                    kwlist, &n, &o, &m,
                                     &Ao_ne, &py_Ao_val, &py_b, &sigma,
                                     &py_x, &py_y, &py_z, &py_w, &py_x_s))
         return NULL;
@@ -831,7 +831,7 @@ static PyObject* py_sllsb_solve(PyObject *self, PyObject *args,
         if(!check_array_double("w", py_w, o))
             return NULL;
         w = (double *) PyArray_DATA(py_w);
-      }  
+      }
     }
     if(py_x_s != NULL) {
       if((PyObject *) py_w != Py_None){
@@ -851,10 +851,10 @@ static PyObject* py_sllsb_solve(PyObject *self, PyObject *args,
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp odim[] = {o}; // size of r
-    PyArrayObject *py_r = 
+    PyArrayObject *py_r =
       (PyArrayObject *) PyArray_SimpleNew(1, odim, NPY_DOUBLE);
     double *r = (double *) PyArray_DATA(py_r);
-    PyArrayObject *py_x_stat = 
+    PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 
@@ -866,7 +866,7 @@ static PyObject* py_sllsb_solve(PyObject *self, PyObject *args,
     // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
     // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -878,8 +878,8 @@ static PyObject* py_sllsb_solve(PyObject *self, PyObject *args,
     // Return x, r, c, y, z, x_stat and c_stat
     PyObject *solve_sllsb_return;
 
-    // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_sllsb_return = Py_BuildValue("OOOOO", py_x, py_y, py_z, py_r, 
+    // solve_qp_return = Py_BuildValue("N", py_x);
+    solve_sllsb_return = Py_BuildValue("NNNNN", py_x, py_y, py_z, py_r,
                                         py_x_stat);
     Py_INCREF(solve_sllsb_return);
     return solve_sllsb_return;
@@ -899,7 +899,7 @@ static PyObject* py_sllsb_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = sllsb_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SLLSB_TERMINATE   -*-*-*-*-*-*-*-*-*-*
@@ -940,7 +940,7 @@ PyDoc_STRVAR(sllsb_module_doc,
 "q(x) = 1/2 ||Ao x - b||_W^2 + sigma/2 ||x-x_s||^2,\n"
 "where x is required to lie in the regular simplex\n"
 "e^T x = 1, x >= 0,\n"
-"the o by n matrix Ao, the vectors b, w, x_s,\n" 
+"the o by n matrix Ao, the vectors b, w, x_s,\n"
 "and the regularization weight sigma >= 0 are given,\n"
 "and the norms are defined by ||v||_W^2 = v^T W v and ||v||^2 = v^T v,\n"
 "where W is the digonal matrix whose entries are the components of w > 0\n"

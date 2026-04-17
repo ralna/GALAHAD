@@ -211,7 +211,7 @@ static PyObject* py_sha_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = sha_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SHA_ANALYSE_MATRIX    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -356,7 +356,7 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
 
     // Return val
     PyObject *recover_matrix_return;
-    recover_matrix_return = Py_BuildValue("O", py_val);
+    recover_matrix_return = Py_BuildValue("N", py_val);
     Py_INCREF(recover_matrix_return);
     return recover_matrix_return;
 
@@ -375,7 +375,7 @@ static PyObject* py_sha_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = sha_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SHA_TERMINATE   -*-*-*-*-*-*-*-*-*-*

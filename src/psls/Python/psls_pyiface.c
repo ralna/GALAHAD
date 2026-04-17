@@ -366,7 +366,7 @@ static PyObject* py_psls_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = psls_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   PSLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -567,7 +567,7 @@ static PyObject* py_psls_apply_preconditioner(PyObject *self, PyObject *args, Py
 
     // Return x
     PyObject *solve_system_return;
-    solve_system_return = Py_BuildValue("O", py_sol);
+    solve_system_return = Py_BuildValue("N", py_sol);
     Py_INCREF(solve_system_return);
     return solve_system_return;
 }
@@ -585,7 +585,7 @@ static PyObject* py_psls_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = psls_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   PSLS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

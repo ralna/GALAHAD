@@ -413,7 +413,7 @@ static PyObject* py_nodend_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = nodend_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   NODEND_ORDER    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -490,7 +490,7 @@ static PyObject* py_nodend_order(PyObject *self, PyObject *args, PyObject *keywd
 
     // Return perm
     PyObject *solve_nodend_return;
-    solve_nodend_return = Py_BuildValue("O", py_perm);
+    solve_nodend_return = Py_BuildValue("N", py_perm);
     Py_INCREF(solve_nodend_return);
     return solve_nodend_return;
 }
@@ -508,7 +508,7 @@ static PyObject* py_nodend_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = nodend_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   NODEND_TERMINATE   -*-*-*-*-*-*-*-*-*-*
@@ -544,7 +544,7 @@ PyDoc_STRVAR(nodend_module_doc,
 
 "The nodend package Find a symmetric row and column permutation P A P'\n"
 "of a symmetric, sparse matrix A with the aim of limiting\n"
-"the fill-in during subsequent Cholesky-like factorization\n" 
+"the fill-in during subsequent Cholesky-like factorization\n"
 "The package is actually a wrapper to the METIS_NodeND\n"
 "procedure from versions 4.0, 5.1 and 5.2 of the\n"
 "METIS package from the Karypis Lab.\n"

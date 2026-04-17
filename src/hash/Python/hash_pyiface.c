@@ -150,7 +150,7 @@ PyObject* hash_make_inform_dict(const struct hash_inform_type *inform){
     // Return options Python dictionary
     PyObject *py_options = hash_make_options_dict(&control);
     PyObject *py_inform = hash_make_inform_dict(&inform);
-    return Py_BuildValue("OO", py_options, py_inform);
+    return Py_BuildValue("NN", py_options, py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   HASH_INFORMATION   -*-*-*-*-*-*-*-*
@@ -166,7 +166,7 @@ static PyObject* py_hash_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = hash_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   HASH_TERMINATE   -*-*-*-*-*-*-*-*-*-*

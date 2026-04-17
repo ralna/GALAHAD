@@ -656,7 +656,7 @@ static PyObject* py_dqp_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = dqp_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   DQP_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -792,7 +792,7 @@ static PyObject* py_dqp_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
     // Parse positional arguments
     static char *kwlist[] = {"n", "m", "f", "g", "H_ne", "H_val", "A_ne", "A_val",
                              "c_l", "c_u", "x_l", "x_u", "x", "y", "z", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOiOiOOOOOOOO", kwlist, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOiOiOOOOOOOO", kwlist,
                                     &n, &m, &f, &py_g,
                                     &H_ne, &py_H_val, &A_ne, &py_A_val,
                                     &py_c_l, &py_c_u, &py_x_l, &py_x_u,
@@ -866,8 +866,8 @@ static PyObject* py_dqp_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
     // Return x, c, y, z, x_stat and c_stat
     PyObject *solve_qp_return;
 
-    // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
+    // solve_qp_return = Py_BuildValue("N", py_x);
+    solve_qp_return = Py_BuildValue("NNNNNN", py_x, py_c, py_y, py_z,
                                               py_x_stat, py_c_stat);
     Py_INCREF(solve_qp_return);
     return solve_qp_return;
@@ -890,7 +890,7 @@ static PyObject* py_dqp_solve_sldqp(PyObject *self, PyObject *args, PyObject *ke
     // Parse positional arguments
     static char *kwlist[] = {"n", "m", "f", "g", "w", "x0", "A_ne", "A_val",
                              "c_l", "c_u", "x_l", "x_u", "x", "y", "z", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOOOiOOOOOOOO", kwlist, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOOOiOOOOOOOO", kwlist,
                                     &n, &m, &f, &py_g,
                                     &py_w, &py_x0, &A_ne, &py_A_val,
                                     &py_c_l, &py_c_u, &py_x_l, &py_x_u,
@@ -967,7 +967,7 @@ static PyObject* py_dqp_solve_sldqp(PyObject *self, PyObject *args, PyObject *ke
 
     // Return x, c, y, z, x_stat and c_stat
     PyObject *solve_sldqp_return;
-    solve_sldqp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
+    solve_sldqp_return = Py_BuildValue("NNNNNN", py_x, py_c, py_y, py_z,
                                                  py_x_stat, py_c_stat);
     Py_INCREF(solve_sldqp_return);
     return solve_sldqp_return;
@@ -986,7 +986,7 @@ static PyObject* py_dqp_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = dqp_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DQP_TERMINATE   -*-*-*-*-*-*-*-*-*-*

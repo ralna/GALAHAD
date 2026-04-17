@@ -281,7 +281,7 @@ static PyObject* py_fdc_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = fdc_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   FDC_FACTORIZE_MATRIX    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -370,7 +370,7 @@ static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
     PyObject *find_dependent_rows_return;
     PyObject *py_inform = fdc_make_inform_dict(&inform);
     find_dependent_rows_return =
-      Py_BuildValue("iOO", n_depen, py_depen, py_inform);
+      Py_BuildValue("iNN", n_depen, py_depen, py_inform);
     Py_INCREF(find_dependent_rows_return);
     return find_dependent_rows_return;
 }

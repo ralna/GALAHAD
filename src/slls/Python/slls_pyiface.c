@@ -410,7 +410,7 @@ static PyObject* py_slls_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = slls_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SLLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -504,7 +504,7 @@ static PyObject* py_slls_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   SLLS_SOLVE   -*-*-*-*-*-*-*-*
 
-static PyObject* py_slls_solve(PyObject *self, PyObject *args, 
+static PyObject* py_slls_solve(PyObject *self, PyObject *args,
                                PyObject *keywds){
     PyArrayObject *py_Ao_val;
     PyArrayObject *py_b, *py_x, *py_w = NULL, *py_x_s = NULL;
@@ -519,7 +519,7 @@ static PyObject* py_slls_solve(PyObject *self, PyObject *args,
     // Parse positional arguments
     static char *kwlist[] = {"n", "o", "m", "Ao_ne", "Ao_val", "b",
                              "sigma", "x", "w", "x_s", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOOdO|OO", kwlist, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOOdO|OO", kwlist,
                                     &n, &o, &m,
                                     &Ao_ne, &py_Ao_val, &py_b, &sigma,
                                     &py_x, &py_w, &py_x_s))
@@ -537,7 +537,7 @@ static PyObject* py_slls_solve(PyObject *self, PyObject *args,
         if(!check_array_double("w", py_w, o))
             return NULL;
         w = (double *) PyArray_DATA(py_w);
-      }  
+      }
     }
     if(py_x_s != NULL) {
       if((PyObject *) py_w != Py_None){
@@ -592,7 +592,7 @@ static PyObject* py_slls_solve(PyObject *self, PyObject *args,
 
     // Return x, y, z, r, g and x_stat
     PyObject *solve_ls_return;
-    solve_ls_return = Py_BuildValue("OOOOOO", py_x, py_y, py_z, py_r, py_g,
+    solve_ls_return = Py_BuildValue("NNNNNN", py_x, py_y, py_z, py_r, py_g,
                                      py_x_stat);
     Py_INCREF(solve_ls_return);
     return solve_ls_return;
@@ -610,7 +610,7 @@ static PyObject* py_slls_information(PyObject *self){
     slls_information(&data, &inform, &status);
     // Return status and inform Python dictionary
     PyObject *py_inform = slls_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SLLS_TERMINATE   -*-*-*-*-*-*-*-*-*-*
