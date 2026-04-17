@@ -428,7 +428,7 @@ static PyObject* py_sils_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = sils_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SILS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -446,7 +446,7 @@ static PyObject* py_sils_information(PyObject *self){
     PyObject *py_ainfo = sils_make_ainfo_dict(&ainfo);
     PyObject *py_finfo = sils_make_finfo_dict(&finfo);
     PyObject *py_sinfo = sils_make_sinfo_dict(&sinfo);
-    return Py_BuildValue("OOO", py_ainfo, py_finfo, py_sinfo);
+    return Py_BuildValue("NNN", py_ainfo, py_finfo, py_sinfo);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SILS_FINALIZE   -*-*-*-*-*-*-*-*-*-*

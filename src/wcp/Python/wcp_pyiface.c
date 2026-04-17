@@ -576,7 +576,7 @@ static PyObject* py_wcp_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = wcp_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   WCP_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -756,8 +756,8 @@ static PyObject* py_wcp_find_wcp(PyObject *self, PyObject *args, PyObject *keywd
     // Return x, c, y, z, x_stat and c_stat
     PyObject *find_wcp_return;
 
-    // find_wcp_return = Py_BuildValue("O", py_x);
-    find_wcp_return = Py_BuildValue("OOOOOOOO", py_x, py_c, py_y_l, py_y_u,
+    // find_wcp_return = Py_BuildValue("N", py_x);
+    find_wcp_return = Py_BuildValue("NNNNNNNN", py_x, py_c, py_y_l, py_y_u,
                                                 py_z_l, py_z_u,
                                                 py_x_stat, py_c_stat);
     Py_INCREF(find_wcp_return);
@@ -777,7 +777,7 @@ static PyObject* py_wcp_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = wcp_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   WCP_TERMINATE   -*-*-*-*-*-*-*-*-*-*

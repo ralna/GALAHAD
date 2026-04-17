@@ -648,16 +648,16 @@ PyObject* clls_make_inform_dict(const struct clls_inform_type *inform){
                          PyBool_FromLong(inform->feasible));
 
     // include checkpoint arrays
-    npy_intp idim[] = {16}; 
-    PyArrayObject *py_iter = 
+    npy_intp idim[] = {16};
+    PyArrayObject *py_iter =
       (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_INT);
-    int *iter = (int *) PyArray_DATA(py_iter); 
-    for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];  
+    int *iter = (int *) PyArray_DATA(py_iter);
+    for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];
     PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
-    PyArrayObject *py_time = 
+    PyArrayObject *py_time =
       (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_DOUBLE);
-    double *time = (double *) PyArray_DATA(py_time); 
-    for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];  
+    double *time = (double *) PyArray_DATA(py_time);
+    for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];
     PyDict_SetItemString(py_inform, "checkpointsTime", (PyObject *) py_time);
 
     // Set time nested dictionary
@@ -695,7 +695,7 @@ static PyObject* py_clls_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = clls_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   CLLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -833,16 +833,16 @@ static PyObject* py_clls_solve(PyObject *self, PyObject *args, PyObject *keywds)
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n", "o", "m", "Ao_ne","Ao_val", "b", "sigma", 
-                             "A_ne","A_val", "c_l", "c_u", "x_l", "x_u", 
+    static char *kwlist[] = {"n", "o", "m", "Ao_ne","Ao_val", "b", "sigma",
+                             "A_ne","A_val", "c_l", "c_u", "x_l", "x_u",
                              "x", "y", "z", "w", "x_s", NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOOdiOOOOOOOO|OO",
-                                    kwlist, &n, &o, &m, 
+                                    kwlist, &n, &o, &m,
                                     &Ao_ne, &py_Ao_val, &py_b, &sigma,
                                     &A_ne, &py_A_val,
                                     &py_c_l, &py_c_u, &py_x_l, &py_x_u,
-                                    &py_x, &py_y, &py_z, 
+                                    &py_x, &py_y, &py_z,
                                     &py_w, &py_x_s))
         return NULL;
 
@@ -872,7 +872,7 @@ static PyObject* py_clls_solve(PyObject *self, PyObject *args, PyObject *keywds)
         if(!check_array_double("w", py_w, o))
             return NULL;
         w = (double *) PyArray_DATA(py_w);
-      }  
+      }
     }
     if(py_x_s != NULL) {
       if((PyObject *) py_w != Py_None){
@@ -898,30 +898,30 @@ static PyObject* py_clls_solve(PyObject *self, PyObject *args, PyObject *keywds)
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp odim[] = {o}; // size of r
     npy_intp mdim[] = {m}; // size of c and c_stat
-    PyArrayObject *py_r = 
+    PyArrayObject *py_r =
       (PyArrayObject *) PyArray_SimpleNew(1, odim, NPY_DOUBLE);
     double *r = (double *) PyArray_DATA(py_r);
-    PyArrayObject *py_c = 
+    PyArrayObject *py_c =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
-    PyArrayObject *py_x_stat = 
+    PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
-    PyArrayObject *py_c_stat = 
+    PyArrayObject *py_c_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call clls_solve_direct
     status = 1; // set status to 1 on entry
-    clls_solve_given_a(&data, &status, n, o, m, 
-                       Ao_ne, Ao_val, b, sigma, A_ne, A_val, 
-                       c_l, c_u, x_l, x_u, x, y, z, r, c, x_stat, c_stat, 
+    clls_solve_given_a(&data, &status, n, o, m,
+                       Ao_ne, Ao_val, b, sigma, A_ne, A_val,
+                       c_l, c_u, x_l, x_u, x, y, z, r, c, x_stat, c_stat,
                        w, x_s);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
     // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -933,8 +933,8 @@ static PyObject* py_clls_solve(PyObject *self, PyObject *args, PyObject *keywds)
     // Return x, y, z, r, c, x_stat and c_stat
     PyObject *solve_clls_return;
 
-    // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_clls_return = Py_BuildValue("OOOOOOO", py_x, py_y, py_z, py_r, py_c, 
+    // solve_qp_return = Py_BuildValue("N", py_x);
+    solve_clls_return = Py_BuildValue("NNNNNNN", py_x, py_y, py_z, py_r, py_c,
                                                  py_x_stat, py_c_stat);
     Py_INCREF(solve_clls_return);
     return solve_clls_return;
@@ -954,7 +954,7 @@ static PyObject* py_clls_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = clls_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   CLLS_TERMINATE   -*-*-*-*-*-*-*-*-*-*
@@ -997,7 +997,7 @@ PyDoc_STRVAR(clls_module_doc,
 "c_i^l  <=  a_i^Tx  <= c_i^u, i = 1, ... , m\n"
 "and the simple bound constraints\n"
 "x_j^l  <=  x_j  <= x_j^u, j = 1, ... , n,\n"
-"where the o by n matrix Ao, the vectors b, w, x_s, a_i, c^l, c^u," 
+"where the o by n matrix Ao, the vectors b, w, x_s, a_i, c^l, c^u,"
 "x^l, x^u and the regularization weight sigma >= 0 are given,\n"
 "and the norms are defined by ||v||_W^2 = v^T W v and ||v||^2 = v^T v,\n"
 "where W is the digonal matrix whose entries are the components of w > 0\n"

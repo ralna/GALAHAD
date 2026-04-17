@@ -343,7 +343,7 @@ static PyObject* py_llsr_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = llsr_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   LLSR_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -568,7 +568,7 @@ static PyObject* py_llsr_solve_problem(PyObject *self, PyObject *args,
     // Return x
     PyObject *solve_problem_return;
 
-    solve_problem_return = Py_BuildValue("O", py_x);
+    solve_problem_return = Py_BuildValue("N", py_x);
     Py_INCREF(solve_problem_return);
     return solve_problem_return;
 
@@ -587,7 +587,7 @@ static PyObject* py_llsr_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = llsr_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LLSR_TERMINATE   -*-*-*-*-*-*-*-*-*-*

@@ -449,7 +449,7 @@ static PyObject* py_eqp_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = eqp_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   EQP_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -629,8 +629,8 @@ static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
     // Return x and y
     PyObject *solve_qp_return;
 
-    // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_qp_return = Py_BuildValue("OO", py_x, py_y);
+    // solve_qp_return = Py_BuildValue("N", py_x);
+    solve_qp_return = Py_BuildValue("NN", py_x, py_y);
     Py_INCREF(solve_qp_return);
     return solve_qp_return;
 
@@ -697,7 +697,7 @@ static PyObject* py_eqp_solve_sldqp(PyObject *self, PyObject *args, PyObject *ke
 
     // Return x, c, y, z, x_stat and c_stat
     PyObject *solve_sldqp_return;
-    solve_sldqp_return = Py_BuildValue("OO", py_x, py_y);
+    solve_sldqp_return = Py_BuildValue("NN", py_x, py_y);
     Py_INCREF(solve_sldqp_return);
     return solve_sldqp_return;
 }
@@ -715,7 +715,7 @@ static PyObject* py_eqp_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = eqp_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   EQP_TERMINATE   -*-*-*-*-*-*-*-*-*-*

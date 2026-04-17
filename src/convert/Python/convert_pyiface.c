@@ -186,7 +186,7 @@ static PyObject* py_convert_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = convert_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   CONVERT_INFORMATION   -*-*-*-*-*-*-*-*
@@ -202,7 +202,7 @@ static PyObject* py_convert_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = convert_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   CONVERT_TERMINATE   -*-*-*-*-*-*-*-*-*-*

@@ -54,7 +54,7 @@ static int eval_r(int n, int m_r, const double x[], double r[],
     PyObject *py_x = PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(O)", py_x);
+    PyObject *arglist = Py_BuildValue("(N)", py_x);
 
     // Call Python eval_r
     PyObject *result = PyObject_CallObject(py_eval_r, arglist);
@@ -86,7 +86,7 @@ static int eval_jr(int n, int m_r, int jrne, const double x[], double jrval[],
        PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(O)", py_x);
+    PyObject *arglist = Py_BuildValue("(N)", py_x);
 
     // Call Python eval_jr
     PyObject *result = PyObject_CallObject(py_eval_jr, arglist);
@@ -116,7 +116,7 @@ static int eval_jr(int n, int m_r, int jrne, const double x[], double jrval[],
     return 0;
 }
 
-static int eval_h(int n, int m, int hne, const double x[], 
+static int eval_h(int n, int m, int hne, const double x[],
                   double hval[], const void *userdata){
 
     // Wrap input arrays as NumPy arrays
@@ -125,7 +125,7 @@ static int eval_h(int n, int m, int hne, const double x[],
        PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(O)", py_x);
+    PyObject *arglist = Py_BuildValue("(N)", py_x);
 
     // Call Python eval_h
     PyObject *result = PyObject_CallObject(py_eval_h, arglist);
@@ -596,7 +596,7 @@ static PyObject* py_bnls_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = bnls_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   BNLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -612,14 +612,14 @@ static PyObject* py_bnls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n", "m_r", "Jr_type", "Jr_ne", 
+    static char *kwlist[] = {"n", "m_r", "Jr_type", "Jr_ne",
                              "Jr_row", "Jr_col", "Jr_ptr_ne", "Jr_ptr",
                              "options", NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOiO|O",
-                                    kwlist, &n, &m_r, 
+                                    kwlist, &n, &m_r,
                                     &Jr_type, &Jr_ne, &py_Jr_row,
-                                    &py_Jr_col, &Jr_ptr_ne, &py_Jr_ptr, 
+                                    &py_Jr_col, &Jr_ptr_ne, &py_Jr_ptr,
                                     &py_options))
         return NULL;
 
@@ -661,7 +661,7 @@ static PyObject* py_bnls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Call bnls_import
-    bnls_import(&control, &data, &status, n, m_r, 
+    bnls_import(&control, &data, &status, n, m_r,
                 Jr_type, Jr_ne, Jr_row, Jr_col, Jr_ptr_ne, Jr_ptr);
 
     // Free allocated memory
@@ -691,10 +691,10 @@ static PyObject* py_bnls_solve(PyObject *self, PyObject *args, PyObject *keywds)
         return NULL;
 
     // Parse positional arguments
-    static char *kwlist[] = {"n", "m_r", "x_l", "x_u", "x", "eval_r", 
+    static char *kwlist[] = {"n", "m_r", "x_l", "x_u", "x", "eval_r",
                              "Jr_ne", "eval_jr", "w", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOOOOiO|O", kwlist, 
-                                    &n, &m_r, &py_x_l, &py_x_u, &py_x, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOOOOiO|O", kwlist,
+                                    &n, &m_r, &py_x_l, &py_x_u, &py_x,
                                     &temp_r, &Jr_ne, &temp_jr, &py_w))
         return NULL;
 
@@ -710,7 +710,7 @@ static PyObject* py_bnls_solve(PyObject *self, PyObject *args, PyObject *keywds)
         if(!check_array_double("w", py_w, m_r))
             return NULL;
         w = (double *) PyArray_DATA(py_w);
-      }  
+      }
     }
 
     // Get array data pointer
@@ -756,7 +756,7 @@ static PyObject* py_bnls_solve(PyObject *self, PyObject *args, PyObject *keywds)
     // Call bnls_solve_direct
     status = 1; // set status to 1 on entry
     bnls_solve_with_jac(&data, NULL, &status, n, m_r,
-                        x_l, x_u, x, z, r, g, x_stat, 
+                        x_l, x_u, x, z, r, g, x_stat,
                         eval_r, Jr_ne, eval_jr, w );
 
     // Propagate any errors with the callback function
@@ -768,7 +768,7 @@ static PyObject* py_bnls_solve(PyObject *self, PyObject *args, PyObject *keywds)
         return NULL;
 
    // Return x, z, r, g and x_stat
-    bnls_solve_return = Py_BuildValue("OOOOO", py_x, py_z, py_r, py_g,
+    bnls_solve_return = Py_BuildValue("NNNNN", py_x, py_z, py_r, py_g,
                                       py_x_stat);
     Py_INCREF(bnls_solve_return);
     return bnls_solve_return;
@@ -788,7 +788,7 @@ static PyObject* py_bnls_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = bnls_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BNLS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

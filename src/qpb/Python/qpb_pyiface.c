@@ -726,7 +726,7 @@ static PyObject* py_qpb_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = qpb_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   QPB_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -935,8 +935,8 @@ static PyObject* py_qpb_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
     // Return x, c, y, z, x_stat and c_stat
     PyObject *solve_qp_return;
 
-    // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
+    // solve_qp_return = Py_BuildValue("N", py_x);
+    solve_qp_return = Py_BuildValue("NNNNNN", py_x, py_c, py_y, py_z,
                                               py_x_stat, py_c_stat);
     Py_INCREF(solve_qp_return);
     return solve_qp_return;
@@ -956,7 +956,7 @@ static PyObject* py_qpb_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = qpb_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   QPB_TERMINATE   -*-*-*-*-*-*-*-*-*-*
