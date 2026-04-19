@@ -448,7 +448,7 @@ static PyObject* py_bgo_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = bgo_make_options_dict(&control);
-    return Py_BuildValue("N, py_options);
+    return Py_BuildValue("N", py_options);
 
 }
 
