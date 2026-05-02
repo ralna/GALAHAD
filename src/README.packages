@@ -7,7 +7,7 @@ ats         | beta   | minimize a quadratic within abs value trust region, sls
 auxiliary   | ok     | auxiliary packages (norms, time, cutest interaces ... )
 band        | ok     | factorize band matrix with modification
 bgo         | ok     | bound-constrained stochastic global optimization
-blls        | ok     | bound-constrained linear least-squares
+blls        | ok     | bound-constrained linear least-squares, projection
 bllsb       | ok     | bound-constrained linear least-squares, interior-point
 bnls        | alpha  | bound-constrained nonlinear least-squares
 bqp         | ok     | bound-constrained QP, proconditioned projected gradients
@@ -16,7 +16,7 @@ bsc         | ok     | assemble the Schur complement
 ccqp        | beta   | QP, crossover interior-point to lunge
 cdqp        | beta   | QP, crossover interior-point to dual gradient projection
 check       | ok     | check derivatives
-clls        | ok     | linearly-constrained linear least-squares
+clls        | ok     | linearly-constrained linear least-squares, interior point
 clock       | ok     | record system clock times
 convert     | beta   | convert between sparse-matrix formats
 cqp         | ok     | convex QP, interior-point
@@ -87,10 +87,12 @@ rqs         | ok     | minimize a quadratic + regularization term via sbls
 sbls        | ok     | symmetric block linear solver, multiple interfaces
 scale       | ok     | compute scale factors in various ways
 scu         | ok     | Schur-compleemnt updating for evolving linear systems
-sec         | alpha  | dense secant Hessian approximation
+sec         | ok     | dense secant Hessian approximation
 sha         | beta   | sparse Hessian approximation via secant equations
 sils        | ok     | modern fortran interface to ma27
-slls        | ok     | simplex-constrained linear least-squares
+slls        | ok     | simplex-constrained linear least-squares, projection
+sllsb       | ok     | simplex-constrained linear least-squares, interior point
+snls        | ok     | bound-constrained nonlinear least-squares
 sls         | ok     | symmetric linear solver, multiple interfaces
 smt         | ok     | alias for zd11
 sort        | ok     | various sorting algorithms

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-04-15 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,7 +15,7 @@
 
    MODULE GALAHAD_BNLS_precision
 
-     --------------------------------------------------------------------
+!     --------------------------------------------------------------------
 !    |                                                                    |
 !    |   BNLS, an algorithm for nonlinear least-squares                   |
 !    |                                                                    |
@@ -447,7 +447,7 @@
        LOGICAL :: reverse_r, reverse_jr, reverse_jr_prod, reverse_jr_scol
        LOGICAL :: reverse_jr_sprod, reverse_internal
        LOGICAL :: successful, transpose, reduce, f_is_nan, g_is_nan
-       LOGICAL :: jacobian_available, re_entry, multiple_simplices
+       LOGICAL :: jacobian_available, re_entry
        LOGICAL :: w_eq_identity, step_accepted, solve_projection
        CHARACTER ( LEN = 1 ) :: perturb = ' '
        CHARACTER ( LEN = 1 ) :: hard = ' '
@@ -494,7 +494,7 @@
 
    CONTAINS
 
-! G A L A H A D - N E W T O N _ B N L S _ I N I T I A L I Z E  S U B R O U TI NE
+! -*-*- G A L A H A D - B N L S _ I N I T I A L I Z E  S U B R O U T I N E -*-*-
 
      SUBROUTINE BNLS_initialize( data, control, inform )
 
@@ -1705,6 +1705,10 @@
           bad_alloc = inform%bad_alloc, out = data%control%error )
      IF ( inform%status /= 0 ) GO TO 980                      
                                                                         
+!  save the lower and upper bounds on the variables
+
+     data%GN_model%X_l = nlp%X_l ; data%GN_model%X_u = nlp%X_u
+
 !  save the weights if they are present
 
      IF ( ALLOCATED( nlp%W ) ) THEN
@@ -2336,18 +2340,8 @@
 !  compute the norm of the projected gradient
 
          val = MIN( one, one / TWO_NORM( nlp%G( : nlp%n ) ) )
-         data%S = nlp%X - val * nlp%G( : nlp%n )
-         IF ( data%multiple_simplices ) THEN
-           CALL BLLS_project_onto_simplices( nlp%n, nlp%m_c,                   &
-                                             data%BLLS_data%n_c,               &
-                                             data%BLLS_data%S_ptr,             &
-                                             data%BLLS_data%S_ind, data%S,     &
-                                             data%X_current,                   &
-                                             data%BLLS_data%X_c,               &
-                                             data%BLLS_data%X_c_proj, i )
-         ELSE
-           CALL BLLS_project_onto_simplex( nlp%n, data%S, data%X_current, i )
-         END IF
+         data%X_current = MIN( MAX( nlp%X - val * nlp%G( : nlp%n ), nlp%X_l ), &
+                               nlp%X_u )
          inform%norm_pg = MAXVAL( ABS( data%X_current - nlp%X ) )
 
 !  reset the initial weight to ||g|| if no sensible value is given
@@ -2571,9 +2565,11 @@
 
 if ( .FALSE. ) THEN
 open(78)
-write(78,*) data%GN_model%n, data%GN_model%o, data%GN_model%m
+write(78,*) data%GN_model%n, data%GN_model%o
 write(78,*) data%GN_model%Ao%val
 write(78,*) data%GN_model%B
+write(78,*) data%GN_model%X_l
+write(78,*) data%GN_model%X_u
 write(78,*) data%GN_model%regularization_weight
 write(78,*) data%GN_model%X
 write(78,*) data%GN_model%X_s
@@ -4201,8 +4197,8 @@ end if
 
 !-  G A L A H A D -  B N L S _ s o l v e _ w i t h _ j a c  S U B R O U T I N E
 
-     SUBROUTINE BNLS_solve_with_jac( data, userdata, status, X, Z, R, G,       &
-                                     X_stat, eval_R, eval_Jr, W )
+     SUBROUTINE BNLS_solve_with_jac( data, userdata, status, X_l, X_u,         &
+                                     X, Z, R, G, X_stat, eval_R, eval_Jr, W )
 
 !  solve the nonlinear least-squares problem previously imported when access
 !  to residual and Jacobian operations are available via subroutine calls. 
@@ -4287,9 +4283,10 @@ end if
 
 ! - G A L A H A D -  B N L S _ s o l v e _ with _ jacprod  S U B R O U T I N E 
 
-     SUBROUTINE BNLS_solve_with_jacprod( data, userdata, status, X, Z,         &
-                                         R, G, X_stat, eval_R, eval_Jr_PROD,   &
-                                         eval_Jr_SCOL, eval_Jr_SPROD, W )
+     SUBROUTINE BNLS_solve_with_jacprod( data, userdata, status, X_l, X_u,     &
+                                         X, Z, R, G, X_stat, eval_R,           &
+                                         eval_Jr_PROD, eval_Jr_SCOL,           &
+                                         eval_Jr_SPROD, W )
 
 !  solve the nonlinear least-squares problem previously imported when access
 !  to residual, and Jacobian-vector product operations are available via 
@@ -4376,8 +4373,9 @@ end if
 
 !-  G A L A H A D -  B N L S _ s o l v e _ reverse _ with _ jac  S U B R OUTINE 
 
-     SUBROUTINE BNLS_solve_reverse_with_jac( data, status, eval_status, X,     &
-                                             Z, R, G, X_stat, Jr_val, W )
+     SUBROUTINE BNLS_solve_reverse_with_jac( data, status, eval_status,        &
+                                             X_l, X_u, X, Z, R, G, X_stat,     &
+                                             Jr_val, W )
 
 !  solve the nonlinear least-squares problem previously imported when access
 !  to residual and Jacobians are available via reverse communications. 

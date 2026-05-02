@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD library
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2024-11-23
+#  This version: 2026-04-15
 
 SHELL = /bin/$(BINSHELL)
 
@@ -2904,6 +2904,115 @@ ucbc_pyiface_quadruple_64:
                      trb_pyiface $(Q64) PWD=$(PWD)/trb )
 	( cd nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      nls_pyiface $(Q64) PWD=$(PWD)/nls )
+
+#  ----------------------------------------
+#  all the nonlinear least-squares packages
+#  ----------------------------------------
+
+nls_cutest: nls_cutest_$(PRECIS)
+
+nls_cutest_single:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all_cutest \
+                    $(S32) PWD=$(PWD)/all_nls )
+nls_cutest_double:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all_cutest \
+                    $(D32) PWD=$(PWD)/all_nls )
+nls_cutest_quadruple:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all_cutest \
+                    $(Q32) PWD=$(PWD)/all_nls )
+nls_cutest_single_64:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all_cutest \
+                    $(S64) PWD=$(PWD)/all_nls )
+nls_cutest_double_64:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all_cutest \
+                    $(D64) PWD=$(PWD)/all_nls )
+nls_cutest_quadruple_64:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all_cutest \
+                    $(Q64) PWD=$(PWD)/all_nls )
+
+nls: nls_$(PRECIS)
+
+nls_single:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all \
+                    $(S32) PWD=$(PWD)/all_nls )
+nls_double:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all \
+                    $(D32) PWD=$(PWD)/all_nls )
+nls_quadruple:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all \
+                    $(Q32) PWD=$(PWD)/all_nls )
+nls_single_64:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all \
+                    $(S64) PWD=$(PWD)/all_nls )
+nls_double_64:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all \
+                    $(D64) PWD=$(PWD)/all_nls )
+nls_quadruple_64:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) all \
+                    $(Q64) PWD=$(PWD)/all_nls )
+
+nls_matlab: nls_matlab_$(PRECIS)
+
+nls_matlab_single:
+	( cd matlab ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     allnls $(S32) PWD=$(PWD)/matlab )
+nls_matlab_double:
+	( cd matlab ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     allnls $(D32) PWD=$(PWD)/matlab )
+nls_matlab_quadruple:
+	( cd matlab ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     allnls $(Q32) PWD=$(PWD)/matlab )
+nls_matlab_single_64:
+	( cd matlab ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     allnls $(S64) PWD=$(PWD)/matlab )
+nls_matlab_double_64:
+	( cd matlab ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     allnls $(D64) PWD=$(PWD)/matlab )
+nls_matlab_quadruple_64:
+	( cd matlab ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     allnls $(Q64) PWD=$(PWD)/matlab )
+
+nls_ciface: nls_ciface_$(PRECIS)
+
+nls_ciface_single:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_ciface $(S32) PWD=$(PWD)/all_nls )
+nls_ciface_double:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_ciface $(D32) PWD=$(PWD)/all_nls )
+nls_ciface_quadruple:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_ciface $(Q32) PWD=$(PWD)/all_nls )
+nls_ciface_single_64:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_ciface $(S64) PWD=$(PWD)/all_nls )
+nls_ciface_double_64:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_ciface $(D64) PWD=$(PWD)/all_nls )
+nls_ciface_quadruple_64:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_ciface $(Q64) PWD=$(PWD)/all_nls )
+
+nls_pyiface: nls_pyiface_$(PRECIS)
+
+nls_pyiface_single:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_pyiface $(S32) PWD=$(PWD)/all_nls )
+nls_pyiface_double:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_pyiface $(D32) PWD=$(PWD)/all_nls )
+nls_pyiface_quadruple:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_pyiface $(Q32) PWD=$(PWD)/all_nls )
+nls_pyiface_single_64:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_pyiface $(S64) PWD=$(PWD)/all_nls )
+nls_pyiface_double_64:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_pyiface $(D64) PWD=$(PWD)/all_nls )
+nls_pyiface_quadruple_64:
+	( cd all_nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_pyiface $(Q64) PWD=$(PWD)/all_nls )
 
 #  ------------------------------------
 #  all the global optimization packages

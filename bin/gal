@@ -767,6 +767,15 @@ elif [[ $2 == 'dgo' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec dgo update
   [[ ! -L RUNDGO.SPC ]] && ln -s ~/.galahad/specs/RUNDGO.SPC RUNDGO.SPC
 
+# rgo
+
+elif [[ $2 == 'rgo' ]]; then
+  RUNMAIN=$GALOBJ/runrgo_sif_$PRECIS.o
+# PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNRGO.SPC ]] && $GALOBJ/buildspec rgo
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec rgo update
+  [[ ! -L RUNRGO.SPC ]] && ln -s ~/.galahad/specs/RUNRGO.SPC RUNRGO.SPC
+
 # tral
 
 elif [[ $2 == 'tral' ]]; then
