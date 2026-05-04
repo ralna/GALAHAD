@@ -124,6 +124,7 @@ Currently supported options with their default value:
 * `-Dlibpastix_path=[]`: additional directories to search for the PASTIX library;
 * `-Dlibmumps_path=[]`: additional directories to search for the MUMPS libraries;
 * `-Dlibasl_path=[]`: additional directories to search for the AMPL solver library;
+* `-Dlibasl_include=[]`: additional directories to search for the AMPL header files;
 * `-Dlibhwloc_path=[]`: additional directories to search for the HWLOC library;
 * `-Dlibhwloc_include=[]`: additional directories to search for the HWLOC header files;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
@@ -306,6 +307,9 @@ When we do a new release of GALAHAD, we should update the `version`
 - `galahad_headers`: Header files to install;
 - `libgalahad_c_single_src`: Fortran files for the C interfaces in single precision;
 - `libgalahad_c_double_src`: Fortran files for the C interfaces in double precision;
+- `libgalahad_ampl_src`: Fortran files related to the AMPL interfaces;
+- `libgalahad_ampl_cc_src`: C files related to the AMPL interfaces;
+- `galahad_ampl_headers`: Header files related to AMPL to install;
 - `libgalahad_c_src`: Fortran files for the C interfaces in both precision;
 - `libgalahad_python_src`: C files for the Python interfaces;
 - `libgalahad_cutest_src`: Fortran files related to the CUTEst interfaces;

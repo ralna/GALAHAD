@@ -119,6 +119,7 @@ libcutest_path = get_option('libcutest_path')
 libhwloc_path = get_option('libhwloc_path')
 
 libhwloc_include = include_directories(get_option('libhwloc_include'))
+libasl_include = include_directories(get_option('libasl_include'))
 libhsl_modules = include_directories(get_option('libhsl_modules'))
 libcutest_modules = include_directories(get_option('libcutest_modules'))
 
@@ -215,7 +216,7 @@ libgalahad_double_deps = [libdmumps, libcutest_double, libblas, liblapack,
                           libasl, libhwloc]
 
 libgalahad_quadruple_deps = [libcutest_quadruple, libhsl, libwsmp, libpardiso,
-                             libspmf, libpastixf, libasl, libhwloc, libquadmath]
+                             libspmf, libpastixf, libhwloc, libquadmath]
 
 # BLAS and LAPACK
 libblas_src = []
@@ -248,6 +249,11 @@ libgalahad_c_quadruple_src = []
 # C files for the Python interfaces
 libgalahad_python_src = []
 
+# Files related to the AMPL interfaces
+libgalahad_ampl_src = []
+libgalahad_ampl_cc_src = []
+galahad_ampl_headers = []
+
 # Files related to the CUTEst interfaces
 libgalahad_cutest_src = []
 galahad_cutest_binaries = []
@@ -273,7 +279,7 @@ libgalahad_include = [include_directories('include'),
                       include_directories('src/external/metis4/include'),
                       include_directories('src/nodend/metis51/include'),
                       include_directories('src/nodend/metis52/include'),
-                      include_directories('src/ampl')] + libhsl_modules + libcutest_modules + libhwloc_include
+                      include_directories('src/ampl')] + libhsl_modules + libcutest_modules + libhwloc_include + libasl_include
 
 if host_machine.system() == 'linux'
   add_global_arguments('-DSPRAL_HAVE_SCHED_GETCPU', language : 'cpp')
@@ -349,6 +355,10 @@ if libcutest_double.found()
 endif
 if libcutest_quadruple.found()
   extra_args_quadruple += '-DCUTEST_SHARED'
+endif
+if libasl.found()
+  extra_args_single += ['-DSinglePrecision', '-DMESON']
+  extra_args_double += '-DMESON'
 endif
 
 # MPI
@@ -522,6 +532,9 @@ if build_single
   else
     to_process_single += libgalahad_cutest_dummy_src
   endif
+  if libcutest_single.found() and libasl.found()
+    to_process_single += libgalahad_ampl_src
+  endif
   pp_sources_single = gen_single.process(to_process_single)
 
   to_process_f_single = [libgalahad_f_src]
@@ -532,6 +545,10 @@ if build_single
   endif
 
   sources_single = [pp_sources_single, pp_sources_f_single, libgalahad_cpp_src, libgalahad_cc_src]
+  if libcutest_single.found() and libasl.found()
+    sources_single += libgalahad_ampl_cc_src
+    galahad_headers += galahad_ampl_headers
+  endif
 
   libgalahad_single_name = 'galahad_single'
   if int64
@@ -573,6 +590,9 @@ if build_double
   else
     to_process_double += libgalahad_cutest_dummy_src
   endif
+  if libcutest_double.found() and libasl.found()
+    to_process_double += libgalahad_ampl_src
+  endif
   pp_sources_double = gen_double.process(to_process_double)
 
   to_process_f_double = [libgalahad_f_src]
@@ -583,6 +603,10 @@ if build_double
   endif
 
   sources_double = [pp_sources_double, pp_sources_f_double, libgalahad_cpp_src, libgalahad_cc_src]
+  if libcutest_single.found() and libasl.found()
+    sources_double += libgalahad_ampl_cc_src
+    galahad_headers += galahad_ampl_headers
+  endif
 
   libgalahad_double_name = 'galahad_double'
   if int64

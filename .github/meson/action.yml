@@ -370,9 +370,10 @@ runs:
                              -Dlibcutest_modules=../CUTEst/modules \
                              -Dlibhsl=${HSL} \
                              -Dlibhsl_path=${HSL_PATH} \
+                             -Dlibhsl_modules=../deps/modules \
                              -Dlibasl=${ASL} \
                              -Dlibasl_path=${ASL_PATH} \
-                             -Dlibhsl_modules=../deps/modules \
+                             -Dlibasl_include=../deps/include \
                              -Db_sanitize=${SANITIZER}
 
     - name: Build GALAHAD

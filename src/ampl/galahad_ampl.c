@@ -25,10 +25,10 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <sys/types.h>
 #include "asl_pfgh.h"
 #include "getstub.h"
 #include "jacpdim.h"            /* For partially-separable structure */
-#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {                /* To prevent C++ compilers from mangling symbols */
@@ -40,7 +40,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
     /* Gateways used to access Galahad functions in their module */
 
-#ifdef QPA
+#if defined(QPA) || defined(MESON)
     /* Attribute memory address of USE_QPA( ) when available */
     void setup_use_qpa( void ( *fn ) (  ) ) {
         USE_QPA = fn;
@@ -56,7 +56,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 #endif
 
 
-#ifdef QPB
+#if defined(QPB) || defined(MESON)
     /* Attribute memory address of USE_QPB( ) when available */
     void setup_use_qpb( void ( *fn ) (  ) ) {
         USE_QPB = fn;
@@ -72,7 +72,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
     }
 #endif
 
-#ifdef QPC
+#if defined(QPC) || defined(MESON)
     /* Attribute memory address of USE_QPC( ) when available */
     void setup_use_qpc( void ( *fn ) (  ) ) {
         USE_QPC = fn;
@@ -88,7 +88,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
     }
 #endif
 
-#ifdef CQP
+#if defined(CQP) || defined(MESON)
     /* Attribute memory address of USE_CQP( ) when available */
     void setup_use_cqp( void ( *fn ) (  ) ) {
         USE_CQP = fn;
@@ -104,7 +104,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
     }
 #endif
 
-#ifdef QP
+#if defined(QP) || defined(MESON)
     /* Attribute memory address of USE_QP( ) when available */
     void setup_use_qp( void ( *fn ) (  ) ) {
         USE_QP = fn;
@@ -120,7 +120,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
     }
 #endif
 
-#ifdef PRESOLVE
+#if defined(PRESOLVE) || defined(MESON)
     /* Attribute memory address of USE_PRESOLVE( ) when available */
     void setup_use_presolve( void ( *fn ) (  ) ) {
         USE_PRESOLVE = fn;
@@ -136,7 +136,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
     }
 #endif
 
-#ifdef LANCELOT
+#if defined(LANCELOT) || defined(MESON)
     /* Attribute memory address of USE_LANCELOT( ) when available */
     void setup_use_lancelot( void ( *fn ) (  ) ) {
         USE_LANCELOT = fn;
@@ -152,7 +152,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
     }
 #endif
 
-#ifdef FILTRANE
+#if defined(FILTRANE) || defined(MESON)
     /* Attribute memory address of USE_FILTRANE( ) when available */
     void setup_use_filtrane( void ( *fn ) (  ) ) {
         USE_FILTRANE = fn;
@@ -303,7 +303,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         /* Problem set-up complete. Call Fortran driver */
         if( qpa ) {
 
-#ifdef QPA
+#if defined(QPA) || defined(MESON)
             strcpy( code_name, "QPA" );
             Init_Galahad_Qpa(  );
             w_clock.setup = clock() - w_clock.setup;
@@ -316,7 +316,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         } else if( qpb ) {
 
-#ifdef QPB
+#if defined(QPB) || defined(MESON)
             strcpy( code_name, "QPB" );
             Init_Galahad_Qpb(  );
             w_clock.setup = clock(  ) - w_clock.setup;
@@ -329,7 +329,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         } else if( qpc ) {
 
-#ifdef QPC
+#if defined(QPC) || defined(MESON)
             strcpy( code_name, "QPC" );
             Init_Galahad_Qpc(  );
             w_clock.setup = clock(  ) - w_clock.setup;
@@ -342,7 +342,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         } else if( cqp ) {
 
-#ifdef CQP
+#if defined(CQP) || defined(MESON)
             strcpy( code_name, "CQP" );
             Init_Galahad_Cqp(  );
             w_clock.setup = clock(  ) - w_clock.setup;
@@ -355,7 +355,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         } else if( cqp ) {
 
-#ifdef QP
+#if defined(QP) || defined(MESON)
             strcpy( code_name, "QP" );
             Init_Galahad_Qp(  );
             w_clock.setup = clock(  ) - w_clock.setup;
@@ -376,7 +376,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
             SETERRQ( 0, "Lancelot-B/Ampl is not yet available." );
         } else if( presolve ) {
 
-#ifdef PRESOLVE
+#if defined(PRESOLVE) || defined(MESON)
             strcpy( code_name, "Presolve" );
             Init_Galahad_Presolve(  );
             w_clock.setup = clock(  ) - w_clock.setup;
@@ -389,7 +389,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         } else if( filtrane ) {
 
-#ifdef FILTRANE
+#if defined(FILTRANE) || defined(MESON)
             strcpy( code_name, "Filtrane" );
             Init_Galahad_Filtrane(  );
             w_clock.setup = clock(  ) - w_clock.setup;
@@ -1459,7 +1459,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
             /* Evaluate and store the sparse Jacobian */
             Jtmp = ( real * ) Malloc( *nnzj * sizeof( real ) );
             nerror = ( fint ) 0;
-#ifdef SinglePrecsion
+#ifdef SinglePrecision
             jacval( Xtmp, Jtmp, &nerror );
             free( Xtmp );
 #else

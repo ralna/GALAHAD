@@ -178,6 +178,11 @@ option('libhwloc_include',
        value : [],
        description : 'Additional directories to search for the HWLOC header files')
 
+option('libasl_include',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the AMPL header files')
+
 option('libhsl_modules',
        type : 'array',
        value : [],
