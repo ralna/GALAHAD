@@ -11,5 +11,5 @@ if libasl.found()
 
   libgalahad_cc_src += files('galahad_ampl.c')
 
-  galahad_headers += files('amplinter.h', 'galahad_ampl.h')
+  galahad_headers += files('galahad_ampl.h')
 endif
