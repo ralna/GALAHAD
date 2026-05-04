@@ -108,10 +108,10 @@ option('libdmumps',
        value : 'dmumps',
        description : 'Double-precision MUMPS library against which to link')
 
-option('libampl',
+option('libasl',
        type : 'string',
-       value : 'ampl',
-       description : 'AMPL library against which to link')
+       value : 'asl',
+       description : 'AMPL solver library against which to link')
 
 option('libhwloc',
        type : 'string',
@@ -163,10 +163,10 @@ option('libmumps_path',
        value : [],
        description : 'Additional directories to search for the MUMPS libraries')
 
-option('libampl_path',
+option('libasl_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search for the AMPL library library')
+       description : 'Additional directories to search for the AMPL solver library')
 
 option('libhwloc_path',
        type : 'array',

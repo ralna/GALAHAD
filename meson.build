@@ -100,7 +100,7 @@ libspmf_name = get_option('libspmf')
 libpastixf_name = get_option('libpastixf')
 libsmumps_name = get_option('libsmumps')
 libdmumps_name = get_option('libdmumps')
-libampl_name = get_option('libampl')
+libasl_name = get_option('libasl')
 libcutest_single_name = get_option('libcutest_single')
 libcutest_double_name = get_option('libcutest_double')
 libcutest_quadruple_name = get_option('libcutest_quadruple')
@@ -114,7 +114,7 @@ libwsmp_path = get_option('libwsmp_path')
 libpardiso_path = get_option('libpardiso_path')
 libspmf_path = get_option('libspmf_path')
 libpastixf_path = get_option('libpastixf_path')
-libampl_path = get_option('libampl_path')
+libasl_path = get_option('libasl_path')
 libcutest_path = get_option('libcutest_path')
 libhwloc_path = get_option('libhwloc_path')
 
@@ -135,7 +135,7 @@ libspmf = fc.find_library(libspmf_name, dirs : libspmf_path, required : false)
 libpastixf = fc.find_library(libpastixf_name, dirs : libpastixf_path, required : false)
 libsmumps = fc.find_library(libsmumps_name, dirs : libmumps_path, required : false)
 libdmumps = fc.find_library(libdmumps_name, dirs : libmumps_path, required : false)
-libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
+libasl = fc.find_library(libasl_name, dirs : libasl_path, required : false)
 libhwloc = fc.find_library(libhwloc_name, dirs : libhwloc_path, required : false)
 lm = cc.find_library('m', required : false)
 has_hwloch = cc.has_header('hwloc.h', include_directories : libhwloc_include)
@@ -208,14 +208,14 @@ endif
 
 libgalahad_single_deps = [libsmumps, libcutest_single, libblas, liblapack,
                           libhsl, libwsmp, libpardiso, libspmf, libpastixf,
-                          libampl, libhwloc]
+                          libasl, libhwloc]
 
 libgalahad_double_deps = [libdmumps, libcutest_double, libblas, liblapack,
                           libhsl, libwsmp, libpardiso, libspmf, libpastixf,
-                          libampl, libhwloc]
+                          libasl, libhwloc]
 
 libgalahad_quadruple_deps = [libcutest_quadruple, libhsl, libwsmp, libpardiso,
-                             libspmf, libpastixf, libampl, libhwloc, libquadmath]
+                             libspmf, libpastixf, libasl, libhwloc, libquadmath]
 
 # BLAS and LAPACK
 libblas_src = []

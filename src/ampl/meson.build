@@ -1,4 +1,4 @@
-if libampl.found()
+if libasl.found()
   libgalahad_src += files('wrap_bqp.F90',
                           'wrap_cqp.F90',
                           'wrap_filtrane.F90',

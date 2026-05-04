@@ -112,7 +112,7 @@ Currently supported options with their default value:
 * `-Dlibpastix=pastix`: PASTIX library against which to link;
 * `-Dlibsmumps=smumps`: Single-precision MUMPS library against which to link;
 * `-Dlibdmumps=dmumps`: Double-precision MUMPS library against which to link;
-* `-Dlibampl=ampl`: AMPL library against which to link;
+* `-Dlibasl=asl`: AMPL solver library against which to link;
 * `-Dlibhwloc=hwloc`: HWLOC library against which to link;
 * `-Dlibblas_path=[]`: additional directories to search for the BLAS library;
 * `-Dliblapack_path=[]`: additional directories to search for the LAPACK library;
@@ -123,7 +123,7 @@ Currently supported options with their default value:
 * `-Dlibspmf_path=[]`: additional directories to search for the SPMF library;
 * `-Dlibpastix_path=[]`: additional directories to search for the PASTIX library;
 * `-Dlibmumps_path=[]`: additional directories to search for the MUMPS libraries;
-* `-Dlibampl_path=[]`: additional directories to search for the AMPL library library;
+* `-Dlibasl_path=[]`: additional directories to search for the AMPL solver library;
 * `-Dlibhwloc_path=[]`: additional directories to search for the HWLOC library;
 * `-Dlibhwloc_include=[]`: additional directories to search for the HWLOC header files;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
