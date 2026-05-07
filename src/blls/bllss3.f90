@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-02-03 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-05-03 AT 14:20 GMT.
    PROGRAM GALAHAD_BLLS_THIRD_EXAMPLE ! subroutine evaluation interface
    USE GALAHAD_BLLS_double            ! double precision version
    IMPLICIT NONE
@@ -101,24 +101,23 @@
    RETURN
    END SUBROUTINE APROD
 
-   SUBROUTINE ASPROD( status, userdata, V, P, NZ_in, nz_in_start, nz_in_end,   &
-                      NZ_out, nz_out_end )
+   SUBROUTINE ASPROD( status, userdata, V, P, IV, lvl, lvu, IP, lp )
    USE GALAHAD_USERDATA_double
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
    TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
-   INTEGER, OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
-   INTEGER, OPTIONAL, INTENT( INOUT ) :: nz_out_end
-   INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
-   INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_out
+   INTEGER, OPTIONAL, INTENT( IN ) :: lvl, lvu
+   INTEGER, OPTIONAL, INTENT( INOUT ) :: lp
+   INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: IV
+   INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: IP
    INTEGER :: i, j, k, l
    REAL ( KIND = wp ) :: val
 !  recover problem data from userdata
    INTEGER :: o, n, nflag, st_flag, st_ptr, st_row, st_val
-   IF ( PRESENT( NZ_in ) ) THEN
-     IF ( .NOT. ( PRESENT( nz_in_start ) .AND. PRESENT( nz_in_end ) ) ) THEN
+   IF ( PRESENT( IV ) ) THEN
+     IF ( .NOT. ( PRESENT( lvl ) .AND. PRESENT( lvu ) ) ) THEN
          status = - 1 ; RETURN
      END IF
    END IF
@@ -129,15 +128,15 @@
    st_ptr = st_flag + MAX( o, n )
    st_row = st_ptr + n + 1
    st_val = 0
-   IF ( PRESENT( NZ_in ) ) THEN
-     IF ( PRESENT( NZ_out ) ) THEN
-       IF ( .NOT. PRESENT( nz_out_end ) ) THEN
+   IF ( PRESENT( IV ) ) THEN
+     IF ( PRESENT( IP ) ) THEN
+       IF ( .NOT. PRESENT( lp ) ) THEN
          status = - 1 ; RETURN
        END IF
        userdata%integer( nflag ) = userdata%integer( nflag ) + 1
-       nz_out_end = 0
-       DO l = nz_in_start, nz_in_end
-         j = NZ_in( l )
+       lp = 0
+       DO l = lvl, lvu
+         j = IV( l )
          val = V( j )
          DO k = userdata%integer( st_ptr + j ),                                &
                 userdata%integer( st_ptr + j + 1 ) - 1
@@ -146,8 +145,8 @@
                 userdata%integer( nflag )  ) THEN
              userdata%integer( st_flag + i ) = userdata%integer( nflag )
              P( i ) = userdata%real( st_val + k ) * val
-             nz_out_end = nz_out_end + 1
-             NZ_out( nz_out_end ) = i
+             lp = lp + 1
+             IP( lp ) = i
            ELSE
              P( i ) = P( i ) + userdata%real( st_val + k ) * val
            END IF
@@ -155,8 +154,8 @@
        END DO
      ELSE
        P( : o ) = 0.0_wp
-       DO l = nz_in_start, nz_in_end
-         j = NZ_in( l )
+       DO l = lvl, lvu
+         j = IV( l )
          val = V( j )
          DO k = userdata%integer( st_ptr + j ),                                &
                 userdata%integer( st_ptr + j + 1 ) - 1
@@ -166,12 +165,12 @@
        END DO
      END IF
    ELSE
-     IF ( PRESENT( NZ_out ) ) THEN
-       IF ( .NOT. PRESENT( nz_out_end ) ) THEN
+     IF ( PRESENT( IP ) ) THEN
+       IF ( .NOT. PRESENT( lp ) ) THEN
          status = - 1 ; RETURN
        END IF
        userdata%integer( nflag ) = userdata%integer( nflag ) + 1
-       nz_out_end = 0
+       lp = 0
        DO j = 1, n
          val = V( j )
          DO k = userdata%integer( st_ptr + j ),                                &
@@ -181,8 +180,8 @@
                 userdata%integer( nflag )  ) THEN
              userdata%integer( st_flag + i ) = userdata%integer( nflag )
              P( i ) = userdata%real( st_val + k ) * val
-             nz_out_end = nz_out_end + 1
-             NZ_out( nz_out_end ) = i
+             lp = lp + 1
+             IP( lp ) = i
            ELSE
              P( i ) = P( i ) + userdata%real( st_val + k ) * val
            END IF

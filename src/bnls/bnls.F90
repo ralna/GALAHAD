@@ -444,7 +444,7 @@
        LOGICAL :: print_iteration_header, print_1st_header
        LOGICAL :: set_printi, set_printt, set_printd, set_printm, set_printw
        LOGICAL :: monotone, new_point, got_jr, got_h, poor_model, n_or_gn
-       LOGICAL :: reverse_r, reverse_jr, reverse_jr_prod, reverse_jr_scol
+       LOGICAL :: reverse_r, reverse_jr, reverse_jr_prod, reverse_jr_prods
        LOGICAL :: reverse_jr_sprod, reverse_internal
        LOGICAL :: successful, transpose, reduce, f_is_nan, g_is_nan
        LOGICAL :: jacobian_available, re_entry
@@ -906,7 +906,7 @@
 !-*-*-*-*-  G A L A H A D -  B N L S _ s o l v e  S U B R O U T I N E  -*-*-*-*-
 
      SUBROUTINE BNLS_solve( nlp, control, inform, data, userdata, reverse,     &
-                            eval_R, eval_Jr, eval_Jr_prod, eval_Jr_scol,       &
+                            eval_R, eval_Jr, eval_Jr_prod, eval_Jr_prods,      &
                             eval_Jr_sprod )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1109,18 +1109,8 @@
 !        this should be flagged by setting reverse%eval_status to a nonzero 
 !        value
 !
-!     6. The j-th column of Jr(x) at the point x indicated in nlp%X is 
-!        required from the user, where reverse%index holds the value of j. 
-!        The resulting NONZEROS and their corresponding row indices of the 
-!        j-th column of Jr must be placed in reverse%p( 1 : reverse%lp ) and
-!        reverse%ip( 1 : reverse%lp ) with reverse%lp set accordingly. 
-!        BNLS_solve should then be re-entered with all other arguments 
-!        unchanged. Once again reverse%eval_status should be set to zero 
-!        unless the column cannot be formed, in which case a nonzero value 
-!        should be returned.
-!
-!     7. The product J(x) * v of the matrix J(x) at the point x indicated in 
-!        nlp%X with a given sparse vector v is required from the user. Only 
+!     6. The product p = J(x) * v of the matrix J(x) at the point x indicated
+!        in nlp%X with a given sparse vector v is required from the user. Only 
 !        components reverse%iv( reverse%lvl : reverse%lvu ) of the vector v 
 !        stored in reverse%v are nonzero. The required product should be 
 !        returned in reverse%p. BNLS_solve must then be re-entered with all 
@@ -1128,6 +1118,18 @@
 !        reverse%lvu - reverse%lvl will be small). reverse%eval_status should 
 !        be set to zero unless the product cannot be formed, in which case 
 !        a nonzero value should be returned.
+!
+!     7. The product p = J(x) * v of the matrix J(x) at the point x indicated
+!        in nlp%X with a given sparse vector v is required from the user. Only 
+!        components reverse%iv( reverse%lvl : reverse%lvu ) of the vector v 
+!        stored in reverse%v are nonzero. The resulting NONZEROS in the 
+!        required product should be placed in the appropriate positions in
+!        reverse%p, and  a list of indices of the nonzeos placed in 
+!        reverse%IP( 1 : reverse%lp ). BNLS_solve must then be re-entered 
+!        with all other arguments unchanged. Typically v will be very sparse 
+!        (i.e., reverse%lvu - reverse%lvl will be small). reverse%eval_status 
+!        should be set to zero unless the product cannot be formed, in which 
+!        case a nonzero value should be returned.
 !
 !     8. Specified components of the product Jr(x)^T * v of the transpose of
 !        the matrix Jr(x) at the point x indicated in nlp%X with a given vector
@@ -1224,7 +1226,7 @@
 !   necessary if reverse-communication is to be used to form matrix-vector 
 !   products of the form Jr * v, find columns of Jr or compute preconditioning 
 !   steps of the form P^{-1} * v. If reverse is present (and eval_Jr_prod,
-!   eval_Jr_scol, eval_Jr_sprod or eval_prec is absent), reverse communication 
+!   eval_Jr_prods, eval_Jr_sprod or eval_prec is absent), reverse communication 
 !   will be used and the user must monitor the value of inform%status (see 
 !   above) to await instructions about required  matrix-vector products.
 
@@ -1254,18 +1256,21 @@
 !   with inform%status = 5 each time an evaluation is required. The Jacobian
 !   has already been evaluated or used at x=X if got_jr is .TRUE.
 !
-!  eval_Jr_scol is an optional subroutine which if present must have the
-!   arguments given below (see the interface blocks). The index-th column of Jr
-!   evaluated at x=X should be returned in VAL as a spare vector. Specifically,
-!   the NONZEROS in the index-th column of Jr must be placed in their
-!   appropriate comnponents of VAL, while a list of row indices of the
-!   nonzeros placed in ROW( 1 : nz ). The status variable should 
-!   be set to 0 unless the column is unavailable in which case status should 
-!   be set to a nonzero value. If eval_Jr_scol is not present, BNLS_solve will 
-!   either return to the user each time an evaluation is required 
-!   (see reverse above) or form the product directly from user-provided nlp%Jr.
-!   The Jacobian has already been evaluated or used at x=X if got_jr is .TRUE.
-!
+!  eval_Jr_prods is an optional subroutine which if present must have the
+!   arguments given below (see the interface blocks). The product p = J(x) * v
+!   of the given matrix J(x)  evaluated at x=X and the vector v stored in V 
+!   must be returned in P; only the components IV( lvl : lvu ) of V are nonzero.
+!   If either of the optional argeuments IP or lp are absent, the WHOLE of 
+!   J(x) * v including zeros should be returned in P. If IP and lp are
+!   present, the NONZEROS in the product J(x) * v must be placed in their
+!   appropriate comnponents of reverse%P, while a list of indices of the
+!   nonzeros placed in IP( 1 : lp ). In both cases, the status
+!   variable should be set to 0 unless the product is impossible in which
+!   case status should be set to a nonzero value. If eval_Jr_prods is not
+!   present, BNLS_solve will either return to the user each time an evaluation
+!   is required (see reverse above) or form the product directly from
+!   user-provided %A.
+
 !  eval_Jr_sprod is an optional subroutine which if present must have the
 !   arguments given below (see the interface blocks). The product J(x) * v
 !   (if transpose is .FALSE.) or Jr(x)^T v (if transpose is .TRUE.) involving
@@ -1293,7 +1298,7 @@
      TYPE ( BNLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      TYPE ( REVERSE_type ), OPTIONAL, INTENT( INOUT ) :: reverse
-     OPTIONAL :: eval_R, eval_Jr, eval_Jr_prod, eval_Jr_scol, eval_Jr_sprod
+     OPTIONAL :: eval_R, eval_Jr, eval_Jr_prod, eval_Jr_prods, eval_Jr_sprod
 
 !----------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -1333,18 +1338,21 @@
      END INTERFACE
 
      INTERFACE
-       SUBROUTINE eval_Jr_scol( status, X, userdata, index, VAL, ROW, nz,      &
-                                got_jr )
+       SUBROUTINE eval_Jr_prods( status, X, userdata, V, P, IV, lvl, lvu,      &
+                                 IP, lp, got_jr )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: index
-       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: VAL
-       INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( INOUT ) :: ROW
-       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: nz
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: lvl, lvu
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: lp
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: IV
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                       &
+                                               INTENT( INOUT ) :: IP
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_jr
-       END SUBROUTINE eval_Jr_scol
+       END SUBROUTINE eval_Jr_prods
      END INTERFACE
 
      INTERFACE
@@ -1483,9 +1491,9 @@
 !  check to see if other operations with Jr are provided
 
        data%reverse_jr_prod = .NOT. PRESENT( eval_Jr_prod )
-       data%reverse_jr_scol = .NOT. PRESENT( eval_Jr_scol )
+       data%reverse_jr_prods = .NOT. PRESENT( eval_Jr_prods )
        data%reverse_jr_sprod = .NOT. PRESENT( eval_Jr_sprod )
-       IF ( data%reverse_jr_prod .OR. data%reverse_jr_scol .OR.                &
+       IF ( data%reverse_jr_prod .OR. data%reverse_jr_prods .OR.               &
             data%reverse_jr_sprod ) THEN
          IF ( .NOT. PRESENT( reverse ) ) THEN
            IF ( control%error > 0 ) WRITE( control%error,                      &
@@ -1593,6 +1601,14 @@
             bad_alloc = inform%bad_alloc, out = data%control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
+     array_name = 'bnls: data%Y'
+     CALL SPACE_resize_array( nlp%m_r, data%Y, inform%status,                  &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
      array_name = 'bnls: data%G_current'
      CALL SPACE_resize_array( nlp%n, data%G_current, inform%status,            &
             inform%alloc_status, array_name = array_name,                      &
@@ -1631,7 +1647,6 @@
 !  least-squares subproblem
 
      data%GN_model%n = nlp%n ; data%GN_model%o = nlp%m_r
-     data%GN_model%m = nlp%m_c
 
      array_name = 'bnls: data%GN_model%B'
      CALL SPACE_resize_array( nlp%m_r, data%GN_model%B,                        &
@@ -2359,9 +2374,9 @@
 
            IF ( data%printi ) THEN
              WRITE( data%out, "( A, '  Problem: ', A, ' (n = ', I0,            &
-            &  ', m_r = ', I0, ', m_c = ', I0, ')', /, A,                      &
+            &  ', m_r = ', I0, ')', /, A,                                      &
             &   '  BNLS stopping tolerances (r,P[-J''r]) =', 2ES9.2, / )" )    &
-               prefix, TRIM( nlp%pname ), nlp%n, nlp%m_r, nlp%m_c,             &
+               prefix, TRIM( nlp%pname ), nlp%n, nlp%m_r,                      &
                prefix, data%stop_r, data%stop_pg
            END IF
          END IF
@@ -2681,31 +2696,52 @@ end if
              data%got_jr = .TRUE.
            END IF
 
-!  compute the index-th column of Jr
+!  compute Jr * sparse v 
 
          CASE ( 4 )
-           IF ( data%reverse_jr_scol ) THEN
+           IF ( data%reverse_jr_prods ) THEN
              inform%status = inform%BLLS_inform%status + 2
              data%branch = 220 ; RETURN
            ELSE
-             CALL eval_Jr_scol( inform%status, nlp%X, userdata, reverse%index, &
-                                reverse%P, reverse%IP, reverse%lp, data%got_jr )
+             CALL eval_Jr_prods( inform%status, nlp%X, userdata, reverse%V,    &
+                                 reverse%P, IV = reverse%IV,                   &
+                                 lvl = reverse%lvl, lvu = reverse%lvu,         &
+                                 got_jr = data%got_jr )
              IF ( inform%status /= 0 ) THEN
-               inform%bad_eval = 'eval_Jr_scol'
+               inform%bad_eval = 'evalJr_prods'
                inform%status = GALAHAD_error_evaluation ; GO TO 990
              END IF
              data%got_jr = .TRUE.
            END IF
 
- !  compute Jr * sparse v or sparse( Jr^T * v )
+!  compute sparse( Jr * sparse v )
 
-         CASE ( 5, 6 )
+         CASE ( 5 )
+           IF ( data%reverse_jr_prods ) THEN
+             inform%status = inform%BLLS_inform%status + 2
+             data%branch = 220 ; RETURN
+           ELSE
+             CALL eval_Jr_prods( inform%status, nlp%X, userdata, reverse%V,    &
+                                 reverse%P, IV = reverse%IV,                   &
+                                 lvl = reverse%lvl, lvu = reverse%lvu,         &
+                                 IP = reverse%IP, lp = reverse%lp,             &
+                                 got_jr = data%got_jr )
+             IF ( inform%status /= 0 ) THEN
+               inform%bad_eval = 'evalJr_prods'
+               inform%status = GALAHAD_error_evaluation ; GO TO 990
+             END IF
+             data%got_jr = .TRUE.
+           END IF
+
+ !  compute sparse( Jr^T * v )
+
+         CASE ( 6 )
            IF ( data%reverse_jr_sprod ) THEN
              inform%status = inform%BLLS_inform%status + 2
              data%branch = 220 ; RETURN
            ELSE
              CALL eval_Jr_sprod( inform%status, nlp%X, userdata,               &
-                                 reverse%transpose, reverse%V, reverse%P,      &
+                                 .TRUE., reverse%V, reverse%P,                 &
                                  reverse%IV, reverse%lvu, data%got_jr )
              IF ( inform%status /= 0 ) THEN
                inform%bad_eval = 'evalJr_sprod'
@@ -2776,30 +2812,65 @@ end if
            END IF
            data%got_jr = .TRUE.
 
-!  compute the index-th column of Jr
+!  compute Jr * sparse v 
 
          CASE ( 4 )
-           CALL eval_Jr_scol( inform%status, nlp%X, userdata,                  &
-                              data%reverse%index, data%reverse%P,              &
-                              data%reverse%IP, data%reverse%lp, data%got_jr )
-           IF ( inform%status /= 0 ) THEN
-             inform%bad_eval = 'eval_Jr_scol'
-             inform%status = GALAHAD_error_evaluation ; GO TO 990
+           IF ( data%reverse_jr_prods ) THEN
+             inform%status = inform%BLLS_inform%status + 2
+             data%branch = 220 ; RETURN
+           ELSE
+             CALL eval_Jr_prods( inform%status, nlp%X, userdata,               &
+                                 data%reverse%V, data%reverse%P,               &
+                                 IV = data%reverse%IV,                         &
+                                 lvl = data%reverse%lvl,                       &
+                                 lvu = data%reverse%lvu,                       &
+                                 got_jr = data%got_jr )
+             IF ( inform%status /= 0 ) THEN
+               inform%bad_eval = 'evalJr_prods'
+               inform%status = GALAHAD_error_evaluation ; GO TO 990
+             END IF
+             data%got_jr = .TRUE.
            END IF
-           data%got_jr = .TRUE.
 
- !  compute Jr * sparse v or sparse( Jr^T * v )
+!  compute sparse( Jr * sparse v )
 
-         CASE ( 5, 6 )
-           CALL eval_Jr_sprod( inform%status, nlp%X, userdata,                 &
-                               data%reverse%transpose, data%reverse%V,         &
-                               data%reverse%P, data%reverse%IV,                &
-                               data%reverse%lvu, data%got_jr )
-           IF ( inform%status /= 0 ) THEN
-             inform%bad_eval = 'evalJr_sprod'
-             inform%status = GALAHAD_error_evaluation ; GO TO 990
+         CASE ( 5 )
+           IF ( data%reverse_jr_prods ) THEN
+             inform%status = inform%BLLS_inform%status + 2
+             data%branch = 220 ; RETURN
+           ELSE
+             CALL eval_Jr_prods( inform%status, nlp%X, userdata,               &
+                                 data%reverse%V, data%reverse%P,               &
+                                 IV = data%reverse%IV,                         &
+                                 lvl = data%reverse%lvl,                       &
+                                 lvu = data%reverse%lvu,                       &
+                                 IP = data%reverse%IP,                         &
+                                 lp = data%reverse%lp,                         &
+                                 got_jr = data%got_jr )
+             IF ( inform%status /= 0 ) THEN
+               inform%bad_eval = 'evalJr_prods'
+               inform%status = GALAHAD_error_evaluation ; GO TO 990
+             END IF
+             data%got_jr = .TRUE.
            END IF
-           data%got_jr = .TRUE.
+
+ !  compute sparse( Jr^T * v )
+
+         CASE ( 6 )
+           IF ( data%reverse_jr_sprod ) THEN
+             inform%status = inform%BLLS_inform%status + 2
+             data%branch = 220 ; RETURN
+           ELSE
+             CALL eval_Jr_sprod( inform%status, nlp%X, userdata,               &
+                                 .TRUE., data%reverse%V, data%reverse%P,       &
+                                 data%reverse%IV, data%reverse%lvu,            &
+                                 data%got_jr )
+             IF ( inform%status /= 0 ) THEN
+               inform%bad_eval = 'evalJr_sprod'
+               inform%status = GALAHAD_error_evaluation ; GO TO 990
+             END IF
+             data%got_jr = .TRUE.
+           END IF
 
 !  error returns
 
@@ -3527,6 +3598,18 @@ end if
 
      array_name = 'bnls: data%GN_model%X'
      CALL SPACE_dealloc_array( data%GN_model%X,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bnls: data%GN_model%X_l'
+     CALL SPACE_dealloc_array( data%GN_model%X_l,                              &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bnls: data%GN_model%X_u'
+     CALL SPACE_dealloc_array( data%GN_model%X_u,                              &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -4285,7 +4368,7 @@ end if
 
      SUBROUTINE BNLS_solve_with_jacprod( data, userdata, status, X_l, X_u,     &
                                          X, Z, R, G, X_stat, eval_R,           &
-                                         eval_Jr_PROD, eval_Jr_SCOL,           &
+                                         eval_Jr_PROD, eval_Jr_PRODS,          &
                                          eval_Jr_SPROD, W )
 
 !  solve the nonlinear least-squares problem previously imported when access
@@ -4307,7 +4390,7 @@ end if
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
      REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( : ), INTENT( IN ) :: W
      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: X_stat
-     EXTERNAL :: eval_R, eval_Jr_PROD, eval_Jr_SCOL, eval_Jr_SPROD
+     EXTERNAL :: eval_R, eval_Jr_PROD, eval_Jr_PRODS, eval_Jr_SPROD
 
 !  local variables
 
@@ -4342,7 +4425,7 @@ end if
      CALL BNLS_solve( data%nlp, data%bnls_control, data%bnls_inform,           &
                       data%bnls_data, userdata, eval_R = eval_R,               &
                       eval_Jr_prod = eval_Jr_PROD,                             &
-                      eval_Jr_scol = eval_Jr_SCOL,                             &
+                      eval_Jr_prods = eval_Jr_PRODS,                           &
                       eval_Jr_sprod = eval_Jr_SPROD )
      status = data%bnls_inform%status
 
@@ -4468,8 +4551,7 @@ end if
 
      SUBROUTINE BNLS_solve_reverse_with_jacprod( data, status, eval_status,    &
                                                  X_l, X_u, X, Z, R, G, X_stat, &
-                                                 V, IV, lvl, lvu, index,       &
-                                                 P, IP, lp, W )
+                                                 V, IV, lvl, lvu, P, IP, lp, W )
 
 !  solve the nonlinear least-squares problem previously imported when access
 !  to residual and Jacobian-vector product operations are available via 
@@ -4491,7 +4573,7 @@ end if
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( INOUT ) :: X_stat
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: V
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: IV
-     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: lvl, lvu, index
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: lvl, lvu
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: P
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: IP
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: lp
@@ -4580,19 +4662,20 @@ end if
          data%reverse%P( : data%nlp%n ) = P( : data%nlp%n )
      CASE( 6 )
        data%reverse%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%reverse%P( : data%nlp%m_r ) = P( : data%nlp%m_r )
+     CASE( 7 )
+       data%reverse%eval_status = eval_status
        IF ( eval_status == 0 ) THEN
          data%reverse%lp = lp
-         data%reverse%P( : lp ) = P( : lp )
          IF ( data%f_indexing ) THEN
            data%reverse%IP( : lp ) = IP( : lp )
          ELSE
            data%reverse%IP( : lp ) = IP( : lp ) + 1
          END IF
+         data%reverse%P( data%reverse%IP( : lp ) )                             &
+           = P( data%reverse%IP( : lp ) )
        END IF
-     CASE( 7 )
-       data%reverse%eval_status = eval_status
-       IF ( eval_status == 0 )                                                 &
-         data%reverse%P( : data%nlp%m_r ) = P( : data%nlp%m_r )
      CASE( 8 )
        data%reverse%eval_status = eval_status
        IF ( eval_status == 0 ) THEN
@@ -4626,13 +4709,7 @@ end if
        V( : data%nlp%n ) = data%reverse%V( : data%nlp%n )
      CASE( 5 )
        V( : data%nlp%m_r ) = data%reverse%V( : data%nlp%m_r )
-     CASE( 6 )
-       IF ( data%f_indexing ) THEN
-         index = data%reverse%index
-       ELSE
-         index = data%reverse%index - 1
-       END IF
-     CASE( 7 )
+     CASE( 6, 7 )
        lvl = data%reverse%lvl ; lvu = data%reverse%lvu
        IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
        V( IV( lvl : lvu ) ) = data%reverse%V( IV( lvl : lvu ) )

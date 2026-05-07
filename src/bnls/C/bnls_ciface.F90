@@ -976,7 +976,7 @@
 !  --------------------------------------------------
 
   SUBROUTINE bnls_solve_reverse_with_jac( cdata, status, eval_status, n, m_r,  &
-                                          x_l, x_u, x, y, z, r, g, x_stat,     &
+                                          x_l, x_u, x, z, r, g, x_stat,        &
                                           jr_ne, jr_val, w ) BIND( C )
   USE GALAHAD_BNLS_precision_ciface
   IMPLICIT NONE

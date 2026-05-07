@@ -36,10 +36,11 @@
      USE GALAHAD_SORT_precision, ONLY: SORT_heapsort_build,                    &
                                        SORT_heapsort_smallest, SORT_partition
      USE GALAHAD_SBLS_precision
-     USE GALAHAD_NORMS_precision
-     USE GALAHAD_QPT_precision
+     USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
+     USE GALAHAD_QPT_precision, ONLY: QPT_problem_type, QPT_keyword_A
      USE GALAHAD_QPD_precision, ONLY: QPD_SIF
-     USE GALAHAD_USERDATA_precision
+     USE GALAHAD_USERDATA_precision, ONLY: USERDATA_type
+     USE GALAHAD_REVERSE_precision, ONLY: REVERSE_type, REVERSE_terminate
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_CONVERT_precision, ONLY: CONVERT_control_type,                &
                                           CONVERT_inform_type,                 &
@@ -48,7 +49,7 @@
 
      PRIVATE
      PUBLIC :: BLLS_initialize, BLLS_read_specfile, BLLS_solve,                &
-               BLLS_terminate,  BLLS_reverse_type, BLLS_data_type,             &
+               BLLS_terminate,  REVERSE_type, BLLS_data_type,                  &
                BLLS_full_initialize, BLLS_full_terminate,                      &
                BLLS_subproblem_data_type, BLLS_exact_arc_search,               &
                BLLS_inexact_arc_search, BLLS_import, BLLS_import_without_a,    &
@@ -337,7 +338,7 @@
      TYPE :: BLLS_subproblem_data_type
        INTEGER ( KIND = ip_ ) :: branch, n_break, n_free, n_fixed, n_a0
        INTEGER ( KIND = ip_ ) :: preconditioner, step
-       INTEGER ( KIND = ip_ ) :: nz_d_start, nz_d_end, nz_out_end, base_free
+       INTEGER ( KIND = ip_ ) :: nz_d_start, nz_d_end, lp, base_free
        REAL ( KIND = rp_ ) :: f_alpha_dash, f_alpha_dashdash, stop_cg
        REAL ( KIND = rp_ ) :: rho_alpha, rho_alpha_dash, rho_alpha_dashdash
        REAL ( KIND = rp_ ) :: phi_alpha_dash, phi_alpha_dashdash
@@ -351,25 +352,12 @@
        LOGICAL :: regularization, preconditioned, w_eq_identity, shifts
        CHARACTER ( LEN = 1 ) :: direction
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FREE, P_used
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_d, NZ_out
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_d, IP
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G, P, Q, R, S, U, W
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R_a, R_f, E_a, D_f
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BREAK_points
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_debug, R_debug
      END TYPE BLLS_subproblem_data_type
-
-!  - - - - - - - - - - -
-!   reverse derived type
-!  - - - - - - - - - - -
-
-     TYPE :: BLLS_reverse_type
-       INTEGER ( KIND = ip_ ) :: nz_in_start, nz_in_end, nz_out_end
-       INTEGER ( KIND = ip_ ) :: eval_status = GALAHAD_ok
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_in, NZ_out
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FIXED
-       LOGICAL :: transpose
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, P
-     END TYPE BLLS_reverse_type
 
 !  - - - - - - - - - -
 !   data derived type
@@ -380,7 +368,7 @@
        INTEGER ( KIND = ip_ ) :: stop_print, print_gap, cg_maxit, eval_status
        INTEGER ( KIND = ip_ ) :: arc_search_status, cgls_status, change_status
        INTEGER ( KIND = ip_ ) :: n_free, branch, cg_iter, preconditioner
-       INTEGER ( KIND = ip_ ) :: nz_in_start, nz_in_end, nz_out_end, maxit
+       INTEGER ( KIND = ip_ ) :: lvl, lvu, lp, maxit
        INTEGER ( KIND = ip_ ) :: segments, max_segments, steps, max_steps
        REAL ( KIND = rp_ ) :: time_start, clock_start
        REAL ( KIND = rp_ ) :: norm_step, step, stop_cg, old_gnrmsq, pnrmsq
@@ -394,7 +382,7 @@
        CHARACTER ( LEN = 6 ) :: string_cg_iter
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_status
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: OLD_status
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_in, NZ_out
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IV, IP
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, P, R, S, V
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DIAG, SBLS_sol
        TYPE ( SMT_type ) :: Ao, H_sbls, AT_sbls, C_sbls
@@ -414,7 +402,7 @@
         TYPE ( BLLS_inform_type ) :: BLLS_inform
         TYPE ( QPT_problem_type ) :: prob
         TYPE ( USERDATA_type ) :: userdata
-        TYPE ( BLLS_reverse_type ) :: reverse
+        TYPE ( REVERSE_type ) :: reverse
       END TYPE BLLS_full_data_type
 
    CONTAINS
@@ -957,23 +945,23 @@
 !
 !     4 The product A * v of the matrix A with a given sparse vector v is
 !       required from the user. Only components
-!         reverse%NZ_in( reverse%nz_in_start : reverse%nz_in_end )
+!         reverse%IV( reverse%lvl : reverse%lvu )
 !       of the vector v stored in reverse%V are nonzero. The required product
 !       should be returned in reverse%P. BLLS_solve must then be re-entered
 !       with all other arguments unchanged. Typically v will be very sparse
-!       (i.e., reverse%nz_in_end-reverse%NZ_in_start will be small).
+!       (i.e., reverse%lvu-reverse%lvl will be small).
 !       reverse%eval_status should be set to zero unless the product cannot
 !       be formed, in which case a nonzero value should be returned.
 !
 !     5 The product A * v of the matrix A with a given sparse vector v
 !       is required from the user. Only components
-!         reverse%NZ_in( reverse%nz_in_start : reverse%nz_in_end )
+!         reverse%IV( reverse%lvl : reverse%lvu )
 !       of the vector v stored in reverse%V are nonzero. The resulting
 !       NONZEROS in the product A * v must be placed in their appropriate
 !       comnpinents of reverse%P, and a list of indices of the nonzeos
-!       placed in reverse%NZ_out( 1 : reverse%nz_out_end ). BLLS_solve should
+!       placed in reverse%IP( 1 : reverse%lp ). BLLS_solve should
 !       then be re-entered with all other arguments unchanged. Typically
-!       v will be very sparse (i.e., reverse%nz_in_end-reverse%NZ_in_start
+!       v will be very sparse (i.e., reverse%lvu-reverse%lvl
 !       will be small). Once again reverse%eval_status should be set to zero
 !       unless the product cannot be form, in which case a nonzero value
 !       should be returned.
@@ -981,9 +969,9 @@
 !     6 Specified components of the product A^T * v of the transpose of the
 !       matrix A with a given vector v stored in reverse%V are required from
 !       the user. Only components indexed by
-!         reverse%NZ_in( reverse%nz_in_start : reverse%nz_in_end )
+!         reverse%IV( reverse%lvl : reverse%lvu )
 !       of the product should be computed, and these should be recorded in
-!         reverse%P( reverse%NZ_in( reverse%nz_in_start : reverse%nz_in_end ) )
+!         reverse%P( reverse%IV( reverse%lvl : reverse%lvu ) )
 !       and BLLS_solve then re-entered with all other arguments unchanged.
 !       reverse%eval_status should be set to zero unless the product cannot
 !       be formed, in which case a nonzero value should be returned.
@@ -1053,7 +1041,7 @@
 !    character_pointer is a rank-one pointer array of type default character.
 !    logical_pointer is a rank-one pointer array of type default logical.
 !
-!  reverse is an OPTIONAL structure of type BLLS_reverse_type which is used to
+!  reverse is an OPTIONAL structure of type REVERSE_type which is used to
 !   pass intermediate data to and from BLLS_solve. This will only be necessary
 !   if reverse-communication is to be used to form matrix-vector products
 !   of the form H * v or preconditioning steps of the form P^{-1} * v. If
@@ -1075,12 +1063,12 @@
 !  eval_ASPROD is an OPTIONAL subroutine which if present must have the
 !   arguments given below (see the interface blocks). The product A * v of
 !   the given matrix A and vector v stored in V must be returned in P; only the
-!   components NZ_in( nz_in_start : nz_in_end ) of V are nonzero. If either of
-!   the optional argeuments NZ_out or nz_out_end are absent, the WHOLE of A v
-!   including zeros should be returned in P. If NZ_out and nz_out_end are
+!   components IV( lvl : lvu ) of V are nonzero. If either of
+!   the optional argeuments IP or lp are absent, the WHOLE of A v
+!   including zeros should be returned in P. If IP and lp are
 !   present, the NONZEROS in the product A * v must be placed in their
 !   appropriate comnponents of reverse%P, while a list of indices of the
-!   nonzeos placed in NZ_out( 1 : nz_out_end ). In both cases, the status
+!   nonzeos placed in IP( 1 : lp ). In both cases, the status
 !   variable should be set to 0 unless the product is impossible in which
 !   case status should be set to a nonzero value. If eval_ASPROD is not
 !   present, BLLS_solve will either return to the user each time an evaluation
@@ -1119,7 +1107,7 @@
      TYPE ( BLLS_control_type ), INTENT( IN ) :: control
      TYPE ( BLLS_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-     TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
+     TYPE ( REVERSE_type ), OPTIONAL, INTENT( INOUT ) :: reverse
      OPTIONAL :: eval_APROD, eval_ASPROD, eval_AFPROD, eval_PREC
 
 !  interface blocks
@@ -1136,18 +1124,17 @@
      END INTERFACE
 
      INTERFACE
-       SUBROUTINE eval_ASPROD( status, userdata, V, P, NZ_in, nz_in_start,     &
-                               nz_in_end, NZ_out, nz_out_end )
+       SUBROUTINE eval_ASPROD( status, userdata, V, P, IV, lvl, lvu, IP, lp )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
-       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
-       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_out_end
-       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: lvl, lvu
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: lp
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: IV
        INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                       &
-                                               INTENT( INOUT ) :: NZ_out
+                                               INTENT( INOUT ) :: IP
        END SUBROUTINE eval_ASPROD
      END INTERFACE
 
@@ -1540,16 +1527,16 @@
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
      IF ( data%reverse ) THEN
-       array_name = 'blls: reverse%NZ_in'
-       CALL SPACE_resize_array( prob%n, reverse%NZ_in, inform%status,          &
+       array_name = 'blls: reverse%IV'
+       CALL SPACE_resize_array( prob%n, reverse%IV, inform%status,             &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
-       array_name = 'blls: reverse%NZ_out'
-       CALL SPACE_resize_array( prob%o, reverse%NZ_out, inform%status,         &
+       array_name = 'blls: reverse%IP'
+       CALL SPACE_resize_array( prob%o, reverse%IP, inform%status,             &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1572,8 +1559,8 @@
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
      ELSE
-       array_name = 'blls: data%NZ_in'
-       CALL SPACE_resize_array( prob%n, data%NZ_in, inform%status,             &
+       array_name = 'blls: data%IV'
+       CALL SPACE_resize_array( prob%n, data%IV, inform%status,                &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -2088,12 +2075,12 @@
 !  if reverse communication is to be used, store the list of free variables
 
        IF ( data%reverse ) THEN
-         reverse%nz_in_start = 1
-         reverse%nz_in_end = 0
+         reverse%lvl = 1
+         reverse%lvu = 0
          DO i = 1, prob%n
            IF ( data%X_status( i ) == 0 ) THEN
-             reverse%nz_in_end = reverse%nz_in_end + 1
-             reverse%NZ_in( reverse%nz_in_end ) = i
+             reverse%lvu = reverse%lvu + 1
+             reverse%IV( reverse%lvu ) = i
            END IF
          END DO
        END IF
@@ -2507,7 +2494,7 @@
      TYPE ( BLLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( BLLS_control_type ), INTENT( IN ) :: control
      TYPE ( BLLS_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
+     TYPE ( REVERSE_type ), OPTIONAL, INTENT( INOUT ) :: reverse
 
 !  Local variables
 
@@ -2527,7 +2514,9 @@
 !  Deallocate all those required for reverse communication
 
      IF ( PRESENT( reverse ) ) THEN
-       CALL BLLS_reverse_terminate( reverse, control, inform )
+       CALL REVERSE_terminate( reverse, inform%status, inform%alloc_status,    &
+          bad_alloc = inform%bad_alloc, out = control%error,                   &
+          deallocate_error_fatal = control%deallocate_error_fatal )
        IF ( control%deallocate_error_fatal .AND.                               &
             inform%status /= GALAHAD_ok ) RETURN
      END IF
@@ -2552,15 +2541,15 @@
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'blls: data%NZ_in'
-     CALL SPACE_dealloc_array( data%NZ_in,                                     &
+     array_name = 'blls: data%IV'
+     CALL SPACE_dealloc_array( data%IV,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'blls: data%NZ_out'
-     CALL SPACE_dealloc_array( data%NZ_out,                                    &
+     array_name = 'blls: data%IP'
+     CALL SPACE_dealloc_array( data%IP,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -2830,79 +2819,15 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     CALL BLLS_reverse_terminate( data%reverse, control, inform )
+     CALL REVERSE_terminate( data%reverse, inform%status, inform%alloc_status, &
+         bad_alloc = inform%bad_alloc, out = control%error,                    &
+         deallocate_error_fatal = control%deallocate_error_fatal )
 
      RETURN
 
 !  End of subroutine BLLS_full_terminate
 
      END SUBROUTINE BLLS_full_terminate
-
-!-*-   B L L S _ R E V E R S E _ T E R M I N A T E   S U B R O U T I N E   -*-
-
-     SUBROUTINE BLLS_reverse_terminate( reverse, control, inform )
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!      ..............................................
-!      .                                            .
-!      .  Deallocate internal arrays at the end     .
-!      .  of the computation                        .
-!      .                                            .
-!      ..............................................
-
-!  Arguments:
-!  =========
-!
-!   reverse see Subroutine BLLS_solve
-!   control see Subroutine BLLS_initialize
-!   inform  see Subroutine BLLS_solve
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  Dummy arguments
-
-     TYPE ( BLLS_reverse_type ), INTENT( INOUT ) :: reverse
-     TYPE ( BLLS_control_type ), INTENT( IN ) :: control
-     TYPE ( BLLS_inform_type ), INTENT( INOUT ) :: inform
-
-!  Local variables
-
-     CHARACTER ( LEN = 80 ) :: array_name
-
-     array_name = 'blls: reverse%V'
-     CALL SPACE_dealloc_array( reverse%V,                                      &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'blls: reverse%P'
-     CALL SPACE_dealloc_array( reverse%P,                                      &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'blls: reverse%NZ_in'
-     CALL SPACE_dealloc_array( reverse%NZ_in,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'blls: reverse%NZ_out'
-     CALL SPACE_dealloc_array( reverse%NZ_out,                                 &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     RETURN
-
-!  End of subroutine BLLS_reverse_terminate
-
-     END SUBROUTINE BLLS_reverse_terminate
 
 !-   B L L S _ S U B P R O B L E M _ T E R M I N A T E   S U B R O U T I N E   -
 
@@ -2923,7 +2848,6 @@
 !   data    see Subroutine BLLS_initialize
 !   control see Subroutine BLLS_initialize
 !   inform  see Subroutine BLLS_solve
-!   reverse see Subroutine BLLS_solve
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -2960,8 +2884,8 @@
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'blls: data%NZ_out'
-     CALL SPACE_dealloc_array( data%NZ_out,                                    &
+     array_name = 'blls: data%IP'
+     CALL SPACE_dealloc_array( data%IP,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -3179,7 +3103,7 @@
 !            3 [Sparse in, dense out] The components of the product
 !              p = A * v, where v is stored in reverse%V, should be
 !              returned in reverse%P. Only the components
-!              reverse%NZ_in( reverse%nz_in_start : reverse%nz_in_end ) of
+!              reverse%IV( reverse%lvl : reverse%lvu ) of
 !              reverse%V are nonzero, and the remeinder may not have
 !              been set. All components of reverse%P should be set.
 !              The argument reverse%eval_status should be set to 0 if the
@@ -3187,10 +3111,10 @@
 !            4 [Sparse in, sparse out] The nonzero components of the
 !              product p = A * v, where v is stored in reverse%V,
 !              should be returned in reverse%P. Only the components
-!              reverse%NZ_in( reverse%nz_in_start : reverse%nz_in_end ) of
+!              reverse%IV( reverse%lvl : reverse%lvu ) of
 !              reverse%V are nonzero, and the remeinder may not have
 !              been set. On return, the positions of the nonzero components of
-!              p should be indicated as reverse%NZ_out( : reverse%nz_out_end ),
+!              p should be indicated as reverse%IP( : reverse%lp ),
 !              and only these components of reverse%p need be set.
 !              The argument reverse%eval_status should be set to 0 if the
 !              calculation succeeds, and to a nonzero value otherwise.
@@ -3219,7 +3143,7 @@
 !          the last entry in A
 !  eval_ASPROD subroutine that performs products with A, see the argument
 !           list for BLLS_solve
-!  reverse (structure of type BLLS_reverse_type) used to communicate
+!  reverse (structure of type REVERSE_type) used to communicate
 !           reverse communication data to and from the subroutine.
 !
 !  ------------------ end of dummy arguments --------------------------
@@ -3248,23 +3172,23 @@
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_row
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_val
       OPTIONAL :: eval_ASPROD
-      TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
+      TYPE ( REVERSE_type ), OPTIONAL, INTENT( INOUT ) :: reverse
 
 !  interface blocks
 
       INTERFACE
-        SUBROUTINE eval_ASPROD( status, userdata, V, P, NZ_in, nz_in_start,    &
-                                nz_in_end, NZ_out, nz_out_end )
+        SUBROUTINE eval_ASPROD( status, userdata, V, P, IV, lvl,    &
+                                lvu, IP, lp )
         USE GALAHAD_USERDATA_precision
         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
         TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
-        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
-        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_out_end
-        INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
+        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: lvl, lvu
+        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: lp
+        INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: IV
         INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                      &
-                                                INTENT( INOUT ) :: NZ_out
+                                                INTENT( INOUT ) :: IP
         END SUBROUTINE eval_ASPROD
       END INTERFACE
 
@@ -3508,8 +3432,8 @@
 
 !  allocate further workspace arrays
 
-      array_name = 'blls_exact_arc_search: data%NZ_out'
-      CALL SPACE_resize_array( o, data%NZ_out, status, alloc_status,           &
+      array_name = 'blls_exact_arc_search: data%IP'
+      CALL SPACE_resize_array( o, data%IP, status, alloc_status,               &
              array_name = array_name, bad_alloc = bad_alloc, out = out )
       IF ( status /= GALAHAD_ok ) GO TO 900
 
@@ -3535,7 +3459,7 @@
 
       IF ( data%regularization ) THEN
         array_name = 'blls_exact_arc_search: data%W'
-        CALL SPACE_resize_array( o, data%W, status, alloc_status,              &
+        CALL SPACE_resize_array( n, data%W, status, alloc_status,              &
                array_name = array_name, bad_alloc = bad_alloc, out = out )
         IF ( status /= GALAHAD_ok ) GO TO 900
       END IF
@@ -3558,13 +3482,13 @@
                array_name = array_name, bad_alloc = bad_alloc, out = out )
         IF ( status /= GALAHAD_ok ) GO TO 900
 
-        array_name = 'blls_exact_arc_search: reverse%NZ_in'
-        CALL SPACE_resize_array( n, reverse%NZ_in, status, alloc_status,       &
+        array_name = 'blls_exact_arc_search: reverse%IV'
+        CALL SPACE_resize_array( n, reverse%IV, status, alloc_status,          &
                array_name = array_name, bad_alloc = bad_alloc, out = out )
         IF ( status /= GALAHAD_ok ) GO TO 900
 
-        array_name = 'blls_exact_arc_search: reverse%NZ_out'
-        CALL SPACE_resize_array( o, reverse%NZ_out, status, alloc_status,      &
+        array_name = 'blls_exact_arc_search: reverse%IP'
+        CALL SPACE_resize_array( o, reverse%IP, status, alloc_status,          &
                array_name = array_name, bad_alloc = bad_alloc, out = out )
         IF ( status /= GALAHAD_ok ) GO TO 900
       END IF
@@ -3619,8 +3543,8 @@
 
       ELSE IF ( data%present_asprod ) THEN
         CALL eval_ASPROD( status, userdata, V = D, P = data%P,                 &
-                          NZ_in = data%NZ_d, nz_in_start = data%nz_d_start,    &
-                          nz_in_end = data%nz_d_end )
+                          IV = data%NZ_d, lvl = data%nz_d_start,               &
+                          lvu = data%nz_d_end )
         IF ( status /= GALAHAD_ok ) THEN
           status = GALAHAD_error_evaluation ; GO TO 900
         END IF
@@ -3628,11 +3552,11 @@
 !  c) evaluation via reverse communication
 
       ELSE
-        reverse%nz_in_start = data%nz_d_start
-        reverse%nz_in_end = data%nz_d_end
+        reverse%lvl = data%nz_d_start
+        reverse%lvu = data%nz_d_end
         DO k = data%nz_d_start, data%nz_d_end
           j = data%NZ_d( k )
-          reverse%NZ_in( k ) = j
+          reverse%IV( k ) = j
           reverse%V( j ) = D( j )
         END DO
         data%branch = 180 ; status = 3
@@ -3642,7 +3566,7 @@
 !  return following reverse communication
 
   180 CONTINUE
-      data%nz_out_end = o
+      data%lp = o
       IF ( data%reverse_asprod ) THEN
         IF ( reverse%eval_status /= GALAHAD_ok ) THEN
           status = GALAHAD_error_evaluation ; GO TO 900
@@ -3842,8 +3766,8 @@
 !  update u and reset p to zero
 
         IF ( segment > 1 ) THEN
-          DO j = 1, data%nz_out_end
-            i = data%NZ_out( j )
+          DO j = 1, data%lp
+            i = data%IP( j )
             data%U( i ) = data%U( i ) + alpha_current * data%P( i )
             data%P( i ) = zero
           END DO
@@ -3899,14 +3823,14 @@
 
 !  compute p = A v, where v contains the components of d that have been
 !  fixed in the current segment. The nonzeros of p are in positions
-!  NZ_out(1:nz_out_end). p_used(i) = segment if and only if variable i
+!  IP(1:lp). p_used(i) = segment if and only if variable i
 !  is fixed in that segment
 
 !  a) evaluation directly via A
 
         data%nz_d_start = data%n_break + 1
         IF ( data%present_a ) THEN
-          data%nz_out_end = 0
+          data%lp = 0
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
             IF ( j <= 0 .OR. j > n ) THEN
@@ -3917,8 +3841,8 @@
               DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
                 i = Ao_row( l )
                 IF ( data%P_used( i ) < segment ) THEN
-                  data%nz_out_end = data%nz_out_end + 1
-                  data%NZ_out( data%nz_out_end ) = i
+                  data%lp = data%lp + 1
+                  data%IP( data%lp ) = i
                   data%P_used( i ) = segment
                 END IF
                 data%P( i ) = data%P( i ) + Ao_val( l ) * s
@@ -3930,9 +3854,8 @@
 
         ELSE IF ( data%present_asprod ) THEN
           CALL eval_ASPROD( status, userdata, V = D, P = data%P,               &
-                            NZ_in = data%NZ_d, nz_in_start = data%nz_d_start,  &
-                            nz_in_end = data%nz_d_end, NZ_out = data%NZ_out,   &
-                            nz_out_end = data%nz_out_end )
+                            IV = data%NZ_d, lvl = data%nz_d_start,             &
+                            lvu = data%nz_d_end, IP = data%IP, lp = data%lp )
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
@@ -3940,11 +3863,11 @@
 !  c) evaluation via reverse communication
 
         ELSE
-          reverse%nz_in_start = data%nz_d_start
-          reverse%nz_in_end = data%nz_d_end
+          reverse%lvl = data%nz_d_start
+          reverse%lvu = data%nz_d_end
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
-            reverse%NZ_in( k ) = j
+            reverse%IV( k ) = j
             reverse%V( j ) = D( j )
           END DO
           data%branch = 220 ; status = 4
@@ -3958,11 +3881,10 @@
           IF ( reverse%eval_status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
-          data%nz_out_end = reverse%nz_out_end
-          data%NZ_out( : data%nz_out_end )                                     &
-            = reverse%NZ_out( : reverse%nz_out_end )
-          DO k = 1, data%nz_out_end
-            i = data%NZ_out( k )
+          data%lp = reverse%lp
+          data%IP( : data%lp ) = reverse%IP( : reverse%lp )
+          DO k = 1, data%lp
+            i = data%IP( k )
             data%P( i ) = reverse%P( i )
           END DO
         END IF
@@ -3974,8 +3896,8 @@
           + data%delta_alpha * data%f_alpha_dashdash
 
         IF ( data%w_eq_identity ) THEN
-          DO j = 1, data%nz_out_end
-            i = data%NZ_out( j )
+          DO j = 1, data%lp
+            i = data%IP( j )
             data%f_alpha_dash = data%f_alpha_dash - data%P( i )                &
               * ( R( i ) + data%U( i ) + data%alpha_next * data%S( i ) )
             data%f_alpha_dashdash = data%f_alpha_dashdash                      &
@@ -3983,8 +3905,8 @@
             data%S( i ) = data%S( i ) - data%P( i )
           END DO
         ELSE
-          DO j = 1, data%nz_out_end
-            i = data%NZ_out( j )
+          DO j = 1, data%lp
+            i = data%IP( j )
             data%f_alpha_dash = data%f_alpha_dash - W( i ) * data%P( i )       &
               * ( R( i ) + data%U( i ) + data%alpha_next * data%S( i ) )
             data%f_alpha_dashdash = data%f_alpha_dashdash                      &
@@ -4059,8 +3981,8 @@
 
           ELSE IF ( data%present_asprod ) THEN
             CALL eval_ASPROD( status, userdata, V = D, P = data%S,             &
-                              NZ_in = data%NZ_d, nz_in_start = data%nz_d_start,&
-                              nz_in_end = data%nz_d_end )
+                              IV = data%NZ_d, lvl = data%nz_d_start,&
+                              lvu = data%nz_d_end )
             IF ( status /= GALAHAD_ok ) THEN
               status = GALAHAD_error_evaluation ; GO TO 900
             END IF
@@ -4068,11 +3990,11 @@
 !  c) evaluation via reverse communication
 
           ELSE
-            reverse%nz_in_start = data%nz_d_start
-            reverse%nz_in_end = data%nz_d_end
+            reverse%lvl = data%nz_d_start
+            reverse%lvu = data%nz_d_end
             DO k = data%nz_d_start, data%nz_d_end
               j = data%NZ_d( k )
-              reverse%NZ_in( k ) = j
+              reverse%IV( k ) = j
               reverse%V( j ) = D( j )
             END DO
             data%branch = 240 ; status = 3
@@ -4382,7 +4304,7 @@
 !            3 [Sparse in, dense out] The components of the product
 !              p = A * v, where v is stored in reverse%V, should be
 !              returned in reverse%P. Only the components
-!              reverse%NZ_in( reverse%nz_in_start : reverse%nz_in_end ) of
+!              reverse%IV( reverse%lvl : reverse%lvu ) of
 !              reverse%V are nonzero, and the remeinder may not have
 !              been set. All components of reverse%P should be set.
 !              The argument reverse%eval_status should be set to 0 if the
@@ -4390,10 +4312,10 @@
 !            4 [Sparse in, sparse out] The nonzero components of the
 !              product p = A * v, where v is stored in reverse%V,
 !              should be returned in reverse%P. Only the components
-!              reverse%NZ_in( reverse%nz_in_start : reverse%nz_in_end ) of
+!              reverse%IV( reverse%lvl : reverse%lvu ) of
 !              reverse%V are nonzero, and the remeinder may not have
 !              been set. On return, the positions of the nonzero components of
-!              p should be indicated as reverse%NZ_out( : reverse%nz_out_end ),
+!              p should be indicated as reverse%IP( : reverse%lp ),
 !              and only these components of reverse%p need be set.
 !              The argument reverse%eval_status should be set to 0 if the
 !              calculation succeeds, and to a nonzero value otherwise.
@@ -4430,7 +4352,7 @@
 !  weight  (REAL) the positive regularization weight (absent = zero)
 !  eval_ASPROD subroutine that performs products with A
 !           and its transpose, see the argument list for BLLS_solve
-!  reverse (structure of type BLLS_reverse_type) used to communicate
+!  reverse (structure of type REVERSE_type) used to communicate
 !           reverse communication data to and from the subroutine.
 !
 !  ------------------ end of dummy arguments --------------------------
@@ -4460,24 +4382,24 @@
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_row
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_val
       OPTIONAL :: eval_ASPROD
-      TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
+      TYPE ( REVERSE_type ), OPTIONAL, INTENT( INOUT ) :: reverse
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: B
 
 !  interface blocks
 
       INTERFACE
-        SUBROUTINE eval_ASPROD( status, userdata, V, P, NZ_in, nz_in_start,    &
-                                nz_in_end, NZ_out, nz_out_end )
+        SUBROUTINE eval_ASPROD( status, userdata, V, P, IV, lvl,    &
+                                lvu, IP, lp )
         USE GALAHAD_USERDATA_precision
         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
         TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
         REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
-        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
-        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_out_end
-        INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
+        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: lvl, lvu
+        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: lp
+        INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: IV
         INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                      &
-                                                INTENT( INOUT ) :: NZ_out
+                                                INTENT( INOUT ) :: IP
         END SUBROUTINE eval_ASPROD
       END INTERFACE
 
@@ -4740,8 +4662,8 @@
 
 !  allocate further workspace arrays
 
-      array_name = 'blls_inexact_arc_search: data%NZ_out'
-      CALL SPACE_resize_array( o, data%NZ_out, status, alloc_status,           &
+      array_name = 'blls_inexact_arc_search: data%IP'
+      CALL SPACE_resize_array( o, data%IP, status, alloc_status,               &
              array_name = array_name, bad_alloc = bad_alloc, out = out )
       IF ( status /= GALAHAD_ok ) GO TO 900
 
@@ -4810,13 +4732,13 @@
                array_name = array_name, bad_alloc = bad_alloc, out = out )
         IF ( status /= GALAHAD_ok ) GO TO 900
 
-        array_name = 'blls_inexact_arc_search: reverse%NZ_in'
-        CALL SPACE_resize_array( n, reverse%NZ_in, status, alloc_status,       &
+        array_name = 'blls_inexact_arc_search: reverse%IV'
+        CALL SPACE_resize_array( n, reverse%IV, status, alloc_status,          &
                array_name = array_name, bad_alloc = bad_alloc, out = out )
         IF ( status /= GALAHAD_ok ) GO TO 900
 
-        array_name = 'blls_inexact_arc_search: reverse%NZ_out'
-        CALL SPACE_resize_array( o, reverse%NZ_out, status, alloc_status,      &
+        array_name = 'blls_inexact_arc_search: reverse%IP'
+        CALL SPACE_resize_array( o, reverse%IP, status, alloc_status,          &
                array_name = array_name, bad_alloc = bad_alloc, out = out )
         IF ( status /= GALAHAD_ok ) GO TO 900
       END IF
@@ -4968,8 +4890,8 @@
 
         IF ( data%n_a0 >= 1 ) THEN
           CALL eval_ASPROD( status, userdata, V = data%S, P = data%P,          &
-                            NZ_in = data%NZ_d, nz_in_start = 1_ip_,            &
-                            nz_in_end = data%n_a0 )
+                            IV = data%NZ_d, lvl = 1_ip_,            &
+                            lvu = data%n_a0 )
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
@@ -4979,8 +4901,8 @@
 
         IF ( data%base_free >= data%n_a0 + 1 ) THEN
           CALL eval_ASPROD( status, userdata, V = D, P = data%Q,               &
-                            NZ_in = data%NZ_d, nz_in_start = data%n_a0 + 1,    &
-                            nz_in_end = data%base_free )
+                            IV = data%NZ_d, lvl = data%n_a0 + 1,    &
+                            lvu = data%base_free )
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
@@ -4993,10 +4915,10 @@
 ! indices in set_A_0
 
         IF ( data%n_a0 >= 1 ) THEN
-          reverse%nz_in_start = 1 ; reverse%nz_in_end = data%n_a0
-          DO k = reverse%nz_in_start, reverse%nz_in_end
+          reverse%lvl = 1 ; reverse%lvu = data%n_a0
+          DO k = reverse%lvl, reverse%lvu
             j = data%NZ_d( k )
-            reverse%NZ_in( k ) = j
+            reverse%IV( k ) = j
             reverse%V( j ) = data%S( j )
             END DO
           data%branch = 80 ; status = 3
@@ -5020,11 +4942,11 @@
 ! indices in set_F_0
 
         IF ( data%base_free >= data%n_a0 + 1 ) THEN
-          reverse%nz_in_start = data%n_a0 + 1
-          reverse%nz_in_end = data%base_free
-          DO k = reverse%nz_in_start, reverse%nz_in_end
+          reverse%lvl = data%n_a0 + 1
+          reverse%lvu = data%base_free
+          DO k = reverse%lvl, reverse%lvu
             j = data%NZ_d( k )
-            reverse%NZ_in( k ) = j
+            reverse%IV( k ) = j
             reverse%V( j ) = D( j )
             END DO
           data%branch = 90 ; status = 3
@@ -5248,7 +5170,7 @@
 
 !  using the Heapsort algorithm
 
-        data%nz_out_end = 0 ; data%nz_d_end = data%n_break
+        data%lp = 0 ; data%nz_d_end = data%n_break
         DO
           data%nz_d_start = data%n_break + 1
           IF ( data%n_break == 0 .OR. data%BREAK_points( 1 ) <= alpha ) EXIT
@@ -5272,8 +5194,8 @@
             DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
               i = Ao_row( l )
               IF ( data%P_used( i ) < data%step ) THEN
-                data%nz_out_end = data%nz_out_end + 1
-                data%NZ_out( data%nz_out_end ) = i
+                data%lp = data%lp + 1
+                data%IP( data%lp ) = i
                 data%P_used( i ) = data%step
                 data%P( i ) = zero ; data%Q( i ) = zero
               END IF
@@ -5287,16 +5209,16 @@
 
         IF ( data%present_asprod ) THEN
           CALL eval_ASPROD( status, userdata, V = data%S, P = data%P,          &
-                            NZ_in = data%NZ_d, nz_in_start = data%nz_d_start,  &
-                            nz_in_end = data%nz_d_end, NZ_out = data%NZ_out,   &
-                            nz_out_end = data%nz_out_end )
+                            IV = data%NZ_d, lvl = data%nz_d_start,  &
+                            lvu = data%nz_d_end, IP = data%IP,   &
+                            lp = data%lp )
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
           CALL eval_ASPROD( status, userdata, V = D, P = data%Q,               &
-                            NZ_in = data%NZ_d, nz_in_start = data%nz_d_start,  &
-                            nz_in_end = data%nz_d_end, NZ_out = data%NZ_out,   &
-                            nz_out_end = data%nz_out_end )
+                            IV = data%NZ_d, lvl = data%nz_d_start,  &
+                            lvu = data%nz_d_end, IP = data%IP,   &
+                            lp = data%lp )
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
@@ -5304,11 +5226,11 @@
 !  c) evaluation via reverse communication
 
         ELSE IF ( data%reverse_asprod ) THEN
-          reverse%nz_in_start = data%nz_d_start
-          reverse%nz_in_end = data%nz_d_end
-          DO k = reverse%nz_in_start, reverse%nz_in_end
+          reverse%lvl = data%nz_d_start
+          reverse%lvu = data%nz_d_end
+          DO k = reverse%lvl, reverse%lvu
             j = data%NZ_d( k )
-            reverse%NZ_in( k ) = j
+            reverse%IV( k ) = j
             reverse%V( j ) = data%S( j )
           END DO
           data%branch = 310 ; status = 4
@@ -5322,12 +5244,12 @@
           IF ( reverse%eval_status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
-          DO j = 1, reverse%nz_out_end
-            i = reverse%NZ_out( j )
+          DO j = 1, reverse%lp
+            i = reverse%IP( j )
             data%P( i ) = reverse%P( i )
           END DO
 
-          DO k = reverse%nz_in_start, reverse%nz_in_end
+          DO k = reverse%lvl, reverse%lvu
             j = data%NZ_d( k )
             reverse%V( j ) = D( j )
           END DO
@@ -5342,9 +5264,9 @@
           IF ( reverse%eval_status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
-          data%nz_out_end = reverse%nz_out_end
-          DO j = 1, reverse%nz_out_end
-            i = reverse%NZ_out( j ) ; data%NZ_out( j ) = i
+          data%lp = reverse%lp
+          DO j = 1, reverse%lp
+            i = reverse%IP( j ) ; data%IP( j ) = i
             data%Q( i ) = reverse%P( i )
           END DO
         END IF
@@ -5352,8 +5274,8 @@
 !  for W = I, loop over the nonzero components of p (and q)
 
         IF ( data%w_eq_identity ) THEN
-          DO j = 1, data%nz_out_end
-            i = data%NZ_out( j )
+          DO j = 1, data%lp
+            i = data%IP( j )
             pi = data%P( i ) ; qi = data%Q( i )
             rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R( i )
 
@@ -5381,8 +5303,8 @@
 !  the same when W /= I, but additionally with y = W p and z = W q
 
         ELSE
-          DO j = 1, data%nz_out_end
-            i = data%NZ_out( j )
+          DO j = 1, data%lp
+            i = data%IP( j )
             pi = data%P( i ) ; qi = data%Q( i )
             wi = W( i ) ; yi = wi * pi ; zi = wi * qi
             rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R( i )
@@ -5471,9 +5393,9 @@
 
 !    set_J_{i+1} = { j: alpha_i < alpha_b_j <= alpha_{i+1}}
 
-!  using the Heapsort algorithm; store set_I_{i+1} in NZ_out
+!  using the Heapsort algorithm; store set_I_{i+1} in IP
 
-        data%nz_out_end = 0 ; data%nz_d_end = data%n_a0 + data%n_break
+        data%lp = 0 ; data%nz_d_end = data%n_a0 + data%n_break
         DO
           data%nz_d_start = data%n_a0 + data%n_break + 1
           IF ( data%n_break == 0 ) EXIT
@@ -5499,8 +5421,8 @@
             DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
               i = Ao_row( l )
               IF ( data%P_used( i ) < data%step ) THEN
-                data%nz_out_end = data%nz_out_end + 1
-                data%NZ_out( data%nz_out_end ) = i
+                data%lp = data%lp + 1
+                data%IP( data%lp ) = i
                 data%P_used( i ) = data%step
                 data%P( i ) = zero ; data%Q( i ) = zero
               END IF
@@ -5514,16 +5436,16 @@
 
         IF ( data%present_asprod ) THEN
           CALL eval_ASPROD( status, userdata, V = data%S, P = data%P,          &
-                            NZ_in = data%NZ_d, nz_in_start = data%nz_d_start,  &
-                            nz_in_end = data%nz_d_end, NZ_out = data%NZ_out,   &
-                            nz_out_end = data%nz_out_end )
+                            IV = data%NZ_d, lvl = data%nz_d_start,  &
+                            lvu = data%nz_d_end, IP = data%IP,   &
+                            lp = data%lp )
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
           CALL eval_ASPROD( status, userdata, V = D, P = data%Q,               &
-                            NZ_in = data%NZ_d, nz_in_start = data%nz_d_start,  &
-                            nz_in_end = data%nz_d_end, NZ_out = data%NZ_out,   &
-                            nz_out_end = data%nz_out_end )
+                            IV = data%NZ_d, lvl = data%nz_d_start,  &
+                            lvu = data%nz_d_end, IP = data%IP,   &
+                            lp = data%lp )
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
@@ -5531,11 +5453,11 @@
 !  c) evaluation via reverse communication
 
         ELSE IF ( data%reverse_asprod ) THEN
-          reverse%nz_in_start = data%nz_d_start
-          reverse%nz_in_end = data%nz_d_end
-          DO k = reverse%nz_in_start, reverse%nz_in_end
+          reverse%lvl = data%nz_d_start
+          reverse%lvu = data%nz_d_end
+          DO k = reverse%lvl, reverse%lvu
             j = data%NZ_d( k )
-            reverse%NZ_in( k ) = j
+            reverse%IV( k ) = j
             reverse%V( j ) = data%S( j )
           END DO
           data%branch = 410 ; status = 4
@@ -5549,12 +5471,12 @@
           IF ( reverse%eval_status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
-          DO j = 1, reverse%nz_out_end
-            i = reverse%NZ_out( j )
+          DO j = 1, reverse%lp
+            i = reverse%IP( j )
             data%P( i ) = reverse%P( i )
           END DO
 
-          DO k = reverse%nz_in_start, reverse%nz_in_end
+          DO k = reverse%lvl, reverse%lvu
             j = data%NZ_d( k )
             reverse%V( j ) = D( j )
           END DO
@@ -5569,9 +5491,9 @@
           IF ( reverse%eval_status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
-          data%nz_out_end = reverse%nz_out_end
-          DO j = 1, reverse%nz_out_end
-            i = reverse%NZ_out( j ) ; data%NZ_out( j ) = i
+          data%lp = reverse%lp
+          DO j = 1, reverse%lp
+            i = reverse%IP( j ) ; data%IP( j ) = i
             data%Q( i ) = reverse%P( i )
           END DO
         END IF
@@ -5579,8 +5501,8 @@
 !  for W = I, loop over the nonzero components of p (and q)
 
         IF ( data%w_eq_identity ) THEN
-          DO j = 1, data%nz_out_end
-            i = data%NZ_out( j )
+          DO j = 1, data%lp
+            i = data%IP( j )
             pi = data%P( i ) ; qi = data%Q( i )
             rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R( i )
 
@@ -5610,8 +5532,8 @@
 !  the same when W /= I, but additionally with y = W p and z = W q
 
         ELSE
-          DO j = 1, data%nz_out_end
-            i = data%NZ_out( j )
+          DO j = 1, data%lp
+            i = data%IP( j )
             pi = data%P( i ) ; qi = data%Q( i )
             wi = W( i ) ; yi = wi * pi ; zi = wi * qi
             rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R( i )
@@ -5980,7 +5902,7 @@
 !  DPREC   (REAL array of length n) the values of a diagonal preconditioner
 !           that aims to approximate A^T W A
 !  preconditioned (LOGICAL) present and set true is there a preconditioner
-!  reverse (structure of type BLLS_reverse_type) used to communicate
+!  reverse (structure of type REVERSE_type) used to communicate
 !           reverse communication data to and from the subroutine
 !  B       (REAL array of length o) rhs vector b only for debugging
 !
@@ -6012,7 +5934,7 @@
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: DPREC
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: B
       LOGICAL, OPTIONAL, INTENT( IN ) :: preconditioned
-      TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
+      TYPE ( REVERSE_type ), OPTIONAL, INTENT( INOUT ) :: reverse
 
 !  interface blocks
 
@@ -6193,7 +6115,7 @@
         f = half * norm_r ** 2
       ELSE
         data%W( : o ) = W( : o ) * R( : o )
-        f = half * MAX( DOT_PRODUCT( R, data%W ), zero )
+        f = half * MAX( DOT_PRODUCT( R( : o ), data%W( : o ) ), zero )
       END IF
 
 !  exit if there are no free variables
@@ -7417,8 +7339,7 @@
      SUBROUTINE BLLS_solve_reverse_a_prod( data, status, eval_status, B,       &
                                            regularization_weight, X_l, X_u,    &
                                            X, Z, R, G, X_stat, V, P,           &
-                                           NZ_in, nz_in_start, nz_in_end,      &
-                                           NZ_out, nz_out_end, W, X_s )
+                                           IV, lvl, lvu, IP, lp, W, X_s )
 
 !  solve the bound-constrained linear least-squares problem whose structure
 !  was previously imported, and for which the action of A and its traspose
@@ -7454,23 +7375,23 @@
 !
 !     4 The product Ao * v of the matrix Ao with a given sparse vector v is
 !       required from the user. Only components
-!         NZ_in( nz_in_start : nz_in_end )
+!         IV( lvl : lvu )
 !       of the vector v stored in V are nonzero. The required product
 !       should be returned in P. BLLS_solve must then be re-entered
 !       with all other arguments unchanged. Typically v will be very sparse
-!       (i.e., nz_in_end-NZ_in_start will be small).
+!       (i.e., lvu-lvl will be small).
 !       eval_status should be set to zero unless the product cannot
 !       be formed, in which case a nonzero value should be returned.
 !
 !     5 The product Ao * v of the matrix Ao with a given sparse vector v
 !       is required from the user. Only components
-!         NZ_in( nz_in_start : nz_in_end )
+!         IV( lvl : lvu )
 !       of the vector v stored in V are nonzero. The resulting
 !       NONZEROS in the product Ao * v must be placed in their appropriate
 !       comnpinents of P, while a list of indices of the nonzeos
-!       placed in NZ_out( 1 : nz_out_end ). BLLS_solve should
+!       placed in IP( 1 : lp ). BLLS_solve should
 !       then be re-entered with all other arguments unchanged. Typically
-!       v will be very sparse (i.e., nz_in_end-NZ_in_start
+!       v will be very sparse (i.e., lvu-lvl
 !       will be small). Once again eval_status should be set to zero
 !       unless the product cannot be form, in which case a nonzero value
 !       should be returned.
@@ -7478,9 +7399,9 @@
 !     6 Specified components of the product A^T * v of the transpose of the
 !       matrix Ao with a given vector v stored in V are required from
 !       the user. Only components indexed by
-!         NZ_in( nz_in_start : nz_in_end )
+!         IV( lvl : lvu )
 !       of the product should be computed, and these should be recorded in
-!         P( NZ_in( nz_in_start : nz_in_end ) )
+!         P( IV( lvl : lvu ) )
 !       and BLLS_solve then re-entered with all other arguments unchanged.
 !       eval_status should be set to zero unless the product cannot
 !       be formed, in which case a nonzero value should be returned.
@@ -7555,7 +7476,7 @@
 !   The j-th component of X_s, j = 1, ... , n, contains (x_s)_j.
 !   If it is absent, the shifts will all be taken to be 0.0.
 !
-!  The remaining components V, ... , nz_out_end need not be set
+!  The remaining components V, ... , lp need not be set
 !  on initial entry, but must be set as instructed by status as above.
 
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
@@ -7567,10 +7488,10 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: R, G
      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( INOUT ) :: X_stat
-     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nz_out_end
-     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nz_in_start, nz_in_end
-     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: NZ_out
-     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: NZ_in
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: lp
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: lvl, lvu
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: IP
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: IV
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: P
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: V
 
@@ -7652,8 +7573,8 @@
 
 !  allocate space for reverse-communication data
 
-       array_name = 'blls: data%reverse%NZ_out'
-       CALL SPACE_resize_array( n, data%reverse%NZ_out,                        &
+       array_name = 'blls: data%reverse%IP'
+       CALL SPACE_resize_array( n, data%reverse%IP,                            &
               data%blls_inform%status, data%blls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -7661,8 +7582,8 @@
               bad_alloc = data%blls_inform%bad_alloc, out = error )
        IF ( data%blls_inform%status /= 0 ) GO TO 900
 
-       array_name = 'blls: data%reverse%NZ_in'
-       CALL SPACE_resize_array( n, data%reverse%NZ_in,                         &
+       array_name = 'blls: data%reverse%IV'
+       CALL SPACE_resize_array( n, data%reverse%IV,                            &
               data%blls_inform%status, data%blls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -7707,14 +7628,13 @@
        data%reverse%P( : n ) = P( : n )
      CASE( 5 )
        data%reverse%eval_status = eval_status
-       data%reverse%P( NZ_out( 1 : nz_out_end ) )                              &
-         = P( NZ_out( 1 : nz_out_end ) )
-       data%reverse%NZ_out( 1 : nz_out_end ) = NZ_out( 1 : nz_out_end )
-       data%reverse%nz_out_end = nz_out_end
+       data%reverse%P( IP( 1 : lp ) ) = P( IP( 1 : lp ) )
+       data%reverse%IP( 1 : lp ) = IP( 1 : lp )
+       data%reverse%lp = lp
      CASE( 6 )
        data%reverse%eval_status = eval_status
-       data%reverse%P( data%reverse%NZ_in( nz_in_start : nz_in_end ) )         &
-         = P( data%reverse%NZ_in( nz_in_start : nz_in_end ) )
+       data%reverse%P( data%reverse%IV( lvl : lvu ) )                          &
+         = P( data%reverse%IV( lvl : lvu ) )
      CASE DEFAULT
        data%blls_inform%status = GALAHAD_error_input_status
        GO TO 900
@@ -7748,17 +7668,14 @@
      CASE( 3 )
        V( : o ) = data%reverse%V( : o )
      CASE( 4, 5 )
-       nz_in_start = data%reverse%nz_in_start
-       nz_in_end = data%reverse%nz_in_end
-       NZ_in( nz_in_start : nz_in_end )                                        &
-         = data%reverse%NZ_in( nz_in_start : nz_in_end )
-       V( NZ_in( nz_in_start : nz_in_end ) )                                   &
-         = data%reverse%V( NZ_in( nz_in_start : nz_in_end ) )
+       lvl = data%reverse%lvl
+       lvu = data%reverse%lvu
+       IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
+       V( IV( lvl : lvu ) ) = data%reverse%V( IV( lvl : lvu ) )
      CASE( 6 )
-       nz_in_start = data%reverse%nz_in_start
-       nz_in_end = data%reverse%nz_in_end
-       NZ_in( nz_in_start : nz_in_end )                                        &
-         = data%reverse%NZ_in( nz_in_start : nz_in_end )
+       lvl = data%reverse%lvl
+       lvu = data%reverse%lvu
+       IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
        V( : o ) = data%reverse%V( : o )
      END SELECT
 

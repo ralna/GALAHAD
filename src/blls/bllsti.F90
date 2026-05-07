@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-02-13 AT 08:20 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2025-05-03 AT 14:20 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_BLLS_interface_test
    USE GALAHAD_KINDS_precision
@@ -22,8 +22,8 @@
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_by_col_val
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_by_col_dense
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
-   INTEGER ( KIND = ip_ ) :: nz_in_start, nz_in_end, nz_out_end
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: nz_in, nz_out
+   INTEGER ( KIND = ip_ ) :: lvl, lvu, lp
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IV, IP
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, P
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MASK
    CHARACTER ( len = 3 ) :: st
@@ -182,7 +182,7 @@
    WRITE( 6, "( /, ' test of reverse-communication interface', / )" )
 
    on = MAX( n, o )
-   ALLOCATE( nz_in( on ), nz_out( o ), V( on ), P( on ), MASK( o ) )
+   ALLOCATE( IV( on ), IP( o ), V( on ), P( on ), MASK( o ) )
    CALL BLLS_initialize( data, control, inform )
    CALL WHICH_sls( control )
    X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
@@ -196,8 +196,7 @@
    DO
      CALL BLLS_solve_reverse_a_prod( data, status, eval_status, B, sigma,      &
                                      X_l, X_u, X, Z, R, G, X_stat, V, P,       &
-                                     nz_in, nz_in_start, nz_in_end,            &
-                                     nz_out, nz_out_end, W = W, X_s = X_s )
+                                     IV, lvl, lvu, IP, lp, W = W, X_s = X_s )
 !    write(6, "( ' status = ', I0 )" ) status
      SELECT CASE( status )
      CASE ( : 0 )
@@ -211,34 +210,34 @@
        eval_status = 0
      CASE ( 4 ) ! A_o v using sparse v
        P( : o ) = 0.0_rp_
-       DO l = nz_in_start, nz_in_end
-         i = nz_in( l )
+       DO l = lvl, lvu
+         i = IV( l )
          P( i ) = V( i )
          P( o ) = P( o ) + V( i )
        END DO
        eval_status = 0
      CASE ( 5 ) ! sparse A_o v using sparse v
-       nz_out_end = 0
+       lp = 0
        mask = 0
-       DO l = nz_in_start, nz_in_end
-         i = nz_in( l )
-         nz_out_end = nz_out_end + 1
-         nz_out( nz_out_end ) = i
+       DO l = lvl, lvu
+         i = IV( l )
+         lp = lp + 1
+         IP( lp ) = i
          P( i ) = V( i )
          IF ( MASK( i ) == 0 ) THEN
            MASK( i ) = 1
-           nz_out_end = nz_out_end + 1
-           nz_out( nz_out_end ) = o
+           lp = lp + 1
+           IP( lp ) = o
            P( o ) = V( i )
          ELSE
            P( o ) = P( o ) + V( i )
          END IF
        END DO
-       MASK( nz_out( : nz_out_end ) ) = 0
+       MASK( IP( : lp ) ) = 0
        eval_status = 0
      CASE ( 6 ) ! sparse A_o^T v
-       DO l = nz_in_start, nz_in_end
-         i = nz_in( l )
+       DO l = lvl, lvu
+         i = IV( l )
          P( i ) = V( i ) + V( o )
        END DO
        eval_status = 0
@@ -252,8 +251,7 @@
      WRITE( 6, "( A3, ': BLLS_solve exit status = ', I0 ) " ) st, inform%status
    END IF
    CALL BLLS_terminate( data, control, inform )  ! delete internal workspace
-   DEALLOCATE( B, X, Z, X_l, X_u, R, G, X_stat, NZ_in, NZ_out, V, P,           &
-               W, X_s, MASK )
+   DEALLOCATE( B, X, Z, X_l, X_u, R, G, X_stat, IV, IP, V, P, W, X_s, MASK )
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS

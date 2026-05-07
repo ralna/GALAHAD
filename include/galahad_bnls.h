@@ -862,7 +862,7 @@ void bnls_solve_with_jacprod( void **data,
                               ipc_ x_stat[],
                               galahad_r *eval_r,
                               galahad_jr_prod *eval_jr_prod,
-                              galahad_jr_scol *eval_jr_scol,
+                              galahad_jr_prods *eval_jr_prods,
                               galahad_jr_sprod *eval_jr_sprod,
                               const rpc_ w[]);
 
@@ -975,18 +975,27 @@ void bnls_solve_with_jacprod( void **data,
    the evaluation is impossible at x, return should be set to a nonzero value.
    Data may be passed into \c eval_jr_prod via the structure \c userdata.
 
- @param eval_jr_scol is a user-supplied function that must have the following
+ @param eval_jr_prods is a user-supplied function that must have the following
    signature:
    \code
-      ipc_ eval_jr_scol( ipc_ n, ipc_ m_r, const rpc_ x[], ipc_ index,
-                         rpc_ val[], ipc_ row[], ipc_ nz, bool got_jr,
-                         const void *userdata )
+      ipc_ eval_jr_prods( ipc_ n, const rpc_ x[], const rpc_ v[], rpc_ p[],
+                          const ipc_ iv[], ipc_ lvl, ipc_ lvu, 
+                          ipc_ ip[], ipc_ *lp, bool got_jr,
+                          const void *userdata )
    \endcode
-   The nonzeros and corresponding row entries of the index-th colum of 
-   \f$J_r(x)\f$ must be returned in val and row, respectively, together
-   with the number of entries, nz, and the function return value set to 0. 
-   If the evaluation is impossible at x, return should be set to a nonzero 
-   value. Data may be passed into \c eval_jr_scol via the structure \c userdata.
+   The nonzero components of the product \f$p = J_r(x) v\f$ of the residual
+   Jacobian  \f$J_r(x) = \nabla_{x}r(x)\f$ with a given sparse input vector
+   \f$v\f$ is required from the user. The nonzero components of the vector 
+   \f$v\f$ will be stored as entries
+      iv[lvl-1:lvu-1]
+   of v; the remaining components of v should be ignored.
+   The resulting <b>nonzeros</b> in the product \f$J_r(x) v\f$
+   must be placed in their appropriate comnponents of p, while a list
+   of indices of the nonzeros placed in
+     ip[0 : lp-1],
+   the number of nonzeros recorded in lp, and the function return value set 
+   to 0. If the evaluation is impossible at x, return should be set to a nonzero
+   value. Data may be passed into \c eval_jr_prods via the structure \c userdata.
 
  @param eval_jr_sprod is a user-supplied function that must have the following
    signature:
@@ -997,7 +1006,7 @@ void bnls_solve_with_jacprod( void **data,
                           const void *userdata )
    \endcode
    The product \f$J_r(x) v\f$ (if tranpose is false) or \f$J_r^T(x) v\f$ 
-   (if tranpose is true) bewteen the Jacobian 
+   (if tranpose is true) between the Jacobian 
    \f$J_r(x) = \nabla_{x}r(x)\f$ or its tranpose with the vector v=\f$v\f$
    must be returned in u, and the function return value set to 0. If
    transpose is false, only the components free[0 : n_free-1] of 

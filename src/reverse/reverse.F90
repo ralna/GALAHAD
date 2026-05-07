@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-02-19 AT 15:20 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-05-03 AT 13:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -36,8 +36,8 @@
        INTEGER ( KIND = ip_ ) :: index, lvl, lvu, lp
        INTEGER ( KIND = ip_ ) :: eval_status = GALAHAD_ok
        LOGICAL :: transpose
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: iv, ip
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: v, p
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IV, IP
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, P
      END TYPE REVERSE_type
 
    CONTAINS
@@ -80,26 +80,26 @@
 
      CHARACTER ( LEN = 80 ) :: array_name
 
-     array_name = 'slls: reverse%v'
-     CALL SPACE_dealloc_array( reverse%v, status, alloc_status,                &
+     array_name = 'slls: reverse%V'
+     CALL SPACE_dealloc_array( reverse%V, status, alloc_status,                &
                                array_name = array_name,                        &
                                bad_alloc = bad_alloc, out = out )
      IF ( deallocate_error_fatal .AND. status /= GALAHAD_ok ) RETURN
 
-     array_name = 'slls: reverse%p'
-     CALL SPACE_dealloc_array( reverse%p, status, alloc_status,                &
+     array_name = 'slls: reverse%P'
+     CALL SPACE_dealloc_array( reverse%P, status, alloc_status,                &
                                array_name = array_name,                        &
                                bad_alloc = bad_alloc, out = out )
      IF ( deallocate_error_fatal .AND. status /= GALAHAD_ok ) RETURN
 
-     array_name = 'slls: reverse%iv'
-     CALL SPACE_dealloc_array( reverse%iv, status, alloc_status,               &
+     array_name = 'slls: reverse%IV'
+     CALL SPACE_dealloc_array( reverse%IV, status, alloc_status,               &
                                array_name = array_name,                        &
                                bad_alloc = bad_alloc, out = out )
      IF ( deallocate_error_fatal .AND. status /= GALAHAD_ok ) RETURN
 
-     array_name = 'slls: reverse%ip'
-     CALL SPACE_dealloc_array( reverse%ip, status, alloc_status,               &
+     array_name = 'slls: reverse%IP'
+     CALL SPACE_dealloc_array( reverse%IP, status, alloc_status,               &
                                array_name = array_name,                        &
                                bad_alloc = bad_alloc, out = out )
      IF ( deallocate_error_fatal .AND. status /= GALAHAD_ok ) RETURN

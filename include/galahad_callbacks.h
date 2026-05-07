@@ -63,6 +63,17 @@ typedef ipc_ galahad_jr_sprod( ipc_ n, ipc_ m_r, const rpc_ x[],
                                const ipc_ free[], ipc_ n_free, 
                                bool got_jr, const void *userdata );
 
+// BNLS
+typedef ipc_ eval_jr_prods( ipc_ n, const rpc_ x[], const rpc_ v[], rpc_ p[],
+                            const ipc_ iv[], ipc_ lvl, ipc_ lvu, 
+                            ipc_ ip[], ipc_ *lp, bool got_jr,
+                            const void *userdata );
+
+// SNLS
+typedef ipc_ galahad_jr_scol( ipc_ n, ipc_ m_r, const rpc_ x[], ipc_ index,
+                              rpc_ val[], ipc_ row[], ipc_ nz, 
+                              bool got_jr, const void *userdata );
+
 // EXPO
 typedef ipc_ galahad_fc( ipc_ n, ipc_ m, const rpc_ x[], rpc_ *f, rpc_ c[], 
                          const void *userdata );

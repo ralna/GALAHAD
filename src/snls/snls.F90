@@ -2888,7 +2888,7 @@ end if
         &  'inform%status = ', I0 )" ) prefix, inform%SLLS_inform%status
 
          IF ( reverse%eval_status /= 0 ) THEN
-           inform%bad_eval = 'evalJr_prods'
+           inform%bad_eval = 'evalJr_sprod'
            inform%status = GALAHAD_error_evaluation ; GO TO 990
          END IF
 

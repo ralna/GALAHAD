@@ -1019,7 +1019,7 @@ void snls_solve_with_jacprod( void **data,
    The product \f$J_r(x) v\f$ (if tranpose is false) or \f$J_r^T(x) v\f$ 
    (if tranpose is true) bewteen the Jacobian 
    \f$J_r(x) = \nabla_{x}r(x)\f$ or its tranpose with the vector v=\f$v\f$
-   must be returned in u, and the function return value set to 0. If
+   must be returned in p, and the function return value set to 0. If
    transpose is false, only the components free[0 : n_free-1] of 
    $v$ will be nonzero, while if transpose is true, only the components 
    free[0 : n_free-1] of p should be set. If the evaluation is 

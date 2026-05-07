@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_BNLS_EXAMPLE3 !  GALAHAD 5.1 - 2024-07-14 AT 14:00 GMT
+   PROGRAM GALAHAD_BNLS_EXAMPLE3  ! GALAHAD 5.5 - 2026-05-04 AT 11:20 GMT
    USE GALAHAD_BNLS_double                      ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -7,58 +7,225 @@
    TYPE ( BNLS_inform_type ) :: inform
    TYPE ( BNLS_data_type ) :: data
    TYPE ( USERDATA_type ) :: userdata
-   INTEGER :: s
-   INTEGER, PARAMETER :: m = 2, n = 3, j_ne = 4, h_ne = 3, p_ne = 3
-   REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp  ! parameter p
+   EXTERNAL :: EVALR, EVALJr_prod, EVALJr_prods, EVALJr_sprod
+   INTEGER, PARAMETER :: n = 5, m_r = 4
+   INTEGER, PARAMETER :: mnm = MAX( n, m_r )
+   INTEGER, PARAMETER :: nflag = 3, st_flag = 3, len_integer = st_flag + mnm
+   REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp ! parameter p
 ! start problem data
-   nlp%n = n ; nlp%m = m ; nlp%J%ne = j_ne ; nlp%H%ne = h_ne   ! dimensions
-   ALLOCATE( nlp%X( n ), nlp%X_l( n ), nlp%X_u( n ), nlp%C( m ) )
-   nlp%X = (/ 1.0_wp, 1.0_wp, 1.0_wp /)         ! start from (-1,1,1)
+   nlp%n = n ; nlp%m_r = m_r ! dimensions
+   ALLOCATE( nlp%X( n ), nlp%X_l( n ), nlp%X_u( n ) )
    nlp%X_l = 0.0_wp ; nlp%X_u = 1.0_wp          ! variables lie in [0,1]
-! problem data complete ; solve using a Newton model
-   CALL BNLS_initialize( data, control, inform ) ! Initialize control params
-   control%jacobian_available = 1               ! only Jacobian-vector products
-   control%hessian_available = 1                ! only Hessian-vector products
-   control%model = 4                            ! use the Newton model
-   inform%status = 1                            ! set for initial entry
-10 CONTINUE
-   CALL BNLS_solve( nlp, control, inform, data, userdata )
-   SELECT CASE ( inform%status ) !  is more information required?
-   CASE ( 0 ) !  successful call
+   nlp%X = [ 0.5_wp, 0.5_wp, 0.5_wp, 0.5_wp, 0.5_wp ]
+   ALLOCATE( userdata%real( 1 ) ) ! space for parameters
+   ALLOCATE( userdata%integer( len_integer ) )
+   userdata%real( 1 ) = p                        ! record parameter, p
+   userdata%integer( 1 ) = n                     ! record parameter, n
+   userdata%integer( 2 ) = m_r                   ! record parameter, m_r
+! problem data complete ; solve using a Gauss-Newton model
+   CALL BNLS_initialize( data, control, inform ) ! initialize control params
+   control%jacobian_available = 1                ! jacobian by products
+   control%print_level = 1
+   control%print_obj = .TRUE.
+   control%subproblem_solver = 2 ! use internal blls (1 for bllsb)
+!  control%BLLS_control%print_level = 1
+   control%BLLS_control%SBLS_control%definite_linear_solver = 'potr '
+   control%BLLS_control%SBLS_control%symmetric_linear_solver = 'sytr '
+!  load workspace into userdata
+   userdata%integer( nflag ) = 0
+   userdata%integer( st_flag + 1 : st_flag + mnm ) = 0
+   inform%status = 1                             ! set for initial entry
+   CALL BNLS_solve( nlp, control, inform, data, userdata,                      &
+                    eval_R = EVALR, eval_Jr_prod = EVALJr_prod,                &
+                    eval_Jr_prods = EVALJr_prods, eval_Jr_sprod = EVALJr_sprod )
+   IF ( inform%status == 0 ) THEN                ! successful return
      WRITE( 6, "( ' BNLS: ', I0, ' iterations -',                              &
     &     ' optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
      inform%iter, inform%obj, nlp%X
-   CASE ( : - 1 ) !  unsuccessful call
+   ELSE                                          ! Error returns
      WRITE( 6, "( ' BNLS_solve exit status = ', I6 ) " ) inform%status
-   CASE ( 2 )
-     nlp%C( 1 ) = nlp%X( 3 ) * nlp%X( 1 ) ** 2 + P
-     nlp%C( 2 ) = nlp%X( 2 ) ** 2 + nlp%X( 3 )
-     data%eval_status = 0
-     GO TO 10  !  return to BNLS_solve
-   CASE ( 5 )
-     IF ( data%transpose ) THEN
-       data%U( 1 ) = data%U( 1 ) + 2.0_wp * nlp%X( 1 ) * nlp%X( 3 ) *          &
-         data%V( 1 )
-       data%U( 2 ) = data%U( 2 ) + 2.0_wp * nlp%X( 2 ) * data%V( 2 )
-       data%U( 3 ) = data%U( 3 ) + data%V( 1 ) * nlp%X( 1 ) ** 2 + data%V( 2 )
-     ELSE
-       data%U( 1 ) = data%U( 1 ) + 2.0_wp * nlp%X( 1 ) * nlp%X( 3 ) *          &
-         data%V( 1 ) + data%V( 3 ) * nlp%X( 1 ) ** 2
-       data%U( 2 ) = data%U( 2 ) + 2.0_wp * nlp%X( 2 ) * data%V( 2 )           &
-                                 + data%V( 3 )
-     END IF
-     data%eval_status = 0
-     GO TO 10  !  return to BNLS_solve
-   CASE ( 6 )
-     data%U( 1 ) = data%U( 1 ) + 2.0_wp * data%Y( 1 ) *                        &
-       ( nlp%X( 3 ) * data%V( 1 ) + nlp%X( 1 ) * data%V( 3 ) )
-     data%U( 2 ) = data%U( 2 ) + 2.0_wp * data%Y( 2 ) * data%V( 2 )
-     data%U( 3 ) = data%U( 3 ) + 2.0_wp * data%Y( 1 ) *                        &
-        nlp%X( 1 ) * data%V( 1 )
-     data%eval_status = 0
-     GO TO 10  !  return to BNLS_solve
-   END SELECT
+   END IF
    CALL BNLS_terminate( data, control, inform )  ! delete internal workspace
-   DEALLOCATE( nlp%X, nlp%G, nlp%X_l, nlp%X_u )
+   DEALLOCATE( nlp%X_l, nlp%X_u, nlp%X, nlp%Z )
+   DEALLOCATE( nlp%G, nlp%R, nlp%X_status )
+   DEALLOCATE( userdata%real, userdata%integer )
    END PROGRAM GALAHAD_BNLS_EXAMPLE3
+
+   SUBROUTINE EVALR( status, X, userdata, R ) ! residual
+   USE GALAHAD_USERDATA_double
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+   INTEGER, INTENT( OUT ) :: status
+   REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
+   REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: R
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+   REAL ( KIND = wp ) :: p
+   p = userdata%real( 1 )
+   R( 1 ) = X( 1 ) * X( 2 ) - p
+   R( 2 ) = X( 2 ) * X( 3 ) - 1.0_wp
+   R( 3 ) = X( 3 ) * X( 4 ) - 1.0_wp
+   R( 4 ) = X( 4 ) * X( 5 ) - 1.0_wp
+   status = 0
+   RETURN
+   END SUBROUTINE EVALR
+
+   SUBROUTINE EVALJr_prod( status, X, userdata, transpose, V, P, got_jr )
+   USE GALAHAD_USERDATA_double
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+   INTEGER, INTENT( OUT ) :: status
+   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+   LOGICAL, INTENT( IN ) :: transpose
+   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
+   LOGICAL, OPTIONAL, INTENT( IN ) :: got_jr
+   IF ( transpose ) THEN
+     P( 1 ) = X( 2 ) * V( 1 )
+     P( 2 ) = X( 3 ) * V( 2 ) + X( 1 ) * V( 1 )
+     P( 3 ) = X( 4 ) * V( 3 ) + X( 2 ) * V( 2 )
+     P( 4 ) = X( 5 ) * V( 4 ) + X( 3 ) * V( 3 )
+     P( 5 ) = X( 4 ) * V( 4 )
+   ELSE
+     P( 1 ) = X( 2 ) * V( 1 ) + X( 1 ) * V( 2 )
+     P( 2 ) = X( 3 ) * V( 2 ) + X( 2 ) * V( 3 )
+     P( 3 ) = X( 4 ) * V( 3 ) + X( 3 ) * V( 4 )
+     P( 4 ) = X( 5 ) * V( 4 ) + X( 4 ) * V( 5 )
+   END IF
+   status = 0
+   RETURN
+   END SUBROUTINE EVALJr_prod
+
+   SUBROUTINE EVALJR_prods( status, X, userdata, V, P, IV, lvl, lvu,           &
+                            IP, lp, got_jr )
+   USE GALAHAD_USERDATA_double
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
+   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: lvl, lvu
+   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: lp
+   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: IV
+   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: IP
+   LOGICAL, OPTIONAL, INTENT( IN ) :: got_jr
+   INTEGER :: i, j, l, n, nflag, st_flag
+   REAL ( KIND = rp_ ) :: val
+   n = userdata%integer( 1 ) 
+   nflag = 3
+   st_flag = 3
+   IF ( PRESENT( IP ) .AND. PRESENT( lp ) )  THEN
+     userdata%integer( nflag ) = userdata%integer( nflag ) + 1
+     lp = 0
+     DO l = lvl, lvu
+       j = IV( l )
+       val = V( j )
+       IF ( j == 1 ) THEN
+         i = 1
+         IF ( userdata%integer( st_flag + i ) < userdata%integer( nflag ) ) THEN
+           userdata%integer( st_flag + i ) = userdata%integer( nflag )
+           P( i ) = X( 2 ) * val
+           lp = lp + 1
+           IP( lp ) = i
+         ELSE
+           P( i ) = P( i ) + X( 2 ) * val
+         END IF
+       ELSE IF ( j == n ) THEN
+         i = n - 1
+         IF ( userdata%integer( st_flag + i ) < userdata%integer( nflag ) ) THEN
+           userdata%integer( st_flag + i ) = userdata%integer( nflag )
+           P( i ) = X( n - 1 ) * val
+           lp = lp + 1
+           IP( lp ) = i
+         ELSE
+           P( i ) = P( i ) + X( n - 1 ) * val
+         END IF
+       ELSE
+         i = j - 1
+         IF ( userdata%integer( st_flag + i ) < userdata%integer( nflag ) ) THEN
+           userdata%integer( st_flag + i ) = userdata%integer( nflag )
+           P( i ) = X( j - 1 ) * val
+           lp = lp + 1
+           IP( lp ) = i
+         ELSE
+           P( i ) = P( i ) + X( j - 1 ) * val
+         END IF
+         i = j
+         IF ( userdata%integer( st_flag + i ) < userdata%integer( nflag ) ) THEN
+           userdata%integer( st_flag + i ) = userdata%integer( nflag )
+           P( i ) = X( j + 1 ) * val
+           lp = lp + 1
+           IP( lp ) = i
+         ELSE
+           P( i ) = P( i ) + X( j + 1 ) * val
+         END IF
+       END IF
+     END DO
+   ELSE
+     P = 0.0_rp_
+     DO l = lvl, lvu
+       j = IV( l )
+       val = V( j )
+       IF ( j == 1 ) THEN
+         i = 1
+         P( i ) = P( i ) + X( 2 ) * val
+       ELSE IF ( j == n ) THEN
+         i = n - 1
+         P( i ) = P( i ) + X( n - 1 ) * val
+       ELSE
+         i = j - 1
+         P( i ) = P( i ) + X( j - 1 ) * val
+         i = j
+         P( i ) = P( i ) + X( j + 1 ) * val
+       END IF
+     END DO
+   END IF
+   status = 0
+   RETURN
+   END SUBROUTINE EVALJR_prods
+
+   SUBROUTINE EVALJr_sprod( status, X, userdata, transpose, V, P, FREE,        &
+                            n_free, got_jr )
+   USE GALAHAD_USERDATA_double
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+   INTEGER, INTENT( OUT ) :: status
+   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
+   LOGICAL, INTENT( IN ) :: transpose
+   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
+   INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
+   INTEGER, INTENT( IN ) :: n_free
+   LOGICAL, OPTIONAL, INTENT( IN ) :: got_jr
+   INTEGER :: i, j, n, m_r
+   REAL ( KIND = wp ) :: val
+   n = userdata%integer( 1 ) 
+   m_r = userdata%integer( 2 )
+   IF ( transpose ) THEN
+     DO i = 1, n_free
+       j = FREE( i )
+       IF ( j == 1 ) THEN
+         P( 1 ) = X( 2 ) * V( 1 )
+       ELSE IF ( j == n ) THEN
+         P( n ) = X( m_r ) * V( m_r )
+       ELSE
+         P( j ) = X( j - 1 ) * V( j - 1 ) + X( j + 1 ) * V( j )
+       END IF
+     END DO
+   ELSE
+     P( : m_r ) = 0.0_wp
+     DO i = 1, n_free
+       j = FREE( i )
+       val = V( j )
+       IF ( j == 1 ) THEN
+         P( 1 ) = P( 1 ) + X( 2 ) * val
+       ELSE IF ( j == n ) THEN
+         P( m_r ) = P( m_r ) + X( m_r ) * val
+       ELSE
+         P( j - 1 ) = P( j - 1 ) + X( j - 1 ) * val 
+         P( j ) = P( j ) + X( j + 1 ) * val 
+       END IF
+     END DO
+   END IF
+   status = 0
+   RETURN
+   END SUBROUTINE EVALJr_sprod

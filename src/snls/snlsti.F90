@@ -9,7 +9,7 @@
    TYPE ( SNLS_full_data_type ) :: data
    TYPE ( USERDATA_type ) :: userdata
 !  EXTERNAL :: EVALR, EVALJr, EVALJr_prod, EVALJr_scol, EVALJr_sprod
-   INTEGER ( KIND = ip_ ) :: i, j, mnn, solver, status, eval_status
+   INTEGER ( KIND = ip_ ) :: i, j, mnm, solver, status, eval_status
    INTEGER, PARAMETER :: n = 5, m_r = 4, m_c = 2, Jr_ne = 8
    REAL ( KIND = rp_ ) :: val
    REAL ( KIND = rp_ ), PARAMETER :: p_val = 4.0_rp_
@@ -103,8 +103,8 @@
 
      CASE( 4 ) ! jacobian products are available via reverse communication
        c_solver = 'PR'
-       mnn = MAX( n, m_r )
-       ALLOCATE( IV( mnn ), IP( m_r ), V( mnn ), P( mnn ) )
+       mnm = MAX( n, m_r )
+       ALLOCATE( IV( mnm ), IP( m_r ), V( mnm ), P( mnm ) )
        control%jacobian_available = 1
        control%subproblem_solver = 2
        CALL SNLS_import_without_jac( control, data, status, n, m_r, m_c,       &
@@ -122,7 +122,6 @@
            R( 2 ) = X( 2 ) * X( 3 ) - 1.0_rp_
            R( 3 ) = X( 3 ) * X( 4 ) - 1.0_rp_
            R( 4 ) = X( 4 ) * X( 5 ) - 1.0_rp_
-!write(6,"( ' r : ', 4F6.2 )" ) R( : 4 )
            eval_status = 0
          CASE( 4 ) ! evaluate Jr(x) * v
            P( 1 )  = X( 2 ) * V( 1 ) + X( 1 ) * V( 2 )
@@ -130,7 +129,6 @@
            P( 3 ) = X( 4 ) * V( 3 ) + X( 3 ) * V( 4 )
            P( 4 ) = X( 5 ) * V( 4 ) + X( 4 ) * V( 5 )
            eval_status = 0
-!write(6,"( ' p : ', 5F6.2 )" ) P( : 4 )
          CASE( 5 ) ! evaluate Jr^T(x) * v
            P( 1 ) = X( 2 ) * V( 1 )
            P( 2 ) = X( 3 ) * V( 2 ) + X( 1 ) * V( 1 )
@@ -138,9 +136,7 @@
            P( 4 ) = X( 5 ) * V( 4 ) + X( 3 ) * V( 3 )
            P( 5 ) = X( 4 ) * V( 4 )
            eval_status = 0
-!write(6,"( ' pt: ', 5F6.2 )" ) P( : 5 )
          CASE( 6 ) ! evaluate column index of J(x)
-!write(6,"( ' index ', I0 )" ) index
            IF ( index == 1 ) THEN
              P( 1 ) = X( 2 )
              IP( 1 ) = 1
@@ -172,7 +168,6 @@
              END IF
            END DO
            eval_status = 0
-!write(6,"( ' j : ', 5( F12.8, 2X ) )" ) P( : m_r )
          CASE( 8 ) ! evaluate sparse Jr^T(x) * v 
            DO i = lvl, lvu
              j = IV( i )
@@ -185,7 +180,6 @@
              END IF
            END DO
            eval_status = 0
-!write(6,"( ' jt: ', 5( F6.2, I2 ) )" ) ( P( IV(i) ), IV(i), i = lvl, lvu )
          CASE DEFAULT ! error returns
            EXIT
          END SELECT
@@ -208,7 +202,7 @@
      END SELECT
    END DO ! solver loop
    IF ( ALLOCATED( COHORT ) ) DEALLOCATE( COHORT )
-   DEALLOCATE( X, G, R, userdata%real, userdata%integer )
+   DEALLOCATE( X, Y, Z, G, R, X_stat, userdata%real, userdata%integer )
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS
@@ -234,7 +228,6 @@
      R( 2 ) = X( 2 ) * X( 3 ) - 1.0_rp_
      R( 3 ) = X( 3 ) * X( 4 ) - 1.0_rp_
      R( 4 ) = X( 4 ) * X( 5 ) - 1.0_rp_
-!write(6,"( ' r : ', 4F6.2 )" ) R( : 4 )
      status = 0
      RETURN
      END SUBROUTINE EVALR
@@ -274,13 +267,11 @@
        P( 3 ) = X( 4 ) * V( 3 ) + X( 2 ) * V( 2 )
        P( 4 ) = X( 5 ) * V( 4 ) + X( 3 ) * V( 3 )
        P( 5 ) = X( 4 ) * V( 4 )
-!write(6,"( ' pt: ', 5F6.2 )" ) P( : 5 )
      ELSE
        P( 1 ) = X( 2 ) * V( 1 ) + X( 1 ) * V( 2 )
        P( 2 ) = X( 3 ) * V( 2 ) + X( 2 ) * V( 3 )
        P( 3 ) = X( 4 ) * V( 3 ) + X( 3 ) * V( 4 )
        P( 4 ) = X( 5 ) * V( 4 ) + X( 4 ) * V( 5 )
-!write(6,"( ' p : ', 5F6.2 )" ) P( : 4 )
      END IF
      status = 0
      RETURN
@@ -298,7 +289,6 @@
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_jr
      INTEGER :: n
      n = userdata%integer( 1 ) 
-!write(6,"( ' index ', I0 )" ) index
      IF ( index == 1 ) THEN
        VAL( 1 ) = X( 2 )
        ROW( 1 ) = 1
@@ -345,7 +335,6 @@
            P( j ) = X( j - 1 ) * V( j - 1 ) + X( j + 1 ) * V( j )
          END IF
        END DO
-!write(6,"( ' jt: ', 5( F6.2, I2 ) )" ) ( P( FREE(i) ), FREE(i), i = 1, n_free )
      ELSE
        P( : m_r ) = 0.0_rp_
        DO i = 1, n_free
@@ -360,7 +349,6 @@
            P( j ) = P( j ) + X( j + 1 ) * val 
          END IF
        END DO
-!write(6,"( ' j : ', 5( F12.8, 2X ) )" ) P( : m_r )
      END IF
      status = 0
      RETURN

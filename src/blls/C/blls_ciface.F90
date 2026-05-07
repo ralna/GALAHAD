@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-02-08 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-05-03 AT 14:10 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -683,9 +683,8 @@
 
   SUBROUTINE blls_solve_reverse_a_prod( cdata, status, eval_status, n, o, b,   &
                                         regularization_weight, xl, xu, x, z,   &
-                                        r, g, xstat, v, p, nz_v, nz_v_start,   &
-                                        nz_v_end, nz_p, nz_p_end,              &
-                                        w, x_s ) BIND( C )
+                                        r, g, xstat, v, p, iv, lvl, lvu,       &
+                                        ip, lp, w, x_s ) BIND( C )
   USE GALAHAD_BLLS_precision_ciface
   IMPLICIT NONE
 
@@ -701,10 +700,10 @@
   REAL ( KIND = rpc_ ), DIMENSION( o ), INTENT( OUT ) :: r
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: g
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: nz_p_end
-  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: nz_v_start, nz_v_end
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( o ) :: nz_p
-  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( MAX( n, o ) ) :: nz_v
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: lp
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: lvl, lvu
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( o ) :: ip
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( MAX( n, o ) ) :: iv
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( MAX( n, o ) ) :: p
   REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( MAX( n, o ) ) :: v
   REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( o ) :: w
@@ -729,18 +728,16 @@
     CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b,           &
                                       regularization_weight, xl, xu,           &
                                       x, z, r, g, xstat, v, p,                 &
-                                      nz_v, nz_v_start, nz_v_end,              &
-                                      nz_p, nz_p_end,                          &
+                                      iv, lvl, lvu, ip, lp,                    &
                                       W = w, X_s = x_s )
   ELSE
     CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b,           &
                                       regularization_weight, xl, xu,           &
                                       x, z, r, g, xstat, v, p,                 &
-                                      nz_v, nz_v_start, nz_v_end,              &
-                                      nz_p( : nz_p_end ) + 1, nz_p_end,        &
+                                      iv, lvl, lvu, ip( : lp ) + 1, lp,        &
                                       W = w, X_s = x_s )
     IF ( status == 4 .OR. status == 5 .OR. status == 6 ) then
-      nz_v( nz_v_start : nz_v_end ) = nz_v( nz_v_start : nz_v_end ) - 1
+      iv( lvl : lvu ) = iv( lvl : lvu ) - 1
     END IF
   END IF
 

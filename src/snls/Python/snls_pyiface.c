@@ -1,7 +1,7 @@
 //* \file snls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.5 - 2026-03-13 AT 14:30 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-05-02 AT 13:40 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SNLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *

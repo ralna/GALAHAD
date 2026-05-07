@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_BNLS_EXAMPLE2 !  GALAHAD 3.3 - 2024-07-14 AT 14:00 GMT
+   PROGRAM GALAHAD_BNLS_EXAMPLE2 !  GALAHAD 5.5 - 2026-05-04 AT 11:10 GMT.
    USE GALAHAD_BNLS_double                      ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -7,87 +7,67 @@
    TYPE ( BNLS_inform_type ) :: inform
    TYPE ( BNLS_data_type ) :: data
    TYPE ( USERDATA_type ) :: userdata
-   EXTERNAL :: EVALC, EVALJ, EVALHPROD
+   TYPE ( REVERSE_type ) :: reverse
    INTEGER :: s
-   INTEGER, PARAMETER :: m = 2, n = 3, j_ne = 4, h_ne = 3, p_ne = 3
-   REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp  ! parameter p
+   INTEGER, PARAMETER :: n = 5, m_r = 4, jr_ne = 8
+   REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp   ! parameter p
 ! start problem data
-   nlp%n = n ; nlp%m = m ; nlp%J%ne = j_ne ; nlp%H%ne = h_ne   ! dimensions
-   ALLOCATE( nlp%X( n ), nlp%X_l( n ), nlp%X_u( n ), nlp%C( m ) )
-   nlp%X = (/ 1.0_wp, 1.0_wp, 1.0_wp /)         ! start from (-1,1,1)
+   nlp%n = n ; nlp%m_r = m_r ; nlp%Jr%ne = jr_ne  ! dimensions
+   ALLOCATE( nlp%X( n ), nlp%X_l( n ), nlp%X_u( n ) )
    nlp%X_l = 0.0_wp ; nlp%X_u = 1.0_wp          ! variables lie in [0,1]
+!  nlp%X = [ 1.0_wp, 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp ]
+   nlp%X = [ 0.5_wp, 0.5_wp, 0.5_wp, 0.5_wp, 0.5_wp ]
 !  sparse co-ordinate storage format
-   CALL SMT_put( nlp%J%type, 'COORDINATE', s )  ! Specify co-ordinate storage
-   ALLOCATE( nlp%J%val( j_ne ), nlp%J%row( j_ne ), nlp%J%col( j_ne ) )
-   nlp%J%row = (/ 1, 2, 1, 2 /)                 ! Jacobian J(x)
-   nlp%J%col = (/ 1, 2, 3, 3 /)
-   ALLOCATE( userdata%real( 1 ) )               ! Allocate space for parameter
-   userdata%real( 1 ) = p                       ! Record parameter, p
-! problem data complete ; solve using a Newton model
-   CALL BNLS_initialize( data, control, inform ) ! Initialize control params
-   control%jacobian_available = 2               ! Jacobian is available
-   control%hessian_available = 1                ! only Hessian-vector products
-   control%model = 4                            ! use the Newton model
-   inform%status = 1                            ! set for initial entry
-   CALL BNLS_solve( nlp, control, inform, data, userdata, eval_C = EVALC,      &
-              eval_J = EVALJ, eval_HPROD = EVALHPROD )  ! Solve problem
-   IF ( inform%status == 0 ) THEN               ! Successful return
-     WRITE( 6, "( ' BNLS: ', I0, ' iterations -',                              &
-    &     ' optimal objective value =',                                        &
-    &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
-     inform%iter, inform%obj, nlp%X
-   ELSE                                         ! Error returns
-     WRITE( 6, "( ' BNLS_solve exit status = ', I6 ) " ) inform%status
-   END IF
-   CALL BNLS_terminate( data, control, inform )  ! delete internal workspace
-   DEALLOCATE( nlp%X, nlp%G, nlp%X_l, nlp%X_u, nlp%C, nlp%J%val, nlp%J%row,    &
-               nlp%J%col, userdata%real )
+   CALL SMT_put( nlp%Jr%type, 'COORDINATE', s )  ! specify co-ordinate storage
+   ALLOCATE( nlp%Jr%val( jr_ne ), nlp%Jr%row( jr_ne ), nlp%Jr%col( jr_ne ) )
+   nlp%Jr%row = (/ 1, 1, 2, 2, 3, 3, 4, 4 /)     ! Jacobian Jr(x)
+   nlp%Jr%col = (/ 1, 2, 2, 3, 3, 4, 4, 5 /)
+! problem data complete ; solve using a Gauss-Newton model
+   CALL BNLS_initialize( data, control, inform ) ! initialize control params
+   control%jacobian_available = 2                ! jacobian is available
+   control%print_level = 1
+   control%print_obj = .TRUE.
+   control%subproblem_solver = 1 ! use internal blls (2 for bllsb)
+!  control%BLLS_control%print_level = 1
+   control%BLLS_control%SBLS_control%definite_linear_solver = 'potr '
+   control%BLLS_control%SBLS_control%symmetric_linear_solver = 'sytr '
+!  control%BLLSB_control%print_level = 1
+   control%BLLSB_control%symmetric_linear_solver = 'sytr '
+   control%BLLSB_control%FDC_control%symmetric_linear_solver = 'sytr '
+   inform%status = 1 ! set for initial entry
+   DO
+     CALL BNLS_solve( nlp, control, inform, data, userdata, reverse = reverse )
+     SELECT CASE( inform%status )
+     CASE ( 0 ) ! successful return
+       WRITE( 6, "( ' BNLS: ', I0, ' iterations -',                            &
+      &     ' optimal objective value =',                                      &
+      &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )              &
+       inform%iter, inform%obj, nlp%X
+       EXIT
+     CASE( 2 ) ! evaluate residual
+       nlp%R( 1 ) = nlp%X( 1 ) * nlp%X( 2 ) - p
+       nlp%R( 2 ) = nlp%X( 2 ) * nlp%X( 3 ) - 1.0_wp
+       nlp%R( 3 ) = nlp%X( 3 ) * nlp%X( 4 ) - 1.0_wp
+       nlp%R( 4 ) = nlp%X( 4 ) * nlp%X( 5 ) - 1.0_wp
+       reverse%eval_status = 0
+     CASE( 3 ) ! evaluate Jacobian
+       nlp%Jr%val( 1 ) = nlp%X( 2 )
+       nlp%Jr%val( 2 ) = nlp%X( 1 )
+       nlp%Jr%val( 3 ) = nlp%X( 3 )
+       nlp%Jr%val( 4 ) = nlp%X( 2 )
+       nlp%Jr%val( 5 ) = nlp%X( 4 )
+       nlp%Jr%val( 6 ) = nlp%X( 3 )
+       nlp%Jr%val( 7 ) = nlp%X( 5 )
+       nlp%Jr%val( 8 ) = nlp%X( 4 )
+       reverse%eval_status = 0
+     CASE DEFAULT ! error returns
+       WRITE( 6, "( ' BNLS_solve exit status = ', I6 ) " ) inform%status
+       EXIT
+     END SELECT
+   END DO
+! delete internal workspace
+   CALL BNLS_terminate( data, control, inform, reverse = reverse )
+   DEALLOCATE( nlp%X_l, nlp%X_u, nlp%X, nlp%Z )
+   DEALLOCATE( nlp%G, nlp%R, nlp%X_status )
+   DEALLOCATE( nlp%Jr%type, nlp%Jr%val, nlp%Jr%row, nlp%Jr%col )
    END PROGRAM GALAHAD_BNLS_EXAMPLE2
-
-   SUBROUTINE EVALC( status, X, userdata, C )   ! residual
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-   REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: C
-   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-   REAL ( KIND = wp ) :: p
-   p = userdata%real( 1 )
-   C( 1 ) = X( 3 ) * X( 1 ) ** 2 + P
-   C( 2 ) = X( 2 ) ** 2 + X( 3 )
-   status = 0
-   RETURN
-   END SUBROUTINE EVALC
-
-   SUBROUTINE EVALJ( status, X, userdata, J_val )    ! Jacobian
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: J_val
-   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-   REAL ( KIND = wp ) :: p
-   p = userdata%real( 1 )
-   J_val( 1 ) = 2.0_wp * X( 1 ) * X( 3 )
-   J_val( 2 ) = 2.0_wp * X( 2 )
-   J_val( 3 ) = X( 1 ) ** 2
-   J_val( 4 ) = 1.0_wp
-   status = 0
-   RETURN
-   END SUBROUTINE EVALJ
-
-   SUBROUTINE EVALHPROD( status, X, Y, userdata, U, V, got_h ) ! Hessian product
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-   LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-   U( 1 ) = U( 1 ) + 2.0_wp * Y( 1 ) * ( X( 3 ) * V( 1 ) + X( 1 ) * V( 3 ) )
-   U( 2 ) = U( 2 ) + 2.0_wp * Y( 2 ) * V( 2 )
-   U( 3 ) = U( 3 ) + 2.0_wp * Y( 1 ) * X( 1 ) * V( 1 )
-   status = 0
-   RETURN
-   END SUBROUTINE EVALHPROD

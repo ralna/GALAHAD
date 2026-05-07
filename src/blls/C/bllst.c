@@ -258,11 +258,11 @@ int main(void) {
     // reverse-communication input/output
     ipc_ on;
     on = imax( o, n );
-    ipc_ eval_status, nz_v_start, nz_v_end, nz_p_end;
-    ipc_ nz_v[on], nz_p[o], mask[o];
+    ipc_ eval_status, lvl, lvu, lp;
+    ipc_ iv[on], ip[o], mask[o];
     rpc_ v[on], p[on];
 
-    nz_p_end = 0;
+    lp = 0;
 
     // Initialize BLLS
     blls_initialize( &data, &control, &status );
@@ -282,8 +282,8 @@ int main(void) {
         blls_solve_reverse_a_prod( &data, &status, &eval_status, n, o, b,
                                    regularization_weight, x_l, x_u, 
                                     x, z, r, g, x_stat, v, p,
-                                   nz_v, &nz_v_start, &nz_v_end,
-                                   nz_p, nz_p_end, w, x_s );
+                                   iv, &lvl, &lvu,
+                                   ip, lp, w, x_s );
         if(status == 0){ // successful termination
             break;
         }else if(status < 0){ // error exit
@@ -299,34 +299,34 @@ int main(void) {
         }else if(status == 4){ // evaluate p = Av for sparse v
           p[n]=0.0;
           for( ipc_ i = 0; i < n; i++) p[i] = 0.0;
-          for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
-            i = nz_v[l];
+          for( ipc_ l = lvl - 1; l < lvu; l++){
+            i = iv[l];
             p[i] = v[i];
             p[n] = p[n] + v[i];
           }
         }else if(status == 5){ // evaluate p = sparse Av for sparse v
-          nz_p_end = 0;
-          for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
-            i = nz_v[l];
+          lp = 0;
+          for( ipc_ l = lvl - 1; l < lvu; l++){
+            i = iv[l];
             if (mask[i] == 0){
               mask[i] = 1;
-              nz_p[nz_p_end] = i;
-              nz_p_end = nz_p_end + 1;
+              ip[lp] = i;
+              lp = lp + 1;
               p[i] = v[i];
             }
             if (mask[n] == 0){
               mask[n] = 1;
-              nz_p[nz_p_end] = n;
-              nz_p_end = nz_p_end + 1;
+              ip[lp] = n;
+              lp = lp + 1;
               p[n] = v[i];
             }else{
               p[n] = p[n] + v[i];
             }
           }
-          for( ipc_ l = 0; l < nz_p_end; l++) mask[nz_p[l]] = 0;
+          for( ipc_ l = 0; l < lp; l++) mask[ip[l]] = 0;
         }else if(status == 6){ // evaluate p = sparse A^Tv
-          for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
-            i = nz_v[l];
+          for( ipc_ l = lvl - 1; l < lvu; l++){
+            i = iv[l];
             p[i] = v[i] + v[n];
           }
         }else if(status == 7){ // evaluate p = P^{-}v

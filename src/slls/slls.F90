@@ -1706,32 +1706,32 @@ END IF
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
      IF ( data%reverse ) THEN
-       array_name = 'slls: reverse%iv'
-       CALL SPACE_resize_array( prob%n, reverse%iv, inform%status,             &
+       array_name = 'slls: reverse%IV'
+       CALL SPACE_resize_array( prob%n, reverse%IV, inform%status,             &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
-       array_name = 'slls: reverse%ip'
-       CALL SPACE_resize_array( prob%o, reverse%ip, inform%status,             &
+       array_name = 'slls: reverse%IP'
+       CALL SPACE_resize_array( prob%o, reverse%IP, inform%status,             &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
-       array_name = 'slls: reverse%v'
-       CALL SPACE_resize_array( MAX( prob%o, prob%n ), reverse%v,              &
+       array_name = 'slls: reverse%V'
+       CALL SPACE_resize_array( MAX( prob%o, prob%n ), reverse%V,              &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
-       array_name = 'slls: reverse%p'
-       CALL SPACE_resize_array( MAX( prob%o, prob%n ), reverse%p,              &
+       array_name = 'slls: reverse%P'
+       CALL SPACE_resize_array( MAX( prob%o, prob%n ), reverse%P,              &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1790,7 +1790,7 @@ END IF
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'slls: data%search_data%rhom_0'
-       CALL SPACE_resize_array( 0, prob%m, data%search_data%rhom_0,            &
+       CALL SPACE_resize_array( 0_ip_, prob%m, data%search_data%rhom_0,        &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1798,7 +1798,7 @@ END IF
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'slls: data%search_data%rhom_1'
-       CALL SPACE_resize_array( 0, prob%m, data%search_data%rhom_1,            &
+       CALL SPACE_resize_array( 0_ip_, prob%m, data%search_data%rhom_1,        &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1806,7 +1806,7 @@ END IF
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'slls: data%search_data%rhom_2'
-       CALL SPACE_resize_array( 0, prob%m, data%search_data%rhom_2,            &
+       CALL SPACE_resize_array( 0_ip_, prob%m, data%search_data%rhom_2,        &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1822,7 +1822,7 @@ END IF
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
      ELSE
        array_name = 'slls: prob%Y'
-       CALL SPACE_resize_array( 1, prob%Y, inform%status,                      &
+       CALL SPACE_resize_array( 1_ip_, prob%Y, inform%status,                  &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -3690,7 +3690,6 @@ END IF
 !   data    see Subroutine SLLS_initialize
 !   control see Subroutine SLLS_initialize
 !   inform  see Subroutine SLLS_solve
-!   reverse see Subroutine SLLS_solve
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -9260,19 +9259,19 @@ END IF
 
      CASE( 2, 5 )
        data%reverse%eval_status = eval_status
-       data%reverse%p( : o ) = P( : o )
+       data%reverse%P( : o ) = P( : o )
      CASE( 3, 7 )
        data%reverse%eval_status = eval_status
-       data%reverse%p( : n ) = P( : n )
+       data%reverse%P( : n ) = P( : n )
      CASE( 4 )
        data%reverse%eval_status = eval_status
-       data%reverse%p( ip( 1 : lp ) ) = P( ip( 1 : lp ) )
-       data%reverse%ip( 1 : lp ) = IP( 1 : lp )
+       data%reverse%P( ip( 1 : lp ) ) = P( ip( 1 : lp ) )
+       data%reverse%IP( 1 : lp ) = IP( 1 : lp )
        data%reverse%lp = lp
      CASE( 6 )
        data%reverse%eval_status = eval_status
-       data%reverse%p( data%reverse%iv( lvl : lvu ) )                          &
-         = P( data%reverse%iv( lvl : lvu ) )
+       data%reverse%P( data%reverse%IV( lvl : lvu ) )                          &
+         = P( data%reverse%IV( lvl : lvu ) )
      CASE DEFAULT
        data%slls_inform%status = GALAHAD_error_input_status
        GO TO 900
@@ -9303,19 +9302,19 @@ END IF
 
      SELECT CASE ( status )
      CASE( 2, 7 )
-       V( : n ) = data%reverse%v( : n )
+       V( : n ) = data%reverse%V( : n )
      CASE( 3 )
-       V( : o ) = data%reverse%v( : o )
+       V( : o ) = data%reverse%V( : o )
      CASE( 4 )
        index = data%reverse%index
      CASE( 5 )
        lvl = data%reverse%lvl ; lvu = data%reverse%lvu
-       IV( lvl : lvu ) = data%reverse%iv( lvl : lvu )
-       V( iv( lvl : lvu ) ) = data%reverse%v( iv( lvl : lvu ) )
+       IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
+       V( iv( lvl : lvu ) ) = data%reverse%V( iv( lvl : lvu ) )
      CASE( 6 )
        lvl = data%reverse%lvl ; lvu = data%reverse%lvu
-       IV( lvl : lvu ) = data%reverse%iv( lvl : lvu )
-       V( : o ) = data%reverse%v( : o )
+       IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
+       V( : o ) = data%reverse%V( : o )
      END SELECT
 
      RETURN

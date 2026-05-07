@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-02-03 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-05-03 AT 14:20 GMT.
    PROGRAM GALAHAD_BLLS_SECOND_EXAMPLE ! reverse commmunication interface
    USE GALAHAD_BLLS_double             ! double precision version
    IMPLICIT NONE
@@ -8,7 +8,7 @@
    TYPE ( BLLS_data_type ) :: data
    TYPE ( BLLS_control_type ) :: control
    TYPE ( BLLS_inform_type ) :: inform
-   TYPE ( BLLS_reverse_type ) :: reverse
+   TYPE ( REVERSE_type ) :: reverse
    TYPE ( USERDATA_type ) :: userdata
    INTEGER :: i, j, k, l, nflag
    REAL ( KIND = wp ) :: val
@@ -66,8 +66,8 @@
        GO TO 10
      CASE ( 4 ) ! compute A * sparse v
        reverse%P( : o ) = 0.0_wp
-       DO l = reverse%nz_in_start, reverse%nz_in_end
-         j = reverse%NZ_in( l )
+       DO l = reverse%lvl, reverse%lvu
+         j = reverse%IV( l )
          val = reverse%V( j )
          DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
            i = Ao_row( k )
@@ -77,17 +77,17 @@
        GO TO 10
      CASE ( 5 ) ! compute sparse( A * sparse v )
        nflag = nflag + 1
-       reverse%nz_out_end = 0
-       DO l = reverse%nz_in_start, reverse%nz_in_end
-         j = reverse%NZ_in( l )
+       reverse%lp = 0
+       DO l = reverse%lvl, reverse%lvu
+         j = reverse%IV( l )
          val = reverse%V( j )
          DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
            i = Ao_row( k )
            IF ( FLAG( i ) < nflag ) THEN
              FLAG( i ) = nflag
              reverse%P( i ) = Ao_val( k ) * val
-             reverse%nz_out_end = reverse%nz_out_end + 1
-             reverse%NZ_out( reverse%nz_out_end ) = i
+             reverse%lp = reverse%lp + 1
+             reverse%IP( reverse%lp ) = i
            ELSE
              reverse%P( i ) = reverse%P( i ) + Ao_val( k ) * val
            END IF
@@ -96,8 +96,8 @@
        GO TO 10
      CASE ( 6 ) ! compute sparse( A^T * v )
        reverse%P( : n ) = 0.0_wp
-       DO l = reverse%nz_in_start, reverse%nz_in_end
-         j = reverse%NZ_in( l )
+       DO l = reverse%lvl, reverse%lvu
+         j = reverse%IV( l )
          val = 0.0_wp
          DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
            val = val + Ao_val( k ) * reverse%V( Ao_row( k ) )

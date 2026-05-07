@@ -9,7 +9,7 @@
    TYPE ( USERDATA_type ) :: userdata
    EXTERNAL :: EVALR, EVALJr
    INTEGER :: s
-   INTEGER, PARAMETER :: n = 5, m_r = 4, m = 2, jr_ne = 8
+   INTEGER, PARAMETER :: n = 5, m_r = 4, jr_ne = 8
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp   ! parameter p
 ! start problem data
    nlp%n = n ; nlp%m_r = m_r ; nlp%Jr%ne = jr_ne ! dimensions
@@ -48,7 +48,8 @@
      WRITE( 6, "( ' BNLS_solve exit status = ', I6 ) " ) inform%status
    END IF
    CALL BNLS_terminate( data, control, inform )  ! delete internal workspace
-   DEALLOCATE( nlp%X, nlp%G, nlp%R, nlp%COHORT, userdata%real )
+   DEALLOCATE( nlp%X_l, nlp%X_u, nlp%X, nlp%Z )
+   DEALLOCATE( nlp%G, nlp%R, nlp%X_status, userdata%real )
    DEALLOCATE( nlp%Jr%type, nlp%Jr%val, nlp%Jr%row, nlp%Jr%col )
    END PROGRAM GALAHAD_BNLS_EXAMPLE
 

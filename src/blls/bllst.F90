@@ -10,7 +10,7 @@
    TYPE ( BLLS_data_type ) :: data
    TYPE ( BLLS_control_type ) :: control
    TYPE ( BLLS_inform_type ) :: inform
-   TYPE ( BLLS_reverse_type ) :: reverse
+   TYPE ( REVERSE_type ) :: reverse
    TYPE ( USERDATA_type ) :: userdata
    INTEGER ( KIND = ip_ ) :: i, j, k, l, nf, sigma, mode, exact_arc_search, s
    INTEGER ( KIND = ip_ ) :: weights, shift, status
@@ -184,8 +184,8 @@
               END DO
             CASE ( 4 ) ! compute A * sparse v
               reverse%P( : o ) = 0.0_rp_
-              DO l = reverse%nz_in_start, reverse%nz_in_end
-                j = reverse%NZ_in( l )
+              DO l = reverse%lvl, reverse%lvu
+                j = reverse%iv( l )
                 val = reverse%V( j )
                 DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
                   i = Ao_row( k )
@@ -194,17 +194,17 @@
               END DO
             CASE ( 5 ) ! compute sparse( A * sparse v )
               nf = nf + 1
-              reverse%nz_out_end = 0
-              DO l = reverse%nz_in_start, reverse%nz_in_end
-                j = reverse%NZ_in( l )
+              reverse%lp = 0
+              DO l = reverse%lvl, reverse%lvu
+                j = reverse%iv( l )
                 val = reverse%V( j )
                 DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
                   i = Ao_row( k )
                   IF ( FLAG( i ) < nf ) THEN
                     FLAG( i ) = nf
                     reverse%P( i ) = Ao_val( k ) * val
-                    reverse%nz_out_end = reverse%nz_out_end + 1
-                    reverse%NZ_out( reverse%nz_out_end ) = i
+                    reverse%lp = reverse%lp + 1
+                    reverse%IP( reverse%lp ) = i
                   ELSE
                     reverse%P( i ) = reverse%P( i ) + Ao_val( k ) * val
                   END IF
@@ -212,8 +212,8 @@
               END DO
             CASE ( 6 ) ! compute sparse( A^T * v )
               reverse%P( : n ) = 0.0_rp_
-              DO l = reverse%nz_in_start, reverse%nz_in_end
-                j = reverse%NZ_in( l )
+              DO l = reverse%lvl, reverse%lvu
+                j = reverse%iv( l )
                 val = 0.0_rp_
                 DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
                   val = val + Ao_val( k ) * reverse%V( Ao_row( k ) )
@@ -523,23 +523,23 @@
    RETURN
    END SUBROUTINE APROD
 
-   SUBROUTINE ASPROD( status, userdata, V, P, NZ_in, nz_in_start, nz_in_end,   &
-                      NZ_out, nz_out_end )
+   SUBROUTINE ASPROD( status, userdata, V, P, iv, lvl, lvu,   &
+                      IP, lp )
    USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
-   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
-   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_out_end
-   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
-   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_out
+   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: lvl, lvu
+   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: lp
+   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: IV
+   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: IP
    INTEGER ( KIND = ip_ ) :: i, j, k, l
    REAL ( KIND = rp_ ) :: val
 !  recover problem data from userdata
    INTEGER ( KIND = ip_ ) :: o, n, nflag, st_flag, st_ptr, st_row, st_val
-   IF ( PRESENT( NZ_in ) ) THEN
-     IF ( .NOT. ( PRESENT( nz_in_start ) .AND. PRESENT( nz_in_end ) ) ) THEN
+   IF ( PRESENT( IV ) ) THEN
+     IF ( .NOT. ( PRESENT( lvl ) .AND. PRESENT( lvu ) ) ) THEN
          status = - 1 ; RETURN
      END IF
    END IF
@@ -550,15 +550,15 @@
    st_ptr = st_flag + MAX( o, n )
    st_row = st_ptr + n + 1
    st_val = 0
-   IF ( PRESENT( NZ_in ) ) THEN
-     IF ( PRESENT( NZ_out ) ) THEN
-       IF ( .NOT. PRESENT( nz_out_end ) ) THEN
+   IF ( PRESENT( IV ) ) THEN
+     IF ( PRESENT( IP ) ) THEN
+       IF ( .NOT. PRESENT( lp ) ) THEN
          status = - 1 ; RETURN
        END IF
        userdata%integer( nflag ) = userdata%integer( nflag ) + 1
-       nz_out_end = 0
-       DO l = nz_in_start, nz_in_end
-         j = NZ_in( l )
+       lp = 0
+       DO l = lvl, lvu
+         j = IV( l )
          val = V( j )
          DO k = userdata%integer( st_ptr + j ),                                &
                 userdata%integer( st_ptr + j + 1 ) - 1
@@ -567,8 +567,8 @@
                 userdata%integer( nflag ) ) THEN
              userdata%integer( st_flag + i ) = userdata%integer( nflag )
              P( i ) = userdata%real( st_val + k ) * val
-             nz_out_end = nz_out_end + 1
-             NZ_out( nz_out_end ) = i
+             lp = lp + 1
+             IP( lp ) = i
            ELSE
              P( i ) = P( i ) + userdata%real( st_val + k ) * val
            END IF
@@ -576,8 +576,8 @@
        END DO
      ELSE
        P( : o ) = 0.0_rp_
-       DO l = nz_in_start, nz_in_end
-         j = NZ_in( l )
+       DO l = lvl, lvu
+         j = IV( l )
          val = V( j )
          DO k = userdata%integer( st_ptr + j ),                                &
                 userdata%integer( st_ptr + j + 1 ) - 1
@@ -587,12 +587,12 @@
        END DO
      END IF
    ELSE
-     IF ( PRESENT( NZ_out ) ) THEN
-       IF ( .NOT. PRESENT( nz_out_end ) ) THEN
+     IF ( PRESENT( IP ) ) THEN
+       IF ( .NOT. PRESENT( lp ) ) THEN
          status = - 1 ; RETURN
        END IF
        userdata%integer( nflag ) = userdata%integer( nflag ) + 1
-       nz_out_end = 0
+       lp = 0
        DO j = 1, n
          val = V( j )
          DO k = userdata%integer( st_ptr + j ),                                &
@@ -602,8 +602,8 @@
                 userdata%integer( nflag ) ) THEN
              userdata%integer( st_flag + i ) = userdata%integer( nflag )
              P( i ) = userdata%real( st_val + k ) * val
-             nz_out_end = nz_out_end + 1
-             NZ_out( nz_out_end ) = i
+             lp = lp + 1
+             IP( lp ) = i
            ELSE
              P( i ) = P( i ) + userdata%real( st_val + k ) * val
            END IF
@@ -683,17 +683,16 @@
    RETURN
    END SUBROUTINE APROD_broken
 
-   SUBROUTINE ASPROD_broken( status, userdata, V, P, NZ_in, nz_in_start,       &
-                             nz_in_end, NZ_out, nz_out_end )
+   SUBROUTINE ASPROD_broken( status, userdata, V, P, IV, lvl, lvu, IP, lp )
    USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
-   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
-   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_out_end
-   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
-   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_out
+   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: lvl, lvu
+   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: lp
+   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: IV
+   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: IP
    P( 1 ) = 0.0_rp_
    status = - 1
    RETURN

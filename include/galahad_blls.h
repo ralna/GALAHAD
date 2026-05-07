@@ -823,11 +823,11 @@ void blls_solve_reverse_a_prod( void **data,
                                 ipc_ x_stat[],
                                 rpc_ v[],
                                 const rpc_ p[],
-                                ipc_ nz_v[],
-                                ipc_ *nz_v_start,
-                                ipc_ *nz_v_end,
-                                const ipc_ nz_p[],
-                                ipc_ nz_p_end,
+                                ipc_ iv[],
+                                ipc_ *lvl,
+                                ipc_ *lvu,
+                                const ipc_ ip[],
+                                ipc_ lp,
                                 const rpc_ w[],
                                 const rpc_ x_s[] );
 
@@ -892,7 +892,7 @@ void blls_solve_reverse_a_prod( void **data,
   \li  4. The product \f$A_o v\f$ of the residual Jacobian \f$A\f$ with a given
        sparse output vector \f$v\f$ is required from the user.
        The nonzero components of the vector \f$v\f$ will be stored as entries
-          nz_in[nz_in_start-1:nz_in_end-1]
+          iv[lvl-1:lvu-1]
        of v and the product \f$A_o v\f$ must be returned in p,
        status_eval should be set to 0, and blls_solve_reverse_a_prod
        re-entered with all other arguments unchanged; The remaining
@@ -901,19 +901,19 @@ void blls_solve_reverse_a_prod( void **data,
        re-entered with eval_status set to a nonzero value.
 
   \li  5. The nonzero components of the product \f$A_o v\f$ of the residual
-       Jacobian \f$A_o\f$ with a given sparse output vector \f$v\f$ is required
+       Jacobian \f$A_o\f$ with a given sparse input vector \f$v\f$ is required
        from the user. The nonzero components of the vector \f$v\f$ will be
        stored as entries
-          nz_in[nz_in_start-1:nz_in_end-1]
+          iv[lvl-1:lvu-1]
        of v; the remaining components of v should be ignored.
        The resulting <b>nonzeros</b> in the product \f$A_o v\f$
        must be placed in their appropriate comnponents of p, while a list
        of indices of the nonzeros placed in
-         nz_out[0 : nz_out_end-1]
-       and the number of nonzeros recorded in nz_out_end. Additionally,
+         ip[0 : lp-1]
+       and the number of nonzeros recorded in lp. Additionally,
        status_eval should be set to 0, and blls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
-       be formed, v, nz_out_end and nz_out  need not be set, but
+       be formed, v, lp and ip  need not be set, but
        blls_solve_reverse_a_prod should be re-entered with eval_status set
        to a nonzero value.
 
@@ -921,7 +921,7 @@ void blls_solve_reverse_a_prod( void **data,
        Jacobian
        \f$A_o\f$ with a given output vector \f$v\f$ is required from the user.
        The vector \f$v\f$ will be  stored in v and components
-          nz_in[nz_in_start-1:nz_in_end-1]
+          iv[lvl-1:lvu-1]
        of the product \f$A_o^T v\f$ must be returned in the relevant
        components of p (the remaining components should not be set),
        status_eval should be set to 0, and blls_solve_reverse_a_prod
@@ -992,19 +992,19 @@ void blls_solve_reverse_a_prod( void **data,
  @param[in] p is a one-dimensional array of size n and type rpc_, that
     is used for reverse communication (see status=2-4 above for details).
 
- @param[out] nz_v is a one-dimensional array of size n and type ipc_, that
+ @param[out] iv is a one-dimensional array of size n and type ipc_, that
     is used for reverse communication (see status=3-4 above for details).
 
- @param[out] nz_v_start is a scalar of type ipc_, that
+ @param[out] lvl is a scalar of type ipc_, that
     is used for reverse communication (see status=3-4 above for details).
 
- @param[out] nz_v_end is a scalar of type ipc_, that
+ @param[out] lvu is a scalar of type ipc_, that
     is used for reverse communication (see status=3-4 above for details).
 
- @param[in] nz_p is a one-dimensional array of size n and type ipc_, that
+ @param[in] ip is a one-dimensional array of size n and type ipc_, that
     is used for reverse communication (see status=4 above for details).
 
- @param[in] nz_p_end is a scalar of type ipc_, that
+ @param[in] lp is a scalar of type ipc_, that
     is used for reverse communication (see status=4 above for details).
 
  @param[in] w is a one-dimensional array of size o and type rpc_, that

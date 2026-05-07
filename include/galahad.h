@@ -45,6 +45,9 @@
       an interior-point method
       \latexonly \href{bllsb_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/bllsb/bllsb.html">(link)</a> \endhtmlonly
+  \li \link bnls \endlink - bound-constrained nonlinear least-squares problems
+      \latexonly \href{bnls_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/bnls/bnls.html">(link)</a> \endhtmlonly
   \li \link slls \endlink - simplex-constrained linear least-squares problems
       using a gradient-projection method
       \latexonly \href{slls_c.pdf}{(link)} \endlatexonly
@@ -334,6 +337,7 @@
 #include "galahad_bgo.h"
 #include "galahad_blls.h"
 #include "galahad_bllsb.h"
+#include "galahad_bnls.h"
 #include "galahad_bqp.h"
 #include "galahad_bqpb.h"
 #include "galahad_bsc.h"

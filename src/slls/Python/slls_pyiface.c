@@ -1,7 +1,7 @@
 //* \file slls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.5 - 2026-02-06 AT 13:10 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-05-02 AT 12:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SLLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -592,7 +592,7 @@ static PyObject* py_slls_solve(PyObject *self, PyObject *args,
 
     // Return x, y, z, r, g and x_stat
     return Py_BuildValue("NNNNNN", py_x, py_y, py_z, py_r, py_g,
-                                     py_x_stat);
+                                   py_x_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SLLS_INFORMATION   -*-*-*-*-*-*-*-*

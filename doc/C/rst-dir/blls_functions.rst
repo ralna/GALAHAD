@@ -108,11 +108,11 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` x_stat[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` p[],
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` nz_v[],
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` *nz_v_start,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` *nz_v_end,
-		const :ref:`ipc_<doxid-galahad__ipc_8h_>` nz_p[],
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` nz_p_end,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` iv[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *lvl,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *lvu,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` ip[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` lp,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` w[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_s[]
 	);
@@ -721,11 +721,11 @@ Solve the bound-constrained linear least-squares problem when the design matrix 
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` x_stat[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` p[],
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` nz_v[],
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` *nz_v_start,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` *nz_v_end,
-		const :ref:`ipc_<doxid-galahad__ipc_8h_>` nz_p[],
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` nz_p_end,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` iv[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *lvl,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *lvu,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` ip[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` lp,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` w[],
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_s[]
 	)
@@ -836,7 +836,7 @@ Solve the bound-constrained linear least-squares problem when the products of th
                     $A_o$ with a given sparse output vector
                     $v$ is required from the user. The nonzero
                     components of the vector $v$ will be stored as
-                    entries nz_v[nz_v_start-1:nz_v_end-1] of v and
+                    entries iv[lvl-1:lvu-1] of v and
                     the product $A_ov$ must be returned in p,
                     status_eval should be set to 0, and
                     blls_solve_reverse_a_prod re-entered with all other
@@ -852,16 +852,16 @@ Solve the bound-constrained linear least-squares problem when the products of th
                     output vector $v$ is required from the
                     user. The nonzero components of the vector $v$
                     will be stored as entries
-                    nz_v[nz_v_start-1:nz_v_end-1] of v; the remaining
+                    iv[lvl-1:lvu-1] of v; the remaining
                     components of v should be ignored. The resulting
                     **nonzeros** in the product $A_ov$ must be
                     placed in their appropriate comnponents of p, while
-                    a list of indices of the nonzeros placed in nz_p[0
-                    : nz_p_end-1] and the number of nonzeros recorded
-                    in nz_p_end. Additionally, status_eval should be
+                    a list of indices of the nonzeros placed in ip[0
+                    : lp-1] and the number of nonzeros recorded
+                    in lp. Additionally, status_eval should be
                     set to 0, and blls_solve_reverse_a_prod re-entered
                     with all other arguments unchanged. If the product
-                    cannot be formed, v, nz_p_end and nz_p need not
+                    cannot be formed, v, lp and ip need not
                     be set, but blls_solve_reverse_a_prod should be
                     re-entered with eval_status set to a nonzero value.
 		  
@@ -870,7 +870,7 @@ Solve the bound-constrained linear least-squares problem when the products of th
                     transpose of the design matrix $A_o$ with a
                     given output vector $v$ is required from the
                     user. The vector $v$ will be stored in v and
-                    components nz_v[nz_v_start-1:nz_v_end-1] of the
+                    components iv[lvl-1:lvu-1] of the
                     product $A_o^Tv$ must be returned in the
                     relevant components of p (the remaining components
                     should not be set), status_eval should be set to 0,
@@ -965,27 +965,27 @@ Solve the bound-constrained linear least-squares problem when the products of th
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that is used for reverse communication (see status=2-4 above for details).
 
 	*
-		- nz_v
+		- iv
 
 		- is a one-dimensional array of size n and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=3-4 above for details).
 
 	*
-		- nz_v_start
+		- lvl
 
 		- is a scalar of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=3-4 above for details).
 
 	*
-		- nz_v_end
+		- lvu
 
 		- is a scalar of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=3-4 above for details).
 
 	*
-		- nz_p
+		- ip
 
 		- is a one-dimensional array of size n and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=4 above for details).
 
 	*
-		- nz_p_end
+		- lp
 
 		- is a scalar of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=4 above for details).
 
