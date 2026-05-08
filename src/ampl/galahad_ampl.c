@@ -885,7 +885,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         fint nerror = ( fint ) 0;
         real *Xtmp, f0;
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *c_double;         /* For conval( ) */
 #endif
 
@@ -903,7 +903,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
             f0 = RealCast objval( 0, Xtmp, &nerror );
         }
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         for( i = 0; i < n_var; i++ )
             Xtmp[i] = AmplCast * ( x + i );
 #endif
@@ -937,7 +937,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         fint nerror = ( fint ) 0;
         real *Xtmp, f0;
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *c_double;         /* For conval( ) */
 #endif
 
@@ -956,7 +956,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
             f0 = RealCast objval( 0, Xtmp, &nerror );
         }
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         for( i = 0; i < n_var; i++ )
             Xtmp[i] = AmplCast * ( x + i );
 #endif
@@ -975,7 +975,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         /* Evaluate constraints at given point.
          * Must use intermediate array in single precision
          */
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         c_double = ( real * ) Malloc( n_con * sizeof( real ) );
         conval( Xtmp, c_double, &nerror );
         for( i = 0; i < n_con; i++ )
@@ -1046,7 +1046,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         fint nerror = ( fint ) 0;       /* Error code for jacval */
         real *gradL;            /* Gradient of the Lagrangian */
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *Xtmp;             /* Temporary X */
 #endif
         cgrad *cg;              /* Jacobian in the DAG */
@@ -1055,7 +1055,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         GalahadValidPointer( x );
         GalahadValidPointer( g );
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         Xtmp = ( real * ) Malloc( n_var * sizeof( real ) );
         for( i = 0; i < n_var; i++ )
             Xtmp[i] = AmplCast *( x + i );
@@ -1101,7 +1101,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         fint nerror = ( fint ) 0;       /* Error code for jacval */
         real *gradL;            /* Gradient of the Lagrangian */
         real *Jtmp;             /* Temporary Jacobian */
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *Xtmp;             /* Temporary X */
 #endif
         cgrad *cg;              /* Jacobian in the DAG */
@@ -1120,7 +1120,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         /* Make room to store the gradient of the Lagrangian */
         gradL = ( real * ) Malloc( n_var * sizeof( real ) );
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         Xtmp = ( real * ) Malloc( n_var * sizeof( real ) );
         for( i = 0; i < n_var; i++ )
             Xtmp[i] = AmplCast *( x + i );
@@ -1144,7 +1144,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         /* Evaluate and store the sparse Jacobian */
         Jtmp = ( real * ) Malloc( *nnzj * sizeof( real ) );
         nerror = ( fint ) 0;
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         jacval( Xtmp, Jtmp, &nerror );
         free( Xtmp );
 #else
@@ -1200,7 +1200,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         real *OW;               /* For Hessian computations */
         real *v_double;      /* For sphes( ) */
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *h_double;      /* For sphes( ) */
 #endif
         int i, j, k;            /* Loops indices */
@@ -1212,7 +1212,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         /* Make room for Hessian of Lagrangian (hence the -1) */
         *nnzh = ( integer ) sphsetup( -1, 1, 1, 1 );
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         h_double = ( real * ) Malloc( *nnzh * sizeof( real ) );
 #endif
         v_double = ( real * ) Malloc( n_con * sizeof( real ) );
@@ -1229,7 +1229,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         for( i = 0; i < n_obj; i++ )
             OW[i] = objtype[i] ? -ONE : ONE;   /* Indicates min/max-imization */
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         sphes( h_double, -1, OW, v_double );
         for( i = 0; i < *nnzh; i++ )
             *( h + i ) = RealCast h_double[i];
@@ -1262,7 +1262,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 #endif
 
         free( OW );
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         free( h_double );
 #endif
         free( v_double );
@@ -1281,7 +1281,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
               integer * irnh, integer * icnh ) {
 
         real *OW;               /* For Hessian computations */
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *h_double, *v_double;      /* For sphes( ) */
 #endif
         int i, j, k;            /* Loops indices */
@@ -1294,7 +1294,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         /* Make room for Hessian of Lagrangian (hence the -1) */
         *nnzh = ( integer ) sphsetup( -1, 1, 1, 1 );
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         h_double = ( real * ) Malloc( *nnzh * sizeof( real ) );
         v_double = ( real * ) Malloc( n_con * sizeof( real ) );
         for( i = 0; i < n_con; i++ )
@@ -1311,7 +1311,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         for( i = 0; i < n_obj; i++ )
             OW[i] = objtype[i] ? -ONE : ONE;   /* Indicates min/max-imization */
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         sphes( h_double, -1, OW, v_double );
         for( i = 0; i < *nnzh; i++ )
             *( h + i ) = RealCast h_double[i];
@@ -1344,7 +1344,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 #endif
 
         free( OW );
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         free( h_double );
         free( v_double );
 #endif
@@ -1425,7 +1425,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         fint nerror = ( fint ) 0;       /* Error code for jacval */
         real *Jtmp;             /* Temporary Jacobian */
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *Xtmp;             /* Temporary X */
         real *c_double;         /* Temporary C(X) */
 #endif
@@ -1441,7 +1441,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         /* Store number of nonzeros in Jacobian */
         *nnzj = n_con ? nzc : 1;
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         Xtmp = ( real * ) Malloc( n_var * sizeof( real ) );
         c_double = ( real * ) Malloc( n_con * sizeof( real ) );
         for( i = 0; i < n_var; i++ )
@@ -1459,7 +1459,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
             /* Evaluate and store the sparse Jacobian */
             Jtmp = ( real * ) Malloc( *nnzj * sizeof( real ) );
             nerror = ( fint ) 0;
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
             jacval( Xtmp, Jtmp, &nerror );
             free( Xtmp );
 #else

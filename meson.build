@@ -357,7 +357,7 @@ if libcutest_quadruple.found()
   extra_args_quadruple += '-DCUTEST_SHARED'
 endif
 if libasl.found()
-  extra_args_single += ['-DSinglePrecision', '-DMESON']
+  extra_args_single += '-DMESON'
   extra_args_double += '-DMESON'
 endif
 

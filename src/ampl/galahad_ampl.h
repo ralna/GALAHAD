@@ -13,7 +13,7 @@ extern "C" {   /* To prevent C++ compilers from mangling symbols */
  * Type definitions
  */
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
     typedef float  GalahadReal;    /* Single precision real numbers */
 #define     AmplCast    (double)   /* Used to cast single to double */
 #define     RealCast    (float)    /* Used to cast back to single   */
