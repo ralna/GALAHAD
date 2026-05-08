@@ -1068,17 +1068,17 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
             dummy_gradient( 0, Xtmp, Gtmp, &nerror );
         else
             objgrd( 0, Xtmp, Gtmp, &nerror );
+
+        for( i = 0; i < n_var; i++ )
+            g[i] = RealCast Gtmp[i];
+
+        free( Xtmp );
+        free( Gtmp );
 #else
         if( filtrane && !n_obj )
             dummy_gradient( 0, x, g, &nerror );
         else
             objgrd( 0, x, g, &nerror );
-
-        for( i = 0; i < n_var; i++ )
-            g[i] = RealCast Gtmp[i];
-
-        Free( Xtmp );
-        Free( Gtmp );
 #endif
         if( !filtrane )
             ncalls.geval++;     /* Filtrane does not really evaluate g(x) */

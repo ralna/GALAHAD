@@ -266,6 +266,7 @@ runs:
       run: |
         mkdir -p ../deps/${LIBDIR}
         mkdir -p ../deps/modules
+        mkdir -p ../deps/include
         mkdir -p ../CUTEst/modules
         CSTD="c99"
         CPPSTD="c++11"
