@@ -1,12 +1,13 @@
-/* bnlst.c */
-/* Full test for the BNLS C interface using C sparse matrix indexing */
-/* Jari Fowkes & Nick Gould, STFC-Rutherford Appleton Laboratory, 2024 */
+/* snlst.c */
+/* Full test for the SNLS C interface using C sparse matrix indexing */
+/* Jari Fowkes & Nick Gould, STFC-Rutherford Appleton Laboratory, 2026 */
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
-#include "galahad_bnls.h"
+#include "galahad_snls.h"
 #ifdef REAL_128
 #include <quadmath.h>
 #endif
@@ -23,657 +24,328 @@ struct userdata_type {
 
 // Function prototypes
 
-ipc_ res( ipc_ n, ipc_ m, const rpc_ x[], rpc_ c[], const void * );
-ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[], const void * );
-ipc_ hess( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
-          rpc_ hval[], const void * );
-ipc_ jacprod( ipc_ n, ipc_ m, const rpc_ x[], const bool transpose, rpc_ u[],
-             const rpc_ v[], bool got_j, const void * );
-ipc_ hessprod( ipc_ n, ipc_ m, const rpc_ x[], const rpc_ y[], rpc_ u[],
-              const rpc_ v[], bool got_h, const void * );
-ipc_ rhessprods( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[], const rpc_ v[],
-                rpc_ pval[], bool got_h, const void * );
-ipc_ scale( ipc_ n, ipc_ m, const rpc_ x[], rpc_ u[],
-           const rpc_ v[], const void * );
-ipc_ jac_dense( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[],
-               const void * );
-ipc_ hess_dense( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
-                rpc_ hval[], const void * );
-ipc_ rhessprods_dense( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[],
-                      const rpc_ v[], rpc_ pval[], bool got_h,
-                      const void * );
+ipc_ res( ipc_ n, ipc_ m_r, const rpc_ x[], rpc_ r[], const void * );
+ipc_ jac( ipc_ n, ipc_ m_r, ipc_ jr_ne, const rpc_ x[], 
+          rpc_ jr_val[], const void * );
+ipc_ jacprod( ipc_ n, ipc_ m, const rpc_ x[], const bool transpose, 
+              const rpc_ v[], rpc_ p[], bool got_jr, const void * );
+ipc_ jaccol( ipc_ n, ipc_ m_r, const rpc_ x[], ipc_ index,
+             rpc_ val[], ipc_ row[], ipc_ nz, bool got_jr, const void * );
+ipc_ sjacprod( ipc_ n, ipc_ m_r, const rpc_ x[], bool transpose,
+               const rpc_ v[], rpc_ p[], const ipc_ free[],
+               ipc_ n_free, bool got_jr, const void * );
 
 int main(void) {
 
     // Derived types
     void *data;
-    struct bnls_control_type control;
-    struct bnls_inform_type inform;
+    struct snls_control_type control;
+    struct snls_inform_type inform;
 
     // Set user data
     struct userdata_type userdata;
-    userdata.p = 1.0;
+    userdata.p = 4.0;
 
     // Set problem data
-    ipc_ n = 2; // # variables
-    ipc_ m = 3; // # residuals
-    ipc_ j_ne = 5; // Jacobian elements
-    ipc_ h_ne = 2; // Hesssian elements
-    ipc_ p_ne = 2; // residual-Hessians-vector products elements
-    ipc_ J_row[] = {0, 1, 1, 2, 2}; // Jacobian J
-    ipc_ J_col[] = {0, 0, 1, 0, 1}; //
-    ipc_ J_ptr[] = {0, 1, 3, 5};    // row pointers
-    ipc_ H_row[] = {0, 1};          // Hessian H
-    ipc_ H_col[] = {0, 1};          // NB lower triangle
-    ipc_ H_ptr[] = {0, 1, 2};       // row pointers
-    ipc_ P_row[] = {0, 1};          // residual-Hessians-vector product matrix
-    ipc_ P_ptr[] = {0, 1, 2, 2};    // column pointers
+    ipc_ n = 5; // # variables
+    ipc_ m_r = 4; // # observations
+    ipc_ m_c = 2; // # number of cohorts
+    ipc_ cohort[] = {0, 1, -1, 0, 1}; // cohorts
+    rpc_ w[] = {1.0, 1.0, 1.0, 1.0}; // weights
+    ipc_ jr_ne = 8; // Jacobian elements
+    ipc_ Jr_row[] = {0, 0, 1, 1, 2, 2, 3, 3}; // Jacobian J
+    ipc_ Jr_col[] = {0, 1, 1, 2, 2, 3, 3, 4};
+    rpc_ Jr_val[jr_ne];
 
     // Set storage
+    rpc_ x[n]; // variables
+    rpc_ y[m_c]; // multipliers
+    rpc_ z[n]; // dual variables
+    rpc_ r[m_r]; // residual
     rpc_ g[n]; // gradient
-    rpc_ c[m]; // residual
-    rpc_ y[m]; // multipliers
-    char st = ' ';
+    ipc_ x_stat[n]; // variable status
     ipc_ status;
 
     printf(" C sparse matrix indexing\n\n");
 
-    printf(" tests options for all-in-one storage format\n\n");
+    // solve when Jacobian is available via function calls
 
-    for( ipc_ d=1; d <= 5; d++){
-//  for( ipc_ d=5; d <= 5; d++){
+    // Initialize SNLS
+    snls_initialize( &data, &control, &inform );
 
-        // Initialize BNLS
-        bnls_initialize( &data, &control, &inform );
+    // Set user-defined control options
+    control.f_indexing = false; // C sparse matrix indexing
+    //control.print_level = 1;
+    control.jacobian_available = 2;
+    control.stop_pg_absolute = 0.00001;
+    strcpy(control.slls_control.sbls_control.definite_linear_solver, "potr ");
+    strcpy(control.slls_control.sbls_control.symmetric_linear_solver, "sytr ");
 
-        // Set user-defined control options
-        control.f_indexing = false; // C sparse matrix indexing
-        //control.print_level = 1;
-        control.jacobian_available = 2;
-        control.hessian_available = 2;
-        control.model = 6;
-        rpc_ x[] = {1.5,1.5}; // starting point
-        rpc_ W[] = {1.0, 1.0, 1.0}; // weights
+    for( ipc_ i = 0; i < n; i++) x[i] = 0.5; // starting point
+    snls_import( &control, &data, &status, n, m_r, m_c,
+                 "coordinate", jr_ne, Jr_row, Jr_col, 0, NULL, cohort );
+    snls_solve_with_jac( &data, &userdata, &status, n, m_r, m_c, 
+                         x, y, z, r, g, x_stat, res, jr_ne, jac, w );
 
-        switch(d){
-            case 1: // sparse co-ordinate storage
-                st = 'C';
-                bnls_import( &control, &data, &status, n, m,
-                            "coordinate", j_ne, J_row, J_col, NULL,
-                            "coordinate", h_ne, H_row, H_col, NULL,
-                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
-                bnls_solve_with_mat( &data, &userdata, &status,
-                                    n, m, x, c, g, res, j_ne, jac,
-                                    h_ne, hess, p_ne, rhessprods );
-                break;
-            case 2: // sparse by rows
-                st = 'R';
-                bnls_import( &control, &data, &status, n, m,
-                            "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
-                            "sparse_by_rows", h_ne, NULL, H_col, H_ptr,
-                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
-                bnls_solve_with_mat( &data, &userdata, &status,
-                                    n, m, x, c, g, res, j_ne, jac,
-                                    h_ne, hess, p_ne, rhessprods );
-                break;
-            case 3: // dense
-                st = 'D';
-                bnls_import( &control, &data, &status, n, m,
-                            "dense", j_ne, NULL, NULL, NULL,
-                            "dense", h_ne, NULL, NULL, NULL,
-                            "dense", p_ne, NULL, NULL, NULL, W );
-                bnls_solve_with_mat( &data, &userdata, &status,
-                                    n, m, x, c, g, res, j_ne, jac_dense,
-                                    h_ne, hess_dense, p_ne, rhessprods_dense );
-                break;
-            case 4: // diagonal
-                st = 'I';
-                bnls_import( &control, &data, &status, n, m,
-                            "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
-                            "diagonal", h_ne, NULL, NULL, NULL,
-                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
-                bnls_solve_with_mat( &data, &userdata, &status,
-                                    n, m, x, c, g, res, j_ne, jac,
-                                    h_ne, hess, p_ne, rhessprods );
-                break;
-            case 5: // access by products
-                st = 'P';
-                bnls_import( &control, &data, &status, n, m,
-                            "absent", j_ne, NULL, NULL, NULL,
-                            "absent", h_ne, NULL, NULL, NULL,
-                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
-                bnls_solve_without_mat( &data, &userdata, &status,
-                                       n, m, x, c, g, res, jacprod,
-                                       hessprod, p_ne, rhessprods );
-                break;
-        }
+    snls_information( &data, &inform, &status );
 
-        bnls_information( &data, &inform, &status );
-
-        if(inform.status == 0){
-            printf("%c:%6" d_ipc_ " iterations. Optimal objective value = %5.2f"
-                   " status = %1" d_ipc_ "\n",
-                   st, inform.iter, inform.obj, inform.status);
-        }else{
-            printf("%c: BNLS_solve exit status = %1" d_ipc_ "\n", st, inform.status);
-        }
-        // Delete internal workspace
-        bnls_terminate( &data, &control, &inform );
+    if(inform.status == 0){
+        printf(" SNLS(JF):%6" d_ipc_ " iterations. Optimal objective value"
+               " = %5.2f status = %1" d_ipc_ "\n",
+               inform.iter, (double)inform.obj, inform.status);
+    }else{
+        printf(" SNLS(JF): exit status = %1" d_ipc_ "\n", inform.status);
     }
+    // Delete internal workspace
+    snls_terminate( &data, &control, &inform );
 
-    printf("\n tests reverse-communication options\n\n");
+    // solve when Jacobian products are available via function calls
+
+    // Initialize SNLS
+    snls_initialize( &data, &control, &inform );
+
+    // Set user-defined control options
+    control.f_indexing = false; // C sparse matrix indexing
+    // control.print_level = 1;
+    // control.slls_control.print_level = 1;
+    control.jacobian_available = 1;
+    control.stop_pg_absolute = 0.00001;
+    strcpy(control.slls_control.sbls_control.definite_linear_solver, "potr ");
+    strcpy(control.slls_control.sbls_control.symmetric_linear_solver, "sytr ");
+
+    for( ipc_ i = 0; i < n; i++) x[i] = 0.5; // starting point
+    snls_import_without_jac( &control, &data, &status, n, m_r, m_c, cohort );
+    snls_solve_with_jacprod( &data, &userdata, &status,
+                             n, m_r, m_c, x, y, z, r, g, x_stat, 
+                             res, jacprod, jaccol, sjacprod, w );
+    snls_information( &data, &inform, &status );
+
+    if(inform.status == 0){
+        printf(" SNLS(PF):%6" d_ipc_ " iterations. Optimal objective value"
+               " = %5.2f status = %1" d_ipc_ "\n",
+               inform.iter, (double)inform.obj, inform.status);
+    }else{
+        printf(" SNLS(PF): exit status = %1" d_ipc_ "\n", inform.status);
+    }
+    // Delete internal workspace
+    snls_terminate( &data, &control, &inform );
 
     // reverse-communication input/output
-    ipc_ eval_status;
-    rpc_ u[imax(m,n)], v[imax(m,n)];
-    rpc_ J_val[j_ne], J_dense[m*n];
-    rpc_ H_val[h_ne], H_dense[n*(n+1)/2], H_diag[n];
-    rpc_ P_val[p_ne], P_dense[m*n];
-    bool transpose;
-    bool got_j = false;
-    bool got_h = false;
+    ipc_ mnm, lp;
+    mnm = imax( m_r, n );
+    lp = 0;
+    ipc_ eval_status, lvl, lvu, index;
+    ipc_ iv[mnm], ip[m_r];
+    rpc_ v[mnm], p[mnm];
+    bool got_jr;
 
-    for( ipc_ d=1; d <= 5; d++){
-//  for( ipc_ d=1; d <= 4; d++){
+    // solve when Jacobian is available via reverse access
 
-        // Initialize BNLS
-        bnls_initialize( &data, &control, &inform );
+    // Initialize SNLS
+    snls_initialize( &data, &control, &inform );
 
-        // Set user-defined control options
-        control.f_indexing = false; // C sparse matrix indexing
-        //control.print_level = 1;
-        control.jacobian_available = 2;
-        control.hessian_available = 2;
-        control.model = 6;
-        rpc_ x[] = {1.5,1.5}; // starting point
-        rpc_ W[] = {1.0, 1.0, 1.0}; // weights
+    // Set user-defined control options
+    control.f_indexing = false; // C sparse matrix indexing
+    //control.print_level = 1;
+    control.jacobian_available = 2;
+    control.stop_pg_absolute = 0.00001;
+    strcpy(control.slls_control.sbls_control.definite_linear_solver, "potr ");
+    strcpy(control.slls_control.sbls_control.symmetric_linear_solver, "sytr ");
 
-        switch(d){
-            case 1: // sparse co-ordinate storage
-                st = 'C';
-                bnls_import( &control, &data, &status, n, m,
-                            "coordinate", j_ne, J_row, J_col, NULL,
-                            "coordinate", h_ne, H_row, H_col, NULL,
-                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
-                while(true){ // reverse-communication loop
-                  bnls_solve_reverse_with_mat( &data, &status, &eval_status,
-                                              n, m, x, c, g, j_ne, J_val, y,
-                                              h_ne, H_val, v, p_ne, P_val );
-                  if(status == 0){ // successful termination
-                        break;
-                  }else if(status < 0){ // error exit
-                      break;
-                  }else if(status == 2){ // evaluate c
-                      eval_status = res( n, m, x, c, &userdata );
-                  }else if(status == 3){ // evaluate J
-                      eval_status = jac( n, m, j_ne, x, J_val, &userdata );
-                  }else if(status == 4){ // evaluate H
-                      eval_status = hess( n, m, h_ne, x, y, H_val, &userdata );
-                  }else if(status == 7){ // evaluate P
-                      eval_status = rhessprods( n, m, p_ne, x, v, P_val,
-                                                got_h, &userdata );
-                  }else{
-                      printf(" the value %1" d_ipc_ " of status should not occur\n",
-                        status);
-                      break;
-                  }
-                }
-                break;
-            case 2: // sparse by rows
-                st = 'R';
-                bnls_import( &control, &data, &status, n, m,
-                            "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
-                            "sparse_by_rows", h_ne, NULL, H_col, H_ptr,
-                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
-                while(true){ // reverse-communication loop
-                  bnls_solve_reverse_with_mat( &data, &status, &eval_status,
-                                              n, m, x, c, g, j_ne, J_val, y,
-                                              h_ne, H_val, v, p_ne, P_val );
-                  if(status == 0){ // successful termination
-                        break;
-                  }else if(status < 0){ // error exit
-                      break;
-                  }else if(status == 2){ // evaluate c
-                      eval_status = res( n, m, x, c, &userdata );
-                  }else if(status == 3){ // evaluate J
-                      eval_status = jac( n, m, j_ne, x, J_val, &userdata );
-                  }else if(status == 4){ // evaluate H
-                      eval_status = hess( n, m, h_ne, x, y, H_val, &userdata );
-                  }else if(status == 7){ // evaluate P
-                      eval_status = rhessprods( n, m, p_ne, x, v, P_val,
-                                                got_h, &userdata );
-                  }else{
-                      printf(" the value %1" d_ipc_ " of status should not occur\n",
-                        status);
-                      break;
-                  }
-                }
-                break;
-            case 3: // dense
-                st = 'D';
-                bnls_import( &control, &data, &status, n, m,
-                            "dense", j_ne, NULL, NULL, NULL,
-                            "dense", h_ne, NULL, NULL, NULL,
-                            "dense", p_ne, NULL, NULL, NULL, W );
-                while(true){ // reverse-communication loop
-                  bnls_solve_reverse_with_mat( &data, &status, &eval_status,
-                                              n, m, x, c, g, m*n, J_dense, y,
-                                              n*(n+1)/2, H_dense, v, m*n,
-                                              P_dense );
-                  if(status == 0){ // successful termination
-                        break;
-                  }else if(status < 0){ // error exit
-                      break;
-                  }else if(status == 2){ // evaluate c
-                      eval_status = res( n, m, x, c, &userdata );
-                  }else if(status == 3){ // evaluate J
-                      eval_status = jac_dense( n, m, j_ne, x, J_dense,
-                                               &userdata );
-                  }else if(status == 4){ // evaluate H
-                      eval_status = hess_dense( n, m, h_ne, x, y, H_dense,
-                                                &userdata );
-                  }else if(status == 7){ // evaluate P
-                      eval_status = rhessprods_dense( n, m, p_ne, x, v, P_dense,
-                                                      got_h, &userdata );
-                  }else{
-                      printf(" the value %1" d_ipc_ " of status should not occur\n",
-                        status);
-                      break;
-                  }
-                }
-                break;
-            case 4: // diagonal
-                st = 'I';
-                bnls_import( &control, &data, &status, n, m,
-                            "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
-                            "diagonal", h_ne, NULL, NULL, NULL,
-                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
-                while(true){ // reverse-communication loop
-                  bnls_solve_reverse_with_mat( &data, &status, &eval_status,
-                                              n, m, x, c, g, j_ne, J_val, y,
-                                              n, H_diag, v, p_ne, P_val );
-                  if(status == 0){ // successful termination
-                        break;
-                  }else if(status < 0){ // error exit
-                      break;
-                  }else if(status == 2){ // evaluate c
-                      eval_status = res( n, m, x, c, &userdata );
-                  }else if(status == 3){ // evaluate J
-                      eval_status = jac( n, m, j_ne, x, J_val, &userdata );
-                  }else if(status == 4){ // evaluate H
-                      eval_status = hess( n, m, h_ne, x, y, H_diag, &userdata );
-                  }else if(status == 7){ // evaluate P
-                      eval_status = rhessprods( n, m, p_ne, x, v, P_val,
-                                                got_h, &userdata );
-                  }else{
-                      printf(" the value %1" d_ipc_ " of status should not occur\n",
-                        status);
-                      break;
-                  }
-                }
-                break;
-            case 5: // access by products
-                st = 'P';
-//              control.print_level = 1;
-                bnls_import( &control, &data, &status, n, m,
-                            "absent", j_ne, NULL, NULL, NULL,
-                            "absent", h_ne, NULL, NULL, NULL,
-                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
-                while(true){ // reverse-communication loop
-                  bnls_solve_reverse_without_mat( &data, &status, &eval_status,
-                                                 n, m, x, c, g, &transpose,
-                                                 u, v, y, p_ne, P_val );
-                  if(status == 0){ // successful termination
-                        break;
-                  }else if(status < 0){ // error exit
-                      break;
-                  }else if(status == 2){ // evaluate c
-                      eval_status = res( n, m, x, c, &userdata );
-                  }else if(status == 5){ // evaluate u + J v or u + J'v
-                      eval_status = jacprod( n, m, x, transpose, u, v, got_j,
-                                             &userdata );
-                  }else if(status == 6){ // evaluate u + H v
-                      eval_status = hessprod( n, m, x, y, u, v, got_h,
-                                              &userdata );
-                  }else if(status == 7){ // evaluate P
-                      eval_status = rhessprods( n, m, p_ne, x, v, P_val,
-                                                got_h, &userdata );
-                  }else{
-                      printf(" the value %1" d_ipc_ " of status should not occur\n",
-                        status);
-                      break;
-                  }
-                }
-                break;
-        }
-
-        bnls_information( &data, &inform, &status );
-
-        if(inform.status == 0){
-            printf("%c:%6" d_ipc_ " iterations. Optimal objective value = %5.2f"
-                   " status = %1" d_ipc_ "\n",
-                   st, inform.iter, inform.obj, inform.status);
-        }else{
-            printf("%c: BNLS_solve exit status = %1" d_ipc_ "\n", st, inform.status);
-        }
-        // Delete internal workspace
-        bnls_terminate( &data, &control, &inform );
+    for( ipc_ i = 0; i < n; i++) x[i] = 0.5; // starting point
+    snls_import( &control, &data, &status, n, m_r, m_c,
+                "coordinate", jr_ne, Jr_row, Jr_col, 0, NULL, cohort );
+    while(true){ // reverse-communication loop
+      snls_solve_reverse_with_jac( &data, &status, &eval_status,
+                                  n, m_r, m_c, x, y, z, r, g, x_stat, 
+                                  jr_ne, Jr_val, w );
+      if(status == 0){ // successful termination
+            break;
+      }else if(status < 0){ // error exit
+          break;
+      }else if(status == 2){ // evaluate r
+          eval_status = res( n, m_r, x, r, &userdata );
+      }else if(status == 3){ // evaluate Jr
+          eval_status = jac( n, m_r, jr_ne, x, Jr_val, &userdata );
+      }else{
+          printf(" the value %1" d_ipc_ " of status should not occur\n",
+            status);
+          break;
+      }
     }
 
-    printf("\n basic tests of models used, direct access\n\n");
+    snls_information( &data, &inform, &status );
 
-    for( ipc_ model=3; model <= 8; model++){
+    if(inform.status == 0){
+        printf(" SNLS(JR):%6" d_ipc_ " iterations. Optimal objective value"
+               " = %5.2f status = %1" d_ipc_ "\n",
+               inform.iter, (double)inform.obj, inform.status);
+    }else{
+        printf(" SNLS(JR): exit status = %1" d_ipc_ "\n", inform.status);
+    }
+    // Delete internal workspace
+    snls_terminate( &data, &control, &inform );
 
-        // Initialize BNLS
-        bnls_initialize( &data, &control, &inform );
+    // solve when Jacobian products are available via reverse access
 
-        // Set user-defined control options
-        control.f_indexing = false; // C sparse matrix indexing
-        //control.print_level = 1;
-        control.jacobian_available = 2;
-        control.hessian_available = 2;
-        control.model = model;
-        rpc_ x[] = {1.5,1.5}; // starting point
-        rpc_ W[] = {1.0, 1.0, 1.0}; // weights
+    // Initialize SNLS
+    snls_initialize( &data, &control, &inform );
 
-        bnls_import( &control, &data, &status, n, m,
-                    "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
-                    "sparse_by_rows", h_ne, NULL, H_col, H_ptr,
-                    "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
-        bnls_solve_with_mat( &data, &userdata, &status,
-                            n, m, x, c, g, res, j_ne, jac,
-                            h_ne, hess, p_ne, rhessprods );
+    // Set user-defined control options
+    control.f_indexing = false; // C sparse matrix indexing
+    // control.print_level = 1;
+    // control.slls_control.print_level = 1;
+    control.jacobian_available = 1;
+    control.stop_pg_absolute = 0.00001;
+    strcpy(control.slls_control.sbls_control.definite_linear_solver, "potr ");
+    strcpy(control.slls_control.sbls_control.symmetric_linear_solver, "sytr ");
 
-        bnls_information( &data, &inform, &status );
-
-        if(inform.status == 0){
-            printf(" %1" d_ipc_ ":%6" d_ipc_ 
-                   " iterations. Optimal objective value = %5.2f"
-                   " status = %1" d_ipc_ "\n",
-                   model, inform.iter, inform.obj, inform.status);
-        }else{
-            printf(" %" d_ipc_ ": BNLS_solve exit status = %1" d_ipc_ "\n", 
-                   model, inform.status);
-        }
-        // Delete internal workspace
-        bnls_terminate( &data, &control, &inform );
+    for( ipc_ i = 0; i < n; i++) x[i] = 0.5; // starting point
+    snls_import_without_jac( &control, &data, &status, n, m_r, m_c, cohort );
+    while(true){ // reverse-communication loop
+      snls_solve_reverse_with_jacprod( &data, &status, &eval_status,
+                                       n, m_r, m_c, x, y, z, r, g, x_stat, v, 
+                                       iv, &lvl, &lvu, &index, p, ip, lp, w );
+      if(status == 0){ // successful termination
+            break;
+      }else if(status < 0){ // error exit
+          break;
+      }else if(status == 2){ // evaluate r
+          eval_status = res( n, m_r, x, r, &userdata );
+          got_jr = false;
+      }else if(status == 4){ // evaluate p = Jr v 
+          eval_status = jacprod( n, m_r, x, false, v, p, got_jr, &userdata );
+      }else if(status == 5){ // evaluate p = Jr' v
+          eval_status = jacprod( n, m_r, x, true, v, p, got_jr, &userdata );
+      }else if(status == 6){ // find the index-th column of Jr
+          eval_status = jaccol( n, m_r, x, index, p, ip, lp, 
+                                got_jr, &userdata );
+      }else if(status == 7){ // evaluate p = J_o sparse(v)
+          eval_status = sjacprod( n, m_r, x, false, v, p, iv, lvu,
+                                  got_jr, &userdata );
+      }else if(status == 8){ // evaluate p = sparse(Jr' v)
+          eval_status = sjacprod( n, m_r, x, true, v, p, iv, lvu,
+                                  got_jr, &userdata );
+      }else{
+          printf(" the value %1" d_ipc_ " of status should not occur\n",
+            status);
+          break;
+      }
     }
 
-    printf("\n basic tests of models used, access by products\n\n");
+    snls_information( &data, &inform, &status );
 
-    for( ipc_ model=3; model <= 8; model++){
-
-        // Initialize BNLS
-        bnls_initialize( &data, &control, &inform );
-
-        // Set user-defined control options
-        control.f_indexing = false; // C sparse matrix indexing
-        //control.print_level = 1;
-        control.jacobian_available = 2;
-        control.hessian_available = 2;
-        control.model = model;
-        rpc_ x[] = {1.5,1.5}; // starting point
-        rpc_ W[] = {1.0, 1.0, 1.0}; // weights
-
-        bnls_import( &control, &data, &status, n, m,
-                    "absent", j_ne, NULL, NULL, NULL,
-                    "absent", h_ne, NULL, NULL, NULL,
-                    "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
-        bnls_solve_without_mat( &data, &userdata, &status,
-                               n, m, x, c, g, res, jacprod,
-                               hessprod, p_ne, rhessprods );
-        bnls_information( &data, &inform, &status );
-
-        if(inform.status == 0){
-            printf("P%1" d_ipc_ ":%6" d_ipc_ 
-                   " iterations. Optimal objective value = %5.2f"
-                   " status = %1" d_ipc_ "\n",
-                   model, inform.iter, inform.obj, inform.status);
-        }else{
-            printf("P%" d_ipc_ ": BNLS_solve exit status = %1" d_ipc_ 
-                   "\n", model, inform.status);
-        }
-        // Delete internal workspace
-        bnls_terminate( &data, &control, &inform );
+    if(inform.status == 0){
+        printf(" SNLS(PR):%6" d_ipc_ " iterations. Optimal objective value"
+               " = %5.2f status = %1" d_ipc_ "\n",
+               inform.iter, (double)inform.obj, inform.status);
+    }else{
+        printf(" SNLS(PR): exit status = %1" d_ipc_ "\n", inform.status);
     }
-
-    printf("\n basic tests of models used, reverse access\n\n");
-
-    for( ipc_ model=3; model <= 8; model++){
-
-        // Initialize BNLS
-        bnls_initialize( &data, &control, &inform );
-
-        // Set user-defined control options
-        control.f_indexing = false; // C sparse matrix indexing
-        //control.print_level = 1;
-        control.jacobian_available = 2;
-        control.hessian_available = 2;
-        control.model = model;
-        rpc_ x[] = {1.5,1.5}; // starting point
-        rpc_ W[] = {1.0, 1.0, 1.0}; // weights
-
-        bnls_import( &control, &data, &status, n, m,
-                    "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
-                    "sparse_by_rows", h_ne, NULL, H_col, H_ptr,
-                    "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
-        while(true){ // reverse-communication loop
-          bnls_solve_reverse_with_mat( &data, &status, &eval_status,
-                                      n, m, x, c, g, j_ne, J_val, y,
-                                      h_ne, H_val, v, p_ne, P_val );
-          if(status == 0){ // successful termination
-                break;
-          }else if(status < 0){ // error exit
-              break;
-          }else if(status == 2){ // evaluate c
-              eval_status = res( n, m, x, c, &userdata );
-          }else if(status == 3){ // evaluate J
-              eval_status = jac( n, m, j_ne, x, J_val, &userdata );
-          }else if(status == 4){ // evaluate H
-              eval_status = hess( n, m, h_ne, x, y, H_val, &userdata );
-          }else if(status == 7){ // evaluate P
-              eval_status = rhessprods( n, m, p_ne, x, v, P_val,
-                                        got_h, &userdata );
-          }else{
-              printf(" the value %1" d_ipc_ " of status should not occur\n",
-                status);
-              break;
-          }
-        }
-
-        bnls_information( &data, &inform, &status );
-
-        if(inform.status == 0){
-            printf("P%1" d_ipc_ ":%6" d_ipc_ " iterations. Optimal objective value = %5.2f"
-                   " status = %1" d_ipc_ "\n",
-                   model, inform.iter, inform.obj, inform.status);
-        }else{
-            printf(" %" d_ipc_ ": BNLS_solve exit status = %1" d_ipc_ "\n", model, inform.status);
-        }
-        // Delete internal workspace
-        bnls_terminate( &data, &control, &inform );
-    }
-
-    printf("\n basic tests of models used, reverse access by products\n\n");
-
-    for( ipc_ model=3; model <= 8; model++){
-
-        // Initialize BNLS
-        bnls_initialize( &data, &control, &inform );
-
-        // Set user-defined control options
-        control.f_indexing = false; // C sparse matrix indexing
-        //control.print_level = 1;
-        control.jacobian_available = 2;
-        control.hessian_available = 2;
-        control.model = model;
-        rpc_ x[] = {1.5,1.5}; // starting point
-        rpc_ W[] = {1.0, 1.0, 1.0}; // weights
-
-        bnls_import( &control, &data, &status, n, m,
-                    "absent", j_ne, NULL, NULL, NULL,
-                    "absent", h_ne, NULL, NULL, NULL,
-                    "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W );
-        while(true){ // reverse-communication loop
-          bnls_solve_reverse_without_mat( &data, &status, &eval_status,
-                                         n, m, x, c, g, &transpose,
-                                         u, v, y, p_ne, P_val );
-          if(status == 0){ // successful termination
-                break;
-          }else if(status < 0){ // error exit
-              break;
-          }else if(status == 2){ // evaluate c
-              eval_status = res( n, m, x, c, &userdata );
-          }else if(status == 5){ // evaluate u + J v or u + J'v
-              eval_status = jacprod( n, m, x, transpose, u, v, got_j,
-                                     &userdata );
-          }else if(status == 6){ // evaluate u + H v
-              eval_status = hessprod( n, m, x, y, u, v, got_h,
-                                      &userdata );
-          }else if(status == 7){ // evaluate P
-              eval_status = rhessprods( n, m, p_ne, x, v, P_val,
-                                        got_h, &userdata );
-          }else{
-              printf(" the value %1" d_ipc_ " of status should not occur\n",
-                status);
-              break;
-          }
-        }
-
-        bnls_information( &data, &inform, &status );
-
-        if(inform.status == 0){
-            printf("P%1" d_ipc_ ":%6" d_ipc_ " iterations. Optimal objective value = %5.2f"
-                   " status = %1" d_ipc_ "\n",
-                   model, inform.iter, inform.obj, inform.status);
-        }else{
-            printf("P%" d_ipc_ ": BNLS_solve exit status = %1" d_ipc_ "\n", model, inform.status);
-        }
-        // Delete internal workspace
-        bnls_terminate( &data, &control, &inform );
-    }
+    // Delete internal workspace
+    snls_terminate( &data, &control, &inform );
 }
 
 // compute the residuals
-ipc_ res( ipc_ n, ipc_ m, const rpc_ x[], rpc_ c[], const void *userdata ){
+ipc_ res( ipc_ n, ipc_ m_r, const rpc_ x[], rpc_ r[], const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     rpc_ p = myuserdata->p;
-    c[0] = pow(x[0],2.0) + p;
-    c[1] = x[0] + pow(x[1],2.0);
-    c[2] = x[0] - x[1];
+    r[0] = x[0] * x[1] - p;
+    r[1] = x[1] * x[2] - 1.0;
+    r[2] = x[2] * x[3] - 1.0;
+    r[3] = x[3] * x[4] - 1.0;
     return 0;
 }
 
 // compute the Jacobian
-ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[],
+ipc_ jac( ipc_ n, ipc_ m_r, ipc_ jne, const rpc_ x[], rpc_ jr_val[],
          const void *userdata ){
-    jval[0] = 2.0 * x[0];
-    jval[1] = 1.0;
-    jval[2] = 2.0 * x[1];
-    jval[3] = 1.0;
-    jval[4] = - 1.0;
-    return 0;
-}
-
-// compute the Hessian
-ipc_ hess( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
-           rpc_ hval[], const void *userdata ){
-    hval[0] = 2.0 * y[0];
-    hval[1] = 2.0 * y[1];
+    jr_val[0] = x[1];
+    jr_val[1] = x[0];
+    jr_val[2] = x[2];
+    jr_val[3] = x[1];
+    jr_val[4] = x[3];
+    jr_val[5] = x[2];
+    jr_val[6] = x[4];
+    jr_val[7] = x[3];
     return 0;
 }
 
 // compute Jacobian-vector products
-ipc_ jacprod( ipc_ n, ipc_ m, const rpc_ x[], const bool transpose, rpc_ u[],
-             const rpc_ v[], bool got_j, const void *userdata ){
+ipc_ jacprod( ipc_ n, ipc_ m_r, const rpc_ x[], const bool transpose, 
+             const rpc_ v[], rpc_ p[], bool got_jr, const void *userdata ){
     if (transpose) {
-      u[0] = u[0] + 2.0 * x[0] * v[0] + v[1] + v[2];
-      u[1] = u[1] + 2.0 * x[1] * v[1] - v[2];
+       p[0] = x[1] * v[0];
+       p[1] = x[2] * v[1] + x[0] * v[0];
+       p[2] = x[3] * v[2] + x[1] * v[1];
+       p[3] = x[4] * v[3] + x[2] * v[2];
+       p[4] = x[3] * v[3];
     }else{
-      u[0] = u[0] + 2.0 * x[0] * v[0];
-      u[1] = u[1] + v[0]  + 2.0 * x[1] * v[1];
-      u[2] = u[2] + v[0] - v[1];
+       p[0] = x[1] * v[0] + x[0] * v[1];
+       p[1] = x[2] * v[1] + x[1] * v[2];
+       p[2] = x[3] * v[2] + x[2] * v[3];
+       p[3] = x[4] * v[3] + x[3] * v[4];
     }
+    got_jr = true;
     return 0;
 }
 
-// compute Hessian-vector products
-ipc_ hessprod( ipc_ n, ipc_ m, const rpc_ x[], const rpc_ y[], rpc_ u[],
-              const rpc_ v[], bool got_h, const void *userdata ){
-    u[0] = u[0] + 2.0 * y[0] * v[0];
-    u[1] = u[1] + 2.0 * y[1] * v[1];
-    return 0;
-}
-
-// compute residual-Hessians-vector products
-ipc_ rhessprods( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[], const rpc_ v[],
-                rpc_ pval[], bool got_h, const void *userdata ){
-    pval[0] = 2.0 * v[0];
-    pval[1] = 2.0 * v[1];
-    return 0;
-}
-
-// scale v
-ipc_ scale( ipc_ n, ipc_ m, const rpc_ x[], rpc_ u[],
-           const rpc_ v[], const void *userdata ){
-    u[0] = v[0];
-    u[1] = v[1];
-    return 0;
-}
-
-// compute the dense Jacobian
-ipc_ jac_dense( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[],
-               const void *userdata ){
-    jval[0] = 2.0 * x[0];
-    jval[1] = 0.0;
-    jval[2] = 1.0;
-    jval[3] = 2.0 * x[1];
-    jval[4] = 1.0;
-    jval[5] = - 1.0;
-    return 0;
-}
-
-// compute the dense Hessian
-ipc_ hess_dense( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
-                rpc_ hval[], const void *userdata ){
-    hval[0] = 2.0 * y[0];
-    hval[1] = 0.0;
-    hval[2] = 2.0 * y[1];
-    return 0;
-}
-
-// compute dense residual-Hessians-vector products
-ipc_ rhessprods_dense( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[],
-                      const rpc_ v[], rpc_ pval[], bool got_h,
-                      const void *userdata ){
-    pval[0] = 2.0 * v[0];
-    pval[1] = 0.0;
-    pval[2] = 0.0;
-    pval[3] = 2.0 * v[1];
-    pval[4] = 0.0;
-    pval[5] = 0.0;
+// compute the index-th column of the Jacobian
+ipc_ jaccol( ipc_ n, ipc_ m_r, const rpc_ x[], ipc_ index,
+             rpc_ val[], ipc_ row[], ipc_ nz, bool got_jr,
+             const void *userdata ) {
+    if (index == 0){
+      val[0] = x[1];
+      row[0] = 0;
+      nz = 1;
+    } else if (index == n-1) {
+      val[0] = x[n-2];
+      row[0] = n-2;
+      nz = 1;
+    } else {
+      val[0] = x[index-1];
+      row[0] = index-1;
+      val[1] = x[index+1];
+      row[1] = index;
+      nz = 2;
+    }
+    got_jr = true;
     return 0;
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// compute a sparse product with the Jacobian
+ipc_ sjacprod( ipc_ n, ipc_ m_r, const rpc_ x[], bool transpose,
+               const rpc_ v[], rpc_ p[], const ipc_ free[], ipc_ n_free, 
+               bool got_jr, const void *userdata ) {
+    ipc_ j;
+    rpc_ val;
+    if (transpose) {
+      for( ipc_ i = 0; i < n_free; i++) {
+        j = free[i];
+        if (j == 0) {
+          p[0] = x[1] * v[0];
+        } else if (j == n-1) {
+          p[n-1] = x[m_r-1] * v[m_r-1];
+        } else {
+          p[j] = x[j-1] * v[j-1] + x[j+1] * v[j];
+        }
+      }
+    } else {
+      for( ipc_ i = 0; i < m_r; i++) p[i] = 0.0;
+      for( ipc_ i = 0; i < n_free; i++) {
+        j = free[i];
+        val = v[j];
+        if (j == 0) {
+          p[0] = p[0] + x[1] * val;
+        } else if (j == n-1) {
+          p[m_r-1] = p[m_r-1] + x[m_r-1] * val;
+        } else {
+          p[j-1] = p[j-1] + x[j-1] * val;
+          p[j] = p[j] + x[j+1] * val;
+        }
+      }
+    }
+    got_jr = true;
+    return 0;
+}

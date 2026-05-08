@@ -978,8 +978,8 @@ void bnls_solve_with_jacprod( void **data,
  @param eval_jr_prods is a user-supplied function that must have the following
    signature:
    \code
-      ipc_ eval_jr_prods( ipc_ n, const rpc_ x[], const rpc_ v[], rpc_ p[],
-                          const ipc_ iv[], ipc_ lvl, ipc_ lvu, 
+      ipc_ eval_jr_prods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[], 
+                          rpc_ p[], const ipc_ iv[], ipc_ lvl, ipc_ lvu, 
                           ipc_ ip[], ipc_ *lp, bool got_jr,
                           const void *userdata )
    \endcode

@@ -1347,10 +1347,9 @@
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: lvl, lvu
-       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: lp
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( OUT ) :: lp
        INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: IV
-       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                       &
-                                               INTENT( INOUT ) :: IP
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: IP
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_jr
        END SUBROUTINE eval_Jr_prods
      END INTERFACE

@@ -173,18 +173,20 @@
     END INTERFACE
 
     ABSTRACT INTERFACE
-      FUNCTION eval_Jr_scol( n, m_r, x, index, val, row, nz, got_jr,           &
-                             userdata ) RESULT( status ) BIND( C )
+      FUNCTION eval_Jr_prods( n, m_r, x, v, p, iv, lvl, lvu, ip, lp,           &
+                              got_jr, userdata ) RESULT( status ) BIND( C )
         USE GALAHAD_KINDS_precision
-        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m_r, index
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m_r, lvl, lvu
+        INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: lp
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
-        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: val
-        INTEGER ( KIND = ipc_ ), DIMENSION( n ), INTENT( OUT ) :: row
-        INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: nz
+        REAL ( KIND = rpc_ ), DIMENSION( MAX( n, m_r ) ), INTENT( IN ) :: v
+        REAL ( KIND = rpc_ ), DIMENSION( MAX( n, m_r ) ), INTENT( OUT ) :: p
+        INTEGER ( KIND = ipc_ ), DIMENSION( n ), INTENT( IN ) :: IV
+        INTEGER ( KIND = ipc_ ), DIMENSION( m_r ), INTENT( OUT ) :: IP
         LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_jr
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
         INTEGER ( KIND = ipc_ ) :: status
-      END FUNCTION eval_Jr_scol
+      END FUNCTION eval_Jr_prods
     END INTERFACE
 
     ABSTRACT INTERFACE
@@ -800,7 +802,7 @@
 
   SUBROUTINE bnls_solve_with_jacprod( cdata, cuserdata, status, n, m_r,        &
                                       x_l, x_u, x, z, r, g, x_stat, ceval_r,   &
-                                      ceval_jr_prod, ceval_jr_scol,            &
+                                      ceval_jr_prod, ceval_jr_prods,           &
                                       ceval_jr_sprod, w ) BIND( C )
   USE GALAHAD_BNLS_precision_ciface
   IMPLICIT NONE
@@ -819,14 +821,14 @@
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_r, ceval_jr_prod
-  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_jr_scol, ceval_jr_sprod
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_jr_prods, ceval_jr_sprod
 
 !  local variables
 
   TYPE ( f_bnls_full_data_type ), POINTER :: fdata
   PROCEDURE( eval_r ), POINTER :: feval_r
   PROCEDURE( eval_jr_prod ), POINTER :: feval_jr_prod
-  PROCEDURE( eval_jr_scol ), POINTER :: feval_jr_scol
+  PROCEDURE( eval_jr_prods ), POINTER :: feval_jr_prods
   PROCEDURE( eval_jr_sprod ), POINTER :: feval_jr_sprod
   LOGICAL :: f_indexing
 
@@ -845,7 +847,7 @@
 
   CALL C_F_PROCPOINTER( ceval_r, feval_r )
   CALL C_F_PROCPOINTER( ceval_jr_prod, feval_jr_prod )
-  CALL C_F_PROCPOINTER( ceval_jr_scol, feval_jr_scol )
+  CALL C_F_PROCPOINTER( ceval_jr_prods, feval_jr_prods )
   CALL C_F_PROCPOINTER( ceval_jr_sprod, feval_jr_sprod )
 
 !  solve the problem when the Hessian is only available via products
@@ -853,7 +855,7 @@
   CALL f_bnls_solve_with_jacprod( fdata, fuserdata, status,                    &
                                   x_l, x_u, x, z, r, g, x_stat,                &
                                   wrap_eval_r, wrap_eval_jr_prod,              &
-                                  wrap_eval_jr_scol, wrap_eval_jr_sprod,       &
+                                  wrap_eval_jr_prods, wrap_eval_jr_sprod,      &
                                   W = w )
   RETURN
 
@@ -902,20 +904,22 @@
 
     END SUBROUTINE wrap_eval_jr_prod
 
-    SUBROUTINE wrap_eval_Jr_scol( status, x, userdata, index, val, row, nz,    &
-                                  fgot_jr )
+    SUBROUTINE wrap_eval_Jr_prods( status, x, userdata, v, p, iv, lvl, lvu,    &
+                                   ip, lp, fgot_jr )
     USE GALAHAD_USERDATA_precision
     INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
     REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
     TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
-    INTEGER ( KIND = ipc_ ), INTENT( IN ) :: index
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: val
-    INTEGER ( KIND = ipc_ ), DIMENSION( : ), INTENT( INOUT ) :: row
-    INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: nz
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: p
+    INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( : ) :: iv
+    INTEGER ( KIND = ipc_ ), INTENT( IN ) :: lvl, lvu
+    INTEGER ( KIND = ipc_ ), DIMENSION( : ), INTENT( OUT ) :: ip
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: lp
     LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_jr
     LOGICAL ( KIND = C_BOOL ) :: cgot_jr
 
-!  call C interoperable eval_jr_scol
+!  call C interoperable eval_jr_prods
 
     IF ( PRESENT( fgot_jr ) ) THEN
       cgot_jr = fgot_jr
@@ -924,16 +928,16 @@
     END IF
 
     IF ( f_indexing ) THEN
-      status = feval_Jr_scol( n, m_r, x, index, val, row, nz, cgot_jr,         &
-                              cuserdata )
+      status = feval_Jr_prods( n, m_r, x, v, p, iv, lvl, lvu, ip, lp, cgot_jr, &
+                               cuserdata )
     ELSE
-      status = feval_Jr_scol( n, m_r, x, index - 1, val, row, nz, cgot_jr,     &
-                              cuserdata )
-      row( : nz ) = row( : nz ) + 1
+      status = feval_Jr_prods( n, m_r, x, v, p, iv, lvl - 1, lvu - 1, ip, lp,  &
+                               cgot_jr, cuserdata )
+      ip( : lp ) = ip( : lp ) + 1
     END IF
     RETURN
 
-    END SUBROUTINE wrap_eval_Jr_scol
+    END SUBROUTINE wrap_eval_Jr_prods
 
     SUBROUTINE wrap_eval_Jr_sprod( status, x, userdata, ftranspose, v, p,      &
                                    free, n_free, fgot_jr )
@@ -1018,7 +1022,7 @@
 
   SUBROUTINE bnls_solve_reverse_with_jacprod( cdata, status, eval_status,      &
                                               n, m_r, x_l, x_u, x, z, r, g,    &
-                                              x_stat, v, iv, lvl, lvu, index,  &
+                                              x_stat, v, iv, lvl, lvu,         &
                                               p, ip, lp, w ) BIND( C )
                                              
   USE GALAHAD_BNLS_precision_ciface
@@ -1028,7 +1032,7 @@
 
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m_r
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
-  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: lvl, lvu, index
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: lvl, lvu
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: lp
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: x_l, x_u
   REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x
@@ -1056,8 +1060,7 @@
 
   CALL f_bnls_solve_reverse_with_jacprod( fdata, status, eval_status,          &
                                           x_l, x_u, x, z, r, g, x_stat,        &
-                                          v, iv, lvl, lvu, index,              &
-                                          p, ip, lp, W = w )
+                                          v, iv, lvl, lvu, p, ip, lp, W = w )
   RETURN
 
   END SUBROUTINE bnls_solve_reverse_with_jacprod
