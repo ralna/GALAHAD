@@ -12,7 +12,7 @@ function meson_check_headers()
   excluded_headers = ["galahad_single.h", "galahad_double.h", "galahad_quadruple.h",
                       "hsl_kinds.h", "hsl_metis.h", "hsl_subset.h", "cutest_routines.h",
                       "galahad_kinds.h", "galahad_blas.h", "galahad_lapack.h",
-                      "galahad_elgrra.h", "galahad_icfs.h"]
+                      "galahad_elgrra.h", "galahad_icfs.h", "amplinter.h"]
 
   for file in readdir(folder_headers)
     !endswith(file, ".h") && continue
