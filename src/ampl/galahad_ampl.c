@@ -1048,6 +1048,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         real *gradL;            /* Gradient of the Lagrangian */
 #if defined(SinglePrecision) || defined(REAL_32)
         real *Xtmp;             /* Temporary X */
+        real *Gtmp;
 #endif
         cgrad *cg;              /* Jacobian in the DAG */
         int i, j;               /* Loops indices */
@@ -1057,19 +1058,27 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
 #if defined(SinglePrecision) || defined(REAL_32)
         Xtmp = ( real * ) Malloc( n_var * sizeof( real ) );
+        Gtmp = ( real * ) Malloc( n_var * sizeof( real ) );
+
         for( i = 0; i < n_var; i++ )
             Xtmp[i] = AmplCast *( x + i );
 
         /* There might be no objective defined in feasibility problems */
         if( filtrane && !n_obj )
-            dummy_gradient( 0, Xtmp, g, &nerror );
+            dummy_gradient( 0, Xtmp, Gtmp, &nerror );
         else
-            objgrd( 0, Xtmp, g, &nerror );
+            objgrd( 0, Xtmp, Gtmp, &nerror );
 #else
         if( filtrane && !n_obj )
             dummy_gradient( 0, x, g, &nerror );
         else
             objgrd( 0, x, g, &nerror );
+
+        for( i = 0; i < n_var; i++ )
+            g[i] = RealCast Gtmp[i];
+
+        Free( Xtmp );
+        Free( Gtmp );
 #endif
         if( !filtrane )
             ncalls.geval++;     /* Filtrane does not really evaluate g(x) */
