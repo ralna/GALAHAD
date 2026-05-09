@@ -104,6 +104,7 @@ function meson_check_files()
       for file in readdir(path_local_package)
         path_file = joinpath(path_local_package, file)
         isdir(path_file) && continue
+        endswith(file, ".h") && continue
         endswith(file, ".meta") && continue
         endswith(file, ".template") && continue
         endswith(file, ".output") && continue
