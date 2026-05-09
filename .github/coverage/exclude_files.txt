@@ -118,8 +118,12 @@ src/sha/shati.F90
 src/sils/silst.F90
 src/slls/sllst.F90
 src/slls/sllsti.F90
+src/sllsb/sllsbt.F90
+src/sllsb/sllsbti.F90
 src/sls/slst.F90
 src/sls/slsti.F90
+src/snls/snlst.F90
+src/snls/snlsti.F90
 src/ssls/sslst.F90
 src/ssls/sslsti.F90
 src/smt/smtt.F90
@@ -322,8 +326,12 @@ src/sha/C/shat.c
 src/sha/C/shatf.c
 src/slls/C/sllst.c
 src/slls/C/sllstf.c
+src/sllsb/C/sllsbt.c
+src/sllsb/C/sllsbtf.c
 src/sls/C/slst.c
 src/sls/C/slstf.c
+src/snls/C/snlst.c
+src/snls/C/snlstf.c
 src/ssls/C/slst.c
 src/ssls/C/slstf.c
 src/trb/C/trbt.c

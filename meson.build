@@ -357,8 +357,8 @@ if libcutest_quadruple.found()
   extra_args_quadruple += '-DCUTEST_SHARED'
 endif
 if libasl.found()
-  extra_args_single += '-DMESON'
-  extra_args_double += '-DMESON'
+  extra_args_single += '-DGALAHAD_AMPL'
+  extra_args_double += '-DGALAHAD_AMPL'
 endif
 
 # MPI

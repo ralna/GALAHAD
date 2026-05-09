@@ -61,6 +61,7 @@ excluded_fortran_fields = Dict(
   "sbls_inform_type" => ["sils_analyse_status", "sils_factorize_status", "sils_solve_status", "sls_analyse_status", "sls_factorize_status", "sls_solve_status", "uls_analyse_status", "uls_factorize_status", "uls_solve_status"],
   "ssids_control_type" => ["auction", "rb_dump"],
   "ssids_inform_type" => ["auction"],
+  "ugo_inform_type" => ["dx_best"],
 )
 
 function F_structures()

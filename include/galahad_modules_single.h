@@ -108,6 +108,7 @@
 #define GALAHAD_QTRANS_precision GALAHAD_QTRANS_single_64
 #define GALAHAD_RAND_precision GALAHAD_RAND_single_64
 #define GALAHAD_RB_precision GALAHAD_RB_single_64
+#define GALAHAD_REVERSE_precision GALAHAD_REVERSE_single_64
 #define GALAHAD_ROOTS_precision GALAHAD_ROOTS_single_64
 #define GALAHAD_RPD_precision GALAHAD_RPD_single_64
 #define GALAHAD_RQS_precision GALAHAD_RQS_single_64
@@ -554,6 +555,7 @@
 #define GALAHAD_QTRANS_precision GALAHAD_QTRANS_single
 #define GALAHAD_RAND_precision GALAHAD_RAND_single
 #define GALAHAD_RB_precision GALAHAD_RB_single
+#define GALAHAD_REVERSE_precision GALAHAD_REVERSE_single
 #define GALAHAD_ROOTS_precision GALAHAD_ROOTS_single
 #define GALAHAD_RPD_precision GALAHAD_RPD_single
 #define GALAHAD_RQS_precision GALAHAD_RQS_single
