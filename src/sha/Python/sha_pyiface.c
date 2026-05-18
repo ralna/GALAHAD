@@ -270,7 +270,11 @@ static PyObject* py_sha_analyse_matrix(PyObject *self, PyObject *args, PyObject 
         return NULL;
 
     // Return m
-    return Py_BuildValue("i", m);
+    PyObject *analyse_matrix_return;
+    analyse_matrix_return = Py_BuildValue("i", m);
+    Py_INCREF(analyse_matrix_return);
+    return analyse_matrix_return;
+
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SHA_RECOVER_MATRIX   -*-*-*-*-*-*-*-*-*
@@ -351,7 +355,11 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
         return NULL;
 
     // Return val
-    return Py_BuildValue("N", py_val);
+    PyObject *recover_matrix_return;
+    recover_matrix_return = Py_BuildValue("N", py_val);
+    Py_INCREF(recover_matrix_return);
+    return recover_matrix_return;
+
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SHA_INFORMATION   -*-*-*-*-*-*-*-*

@@ -262,7 +262,11 @@ static PyObject* py_bsc_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return S_ne
-    return Py_BuildValue("i", S_ne);
+    PyObject *import_bsc_return;
+
+    import_bsc_return = Py_BuildValue("i", S_ne );
+    Py_INCREF(import_bsc_return);
+    return import_bsc_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-*-*-   BSC_FORM   -*-*-*-*-*-*-*-*-*-*-*-*
@@ -327,7 +331,12 @@ static PyObject* py_bsc_form(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return S_row, S_col,S_ptr and S_val
-    return Py_BuildValue("NNNN", py_s_row, py_s_col, py_s_ptr, py_s_val);
+    PyObject *form_bsc_return;
+    form_bsc_return = Py_BuildValue("NNNN",
+                                     py_s_row, py_s_col, py_s_ptr, py_s_val);
+    Py_INCREF(form_bsc_return);
+    return form_bsc_return;
+
 }
 
 

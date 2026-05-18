@@ -471,9 +471,13 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
     PyObject *py_inform = cro_make_inform_dict(&inform);
 
     // Return x, c, y, z, x_stat and c_stat
-    return Py_BuildValue("NNNNNNN", py_x, py_c, py_y,
+    PyObject *crossover_solution_return;
+    crossover_solution_return = Py_BuildValue("NNNNNNN", py_x, py_c, py_y,
                                               py_z, py_x_stat, py_c_stat,
                                               py_inform);
+    Py_INCREF(crossover_solution_return);
+    return crossover_solution_return;
+
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   CRO_TERMINATE   -*-*-*-*-*-*-*-*-*-*

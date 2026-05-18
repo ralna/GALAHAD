@@ -566,7 +566,10 @@ static PyObject* py_psls_apply_preconditioner(PyObject *self, PyObject *args, Py
         return NULL;
 
     // Return x
-    return Py_BuildValue("N", py_sol);
+    PyObject *solve_system_return;
+    solve_system_return = Py_BuildValue("N", py_sol);
+    Py_INCREF(solve_system_return);
+    return solve_system_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   PSLS_INFORMATION   -*-*-*-*-*-*-*-*

@@ -754,9 +754,14 @@ static PyObject* py_wcp_find_wcp(PyObject *self, PyObject *args, PyObject *keywd
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    return Py_BuildValue("NNNNNNNN", py_x, py_c, py_y_l, py_y_u,
+    PyObject *find_wcp_return;
+
+    // find_wcp_return = Py_BuildValue("N", py_x);
+    find_wcp_return = Py_BuildValue("NNNNNNNN", py_x, py_c, py_y_l, py_y_u,
                                                 py_z_l, py_z_u,
                                                 py_x_stat, py_c_stat);
+    Py_INCREF(find_wcp_return);
+    return find_wcp_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   WCP_INFORMATION   -*-*-*-*-*-*-*-*

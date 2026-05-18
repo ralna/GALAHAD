@@ -410,7 +410,7 @@ static PyObject* py_slls_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = slls_make_options_dict(&control);
-    return Py_BuildValue("N", py_options);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SLLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -591,8 +591,11 @@ static PyObject* py_slls_solve(PyObject *self, PyObject *args,
         return NULL;
 
     // Return x, y, z, r, g and x_stat
-    return Py_BuildValue("NNNNNN", py_x, py_y, py_z, py_r, py_g,
-                                   py_x_stat);
+    PyObject *solve_ls_return;
+    solve_ls_return = Py_BuildValue("OOOOOO", py_x, py_y, py_z, py_r, py_g,
+                                     py_x_stat);
+    Py_INCREF(solve_ls_return);
+    return solve_ls_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SLLS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -607,7 +610,7 @@ static PyObject* py_slls_information(PyObject *self){
     slls_information(&data, &inform, &status);
     // Return status and inform Python dictionary
     PyObject *py_inform = slls_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SLLS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

@@ -44,6 +44,7 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
+static PyObject *dgo_solve_return = NULL;
 
 /* C eval_* function wrappers */
 static int eval_f(int n, const double x[], double *f, const void *userdata){
@@ -670,7 +671,9 @@ static PyObject* py_dgo_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x and g
-    return Py_BuildValue("NN", py_x, py_g);
+    dgo_solve_return = Py_BuildValue("NN", py_x, py_g);
+    Py_XINCREF(dgo_solve_return);
+    return dgo_solve_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DGO_INFORMATION   -*-*-*-*-*-*-*-*

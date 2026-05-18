@@ -838,8 +838,13 @@ static PyObject* py_lpb_solve_lp(PyObject *self, PyObject *args, PyObject *keywd
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    return Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
+    PyObject *solve_lp_return;
+
+    // solve_lp_return = Py_BuildValue("O", py_x);
+    solve_lp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
                                               py_x_stat, py_c_stat);
+    Py_INCREF(solve_lp_return);
+    return solve_lp_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LPB_INFORMATION   -*-*-*-*-*-*-*-*

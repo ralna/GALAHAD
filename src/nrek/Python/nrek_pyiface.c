@@ -597,7 +597,12 @@ static PyObject* py_nrek_solve_problem(PyObject *self, PyObject *args,
         return NULL;
 
     // Return x
-    return Py_BuildValue("N", py_x);
+    PyObject *solve_problem_return;
+
+    solve_problem_return = Py_BuildValue("N", py_x);
+    Py_INCREF(solve_problem_return);
+    return solve_problem_return;
+
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   NREK_INFORMATION   -*-*-*-*-*-*-*-*

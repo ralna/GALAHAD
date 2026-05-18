@@ -352,7 +352,12 @@ static PyObject* py_l2rt_solve_problem(PyObject *self, PyObject *args, PyObject 
         return NULL;
 
     // Return status, x, u and v
-    return Py_BuildValue("iNNN", status, py_x, py_u, py_v);
+    PyObject *solve_problem_return;
+
+    // solve_problem_return = Py_BuildValue("N", py_x);
+    solve_problem_return = Py_BuildValue("iNNN", status, py_x, py_u, py_v);
+    Py_INCREF(solve_problem_return);
+    return solve_problem_return;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   L2RT_INFORMATION   -*-*-*-*-*-*-*-*

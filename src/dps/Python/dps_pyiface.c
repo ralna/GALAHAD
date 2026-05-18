@@ -433,7 +433,12 @@ static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args, PyObjec
         return NULL;
 
     // Return x
-    return Py_BuildValue("N", py_x);
+    PyObject *solve_tr_problem_return;
+
+    solve_tr_problem_return = Py_BuildValue("N", py_x);
+    Py_INCREF(solve_tr_problem_return);
+    return solve_tr_problem_return;
+
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DPS_SOLVE_RQ_PROBLEM   -*-*-*-*-*-*-*-*
@@ -485,7 +490,12 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObjec
         return NULL;
 
     // Return x
-    return Py_BuildValue("N", py_x);
+    PyObject *solve_rq_problem_return;
+
+    solve_rq_problem_return = Py_BuildValue("N", py_x);
+    Py_INCREF(solve_rq_problem_return);
+    return solve_rq_problem_return;
+
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DPS_INFORMATION   -*-*-*-*-*-*-*-*
