@@ -40,7 +40,6 @@ static int status = 0;                   // exit status
 /* Python eval_* function pointers */
 static PyObject *py_eval_r = NULL;
 static PyObject *py_eval_jr = NULL;
-static PyObject *py_eval_h = NULL;
 static PyObject *snls_solve_return = NULL;
 //static PyObject *py_c = NULL;
 //static PyObject *py_g = NULL;
@@ -108,48 +107,6 @@ static int eval_jr(int n, int m_r, int jrne, const double x[], double jrval[],
     const double *val = (double *) PyArray_DATA((PyArrayObject*) result);
     for(int i=0; i<jrne; i++) {
         jrval[i] = val[i];
-    }
-
-    // Free result memory
-    Py_DECREF(result);
-
-    return 0;
-}
-
-static int eval_h(int n, int m, int hne, const double x[], const double y[],
-                  double hval[], const void *userdata){
-
-    // Wrap input arrays as NumPy arrays
-    npy_intp xdim[] = {n};
-    PyArrayObject *py_x = (PyArrayObject*)
-       PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
-    npy_intp ydim[] = {m};
-    PyArrayObject *py_y = (PyArrayObject*)
-       PyArray_SimpleNewFromData(1, ydim, NPY_DOUBLE, (void *) y);
-
-    // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(NN)", py_x, py_y);
-
-    // Call Python eval_h
-    PyObject *result = PyObject_CallObject(py_eval_h, arglist);
-    Py_DECREF(py_x);    // Free py_x memory
-    Py_DECREF(arglist); // Free arglist memory
-
-    // Check that eval was successful
-    if(!result)
-        return -1;
-
-    // Check return value is of correct type, size, and shape
-    if(!check_array_double("eval_h return value",
-                           (PyArrayObject*) result, hne)){
-        Py_DECREF(result); // Free result memory
-        return -1;
-    }
-
-    // Get return value data pointer and copy data into hval
-    const double *val = (double *) PyArray_DATA((PyArrayObject*) result);
-    for(int i=0; i<hne; i++) {
-        hval[i] = val[i];
     }
 
     // Free result memory

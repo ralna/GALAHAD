@@ -177,12 +177,12 @@
                               got_jr, userdata ) RESULT( status ) BIND( C )
         USE GALAHAD_KINDS_precision
         INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m_r, lvl, lvu
-        INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: lp
+        INTEGER ( KIND = ipc_ ), OPTIONAL, INTENT( OUT ) :: lp
         REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
-        REAL ( KIND = rpc_ ), DIMENSION( MAX( n, m_r ) ), INTENT( IN ) :: v
-        REAL ( KIND = rpc_ ), DIMENSION( MAX( n, m_r ) ), INTENT( OUT ) :: p
+        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: v
+        REAL ( KIND = rpc_ ), DIMENSION( m_r ), INTENT( OUT ) :: p
         INTEGER ( KIND = ipc_ ), DIMENSION( n ), INTENT( IN ) :: IV
-        INTEGER ( KIND = ipc_ ), DIMENSION( m_r ), INTENT( OUT ) :: IP
+        INTEGER ( KIND = ipc_ ), OPTIONAL, DIMENSION( m_r ), INTENT( OUT ) :: IP
         LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_jr
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
         INTEGER ( KIND = ipc_ ) :: status
@@ -665,6 +665,7 @@
 !  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+
   RETURN
 
   END SUBROUTINE bnls_import_without_jac
@@ -914,8 +915,8 @@
     REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: p
     INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( : ) :: iv
     INTEGER ( KIND = ipc_ ), INTENT( IN ) :: lvl, lvu
-    INTEGER ( KIND = ipc_ ), DIMENSION( : ), INTENT( OUT ) :: ip
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: lp
+    INTEGER ( KIND = ipc_ ), OPTIONAL, DIMENSION( : ), INTENT( OUT ) :: ip
+    INTEGER ( KIND = ipc_ ), OPTIONAL, INTENT( OUT ) :: lp
     LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_jr
     LOGICAL ( KIND = C_BOOL ) :: cgot_jr
 
@@ -928,13 +929,13 @@
     END IF
 
     IF ( f_indexing ) THEN
-      status = feval_Jr_prods( n, m_r, x, v, p, iv, lvl, lvu, ip, lp, cgot_jr, &
-                               cuserdata )
+      status = feval_Jr_prods( n, m_r, x, v, p, iv, lvl - 1, lvu - 1,          &
+                               ip, lp, cgot_jr, cuserdata )
     ELSE
-      status = feval_Jr_prods( n, m_r, x, v, p, iv, lvl - 1, lvu - 1, ip, lp,  &
-                               cgot_jr, cuserdata )
-      ip( : lp ) = ip( : lp ) + 1
+      status = feval_Jr_prods( n, m_r, x, v, p, iv - 1, lvl - 1, lvu - 1,      &
+                               ip, lp, cgot_jr, cuserdata )
     END IF
+    IF ( PRESENT( lp ) ) ip( : lp ) = ip( : lp ) + 1
     RETURN
 
     END SUBROUTINE wrap_eval_Jr_prods
@@ -1050,10 +1051,13 @@
 !  local variables
 
   TYPE ( f_bnls_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
 
 !  associate data pointer
 
   CALL C_F_POINTER( cdata, fdata )
+
+  f_indexing = fdata%f_indexing
 
 !  solve the problem when Hessian products are available by reverse
 !  communication
@@ -1061,6 +1065,12 @@
   CALL f_bnls_solve_reverse_with_jacprod( fdata, status, eval_status,          &
                                           x_l, x_u, x, z, r, g, x_stat,        &
                                           v, iv, lvl, lvu, p, ip, lp, W = w )
+
+  IF ( status >= 6 .AND. status <= 8 ) THEN
+    IF ( f_indexing )THEN
+      lvl = lvl - 1 ; lvu = lvu - 1
+    END IF
+  END IF
   RETURN
 
   END SUBROUTINE bnls_solve_reverse_with_jacprod

@@ -55,19 +55,16 @@ typedef ipc_ galahad_shrprod( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[],
 typedef ipc_ galahad_jr_prod( ipc_ n, ipc_ m_r, const rpc_ x[], 
                               const bool transpose, const rpc_ v[], rpc_ p[], 
                               bool got_jr, const void *userdata );
-typedef ipc_ galahad_jr_scol( ipc_ n, ipc_ m_r, const rpc_ x[], ipc_ index,
-                              rpc_ val[], ipc_ row[], ipc_ nz, 
-                              bool got_jr, const void *userdata );
 typedef ipc_ galahad_jr_sprod( ipc_ n, ipc_ m_r, const rpc_ x[], 
                                const bool transpose, const rpc_ v[], rpc_ p[], 
                                const ipc_ free[], ipc_ n_free, 
                                bool got_jr, const void *userdata );
 
 // BNLS
-typedef ipc_ eval_jr_prods( ipc_ n, const rpc_ x[], const rpc_ v[], rpc_ p[],
-                            const ipc_ iv[], ipc_ lvl, ipc_ lvu, 
-                            ipc_ ip[], ipc_ *lp, bool got_jr,
-                            const void *userdata );
+typedef ipc_ galahad_jr_prods( ipc_ n, ipc_ m_r,const rpc_ x[], const rpc_ v[],
+                               rpc_ p[], const ipc_ iv[], ipc_ lvl, ipc_ lvu, 
+                               ipc_ ip[], ipc_ *lp, bool got_jr,
+                               const void *userdata );
 
 // SNLS
 typedef ipc_ galahad_jr_scol( ipc_ n, ipc_ m_r, const rpc_ x[], ipc_ index,

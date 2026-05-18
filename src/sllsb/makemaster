@@ -19,7 +19,7 @@ PACKAGE = SLLSB
 #  auxiliary packages that current package depends on (prepend with make_)
 
 DEPENDENCIES = make_qpd_deps make_qpd make_checkpoint make_rpd make_cqp \
-               make_clls
+               make_clls make_cro
 
 #  other packages that depend on package
 

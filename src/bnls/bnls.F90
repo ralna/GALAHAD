@@ -2071,17 +2071,14 @@
      data%poor_model = .FALSE.
      data%minimum_weight = data%control%minimum_weight
      data%got_jr = .FALSE.
-!write(6,*) ' a ', data%reverse_r 
+
 ! evaluate the residual function r(x) at the initial point
 
      IF ( data%reverse_r ) THEN
        data%branch = 30 ; inform%status = 2 ; RETURN
      ELSE
-!write(6,*) ' b '
-!write(6,*) ' x ', nlp%X
        CALL eval_R( data%eval_status, nlp%X( : nlp%n ), userdata,              &
                     nlp%R( : nlp%m_r ) )
-!write(6,*) ' c '
        IF ( data%eval_status /= 0 ) THEN
          inform%bad_eval = 'eval_R'
          IF ( control%error > 0 ) WRITE( control%error,                        &
@@ -2610,7 +2607,6 @@ end if
 
    190 CONTINUE
        IF ( data%printw ) WRITE( data%out, "( A, ' statement 190' )" ) prefix
-!      write(6,*) ' f ', inform%obj
 
 !  2a. solution using projection with available Jr
 !  -----------------------------------------------
@@ -2784,12 +2780,9 @@ end if
 !  solve problem with an internal reverse commmunication loop with
 
  230   CONTINUE
-
-!write(6,*) ' blls in  ', inform%BLLS_inform%status
          CALL BLLS_solve( data%GN_model, data%BLLS_data,                       &
                           data%control%BLLS_control, inform%BLLS_inform,       &
                           userdata, reverse = data%reverse )
-!write(6,*) ' blls out ', inform%BLLS_inform%status
 
          SELECT CASE ( inform%BLLS_inform%status )
 
@@ -2949,7 +2942,6 @@ end if
 
        data%stg = DOT_PRODUCT( data%S( : nlp%n ), nlp%G( : nlp%n ) )
        data%hstbs = data%model - data%stg
-!      write(6,*) ' stg = ', data%stg
 
 !  record the current point
 
@@ -3112,7 +3104,6 @@ end if
 !  compute the change in the objective function
 
        data%df = inform%obj - data%f_trial
-!      if (data%printi) write(6,*) ' dm, df ', data%dm, data%df
 
 !  compute the ratio of actual to predicted reduction over the current iteration
 
@@ -3124,9 +3115,7 @@ end if
        prered = data%dm + rounding
        IF ( ABS( ared ) < teneps .AND. ABS( inform%obj ) > teneps )            &
          ared = prered
-!write(6,*) ' ared, pred ', ared, prered
        data%ratio = ared / prered
-!      write(6,*) ' ratio ', data%ratio, ared, prered
        IF ( data%printm ) WRITE( data%out, "( /, A, ' actual, predicted',      &
       &   ' reductions = ', 2ES12.4 )" ) prefix, ared, prered
 
@@ -3311,8 +3300,6 @@ end if
          END IF
        END SELECT
 
-!      write(6,*) ' weight update ', inform%weight
-
 !  record the clock time
 
        CALL CPU_TIME( data%time_now ) ; CALL CLOCK_time( data%clock_now )
@@ -3328,9 +3315,6 @@ end if
            "( A, ' error: time limit exceeded' )" ) prefix
          inform%status = GALAHAD_error_cpu_limit ; GO TO 990
        END IF
-
-!write(6,*) ' f ', data%f_trial, data%ratio
-!stop
      GO TO 100
 
 !  ============================================================================
@@ -3350,7 +3334,6 @@ end if
      ELSE
        inform%norm_g = zero
      END IF
-!    write(6,*) ' final weight = ', inform%weight
 
      IF ( data%printi ) THEN
 
@@ -3377,7 +3360,7 @@ end if
 
        WRITE( data%out, "( /, A, '  Problem: ', A, ' (n = ', I0, ', m = ', I0, &
     &   ')', /, A, '  BNLS stopping tolerances (r,P[-J''r]) =', 2ES9.2 )" )    &
-          prefix, TRIM( nlp%pname ), nlp%n, nlp%m_r, prefix,                     &
+          prefix, TRIM( nlp%pname ), nlp%n, nlp%m_r, prefix,                   &
           data%stop_r, data%stop_pg
        IF ( .NOT. data%monotone ) WRITE( data%out,                             &
            "( A, '  Non-monotone method used (history = ', I0, ')' )" )        &
@@ -4668,7 +4651,7 @@ end if
        IF ( eval_status == 0 ) THEN
          data%reverse%lp = lp
          IF ( data%f_indexing ) THEN
-           data%reverse%IP( : lp ) = IP( : lp )
+           data%reverse%IP( : lp ) = IP( : lp ) + 1
          ELSE
            data%reverse%IP( : lp ) = IP( : lp ) + 1
          END IF
@@ -4678,8 +4661,8 @@ end if
      CASE( 8 )
        data%reverse%eval_status = eval_status
        IF ( eval_status == 0 ) THEN
+         lvl = data%reverse%lvl ; lvu = data%reverse%lvu
          IF ( .NOT. data%f_indexing ) THEN
-           lvl = data%reverse%lvl ; lvu = data%reverse%lvu
            IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
          END IF
          data%reverse%P( IV( lvl : lvu ) ) = P( IV( lvl : lvu ) )
@@ -4710,11 +4693,13 @@ end if
        V( : data%nlp%m_r ) = data%reverse%V( : data%nlp%m_r )
      CASE( 6, 7 )
        lvl = data%reverse%lvl ; lvu = data%reverse%lvu
-       IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
-       V( IV( lvl : lvu ) ) = data%reverse%V( IV( lvl : lvu ) )
-       IF ( .NOT. data%f_indexing ) THEN
-         IV( lvl : lvu ) = IV( lvl : lvu ) - 1
-!        lvl = lvl - 1 ; lvu = lvu - 1
+       V( data%reverse%IV( lvl : lvu ) )                                       &
+         = data%reverse%V( data%reverse%IV( lvl : lvu ) )
+       IF ( data%f_indexing ) THEN
+         IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
+       ELSE
+         IV( lvl : lvu ) = data%reverse%IV( lvl : lvu ) - 1
+         lvl = lvl - 1 ; lvu = lvu - 1
        END IF
      CASE( 8 )
        lvl = data%reverse%lvl ; lvu = data%reverse%lvu
@@ -4723,7 +4708,7 @@ end if
          IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
        ELSE
          IV( lvl : lvu ) = data%reverse%IV( lvl : lvu ) - 1
-!        lvl = lvl - 1 ; lvu = lvu - 1
+         lvl = lvl - 1 ; lvu = lvu - 1
        END IF
      END SELECT
      status = data%bnls_inform%status

@@ -33,7 +33,7 @@ ipc_ jacprod( ipc_ n, ipc_ m, const rpc_ x[], const bool transpose,
               const rpc_ v[], rpc_ p[], bool got_jr, const void * );
 ipc_ jacprods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[], 
                rpc_ p[], const ipc_ iv[], ipc_ lvl, ipc_ lvu, 
-               ipc_ ip[], ipc_ *lp, bool got_jr, const void *userdata ) {
+               ipc_ ip[], ipc_ *lp, bool got_jr, const void *userdata );
 ipc_ sjacprod( ipc_ n, ipc_ m_r, const rpc_ x[], bool transpose,
                const rpc_ v[], rpc_ p[], const ipc_ free[],
                ipc_ n_free, bool got_jr, const void * );
@@ -71,13 +71,13 @@ int main(void) {
     // set up array to flag current nonzeros in a  vector
     ipc_ flag = 0; // current flag value
     ipc_ flags[m_r]; // array of flags
-    for( ipc_ i = 0; i < m_r; i++) flags[i] = 0
+    for( ipc_ i = 0; i < m_r; i++) flags[i] = 0;
 
     // Set user data
     struct userdata_type userdata;
     userdata.p = 4.0;
-    userdata->flag = flag;
-    userdata->flags = flags;
+    userdata.flag = &flag;
+    userdata.flags = flags;
 
     printf(" fortran sparse matrix indexing\n\n");
 
@@ -123,8 +123,8 @@ int main(void) {
     // control.blls_control.print_level = 1;
     control.jacobian_available = 1;
     control.stop_pg_absolute = 0.00001;
-    // control.maxit = 1;
-    // control.blls_control.maxit = 5;
+    // control.maxit = 10;
+    //control.blls_control.maxit = 5;
     strcpy(control.blls_control.sbls_control.definite_linear_solver, "potr ");
     strcpy(control.blls_control.sbls_control.symmetric_linear_solver, "sytr ");
 
@@ -215,6 +215,8 @@ int main(void) {
     strcpy(control.blls_control.sbls_control.definite_linear_solver, "potr ");
     strcpy(control.blls_control.sbls_control.symmetric_linear_solver, "sytr ");
 
+    // control.maxit = 10;
+    // control.blls_control.maxit = 5;
     for( ipc_ i = 0; i < n; i++) x[i] = 0.5; // starting point
     bnls_import_without_jac( &control, &data, &status, n, m_r );
     while(true){ // reverse-communication loop
@@ -236,7 +238,7 @@ int main(void) {
           eval_status = jacprods( n, m_r, x, v, p, iv, lvl, lvu, NULL, NULL,
                                   got_jr, &userdata );
       }else if(status == 7){ // evaluate p = sparse( Jr(x) * sparse v )
-          eval_status = jacprods( n, m_r, x, v, p, iv, lvl, lvu, ip, lp,
+          eval_status = jacprods( n, m_r, x, v, p, iv, lvl, lvu, ip, &lp,
                                   got_jr, &userdata );
       }else if(status == 8){ // evaluate p = sparse(Jr' v)
           eval_status = sjacprod( n, m_r, x, true, v, p, iv, lvu,
@@ -259,6 +261,7 @@ int main(void) {
     }
     // Delete internal workspace
     bnls_terminate( &data, &control, &inform );
+    printf(" BNLS tests complete\n");
 }
 
 // compute the residuals
@@ -307,77 +310,77 @@ ipc_ jacprod( ipc_ n, ipc_ m_r, const rpc_ x[], const bool transpose,
 
 // compute a sparse product with the Jacobian
 ipc_ jacprods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[], 
-                          rpc_ p[], const ipc_ iv[], ipc_ lvl, ipc_ lvu, 
-                          ipc_ ip[], ipc_ *lp, bool got_jr,
-                          const void *userdata ) {
-    ipc_ j;
+               rpc_ p[], const ipc_ iv[], ipc_ lvl, ipc_ lvu, 
+               ipc_ ip[], ipc_ *lp, bool got_jr,
+               const void *userdata ) {
+    ipc_ i, j;
     rpc_ val;
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
-    ipc_ flag = myuserdata->flag;
-    ipc_ flags[] = myuserdata->flags;
+    ipc_ flag = *(myuserdata->flag);
+    ipc_ *flags = myuserdata->flags;
     if (ip != NULL && lp != NULL) {
       flag = flag+1;
       *lp = 0;
-      for( ipc_ l=lvl-1; l < lvu; l++){
+      for( ipc_ l=lvl; l <= lvu; l++){
         j = iv[l]-1;
         val = v[j];
         if (j == 0){
-          i = 1;
-          if (flags[i-1] < flag) {
-            flags[i-1] = flag;
-            p[i] = x[2] * val;
-            *lp = *lp+1;
+          i = 0;
+          if (flags[i] < flag) {
+            flags[i] = flag;
+            p[i] = x[i+1] * val;
             ip[*lp] = i;
+            *lp = *lp+1;
           } else {
-            p[i] = p[i] + x[2] * val;
+            p[i] = p[i] + x[i+1] * val;
           }
         } else if (j == n-1) {
-          i = n-1;
-          if (flags[i-1] < flag) {
-            flags[i-1] = flag;
-            p[i] = x[n-1] * val;
-            *lp = *lp+1;
+          i = m_r-1;
+          if (flags[i] < flag) {
+            flags[i] = flag;
+            p[i] = x[i] * val;
             ip[*lp] = i;
+            *lp = *lp+1;
           } else {
-            p[i] = p[i] + x[n-1] * val;
+            p[i] = p[i] + x[i] * val;
           }
         } else {
           i = j-1;
-          if (flags[i-1] < flag) {
-            flags[i-1] = flag;
-            p[i] = x[j-1] * val;
-            *lp = *lp+1;
+          if (flags[i] < flag) {
+            flags[i] = flag;
+            p[i] = x[i] * val;
             ip[*lp] = i;
+            *lp = *lp+1;
           } else {
-            p[i] = p[i] + x[j-1] * val;
+            p[i] = p[i] + x[i] * val;
           }
           i = j;
           if (flags[i] < flag) {
             flags[i] = flag;
-            p[i] = x[j +1] * val;
-            *lp = *lp + 1;
+            p[i] = x[i+1] * val;
             ip[*lp] = i;
+            *lp = *lp + 1;
           } else {
-            p[i] = p[i] + x[j+1] * val;
+            p[i] = p[i] + x[i+1] * val;
           }
         }
       }
     } else {
       for( ipc_ i = 0; i < m_r; i++) p[i] = 0.0;
-      for( ipc_ l =lvl-1; l < lvu; l++){
+      for( ipc_ l = lvl; l <= lvu; l++){
         j = iv[l]-1;
         val = v[j];
         if (j == 0) {
-          i = 1;
-          p[i] = p[i] + x[2] * val;
+          i = 0;
+          p[i] = p[i] + x[i+1] * val;
         } else if (j == n-1) {
-          i = n-1;
-          p[i] = p[i] + x[n-1] * val;
+          i = m_r-1;
+          p[i] = p[i] + x[i] * val;
         } else {
           i = j-1;
-          p[i] = p[i] + x[j-1] * val;
+          p[i] = p[i] + x[i] * val;
           i = j;
-          p[i] = p[i] + x[j+1] * val;
+          p[i] = p[i] + x[i+1] * val;
         }
       }
     }

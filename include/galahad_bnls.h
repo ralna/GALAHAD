@@ -233,8 +233,8 @@ extern "C" {
 #include "galahad_callbacks.h"
 
 // required packages
-#include "galahad_slls.h"
-#include "galahad_sllsb.h"
+#include "galahad_blls.h"
+#include "galahad_bllsb.h"
 
 /**
  * control derived type as a C struct
@@ -287,8 +287,8 @@ struct bnls_control_type {
 
     /// \brief
     ///  specify the method to be used to solve the subproblem
-    /// 1  use a projection method (slls)
-    /// 2  use an interior-point method (sllsb)
+    /// 1  use a projection method (blls)
+    /// 2  use an interior-point method (bllsb)
     /// 3  start with an interior-point method but later switch to projection
     ipc_ subproblem_solver;
 
@@ -416,12 +416,12 @@ struct bnls_control_type {
     char prefix[31];
 
     /// \brief
-    /// control parameters for SLLS
-    struct slls_control_type slls_control;
+    /// control parameters for BLLS
+    struct blls_control_type blls_control;
 
     /// \brief
-    /// control parameters for SLLSB
-    struct sllsb_control_type sllsb_control;
+    /// control parameters for BLLSB
+    struct bllsb_control_type bllsb_control;
 };
 
 /**
@@ -434,24 +434,24 @@ struct bnls_time_type {
     rpc_ total;
 
     /// \brief
-    /// the total CPU time spent in the slls package
-    rpc_ slls;
+    /// the total CPU time spent in the blls package
+    rpc_ blls;
 
     /// \brief
-    /// the total CPU time spent in the sllsb package
-    rpc_ sllsb;
+    /// the total CPU time spent in the bllsb package
+    rpc_ bllsb;
 
     /// \brief
     /// the total clock time spent in the package
     rpc_ clock_total;
 
     /// \brief
-    /// the total clock time spent in the slls package
-    rpc_ clock_slls;
+    /// the total clock time spent in the blls package
+    rpc_ clock_blls;
 
     /// \brief
-    /// the total clock time spent in the sllsb package
-    rpc_ clock_sllsb;
+    /// the total clock time spent in the bllsb package
+    rpc_ clock_bllsb;
 
 };
 
@@ -523,12 +523,12 @@ struct bnls_inform_type {
     struct bnls_time_type time;
 
     /// \brief
-    /// inform values from slls
-    struct slls_inform_type slls_inform;
+    /// inform values from blls
+    struct blls_inform_type blls_inform;
 
     /// \brief
-    /// inform values for sllsb
-    struct sllsb_inform_type sllsb_inform;
+    /// inform values for bllsb
+    struct bllsb_inform_type bllsb_inform;
 
 };
 
@@ -1173,7 +1173,6 @@ void bnls_solve_reverse_with_jacprod( void **data,
                                       ipc_ iv[],
                                       ipc_ *lvl,
                                       ipc_ *lvu,
-                                      ipc_ *index,
                                       const rpc_ p[],
                                       const ipc_ ip[],
                                       ipc_ lp,
@@ -1248,7 +1247,29 @@ void bnls_solve_reverse_with_jacprod( void **data,
        bnls_solve_reverse_with_jacprod should be re-entered with eval_status 
        set to a nonzero value.
 
-  \li  6. The j-th column of the residual Jacobian \f$J_r(x)\f$ is required 
+  \li  6. The product \f$J_r(x)v\f$ of the residual Jacobian \f$J_r(x)\f$ with 
+       a  given sparse output vector \f$v\f$ is required from the user.
+       The nonzero components of the vector \f$v\f$ will be stored as entries
+       iv[lvl-1:lvu-1] of v and the product \f$Av\f$ must be returned 
+       in p, eval_status should be set to 0, and bnls_solve_reverse_with_jacprod
+       re-entered with all other arguments unchanged; The remaining
+       components of v should be ignored. If the product cannot be formed,
+       p need not be set, but bnls_solve_reverse_with_jacprod should be
+       re-entered with eval_status set to a nonzero value.
+
+  \li  6. The nonzero components of the product \f$J_r(x)v\f$ of the residual 
+       Jacobian \f$J_r(x)\f$ with a  given sparse output vector \f$v\f$ is 
+       required from the user. The nonzero components of the vector \f$v\f$ 
+       will be stored as entries iv[lvl-1:lvu-1] of v and the lp nonzeros of 
+       the product \f$Av\f$ must be returned in p[ip[0:lp-1]] with lp, and
+       the indices ip{0:lp-1] of the nonzero components set accordingly; the 
+       remaining components of v should be ignored. If this is possible, 
+       eval_status should be set to 0, and bnls_solve_reverse_with_jacprod 
+       re-entered with all other arguments unchanged. If the product cannot be 
+       formed, p need not be set, but bnls_solve_reverse_with_jacprod should
+       be re-entered with eval_status set to a nonzero value.
+
+  \li  7. The j-th column of the residual Jacobian \f$J_r(x)\f$ is required 
        from the user, where index holds the value of j. The resulting 
        NONZEROS and their  correspinding row indices of the j-th column of
        \f$Av_o\f$ must be placed in p[0 : lp-1] and ip[0 : lp-1],
@@ -1258,16 +1279,6 @@ void bnls_solve_reverse_with_jacprod( void **data,
        cannot be formed, p, ip and lp need not be set, but 
        bnls_solve_reverse_with_jacprod should be re-entered with eval_status 
        set to a nonzero value.
-
-  \li  7. The product \f$J_r(x)v\f$ of the residual Jacobian \f$J_r(x)\f$ with 
-       a  given sparse output vector \f$v\f$ is required from the user.
-       The nonzero components of the vector \f$v\f$ will be stored as entries
-       iv[iv_start-1:iv_end-1] of v and the product \f$Av\f$ must be returned 
-       in p, eval_status should be set to 0, and bnls_solve_reverse_with_jacprod
-       re-entered with all other arguments unchanged; The remaining
-       components of v should be ignored. If the product cannot be formed,
-       v need not be set, but bnls_solve_reverse_with_jacprod should be
-       re-entered with eval_status set to a nonzero value.
 
   \li  8. A subset of the product \f$J_r(x)^Tv\f$ of the transpose of the 
        residual Jacobian \f$J_r(x)\f$ with a given output vector \f$v\f$ 

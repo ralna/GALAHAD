@@ -189,8 +189,8 @@ functions
             infinite.
           stop_pg_absolute : float
             overall convergence tolerances. The iteration will terminate
-            when the norm of the gradient of the objective function is
-            smaller than MAX( ``stop_pg_absolute,`` ``stop_pg_relative``
+            when the norm of the projected gradient of the objective function
+            is smaller than MAX( ``stop_pg_absolute,`` ``stop_pg_relative``
             * norm of the initial gradient ) or if the step is less than
             ``stop_s``.
           stop_pg_relative : float

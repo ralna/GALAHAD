@@ -1,16 +1,16 @@
-SNLS
+BNLS
 ====
 
-.. module:: galahad.snls
+.. module:: galahad.bnls
 
-.. include:: snls_intro.rst
+.. include:: bnls_intro.rst
 
-.. include:: snls_storage.rst
+.. include:: bnls_storage.rst
 
 functions
 ---------
 
-   .. function:: snls.initialize()
+   .. function:: bnls.initialize()
 
       Set default option values and initialize private data
 
@@ -63,11 +63,11 @@ functions
 
              * **1**
 
-               use a projected-gradient method from the GALAHAD module ``slls``.
+               use a projected-gradient method from the GALAHAD module ``blls``.
 
              * **2**
 
-               use an interior-point method from the GALAHAD module ``sllsb``.
+               use an interior-point method from the GALAHAD module ``bllsb``.
 
              * **3**
 
@@ -82,6 +82,9 @@ functions
              define the weight-update strategy: 1 (basic), 2 (reset to
              zero when very successful), 3 (imitate TR), 4 (increase
              lower bound), 5 (GPT).
+          infinity : float
+            any bound larger than infinity in modulus will be regarded as
+            infinite.
           stop_r_absolute : float
              overall convergence tolerances. The iteration will
              terminate when $||r(x)||_W \leq \max($
@@ -167,13 +170,13 @@ functions
             all output lines will be prefixed by the string contained
             in quotes within ``prefix``, e.g. 'word' (note the qutoes)
             will result in the prefix word.
-          slls_options : dict
-             default control options for `slls` (see ``slls.initialize``).
-          sllsb_options : dict
-             default control options for `sllsb` (see ``sllsb.initialize``).
+          blls_options : dict
+             default control options for `blls` (see ``blls.initialize``).
+          bllsb_options : dict
+             default control options for `bllsb` (see ``bllsb.initialize``).
 
-   .. function:: snls.load(n, m_r, m_c, J_type, J_ne, J_row, J_col, J_ptr_ne, 
-                           J_ptr, cohort, options=None)
+   .. function:: bnls.load(n, m_r, J_type, J_ne, J_row, J_col, J_ptr_ne, 
+                           J_ptr, options=None)
 
       Import problem data into internal storage prior to solution.
 
@@ -183,8 +186,6 @@ functions
           holds the number of variables.
       m_r : int
           holds the number of residuals.
-      m_c : int
-          holds the number of cohorts.
       J_type : string
           specifies the unsymmetric storage scheme used for the Jacobian
           $J = J(x)$.
@@ -213,18 +214,13 @@ functions
           as the total number of entries, in the sparse column-wise storage 
           scheme. It need not be set when the other schemes are used, and in 
           this case can be None.
-      cohort : ndarray(n), optional
-          specifies which cohort, $i=0,\ldots,m_c-1$, variable $x_j$ 
-          $j=0,\ldots,n-1$, lies in, or to a negative number if $x_j$
-          is not constrained. If all variables lie in a single cohort,
-          it may be set to None.
       options : dict, optional
-          dictionary of control options (see ``snls.initialize``).
+          dictionary of control options (see ``bnls.initialize``).
 
-   .. function:: snls.solve(n, m_r, m_c, x, eval_r, Jr_ne, eval_jr, w)
+   .. function:: bnls.solve(n, m_r, x_l, x_u,, x, eval_r, Jr_ne, eval_jr, w)
 
       Find an approximate local unconstrained minimizer of a given 
-      least-squares function subject to non-overlapping simplex constraints
+      least-squares function subject to simple-bound constraints
       using a regularization method.
 
       **Parameters:**
@@ -233,8 +229,12 @@ functions
           holds the number of variables.
       m_r : int
           holds the number of residuals.
-      m_c : int
-          holds the number of cohorts.
+      x_l : ndarray(n)
+          holds the values $x^l$ of the lower bounds on the
+          optimization variables $x$.
+      x_u : ndarray(n)
+          holds the values $x^u$ of the upper bounds on the
+          optimization variables $x$.
       x : ndarray(n)
           holds the values of optimization variables $x$.
       eval_r : callable
@@ -254,7 +254,7 @@ functions
           The components of the nonzeros in the Jacobian
           $J_r(x)$ of the objective function evaluated at
           $x$ must be assigned to ``jr`` in the same order as specified
-          in the sparsity pattern in ``snls.load``.
+          in the sparsity pattern in ``bnls.load``.
       w : ndarray(m_r), optional
           holds the vector of weights $w$. If w is Null, weights of
           one will be presumed.
@@ -264,8 +264,6 @@ functions
       x : ndarray(n)
           holds the value of the approximate minimizer $x$ after
           a successful call.
-      y : ndarray(m_c)
-          holds the value of the Lagrange multipliers $y$.
       z : ndarray(n)
           holds the value of the dual variables $z$.
       r : ndarray(m_r)
@@ -274,7 +272,7 @@ functions
           holds the gradient $\nabla f(x)$ of the objective function.
 
 
-   .. function:: [optional] snls.information()
+   .. function:: [optional] bnls.information()
 
       Provide optional output information
 
@@ -376,46 +374,46 @@ functions
           obj : float
              the value of the objective function
              $\frac{1}{2}\|r(x)\|^2_W$ at the best estimate the
-             solution, x, determined by SNLS_solve.
+             solution, x, determined by BNLS_solve.
           norm_r : float
              the norm of the residual $\|r(x)\|_W$ at the best estimate
-             of the solution x, determined by SNLS_solve.
+             of the solution x, determined by BNLS_solve.
           norm_g : float
              the norm of the gradient of $\|r(x)\|_W$ of the objective
              function at the best estimate, x, of the solution
-             determined by SNLS_solve.
+             determined by BNLS_solve.
           norm_pg : float
              the norm of the projected gradient $P[x- J_r^T(x) r(x)] - x$
-             at the best estimate, x, of the solution determined by SNLS_solve.
+             at the best estimate, x, of the solution determined by BNLS_solve.
           weight : float
              the final regularization weight used.
           time : dict
              dictionary containing timing information:
                total : float
                   the total CPU time spent in the package.
-               slls : float
-                  the CPU time spent in the ``slls`` package
-               sllsb : float
-                  the CPU time spent in the ``sllsb`` package
+               blls : float
+                  the CPU time spent in the ``blls`` package
+               bllsb : float
+                  the CPU time spent in the ``bllsb`` package
                clock_total : float
                   the total clock time spent in the package.
-               clock_slls : float
-                  the clock time spent in the ``slls`` package
-               clock_sllsb : float
-                  the clock time spent in the ``sllsb`` package
-          slls_inform : dict
-             inform parameters for ``slls`` (see ``slls.information``).
-          sllsb_inform : dict
-             inform parameters for ``sllsb`` (see ``sllsb.information``).
+               clock_blls : float
+                  the clock time spent in the ``blls`` package
+               clock_bllsb : float
+                  the clock time spent in the ``bllsb`` package
+          blls_inform : dict
+             inform parameters for ``blls`` (see ``blls.information``).
+          bllsb_inform : dict
+             inform parameters for ``bllsb`` (see ``bllsb.information``).
 
-   .. function:: snls.terminate()
+   .. function:: bnls.terminate()
 
      Deallocate all internal private storage.
 
 example code
 ------------
 
-.. include:: ../../src/snls/Python/test_snls.py
+.. include:: ../../src/bnls/Python/test_bnls.py
    :code: python
 
-This example code is available in $GALAHAD/src/snls/Python/test_snls.py .
+This example code is available in $GALAHAD/src/bnls/Python/test_bnls.py .

@@ -3,76 +3,124 @@ import numpy as np
 np.set_printoptions(precision=4,suppress=True,floatmode='fixed')
 print("\n** python test: bnls")
 
+# set parameters
+p = 4.0
+n = 5
+m_r = 4
+
+# set Jacobian sparsity
+Jr_type = 'coordinate'
+Jr_ne = 8
+Jr_row = np.array([0,0,1,1,2,2,3,3])
+Jr_col = np.array([0,1,1,2,2,3,3,4])
+Jr_ptr = None
+
+# set variable bounds
+x_l = np.array([0.0,0.0,0.0,0.0,0.0])
+x_u = np.array([1.0,1.0,1.0,1.0,1.0])
+
+# set weights
+w = np.array([1.0,1.0,1.0,1.0])
+
 # allocate internal data and set default options
 options = bnls.initialize()
 
 # set some non-default options
 options['print_level'] = 0
 options['jacobian_available'] = 2
-options['hessian_available'] = 2
-options['model'] = 6
+options['stop_pg_absolute'] =  0.00001
+options['blls_options']['sbls_options']['symmetric_linear_solver'] = 'sytr '
+options['blls_options']['sbls_options']['definite_linear_solver'] = 'potr '
 #print("options:", options)
 
-# set parameters
-p = 1.0
-n = 2
-m = 3
-
-# set Jacobian sparsity
-J_type = 'coordinate'
-J_ne = 5
-J_row = np.array([0,1,1,2,2])
-J_col = np.array([0,0,1,0,1])
-J_ptr = None
-
-# set Hessian sparsity
-H_type = 'coordinate'
-H_ne = 2
-H_row = np.array([0,1])
-H_col = np.array([0,1])
-H_ptr = None
-
-# set Hessian product sparsity
-P_type = 'sparse_by_columns'
-P_ne = 2
-P_row = np.array([0,1])
-P_col = None
-P_ptr = np.array([0,1,2,2])
-
-w = np.array([1.0,1.0,1.0])
-
 # load data (and optionally non-default options)
-bnls.load(n, m,
-         J_type, J_ne, J_row, J_col, J_ptr,
-         H_type, H_ne, H_row, H_col, H_ptr,
-         P_type, P_ne, P_row, P_col, P_ptr,
-         w, options)
+bnls.load(n, m_r, Jr_type, Jr_ne, Jr_row, Jr_col, 0, Jr_ptr, options)
 
-# define residual function and its derivatives
-def eval_c(x):
-    return np.array([(x[0])**2 + p, x[0] + (x[1])**2, x[0] - x[1]])
-def eval_j(x):
-    return np.array([2.0 * x[0], 1.0, 2.0 * x[1], 1.0, - 1.0])
-def eval_h(x,y):
-    return np.array([2.0 * y[0], 2.0 * y[1]])
-def eval_hprod(x,v):
-    return np.array([2.0 * v[0], 2.0 * v[1]])
+# define residual function and its Jacobian
+def eval_r(x):
+    return np.array([x[0]*x[1] - p, x[1]*x[2] - 1.0, 
+                     x[2]*x[3] - 1.0, x[3]*x[4] - 1.0])
+def eval_jr(x):
+    return np.array([x[1], x[0], x[2], x[1], x[3], x[2], x[4], x[3]])
 
 # set starting point
-x = np.array([1.5,1.5])
-
-# find optimum
-x, c, g = bnls.solve(n, m, x, eval_c, J_ne, eval_j, H_ne, eval_h,
-                    P_ne, eval_hprod)
+x = np.array([0.5,0.5,0.5,0.5,0.5])
 print(" x:",x)
-print(" c:",c)
+
+# find minimizer
+print("\n sparse solve bnls")
+x, z, r, g, x_stat = bnls.solve(n, m_r, x_l, x_u, x, eval_r, Jr_ne, eval_jr, w)
+print("\n** out solve")
+print(" x:",x)
+print("\n** print x done")
+print(" z:",z)
+print(" r:",r)
 print(" g:",g)
+print(" x_stat:",x_stat)
+print("\n** print x_stat done")
 
 # get information
+print("\n** get inform")
 inform = bnls.information()
-#print(inform)
+print("\n** get inform done")
+print("inform:", inform)
 print(" f: %.4f" % inform['obj'])
 print('** bnls exit status:', inform['status'])
 
 # deallocate internal data
 bnls.terminate()
+
+# repeat problem using dense format
+
+# set Jacobian sparsity
+Jr_type = 'dense'
+Jr_ne = n * m_r
+Jr_row = None
+Jr_col = None
+Jr_ptr = None
+
+# allocate internal data and set default options
+options = bnls.initialize()
+
+# set some non-default options
+options['print_level'] = 0
+options['jacobian_available'] = 2
+options['stop_pg_absolute'] =  0.00001
+options['blls_options']['sbls_options']['symmetric_linear_solver'] = 'sytr '
+options['blls_options']['sbls_options']['definite_linear_solver'] = 'potr '
+#print("options:", options)
+
+# load data (and optionally non-default options)
+bnls.load(n, m_r, Jr_type, Jr_ne, Jr_row, Jr_col, 0, Jr_ptr, options)
+
+# define the dense Jacobian
+def eval_jr_dense(x):
+    return np.array([x[1], x[0], 0.0,  0.0,  0.0,
+                     0.0,  x[2], x[1], 0.0,  0.0,
+                     0.0,  0.0,  x[3], x[2], 0.0,
+                     0.0,  0.0,  0.0,  x[4], x[3]])
+
+# set starting point
+x = np.array([0.5,0.5,0.5,0.5,0.5])
+
+# find minimizer
+print("\n dense solve bnls")
+x, z, r, g, x_stat = bnls.solve(n, m_r, x_l, x_u, x, 
+                                eval_r, Jr_ne, eval_jr_dense, w)
+print(" x:",x)
+print(" z:",z)
+print(" r:",r)
+print(" g:",g)
+print(" x_stat:",x_stat)
+
+# get information
+inform = bnls.information()
+#print("inform:", inform)
+print(" f: %.4f" % inform['obj'])
+print('** bnls exit status:', inform['status'])
+
+# deallocate internal data
+bnls.terminate()
+
+
+

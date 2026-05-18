@@ -47,6 +47,8 @@ all_cutest_single:
                          trb_cutest $(S32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          nls_cutest $(S32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         bnls_cutest $(S32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          snls_cutest $(S32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -77,6 +79,8 @@ all_cutest_double:
                           trb_cutest $(D32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls_cutest $(D32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls_cutest $(D32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls_cutest $(D32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -107,6 +111,8 @@ all_cutest_quadruple:
                           trb_cutest $(Q32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls_cutest $(Q32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls_cutest $(Q32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls_cutest $(Q32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -137,6 +143,8 @@ all_cutest_single_64:
                          trb_cutest $(S64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          nls_cutest $(S64) PWD=$(PWD)/nls )
+	( cd bnls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         bnls_cutest $(S64) PWD=$(PWD)/bnls )
 	( cd snls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          snls_cutest $(S64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -167,6 +175,8 @@ all_cutest_double_64:
                           trb_cutest $(D64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls_cutest $(D64) PWD=$(PWD)/nls )
+	( cd bnls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls_cutest $(D64) PWD=$(PWD)/bnls )
 	( cd snls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls_cutest $(D64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -197,6 +207,8 @@ all_cutest_quadruple_64:
                           trb_cutest $(Q64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls_cutest $(Q64) PWD=$(PWD)/nls )
+	( cd bnls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls_cutest $(Q64) PWD=$(PWD)/bnls )
 	( cd snls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls_cutest $(Q64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -273,6 +285,8 @@ all_ciface_single:
                          trb_ciface $(S32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          nls_ciface $(S32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         bnls_ciface $(S32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          snls_ciface $(S32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -295,6 +309,8 @@ all_ciface_double:
                           trb_ciface $(D32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls_ciface $(D32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls_ciface $(D32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls_ciface $(D32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -317,6 +333,8 @@ all_ciface_quadruple:
                           trb_ciface $(Q32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls_ciface $(Q32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls_ciface $(Q32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls_ciface $(Q32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -339,6 +357,8 @@ all_ciface_single_64:
                          trb_ciface $(S64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          nls_ciface $(S64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         bnls_ciface $(S64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          snls_ciface $(S64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -361,6 +381,8 @@ all_ciface_double_64:
                           trb_ciface $(D64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls_ciface $(D64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls_ciface $(D64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls_ciface $(D64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -383,6 +405,8 @@ all_ciface_quadruple_64:
                           trb_ciface $(Q64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls_ciface $(Q64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls_ciface $(Q64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls_ciface $(Q64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -411,6 +435,8 @@ all_pyiface_single: all_ciface_single
                          trb_pyiface $(S32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          nls_pyiface $(S32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         bnls_pyiface $(S32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          snls_pyiface $(S32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -433,6 +459,8 @@ all_pyiface_double: all_ciface_double
                          trb_pyiface $(D32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          nls_pyiface $(D32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         bnls_pyiface $(D32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          snls_pyiface $(D32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -455,6 +483,8 @@ all_pyiface_quadruple: all_ciface_quadruple
                          trb_pyiface $(D64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          nls_pyiface $(D64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         bnls_pyiface $(D64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          snls_pyiface $(D64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -479,6 +509,8 @@ all_pyiface_single_64: all_ciface_single_64
                          nls_pyiface $(S64) PWD=$(PWD)/nls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          snls_pyiface $(S64) PWD=$(PWD)/snls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         bnls_pyiface $(S64) PWD=$(PWD)/bnls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_pyiface $(S64) PWD=$(PWD)/all_go )
 
@@ -499,6 +531,8 @@ all_pyiface_double_64: all_ciface_double_64
                          trb_pyiface $(D64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          nls_pyiface $(D64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         bnls_pyiface $(D64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          snls_pyiface $(D64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -521,6 +555,8 @@ all_pyiface_quadruple_64: all_ciface_quadruple_64
                          trb_pyiface $(Q64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          nls_pyiface $(Q64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         bnls_pyiface $(Q64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          snls_pyiface $(Q64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -583,6 +619,8 @@ all_standalone_single:
                           trb $(S32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls $(S32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls $(S32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls $(S32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -613,6 +651,8 @@ all_standalone_double:
                           trb $(D32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls $(D32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls $(D32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls $(D32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -643,6 +683,8 @@ all_standalone_quadruple:
                           trb $(Q32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls $(Q32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls $(Q32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls $(Q32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -673,6 +715,8 @@ all_standalone_single_64:
                           trb $(S64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls $(S64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls $(S64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls $(S64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -703,6 +747,8 @@ all_standalone_double_64:
                           trb $(D64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls $(D64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls $(D64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls $(D64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -733,6 +779,8 @@ all_standalone_quadruple_64:
                           trb $(Q64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls $(Q64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          bnls $(Q64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           snls $(Q64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1935,6 +1983,8 @@ test_all_ciface_single:
                          test_cifaces $(S32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          test_cifaces $(S32) PWD=$(PWD)/nls )
+	( cd bnls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                        test_cifaces $(S32) PWD=$(PWD)/bnls )
 	( cd snls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                         test_cifaces $(S32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1962,6 +2012,8 @@ test_all_ciface_double:
                           test_cifaces $(D32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(D32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces $(D32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(D32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -1989,6 +2041,8 @@ test_all_ciface_quadruple:
                           test_cifaces $(Q32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(Q32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces $(Q32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(Q32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2016,6 +2070,8 @@ test_all_ciface_single_64:
                          test_cifaces $(S64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          test_cifaces $(S64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         test_cifaces $(S64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          test_cifaces $(S64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2043,6 +2099,8 @@ test_all_ciface_double_64:
                           test_cifaces $(D64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(D64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces $(D64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(D64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2070,6 +2128,8 @@ test_all_ciface_quadruple_64:
                           test_cifaces $(Q64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(Q64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces $(Q64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_cifaces $(Q64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2128,6 +2188,8 @@ test_all_pyiface_single:
                           test_pyiface $(S32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(S32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface $(S32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(S32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2179,6 +2241,8 @@ test_all_pyiface_double:
                           test_pyiface $(D32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(D32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface $(D32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(D32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2230,6 +2294,8 @@ test_all_pyiface_quadruple:
                           test_pyiface $(Q32) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(Q32) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface $(Q32) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(Q32) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2281,6 +2347,8 @@ test_all_pyiface_single_64:
                           test_pyiface $(S64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(S64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface $(S64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(S64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2332,6 +2400,8 @@ test_all_pyiface_double_64:
                           test_pyiface $(D64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(D64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface $(D64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(D64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -2383,6 +2453,8 @@ test_all_pyiface_quadruple_64:
                           test_pyiface $(Q64) PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(Q64) PWD=$(PWD)/nls )
+	( cd bnls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_pyiface $(Q64) PWD=$(PWD)/bnls )
 	( cd snls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           test_pyiface $(Q64) PWD=$(PWD)/snls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \

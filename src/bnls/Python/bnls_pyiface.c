@@ -40,7 +40,7 @@ static int status = 0;                   // exit status
 /* Python eval_* function pointers */
 static PyObject *py_eval_r = NULL;
 static PyObject *py_eval_jr = NULL;
-static PyObject *py_eval_h = NULL;
+static PyObject *bnls_solve_return = NULL;
 //static PyObject *py_c = NULL;
 //static PyObject *py_g = NULL;
 
@@ -107,45 +107,6 @@ static int eval_jr(int n, int m_r, int jrne, const double x[], double jrval[],
     const double *val = (double *) PyArray_DATA((PyArrayObject*) result);
     for(int i=0; i<jrne; i++) {
         jrval[i] = val[i];
-    }
-
-    // Free result memory
-    Py_DECREF(result);
-
-    return 0;
-}
-
-static int eval_h(int n, int m, int hne, const double x[],
-                  double hval[], const void *userdata){
-
-    // Wrap input arrays as NumPy arrays
-    npy_intp xdim[] = {n};
-    PyArrayObject *py_x = (PyArrayObject*)
-       PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
-
-    // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(N)", py_x);
-
-    // Call Python eval_h
-    PyObject *result = PyObject_CallObject(py_eval_h, arglist);
-    Py_DECREF(py_x);    // Free py_x memory
-    Py_DECREF(arglist); // Free arglist memory
-
-    // Check that eval was successful
-    if(!result)
-        return -1;
-
-    // Check return value is of correct type, size, and shape
-    if(!check_array_double("eval_h return value",
-                           (PyArrayObject*) result, hne)){
-        Py_DECREF(result); // Free result memory
-        return -1;
-    }
-
-    // Get return value data pointer and copy data into hval
-    const double *val = (double *) PyArray_DATA((PyArrayObject*) result);
-    for(int i=0; i<hne; i++) {
-        hval[i] = val[i];
     }
 
     // Free result memory
@@ -736,9 +697,6 @@ static PyObject* py_bnls_solve(PyObject *self, PyObject *args, PyObject *keywds)
     npy_intp ndim[] = {n}; // size of z, g and x_stat
     npy_intp mrdim[] = {m_r}; // size of r
 
-    PyArrayObject *py_y =
-      (PyArrayObject *) PyArray_SimpleNew(1, mcdim, NPY_DOUBLE);
-    double *y = (double *) PyArray_DATA(py_y);
     PyArrayObject *py_z =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *z = (double *) PyArray_DATA(py_z);
@@ -757,6 +715,7 @@ static PyObject* py_bnls_solve(PyObject *self, PyObject *args, PyObject *keywds)
     bnls_solve_with_jac(&data, NULL, &status, n, m_r,
                         x_l, x_u, x, z, r, g, x_stat,
                         eval_r, Jr_ne, eval_jr, w );
+    printf(" BNLS out solve ok\n");
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
@@ -766,24 +725,33 @@ static PyObject* py_bnls_solve(PyObject *self, PyObject *args, PyObject *keywds)
     if(!check_error_codes(status))
         return NULL;
 
-    // Return x, z, r, g and x_stat
-    return Py_BuildValue("NNNNN", py_x, py_z, py_r, py_g,
-                                    py_x_stat);
+    printf(" py_bnls_solve out ok\n");
+
+   // Return x, z, r, g and x_stat
+    bnls_solve_return = Py_BuildValue("NNNNN", py_x, py_z, py_r, py_g,
+                                               py_x_stat);
+    Py_INCREF(bnls_solve_return);
+    printf(" py_bnls_solve out ok ok\n");
+    return bnls_solve_return;
+
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BNLS_INFORMATION   -*-*-*-*-*-*-*-*
 
 static PyObject* py_bnls_information(PyObject *self){
 
+    printf(" py_bnls_information in ok\n");
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
     // Call bnls_information
+    printf(" py_bnls_information get\n");
     bnls_information(&data, &inform, &status);
 
     // Return status and inform Python dictionary
     PyObject *py_inform = bnls_make_inform_dict(&inform);
+    printf(" py_bnls_information out\n");
     return Py_BuildValue("N", py_inform);
 }
 

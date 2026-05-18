@@ -281,8 +281,7 @@ int main(void) {
     while(true){ // reverse-communication loop
         blls_solve_reverse_a_prod( &data, &status, &eval_status, n, o, b,
                                    regularization_weight, x_l, x_u, 
-                                    x, z, r, g, x_stat, v, p,
-                                   iv, &lvl, &lvu,
+                                   x, z, r, g, x_stat, v, p, iv, &lvl, &lvu,
                                    ip, lp, w, x_s );
         if(status == 0){ // successful termination
             break;
