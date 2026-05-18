@@ -67,7 +67,7 @@ static int eval_c(int n, int m, const double x[], double c[],
     PyObject *py_x = PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(N)", py_x);
+    PyObject *arglist = Py_BuildValue("(O)", py_x);
 
     // Call Python eval_c
     PyObject *result = PyObject_CallObject(py_eval_c, arglist);
@@ -99,7 +99,7 @@ static int eval_j(int n, int m, int jne, const double x[], double jval[],
        PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(N)", py_x);
+    PyObject *arglist = Py_BuildValue("(O)", py_x);
 
     // Call Python eval_j
     PyObject *result = PyObject_CallObject(py_eval_j, arglist);
@@ -141,7 +141,7 @@ static int eval_h(int n, int m, int hne, const double x[], const double y[],
        PyArray_SimpleNewFromData(1, ydim, NPY_DOUBLE, (void *) y);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(NN)", py_x, py_y);
+    PyObject *arglist = Py_BuildValue("(OO)", py_x, py_y);
 
     // Call Python eval_h
     PyObject *result = PyObject_CallObject(py_eval_h, arglist);
@@ -184,7 +184,7 @@ static int eval_hprods(int n, int m, int pne, const double x[], const double v[]
        PyArray_SimpleNewFromData(1, vdim, NPY_DOUBLE, (void *) v);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(NN)", py_x, py_v);
+    PyObject *arglist = Py_BuildValue("(OO)", py_x, py_v);
 
     // Call Python eval_h
     PyObject *result = PyObject_CallObject(py_eval_hprods, arglist);
@@ -1257,7 +1257,7 @@ static PyObject* py_nls_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = nls_make_options_dict(&control);
-    return Py_BuildValue("N", py_options);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   NLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -1495,7 +1495,7 @@ static PyObject* py_nls_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x, c and g
-    nls_solve_return = Py_BuildValue("NNN", py_x, py_c, py_g);
+    nls_solve_return = Py_BuildValue("OOO", py_x, py_c, py_g);
     Py_XINCREF(nls_solve_return);
     return nls_solve_return;
 }
@@ -1513,7 +1513,7 @@ static PyObject* py_nls_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = nls_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   NLS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

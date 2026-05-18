@@ -284,7 +284,7 @@ static PyObject* py_glrt_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = glrt_make_options_dict(&control);
-    return Py_BuildValue("N", py_options);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   GLRT_LOAD_OPTIONS    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -329,7 +329,7 @@ static PyObject* py_glrt_solve_problem(PyObject *self, PyObject *args, PyObject 
 
     // Parse positional arguments
     static char *kwlist[] = {"status", "n", "power", "weight", "r", "v", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiddOO", kwlist, &status,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiddOO", kwlist, &status, 
                                     &n, &power, &weight, &py_r, &py_v))
         return NULL;
 
@@ -365,8 +365,8 @@ static PyObject* py_glrt_solve_problem(PyObject *self, PyObject *args, PyObject 
     // Return status, x, r and v
     PyObject *solve_problem_return;
 
-    // solve_problem_return = Py_BuildValue("N", py_x);
-    solve_problem_return = Py_BuildValue("iNNN", status, py_x, py_r, py_v);
+    // solve_problem_return = Py_BuildValue("O", py_x);
+    solve_problem_return = Py_BuildValue("iOOO", status, py_x, py_r, py_v);
     Py_INCREF(solve_problem_return);
     return solve_problem_return;
 }
@@ -384,7 +384,7 @@ static PyObject* py_glrt_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = glrt_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   GLRT_TERMINATE   -*-*-*-*-*-*-*-*-*-*

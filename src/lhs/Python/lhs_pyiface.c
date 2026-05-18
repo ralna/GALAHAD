@@ -152,7 +152,7 @@ static PyObject* py_lhs_initialize(PyObject *self){
     // Return options Python dictionary
     PyObject *py_options = lhs_make_options_dict(&control);
     PyObject *py_inform = lhs_make_inform_dict(&inform);
-    return Py_BuildValue("NN", py_options, py_inform);
+    return Py_BuildValue("OO", py_options, py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LHS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -168,7 +168,7 @@ static PyObject* py_lhs_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = lhs_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LHS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

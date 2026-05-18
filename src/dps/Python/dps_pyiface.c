@@ -302,7 +302,7 @@ static PyObject* py_dps_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = dps_make_options_dict(&control);
-    return Py_BuildValue("N", py_options);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   DPS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -435,7 +435,7 @@ static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args, PyObjec
     // Return x
     PyObject *solve_tr_problem_return;
 
-    solve_tr_problem_return = Py_BuildValue("N", py_x);
+    solve_tr_problem_return = Py_BuildValue("O", py_x);
     Py_INCREF(solve_tr_problem_return);
     return solve_tr_problem_return;
 
@@ -455,7 +455,7 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObjec
 
     // Parse positional arguments
     static char *kwlist[] = {"n","weight","power","f","g","H_ne","H_val",NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idddOiO", kwlist, &n,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idddOiO", kwlist, &n, 
                                     &weight, &power, &f, &py_g,
                                     &H_ne, &py_H_val))
         return NULL;
@@ -492,7 +492,7 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObjec
     // Return x
     PyObject *solve_rq_problem_return;
 
-    solve_rq_problem_return = Py_BuildValue("N", py_x);
+    solve_rq_problem_return = Py_BuildValue("O", py_x);
     Py_INCREF(solve_rq_problem_return);
     return solve_rq_problem_return;
 
@@ -511,7 +511,7 @@ static PyObject* py_dps_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = dps_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DPS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

@@ -201,7 +201,7 @@ static PyObject* py_lms_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = lms_make_options_dict(&control);
-    return Py_BuildValue("N", py_options);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LMS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -217,7 +217,7 @@ static PyObject* py_lms_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = lms_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LMS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

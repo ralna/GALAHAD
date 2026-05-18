@@ -101,7 +101,7 @@ static PyObject* py_scu_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = scu_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SCU_TERMINATE   -*-*-*-*-*-*-*-*-*-*

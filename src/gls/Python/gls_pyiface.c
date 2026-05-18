@@ -352,7 +352,7 @@ static PyObject* py_gls_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = gls_make_options_dict(&control);
-    return Py_BuildValue("N", py_options);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   GLS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -370,7 +370,7 @@ static PyObject* py_gls_information(PyObject *self){
     PyObject *py_ainfo = gls_make_ainfo_dict(&ainfo);
     PyObject *py_finfo = gls_make_finfo_dict(&finfo);
     PyObject *py_sinfo = gls_make_sinfo_dict(&sinfo);
-    return Py_BuildValue("NNN", py_ainfo, py_finfo, py_sinfo);
+    return Py_BuildValue("OOO", py_ainfo, py_finfo, py_sinfo);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   GLS_FINALIZE   -*-*-*-*-*-*-*-*-*-*

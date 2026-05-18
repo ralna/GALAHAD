@@ -698,7 +698,7 @@ static PyObject* py_bqpb_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = bqpb_make_options_dict(&control);
-    return Py_BuildValue("N", py_options);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   BQPB_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -847,8 +847,8 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args, PyObject *keyw
     // Return x, z and x_stat
     PyObject *solve_qp_return;
 
-    // solve_qp_return = Py_BuildValue("N", py_x);
-    solve_qp_return = Py_BuildValue("NNN", py_x, py_z, py_x_stat);
+    // solve_qp_return = Py_BuildValue("O", py_x);
+    solve_qp_return = Py_BuildValue("OOO", py_x, py_z, py_x_stat);
     Py_INCREF(solve_qp_return);
     return solve_qp_return;
 
@@ -923,7 +923,7 @@ static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args, PyObject *k
 
     // Return x, z, and x_stat
     PyObject *solve_sldqp_return;
-    solve_sldqp_return = Py_BuildValue("NNN", py_x, py_z, py_x_stat);
+    solve_sldqp_return = Py_BuildValue("OOO", py_x, py_z, py_x_stat);
     Py_INCREF(solve_sldqp_return);
     return solve_sldqp_return;
 }
@@ -941,7 +941,7 @@ static PyObject* py_bqpb_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = bqpb_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BQPB_TERMINATE   -*-*-*-*-*-*-*-*-*-*

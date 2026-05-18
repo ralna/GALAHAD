@@ -68,7 +68,7 @@ static int eval_f(int n, const double x[], double *f, const void *userdata){
     PyObject *py_x = PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(N)", py_x);
+    PyObject *arglist = Py_BuildValue("(O)", py_x);
 
     // Call Python eval_f
     PyObject *result = PyObject_CallObject(py_eval_f, arglist);
@@ -99,7 +99,7 @@ static int eval_g(int n, const double x[], double g[], const void *userdata){
        PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(N)", py_x);
+    PyObject *arglist = Py_BuildValue("(O)", py_x);
 
     // Call Python eval_g
     PyObject *result = PyObject_CallObject(py_eval_g, arglist);
@@ -136,7 +136,7 @@ static int eval_h(int n, int ne, const double x[], double hval[], const void *us
        PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(N)", py_x);
+    PyObject *arglist = Py_BuildValue("(O)", py_x);
 
     // Call Python eval_h
     PyObject *result = PyObject_CallObject(py_eval_h, arglist);
@@ -720,7 +720,7 @@ static PyObject* py_arc_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = arc_make_options_dict(&control);
-    return Py_BuildValue("N", py_options);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   ARC_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -865,7 +865,7 @@ static PyObject* py_arc_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x and g
-    arc_solve_return = Py_BuildValue("NN", py_x, py_g);
+    arc_solve_return = Py_BuildValue("OO", py_x, py_g);
     Py_XINCREF(arc_solve_return);
     return arc_solve_return;
 }
@@ -883,7 +883,7 @@ static PyObject* py_arc_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = arc_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   ARC_TERMINATE   -*-*-*-*-*-*-*-*-*-*

@@ -424,7 +424,7 @@ static PyObject* py_rqs_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = rqs_make_options_dict(&control);
-    return Py_BuildValue("N", py_options);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   RQS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -745,9 +745,9 @@ static PyObject* py_rqs_solve_problem(PyObject *self, PyObject *args,
     PyObject *solve_problem_return;
 
     if(load_a_called) {
-      solve_problem_return = Py_BuildValue("NN", py_x, py_y);
+      solve_problem_return = Py_BuildValue("OO", py_x, py_y);
     } else {
-      solve_problem_return = Py_BuildValue("N", py_x);
+      solve_problem_return = Py_BuildValue("O", py_x);
     }
     Py_INCREF(solve_problem_return);
     return solve_problem_return;
@@ -767,7 +767,7 @@ static PyObject* py_rqs_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = rqs_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   RQS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

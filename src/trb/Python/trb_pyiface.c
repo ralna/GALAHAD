@@ -64,7 +64,7 @@ static int eval_f(int n, const double x[], double *f, const void *userdata){
     PyObject *py_x = PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(N)", py_x);
+    PyObject *arglist = Py_BuildValue("(O)", py_x);
 
     // Call Python eval_f
     PyObject *result = PyObject_CallObject(py_eval_f, arglist);
@@ -95,7 +95,7 @@ static int eval_g(int n, const double x[], double g[], const void *userdata){
        PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(N)", py_x);
+    PyObject *arglist = Py_BuildValue("(O)", py_x);
 
     // Call Python eval_g
     PyObject *result = PyObject_CallObject(py_eval_g, arglist);
@@ -132,7 +132,7 @@ static int eval_h(int n, int ne, const double x[], double hval[], const void *us
        PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(N)", py_x);
+    PyObject *arglist = Py_BuildValue("(O)", py_x);
 
     // Call Python eval_h
     PyObject *result = PyObject_CallObject(py_eval_h, arglist);
@@ -740,7 +740,7 @@ static PyObject* py_trb_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = trb_make_options_dict(&control);
-    return Py_BuildValue("N", py_options);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   TRB_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -831,9 +831,9 @@ static PyObject* py_trb_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Parse positional arguments
-    static char *kwlist[] = {"n", "H_ne", "x_l", "x_u", "x",
+    static char *kwlist[] = {"n", "H_ne", "x_l", "x_u", "x", 
                              "eval_f", "eval_g", "eval_h", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOOOOOO", kwlist, &n,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOOOOOO", kwlist, &n, 
                                     &H_ne, &py_x_l, &py_x_u, &py_x,
                                     &temp_f, &temp_g, &temp_h))
         return NULL;
@@ -879,7 +879,7 @@ static PyObject* py_trb_solve(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Call trb_solve_direct
     status = 1; // set status to 1 on entry
-    trb_solve_with_mat(&data, NULL, &status, n, x_l, x_u, x, g, H_ne,
+    trb_solve_with_mat(&data, NULL, &status, n, x_l, x_u, x, g, H_ne, 
                        eval_f, eval_g, eval_h, NULL);
 
     // Propagate any errors with the callback function
@@ -891,7 +891,7 @@ static PyObject* py_trb_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x and g
-    trb_solve_return = Py_BuildValue("NN", py_x, py_g);
+    trb_solve_return = Py_BuildValue("OO", py_x, py_g);
     Py_XINCREF(trb_solve_return);
     return trb_solve_return;
 }
@@ -909,7 +909,7 @@ static PyObject* py_trb_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = trb_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   TRB_TERMINATE   -*-*-*-*-*-*-*-*-*-*

@@ -504,7 +504,7 @@ static PyObject* py_slls_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   SLLS_SOLVE   -*-*-*-*-*-*-*-*
 
-static PyObject* py_slls_solve(PyObject *self, PyObject *args,
+static PyObject* py_slls_solve(PyObject *self, PyObject *args, 
                                PyObject *keywds){
     PyArrayObject *py_Ao_val;
     PyArrayObject *py_b, *py_x, *py_w = NULL, *py_x_s = NULL;
@@ -519,7 +519,7 @@ static PyObject* py_slls_solve(PyObject *self, PyObject *args,
     // Parse positional arguments
     static char *kwlist[] = {"n", "o", "m", "Ao_ne", "Ao_val", "b",
                              "sigma", "x", "w", "x_s", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOOdO|OO", kwlist,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOOdO|OO", kwlist, 
                                     &n, &o, &m,
                                     &Ao_ne, &py_Ao_val, &py_b, &sigma,
                                     &py_x, &py_w, &py_x_s))
@@ -537,7 +537,7 @@ static PyObject* py_slls_solve(PyObject *self, PyObject *args,
         if(!check_array_double("w", py_w, o))
             return NULL;
         w = (double *) PyArray_DATA(py_w);
-      }
+      }  
     }
     if(py_x_s != NULL) {
       if((PyObject *) py_w != Py_None){

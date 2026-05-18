@@ -167,7 +167,7 @@ static PyObject* py_roots_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = roots_make_options_dict(&control);
-    return Py_BuildValue("N", py_options);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   ROOTS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -183,7 +183,7 @@ static PyObject* py_roots_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = roots_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   ROOTS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

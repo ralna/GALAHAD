@@ -53,7 +53,7 @@ static int eval_r(int n, int m_r, const double x[], double r[],
     PyObject *py_x = PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(N)", py_x);
+    PyObject *arglist = Py_BuildValue("(O)", py_x);
 
     // Call Python eval_r
     PyObject *result = PyObject_CallObject(py_eval_r, arglist);
@@ -85,7 +85,7 @@ static int eval_jr(int n, int m_r, int jrne, const double x[], double jrval[],
        PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(N)", py_x);
+    PyObject *arglist = Py_BuildValue("(O)", py_x);
 
     // Call Python eval_jr
     PyObject *result = PyObject_CallObject(py_eval_jr, arglist);
@@ -548,7 +548,7 @@ static PyObject* py_snls_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = snls_make_options_dict(&control);
-    return Py_BuildValue("N", py_options);
+    return Py_BuildValue("O", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SNLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -564,14 +564,14 @@ static PyObject* py_snls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n", "m_r", "m_c", "Jr_type", "Jr_ne",
+    static char *kwlist[] = {"n", "m_r", "m_c", "Jr_type", "Jr_ne", 
                              "Jr_row", "Jr_col", "Jr_ptr_ne", "Jr_ptr",
                              "cohort", "options", NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiisiOOiO|OO",
                                     kwlist, &n, &m_r, &m_c,
                                     &Jr_type, &Jr_ne, &py_Jr_row,
-                                    &py_Jr_col, &Jr_ptr_ne, &py_Jr_ptr,
+                                    &py_Jr_col, &Jr_ptr_ne, &py_Jr_ptr, 
                                     &py_cohort, &py_options))
         return NULL;
 
@@ -652,10 +652,10 @@ static PyObject* py_snls_solve(PyObject *self, PyObject *args, PyObject *keywds)
         return NULL;
 
     // Parse positional arguments
-    static char *kwlist[] = {"n", "m_r", "m_c", "x", "eval_r",
+    static char *kwlist[] = {"n", "m_r", "m_c", "x", "eval_r", 
                              "Jr_ne", "eval_jr", "w", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOOiO|O", kwlist,
-                                    &n, &m_r, &m_c, &py_x, &temp_r,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOOiO|O", kwlist, 
+                                    &n, &m_r, &m_c, &py_x, &temp_r, 
                                     &Jr_ne, &temp_jr, &py_w))
         return NULL;
 
@@ -667,7 +667,7 @@ static PyObject* py_snls_solve(PyObject *self, PyObject *args, PyObject *keywds)
         if(!check_array_double("w", py_w, m_r))
             return NULL;
         w = (double *) PyArray_DATA(py_w);
-      }
+      }  
     }
 
     // Get array data pointer
@@ -711,8 +711,8 @@ static PyObject* py_snls_solve(PyObject *self, PyObject *args, PyObject *keywds)
 
     // Call snls_solve_direct
     status = 1; // set status to 1 on entry
-    snls_solve_with_jac(&data, NULL, &status, n, m_r, m_c,
-                        x, y, z, r, g, x_stat,
+    snls_solve_with_jac(&data, NULL, &status, n, m_r, m_c, 
+                        x, y, z, r, g, x_stat, 
                         eval_r, Jr_ne, eval_jr, w );
 
     // Propagate any errors with the callback function
@@ -724,7 +724,7 @@ static PyObject* py_snls_solve(PyObject *self, PyObject *args, PyObject *keywds)
         return NULL;
 
    // Return x, y, z, r, g and x_stat
-    snls_solve_return = Py_BuildValue("NNNNNN", py_x, py_y, py_z, py_r, py_g,
+    snls_solve_return = Py_BuildValue("OOOOOO", py_x, py_y, py_z, py_r, py_g,
                                       py_x_stat);
     Py_INCREF(snls_solve_return);
     return snls_solve_return;
@@ -744,7 +744,7 @@ static PyObject* py_snls_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = snls_make_inform_dict(&inform);
-    return Py_BuildValue("N", py_inform);
+    return Py_BuildValue("O", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SNLS_TERMINATE   -*-*-*-*-*-*-*-*-*-*
