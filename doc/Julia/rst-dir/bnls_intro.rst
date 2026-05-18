@@ -17,8 +17,6 @@ for problems involving a large number of unknowns $x$.
 First derivatives of the residual function $r(x)$ are required, and if
 second derivatives of the $r_i(x)$ can be calculated, they may be exploited.
 
-See Section 4 of $GALAHAD/doc/bnls.pdf for additional details.
-
 terminology
 -----------
 
@@ -47,9 +45,9 @@ Various models are provided, and each has different derivative requirements.
 We denote the $m$ by $n$ residual **Jacobian**
 $J(x) \equiv \nabla_x c(x)$ as the matrix  whose $i,j$-th component
 $$J(x)_{i,j} := \partial r_i(x) / \partial x_j \;\;
-\mbox{for $i=0,\ldots,m_r$ and $j=0,\ldots,n-1$.}$$
+\mbox{for $i=1,\ldots,m_r$ and $j=1,\ldots,n$.}$$
 For a given $m_r$-vector $y$, the **weighted-residual Hessian** is the sum
-$$H(x,y) := \sum_{\ell=0}^{m_r-1} y_{\ell} H_{\ell}(x), \;\; \mbox{where}\;\; H_{\ell}(x)_{i,j} := \partial^2 r_{\ell}(x) / \partial x_i \partial x_j \;\; \mbox{for $i,j=0,\ldots,n-1$}$$
+$$H(x,y) := \sum_{\ell=1}^{m_r} y_{\ell} H_{\ell}(x), \;\; \mbox{where}\;\; H_{\ell}(x)_{i,j} := \partial^2 r_{\ell}(x) / \partial x_i \partial x_j \;\; \mbox{for $i,j=1,\ldots,n$}$$
 is the Hessian of $r_\ell(x)$.
 The models $t_k(s)$ provided are,
 
@@ -84,14 +82,6 @@ $\eta_v \geq \eta_d$, the weight will be decreased by powers of a given
 decrease factor again up to a given limit. The method will terminate
 as soon as $f(x_k)$ or
 $\|\nabla_x f(x_k)\|$ is smaller than a specified value.
-
-The step $s_k$ may be computed either by employing a projected-gradient
-method to minimize the model within the simple-bound constraint set 
-$x^L \leq x_k \leq x^U)$ using the GALAHAD module ``blls``, or by
-applying the interior-point method available in the module ``bllsb``
-to the same subproblem. Experience has shown that it can be beneficial
-to use the latter method during early iterations, but to switch to the 
-former as the iterates approach convergence.
 
 The iteration is terminated as soon as either the $W$-norm of the 
 residual $r(x_k)$ or the the Euclidean norm of the 
