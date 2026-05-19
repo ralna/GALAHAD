@@ -347,7 +347,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
           p[i] = userdata.scale * v[i]
         end
       else
-        @printf(" the value %1i of status should not occur\n", status)
+        @printf(" the value %1i of status should not occur\n", status[])
       end
       eval_status[] = 0
     end

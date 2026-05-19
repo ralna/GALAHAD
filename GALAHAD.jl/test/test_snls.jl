@@ -21,9 +21,9 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   # compute the residuals
   function res(x::Vector{T}, r::Vector{T}, userdata::userdata_snls{T})
     r[1] = x[1] * x[2] - userdata.p
-    r[2] = x[2] * x[3] - 1.0
-    r[3] = x[3] * x[4] - 1.0
-    r[4] = x[4] * x[5] - 1.0
+    r[2] = x[2] * x[3] - one(T)
+    r[3] = x[3] * x[4] - one(T)
+    r[4] = x[4] * x[5] - one(T)
     return INT(0)
   end
 
@@ -134,7 +134,7 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
                     v::Vector{T}, p::Vector{T}, free::Vector{INT}, n_free::INT, 
                     got_jr::Bool, userdata::userdata_snls{T})
 
-    if (transpose)
+    if transpose
       resize!(p, n)
       for i in 1:n_free
         j = free[i]
@@ -328,7 +328,7 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
     elseif status[] == 3 # evaluate Jr
       eval_status[] = jac(x, Jr_val, userdata)
     else
-      @printf(" the value %i of status should not occur\n", status)
+      @printf(" the value %i of status should not occur\n", status[])
     end
   end
   snls_information(T, INT, data, inform, status)
@@ -387,7 +387,7 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
       eval_status[] = sjacprod(n, m_r, x, true, v, p, iv, lvu[], got_jr,
                                userdata)
     else
-      @printf(" the value %1d of status should not occur\n", status)
+      @printf(" the value %1d of status should not occur\n", status[])
     end
   end
   snls_information(T, INT, data, inform, status)

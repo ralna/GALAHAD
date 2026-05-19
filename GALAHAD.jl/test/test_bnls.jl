@@ -8,617 +8,418 @@ using Accessors
 using Quadmath
 
 # Custom userdata struct
-mutable struct userdata_bnls{T}
+mutable struct userdata_bnls{T,INT}
   p::T
+  flag::INT
+  flags::Vector{INT}
 end
 
-Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_bnls) = pointer_from_objref(userdata)
+function Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_bnls)
+  return pointer_from_objref(userdata)
+end
 
-function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
+function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr",
+                   dls::String="potr") where {T,INT}
+
   # compute the residuals
-  function res(x::Vector{T}, c::Vector{T}, userdata::userdata_bnls{T})
-    c[1] = x[1] * x[1] + userdata.p
-    c[2] = x[1] + x[2] * x[2]
-    c[3] = x[1] - x[2]
+  function res(x::Vector{T}, r::Vector{T}, userdata::userdata_bnls{T,INT})
+    r[1] = x[1] * x[2] - userdata.p
+    r[2] = x[2] * x[3] - one(T)
+    r[3] = x[3] * x[4] - one(T)
+    r[4] = x[4] * x[5] - one(T)
     return INT(0)
   end
+
+  function res_c(n::INT, m_r::INT, x::Ptr{T}, r::Ptr{T}, userdata::Ptr{Cvoid})
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _r = unsafe_wrap(Vector{T}, r, m_r)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
+    return res(_x, _r, _userdata)
+  end
+
+  res_ptr = @eval @cfunction($res_c, $INT,
+                             ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the Jacobian
-  function jac(x::Vector{T}, jval::Vector{T}, userdata::userdata_bnls{T})
-    jval[1] = 2 * x[1]
-    jval[2] = 1
-    jval[3] = 2 * x[2]
-    jval[4] = 1
-    jval[5] = -1
+  function jac(jne::INT, x::Vector{T}, jr_val::Vector{T}, userdata::userdata_bnls{T,INT})
+    jr_val[1] = x[2]
+    jr_val[2] = x[1]
+    jr_val[3] = x[3]
+    jr_val[4] = x[2]
+    jr_val[5] = x[4]
+    jr_val[6] = x[3]
+    jr_val[7] = x[5]
+    jr_val[8] = x[4]
     return INT(0)
   end
 
-  # compute the Hessian
-  function hess(x::Vector{T}, y::Vector{T}, hval::Vector{T}, userdata::userdata_bnls{T})
-    hval[1] = 2 * y[1]
-    hval[2] = 2 * y[1]
-    return INT(0)
+  function jac_c(n::INT, m_r::INT, jr_ne::INT, x::Ptr{T}, jr_val::Ptr{T},
+                 userdata::Ptr{Cvoid})
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _jr_val = unsafe_wrap(Vector{T}, jr_val, jr_ne)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
+    return jac(_x, _jr_val, _userdata)
   end
+
+  jac_ptr = @eval @cfunction($jac_c, $INT,
+                             ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute Jacobian-vector products
-  function jacprod(x::Vector{T}, transpose::Bool, u::Vector{T}, v::Vector{T}, got_j::Bool,
-                   userdata::userdata_bnls{T})
+  function jacprod(x::Vector{T}, transpose::Bool, v::Vector{T}, p::Vector{T},
+                   got_jr::Bool, userdata::userdata_bnls{T,INT})
     if transpose
-      u[1] = u[1] + 2 * x[1] * v[1] + v[2] + v[3]
-      u[2] = u[2] + 2 * x[2] * v[2] - v[3]
+      p[1] = x[2] * v[1]
+      p[2] = x[3] * v[2] + x[1] * v[1]
+      p[3] = x[4] * v[3] + x[2] * v[2]
+      p[4] = x[5] * v[4] + x[3] * v[3]
+      p[5] = x[4] * v[4]
     else
-      u[1] = u[1] + 2 * x[1] * v[1]
-      u[2] = u[2] + v[1] + 2 * x[2] * v[]
-      u[3] = u[3] + v[1] - v[2]
+      p[1] = x[2] * v[1] + x[1] * v[2]
+      p[2] = x[3] * v[2] + x[2] * v[3]
+      p[3] = x[4] * v[3] + x[3] * v[4]
+      p[4] = x[5] * v[4] + x[4] * v[5]
     end
     return INT(0)
   end
 
-  # compute Hessian-vector products
-  function hessprod(x::Vector{T}, y::Vector{T}, u::Vector{T}, v::Vector{T}, got_h::Bool,
-                    userdata::userdata_bnls{T})
-    u[1] = u[1] + 2 * y[1] * v[1]
-    u[2] = u[2] + 2 * y[2] * v[2]
+  function jacprod_c(n::INT, m_r::INT, x::Ptr{T}, transpose::Bool,
+                     v::Ptr{T}, p::Ptr{T}, got_jr::Bool, userdata::Ptr{Cvoid})
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _v = unsafe_wrap(Vector{T}, v, transpose ? m_r : n)
+    _p = unsafe_wrap(Vector{T}, p, transpose ? n : m_r)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
+    return jacprod(_x, transpose, _v, _p, got_jr, _userdata)
+  end
+
+  jacprod_ptr = @eval @cfunction($jacprod_c, $INT,
+                                 ($INT, $INT, Ptr{$T}, Bool, Ptr{$T}, Ptr{$T}, Bool,
+                                  Ptr{Cvoid}))
+
+  # compute a sparse product with the Jacobian
+  # function jacprods(n::INT, m_r::INT, x::Vector{T}, v::Vector{T}, p::Vector{T}, iv::Vector{INT},
+  #                   lvl::INT, lvu::INT, ip::Vector{INT}, lp::Vector{INT}, got_jr::Bool, userdata::userdata_bnls{T,INT})
+  #   if !isempty(ip) && !isempty(lp)
+  #     flag = flag+1
+  #     *lp = 0
+  #     for(INT l=lvl l <= lvu l++)
+  #     j = iv[l]-1
+  #     val = v[j]
+  #   if (j == 0
+  #     i = 0
+  #     if (flags[i] < flag) {
+  #       flags[i] = flag
+  #       p[i] = x[i+1] * val
+  #       ip[*lp] = i
+  #       *lp = *lp+1
+  #     else
+  #       p[i] = p[i] + x[i+1] * val
+  #     end
+  #   elseif (j == n-1) {
+  #     i = m_r-1
+  #     if (flags[i] < flag) {
+  #       flags[i] = flag
+  #       p[i] = x[i] * val
+  #       ip[*lp] = i
+  #       *lp = *lp+1
+  #     else
+  #       p[i] = p[i] + x[i] * val
+  #     end
+  # else
+  #   i = j-1
+  #   if (flags[i] < flag) {
+  #     flags[i] = flag
+  #     p[i] = x[i] * val
+  #     ip[*lp] = i
+  #     *lp = *lp+1
+  #   else
+  #     p[i] = p[i] + x[i] * val
+  #   end
+  #   i = j
+  #   if (flags[i] < flag) {
+  #     flags[i] = flag
+  #     p[i] = x[i+1] * val
+  #     ip[*lp] = i
+  #     *lp = *lp + 1
+  #   else
+  #     p[i] = p[i] + x[i+1] * val
+  #   end
+  # else
+  #   for(INT i = 0 i < m_r i++) p[i] = 0.0
+  #   for(INT l = lvl l <= lvu l++)
+  # j = iv[l]-1
+  # val = v[j]
+  # if (j == 0 {
+  #   i = 0
+  #   p[i] = p[i] + x[i+1] * val
+  # } elseif (j == n-1) {
+  #   i = m_r-1
+  #   p[i] = p[i] + x[i] * val
+  # else
+  #   i = j-1
+  #   p[i] = p[i] + x[i] * val
+  #   i = j
+  #   p[i] = p[i] + x[i+1] * val
+  # end
+  #   return INT(0)
+  # end
+
+  function jacprods_c(n::INT, m_r::INT, x::Ptr{T}, v::Ptr{T}, p::Ptr{T},
+                      iv::Ptr{INT}, lvl::INT, lvu::INT, ip::Ptr{INT},
+                      lp::Ptr{INT}, got_jr::Bool, userdata::Ptr{Cvoid})
+    _x = unsafe_wrap(Vector{T}, x, ...)
+    _v = unsafe_wrap(Vector{T}, v, ...)
+    _p = unsafe_wrap(Vector{T}, p, ...)
+    _iv = unsafe_wrap(Vector{INT}, iv, ...)
+    _ip = unsafe_wrap(Vector{INT}, ip, ...)
+    _lp = unsafe_wrap(Vector{INT}, lp, ...)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
+    return jacprods(n, m_r, _x, _v, _p, _iv, lvl, lvu, _ip, _lp, got_jr, _userdata)
+  end
+
+  jacprods_ptr = @eval @cfunction($jacprods_c, $INT,
+                                  ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{$INT}, $INT,
+                                   $INT, Ptr{$INT}, Ptr{$INT}, Bool, Ptr{Cvoid}))
+
+  # compute a sparse product with the Jacobian or its transpose
+  function sjacprod(n::INT, m_r::INT, x::Vector{T}, transpose::Bool,
+                    v::Vector{T}, p::Vector{T}, free::Vector{INT}, n_free::INT,
+                    got_jr::Bool, userdata::userdata_bnls{T,INT})
+    if transpose
+      resize!(p, n)
+      for i in 1:n_free
+        j = free[i]
+        if j == 1
+          p[1] = x[2] * v[1]
+        elseif j == n
+          p[n] = x[m_r] * v[m_r]
+        else
+          p[j] = x[j-1] * v[j-1] + x[j+1] * v[j]
+        end
+      end
+    else
+      resize!(p, m_r)
+      for i in 1:n_free
+        j = free[i]
+        val = v[j]
+        if j == 1
+          p[1] = p[1] + x[2] * val
+        elseif j == n
+          p[m_r] = p[m_r] + x[m_r] * val
+        else
+          p[j-1] = p[j-1] + x[j-1] * val
+          p[j] = p[j] + x[j+1] * val
+        end
+      end
+    end
     return INT(0)
   end
 
-  # compute residual-Hessians-vector products
-  function rhessprods(x::Vector{T}, v::Vector{T}, pval::Vector{T}, got_h::Bool,
-                      userdata::userdata_bnls{T})
-    pval[1] = 2 * v[1]
-    pval[2] = 2 * v[2]
-    return INT(0)
+  function sjacprod_c(n::INT, m_r::INT, x::Ptr{T}, transpose::Bool,
+                      v::Ptr{T}, p::Ptr{T}, free::Ptr{INT}, n_free::INT,
+                      got_jr::Bool, userdata::Ptr{Cvoid})
+    _x = unsafe_wrap(Vector{T}, x, n)
+    _v = unsafe_wrap(Vector{T}, v, transpose ? m_r : n)
+    _p = unsafe_wrap(Vector{T}, p, transpose ? n : m_r)
+    _free = unsafe_wrap(Vector{INT}, free, n_free)
+    _userdata = unsafe_pointer_to_objref(userdata)::userdata_snls{T}
+    return sjacprod(n, m_r, _x, transpose, _v, _p, _free, n_free, got_jr, _userdata)
   end
 
-  # scale v
-  function scale(x::Vector{T}, u::Vector{T}, v::Vector{T}, userdata::userdata_bnls{T})
-    u[1] = v[1]
-    u[2] = v[2]
-    return INT(0)
-  end
-
-  # compute the dense Jacobian
-  function jac_dense(x::Vector{T}, jval::Vector{T}, userdata::userdata_bnls{T})
-    jval[1] = 2 * x[1]
-    jval[2] = 0
-    jval[3] = 1
-    jval[4] = 2 * x[2]
-    jval[5] = 1
-    jval[6] = -1
-    return INT(0)
-  end
-
-  # compute the dense Hessian
-  function hess_dense(x::Vector{T}, y::Vector{T}, hval::Vector{T},
-                      userdata::userdata_bnls{T})
-    hval[1] = 2 * y[1]
-    hval[2] = 0
-    hval[3] = 2 * y[2]
-    return INT(0)
-  end
-
-  # compute dense residual-Hessians-vector products
-  function rhessprods_dense(x::Vector{T}, v::Vector{T}, pval::Vector{T}, got_h::Bool,
-                            userdata::userdata_bnls{T})
-    pval[1] = 2 * v[1]
-    pval[2] = 0
-    pval[3] = 0
-    pval[4] = 2 * v[2]
-    pval[5] = 0
-    pval[6] = 0
-    return INT(0)
-  end
+  sjacprod_ptr = @eval @cfunction($sjacprod_c, $INT,
+                                  ($INT, $INT, Ptr{$T}, Bool, Ptr{$T}, Ptr{$T}, Ptr{$INT},
+                                   $INT,
+                                   Bool, Ptr{Cvoid}))
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{bnls_control_type{T,INT}}()
   inform = Ref{bnls_inform_type{T,INT}}()
 
-  # Set user data
-  userdata = userdata_bnls{T}(1)
-
   # Set problem data
-  n = INT(2)  # variables
-  m = INT(3)  # residuals
-  j_ne = INT(5)  # Jacobian elements
-  h_ne = INT(2)  # Hesssian elements
-  p_ne = INT(2)  # residual-Hessians-vector products elements
-  J_row = INT[1, 2, 2, 3, 3]  # Jacobian J
-  J_col = INT[1, 1, 2, 1, 2]  #
-  J_ptr = INT[1, 2, 4, 6]  # row pointers
-  H_row = INT[1, 2]  # Hessian H
-  H_col = INT[1, 2]  # NB lower triangle
-  H_ptr = INT[1, 2, 3]  # row pointers
-  P_row = INT[1, 2]  # residual-Hessians-vector product matrix
-  P_ptr = INT[1, 2, 3, 3]  # column pointers
+  n = INT(5)  # variables
+  m_r = INT(4)  # observations
+  w = T[1.0, 1.0, 1.0, 1.0]  # weights
+  jr_ne = INT(8)  # Jacobian elements
+  Jr_row = INT[1, 1, 2, 2, 3, 3, 4, 4]  # Jacobian J
+  Jr_col = INT[1, 2, 2, 3, 3, 4, 4, 5]
+  Jr_val = zeros(T, jr_ne)
 
   # Set storage
+  x_l = zeros(T, n)  # lower bounds
+  x_u = zeros(T, n)  # upper bounds
+  x = zeros(T, n)  # variables
+  z = zeros(T, n)  # dual variables
+  r = zeros(T, m_r)  # residual
   g = zeros(T, n)  # gradient
-  c = zeros(T, m)  # residual
-  y = zeros(T, m)  # multipliers
-  st = ' '
-  status = Ref{INT}(0)
+  x_stat = zeros(INT, n)  # variable status
+  status = Ref{INT}()
 
-  @printf(" Fortran sparse matrix indexing\n\n")
+  # set variable bounds
+  for i in 1:n
+    x_l[i] = zero(T)  # lower bound
+    x_u[i] = one(T)   # upper bound
+  end
+
+  # Set user data
+  p = T(4)
+  flag = INT(0)  # current flag value
+  flags = zeros(INT, m_r)  # array of flags
+  userdata = userdata_bnls{T,INT}(p, flag, flags)
+
+  @printf(" fortran sparse matrix indexing\n\n")
 
   if mode == "direct"
-    @printf(" tests options for all-in-one storage format\n\n")
-
-    for d in 1:5
+    for d in 1:2
       # Initialize BNLS
-      bnls_initialize(T, INT, data, control, inform)
+      bnls_initialize(data, control, inform)
 
-      # @reset control[].print_level = 1
-      @reset control[].jacobian_available = 2
-      @reset control[].hessian_available = 2
-      @reset control[].model = 6
-      x = T[1.5, 1.5]  # starting point
-      W = T[1.0, 1.0, 1.0]  # weights
+      # Set user-defined control options
+      # @reset control[].maxit = INT(10)
+      # @reset control[].blls_control.print_level = INT(1)
+      # @reset control[].blls_control.maxit = INT(5)
+      @reset control[].jacobian_available = INT(2)
+      @reset control[].stop_pg_absolute = T(0.00001)
+      @reset control[].blls_control.sbls_control.definite_linear_solver = galahad_linear_solver(dls)
+      @reset control[].blls_control.sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+      st = " "
 
-      # sparse co-ordinate storage
+      for i in 1:n
+        x[i] = T(0.5)  # starting point
+      end
+
+      # solve when Jacobian is available via function calls
       if d == 1
-        st = 'C'
-        bnls_import(T, INT, control, data, status, n, m,
-                    "coordinate", j_ne, J_row, J_col, C_NULL,
-                    "coordinate", h_ne, H_row, H_col, C_NULL,
-                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-
-        bnls_solve_with_mat(T, INT, data, userdata, status,
-                            n, m, x, c, g, res, j_ne, jac,
-                            h_ne, hess, p_ne, rhessprods)
+        st = "JF"
+        control[].jacobian_available = INT(2)
+        bnls_import(control, data, status, n, m_r, "coordinate", jr_ne, Jr_row, Jr_col,
+                    INT(0), C_NULL)
+        bnls_solve_with_jac(data, userdata, status, n, m_r, x_l, x_u, x, z, r, g, x_stat,
+                            res_ptr, jr_ne, jac_ptr, w)
       end
 
-      # sparse by rows
+      # solve when Jacobian products are available via function calls
       if d == 2
-        st = 'R'
-        bnls_import(T, INT, control, data, status, n, m,
-                    "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
-                    "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
-                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-
-        bnls_solve_with_mat(T, INT, data, userdata, status,
-                            n, m, x, c, g, res, j_ne, jac,
-                            h_ne, hess, p_ne, rhessprods)
+        st = "PF"
+        control[].jacobian_available = INT(1)
+        bnls_import_without_jac(control, data, status, n, m_r)
+        bnls_solve_with_jacprod(data, userdata, status, n, m_r, x_l, x_u, x, z, r, g,
+                                x_stat, res_ptr, jacprod_ptr, jacprods_ptr, sjacprod_ptr, w)
       end
 
-      # dense
-      if d == 3
-        st = 'D'
-        bnls_import(T, INT, control, data, status, n, m,
-                    "dense", j_ne, C_NULL, C_NULL, C_NULL,
-                    "dense", h_ne, C_NULL, C_NULL, C_NULL,
-                    "dense", p_ne, C_NULL, C_NULL, C_NULL, W)
-
-        bnls_solve_with_mat(T, INT, data, userdata, status,
-                            n, m, x, c, g, res, j_ne, jac_dense,
-                            h_ne, hess_dense, p_ne, rhessprods_dense)
-      end
-      # diagonal
-      if d == 4
-        st = 'I'
-        bnls_import(T, INT, control, data, status, n, m,
-                    "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
-                    "diagonal", h_ne, C_NULL, C_NULL, C_NULL,
-                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-
-        bnls_solve_with_mat(T, INT, data, userdata, status,
-                            n, m, x, c, g, res, j_ne, jac,
-                            h_ne, hess, p_ne, rhessprods)
-      end
-
-      # access by products
-      if d == 5
-        st = 'P'
-        bnls_import(T, INT, control, data, status, n, m,
-                    "absent", j_ne, C_NULL, C_NULL, C_NULL,
-                    "absent", h_ne, C_NULL, C_NULL, C_NULL,
-                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-
-        bnls_solve_without_mat(T, INT, data, userdata, status,
-                               n, m, x, c, g, res, jacprod,
-                               hessprod, p_ne, rhessprods)
-      end
-
-      bnls_information(T, INT, data, inform, status)
+      bnls_information(data, inform, status)
 
       if inform[].status == 0
-        @printf("%c:%6i iterations. Optimal objective value = %5.2f, status = %1i\n",
+        @printf(" BNLS(%s):%6d iterations. Optimal objective value = %5.2f status = %1d\n",
                 st, inform[].iter, inform[].obj, inform[].status)
       else
-        @printf("%c: BNLS_solve exit status = %1i\n", st, inform[].status)
+        @printf(" BNLS(%s): exit status = %1d\n", st, inform[].status)
       end
 
       # Delete internal workspace
-      bnls_terminate(T, INT, data, control, inform)
+      bnls_terminate(data, control, inform)
     end
   end
 
   if mode == "reverse"
-    @printf("\n tests reverse-communication options\n\n")
-
-    # reverse-communication input / output
+    # reverse-communication input/output
+    mnm = max(m_r, n)
+    lp = INT(0)
     eval_status = Ref{INT}()
-    u = zeros(T, min(m, n))
-    v = zeros(T, min(m, n))
-    J_val = zeros(T, j_ne)
-    J_dense = zeros(T, m * n)
-    H_val = zeros(T, h_ne)
-    H_dense = zeros(T, div(n * (n + 1), 2))
-    H_diag = zeros(T, n)
-    P_val = zeros(T, p_ne)
-    P_dense = zeros(T, m * n)
-    got_j = false
-    got_h = false
+    lvl = Ref{INT}()
+    lvu = Ref{INT}()
+    iv = zeros(INT, mnm)
+    ip = zeros(INT, m_r)
+    v = zeros(T, mnm)
+    p = zeros(T, mnm)
+    got_jr = true
 
-    for d in 1:5
+    for d in 1:2
       # Initialize BNLS
-      bnls_initialize(T, INT, data, control, inform)
+      bnls_initialize(data, control, inform)
 
       # Set user-defined control options
-      # @reset control[].print_level = 1
-      @reset control[].jacobian_available = 2
-      @reset control[].hessian_available = 2
-      @reset control[].model = 6
-      x = T[1.5, 1.5]  # starting point
-      W = T[1.0, 1.0, 1.0]  # weights
+      # @reset control[].print_level = INT(1)
+      # @reset control[].maxit = INT(10)
+      # @reset control[].blls_control.maxit = INT(5)
+      @reset control[].stop_pg_absolute = T(0.00001)
+      @reset control[].blls_control.sbls_control.definite_linear_solver = galahad_linear_solver(dls)
+      @reset control[].blls_control.sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+      st = " "
 
-      # sparse co-ordinate storage
+      for i in 1:n
+        x[i] = T(0.5)  # starting point
+      end
+
       if d == 1
-        st = 'C'
-        bnls_import(T, INT, control, data, status, n, m,
-                    "coordinate", j_ne, J_row, J_col, C_NULL,
-                    "coordinate", h_ne, H_row, H_col, C_NULL,
-                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+        # solve when Jacobian is available via reverse access
+        st = "JF"
+        control[].jacobian_available = INT(2)
+        bnls_import(control, data, status, n, m_r, "coordinate", jr_ne, Jr_row, Jr_col,
+                    INT(0), C_NULL)
 
         terminated = false
-        while !terminated  # reverse-communication loop
-          bnls_solve_reverse_with_mat(T, INT, data, status, eval_status,
-                                      n, m, x, c, g, j_ne, J_val, y,
-                                      h_ne, H_val, v, p_ne, P_val)
-
+        while !terminated # reverse-communication loop
+          bnls_solve_reverse_with_jac(data, status, eval_status, n, m_r, x_l, x_u, x, z, r,
+                                      g, x_stat, jr_ne, Jr_val, w)
           if status[] == 0 # successful termination
             terminated = true
-          elseif status[] < 0  # error exit
+          elseif status[] < 0 # error exit
             terminated = true
-          elseif status[] == 2  # evaluate c
-            eval_status[] = res(x, c, userdata)
-          elseif status[] == 3  # evaluate J
-            eval_status[] = jac(x, J_val, userdata)
-          elseif status[] == 4  # evaluate H
-            eval_status[] = hess(x, y, H_val, userdata)
-          elseif status[] == 7  # evaluate P
-            eval_status[] = rhessprods(x, v, P_val, got_h, userdata)
+          elseif status[] == 2 # evaluate r
+            eval_status[] = res(x, r, userdata)
+          elseif status[] == 3 # evaluate Jr
+            eval_status[] = jac(jr_ne, x, Jr_val, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1d of status should not occur\n", status[])
           end
         end
       end
 
-      # sparse by rows
       if d == 2
-        st = 'R'
-        bnls_import(T, INT, control, data, status, n, m,
-                    "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
-                    "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
-                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+        # solve when Jacobian products are available via reverse access
+        st = "PF"
+        control[].jacobian_available = INT(1)
+        bnls_import_without_jac(control, data, status, n, m_r)
 
-        terminated = false
-        while !terminated  # reverse-communication loop
-          bnls_solve_reverse_with_mat(T, INT, data, status, eval_status,
-                                      n, m, x, c, g, j_ne, J_val, y,
-                                      h_ne, H_val, v, p_ne, P_val)
-
-          if status[] == 0  # successful termination
+        while !terminated # reverse-communication loop
+          bnls_solve_reverse_with_jacprod(data, status, eval_status, n, m_r, x_l, x_u, x, z,
+                                          r, g, x_stat, v, iv, lvl, lvu, p, ip, lp, w)
+          if status[] == 0 # successful termination
             terminated = true
-          elseif status[] < 0  # error exit
+          elseif status[] < 0 # error exit
             terminated = true
-          elseif status[] == 2  # evaluate c
-            eval_status[] = res(x, c, userdata)
-          elseif status[] == 3  # evaluate J
-            eval_status[] = jac(j_ne, x, J_val, userdata)
-          elseif status[] == 4  # evaluate H
-            eval_status[] = hess(h_ne, x, y, H_val, userdata)
-          elseif status[] == 7  # evaluate P
-            eval_status[] = rhessprods(p_ne, x, v, P_val, got_h, userdata)
+          elseif status[] == 2 # evaluate r
+            eval_status[] = res(x, r, userdata)
+            got_jr = false
+          elseif status[] == 4 # evaluate p = Jr v
+            eval_status[] = jacprod(x, false, v, p, got_jr, userdata)
+          elseif status[] == 5 # evaluate p = Jr' v
+            eval_status[] = jacprod(x, true, v, p, got_jr, userdata)
+          elseif status[] == 6 # evaluate p = Jr * sparse v
+            eval_status[] = jacprods(n, m_r, x, v, p, iv, lvl, lvu, C_NULL, C_NULL, got_jr,
+                                     userdata)
+          elseif status[] == 7 # evaluate p = sparse(Jr(x) * sparse v)
+            eval_status[] = jacprods(n, m_r, x, v, p, iv, lvl, lvu, ip, lp, got_jr,
+                                     userdata)
+          elseif status[] == 8 # evaluate p = sparse(Jr' v)
+            eval_status[] = sjacprod(n, m_r, x, true, v, p, iv, lvu, got_jr, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1d of status should not occur\n", status[])
           end
         end
       end
 
-      # dense
-      if d == 3
-        st = 'D'
-        bnls_import(T, INT, control, data, status, n, m,
-                    "dense", j_ne, C_NULL, C_NULL, C_NULL,
-                    "dense", h_ne, C_NULL, C_NULL, C_NULL,
-                    "dense", p_ne, C_NULL, C_NULL, C_NULL, W)
-
-        terminated = false
-        while !terminated  # reverse-communication loop
-          bnls_solve_reverse_with_mat(T, INT, data, status, eval_status,
-                                      n, m, x, c, g, m * n, J_dense, y,
-                                      n * (n + 1) / 2, H_dense, v, m * n,
-                                      P_dense)
-
-          if status[] == 0  # successful termination
-            terminated = true
-          elseif status[] < 0  # error exit
-            terminated = true
-          elseif status[] == 2  # evaluate c
-            eval_status[] = res(x, c, userdata)
-          elseif status[] == 3  # evaluate J
-            eval_status[] = jac_dense(x, J_dense, userdata)
-          elseif status[] == 4  # evaluate H
-            eval_status[] = hess_dense(x, y, H_dense, userdata)
-          elseif status[] == 7  # evaluate P
-            eval_status[] = rhessprods_dense(x, v, P_dense, got_h, userdata)
-          else
-            @printf(" the value %1i of status should not occur\n", status)
-          end
-        end
-      end
-
-      # diagonal
-      if d == 4
-        st = 'I'
-        bnls_import(T, INT, control, data, status, n, m,
-                    "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
-                    "diagonal", h_ne, C_NULL, C_NULL, C_NULL,
-                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-
-        terminated = false
-        while !terminated  # reverse-communication loop
-          bnls_solve_reverse_with_mat(T, INT, data, status, eval_status,
-                                      n, m, x, c, g, j_ne, J_val, y,
-                                      n, H_diag, v, p_ne, P_val)
-
-          if status[] == 0  # successful termination
-            terminated = true
-          elseif status[] < 0  # error exit
-            terminated = true
-          elseif status[] == 2  # evaluate c
-            eval_status[] = res(x, c, userdata)
-          elseif status[] == 3  # evaluate J
-            eval_status[] = jac(x, J_val, userdata)
-          elseif status[] == 4  # evaluate H
-            eval_status[] = hess(x, y, H_diag, userdata)
-          elseif status[] == 7  # evaluate P
-            eval_status[] = rhessprods(x, v, P_val, got_h, userdata)
-          else
-            @printf(" the value %1i of status should not occur\n", status)
-          end
-        end
-      end
-
-      # access by products
-      if d == 5
-        st = 'P'
-        bnls_import(T, INT, control, data, status, n, m,
-                    "absent", j_ne, C_NULL, C_NULL, C_NULL,
-                    "absent", h_ne, C_NULL, C_NULL, C_NULL,
-                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-
-        terminated = false
-        while !terminated  # reverse-communication loop
-          bnls_solve_reverse_without_mat(data, status, eval_status,
-                                         n, m, x, c, g, transpose,
-                                         u, v, y, p_ne, P_val)
-          if status[] == 0  # successful termination
-            terminated = true
-          elseif status < 0  # error exit
-            terminated = true
-          elseif status[] == 2  # evaluate c
-            eval_status[] = res(x, c, userdata)
-          elseif status[] == 5  # evaluate u + J v or u + J'v
-            eval_status[] = jacprod(x, transpose, u, v, got_j, userdata)
-          elseif status[] == 6  # evaluate u + H v
-            eval_status[] = hessprod(x, y, u, v, got_h, userdata)
-          elseif status[] == 7  # evaluate P
-            eval_status[] = rhessprods(x, v, P_val, got_h, userdata)
-          else
-            @printf(" the value %1i of status should not occur\n", status)
-          end
-        end
-      end
-
-      bnls_information(T, INT, data, inform, status)
+      bnls_information(data, inform, status)
 
       if inform[].status == 0
-        @printf("%c:%6i iterations. Optimal objective value = %5.2f, status = %1i\n",
+        @printf(" BNLS(%s):%6d iterations. Optimal objective value = %5.2f status = %1d\n",
                 st, inform[].iter, inform[].obj, inform[].status)
       else
-        @printf("%c: BNLS_solve exit status = %1i\n", st, inform[].status)
+        @printf(" BNLS(%s): exit status = %1d\n", st, inform[].status)
       end
 
       # Delete internal workspace
-      bnls_terminate(T, INT, data, control, inform)
-    end
-  end
-
-  if mode == "direct"
-    @printf("\n basic tests of models used, direct access\n\n")
-
-    for model in 3:8
-      # Initialize BNLS
-      bnls_initialize(T, INT, data, control, inform)
-
-      # Set user-defined control options
-      # @reset control[].print_level = 1
-      @reset control[].jacobian_available = 2
-      @reset control[].hessian_available = 2
-      @reset control[].model = model
-      x = T[1.5, 1.5]  # starting point
-      W = T[1.0, 1.0, 1.0]  # weights
-
-      bnls_import(T, INT, control, data, status, n, m,
-                  "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
-                  "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
-                  "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-
-      bnls_solve_with_mat(T, INT, data, userdata, status,
-                          n, m, x, c, g, res, j_ne, jac,
-                          h_ne, hess, p_ne, rhessprods)
-
-      bnls_information(T, INT, data, inform, status)
-
-      if inform[].status == 0
-        @printf(" %1i:%6i iterations. Optimal objective value = %5.2f, status = %1i\n",
-                model, inform[].iter, inform[].obj, inform[].status)
-      else
-        @printf(" %i: BNLS_solve exit status = %1i\n", model, inform[].status)
-      end
-
-      # Delete internal workspace
-      bnls_terminate(T, INT, data, control, inform)
-    end
-
-    @printf("\n basic tests of models used, access by products\n\n")
-
-    for model in 3:8
-      # Initialize BNLS
-      bnls_initialize(T, INT, data, control, inform)
-
-      # Set user-defined control options
-      # @reset control[].print_level = 1
-      @reset control[].jacobian_available = 2
-      @reset control[].hessian_available = 2
-      @reset control[].model = model
-      x = T[1.5, 1.5]  # starting point
-      W = T[1.0, 1.0, 1.0]  # weights
-
-      bnls_import(T, INT, control, data, status, n, m,
-                  "absent", j_ne, C_NULL, C_NULL, C_NULL,
-                  "absent", h_ne, C_NULL, C_NULL, C_NULL,
-                  "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-
-      bnls_solve_without_mat(T, INT, data, userdata, status,
-                             n, m, x, c, g, res, jacprod,
-                             hessprod, p_ne, rhessprods)
-
-      bnls_information(T, INT, data, inform, status)
-
-      if inform[].status == 0
-        @printf("P%1i:%6i iterations. Optimal objective value = %5.2f, status = %1i\n",
-                model, inform[].iter, inform[].obj, inform[].status)
-      else
-        @printf("P%i: BNLS_solve exit status = %1i\n", model, inform[].status)
-      end
-
-      # Delete internal workspace
-      bnls_terminate(T, INT, data, control, inform)
-    end
-  end
-
-  if mode == "reverse"
-    @printf("\n basic tests of models used, reverse access\n\n")
-
-    for model in 3:8
-      # Initialize BNLS
-      bnls_initialize(T, INT, data, control, inform)
-
-      # Set user-defined control options
-      # @reset control[].print_level = 1
-      @reset control[].jacobian_available = 2
-      @reset control[].hessian_available = 2
-      @reset control[].model = model
-      x = T[1.5, 1.5]  # starting point
-      W = T[1.0, 1.0, 1.0]  # weights
-
-      bnls_import(T, INT, control, data, status, n, m,
-                  "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
-                  "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
-                  "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-
-      terminated = false
-      while !terminated  # reverse-communication loop
-        bnls_solve_reverse_with_mat(T, INT, data, status, eval_status,
-                                    n, m, x, c, g, j_ne, J_val, y,
-                                    h_ne, H_val, v, p_ne, P_val)
-
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0  # error exit
-          terminated = true
-        elseif status[] == 2  # evaluate c
-          eval_status[] = res(x, c, userdata)
-        elseif status[] == 3  # evaluate J
-          eval_status[] = jac(x, J_val, userdata)
-        elseif status[] == 4  # evaluate H
-          eval_status[] = hess(x, y, H_val, userdata)
-        elseif status[] == 7  # evaluate P
-          eval_status[] = rhessprods(x, v, P_val, got_h, userdata)
-        else
-          @printf(" the value %1i of status should not occur\n", status)
-        end
-      end
-
-      bnls_information(T, INT, data, inform, status)
-
-      if inform[].status == 0
-        @printf("P%1i:%6i iterations. Optimal objective value = %5.2f, status = %1i\n",
-                model, inform[].iter, inform[].obj, inform[].status)
-      else
-        @printf(" %i: BNLS_solve exit status = %1i\n", model, inform[].status)
-      end
-
-      # Delete internal workspace
-      bnls_terminate(T, INT, data, control, inform)
-    end
-
-    @printf("\n basic tests of models used, reverse access by products\n\n")
-
-    for model in 3:8
-      # Initialize BNLS
-      bnls_initialize(T, INT, data, control, inform)
-
-      # Set user-defined control options
-      # @reset control[].print_level = 1
-      @reset control[].jacobian_available = 2
-      @reset control[].hessian_available = 2
-      @reset control[].model = model
-      x = T[1.5, 1.5]  # starting point
-      W = T[1.0, 1.0, 1.0]  # weights
-
-      bnls_import(T, INT, control, data, status, n, m,
-                  "absent", j_ne, C_NULL, C_NULL, C_NULL,
-                  "absent", h_ne, C_NULL, C_NULL, C_NULL,
-                  "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-
-      terminated = false
-      while !terminated  # reverse-communication loop
-        bnls_solve_reverse_without_mat(T, INT, data, status, eval_status,
-                                       n, m, x, c, g, transpose,
-                                       u, v, y, p_ne, P_val)
-
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0  # error exit
-          terminated = true
-        elseif status[] == 2  # evaluate c
-          eval_status[] = res(x, c, userdata)
-        elseif status[] == 5  # evaluate u + J v or u + J'v
-          eval_status[] = jacprod(x, transpose, u, v, got_j, userdata)
-        elseif status[] == 6  # evaluate u + H v
-          eval_status[] = hessprod(x, y, u, v, got_h, userdata)
-        elseif status[] == 7  # evaluate P
-          eval_status[] = rhessprods(x, v, P_val, got_h, userdata)
-        else
-          @printf(" the value %1i of status should not occur\n", status)
-        end
-      end
-
-      bnls_information(T, INT, data, inform, status)
-
-      if inform[].status == 0
-        @printf("P%1i:%6i iterations. Optimal objective value = %5.2f, status = %1i\n",
-                model, inform[].iter, inform[].obj, inform[].status)
-      else
-        @printf("P%i: BNLS_solve exit status = %1i\n", model, inform[].status)
-      end
-
-      # Delete internal workspace
-      bnls_terminate(T, INT, data, control, inform)
+      bnls_terminate(data, control, inform)
     end
   end
 

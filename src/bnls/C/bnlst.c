@@ -66,7 +66,7 @@ int main(void) {
 
     // set variable bounds
     for( ipc_ i = 0; i < n; i++) x_l[i] = 0.0; // lower bounds
-    for( ipc_ i = 0; i < n; i++) x_u[i] = 1.0; // lower bounds
+    for( ipc_ i = 0; i < n; i++) x_u[i] = 1.0; // upper bounds
 
     // set up array to flag current nonzeros in a  vector
     ipc_ flag = 0; // current flag value

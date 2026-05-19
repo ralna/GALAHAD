@@ -11,9 +11,15 @@ function test_version(::Type{T}, ::Type{INT}) where {T,INT}
   version = version_galahad(T, INT)
   # @printf("GALAHAD_VERSION : %s\n", version)
   version_jll = pkgversion(GALAHAD_jll)
-  @test version.major == version_jll.major
-  @test version.minor == version_jll.minor
-  @test version.patch == version_jll.patch
+  if GALAHAD.GALAHAD_INSTALLATION == "YGGDRASIL"
+    @test version.major == version_jll.major
+    @test version.minor == version_jll.minor
+    @test version.patch == version_jll.patch
+  else
+    @test version.major >= version_jll.major
+    @test version.minor >= version_jll.minor
+    @test version.patch >= version_jll.patch
+  end
 
   return 0
 end

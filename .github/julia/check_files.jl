@@ -32,7 +32,7 @@ function meson_check_headers()
 
   if n > 0
     println("If some header files should not be installed by Meson, please update")
-    println("the variable `excluded_headers` in GALAHAD/.github/julia/check_meson.jl.")
+    println("the variable `excluded_headers` in GALAHAD/.github/julia/check_files.jl.")
     println()
   end
 
@@ -68,7 +68,7 @@ function meson_check_packages()
 
   if m > 0
     println("If some subfolders should not be explored by Meson, please update")
-    println("the variable `excluded_packages` in GALAHAD/.github/julia/check_meson.jl.")
+    println("the variable `excluded_packages` in GALAHAD/.github/julia/check_files.jl.")
     println()
   end
 
@@ -140,7 +140,7 @@ function meson_check_files()
 
   if p > 0
     println("If some files should not be compiled by Meson, please update")
-    println("the variable `excluded_files` in GALAHAD/.github/julia/check_meson.jl.")
+    println("the variable `excluded_files` in GALAHAD/.github/julia/check_files.jl.")
     println()
   end
 
@@ -165,6 +165,7 @@ function julia_check_wrappers()
       if !isfile(path_julia_wrapper)
         q = q + 1
         println("Please add the file `$package.jl` in GALAHAD/GALAHAD.jl/src/wrappers.")
+        println("The script GALAHAD/GALAHAD.jl/gen/wrapper.jl can help generate it.")
         println("Please read the file GALAHAD/GALAHAD.jl/gen/README.md for more details.")
         println()
       end
@@ -204,6 +205,8 @@ function julia_check_tests()
       if !isfile(path_julia_test)
         r = r + 1
         println("Please add the file `test_$package.jl` in GALAHAD/GALAHAD.jl/test.")
+        println("The script GALAHAD/GALAHAD.jl/gen/examples.jl can help generate it.")
+        println("Please read the file GALAHAD/GALAHAD.jl/gen/README.md for more details.")
         println()
       end
     end

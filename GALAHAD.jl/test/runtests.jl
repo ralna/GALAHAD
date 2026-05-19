@@ -2,9 +2,6 @@ using GALAHAD
 using Quadmath
 
 @info("GALAHAD_INSTALLATION : $(GALAHAD.GALAHAD_INSTALLATION)")
-if GALAHAD.GALAHAD_INSTALLATION == "YGGDRASIL"
-  include("test_version.jl")
-end
 
 include("test_structures.jl")
 
@@ -12,7 +9,7 @@ include("test_arc.jl")
 include("test_bgo.jl")
 include("test_blls.jl")
 include("test_bllsb.jl")
-# include("test_bnls.jl")
+include("test_bnls.jl")
 include("test_bqp.jl")
 include("test_bqpb.jl")
 include("test_bsc.jl")
@@ -70,4 +67,5 @@ include("test_trs.jl")
 include("test_tru.jl")
 include("test_ugo.jl")
 include("test_uls.jl")
+include("test_version.jl")
 include("test_wcp.jl")

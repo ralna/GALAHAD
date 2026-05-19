@@ -1112,4 +1112,3 @@ Ref{wcp_inform_type{Float64,Int32}}()[]
 Ref{wcp_inform_type{Float64,Int64}}()[]
 Ref{wcp_inform_type{Float128,Int32}}()[]
 Ref{wcp_inform_type{Float128,Int64}}()[]
-

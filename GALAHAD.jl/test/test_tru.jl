@@ -325,7 +325,7 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
           elseif status[] == 6 # evaluate the product with P
             eval_status[] = prec(x, u, v, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -353,7 +353,7 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
           elseif status[] == 6 # evaluate the product with P
             eval_status[] = prec(x, u, v, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -382,7 +382,7 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
           elseif status[] == 6 # evaluate the product with P
             eval_status[] = prec(x, u, v, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -410,7 +410,7 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
           elseif status[] == 6 # evaluate the product with P
             eval_status[] = prec(x, u, v, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -438,7 +438,7 @@ function test_tru(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
           elseif status[] == 6 # evaluate the product with P
             eval_status[] = prec(x, u, v, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end

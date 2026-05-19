@@ -77,7 +77,7 @@ function test_glrt(::Type{T}, ::Type{INT}) where {T,INT}
             r[i] = 1.0
           end
         else
-          @printf(" the value %1i of status should not occur\n", status)
+          @printf(" the value %1i of status should not occur\n", status[])
         end
       end
 

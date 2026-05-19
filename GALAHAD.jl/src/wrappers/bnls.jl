@@ -40,19 +40,19 @@ struct bnls_control_type{T,INT}
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
-  slls_control::slls_control_type{T,INT}
-  sllsb_control::sllsb_control_type{T,INT}
+  blls_control::blls_control_type{T,INT}
+  bllsb_control::bllsb_control_type{T,INT}
 end
 
 export bnls_time_type
 
 struct bnls_time_type{T}
   total::T
-  slls::T
-  sllsb::T
+  blls::T
+  bllsb::T
   clock_total::T
-  clock_slls::T
-  clock_sllsb::T
+  clock_blls::T
+  clock_bllsb::T
 end
 
 export bnls_inform_type
@@ -72,8 +72,8 @@ struct bnls_inform_type{T,INT}
   norm_pg::T
   weight::T
   time::bnls_time_type{T}
-  slls_inform::slls_inform_type{T,INT}
-  sllsb_inform::sllsb_inform_type{T,INT}
+  blls_inform::blls_inform_type{T,INT}
+  bllsb_inform::bllsb_inform_type{T,INT}
 end
 
 export bnls_initialize
@@ -494,7 +494,7 @@ export bnls_solve_with_jacprod
 
 function bnls_solve_with_jacprod(::Type{Float32}, ::Type{Int32}, data, userdata,
                                  status, n, m_r, x_l, x_u, x, z, r, g, x_stat,
-                                 eval_r, eval_jr_prod, eval_jr_scol,
+                                 eval_r, eval_jr_prod, eval_jr_prods,
                                  eval_jr_sprod, w)
   @ccall libgalahad_single.bnls_solve_with_jacprod_s(data::Ptr{Ptr{Cvoid}},
                                                      userdata::Ptr{Cvoid},
@@ -509,14 +509,14 @@ function bnls_solve_with_jacprod(::Type{Float32}, ::Type{Int32}, data, userdata,
                                                      x_stat::Ptr{Int32},
                                                      eval_r::Ptr{Cvoid},
                                                      eval_jr_prod::Ptr{Cvoid},
-                                                     eval_jr_scol::Ptr{Cvoid},
+                                                     eval_jr_prods::Ptr{Cvoid},
                                                      eval_jr_sprod::Ptr{Cvoid},
                                                      w::Ptr{Float32})::Cvoid
 end
 
 function bnls_solve_with_jacprod(::Type{Float32}, ::Type{Int64}, data, userdata,
                                  status, n, m_r, x_l, x_u, x, z, r, g, x_stat,
-                                 eval_r, eval_jr_prod, eval_jr_scol,
+                                 eval_r, eval_jr_prod, eval_jr_prods,
                                  eval_jr_sprod, w)
   @ccall libgalahad_single_64.bnls_solve_with_jacprod_s_64(data::Ptr{Ptr{Cvoid}},
                                                            userdata::Ptr{Cvoid},
@@ -531,14 +531,14 @@ function bnls_solve_with_jacprod(::Type{Float32}, ::Type{Int64}, data, userdata,
                                                            x_stat::Ptr{Int64},
                                                            eval_r::Ptr{Cvoid},
                                                            eval_jr_prod::Ptr{Cvoid},
-                                                           eval_jr_scol::Ptr{Cvoid},
+                                                           eval_jr_prods::Ptr{Cvoid},
                                                            eval_jr_sprod::Ptr{Cvoid},
                                                            w::Ptr{Float32})::Cvoid
 end
 
 function bnls_solve_with_jacprod(::Type{Float64}, ::Type{Int32}, data, userdata,
                                  status, n, m_r, x_l, x_u, x, z, r, g, x_stat,
-                                 eval_r, eval_jr_prod, eval_jr_scol,
+                                 eval_r, eval_jr_prod, eval_jr_prods,
                                  eval_jr_sprod, w)
   @ccall libgalahad_double.bnls_solve_with_jacprod(data::Ptr{Ptr{Cvoid}},
                                                    userdata::Ptr{Cvoid},
@@ -553,14 +553,14 @@ function bnls_solve_with_jacprod(::Type{Float64}, ::Type{Int32}, data, userdata,
                                                    x_stat::Ptr{Int32},
                                                    eval_r::Ptr{Cvoid},
                                                    eval_jr_prod::Ptr{Cvoid},
-                                                   eval_jr_scol::Ptr{Cvoid},
+                                                   eval_jr_prods::Ptr{Cvoid},
                                                    eval_jr_sprod::Ptr{Cvoid},
                                                    w::Ptr{Float64})::Cvoid
 end
 
 function bnls_solve_with_jacprod(::Type{Float64}, ::Type{Int64}, data, userdata,
                                  status, n, m_r, x_l, x_u, x, z, r, g, x_stat,
-                                 eval_r, eval_jr_prod, eval_jr_scol,
+                                 eval_r, eval_jr_prod, eval_jr_prods,
                                  eval_jr_sprod, w)
   @ccall libgalahad_double_64.bnls_solve_with_jacprod_64(data::Ptr{Ptr{Cvoid}},
                                                          userdata::Ptr{Cvoid},
@@ -575,14 +575,14 @@ function bnls_solve_with_jacprod(::Type{Float64}, ::Type{Int64}, data, userdata,
                                                          x_stat::Ptr{Int64},
                                                          eval_r::Ptr{Cvoid},
                                                          eval_jr_prod::Ptr{Cvoid},
-                                                         eval_jr_scol::Ptr{Cvoid},
+                                                         eval_jr_prods::Ptr{Cvoid},
                                                          eval_jr_sprod::Ptr{Cvoid},
                                                          w::Ptr{Float64})::Cvoid
 end
 
 function bnls_solve_with_jacprod(::Type{Float128}, ::Type{Int32}, data,
                                  userdata, status, n, m_r, x_l, x_u, x, z, r, g,
-                                 x_stat, eval_r, eval_jr_prod, eval_jr_scol,
+                                 x_stat, eval_r, eval_jr_prod, eval_jr_prods,
                                  eval_jr_sprod, w)
   @ccall libgalahad_quadruple.bnls_solve_with_jacprod_q(data::Ptr{Ptr{Cvoid}},
                                                         userdata::Ptr{Cvoid},
@@ -597,14 +597,14 @@ function bnls_solve_with_jacprod(::Type{Float128}, ::Type{Int32}, data,
                                                         x_stat::Ptr{Int32},
                                                         eval_r::Ptr{Cvoid},
                                                         eval_jr_prod::Ptr{Cvoid},
-                                                        eval_jr_scol::Ptr{Cvoid},
+                                                        eval_jr_prods::Ptr{Cvoid},
                                                         eval_jr_sprod::Ptr{Cvoid},
                                                         w::Ptr{Float128})::Cvoid
 end
 
 function bnls_solve_with_jacprod(::Type{Float128}, ::Type{Int64}, data,
                                  userdata, status, n, m_r, x_l, x_u, x, z, r, g,
-                                 x_stat, eval_r, eval_jr_prod, eval_jr_scol,
+                                 x_stat, eval_r, eval_jr_prod, eval_jr_prods,
                                  eval_jr_sprod, w)
   @ccall libgalahad_quadruple_64.bnls_solve_with_jacprod_q_64(data::Ptr{Ptr{Cvoid}},
                                                               userdata::Ptr{Cvoid},
@@ -620,7 +620,7 @@ function bnls_solve_with_jacprod(::Type{Float128}, ::Type{Int64}, data,
                                                               x_stat::Ptr{Int64},
                                                               eval_r::Ptr{Cvoid},
                                                               eval_jr_prod::Ptr{Cvoid},
-                                                              eval_jr_scol::Ptr{Cvoid},
+                                                              eval_jr_prods::Ptr{Cvoid},
                                                               eval_jr_sprod::Ptr{Cvoid},
                                                               w::Ptr{Float128})::Cvoid
 end
@@ -749,8 +749,8 @@ export bnls_solve_reverse_with_jacprod
 
 function bnls_solve_reverse_with_jacprod(::Type{Float32}, ::Type{Int32}, data,
                                          status, eval_status, n, m_r, x_l, x_u,
-                                         x, z, r, g, x_stat, v, iv, lvl, lvu,
-                                         index, p, ip, lp, w)
+                                         x, z, r, g, x_stat, v, iv, lvl, lvu, p,
+                                         ip, lp, w)
   @ccall libgalahad_single.bnls_solve_reverse_with_jacprod_s(data::Ptr{Ptr{Cvoid}},
                                                              status::Ptr{Int32},
                                                              eval_status::Ptr{Int32},
@@ -767,7 +767,6 @@ function bnls_solve_reverse_with_jacprod(::Type{Float32}, ::Type{Int32}, data,
                                                              iv::Ptr{Int32},
                                                              lvl::Ptr{Int32},
                                                              lvu::Ptr{Int32},
-                                                             index::Ptr{Int32},
                                                              p::Ptr{Float32},
                                                              ip::Ptr{Int32},
                                                              lp::Int32,
@@ -776,8 +775,8 @@ end
 
 function bnls_solve_reverse_with_jacprod(::Type{Float32}, ::Type{Int64}, data,
                                          status, eval_status, n, m_r, x_l, x_u,
-                                         x, z, r, g, x_stat, v, iv, lvl, lvu,
-                                         index, p, ip, lp, w)
+                                         x, z, r, g, x_stat, v, iv, lvl, lvu, p,
+                                         ip, lp, w)
   @ccall libgalahad_single_64.bnls_solve_reverse_with_jacprod_s_64(data::Ptr{Ptr{Cvoid}},
                                                                    status::Ptr{Int64},
                                                                    eval_status::Ptr{Int64},
@@ -794,7 +793,6 @@ function bnls_solve_reverse_with_jacprod(::Type{Float32}, ::Type{Int64}, data,
                                                                    iv::Ptr{Int64},
                                                                    lvl::Ptr{Int64},
                                                                    lvu::Ptr{Int64},
-                                                                   index::Ptr{Int64},
                                                                    p::Ptr{Float32},
                                                                    ip::Ptr{Int64},
                                                                    lp::Int64,
@@ -803,8 +801,8 @@ end
 
 function bnls_solve_reverse_with_jacprod(::Type{Float64}, ::Type{Int32}, data,
                                          status, eval_status, n, m_r, x_l, x_u,
-                                         x, z, r, g, x_stat, v, iv, lvl, lvu,
-                                         index, p, ip, lp, w)
+                                         x, z, r, g, x_stat, v, iv, lvl, lvu, p,
+                                         ip, lp, w)
   @ccall libgalahad_double.bnls_solve_reverse_with_jacprod(data::Ptr{Ptr{Cvoid}},
                                                            status::Ptr{Int32},
                                                            eval_status::Ptr{Int32},
@@ -820,7 +818,6 @@ function bnls_solve_reverse_with_jacprod(::Type{Float64}, ::Type{Int32}, data,
                                                            iv::Ptr{Int32},
                                                            lvl::Ptr{Int32},
                                                            lvu::Ptr{Int32},
-                                                           index::Ptr{Int32},
                                                            p::Ptr{Float64},
                                                            ip::Ptr{Int32},
                                                            lp::Int32,
@@ -829,8 +826,8 @@ end
 
 function bnls_solve_reverse_with_jacprod(::Type{Float64}, ::Type{Int64}, data,
                                          status, eval_status, n, m_r, x_l, x_u,
-                                         x, z, r, g, x_stat, v, iv, lvl, lvu,
-                                         index, p, ip, lp, w)
+                                         x, z, r, g, x_stat, v, iv, lvl, lvu, p,
+                                         ip, lp, w)
   @ccall libgalahad_double_64.bnls_solve_reverse_with_jacprod_64(data::Ptr{Ptr{Cvoid}},
                                                                  status::Ptr{Int64},
                                                                  eval_status::Ptr{Int64},
@@ -847,7 +844,6 @@ function bnls_solve_reverse_with_jacprod(::Type{Float64}, ::Type{Int64}, data,
                                                                  iv::Ptr{Int64},
                                                                  lvl::Ptr{Int64},
                                                                  lvu::Ptr{Int64},
-                                                                 index::Ptr{Int64},
                                                                  p::Ptr{Float64},
                                                                  ip::Ptr{Int64},
                                                                  lp::Int64,
@@ -856,8 +852,8 @@ end
 
 function bnls_solve_reverse_with_jacprod(::Type{Float128}, ::Type{Int32}, data,
                                          status, eval_status, n, m_r, x_l, x_u,
-                                         x, z, r, g, x_stat, v, iv, lvl, lvu,
-                                         index, p, ip, lp, w)
+                                         x, z, r, g, x_stat, v, iv, lvl, lvu, p,
+                                         ip, lp, w)
   @ccall libgalahad_quadruple.bnls_solve_reverse_with_jacprod_q(data::Ptr{Ptr{Cvoid}},
                                                                 status::Ptr{Int32},
                                                                 eval_status::Ptr{Int32},
@@ -874,7 +870,6 @@ function bnls_solve_reverse_with_jacprod(::Type{Float128}, ::Type{Int32}, data,
                                                                 iv::Ptr{Int32},
                                                                 lvl::Ptr{Int32},
                                                                 lvu::Ptr{Int32},
-                                                                index::Ptr{Int32},
                                                                 p::Ptr{Float128},
                                                                 ip::Ptr{Int32},
                                                                 lp::Int32,
@@ -883,8 +878,8 @@ end
 
 function bnls_solve_reverse_with_jacprod(::Type{Float128}, ::Type{Int64}, data,
                                          status, eval_status, n, m_r, x_l, x_u,
-                                         x, z, r, g, x_stat, v, iv, lvl, lvu,
-                                         index, p, ip, lp, w)
+                                         x, z, r, g, x_stat, v, iv, lvl, lvu, p,
+                                         ip, lp, w)
   @ccall libgalahad_quadruple_64.bnls_solve_reverse_with_jacprod_q_64(data::Ptr{Ptr{Cvoid}},
                                                                       status::Ptr{Int64},
                                                                       eval_status::Ptr{Int64},
@@ -901,7 +896,6 @@ function bnls_solve_reverse_with_jacprod(::Type{Float128}, ::Type{Int64}, data,
                                                                       iv::Ptr{Int64},
                                                                       lvl::Ptr{Int64},
                                                                       lvu::Ptr{Int64},
-                                                                      index::Ptr{Int64},
                                                                       p::Ptr{Float128},
                                                                       ip::Ptr{Int64},
                                                                       lp::Int64,

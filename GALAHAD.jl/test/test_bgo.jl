@@ -513,7 +513,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
             eval_status[] = grad(x, g, userdata)
             eval_status[] = hessprod(x, u, v, false, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -557,7 +557,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
             eval_status[] = grad(x, g, userdata)
             eval_status[] = hessprod(x, u, v, false, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -600,7 +600,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
             eval_status[] = grad_diag(x, g, userdata)
             eval_status[] = hessprod_diag(x, u, v, false, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -648,7 +648,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
             eval_status[] = hessprod(x, u, v, false, userdata)
           else
             @printf(" the value %1i of status should not occur\n",
-                    status)
+                    status[])
           end
         end
       end

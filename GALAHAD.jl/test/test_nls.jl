@@ -387,7 +387,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
           elseif status[] == 7 # evaluate P
             eval_status[] = rhessprods(x, v, P_val, got_h, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -418,7 +418,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
           elseif status[] == 7 # evaluate P
             eval_status[] = rhessprods(x, v, P_val, got_h, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -450,7 +450,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
           elseif status[] == 7 # evaluate P
             eval_status[] = rhessprods_dense(x, v, P_dense, got_h, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -481,7 +481,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
           elseif status[] == 7 # evaluate P
             eval_status[] = rhessprods(x, v, P_val, got_h, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -513,7 +513,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
           elseif status[] == 7 # evaluate P
             eval_status[] = rhessprods(x, v, P_val, got_h, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -658,7 +658,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         elseif status[] == 7 # evaluate P
           eval_status[] = rhessprods(x, v, P_val, got_h, userdata)
         else
-          @printf(" the value %1i of status should not occur\n", status)
+          @printf(" the value %1i of status should not occur\n", status[])
         end
       end
 
@@ -716,7 +716,7 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         elseif status[] == 7 # evaluate P
           eval_status[] = rhessprods(x, v, P_val, got_h, userdata)
         else
-          @printf(" the value %1i of status should not occur\n", status)
+          @printf(" the value %1i of status should not occur\n", status[])
         end
       end
 

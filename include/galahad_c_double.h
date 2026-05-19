@@ -17,8 +17,9 @@ typedef int32_t galahad_jrprod(int32_t n, int32_t m, const double x[], const boo
 typedef int32_t galahad_hrprod(int32_t n, int32_t m, const double x[], const double y[], double u[], const double v[], bool got_h, const void *userdata);
 typedef int32_t galahad_shrprod(int32_t n, int32_t m, int32_t pne, const double x[], const double v[], double pval[], bool got_h, const void *userdata);
 typedef int32_t galahad_jr_prod(int32_t n, int32_t m_r, const double x[], const bool transpose, const double v[], double p[], bool got_jr, const void *userdata);
-typedef int32_t galahad_jr_scol(int32_t n, int32_t m_r, const double x[], int32_t index, double val[], int32_t row[], int32_t nz, bool got_jr, const void *userdata);
 typedef int32_t galahad_jr_sprod(int32_t n, int32_t m_r, const double x[], const bool transpose, const double v[], double p[], const int32_t free[], int32_t n_free, bool got_jr, const void *userdata);
+typedef int32_t galahad_jr_prods(int32_t n, int32_t m_r,const double x[], const double v[], double p[], const int32_t iv[], int32_t lvl, int32_t lvu, int32_t ip[], int32_t *lp, bool got_jr, const void *userdata);
+typedef int32_t galahad_jr_scol(int32_t n, int32_t m_r, const double x[], int32_t index, double val[], int32_t row[], int32_t nz, bool got_jr, const void *userdata);
 typedef int32_t galahad_fc(int32_t n, int32_t m, const double x[], double *f, double c[], const void *userdata);
 typedef int32_t galahad_gj(int32_t n, int32_t m, int32_t jne, const double x[], double g[], double j[], const void *userdata);
 typedef int32_t galahad_hl(int32_t n, int32_t m, int32_t hne, const double x[], const double y[], double h[], const void *userdata);
@@ -38,8 +39,9 @@ typedef int64_t galahad_jrprod_64(int64_t n, int64_t m, const double x[], const 
 typedef int64_t galahad_hrprod_64(int64_t n, int64_t m, const double x[], const double y[], double u[], const double v[], bool got_h, const void *userdata);
 typedef int64_t galahad_shrprod_64(int64_t n, int64_t m, int64_t pne, const double x[], const double v[], double pval[], bool got_h, const void *userdata);
 typedef int64_t galahad_jr_prod_64(int64_t n, int64_t m_r, const double x[], const bool transpose, const double v[], double p[], bool got_jr, const void *userdata);
-typedef int64_t galahad_jr_scol_64(int64_t n, int64_t m_r, const double x[], int64_t index, double val[], int64_t row[], int64_t nz, bool got_jr, const void *userdata);
 typedef int64_t galahad_jr_sprod_64(int64_t n, int64_t m_r, const double x[], const bool transpose, const double v[], double p[], const int64_t free[], int64_t n_free, bool got_jr, const void *userdata);
+typedef int64_t galahad_jr_prods_64(int64_t n, int64_t m_r,const double x[], const double v[], double p[], const int64_t iv[], int64_t lvl, int64_t lvu, int64_t ip[], int64_t *lp, bool got_jr, const void *userdata);
+typedef int64_t galahad_jr_scol_64(int64_t n, int64_t m_r, const double x[], int64_t index, double val[], int64_t row[], int64_t nz, bool got_jr, const void *userdata);
 typedef int64_t galahad_fc_64(int64_t n, int64_t m, const double x[], double *f, double c[], const void *userdata);
 typedef int64_t galahad_gj_64(int64_t n, int64_t m, int64_t jne, const double x[], double g[], double j[], const void *userdata);
 typedef int64_t galahad_hl_64(int64_t n, int64_t m, int64_t hne, const double x[], const double y[], double h[], const void *userdata);
@@ -4145,8 +4147,8 @@ void blls_reset_control(struct blls_control_type *control, void **data, int32_t 
 void blls_reset_control_64(struct blls_control_type_64 *control, void **data, int64_t *status);
 void blls_solve_given_a(void **data, void *userdata, int32_t *status, int32_t n, int32_t o, int32_t Ao_ne, double *Ao_val, double *b, double regularization_weight, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int32_t *x_stat, double *w, double *x_s, galahad_constant_prec *eval_prec);
 void blls_solve_given_a_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t o, int64_t Ao_ne, double *Ao_val, double *b, double regularization_weight, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int64_t *x_stat, double *w, double *x_s, galahad_constant_prec_64 *eval_prec);
-void blls_solve_reverse_a_prod(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t o, double *b, double regularization_weight, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int32_t *x_stat, double *v, double *p, int32_t *nz_v, int32_t *nz_v_start, int32_t *nz_v_end, int32_t *nz_p, int32_t nz_p_end, double *w, double *x_s);
-void blls_solve_reverse_a_prod_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t o, double *b, double regularization_weight, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int64_t *x_stat, double *v, double *p, int64_t *nz_v, int64_t *nz_v_start, int64_t *nz_v_end, int64_t *nz_p, int64_t nz_p_end, double *w, double *x_s);
+void blls_solve_reverse_a_prod(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t o, double *b, double regularization_weight, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int32_t *x_stat, double *v, double *p, int32_t *iv, int32_t *lvl, int32_t *lvu, int32_t *ip, int32_t lp, double *w, double *x_s);
+void blls_solve_reverse_a_prod_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t o, double *b, double regularization_weight, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int64_t *x_stat, double *v, double *p, int64_t *iv, int64_t *lvl, int64_t *lvu, int64_t *ip, int64_t lp, double *w, double *x_s);
 void blls_information(void **data, struct blls_inform_type *inform, int32_t *status);
 void blls_information_64(void **data, struct blls_inform_type_64 *inform, int64_t *status);
 void blls_terminate(void **data, struct blls_control_type *control, struct blls_inform_type *inform);
@@ -8669,8 +8671,8 @@ struct bnls_control_type {
     bool space_critical;
     bool deallocate_error_fatal;
     char prefix[31];
-    struct slls_control_type slls_control;
-    struct sllsb_control_type sllsb_control;
+    struct blls_control_type blls_control;
+    struct bllsb_control_type bllsb_control;
 };
 
 struct bnls_control_type_64 {
@@ -8713,17 +8715,17 @@ struct bnls_control_type_64 {
     bool space_critical;
     bool deallocate_error_fatal;
     char prefix[31];
-    struct slls_control_type_64 slls_control;
-    struct sllsb_control_type_64 sllsb_control;
+    struct blls_control_type_64 blls_control;
+    struct bllsb_control_type_64 bllsb_control;
 };
 
 struct bnls_time_type {
     double total;
-    double slls;
-    double sllsb;
+    double blls;
+    double bllsb;
     double clock_total;
-    double clock_slls;
-    double clock_sllsb;
+    double clock_blls;
+    double clock_bllsb;
 };
 
 struct bnls_inform_type {
@@ -8741,8 +8743,8 @@ struct bnls_inform_type {
     double norm_pg;
     double weight;
     struct bnls_time_type time;
-    struct slls_inform_type slls_inform;
-    struct sllsb_inform_type sllsb_inform;
+    struct blls_inform_type blls_inform;
+    struct bllsb_inform_type bllsb_inform;
 };
 
 struct bnls_inform_type_64 {
@@ -8760,8 +8762,8 @@ struct bnls_inform_type_64 {
     double norm_pg;
     double weight;
     struct bnls_time_type time;
-    struct slls_inform_type_64 slls_inform;
-    struct sllsb_inform_type_64 sllsb_inform;
+    struct blls_inform_type_64 blls_inform;
+    struct bllsb_inform_type_64 bllsb_inform;
 };
 
 void bnls_initialize(void **data, struct bnls_control_type *control, struct bnls_inform_type *inform);
@@ -8776,12 +8778,12 @@ void bnls_reset_control(struct bnls_control_type *control, void **data, int32_t 
 void bnls_reset_control_64(struct bnls_control_type_64 *control, void **data, int64_t *status);
 void bnls_solve_with_jac(void **data, void *userdata, int32_t *status, int32_t n, int32_t m_r, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int32_t *x_stat, galahad_r *eval_r, int32_t jr_ne, galahad_jr *eval_jr, double *w);
 void bnls_solve_with_jac_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t m_r, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int64_t *x_stat, galahad_r_64 *eval_r, int64_t jr_ne, galahad_jr_64 *eval_jr, double *w);
-void bnls_solve_with_jacprod(void **data, void *userdata, int32_t *status, int32_t n, int32_t m_r, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int32_t *x_stat, galahad_r *eval_r, galahad_jr_prod *eval_jr_prod, galahad_jr_scol *eval_jr_scol, galahad_jr_sprod *eval_jr_sprod, double *w);
-void bnls_solve_with_jacprod_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t m_r, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int64_t *x_stat, galahad_r_64 *eval_r, galahad_jr_prod_64 *eval_jr_prod, galahad_jr_scol_64 *eval_jr_scol, galahad_jr_sprod_64 *eval_jr_sprod, double *w);
+void bnls_solve_with_jacprod(void **data, void *userdata, int32_t *status, int32_t n, int32_t m_r, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int32_t *x_stat, galahad_r *eval_r, galahad_jr_prod *eval_jr_prod, galahad_jr_prods *eval_jr_prods, galahad_jr_sprod *eval_jr_sprod, double *w);
+void bnls_solve_with_jacprod_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t m_r, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int64_t *x_stat, galahad_r_64 *eval_r, galahad_jr_prod_64 *eval_jr_prod, galahad_jr_prods_64 *eval_jr_prods, galahad_jr_sprod_64 *eval_jr_sprod, double *w);
 void bnls_solve_reverse_with_jac(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t m_r, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int32_t *x_stat, int32_t jr_ne, double *jr_val, double *w);
 void bnls_solve_reverse_with_jac_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t m_r, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int64_t *x_stat, int64_t jr_ne, double *jr_val, double *w);
-void bnls_solve_reverse_with_jacprod(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t m_r, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int32_t *x_stat, double *v, int32_t *iv, int32_t *lvl, int32_t *lvu, int32_t *index, double *p, int32_t *ip, int32_t lp, double *w);
-void bnls_solve_reverse_with_jacprod_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t m_r, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int64_t *x_stat, double *v, int64_t *iv, int64_t *lvl, int64_t *lvu, int64_t *index, double *p, int64_t *ip, int64_t lp, double *w);
+void bnls_solve_reverse_with_jacprod(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t m_r, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int32_t *x_stat, double *v, int32_t *iv, int32_t *lvl, int32_t *lvu, double *p, int32_t *ip, int32_t lp, double *w);
+void bnls_solve_reverse_with_jacprod_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t m_r, double *x_l, double *x_u, double *x, double *z, double *r, double *g, int64_t *x_stat, double *v, int64_t *iv, int64_t *lvl, int64_t *lvu, double *p, int64_t *ip, int64_t lp, double *w);
 void bnls_information(void **data, struct bnls_inform_type *inform, int32_t *status);
 void bnls_information_64(void **data, struct bnls_inform_type_64 *inform, int64_t *status);
 void bnls_terminate(void **data, struct bnls_control_type *control, struct bnls_inform_type *inform);

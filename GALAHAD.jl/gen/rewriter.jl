@@ -11,7 +11,7 @@ packages = ("arc", "bgo", "blls", "bllsb", "bnls", "bqp", "bqpb", "bsc",
 callbacks = ("galahad_f", "galahad_g", "galahad_h", "galahad_prec", "galahad_hprod",
              "galahad_shprod", "galahad_constant_prec", "galahad_r", "galahad_jr",
              "galahad_hr", "galahad_jrprod", "galahad_hrprod", "galahad_shrprod",
-             "galahad_jr_prod", "galahad_jr_scol", "galahad_jr_sprod",
+             "galahad_jr_prod", "galahad_jr_scol", "galahad_jr_sprod", "galahad_jr_prods",
              "galahad_fc", "galahad_gj", "galahad_hl", "galahad_fgh")
 
 types = ("control", "time", "inform", "history", "subproblem_control",
@@ -266,7 +266,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
     isfile("../test/test_structures.jl") || write("../test/test_structures.jl", "using GALAHAD\nusing Quadmath\n\n")
     test = read("../test/test_structures.jl", String)
     structures = structures * "\n"
-    structures = replace(structures, "Ref{wcp_inform_type{Float128}}()\n" => "Ref{wcp_inform_type{Float128}}()")
+    structures = replace(structures, "Ref{wcp_inform_type{Float128,Int64}}()[]\n" => "Ref{wcp_inform_type{Float128,Int64}}()[]")
     content = test * structures
     content = replace(content, "\n\n\n" => "\n\n")
     write("../test/test_structures.jl", content)
