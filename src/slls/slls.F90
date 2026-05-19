@@ -4555,6 +4555,7 @@ END IF
 
 !  fix the variable that encounters its bound and adjust FREE
 
+write(6,*) ' i_fixed ', i_fixed
         now_fixed = FREE( i_fixed )
         FREE( i_fixed ) = FREE( n_free )
         FREE( n_free ) = now_fixed
