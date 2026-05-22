@@ -361,7 +361,7 @@ static PyObject* py_uls_initialize(PyObject *self, PyObject *args, PyObject *key
 
     // Return options Python dictionary
     PyObject *py_options = uls_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   ULS_FACTORIZE_MATRIX    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -483,10 +483,7 @@ static PyObject* py_uls_solve_system(PyObject *self, PyObject *args, PyObject *k
         return NULL;
 
     // Return x
-    PyObject *solve_system_return;
-    solve_system_return = Py_BuildValue("O", py_sol);
-    Py_INCREF(solve_system_return);
-    return solve_system_return;
+    return Py_BuildValue("O", py_sol);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   ULS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -502,7 +499,7 @@ static PyObject* py_uls_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = uls_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   ULS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

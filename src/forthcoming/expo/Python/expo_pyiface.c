@@ -45,7 +45,6 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_fc = NULL;
 static PyObject *py_eval_gj = NULL;
 static PyObject *py_eval_hl = NULL;
-static PyObject *expo_solve_return = NULL;
 
 /* C eval_* function wrappers */
 static int eval_fc(int n, int m, const double x[], double *f, double c[],
@@ -598,7 +597,7 @@ static PyObject* py_expo_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = expo_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   EXPO_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -778,7 +777,7 @@ static PyObject* py_expo_solve(PyObject *self, PyObject *args, PyObject *keywds)
     Py_XDECREF(py_eval_hl);         /* Dispose of previous callback */
     py_eval_hl = temp_hl;            /* Remember new callback */
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp mdim[] = {m}; // size of y and c
     PyArrayObject *py_y =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
@@ -809,9 +808,7 @@ static PyObject* py_expo_solve(PyObject *self, PyObject *args, PyObject *keywds)
         return NULL;
 
     // Return x, y, z, c and gl
-    expo_solve_return = Py_BuildValue("OOOOO", py_x, py_y, py_z, py_c, py_gl);
-    Py_XINCREF(expo_solve_return);
-    return expo_solve_return;
+    return Py_BuildValue("ONNNN", py_x, py_y, py_z, py_c, py_gl);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   EXPO_INFORMATION   -*-*-*-*-*-*-*-*
@@ -827,7 +824,7 @@ static PyObject* py_expo_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = expo_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   EXPO_TERMINATE   -*-*-*-*-*-*-*-*-*-*

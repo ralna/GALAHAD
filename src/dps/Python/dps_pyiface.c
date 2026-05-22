@@ -302,7 +302,7 @@ static PyObject* py_dps_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = dps_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   DPS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -414,7 +414,7 @@ static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args, PyObjec
     g = (double *) PyArray_DATA(py_g);
     H_val = (double *) PyArray_DATA(py_H_val);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
     PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
@@ -433,12 +433,7 @@ static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args, PyObjec
         return NULL;
 
     // Return x
-    PyObject *solve_tr_problem_return;
-
-    solve_tr_problem_return = Py_BuildValue("O", py_x);
-    Py_INCREF(solve_tr_problem_return);
-    return solve_tr_problem_return;
-
+    return Py_BuildValue("N", py_x);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DPS_SOLVE_RQ_PROBLEM   -*-*-*-*-*-*-*-*
@@ -455,7 +450,7 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObjec
 
     // Parse positional arguments
     static char *kwlist[] = {"n","weight","power","f","g","H_ne","H_val",NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idddOiO", kwlist, &n, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idddOiO", kwlist, &n,
                                     &weight, &power, &f, &py_g,
                                     &H_ne, &py_H_val))
         return NULL;
@@ -470,7 +465,7 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObjec
     g = (double *) PyArray_DATA(py_g);
     H_val = (double *) PyArray_DATA(py_H_val);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
     PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
@@ -490,12 +485,7 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObjec
         return NULL;
 
     // Return x
-    PyObject *solve_rq_problem_return;
-
-    solve_rq_problem_return = Py_BuildValue("O", py_x);
-    Py_INCREF(solve_rq_problem_return);
-    return solve_rq_problem_return;
-
+    return Py_BuildValue("N", py_x);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DPS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -511,7 +501,7 @@ static PyObject* py_dps_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = dps_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DPS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

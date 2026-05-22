@@ -44,8 +44,6 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
-static PyObject *bgo_solve_return = NULL;
-//static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
 static int eval_f(int n, const double x[], double *f, const void *userdata){
@@ -449,7 +447,7 @@ static PyObject* py_bgo_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = bgo_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 
 }
 
@@ -600,9 +598,7 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x and g
-    bgo_solve_return = Py_BuildValue("OO", py_x, py_g);
-    Py_XINCREF(bgo_solve_return);
-    return bgo_solve_return;
+    return Py_BuildValue("ON", py_x, py_g);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BGO_INFORMATION   -*-*-*-*-*-*-*-*
@@ -618,7 +614,7 @@ static PyObject* py_bgo_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = bgo_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BGO_TERMINATE   -*-*-*-*-*-*-*-*-*-*
@@ -636,7 +632,6 @@ static PyObject* py_bgo_terminate(PyObject *self){
     Py_XDECREF(py_eval_f);
     Py_XDECREF(py_eval_g);
     Py_XDECREF(py_eval_h);
-    Py_XDECREF(bgo_solve_return);
     Py_INCREF(Py_None);
     return Py_None;
 }

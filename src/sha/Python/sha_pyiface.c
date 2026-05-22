@@ -211,7 +211,7 @@ static PyObject* py_sha_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = sha_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SHA_ANALYSE_MATRIX    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -270,11 +270,7 @@ static PyObject* py_sha_analyse_matrix(PyObject *self, PyObject *args, PyObject 
         return NULL;
 
     // Return m
-    PyObject *analyse_matrix_return;
-    analyse_matrix_return = Py_BuildValue("i", m);
-    Py_INCREF(analyse_matrix_return);
-    return analyse_matrix_return;
-
+    return Py_BuildValue("i", m);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SHA_RECOVER_MATRIX   -*-*-*-*-*-*-*-*-*
@@ -331,7 +327,7 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
 
     //for( int i = 0; i < ls2; i++) printf("s %f\n", s2d[0][i]);
 
-   // Create NumPy output array for val
+    // Create NumPy output array for val
     npy_intp nedim[] = {ne};
     PyArrayObject *py_val =
       (PyArrayObject *) PyArray_SimpleNew(1, nedim, NPY_DOUBLE);
@@ -355,11 +351,7 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
         return NULL;
 
     // Return val
-    PyObject *recover_matrix_return;
-    recover_matrix_return = Py_BuildValue("O", py_val);
-    Py_INCREF(recover_matrix_return);
-    return recover_matrix_return;
-
+    return Py_BuildValue("N", py_val);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SHA_INFORMATION   -*-*-*-*-*-*-*-*
@@ -375,7 +367,7 @@ static PyObject* py_sha_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = sha_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SHA_TERMINATE   -*-*-*-*-*-*-*-*-*-*

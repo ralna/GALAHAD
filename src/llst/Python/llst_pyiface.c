@@ -351,7 +351,7 @@ static PyObject* py_llst_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = llst_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   LLST_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -554,7 +554,7 @@ static PyObject* py_llst_solve_problem(PyObject *self, PyObject *args,
     A_val = (double *) PyArray_DATA(py_A_val);
     if(py_S_val != NULL) S_val = (double *) PyArray_DATA(py_S_val);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
     PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
@@ -574,12 +574,7 @@ static PyObject* py_llst_solve_problem(PyObject *self, PyObject *args,
         return NULL;
 
     // Return x
-    PyObject *solve_problem_return;
-
-    solve_problem_return = Py_BuildValue("O", py_x);
-    Py_INCREF(solve_problem_return);
-    return solve_problem_return;
-
+    return Py_BuildValue("N", py_x);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LLST_INFORMATION   -*-*-*-*-*-*-*-*
@@ -595,7 +590,7 @@ static PyObject* py_llst_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = llst_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LLST_TERMINATE   -*-*-*-*-*-*-*-*-*-*

@@ -425,7 +425,7 @@ static PyObject* py_blls_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = blls_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   BLLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -526,9 +526,9 @@ static PyObject* py_blls_solve(PyObject *self, PyObject *args, PyObject *keywds)
     // Parse positional arguments
     static char *kwlist[] = {"n", "o", "Ao_ne", "Ao_val", "b", "sigma",
                              "x_l", "x_u", "x", "z", "w", "x_s", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOOdOOOO|OO", kwlist, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOOdOOOO|OO", kwlist,
                                     &n, &o, &Ao_ne, &py_Ao_val, &py_b, &sigma,
-                                    &py_x_l, &py_x_u, &py_x, &py_z, 
+                                    &py_x_l, &py_x_u, &py_x, &py_z,
                                     &py_w, &py_x_s))
         return NULL;
 
@@ -550,7 +550,7 @@ static PyObject* py_blls_solve(PyObject *self, PyObject *args, PyObject *keywds)
         if(!check_array_double("w", py_w, o))
             return NULL;
         w = (double *) PyArray_DATA(py_w);
-      }  
+      }
     }
     if(py_x_s != NULL) {
       if((PyObject *) py_w != Py_None){
@@ -568,7 +568,7 @@ static PyObject* py_blls_solve(PyObject *self, PyObject *args, PyObject *keywds)
     x = (double *) PyArray_DATA(py_x);
     z = (double *) PyArray_DATA(py_z);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of g and x_stat
     npy_intp odim[] = {o}; // size of c
     PyArrayObject *py_r =
@@ -599,11 +599,7 @@ static PyObject* py_blls_solve(PyObject *self, PyObject *args, PyObject *keywds)
         return NULL;
 
     // Return x, z, r, g and x_stat
-    PyObject *solve_ls_return;
-    solve_ls_return = Py_BuildValue("OOOOO", py_x, py_z, py_r, py_g,
-                                     py_x_stat);
-    Py_INCREF(solve_ls_return);
-    return solve_ls_return;
+    return Py_BuildValue("OONNN", py_x, py_z, py_r, py_g, py_x_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BLLS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -618,7 +614,7 @@ static PyObject* py_blls_information(PyObject *self){
     blls_information(&data, &inform, &status);
     // Return status and inform Python dictionary
     PyObject *py_inform = blls_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BLLS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

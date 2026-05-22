@@ -726,7 +726,7 @@ static PyObject* py_qpb_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = qpb_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   QPB_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -902,7 +902,7 @@ static PyObject* py_qpb_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
     y = (double *) PyArray_DATA(py_y);
     z = (double *) PyArray_DATA(py_z);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp mdim[] = {m}; // size of c and c_ztar
     PyArrayObject *py_c =
@@ -933,14 +933,7 @@ static PyObject* py_qpb_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *solve_qp_return;
-
-    // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
-                                              py_x_stat, py_c_stat);
-    Py_INCREF(solve_qp_return);
-    return solve_qp_return;
-
+    return Py_BuildValue("ONOONN", py_x, py_c, py_y, py_z, py_x_stat, py_c_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   QPB_INFORMATION   -*-*-*-*-*-*-*-*
@@ -956,7 +949,7 @@ static PyObject* py_qpb_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = qpb_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   QPB_TERMINATE   -*-*-*-*-*-*-*-*-*-*

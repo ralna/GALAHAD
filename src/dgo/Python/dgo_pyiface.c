@@ -44,7 +44,6 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
-static PyObject *dgo_solve_return = NULL;
 
 /* C eval_* function wrappers */
 static int eval_f(int n, const double x[], double *f, const void *userdata){
@@ -521,7 +520,7 @@ static PyObject* py_dgo_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = dgo_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   DGO_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -671,9 +670,7 @@ static PyObject* py_dgo_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x and g
-    dgo_solve_return = Py_BuildValue("OO", py_x, py_g);
-    Py_XINCREF(dgo_solve_return);
-    return dgo_solve_return;
+    return Py_BuildValue("ON", py_x, py_g);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DGO_INFORMATION   -*-*-*-*-*-*-*-*
@@ -689,7 +686,7 @@ static PyObject* py_dgo_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = dgo_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DGO_TERMINATE   -*-*-*-*-*-*-*-*-*-*

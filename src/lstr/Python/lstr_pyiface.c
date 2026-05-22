@@ -273,7 +273,7 @@ static PyObject* py_lstr_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = lstr_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   LSTR_LOAD_OPTIONS    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -331,7 +331,7 @@ static PyObject* py_lstr_solve_problem(PyObject *self, PyObject *args, PyObject 
     u = (double *) PyArray_DATA(py_u);
     v = (double *) PyArray_DATA(py_v);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
     PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
@@ -350,12 +350,7 @@ static PyObject* py_lstr_solve_problem(PyObject *self, PyObject *args, PyObject 
         return NULL;
 
     // Return status, x, u and v
-    PyObject *solve_problem_return;
-
-    // solve_problem_return = Py_BuildValue("O", py_x);
-    solve_problem_return = Py_BuildValue("iOOO", status, py_x, py_u, py_v);
-    Py_INCREF(solve_problem_return);
-    return solve_problem_return;
+    return Py_BuildValue("iNOO", status, py_x, py_u, py_v);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LSTR_INFORMATION   -*-*-*-*-*-*-*-*
@@ -371,7 +366,7 @@ static PyObject* py_lstr_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = lstr_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LSTR_TERMINATE   -*-*-*-*-*-*-*-*-*-*

@@ -392,11 +392,7 @@ static PyObject* py_ugo_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = ugo_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
-
-    // Return None boilerplate
-    // Py_INCREF(Py_None);
-    // return Py_None;
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   UGO_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -483,7 +479,7 @@ static PyObject* py_ugo_information(PyObject *self){
 
     // Return inform Python dictionary
     PyObject *py_inform = ugo_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   UGO_TERMINATE   -*-*-*-*-*-*-*-*-*-*

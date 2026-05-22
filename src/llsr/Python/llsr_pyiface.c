@@ -34,8 +34,8 @@ PyObject* ir_make_inform_dict(const struct ir_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
-static struct llsr_control_type control;  // control struct
-static struct llsr_inform_type inform;    // inform struct
+static struct llsr_control_type control; // control struct
+static struct llsr_inform_type inform;   // inform struct
 static bool init_called = false;         // record if initialise was called
 static bool load_called = false;         // record if load was called
 static bool load_scaling_called = false; // record if load_scaling was called
@@ -343,7 +343,7 @@ static PyObject* py_llsr_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = llsr_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   LLSR_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -546,7 +546,7 @@ static PyObject* py_llsr_solve_problem(PyObject *self, PyObject *args,
     A_val = (double *) PyArray_DATA(py_A_val);
     if(py_S_val != NULL) S_val = (double *) PyArray_DATA(py_S_val);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
     PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
@@ -566,12 +566,7 @@ static PyObject* py_llsr_solve_problem(PyObject *self, PyObject *args,
         return NULL;
 
     // Return x
-    PyObject *solve_problem_return;
-
-    solve_problem_return = Py_BuildValue("O", py_x);
-    Py_INCREF(solve_problem_return);
-    return solve_problem_return;
-
+    return Py_BuildValue("N", py_x);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LLSR_INFORMATION   -*-*-*-*-*-*-*-*
@@ -587,7 +582,7 @@ static PyObject* py_llsr_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = llsr_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LLSR_TERMINATE   -*-*-*-*-*-*-*-*-*-*

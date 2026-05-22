@@ -672,7 +672,7 @@ static PyObject* py_lpb_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = lpb_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   LPB_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -807,7 +807,7 @@ static PyObject* py_lpb_solve_lp(PyObject *self, PyObject *args, PyObject *keywd
     y = (double *) PyArray_DATA(py_y);
     z = (double *) PyArray_DATA(py_z);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp mdim[] = {m}; // size of c and c_ztar
     PyArrayObject *py_c =
@@ -838,13 +838,7 @@ static PyObject* py_lpb_solve_lp(PyObject *self, PyObject *args, PyObject *keywd
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *solve_lp_return;
-
-    // solve_lp_return = Py_BuildValue("O", py_x);
-    solve_lp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
-                                              py_x_stat, py_c_stat);
-    Py_INCREF(solve_lp_return);
-    return solve_lp_return;
+    return Py_BuildValue("ONOONN", py_x, py_c, py_y, py_z, py_x_stat, py_c_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LPB_INFORMATION   -*-*-*-*-*-*-*-*
@@ -860,7 +854,7 @@ static PyObject* py_lpb_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = lpb_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LPB_TERMINATE   -*-*-*-*-*-*-*-*-*-*

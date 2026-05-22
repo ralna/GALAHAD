@@ -487,7 +487,7 @@ static PyObject* py_sbls_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = sbls_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SBLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -723,10 +723,7 @@ static PyObject* py_sbls_solve_system(PyObject *self, PyObject *args, PyObject *
         return NULL;
 
     // Return x
-    PyObject *solve_system_return;
-    solve_system_return = Py_BuildValue("O", py_sol);
-    Py_INCREF(solve_system_return);
-    return solve_system_return;
+    return Py_BuildValue("O", py_sol);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SBLS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -742,7 +739,7 @@ static PyObject* py_sbls_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = sbls_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SBLS_TERMINATE   -*-*-*-*-*-*-*-*-*-*
