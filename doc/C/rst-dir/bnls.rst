@@ -36,13 +36,13 @@ To solve a given problem, functions from the bnls package must be called in the 
 
 * solve the problem by calling one of
   
-  * :ref:`bnls_solve_with_jac <doxid-galahad__bnls_8h_1ae923c2e6afabb3563fe0998d45b715c4>` - solve using function calls to evaluate function, gradient and Hessian values
+  * :ref:`bnls_solve_with_jac <doxid-galahad__bnls_8h_1ae923c2e6afabb3563fe0998d45b715c4>` - solve using function calls to evaluate residual and Jacobian  values
   
-  * :ref:`bnls_solve_with_jacprod <doxid-galahad__bnls_8h_1a692ecbfaa428584e60aa4c33d7278a64>` - solve using function calls to evaluate function and gradient values and Hessian-vector products
+  * :ref:`bnls_solve_with_jacprod <doxid-galahad__bnls_8h_1a692ecbfaa428584e60aa4c33d7278a64>` - solve using function calls to evaluate residual values and Jacobian-vector products
   
-  * :ref:`bnls_solve_reverse_with_jac <doxid-galahad__bnls_8h_1a9ad89605640c53c33ddd5894b5e3edd1>` - solve returning to the calling program to obtain function, gradient and Hessian values, or
+  * :ref:`bnls_solve_reverse_with_jac <doxid-galahad__bnls_8h_1a9ad89605640c53c33ddd5894b5e3edd1>` - solve returning to the calling program to obtain residual and Jacobian values, or
   
-  * :ref:`bnls_solve_reverse_with_jacprod <doxid-galahad__bnls_8h_1a6dddd928c19adec0abf76bdb2d75da17>` - solve returning to the calling prorgram to obtain function and gradient values and Hessian-vector products
+  * :ref:`bnls_solve_reverse_with_jacprod <doxid-galahad__bnls_8h_1a6dddd928c19adec0abf76bdb2d75da17>` - solve returning to the calling prorgram to obtain residual and values and Jacobian-vector products
 
 * :ref:`bnls_information <doxid-galahad__bnls_8h_1a765da96b0a1f3d07dab53cc3400c22d8>` (optional) - recover information about the solution and solution process
 

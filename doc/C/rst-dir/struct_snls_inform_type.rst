@@ -121,7 +121,7 @@ the total number of evaluations of the residual function $r(x)$
 
 	:ref:`ipc_<doxid-galahad__ipc_8h_>` jr_eval
 
-the total number of evaluations of the Jacobian $J(x)$ of $r(x)$
+the total number of evaluations of the Jacobian $J_r(x)$ of $r(x)$
 
 .. index:: pair: variable; obj
 .. _doxid-structsnls__inform__type_obj:

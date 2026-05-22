@@ -22,15 +22,6 @@ See Section 4 of $GALAHAD/doc/bnls.pdf for additional details.
 terminology
 -----------
 
-The **primal optimality** conditions (1) and **dual optimality** conditions
-$$J_r^T(x) W r(x) = z$$
-necessarily hold at an optimal point $x$ for some 
-**dual variables** $z$,
-where $x$ and $z$ satisfy appropriate **complementarity** conditions,
-namely that the $i$-th dual variable $z_i$ is non-negative if $x_i$ is on its
-lower bound $x^l_i$, non-positive if $x_i$ is on its upper bound $x^u_i$,
-and zero if $x_i$ lies strictly between its bounds.
-
 The algorithm used by the package is iterative. From the current best estimate
 of the minimizer $x_k$, a trial improved point $x_k + s_k$ is sought.
 The correction $s_k$ is chosen to improve a model $m_k(s)$ of
@@ -45,8 +36,8 @@ The model $t_k(s)$ is a truncated Taylor-series approximation, and this
 relies on being able to compute or estimate derivatives of $c(x)$.
 Various models are provided, and each has different derivative requirements.
 We denote the $m$ by $n$ residual **Jacobian**
-$J(x) \equiv \nabla_x c(x)$ as the matrix  whose $i,j$-th component
-$$J(x)_{i,j} := \partial r_i(x) / \partial x_j \;\;
+$J_r(x) \equiv \nabla_x c(x)$ as the matrix  whose $i,j$-th component
+$$J_r(x)_{i,j} := \partial r_i(x) / \partial x_j \;\;
 \mbox{for $i=0,\ldots,m_r$ and $j=0,\ldots,n-1$.}$$
 For a given $m_r$-vector $y$, the **weighted-residual Hessian** is the sum
 $$H(x,y) := \sum_{\ell=0}^{m_r-1} y_{\ell} H_{\ell}(x), \;\; \mbox{where}\;\; H_{\ell}(x)_{i,j} := \partial^2 r_{\ell}(x) / \partial x_i \partial x_j \;\; \mbox{for $i,j=0,\ldots,n-1$}$$
@@ -54,14 +45,22 @@ is the Hessian of $r_\ell(x)$.
 The models $t_k(s)$ provided are,
 
 1. the **Gauss-Newton** approximation
-   $\frac{1}{2} \| r(x_k) + J(x_k) s\|^2_W$,
+   $\frac{1}{2} \| r(x_k) + J_r(x_k) s\|^2_W$,
 
 2. the **Newton (second-order Taylor)** approximation
 
-   $f(x_k) + g(x_k)^T s + \frac{1}{2} s^T [ J^T(x_k) W J(x_k) + H(x_k,W r(x_k))] s$
+   $f(x_k) + g(x_k)^T s + \frac{1}{2} s^T [ J_r^T(x_k) W J_r(x_k) + H(x_k,W r(x_k))] s$
 
 (although the latter has yet to be implemented).
 
+The **primal optimality** conditions (1) and **dual optimality** conditions
+$$J_r^T(x) W r(x) = z$$
+necessarily hold at an optimal point $x$ for some 
+**dual variables** $z$,
+where $x$ and $z$ satisfy appropriate **complementarity** conditions,
+namely that the $i$-th dual variable $z_i$ is non-negative if $x_i$ is on its
+lower bound $x^l_i$, non-positive if $x_i$ is on its upper bound $x^u_i$,
+and zero if $x_i$ lies strictly between its bounds.
 
 method
 ------
@@ -95,7 +94,7 @@ former as the iterates approach convergence.
 
 The iteration is terminated as soon as either the $W$-norm of the 
 residual $r(x_k)$ or the the Euclidean norm of the 
-projected gradient $P[x_k-\nabla f(x_k)]$, where the projection operator
+projected gradient $P[x_k-\nabla f(x_k)]$, for which the projection operator
 $$P[v] = \min(\max( v, x^l), x^u) -x,$$
 is sufficiently small.
 

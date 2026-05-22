@@ -80,6 +80,10 @@
 !   P a r a m e t e r s
 !----------------------
 
+     LOGICAL, PARAMETER :: debug_br = .FALSE.
+!    LOGICAL, PARAMETER :: old_search = .TRUE.    ! use the old search method
+     LOGICAL, PARAMETER :: old_search = .FALSE.   ! use the new search method
+
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
@@ -98,8 +102,6 @@
      REAL ( KIND = rp_ ), PARAMETER :: mu_search = 0.1_rp_
      REAL ( KIND = rp_ ), PARAMETER :: fixed_tol = ten ** ( -15 )
      REAL ( KIND = rp_ ), PARAMETER :: eta = 0.01_rp_
-
-     LOGICAL, PARAMETER :: debug_br = .FALSE.
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -343,7 +345,7 @@
 !  - - - - - - - - - - - - - - -
 
      TYPE :: SLLS_search_data_type
-       INTEGER ( KIND = ip_ ) :: branch, i_free, ic, m, step
+       INTEGER ( KIND = ip_ ) :: branch, i_free, ic, m, step, max_segments
        REAL ( KIND = rp_ ) :: ete, f_0, phi_0, phi_1_stop, gamma, rtr, xtx
        REAL ( KIND = rp_ ) :: s_fixed, x_s_fixed, t, t_break, t_total
        REAL ( KIND = rp_ ) :: rho_0, rho_1, rho_2, xi
@@ -1175,6 +1177,7 @@
      REAL ( KIND = rp_ ) :: val, x_j, g_j, lambda
      CHARACTER ( LEN = 6 ) :: string_iter
      CHARACTER ( LEN = 80 ) :: array_name
+     LOGICAL :: summary, debug
 
 !  prefix for all output
 
@@ -1387,6 +1390,11 @@
        ELSE
          WRITE( control%out, "( A, ' constraint is a single simplex' )" ) prefix
        END IF
+!      IF ( old_search ) THEN
+!        WRITE( control%out, "( ' -------------- old search --------------' )" )
+!      ELSE
+!        WRITE( control%out, "( ' -------------- new search --------------' )" )
+!      END IF
      END IF
 
 !  see if W = I
@@ -2583,6 +2591,8 @@ END IF
 ! data%n_free, data%FREE( : data%n_free )
 !write(6,"( ' x = ', /, ( 5ES12.4 ) )" ) data%X_new( : prob%n )
 
+       summary = data%printm ; debug = data%printd
+!      summary = .TRUE. ; debug = .FALSE.
  300   CONTINUE ! mock CGLS loop
 
 !  find an improved point, X_new, in the multiple-simplex case by
@@ -2596,8 +2606,7 @@ END IF
              IF ( data%preconditioner == 0 ) THEN
                CALL SLLSM_cgls( prob%o, prob%n, prob%m, data%n_free,           &
                                 prob%COHORT, data%weight,                      &
-                                data%out, data%printm, data%printd, prefix,    &
-!                               data%out, .TRUE., .FALSE., prefix,             &
+                                data%out, summary, debug, prefix,              &
                                 data%phi_new, data%X_new, data%R, prob%Y,      &
                                 data%FREE, control%stop_cg_relative,           &
                                 control%stop_cg_absolute, data%cg_iter,        &
@@ -2609,8 +2618,7 @@ END IF
              ELSE IF ( data%preconditioner == 1 ) THEN
                CALL SLLSM_cgls( prob%o, prob%n, prob%m, data%n_free,           &
                                 prob%COHORT, data%weight,                      &
-                                data%out, data%printm, data%printd, prefix,    &
-!                               data%out, .TRUE., .FALSE., prefix,             &
+                                data%out, summary, debug, prefix,              &
                                 data%phi_new, data%X_new, data%R, prob%Y,      &
                                 data%FREE, control%stop_cg_relative,           &
                                 control%stop_cg_absolute, data%cg_iter,        &
@@ -2623,7 +2631,7 @@ END IF
              ELSE
                CALL SLLSM_cgls( prob%o, prob%n, prob%m, data%n_free,           &
                                 prob%COHORT, data%weight,                      &
-                                data%out, data%printm, data%printd, prefix,    &
+                                data%out, summary, debug, prefix,              &
                                 data%phi_new, data%X_new, data%R, prob%Y,      &
                                 data%FREE, control%stop_cg_relative,           &
                                 control%stop_cg_absolute, data%cg_iter,        &
@@ -2642,7 +2650,7 @@ END IF
              IF ( data%preconditioner == 0 ) THEN
                CALL SLLSM_cgls( prob%o, prob%n, prob%m, data%n_free,           &
                                 prob%COHORT, data%weight,                      &
-                                data%out, data%printm, data%printd, prefix,    &
+                                data%out, summary, debug, prefix,              &
                                 data%phi_new, data%X_new, data%R, prob%Y,      &
                                 data%FREE, control%stop_cg_relative,           &
                                 control%stop_cg_absolute, data%cg_iter,        &
@@ -2654,7 +2662,7 @@ END IF
              ELSE IF ( data%preconditioner == 1 ) THEN
                CALL SLLSM_cgls( prob%o, prob%n, prob%m, data%n_free,           &
                                 prob%COHORT, data%weight,                      &
-                                data%out, data%printm, data%printd, prefix,    &
+                                data%out, summary, debug, prefix,              &
                                 data%phi_new, data%X_new, data%R, prob%Y,      &
                                 data%FREE, control%stop_cg_relative,           &
                                 control%stop_cg_absolute, data%cg_iter,        &
@@ -2667,7 +2675,7 @@ END IF
              ELSE
                CALL SLLSM_cgls( prob%o, prob%n, prob%m, data%n_free,           &
                                 prob%COHORT, data%weight,                      &
-                                data%out, data%printm, data%printd, prefix,    &
+                                data%out, summary, debug, prefix,              &
                                 data%phi_new, data%X_new, data%R, prob%Y,      &
                                 data%FREE, control%stop_cg_relative,           &
                                 control%stop_cg_absolute, data%cg_iter,        &
@@ -2690,8 +2698,7 @@ END IF
            IF (  data%explicit_a ) THEN
              IF ( data%preconditioner == 0 ) THEN
                CALL SLLS_cgls( prob%o, prob%n, data%n_free, data%weight,       &
-                               data%out, data%printm, data%printd, prefix,     &
-!                              data%out, .TRUE., .FALSE., prefix,              &
+                               data%out, summary, debug, prefix,               &
                                data%phi_new, data%X_new, data%R, prob%Y( 1 ),  &
                                data%FREE, control%stop_cg_relative,            &
                                control%stop_cg_absolute, data%cg_iter,         &
@@ -2702,8 +2709,7 @@ END IF
                                Ao_row = data%Ao%row, Ao_val = data%Ao%val )
              ELSE IF ( data%preconditioner == 1 ) THEN
                CALL SLLS_cgls( prob%o, prob%n, data%n_free, data%weight,       &
-                               data%out, data%printm, data%printd, prefix,     &
-!                              data%out, .TRUE., .FALSE., prefix,              &
+                               data%out, summary, debug, prefix,               &
                                data%phi_new, data%X_new, data%R, prob%Y( 1 ),  &
                                data%FREE, control%stop_cg_relative,            &
                                control%stop_cg_absolute, data%cg_iter,         &
@@ -2715,7 +2721,7 @@ END IF
                                preconditioned = .TRUE., DPREC = data%DIAG )
              ELSE
                CALL SLLS_cgls( prob%o, prob%n, data%n_free, data%weight,       &
-                               data%out, data%printm, data%printd, prefix,     &
+                               data%out, summary, debug, prefix,               &
                                data%phi_new, data%X_new, data%R, prob%Y( 1 ),  &
                                data%FREE, control%stop_cg_relative,            &
                                control%stop_cg_absolute, data%cg_iter,         &
@@ -2733,7 +2739,7 @@ END IF
            ELSE
              IF ( data%preconditioner == 0 ) THEN
                CALL SLLS_cgls( prob%o, prob%n, data%n_free, data%weight,       &
-                               data%out, data%printm, data%printd, prefix,     &
+                               data%out, summary, debug, prefix,               &
                                data%phi_new, data%X_new, data%R, prob%Y( 1 ),  &
                                data%FREE, control%stop_cg_relative,            &
                                control%stop_cg_absolute, data%cg_iter,         &
@@ -2744,7 +2750,7 @@ END IF
                                reverse = reverse )
              ELSE IF ( data%preconditioner == 1 ) THEN
                CALL SLLS_cgls( prob%o, prob%n, data%n_free, data%weight,       &
-                               data%out, data%printm, data%printd, prefix,     &
+                               data%out, summary, debug, prefix,               &
                                data%phi_new, data%X_new, data%R, prob%Y( 1 ),  &
                                data%FREE, control%stop_cg_relative,            &
                                control%stop_cg_absolute, data%cg_iter,         &
@@ -2756,7 +2762,7 @@ END IF
                                DPREC = data%DIAG )
              ELSE
                CALL SLLS_cgls( prob%o, prob%n, data%n_free, data%weight,       &
-                               data%out, data%printm, data%printd, prefix,     &
+                               data%out, summary, debug, prefix,               &
                                data%phi_new, data%X_new, data%R, prob%Y( 1 ),  &
                                data%FREE, control%stop_cg_relative,            &
                                control%stop_cg_absolute, data%cg_iter,         &
@@ -2839,9 +2845,12 @@ END IF
 
 !  SBLS_sol is used as a surrogate for AE
 
-       data%D = data%D / TWO_NORM( data%D )
+       IF ( TWO_NORM( data%D ) > zero )                                        &
+         data%D = data%D / TWO_NORM( data%D )
        data%SBLS_sol( : prob%o ) = data%AE( : prob%o ) 
 
+       summary = data%printm ; debug = data%printd
+!      summary = .TRUE. ; debug = .FALSE.
  420   CONTINUE ! mock arc search loop
 
 !  find an improved point in the multiple-simplex case
@@ -2855,8 +2864,7 @@ END IF
              CALL SLLSM_exact_arc_search( prob%n, prob%o, prob%m, data%n_c,    &
                                           prob%COHORT, data%S_ptr, data%S_ind, &
                                           data%weight, data%out,               &
-                                          data%printm, data%printd,            &
-!                                         .TRUE., .FALSE.,                     &
+                                          summary, debug,                      &
                                           prefix, data%arc_search_status,      &
                                           data%X_new, data%R, data%D, data%AS, &
                                           data%AEC, data%segment,              &
@@ -2874,7 +2882,7 @@ END IF
              CALL SLLSM_exact_arc_search( prob%n, prob%o, prob%m, data%n_c,    &
                                           prob%COHORT, data%S_ptr, data%S_ind, &
                                           data%weight, data%out,               &
-                                          data%printm, data%printd,            &
+                                          summary, debug,                      &
                                           prefix, data%arc_search_status,      &
                                           data%X_new, data%R, data%D, data%AS, &
                                           data%AEC, data%segment,              &
@@ -2896,8 +2904,7 @@ END IF
 
            IF ( data%explicit_a ) THEN
              CALL SLLS_exact_arc_search( prob%n, prob%o, data%weight,          &
-                                         data%out, data%printm, data%printd,   &
-!                                        data%out, .TRUE., .FALSE.,            &
+                                         data%out, summary, debug,             &
                                          prefix, data%arc_search_status,       &
                                          data%X_new, data%R, data%D, data%AS,  &
                                          data%sbls_sol, data%segment,          &
@@ -2913,7 +2920,7 @@ END IF
 
            ELSE
              CALL SLLS_exact_arc_search( prob%n, prob%o, data%weight,          &
-                                         data%out, data%printm, data%printd,   &
+                                         data%out, summary, debug,             &
                                          prefix, data%arc_search_status,       &
                                          data%X_new, data%R, data%D, data%AS,  &
                                          data%sbls_sol, data%segment,          &
@@ -2994,6 +3001,8 @@ END IF
  440   CONTINUE
        data%alpha_0 = alpha_search
 
+       summary = data%printm ; debug = data%printd
+!      summary = .TRUE. ; debug = .FALSE.
  450   CONTINUE ! mock arc search loop
 
 !  find an improved point in the multiple-simplex case
@@ -3007,8 +3016,7 @@ END IF
              CALL SLLSM_inexact_arc_search( prob%n, prob%o, prob%m,            &
                                             data%n_c, data%S_ptr, data%S_ind,  &
                                             data%weight, data%out,             &
-                                            data%printm, data%printd,          &
-!                                           .TRUE., .FALSE.,                   &
+                                            summary, debug,                    &
                                             prefix, data%arc_search_status,    &
                                             data%X_new, prob%R, data%D,        &
                                             data%sbls_sol, data%R,             &
@@ -3033,7 +3041,7 @@ END IF
              CALL SLLSM_inexact_arc_search( prob%n, prob%o, prob%m,            &
                                             data%n_c, data%S_ptr, data%S_ind,  &
                                             data%weight, data%out,             &
-                                            data%printm, data%printd,          &
+                                            summary, debug,                    &
                                             prefix, data%arc_search_status,    &
                                             data%X_new, prob%R, data%D,        &
                                             data%sbls_sol, data%R,             &
@@ -3061,8 +3069,7 @@ END IF
 
            IF (  data%explicit_a ) THEN
              CALL SLLS_inexact_arc_search( prob%n, prob%o, data%weight,        &
-                                           data%out, data%printm, data%printd, &
-!                                          data%out, .TRUE., .FALSE.,          &
+                                           data%out, summary, debug,           &
                                            prefix, data%arc_search_status,     &
                                            data%X_new, prob%R, data%D,         &
                                            data%sbls_sol, data%R,              &
@@ -3084,7 +3091,7 @@ END IF
 
            ELSE
              CALL SLLS_inexact_arc_search( prob%n, prob%o, data%weight,        &
-                                           data%out, data%printm, data%printd, &
+                                           data%out, summary, debug,           &
                                            prefix, data%arc_search_status,     &
                                            data%X_new, prob%R, data%D,         &
                                            data%sbls_sol, data%R,              &
@@ -3734,14 +3741,14 @@ END IF
           inform%status /= GALAHAD_ok ) RETURN
 
      array_name = 'slls: data%PE'
-     CALL SPACE_dealloc_array( data%PE,                                       &
+     CALL SPACE_dealloc_array( data%PE,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
      array_name = 'slls: data%Y'
-     CALL SPACE_dealloc_array( data%Y,                                        &
+     CALL SPACE_dealloc_array( data%Y,                                         &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -4246,13 +4253,14 @@ END IF
 
 !  if a re-entry occurs, branch to the appropriate place in the code
 
-      IF ( status > n ) GO TO 10
-      IF ( status > 0 ) GO TO 200
+!     write(6,*) ' into SLLS_exact_arc_search, status = ', status
+!     IF ( status > n ) GO TO 10
+!     IF ( status > 0 ) GO TO 200
 
       IF ( status /= 0 ) THEN
         SELECT CASE ( data%branch )
         CASE ( 10 ) ; GO TO 10
-        CASE ( 90 ) ; GO TO 90
+        CASE ( 80 ) ; GO TO 80
         CASE ( 200 ) ; GO TO 200
         END SELECT
       END IF
@@ -4334,10 +4342,12 @@ END IF
 
 !  set any tiny components of x and d to zero
 
-      DO j = 1, n
-        IF ( ABS( X( j ) ) <= x_zero ) X( j ) = zero
-        IF ( ABS( D( j ) ) <= d_zero ) D( j ) = zero
-      END DO
+      IF ( .NOT. old_search ) THEN
+        DO j = 1, n
+          IF ( ABS( X( j ) ) <= x_zero ) X( j ) = zero
+          IF ( ABS( D( j ) ) <= d_zero ) D( j ) = zero
+        END DO
+      END IF
 
 !  compute As
 
@@ -4397,17 +4407,22 @@ END IF
 
 !  FREE(:n_free) are indices of variables that are free
 
-!     n_free = n
-!     FREE = [ ( j, j = 1, n ) ]
-
-      n_free = 0
-      DO j = 1, n
-        IF ( .NOT. ( X( j ) == zero .AND. D( j ) <= zero ) ) THEN
-          n_free = n_free + 1
-          FREE( n_free ) = j
-        END IF
-      END DO
-!     WRITE( 6, * ) ' n_free = ', n_free
+      IF ( old_search ) THEN
+        n_free = n
+        FREE = [ ( j, j = 1, n ) ]
+      ELSE
+        n_free = 0
+        DO j = 1, n
+          IF ( .NOT. ( X( j ) == zero .AND. D( j ) <= zero ) ) THEN
+            n_free = n_free + 1
+            FREE( n_free ) = j
+          END IF
+        END DO
+!       WRITE( 6, * ) ' n_free = ', n_free
+!       WRITE( 6, * ) ' ifree = ', free(:n_free)
+        data%ete = REAL( n_free, KIND = rp_ )
+      END IF
+      data%max_segments = n_free
       IF ( n_free == n ) GO TO 90
 
 !  store the vector A_free e_free in AE
@@ -4416,7 +4431,7 @@ END IF
       IF ( data%reverse_a ) THEN ! return to calculate the j-th column of Ao
         DO i_free = 1, n_free
           j = FREE( i_free )
-          data%i_free = i_free ; data%branch = 90 ; status = j ; RETURN
+          data%i_free = i_free ; data%branch = 80 ; status = j ; RETURN
         END DO
         j = n + 1
       ELSE IF ( data%present_a ) THEN ! sum the appropriate columns of Ao
@@ -4424,7 +4439,7 @@ END IF
           j = FREE( i_free )
           DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
             i = Ao_row( l )
-            AE( i ) = AE( i) + Ao_val( l )
+            AE( i ) = AE( i ) + Ao_val( l )
           END DO
         END DO     
       ELSE
@@ -4444,8 +4459,8 @@ END IF
 
 !  re-enter with the required column of Ao
 
-   90 CONTINUE
-      IF ( data%reverse_a .AND. n_free < n ) THEN
+   80 CONTINUE
+      IF ( data%reverse_a ) THEN
         IF ( status <= n ) THEN ! add the j-th column of Ao as appropriate 
           DO l = 1, reverse%lp
             i = reverse%ip( l )
@@ -4453,13 +4468,14 @@ END IF
           END DO
           DO i_free = data%i_free + 1, n_free ! return to get the next column
             j = FREE( i_free )
-            data%i_free = i_free ; data%branch = 90 ; status = j ; RETURN
+            data%i_free = i_free ; data%branch = 80 ; status = j ; RETURN
           END DO
         END IF
       END IF
 
 !  main loop (mock do loop to allow reverse communication)
 
+   90 CONTINUE
       segment = 1
       IF ( summary ) WRITE( out, "( /, A, ' segment    phi_0       phi_1    ', &
      &             '   phi_2      t_break       t_opt' )" ) prefix
@@ -4485,6 +4501,8 @@ END IF
 
 !  compute the slope f_1/phi_1 and curvature f_2/phi_2 along the current segment
 
+!write(6,*) ' As ', AS
+!write(6,*) ' Ae ', AE
         f_1 = DOT_PRODUCT( R, AS ) ; f_2 = DOT_PRODUCT( AS, AS )
         IF ( weight > zero ) THEN
           phi_1 = f_1 + weight * data%rho_1 ; phi_2 = f_2 + weight * data%rho_2
@@ -4530,6 +4548,7 @@ END IF
           IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES21.14, ' at t =',  &
          &    ES21.14, ' at start of segment ', I0 )" )                        &
                 prefix, phi_opt, t_opt, segment
+!write(6,*) ' leaving a'
           GO TO 900
         END IF
 
@@ -4546,6 +4565,7 @@ END IF
           t_opt = data%t_total + t_opt
           IF ( summary ) WRITE( out,  "( A, ' phi_opt =', ES21.14, ' at t =',  &
          &   ES21.14, ' in segment ', I0 )" ) prefix, phi_opt, t_opt, segment
+!write(6,*) ' leaving b'
           GO TO 900
         END IF
 
@@ -4555,7 +4575,7 @@ END IF
 
 !  fix the variable that encounters its bound and adjust FREE
 
-write(6,*) ' i_fixed ', i_fixed
+!write(6,*) ' i_fixed ', i_fixed
         now_fixed = FREE( i_fixed )
         FREE( i_fixed ) = FREE( n_free )
         FREE( n_free ) = now_fixed
@@ -4623,9 +4643,11 @@ write(6,*) ' i_fixed ', i_fixed
 
         R = R + data%t_break * AS
         IF ( data%present_a ) THEN
+!write(6,*) ' now_fixed ', now_fixed
           DO l = Ao_ptr( now_fixed ), Ao_ptr( now_fixed + 1 ) - 1
             i = Ao_row( l ) ; a = Ao_val( l )
             AE( i ) = AE( i ) - a
+!write(6,*) ' i, a, as, s_fixed ', i, a, AS( i ), data%s_fixed
             AS( i ) = AS( i ) - data%s_fixed * a
           END DO
         ELSE IF ( data%reverse_as ) THEN
@@ -4645,6 +4667,9 @@ write(6,*) ' i_fixed ', i_fixed
             AS( i ) = AS( i ) - data%s_fixed * a
           END DO
         END IF
+!write(6,*) ' 2 gamma ', data%gamma
+!write(6,*) ' 2 AS ', AS
+!write(6,*) ' 2 AE ', AE
         AS = AS + data%gamma * AE
 
 !  update rho_0, rho_1 and rho_2 if required
@@ -4665,7 +4690,8 @@ write(6,*) ' i_fixed ', i_fixed
         END IF
 
         segment = segment + 1
-        IF ( segment < n ) GO TO 100
+!write(6,*) ' segment, max ', segment, data%max_segments
+        IF ( segment <= data%max_segments ) GO TO 100
 
 !  end of main (mock) loop
 
@@ -4851,6 +4877,7 @@ write(6,*) ' i_fixed ', i_fixed
 
 !  if a re-entry occurs, branch to the appropriate place in the code
 
+!write(6,*) ' into SLLSM_exact_arc_search'
       IF ( status /= 0 ) THEN
         SELECT CASE ( data%branch )
         CASE ( 10 ) ; GO TO 10
@@ -4950,12 +4977,14 @@ write(6,*) ' i_fixed ', i_fixed
 
 !  set any tiny components of x and d to zero
 
-      DO j = 1, n
-        IF ( ABS( X( j ) ) <= x_zero ) X( j ) = zero
-        IF ( ABS( D( j ) ) <= d_zero ) D( j ) = zero
-        IF ( .FALSE. ) &
-          WRITE(6,"( ' i, d, cohort ', I3, ES12.4, I2 )") j, D( j ), COHORT( j )
-      END DO
+      IF ( .NOT. old_search ) THEN
+        DO j = 1, n
+          IF ( ABS( X( j ) ) <= x_zero ) X( j ) = zero
+          IF ( ABS( D( j ) ) <= d_zero ) D( j ) = zero
+          IF ( .FALSE. ) WRITE( 6,                                             &
+             "( ' i, d, cohort ', I3, ES12.4, I2 )") j, D( j ), COHORT( j )
+        END DO
+      END IF
 
 !  compute As
 
@@ -5019,20 +5048,23 @@ write(6,*) ' i_fixed ', i_fixed
 
 !  FREE(:n_free) are indices of variables that are free
 
-!     n_free = n
-!     FREE = [ ( j, j = 1, n ) ]
-
-      n_free = 0
-      data%I_len( 1 : m ) = 0
-      DO j = 1, n
-        IF ( .NOT. ( X( j ) == zero .AND. D( j ) <= zero ) ) THEN
-          n_free = n_free + 1
-          FREE( n_free ) = j
-          k = COHORT( j )
-          IF ( k > 0 ) data%I_len( k ) = data%I_len( k ) + 1
-        END IF
-      END DO
-!     WRITE( 6, * ) ' n_free = ', n_free
+      IF ( old_search ) THEN
+        n_free = n
+        FREE = [ ( j, j = 1, n ) ]
+      ELSE
+        n_free = 0
+        data%I_len( 1 : m ) = 0
+        DO j = 1, n
+          IF ( .NOT. ( X( j ) == zero .AND. D( j ) <= zero ) ) THEN
+            n_free = n_free + 1
+            FREE( n_free ) = j
+            k = COHORT( j )
+            IF ( k > 0 ) data%I_len( k ) = data%I_len( k ) + 1
+          END IF
+        END DO
+!       WRITE( 6, * ) ' n_free = ', n_free
+      END IF
+      data%max_segments = n_free
 
 !  store the vectors A_Cj e_Cj in AEC
 
@@ -5153,6 +5185,7 @@ write(6,*) ' i_fixed ', i_fixed
 !  compute the slope phi_1 and curvature phi_2 along the current segment
 
         f_1 = DOT_PRODUCT( R, AS ) ; f_2 = DOT_PRODUCT( AS, AS )
+!write(6,*) ' a f_1, f_2 ', f_1, f_2
         IF ( weight > zero ) THEN
           phi_1 = f_1 + weight * SUM( data%rhom_1( 0 : m ) )
           phi_2 = f_2 + weight * SUM( data%rhom_2( 0 : m ) )
@@ -5160,12 +5193,14 @@ write(6,*) ' i_fixed ', i_fixed
           phi_1 = f_1
           phi_2 = f_2
         END IF
+!write(6,*) ' a phi_1, phi_2 ', phi_1, phi_2 
 
 !  compute the step to the minimizer along the segment
 
         IF ( phi_2 /= zero ) THEN
           t_opt = - phi_1 / phi_2
         ELSE
+!write(6,*) ' phi_1, phi_2 ', phi_1, phi_2
           t_opt = infinity
         END IF
 
@@ -5202,25 +5237,26 @@ write(6,*) ' i_fixed ', i_fixed
           IF ( summary ) WRITE( out,  "( A, I8, 5ES12.4, 1X, I0 )" ) prefix,   &
             segment, data%phi_0, phi_1, phi_2, data%t_total + data%t_break,    &
             data%t_total + t_opt, FREE( i_fixed )
-
-!  stop if the slope is positive
-
-!         IF ( phi_1 > - data%phi_1_stop ) THEN
-          IF ( phi_1 >= - data%phi_1_stop ) THEN
-            t_opt = data%t_total ; f_opt = data%f_0 ; phi_opt = data%phi_0
-            IF ( summary ) WRITE( out, "( A, ' phi_opt =', ES21.14, ' at t =', &
-           &    ES21.14, ' at start of segment ', I0 )" )                      &
-                  prefix, phi_opt, t_opt, segment
-            GO TO 900
-          END IF
         ELSE
           IF ( summary ) WRITE( out, "( A, I8, 5ES12.4, 1X, I0 )" ) prefix,    &
             segment, data%phi_0, phi_1, phi_2, data%t_total + data%t_break,    &
             data%t_total + t_opt, 0
         END IF
 
+!  stop if the slope is positive
+
+!       IF ( phi_1 > - data%phi_1_stop ) THEN
+        IF ( phi_1 >= - data%phi_1_stop ) THEN
+          t_opt = data%t_total ; f_opt = data%f_0 ; phi_opt = data%phi_0
+          IF ( summary ) WRITE( out, "( A, ' phi_opt =', ES21.14, ' at t =',   &
+         &    ES21.14, ' at start of segment ', I0 )" )                        &
+                prefix, phi_opt, t_opt, segment
+          GO TO 900
+        END IF
+
 !  stop if the minimizer on the segment occurs before the end of the segment
 
+!write(6,*) ' i_fixed, t_opt, t_break ', i_fixed, t_opt, data%t_break
         IF ( t_opt > zero .AND. t_opt <= data%t_break ) THEN
           f_opt = data%f_0 + f_1 * t_opt + half * f_2 * t_opt ** 2
           phi_opt = data%phi_0 + phi_1 * t_opt + half * phi_2 * t_opt ** 2
@@ -5241,6 +5277,7 @@ write(6,*) ' i_fixed ', i_fixed
 
 !  fix the variable that encounters its bound and adjust FREE
 
+!write(6,*) ' i_fixed ', i_fixed
         now_fixed = FREE( i_fixed )
         FREE( i_fixed ) = FREE( n_free )
         FREE( n_free ) = now_fixed
@@ -5328,6 +5365,12 @@ write(6,*) ' i_fixed ', i_fixed
             AS( i ) = AS( i ) - data%s_fixed * a
           END DO
         ELSE IF ( data%reverse_as ) THEN
+!write(6,*) ' lp ', reverse%lp
+!write(6,*) ' ip ', reverse%ip( : reverse%lp )
+!write(6,*) ' p ', reverse%p( : reverse%lp )
+!write(6,*) ' as ', As
+!write(6,*) ' ae ', AEC( : o, k )
+
           DO l = 1, reverse%lp
             i = reverse%ip( l ) ; a = reverse%p( l )
             AEC( i, k ) = AEC( i, k ) - a
@@ -5344,9 +5387,11 @@ write(6,*) ' i_fixed ', i_fixed
             AS( i ) = AS( i ) - data%s_fixed * a
           END DO
         END IF
+!write(6,*) ' as ', As
 
 !       R = R + data%t_break * AS
         AS = AS + data%gamma * AEC( :, k )
+!write(6,*) ' as ', As
 
         IF ( .FALSE. ) THEN
           data%R( : o ) = zero
@@ -5366,8 +5411,6 @@ write(6,*) ' i_fixed ', i_fixed
               i, AS( i ), data%R( i )
           END DO
         END IF
-
-
 
 !  update rhom_0, rhom_1 and rhom_2 if required. Loop over cohorts
 
@@ -5406,7 +5449,7 @@ write(6,*) ' i_fixed ', i_fixed
         data%I_len( data%ic ) = data%I_len( data%ic ) - 1
 
         segment = segment + 1
-        IF ( segment < n ) GO TO 100
+        IF ( segment <= data%max_segments ) GO TO 100
 
 !  end of main (mock) loop
 

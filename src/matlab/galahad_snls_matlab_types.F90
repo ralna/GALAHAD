@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 5.5 - 2026-03-26 AT 15:20 GMT.
+!  THIS VERSION: GALAHAD 5.5 - 2026-05-21 AT 11:00 GMT.
 
 !-*-*-*-  G A L A H A D _ S N L S _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
 
@@ -8,7 +8,7 @@
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released with GALAHAD Version 3.2. March 6th, 2019
+!   originally released with GALAHAD Version 5.5. March 6th, 2026
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html

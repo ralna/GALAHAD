@@ -288,7 +288,7 @@ see stop_r_absolute
 the step-computation solver will switch from an interior-point
 method to a projected-gradient one if .subproblem_solver = 3 (see above) and
 $\|P[x-g(x)]-x\|_2 \leq$
-MAX( .stop_pg_absolute, .stop_pg_switch $* \|P[x_0-g(x_0)]-x_0\|_2.
+MAX( .stop_pg_absolute, .stop_pg_switch $* \|P[x_0-g(x_0)]-x_0\|_2$.
 
 .. index:: pair: variable; initial_weight
 .. _doxid-structsnls__control__type_initial_weight:

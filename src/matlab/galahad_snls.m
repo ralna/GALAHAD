@@ -13,14 +13,14 @@
 %
 %  r_i(x) is the ith residual, and the vector r(x) are the residuals.
 %  Weights w_i>0 may be provided, but otherwise will be assumed to be 1.
-%  The matrix J(x) for which J_i,j = d r_i(x) / dx_j is the Jacobian
+%  The matrix Jr(x) for which J_i,j = d r_i(x) / dx_j is the Jacobian
 %  of the residuals
 %
 %  Simple usage -
 %
 %  to find the minimizer
 %   [ x, inform ]
-%    = galahad_snls( pattern, x_0, eval_r, eval_j, cohort, w, control )
+%    = galahad_snls( pattern, x_0, eval_r, eval_jr, cohort, w, control )
 %
 %  Sophisticated usage -
 %
@@ -31,7 +31,7 @@
 %  to solve the problem using existing data structures
 %   [ x, inform ]
 %    = galahad_snls( 'existing', pattern, x_0, eval_r, ...
-                     cohort, w, eval_j, control )
+                     cohort, w, eval_jr, control )
 %
 %  to remove data structures after solution
 %   galahad_snls( 'final' )
@@ -40,9 +40,9 @@
 %     pattern: a structure that indicates the sparsity pattern of
 %              the Jacobian matrices. Components are -
 %                m_r: number of residuals (compulsory)
-%                j_row, j_col: row and column indices of the nonzeros
-%                  in the Jacobian of the residuals J(x) (optional).
-%                  If absent, J(x) is assumed dense and stored by rows
+%                jr_row, jr_col: row and column indices of the nonzeros
+%                  in the Jacobian of the residuals Jr(x) (optional).
+%                  If absent, Jr(x) is assumed dense and stored by rows
 %      x_0: an initial estimate of the minimizer
 %      eval_r: a user-provided subroutine named eval_r.m for which
 %                [r,status] = eval_r(x)
@@ -50,14 +50,14 @@
 %              r at x; r(i) contains r_i(x).
 %              status should be set to 0 if the evaluation succeeds,
 %              and a non-zero value if the evaluation fails.
-%      eval_j: a user-provided subroutine named eval_j.m for which
-%                [j_val,status] = eval_j(x)
-%              returns a vector of values of the Jacobian J(x) of the
-%              residuals stored by rows. If J(x) is dense, the n*(i-1)+j-th
+%      eval_jr: a user-provided subroutine named eval_jr.m for which
+%                [j_val,status] = eval_jr(x)
+%              returns a vector of values of the Jacobian Jr(x) of the
+%              residuals stored by rows. If Jr(x) is dense, the n*(i-1)+j-th
 %              conponent of j_val should contain the derivative
-%              dr_i(x)/dx_j dx_j at x, 1<=i<=m, 1<=j<=n. If J(x) is sparse,
+%              dr_i(x)/dx_j dx_j at x, 1<=i<=m, 1<=j<=n. If Jr(x) is sparse,
 %              the k-th component of j_val contains the derivative
-%              dr_i(x)/dx_i dx_j for which i=j_row(k) and j=j_col(k),
+%              dr_i(x)/dx_i dx_j for which i=jr_row(k) and j=jr_col(k),
 %              as set in the structure pattern (see above).
 %              status should be set to 0 if the evaluation succeeds,
 %              and a non-zero value if the evaluation fails.

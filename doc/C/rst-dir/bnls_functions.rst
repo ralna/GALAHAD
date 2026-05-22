@@ -44,14 +44,12 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_c,
 		const char J_type[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` J_ne,
 		const :ref:`ipc_<doxid-galahad__ipc_8h_>` J_row[],
 		const :ref:`ipc_<doxid-galahad__ipc_8h_>` J_col[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` J_ptr_ne,
-		const :ref:`ipc_<doxid-galahad__ipc_8h_>` J_ptr[],
-		const :ref:`ipc_<doxid-galahad__ipc_8h_>` cohort[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` J_ptr[]
 	);
 
 	void :ref:`bnls_import_withot_jac<doxid-galahad__bnls_8h_1a3f0eb83fd31ee4108156f2e84176390d>`(
@@ -59,9 +57,7 @@ overview of functions provided
 		void **data,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_c,
-		const :ref:`ipc_<doxid-galahad__ipc_8h_>` cohort[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r
 	);
 
 	void :ref:`bnls_reset_control<doxid-galahad__bnls_8h_1a07f0857c9923ad0f92d51ed00833afda>`(
@@ -76,9 +72,9 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_c,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` r[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
@@ -96,17 +92,17 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_c,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` r[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` x_stat[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_r,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const bool, :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], bool, const void*) eval_jr_prod,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, bool, const void*) eval_scol,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const bool, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`ipc_<doxid-galahad__ipc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, bool, const void*) eval_sprod,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`ipc_<doxid-galahad__ipc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, bool, const void*) eval_jr_prods,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const bool, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`ipc_<doxid-galahad__ipc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, bool, const void*) eval_jr_sprod,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` w[]
 	);
 
@@ -116,9 +112,9 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_c,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` r[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
@@ -134,9 +130,9 @@ overview of functions provided
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_c,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` r[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
@@ -146,7 +142,6 @@ overview of functions provided
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *lvl,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *lvu,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` *index,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` p[],
 		const :ref:`ipc_<doxid-galahad__rpc_8h_>` ip[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` lp,
@@ -321,14 +316,12 @@ relate to the components of the control structure.
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_c,
 		const char J_type[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` J_ne,
 		const :ref:`ipc_<doxid-galahad__ipc_8h_>` J_row[],
 		const :ref:`ipc_<doxid-galahad__ipc_8h_>` J_col[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` J_ptr_ne,
-		const :ref:`ipc_<doxid-galahad__ipc_8h_>` J_ptr[],
-		const :ref:`ipc_<doxid-galahad__ipc_8h_>` cohort[]
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` J_ptr[]
 	)
 
 Import problem data into internal storage prior to solution.
@@ -393,11 +386,6 @@ Import problem data into internal storage prior to solution.
 		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of residuals.
 
 	*
-		- m_c
-
-		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of cohorts.
-
-	*
 		- J_type
 
 		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme<details-bnls_storage__unsym>` used for the Jacobian, $J_r$. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.
@@ -427,13 +415,8 @@ Import problem data into internal storage prior to solution.
 
 		- is a one-dimensional array of size m+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the starting position of each row of $J_r$, as well as the total number of entries, in the sparse row-wise storage scheme, or the starting position of each column of $J_r$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
-	*
-		- cohort
-
-		- is a one-dimensional array of size m and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that specifies which cohort each variable is assigned to. If variable $x_j$ is associated with cohort $\cal C_i$, $0 \leq i \leq m_c-1$, cohort[j] should be set to i, while if $x_j$ is unconstrained cohort[j] = -1 should be assigned. At least one value cohort[j] for $j = 0,\ldots\,n-1$ is expected to take the value $i$ for every $0 \leq i \leq m_c-1$, that is no empty cohorts are allowed. If all the variables lie in a single simplex, cohort can be set to NULL.
-
 .. index:: pair: function; bnls_import_without_jac
-.. _doxid-galahad__bnls_8h_1a3f0eb83fd31ee4108156f2e84176390d:
+.. _doxid-galahad__snls_8h_1a3f0eb83fd31ee4108156f2e84176390d:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
@@ -443,9 +426,7 @@ Import problem data into internal storage prior to solution.
 		void **data,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_c,
-		const :ref:`ipc_<doxid-galahad__ipc_8h_>` cohort[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r
 	)
 
 Import problem data, excluding the structure of $J_r(x)$, into internal storage prior to solution.
@@ -505,16 +486,6 @@ Import problem data, excluding the structure of $J_r(x)$, into internal storage 
 
 		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of residuals.
 
-	*
-		- m_c
-
-		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of cohorts.
-
-	*
-		- cohort
-
-		- is a one-dimensional array of size m and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that specifies which cohort each variable is assigned to. If variable $x_j$ is associated with cohort $\cal C_i$, $0 \leq i \leq m_c-1$, cohort[j] should be set to i, while if $x_j$ is unconstrained cohort[j] = -1 should be assigned. At least one value cohort[j] for $j = 0,\ldots\,n-1$ is expected to take the value $i$ for every $0 \leq i \leq m_c-1$, that is no empty cohorts are allowed. If all the variables lie in a single simplex, cohort can be set to NULL.
-
 .. index:: pair: function; bnls_reset_control
 .. _doxid-galahad__bnls_8h_1a07f0857c9923ad0f92d51ed00833afda:
 
@@ -566,9 +537,9 @@ Reset control parameters after import if required.
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_c,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` r[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
@@ -680,19 +651,19 @@ Solve the simplex-constrained nonlinear least-squares problem when the Jacobian 
 		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of residuals.
 
 	*
-		- m_c
+		- x_l
 
-		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of cohorts.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^u_j$.
 
 	*
 		- x
 
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
-
-	*
-		- y
-
-		- is a one-dimensional array of size m_c and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $y$ of the Lagrange multipliers for the simplex constraints. The i-th component of y, i = 0, ... , m_r-1, contains $y_i$.
 
 	*
 		- z
@@ -762,17 +733,17 @@ Solve the simplex-constrained nonlinear least-squares problem when the Jacobian 
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_c,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` r[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` x_stat[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_r,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const bool, :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], bool, const void*) eval_jr_prod,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, bool, const void*) eval_scol,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const bool, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`ipc_<doxid-galahad__ipc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, bool, const void*) eval_sprod,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`ipc_<doxid-galahad__ipc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`*, bool, const void *) eval_jr_prods
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const bool, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`ipc_<doxid-galahad__ipc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, bool, const void*) eval_jr_sprod,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` w[]
 	)
 
@@ -877,14 +848,24 @@ Solve the simplex-constrained nonlinear least-squares problem when the products 
 		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of residuals.
 
 	*
-		- m_c
+		- x_l
 
-		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of cohorts.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^u_j$.
 
 	*
 		- x
 
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+
+	*
+		- z
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- r
@@ -930,19 +911,20 @@ Solve the simplex-constrained nonlinear least-squares problem when the products 
 
 
 	*
-		- eval_jr_scol
+		- eval_jr_prods
 
 		- 
 		  is a user-supplied function that must have the following signature:
 		  
 		  .. ref-code-block:: cpp
 
-		  	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_jr_scol( :ref:`ipc_<doxid-galahad__ipc_8h_>` n, :ref:`ipc_<doxid-galahad__ipc_8h_>` m_r, const :ref:`rpc_<doxid-galahad__rpc_8h_>` x[], 
-		  	                   :ref:`ipc_<doxid-galahad__ipc_8h_>` index, :ref:`rpc_<doxid-galahad__rpc_8h_>` val[], 
-		  	                   :ref:`ipc_<doxid-galahad__ipc_8h_>` row[], :ref:`ipc_<doxid-galahad__ipc_8h_>` nz, bool got_jr,
-		  	                   const void *userdata )
+		  	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_jr_prods( :ref:`ipc_<doxid-galahad__ipc_8h_>` n, :ref:`ipc_<doxid-galahad__ipc_8h_>` m_r, const :ref:`rpc_<doxid-galahad__rpc_8h_>` x[], 
+		  	                    const :ref:`rpc_<doxid-galahad__rpc_8h_>` v[], :ref:`rpc_<doxid-galahad__rpc_8h_>` p[],
+		  	                    const :ref:`ipc_<doxid-galahad__ipc_8h_>` iv[], :ref:`ipc_<doxid-galahad__ipc_8h_>` lvl,
+		  	                    :ref:`ipc_<doxid-galahad__ipc_8h_>` lvu, :ref:`ipc_<doxid-galahad__ipc_8h_>` ip[], :ref:`ipc_<doxid-galahad__ipc_8h_>` *lp,
+		  	                    bool got_jr, const void *userdata )
  
-		  The nonzeros and corresponding row entries of the index-th colum of $J_r(x)$ must be returned in val and row, respectively, together with the number of entries, nz, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_jr_scol`` via the structure ``userdata``.
+		  The product $p = J_r(x) v$ bewteen the Jacobian $J_r(x) = \nabla_{x}r(x)$ evaluated at x$=x$ with the vector v=$v$ must be returned in p, and the function return value set to 0. Only the components iv[lvl:lvu] of $v$ will be nonzero. If ip or lp is NULL, the whole of p[0,m_r-1] should be filled. Otherwise, only the lp **nonzero** components p[ip[0:lp-1]] need be specified, and ip and lp returned accordingly. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_jr_prods`` via the structure ``userdata``.
 
 	*
 		- eval_jr_sprod
@@ -975,9 +957,9 @@ Solve the simplex-constrained nonlinear least-squares problem when the products 
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_c,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` r[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
@@ -1112,14 +1094,24 @@ Solve the simplex-constrained nonlinear least-squares problem when the Jacobian 
 		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of residuals.
 
 	*
-		- m_c
+		- x_l
 
-		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of cohorts.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^u_j$.
 
 	*
 		- x
 
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+
+	*
+		- z
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- r
@@ -1162,9 +1154,9 @@ Solve the simplex-constrained nonlinear least-squares problem when the Jacobian 
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_r,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_c,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
-		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` r[],
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
@@ -1174,7 +1166,6 @@ Solve the simplex-constrained nonlinear least-squares problem when the Jacobian 
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *lvl,
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *lvu,
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` *index,
 		const :ref:`rpc_<doxid-galahad__rpc_8h_>` p[],
 		const :ref:`ipc_<doxid-galahad__rpc_8h_>` ip[],
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` lp,
@@ -1299,18 +1290,6 @@ Solve the simplex-constrained nonlinear least-squares problem when the  products
                     non-zero value.
 		  
 		  * **6**
-                    The user should compute the $j$-th column of $J_r(x)$, 
-                    with $j$ provided in index, at the point $x$ given in x.
-                    The resulting `nonzeros` and their corresponding row 
-                    indices of the $j$-th column of $J_r(x)$ must be placed in 
-                    p[0:lp-1] and ip[0:lp-1] with lp set accordingly,
-                    and eval_status should be set to 0. 
-                    If the user is unable to evaluate the column, for 
-                    instance, if the Jacobian is undefined at $x$ the user
-                    need not set p, ip and nz but should then set eval_status 
-                    to a  non-zero value.
-
-		  * **7**
                     The user should compute the product $p = J_r(x) v$
                     involving the residual Jacobian $J_r(x)$ at the point $x$, 
                     given in x, and a given sparse vector $v$, whose nonzeros
@@ -1320,6 +1299,20 @@ Solve the simplex-constrained nonlinear least-squares problem when the  products
                     instance, if the Jacobian is undefined at $x$ the user
                     need not set p, but should then set eval_status to a
                     non-zero value.
+
+		  * **7**
+                    The user should compute the nonzeros of the product 
+                    $p = J_r(x) v$ involving the residual Jacobian $J_r(x)$ 
+                    at the point $x$, given in x, and a given sparse vector 
+                    $v$, whose nonzeros are in positions iv[lvl:lvu] of v. 
+                    The **nonzeros** of the resulting $p$ should be placed 
+                    in p, the indices of these nonzeros recorded in
+                    ip[0:lp-1] with lp set accordingly, 
+                    and eval_status should be set to 0. 
+                    If the user is unable to evaluate the product, for 
+                    instance, if the Jacobian is undefined at $x$ the user
+                    need not set p, ip and lp, but should then set eval_status 
+                    to a  non-zero value.
 
 		  * **8**
                     The user should compute selected components of the product 
@@ -1354,14 +1347,24 @@ Solve the simplex-constrained nonlinear least-squares problem when the  products
 		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of residuals.
 
 	*
-		- m_c
+		- x_l
 
-		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of cohorts.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^u_j$.
 
 	*
 		- x
 
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+
+	*
+		- z
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- r

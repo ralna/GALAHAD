@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-05-19 AT 09:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -6,7 +6,7 @@
 
 !  Nick Gould, for GALAHAD productions
 !  Copyright reserved
-!  October 27th 2015
+!  May 19th 2026
 
    MODULE GALAHAD_USEBNLS_precision
 
@@ -23,7 +23,6 @@
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_precision
-     USE GALAHAD_USERDATA_precision
      USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
      USE GALAHAD_CUTEST_precision
 
@@ -213,24 +212,21 @@
 
 !  Set copyright
 
-     IF ( out > 0 ) CALL COPYRIGHT( out, '2015' )
+     IF ( out > 0 ) CALL COPYRIGHT( out, '2026' )
 
 !  Set up control parameters prior to the next solution
 
      CALL BNLS_initialize( data, control, inform )
      IF ( is_specfile ) CALL BNLS_read_specfile( control, input_specfile )
      control%jacobian_available = 2
-     control%hessian_available = 2
 
 !  Initialize the problem data
-
-     hessian_pattern_required                                                  &
-       = control%hessian_available >= 1 .OR. control%model == 4
 
      cutest_control%input = input ; cutest_control%error = control%error
      CALL CUTEST_initialize( nlp, cutest_control, cutest_inform, userdata,     &
                              no_hessian = .NOT. hessian_pattern_required,      &
                              hessian_products = .TRUE. )
+     nlp%m_r = nlp%m
 
 !  Read a previous solution file for a re-entry
 
@@ -251,16 +247,16 @@
           name, nlp%pname
          STOP
        END IF
-       READ( wfiledevice, "( I8 )" )i
+       READ( wfiledevice, "( I8 )" ) i
        IF ( i /= nlp%n ) THEN
          WRITE( out, "( /, ' *** Exit from usebnls: number of variables',      &
         &        ' changed from ', I0,' to ', I0,' on re-entry ' )" ) nlp%n, i
          STOP
        END IF
-       READ( wfiledevice, "( I8 )" )i
-       IF ( i /= nlp%m ) THEN
+       READ( wfiledevice, "( I8 )" ) i
+       IF ( i /= nlp%m_r ) THEN
          WRITE( out, "( /, ' *** Exit from usebnls: number of residuals',      &
-        &        ' changed from ', I0, ' to ', I0, ' on re-entry ' )" ) nlp%m, i
+        &      ' changed from ', I0, ' to ', I0, ' on re-entry ' )" ) nlp%m_r, i
          STOP
        END IF
        READ( wfiledevice, "( ES24.16 )" ) control%initial_weight
@@ -275,46 +271,6 @@
        CLOSE( wfiledevice )
      END IF
 
-!  find the tensor model at the initial point
-
-     IF ( .FALSE. ) THEN
-       write(78,"( A8, 1X, A8 )" )  ADJUSTL( STRING_trim_integer_8( nlp%n ) ), &
-        ADJUSTL( STRING_trim_integer_8( nlp%m ) )
-       CALL CUTEST_eval_C( data%eval_status, nlp%X( : nlp%n ), userdata,       &
-                    nlp%C( : nlp%m ) )
-       write(78,"( ( A8, 1X, A12 ) )" )                                        &
-         ( ADJUSTL( STRING_trim_integer_8( i ) ),                              &
-           STRING_real_12( nlp%C( i ) ), i = 1, nlp%m )
-       CALL CUTEST_eval_J( data%eval_status, nlp%X( : nlp%n ), userdata,       &
-                    nlp%J%val )
-       DO i = 1, nlp%J%ne
-         write(78,"( A8, 1X, A8, 1X, A12 )" )                                  &
-           ADJUSTL( STRING_trim_integer_8( nlp%J%row( i ) ) ),                 &
-           ADJUSTL( STRING_trim_integer_8( nlp%J%col( i ) ) ),                 &
-             STRING_real_12( nlp%J%val( i ) )
-       END DO
-       ALLOCATE( data%W( nlp%n ), stat = i )
-       data%W( : nlp%n ) = 0.0_rp_
-       DO j = 1, nlp%n
-         data%W( j ) = 1.0_rp_
-         CALL CUTEST_eval_HCPRODS( data%eval_status, nlp%X( : nlp%n ),         &
-                                   data%W( : nlp%n ), userdata,                &
-                                   nlp%P%val, got_h = .FALSE. )
-         data%W( j ) = 0.0_rp_
-         DO i = 1, nlp%m
-           DO l = nlp%P%ptr( i ), nlp%P%ptr( i + 1 ) - 1
-             IF ( nlp%P%row( l ) <= j ) &
-             write(78,"( A8, 1X, A8, 1X, A8, 1X, A12 )" )                      &
-               ADJUSTL( STRING_trim_integer_8( i ) ),                          &
-               ADJUSTL( STRING_trim_integer_8( nlp%P%row( l ) ) ),             &
-               ADJUSTL( STRING_trim_integer_8( j ) ),                          &
-               STRING_real_12( nlp%J%val( l ) )
-           END DO
-         END DO
-       END DO
-       DEALLOCATE( data%W )
-     END IF
-
      CALL CUTEst_start_timing( status )
 
 !  =================
@@ -324,12 +280,7 @@
      inform%status = 1
 !    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
      CALL BNLS_solve( nlp, control, inform, data, userdata,                    &
-                      eval_C = CUTEST_eval_C,                                  &
-                      eval_J = CUTEST_eval_J,                                  &
-                      eval_H = CUTEST_eval_HLC,                                &
-                      eval_JPROD = CUTEST_eval_JPROD,                          &
-                      eval_HPROD = CUTEST_eval_HLCPROD,                        &
-                      eval_HPRODS = CUTEST_eval_HCPRODS )
+                      eval_R = CUTEST_eval_C, eval_Jr = CUTEST_eval_J )
 !    CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
 !$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
@@ -337,28 +288,7 @@
       CALL CUTEst_timing( status, userdata, 'CUTEST_eval_C', cutest_time )
       WRITE( 6, "( ' CUTEST_eval_C time =   ', F8.2 )" ) cutest_time
       CALL CUTEst_timing( status, userdata, 'CUTEST_eval_J', cutest_time )
-      WRITE( 6, "( ' CUTEST_eval_J time =   ', F8.2 )" ) cutest_time
-      CALL CUTEst_timing( status, userdata, 'CUTEST_eval_HLC', cutest_time )
-      WRITE( 6, "( ' CUTEST_eval_HLC time = ', F8.2 )" ) cutest_time
       WRITE( 6, "( ' total time =           ', F8.2 )" )inform%time%total
-      IF (  control%subproblem_direct ) THEN
-        IF ( control%model == 6 ) THEN
-          WRITE( 6, "(' m, n, nnz(lower[J^TJ]), density =', 3( ' ', I0, ',' ), &
-         &  F5.2, / )" ) nlp%m, nlp%n,                                         &
-            inform%subproblem_inform%RQS_inform%SLS_inform%entries,            &
-            REAL( inform%subproblem_inform%RQS_inform%SLS_inform%entries       &
-              - nlp%n ) / ( REAL( nlp%n, rp_ ) * REAL( nlp%n + 1, rp_ ) /      &
-                2.0_rp_ )
-        ELSE
-          WRITE( 6, "(' m, n, nnz(lower[J^TJ]), density =', 3( ' ', I0, ',' ), &
-         &  F5.2, / )" ) nlp%m, nlp%n, inform%RQS_inform%SLS_inform%entries,   &
-             REAL( inform%RQS_inform%SLS_inform%entries - nlp%n )              &
-              / ( REAL( nlp%n, rp_ ) * REAL( nlp%n + 1, rp_ ) / 2.0_rp_ )
-        END IF
-
-!write(6,*) REAL( inform%subproblem_inform%RQS_inform%SLS_inform%entries       &
-!  - nlp%n ) / ( REAL( nlp%n, rp_ ) * REAL( nlp%n + 1, rp_ ) / 2.0_rp_ )
-      END IF
 
 !  ================
 !  Solution details
@@ -368,34 +298,17 @@
 
       IF ( write_result_summary ) THEN
         BACKSPACE( rfiledevice )
-        IF ( control%subproblem_direct ) THEN
-          IF ( inform%status == GALAHAD_ok .OR.                                &
-               inform%status == GALAHAD_error_unbounded ) THEN
-            WRITE( rfiledevice, 2040 ) nlp%pname, nlp%m, nlp%n,                &
-              inform%norm_c, inform%norm_g, inform%iter,                       &
-              inform%j_eval, inform%factorization_average,                     &
-              inform%factorization_max,                                        &
-              inform%time%clock_total, inform%status
-          ELSE
-            WRITE( rfiledevice, 2040 ) nlp%pname, nlp%m, nlp%n,                &
-              inform%norm_c, inform%norm_g, - inform%iter,                     &
-              - inform%j_eval, inform%factorization_average,                   &
-              inform%factorization_max, - inform%time%clock_total,             &
-              inform%status
-          END IF
+        IF ( inform%status == GALAHAD_ok .OR.                                  &
+             inform%status == GALAHAD_error_unbounded ) THEN
+          WRITE( rfiledevice, 2050 ) nlp%pname, nlp%m_r, nlp%n,                &
+            inform%norm_r, inform%norm_pg, inform%iter,                        &
+            inform%jr_eval, inform%inner_iter,                                 &
+            inform%time%clock_total, inform%status
         ELSE
-          IF ( inform%status == GALAHAD_ok .OR.                                &
-               inform%status == GALAHAD_error_unbounded ) THEN
-            WRITE( rfiledevice, 2050 ) nlp%pname, nlp%m, nlp%n,                &
-              inform%norm_c, inform%norm_g, inform%iter,                       &
-              inform%j_eval, inform%cg_iter,                                   &
-              inform%time%clock_total, inform%status
-          ELSE
-            WRITE( rfiledevice, 2050 ) nlp%pname, nlp%m, nlp%n,                &
-              inform%norm_c, inform%norm_g, - inform%iter,                     &
-              - inform%j_eval, inform%cg_iter,                                 &
-              - inform%time%clock_total, inform%status
-          END IF
+          WRITE( rfiledevice, 2050 ) nlp%pname, nlp%m_r, nlp%n,                &
+            inform%norm_r, inform%norm_pg, - inform%iter,                      &
+            - inform%jr_eval, inform%inner_iter,                               &
+            - inform%time%clock_total, inform%status
         END IF
       END IF
 
@@ -420,34 +333,17 @@
         END DO
       END DO
 
-      IF ( control%subproblem_direct ) THEN
-        WRITE( errout, "( /, 'name           m     n      ||c||    ',          &
-       &  ' ||J''c/c||   its     #g   av fac   time  st' )" )
-        IF ( inform%status == GALAHAD_ok .OR.                                  &
-             inform%status == GALAHAD_error_unbounded ) THEN
-          WRITE( errout, 2040 ) nlp%pname, nlp%m, nlp%n, inform%norm_c,        &
-            inform%norm_g, inform%iter, inform%j_eval,                         &
-            inform%factorization_average, inform%factorization_max,            &
-            inform%time%clock_total, inform%status
-        ELSE
-          WRITE( errout, 2040 ) nlp%pname, nlp%m, nlp%n, inform%norm_c,        &
-            inform%norm_g, - inform%iter, - inform%j_eval,                     &
-            inform%factorization_average, inform%factorization_max,            &
-            - inform%time%clock_total, inform%status
-        END IF
+      WRITE( errout, "( /, 'name           o     n      ||r||    ',            &
+     &  ' ||J''r/r||   its     #g      #cg   time stat' )" )
+      IF ( inform%status == GALAHAD_ok .OR.                                    &
+           inform%status == GALAHAD_error_unbounded ) THEN
+        WRITE( errout, 2050 ) nlp%pname, nlp%m_r, nlp%n, inform%norm_r,        &
+          inform%norm_pg, inform%iter, inform%jr_eval,                         &
+          inform%inner_iter, inform%time%clock_total, inform%status
       ELSE
-        WRITE( errout, "( /, 'name           m     n      ||c||    ',          &
-       &  ' ||J''c/c||   its     #g      #cg   time stat' )" )
-        IF ( inform%status == GALAHAD_ok .OR.                                  &
-             inform%status == GALAHAD_error_unbounded ) THEN
-          WRITE( errout, 2050 ) nlp%pname, nlp%m, nlp%n, inform%norm_c,        &
-            inform%norm_g, inform%iter, inform%j_eval,                         &
-            inform%cg_iter, inform%time%clock_total, inform%status
-        ELSE
-          WRITE( errout, 2050 ) nlp%pname, nlp%m, nlp%n, inform%norm_c,        &
-            inform%norm_g, - inform%iter, - inform%j_eval,                     &
-            inform%cg_iter, - inform%time%clock_total, inform%status
-        END IF
+        WRITE( errout, 2050 ) nlp%pname, nlp%m_r, nlp%n, inform%norm_r,        &
+          inform%norm_pg, - inform%iter, - inform%jr_eval,                     &
+          inform%inner_iter, - inform%time%clock_total, inform%status
       END IF
 
       IF ( write_solution ) THEN
@@ -511,7 +407,7 @@
       &                       I8,  ' number of variables', /,                  &
       &                       I8,  ' number of residuals', /,                  &
       &                       ES24.16, ' weight ... and now variables' )" )    &
-       nlp%pname, nlp%n, nlp%m, inform%weight
+       nlp%pname, nlp%n, nlp%m_r, inform%weight
        DO i = 1, nlp%n
          WRITE( wfiledevice, "( ES24.16, 2X, A10 )" )                          &
           nlp%X( i ), nlp%VNAMES( i )
@@ -535,7 +431,6 @@
  2010 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
- 2040 FORMAT( A10, 2I6, ES16.8, ES8.1, bn, 2I7, F5.1, I4, F7.2, I4 )
  2050 FORMAT( A10, 2I6, ES16.8, ES8.1, bn, 2I7, I9, F7.2, I4 )
  2100 FORMAT( ' Solution: ', /,'                        ',                     &
               '                    <------ Bounds ------> ', /                 &

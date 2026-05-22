@@ -348,7 +348,7 @@ iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1803
 
 	:ref:`rpc_<doxid-galahad__rpc_8h_>` infinity
 
-any bound larger than infinity in modulus will be regarded as infinite
+any variable bound larger than infinity in modulus will be regarded as infinite
 
 .. index:: pair: variable; stop_pg_absolute
 .. _doxid-structtrb__control__type_stop_pg_absolute:

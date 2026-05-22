@@ -25,6 +25,7 @@ bnls_control_type structure
           subproblem_solver::INT
           non_monotone::INT
           weight_update_strategy::INT
+          infinity::T
           stop_r_absolute::T
           stop_r_relative::T
           stop_pg_absolute::T
@@ -217,6 +218,16 @@ non-monotone $\leq$ 0 monotone strategy used, anything else non-monotone strateg
 
 define the weight-update strategy: 1 (basic), 2 (reset to zero when very
 successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT)
+
+.. index:: pair: variable; infinity
+.. _doxid-structbnls__control__type_infinity:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	T infinity
+
+any variable bound larger than infinity in modulus will be regarded as infinite
 
 .. index:: pair: variable; stop_r_absolute
 .. _doxid-structbnls__control__type_stop_r_absolute:

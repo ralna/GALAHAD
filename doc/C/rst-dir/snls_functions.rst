@@ -887,6 +887,16 @@ Solve the simplex-constrained nonlinear least-squares problem when the products 
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
+		- y
+
+		- is a one-dimensional array of size m_c and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $y$ of the Lagrange multipliers for the simplex constraints. The i-th component of y, i = 0, ... , m_r-1, contains $y_i$.
+
+	*
+		- z
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+
+	*
 		- r
 
 		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the residual $r(x)$. The i-th component of r, j = 0, ... , n-1, contains $r_j(x)$.
@@ -1120,6 +1130,16 @@ Solve the simplex-constrained nonlinear least-squares problem when the Jacobian 
 		- x
 
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+
+	*
+		- y
+
+		- is a one-dimensional array of size m_c and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $y$ of the Lagrange multipliers for the simplex constraints. The i-th component of y, i = 0, ... , m_r-1, contains $y_i$.
+
+	*
+		- z
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- r
@@ -1362,6 +1382,16 @@ Solve the simplex-constrained nonlinear least-squares problem when the  products
 		- x
 
 		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+
+	*
+		- y
+
+		- is a one-dimensional array of size m_c and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $y$ of the Lagrange multipliers for the simplex constraints. The i-th component of y, i = 0, ... , m_r-1, contains $y_i$.
+
+	*
+		- z
+
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- r

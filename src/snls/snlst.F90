@@ -108,6 +108,7 @@
    userdata%real( 1 ) = p
 
    DO mode = 1, 5
+!  DO mode = 1, 0
      CALL SNLS_initialize( data, control, inform )
      CALL WHICH_sls( control )
 !    control%print_level = 1                    ! print one line/iteration
@@ -180,6 +181,7 @@
 
 !  DO cohort = 0, 0
    DO cohort = 0, 2
+!  DO cohort = 2, 2
      SELECT CASE( cohort )
      CASE( 0 )
        nlp%m_c = 1
@@ -195,10 +197,15 @@
 
 !    DO solver = 1, 1
      DO solver = 1, 6
+!    DO solver = 3, 5, 2
+!    DO solver = 3, 3
+!if ( solver == 2 .OR. solver == 4 .OR. solver == 6 ) CYCLE
        CALL SNLS_initialize( data, control, inform )
 !      control%print_level = 1
 !      control%SLLS_control%print_level = 1
 !      control%SLLSB_control%print_level = 1
+!      control%maxit = 4
+!      control%SLLS_control%maxit = 6
        control%stop_pg_absolute = 0.00001_rp_
        CALL WHICH_sls( control )
 

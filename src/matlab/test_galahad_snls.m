@@ -22,8 +22,8 @@ disp( sprintf( 'dense example: \n%s %13.6e %s %8.4e %s %2.0f %s %2.0f', ...
 
 % SNLS documentation problem (spare Jacobian)
 
-p.j_row = [ 1, 1, 2, 2, 3, 3, 4, 4 ] ;
-p.j_col = [ 1, 2, 2, 3, 3, 4, 4, 5 ] ;
+p.jr_row = [ 1, 1, 2, 2, 3, 3, 4, 4 ] ;
+p.jr_col = [ 1, 2, 2, 3, 3, 4, 4, 5 ] ;
 
 x0 = [ 0.5 0.5 0.5 0.5 0.5 ];
 [ control ] = galahad_snls( 'initial' );
@@ -39,8 +39,8 @@ disp( sprintf( 'sparse example: \n%s %13.6e %s %8.4e %s %2.0f %s %2.0f', ...
 
 % SNLS documentation problem (spare Jacobian with options)
 
-p.j_row = [ 1, 1, 2, 2, 3, 3, 4, 4 ] ;
-p.j_col = [ 1, 2, 2, 3, 3, 4, 4, 5 ] ;
+p.jr_row = [ 1, 1, 2, 2, 3, 3, 4, 4 ] ;
+p.jr_col = [ 1, 2, 2, 3, 3, 4, 4, 5 ] ;
 
 x0 = [ 0.5 0.5 0.5 0.5 0.5 ];
 %cohort = [ 1, 2, 0, 1, 2 ] ;

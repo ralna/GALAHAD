@@ -30,6 +30,7 @@ bnls_control_type structure
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`subproblem_solver<doxid-structbnls__control__type_subproblem_solver>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`non_monotone<doxid-structbnls__control__type_non_monotone>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`weight_update_strategy<doxid-structbnls__control__type_weight_update_strategy>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infinity<doxid-structbnls__control__type_infinity>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_r_absolute<doxid-structbnls__control__type_stop_r_absolute>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_r_relative<doxid-structbnls__control__type_stop_r_relative>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_pg_absolute<doxid-structbnls__control__type_stop_pg_absolute>`;
@@ -222,6 +223,16 @@ non-monotone $\leq$ 0 monotone strategy used, anything else non-monotone strateg
 
 define the weight-update strategy: 1 (basic), 2 (reset to zero when very successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT)
 
+.. index:: pair: variable; infinity
+.. _doxid-structbnls__control__type_infinity:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` infinity
+
+any variable bound larger than infinity in modulus will be regarded as infinite
+
 .. index:: pair: variable; stop_r_absolute
 .. _doxid-structbnls__control__type_stop_r_absolute:
 
@@ -231,8 +242,8 @@ define the weight-update strategy: 1 (basic), 2 (reset to zero when very success
 	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_r_absolute
 
 overall convergence tolerances. The iteration will terminate when
-$||r(x)||_2 \leq$ MAX( .stop_r_absolute, .stop_r_relative $*
-\|r(x_0)\|_2$ or when the norm of the gradient, $g(x) = J^T(x) W r(x)$
+$||r(x)||_W \leq$ MAX( .stop_r_absolute, .stop_r_relative $*
+\|r(x_0)\|_W$ or when the norm of the gradient, $g(x) = J^T(x) W r(x)$
 satisfies $\|P[x-g(x)]-x\|_2 \leq$
 MAX( .stop_pg_absolute, .stop_pg_relative $* \|P[x_0-g(x_0)]-x_0\|_2$
 or if the norm of step is less than .stop_s, where $x_0$ is the initial point.
@@ -288,7 +299,7 @@ see stop_r_absolute
 the step-computation solver will switch from an interior-point
 method to a projected-gradient one if .subproblem_solver = 3 (see above) and
 $\|P[x-g(x)]-x\|_2 \leq$
-MAX( .stop_pg_absolute, .stop_pg_switch $* \|P[x_0-g(x_0)]-x_0\|_2.
+MAX( .stop_pg_absolute, .stop_pg_switch $* \|P[x_0-g(x_0)]-x_0\|_2$.
 
 .. index:: pair: variable; initial_weight
 .. _doxid-structbnls__control__type_initial_weight:

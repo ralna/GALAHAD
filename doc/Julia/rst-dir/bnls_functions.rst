@@ -71,9 +71,8 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bnls_import(T, INT, control, data, status, n, m_r, m_c,
-                             Jr_type, Jr_ne, Jr_row, Jr_col, Jr_ptr_ne, Jr_ptr,
-                             cohort)
+        function bnls_import(T, INT, control, data, status, n, m_r,
+                             Jr_type, Jr_ne, Jr_row, Jr_col, Jr_ptr_ne, Jr_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -136,11 +135,6 @@ Import problem data into internal storage prior to solution.
 		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
-		- m_c
-
-		- is a scalar variable of type INT that holds the number of cohorts.
-
-	*
 		- Jr_type
 
 		- is a one-dimensional array of type Vararg{Cchar} that specifies the :ref:`unsymmetric storage scheme<details-bnls_storage__unsym>` used for the Jacobian, $J_r$. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.
@@ -171,19 +165,13 @@ Import problem data into internal storage prior to solution.
 		- is a one-dimensional array of size m+1 and type INT that holds the starting position of each row of $J_r$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 
-	*
-		- cohort
-
-		- is a one-dimensional array of size m and type INT that specifies which cohort each variable is assigned to. If variable $x_j$ is associated with cohort $\cal C_i$, $1 \leq i \leq m_c$, cohort[j] should be set to i, while if $x_j$ is unconstrained cohort[j] = 0 should be assigned. At least one value cohort[j] for $j = 1,\ldots\,n$ is expected to take the value $i$ for every $1 \leq i \leq m_c$, that is no empty cohorts are allowed. If all the variables lie in a single simplex, cohort can be set to C_NULL.
-
 .. index:: pair: function; bnls_import_without_jac
 .. _doxid-galahad__bnls_8h_1a3f0eb83fd31ee4108156f2e84176390d:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bnls_import_without_jac(T, INT, control, data, status, 
-                                         n, m_r, m_c, cohort)
+        function bnls_import_without_jac(T, INT, control, data, status, n, m_r)
 
 Import problem data, excluding the structure of $J_r(x)$, into internal storage prior to solution.
 
@@ -241,16 +229,6 @@ Import problem data, excluding the structure of $J_r(x)$, into internal storage 
 
 		- is a scalar variable of type INT that holds the number of residuals.
 
-	*
-		- m_c
-
-		- is a scalar variable of type INT that holds the number of cohorts.
-
-	*
-		- cohort
-
-		- is a one-dimensional array of size m and type INT that specifies which cohort each variable is assigned to. If variable $x_j$ is associated with cohort $\cal C_i$, $1 \leq i \leq m_c$, cohort[j] should be set to i, while if $x_j$ is unconstrained cohort[j] = 0 should be assigned. At least one value cohort[j] for $j = 1,\ldots\,n$ is expected to take the value $i$ for every $1 \leq i \leq m_c$, that is no empty cohorts are allowed. If all the variables lie in a single simplex, cohort can be set to C_NULL.
-
 .. index:: pair: function; bnls_reset_control
 .. _doxid-galahad__bnls_8h_1a07f0857c9923ad0f92d51ed00833afda:
 
@@ -293,7 +271,7 @@ Reset control parameters after import if required.
 	:class: doxyrest-title-code-block
 
         function bnls_solve_with_jac(T, INT, data, userdata, status, 
-                                     n, m_r, m_c, x, y, z, r, g, x_stat,
+                                     n, m_r, x_l, x_u, x, z, r, g, x_stat,
                                      eval_r, Jr_ne, eval_jr, w)
 
 Solve the simplex-constrained nonlinear least-squares problem when the Jacobian $J_r(x)$ is available by function calls.
@@ -397,19 +375,19 @@ Solve the simplex-constrained nonlinear least-squares problem when the Jacobian 
 		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
-		- m_c
+		- x_l
 
-		- is a scalar variable of type INT that holds the number of cohorts.
+		- is a one-dimensional array of size n and type T that holds the values $x^l$ of the lower bounds on the optimization variables $x$. The j-th component of ``x_l``, $j = 1, \ldots, n$, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type T that holds the values $x^u$ of the upper bounds on the optimization variables $x$. The j-th component of ``x_u``, $j = 1, \ldots, n$, contains $x^u_j$.
 
 	*
 		- x
 
 		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
-
-	*
-		- y
-
-		- is a one-dimensional array of size n and type T that holds the values $y$ of the Lagrange multipliers. The i-th component of ``y``, i = 1, ... , m_c, contains $y_i$.
 
 	*
 		- z
@@ -482,8 +460,8 @@ Solve the simplex-constrained nonlinear least-squares problem when the Jacobian 
 	:class: doxyrest-title-code-block
 
         function bnls_solve_with_jacprod(T, INT, data, userdata, status, 
-                                         n, m_r, m_c, x, y, z, r, g, x_stat,
-                                         eval_r, eval_jr_prod, eval_jr_scol,
+                                         n, m_r, x_l, x_u, x, z, r, g, x_stat,
+                                         eval_r, eval_jr_prod, eval_jr_prods,
                                          eval_jr_sprod, w)
 
 Solve the simplex-constrained nonlinear least-squares problem when the products of the Jacobian $J_r(x)$ and its transpose are available by function calls.
@@ -587,19 +565,19 @@ Solve the simplex-constrained nonlinear least-squares problem when the products 
 		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
-		- m_c
+		- x_l
 
-		- is a scalar variable of type INT that holds the number of cohorts.
+		- is a one-dimensional array of size n and type T that holds the values $x^l$ of the lower bounds on the optimization variables $x$. The j-th component of ``x_l``, $j = 1, \ldots, n$, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type T that holds the values $x^u$ of the upper bounds on the optimization variables $x$. The j-th component of ``x_u``, $j = 1, \ldots, n$, contains $x^u_j$.
 
 	*
 		- x
 
 		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
-
-	*
-		- y
-
-		- is a one-dimensional array of size n and type T that holds the values $y$ of the Lagrange multipliers. The i-th component of ``y``, i = 1, ... , m_c, contains $y_i$.
 
 	*
 		- z
@@ -657,20 +635,25 @@ Solve the simplex-constrained nonlinear least-squares problem when the products 
 		  structure ``userdata``.
 
 	*
-		- eval_jr_scol
+		- eval_jr_prods
 
 		- is a user-supplied function that must have the
 		  following signature:
 
 		  .. ref-code-block:: julia
 
-		  	function eval_jr_scol(n, m_r, x, index, val, row, nz, got_jr, userdata)
+		  	function eval_jr_prods(n, m_r, x, v, p, iv, lvl, lvu, ip, lp, got_jr, userdata)
 
-		  The nonzeros and corresponding row entries of the index-th colum of $J_r(x)$ 
-		  evaluated at x=$x$ must be returned in val and row, respectively, together 
-		  with the number of entries, nz, and the function return value set to 0. 
-		  If the evaluation is impossible at x, return should be set to a nonzero value. 
-		  Data may be passed into ``eval_jr_scol`` via the structure ``userdata``.
+		  The product $p = J_r(x) v$ bewteen the Jacobian
+		  $J_r(x) = \nabla_{x}r(x)$ evaluated at x$=x$ with the vector 
+		  v=$v$ must be returned in p, and the function return value 
+		  set to 0. Only the components iv[lvl:lvu] of $v$ will be 
+		  nonzero. If ip or lp is C_NULL, the whole of p[1,m_r] should 
+		  be filled. Otherwise, only the lp **nonzero** components 
+		  p[ip[1:lp]] need be specified, and ip and lp returned 
+		  accordingly. If the evaluation is impossible at x, return 
+		  should be set to a nonzero value. Data may be passed into 
+		  ``eval_jr_prods`` via the structure ``userdata``.
 
 	*
 		- eval_jr_sprod
@@ -702,8 +685,8 @@ Solve the simplex-constrained nonlinear least-squares problem when the products 
 	:class: doxyrest-title-code-block
 
         function bnls_solve_reverse_with_jac(T, INT, data, status, eval_status,
-                                            n, m_r, m_c, x, y, z, r, g, x_stat,
-                                            jr_ne, Jr_val, w)
+                                             n, m_r, x_l, x_u, x, z, r, g, 
+                                             x_stat, jr_ne, Jr_val, w)
 
 Solve the simplex-constrained nonlinear least-squares problem when the Jacobian $J_r(x)$ may be computed by the calling program.
 
@@ -830,19 +813,19 @@ Solve the simplex-constrained nonlinear least-squares problem when the Jacobian 
 		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
-		- m_c
+		- x_l
 
-		- is a scalar variable of type INT that holds the number of cohorts.
+		- is a one-dimensional array of size n and type T that holds the values $x^l$ of the lower bounds on the optimization variables $x$. The j-th component of ``x_l``, $j = 1, \ldots, n$, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type T that holds the values $x^u$ of the upper bounds on the optimization variables $x$. The j-th component of ``x_u``, $j = 1, \ldots, n$, contains $x^u_j$.
 
 	*
 		- x
 
 		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
-
-	*
-		- y
-
-		- is a one-dimensional array of size n and type T that holds the values $y$ of the Lagrange multipliers. The i-th component of ``y``, i = 1, ... , m_c, contains $y_i$.
 
 	*
 		- z
@@ -885,8 +868,8 @@ Solve the simplex-constrained nonlinear least-squares problem when the Jacobian 
 	:class: doxyrest-title-code-block
 
         function bnls_solve_reverse_with_jacprod(T, INT, data, status, eval_status,
-                                                 n, m_r, m_c, x, y, z, r, g, x_stat,
-                                                 v, iv, lvl, lvu, index, p, ip, lp, w)
+                                                 n, m_r, x_l, x_u, x, z, r, g, x_stat,
+                                                 v, iv, lvl, lvu, p, ip, lp, w)
 
 Solve the simplex-constrained nonlinear least-squares problem when the  products of the Jacobian $J_r(x)$ and its transpose with specified vectors may be computed by the calling program.
 
@@ -999,25 +982,13 @@ Solve the simplex-constrained nonlinear least-squares problem when the  products
                     at the point $x$ indicated in x, between the product
                     of the transpose of the Jacobian $J_r(x) = \nabla_{x}c_(x)$ 
                     with the vector v= $v$, and then re-enter the function. The
-                    result should be set in p, and eval_status should be set to 0. 
-                    If the user is unable to evaluate the product, for 
+                    result should be set in p, and eval_status should be set 
+                    to 0. If the user is unable to evaluate the product, for 
                     instance, if the Jacobian is undefined at $x$ the user
                     need not set p, but should then set eval_status to a
                     non-zero value.
 		  
 		  * **6**
-                    The user should compute the $j$-th column of $J_r(x)$, 
-                    with $j$ provided in index, at the point $x$ given in x.
-                    The resulting `nonzeros` and their corresponding row 
-                    indices of the $j$-th column of $J_r(x)$ must be placed in 
-                    p[1:lp] and ip[1:lp] with lp set accordingly,
-                    and eval_status should be set to 0. 
-                    If the user is unable to evaluate the column, for 
-                    instance, if the Jacobian is undefined at $x$ the user
-                    need not set p, ip and nz but should then set eval_status 
-                    to a  non-zero value.
-
-		  * **7**
                     The user should compute the product $p = J_r(x) v$
                     involving the residual Jacobian $J_r(x)$ at the point $x$, 
                     given in x, and a given sparse vector $v$, whose nonzeros
@@ -1027,6 +998,19 @@ Solve the simplex-constrained nonlinear least-squares problem when the  products
                     instance, if the Jacobian is undefined at $x$ the user
                     need not set p, but should then set eval_status to a
                     non-zero value.
+
+		  * **7**
+                    The user should compute the nonzeros of the product 
+                    $p = J_r(x) v$ involving the residual Jacobian $J_r(x)$ 
+                    at the point $x$, given in x, and a given sparse vector 
+                    $v$, whose nonzeros are in positions iv[lvl:lvu] of v. 
+                    The **nonzeros** of the resulting $p$ should be placed 
+                    in p, the indices of these nonzeros recorded in ip[1:lp] 
+                    with lp set accordingly, and eval_status should be set 
+                    to 0. If the user is unable to evaluate the product, for 
+                    instance, if the Jacobian is undefined at $x$ the user
+                    need not set p, ip and lp, but should then set eval_status 
+                    to a  non-zero value.
 
 		  * **8**
                     The user should compute selected components of the product 
@@ -1061,19 +1045,19 @@ Solve the simplex-constrained nonlinear least-squares problem when the  products
 		- is a scalar variable of type INT that holds the number of residuals.
 
 	*
-		- m_c
+		- x_l
 
-		- is a scalar variable of type INT that holds the number of cohorts.
+		- is a one-dimensional array of size n and type T that holds the values $x^l$ of the lower bounds on the optimization variables $x$. The j-th component of ``x_l``, $j = 1, \ldots, n$, contains $x^l_j$.
+
+	*
+		- x_u
+
+		- is a one-dimensional array of size n and type T that holds the values $x^u$ of the upper bounds on the optimization variables $x$. The j-th component of ``x_u``, $j = 1, \ldots, n$, contains $x^u_j$.
 
 	*
 		- x
 
 		- is a one-dimensional array of size n and type T that holds the values $x$ of the optimization variables. The j-th component of ``x``, j = 1, ... , n, contains $x_j$.
-
-	*
-		- y
-
-		- is a one-dimensional array of size n and type T that holds the values $y$ of the Lagrange multipliers. The i-th component of ``y``, i = 1, ... , m_c, contains $y_i$.
 
 	*
 		- z
@@ -1103,22 +1087,17 @@ Solve the simplex-constrained nonlinear least-squares problem when the  products
 	*
 		- iv
 
-		- is a one-dimensional array of size max(n,m_r) and type INT, that is used for reverse communication. See status = 7 and 8 above for more details.
+		- is a one-dimensional array of size max(n,m_r) and type INT, that is used for reverse communication. See status = 6, 7 and 8 above for more details.
 
 	*
 		- lvl
 
-		- is a scalar variable of type INT, that is used for reverse communication. See status = 7 and 8 above for more details.
+		- is a scalar variable of type INT, that is used for reverse communication. See status = 6, 7 and 8 above for more details.
 
 	*
 		- lvu
 
-		- is a scalar variable of type INT, that is used for reverse communication. See status = 7 and 8 above for more details.
-
-	*
-		- index
-
-		- is a scalar variable of type INT, that is used for reverse communication. See status = 6 above for more details.
+		- is a scalar variable of type INT, that is used for reverse communication. See status = 6, 7 and 8 above for more details.
 
 	*
 		- p
@@ -1128,12 +1107,12 @@ Solve the simplex-constrained nonlinear least-squares problem when the  products
 	*
 		- ip
 
-		- is a one-dimensional array of size n and type INT, that is used for reverse communication. See status = 6 above for more details.
+		- is a one-dimensional array of size n and type INT, that is used for reverse communication. See status = 7 above for more details.
 
 	*
 		- lp
 
-		- is a scalar variable of type INT, that is used for reverse communication. See status = 6 above for more details.
+		- is a scalar variable of type INT, that is used for reverse communication. See status = 7 above for more details.
 
 	*
 		- w
