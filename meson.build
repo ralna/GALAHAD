@@ -532,9 +532,9 @@ if build_single
   else
     to_process_single += libgalahad_cutest_dummy_src
   endif
-  if libcutest_single.found() and libasl.found()
-    to_process_single += libgalahad_ampl_src
-  endif
+  # if libcutest_single.found() and libasl.found()
+  #   to_process_single += libgalahad_ampl_src
+  # endif
   pp_sources_single = gen_single.process(to_process_single)
 
   to_process_f_single = [libgalahad_f_src]
@@ -545,10 +545,10 @@ if build_single
   endif
 
   sources_single = [pp_sources_single, pp_sources_f_single, libgalahad_cpp_src, libgalahad_cc_src]
-  if libcutest_single.found() and libasl.found()
-    sources_single += libgalahad_ampl_cc_src
-    galahad_headers += galahad_ampl_headers
-  endif
+  # if libcutest_single.found() and libasl.found()
+  #   sources_single += libgalahad_ampl_cc_src
+  #   galahad_headers += galahad_ampl_headers
+  # endif
 
   libgalahad_single_name = 'galahad_single'
   if int64
