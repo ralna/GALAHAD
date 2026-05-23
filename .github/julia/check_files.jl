@@ -97,7 +97,7 @@ function meson_check_files()
                     "sllss5.f90", "sllss6.f90", "sllss7.f90", "sllsbs5.f90", "snlss5.f90", 
                     "snlss.c", "snlss2.c", "snlss3.c", "snlss4.c", "sllsb5.f90",
                     "snlst2.F90", "bnlst2.F90"]
-sllsb5.f90
+
   for package in readdir(path_packages)
     path_local_package = joinpath(path_packages, package)
     !isdir(path_local_package) && continue
