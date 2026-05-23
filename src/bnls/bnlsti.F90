@@ -254,7 +254,7 @@
 
      SUBROUTINE EVALR( status, X, userdata, R ) ! residual
      USE GALAHAD_USERDATA_precision
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: R
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
@@ -270,7 +270,7 @@
 
      SUBROUTINE EVALJr( status, X, userdata, Jr_val ) ! Jacobian
      USE GALAHAD_USERDATA_precision
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Jr_val
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
@@ -290,7 +290,7 @@
 
      SUBROUTINE EVALJr_prod( status, X, userdata, transpose, V, P, got_jr )
      USE GALAHAD_USERDATA_precision
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      LOGICAL, INTENT( IN ) :: transpose
@@ -408,14 +408,14 @@
      SUBROUTINE EVALJr_sprod( status, X, userdata, transpose, V, P, FREE,      &
                               n_free, got_jr )
      USE GALAHAD_USERDATA_precision
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      LOGICAL, INTENT( IN ) :: transpose
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
-     INTEGER, INTENT( IN ) :: n_free
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: FREE
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_free
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_jr
      INTEGER :: i, j, n, m_r
      REAL ( KIND = rp_ ) :: val
