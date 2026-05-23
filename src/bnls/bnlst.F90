@@ -13,7 +13,7 @@
 !  EXTERNAL :: EVALR, EVALJr, EVALJr_prod, EVALJr_prods, EVALJr_sprod
    INTEGER ( KIND = ip_ ) :: i, j, l, nf, s, error, solver, mode
    INTEGER ( KIND = ip_ ) :: mnm, nflag, st_flag, len_integer
-   INTEGER, PARAMETER :: n = 5, m_r = 4, jr_ne = 8
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, m_r = 4, jr_ne = 8
    INTEGER ( KIND = ip_ ), DIMENSION( n ) :: FLAG
    REAL ( KIND = rp_ ) :: val
    REAL ( KIND = rp_ ), PARAMETER :: p = 4.0_rp_
