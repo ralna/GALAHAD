@@ -315,7 +315,7 @@
 
      SUBROUTINE EVALJR_prods( status, X, userdata, V, P, IV, lvl, lvu,         &
                               IP, lp, got_jr )
-     USE GALAHAD_USERDATA_double
+     USE GALAHAD_USERDATA_precision
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
