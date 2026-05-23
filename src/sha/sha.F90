@@ -2664,43 +2664,50 @@
       END IF
     END DO
 
-!  Firstly solve for each sparse row
+!  firstly solve for each sparse row
+
+    IF ( ns > 0 ) THEN
 
 !$omp parallel do private( i )
-    DO idx = 1, ns
-      i = SPARSE_INDS( idx )
+
+      DO idx = 1, ns
+        i = SPARSE_INDS( idx )
 
 !  determine unknowns and solve linear system
 
-      CALL SHA_solve_unknown_2_3( i, PTR, COL, m_available,                    &
-                                  S, ls1, ls2, Y, ly1, ly2, VAL,               &
-                                  extra_differences , INFO( i ), ORDER )
-    END DO
+        CALL SHA_solve_unknown_2_3( i, PTR, COL, m_available,                  &
+                                    S, ls1, ls2, Y, ly1, ly2, VAL,             &
+                                    extra_differences , INFO( i ), ORDER )
+      END DO
 !$omp end parallel do
 
 !  check for errors
 
-    status = MINVAL( INFO( SPARSE_INDS( 1 : ns ) ) )
-    IF ( status /= GALAHAD_ok ) RETURN
+      status = MINVAL( INFO( SPARSE_INDS( 1 : ns ) ) )
+      IF ( status /= GALAHAD_ok ) RETURN
+    END IF
 
-!  then solve for each dense row
+!  now solve for each dense row
+
+    IF ( nd > 0 ) THEN
 
 !$omp parallel do private( i )
-    DO idx = 1, nd
-      i = DENSE_INDS( idx )
+      DO idx = 1, nd
+        i = DENSE_INDS( idx )
 
 ! determine sparse knowns and unknowns and solve linear system
 
-      CALL SHA_solve_known_unknown_2_3( i, PTR, COL, m_available,              &
-                                        S, ls1, ls2, Y, ly1, ly2, VAL,         &
-                                        sparse_row, extra_differences,         &
-                                        INFO( i ), ORDER )
-    END DO
+        CALL SHA_solve_known_unknown_2_3( i, PTR, COL, m_available,            &
+                                          S, ls1, ls2, Y, ly1, ly2, VAL,       &
+                                          sparse_row, extra_differences,       &
+                                          INFO( i ), ORDER )
+      END DO
 !$omp end parallel do
 
 !  check for errors
 
-    status = MINVAL( INFO( DENSE_INDS( 1 : nd ) ) )
+      status = MINVAL( INFO( DENSE_INDS( 1 : nd ) ) )
+    END IF
     RETURN
 
 !  end of SUBROUTINE SHA_estimate_2_3
@@ -3954,7 +3961,6 @@
                           S, ls1, ls2, Y, ly1, ly2, matrix_val,                &
                           data%sha_data, data%sha_control, data%sha_inform )
      END IF
-
      status = data%sha_inform%status
      RETURN
 

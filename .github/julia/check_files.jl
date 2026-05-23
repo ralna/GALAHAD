@@ -93,7 +93,10 @@ function meson_check_files()
                     "mop.d90.vers1", "nlst2.F90", "nodendti.F90", "bits", "orig", "pre",
                     "qp_spec.F90", "qp_test.F90", "qp_ciface.F90", "qpcs.f90.real",
                     "qpcs.f90.test", "qpc_ciface.F90", "shati.F90", "shat.c", "shatf.c",
-                    "fa04a.f", "fa04ad.f", "ym01a.f", "ym01ad.f", "runsls_rb.F90"]
+                    "fa04a.f", "fa04ad.f", "ym01a.f", "ym01ad.f", "runsls_rb.F90",
+                    "sllss5.f90", "sllss6.f90", "sllss7.f90", "sllsbs5.f90", "snlss5.f90", 
+                    "snlss.c", "snlss2.c", "snlss3.c", "snlss4.c", 
+                    "snlst2.F90", "bnlst2.F90"]
 
   for package in readdir(path_packages)
     path_local_package = joinpath(path_packages, package)

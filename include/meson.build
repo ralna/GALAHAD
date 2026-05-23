@@ -15,6 +15,7 @@ if build_ciface
                            'galahad_bgo.h',
                            'galahad_blls.h',
                            'galahad_bllsb.h',
+                           'galahad_bnls.h',
                            'galahad_bqpb.h',
                            'galahad_bqp.h',
                            'galahad_bsc.h',
