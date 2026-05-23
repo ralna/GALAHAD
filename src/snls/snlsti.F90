@@ -10,7 +10,7 @@
    TYPE ( USERDATA_type ) :: userdata
 !  EXTERNAL :: EVALR, EVALJr, EVALJr_prod, EVALJr_scol, EVALJr_sprod
    INTEGER ( KIND = ip_ ) :: i, j, mnm, solver, status, eval_status
-   INTEGER, PARAMETER :: n = 5, m_r = 4, m_c = 2, Jr_ne = 8
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, m_r = 4, m_c = 2, Jr_ne = 8
    REAL ( KIND = rp_ ) :: val
    REAL ( KIND = rp_ ), PARAMETER :: p_val = 4.0_rp_
    CHARACTER ( LEN = 2 ) :: c_solver
@@ -218,7 +218,7 @@
 
      SUBROUTINE EVALR( status, X, userdata, R ) ! residual
      USE GALAHAD_USERDATA_precision
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: R
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
@@ -234,7 +234,7 @@
 
      SUBROUTINE EVALJr( status, X, userdata, Jr_val ) ! Jacobian
      USE GALAHAD_USERDATA_precision
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Jr_val
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
@@ -254,7 +254,7 @@
 
      SUBROUTINE EVALJr_prod( status, X, userdata, transpose, V, P, got_jr )
      USE GALAHAD_USERDATA_precision
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      LOGICAL, INTENT( IN ) :: transpose
@@ -279,13 +279,13 @@
 
      SUBROUTINE EVALJr_scol( status, X, userdata, index, VAL, ROW, nz, got_jr )
      USE GALAHAD_USERDATA_precision
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
-     INTEGER, INTENT( IN ) :: index
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: index
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: VAL
-     INTEGER, DIMENSION( : ), INTENT( INOUT ) :: ROW
-     INTEGER, INTENT( INOUT ) :: nz
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( INOUT ) :: ROW
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: nz
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_jr
      INTEGER :: n
      n = userdata%integer( 1 ) 
@@ -311,14 +311,14 @@
      SUBROUTINE EVALJr_sprod( status, X, userdata, transpose, V, P, FREE,      &
                               n_free, got_jr )
      USE GALAHAD_USERDATA_precision
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      LOGICAL, INTENT( IN ) :: transpose
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
-     INTEGER, INTENT( IN ) :: n_free
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: FREE
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_free
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_jr
      INTEGER :: i, j, n, m_r
      REAL ( KIND = rp_ ) :: val
