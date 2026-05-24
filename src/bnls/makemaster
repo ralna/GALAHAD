@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD BNLS package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-04-15
+#  This version: 2026-05-24
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -34,8 +34,10 @@ DEPENDS =
 
 CDEPENDENCIES = make_ciface_common make_ciface_sbls_deps make_ciface_sbls \
                 make_ciface_ir make_ciface_gltr make_ciface_glrt \
-                make_ciface_rqs make_ciface_psls make_ciface_bsc \
-                make_ciface_roots make_ciface_blls make_ciface_bllsb 
+                make_ciface_convert make_ciface_fdc make_ciface_fit \
+                make_ciface_scu make_ciface_cro make_ciface_rqs \
+                make_ciface_psls make_ciface_bsc make_ciface_roots \
+                make_ciface_blls make_ciface_bllsb 
 
 #  other C interface packages that depend on current interface package
 

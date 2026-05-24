@@ -1075,9 +1075,9 @@
 
   END SUBROUTINE bnls_solve_reverse_with_jacprod
 
-!  --------------------------------------
+!  ---------------------------------------
 !  C interface to fortran bnls_information
-!  --------------------------------------
+!  ---------------------------------------
 
   SUBROUTINE bnls_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_BNLS_precision_ciface
@@ -1110,9 +1110,9 @@
 
   END SUBROUTINE bnls_information
 
-!  ------------------------------------
+!  -------------------------------------
 !  C interface to fortran bnls_terminate
-!  ------------------------------------
+!  -------------------------------------
 
   SUBROUTINE bnls_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_BNLS_precision_ciface

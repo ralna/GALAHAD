@@ -92,12 +92,14 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
   end
 
   jacprod_ptr = @eval @cfunction($jacprod_c, $INT,
-                                 ($INT, $INT, Ptr{$T}, Bool, Ptr{$T}, Ptr{$T}, Bool,
-                                  Ptr{Cvoid}))
+                                 ($INT, $INT, Ptr{$T}, Bool, Ptr{$T}, Ptr{$T}, 
+                                  Bool, Ptr{Cvoid}))
 
   # compute a sparse product with the Jacobian
-  function jacprods(n::INT, m_r::INT, x::Vector{T}, v::Vector{T}, p::Vector{T}, iv::Vector{INT},
-                    lvl::INT, lvu::INT, ip::Vector{INT}, lp::Vector{INT}, got_jr::Bool, userdata::userdata_bnls{T,INT})
+  function jacprods(n::INT, m_r::INT, x::Vector{T}, v::Vector{T}, p::Vector{T},
+                    iv::Vector{INT}, lvl::INT, lvu::INT, ip::Vector{INT}, 
+                    lp::Vector{INT}, got_jr::Bool, 
+                    userdata::userdata_bnls{T,INT})
     if !isempty(ip) && !isempty(lp)
       userdata.flag = userdata.flag + 1
       lp[1] = 1
@@ -180,12 +182,14 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     _ip = unsafe_wrap(Vector{INT}, ip, ip == C_NULL ? 0 : m_r)
     _lp = unsafe_wrap(Vector{INT}, lp, lp == C_NULL ? 0 : 1)
     _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
-    return jacprods(n, m_r, _x, _v, _p, _iv, lvl, lvu, _ip, _lp, got_jr, _userdata)
+    return jacprods(n, m_r, _x, _v, _p, _iv, lvl, lvu, _ip, _lp, got_jr, 
+                    _userdata)
   end
 
   jacprods_ptr = @eval @cfunction($jacprods_c, $INT,
-                                  ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{$INT}, $INT,
-                                   $INT, Ptr{$INT}, Ptr{$INT}, Bool, Ptr{Cvoid}))
+                                  ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, 
+                                   Ptr{$INT}, $INT, $INT, Ptr{$INT}, Ptr{$INT}, 
+                                   Bool, Ptr{Cvoid}))
 
   # compute a sparse product with the Jacobian or its transpose
   function sjacprod(n::INT, m_r::INT, x::Vector{T}, transpose::Bool,
@@ -229,13 +233,13 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     _p = unsafe_wrap(Vector{T}, p, transpose ? n : m_r)
     _free = unsafe_wrap(Vector{INT}, free, n_free)
     _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T}
-    return sjacprod(n, m_r, _x, transpose, _v, _p, _free, n_free, got_jr, _userdata)
+    return sjacprod(n, m_r, _x, transpose, _v, _p, _free, n_free, got_jr, 
+                    _userdata)
   end
 
   sjacprod_ptr = @eval @cfunction($sjacprod_c, $INT,
-                                  ($INT, $INT, Ptr{$T}, Bool, Ptr{$T}, Ptr{$T}, Ptr{$INT},
-                                   $INT,
-                                   Bool, Ptr{Cvoid}))
+                                  ($INT, $INT, Ptr{$T}, Bool, Ptr{$T}, Ptr{$T},
+                                   Ptr{$INT}, $INT, Bool, Ptr{Cvoid}))
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -286,8 +290,10 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       # @reset control[].blls_control.maxit = INT(5)
       @reset control[].jacobian_available = INT(2)
       @reset control[].stop_pg_absolute = T(0.00001)
-      @reset control[].blls_control.sbls_control.definite_linear_solver = galahad_linear_solver(dls)
-      @reset control[].blls_control.sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+      @reset control[].blls_control.sbls_control.definite_linear_solver =
+        galahad_linear_solver(dls)
+      @reset control[].blls_control.sbls_control.symmetric_linear_solver =
+        galahad_linear_solver(sls)
       st = " "
 
       for i in 1:n
@@ -298,10 +304,10 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       if d == 1
         st = "JF"
         @reset control[].jacobian_available = INT(2)
-        bnls_import(T, INT, control, data, status, n, m_r, "coordinate", jr_ne, Jr_row, Jr_col,
-                    INT(0), C_NULL)
-        bnls_solve_with_jac(T, INT, data, userdata, status, n, m_r, x_l, x_u, x, z, r, g, x_stat,
-                            res_ptr, jr_ne, jac_ptr, w)
+        bnls_import(T, INT, control, data, status, n, m_r, "coordinate", jr_ne,
+                    Jr_row, Jr_col, INT(0), C_NULL)
+        bnls_solve_with_jac(T, INT, data, userdata, status, n, m_r, x_l, x_u, 
+                            x, z, r, g, x_stat, res_ptr, jr_ne, jac_ptr, w)
       end
 
       # solve when Jacobian products are available via function calls
@@ -309,8 +315,9 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         st = "PF"
         @reset control[].jacobian_available = INT(1)
         bnls_import_without_jac(T, INT, control, data, status, n, m_r)
-        bnls_solve_with_jacprod(T, INT, data, userdata, status, n, m_r, x_l, x_u, x, z, r, g,
-                                x_stat, res_ptr, jacprod_ptr, jacprods_ptr, sjacprod_ptr, w)
+        bnls_solve_with_jacprod(T, INT, data, userdata, status, n, m_r, 
+                                x_l, x_u, x, z, r, g, x_stat, res_ptr, 
+                                jacprod_ptr, jacprods_ptr, sjacprod_ptr, w)
       end
 
       bnls_information(T, INT, data, inform, status)
@@ -349,8 +356,10 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       # @reset control[].maxit = INT(10)
       # @reset control[].blls_control.maxit = INT(5)
       @reset control[].stop_pg_absolute = T(0.00001)
-      @reset control[].blls_control.sbls_control.definite_linear_solver = galahad_linear_solver(dls)
-      @reset control[].blls_control.sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
+      @reset control[].blls_control.sbls_control.definite_linear_solver =
+        galahad_linear_solver(dls)
+      @reset control[].blls_control.sbls_control.symmetric_linear_solver =
+        galahad_linear_solver(sls)
       st = " "
 
       for i in 1:n
@@ -361,13 +370,14 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         # solve when Jacobian is available via reverse access
         st = "JF"
         @reset control[].jacobian_available = INT(2)
-        bnls_import(T, INT, control, data, status, n, m_r, "coordinate", jr_ne, Jr_row, Jr_col,
-                    INT(0), C_NULL)
+        bnls_import(T, INT, control, data, status, n, m_r, "coordinate", 
+                    jr_ne, Jr_row, Jr_col, INT(0), C_NULL)
 
         terminated = false
         while !terminated # reverse-communication loop
-          bnls_solve_reverse_with_jac(T, INT, data, status, eval_status, n, m_r, x_l, x_u, x, z, r,
-                                      g, x_stat, jr_ne, Jr_val, w)
+          bnls_solve_reverse_with_jac(T, INT, data, status, eval_status, 
+                                      n, m_r, x_l, x_u, x, z, r, g, x_stat, 
+                                      jr_ne, Jr_val, w)
           if status[] == 0 # successful termination
             terminated = true
           elseif status[] < 0 # error exit
@@ -390,8 +400,9 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
 
         terminated = false
         while !terminated # reverse-communication loop
-          bnls_solve_reverse_with_jacprod(T, INT, data, status, eval_status, n, m_r, x_l, x_u, x, z,
-                                          r, g, x_stat, v, iv, lvl, lvu, p, ip, lp[1], w)
+          bnls_solve_reverse_with_jacprod(T, INT, data, status, eval_status, 
+                                          n, m_r, x_l, x_u, x, z, r, g, x_stat,
+                                          v, iv, lvl, lvu, p, ip, lp[1], w)
           if status[] == 0 # successful termination
             terminated = true
           elseif status[] < 0 # error exit
@@ -404,13 +415,14 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
           elseif status[] == 5 # evaluate p = Jr' v
             eval_status[] = jacprod(x, true, v, p, got_jr, userdata)
           elseif status[] == 6 # evaluate p = Jr * sparse v
-            eval_status[] = jacprods(n, m_r, x, v, p, iv, lvl[], lvu[], INT[], INT[], got_jr,
-                                     userdata)
+            eval_status[] = jacprods(n, m_r, x, v, p, iv, lvl[], lvu[], 
+                                     INT[], INT[], got_jr, userdata)
           elseif status[] == 7 # evaluate p = sparse(Jr(x) * sparse v)
-            eval_status[] = jacprods(n, m_r, x, v, p, iv, lvl[], lvu[], ip, lp, got_jr,
-                                     userdata)
+            eval_status[] = jacprods(n, m_r, x, v, p, iv, lvl[], lvu[], 
+                                     ip, lp, got_jr, userdata)
           elseif status[] == 8 # evaluate p = sparse(Jr' v)
-            eval_status[] = sjacprod(n, m_r, x, true, v, p, iv, lvu[], got_jr, userdata)
+            eval_status[] = sjacprod(n, m_r, x, true, v, p, iv, lvu[], 
+                                     got_jr, userdata)
           else
             @printf(" the value %1d of status should not occur\n", status[])
           end
