@@ -2591,9 +2591,9 @@ END IF
 ! data%n_free, data%FREE( : data%n_free )
 !write(6,"( ' x = ', /, ( 5ES12.4 ) )" ) data%X_new( : prob%n )
 
-       summary = data%printm ; debug = data%printd
-!      summary = .TRUE. ; debug = .FALSE.
  300   CONTINUE ! mock CGLS loop
+         summary = data%printm ; debug = data%printd
+!        summary = .TRUE. ; debug = .FALSE.
 
 !  find an improved point, X_new, in the multiple-simplex case by
 !  conjugate-gradient least-squares ...
@@ -2849,9 +2849,9 @@ END IF
          data%D = data%D / TWO_NORM( data%D )
        data%SBLS_sol( : prob%o ) = data%AE( : prob%o ) 
 
-       summary = data%printm ; debug = data%printd
-!      summary = .TRUE. ; debug = .FALSE.
  420   CONTINUE ! mock arc search loop
+         summary = data%printm ; debug = data%printd
+!        summary = .TRUE. ; debug = .FALSE.
 
 !  find an improved point in the multiple-simplex case
 
@@ -3001,9 +3001,9 @@ END IF
  440   CONTINUE
        data%alpha_0 = alpha_search
 
-       summary = data%printm ; debug = data%printd
-!      summary = .TRUE. ; debug = .FALSE.
  450   CONTINUE ! mock arc search loop
+         summary = data%printm ; debug = data%printd
+!        summary = .TRUE. ; debug = .FALSE.
 
 !  find an improved point in the multiple-simplex case
 

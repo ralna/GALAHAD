@@ -241,7 +241,7 @@
 !write(6,"( ' z: ', 5ES10.2, /, ( 4X, 5ES10.2 ) )" ) Z
 !write(6,"( ' g: ', 5ES10.2, /, ( 4X, 5ES10.2 ) )" ) G
    DEALLOCATE( Ao_val, Ao_row, Ao_col, Ao_ptr, Ao_dense )
-   DEALLOCATE( B, X, Y, Z, R, G, X_stat, W, X_s, IV, IP, V, P )
+   DEALLOCATE( B, X, Y, Z, R, G, X_stat, COHORT, W, X_s, IV, IP, V, P )
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS
