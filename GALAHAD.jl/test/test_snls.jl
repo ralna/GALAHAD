@@ -99,7 +99,7 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
       val[1] = x[2]
       row[1] = 0
       nz = 1
-    elseif (index == n)
+    elseif index == n
       val[1] = x[n-1]
       row[1] = n-1
       nz = 1
@@ -110,7 +110,6 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
       row[2] = index
       nz = 2
     end
-    got_jr = true
     return INT(0)
   end
 
@@ -135,7 +134,6 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
                     got_jr::Bool, userdata::userdata_snls{T})
 
     if transpose
-      resize!(p, n)
       for i in 1:n_free
         j = free[i]
         if j == 1
@@ -147,7 +145,9 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
         end
       end
     else
-      resize!(p, m_r)
+      for i in 1:m_r
+        p[i] = zero(T)
+      end
       for i in 1:n_free
         j = free[i]
         val = v[j]
@@ -231,7 +231,7 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
 
   x = fill!(x, T(0.5))  # initial guess
   snls_import(T, INT, control, data, status, n, m_r, m_c,
-              "coordinate", jr_ne, Jr_row, Jr_col, 0, C_NULL, cohort)
+              "coordinate", jr_ne, Jr_row, Jr_col, INT(0), C_NULL, cohort)
   snls_solve_with_jac(T, INT, data, userdata, status, n, m_r, m_c,
                       x, y, z, r, g, x_stat, res_ptr, jr_ne, jac_ptr, w)
   snls_information(T, INT, data, inform, status)
@@ -291,7 +291,7 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   lvu = Ref{INT}(0)
   index = Ref{INT}(0)
   iv = Vector{INT}(undef, mrn)
-  ip = Vector{INT}(undef, mrn)
+  ip = Vector{INT}(undef, m_r)
   v = Vector{T}(undef, mrn)
   p = Vector{T}(undef, mrn)
   got_jr = false
@@ -313,7 +313,7 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
 
   x = fill(T(0.5), n) # initial guess
   snls_import(T, INT, control, data, status, n, m_r, m_c,
-              "coordinate", jr_ne, Jr_row, Jr_col, 0, C_NULL, cohort)
+              "coordinate", jr_ne, Jr_row, Jr_col, INT(0), C_NULL, cohort)
   terminated = false
   while !terminated # reverse-communication loop
     snls_solve_reverse_with_jac(T, INT, data, status, eval_status, 
