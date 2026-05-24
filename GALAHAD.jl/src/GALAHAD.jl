@@ -187,7 +187,7 @@ include("wrappers/bllsb.jl")
 # sllsb requires clls, fdc, sls, sils, uls, gls, fit, roots, cro, ir, scu, rpd, nodend.
 include("wrappers/sllsb.jl")
 
-# bnls requires rqs, sls, sils, ir, glrt, gltr, psls, bsc, roots, nodend.
+# bnls requires rpd, gls, cro, fit, fdc, bllsb, uls, sbls, convert, blls, rqs, sls, sils, ir, glrt, gltr, psls, bsc, roots, nodend.
 include("wrappers/bnls.jl")
 
 # ssls requires sls, sils, nodend.
