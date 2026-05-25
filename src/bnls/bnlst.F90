@@ -181,7 +181,11 @@
 !    control%print_level = 1
 !    control%BLLS_control%print_level = 1
 !    control%BLLSB_control%print_level = 1
+#ifdef REAL_32
+     control%stop_pg_absolute = 0.0001_rp_
+#else
      control%stop_pg_absolute = 0.00001_rp_
+#endif
      CALL WHICH_sls( control )
 
      nlp%X = [ 0.5_rp_, 0.5_rp_, 0.5_rp_, 0.5_rp_, 0.5_rp_ ]

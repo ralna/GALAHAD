@@ -45,7 +45,11 @@
 !    control%BLLS_control%print_level = 1
 !    control%maxit = 1
 !    control%BLLS_control%maxit = 5
+#ifdef REAL_32
+     control%stop_pg_absolute = 0.0001_rp_
+#else
      control%stop_pg_absolute = 0.00001_rp_
+#endif
      CALL WHICH_sls( control )
 
      X = [ 0.5_rp_, 0.5_rp_, 0.5_rp_, 0.5_rp_, 0.5_rp_ ]

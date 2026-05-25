@@ -90,7 +90,11 @@ int main(void) {
     control.f_indexing = false; // C sparse matrix indexing
     // control.print_level = 1;
     control.jacobian_available = 2;
+#ifdef REAL_32
+    control.stop_pg_absolute = 0.0001;
+#else
     control.stop_pg_absolute = 0.00001;
+#endif
     strcpy(control.blls_control.sbls_control.definite_linear_solver, "potr ");
     strcpy(control.blls_control.sbls_control.symmetric_linear_solver, "sytr ");
 
@@ -122,7 +126,11 @@ int main(void) {
     // control.print_level = 1;
     // control.blls_control.print_level = 1;
     control.jacobian_available = 1;
+#ifdef REAL_32
+    control.stop_pg_absolute = 0.0001;
+#else
     control.stop_pg_absolute = 0.00001;
+#endif
     // control.maxit = 10;
     // control.blls_control.maxit = 10;
     // control.blls_control.maxit = 5;
@@ -165,7 +173,11 @@ int main(void) {
     control.f_indexing = false; // fortran sparse matrix indexing
     //control.print_level = 1;
     control.jacobian_available = 2;
+#ifdef REAL_32
+    control.stop_pg_absolute = 0.0001;
+#else
     control.stop_pg_absolute = 0.00001;
+#endif
     strcpy(control.blls_control.sbls_control.definite_linear_solver, "potr ");
     strcpy(control.blls_control.sbls_control.symmetric_linear_solver, "sytr ");
 
@@ -213,7 +225,11 @@ int main(void) {
     // control.print_level = 1;
     // control.blls_control.print_level = 1;
     control.jacobian_available = 1;
+#ifdef REAL_32
+    control.stop_pg_absolute = 0.0001;
+#else
     control.stop_pg_absolute = 0.00001;
+#endif
     strcpy(control.blls_control.sbls_control.definite_linear_solver, "potr ");
     strcpy(control.blls_control.sbls_control.symmetric_linear_solver, "sytr ");
 
