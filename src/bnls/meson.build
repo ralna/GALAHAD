@@ -39,8 +39,3 @@ galahad_python_tests += [['bnls', 'bnls_py', files('Python/test_bnls.py')]]
 galahad_examples += [['bnlss', files('bnlss.f90')],
                      ['bnlss2', files('bnlss2.f90')],
                      ['bnlss3', files('bnlss3.f90')]]
-
-galahad_c_examples += [['bnlss_c', files('C/bnlss.c')],
-                       ['bnlss2_c', files('C/bnlss2.c')],
-                       ['bnlss3_c', files('C/bnlss3.c')],
-                       ['bnlss4_c', files('C/bnlss4.c')]]

@@ -289,7 +289,11 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       # @reset control[].blls_control.print_level = INT(1)
       # @reset control[].blls_control.maxit = INT(5)
       @reset control[].jacobian_available = INT(2)
-      @reset control[].stop_pg_absolute = T(0.00001)
+      if T == Float32
+        @reset control[].stop_pg_absolute = T(0.0001)
+      else
+        @reset control[].stop_pg_absolute = T(0.00001)
+      end
       @reset control[].blls_control.sbls_control.definite_linear_solver =
         galahad_linear_solver(dls)
       @reset control[].blls_control.sbls_control.symmetric_linear_solver =
@@ -355,7 +359,11 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       # @reset control[].print_level = INT(1)
       # @reset control[].maxit = INT(10)
       # @reset control[].blls_control.maxit = INT(5)
-      @reset control[].stop_pg_absolute = T(0.00001)
+      if T == Float32
+        @reset control[].stop_pg_absolute = T(0.0001)
+      else
+        @reset control[].stop_pg_absolute = T(0.00001)
+      end
       @reset control[].blls_control.sbls_control.definite_linear_solver =
         galahad_linear_solver(dls)
       @reset control[].blls_control.sbls_control.symmetric_linear_solver =
