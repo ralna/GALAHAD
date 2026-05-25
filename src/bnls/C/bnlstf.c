@@ -127,7 +127,7 @@ int main(void) {
     // control.blls_control.print_level = 1;
     control.jacobian_available = 1;
 #ifdef REAL_32
-    control.stop_pg_absolute = 0.0001;
+    control.stop_pg_absolute = 0.005;
 #else
     control.stop_pg_absolute = 0.00001;
 #endif

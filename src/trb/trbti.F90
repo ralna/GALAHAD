@@ -43,6 +43,7 @@
    WRITE( 6, "( /, ' basic tests of storage formats ', / )" )
 
    DO data_storage_type = 1, 5
+!  DO data_storage_type = 5, 5
      CALL TRB_initialize( data, control, inform )
      CALL WHICH_sls( control )
 !    control%print_level = 1
@@ -74,6 +75,9 @@
                                 FUN_diag, GRAD_diag, HESS_diag, PREC )
      CASE ( 5 ) ! access by products
        st = 'P'
+!control%print_level = 11
+!control%maxit = 1
+!control%trs_control%print_level = 1
        CALL TRB_import( control, data, status, n,                              &
                         'absent', ne, H_row, H_col, H_ptr )
        CALL TRB_solve_without_mat( data, userdata, status, X_l, X_u, X, G,     &
@@ -90,7 +94,7 @@
 !    WRITE( 6, "( ' G ', 3ES12.5 )" ) G
      CALL TRB_terminate( data, control, inform )  ! delete internal workspace
    END DO
-
+!stop
    WRITE( 6, "( /, ' tests reverse-communication options ', / )" )
 
    f = 0.0_rp_

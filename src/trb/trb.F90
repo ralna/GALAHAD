@@ -1568,7 +1568,7 @@
      INTEGER ( KIND = ip_ ) :: i, ii, ic, ir, j, jj, k, l, n_active
      INTEGER ( KIND = ip_ ) :: duplicates, out_of_range, upper
      INTEGER ( KIND = ip_ ) :: missing_diagonals, info_svd, facts_this_solve
-     REAL ( KIND = rp_ ) :: val, ared, prered, rounding, gi
+     REAL ( KIND = rp_ ) :: val, ared, prered, rounding, gi, max_step, step
      REAL ( KIND = rp_ ) :: delta, tau, tau_1, tau_2, tau_min, tau_max, distan
      LOGICAL :: alive
      CHARACTER ( LEN = 6 ) :: char_iter, char_facts, char_sit, char_sit2
@@ -3466,6 +3466,7 @@
 !  ------------------- start of generalized Cauchy point loop -----------------
 
 !write(6,*) ' p ', data%P( : nlp%n )
+!write(6,"( ' p = ', 3ES12.4 )" )  data%P( : nlp%n )
   410    CONTINUE
 
 !  if required, print a list of the nonzeros of P and HP
@@ -3628,6 +3629,7 @@
 
 !  store the Cauchy point and its gradient for future use
 
+!write(6,"( ' x_trial = ', 3ES12.4 )" )  data%X_trial( : nlp%n )
          data%X_cauchy( : nlp%n ) = data%X_trial( : nlp%n )
          data%model_cp = data%model
 
@@ -3997,27 +3999,8 @@
            IF ( data%printd ) THEN
              WRITE( data%out, "( ' trs model value =', ES12.4 )" )             &
              inform%TRS_inform%obj
-
-!  compute the step, p, to the trial point
-
-             data%P = data%X_trial - data%X_current
-
-!  compute the product of the Hessian H and the step p
-
-             IF ( data%control%model == first_order_model ) THEN
-               data%HP( : nlp%n ) = zero
-             ELSE IF ( data%control%model == identity_hessian_model ) THEN
-               data%HP( : nlp%n ) = data%P( : nlp%n )
-             ELSE
-               CALL mop_Ax( one, nlp%H,  data%P( : nlp%n ), zero,              &
-                            data%HP( : nlp%n ), data%out, data%control%error,  &
-                            0_ip_, symmetric = .TRUE. )
-               WRITE( data%out, "( ' recurred, computed dm =', 2ES12.4 )" )    &
-                 data%model, DOT_PRODUCT( data%P( : nlp%n ),                   &
-                   nlp%G( : nlp%n ) + half * data%HP( : nlp%n ) )
-             END IF
            END IF
-           GO TO 500
+           GO TO 490
          END IF
 
 !  - - - - - - - - - - - iterative method using GLTR - - - - - - - - - - - - -
@@ -4279,17 +4262,48 @@
          WHERE ( data%X_status == 0 ) data%X_trial = data%X_trial + data%S_sub
          data%model = data%model_cp + data%gltr_model
 
-!  compare the recurred and compted reduction, if required
-
          IF ( data%printd .AND. .NOT. data%reverse_hprod ) THEN
            WRITE( data%out, "( ' gltr model value =', ES12.4 )" )              &
              data%gltr_model
-           data%P = data%X_trial - data%X_current
+         END IF
+
+!  compute the step, p, to the trial point
+
+ 490     CONTINUE
+         data%P = data%X_trial - data%X_cauchy
+       
+!  now consider the arc from the Cauchy point to the trial point, and record 
+!  the maximum feasible step along this arc
+
+         max_step = one
+         DO i = 1, nlp%n
+           IF ( data%P( i ) > zero ) THEN
+             step = ( nlp%X_u( i )- data%X_cauchy( i ) ) / data%P( i )
+             max_step = MIN( max_step, step )
+           ELSE IF ( data%P( i ) < zero ) THEN
+             step = ( nlp%X_l( i )- data%X_cauchy( i ) ) / data%P( i )
+             max_step = MIN( max_step, step )
+           END IF
+         END DO
+         IF ( max_step < one ) THEN
+           data%P = max_step * data%P
+           data%X_trial = data%X_cauchy + data%P
+         END IF
+
+!  compare the recurred and computed reduction, if required
+
+         IF ( data%printd .AND. .NOT. data%reverse_hprod ) THEN
+
+!  compute the product of the Hessian H and the step p
 
            IF ( data%control%model == first_order_model ) THEN
              data%HP( : nlp%n ) = zero
            ELSE IF ( data%control%model == identity_hessian_model ) THEN
              data%HP( : nlp%n ) = data%P( : nlp%n )
+           ELSE IF ( data%control%hessian_available ) THEN
+             CALL mop_Ax( one, nlp%H,  data%P( : nlp%n ), zero,                &
+                          data%HP( : nlp%n ), data%out, data%control%error,    &
+                          0_ip_, symmetric = .TRUE. )
            ELSE
              data%HP( : nlp%n ) = zero
              CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,    &
@@ -4355,6 +4369,7 @@
 
  510   CONTINUE
        nlp%X( : nlp%n ) = data%X_current( : nlp%n ) + data%S( : nlp%n )
+!write(6,"( ' x = ', 3ES12.4 )" )  nlp%X( : nlp%n )
 
 !  evaluate the objective function at the trial point
 
