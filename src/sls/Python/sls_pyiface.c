@@ -924,7 +924,7 @@ static PyObject* py_sls_partial_solve_system(PyObject *self, PyObject *args, PyO
                         NPY_DOUBLE, (void *) sol); // create NumPy x array
 
     // Return x
-    return Py_BuildValue("O", py_x);
+    return Py_BuildValue("N", py_x);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SLS_INFORMATION   -*-*-*-*-*-*-*-*
