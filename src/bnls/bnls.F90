@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-15 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-05-26 AT 09:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,23 +15,23 @@
 
    MODULE GALAHAD_BNLS_precision
 
-!     --------------------------------------------------------------------
-!    |                                                                    |
-!    |   BNLS, an algorithm for nonlinear least-squares                   |
-!    |                                                                    |
-!    |   Aim: find a (local) minimizer of the objective function          |
-!    |                                                                    |
-!    |            1/2 ||c(x)||_W^2 = 1/2 sum_i=1^m w_i c_i^2(x)           |
-!    |                                                                    |
-!    |   subject to bound constraints                                     |
-!    |                                                                    |
-!    |                     (x_l)_i <= x_i <= (x_u)_i                      |
-!    |                                                                    |
-!    |   where the residual c(x) is a smooth vector-valued function,      |
-!    |   the weights w_i are positive and any of the components of        |
-!    |   x_l and x_u may be infinite                                      |
-!    |                                                                    |
-!     --------------------------------------------------------------------
+!     ----------------------------------------------------------------
+!    |                                                                |
+!    |   BNLS, an algorithm for nonlinear least-squares               |
+!    |                                                                |
+!    |   Aim: find a (local) minimizer of the objective function      |
+!    |                                                                |
+!    |            1/2 ||c(x)||_W^2 = 1/2 sum_i=1^m w_i c_i^2(x)       |
+!    |                                                                |
+!    |   subject to bound constraints                                 |
+!    |                                                                |
+!    |                     (x_l)_i <= x_i <= (x_u)_i                  |
+!    |                                                                |
+!    |   where the residual c(x) is a smooth vector-valued function,  |
+!    |   the weights w_i are positive and any of the components of    |
+!    |   x_l and x_u may be infinite                                  |
+!    |                                                                |
+!     ----------------------------------------------------------------
 
      USE GALAHAD_KINDS_precision
      USE GALAHAD_CLOCK
@@ -4651,7 +4651,7 @@ end if
        IF ( eval_status == 0 ) THEN
          data%reverse%lp = lp
          IF ( data%f_indexing ) THEN
-           data%reverse%IP( : lp ) = IP( : lp ) + 1
+           data%reverse%IP( : lp ) = IP( : lp )
          ELSE
            data%reverse%IP( : lp ) = IP( : lp ) + 1
          END IF
