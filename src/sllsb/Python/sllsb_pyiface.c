@@ -647,20 +647,21 @@ PyObject* sllsb_make_inform_dict(const struct sllsb_inform_type *inform){
     PyDict_SetItemString(py_inform, "feasible",
                          PyBool_FromLong(inform->feasible));
 
-    // include checkpoint arrays (commented out as these cause a segfault!)
-    int ii = 16;
-    npy_intp idim[] = {ii}; 
-    //PyArrayObject *py_iter = 
-    //  (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_INT);
-    //int *iter = (int *) PyArray_DATA(py_iter); 
-    //for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];  
-    //PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
+    // for NumPy arrays
+    import_array();
 
-    //PyArrayObject *py_time = 
-    // (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_DOUBLE);
-    //double *time = (double *) PyArray_DATA(py_time); 
-    //for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];  
-    //PyDict_SetItemString(py_inform, "checkpointsTime", (PyObject *) py_time);
+    // include checkpoint arrays (commented out as these cause a segfault!)
+    npy_intp idim[] = {16}; 
+    PyArrayObject *py_iter = 
+      (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_INT);
+    int *iter = (int *) PyArray_DATA(py_iter); 
+    for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];  
+    PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
+    PyArrayObject *py_time = 
+     (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_DOUBLE);
+    double *time = (double *) PyArray_DATA(py_time); 
+    for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];  
+    PyDict_SetItemString(py_inform, "checkpointsTime", (PyObject *) py_time);
 
     // Set time nested dictionary
     PyDict_SetItemString(py_inform, "time",

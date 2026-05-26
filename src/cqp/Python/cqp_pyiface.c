@@ -653,6 +653,9 @@ PyObject* cqp_make_inform_dict(const struct cqp_inform_type *inform){
     PyDict_SetItemString(py_inform, "feasible",
                          PyBool_FromLong(inform->feasible));
 
+    // for NumPy arrays
+    import_array();
+
     // include checkpoint arrays
     npy_intp cdim[] = {16};
     PyArrayObject *py_iter =

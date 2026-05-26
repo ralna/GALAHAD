@@ -646,18 +646,18 @@ PyObject* bllsb_make_inform_dict(const struct bllsb_inform_type *inform){
                          PyFloat_FromDouble(inform->non_negligible_pivot));
     PyDict_SetItemString(py_inform, "feasible",
                          PyBool_FromLong(inform->feasible));
-printf("  bllsb_make_inform_dict before checkpoint creation\n");
+    // for NumPy arrays
+    import_array();
 
     // include checkpoint arrays
+//printf("  bllsb_make_inform_dict before checkpoint creation\n");
     npy_intp cdim[] = {16};
     PyArrayObject *py_iter =
       (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_INT);
     int *iter = (int *) PyArray_DATA(py_iter);
     for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];
     PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
-
-printf("  bllsb_make_inform_dict after checkpoint creation\n");
-
+//printf("  bllsb_make_inform_dict after checkpoint creation\n");
     PyArrayObject *py_time =
       (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_DOUBLE);
     double *time = (double *) PyArray_DATA(py_time);
