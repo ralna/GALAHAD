@@ -1,0 +1,719 @@
+#ifdef INTEGER_64
+#define GALAHAD_KINDS GALAHAD_KINDS_64
+#define galahad_kinds galahad_kinds_64
+#define GALAHAD_KINDS_single GALAHAD_KINDS_single_64
+#define GALAHAD_KINDS_double GALAHAD_KINDS_double_64
+#define GALAHAD_KINDS_quadruple GALAHAD_KINDS_quadruple_64
+#define GALAHAD_METIS GALAHAD_METIS_64
+#define GALAHAD_HASH GALAHAD_HASH_64
+#define GALAHAD_HASH_ciface GALAHAD_HASH_ciface_64
+#define GALAHAD_HW GALAHAD_HW_64
+#define GALAHAD_STRING GALAHAD_STRING_64
+#define GALAHAD_SYMBOLS GALAHAD_SYMBOLS_64
+#define GALAHAD_COPYRIGHT GALAHAD_COPYRIGHT_64
+#define GALAHAD_VERSION GALAHAD_VERSION_64
+#define GALAHAD_VERSION_ciface GALAHAD_VERSION_ciface_64
+#define GALAHAD_CLOCK GALAHAD_CLOCK_64
+#define GALAHAD_TOOLS GALAHAD_TOOLS_64
+#define GALAHAD_common_ciface GALAHAD_common_ciface_64
+#define MKL_PARDISO_PRIVATE MKL_PARDISO_PRIVATE_64
+#define MKL_PARDISO MKL_PARDISO_64
+#define galahad_metis galahad_metis_64
+#define spmf_interfaces spmf_interfaces_64
+#define spmf_enums spmf_enums_64
+#define pastixf_interfaces pastixf_interfaces_64
+#define pastixf_enums pastixf_enums_64
+#endif
+
+#ifdef REAL_32
+#include "galahad_modules_single.h"
+#elif REAL_128
+#include "galahad_modules_quadruple.h"
+#else
+#include "galahad_modules_double.h"
+#endif
+
+#ifdef REAL_32
+#define mumps_struc smumps_struc
+#define MUMPS_STRUC SMUMPS_STRUC
+#ifdef INTEGER_64
+#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_single_64
+#ifdef DUMMY_SMUMPS
+#define MUMPS_precision GALAHAD_SMUMPS_64
+#else
+#define MUMPS_precision SMUMPS
+#endif
+#else
+#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_single
+#ifdef DUMMY_SMUMPS
+#define MUMPS_precision GALAHAD_SMUMPS
+#else
+#define MUMPS_precision SMUMPS
+#endif
+#endif
+#elif REAL_128
+#define mumps_struc qmumps_struc
+#define MUMPS_STRUC QMUMPS_STRUC
+#ifdef INTEGER_64
+#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_quadruple_64
+#ifdef DUMMY_QMUMPS
+#define MUMPS_precision GALAHAD_QMUMPS_64
+#else
+#define MUMPS_precision QMUMPS
+#endif
+#else
+#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_quadruple
+#ifdef DUMMY_QMUMPS
+#define MUMPS_precision GALAHAD_QMUMPS
+#else
+#define MUMPS_precision QMUMPS
+#endif
+#endif
+#else
+#define mumps_struc dmumps_struc
+#define MUMPS_STRUC DMUMPS_STRUC
+#ifdef INTEGER_64
+#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_double_64
+#ifdef DUMMY_DMUMPS
+#define MUMPS_precision GALAHAD_DMUMPS_64
+#else
+#define MUMPS_precision DMUMPS
+#endif
+#else
+#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_double
+#ifdef DUMMY_DMUMPS
+#define MUMPS_precision GALAHAD_DMUMPS
+#else
+#define MUMPS_precision DMUMPS
+#endif
+#endif
+#endif
+
+#ifdef DUMMY_MPI
+#define MPI_INIT GALAHAD_MPI_INIT
+#define MPI_INITIALIZED GALAHAD_MPI_INITIALIZED
+#define MPI_FINALIZE GALAHAD_MPI_FINALIZE
+#endif
+
+#ifdef DUMMY_PARDISO
+#define PARDISOINIT GALAHAD_PARDISOINIT
+#define PARDISO GALAHAD_PARDISO
+#endif
+
+#ifdef DUMMY_MKL_PARDISO
+#define PARDISO_D GALAHAD_PARDISO_D
+#define PARDISO_D_2D GALAHAD_PARDISO_D_2D
+#define PARDISO_D_64 GALAHAD_PARDISO_D_64
+#define PARDISO_D_64_2D GALAHAD_PARDISO_D_64_2D
+#define PARDISO_DC GALAHAD_PARDISO_DC
+#define PARDISO_DC_2D GALAHAD_PARDISO_DC_2D
+#define PARDISO_DC_64 GALAHAD_PARDISO_DC_64
+#define PARDISO_DC_64_2D GALAHAD_PARDISO_DC_64_2D
+#define PARDISO_EXPORT_C GALAHAD_PARDISO_EXPORT_C
+#define PARDISO_EXPORT_D GALAHAD_PARDISO_EXPORT_D
+#define PARDISO_EXPORT_S GALAHAD_PARDISO_EXPORT_S
+#define PARDISO_EXPORT_Z GALAHAD_PARDISO_EXPORT_Z
+#define PARDISO_GETDIAG_D GALAHAD_PARDISO_GETDIAG_D
+#define PARDISO_GETDIAG_Z GALAHAD_PARDISO_GETDIAG_Z
+#define PARDISO_GETENV GALAHAD_PARDISO_GETENV
+#define PARDISO_GETENV_F GALAHAD_PARDISO_GETENV_F
+#define PARDISO_HANDLE_DELETE GALAHAD_PARDISO_HANDLE_DELETE
+#define PARDISO_HANDLE_DELETE_64 GALAHAD_PARDISO_HANDLE_DELETE_64
+#define PARDISO_HANDLE_RESTORE GALAHAD_PARDISO_HANDLE_RESTORE
+#define PARDISO_HANDLE_RESTORE_64 GALAHAD_PARDISO_HANDLE_RESTORE_64
+#define PARDISO_HANDLE_STORE GALAHAD_PARDISO_HANDLE_STORE
+#define PARDISO_HANDLE_STORE_64 GALAHAD_PARDISO_HANDLE_STORE_64
+#define PARDISO_S GALAHAD_PARDISO_S
+#define PARDISO_S_2D GALAHAD_PARDISO_S_2D
+#define PARDISO_S_64 GALAHAD_PARDISO_S_64
+#define PARDISO_S_64_2D GALAHAD_PARDISO_S_64_2D
+#define PARDISO_SC GALAHAD_PARDISO_SC
+#define PARDISO_SC_2D GALAHAD_PARDISO_SC_2D
+#define PARDISO_SC_64 GALAHAD_PARDISO_SC_64
+#define PARDISO_SC_64_2D GALAHAD_PARDISO_SC_64_2D
+#define PARDISO_SETENV GALAHAD_PARDISO_SETENV
+#define PARDISO_SETENV_F GALAHAD_PARDISO_SETENV_F
+#define MKL_PARDISO_PIVOT GALAHAD_MKL_PARDISO_PIVOT
+#define PARDISO_EXPORT_Q GALAHAD_PARDISO_EXPORT_Q
+#define PARDISO_EXPORT_X GALAHAD_PARDISO_EXPORT_X
+#define PARDISO_Q GALAHAD_PARDISO_Q
+#define PARDISO_Q_2D GALAHAD_PARDISO_Q_2D
+#define PARDISO_Q_64 GALAHAD_PARDISO_Q_64
+#define PARDISO_Q_64_2D GALAHAD_PARDISO_Q_64_2D
+#define PARDISO_QC GALAHAD_PARDISO_QC
+#define PARDISO_QC_2D GALAHAD_PARDISO_QC_2D
+#define PARDISO_QC_64 GALAHAD_PARDISO_QC_64
+#define PARDISO_QC_64_2D GALAHAD_PARDISO_QC_64_2D
+#endif
+
+#ifdef DUMMY_WSMP
+#define WSMP_INITIALIZE GALAHAD_WSMP_INITIALIZE
+#define WSETMAXTHRDS GALAHAD_WSETMAXTHRDS
+#define WSSMP GALAHAD_WSSMP
+#define WSMP_CLEAR GALAHAD_WSMP_CLEAR
+#define WSSFREE GALAHAD_WSSFREE
+#endif
+
+#ifdef DUMMY_SPMF
+#define spmInit_f08 GALAHAD_spmInit_f08
+#define spmUpdateComputedFields_f08 GALAHAD_spmUpdateComputedFields_f08
+#define spmAlloc_f08 GALAHAD_spmAlloc_f08
+#define spmCheckAndCorrect_f08 GALAHAD_spmCheckAndCorrect_f08
+#define spmGetArray_f08 GALAHAD_spmGetArray_f08
+#define spmCheckAxb_f08 GALAHAD_spmCheckAxb_f08
+#define spmExit_f08 GALAHAD_spmExit_f08
+#endif
+
+#ifdef DUMMY_PASTIXF
+#define pastixInitParam_f08 GALAHAD_pastixInitParam_f08
+#define pastixInit_f08 GALAHAD_pastixInit_f08
+#define pastix_task_analyze_f08 GALAHAD_pastix_task_analyze_f08
+#define pastix_task_numfact_f08 GALAHAD_pastix_task_numfact_f08
+#define pastix_task_solve_f08 GALAHAD_pastix_task_solve_f08
+#define pastix_task_refine_f08 GALAHAD_pastix_task_refine_f08
+#define pastixOrderGet_f08 GALAHAD_pastixOrderGet_f08
+#define pastixOrderGetArray_f08 GALAHAD_pastixOrderGetArray_f08
+#define pastixFinalize_f08 GALAHAD_pastixFinalize_f08
+#endif
+
+#ifdef DUMMY_HSL
+#ifdef INTEGER_64
+#define hsl_kb22_long_integer gal_hsl_kb22_long_integer_64
+#define hsl_mc68_integer_ciface gal_hsl_mc68_integer_64_ciface
+#define hsl_mc68_integer gal_hsl_mc68_integer_64
+#define hsl_mc78_integer gal_hsl_mc78_integer_64
+#define hsl_of01_integer gal_hsl_of01_integer_64
+#define hsl_zb01_integer gal_hsl_zb01_integer_64
+#else
+#define hsl_kb22_long_integer gal_hsl_kb22_long_integer
+#define hsl_mc68_integer_ciface gal_hsl_mc68_integer_ciface
+#define hsl_mc68_integer gal_hsl_mc68_integer
+#define hsl_mc78_integer gal_hsl_mc78_integer
+#define hsl_of01_integer gal_hsl_of01_integer
+#define hsl_zb01_integer gal_hsl_zb01_integer
+#endif
+#ifdef REAL_32
+#ifdef INTEGER_64 
+#define hsl_ma48_precision_ciface gal_hsl_ma48_single_64_ciface
+#define hsl_ma57_precision_ciface gal_hsl_ma57_single_64_ciface
+#define hsl_ma77_precision_ciface gal_hsl_ma77_single_64_ciface
+#define hsl_ma86_precision_ciface gal_hsl_ma86_single_64_ciface
+#define hsl_ma87_precision_ciface gal_hsl_ma87_single_64_ciface
+#define hsl_ma97_precision_ciface gal_hsl_ma97_single_64_ciface
+#define hsl_mc64_precision_ciface gal_hsl_mc64_single_64_ciface
+#define hsl_mi20_precision_ciface gal_hsl_mi20_single_64_ciface
+#define hsl_mi28_precision_ciface gal_hsl_mi28_single_64_ciface
+#define hsl_ad02_backward_precision gal_hsl_ad02_backward_single_64
+#define hsl_ad02_forward_precision gal_hsl_ad02_forward_single_64
+#define hsl_ma48_precision gal_hsl_ma48_single_64
+#define hsl_ma54_precision gal_hsl_ma54_single_64
+#define hsl_ma57_precision gal_hsl_ma57_single_64
+#define hsl_ma64_precision gal_hsl_ma64_single_64
+#define hsl_ma77_precision gal_hsl_ma77_single_64
+#define hsl_ma86_precision gal_hsl_ma86_single_64
+#define hsl_ma87_precision gal_hsl_ma87_single_64
+#define hsl_ma97_precision gal_hsl_ma97_single_64
+#define hsl_mc34_precision gal_hsl_mc34_single_64
+#define hsl_mc64_precision gal_hsl_mc64_single_64
+#define hsl_mc65_precision gal_hsl_mc65_single_64
+#define hsl_mc68_precision gal_hsl_mc68_single_64
+#define hsl_mc69_precision gal_hsl_mc69_single_64
+#define hsl_mc80_precision gal_hsl_mc80_single_64
+#define hsl_mi20_precision gal_hsl_mi20_single_64
+#define hsl_mi28_precision gal_hsl_mi28_single_64
+#define hsl_mi32_precision gal_hsl_mi32_single_64
+#define hsl_mi35_precision gal_hsl_mi35_single_64
+#define hsl_of01_precision gal_hsl_of01_single_64
+#define hsl_zb01_precision gal_hsl_zb01_single_64
+#define hsl_zd11_precision gal_hsl_zd11_single_64
+#else
+#define hsl_ma48_precision_ciface gal_hsl_ma48_single_ciface
+#define hsl_ma57_precision_ciface gal_hsl_ma57_single_ciface
+#define hsl_ma77_precision_ciface gal_hsl_ma77_single_ciface
+#define hsl_ma86_precision_ciface gal_hsl_ma86_single_ciface
+#define hsl_ma87_precision_ciface gal_hsl_ma87_single_ciface
+#define hsl_ma97_precision_ciface gal_hsl_ma97_single_ciface
+#define hsl_mc64_precision_ciface gal_hsl_mc64_single_ciface
+#define hsl_mi20_precision_ciface gal_hsl_mi20_single_ciface
+#define hsl_mi28_precision_ciface gal_hsl_mi28_single_ciface
+#define hsl_ad02_backward_precision gal_hsl_ad02_backward_single
+#define hsl_ad02_forward_precision gal_hsl_ad02_forward_single
+#define hsl_ma48_precision gal_hsl_ma48_single
+#define hsl_ma54_precision gal_hsl_ma54_single
+#define hsl_ma57_precision gal_hsl_ma57_single
+#define hsl_ma64_precision gal_hsl_ma64_single
+#define hsl_ma77_precision gal_hsl_ma77_single
+#define hsl_ma86_precision gal_hsl_ma86_single
+#define hsl_ma87_precision gal_hsl_ma87_single
+#define hsl_ma97_precision gal_hsl_ma97_single
+#define hsl_mc34_precision gal_hsl_mc34_single
+#define hsl_mc64_precision gal_hsl_mc64_single
+#define hsl_mc65_precision gal_hsl_mc65_single
+#define hsl_mc68_precision gal_hsl_mc68_single
+#define hsl_mc69_precision gal_hsl_mc69_single
+#define hsl_mc80_precision gal_hsl_mc80_single
+#define hsl_mi20_precision gal_hsl_mi20_single
+#define hsl_mi28_precision gal_hsl_mi28_single
+#define hsl_mi32_precision gal_hsl_mi32_single
+#define hsl_mi35_precision gal_hsl_mi35_single
+#define hsl_of01_precision gal_hsl_of01_single
+#define hsl_zb01_precision gal_hsl_zb01_single
+#define hsl_zd11_precision gal_hsl_zd11_single
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define hsl_ma48_precision_ciface gal_hsl_ma48_quadruple_64_ciface
+#define hsl_ma57_precision_ciface gal_hsl_ma57_quadruple_64_ciface
+#define hsl_ma77_precision_ciface gal_hsl_ma77_quadruple_64_ciface
+#define hsl_ma86_precision_ciface gal_hsl_ma86_quadruple_64_ciface
+#define hsl_ma87_precision_ciface gal_hsl_ma87_quadruple_64_ciface
+#define hsl_ma97_precision_ciface gal_hsl_ma97_quadruple_64_ciface
+#define hsl_mc64_precision_ciface gal_hsl_mc64_quadruple_64_ciface
+#define hsl_mi20_precision_ciface gal_hsl_mi20_quadruple_64_ciface
+#define hsl_mi28_precision_ciface gal_hsl_mi28_quadruple_64_ciface
+#define hsl_ad02_backward_precision gal_hsl_ad02_backward_quadruple_64
+#define hsl_ad02_forward_precision gal_hsl_ad02_forward_quadruple_64
+#define hsl_ma48_precision gal_hsl_ma48_quadruple_64
+#define hsl_ma54_precision gal_hsl_ma54_quadruple_64
+#define hsl_ma57_precision gal_hsl_ma57_quadruple_64
+#define hsl_ma64_precision gal_hsl_ma64_quadruple_64
+#define hsl_ma77_precision gal_hsl_ma77_quadruple_64
+#define hsl_ma86_precision gal_hsl_ma86_quadruple_64
+#define hsl_ma87_precision gal_hsl_ma87_quadruple_64
+#define hsl_ma97_precision gal_hsl_ma97_quadruple_64
+#define hsl_mc34_precision gal_hsl_mc34_quadruple_64
+#define hsl_mc64_precision gal_hsl_mc64_quadruple_64
+#define hsl_mc65_precision gal_hsl_mc65_quadruple_64
+#define hsl_mc68_precision gal_hsl_mc68_quadruple_64
+#define hsl_mc69_precision gal_hsl_mc69_quadruple_64
+#define hsl_mc80_precision gal_hsl_mc80_quadruple_64
+#define hsl_mi20_precision gal_hsl_mi20_quadruple_64
+#define hsl_mi28_precision gal_hsl_mi28_quadruple_64
+#define hsl_mi32_precision gal_hsl_mi32_quadruple_64
+#define hsl_mi35_precision gal_hsl_mi35_quadruple_64
+#define hsl_of01_precision gal_hsl_of01_quadruple_64
+#define hsl_zb01_precision gal_hsl_zb01_quadruple_64
+#define hsl_zd11_precision gal_hsl_zd11_quadruple_64
+#else
+#define hsl_ma48_precision_ciface gal_hsl_ma48_quadruple_ciface
+#define hsl_ma57_precision_ciface gal_hsl_ma57_quadruple_ciface
+#define hsl_ma77_precision_ciface gal_hsl_ma77_quadruple_ciface
+#define hsl_ma86_precision_ciface gal_hsl_ma86_quadruple_ciface
+#define hsl_ma87_precision_ciface gal_hsl_ma87_quadruple_ciface
+#define hsl_ma97_precision_ciface gal_hsl_ma97_quadruple_ciface
+#define hsl_mc64_precision_ciface gal_hsl_mc64_quadruple_ciface
+#define hsl_mi20_precision_ciface gal_hsl_mi20_quadruple_ciface
+#define hsl_mi28_precision_ciface gal_hsl_mi28_quadruple_ciface
+#define hsl_ad02_backward_precision gal_hsl_ad02_backward_quadruple
+#define hsl_ad02_forward_precision gal_hsl_ad02_forward_quadruple
+#define hsl_ma48_precision gal_hsl_ma48_quadruple
+#define hsl_ma54_precision gal_hsl_ma54_quadruple
+#define hsl_ma57_precision gal_hsl_ma57_quadruple
+#define hsl_ma64_precision gal_hsl_ma64_quadruple
+#define hsl_ma77_precision gal_hsl_ma77_quadruple
+#define hsl_ma86_precision gal_hsl_ma86_quadruple
+#define hsl_ma87_precision gal_hsl_ma87_quadruple
+#define hsl_ma97_precision gal_hsl_ma97_quadruple
+#define hsl_mc34_precision gal_hsl_mc34_quadruple
+#define hsl_mc64_precision gal_hsl_mc64_quadruple
+#define hsl_mc65_precision gal_hsl_mc65_quadruple
+#define hsl_mc68_precision gal_hsl_mc68_quadruple
+#define hsl_mc69_precision gal_hsl_mc69_quadruple
+#define hsl_mc80_precision gal_hsl_mc80_quadruple
+#define hsl_mi20_precision gal_hsl_mi20_quadruple
+#define hsl_mi28_precision gal_hsl_mi28_quadruple
+#define hsl_mi32_precision gal_hsl_mi32_quadruple
+#define hsl_mi35_precision gal_hsl_mi35_quadruple
+#define hsl_of01_precision gal_hsl_of01_quadruple
+#define hsl_zb01_precision gal_hsl_zb01_quadruple
+#define hsl_zd11_precision gal_hsl_zd11_quadruple
+#endif
+#else
+#ifdef INTEGER_64
+#define hsl_ma48_precision_ciface gal_hsl_ma48_double_64_ciface
+#define hsl_ma57_precision_ciface gal_hsl_ma57_double_64_ciface
+#define hsl_ma77_precision_ciface gal_hsl_ma77_double_64_ciface
+#define hsl_ma86_precision_ciface gal_hsl_ma86_double_64_ciface
+#define hsl_ma87_precision_ciface gal_hsl_ma87_double_64_ciface
+#define hsl_ma97_precision_ciface gal_hsl_ma97_double_64_ciface
+#define hsl_mc64_precision_ciface gal_hsl_mc64_double_64_ciface
+#define hsl_mi20_precision_ciface gal_hsl_mi20_double_64_ciface
+#define hsl_mi28_precision_ciface gal_hsl_mi28_double_64_ciface
+#define hsl_ad02_backward_precision gal_hsl_ad02_backward_double_64
+#define hsl_ad02_forward_precision gal_hsl_ad02_forward_double_64
+#define hsl_ma48_precision gal_hsl_ma48_double_64
+#define hsl_ma54_precision gal_hsl_ma54_double_64
+#define hsl_ma57_precision gal_hsl_ma57_double_64
+#define hsl_ma64_precision gal_hsl_ma64_double_64
+#define hsl_ma77_precision gal_hsl_ma77_double_64
+#define hsl_ma86_precision gal_hsl_ma86_double_64
+#define hsl_ma87_precision gal_hsl_ma87_double_64
+#define hsl_ma97_precision gal_hsl_ma97_double_64
+#define hsl_mc34_precision gal_hsl_mc34_double_64
+#define hsl_mc64_precision gal_hsl_mc64_double_64
+#define hsl_mc65_precision gal_hsl_mc65_double_64
+#define hsl_mc68_precision gal_hsl_mc68_double_64
+#define hsl_mc69_precision gal_hsl_mc69_double_64
+#define hsl_mc80_precision gal_hsl_mc80_double_64
+#define hsl_mi20_precision gal_hsl_mi20_double_64
+#define hsl_mi28_precision gal_hsl_mi28_double_64
+#define hsl_mi32_precision gal_hsl_mi32_double_64
+#define hsl_mi35_precision gal_hsl_mi35_double_64
+#define hsl_of01_precision gal_hsl_of01_double_64
+#define hsl_zb01_precision gal_hsl_zb01_double_64
+#define hsl_zd11_precision gal_hsl_zd11_double_64
+#else
+#define hsl_ma48_precision_ciface gal_hsl_ma48_double_ciface
+#define hsl_ma57_precision_ciface gal_hsl_ma57_double_ciface
+#define hsl_ma77_precision_ciface gal_hsl_ma77_double_ciface
+#define hsl_ma86_precision_ciface gal_hsl_ma86_double_ciface
+#define hsl_ma87_precision_ciface gal_hsl_ma87_double_ciface
+#define hsl_ma97_precision_ciface gal_hsl_ma97_double_ciface
+#define hsl_mc64_precision_ciface gal_hsl_mc64_double_ciface
+#define hsl_mi20_precision_ciface gal_hsl_mi20_double_ciface
+#define hsl_mi28_precision_ciface gal_hsl_mi28_double_ciface
+#define hsl_ad02_backward_precision gal_hsl_ad02_backward_double
+#define hsl_ad02_forward_precision gal_hsl_ad02_forward_double
+#define hsl_ma48_precision gal_hsl_ma48_double
+#define hsl_ma54_precision gal_hsl_ma54_double
+#define hsl_ma57_precision gal_hsl_ma57_double
+#define hsl_ma64_precision gal_hsl_ma64_double
+#define hsl_ma77_precision gal_hsl_ma77_double
+#define hsl_ma86_precision gal_hsl_ma86_double
+#define hsl_ma87_precision gal_hsl_ma87_double
+#define hsl_ma97_precision gal_hsl_ma97_double
+#define hsl_mc34_precision gal_hsl_mc34_double
+#define hsl_mc64_precision gal_hsl_mc64_double
+#define hsl_mc65_precision gal_hsl_mc65_double
+#define hsl_mc68_precision gal_hsl_mc68_double
+#define hsl_mc69_precision gal_hsl_mc69_double
+#define hsl_mc80_precision gal_hsl_mc80_double
+#define hsl_mi20_precision gal_hsl_mi20_double
+#define hsl_mi28_precision gal_hsl_mi28_double
+#define hsl_mi32_precision gal_hsl_mi32_double
+#define hsl_mi35_precision gal_hsl_mi35_double
+#define hsl_of01_precision gal_hsl_of01_double
+#define hsl_zb01_precision gal_hsl_zb01_double
+#define hsl_zd11_precision gal_hsl_zd11_double
+#endif
+#endif
+#else
+
+#ifdef INTEGER_64
+#define hsl_kb22_long_integer hsl_kb22_long_integer_64
+#define hsl_mc68_integer_ciface hsl_mc68_integer_64_ciface
+#define hsl_mc68_integer hsl_mc68_integer_64
+#define hsl_mc78_integer hsl_mc78_integer_64
+#define hsl_of01_integer hsl_of01_integer_64
+#define hsl_zb01_integer hsl_zb01_integer_64
+#endif
+#ifdef REAL_32
+#ifdef INTEGER_64
+#define hsl_ma48_precision_ciface hsl_ma48_single_64_ciface
+#define hsl_ma57_precision_ciface hsl_ma57_single_64_ciface
+#define hsl_ma77_precision_ciface hsl_ma77_single_64_ciface
+#define hsl_ma86_precision_ciface hsl_ma86_single_64_ciface
+#define hsl_ma87_precision_ciface hsl_ma87_single_64_ciface
+#define hsl_ma97_precision_ciface hsl_ma97_single_64_ciface
+#define hsl_mc64_precision_ciface hsl_mc64_single_64_ciface
+#define hsl_mi20_precision_ciface hsl_mi20_single_64_ciface
+#define hsl_mi28_precision_ciface hsl_mi28_single_64_ciface
+#define hsl_ad02_backward_precision hsl_ad02_backward_single_64
+#define hsl_ad02_forward_precision hsl_ad02_forward_single_64
+#define hsl_ma48_precision hsl_ma48_single_64
+#define hsl_ma54_precision hsl_ma54_single_64
+#define hsl_ma57_precision hsl_ma57_single_64
+#define hsl_ma64_precision hsl_ma64_single_64
+#define hsl_ma77_precision hsl_ma77_single_64
+#define hsl_ma86_precision hsl_ma86_single_64
+#define hsl_ma87_precision hsl_ma87_single_64
+#define hsl_ma97_precision hsl_ma97_single_64
+#define hsl_mc34_precision hsl_mc34_single_64
+#define hsl_mc64_precision hsl_mc64_single_64
+#define hsl_mc65_precision hsl_mc65_single_64
+#define hsl_mc68_precision hsl_mc68_single_64
+#define hsl_mc69_precision hsl_mc69_single_64
+#define hsl_mc80_precision hsl_mc80_single_64
+#define hsl_mi20_precision hsl_mi20_single_64
+#define hsl_mi28_precision hsl_mi28_single_64
+#define hsl_mi32_precision hsl_mi32_single_64
+#define hsl_mi35_precision hsl_mi35_single_64
+#define hsl_of01_precision hsl_of01_single_64
+#define hsl_zb01_precision hsl_zb01_single_64
+#define hsl_zd11_precision hsl_zd11_single_64
+#define hsl_ma48_single_ciface hsl_ma48_single_64_ciface
+#define hsl_ma57_single_ciface hsl_ma57_single_64_ciface
+#define hsl_ma77_single_ciface hsl_ma77_single_64_ciface
+#define hsl_ma86_single_ciface hsl_ma86_single_64_ciface
+#define hsl_ma87_single_ciface hsl_ma87_single_64_ciface
+#define hsl_ma97_single_ciface hsl_ma97_single_64_ciface
+#define hsl_mc64_single_ciface hsl_mc64_single_64_ciface
+#define hsl_mi20_single_ciface hsl_mi20_single_64_ciface
+#define hsl_mi28_single_ciface hsl_mi28_single_64_ciface
+#define hsl_ad02_backward_single hsl_ad02_backward_single_64
+#define hsl_ad02_forward_single hsl_ad02_forward_single_64
+#define hsl_ma48_single hsl_ma48_single_64
+#define hsl_ma54_single hsl_ma54_single_64
+#define hsl_ma57_single hsl_ma57_single_64
+#define hsl_ma64_single hsl_ma64_single_64
+#define hsl_ma77_single hsl_ma77_single_64
+#define hsl_ma86_single hsl_ma86_single_64
+#define hsl_ma87_single hsl_ma87_single_64
+#define hsl_ma97_single hsl_ma97_single_64
+#define hsl_mc34_single hsl_mc34_single_64
+#define hsl_mc64_single hsl_mc64_single_64
+#define hsl_mc65_single hsl_mc65_single_64
+#define hsl_mc68_single hsl_mc68_single_64
+#define hsl_mc69_single hsl_mc69_single_64
+#define hsl_mc80_single hsl_mc80_single_64
+#define hsl_mi20_single hsl_mi20_single_64
+#define hsl_mi28_single hsl_mi28_single_64
+#define hsl_mi32_single hsl_mi32_single_64
+#define hsl_mi35_single hsl_mi35_single_64
+#define hsl_of01_single hsl_of01_single_64
+#define hsl_zb01_single hsl_zb01_single_64
+#define hsl_zd11_single hsl_zd11_single_64
+#else
+#define hsl_ma48_precision_ciface hsl_ma48_single_ciface
+#define hsl_ma57_precision_ciface hsl_ma57_single_ciface
+#define hsl_ma77_precision_ciface hsl_ma77_single_ciface
+#define hsl_ma86_precision_ciface hsl_ma86_single_ciface
+#define hsl_ma87_precision_ciface hsl_ma87_single_ciface
+#define hsl_ma97_precision_ciface hsl_ma97_single_ciface
+#define hsl_mc64_precision_ciface hsl_mc64_single_ciface
+#define hsl_mi20_precision_ciface hsl_mi20_single_ciface
+#define hsl_mi28_precision_ciface hsl_mi28_single_ciface
+#define hsl_ad02_backward_precision hsl_ad02_backward_single
+#define hsl_ad02_forward_precision hsl_ad02_forward_single
+#define hsl_ma48_precision hsl_ma48_single
+#define hsl_ma54_precision hsl_ma54_single
+#define hsl_ma57_precision hsl_ma57_single
+#define hsl_ma64_precision hsl_ma64_single
+#define hsl_ma77_precision hsl_ma77_single
+#define hsl_ma86_precision hsl_ma86_single
+#define hsl_ma87_precision hsl_ma87_single
+#define hsl_ma97_precision hsl_ma97_single
+#define hsl_mc34_precision hsl_mc34_single
+#define hsl_mc64_precision hsl_mc64_single
+#define hsl_mc65_precision hsl_mc65_single
+#define hsl_mc68_precision hsl_mc68_single
+#define hsl_mc69_precision hsl_mc69_single
+#define hsl_mc80_precision hsl_mc80_single
+#define hsl_mi20_precision hsl_mi20_single
+#define hsl_mi28_precision hsl_mi28_single
+#define hsl_mi32_precision hsl_mi32_single
+#define hsl_mi35_precision hsl_mi35_single
+#define hsl_of01_precision hsl_of01_single
+#define hsl_zb01_precision hsl_zb01_single
+#define hsl_zd11_precision hsl_zd11_single
+#endif
+#elif REAL_128
+#ifdef INTEGER_64
+#define hsl_ma48_precision_ciface hsl_ma48_quadruple_64_ciface
+#define hsl_ma57_precision_ciface hsl_ma57_quadruple_64_ciface
+#define hsl_ma77_precision_ciface hsl_ma77_quadruple_64_ciface
+#define hsl_ma86_precision_ciface hsl_ma86_quadruple_64_ciface
+#define hsl_ma87_precision_ciface hsl_ma87_quadruple_64_ciface
+#define hsl_ma97_precision_ciface hsl_ma97_quadruple_64_ciface
+#define hsl_mc64_precision_ciface hsl_mc64_quadruple_64_ciface
+#define hsl_mi20_precision_ciface hsl_mi20_quadruple_64_ciface
+#define hsl_mi28_precision_ciface hsl_mi28_quadruple_64_ciface
+#define hsl_ad02_backward_precision hsl_ad02_backward_quadruple_64
+#define hsl_ad02_forward_precision hsl_ad02_forward_quadruple_64
+#define hsl_ma48_precision hsl_ma48_quadruple_64
+#define hsl_ma54_precision hsl_ma54_quadruple_64
+#define hsl_ma57_precision hsl_ma57_quadruple_64
+#define hsl_ma64_precision hsl_ma64_quadruple_64
+#define hsl_ma77_precision hsl_ma77_quadruple_64
+#define hsl_ma86_precision hsl_ma86_quadruple_64
+#define hsl_ma87_precision hsl_ma87_quadruple_64
+#define hsl_ma97_precision hsl_ma97_quadruple_64
+#define hsl_mc34_precision hsl_mc34_quadruple_64
+#define hsl_mc64_precision hsl_mc64_quadruple_64
+#define hsl_mc65_precision hsl_mc65_quadruple_64
+#define hsl_mc68_precision hsl_mc68_quadruple_64
+#define hsl_mc69_precision hsl_mc69_quadruple_64
+#define hsl_mc80_precision hsl_mc80_quadruple_64
+#define hsl_mi20_precision hsl_mi20_quadruple_64
+#define hsl_mi28_precision hsl_mi28_quadruple_64
+#define hsl_mi32_precision hsl_mi32_quadruple_64
+#define hsl_mi35_precision hsl_mi35_quadruple_64
+#define hsl_of01_precision hsl_of01_quadruple_64
+#define hsl_zb01_precision hsl_zb01_quadruple_64
+#define hsl_zd11_precision hsl_zd11_quadruple_64
+#define hsl_ma48_quadruple_ciface hsl_ma48_quadruple_64_ciface
+#define hsl_ma57_quadruple_ciface hsl_ma57_quadruple_64_ciface
+#define hsl_ma77_quadruple_ciface hsl_ma77_quadruple_64_ciface
+#define hsl_ma86_quadruple_ciface hsl_ma86_quadruple_64_ciface
+#define hsl_ma87_quadruple_ciface hsl_ma87_quadruple_64_ciface
+#define hsl_ma97_quadruple_ciface hsl_ma97_quadruple_64_ciface
+#define hsl_mc64_quadruple_ciface hsl_mc64_quadruple_64_ciface
+#define hsl_mi20_quadruple_ciface hsl_mi20_quadruple_64_ciface
+#define hsl_mi28_quadruple_ciface hsl_mi28_quadruple_64_ciface
+#define hsl_ad02_backward_quadruple hsl_ad02_backward_quadruple_64
+#define hsl_ad02_forward_quadruple hsl_ad02_forward_quadruple_64
+#define hsl_ma48_quadruple hsl_ma48_quadruple_64
+#define hsl_ma54_quadruple hsl_ma54_quadruple_64
+#define hsl_ma57_quadruple hsl_ma57_quadruple_64
+#define hsl_ma64_quadruple hsl_ma64_quadruple_64
+#define hsl_ma77_quadruple hsl_ma77_quadruple_64
+#define hsl_ma86_quadruple hsl_ma86_quadruple_64
+#define hsl_ma87_quadruple hsl_ma87_quadruple_64
+#define hsl_ma97_quadruple hsl_ma97_quadruple_64
+#define hsl_mc34_quadruple hsl_mc34_quadruple_64
+#define hsl_mc64_quadruple hsl_mc64_quadruple_64
+#define hsl_mc65_quadruple hsl_mc65_quadruple_64
+#define hsl_mc68_quadruple hsl_mc68_quadruple_64
+#define hsl_mc69_quadruple hsl_mc69_quadruple_64
+#define hsl_mc80_quadruple hsl_mc80_quadruple_64
+#define hsl_mi20_quadruple hsl_mi20_quadruple_64
+#define hsl_mi28_quadruple hsl_mi28_quadruple_64
+#define hsl_mi32_quadruple hsl_mi32_quadruple_64
+#define hsl_mi35_quadruple hsl_mi35_quadruple_64
+#define hsl_of01_quadruple hsl_of01_quadruple_64
+#define hsl_zb01_quadruple hsl_zb01_quadruple_64
+#define hsl_zd11_quadruple hsl_zd11_quadruple_64
+#else
+#define hsl_ma48_precision_ciface hsl_ma48_quadruple_ciface
+#define hsl_ma57_precision_ciface hsl_ma57_quadruple_ciface
+#define hsl_ma77_precision_ciface hsl_ma77_quadruple_ciface
+#define hsl_ma86_precision_ciface hsl_ma86_quadruple_ciface
+#define hsl_ma87_precision_ciface hsl_ma87_quadruple_ciface
+#define hsl_ma97_precision_ciface hsl_ma97_quadruple_ciface
+#define hsl_mc64_precision_ciface hsl_mc64_quadruple_ciface
+#define hsl_mi20_precision_ciface hsl_mi20_quadruple_ciface
+#define hsl_mi28_precision_ciface hsl_mi28_quadruple_ciface
+#define hsl_ad02_backward_precision hsl_ad02_backward_quadruple
+#define hsl_ad02_forward_precision hsl_ad02_forward_quadruple
+#define hsl_ma48_precision hsl_ma48_quadruple
+#define hsl_ma54_precision hsl_ma54_quadruple
+#define hsl_ma57_precision hsl_ma57_quadruple
+#define hsl_ma64_precision hsl_ma64_quadruple
+#define hsl_ma77_precision hsl_ma77_quadruple
+#define hsl_ma86_precision hsl_ma86_quadruple
+#define hsl_ma87_precision hsl_ma87_quadruple
+#define hsl_ma97_precision hsl_ma97_quadruple
+#define hsl_mc34_precision hsl_mc34_quadruple
+#define hsl_mc64_precision hsl_mc64_quadruple
+#define hsl_mc65_precision hsl_mc65_quadruple
+#define hsl_mc68_precision hsl_mc68_quadruple
+#define hsl_mc69_precision hsl_mc69_quadruple
+#define hsl_mc80_precision hsl_mc80_quadruple
+#define hsl_mi20_precision hsl_mi20_quadruple
+#define hsl_mi28_precision hsl_mi28_quadruple
+#define hsl_mi32_precision hsl_mi32_quadruple
+#define hsl_mi35_precision hsl_mi35_quadruple
+#define hsl_of01_precision hsl_of01_quadruple
+#define hsl_zb01_precision hsl_zb01_quadruple
+#define hsl_zd11_precision hsl_zd11_quadruple
+#endif
+
+#else
+#ifdef INTEGER_64
+#define hsl_ma48_precision_ciface hsl_ma48_double_64_ciface
+#define hsl_ma57_precision_ciface hsl_ma57_double_64_ciface
+#define hsl_ma77_precision_ciface hsl_ma77_double_64_ciface
+#define hsl_ma86_precision_ciface hsl_ma86_double_64_ciface
+#define hsl_ma87_precision_ciface hsl_ma87_double_64_ciface
+#define hsl_ma97_precision_ciface hsl_ma97_double_64_ciface
+#define hsl_mc64_precision_ciface hsl_mc64_double_64_ciface
+#define hsl_mi20_precision_ciface hsl_mi20_double_64_ciface
+#define hsl_mi28_precision_ciface hsl_mi28_double_64_ciface
+#define hsl_ad02_backward_precision hsl_ad02_backward_double_64
+#define hsl_ad02_forward_precision hsl_ad02_forward_double_64
+#define hsl_ma48_precision hsl_ma48_double_64
+#define hsl_ma54_precision hsl_ma54_double_64
+#define hsl_ma57_precision hsl_ma57_double_64
+#define hsl_ma64_precision hsl_ma64_double_64
+#define hsl_ma77_precision hsl_ma77_double_64
+#define hsl_ma86_precision hsl_ma86_double_64
+#define hsl_ma87_precision hsl_ma87_double_64
+#define hsl_ma97_precision hsl_ma97_double_64
+#define hsl_mc34_precision hsl_mc34_double_64
+#define hsl_mc64_precision hsl_mc64_double_64
+#define hsl_mc65_precision hsl_mc65_double_64
+#define hsl_mc68_precision hsl_mc68_double_64
+#define hsl_mc69_precision hsl_mc69_double_64
+#define hsl_mc80_precision hsl_mc80_double_64
+#define hsl_mi20_precision hsl_mi20_double_64
+#define hsl_mi28_precision hsl_mi28_double_64
+#define hsl_mi32_precision hsl_mi32_double_64
+#define hsl_mi35_precision hsl_mi35_double_64
+#define hsl_of01_precision hsl_of01_double_64
+#define hsl_zb01_precision hsl_zb01_double_64
+#define hsl_zd11_precision hsl_zd11_double_64
+#define hsl_ma48_double_ciface hsl_ma48_double_64_ciface
+#define hsl_ma57_double_ciface hsl_ma57_double_64_ciface
+#define hsl_ma77_double_ciface hsl_ma77_double_64_ciface
+#define hsl_ma86_double_ciface hsl_ma86_double_64_ciface
+#define hsl_ma87_double_ciface hsl_ma87_double_64_ciface
+#define hsl_ma97_double_ciface hsl_ma97_double_64_ciface
+#define hsl_mc64_double_ciface hsl_mc64_double_64_ciface
+#define hsl_mi20_double_ciface hsl_mi20_double_64_ciface
+#define hsl_mi28_double_ciface hsl_mi28_double_64_ciface
+#define hsl_ad02_backward_double hsl_ad02_backward_double_64
+#define hsl_ad02_forward_double hsl_ad02_forward_double_64
+#define hsl_ma48_double hsl_ma48_double_64
+#define hsl_ma54_double hsl_ma54_double_64
+#define hsl_ma57_double hsl_ma57_double_64
+#define hsl_ma64_double hsl_ma64_double_64
+#define hsl_ma77_double hsl_ma77_double_64
+#define hsl_ma86_double hsl_ma86_double_64
+#define hsl_ma87_double hsl_ma87_double_64
+#define hsl_ma97_double hsl_ma97_double_64
+#define hsl_mc34_double hsl_mc34_double_64
+#define hsl_mc64_double hsl_mc64_double_64
+#define hsl_mc65_double hsl_mc65_double_64
+#define hsl_mc68_double hsl_mc68_double_64
+#define hsl_mc69_double hsl_mc69_double_64
+#define hsl_mc80_double hsl_mc80_double_64
+#define hsl_mi20_double hsl_mi20_double_64
+#define hsl_mi28_double hsl_mi28_double_64
+#define hsl_mi32_double hsl_mi32_double_64
+#define hsl_mi35_double hsl_mi35_double_64
+#define hsl_of01_double hsl_of01_double_64
+#define hsl_zb01_double hsl_zb01_double_64
+#define hsl_zd11_double hsl_zd11_double_64
+#else
+#define hsl_ma48_precision_ciface hsl_ma48_double_ciface
+#define hsl_ma57_precision_ciface hsl_ma57_double_ciface
+#define hsl_ma77_precision_ciface hsl_ma77_double_ciface
+#define hsl_ma86_precision_ciface hsl_ma86_double_ciface
+#define hsl_ma87_precision_ciface hsl_ma87_double_ciface
+#define hsl_ma97_precision_ciface hsl_ma97_double_ciface
+#define hsl_mc64_precision_ciface hsl_mc64_double_ciface
+#define hsl_mi20_precision_ciface hsl_mi20_double_ciface
+#define hsl_mi28_precision_ciface hsl_mi28_double_ciface
+#define hsl_ad02_backward_precision hsl_ad02_backward_double
+#define hsl_ad02_forward_precision hsl_ad02_forward_double
+#define hsl_ma48_precision hsl_ma48_double
+#define hsl_ma54_precision hsl_ma54_double
+#define hsl_ma57_precision hsl_ma57_double
+#define hsl_ma64_precision hsl_ma64_double
+#define hsl_ma77_precision hsl_ma77_double
+#define hsl_ma86_precision hsl_ma86_double
+#define hsl_ma87_precision hsl_ma87_double
+#define hsl_ma97_precision hsl_ma97_double
+#define hsl_mc34_precision hsl_mc34_double
+#define hsl_mc64_precision hsl_mc64_double
+#define hsl_mc65_precision hsl_mc65_double
+#define hsl_mc68_precision hsl_mc68_double
+#define hsl_mc69_precision hsl_mc69_double
+#define hsl_mc80_precision hsl_mc80_double
+#define hsl_mi20_precision hsl_mi20_double
+#define hsl_mi28_precision hsl_mi28_double
+#define hsl_mi32_precision hsl_mi32_double
+#define hsl_mi35_precision hsl_mi35_double
+#define hsl_of01_precision hsl_of01_double
+#define hsl_zb01_precision hsl_zb01_double
+#define hsl_zd11_precision hsl_zd11_double
+#endif
+
+#endif
+
+#endif
+
+
+
+
+
