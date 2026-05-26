@@ -202,7 +202,7 @@
      END SELECT
    END DO ! solver loop
    IF ( ALLOCATED( COHORT ) ) DEALLOCATE( COHORT )
-   DEALLOCATE( X, Y, Z, G, R, X_stat, userdata%real, userdata%integer )
+   DEALLOCATE( X, Y, Z, G, R, X_stat, W, userdata%real, userdata%integer )
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS

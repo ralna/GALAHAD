@@ -242,7 +242,8 @@
        DEALLOCATE( Jr_val, Jr_row, Jr_col )
      END SELECT
    END DO ! solver loop
-   DEALLOCATE( X, X_l, X_u, Z, G, R, X_stat, userdata%real, userdata%integer )
+   DEALLOCATE( X, X_l, X_u, Z, G, R, X_stat, W )
+   DEALLOCATE( userdata%real, userdata%integer )
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS
