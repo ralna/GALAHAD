@@ -22,6 +22,11 @@ fs = import('fs')
 py = import('python').find_installation()
 host_system = host_machine.system()
 
+# Ensure --prefix is not the GALAHAD source root
+if fs.is_samepath(get_option('prefix'), meson.source_root())
+  error('The option --prefix must not be the GALAHAD source directory.')
+endif
+
 if host_machine.system() == 'darwin'
   if cxx.get_id() == 'clang' and fc.get_id() == 'gcc'
     error('On macOS, building GALAHAD with gfortran and clang++ is not supported. Please use g++ as the C++ compiler.')
