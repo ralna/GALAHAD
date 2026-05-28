@@ -925,15 +925,10 @@
     IF ( f_indexing ) THEN
       status = feval_Jr_scol( n, m_r, x, index, val, row, nz, cgot_jr,         &
                               cuserdata )
-write(6,*) ' f scol nz = ', nz
-write(6,*) ' row ', row( : nz )
-
       row( : nz ) = row( : nz ) + 1
     ELSE
       status = feval_Jr_scol( n, m_r, x, index - 1, val, row, nz, cgot_jr,     &
                               cuserdata )
-write(6,*) ' c scol nz = ', nz
-write(6,*) ' row ', row( : nz )
       row( : nz ) = row( : nz ) + 1
     END IF
     RETURN

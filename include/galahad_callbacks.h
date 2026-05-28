@@ -68,7 +68,7 @@ typedef ipc_ galahad_jr_prods( ipc_ n, ipc_ m_r,const rpc_ x[], const rpc_ v[],
 
 // SNLS
 typedef ipc_ galahad_jr_scol( ipc_ n, ipc_ m_r, const rpc_ x[], ipc_ index,
-                              rpc_ val[], ipc_ row[], ipc_ nz, 
+                              rpc_ val[], ipc_ row[], ipc_ *nz, 
                               bool got_jr, const void *userdata );
 
 // EXPO

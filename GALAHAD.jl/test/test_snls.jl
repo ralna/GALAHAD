@@ -95,7 +95,6 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   function jaccol(n::INT, x::Vector{T}, index::INT, 
                   val::Vector{T}, row::Vector{INT}, nz::Vector{INT}, 
                   got_jr::Bool, userdata::userdata_snls{T})
-    @printf(" index = %1d\n", index)
     if index == 1
       val[1] = x[2]
       row[1] = 1
@@ -111,7 +110,6 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
       row[2] = index+1
       nz[1] = 2
     end
-    @printf(" nz = %1d\n", nz)
     return INT(0)
   end
 
@@ -123,12 +121,11 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
     _row = unsafe_wrap(Vector{INT}, row, n)
     _nz = unsafe_wrap(Vector{INT}, nz, 1)
     _userdata = unsafe_pointer_to_objref(userdata)::userdata_snls{T}
-    jaccol(n, _x, index, _val, _row, nz, got_jr, _userdata)
- @printf(" c nz = %1d\n", nz)
+    jaccol(n, _x, index, _val, _row, _nz, got_jr, _userdata)
   end
 
   jaccol_ptr = @eval @cfunction($jaccol_c, $INT, 
-      ($INT, $INT, Ptr{$T}, $INT, Ptr{$T}, Ptr{$INT}, $INT,
+      ($INT, $INT, Ptr{$T}, $INT, Ptr{$T}, Ptr{$INT}, $Ptr{$INT},
        Bool, Ptr{Cvoid}))
 
 
@@ -409,8 +406,6 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
   return 0
 end
 
-#for (T, INT, libgalahad) in ((Float128, Int32, GALAHAD.libgalahad_quadruple   ),
-#                             (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
 for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
                              (Float32 , Int64, GALAHAD.libgalahad_single_64   ),
                              (Float64 , Int32, GALAHAD.libgalahad_double      ),

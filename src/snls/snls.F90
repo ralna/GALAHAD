@@ -2938,7 +2938,6 @@ end if
              inform%bad_eval = 'eval_Jr_scol'
              inform%status = GALAHAD_error_evaluation ; GO TO 990
            END IF
-write(6,*) ' lp out = ', data%reverse%lp
            data%got_jr = .TRUE.
 
  !  compute Jr * sparse v or sparse( Jr^T * v )
