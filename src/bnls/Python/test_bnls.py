@@ -50,20 +50,14 @@ print(" x:",x)
 # find minimizer
 print("\n sparse solve bnls")
 x, z, r, g, x_stat = bnls.solve(n, m_r, x_l, x_u, x, eval_r, Jr_ne, eval_jr, w)
-print("\n** out solve")
 print(" x:",x)
-print("\n** print x done")
 print(" z:",z)
 print(" r:",r)
 print(" g:",g)
 print(" x_stat:",x_stat)
-print("\n** print x_stat done")
 
 # get information
-print("\n** get inform")
 inform = bnls.information()
-print("\n** get inform done")
-print("inform:", inform)
 print(" f: %.4f" % inform['obj'])
 print('** bnls exit status:', inform['status'])
 

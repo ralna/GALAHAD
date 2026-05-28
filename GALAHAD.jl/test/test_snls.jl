@@ -97,17 +97,17 @@ function test_snls(::Type{T}, ::Type{INT}; sls::String="sytr", dls::String="potr
                   got_jr::Bool, userdata::userdata_snls{T})
     if index == 1
       val[1] = x[2]
-      row[1] = 0
+      row[1] = 1
       nz = 1
     elseif index == n
       val[1] = x[n-1]
-      row[1] = n-1
+      row[1] = n
       nz = 1
     else
       val[1] = x[index-1]
-      row[1] = index-1
+      row[1] = index
       val[2] = x[index+1]
-      row[2] = index
+      row[2] = index+1
       nz = 2
     end
     return INT(0)
