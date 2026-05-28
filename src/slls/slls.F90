@@ -5073,6 +5073,7 @@ END IF
         DO i_free = 1, n_free
           j = FREE( i_free )
           IF ( COHORT( j ) > 0 ) THEN
+write(6,*) ' j ', j
             data%i_free = i_free ; data%branch = 90 ; status = j ; RETURN
           END IF
         END DO
@@ -5111,8 +5112,11 @@ END IF
       IF ( data%reverse_a ) THEN
         IF ( status <= n ) THEN ! add the j-th column of Ao as appropriate 
           k = COHORT( status )
+!write(6,*) ' k, lp ', k, reverse%lp
+!stop
           DO l = 1, reverse%lp
             i = reverse%ip( l )
+!write(6,*) ' i ', i
             AEC( i, k ) = AEC( i, k ) - reverse%p( l )
           END DO
           DO i_free = data%i_free + 1, n_free ! return to get the next column

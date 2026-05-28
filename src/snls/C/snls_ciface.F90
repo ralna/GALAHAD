@@ -925,9 +925,15 @@
     IF ( f_indexing ) THEN
       status = feval_Jr_scol( n, m_r, x, index, val, row, nz, cgot_jr,         &
                               cuserdata )
+write(6,*) ' f scol nz = ', nz
+write(6,*) ' row ', row( : nz )
+
+      row( : nz ) = row( : nz ) + 1
     ELSE
       status = feval_Jr_scol( n, m_r, x, index - 1, val, row, nz, cgot_jr,     &
                               cuserdata )
+write(6,*) ' c scol nz = ', nz
+write(6,*) ' row ', row( : nz )
       row( : nz ) = row( : nz ) + 1
     END IF
     RETURN
@@ -1051,11 +1057,18 @@
 
 !  solve the problem when Hessian products are available by reverse
 !  communication
-
-  CALL f_snls_solve_reverse_with_jacprod( fdata, status, eval_status,          &
-                                          x, y, z, r, g, x_stat,               &
-                                          v, iv, lvl, lvu, index,              &
-                                          p, ip, lp, W = w )
+  
+  IF ( fdata%f_indexing ) THEN
+    CALL f_snls_solve_reverse_with_jacprod( fdata, status, eval_status,        &
+                                            x, y, z, r, g, x_stat,             &
+                                            v, iv, lvl, lvu, index,            &
+                                            p, ip + 1, lp, W = w )
+  ELSE
+    CALL f_snls_solve_reverse_with_jacprod( fdata, status, eval_status,        &
+                                            x, y, z, r, g, x_stat,             &
+                                            v, iv, lvl, lvu, index,            &
+                                            p, ip, lp, W = w )
+  END IF
   RETURN
 
   END SUBROUTINE snls_solve_reverse_with_jacprod

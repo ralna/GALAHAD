@@ -30,7 +30,7 @@ ipc_ jac( ipc_ n, ipc_ m_r, ipc_ jr_ne, const rpc_ x[],
 ipc_ jacprod( ipc_ n, ipc_ m, const rpc_ x[], const bool transpose, 
               const rpc_ v[], rpc_ p[], bool got_jr, const void * );
 ipc_ jaccol( ipc_ n, ipc_ m_r, const rpc_ x[], ipc_ index,
-             rpc_ val[], ipc_ row[], ipc_ nz, bool got_jr, const void * );
+             rpc_ val[], ipc_ row[], ipc_ *nz, bool got_jr, const void * );
 ipc_ sjacprod( ipc_ n, ipc_ m_r, const rpc_ x[], bool transpose,
                const rpc_ v[], rpc_ p[], const ipc_ free[],
                ipc_ n_free, bool got_jr, const void * );
@@ -220,7 +220,7 @@ int main(void) {
       }else if(status == 5){ // evaluate p = Jr' v
           eval_status = jacprod( n, m_r, x, true, v, p, got_jr, &userdata );
       }else if(status == 6){ // find the index-th column of Jr
-          eval_status = jaccol( n, m_r, x, index, p, ip, lp, 
+          eval_status = jaccol( n, m_r, x, index, p, ip, &lp, 
                                 got_jr, &userdata );
       }else if(status == 7){ // evaluate p = J_o sparse(v)
           eval_status = sjacprod( n, m_r, x, false, v, p, iv, lvu,
@@ -294,22 +294,22 @@ ipc_ jacprod( ipc_ n, ipc_ m_r, const rpc_ x[], const bool transpose,
 
 // compute the index-th column of the Jacobian
 ipc_ jaccol( ipc_ n, ipc_ m_r, const rpc_ x[], ipc_ index,
-             rpc_ val[], ipc_ row[], ipc_ nz, bool got_jr,
+             rpc_ val[], ipc_ row[], ipc_ *nz, bool got_jr,
              const void *userdata ) {
     if (index == 1){
       val[0] = x[1];
       row[0] = 0;
-      nz = 1;
+      *nz = 1;
     } else if (index == n) {
       val[0] = x[n-2];
-      row[0] = n-1;
-      nz = 1;
+      row[0] = n-2;
+      *nz = 1;
     } else {
       val[0] = x[index-2];
-      row[0] = index-1;
+      row[0] = index-2;
       val[1] = x[index];
-      row[1] = index;
-      nz = 2;
+      row[1] = index-1;
+      *nz = 2;
     }
     got_jr = true;
     return 0;

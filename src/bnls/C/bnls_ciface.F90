@@ -1067,7 +1067,7 @@
                                           v, iv, lvl, lvu, p, ip, lp, W = w )
 
   IF ( status >= 6 .AND. status <= 8 ) THEN
-    IF ( f_indexing )THEN
+    IF ( f_indexing ) THEN
       lvl = lvl - 1 ; lvu = lvu - 1
     END IF
   END IF

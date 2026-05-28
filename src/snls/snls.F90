@@ -2802,9 +2802,11 @@ end if
 !  solve problem with a reverse commmunication loop
 
  210   CONTINUE
+!write(6,*) ' status in = ', inform%SLLS_inform%status
          CALL SLLS_solve( data%GN_model, data%SLLS_data,                       &
                           data%control%SLLS_control, inform%SLLS_inform,       &
                           userdata, reverse = reverse )
+!write(6,*) ' status out = ', inform%SLLS_inform%status
 
          SELECT CASE ( inform%SLLS_inform%status )
 
@@ -2936,6 +2938,7 @@ end if
              inform%bad_eval = 'eval_Jr_scol'
              inform%status = GALAHAD_error_evaluation ; GO TO 990
            END IF
+write(6,*) ' lp out = ', data%reverse%lp
            data%got_jr = .TRUE.
 
  !  compute Jr * sparse v or sparse( Jr^T * v )
