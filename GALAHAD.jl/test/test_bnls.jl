@@ -34,7 +34,8 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
     _x = unsafe_wrap(Vector{T}, x, n)
     _r = unsafe_wrap(Vector{T}, r, m_r)
     _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
-    return res(_x, _r, _userdata)
+    res(_x, _r, _userdata)
+    return INT(0)
   end
 
   res_ptr = @eval @cfunction($res_c, $INT,
@@ -58,7 +59,8 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
     _x = unsafe_wrap(Vector{T}, x, n)
     _jr_val = unsafe_wrap(Vector{T}, jr_val, jr_ne)
     _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
-    return jac(_x, _jr_val, _userdata)
+    jac(_x, _jr_val, _userdata)
+    return INT(0)
   end
 
   jac_ptr = @eval @cfunction($jac_c, $INT,
@@ -88,7 +90,8 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
     _v = unsafe_wrap(Vector{T}, v, transpose ? m_r : n)
     _p = unsafe_wrap(Vector{T}, p, transpose ? n : m_r)
     _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
-    return jacprod(_x, transpose, _v, _p, got_jr, _userdata)
+    jacprod(_x, transpose, _v, _p, got_jr, _userdata)
+    return INT(0)
   end
 
   jacprod_ptr = @eval @cfunction($jacprod_c, $INT,
@@ -182,8 +185,8 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
     _ip = unsafe_wrap(Vector{INT}, ip, ip == C_NULL ? 0 : m_r)
     _lp = unsafe_wrap(Vector{INT}, lp, lp == C_NULL ? 0 : 1)
     _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
-    return jacprods(n, m_r, _x, _v, _p, _iv, lvl, lvu, _ip, _lp, got_jr, 
-                    _userdata)
+    jacprods(n, m_r, _x, _v, _p, _iv, lvl, lvu, _ip, _lp, got_jr, _userdata)
+    return INT(0)
   end
 
   jacprods_ptr = @eval @cfunction($jacprods_c, $INT,

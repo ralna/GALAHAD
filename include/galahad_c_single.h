@@ -19,7 +19,7 @@ typedef int32_t galahad_shrprod_s(int32_t n, int32_t m, int32_t pne, const float
 typedef int32_t galahad_jr_prod_s(int32_t n, int32_t m_r, const float x[], const bool transpose, const float v[], float p[], bool got_jr, const void *userdata);
 typedef int32_t galahad_jr_sprod_s(int32_t n, int32_t m_r, const float x[], const bool transpose, const float v[], float p[], const int32_t free[], int32_t n_free, bool got_jr, const void *userdata);
 typedef int32_t galahad_jr_prods_s(int32_t n, int32_t m_r,const float x[], const float v[], float p[], const int32_t iv[], int32_t lvl, int32_t lvu, int32_t ip[], int32_t *lp, bool got_jr, const void *userdata);
-typedef int32_t galahad_jr_scol_s(int32_t n, int32_t m_r, const float x[], int32_t index, float val[], int32_t row[], int32_t nz, bool got_jr, const void *userdata);
+typedef int32_t galahad_jr_scol_s(int32_t n, int32_t m_r, const float x[], int32_t index, float val[], int32_t row[], int32_t *nz, bool got_jr, const void *userdata);
 typedef int32_t galahad_fc_s(int32_t n, int32_t m, const float x[], float *f, float c[], const void *userdata);
 typedef int32_t galahad_gj_s(int32_t n, int32_t m, int32_t jne, const float x[], float g[], float j[], const void *userdata);
 typedef int32_t galahad_hl_s(int32_t n, int32_t m, int32_t hne, const float x[], const float y[], float h[], const void *userdata);
@@ -41,7 +41,7 @@ typedef int64_t galahad_shrprod_s_64(int64_t n, int64_t m, int64_t pne, const fl
 typedef int64_t galahad_jr_prod_s_64(int64_t n, int64_t m_r, const float x[], const bool transpose, const float v[], float p[], bool got_jr, const void *userdata);
 typedef int64_t galahad_jr_sprod_s_64(int64_t n, int64_t m_r, const float x[], const bool transpose, const float v[], float p[], const int64_t free[], int64_t n_free, bool got_jr, const void *userdata);
 typedef int64_t galahad_jr_prods_s_64(int64_t n, int64_t m_r,const float x[], const float v[], float p[], const int64_t iv[], int64_t lvl, int64_t lvu, int64_t ip[], int64_t *lp, bool got_jr, const void *userdata);
-typedef int64_t galahad_jr_scol_s_64(int64_t n, int64_t m_r, const float x[], int64_t index, float val[], int64_t row[], int64_t nz, bool got_jr, const void *userdata);
+typedef int64_t galahad_jr_scol_s_64(int64_t n, int64_t m_r, const float x[], int64_t index, float val[], int64_t row[], int64_t *nz, bool got_jr, const void *userdata);
 typedef int64_t galahad_fc_s_64(int64_t n, int64_t m, const float x[], float *f, float c[], const void *userdata);
 typedef int64_t galahad_gj_s_64(int64_t n, int64_t m, int64_t jne, const float x[], float g[], float j[], const void *userdata);
 typedef int64_t galahad_hl_s_64(int64_t n, int64_t m, int64_t hne, const float x[], const float y[], float h[], const void *userdata);
