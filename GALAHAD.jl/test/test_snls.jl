@@ -100,17 +100,17 @@ function test_snls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
                   got_jr::Bool, userdata::userdata_snls{T})
     if index == 1
       val[1] = x[2]
-      row[1] = 1
+      row[1] = 0
       nz[1] = 1
     elseif index == n
       val[1] = x[n-1]
-      row[1] = n
+      row[1] = n-2
       nz[1] = 1
     else
       val[1] = x[index-1]
-      row[1] = index
+      row[1] = index-2
       val[2] = x[index+1]
-      row[2] = index+1
+      row[2] = index-1
       nz[1] = 2
     end
     return INT(0)
