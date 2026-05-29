@@ -281,7 +281,7 @@ function test_snls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     ip = Vector{INT}(undef, m_r)
     v = Vector{T}(undef, mrn)
     p = Vector{T}(undef, mrn)
-    lp = zero(INT, 1)
+    lp = zeros(INT, 1)
     got_jr = false
     st = ""
 
