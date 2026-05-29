@@ -31,11 +31,13 @@
    userdata%real( 1 ) = p_val
    userdata%integer( 1 ) = n ; userdata%integer( 2 ) = m_r
 
-!  DO solver = 2, 2
-   DO solver = 1, 4
+   DO solver = 2, 2
+!  DO solver = 1, 4
      CALL SNLS_initialize( data, control, inform )
 !    control%print_level = 1
 !    control%SLLS_control%print_level = 1
+     control%print_level = 100
+     control%SLLS_control%print_level = 100
 !    control%maxit = 1
 !    control%SLLS_control%maxit = 5
      control%stop_pg_absolute = 0.00001_rp_

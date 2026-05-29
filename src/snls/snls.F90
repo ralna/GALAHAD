@@ -3851,8 +3851,20 @@ end if
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'snls: data%nlp%X_status'
+     CALL SPACE_dealloc_array( data%nlp%X_status,                              &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'snls: data%nlp%W'
      CALL SPACE_dealloc_array( data%nlp%W,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'snls: data%nlp%COHORT'
+     CALL SPACE_dealloc_array( data%nlp%COHORT,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

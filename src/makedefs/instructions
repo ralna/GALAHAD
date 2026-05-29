@@ -2346,6 +2346,18 @@ $(package)cdtf_gdb: $($(PACKAGE)CDTF)
 	- gdb $(GDB) ./run_$(package)
 	rm ./run_$(package)
 
+$(package)cdtf_valgrind: $($(PACKAGE)CDTF)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDTF)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dt.output 2>&1
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)dt_valgrind.output 2>&1
+	cat $(package)dt_valgrind.output
+	rm ./run_$(package)
+
 $(package)cqt: $($(PACKAGE)CQT)
 	echo ""
 	echo " Exhaustive test of C function interface to $(package)"

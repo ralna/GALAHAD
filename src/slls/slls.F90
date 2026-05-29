@@ -396,7 +396,7 @@
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FREE, S_ind, S_ptr
        LOGICAL ( KIND = lp_ ), ALLOCATABLE, DIMENSION( : ) :: FIXED, FIXED_old
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, R, SBLS_sol
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D, AS, S, AE, DIAG
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D, S, AS, AE, DIAG
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_c, X_c_proj
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: AEC, VT, EVT, Y
        TYPE ( SMT_type ) :: Ao, H_sbls, AT_sbls, C_sbls
@@ -3282,6 +3282,49 @@ END IF
 !  Deallocate all those required when solving the subproblems
 
      CALL SLLS_subproblem_terminate( data%subproblem_data, control, inform )
+
+if(.false.)then ! debugging, remove !!
+write(6,*) 'data%Ao%type',data%Ao%type
+write(6,*) 'data%Ao%ptr',data%Ao%ptr
+write(6,*) 'data%Ao%row',data%Ao%row
+write(6,*) 'data%Ao%row',data%Ao%row
+write(6,*) 'data%Ao%col',data%Ao%col
+write(6,*) 'data%Ao%val',data%Ao%val
+write(6,*) 'data%R',data%R
+write(6,*) 'data%S_ptr',data%S_ptr
+write(6,*) 'data%S_ind',data%S_ind
+write(6,*) 'data%VT',data%VT
+write(6,*) 'data%EVT',data%EVT
+write(6,*) 'data%Y',data%Y
+write(6,*) 'data%S',data%S
+write(6,*) 'data%D',data%D
+write(6,*) 'data%AS',data%AS
+write(6,*) 'data%AE',data%AE
+write(6,*) 'data%AEC',data%AEC
+write(6,*) 'data%SBLS_sol',data%SBLS_sol
+write(6,*) 'data%X_new',data%X_new
+write(6,*) 'data%FREE',data%FREE
+write(6,*) 'data%FIXED',data%FIXED
+write(6,*) 'data%FIXED_old',data%FIXED_old
+write(6,*) 'data%DIAG',data%DIAG
+write(6,*) 'data%X_c',data%X_c
+write(6,*) 'data%X_c_proj',data%X_c_proj
+write(6,*) 'data%H_sbls%type',data%H_sbls%type
+write(6,*) 'data%C_sbls%type',data%C_sbls%type
+write(6,*) 'data%AT_sbls%type',data%AT_sbls%type
+write(6,*) 'data%AT_sbls%val',data%AT_sbls%val
+write(6,*) 'data%AT_sbls%col',data%AT_sbls%col
+write(6,*) 'data%AT_sbls%ptr',data%AT_sbls%ptr
+write(6,*) 'data%SBLS_sol',data%SBLS_sol
+write(6,*) 'data%C_sbls%val',data%C_sbls%val
+write(6,*) 'data%search_data%P',data%search_data%P
+write(6,*) 'data%search_data%IP',data%search_data%IP
+write(6,*) 'data%search_data%I_len',data%search_data%I_len
+write(6,*) 'data%search_data%rhom_0',data%search_data%rhom_0
+write(6,*) 'data%search_data%rhom_1',data%search_data%rhom_1
+write(6,*) 'data%search_data%rhom_2',data%search_data%rhom_2
+write(6,*) 'data%search_data%xim',data%search_data%xim
+endif
 
 !  Deallocate all remaining allocated arrays
 

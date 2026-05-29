@@ -1062,10 +1062,17 @@
 !  solve the problem when Hessian products are available by reverse
 !  communication
 
-  CALL f_bnls_solve_reverse_with_jacprod( fdata, status, eval_status,          &
-                                          x_l, x_u, x, z, r, g, x_stat,        &
-                                          v, iv, lvl, lvu, p, ip, lp, W = w )
-
+  IF ( fdata%f_indexing ) THEN
+    CALL f_bnls_solve_reverse_with_jacprod( fdata, status, eval_status,        &
+                                            x_l, x_u, x, z, r, g, x_stat,      &
+                                            v, iv, lvl, lvu, p, ip + 1, lp,    &
+                                            W = w )
+  ELSE
+    CALL f_bnls_solve_reverse_with_jacprod( fdata, status, eval_status,        &
+                                            x_l, x_u, x, z, r, g, x_stat,      &
+                                            v, iv, lvl, lvu, p, ip, lp,        &
+                                            W = w )
+  END IF
   IF ( status >= 6 .AND. status <= 8 ) THEN
     IF ( f_indexing ) THEN
       lvl = lvl - 1 ; lvu = lvu - 1
