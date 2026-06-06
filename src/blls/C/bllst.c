@@ -83,6 +83,7 @@ int main(void) {
 
     //w[0] = 2.0;
     w[0] = 1.0;
+    x_s[0] = 0.5;
     for( ipc_ i = 1; i < o; i++) w[i] = 1.0;
     for( ipc_ i = 1; i < n; i++) x_s[i] = 0.5;
 
@@ -160,7 +161,7 @@ int main(void) {
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
-        //control.print_level = 1;
+        // control.print_level = 3;
 
         // Start from 0
         for( ipc_ i = 0; i < n; i++) x[i] = 0.0;
@@ -231,8 +232,9 @@ int main(void) {
 
         if(inform.status == 0){
 #ifdef REAL_128
-// interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
-#include "galahad_pquad_sf.h"
+            printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
+                   st, inform.iter, (double)inform.obj, inform.status);
 #else
             printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
                    "value = %.2f status = %1" d_ipc_ "\n",
@@ -269,7 +271,7 @@ int main(void) {
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing
-    // control.print_level = 1;
+    // control.print_level = 3;
 
     // Start from 0
     for( ipc_ i = 0; i < n; i++) x[i] = 0.0;
@@ -288,7 +290,7 @@ int main(void) {
         }else if(status < 0){ // error exit
             break;
         }else if(status == 2){ // evaluate p = Av
-          p[n]=0.0;
+          p[n] = 0.0;
           for( ipc_ i = 0; i < n; i++){
             p[i] = v[i];
             p[n] = p[n] + v[i];
@@ -296,35 +298,35 @@ int main(void) {
         }else if(status == 3){ // evaluate p = A^Tv
           for( ipc_ i = 0; i < n; i++) p[i] = v[i] + v[n];
         }else if(status == 4){ // evaluate p = Av for sparse v
-          p[n]=0.0;
-          for( ipc_ i = 0; i < n; i++) p[i] = 0.0;
-          for( ipc_ l = lvl - 1; l < lvu; l++){
+          for( ipc_ i = 0; i <= n; i++) p[i] = 0.0;
+          for( ipc_ l = lvl; l <= lvu; l++){
             i = iv[l];
             p[i] = v[i];
             p[n] = p[n] + v[i];
           }
         }else if(status == 5){ // evaluate p = sparse Av for sparse v
-          lp = 0;
-          for( ipc_ l = lvl - 1; l < lvu; l++){
+          // lp = 0;
+          lp = - 1;
+          for( ipc_ l = lvl; l <= lvu; l++){
             i = iv[l];
             if (mask[i] == 0){
               mask[i] = 1;
-              ip[lp] = i;
               lp = lp + 1;
+              ip[lp] = i;
               p[i] = v[i];
             }
             if (mask[n] == 0){
               mask[n] = 1;
-              ip[lp] = n;
               lp = lp + 1;
+              ip[lp] = n;
               p[n] = v[i];
             }else{
               p[n] = p[n] + v[i];
             }
           }
-          for( ipc_ l = 0; l < lp; l++) mask[ip[l]] = 0;
+          for( ipc_ l = 0; l <= lp; l++) mask[ip[l]] = 0;
         }else if(status == 6){ // evaluate p = sparse A^Tv
-          for( ipc_ l = lvl - 1; l < lvu; l++){
+          for( ipc_ l = lvl; l <= lvu; l++){
             i = iv[l];
             p[i] = v[i] + v[n];
           }
@@ -344,8 +346,9 @@ int main(void) {
     // Print solution details
     if(inform.status == 0){
 #ifdef REAL_128
-// interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
-#include "galahad_pquad_sf.h"
+            printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
+                   st, inform.iter, (double)inform.obj, inform.status);
 #else
             printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
                    "value = %.2f status = %1" d_ipc_ "\n",

@@ -92,9 +92,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
   end
   b[n + 1] = n + 1
 
-  w[1] = 2.0
-  w[2] = 1.0
-  for i in 3:o
+  for i in 1:o
     w[i] = 1.0
   end
 

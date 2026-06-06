@@ -83,6 +83,7 @@ int main(void) {
 
     // w[0] = 2.0;
     w[0] = 1.0;
+    x_s[0] = 0.5;
     for( ipc_ i = 1; i < o; i++) w[i] = 1.0;
     for( ipc_ i = 1; i < n; i++) x_s[i] = 0.5;
 
@@ -230,8 +231,9 @@ int main(void) {
 
         if(inform.status == 0){
 #ifdef REAL_128
-// interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
-#include "galahad_pquad_sf.h"
+            printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
+                   st, inform.iter, (double)inform.obj, inform.status);
 #else
             printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
                    "value = %.2f status = %1" d_ipc_ "\n",
@@ -268,6 +270,7 @@ int main(void) {
 
     // Set user-defined control options
     control.f_indexing = true; // fortran sparse matrix indexing
+    // control.print_level = 3;
 
     // Start from 0
     for( ipc_ i = 0; i < n; i++) x[i] = 0.0;
@@ -343,8 +346,9 @@ int main(void) {
     // Print solution details
     if(inform.status == 0){
 #ifdef REAL_128
-// interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
-#include "galahad_pquad_sf.h"
+            printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
+                   st, inform.iter, (double)inform.obj, inform.status);
 #else
             printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
                    "value = %.2f status = %1" d_ipc_ "\n",

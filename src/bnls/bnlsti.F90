@@ -41,8 +41,8 @@
 !  DO solver = 2, 2
    DO solver = 1, 4
      CALL BNLS_initialize( data, control, inform )
-!    control%print_level = 1
-!    control%BLLS_control%print_level = 1
+!    control%print_level = 10
+!    control%BLLS_control%print_level = 10
 !    control%maxit = 1
 !    control%BLLS_control%maxit = 5
 #ifdef REAL_32

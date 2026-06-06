@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-14 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-06-03 AT 11:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -9357,6 +9357,7 @@ endif
        data%reverse%lp = lp
      CASE( 6 )
        data%reverse%eval_status = eval_status
+       lvl = data%reverse%lvl ; lvu = data%reverse%lvu
        data%reverse%P( data%reverse%IV( lvl : lvu ) )                          &
          = P( data%reverse%IV( lvl : lvu ) )
      CASE DEFAULT

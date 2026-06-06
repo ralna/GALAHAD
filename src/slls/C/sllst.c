@@ -248,6 +248,7 @@ int main(void) {
 
     strcpy( st, "RC" );
 
+    // control.print_level = 3;
     slls_import_without_a( &control, &data, &status, n, o, m, NULL );
     while(true){ // reverse-communication loop
         slls_solve_reverse_a_prod( &data, &status, &eval_status, n, o, m,
@@ -276,13 +277,13 @@ int main(void) {
         }else if(status == 5){ // evaluate p = Av for sparse v
           p[n]=0.0;
           for( ipc_ i = 0; i < n; i++) p[i] = 0.0;
-          for( ipc_ l = lvl - 1; l < lvu; l++){
+          for( ipc_ l = lvl; l <= lvu; l++){
             i = iv[l];
             p[i] = v[i];
             p[n] = p[n] + v[i];
           }
         }else if(status == 6){ // evaluate p = sparse A^Tv
-          for( ipc_ l = lvl - 1; l < lvu; l++){
+          for( ipc_ l = lvl; l <= lvu; l++){
             i = iv[l];
             p[i] = v[i] + v[n];
           }

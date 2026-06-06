@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-05-26 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-06-04 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -3727,6 +3727,18 @@ end if
 
 !  deallocate any internal problem arrays
 
+     array_name = 'bnls: data%nlp%X_l'
+     CALL SPACE_dealloc_array( data%nlp%X_l,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bnls: data%nlp%X_u'
+     CALL SPACE_dealloc_array( data%nlp%X_u,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'bnls: data%nlp%X'
      CALL SPACE_dealloc_array( data%nlp%X,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -3747,6 +3759,12 @@ end if
 
      array_name = 'bnls: data%nlp%G'
      CALL SPACE_dealloc_array( data%nlp%G,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bnls: data%nlp%X_status'
+     CALL SPACE_dealloc_array( data%nlp%X_status,                              &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -4650,22 +4668,15 @@ end if
        data%reverse%eval_status = eval_status
        IF ( eval_status == 0 ) THEN
          data%reverse%lp = lp
-         IF ( data%f_indexing ) THEN
-           data%reverse%IP( : lp ) = IP( : lp )
-         ELSE
-           data%reverse%IP( : lp ) = IP( : lp ) + 1
-         END IF
-         data%reverse%P( data%reverse%IP( : lp ) )                             &
-           = P( data%reverse%IP( : lp ) )
+         data%reverse%IP( : lp ) = IP( : lp )
+         data%reverse%P( IP( : lp ) ) = P( IP( : lp ) )
        END IF
      CASE( 8 )
        data%reverse%eval_status = eval_status
        IF ( eval_status == 0 ) THEN
          lvl = data%reverse%lvl ; lvu = data%reverse%lvu
-         IF ( .NOT. data%f_indexing ) THEN
-           IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
-         END IF
-         data%reverse%P( IV( lvl : lvu ) ) = P( IV( lvl : lvu ) )
+         data%reverse%P( data%reverse%IV( lvl : lvu ) )                        &
+           = P( data%reverse%IV( lvl : lvu ) )
        END IF
      END SELECT
 
@@ -4693,23 +4704,13 @@ end if
        V( : data%nlp%m_r ) = data%reverse%V( : data%nlp%m_r )
      CASE( 6, 7 )
        lvl = data%reverse%lvl ; lvu = data%reverse%lvu
+       IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
        V( data%reverse%IV( lvl : lvu ) )                                       &
          = data%reverse%V( data%reverse%IV( lvl : lvu ) )
-       IF ( data%f_indexing ) THEN
-         IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
-       ELSE
-         IV( lvl : lvu ) = data%reverse%IV( lvl : lvu ) - 1
-         lvl = lvl - 1 ; lvu = lvu - 1
-       END IF
      CASE( 8 )
        lvl = data%reverse%lvl ; lvu = data%reverse%lvu
+       IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
        V( : data%nlp%m_r ) = data%reverse%V( : data%nlp%m_r )
-       IF ( data%f_indexing ) THEN
-         IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
-       ELSE
-         IV( lvl : lvu ) = data%reverse%IV( lvl : lvu ) - 1
-         lvl = lvl - 1 ; lvu = lvu - 1
-       END IF
      END SELECT
      status = data%bnls_inform%status
 

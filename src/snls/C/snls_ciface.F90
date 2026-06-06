@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-03-30 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-06-03 AT 11:25 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -1062,7 +1062,12 @@
     CALL f_snls_solve_reverse_with_jacprod( fdata, status, eval_status,        &
                                             x, y, z, r, g, x_stat,             &
                                             v, iv, lvl, lvu, index,            &
-                                            p, ip, lp, W = w )
+                                            p, ip + 1, lp + 1, W = w )
+    IF ( status == 6 ) index = index - 1
+    IF ( status == 7 .OR. status == 8 ) THEN
+      iv( lvl : lvu ) = iv( lvl : lvu ) - 1
+      lvl = lvl - 1 ; lvu = lvu - 1
+    END IF
   END IF
   RETURN
 

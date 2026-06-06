@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-06-03 AT 11:25 GMT.
 
 #include "galahad_modules.h"
 
@@ -4788,11 +4788,7 @@ end if
        IF ( eval_status == 0 ) THEN
          data%reverse%lp = lp
          data%reverse%P( : lp ) = P( : lp )
-         IF ( data%f_indexing ) THEN
-           data%reverse%IP( : lp ) = IP( : lp )
-         ELSE
-           data%reverse%IP( : lp ) = IP( : lp ) + 1
-         END IF
+         data%reverse%IP( : lp ) = IP( : lp )
        END IF
      CASE( 7 )
        data%reverse%eval_status = eval_status
@@ -4801,11 +4797,9 @@ end if
      CASE( 8 )
        data%reverse%eval_status = eval_status
        IF ( eval_status == 0 ) THEN
-         IF ( .NOT. data%f_indexing ) THEN
-           lvl = data%reverse%lvl ; lvu = data%reverse%lvu
-           IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
-         END IF
-         data%reverse%P( IV( lvl : lvu ) ) = P( IV( lvl : lvu ) )
+         lvl = data%reverse%lvl ; lvu = data%reverse%lvu
+         data%reverse%P( data%reverse%IV( lvl : lvu ) )                        &
+           = P( data%reverse%IV( lvl : lvu ) )
        END IF
      END SELECT
 
@@ -4833,28 +4827,15 @@ end if
      CASE( 5 )
        V( : data%nlp%m_r ) = data%reverse%V( : data%nlp%m_r )
      CASE( 6 )
-       IF ( data%f_indexing ) THEN
-         index = data%reverse%index
-       ELSE
-         index = data%reverse%index - 1
-       END IF
+       index = data%reverse%index
      CASE( 7 )
        lvl = data%reverse%lvl ; lvu = data%reverse%lvu
        IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
        V( IV( lvl : lvu ) ) = data%reverse%V( IV( lvl : lvu ) )
-       IF ( .NOT. data%f_indexing ) THEN
-         IV( lvl : lvu ) = IV( lvl : lvu ) - 1
-!        lvl = lvl - 1 ; lvu = lvu - 1
-       END IF
      CASE( 8 )
        lvl = data%reverse%lvl ; lvu = data%reverse%lvu
        V( : data%nlp%m_r ) = data%reverse%V( : data%nlp%m_r )
-       IF ( data%f_indexing ) THEN
-         IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
-       ELSE
-         IV( lvl : lvu ) = data%reverse%IV( lvl : lvu ) - 1
-!        lvl = lvl - 1 ; lvu = lvu - 1
-       END IF
+       IV( lvl : lvu ) = data%reverse%IV( lvl : lvu )
      END SELECT
      status = data%snls_inform%status
 

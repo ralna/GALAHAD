@@ -105,7 +105,7 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
                     userdata::userdata_bnls{T,INT})
     if !isempty(ip) && !isempty(lp)
       userdata.flag = userdata.flag + 1
-      lp[1] = 1
+      lp[1] = 0
       for l = lvl:lvu
         j = iv[l+1]
         val = v[j]
@@ -114,8 +114,8 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
           if userdata.flags[i] < userdata.flag
             userdata.flags[i] = userdata.flag
             p[i] = x[i+1] * val
-            ip[lp[1]] = i
             lp[1] = lp[1] + 1
+            ip[lp[1]] = i
           else
             p[i] = p[i] + x[i+1] * val
           end
@@ -124,8 +124,8 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
           if userdata.flags[i] < userdata.flag
             userdata.flags[i] = userdata.flag
             p[i] = x[i] * val
-            ip[lp[1]] = i
             lp[1] = lp[1] + 1
+            ip[lp[1]] = i
           else
             p[i] = p[i] + x[i] * val
           end
@@ -134,8 +134,8 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
           if userdata.flags[i] < userdata.flag
             userdata.flags[i] = userdata.flag
             p[i] = x[i] * val
-            ip[lp[1]] = i
             lp[1] = lp[1] + 1
+            ip[lp[1]] = i
           else
             p[i] = p[i] + x[i] * val
           end
@@ -143,8 +143,8 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
           if userdata.flags[i] < userdata.flag
             userdata.flags[i] = userdata.flag
             p[i] = x[i+1] * val
-            ip[lp[1]] = i
             lp[1] = lp[1] + 1
+            ip[lp[1]] = i
           else
             p[i] = p[i] + x[i+1] * val
           end

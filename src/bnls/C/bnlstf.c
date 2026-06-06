@@ -220,8 +220,8 @@ int main(void) {
 
     // Set user-defined control options
     control.f_indexing = true; // fortran sparse matrix indexing
-    // control.print_level = 1;
-    // control.blls_control.print_level = 1;
+    //control.print_level = 1;
+    //control.blls_control.print_level = 1;
     control.jacobian_available = 1;
 #ifdef REAL_32
     control.stop_pg_absolute = 0.0001;
@@ -380,6 +380,7 @@ ipc_ jacprods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[],
             p[i] = p[i] + x[i+1] * val;
           }
         }
+      for( ipc_ i = 0; i < *lp; i++) flags[ip[i]] = 0;
       }
     } else {
       for( ipc_ i = 0; i < m_r; i++) p[i] = 0.0;

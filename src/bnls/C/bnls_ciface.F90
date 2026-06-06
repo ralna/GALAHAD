@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-15 AT 11:40 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-06-04 AT 16:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -1051,13 +1051,10 @@
 !  local variables
 
   TYPE ( f_bnls_full_data_type ), POINTER :: fdata
-  LOGICAL :: f_indexing
 
 !  associate data pointer
 
   CALL C_F_POINTER( cdata, fdata )
-
-  f_indexing = fdata%f_indexing
 
 !  solve the problem when Hessian products are available by reverse
 !  communication
@@ -1070,13 +1067,13 @@
   ELSE
     CALL f_bnls_solve_reverse_with_jacprod( fdata, status, eval_status,        &
                                             x_l, x_u, x, z, r, g, x_stat,      &
-                                            v, iv, lvl, lvu, p, ip, lp,        &
-                                            W = w )
+                                            v, iv, lvl, lvu, p, ip + 1,        &
+                                            lp, W = w )
+    IF ( status >= 6 .AND. status <= 8 )                                       &
+      iv( lvl : lvu ) = iv( lvl : lvu ) - 1
   END IF
-  IF ( status >= 6 .AND. status <= 8 ) THEN
-    IF ( f_indexing ) THEN
-      lvl = lvl - 1 ; lvu = lvu - 1
-    END IF
+  IF ( status >= 6 .AND. status <= 7 ) THEN
+    lvl = lvl - 1 ; lvu = lvu - 1
   END IF
   RETURN
 

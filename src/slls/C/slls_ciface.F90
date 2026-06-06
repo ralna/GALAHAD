@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-02-08 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-06-03 AT 11:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -714,20 +714,14 @@
 !  local variables
 
   TYPE ( f_slls_full_data_type ), POINTER :: fdata
-  LOGICAL :: f_indexing
 
 !  associate data pointer
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  is fortran-style 1-based indexing used?
+!  solve the simplex-constrained least-squares problem by reverse communication
 
-  f_indexing = fdata%f_indexing
-
-!  solve the bound-constrained least-squares problem by reverse communication
-
-!if (status == 4 ) write(6,"( ' P ', /, ( 5ES12.4 ) )" ) P(:m)
-  IF ( f_indexing ) THEN
+  IF ( fdata%f_indexing ) THEN
     CALL f_slls_solve_reverse_a_prod( fdata, status, eval_status, b,           &
                                       regularization_weight, x, y, z, r, g,    &
                                       xstat, v, p, iv, lvl, lvu, index,        &
@@ -736,9 +730,12 @@
     CALL f_slls_solve_reverse_a_prod( fdata, status, eval_status, b,           &
                                       regularization_weight, x, y, z, r, g,    &
                                       xstat, v, p, iv, lvl, lvu, index,        &
-                                      ip + 1, lp, W = w, X_s = x_s )
-    IF ( status == 5 .OR. status == 6 )                                        &
+                                      ip + 1, lp + 1, W = w, X_s = x_s )
+    IF ( status == 4 ) index = index - 1
+    IF ( status == 5 .OR. status == 6 ) THEN
       iv( lvl : lvu ) = iv( lvl : lvu ) - 1
+      lvl = lvl - 1 ; lvu = lvu - 1
+    END IF
   END IF
 
   RETURN

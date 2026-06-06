@@ -123,8 +123,8 @@ int main(void) {
 
     // Set user-defined control options
     control.f_indexing = false; // fortran sparse matrix indexing
-    // control.print_level = 1;
-    // control.blls_control.print_level = 1;
+    //control.print_level = 1;
+    //control.blls_control.print_level = 1;
     control.jacobian_available = 1;
 #ifdef REAL_32
     control.stop_pg_absolute = 0.005;
@@ -222,8 +222,8 @@ int main(void) {
 
     // Set user-defined control options
     control.f_indexing = false; // fortran sparse matrix indexing
-    // control.print_level = 1;
-    // control.blls_control.print_level = 1;
+    //control.print_level = 1;
+    //control.blls_control.print_level = 1;
     control.jacobian_available = 1;
 #ifdef REAL_32
     control.stop_pg_absolute = 0.0001;
@@ -337,7 +337,7 @@ ipc_ jacprods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[],
     if (ip != NULL && lp != NULL) {
       flag = flag+1;
       *lp = 0;
-      for( ipc_ l=lvl; l <= lvu; l++){
+      for( ipc_ l = lvl; l <= lvu; l++){
         j = iv[l];
         val = v[j];
         if (j == 0){
@@ -346,7 +346,7 @@ ipc_ jacprods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[],
             flags[i] = flag;
             p[i] = x[i+1] * val;
             ip[*lp] = i;
-            *lp = *lp+1;
+            *lp = *lp + 1;
           } else {
             p[i] = p[i] + x[i+1] * val;
           }
@@ -356,17 +356,17 @@ ipc_ jacprods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[],
             flags[i] = flag;
             p[i] = x[i] * val;
             ip[*lp] = i;
-            *lp = *lp+1;
+            *lp = *lp + 1;
           } else {
             p[i] = p[i] + x[i] * val;
           }
         } else {
-          i = j-1;
+          i = j - 1;
           if (flags[i] < flag) {
             flags[i] = flag;
             p[i] = x[i] * val;
             ip[*lp] = i;
-            *lp = *lp+1;
+            *lp = *lp + 1;
           } else {
             p[i] = p[i] + x[i] * val;
           }
@@ -380,6 +380,7 @@ ipc_ jacprods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[],
             p[i] = p[i] + x[i+1] * val;
           }
         }
+      for( ipc_ i = 0; i < *lp; i++) flags[ip[i]] = 0;
       }
     } else {
       for( ipc_ i = 0; i < m_r; i++) p[i] = 0.0;
@@ -390,10 +391,10 @@ ipc_ jacprods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[],
           i = 0;
           p[i] = p[i] + x[i+1] * val;
         } else if (j == n-1) {
-          i = m_r-1;
+          i = m_r - 1;
           p[i] = p[i] + x[i] * val;
         } else {
-          i = j-1;
+          i = j - 1;
           p[i] = p[i] + x[i] * val;
           i = j;
           p[i] = p[i] + x[i+1] * val;

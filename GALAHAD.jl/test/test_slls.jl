@@ -146,7 +146,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       # Linear solvers
       @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver(sls)
       @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver(dls)
-#      @reset control[].print_level = INT(3)
+     #@reset control[].print_level = INT(3)
 
       # Start from 0
       for i = 1:n
@@ -250,6 +250,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
 
     st = "RC"
 
+    #@reset control[].print_level = INT(3)
     slls_import_without_a(T, INT, control, data, status, n, o, m, C_NULL)
 
     terminated = false
@@ -272,6 +273,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
           p[i] = v[i] + v[o]
         end
       elseif status[] == 4 # evaluate the index-th sparse column of Ao 
+        #@printf("index = %1i\n", index[])
         lp = 1
         ip[lp] = index[]
         p[lp] = 1.0

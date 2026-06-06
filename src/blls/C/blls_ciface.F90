@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-05-03 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-06-03 AT 11:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -712,32 +712,29 @@
 !  local variables
 
   TYPE ( f_blls_full_data_type ), POINTER :: fdata
-  LOGICAL :: f_indexing
 
 !  associate data pointer
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  is fortran-style 1-based indexing used?
-
-  f_indexing = fdata%f_indexing
-
 !  solve the bound-constrained least-squares problem by reverse communication
 
-  IF ( f_indexing ) THEN
+  IF ( fdata%f_indexing ) THEN
     CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b,           &
                                       regularization_weight, xl, xu,           &
-                                      x, z, r, g, xstat, v, p,                 &
-                                      iv, lvl, lvu, ip, lp,                    &
-                                      W = w, X_s = x_s )
+                                      x, z, r, g, xstat, v, p, iv, lvl, lvu,   &
+                                      ip, lp, W = w, X_s = x_s )
   ELSE
+!write(6,*) ' in status, lp', status, lp, o, size( ip )
     CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b,           &
                                       regularization_weight, xl, xu,           &
-                                      x, z, r, g, xstat, v, p,                 &
-                                      iv, lvl, lvu, ip( : lp ) + 1, lp,        &
-                                      W = w, X_s = x_s )
+                                      x, z, r, g, xstat, v, p, iv, lvl, lvu,   &
+                                      ip + 1, lp + 1, W = w, X_s = x_s )
+!                                     ip( : lp ) + 1, lp + 1, W = w, X_s = x_s )
+!write(6,*) ' out status', status
     IF ( status == 4 .OR. status == 5 .OR. status == 6 ) then
       iv( lvl : lvu ) = iv( lvl : lvu ) - 1
+      lvl = lvl - 1 ; lvu = lvu - 1
     END IF
   END IF
 

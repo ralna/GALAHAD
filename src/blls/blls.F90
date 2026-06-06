@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-08 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-06-04 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -339,7 +339,7 @@
        INTEGER ( KIND = ip_ ) :: branch, n_break, n_free, n_fixed, n_a0
        INTEGER ( KIND = ip_ ) :: preconditioner, step
        INTEGER ( KIND = ip_ ) :: nz_d_start, nz_d_end, lp, base_free
-       REAL ( KIND = rp_ ) :: f_alpha_dash, f_alpha_dashdash, stop_cg
+       REAL ( KIND = rp_ ) :: f_alpha_dash, f_alpha_dashdash, sts, stop_cg
        REAL ( KIND = rp_ ) :: rho_alpha, rho_alpha_dash, rho_alpha_dashdash
        REAL ( KIND = rp_ ) :: phi_alpha_dash, phi_alpha_dashdash
        REAL ( KIND = rp_ ) :: alpha_i, alpha_next, delta_alpha, alpha, target
@@ -1391,24 +1391,24 @@
        IF ( data%explicit_a ) THEN
          SELECT CASE ( SMT_get( prob%Ao%type ) )
          CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS'  )
-           WRITE( control%out, "( ' A (dense) = ', /, ( 5ES12.4 ) )" )         &
+           WRITE( control%out, "( ' Ao (dense) = ', /, ( 5ES12.4 ) )" )        &
              prob%Ao%val( : prob%o * prob%n )
          CASE ( 'SPARSE_BY_ROWS' )
-           WRITE( control%out, "( ' A (row-wise) = ' )" )
+           WRITE( control%out, "( ' Ao (row-wise) = ' )" )
            DO i = 1, prob%o
              WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                  &
                ( i, prob%Ao%col( j ), prob%Ao%val( j ),                        &
                  j = prob%Ao%ptr( i ), prob%Ao%ptr( i + 1 ) - 1 )
            END DO
          CASE ( 'SPARSE_BY_COLUMNS' )
-           WRITE( control%out, "( ' A (column-wise) = ' )" )
+           WRITE( control%out, "( ' Ao (column-wise) = ' )" )
            DO j = 1, prob%n
              WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                  &
                ( prob%Ao%row( i ), j, prob%Ao%val( i ),                        &
                  i = prob%Ao%ptr( j ), prob%Ao%ptr( j + 1 ) - 1 )
            END DO
          CASE ( 'COORDINATE' )
-           WRITE( control%out, "( ' A (co-ordinate) = ' )" )
+           WRITE( control%out, "( ' Ao (co-ordinate) = ' )" )
            WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                    &
             ( prob%Ao%row( i ), prob%Ao%col( i ), prob%Ao%val( i ),            &
               i = 1, prob%Ao%ne )
@@ -1420,6 +1420,10 @@
          prob%X_l( : prob%n )
        WRITE( control%out, "( ' X_u = ', /, ( 5ES12.4 ) )" )                   &
          prob%X_u( : prob%n )
+       IF ( data%weight > zero )                                               &
+          WRITE( control%out, "( ' weight = ', ES12.4 )" ) data%weight
+       IF ( data%shifts ) WRITE( control%out, "( ' X_s = ', /, ( 5ES12.4 ) )" )&
+         prob%X_s( : prob%n )
      END IF
 
 !  check that problem bounds are consistent; reassign any pair of bounds
@@ -3208,7 +3212,7 @@
       INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, ibreak, inform_sort
       INTEGER ( KIND = ip_ ) :: n_freed, n_zero
       REAL ( KIND = rp_ ) :: alpha_star, alpha_current, phi_alpha_dash_old
-      REAL ( KIND = rp_ ) :: rts, sts, vtv, vtx, dx, s, feasep
+      REAL ( KIND = rp_ ) :: rts, vtv, vtx, dx, s, feasep
 !     REAL ( KIND = rp_ ) :: ptr, ptu, arth, phi_alpha_dash_old
       LOGICAL :: printi, xlower, xupper
       CHARACTER ( LEN = 80 ) :: array_name
@@ -4015,7 +4019,7 @@
 
 !  compute sts = s^T s
 
-          sts = DOT_PRODUCT( data%S( : o ), data%S( : o ) )
+          data%sts = DOT_PRODUCT( data%S( : o ), data%S( : o ) )
 
 !  compute rts = r^T s, where r = A ( x_i+1 - x ) + r, and
 !  x_i+1 = Proj(x + alpha_i+1 d)
@@ -4083,11 +4087,11 @@
           IF ( data%printw ) WRITE( out, "(                                    &
          &  /, A, ' Calculated f'' and f''''(alpha) =', 2ES22.14,              &
          &  /, A, ' Recurred   f'' and f''''(alpha) =', 2ES22.14 )" ) prefix,  &
-             rts, sts, prefix, data%f_alpha_dash, data%f_alpha_dashdash
+             rts, data%sts, prefix, data%f_alpha_dash, data%f_alpha_dashdash
 
 !  use the newly-computed derivatives of f
 
-          data%f_alpha_dash = rts ; data%f_alpha_dashdash = sts
+          data%f_alpha_dash = rts ; data%f_alpha_dashdash = data%sts
 
 !  compute vtv = v^T v and vtx = v^T x_i+1, where v are the components of d
 !  that have not been fixed and x_i+1 = Proj(x + alpha_i+1 d)
@@ -7633,6 +7637,7 @@
        data%reverse%lp = lp
      CASE( 6 )
        data%reverse%eval_status = eval_status
+       lvl = data%reverse%lvl ; lvu = data%reverse%lvu
        data%reverse%P( data%reverse%IV( lvl : lvu ) )                          &
          = P( data%reverse%IV( lvl : lvu ) )
      CASE DEFAULT
