@@ -725,14 +725,11 @@
                                       x, z, r, g, xstat, v, p, iv, lvl, lvu,   &
                                       ip, lp, W = w, X_s = x_s )
   ELSE
-!write(6,*) ' in status, lp', status, lp, o, size( ip )
     CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b,           &
                                       regularization_weight, xl, xu,           &
                                       x, z, r, g, xstat, v, p, iv, lvl, lvu,   &
-                                      ip + 1, lp + 1, W = w, X_s = x_s )
-!                                     ip( : lp ) + 1, lp + 1, W = w, X_s = x_s )
-!write(6,*) ' out status', status
-    IF ( status == 4 .OR. status == 5 .OR. status == 6 ) then
+                                      ip + 1, lp, W = w, X_s = x_s )
+    IF ( status == 4 .OR. status == 5 .OR. status == 6 ) THEN
       iv( lvl : lvu ) = iv( lvl : lvu ) - 1
       lvl = lvl - 1 ; lvu = lvu - 1
     END IF

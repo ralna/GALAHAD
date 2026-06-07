@@ -90,7 +90,7 @@ QRB$(PACKAGE)64 = $(RB_TESTS) $(TESTDEPS) $(OBJQ64)/run$(package)_rb_quadruple.o
 
 ifeq "$(HSL_64)" "_64"
   LIBS = -lgalahad $(HSL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
-             $(METIS464ND) $(METIS564ND) $(PASTIX) $(MUMPS) $(MPI) \
+             $(METIS4ND64) $(METIS5ND64) $(PASTIX) $(MUMPS) $(MPI) \
              $(UMFPACK) $(LAPACK) $(BLAS) -lstdc++ -lhwloc
 else
   LIBS = -lgalahad $(HSL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
@@ -2481,6 +2481,8 @@ $(package)cst_64_gdb: $($(PACKAGE)CST64)
 $(package)cdt_64: $($(PACKAGE)CDT64)
 	echo ""
 	echo " Exhaustive test of C function interface to $(package)"
+	echo "RUNFFLAGSOMP $(RUNFFLAGSOMP) $(SPECIAL)"
+	echo "R $(R$(PACKAGE)CDT64)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT64)
 	$(RMOOC)

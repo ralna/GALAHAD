@@ -305,26 +305,25 @@ int main(void) {
             p[n] = p[n] + v[i];
           }
         }else if(status == 5){ // evaluate p = sparse Av for sparse v
-          // lp = 0;
-          lp = - 1;
+          lp = 0;
           for( ipc_ l = lvl; l <= lvu; l++){
             i = iv[l];
             if (mask[i] == 0){
               mask[i] = 1;
-              lp = lp + 1;
-              ip[lp] = i;
               p[i] = v[i];
+              ip[lp] = i;
+              lp = lp + 1;
             }
             if (mask[n] == 0){
               mask[n] = 1;
-              lp = lp + 1;
-              ip[lp] = n;
               p[n] = v[i];
+              ip[lp] = n;
+              lp = lp + 1;
             }else{
               p[n] = p[n] + v[i];
             }
           }
-          for( ipc_ l = 0; l <= lp; l++) mask[ip[l]] = 0;
+          for( ipc_ l = 0; l < lp; l++) mask[ip[l]] = 0;
         }else if(status == 6){ // evaluate p = sparse A^Tv
           for( ipc_ l = lvl; l <= lvu; l++){
             i = iv[l];

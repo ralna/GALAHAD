@@ -1069,10 +1069,10 @@
                                             x_l, x_u, x, z, r, g, x_stat,      &
                                             v, iv, lvl, lvu, p, ip + 1,        &
                                             lp, W = w )
-    IF ( status >= 6 .AND. status <= 8 )                                       &
+    IF ( status == 6 .OR. status == 7 .OR. status == 8 )                       &
       iv( lvl : lvu ) = iv( lvl : lvu ) - 1
   END IF
-  IF ( status >= 6 .AND. status <= 7 ) THEN
+  IF ( status == 6 .OR. status == 7 ) THEN
     lvl = lvl - 1 ; lvu = lvu - 1
   END IF
   RETURN
