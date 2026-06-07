@@ -18,8 +18,7 @@ function Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_bnls)
   return pointer_from_objref(userdata)
 end
 
-function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
-                   dls::String="potr") where {T,INT}
+function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr",dls::String="potr") where {T,INT}
 
   # compute the residuals
   function res(x::Vector{T}, r::Vector{T}, userdata::userdata_bnls{T,INT})
@@ -179,8 +178,8 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
                       lp::Ptr{INT}, got_jr::Bool, userdata::Ptr{Cvoid})
     mnm = max(m_r, n)
     _x = unsafe_wrap(Vector{T}, x, n)
-    _v = unsafe_wrap(Vector{T}, v, mnm)
-    _p = unsafe_wrap(Vector{T}, p, mnm)
+    _v = unsafe_wrap(Vector{T}, v, n)
+    _p = unsafe_wrap(Vector{T}, p, m_r)
     _iv = unsafe_wrap(Vector{INT}, iv, mnm)
     _ip = unsafe_wrap(Vector{INT}, ip, ip == C_NULL ? 0 : m_r)
     _lp = unsafe_wrap(Vector{INT}, lp, lp == C_NULL ? 0 : 1)
@@ -199,7 +198,6 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
                     v::Vector{T}, p::Vector{T}, free::Vector{INT}, n_free::INT,
                     got_jr::Bool, userdata::userdata_bnls{T,INT})
     if transpose
-      resize!(p, n)
       for i in 1:n_free
         j = free[i]
         if j == 1
@@ -211,7 +209,6 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
         end
       end
     else
-      resize!(p, m_r)
       for i in 1:n_free
         j = free[i]
         val = v[j]
@@ -282,181 +279,183 @@ function test_bnls(::Type{T}, ::Type{INT}; sls::String="sytr",
 
   @printf(" fortran sparse matrix indexing\n\n")
 
-  # solve via function calls
-  # ------------------------ 
-  for d in 1:2
-    # Initialize BNLS
-    bnls_initialize(T, INT, data, control, inform)
+  if mode == "direct"
+    # solve via function calls
+    for d in 1:2
+      # Initialize BNLS
+      bnls_initialize(T, INT, data, control, inform)
 
-    # Set user-defined control options
-    # @reset control[].maxit = INT(10)
-    # @reset control[].blls_control.print_level = INT(1)
-    # @reset control[].blls_control.maxit = INT(5)
-    @reset control[].jacobian_available = INT(2)
-    if T == Float32
-      @reset control[].stop_pg_absolute = T(0.0001)
-    else
-      @reset control[].stop_pg_absolute = T(0.00001)
-    end
-    @reset control[].blls_control.sbls_control.definite_linear_solver =
-      galahad_linear_solver(dls)
-    @reset control[].blls_control.sbls_control.symmetric_linear_solver =
-      galahad_linear_solver(sls)
-    st = " "
-
-    for i in 1:n
-      x[i] = T(0.5)  # starting point
-    end
-
-    # solve when Jacobian is available via function calls
-    # --------------------------------------------------- 
-    if d == 1
-      st = "JF"
+      # Set user-defined control options
+      # @reset control[].maxit = INT(10)
+      # @reset control[].blls_control.print_level = INT(1)
+      # @reset control[].blls_control.maxit = INT(5)
       @reset control[].jacobian_available = INT(2)
-      bnls_import(T, INT, control, data, status, n, m_r, "coordinate", jr_ne,
-                  Jr_row, Jr_col, INT(0), C_NULL)
-      bnls_solve_with_jac(T, INT, data, userdata, status, n, m_r, x_l, x_u, 
-                          x, z, r, g, x_stat, res_ptr, jr_ne, jac_ptr, w)
+      if T == Float32
+        @reset control[].stop_pg_absolute = T(0.0001)
+      else
+        @reset control[].stop_pg_absolute = T(0.00001)
+      end
+      @reset control[].blls_control.sbls_control.definite_linear_solver =
+        galahad_linear_solver(dls)
+      @reset control[].blls_control.sbls_control.symmetric_linear_solver =
+        galahad_linear_solver(sls)
+      st = " "
+
+      for i in 1:n
+        x[i] = T(0.5)  # starting point
+      end
+
+      # solve when Jacobian is available via function calls
+      # --------------------------------------------------- 
+      if d == 1
+        st = "JF"
+        @reset control[].jacobian_available = INT(2)
+        bnls_import(T, INT, control, data, status, n, m_r, "coordinate", jr_ne,
+                    Jr_row, Jr_col, INT(0), C_NULL)
+        bnls_solve_with_jac(T, INT, data, userdata, status, n, m_r, x_l, x_u, 
+                            x, z, r, g, x_stat, res_ptr, jr_ne, jac_ptr, w)
+      end
+
+      # solve when Jacobian products are available via function calls
+      # ------------------------------------------------------------- 
+      if d == 2
+        st = "PF"
+        @reset control[].jacobian_available = INT(1)
+        bnls_import_without_jac(T, INT, control, data, status, n, m_r)
+        bnls_solve_with_jacprod(T, INT, data, userdata, status, n, m_r, 
+                                x_l, x_u, x, z, r, g, x_stat, res_ptr, 
+                                jacprod_ptr, jacprods_ptr, sjacprod_ptr, w)
+      end
+
+      bnls_information(T, INT, data, inform, status)
+
+      if inform[].status == 0
+        @printf(" BNLS(%s):%6d iterations. Optimal objective value = %5.2f status = %1d\n",
+                st, inform[].iter, inform[].obj, inform[].status)
+      else
+        @printf(" BNLS(%s): exit status = %1d\n", st, inform[].status)
+      end
+
+      # Delete internal workspace
+      bnls_terminate(T, INT, data, control, inform)
     end
-
-    # solve when Jacobian products are available via function calls
-    # ------------------------------------------------------------- 
-    if d == 2
-      st = "PF"
-      @reset control[].jacobian_available = INT(1)
-      bnls_import_without_jac(T, INT, control, data, status, n, m_r)
-      bnls_solve_with_jacprod(T, INT, data, userdata, status, n, m_r, 
-                              x_l, x_u, x, z, r, g, x_stat, res_ptr, 
-                              jacprod_ptr, jacprods_ptr, sjacprod_ptr, w)
-    end
-
-    bnls_information(T, INT, data, inform, status)
-
-    if inform[].status == 0
-      @printf(" BNLS(%s):%6d iterations. Optimal objective value = %5.2f status = %1d\n",
-              st, inform[].iter, inform[].obj, inform[].status)
-    else
-      @printf(" BNLS(%s): exit status = %1d\n", st, inform[].status)
-    end
-
-    # Delete internal workspace
-    bnls_terminate(T, INT, data, control, inform)
   end
 
-  # reverse-communication input/output
-  mnm = max(m_r, n)
-  eval_status = Ref{INT}()
-  lvl = Ref{INT}()
-  lvu = Ref{INT}()
-  iv = zeros(INT, mnm)
-  ip = zeros(INT, m_r)
-  lp = zeros(INT, 1)
-  v = zeros(T, mnm)
-  p = zeros(T, mnm)
-  got_jr = true
+  if mode == "reverse"
+    # reverse-communication input/output
+    mnm = max(m_r, n)
+    eval_status = Ref{INT}()
+    lvl = Ref{INT}()
+    lvu = Ref{INT}()
+    iv = zeros(INT, mnm)
+    ip = zeros(INT, m_r)
+    lp = zeros(INT, 1)
+    v = zeros(T, mnm)
+    p = zeros(T, mnm)
+    got_jr = true
 
-  # solve via reverse access
-  # ------------------------ 
-  #for d in 1:2
-  for d in 1:1
-    # Initialize BNLS
-    bnls_initialize(T, INT, data, control, inform)
+    # solve via reverse access
+    # ------------------------ 
+    for d in 1:2
+      # Initialize BNLS
+      bnls_initialize(T, INT, data, control, inform)
 
-    # Set user-defined control options
-    # @reset control[].print_level = INT(1)
-    # @reset control[].maxit = INT(10)
-    # @reset control[].blls_control.maxit = INT(5)
-    if T == Float32
-      @reset control[].stop_pg_absolute = T(0.0001)
-    else
-      @reset control[].stop_pg_absolute = T(0.00001)
-    end
-    @reset control[].blls_control.sbls_control.definite_linear_solver =
-      galahad_linear_solver(dls)
-    @reset control[].blls_control.sbls_control.symmetric_linear_solver =
-      galahad_linear_solver(sls)
-    st = " "
+      # Set user-defined control options
+      # @reset control[].print_level = INT(1)
+      # @reset control[].maxit = INT(10)
+      # @reset control[].blls_control.maxit = INT(5)
+      if T == Float32
+        @reset control[].stop_pg_absolute = T(0.0001)
+      else
+        @reset control[].stop_pg_absolute = T(0.00001)
+      end
+      @reset control[].blls_control.sbls_control.definite_linear_solver =
+        galahad_linear_solver(dls)
+      @reset control[].blls_control.sbls_control.symmetric_linear_solver =
+        galahad_linear_solver(sls)
+      st = " "
 
-    for i in 1:n
-      x[i] = T(0.5)  # starting point
-    end
+      for i in 1:n
+        x[i] = T(0.5)  # starting point
+      end
 
-    if d == 1
-      # solve when Jacobian is available via reverse access
-      # ---------------------------------------------------
-      st = "JR"
-      @reset control[].jacobian_available = INT(2)
-      bnls_import(T, INT, control, data, status, n, m_r, "coordinate", 
-                  jr_ne, Jr_row, Jr_col, INT(0), C_NULL)
+      if d == 1
+        # solve when Jacobian is available via reverse access
+        # ---------------------------------------------------
+        st = "JR"
+        @reset control[].jacobian_available = INT(2)
+        bnls_import(T, INT, control, data, status, n, m_r, "coordinate", 
+                    jr_ne, Jr_row, Jr_col, INT(0), C_NULL)
 
-      terminated = false
-      while !terminated # reverse-communication loop
-        bnls_solve_reverse_with_jac(T, INT, data, status, eval_status, 
-                                    n, m_r, x_l, x_u, x, z, r, g, x_stat, 
-                                    jr_ne, Jr_val, w)
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0 # error exit
-          terminated = true
-        elseif status[] == 2 # evaluate r
-          eval_status[] = res(x, r, userdata)
-        elseif status[] == 3 # evaluate Jr
-          eval_status[] = jac(x, Jr_val, userdata)
-        else
-          @printf(" the value %1d of status should not occur\n", status[])
+        terminated = false
+        while !terminated # reverse-communication loop
+          bnls_solve_reverse_with_jac(T, INT, data, status, eval_status, 
+                                      n, m_r, x_l, x_u, x, z, r, g, x_stat, 
+                                      jr_ne, Jr_val, w)
+          if status[] == 0 # successful termination
+            terminated = true
+          elseif status[] < 0 # error exit
+            terminated = true
+          elseif status[] == 2 # evaluate r
+            eval_status[] = res(x, r, userdata)
+          elseif status[] == 3 # evaluate Jr
+            eval_status[] = jac(x, Jr_val, userdata)
+          else
+            @printf(" the value %1d of status should not occur\n", status[])
+          end
         end
       end
-    end
 
-    if d == 2
-      # solve when Jacobian products are available via reverse access
-      # -------------------------------------------------------------
-      st = "PR"
-      @reset control[].jacobian_available = INT(1)
-      bnls_import_without_jac(T, INT, control, data, status, n, m_r)
+      if d == 2
+        # solve when Jacobian products are available via reverse access
+        # -------------------------------------------------------------
+        st = "PR"
+        @reset control[].jacobian_available = INT(1)
+        bnls_import_without_jac(T, INT, control, data, status, n, m_r)
 
-      terminated = false
-      while !terminated # reverse-communication loop
-        bnls_solve_reverse_with_jacprod(T, INT, data, status, eval_status, 
-                                        n, m_r, x_l, x_u, x, z, r, g, x_stat,
-                                        v, iv, lvl, lvu, p, ip, lp[1], w)
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0 # error exit
-          terminated = true
-        elseif status[] == 2 # evaluate r
-          eval_status[] = res(x, r, userdata)
-          got_jr = false
-        elseif status[] == 4 # evaluate p = Jr v
-          eval_status[] = jacprod(x, false, v, p, got_jr, userdata)
-        elseif status[] == 5 # evaluate p = Jr' v
-          eval_status[] = jacprod(x, true, v, p, got_jr, userdata)
-        elseif status[] == 6 # evaluate p = Jr * sparse v
-          eval_status[] = jacprods(n, m_r, x, v, p, iv, lvl[], lvu[], 
-                                   INT[], INT[], got_jr, userdata)
-        elseif status[] == 7 # evaluate p = sparse(Jr(x) * sparse v)
-          eval_status[] = jacprods(n, m_r, x, v, p, iv, lvl[], lvu[], 
-                                   ip, lp, got_jr, userdata)
-        elseif status[] == 8 # evaluate p = sparse(Jr' v)
-          eval_status[] = sjacprod(n, m_r, x, true, v, p, iv, lvu[], 
-                                   got_jr, userdata)
-        else
-          @printf(" the value %1d of status should not occur\n", status[])
+        terminated = false
+        while !terminated # reverse-communication loop
+          bnls_solve_reverse_with_jacprod(T, INT, data, status, eval_status, 
+                                          n, m_r, x_l, x_u, x, z, r, g, x_stat,
+                                          v, iv, lvl, lvu, p, ip, lp[1], w)
+          if status[] == 0 # successful termination
+            terminated = true
+          elseif status[] < 0 # error exit
+            terminated = true
+          elseif status[] == 2 # evaluate r
+            eval_status[] = res(x, r, userdata)
+            got_jr = false
+          elseif status[] == 4 # evaluate p = Jr v
+            eval_status[] = jacprod(x, false, v, p, got_jr, userdata)
+          elseif status[] == 5 # evaluate p = Jr' v
+            eval_status[] = jacprod(x, true, v, p, got_jr, userdata)
+          elseif status[] == 6 # evaluate p = Jr * sparse v
+            eval_status[] = jacprods(n, m_r, x, v, p, iv, lvl[], lvu[], 
+                                     INT[], INT[], got_jr, userdata)
+          elseif status[] == 7 # evaluate p = sparse(Jr(x) * sparse v)
+            eval_status[] = jacprods(n, m_r, x, v, p, iv, lvl[], lvu[], 
+                                     ip, lp, got_jr, userdata)
+          elseif status[] == 8 # evaluate p = sparse(Jr' v)
+            eval_status[] = sjacprod(n, m_r, x, true, v, p, iv, lvu[], 
+                                     got_jr, userdata)
+          else
+            @printf(" the value %1d of status should not occur\n", status[])
+          end
         end
       end
+
+      bnls_information(T, INT, data, inform, status)
+
+      if inform[].status == 0
+        @printf(" BNLS(%s):%6d iterations. Optimal objective value = %5.2f status = %1d\n",
+                st, inform[].iter, inform[].obj, inform[].status)
+      else
+        @printf(" BNLS(%s): exit status = %1d\n", st, inform[].status)
+      end
+
+      # Delete internal workspace
+      bnls_terminate(T, INT, data, control, inform)
     end
-
-    bnls_information(T, INT, data, inform, status)
-
-    if inform[].status == 0
-      @printf(" BNLS(%s):%6d iterations. Optimal objective value = %5.2f status = %1d\n",
-              st, inform[].iter, inform[].obj, inform[].status)
-    else
-      @printf(" BNLS(%s): exit status = %1d\n", st, inform[].status)
-    end
-
-    # Delete internal workspace
-    bnls_terminate(T, INT, data, control, inform)
   end
 
   return 0
@@ -470,7 +469,9 @@ for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
                              (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
   if isfile(libgalahad)
     @testset "BNLS -- $T -- $INT" begin
-      @test test_bnls(T, INT) == 0
+      @testset "$mode communication" for mode in ("reverse", "direct")
+        @test test_bnls(T, INT; mode) == 0
+      end
     end
   end
 end
