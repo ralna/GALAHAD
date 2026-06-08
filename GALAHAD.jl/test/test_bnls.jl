@@ -286,6 +286,8 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       bnls_initialize(T, INT, data, control, inform)
 
       # Set user-defined control options
+      @reset control[].print_level = INT(10)
+      @reset control[].blls_control.print_level = INT(10)
       # @reset control[].maxit = INT(10)
       # @reset control[].blls_control.print_level = INT(1)
       # @reset control[].blls_control.maxit = INT(5)
