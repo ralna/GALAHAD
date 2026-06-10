@@ -149,6 +149,9 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
           end
         end
       end
+      for i in 1:lp[1]
+        @printf(" ip %i\n", ip[i])
+      end
     else
       for i = 1:m_r
         p[i] = zero(T)
@@ -281,15 +284,18 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
 
   if mode == "direct"
     # solve via function calls
-    for d in 1:2
+    #for d in 1:2
+    for d in 2:2
       # Initialize BNLS
       bnls_initialize(T, INT, data, control, inform)
 
       # Set user-defined control options
+      # @reset control[].out = INT(0)
+      # @reset control[].blls_control.out = INT(0)
       @reset control[].print_level = INT(10)
-      @reset control[].blls_control.print_level = INT(10)
+      @reset control[].blls_control.print_level = INT(4)
+      # @reset control[].bllsb_control.print_level = INT(1)
       # @reset control[].maxit = INT(10)
-      # @reset control[].blls_control.print_level = INT(1)
       # @reset control[].blls_control.maxit = INT(5)
       @reset control[].jacobian_available = INT(2)
       if T == Float32
@@ -339,7 +345,9 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       end
 
       # Delete internal workspace
+      @printf(" before terminate\n")
       bnls_terminate(T, INT, data, control, inform)
+      @printf(" after terminate\n")
     end
   end
 
@@ -350,7 +358,8 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     lvl = Ref{INT}()
     lvu = Ref{INT}()
     iv = zeros(INT, mnm)
-    ip = zeros(INT, m_r)
+    #ip = zeros(INT, m_r)
+    ip = zeros(INT, mnm)
     lp = zeros(INT, 1)
     v = zeros(T, mnm)
     p = zeros(T, mnm)
@@ -358,7 +367,8 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
 
     # solve via reverse access
     # ------------------------ 
-    for d in 1:2
+    #for d in 1:2
+    for d in 1:0
       # Initialize BNLS
       bnls_initialize(T, INT, data, control, inform)
 
@@ -456,19 +466,23 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       end
 
       # Delete internal workspace
+      @printf(" before terminate\n")
       bnls_terminate(T, INT, data, control, inform)
+      @printf(" after terminate\n")
     end
   end
 
   return 0
 end
 
-for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
-                             (Float32 , Int64, GALAHAD.libgalahad_single_64   ),
-                             (Float64 , Int32, GALAHAD.libgalahad_double      ),
-                             (Float64 , Int64, GALAHAD.libgalahad_double_64   ),
-                             (Float128, Int32, GALAHAD.libgalahad_quadruple   ),
-                             (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
+#for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
+#                             (Float32 , Int64, GALAHAD.libgalahad_single_64   ),
+#                             (Float64 , Int32, GALAHAD.libgalahad_double      ),
+#                             (Float64 , Int64, GALAHAD.libgalahad_double_64   ),
+#                             (Float128, Int32, GALAHAD.libgalahad_quadruple   ),
+#                             (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
+for (T, INT, libgalahad) in ((Float64 , Int64, GALAHAD.libgalahad_double_64   ),
+                             (Float128, Int32, GALAHAD.libgalahad_quadruple   ))
   if isfile(libgalahad)
     @testset "BNLS -- $T -- $INT" begin
       @testset "$mode communication" for mode in ("reverse", "direct")

@@ -1067,8 +1067,8 @@
   ELSE
     CALL f_bnls_solve_reverse_with_jacprod( fdata, status, eval_status,        &
                                             x_l, x_u, x, z, r, g, x_stat,      &
-                                            v, iv, lvl, lvu, p, ip + 1,        &
-                                            lp, W = w )
+                                            v, iv, lvl, lvu, p, ip + 1, lp,    &
+                                            W = w )
     IF ( status == 6 .OR. status == 7 .OR. status == 8 )                       &
       iv( lvl : lvu ) = iv( lvl : lvu ) - 1
   END IF

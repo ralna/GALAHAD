@@ -117,7 +117,7 @@
 !  DO data_storage_type = 1, 0
    DO data_storage_type = 1, 6
      CALL BLLS_initialize( data, control, inform )
-!    control%print_level = 1
+     control%print_level = 4
 !    control%SBLS_control%print_level = 1
 !    control%print_level = 10
      control%SBLS_control%symmetric_linear_solver = 'sytr' ! non-default solver
@@ -189,7 +189,7 @@
    X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
    MASK = 0
    st = ' RC'
-!  control%print_level = 10
+!  control%print_level = 4
 !  control%maxit = 5
    CALL BLLS_import_without_a( control, data, status, n, o )
    status = 1

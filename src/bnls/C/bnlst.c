@@ -88,7 +88,9 @@ int main(void) {
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing
-    // control.print_level = 1;
+    //control.print_level = 1;
+    control.print_level = 10;
+    control.blls_control.print_level = 10;
     control.jacobian_available = 2;
 #ifdef REAL_32
     control.stop_pg_absolute = 0.0001;
@@ -125,6 +127,8 @@ int main(void) {
     control.f_indexing = false; // fortran sparse matrix indexing
     //control.print_level = 1;
     //control.blls_control.print_level = 1;
+    control.print_level = 10;
+    control.blls_control.print_level = 10;
     control.jacobian_available = 1;
 #ifdef REAL_32
     control.stop_pg_absolute = 0.005;
@@ -160,7 +164,7 @@ int main(void) {
     mnm = imax( m_r, n );
     lp = 0;
     ipc_ eval_status, lvl, lvu;
-    ipc_ iv[mnm], ip[m_r];
+    ipc_ iv[mnm], ip[mnm];
     rpc_ v[mnm], p[mnm];
     bool got_jr;
 
@@ -172,6 +176,8 @@ int main(void) {
     // Set user-defined control options
     control.f_indexing = false; // fortran sparse matrix indexing
     //control.print_level = 1;
+    control.print_level = 10;
+    control.blls_control.print_level = 10;
     control.jacobian_available = 2;
 #ifdef REAL_32
     control.stop_pg_absolute = 0.0001;
@@ -180,7 +186,6 @@ int main(void) {
 #endif
     strcpy(control.blls_control.sbls_control.definite_linear_solver, "potr ");
     strcpy(control.blls_control.sbls_control.symmetric_linear_solver, "sytr ");
-
     for( ipc_ i = 0; i < n; i++) x[i] = 0.5; // starting point
     bnls_import( &control, &data, &status, n, m_r, 
                 "coordinate", jr_ne, Jr_row, Jr_col, 0, NULL );
@@ -189,7 +194,7 @@ int main(void) {
                                   n, m_r, x_l, x_u, x, z, r, g, x_stat, 
                                   jr_ne, Jr_val, w );
       if(status == 0){ // successful termination
-            break;
+          break;
       }else if(status < 0){ // error exit
           break;
       }else if(status == 2){ // evaluate r
@@ -224,6 +229,8 @@ int main(void) {
     control.f_indexing = false; // fortran sparse matrix indexing
     //control.print_level = 1;
     //control.blls_control.print_level = 1;
+    control.print_level = 10;
+    control.blls_control.print_level = 10;
     control.jacobian_available = 1;
 #ifdef REAL_32
     control.stop_pg_absolute = 0.0001;
@@ -233,14 +240,19 @@ int main(void) {
     strcpy(control.blls_control.sbls_control.definite_linear_solver, "potr ");
     strcpy(control.blls_control.sbls_control.symmetric_linear_solver, "sytr ");
 
+lp = mnm;
+for( ipc_ i = 0; i < mnm; i++) ip[i] =i;
+
     for( ipc_ i = 0; i < n; i++) x[i] = 0.5; // starting point
     bnls_import_without_jac( &control, &data, &status, n, m_r );
     while(true){ // reverse-communication loop
+printf(" status in  = %1" d_ipc_ "\n", status);
       bnls_solve_reverse_with_jacprod( &data, &status, &eval_status,
                                        n, m_r, x_l, x_u, x, z, r, g, x_stat,
                                        v, iv, &lvl, &lvu, p, ip, lp, w );
+printf(" status out = %1" d_ipc_ "\n", status);
       if(status == 0){ // successful termination
-            break;
+          break;
       }else if(status < 0){ // error exit
           break;
       }else if(status == 2){ // evaluate r
