@@ -4603,7 +4603,7 @@
 !  indices of the base-fixed set
 
         base_fixed = base_fixed - 1
-        data%NZ_d( base_fixed ) = i
+        data%NZ_d( base_fixed ) = j
         X_alpha( j ) = X( j )
         CYCLE
 
