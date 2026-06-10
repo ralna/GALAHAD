@@ -3233,6 +3233,10 @@
 !  initial entry
 
   100 CONTINUE
+!write(99,*) ' n ', n
+!write(99,*) ' X ', X
+!write(99,*) ' X_s ', X_s
+!write(99,*) ' D ', D
 
 !  check input parameters
 
@@ -3397,7 +3401,10 @@
 !  record the number of break points
 
       data%nz_d_start = 1 ; data%nz_d_end = data%n_break
-
+write(6,*) ' data%NZ_d free  ', data%NZ_d( 1 : data%n_break )
+write(6,*) ' data%NZ_d fixed ', data%NZ_d( data%n_break + 1 : n)
+!write(99,*) ' free  ', data%NZ_d( 1 : data%n_break )
+!write(99,*) ' fixed ', data%NZ_d( data%n_break + 1 : n)
       IF ( data%printp ) WRITE( out, "( /, A, 1X, I0, ' variable', A,          &
      &  ' freed from ', A, ' bound', A, ', ', I0, ' variable', A, ' remain',   &
      &  A, ' fixed,', /, A, ' of which ', I0, 1X, A, ' between bounds' )" )    &
@@ -3682,7 +3689,7 @@
 
         alpha_current = data%alpha_next
 
-!  find the next breakpoint ( end of the segment )
+!  find the next breakpoint (end of the segment)
 
         data%alpha_next = data%BREAK_points( 1 )
         CALL SORT_heapsort_smallest( data%n_break, data%BREAK_points,          &
@@ -3758,6 +3765,7 @@
 
         IF ( data%regularization ) THEN
           IF ( segment > 1 ) THEN
+write(6,*) ' ** d_start, end ',  data%nz_d_start, data%nz_d_end
             DO k = data%nz_d_start, data%nz_d_end
               j = data%NZ_d( k )
               data%W( j ) = data%W( j ) + alpha_current * D( j )
@@ -3797,6 +3805,8 @@
             write( out, "( ' variable ', I0, ' reaches a bound' )" ) ibreak
           IF ( data%printd ) WRITE( out, "( A, ' Variable ', I0,               &
          &  ' is fixed, step =', ES12.4 )" ) prefix, ibreak, data%alpha_next
+
+!write(99,*) ' fixed, alpha ', ibreak, data%alpha_next
 
 !  indicate the status of the newly-fixed variable
 
@@ -3924,11 +3934,13 @@
         IF ( data%regularization ) THEN
           data%rho_alpha_dash = data%rho_alpha_dash                            &
             + data%delta_alpha * data%rho_alpha_dashdash
+write(6,*) ' * d_start, end ',  data%nz_d_start, data%nz_d_end
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
             IF ( data%shifts ) THEN
               data%rho_alpha_dash = data%rho_alpha_dash - D( j )               &
                 * ( X( j ) - X_s( j ) + data%W( j ) + data%alpha_next * D( j ) )
+write(6,*) j,  X( j ) + data%alpha_next * D( j ) - X_s( j ), D( j ), data%W( j )
             ELSE
               data%rho_alpha_dash = data%rho_alpha_dash - D( j )               &
                 * ( X( j ) + data%W( j ) + data%alpha_next * D( j ) )
@@ -4098,18 +4110,26 @@
 
           IF ( data%regularization ) THEN
             vtv = zero ; vtx = zero
-            DO l =  data%nz_d_start, data%nz_d_end
-              j =  data%NZ_d( l )
-              s =  D( j )
+write(6,*) ' d_start, end ',  data%nz_d_start, data%nz_d_end
+write(6,*)  data%NZ_d(  data%nz_d_start : data%nz_d_end )
+            DO l = data%nz_d_start, data%nz_d_end
+              j = data%NZ_d( l )
+              s = D( j )
               vtv = vtv + s ** 2
-!             IF ( data%shifts ) THEN
-!               vtx = vtx + s * ( MAX( X_l( j ), MIN( X_u( j ),                &
-!                                      X( j ) + data%alpha_next * D( j ) ) )   &
-!                                 - X_s( j ) )
-!             ELSE
+              IF ( data%shifts ) THEN
+
+write(6,*) j, MAX( X_l( j ), &
+ MIN( X_u( j ), X( j ) + data%alpha_next * D( j ) ) ), &
+ X( j ) + data%alpha_next * D( j ) - X_s(j), D( j )
+
+
+                vtx = vtx + s * ( MAX( X_l( j ), MIN( X_u( j ),                &
+                                       X( j ) + data%alpha_next * D( j ) ) )   &
+                                  - X_s( j ) )
+              ELSE
                 vtx = vtx + s * MAX( X_l( j ), MIN( X_u( j ),                  &
                                      X( j ) + data%alpha_next * D( j ) ) )
-!             END IF  
+              END IF  
             END DO
 
             IF ( data%printw ) WRITE( out, "(                                  &
@@ -4120,7 +4140,7 @@
 
 !  use the newly-computed derivatives of rho
 
-            data%rho_alpha_dash = vtx ; data%rho_alpha_dashdash = vtv
+!           data%rho_alpha_dash = vtx ; data%rho_alpha_dashdash = vtv
 
 !  record the derivatives of phi
 
