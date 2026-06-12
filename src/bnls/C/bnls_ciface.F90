@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-06-04 AT 16:20 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-06-12 AT 10:50 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -775,7 +775,6 @@
 
 !  call C interoperable eval_c
 
-!   write(6, "( ' X in wrap_eval_c = ', 2ES12.4 )" ) x
     status = feval_r( n, m_r, x, r, cuserdata )
     RETURN
 
@@ -929,16 +928,13 @@
     END IF
 
     IF ( f_indexing ) THEN
-!write(6,"( ' ciface lvl, lvu = ', 2I5 )" ) lvl, lvu
       status = feval_Jr_prods( n, m_r, x, v, p, iv, lvl, lvu,                  &
                                ip, lp, cgot_jr, cuserdata )
     ELSE
-!write(6,"( ' ciface lvl, lvu = ', 2I5 )" ) lvl, lvu
       status = feval_Jr_prods( n, m_r, x, v, p, iv - 1, lvl - 1, lvu - 1,      &
                                ip, lp, cgot_jr, cuserdata )
       IF ( PRESENT( lp ) ) ip( : lp ) = ip( : lp ) + 1
     END IF
-!if ( PRESENT( ip ) ) write(6,"( ' ciface ip ', 5I5 )" ) ip(:lp)
     RETURN
 
     END SUBROUTINE wrap_eval_Jr_prods

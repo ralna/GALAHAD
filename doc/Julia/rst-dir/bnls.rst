@@ -71,7 +71,7 @@ available structures
 example calls
 -------------
 
-This is an example of how to use the package to solve a simplex-constrained 
+This is an example of how to use the package to solve a bound-constrained 
 nonlinear least-squares problem; the code is available 
 in $GALAHAD/src/bnls/Julia/test_bnls.jl .
 

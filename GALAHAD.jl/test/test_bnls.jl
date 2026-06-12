@@ -105,10 +105,8 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     if !isempty(ip) && !isempty(lp)
       userdata.flag = userdata.flag + 1
       lp[1] = 0
-      # @printf(" test lvl,lvu = %1d %1d\n", lvl, lvu)
       for l = lvl:lvu
         j = iv[l]
-        #@printf(" test j = %1d\n", j)
         val = v[j]
         if j == 1
           i = 1
@@ -150,9 +148,6 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
             p[i] = p[i] + x[i+1] * val
           end
         end
-      end
-      for i in 1:lp[1]
-      #  @printf(" test ip %i\n", ip[i])
       end
     else
       for i = 1:m_r
@@ -347,9 +342,7 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       end
 
       # Delete internal workspace
-      #@printf(" before terminate\n")
       bnls_terminate(T, INT, data, control, inform)
-      #@printf(" after terminate\n")
     end
   end
 
@@ -444,10 +437,6 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
           elseif status[] == 5 # evaluate p = Jr' v
             eval_status[] = jacprod(x, true, v, p, got_jr, userdata)
           elseif status[] == 6 # evaluate p = Jr * sparse v
-        #@printf(" run lvl, lvu %i %i\n", lvl[], lvu[])
-      for i in lvl[]:lvu[]
-        #@printf(" test iv %i\n", iv[i])
-      end
             eval_status[] = jacprods(n, m_r, x, v, p, iv, lvl[], lvu[], 
                                      INT[], INT[], got_jr, userdata)
           elseif status[] == 7 # evaluate p = sparse(Jr(x) * sparse v)
@@ -472,9 +461,7 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       end
 
       # Delete internal workspace
-      #@printf(" before terminate\n")
       bnls_terminate(T, INT, data, control, inform)
-      #@printf(" after terminate\n")
     end
   end
 
@@ -487,9 +474,6 @@ for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
                              (Float64 , Int64, GALAHAD.libgalahad_double_64   ),
                              (Float128, Int32, GALAHAD.libgalahad_quadruple   ),
                              (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
-#for (T, INT, libgalahad) in ((Float64 , Int64, GALAHAD.libgalahad_double_64   ),
-#                             (Float64 , Int32, GALAHAD.libgalahad_double      ))
-##                            (Float128, Int32, GALAHAD.libgalahad_quadruple   ))
   if isfile(libgalahad)
     @testset "BNLS -- $T -- $INT" begin
       @testset "$mode communication" for mode in ("direct","reverse")

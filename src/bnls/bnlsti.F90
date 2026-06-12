@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-05-06 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-06-12 AT 10:50 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_BNLS_interface_test
    USE GALAHAD_KINDS_precision

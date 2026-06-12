@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-06-04 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-06-12 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -1625,7 +1625,6 @@
        END IF
        IF ( data%weight > zero ) data%DIAG( : prob%n ) =                       &
           data%DIAG( : prob%n ) + data%weight
-!write(6,"( ' diag ', 4ES12.4 )" )  data%DIAG( : prob%n )
        IF ( data%set_printm ) WRITE( data%out,                                 &
          "( /, A, ' diagonal preconditioner, min, max =', 2ES11.4 )" ) prefix, &
            MINVAL( data%DIAG( : prob%n ) ), MAXVAL( data%DIAG( : prob%n ) )
@@ -1788,9 +1787,7 @@
            inform%status = GALAHAD_error_evaluation ; GO TO 910
          END IF
        ELSE
-!        reverse%P( : prob%o ) = - prob%B
          reverse%V( : prob%n ) = prob%X
-!write(6,"(' v', /, ( 5ES12.4 ) )" ) reverse%V( : prob%n )
          reverse%transpose = .FALSE.
          data%branch = 210 ; inform%status = 2 ; RETURN
        END IF
@@ -3406,10 +3403,6 @@
 !  record the number of break points
 
       data%nz_d_start = 1 ; data%nz_d_end = data%n_break
-!write(6,*) ' data%NZ_d free  ', data%NZ_d( 1 : data%n_break )
-!write(6,*) ' data%NZ_d fixed ', data%NZ_d( data%n_break + 1 : n)
-!write(99,*) ' free  ', data%NZ_d( 1 : data%n_break )
-!write(99,*) ' fixed ', data%NZ_d( data%n_break + 1 : n)
       IF ( data%printp ) WRITE( out, "( /, A, 1X, I0, ' variable', A,          &
      &  ' freed from ', A, ' bound', A, ', ', I0, ' variable', A, ' remain',   &
      &  A, ' fixed,', /, A, ' of which ', I0, 1X, A, ' between bounds' )" )    &
@@ -3766,19 +3759,6 @@
           phi_alpha = f_alpha
         END IF
 
-!  update w
-
-!       IF ( data%regularization ) THEN
-!         IF ( segment > 1 ) THEN
-!           DO k = data%nz_d_start, data%nz_d_end
-!             j = data%NZ_d( k )
-!             data%W( j ) = data%W( j ) + alpha_current * D( j )
-!           END DO
-!         ELSE
-!           data%W( : n ) = zero
-!         END IF
-!       END IF
-
 !  update u and reset p to zero
 
         IF ( segment > 1 ) THEN
@@ -3788,8 +3768,6 @@
             data%P( i ) = zero
           END DO
         ELSE
-!write(6,*) ' segment = 1, alpha_current = ', alpha_current
-!          data%U( : o ) = alpha_current * data%P( : o )
           data%U( : o ) = zero
           data%P( : o ) = zero
         END IF
@@ -3883,14 +3861,11 @@
         ELSE
           reverse%lvl = data%nz_d_start
           reverse%lvu = data%nz_d_end
-!write(6,"( ' blls < 220 fortran lvl, lvu ', 2I5 )" ) reverse%lvl, reverse%lvu
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
             reverse%IV( k ) = j
             reverse%V( j ) = D( j )
           END DO
-!write(6,"( ' blls < 220 iv ', 5I5 )" ) 
-!reverse%IV( data%nz_d_start : data%nz_d_end )
            data%branch = 220 ; status = 4
           RETURN
         END IF
@@ -3908,10 +3883,6 @@
             i = data%IP( k )
             data%P( i ) = reverse%P( i )
           END DO
-!write(6,"( ' blls 220 lp ', I5 )" ) data%lp
-!write(6,"( ' blls 220 ip ', 5I5 )" ) data%IP( : data%lp )
-!write(6,"( ' blls 220 p ', 3ES22.14, /, (  '       ', 3ES22.14 ) )" ) &
-! data%P(data%IP( : data%lp ))
         END IF
 
 !  update the first and second derivatives of f(x(alpha)), and s
@@ -3945,23 +3916,14 @@
         IF ( data%regularization ) THEN
           data%rho_alpha_dash = data%rho_alpha_dash                            &
             + data%delta_alpha * data%rho_alpha_dashdash
-!write(6,"(' da * rho_dd ', ES22.14 )" ) &
-! data%delta_alpha * data%rho_alpha_dashdash
-!write(6,*) ' * d_start, end ',  data%nz_d_start, data%nz_d_end
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
-
-!data%W( j ) = zero
             IF ( data%shifts ) THEN
               data%rho_alpha_dash = data%rho_alpha_dash - D( j )               &
                 * ( X( j ) - X_s( j ) + data%alpha_next * D( j ) )
-!               * ( X( j ) - X_s( j ) + data%W( j ) + data%alpha_next * D( j ) )
-!write(6,"( ' j, d, e+ad, w ', i0, 3es22.14 )" ) &
-! j,  D(j), X( j ) - X_s( j ) + data%alpha_next * D( j ), data%W( j )
             ELSE
               data%rho_alpha_dash = data%rho_alpha_dash - D( j )               &
                 * ( X( j ) + data%alpha_next * D( j ) )
-!               * ( X( j ) + data%W( j ) + data%alpha_next * D( j ) )
             END IF
             data%rho_alpha_dashdash = data%rho_alpha_dashdash - D( j ) ** 2
           END DO
@@ -4057,7 +4019,6 @@
 !  a) evaluation directly via A
 
           IF ( data%present_a ) THEN
-write(6,*) ' AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
             rts = DOT_PRODUCT( R, data%S( : o ) )
             DO j = 1, n
               ll = Ao_ptr( j ) ; lu = Ao_ptr( j + 1 ) - 1
@@ -4072,17 +4033,7 @@ write(6,*) ' AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
 !  b) evaluation via matrix-vector product call
 
           ELSE IF ( data%present_asprod ) THEN
-write(6,*) ' BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'
             X_alpha = MAX( X_l, MIN( X_u, X + data%alpha_next * D ) ) - X
-!           data%R = R
-!           DO j = 1, n
-!             dx = MAX( X_l( j ), MIN( X_u( j ),                               &
-!                     X( j ) + data%alpha_next * D( j ) ) ) - X( j )
-!             DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
-!               i = Ao_row( l )
-!               R( i ) = R( i ) + Ao_val( l ) * dx
-!             END DO
-!           END DO
             CALL eval_ASPROD( status, userdata, V = X_alpha, P = data%R )
             IF ( status /= GALAHAD_ok ) THEN
               status = GALAHAD_error_evaluation ; GO TO 900
@@ -4093,7 +4044,6 @@ write(6,*) ' BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'
 !  c) evaluation via reverse communication
 
           ELSE
-write(6,*) ' CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'
             reverse%V( : n )                                                   &
               = MAX( X_l, MIN( X_u, X + data%alpha_next * D ) ) - X
             data%branch = 260 ; status = 2
@@ -4131,8 +4081,6 @@ write(6,*) ' CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'
 
           IF ( data%regularization ) THEN
             vtv = zero ; vtx = zero
-!write(6,*) ' d_start, end ',  data%nz_d_start, data%nz_d_end
-!write(6,*)  data%NZ_d(  data%nz_d_start : data%nz_d_end )
             DO l = data%nz_d_start, data%nz_d_end
               j = data%NZ_d( l )
               s = D( j )
@@ -6269,7 +6217,6 @@ write(6,*) ' CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'
 !  a) evaluation via preconditioner-inverse-vector product call
 
       IF ( data%preconditioned ) THEN
-!write(6,"(' g', 4ES12.4)" ) data%G( : n )
         IF ( data%present_dprec ) THEN
           IF ( data%n_free < n ) THEN
             data%S( data%FREE( : data%n_free ) )                               &
@@ -6310,7 +6257,6 @@ write(6,*) ' CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'
           END IF
           data%S( : n ) = reverse%P( : n )
         END IF
-!write(6,"(' s', 4ES12.4)" ) data%S( : n )
         IF ( data%n_free < n ) THEN
           data%P( data%FREE( : data%n_free ) )                                 &
             = - data%S( data%FREE( : data%n_free ) )

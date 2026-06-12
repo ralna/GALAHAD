@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-06-04 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-06-12 AT 10:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -2815,8 +2815,6 @@ end if
              inform%status = inform%BLLS_inform%status + 2
              data%branch = 220 ; RETURN
            ELSE
-!write(6,"( ' bnls 4 lvl, lvu = ', 2I5 )" ) data%reverse%lvl, data%reverse%lvu
-
              CALL eval_Jr_prods( inform%status, nlp%X, userdata,               &
                                  data%reverse%V, data%reverse%P,               &
                                  IV = data%reverse%IV,                         &
@@ -2829,8 +2827,6 @@ end if
              END IF
              data%got_jr = .TRUE.
            END IF
-!write(6,"( ' bnls 4 p ', 3ES22.14, /, (  '          ', 3ES22.14 ) )" ) &
-! data%reverse%P(:data%GN_model%o)
 
 !  compute sparse( Jr * sparse v )
 
@@ -2839,8 +2835,6 @@ end if
              inform%status = inform%BLLS_inform%status + 2
              data%branch = 220 ; RETURN
            ELSE
-!write(6,"( ' bnls fortran lvl, lvu ', 2I5 )" )data%reverse%lvl, data%reverse%lvu
-!write(6,"( ' bnls iv ', 5I5)") data%reverse%IV(data%reverse%lvl:data%reverse%lvu)
              CALL eval_Jr_prods( inform%status, nlp%X, userdata,               &
                                  data%reverse%V, data%reverse%P,               &
                                  IV = data%reverse%IV,                         &
@@ -2873,9 +2867,6 @@ end if
              END IF
              data%got_jr = .TRUE.
            END IF
-!write(6,"( ' bnls 6 p ', 3ES22.14, /, (  '          ', 3ES22.14 ) )" ) &
-! data%reverse%P(data%reverse%IV(:data%reverse%lvu))
-
            
 !  error returns
 
@@ -2931,7 +2922,7 @@ end if
 !  recover the step
 
        data%S( : nlp%n ) = data%GN_model%X( : nlp%n ) - nlp%X( : nlp%n )
-!write(6,"( ' s = ', 2ES12.4 )" ) data%S( : nlp%n )
+!      WRITE( 6, "( ' s = ', 2ES12.4 )" ) data%S( : nlp%n )
        data%s_norm = TWO_NORM( data%S( : nlp%n ) )
 !      WRITE( 6, "( ' s_norm ', ES12.4 )" ) data%s_norm
 !      WRITE( 6, "( ' ||s|| = ', ES12.4 )" ) MAXVAL( ABS( data%S( : nlp%n ) ) )
