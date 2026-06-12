@@ -114,11 +114,11 @@
    WRITE( 6, "( /, ' basic tests of Jacobian storage formats', / )" )
 
 !  DO data_storage_type = 1, 1
-   DO data_storage_type = 1, 0
-!  DO data_storage_type = 1, 6
+!  DO data_storage_type = 1, 0
+   DO data_storage_type = 1, 6
      CALL BLLS_initialize( data, control, inform )
-     control%print_level = 3
-     control%print_level = 4
+!    control%print_level = 3
+!    control%print_level = 4
 !    control%SBLS_control%print_level = 1
 !    control%print_level = 10
      control%SBLS_control%symmetric_linear_solver = 'sytr' ! non-default solver
@@ -191,8 +191,8 @@
    MASK = 0
    st = ' RC'
 !  control%print_level = 3
-   control%print_level = 4
-   control%maxit = 2
+!  control%print_level = 4
+!  control%maxit = 2
    CALL BLLS_import_without_a( control, data, status, n, o )
    status = 1
    DO

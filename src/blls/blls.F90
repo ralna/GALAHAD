@@ -2196,11 +2196,13 @@
 !  form the matrix-vector product A * v with sparse v
 
          CASE ( 2 )
+           reverse%transpose = .FALSE.
            data%branch = 300 ; inform%status = 4 ; RETURN
 
-!  form the sparse matrix-vector product A * v
+!  form the sparse matrix-vector product A^T * v
 
          CASE ( 3 )
+           reverse%transpose = .TRUE.
            data%branch = 300 ; inform%status = 6 ; RETURN
 
 !  form the preconditioned product P^-1 * v
@@ -2379,16 +2381,19 @@
 !  form the matrix-vector product A * v
 
          CASE ( 2 )
+           reverse%transpose = .FALSE.
            data%branch = 400 ; inform%status = 2 ; RETURN
 
 !  form the sparse matrix-vector product A * v
 
          CASE ( 3 )
+           reverse%transpose = .FALSE.
            data%branch = 400 ; inform%status = 4 ; RETURN
 
 !  form the sparse matrix-vector product A * v and return a sparse result
 
          CASE ( 4 )
+           reverse%transpose = .FALSE.
            data%branch = 400 ; inform%status = 5 ; RETURN
          END SELECT
          GO TO 400 ! end of arc length loop
@@ -3401,8 +3406,8 @@
 !  record the number of break points
 
       data%nz_d_start = 1 ; data%nz_d_end = data%n_break
-write(6,*) ' data%NZ_d free  ', data%NZ_d( 1 : data%n_break )
-write(6,*) ' data%NZ_d fixed ', data%NZ_d( data%n_break + 1 : n)
+!write(6,*) ' data%NZ_d free  ', data%NZ_d( 1 : data%n_break )
+!write(6,*) ' data%NZ_d fixed ', data%NZ_d( data%n_break + 1 : n)
 !write(99,*) ' free  ', data%NZ_d( 1 : data%n_break )
 !write(99,*) ' fixed ', data%NZ_d( data%n_break + 1 : n)
       IF ( data%printp ) WRITE( out, "( /, A, 1X, I0, ' variable', A,          &
@@ -3763,17 +3768,16 @@ write(6,*) ' data%NZ_d fixed ', data%NZ_d( data%n_break + 1 : n)
 
 !  update w
 
-        IF ( data%regularization ) THEN
-          IF ( segment > 1 ) THEN
-write(6,*) ' ** d_start, end ',  data%nz_d_start, data%nz_d_end
-            DO k = data%nz_d_start, data%nz_d_end
-              j = data%NZ_d( k )
-              data%W( j ) = data%W( j ) + alpha_current * D( j )
-            END DO
-          ELSE
-            data%W( : n ) = zero
-          END IF
-        END IF
+!       IF ( data%regularization ) THEN
+!         IF ( segment > 1 ) THEN
+!           DO k = data%nz_d_start, data%nz_d_end
+!             j = data%NZ_d( k )
+!             data%W( j ) = data%W( j ) + alpha_current * D( j )
+!           END DO
+!         ELSE
+!           data%W( : n ) = zero
+!         END IF
+!       END IF
 
 !  update u and reset p to zero
 
@@ -3879,12 +3883,15 @@ write(6,*) ' ** d_start, end ',  data%nz_d_start, data%nz_d_end
         ELSE
           reverse%lvl = data%nz_d_start
           reverse%lvu = data%nz_d_end
+!write(6,"( ' blls < 220 fortran lvl, lvu ', 2I5 )" ) reverse%lvl, reverse%lvu
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
             reverse%IV( k ) = j
             reverse%V( j ) = D( j )
           END DO
-          data%branch = 220 ; status = 4
+!write(6,"( ' blls < 220 iv ', 5I5 )" ) 
+!reverse%IV( data%nz_d_start : data%nz_d_end )
+           data%branch = 220 ; status = 4
           RETURN
         END IF
 
@@ -3901,6 +3908,10 @@ write(6,*) ' ** d_start, end ',  data%nz_d_start, data%nz_d_end
             i = data%IP( k )
             data%P( i ) = reverse%P( i )
           END DO
+!write(6,"( ' blls 220 lp ', I5 )" ) data%lp
+!write(6,"( ' blls 220 ip ', 5I5 )" ) data%IP( : data%lp )
+!write(6,"( ' blls 220 p ', 3ES22.14, /, (  '       ', 3ES22.14 ) )" ) &
+! data%P(data%IP( : data%lp ))
         END IF
 
 !  update the first and second derivatives of f(x(alpha)), and s
@@ -3934,16 +3945,23 @@ write(6,*) ' ** d_start, end ',  data%nz_d_start, data%nz_d_end
         IF ( data%regularization ) THEN
           data%rho_alpha_dash = data%rho_alpha_dash                            &
             + data%delta_alpha * data%rho_alpha_dashdash
-write(6,*) ' * d_start, end ',  data%nz_d_start, data%nz_d_end
+!write(6,"(' da * rho_dd ', ES22.14 )" ) &
+! data%delta_alpha * data%rho_alpha_dashdash
+!write(6,*) ' * d_start, end ',  data%nz_d_start, data%nz_d_end
           DO k = data%nz_d_start, data%nz_d_end
             j = data%NZ_d( k )
+
+!data%W( j ) = zero
             IF ( data%shifts ) THEN
               data%rho_alpha_dash = data%rho_alpha_dash - D( j )               &
-                * ( X( j ) - X_s( j ) + data%W( j ) + data%alpha_next * D( j ) )
-write(6,*) j,  X( j ) + data%alpha_next * D( j ) - X_s( j ), D( j ), data%W( j )
+                * ( X( j ) - X_s( j ) + data%alpha_next * D( j ) )
+!               * ( X( j ) - X_s( j ) + data%W( j ) + data%alpha_next * D( j ) )
+!write(6,"( ' j, d, e+ad, w ', i0, 3es22.14 )" ) &
+! j,  D(j), X( j ) - X_s( j ) + data%alpha_next * D( j ), data%W( j )
             ELSE
               data%rho_alpha_dash = data%rho_alpha_dash - D( j )               &
-                * ( X( j ) + data%W( j ) + data%alpha_next * D( j ) )
+                * ( X( j ) + data%alpha_next * D( j ) )
+!               * ( X( j ) + data%W( j ) + data%alpha_next * D( j ) )
             END IF
             data%rho_alpha_dashdash = data%rho_alpha_dashdash - D( j ) ** 2
           END DO
@@ -4039,13 +4057,14 @@ write(6,*) j,  X( j ) + data%alpha_next * D( j ) - X_s( j ), D( j ), data%W( j )
 !  a) evaluation directly via A
 
           IF ( data%present_a ) THEN
+write(6,*) ' AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
             rts = DOT_PRODUCT( R, data%S( : o ) )
             DO j = 1, n
               ll = Ao_ptr( j ) ; lu = Ao_ptr( j + 1 ) - 1
               IF ( ll <= lu ) THEN
                 s = DOT_PRODUCT( data%S( Ao_row( ll : lu ) ), Ao_val( ll : lu ))
                 dx = MAX( X_l( j ), MIN( X_u( j ),                             &
-                        X( j ) + data%alpha_next * D( j ) ) ) - X( j )
+                          X( j ) + data%alpha_next * D( j ) ) ) - X( j )
                 rts = rts + s * dx
               END IF
             END DO
@@ -4053,6 +4072,7 @@ write(6,*) j,  X( j ) + data%alpha_next * D( j ) - X_s( j ), D( j ), data%W( j )
 !  b) evaluation via matrix-vector product call
 
           ELSE IF ( data%present_asprod ) THEN
+write(6,*) ' BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'
             X_alpha = MAX( X_l, MIN( X_u, X + data%alpha_next * D ) ) - X
 !           data%R = R
 !           DO j = 1, n
@@ -4073,6 +4093,7 @@ write(6,*) j,  X( j ) + data%alpha_next * D( j ) - X_s( j ), D( j ), data%W( j )
 !  c) evaluation via reverse communication
 
           ELSE
+write(6,*) ' CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'
             reverse%V( : n )                                                   &
               = MAX( X_l, MIN( X_u, X + data%alpha_next * D ) ) - X
             data%branch = 260 ; status = 2
@@ -4110,19 +4131,13 @@ write(6,*) j,  X( j ) + data%alpha_next * D( j ) - X_s( j ), D( j ), data%W( j )
 
           IF ( data%regularization ) THEN
             vtv = zero ; vtx = zero
-write(6,*) ' d_start, end ',  data%nz_d_start, data%nz_d_end
-write(6,*)  data%NZ_d(  data%nz_d_start : data%nz_d_end )
+!write(6,*) ' d_start, end ',  data%nz_d_start, data%nz_d_end
+!write(6,*)  data%NZ_d(  data%nz_d_start : data%nz_d_end )
             DO l = data%nz_d_start, data%nz_d_end
               j = data%NZ_d( l )
               s = D( j )
               vtv = vtv + s ** 2
               IF ( data%shifts ) THEN
-
-write(6,*) j, MAX( X_l( j ), &
- MIN( X_u( j ), X( j ) + data%alpha_next * D( j ) ) ), &
- X( j ) + data%alpha_next * D( j ) - X_s(j), D( j )
-
-
                 vtx = vtx + s * ( MAX( X_l( j ), MIN( X_u( j ),                &
                                        X( j ) + data%alpha_next * D( j ) ) )   &
                                   - X_s( j ) )
@@ -6128,6 +6143,13 @@ write(6,*) j, MAX( X_l( j ), &
           data%FREE( data%n_free ) = j
         END IF
       END DO
+
+!  make a copy for reverse communication
+
+      IF ( data%reverse_afprod ) THEN
+        reverse%lvl = 1 ; reverse%lvu = data%n_free
+        reverse%IV( 1 : data%n_free ) = data%FREE( 1 : data%n_free )
+      END IF
 
       IF ( data%printp ) WRITE( out, "( /, A, ' ** cgls entered',              &
      &    ' (n = ', I0, ', free = ', I0, ') ** ' )" ) prefix, n, data%n_free

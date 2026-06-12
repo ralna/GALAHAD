@@ -929,13 +929,16 @@
     END IF
 
     IF ( f_indexing ) THEN
-      status = feval_Jr_prods( n, m_r, x, v, p, iv, lvl - 1, lvu - 1,          &
+!write(6,"( ' ciface lvl, lvu = ', 2I5 )" ) lvl, lvu
+      status = feval_Jr_prods( n, m_r, x, v, p, iv, lvl, lvu,                  &
                                ip, lp, cgot_jr, cuserdata )
     ELSE
+!write(6,"( ' ciface lvl, lvu = ', 2I5 )" ) lvl, lvu
       status = feval_Jr_prods( n, m_r, x, v, p, iv - 1, lvl - 1, lvu - 1,      &
                                ip, lp, cgot_jr, cuserdata )
+      IF ( PRESENT( lp ) ) ip( : lp ) = ip( : lp ) + 1
     END IF
-    IF ( PRESENT( lp ) ) ip( : lp ) = ip( : lp ) + 1
+!if ( PRESENT( ip ) ) write(6,"( ' ciface ip ', 5I5 )" ) ip(:lp)
     RETURN
 
     END SUBROUTINE wrap_eval_Jr_prods
@@ -1062,8 +1065,9 @@
   IF ( fdata%f_indexing ) THEN
     CALL f_bnls_solve_reverse_with_jacprod( fdata, status, eval_status,        &
                                             x_l, x_u, x, z, r, g, x_stat,      &
-                                            v, iv, lvl, lvu, p, ip + 1, lp,    &
+                                            v, iv, lvl, lvu, p, ip, lp,        &
                                             W = w )
+!                                           v, iv, lvl, lvu, p, ip + 1, lp,    &
   ELSE
     CALL f_bnls_solve_reverse_with_jacprod( fdata, status, eval_status,        &
                                             x_l, x_u, x, z, r, g, x_stat,      &
@@ -1071,9 +1075,9 @@
                                             W = w )
     IF ( status == 6 .OR. status == 7 .OR. status == 8 )                       &
       iv( lvl : lvu ) = iv( lvl : lvu ) - 1
-  END IF
-  IF ( status == 6 .OR. status == 7 ) THEN
-    lvl = lvl - 1 ; lvu = lvu - 1
+    IF ( status == 6 .OR. status == 7 ) THEN
+      lvl = lvl - 1 ; lvu = lvu - 1
+    END IF
   END IF
   RETURN
 

@@ -2657,10 +2657,14 @@ end if
        data%control%BLLS_control%stop_d                                        &
          = MIN( control%BLLS_control%stop_d, point1 * inform%norm_pg )
        CALL CPU_TIME( data%time_record ) ; CALL CLOCK_time( data%clock_record )
-       IF ( data%reverse_internal ) GO TO 230
+       IF ( data%reverse_internal ) THEN
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement 230' )" ) prefix
+         GO TO 230
+       END IF
 
 !  solve problem with a reverse commmunication loop
 
+       IF ( data%printw ) WRITE( data%out, "( A, ' statement 210' )" ) prefix
  210   CONTINUE
          CALL BLLS_solve( data%GN_model, data%BLLS_data,                       &
                           data%control%BLLS_control, inform%BLLS_inform,       &
@@ -2811,6 +2815,8 @@ end if
              inform%status = inform%BLLS_inform%status + 2
              data%branch = 220 ; RETURN
            ELSE
+!write(6,"( ' bnls 4 lvl, lvu = ', 2I5 )" ) data%reverse%lvl, data%reverse%lvu
+
              CALL eval_Jr_prods( inform%status, nlp%X, userdata,               &
                                  data%reverse%V, data%reverse%P,               &
                                  IV = data%reverse%IV,                         &
@@ -2823,6 +2829,8 @@ end if
              END IF
              data%got_jr = .TRUE.
            END IF
+!write(6,"( ' bnls 4 p ', 3ES22.14, /, (  '          ', 3ES22.14 ) )" ) &
+! data%reverse%P(:data%GN_model%o)
 
 !  compute sparse( Jr * sparse v )
 
@@ -2831,6 +2839,8 @@ end if
              inform%status = inform%BLLS_inform%status + 2
              data%branch = 220 ; RETURN
            ELSE
+!write(6,"( ' bnls fortran lvl, lvu ', 2I5 )" )data%reverse%lvl, data%reverse%lvu
+!write(6,"( ' bnls iv ', 5I5)") data%reverse%IV(data%reverse%lvl:data%reverse%lvu)
              CALL eval_Jr_prods( inform%status, nlp%X, userdata,               &
                                  data%reverse%V, data%reverse%P,               &
                                  IV = data%reverse%IV,                         &
@@ -2863,7 +2873,10 @@ end if
              END IF
              data%got_jr = .TRUE.
            END IF
+!write(6,"( ' bnls 6 p ', 3ES22.14, /, (  '          ', 3ES22.14 ) )" ) &
+! data%reverse%P(data%reverse%IV(:data%reverse%lvu))
 
+           
 !  error returns
 
          CASE DEFAULT

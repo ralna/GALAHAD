@@ -38,11 +38,13 @@
    userdata%integer( nflag ) = 0
    userdata%integer( st_flag + 1 : st_flag + mnm ) = 0
 
-   DO solver = 2, 2
-!  DO solver = 1, 4
+!  DO solver = 2, 2
+!  DO solver = 1, 2
+   DO solver = 1, 4
      CALL BNLS_initialize( data, control, inform )
-     control%print_level = 10
-     control%BLLS_control%print_level = 4
+!    control%print_level = 10
+!    control%BLLS_control%print_level = 4
+!    control%BLLS_control%preconditioner = 0
 !    control%maxit = 1
 !    control%BLLS_control%maxit = 5
 #ifdef REAL_32

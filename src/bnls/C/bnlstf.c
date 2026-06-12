@@ -81,6 +81,8 @@ int main(void) {
 
     printf(" fortran sparse matrix indexing\n\n");
 
+//if(false){
+
     // solve when Jacobian is available via function calls
 
     // Initialize BNLS
@@ -88,7 +90,8 @@ int main(void) {
 
     // Set user-defined control options
     control.f_indexing = true; // fortran sparse matrix indexing
-    // control.print_level = 1;
+    //control.print_level = 1;
+    //control.blls_control.print_level = 1;
     control.jacobian_available = 2;
 #ifdef REAL_32
     control.stop_pg_absolute = 0.0001;
@@ -116,6 +119,8 @@ int main(void) {
     // Delete internal workspace
     bnls_terminate( &data, &control, &inform );
 
+//}
+
     // solve when Jacobian products are available via function calls
 
     // Initialize BNLS
@@ -123,8 +128,8 @@ int main(void) {
 
     // Set user-defined control options
     control.f_indexing = true; // fortran sparse matrix indexing
-    // control.print_level = 1;
-    // control.blls_control.print_level = 1;
+    //control.print_level = 1;
+    //control.blls_control.print_level = 1;
     control.jacobian_available = 1;
 #ifdef REAL_32
     control.stop_pg_absolute = 0.005;
@@ -153,6 +158,8 @@ int main(void) {
     // Delete internal workspace
     bnls_terminate( &data, &control, &inform );
 
+//if(false){
+
     // reverse-communication input/output
     ipc_ mnm, lp;
     mnm = imax( m_r, n );
@@ -170,6 +177,7 @@ int main(void) {
     // Set user-defined control options
     control.f_indexing = true; // fortran sparse matrix indexing
     //control.print_level = 1;
+    //control.blls_control.print_level = 1;
     control.jacobian_available = 2;
 #ifdef REAL_32
     control.stop_pg_absolute = 0.0001;
@@ -236,9 +244,11 @@ int main(void) {
     for( ipc_ i = 0; i < n; i++) x[i] = 0.5; // starting point
     bnls_import_without_jac( &control, &data, &status, n, m_r );
     while(true){ // reverse-communication loop
+//printf(" bnlst status in  = %1" d_ipc_ "\n", status);
       bnls_solve_reverse_with_jacprod( &data, &status, &eval_status,
                                        n, m_r, x_l, x_u, x, z, r, g, x_stat,
                                        v, iv, &lvl, &lvu, p, ip, lp, w );
+//printf(" bnlst status out = %1" d_ipc_ "\n", status);
       if(status == 0){ // successful termination
             break;
       }else if(status < 0){ // error exit
@@ -277,6 +287,9 @@ int main(void) {
     }
     // Delete internal workspace
     bnls_terminate( &data, &control, &inform );
+
+//}
+
     printf(" BNLS tests complete\n");
 }
 
@@ -334,18 +347,23 @@ ipc_ jacprods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[],
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     ipc_ flag = *(myuserdata->flag);
     ipc_ *flags = myuserdata->flags;
+//printf(" bnlstf lvl, lvu = %1" d_ipc_ " %1" d_ipc_ "\n", lvl, lvu);
     if (ip != NULL && lp != NULL) {
       flag = flag+1;
+//printf(" bnlst  flag = %1" d_ipc_ "\n", flag);
       *lp = 0;
-      for( ipc_ l=lvl; l <= lvu; l++){
+      for( ipc_ l=lvl-1; l <= lvu-1; l++){
+      //for( ipc_ l=lvl; l <= lvu; l++){
         j = iv[l]-1;
+//printf(" bnlstf j = %1" d_ipc_ "\n", j);
         val = v[j];
         if (j == 0){
           i = 0;
+//printf(" bnlst  flags[%1" d_ipc_ "] = %1" d_ipc_ "\n", i,flags[i]);
           if (flags[i] < flag) {
             flags[i] = flag;
             p[i] = x[i+1] * val;
-            ip[*lp] = i;
+            ip[*lp] = i+1;
             *lp = *lp+1;
           } else {
             p[i] = p[i] + x[i+1] * val;
@@ -355,7 +373,7 @@ ipc_ jacprods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[],
           if (flags[i] < flag) {
             flags[i] = flag;
             p[i] = x[i] * val;
-            ip[*lp] = i;
+            ip[*lp] = i+1;
             *lp = *lp+1;
           } else {
             p[i] = p[i] + x[i] * val;
@@ -365,7 +383,7 @@ ipc_ jacprods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[],
           if (flags[i] < flag) {
             flags[i] = flag;
             p[i] = x[i] * val;
-            ip[*lp] = i;
+            ip[*lp] = i+1;
             *lp = *lp+1;
           } else {
             p[i] = p[i] + x[i] * val;
@@ -374,17 +392,19 @@ ipc_ jacprods( ipc_ n, ipc_ m_r, const rpc_ x[], const rpc_ v[],
           if (flags[i] < flag) {
             flags[i] = flag;
             p[i] = x[i+1] * val;
-            ip[*lp] = i;
+            ip[*lp] = i+1;
             *lp = *lp + 1;
           } else {
             p[i] = p[i] + x[i+1] * val;
           }
         }
-      for( ipc_ i = 0; i < *lp; i++) flags[ip[i]] = 0;
+//printf(" bnlstf lp = %1" d_ipc_ "\n", *lp);
+      for( ipc_ i = 0; i < *lp; i++) flags[ip[i]-1] = 0;
       }
     } else {
       for( ipc_ i = 0; i < m_r; i++) p[i] = 0.0;
-      for( ipc_ l = lvl; l <= lvu; l++){
+      for( ipc_ l = lvl-1; l <= lvu-1; l++){
+      //for( ipc_ l = lvl; l <= lvu; l++){
         j = iv[l]-1;
         val = v[j];
         if (j == 0) {
