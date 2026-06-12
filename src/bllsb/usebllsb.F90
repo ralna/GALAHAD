@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-01-28 AT 14:50 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -191,105 +191,6 @@
 
       CALL CPU_TIME( time ) ; CALL CLOCK_time( clock )
 
-!  Determine the number of variables and constraints
-
-      CALL CUTEST_cdimen_r( cutest_status, input, n, m )
-      IF ( cutest_status /= 0 ) GO TO 910
-
-!  allocate temporary arrays
-
-      ALLOCATE( X( n ), X_l( n ), X_u( n ), Y( m ), C_l( m ), C_u( m ),        &
-                EQUATN( m ), LINEAR( m ), STAT = alloc_stat )
-
-      IF ( alloc_stat /= 0 ) THEN
-        WRITE( out, 2150 ) 'X etc', alloc_stat ; STOP
-      END IF
-
-!  set up the data structures necessary to hold the group partially
-!  separable function.
-
-      CALL CUTEST_csetup_r( cutest_status, input, out,                         &
-                            io_buffer, n, m, X, X_l, X_u, Y, C_l, C_u,         &
-                            EQUATN, LINEAR, 0_ip_, 0_ip_, 0_ip_ )
-      DEALLOCATE( Y, LINEAR, STAT = alloc_stat )
-
-!  count the number of slack variables, and set problem dimensions
-
-      n_s = m - COUNT( EQUATN )
-      prob%o = m ; prob%n = n + n_s
-
-!  Determine the names of the problem, variables and constraints.
-
-      ALLOCATE( VNAME( prob%n ), CNAME( m ), STAT = alloc_stat )
-      IF ( alloc_stat /= 0 ) THEN
-        WRITE( out, 2150 ) 'VNAME etc', alloc_stat ; STOP
-      END IF
-
-      CALL CUTEST_cnames_r( cutest_status, n, m, pname, VNAME, CNAME )
-      IF ( cutest_status /= 0 ) GO TO 910
-      WRITE( out, "( /, ' Problem: ', A )" ) pname
-
-!  allocate problem arrays
-
-      ALLOCATE( prob%X( prob%n ), prob%X_l( prob%n ), prob%X_u( prob%n ),      &
-                prob%B( prob%n ), C( m ), prob%Z( prob%n ), STAT = alloc_stat )
-      IF ( alloc_stat /= 0 ) THEN
-        WRITE( out, 2150 ) 'prob%X etc', alloc_stat ; STOP
-      END IF
-
-!  transfer data to problem
-
-      prob%X( : n ) = X( : n )
-      prob%X_l( : n ) = X_l( : n )
-      prob%X_u( : n ) = X_u( : n )
-      DEALLOCATE( X_l, X_u, STAT = alloc_stat )
-
-!  determine the number of entries in the Jacobian, and set its dimensions
-
-      CALL CUTEST_cdimsj_r( cutest_status, nnzj )
-      IF ( cutest_status /= 0 ) GO TO 910
-      prob%Ao%m = prob%o ; prob%Ao%n = prob%n ; prob%Ao%ne = nnzj + n_s
-      CALL SMT_put( prob%Ao%type, 'COORDINATE', smt_stat )
-
-!  allocate problem arrays
-
-      ALLOCATE( prob%Ao%val( prob%Ao%ne ), prob%Ao%row( prob%Ao%ne ),          &
-                prob%Ao%col( prob%Ao%ne ), STAT = alloc_stat )
-     IF ( alloc_stat /= 0 ) THEN
-        WRITE( out, 2150 ) 'prob%Ao%val etc', alloc_stat ; STOP
-     END IF
-
-!  compute the values of the constraints and Jacobian
-
-      CALL CUTEST_ccfsg_r( cutest_status, n, m, X, C, nnzj, prob%Ao%ne,        &
-                           prob%Ao%val, prob%Ao%col, prob%Ao%row, .TRUE. )
-      prob%B = - C
-
-!  deal with slack variables
-
-      prob%Ao%ne = nnzj
-      IF ( n_s > 0 ) THEN
-        l = n
-        DO i = 1, m
-          IF ( .NOT. EQUATN( i ) ) THEN
-            l = l + 1
-            prob%X( l ) = zero
-            prob%X_l( l ) = C_l( i )
-            prob%X_u( l ) = C_u( i )
-            VNAME( l ) = CNAME( i )
-            prob%Ao%ne = prob%Ao%ne + 1
-            prob%Ao%row( prob%Ao%ne ) = i
-            prob%Ao%col( prob%Ao%ne ) = l
-            prob%Ao%val( prob%Ao%ne ) = - one
-          END IF
-        END DO
-      END IF
-      DEALLOCATE( X, C, C_l, C_u, CNAME, EQUATN, STAT = alloc_stat )
-
-!  ------------------- problem set-up complete ----------------------
-
-      CALL CPU_TIME( times ) ; CALL CLOCK_time( clocks )
-
 !  ------------------ Open the specfile for runblls ----------------
 
       INQUIRE( FILE = runspec, EXIST = is_specfile )
@@ -363,6 +264,107 @@
         CALL SPECFILE_assign_string ( spec( 28 ), cfilename, errout )
         CALL SPECFILE_assign_integer ( spec( 29 ), cfiledevice, errout )
       END IF
+
+!  Determine the number of variables and constraints
+
+      CALL CUTEST_cdimen_r( cutest_status, input, n, m )
+      IF ( cutest_status /= 0 ) GO TO 910
+
+!  allocate temporary arrays
+
+      ALLOCATE( X( n ), X_l( n ), X_u( n ), Y( m ), C_l( m ), C_u( m ),        &
+                EQUATN( m ), LINEAR( m ), STAT = alloc_stat )
+
+      IF ( alloc_stat /= 0 ) THEN
+        WRITE( out, 2150 ) 'X etc', alloc_stat ; STOP
+      END IF
+
+!  set up the data structures necessary to hold the group partially
+!  separable function.
+
+      CALL CUTEST_csetup_r( cutest_status, input, out,                         &
+                            io_buffer, n, m, X, X_l, X_u, Y, C_l, C_u,         &
+                            EQUATN, LINEAR, 0_ip_, 0_ip_, 0_ip_ )
+      DEALLOCATE( Y, LINEAR, STAT = alloc_stat )
+
+!  count the number of slack variables, and set problem dimensions
+
+      n_s = m - COUNT( EQUATN )
+      prob%o = m ; prob%n = n + n_s
+      prob%regularization_weight = regularization_weight
+
+!  Determine the names of the problem, variables and constraints.
+
+      ALLOCATE( VNAME( prob%n ), CNAME( m ), STAT = alloc_stat )
+      IF ( alloc_stat /= 0 ) THEN
+        WRITE( out, 2150 ) 'VNAME etc', alloc_stat ; STOP
+      END IF
+
+      CALL CUTEST_cnames_r( cutest_status, n, m, pname, VNAME, CNAME )
+      IF ( cutest_status /= 0 ) GO TO 910
+      WRITE( out, "( /, ' Problem: ', A )" ) pname
+
+!  allocate problem arrays
+
+      ALLOCATE( prob%X( prob%n ), prob%X_l( prob%n ), prob%X_u( prob%n ),      &
+                prob%B( prob%n ), C( m ), prob%Z( prob%n ), STAT = alloc_stat )
+      IF ( alloc_stat /= 0 ) THEN
+        WRITE( out, 2150 ) 'prob%X etc', alloc_stat ; STOP
+      END IF
+
+!  transfer data to problem
+
+      prob%X( : n ) = X( : n )
+      prob%X_l( : n ) = X_l( : n )
+      prob%X_u( : n ) = X_u( : n )
+      DEALLOCATE( X_l, X_u, STAT = alloc_stat )
+
+!  determine the number of entries in the Jacobian, and set its dimensions
+
+      CALL CUTEST_cdimsj_r( cutest_status, nnzj )
+      IF ( cutest_status /= 0 ) GO TO 910
+      prob%Ao%m = prob%o ; prob%Ao%n = prob%n ; prob%Ao%ne = nnzj + n_s
+      CALL SMT_put( prob%Ao%type, 'COORDINATE', smt_stat )
+
+!  allocate problem arrays
+
+      ALLOCATE( prob%Ao%val( prob%Ao%ne ), prob%Ao%row( prob%Ao%ne ),          &
+                prob%Ao%col( prob%Ao%ne ), STAT = alloc_stat )
+     IF ( alloc_stat /= 0 ) THEN
+        WRITE( out, 2150 ) 'prob%Ao%val etc', alloc_stat ; STOP
+     END IF
+
+!  compute the values of the constraints and Jacobian
+
+      CALL CUTEST_ccfsg_r( cutest_status, n, m, X, C, nnzj, prob%Ao%ne,        &
+                           prob%Ao%val, prob%Ao%col, prob%Ao%row, .TRUE. )
+      prob%B = - C
+
+!  deal with slack variables
+
+      prob%Ao%ne = nnzj
+      IF ( n_s > 0 ) THEN
+        l = n
+        DO i = 1, m
+          IF ( .NOT. EQUATN( i ) ) THEN
+            l = l + 1
+            prob%X( l ) = zero
+            prob%X_l( l ) = C_l( i )
+            prob%X_u( l ) = C_u( i )
+            VNAME( l ) = CNAME( i )
+            prob%Ao%ne = prob%Ao%ne + 1
+            prob%Ao%row( prob%Ao%ne ) = i
+            prob%Ao%col( prob%Ao%ne ) = l
+            prob%Ao%val( prob%Ao%ne ) = - one
+          END IF
+        END DO
+      END IF
+      DEALLOCATE( X, C, C_l, C_u, CNAME, EQUATN, STAT = alloc_stat )
+
+!  ------------------- problem set-up complete ----------------------
+
+      CALL CPU_TIME( times ) ; CALL CLOCK_time( clocks )
+
 
 !  Perturb bounds if required
 
@@ -600,8 +602,7 @@
 
         solv = ' BLLSB'
         IF ( printo ) WRITE( out, " ( ' ** BLLSB solver used ** ' ) " )
-        CALL BLLSB_solve( prob, data, control, inform,                         &
-                          regularization_weight = regularization_weight )
+        CALL BLLSB_solve( prob, data, control, inform )
 
         IF ( printo ) WRITE( out, " ( /, ' ** BLLSB solver used ** ' ) " )
 

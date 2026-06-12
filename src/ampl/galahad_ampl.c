@@ -25,10 +25,10 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <sys/types.h>
 #include "asl_pfgh.h"
 #include "getstub.h"
 #include "jacpdim.h"            /* For partially-separable structure */
-#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {                /* To prevent C++ compilers from mangling symbols */
@@ -40,7 +40,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
     /* Gateways used to access Galahad functions in their module */
 
-#ifdef QPA
+#if defined(QPA) || defined(GALAHAD_AMPL)
     /* Attribute memory address of USE_QPA( ) when available */
     void setup_use_qpa( void ( *fn ) (  ) ) {
         USE_QPA = fn;
@@ -56,7 +56,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 #endif
 
 
-#ifdef QPB
+#if defined(QPB) || defined(GALAHAD_AMPL)
     /* Attribute memory address of USE_QPB( ) when available */
     void setup_use_qpb( void ( *fn ) (  ) ) {
         USE_QPB = fn;
@@ -72,7 +72,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
     }
 #endif
 
-#ifdef QPC
+#if defined(QPC) || defined(GALAHAD_AMPL)
     /* Attribute memory address of USE_QPC( ) when available */
     void setup_use_qpc( void ( *fn ) (  ) ) {
         USE_QPC = fn;
@@ -88,7 +88,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
     }
 #endif
 
-#ifdef CQP
+#if defined(CQP) || defined(GALAHAD_AMPL)
     /* Attribute memory address of USE_CQP( ) when available */
     void setup_use_cqp( void ( *fn ) (  ) ) {
         USE_CQP = fn;
@@ -104,7 +104,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
     }
 #endif
 
-#ifdef QP
+#if defined(QP) || defined(GALAHAD_AMPL)
     /* Attribute memory address of USE_QP( ) when available */
     void setup_use_qp( void ( *fn ) (  ) ) {
         USE_QP = fn;
@@ -120,7 +120,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
     }
 #endif
 
-#ifdef PRESOLVE
+#if defined(PRESOLVE) || defined(GALAHAD_AMPL)
     /* Attribute memory address of USE_PRESOLVE( ) when available */
     void setup_use_presolve( void ( *fn ) (  ) ) {
         USE_PRESOLVE = fn;
@@ -136,7 +136,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
     }
 #endif
 
-#ifdef LANCELOT
+#if defined(LANCELOT) || defined(GALAHAD_AMPL)
     /* Attribute memory address of USE_LANCELOT( ) when available */
     void setup_use_lancelot( void ( *fn ) (  ) ) {
         USE_LANCELOT = fn;
@@ -152,7 +152,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
     }
 #endif
 
-#ifdef FILTRANE
+#if defined(FILTRANE) || defined(GALAHAD_AMPL)
     /* Attribute memory address of USE_FILTRANE( ) when available */
     void setup_use_filtrane( void ( *fn ) (  ) ) {
         USE_FILTRANE = fn;
@@ -303,7 +303,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         /* Problem set-up complete. Call Fortran driver */
         if( qpa ) {
 
-#ifdef QPA
+#if defined(QPA) || defined(GALAHAD_AMPL)
             strcpy( code_name, "QPA" );
             Init_Galahad_Qpa(  );
             w_clock.setup = clock() - w_clock.setup;
@@ -316,7 +316,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         } else if( qpb ) {
 
-#ifdef QPB
+#if defined(QPB) || defined(GALAHAD_AMPL)
             strcpy( code_name, "QPB" );
             Init_Galahad_Qpb(  );
             w_clock.setup = clock(  ) - w_clock.setup;
@@ -329,7 +329,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         } else if( qpc ) {
 
-#ifdef QPC
+#if defined(QPC) || defined(GALAHAD_AMPL)
             strcpy( code_name, "QPC" );
             Init_Galahad_Qpc(  );
             w_clock.setup = clock(  ) - w_clock.setup;
@@ -342,7 +342,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         } else if( cqp ) {
 
-#ifdef CQP
+#if defined(CQP) || defined(GALAHAD_AMPL)
             strcpy( code_name, "CQP" );
             Init_Galahad_Cqp(  );
             w_clock.setup = clock(  ) - w_clock.setup;
@@ -355,7 +355,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         } else if( cqp ) {
 
-#ifdef QP
+#if defined(QP) || defined(GALAHAD_AMPL)
             strcpy( code_name, "QP" );
             Init_Galahad_Qp(  );
             w_clock.setup = clock(  ) - w_clock.setup;
@@ -376,7 +376,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
             SETERRQ( 0, "Lancelot-B/Ampl is not yet available." );
         } else if( presolve ) {
 
-#ifdef PRESOLVE
+#if defined(PRESOLVE) || defined(GALAHAD_AMPL)
             strcpy( code_name, "Presolve" );
             Init_Galahad_Presolve(  );
             w_clock.setup = clock(  ) - w_clock.setup;
@@ -389,7 +389,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         } else if( filtrane ) {
 
-#ifdef FILTRANE
+#if defined(FILTRANE) || defined(GALAHAD_AMPL)
             strcpy( code_name, "Filtrane" );
             Init_Galahad_Filtrane(  );
             w_clock.setup = clock(  ) - w_clock.setup;
@@ -885,7 +885,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         fint nerror = ( fint ) 0;
         real *Xtmp, f0;
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *c_double;         /* For conval( ) */
 #endif
 
@@ -903,7 +903,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
             f0 = RealCast objval( 0, Xtmp, &nerror );
         }
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         for( i = 0; i < n_var; i++ )
             Xtmp[i] = AmplCast * ( x + i );
 #endif
@@ -937,7 +937,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         fint nerror = ( fint ) 0;
         real *Xtmp, f0;
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *c_double;         /* For conval( ) */
 #endif
 
@@ -956,7 +956,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
             f0 = RealCast objval( 0, Xtmp, &nerror );
         }
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         for( i = 0; i < n_var; i++ )
             Xtmp[i] = AmplCast * ( x + i );
 #endif
@@ -975,7 +975,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         /* Evaluate constraints at given point.
          * Must use intermediate array in single precision
          */
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         c_double = ( real * ) Malloc( n_con * sizeof( real ) );
         conval( Xtmp, c_double, &nerror );
         for( i = 0; i < n_con; i++ )
@@ -1046,8 +1046,9 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         fint nerror = ( fint ) 0;       /* Error code for jacval */
         real *gradL;            /* Gradient of the Lagrangian */
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *Xtmp;             /* Temporary X */
+        real *Gtmp;
 #endif
         cgrad *cg;              /* Jacobian in the DAG */
         int i, j;               /* Loops indices */
@@ -1055,16 +1056,24 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         GalahadValidPointer( x );
         GalahadValidPointer( g );
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         Xtmp = ( real * ) Malloc( n_var * sizeof( real ) );
+        Gtmp = ( real * ) Malloc( n_var * sizeof( real ) );
+
         for( i = 0; i < n_var; i++ )
             Xtmp[i] = AmplCast *( x + i );
 
         /* There might be no objective defined in feasibility problems */
         if( filtrane && !n_obj )
-            dummy_gradient( 0, Xtmp, g, &nerror );
+            dummy_gradient( 0, Xtmp, Gtmp, &nerror );
         else
-            objgrd( 0, Xtmp, g, &nerror );
+            objgrd( 0, Xtmp, Gtmp, &nerror );
+
+        for( i = 0; i < n_var; i++ )
+            g[i] = RealCast Gtmp[i];
+
+        free( Xtmp );
+        free( Gtmp );
 #else
         if( filtrane && !n_obj )
             dummy_gradient( 0, x, g, &nerror );
@@ -1101,7 +1110,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         fint nerror = ( fint ) 0;       /* Error code for jacval */
         real *gradL;            /* Gradient of the Lagrangian */
         real *Jtmp;             /* Temporary Jacobian */
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *Xtmp;             /* Temporary X */
 #endif
         cgrad *cg;              /* Jacobian in the DAG */
@@ -1120,7 +1129,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         /* Make room to store the gradient of the Lagrangian */
         gradL = ( real * ) Malloc( n_var * sizeof( real ) );
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         Xtmp = ( real * ) Malloc( n_var * sizeof( real ) );
         for( i = 0; i < n_var; i++ )
             Xtmp[i] = AmplCast *( x + i );
@@ -1144,7 +1153,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         /* Evaluate and store the sparse Jacobian */
         Jtmp = ( real * ) Malloc( *nnzj * sizeof( real ) );
         nerror = ( fint ) 0;
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         jacval( Xtmp, Jtmp, &nerror );
         free( Xtmp );
 #else
@@ -1200,7 +1209,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         real *OW;               /* For Hessian computations */
         real *v_double;      /* For sphes( ) */
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *h_double;      /* For sphes( ) */
 #endif
         int i, j, k;            /* Loops indices */
@@ -1212,7 +1221,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         /* Make room for Hessian of Lagrangian (hence the -1) */
         *nnzh = ( integer ) sphsetup( -1, 1, 1, 1 );
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         h_double = ( real * ) Malloc( *nnzh * sizeof( real ) );
 #endif
         v_double = ( real * ) Malloc( n_con * sizeof( real ) );
@@ -1229,7 +1238,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         for( i = 0; i < n_obj; i++ )
             OW[i] = objtype[i] ? -ONE : ONE;   /* Indicates min/max-imization */
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         sphes( h_double, -1, OW, v_double );
         for( i = 0; i < *nnzh; i++ )
             *( h + i ) = RealCast h_double[i];
@@ -1262,7 +1271,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 #endif
 
         free( OW );
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         free( h_double );
 #endif
         free( v_double );
@@ -1281,7 +1290,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
               integer * irnh, integer * icnh ) {
 
         real *OW;               /* For Hessian computations */
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *h_double, *v_double;      /* For sphes( ) */
 #endif
         int i, j, k;            /* Loops indices */
@@ -1294,7 +1303,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         /* Make room for Hessian of Lagrangian (hence the -1) */
         *nnzh = ( integer ) sphsetup( -1, 1, 1, 1 );
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         h_double = ( real * ) Malloc( *nnzh * sizeof( real ) );
         v_double = ( real * ) Malloc( n_con * sizeof( real ) );
         for( i = 0; i < n_con; i++ )
@@ -1311,7 +1320,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         for( i = 0; i < n_obj; i++ )
             OW[i] = objtype[i] ? -ONE : ONE;   /* Indicates min/max-imization */
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         sphes( h_double, -1, OW, v_double );
         for( i = 0; i < *nnzh; i++ )
             *( h + i ) = RealCast h_double[i];
@@ -1344,7 +1353,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 #endif
 
         free( OW );
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         free( h_double );
         free( v_double );
 #endif
@@ -1425,7 +1434,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
 
         fint nerror = ( fint ) 0;       /* Error code for jacval */
         real *Jtmp;             /* Temporary Jacobian */
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         real *Xtmp;             /* Temporary X */
         real *c_double;         /* Temporary C(X) */
 #endif
@@ -1441,7 +1450,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
         /* Store number of nonzeros in Jacobian */
         *nnzj = n_con ? nzc : 1;
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
         Xtmp = ( real * ) Malloc( n_var * sizeof( real ) );
         c_double = ( real * ) Malloc( n_con * sizeof( real ) );
         for( i = 0; i < n_var; i++ )
@@ -1459,7 +1468,7 @@ extern "C" {                /* To prevent C++ compilers from mangling symbols */
             /* Evaluate and store the sparse Jacobian */
             Jtmp = ( real * ) Malloc( *nnzj * sizeof( real ) );
             nerror = ( fint ) 0;
-#ifdef SinglePrecsion
+#if defined(SinglePrecision) || defined(REAL_32)
             jacval( Xtmp, Jtmp, &nerror );
             free( Xtmp );
 #else

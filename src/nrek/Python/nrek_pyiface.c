@@ -346,7 +346,7 @@ static PyObject* py_nrek_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = nrek_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   NREK_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -513,7 +513,7 @@ static PyObject* py_nrek_load_s(PyObject *self, PyObject *args,
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   NREK_RESET_OPTIONS    -*-*-*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_nrek_reset_options(PyObject *self, PyObject *args, 
+static PyObject* py_nrek_reset_options(PyObject *self, PyObject *args,
                                       PyObject *keywds){
     PyObject *py_options = NULL;
 
@@ -558,7 +558,7 @@ static PyObject* py_nrek_solve_problem(PyObject *self, PyObject *args,
                              "S_ne","S_val",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOOdd|iO", kwlist,
-                                    &n, &H_ne, &py_H_val, &py_g, 
+                                    &n, &H_ne, &py_H_val, &py_g,
                                     &power, &weight, &S_ne, &py_S_val))
         return NULL;
 
@@ -577,7 +577,7 @@ static PyObject* py_nrek_solve_problem(PyObject *self, PyObject *args,
     H_val = (double *) PyArray_DATA(py_H_val);
     if(py_S_val != NULL) S_val = (double *) PyArray_DATA(py_S_val);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
     PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
@@ -597,12 +597,7 @@ static PyObject* py_nrek_solve_problem(PyObject *self, PyObject *args,
         return NULL;
 
     // Return x
-    PyObject *solve_problem_return;
-
-    solve_problem_return = Py_BuildValue("O", py_x);
-    Py_INCREF(solve_problem_return);
-    return solve_problem_return;
-
+    return Py_BuildValue("N", py_x);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   NREK_INFORMATION   -*-*-*-*-*-*-*-*
@@ -618,7 +613,7 @@ static PyObject* py_nrek_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = nrek_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   NREK_TERMINATE   -*-*-*-*-*-*-*-*-*-*

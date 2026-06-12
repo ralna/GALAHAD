@@ -6,7 +6,7 @@
    TYPE ( NLS_control_type ) :: control
    TYPE ( NLS_inform_type ) :: inform
    TYPE ( NLS_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER :: s
    INTEGER, PARAMETER :: m = 2, n = 3, j_ne = 4, h_ne = 3, p_ne = 3
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp  ! parameter p

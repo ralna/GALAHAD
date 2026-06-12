@@ -32,9 +32,14 @@ sls.analyse_matrix(n, A_type, A_ne, A_row, A_col, A_ptr, options)
 sls.factorize_matrix(A_ne, A_val)
 
 # solve system
+print(" solve system")
 x = sls.solve_system(n, b)
+print(" x:", x)
 
-print(" x:",x)
+# partially solve system
+print(" partially solve system")
+x = sls.partial_solve_system('L', n, b)
+print(" x:", x)
 
 # get information
 inform = sls.information()
@@ -42,5 +47,4 @@ print(" rank:",inform['rank'])
 print('** sls exit status:', inform['status'])
 
 # deallocate internal data
-
 sls.terminate()

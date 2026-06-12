@@ -33,7 +33,7 @@
         f_ugo_terminate      => UGO_terminate
 
     USE GALAHAD_USERDATA_precision, ONLY:                                      &
-        f_galahad_userdata_type => GALAHAD_userdata_type
+        f_galahad_userdata_type => USERDATA_type
 
     IMPLICIT NONE
 
@@ -79,7 +79,6 @@
 
     TYPE, BIND( C ) :: ugo_inform_type
       INTEGER ( KIND = ipc_ ) :: status
-      INTEGER ( KIND = ipc_ ) :: eval_status
       INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = ipc_ ) :: iter

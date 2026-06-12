@@ -42,11 +42,23 @@
       \latexonly \href{blls_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/blls/blls.html">(link)</a> \endhtmlonly
   \li bllsb - bound-constrained linear-least-squares using
-      an interior-point method (in preparation)
+      an interior-point method
+      \latexonly \href{bllsb_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/bllsb/bllsb.html">(link)</a> \endhtmlonly
+  \li \link bnls \endlink - bound-constrained nonlinear least-squares problems
+      \latexonly \href{bnls_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/bnls/bnls.html">(link)</a> \endhtmlonly
   \li \link slls \endlink - simplex-constrained linear least-squares problems
       using a gradient-projection method
       \latexonly \href{slls_c.pdf}{(link)} \endlatexonly
-      \htmlonly <a href="../../../html/C/blls/slls.html">(link)</a> \endhtmlonly
+      \htmlonly <a href="../../../html/C/slls/slls.html">(link)</a> \endhtmlonly
+  \li \link sllsb \endlink - simplex-constrained linear least-squares problems
+      using an interior-point method
+      \latexonly \href{sllsb_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/sllsb/sllsb.html">(link)</a> \endhtmlonly
+  \li \link snls \endlink - simplex-constrained nonlinear least-squares problems
+      \latexonly \href{snls_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/snls/snls.html">(link)</a> \endhtmlonly
   \li \link presolve \endlink - simplify quadratic programs prior to solution
       \latexonly \href{presolve_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/presolve/presolve.html">(link)</a>
@@ -325,6 +337,7 @@
 #include "galahad_bgo.h"
 #include "galahad_blls.h"
 #include "galahad_bllsb.h"
+#include "galahad_bnls.h"
 #include "galahad_bqp.h"
 #include "galahad_bqpb.h"
 #include "galahad_bsc.h"
@@ -371,6 +384,8 @@
 #include "galahad_sha.h"
 #include "galahad_sils.h"
 #include "galahad_slls.h"
+#include "galahad_sllsb.h"
+#include "galahad_snls.h"
 #include "galahad_sls.h"
 #include "galahad_ssids.h"
 #include "galahad_ssls.h"

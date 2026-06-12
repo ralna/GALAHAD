@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-02-13 AT 08:20 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2025-05-03 AT 14:20 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_BLLS_interface_test
    USE GALAHAD_KINDS_precision
@@ -12,8 +12,9 @@
    INTEGER ( KIND = ip_ ) :: n, o, Ao_ne, Ao_dense_ne, eval_status
    INTEGER ( KIND = ip_ ) :: i, j, l, on, data_storage_type, status
    INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null_
+   REAL ( KIND = rp_ ) :: sigma
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B, R, G, W
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B, R, G, W, X_s
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_row, Ao_col, Ao_ptr
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_val, Ao_dense
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_by_col_row
@@ -21,19 +22,19 @@
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_by_col_val
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_by_col_dense
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
-   INTEGER ( KIND = ip_ ) :: nz_in_start, nz_in_end, nz_out_end
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: nz_in, nz_out
+   INTEGER ( KIND = ip_ ) :: lvl, lvu, lp
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IV, IP
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, P
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MASK
    CHARACTER ( len = 3 ) :: st
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
 
 ! set up problem data for min || A_o x - b || with
 !   A_o = (  I  )  and b = (   e   )
 !         ( e^T )          ( n + 1 )
 
    n = 10 ; o = n + 1 ; Ao_ne = 2 * n ; Ao_dense_ne = o * n
-   ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), G( n ) )
+   ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), G( n ), X_s( n ) )
    ALLOCATE( B( o ), R( o ), W( o ), X_stat( n ) )
    X_l( 1 ) = - 1.0_rp_ ; X_l( 2 : n ) = - infinity ! variable lower bound
    X_u( 1 ) = 1.0_rp_ ; X_u( 2 ) = infinity ; X_u( 3 : n ) = 2.0_rp_ ! upper
@@ -45,6 +46,8 @@
 !  W( 1 ) = 2.0_rp_
    W( 1 ) = 1.0_rp_
    W( 2 : o ) = 1.0_rp_
+   X_s = 0.5_rp_
+   sigma = 1.0_rp_
 
 !  set up A stored by rows
 
@@ -111,9 +114,11 @@
    WRITE( 6, "( /, ' basic tests of Jacobian storage formats', / )" )
 
 !  DO data_storage_type = 1, 1
+!  DO data_storage_type = 1, 0
    DO data_storage_type = 1, 6
      CALL BLLS_initialize( data, control, inform )
-!    control%print_level = 1
+!    control%print_level = 3
+!    control%print_level = 4
 !    control%SBLS_control%print_level = 1
 !    control%print_level = 10
      control%SBLS_control%symmetric_linear_solver = 'sytr' ! non-default solver
@@ -126,38 +131,44 @@
        CALL BLLS_import( control, data, status, n, o, 'coordinate',            &
                          Ao_ne, Ao_row, Ao_col, null_ )
        CALL BLLS_solve_given_a( data, userdata, status, Ao_val, B,             &
-                                X_l, X_u, X, Z, R, G, X_stat, W = W )
+                                sigma, X_l, X_u, X, Z, R, G, X_stat,           &
+                                W = W, X_s = X_s )
 !      WRITE( 6, "( ' x = ', 5ES12.4, /, 5X, 5ES12.4 )" ) X
      CASE ( 2 ) ! sparse by rows
-        st = ' SR'
-        CALL BLLS_import( control, data, status, n, o, 'sparse_by_rows',       &
-                          Ao_ne, null_, Ao_col, Ao_ptr )
-        CALL BLLS_solve_given_a( data, userdata, status, Ao_val, B,            &
-                                X_l, X_u, X, Z, R, G, X_stat, W = W )
+       st = ' SR'
+       CALL BLLS_import( control, data, status, n, o, 'sparse_by_rows',        &
+                         Ao_ne, null_, Ao_col, Ao_ptr )
+       CALL BLLS_solve_given_a( data, userdata, status, Ao_val, B,             &
+                                sigma, X_l, X_u, X, Z, R, G, X_stat,           &
+                                W = W, X_s = X_s )
      CASE ( 3 ) ! dense
        st = ' DD'
        CALL BLLS_import( control, data, status, n, o, 'dense',                 &
                                   Ao_ne, null_, null_, null_ )
        CALL BLLS_solve_given_a( data, userdata, status, Ao_dense, B,           &
-                                X_l, X_u, X, Z, R, G, X_stat, W = W )
+                                sigma, X_l, X_u, X, Z, R, G, X_stat,           &
+                                W = W, X_s = X_s )
      CASE ( 4 ) ! dense_by_rows
        st = ' DR'
        CALL BLLS_import( control, data, status, n, o, 'dense_by_rows',         &
                                   Ao_ne, null_, null_, null_ )
        CALL BLLS_solve_given_a( data, userdata, status, Ao_dense, B,           &
-                                X_l, X_u, X, Z, R, G, X_stat, W = W )
+                                sigma, X_l, X_u, X, Z, R, G, X_stat,           &
+                                W = W, X_s = X_s )
      CASE ( 5 ) ! sparse by cols
        st = ' SC'
        CALL BLLS_import( control, data, status, n, o, 'sparse_by_columns',     &
                                   Ao_ne, Ao_by_col_row, null_, Ao_by_col_ptr )
        CALL BLLS_solve_given_a( data, userdata, status, Ao_by_col_val, B,      &
-                                X_l, X_u, X, Z, R, G, X_stat, W = W )
+                                sigma, X_l, X_u, X, Z, R, G, X_stat,           &
+                                W = W, X_s = X_s )
      CASE ( 6 ) ! dense_by_cols
        st = ' DC'
        CALL BLLS_import( control, data, status, n, o, 'dense_by_columns',      &
                          Ao_ne, null_, null_, null_ )
        CALL BLLS_solve_given_a( data, userdata, status, Ao_by_col_dense, B,    &
-                                X_l, X_u, X, Z, R, G, X_stat, W = W )
+                                sigma, X_l, X_u, X, Z, R, G, X_stat,           &
+                                W = W, X_s = X_s )
      END SELECT
      CALL BLLS_information( data, inform, status )
      IF ( inform%status == 0 ) THEN
@@ -173,22 +184,21 @@
    WRITE( 6, "( /, ' test of reverse-communication interface', / )" )
 
    on = MAX( n, o )
-   ALLOCATE( nz_in( on ), nz_out( o ), V( on ), P( on ), MASK( o ) )
+   ALLOCATE( IV( on ), IP( o ), V( on ), P( on ), MASK( o ) )
    CALL BLLS_initialize( data, control, inform )
    CALL WHICH_sls( control )
    X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
    MASK = 0
    st = ' RC'
 !  control%print_level = 3
-!  control%print_level = 10
-!  control%maxit = 5
+!  control%print_level = 4
+!  control%maxit = 2
    CALL BLLS_import_without_a( control, data, status, n, o )
    status = 1
    DO
-     CALL BLLS_solve_reverse_a_prod( data, status, eval_status, B, X_l, X_u,   &
-                                     X, Z, R, G, X_stat, V, P,                 &
-                                     nz_in, nz_in_start, nz_in_end,            &
-                                     nz_out, nz_out_end, W = W )
+     CALL BLLS_solve_reverse_a_prod( data, status, eval_status, B, sigma,      &
+                                     X_l, X_u, X, Z, R, G, X_stat, V, P,       &
+                                     IV, lvl, lvu, IP, lp, W = W, X_s = X_s )
 !    write(6, "( ' status = ', I0 )" ) status
      SELECT CASE( status )
      CASE ( : 0 )
@@ -202,34 +212,34 @@
        eval_status = 0
      CASE ( 4 ) ! A_o v using sparse v
        P( : o ) = 0.0_rp_
-       DO l = nz_in_start, nz_in_end
-         i = nz_in( l )
+       DO l = lvl, lvu
+         i = IV( l )
          P( i ) = V( i )
          P( o ) = P( o ) + V( i )
        END DO
        eval_status = 0
      CASE ( 5 ) ! sparse A_o v using sparse v
-       nz_out_end = 0
+       lp = 0
        mask = 0
-       DO l = nz_in_start, nz_in_end
-         i = nz_in( l )
-         nz_out_end = nz_out_end + 1
-         nz_out( nz_out_end ) = i
+       DO l = lvl, lvu
+         i = IV( l )
+         lp = lp + 1
+         IP( lp ) = i
          P( i ) = V( i )
          IF ( MASK( i ) == 0 ) THEN
            MASK( i ) = 1
-           nz_out_end = nz_out_end + 1
-           nz_out( nz_out_end ) = o
+           lp = lp + 1
+           IP( lp ) = o
            P( o ) = V( i )
          ELSE
            P( o ) = P( o ) + V( i )
          END IF
        END DO
-       MASK( nz_out( : nz_out_end ) ) = 0
+       MASK( IP( : lp ) ) = 0
        eval_status = 0
      CASE ( 6 ) ! sparse A_o^T v
-       DO l = nz_in_start, nz_in_end
-         i = nz_in( l )
+       DO l = lvl, lvu
+         i = IV( l )
          P( i ) = V( i ) + V( o )
        END DO
        eval_status = 0
@@ -243,7 +253,7 @@
      WRITE( 6, "( A3, ': BLLS_solve exit status = ', I0 ) " ) st, inform%status
    END IF
    CALL BLLS_terminate( data, control, inform )  ! delete internal workspace
-   DEALLOCATE( B, X, Z, X_l, X_u, R, G, X_stat, NZ_in, NZ_out, V, P, W, MASK )
+   DEALLOCATE( B, X, Z, X_l, X_u, R, G, X_stat, IV, IP, V, P, W, X_s, MASK )
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS

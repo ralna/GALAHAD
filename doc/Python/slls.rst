@@ -88,11 +88,6 @@ functions
           sif_file_device : int
              the unit number to write generated SIF file describing the
              current problem.
-          weight : float
-             the value of the non-negative regularization weight $\sigma$, 
-             i.e., the quadratic objective function $q(x)$ will be regularized 
-             by adding $1/2 \sigma \|x\|_2^2$; any value of weight smaller
-             than zero will be regarded as zero.
           stop_d : float
              the required accuracy for the dual infeasibility.
           stop_cg_relative : float
@@ -149,7 +144,7 @@ functions
           convert_options : dict
              default control options for CONVERT (see ``convert.initialize``).
 
-   .. function:: slls.load(n, o, Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr, options=None)
+   .. function:: slls.load(n, o, m, Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr, cohort, options=None)
 
       Import problem data into internal storage prior to solution.
 
@@ -158,7 +153,10 @@ functions
       n : int
           holds the number of variables.
       o : int
-          holds the number of residuals.
+          holds the number of residuals (observations).
+      m : int
+          holds the number of cohorts; this will be ignored (and treated
+          internally as 1) if cohort (see later) is None.
       Ao_type : string
           specifies the unsymmetric storage scheme used for the objective
           design matrix $A_o$. It should be one of 'coordinate', 
@@ -188,10 +186,19 @@ functions
           as well as the total number of entries, in the sparse column-wise 
           storage scheme. It need not be set when the other schemes are used, 
           and in this case can be None.
+      cohort : ndarray(n)
+          specifies which cohort each variable is associated with.
+          If variable $x_j$ is associated with cohort $\cal C_i$, 
+          $0 \leq i \leq m-1$, cohort(j) should be set to i, while 
+          if $x_j$ is unconstrained cohort(j) < 0 should be assigned. 
+          At least one value cohort(j) for $j = 0,\ldots\,n-1$ is expected 
+          to take the value $i$ for every $0 \leq i \leq m-1$, that is 
+          no empty cohorts are allowed. If all the variables lie in a
+          single cohort, cohort can be set as None.
       options : dict, optional
           dictionary of control options (see ``slls.initialize``).
 
-   .. function:: slls.solve_ls(n, o, Ao_ne, Ao_val, b, x, z)
+   .. function:: slls.solve(n, o, m, Ao_ne, Ao_val, sigma, b, x, w, x_s)
 
       Find a solution to the simplex-constraind regularized linear least-squares
       problem involving the least-squares objective function $q(x)$.
@@ -202,6 +209,8 @@ functions
           holds the number of variables.
       o : int
           holds the number of residuals.
+      m : int
+          holds the number of cohorts.
       Ao_ne : int
           holds the number of entries in the constraint Jacobian $A_o$.
       Ao_val : ndarray(Ao_ne)
@@ -211,21 +220,27 @@ functions
       b : ndarray(o)
           holds the values of the observation vector $b$ in the 
           objective function.
+      sigma : float
+          holds the regularization weight $\sigma \geq 0$.
       x : ndarray(n)
           holds the initial estimate of the minimizer $x$, if known.
           This is not crucial, and if no suitable value is known, then any
           value, such as $x=0$, suffices and will be adjusted accordingly.
-      z : ndarray(n)
-          holds the initial estimate of the dual variables $z$
-          associated with the simple bound constraints, if known.
-          This is not crucial, and if no suitable value is known, then any
-          value, such as $z=0$, suffices and will be adjusted accordingly.
+      w : ndarray(n)
+          holds the values of the weights $w$. If all the weights are one,
+          w can be set as None.
+      x_s : ndarray(n)
+          holds the values of the shifts $x_s$. If all the shifts are zero,
+          x_s can be set as None.
 
       **Returns:**
 
       x : ndarray(n)
           holds the values of the approximate minimizer $x$ after
           a successful call.
+      y : ndarray(m)
+          holds the values of the Lagrange multipliers associated with the 
+          simplex equality constraint for each cohort.
       z : ndarray(n)
           holds the values of the dual variables associated with the 
           simple bound constraints.
@@ -320,21 +335,21 @@ functions
           cg_iter : int
              number of CG iterations required.
           obj : float
-             current value of the objective function, $r(x)$.
+             current value of the regularized objective function, $q(x)$.
+          ls_obj : float
+             current value of the least-squares function, 
+             $\half \| \bmA_o \bmx - \bmb\|_W^2$.
           norm_pg : float
              current value of the Euclidean norm of projected gradient 
              of $r(x)$.
+          lapack_error : int
+             the output scalars and arrays from LAPACK routines.
           time : dict
              dictionary containing timing information:
                total : float
                   the total CPU time spent in the package.
-               analyse : float
-                  the CPU time spent analysing the required matrices prior
-                  to factorization.
-               factorize : float
-                  the CPU time spent factorizing the required matrices.
-               solve : float
-                  the CPU time spent computing the search direction.
+               clock_total : float
+                  the total clock time spent in the package.
           sbls_inform : dict
              inform parameters for SBLS (see ``sbls.information``).
           convert_inform : dict

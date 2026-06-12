@@ -978,6 +978,7 @@
       INTEGER * 4 :: Y_array( 1 )
 
       nn = 1
+!     CALL mexWarnMsgTxt( ' in galmxCopyPtrToInteger4' )
       CALL mxCopyPtrToInteger4( px, Y_array, nn )
       y = Y_array( 1 )
 
@@ -1003,7 +1004,6 @@
 
       mwSize :: nn
       INTEGER * 8 :: Y_array( 1 )
-
       nn = 1
       CALL mxCopyPtrToInteger8( px, Y_array, nn )
       y = Y_array( 1 )
@@ -1034,11 +1034,14 @@
       INTEGER :: alloc_stat
       mwIndex, DIMENSION(:), ALLOCATABLE :: temp_mwi
 
+!     CALL mexWarnMsgTxt( ' in galmxCopyPtrToInteger44' )
       nn = n
       SELECT CASE( mwi_ )
       CASE( KIND( Y ) )
+!       CALL mexWarnMsgTxt( ' **** mxCopyPtrToInteger4 ' )
         CALL mxCopyPtrToInteger4( px, Y, nn )
       CASE default
+!       CALL mexWarnMsgTxt( ' **** default ' )
         ALLOCATE( temp_mwi( n ), STAT = alloc_stat )
         IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
         CALL mxCopyPtrToInteger8( px, temp_mwi, nn )
@@ -1071,6 +1074,7 @@
 
       mwSize :: nn
 
+!     CALL mexWarnMsgTxt( ' in galmxCopyPtrToInteger84' )
       nn = n
       CALL mxCopyPtrToInteger8( px, Y, nn )
 
@@ -1102,6 +1106,7 @@
       INTEGER :: alloc_stat
       mwIndex, DIMENSION(:), ALLOCATABLE :: temp_mwi
 
+!     CALL mexWarnMsgTxt( ' in galmxCopyPtrToInteger48' )
       nn = n
       SELECT CASE( mwi_ )
       CASE( kind( Y ) )
@@ -1139,6 +1144,7 @@
 
       mwSize :: nn
 
+!     CALL mexWarnMsgTxt( ' in galmxCopyPtrToInteger88' )
 !     CALL mexWarnMsgTxt( ' 88 ' )
 
       nn = n
@@ -1166,6 +1172,7 @@
 
       REAL ( KIND = wp ) :: Y_vect( 1 )
 
+!     CALL mexWarnMsgTxt( ' in galmxCopyPtrToReal' )
       CALL mxCopyPtrToReal8( px, Y_vect, 1_mws_ )
       Y = Y_vect( 1 )
 
@@ -1194,6 +1201,7 @@
 
       mwSize :: nn
 
+!     CALL mexWarnMsgTxt( ' in galmxCopyPtrToRealArray4' )
       nn = n
       CALL mxCopyPtrToReal8( px, Y, nn )
 
@@ -1222,6 +1230,7 @@
 
       mwSize :: nn
 
+!     CALL mexWarnMsgTxt( ' in galmxCopyPtrToRealArray8' )
       nn = n
       CALL mxCopyPtrToReal8( px, Y, nn )
 

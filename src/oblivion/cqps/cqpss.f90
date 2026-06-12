@@ -8,7 +8,7 @@
    TYPE ( CQPS_data_type ) :: data
    TYPE ( CQPS_control_type ) :: control
    TYPE ( CQPS_inform_type ) :: inform
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat

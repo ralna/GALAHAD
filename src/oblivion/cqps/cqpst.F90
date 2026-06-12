@@ -10,7 +10,7 @@
    TYPE ( CQPS_data_type ) :: data
    TYPE ( CQPS_control_type ) :: control
    TYPE ( CQPS_inform_type ) :: inform
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, tests, smt_stat
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st

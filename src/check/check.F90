@@ -397,7 +397,7 @@
 !            That is, given a vector V the subroutine returns the product
 !            of the Jacobian matrix with V.  The form is given
 !            by eval_Jv(status, userdata, transpose,U,V,X) where userdata is
-!            of type GALAHAD_userdata_type.  If transpose is set .true., then
+!            of type USERDATA_type.  If transpose is set .true., then
 !            it returns of the product of the transpose of the Jacobian with
 !            the vector V.
 !                 transpose = .false.      U <-- U + J(X) V
@@ -412,9 +412,9 @@
 !            the subroutine returns the product of the Hessian matrix with V.
 !            The structure of the subroutine is given by
 !            eval_Hv( status, userdata, U, V, X, Y )  where userdata is
-!            of type GALAHAD_userdata_type: U <-- U + H(X,Y) V.
+!            of type USERDATA_type: U <-- U + H(X,Y) V.
 !
-!   userdata (optional) is a scalar variable of type GALAHAD_userdata_type.
+!   userdata (optional) is a scalar variable of type USERDATA_type.
 !            Intended for the sole use of the "user" if needed.
 !
 !-------------------------------------------------------------------------------
@@ -424,7 +424,7 @@
  TYPE( CHECK_control_type ), INTENT( INOUT ) :: control
  TYPE( CHECK_inform_type ), INTENT( OUT ) :: inform
  TYPE( CHECK_data_type ), INTENT( INOUT ) :: data
- TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+ TYPE( USERDATA_type ), INTENT( INOUT ) :: userdata
  OPTIONAL eval_F, eval_C, eval_G, eval_J, eval_Jv, eval_HL, eval_Hv
 !-------------------------------------------------------------------------------
 ! Interfaces
@@ -435,28 +435,28 @@
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
       REAL ( kind = rp_ ), INTENT( IN ), DIMENSION( : ) :: X
       REAL ( kind = rp_ ), INTENT( OUT ) :: F
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_F
     SUBROUTINE eval_C(status, X, userdata, C)
       USE GALAHAD_USERDATA_precision
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
       REAL ( kind = rp_ ), INTENT( IN ), DIMENSION( : ) :: X
       REAL ( kind = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_C
     SUBROUTINE eval_G(status, X, userdata, G)
       USE GALAHAD_USERDATA_precision
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_G
    SUBROUTINE eval_J(status, X, userdata, Jval)
       USE GALAHAD_USERDATA_precision
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Jval
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_J
     SUBROUTINE eval_Jv(status, X, userdata, transpose, U, V)
       USE GALAHAD_USERDATA_precision
@@ -465,7 +465,7 @@
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_Jv
     SUBROUTINE eval_HL(status, X, Y, userdata, Hval)
       USE GALAHAD_USERDATA_precision
@@ -473,7 +473,7 @@
       REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
       REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: Y
       REAL ( kind = rp_ ), DIMENSION( : ), INTENT( OUT ) ::Hval
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_HL
     SUBROUTINE eval_Hv(status, X, Y, userdata, U, V )
       USE GALAHAD_USERDATA_precision
@@ -481,7 +481,7 @@
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_Hv
  END INTERFACE
 !------------------------------------------------------------------------------

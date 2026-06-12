@@ -3,12 +3,13 @@ using Clang
 using Clang.Generators
 using JuliaFormatter
 
+include("rewriter.jl")
+include("galahad_c.jl")
+
 # Support for quadruple precision
 struct JuliaCfloat128 <: Clang.Generators.AbstractJuliaSIT end
 Clang.Generators.tojulia(x::CLFloat128) = JuliaCfloat128()
 Clang.Generators.translate(jlty::JuliaCfloat128, options = Dict()) = :Float128
-
-include("rewriter.jl")
 
 function run_sif_wrapper(name::String, precision::String)
 str = "function run_sif(::Val{:$name}, ::Val{:$precision}, path_libsif::String, path_outsdif::String)
@@ -68,7 +69,7 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool;
     build!(ctx, BUILDSTAGE_PRINTING_ONLY)
 
     rewrite!(path, name, optimized)
-    format_file(path, YASStyle(), indent=2)
+    format_file(path, YASStyle(), indent=2, margin=80)
     (name == "version") && write(path, text_backup)
   end
 
@@ -79,7 +80,7 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool;
     text = text * "\n\n" * run_sif_wrapper(name, "double")
     # text = text * "\n\n" * run_sif_wrapper(name, "quadruple")
     write(path, text)
-    format_file(path, YASStyle(), indent=2)
+    format_file(path, YASStyle(), indent=2, margin=80)
   end
 
   if run_qplib
@@ -89,7 +90,7 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool;
     text = text * "\n\n" * run_qplib_wrapper(name, "double")
     # text = text * "\n\n" * run_qplib_wrapper(name, "quadruple")
     write(path, text)
-    format_file(path, YASStyle(), indent=2)
+    format_file(path, YASStyle(), indent=2, margin=80)
   end
 
   # Generate a symbolic link for the Julia wrappers
@@ -114,7 +115,6 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool;
   return nothing
 end
 
-# Change the default value of `mp` to `true` if we want to regenerate `galahad_c.h`.
 function main(name::String="all"; optimized::Bool=true)
   haskey(ENV, "GALAHAD") || error("The environment variable GALAHAD is not defined.")
   galahad = joinpath(ENV["GALAHAD"], "include")
@@ -128,7 +128,7 @@ function main(name::String="all"; optimized::Bool=true)
   (name == "all" || name == "bgo")      && wrapper("bgo", ["$galahad/galahad_bgo.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "blls")     && wrapper("blls", ["$galahad/galahad_blls.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "bllsb")    && wrapper("bllsb", ["$galahad/galahad_bllsb.h"], optimized, run_sif=true, run_qplib=false)
-  # (name == "all" || name == "bnls")   && wrapper("bnls", ["$galahad/galahad_bnls.h"], optimized, run_sif=true, run_qplib=false, forthcoming=true)
+  (name == "all" || name == "bnls")     && wrapper("bnls", ["$galahad/galahad_bnls.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "bqp")      && wrapper("bqp", ["$galahad/galahad_bqp.h"], optimized, run_sif=true, run_qplib=true)
   (name == "all" || name == "bqpb")     && wrapper("bqpb", ["$galahad/galahad_bqpb.h"], optimized, run_sif=true, run_qplib=true)
   (name == "all" || name == "bsc")      && wrapper("bsc", ["$galahad/galahad_bsc.h"], optimized, run_sif=false, run_qplib=false)
@@ -190,7 +190,9 @@ function main(name::String="all"; optimized::Bool=true)
   (name == "all" || name == "sha")      && wrapper("sha", ["$galahad/galahad_sha.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "sils")     && wrapper("sils", ["$galahad/galahad_sils.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "slls")     && wrapper("slls", ["$galahad/galahad_slls.h"], optimized, run_sif=true, run_qplib=false)
+  (name == "all" || name == "sllsb")    && wrapper("sllsb", ["$galahad/galahad_sllsb.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "sls")      && wrapper("sls", ["$galahad/galahad_sls.h"], optimized, run_sif=true, run_qplib=false)
+  (name == "all" || name == "snls")     && wrapper("snls", ["$galahad/galahad_snls.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "ssids")    && wrapper("ssids", ["$galahad/galahad_ssids.h"], optimized, run_sif=false, run_qplib=false)
   (name == "all" || name == "ssls")     && wrapper("ssls", ["$galahad/galahad_ssls.h"], optimized, run_sif=true, run_qplib=false)
   (name == "all" || name == "trb")      && wrapper("trb", ["$galahad/galahad_trb.h"], optimized, run_sif=true, run_qplib=false)

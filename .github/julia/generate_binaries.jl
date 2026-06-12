@@ -6,29 +6,13 @@ package = "GALAHAD"
 
 platforms = [
    ("aarch64-apple-darwin-libgfortran5"  , "lib", "dylib"),
-#  ("aarch64-linux-gnu-libgfortran3"     , "lib", "so"   ),
-#  ("aarch64-linux-gnu-libgfortran4"     , "lib", "so"   ),
    ("aarch64-linux-gnu-libgfortran5"     , "lib", "so"   ),
-#  ("aarch64-linux-musl-libgfortran3"    , "lib", "so"   ),
-#  ("aarch64-linux-musl-libgfortran4"    , "lib", "so"   ),
 #  ("aarch64-linux-musl-libgfortran5"    , "lib", "so"   ),
-#  ("powerpc64le-linux-gnu-libgfortran3" , "lib", "so"   ),
-#  ("powerpc64le-linux-gnu-libgfortran4" , "lib", "so"   ),
 #  ("powerpc64le-linux-gnu-libgfortran5" , "lib", "so"   ),
-#  ("x86_64-apple-darwin-libgfortran3"   , "lib", "dylib"),
-#  ("x86_64-apple-darwin-libgfortran4"   , "lib", "dylib"),
    ("x86_64-apple-darwin-libgfortran5"   , "lib", "dylib"),
-#  ("x86_64-linux-gnu-libgfortran3"      , "lib", "so"   ),
-#  ("x86_64-linux-gnu-libgfortran4"      , "lib", "so"   ),
    ("x86_64-linux-gnu-libgfortran5"      , "lib", "so"   ),
-#  ("x86_64-linux-musl-libgfortran3"     , "lib", "so"   ),
-#  ("x86_64-linux-musl-libgfortran4"     , "lib", "so"   ),
 #  ("x86_64-linux-musl-libgfortran5"     , "lib", "so"   ),
-#  ("x86_64-unknown-freebsd-libgfortran3", "lib", "so"   ),
-#  ("x86_64-unknown-freebsd-libgfortran4", "lib", "so"   ),
 #  ("x86_64-unknown-freebsd-libgfortran5", "lib", "so"   ),
-#  ("x86_64-w64-mingw32-libgfortran3"    , "bin", "dll"  ),
-#  ("x86_64-w64-mingw32-libgfortran4"    , "bin", "dll"  ),
    ("x86_64-w64-mingw32-libgfortran5"    , "bin", "dll"  ),
 ]
 
@@ -61,6 +45,50 @@ for (platform, libdir, ext) in platforms
       # Remove the folder used to unzip the tarball of the dependencies
       rm("products/$platform/deps", recursive=true)
       rm("products/$platform/deps.tar.gz", recursive=true)
+
+      # Remove the headers that are not related to GALAHAD
+      for file in readdir("products/$platform/include")
+        if endswith(file, ".h") && !startswith(file, "galahad")
+          rm("products/$platform/include/$file")
+        end
+      end
+
+      # Remove the binaries that are not related to GALAHAD
+      for file in readdir("products/$platform/bin")
+        if !startswith(file, "run") && !startswith(file, "galahad") && !startswith(file, "buildspec") && !endswith(file, ".dll")
+          rm("products/$platform/bin/$file")
+        end
+      end
+
+      # Remove the libraries that are not dependencies of GALAHAD
+      isfile("products/$platform/$libdir/libhsl.$ext") && rm("products/$platform/$libdir/libhsl.$ext")
+      isfile("products/$platform/$libdir/libcmumps.$ext") && rm("products/$platform/$libdir/libcmumps.$ext")
+      isfile("products/$platform/$libdir/libzmumps.$ext") && rm("products/$platform/$libdir/libzmumps.$ext")
+      isfile("products/$platform/lib/libcharset.a") && rm("products/$platform/lib/libcharset.a")
+      isfile("products/$platform/lib/libz.a") && rm("products/$platform/lib/libz.a")
+      isfile("products/$platform/lib/libiconv.a") && rm("products/$platform/lib/libiconv.a")
+      isfile("products/$platform/lib/libcutest_single.a") && rm("products/$platform/lib/libcutest_single.a")
+      isfile("products/$platform/lib/libcutest_double.a") && rm("products/$platform/lib/libcutest_double.a")
+      isfile("products/$platform/lib/libcutest_quadruple.a") && rm("products/$platform/lib/libcutest_quadruple.a")
+      for file in readdir("products/$platform/$libdir")
+        if startswith(file, "libasan") || startswith(file, "libubsan") || startswith(file, "libtsan") || startswith(file, "libhwasan") || startswith(file, "liblsan")
+          rm("products/$platform/$libdir/$file")
+        end
+      end
+
+      # Create a folder with only the libraries of the dependencies
+      mkdir("products/$platform/deps")
+      for file in readdir("products/$platform/$libdir")
+        if !startswith(file, "libgalahad")
+          if platform == "x86_64-w64-mingw32-libgfortran5"
+            if !startswith(file, "run") && !startswith(file, "galahad_error") && !startswith(file, "buildspec")
+              mv("products/$platform/$libdir/$file", "products/$platform/deps/$file")
+            end
+          else
+            mv("products/$platform/$libdir/$file", "products/$platform/deps/$file")
+          end
+        end
+      end
 
       # Create the archives *_binaries
       isfile("$(package)_binaries.$version2.$platform.tar.gz") && rm("$(package)_binaries.$version2.$platform.tar.gz")

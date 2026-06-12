@@ -181,11 +181,14 @@ include("wrappers/llsr.jl")
 # llst requires sbls, sls, sils, uls, gls, ir, nodend.
 include("wrappers/llst.jl")
 
-# bllsb requires fdc, sbls, sls, sils, uls, gls, fit, roots, cro, rpd, ir, nodend.
+# bllsb requires clls, fdc, sbls, sls, sils, uls, gls, fit, roots, cro, rpd, ir, nodend.
 include("wrappers/bllsb.jl")
 
-# bnls requires rqs, sls, sils, ir, glrt, psls, bsc, roots, nodend.
-# include("wrappers/bnls.jl")
+# sllsb requires clls, fdc, sls, sils, uls, gls, fit, roots, cro, ir, scu, rpd, nodend.
+include("wrappers/sllsb.jl")
+
+# bnls requires rpd, gls, cro, fit, fdc, bllsb, uls, sbls, convert, blls, rqs, sls, sils, ir, glrt, gltr, psls, bsc, roots, nodend.
+include("wrappers/bnls.jl")
 
 # ssls requires sls, sils, nodend.
 include("wrappers/ssls.jl")
@@ -198,5 +201,8 @@ include("wrappers/trek.jl")
 
 # nrek requires sls, rqs, sils, ir, nodend.
 include("wrappers/nrek.jl")
+
+# snls requires slls, sllsb, clls, fdc, sbls, sls, sils, uls, gls, fit, roots, cro, ir, scu, rpd, convert, nodend.
+include("wrappers/snls.jl")
 
 end # module GALAHAD

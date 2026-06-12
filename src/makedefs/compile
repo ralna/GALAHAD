@@ -1,7 +1,7 @@
 #  standard GALAHAD package compilation
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2023-11-13
+#  This version: 2026-01-07
 
 #  package compilation
 
@@ -213,6 +213,42 @@ $(OBJ)/$(package)s7_$(PRECIS).o: ../$(package)/$(package)s7.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
+$(package)s8.o: $(OBJ)/$(package)s8_$(PRECIS).o
+
+$(OBJ)/$(package)s8_$(PRECIS).o: ../$(package)/$(package)s8.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s8  "
+	$(SED) -f $(SEDS) \
+            ../$(package)/$(package)s8.f90 > $(OBJ)/$(package)s1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s8.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)s8_$(PRECIS).o \
+                      $(FFLAGS) $(package)s8.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+$(package)s9.o: $(OBJ)/$(package)s9_$(PRECIS).o
+
+$(OBJ)/$(package)s9_$(PRECIS).o: ../$(package)/$(package)s9.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s9  "
+	$(SED) -f $(SEDS) \
+            ../$(package)/$(package)s9.f90 > $(OBJ)/$(package)s1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s9.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)s9_$(PRECIS).o \
+                      $(FFLAGS) $(package)s9.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+$(package)s10.o: $(OBJ)/$(package)s10_$(PRECIS).o
+
+$(OBJ)/$(package)s10_$(PRECIS).o: ../$(package)/$(package)s10.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s10  "
+	$(SED) -f $(SEDS) \
+            ../$(package)/$(package)s10.f90 > $(OBJ)/$(package)s1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s10.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)s10_$(PRECIS).o \
+                      $(FFLAGS) $(package)s10.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
 #  test programs for C specification document
 
 $(package)cs.o: $(OBJ)/$(package)cs_$(PRECIS).o
@@ -291,6 +327,42 @@ $(OBJ)/$(package)cs7_$(PRECIS).o: ../$(package)/C/$(package)s7.c
            ../$(package)/C/$(package)s7.c > $(OBJ)/$(package)cs7.c
 	cd $(OBJ) ; $(CC) -o $(package)cs7_$(PRECIS).o \
                       $(CFLAGS) $(package)cs7.c \
+                     -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
+	@printf '[ OK ]\n'
+
+$(package)cs8.o: $(OBJ)/$(package)cs8_$(PRECIS).o
+
+$(OBJ)/$(package)cs8_$(PRECIS).o: ../$(package)/C/$(package)s8.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)cs8  "
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package)s8.c > $(OBJ)/$(package)cs8.c
+	cd $(OBJ) ; $(CC) -o $(package)cs8_$(PRECIS).o \
+                      $(CFLAGS) $(package)cs8.c \
+                     -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
+	@printf '[ OK ]\n'
+
+$(package)cs9.o: $(OBJ)/$(package)cs9_$(PRECIS).o
+
+$(OBJ)/$(package)cs9_$(PRECIS).o: ../$(package)/C/$(package)s9.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)cs9  "
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package)s9.c > $(OBJ)/$(package)cs9.c
+	cd $(OBJ) ; $(CC) -o $(package)cs9_$(PRECIS).o \
+                      $(CFLAGS) $(package)cs9.c \
+                     -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
+	@printf '[ OK ]\n'
+
+$(package)cs10.o: $(OBJ)/$(package)cs10_$(PRECIS).o
+
+$(OBJ)/$(package)cs10_$(PRECIS).o: ../$(package)/C/$(package)s10.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)cs10  "
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package)s10.c > $(OBJ)/$(package)cs10.c
+	cd $(OBJ) ; $(CC) -o $(package)cs10_$(PRECIS).o \
+                      $(CFLAGS) $(package)cs10.c \
                      -I $(GALAHAD)/include -I $(OBJ)
 	rm $(OBJ)/*.c
 	@printf '[ OK ]\n'

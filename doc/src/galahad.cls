@@ -42,7 +42,7 @@
 
 \newcommand{\libraryname}{GA\-LA\-H\-AD}
 %\newcommand{\releasename}{GALAHAD Optimization Library version $2.\epsilon$}
-\newcommand{\releasename}{GALAHAD Optimization Library version $5.4$}
+\newcommand{\releasename}{GALAHAD Optimization Library version $5.5$}
 
 \newcommand\@ptsize{}
 \newif\if@restonecol
@@ -641,6 +641,7 @@
 \newcommand{\lancelotb}{\textsf{LANCELOT B}}
 
 \usepackage{graphicx,fancyheadings,pslatex,bm,fancyvrb,ifthen,url,varioref}
+\usepackage{subdepth}
 
 % Page sizes
 
@@ -669,8 +670,8 @@
 % For any commercial application, a separate license must be signed.}}
 \newcommand{\botl}{{\bf \large All use is subject to the conditions of
 a BSD-3-Clause License. \\
-See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
-
+See {\tt https://www.galahad.rl.ac.uk/download/} for full details.}}
+         
 \newcommand{\bottr}{\packagename \, (\today) \,\,\,\, \thepage}
 \newcommand{\bottl}{\thepage \,\,\,\, \packagename \, (\today)}
 
@@ -777,6 +778,9 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\packageexamplec}{\packagedir/\package s3.f90}
 \newcommand{\packageresultsc}{\packagedir/\package ds3.output}
 \newcommand{\packagedatac}{\packagedir/\package s3.data}
+\newcommand{\packageexampled}{\packagedir/\package s4.f90}
+\newcommand{\packageresultsd}{\packagedir/\package ds4.output}
+\newcommand{\packagedatad}{\packagedir/\package s4.data}
 
 \newcommand{\packagenewexample}{\packagedir/\package _spec.f90}
 \newcommand{\packagenewresults}{\packagedir/\package _specd.output}
@@ -970,10 +974,58 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\bmy}{{\mathbf{y}}} \newcommand{\bmz}{{\mathbf{z}}}
 
 \newcommand{\bmzero}{{\mathbf{0}}}
+
+\renewcommand{\bmA}{{\bm{A}}} \renewcommand{\bmB}{{\bm{B}}}
+\renewcommand{\bmC}{{\bm{C}}} \renewcommand{\bmD}{{\bm{D}}}
+\renewcommand{\bmE}{{\bm{E}}} \renewcommand{\bmF}{{\bm{F}}}
+\renewcommand{\bmG}{{\bm{G}}} \renewcommand{\bmH}{{\bm{H}}}
+\renewcommand{\bmI}{{\bm{I}}} \renewcommand{\bmJ}{{\bm{J}}}
+\renewcommand{\bmK}{{\bm{K}}} \renewcommand{\bmL}{{\bm{L}}}
+\renewcommand{\bmM}{{\bm{M}}} \renewcommand{\bmN}{{\bm{N}}}
+\renewcommand{\bmO}{{\bm{O}}} \renewcommand{\bmP}{{\bm{P}}}
+\renewcommand{\bmQ}{{\bm{Q}}} \renewcommand{\bmR}{{\bm{R}}}
+\renewcommand{\bmS}{{\bm{S}}} \renewcommand{\bmT}{{\bm{T}}}
+\renewcommand{\bmU}{{\bm{U}}} \renewcommand{\bmV}{{\bm{V}}}
+\renewcommand{\bmW}{{\bm{W}}} \renewcommand{\bmX}{{\bm{X}}}
+\renewcommand{\bmY}{{\bm{Y}}} \renewcommand{\bmZ}{{\bm{Z}}}
+
+\renewcommand{\bma}{{\bm{a}}} \renewcommand{\bmb}{{\bm{b}}}
+\renewcommand{\bmc}{{\bm{c}}} \renewcommand{\bmd}{{\bm{d}}}
+\renewcommand{\bme}{{\bm{e}}} \renewcommand{\bmf}{{\bm{f}}}
+\renewcommand{\bmg}{{\bm{g}}} \renewcommand{\bmh}{{\bm{h}}}
+\renewcommand{\bmi}{{\bm{i}}} \renewcommand{\bmj}{{\bm{j}}}
+\renewcommand{\bmk}{{\bm{k}}} \renewcommand{\bml}{{\bm{l}}}
+\renewcommand{\bmm}{{\bm{m}}} \renewcommand{\bmn}{{\bm{n}}}
+\renewcommand{\bmo}{{\bm{o}}} \renewcommand{\bmp}{{\bm{p}}}
+\renewcommand{\bmq}{{\bm{q}}} \renewcommand{\bmr}{{\bm{r}}}
+\renewcommand{\bms}{{\bm{s}}} \renewcommand{\bmt}{{\bm{t}}}
+\renewcommand{\bmu}{{\bm{u}}} \renewcommand{\bmv}{{\bm{v}}}
+\renewcommand{\bmw}{{\bm{w}}} \renewcommand{\bmx}{{\bm{x}}}
+\renewcommand{\bmy}{{\bm{y}}} \renewcommand{\bmz}{{\bm{z}}}
+
+
+\renewcommand{\bmzero}{{\bm{0}}}
 %\newcommand{\bmmu}{\mbox{\boldmath$\mu$}}
 \newcommand{\bmmu}{\bm \mu}
 \newcommand{\bmnu}{\bm \nu}
 \newcommand{\bmtheta}{\bm \theta}
+
+% Calligraphic letters
+% syntax: \cal[A-Z,a-z]
+
+\newcommand{\calA}{{\cal A}} \newcommand{\calB}{{\cal B}}
+\newcommand{\calC}{{\cal C}} \newcommand{\calD}{{\cal D}}
+\newcommand{\calE}{{\cal E}} \newcommand{\calF}{{\cal F}}
+\newcommand{\calG}{{\cal G}} \newcommand{\calH}{{\cal H}}
+\newcommand{\calI}{{\cal I}} \newcommand{\calJ}{{\cal J}}
+\newcommand{\calK}{{\cal K}} \newcommand{\calL}{{\cal L}}
+\newcommand{\calM}{{\cal M}} \newcommand{\calN}{{\cal N}}
+\newcommand{\calO}{{\cal O}} \newcommand{\calP}{{\cal P}}
+\newcommand{\calQ}{{\cal Q}} \newcommand{\calR}{{\cal R}}
+\newcommand{\calS}{{\cal S}} \newcommand{\calT}{{\cal T}}
+\newcommand{\calU}{{\cal U}} \newcommand{\calV}{{\cal V}}
+\newcommand{\calW}{{\cal W}} \newcommand{\calX}{{\cal X}}
+\newcommand{\calY}{{\cal Y}} \newcommand{\calZ}{{\cal Z}}
 
 % error codes (see symbols module)
 

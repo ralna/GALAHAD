@@ -255,7 +255,7 @@ In order to get GALAHAD working **using make**, here is what you need to do.
    Check with your system administrator if you need help!
 
    If it *really* is impossible to install libhwloc-dev, you should edit
-   the file $GALAHAD/src/spral/config.h and replace the line
+   the file $GALAHAD/include/ssids_config.h and replace the line
 
    #define HAVE_HWLOC 1
 
@@ -274,6 +274,25 @@ In order to get GALAHAD working **using make**, here is what you need to do.
 
    Currently this is done automatically for ifort/icc and
    gfortran/gcc to avoid compiler bugs
+
+   Finally, if you do have HWLOC, you can improve the performannce of
+   codes that rely on it, by setting an appropriate xml file that gives
+   your specific hardware locality. To do so, use hwloc's lstopo to
+   generate the xml file, and then set an appropriate environment variable
+   to point at this file. For example, under Linux or OSX, if you have a
+   local ~/.config directory, then
+
+     lstopo --of xml ~/.config/hwloc-topology.xml
+
+   generates the file, and
+
+     export HWLOC_XMLFILE=$HOME/.config/hwloc-topology.xml
+
+   (for sh/bash) or
+
+     setenv HWLOC_XMLFILE $HOME/.config/hwloc-topology.xml
+
+    (for csh/tcsh) is appropriate
 
 12. For Windows systems that use MSYS/MINGW, you will also need to set the
    environment variable MSYS2 to point to the folder that contains the
@@ -508,6 +527,5 @@ From version 4.2, additionally with
  Jari Fowkes
  Alexis Montoison
 
-This version, 5.3
-
-1st October 2025
+This version, 5.5
+March 6th 2026

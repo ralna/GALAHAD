@@ -1,7 +1,7 @@
 //* \file qpa_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:50 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_QPA PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -34,8 +34,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool qpa_update_control(struct qpa_control_type *control,
-                               PyObject *py_options){
+bool qpa_update_control(struct qpa_control_type *control,
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -511,7 +511,8 @@ static PyObject* qpa_make_time_dict(const struct qpa_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* qpa_make_inform_dict(const struct qpa_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* qpa_make_inform_dict(const struct qpa_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -572,7 +573,7 @@ static PyObject* py_qpa_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = qpa_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   QPA_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -748,7 +749,7 @@ static PyObject* py_qpa_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
     y = (double *) PyArray_DATA(py_y);
     z = (double *) PyArray_DATA(py_z);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp mdim[] = {m}; // size of c and c_ztar
     PyArrayObject *py_c =
@@ -779,14 +780,7 @@ static PyObject* py_qpa_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *solve_qp_return;
-
-    // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
-                                              py_x_stat, py_c_stat);
-    Py_INCREF(solve_qp_return);
-    return solve_qp_return;
-
+    return Py_BuildValue("ONOONN", py_x, py_c, py_y, py_z, py_x_stat, py_c_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   QPA_SOLVE_L1QP   -*-*-*-*-*-*-*-*
@@ -846,7 +840,7 @@ static PyObject* py_qpa_solve_l1qp(PyObject *self, PyObject *args, PyObject *key
     y = (double *) PyArray_DATA(py_y);
     z = (double *) PyArray_DATA(py_z);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp mdim[] = {m}; // size of c and c_ztar
     PyArrayObject *py_c =
@@ -877,14 +871,7 @@ static PyObject* py_qpa_solve_l1qp(PyObject *self, PyObject *args, PyObject *key
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *solve_l1qp_return;
-
-    // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_l1qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
-                                                py_x_stat, py_c_stat);
-    Py_INCREF(solve_l1qp_return);
-    return solve_l1qp_return;
-
+    return Py_BuildValue("ONOONN", py_x, py_c, py_y, py_z, py_x_stat, py_c_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   QPA_SOLVE_BCL1QP   -*-*-*-*-*-*-*-*
@@ -944,7 +931,7 @@ static PyObject* py_qpa_solve_bcl1qp(PyObject *self, PyObject *args, PyObject *k
     y = (double *) PyArray_DATA(py_y);
     z = (double *) PyArray_DATA(py_z);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp mdim[] = {m}; // size of c and c_ztar
     PyArrayObject *py_c =
@@ -975,14 +962,7 @@ static PyObject* py_qpa_solve_bcl1qp(PyObject *self, PyObject *args, PyObject *k
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *solve_l1qp_return;
-
-    // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_l1qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
-                                                py_x_stat, py_c_stat);
-    Py_INCREF(solve_l1qp_return);
-    return solve_l1qp_return;
-
+    return Py_BuildValue("ONOONN", py_x, py_c, py_y, py_z, py_x_stat, py_c_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   QPA_INFORMATION   -*-*-*-*-*-*-*-*
@@ -998,7 +978,7 @@ static PyObject* py_qpa_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = qpa_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   QPA_TERMINATE   -*-*-*-*-*-*-*-*-*-*

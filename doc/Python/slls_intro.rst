@@ -4,15 +4,24 @@ purpose
 The ``slls`` package uses a **preconditioned project-gradient method** to solve
 a given **simplex-constrained linear least-squares problem**.
 The aim is to minimize the (regularized) least-squares objective function
-$$q(x) = \frac{1}{2} \| A_o x - b\|^2 +  \frac{1}{2}\sigma \|x\|^2$$ 
+$$q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x-x_s\|_2^2$$ 
 where the variables $x$ are required to lie within the
 **regular simplex**
 $$e^T x = 1 \;\;\mbox{and}\;\; x \geq 0,$$
-the norm $\|x\| = \sqrt{\sum_{i=1}^n x_i^2}$,
-$A_o$ is a given  $o$ by $n$ matrix,
-$b$ is a vector, $\sigma \geq 0$ is a scalar, 
-$e$ is a vector of ones, and any of the components 
-of the vectors $x_l$ or $x_u$ may be infinite.
+or an intersection of **multiple non-overlapping regular simplices**
+$$e_{\cal C_i}^T x_{\cal C_i}^{} = 1 \;\;\mbox{and}\;\; x_{\cal C_i}^{}
+\geq 0 \;\;\mbox{for}\;\; i = 1,\ldots,m,$$
+where the $o$ by $n$ real **design matrix** $A_o$, the vector $b$
+of **observations**
+and the non-negative **weights** $w$ and $\sigma$ are given, 
+$e$ is the vector of ones, 
+the vector $v_{\cal C}$ is made up of those entries of $v$ indexed by
+the set $\cal C$, 
+the index sets of **cohorts** $\cal C_i \subseteq \{1,\ldots,n\}$
+for which $\cal C_i \cap \cal C_j = \emptyset$ for $1 \leq i, \neq j \leq m$,
+and where the Euclidean and weighted-Euclidean norms
+are given by $\|v\|_2^2 = v^T v$ and $\|v\|_W^2 = v^T W v$,
+respectively, with $W = \mbox{diag}(w)$.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
 involving a large number of unknowns $x$.
@@ -24,11 +33,18 @@ terminology
 
 Any required solution $x$ necessarily satisfies
 the **primal optimality conditions**
-$$e^T x = 1 \;\;\mbox{and}\;\; x \geq 0,$$
+$$e_{\cal C_i}^T x_{\cal C_i}^{} = 1 \;\;\mbox{and}\;\; x_{\cal C_i}^{}
+\geq 0 \;\;\mbox{for}\;\; i = 1,\ldots,m$$
 the **dual optimality conditions**
-$$A_o^T ( A_o x - b) + \sigma x = \lambda e + z, \;\;\mbox{and}\;\; z \geq 0,$$
+$$A_o^T W ( A_o x - b) + \sigma (x-x_s) = \sum_{i=1}^m e_{\cal C_i} y_i + z,
+\;\;\mbox{and}\;\; z_{\cal C_i} \geq 0 \;\;\mbox{for}\;\; i = 1,\ldots,m,$$
 and the **complementary slackness conditions**
 $$x^T z = 0,$$
+where the components of the vector $y$ are known as the 
+**Lagrange multipliers** for the primal equality constraints
+$z$ is are **dual variables** for the primal inequalities,
+and the vector inequalities hold component-wise.
+
 for some scalar Lagrange multiplier $\lambda$, where the 
 vector $z$ is known as the **dual variables** for the bounds $x \geq 0$,
 and the vector inequalities hold component-wise.
@@ -36,12 +52,11 @@ and the vector inequalities hold component-wise.
 method
 ------
 
-Projected-gradient methods iterate towards a point that satisfies 
-these optimality conditions by ultimately aiming to satisfy
-$A_o^T ( A_o x - b) + \sigma x = \lambda e + z$, while ensuring 
-that the remaining conditions are satisfied at each stage.
-Appropriate norms of the amounts by which the optimality conditions
-fail to be satisfied are known as the primal and dual infeasibility, 
+Projected-gradient methods iterate towards a point that satisfies these 
+optimality conditions by ultimately aiming to satisfy the dual optimality 
+condistions, while ensuring that the remaining conditions are satisfied 
+at each stage. Appropriate norms of the amounts by which the optimality 
+conditions fail to be satisfied are known as the primal and dual infeasibility, 
 and the violation of complementary slackness, respectively.
 
 The method is iterative. Each iteration proceeds in two stages.
@@ -57,7 +72,7 @@ regularize the subproblem very slightly to avoid a ill-posedness.
 Thereafter, a piecewise linesearch (arc search) is carried out along
 the arc $x(\alpha) = P( x + \alpha s)$ for $\alpha > 0$,
 where the projection operator $P(v)$ gives the nearest point to $v$ 
-within the regular simplex;
+within the intersection of specified simplices;
 thus this arc bends the search direction into the feasible region.
 The arc search is performed either exactly, by passing through a set
 of increasing breakpoints at which it changes direction, or inexactly,
@@ -69,7 +84,7 @@ reference
 
 Full details are provided in
 
-  N. I. M. Gould (2023).
+  H. Al Daas, J. M. Fowkes, N. I. M. Gould and J. Huntley (2026).
   ''Linear least-squares over the unit simplex''.
   STFC-Rutherford Appleton Laboratory Computational Mathematics Group
-  Internal Report 2023-2.
+  Internal Report 2026-1.

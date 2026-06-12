@@ -21,6 +21,9 @@ lazy_definitions = Dict(
   "sils_control_type" => "sils_control",
   "sils_finfo_type" => "sils_finfo",
   "sils_sinfo_type" => "sils_sinfo",
+  "sllsb_control_type" => "clls_control_type",
+  "sllsb_time_type" => "clls_time_type",
+  "sllsb_inform_type" => "clls_inform_type",
 )
 
 mapping_types_c2f = Dict(
@@ -41,6 +44,26 @@ mapping_types_c2f = Dict(
   "char[3][81]" => "char[80[3]]",
 ) ∪ lazy_definitions
 
+mapping_field_c2f = Dict(
+  "nstatic" => "static",       # SILS
+  "switch_full" => "switch",   # GLS
+  "struct_abort" => "struct",  # GLS
+)
+
+# Packages that are not ready but some headers are already in the folder `include`
+excluded_packages = ("icfs",)
+
+# Fields that are only in the Fortran structures
+excluded_fortran_fields = Dict(
+  "lpa_inform_type" => ["threads"],
+  "presolve_control_type" => ["get_q", "get_f", "get_g", "get_h", "get_a", "get_x", "get_x_bounds", "get_z", "get_z_bounds", "get_c", "get_c_bounds", "get_y", "get_y_bounds"],
+  "wcp_inform_type" => ["x_status", "c_status"],
+  "sbls_inform_type" => ["sils_analyse_status", "sils_factorize_status", "sils_solve_status", "sls_analyse_status", "sls_factorize_status", "sls_solve_status", "uls_analyse_status", "uls_factorize_status", "uls_solve_status"],
+  "ssids_control_type" => ["auction", "rb_dump"],
+  "ssids_inform_type" => ["auction"],
+  "ugo_inform_type" => ["dx_best"],
+)
+
 function F_structures()
   f_types = Dict{String,Vector{String}}()
   f_structures = Dict{String,Vector{String}}()
@@ -56,11 +79,9 @@ function F_structures()
       package = folders[end]
       if file == "$package.F90"
         if package == "ssids"
-          code_aux = read(joinpath(root, "types.F90") |> normpath, String)
-          code = code_aux * "\n" * read(path, String)
-        else
-          code = read(path, String)
+          path = joinpath(root, "types.F90") |> normpath
         end
+        code = read(path, String)
         lines = split(code, '\n')
         f_contains = false
         for (i, line) in enumerate(lines)
@@ -92,6 +113,7 @@ function F_structures()
             if startswith(line |> strip, "contains") || startswith(line |> strip, "CONTAINS")
               f_contains = true
             elseif contains(line |> uppercase, "END TYPE")
+              f_contains = false
               f_struct = ""
             else
               f_contains && continue
@@ -157,7 +179,7 @@ function C_structures()
   for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "src"))
     for file in files
       path = joinpath(root, file) |> normpath
-      if endswith(file, "_ciface.F90") && !startswith(file, "bnls")
+      if endswith(file, "_ciface.F90") && mapreduce(x -> !startswith(file, x), &, excluded_packages)
         code = read(path, String)
         lines = split(code, '\n')
         for (i, line) in enumerate(lines)
@@ -224,56 +246,52 @@ function H_structures()
   for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "include"))
     for file in files
       mapreduce(x -> file == x, |, ["galahad_c.h", "galahad_c_common.h", "galahad_c_single.h", "galahad_c_double.h", "galahad_c_quadruple.h"]) && continue
+      (!startswith(file, "galahad_") || !endswith(file, ".h")) && continue
+      mapreduce(x -> !contains(file, x), &, excluded_packages) || continue
       path = joinpath(root, file) |> normpath
-      if endswith(file, ".h")
-        (file == "ssids_gpu_kernels_datatypes.h") && continue
-        (file == "ssids_gpu_kernels_dtrsv.h") && continue
-        (file == "galahad_icfs.h") && continue
-        (file == "galahad_bnls.h") && continue
-        code = read(path, String)
-        lines = split(code, '\n')
-        for (i, line) in enumerate(lines)
-          line2 = line |> strip
-          length(line2) == 0 && continue
-          startswith(line2, "/") && continue
-          startswith(line2, "#") && continue
-          startswith(line2, "*") && continue
-          startswith(line2, "extern") && continue
-          if h_struct == ""
-            if startswith(line, "struct") && endswith(line, "{")
-              h_struct = split(line, "struct")[2]
-              h_struct = split(h_struct, "{")[1] |> strip
-              h_struct = lowercase(h_struct)
-              h_types[h_struct] = String[]
-              h_structures[h_struct] = String[]
-            end
+      code = read(path, String)
+      lines = split(code, '\n')
+      for (i, line) in enumerate(lines)
+        line2 = line |> strip
+        length(line2) == 0 && continue
+        startswith(line2, "/") && continue
+        startswith(line2, "#") && continue
+        startswith(line2, "*") && continue
+        startswith(line2, "extern") && continue
+        if h_struct == ""
+          if startswith(line, "struct") && endswith(line, "{")
+            h_struct = split(line, "struct")[2]
+            h_struct = split(h_struct, "{")[1] |> strip
+            h_struct = lowercase(h_struct)
+            h_types[h_struct] = String[]
+            h_structures[h_struct] = String[]
+          end
+        else
+          if startswith(line, "};")
+            h_struct = ""
           else
-            if startswith(line, "};")
-              h_struct = ""
-            else
-              line = split(line, '/')[1]
-              type = split(line)[end-1]
-              field = split(line)[end][1:end-1]  # remove ";" at the end
-              if contains(field, "[") && contains(field, "]")
-                split_field = split(field, "[")
-                if length(split_field) == 2
-                  dimension = split(field, "[")[2]
-                  type = type * "[$dimension"
-                else
-                  @assert length(split_field) == 3
-                  dimension1 = split(field, "[")[2]
-                  dimension2 = split(field, "[")[3]
-                  type = type * "[$dimension1[$dimension2"
-                end
-                field = split(field, "[")[1]
+            line = split(line, '/')[1]
+            type = split(line)[end-1]
+            field = split(line)[end][1:end-1]  # remove ";" at the end
+            if contains(field, "[") && contains(field, "]")
+              split_field = split(field, "[")
+              if length(split_field) == 2
+                dimension = split(field, "[")[2]
+                type = type * "[$dimension"
+              else
+                @assert length(split_field) == 3
+                dimension1 = split(field, "[")[2]
+                dimension2 = split(field, "[")[3]
+                type = type * "[$dimension1[$dimension2"
               end
-              type = replace(type, "real_sp_" => "spc_")
-              field = lowercase(field)
-              type = lowercase(type)
-
-              push!(h_types[h_struct], type)
-              push!(h_structures[h_struct], field)
+              field = split(field, "[")[1]
             end
+            type = replace(type, "real_sp_" => "spc_")
+            field = lowercase(field)
+            type = lowercase(type)
+
+            push!(h_types[h_struct], type)
+            push!(h_structures[h_struct], field)
           end
         end
       end
@@ -288,12 +306,14 @@ function diff_structures(char1::Char, structure1::Vector{String}, char2::Char, s
   for field in unique(structure1)
     if !(field in common_fields)
       println("• The field `$field` is in the `$char1` structure but not the `$char2` structure.")
+      global n += 1
     end
   end
   for field in structure2
     if !(field in common_fields)
-      if (field != "f_indexing") || !(char1 == 'F' && char2 == 'C')
+      if (char1 != 'H' && field != "f_indexing" && field != "array_base") || !(char1 == 'F' && char2 == 'C')
         println("• The field `$field` is in the `$char2` structure but not the `$char1` structure.")
+        global n += 1
       end
     end
   end
@@ -348,7 +368,6 @@ for structure in c_list
     if c_nfields != h_nfields
       println("[$package] -- The structure `$structure` has missing attributes (H:$h_nfields / C:$c_nfields).")
       diff_structures('H', h_structures[structure], 'C', c_structures[structure])
-      global n += 1
     else
       for i = 1:h_nfields
         h_field = h_structures[structure][i]
@@ -384,18 +403,25 @@ for structure in c_list
     c_nfields = length(c_structures[structure])
     c_nfields = ("f_indexing" in c_structures[structure]) ? c_nfields-1 : c_nfields
     c_nfields = ("array_base" in c_structures[structure]) ? c_nfields-1 : c_nfields
+    if haskey(excluded_fortran_fields, structure)
+      f_nfields = f_nfields - length(excluded_fortran_fields[structure])
+    end
 
     if f_nfields != c_nfields
       println("[$package] -- The structure `$structure` has missing attributes (F:$f_nfields / C:$c_nfields).")
       diff_structures('F', f_structures[structure2], 'C', c_structures[structure])
-      # global n += 1
     else
       for (i, c_field) in enumerate(c_structures[structure])
         (c_field == "f_indexing") && continue
         (c_field == "array_base") && continue
+        for (key, val) in mapping_field_c2f
+          if c_field == key
+            c_field = val
+          end
+        end
         if !(c_field in f_structures[structure2])
           println("[$package] -- The field `$(c_field)` of the C structure `$structure` can't be found in the Fortran structure `$structure2`.")
-          # global n += 1
+          global n += 1
         else
           j = findfirst(str -> str == c_field, f_structures[structure2])
           c_type = c_types[structure][i]
@@ -414,4 +440,7 @@ for structure in c_list
   end
 end
 
+if n > 0
+  println("\nMaybe a manual update of the file GALAHAD/.github/julia/check_structures.jl is needed.\n")
+end
 @test n == 0

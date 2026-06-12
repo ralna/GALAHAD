@@ -5,11 +5,11 @@
 GALAHAD C Interfaces
 ====================
 
-**Release:** 1.1
+**Release:** 5.5
 
 **Date:** |today|
 
-**Author:** `Jaroslav Fowkes <jaroslav.fowkes@stfc.ac.uk>`_ and `Nick Gould <nick.gould@stfc.ac.uk>`_
+**Author:** `Jaroslav Fowkes <jaroslav.fowkes@stfc.ac.uk>`_, `Nick Gould <nick.gould@stfc.ac.uk>`_, `Alexis Montoison <alexis.montoison@polymtl.ca>`_ and `Dominique Orban <dominique.orban@polymtl.ca>`_
 
 GALAHAD [1]_ is a suite of open-source routines for large-scale continuous
 optimization. GALAHAD 4.1 [2]_ and above provides C functions that link

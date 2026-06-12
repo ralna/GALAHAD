@@ -7,9 +7,9 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'GALAHAD Julia interfaces'
-copyright = 'Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould, GALAHAD 5 Julia interfaces copyright Fowkes/Gould/Montoison/Orban'
+copyright = 'Gould/Orban/Toint, for GALAHAD productions, GALAHAD 5 C/Python/Julia interfaces copyright Fowkes/Gould/Montoison/Orban'
 author = 'Jaroslav Fowkes, Nick Gould, Alexis Montoison & Dominique Orban'
-release = '1.1'
+release = '5.5'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

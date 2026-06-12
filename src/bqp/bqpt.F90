@@ -11,7 +11,7 @@
    TYPE ( BQP_data_type ) :: data
    TYPE ( BQP_control_type ) :: control
    TYPE ( BQP_inform_type ) :: info
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER ( KIND = ip_ ) :: n, h_ne, tests, smt_stat
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st

@@ -388,7 +388,7 @@ function calls.
 
 		  .. ref-code-block:: julia
 
-		  	function eval_c(n, x, c, userdata)
+		  	function eval_c(n, m, x, c, userdata)
 
 		  The componnts of the residual function $c(x)$
 		  evaluated at x=$x$ must be assigned to c, and the
@@ -607,7 +607,7 @@ information is available by function calls.
 
 		  .. ref-code-block:: julia
 
-		  	function eval_c(n, x, c, userdata)
+		  	function eval_c(n, m, x, c, userdata)
 
 		  The componnts of the residual function $c(x)$
 		  evaluated at x=$x$ must be assigned to c, and the
@@ -798,7 +798,7 @@ returning to the calling procedure
                     function. The l-th component of the Jacobian stored
                     according to the scheme specified for the remainder
                     of $J$ in the earlier call to nls_import should be
-                    set in J_val[l], for l = 0, ..., J_ne-1 and
+                    set in J_val[l], for l = 1, ..., J_ne and
                     eval_status should be set to 0. If the user is
                     unable to evaluate a component of $J$ for instance,
                     if a component of the matrix is undefined at $x$ the
@@ -812,7 +812,7 @@ returning to the calling procedure
                     function. The l-th component of the matrix stored
                     according to the scheme specified for the remainder
                     of $H$ in the earlier call to nls_import should be
-                    set in H_val[l], for l = 0, ..., H_ne-1 and
+                    set in H_val[l], for l = 1, ..., H_ne and
                     eval_status should be set to 0. If the user is
                     unable to evaluate a component of $H$ for instance,
                     if a component of the matrix is undefined at $x$ the
@@ -830,7 +830,7 @@ returning to the calling procedure
                     function. The l-th component of the matrix stored
                     according to the scheme specified for the remainder
                     of $P$ in the earlier call to nls_import should be
-                    set in P_val[l], for l = 0, ..., P_ne-1 and
+                    set in P_val[l], for l = 1, ..., P_ne and
                     eval_status should be set to 0. If the user is
                     unable to evaluate a component of $P$ for instance,
                     if a component of the matrix is undefined at $x$ the

@@ -5,7 +5,7 @@ GALAHAD NLS package
 
 .. module:: galahad.nls
 
-.. include:: ../../Python/nls_intro.rst
+.. include:: nls_intro.rst
 
 .. include:: nls_storage.rst
 

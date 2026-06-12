@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function blls_import(T, INT, control, data, status, n, o, 
+        function blls_import(T, INT, control, data, status, n, o,
                              Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -273,9 +273,9 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function blls_solve_given_a(T, INT, data, userdata, status, n, o, 
-                                    Ao_ne, Ao_val, b, x_l, x_u, x, z, r, g, 
-                                    x_stat, w, eval_prec)
+        function blls_solve_given_a(T, INT, data, userdata, status, n, o,
+                                    Ao_ne, Ao_val, b, sigma, x_l, x_u, 
+                                    x, z, r, g, x_stat, w, x_s, eval_prec)
 
 Solve the bound-constrained linear least-squares problem when the
 Jacobian $A$ is available.
@@ -381,6 +381,11 @@ Jacobian $A$ is available.
 		- is a one-dimensional array of size m and type T that holds the constant term $b$ in the residuals. The i-th component of ``b``, i = 1, ... , o, contains $b_i$.
 
 	*
+		- sigma
+
+		- is a scalar of type T that holds the non-negative regularization weight $\sigma \geq 0$.
+
+	*
 		- x_l
 
 		- is a one-dimensional array of size n and type T that holds the lower bounds $x^l$ on the variables $x$. The j-th component of ``x_l``, j = 1, ... , n, contains $x^l_j$.
@@ -418,7 +423,12 @@ Jacobian $A$ is available.
 	*
 		- w
 
-		- is an optional one-dimensional array of size m and type T that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be C_NULL.
+		- is a one-dimensional array of size m and type T that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be C_NULL.
+
+	*
+		- x_s
+
+		- is a one-dimensional array of size n and type T that holds the values $x_s$ of the shifts. The j-th component of w, j = 1, ... , n, contains ${x_s}_j$. If the shifts are all zero, x_s can be set to C_NULL.
 
 	*
 		- eval_prec
@@ -445,10 +455,11 @@ Jacobian $A$ is available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function blls_solve_reverse_a_prod(T, INT, data, status, eval_status, n, o, b,
-                                           x_l, x_u, x, z, r, g, x_stat, v, p,
+        function blls_solve_reverse_a_prod(T, INT, data, status, eval_status, 
+                                           n, o, b, sigma, x_l, x_u, 
+                                           x, z, r, g, x_stat, v, p,
                                            nz_v, nz_v_start, nz_v_end, nz_p, 
-                                           nz_p_end, w)
+                                           nz_p_end, w, x_s)
 
 Solve the bound-constrained linear least-squares problem when the
 products of the Jacobian $A$ and its transpose with specified vectors
@@ -555,7 +566,7 @@ may be computed by the calling program.
                     given sparse output vector $v$ is required from the
                     user. The nonzero components of the vector $v$ will
                     be stored as entries
-                    nz_in[nz_in_start-1:nz_in_end-1] of v and the
+                    nz_v[nz_v_start:nz_v_end] of v and the
                     product $A_ov$ must be returned in p, status_eval
                     should be set to 0, and blls_solve_reverse_a_prod
                     re-entered with all other arguments unchanged; The
@@ -569,16 +580,16 @@ may be computed by the calling program.
                     design matrix $A_o$ with a given sparse output
                     vector $v$ is required from the user. The nonzero
                     components of the vector $v$ will be stored as
-                    entries nz_in[nz_in_start-1:nz_in_end-1] of v; the
+                    entries nz_v[nz_v_start:nz_v_end] of v; the
                     remaining components of v should be ignored. The
                     resulting **nonzeros** in the product $A_ov$ must be
                     placed in their appropriate comnponents of p, while
-                    a list of indices of the nonzeros placed in nz_out[0
-                    : nz_out_end-1] and the number of nonzeros recorded
-                    in nz_out_end. Additionally, status_eval should be
+                    a list of indices of the nonzeros placed in nz_p[1
+                    : nz_p_end] and the number of nonzeros recorded
+                    in nz_p_end. Additionally, status_eval should be
                     set to 0, and blls_solve_reverse_a_prod re-entered
                     with all other arguments unchanged. If the product
-                    cannot be formed, v, nz_out_end and nz_out need not
+                    cannot be formed, v, nz_p_end and nz_p need not
                     be set, but blls_solve_reverse_a_prod should be
                     re-entered with eval_status set to a nonzero value.
 
@@ -587,7 +598,7 @@ may be computed by the calling program.
                     the design matrix $A_o$ with a given output vector
                     $v$ is required from the user. The vector $v$ will
                     be stored in v and components
-                    nz_in[nz_in_start-1:nz_in_end-1] of the product
+                    nz_v[nz_v_start:nz_v_end] of the product
                     $A_o^Tv$ must be returned in the relevant components
                     of p (the remaining components should not be set),
                     status_eval should be set to 0, and
@@ -630,6 +641,11 @@ may be computed by the calling program.
 		- b
 
 		- is a one-dimensional array of size m and type T that holds the constant term $b$ in the residuals. The i-th component of ``b``, i = 1, ... , o, contains $b_i$.
+
+	*
+		- sigma
+
+		- is a scalar of type T that holds the non-negative regularization weight $\sigma \geq 0$.
 
 	*
 		- x_l
@@ -704,7 +720,12 @@ may be computed by the calling program.
 	*
 		- w
 
-		- is an optional one-dimensional array of size o and type T that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be C_NULL.
+		- is a one-dimensional array of size o and type T that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be C_NULL.
+
+	*
+		- x_s
+
+		- is a one-dimensional array of size n and type T that holds the values $x_s$ of the shifts. The j-th component of w, j = 1, ... , n, contains ${x_s}_j$. If the shifts are all zero, x_s can be set to C_NULL.
 
 .. index:: pair: function; blls_information
 .. _doxid-galahad__blls_8h_1a457b8ee7c630715bcb43427f254b555f:

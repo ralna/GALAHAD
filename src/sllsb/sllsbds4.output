@@ -1,0 +1,52 @@
+ problem dimensions before preprocessing: 
+ n = 5 m = 2 ao_ne = 10 a_ne = 4
+ problem dimensions after preprocessing: 
+ n = 5 m = 2 ao_ne = 10 a_ne = 4
+
+ 2 equalities from 2 constraints
+
+  maximum element of Ao = 1.0000E+00
+  maximum element of A  = 1.0000E+00
+
+  Primal    convergence tolerance = 6.8285E-06
+  Dual      convergence tolerance = 6.8285E-06
+  Slackness convergence tolerance = 6.8285E-06
+
+ Iter   p-feas  d-feas com-slk    obj     step   target   arc bt     time
+    0  2.0E+04 2.0E+04 1.0E+08  2.0E+08     -   1.0E+06    -   -     0.00
+
+ ========================= feasible point found =========================
+
+    1r 1.8E-12 3.6E-12 5.0E+03  6.8E+00 1.0E+00 5.0E+01  0TZh  0     0.00
+    2r 2.8E-16 1.1E-12 5.0E+01  6.8E+00 1.0E+00 5.0E-01  0TZh  0     0.00
+    3r 2.2E-16 3.2E-14 5.0E-01  6.8E+00 1.0E+00 5.0E-03  0TZh  0     0.00
+    4r 3.3E-16 1.6E-15 1.8E-02  6.7E+00 9.7E-01 1.8E-04  2PZh  0     0.00
+    5r 0.0E+00 1.2E-13 3.1E-04  6.7E+00 8.4E-01 3.1E-06  2PZh  0     0.00
+    6r 1.1E-16 1.5E-15 3.6E-06  6.7E+00 1.0E+00 3.1E-06  2PZh  0     0.00
+  Computed constraint residual is 0.0000E+00
+  Indicators: n_active/n, m_active/m = 1/5, 2/2
+  changes in predicted X/C_stat = 1, 0, pouncing for solution ...
+  pounce successful, optimal solution found
+
+  Final objective function value is 6.71428571428572E+00
+  Total number of iterations = 6
+  Total number of backtracks = 0
+
+  Norm of projected gradient is 2.2204E-16
+  Norm of infeasibility is 1.1102E-16
+  gamma_c,f are 1.0000E-05 1.1548E-01
+  Maximum order 2 Puiseux fit to the Zhang arc is used
+  Linear system solver sytr is used
+  Primal-dual indicators used
+
+    =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    =                            total time                           =
+    =                                0.00                             =
+    =    preprocess    analyse    factorize     solve     crossover   =
+    =        0.00        0.00        0.00        0.00        0.00     =
+    =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+ SLLSB: 6 iterations  
+ Optimal objective value =  6.7143E+00
+ Optimal solution =  0.0000E+00  8.5714E-01  4.2857E-01  1.0000E+00  1.4286E-01
+ Lagrange multiplier estimates =  4.2857E-01  2.8571E-01

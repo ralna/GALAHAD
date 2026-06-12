@@ -1,7 +1,7 @@
 //* \file wcp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:10 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_WCP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -38,7 +38,7 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool wcp_update_control(struct wcp_control_type *control,
+bool wcp_update_control(struct wcp_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -515,7 +515,8 @@ static PyObject* wcp_make_time_dict(const struct wcp_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* wcp_make_inform_dict(const struct wcp_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* wcp_make_inform_dict(const struct wcp_inform_type *inform){
     PyObject *py_inform = PyDict_New();
     PyDict_SetItemString(py_inform, "status",
                          PyLong_FromLong(inform->status));
@@ -575,7 +576,7 @@ static PyObject* py_wcp_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = wcp_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   WCP_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -719,7 +720,7 @@ static PyObject* py_wcp_find_wcp(PyObject *self, PyObject *args, PyObject *keywd
     z_l = (double *) PyArray_DATA(py_z_l);
     z_u = (double *) PyArray_DATA(py_z_u);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp mdim[] = {m}; // size of c and c_ztar
     PyArrayObject *py_c =
@@ -753,14 +754,9 @@ static PyObject* py_wcp_find_wcp(PyObject *self, PyObject *args, PyObject *keywd
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *find_wcp_return;
-
-    // find_wcp_return = Py_BuildValue("O", py_x);
-    find_wcp_return = Py_BuildValue("OOOOOOOO", py_x, py_c, py_y_l, py_y_u,
-                                                py_z_l, py_z_u,
-                                                py_x_stat, py_c_stat);
-    Py_INCREF(find_wcp_return);
-    return find_wcp_return;
+    return Py_BuildValue("ONOOOONN", py_x, py_c, py_y_l, py_y_u,
+                                                 py_z_l, py_z_u,
+                                                 py_x_stat, py_c_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   WCP_INFORMATION   -*-*-*-*-*-*-*-*
@@ -776,7 +772,7 @@ static PyObject* py_wcp_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = wcp_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   WCP_TERMINATE   -*-*-*-*-*-*-*-*-*-*

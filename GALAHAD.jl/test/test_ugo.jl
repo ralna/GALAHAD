@@ -6,13 +6,16 @@ using Test
 using Printf
 using Accessors
 using Quadmath
+import Quadmath.Cfloat128
 
 # Custom userdata struct
 mutable struct userdata_ugo{T}
   a::T
 end
 
-function test_ugo(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
+Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_ugo) = pointer_from_objref(userdata)
+
+function test_ugo(::Type{T}, ::Type{INT}, ::Type{CT}; mode::String="reverse") where {T,INT,CT}
   # Test problem objective
   function objf(x::T, userdata::userdata_ugo{T})
     a = userdata.a
@@ -35,19 +38,19 @@ function test_ugo(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
   end
 
   # Evaluate test problem objective, first and second derivatives
-  function eval_fgh(x::T, f::Ptr{T}, g::Ptr{T}, h::Ptr{T}, userdata::Ptr{Cvoid})::INT
+  function eval_fgh(x::CT, f::Ptr{T}, g::Ptr{T}, h::Ptr{T}, userdata::Ptr{Cvoid})::INT
     _f = unsafe_wrap(Vector{T}, f, 1)
     _g = unsafe_wrap(Vector{T}, g, 1)
     _h = unsafe_wrap(Vector{T}, h, 1)
     _userdata = unsafe_pointer_to_objref(userdata)::userdata_ugo{T}
 
-    _f[1] = objf(x, _userdata)
-    _g[1] = gradf(x, _userdata)
-    _h[1] = hessf(x, _userdata)
+    _f[1] = objf(T(x), _userdata)
+    _g[1] = gradf(T(x), _userdata)
+    _h[1] = hessf(T(x), _userdata)
     return INT(0)
   end
 
-  eval_fgh_ptr = @eval @cfunction($eval_fgh, $INT, ($T, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+  eval_fgh_ptr = @eval @cfunction($eval_fgh, $INT, ($CT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -56,7 +59,6 @@ function test_ugo(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
 
   # Set user data
   userdata = userdata_ugo{T}(10)
-  userdata_ptr = pointer_from_objref(userdata)
 
   # Initialize UGO
   status = Ref{INT}()
@@ -85,7 +87,7 @@ function test_ugo(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
   # Solve the problem: min f(x), x_l ≤ x ≤ x_u
   if mode == "direct"
     # Call UGO_solve
-    ugo_solve_direct(T, INT, data, userdata_ptr, status, x, f, g, h, eval_fgh_ptr)
+    ugo_solve_direct(T, INT, data, userdata, status, x, f, g, h, eval_fgh_ptr)
   end
 
   if mode == "reverse"
@@ -125,16 +127,16 @@ function test_ugo(::Type{T}, ::Type{INT}; mode::String="reverse") where {T,INT}
   return 0
 end
 
-for (T, INT, libgalahad) in ((Float32 , Int32, GALAHAD.libgalahad_single      ),
-                             (Float32 , Int64, GALAHAD.libgalahad_single_64   ),
-                             (Float64 , Int32, GALAHAD.libgalahad_double      ),
-                             (Float64 , Int64, GALAHAD.libgalahad_double_64   ),
-                             (Float128, Int32, GALAHAD.libgalahad_quadruple   ),
-                             (Float128, Int64, GALAHAD.libgalahad_quadruple_64))
+for (T, INT, CT, libgalahad) in ((Float32 , Int32, Float32  , GALAHAD.libgalahad_single      ),
+                                 (Float32 , Int64, Float32  , GALAHAD.libgalahad_single_64   ),
+                                 (Float64 , Int32, Float64  , GALAHAD.libgalahad_double      ),
+                                 (Float64 , Int64, Float64  , GALAHAD.libgalahad_double_64   ),
+                                 (Float128, Int32, Cfloat128, GALAHAD.libgalahad_quadruple   ),
+                                 (Float128, Int64, Cfloat128, GALAHAD.libgalahad_quadruple_64))
   if isfile(libgalahad)
     @testset "UGO -- $T -- $INT" begin
       @testset "$mode communication" for mode in ("reverse", "direct")
-        @test test_ugo(T, INT; mode) == 0
+        @test test_ugo(T, INT, CT; mode) == 0
       end
     end
   end

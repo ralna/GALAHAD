@@ -30,7 +30,7 @@
         f_expo_information               => EXPO_information,                  &
         f_expo_terminate                 => EXPO_terminate
     USE GALAHAD_USERDATA_precision, ONLY:                                      &
-        f_galahad_userdata_type => GALAHAD_userdata_type
+        f_galahad_userdata_type => USERDATA_type
 
     USE GALAHAD_BSC_precision_ciface, ONLY:                                    &
         bsc_inform_type,                                                       &

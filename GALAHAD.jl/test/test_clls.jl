@@ -24,6 +24,7 @@ function test_clls(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
   x_l = T[-1.0, -Inf, -Inf]  # variable lower bound
   x_u = T[1.0, Inf, 2.0]  # variable upper bound
   w = T[1.0, 1.0, 1.0, 2.0]  # weights
+  x_s = T[0.5, 0.5, 0.5]  # shifts
 
   # Set output storage
   r = zeros(T, o) # residual values
@@ -66,9 +67,9 @@ function test_clls(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
                   "coordinate", Ao_ne, Ao_row, Ao_col, 0, C_NULL,
                   "coordinate", A_ne, A_row, A_col, 0, C_NULL)
 
-      clls_solve_clls(T, INT, data, status, n, o, m, Ao_ne, Ao_val, b,
-                      sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
-                      x, r, c, y, z, x_stat, c_stat, w)
+      clls_solve_given_a(T, INT, data, status, n, o, m, Ao_ne, Ao_val, b,
+                         sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
+                         x, y, z, r, c, x_stat, c_stat, w, x_s)
     end
 
     # sparse by rows
@@ -91,9 +92,9 @@ function test_clls(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
                   "sparse_by_rows", A_ne, C_NULL, A_col,
                   A_ptr_ne, A_ptr)
 
-      clls_solve_clls(T, INT, data, status, n, o, m, Ao_ne, Ao_val, b,
-                      sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
-                      x, r, c, y, z, x_stat, c_stat, w)
+      clls_solve_given_a(T, INT, data, status, n, o, m, Ao_ne, Ao_val, b,
+                         sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
+                         x, y, z, r, c, x_stat, c_stat, w, x_s)
     end
 
     # sparse by columns
@@ -116,9 +117,9 @@ function test_clls(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
                   "sparse_by_columns", A_ne, A_row, C_NULL,
                   A_ptr_ne, A_ptr)
 
-      clls_solve_clls(T, INT, data, status, n, o, m, Ao_ne, Ao_val, b,
-                      sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
-                      x, r, c, y, z, x_stat, c_stat, w)
+      clls_solve_given_a(T, INT, data, status, n, o, m, Ao_ne, Ao_val, b,
+                         sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
+                         x, y, z, r, c, x_stat, c_stat, w, x_s)
     end
 
     # dense by rows
@@ -133,9 +134,9 @@ function test_clls(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
                   "dense", Ao_ne, C_NULL, C_NULL, 0, C_NULL,
                   "dense", A_ne, C_NULL, C_NULL, 0, C_NULL)
 
-      clls_solve_clls(T, INT, data, status, n, o, m, Ao_ne, Ao_dense, b,
-                      sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
-                      x, r, c, y, z, x_stat, c_stat, w)
+      clls_solve_given_a(T, INT, data, status, n, o, m, Ao_ne, Ao_dense, b,
+                         sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
+                         x, y, z, r, c, x_stat, c_stat, w, x_s)
     end
 
     # dense by cols
@@ -150,9 +151,9 @@ function test_clls(::Type{T}, ::Type{INT}; sls::String="sytr") where {T,INT}
                   "dense_by_columns", Ao_ne, C_NULL, C_NULL, 0, C_NULL,
                   "dense_by_columns", A_ne, C_NULL, C_NULL, 0, C_NULL)
 
-      clls_solve_clls(T, INT, data, status, n, o, m, Ao_ne, Ao_dense, b,
-                      sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
-                      x, r, c, y, z, x_stat, c_stat, w)
+      clls_solve_given_a(T, INT, data, status, n, o, m, Ao_ne, Ao_dense, b,
+                         sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
+                         x, y, z, r, c, x_stat, c_stat, w, x_s)
     end
 
     clls_information(T, INT, data, inform, status)

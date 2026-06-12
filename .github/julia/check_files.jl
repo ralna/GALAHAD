@@ -6,12 +6,13 @@ function meson_check_headers()
 
   folder_headers = joinpath(@__DIR__, "..", "..", "include")
   path_galahad_h = joinpath(folder_headers, "meson.build")
+  path_galahad_jl = joinpath(@__DIR__, "..", "..", "GALAHAD.jl")
   content = read(path_galahad_h, String)
 
   excluded_headers = ["galahad_single.h", "galahad_double.h", "galahad_quadruple.h",
                       "hsl_kinds.h", "hsl_metis.h", "hsl_subset.h", "cutest_routines.h",
                       "galahad_kinds.h", "galahad_blas.h", "galahad_lapack.h",
-                      "galahad_elgrra.h", "galahad_icfs.h", "galahad_bnls.h"]
+                      "galahad_elgrra.h", "galahad_icfs.h", "amplinter.h"]
 
   for file in readdir(folder_headers)
     !endswith(file, ".h") && continue
@@ -31,7 +32,7 @@ function meson_check_headers()
 
   if n > 0
     println("If some header files should not be installed by Meson, please update")
-    println("the variable `excluded_headers` in GALAHAD/.github/julia/check_meson.jl.")
+    println("the variable `excluded_headers` in GALAHAD/.github/julia/check_files.jl.")
     println()
   end
 
@@ -67,7 +68,7 @@ function meson_check_packages()
 
   if m > 0
     println("If some subfolders should not be explored by Meson, please update")
-    println("the variable `excluded_packages` in GALAHAD/.github/julia/check_meson.jl.")
+    println("the variable `excluded_packages` in GALAHAD/.github/julia/check_files.jl.")
     println()
   end
 
@@ -92,7 +93,11 @@ function meson_check_files()
                     "mop.d90.vers1", "nlst2.F90", "nodendti.F90", "bits", "orig", "pre",
                     "qp_spec.F90", "qp_test.F90", "qp_ciface.F90", "qpcs.f90.real",
                     "qpcs.f90.test", "qpc_ciface.F90", "shati.F90", "shat.c", "shatf.c",
-                    "fa04a.f", "fa04ad.f", "ym01a.f", "ym01ad.f", "runsls_rb.F90"]
+                    "fa04a.f", "fa04ad.f", "ym01a.f", "ym01ad.f", "runsls_rb.F90",
+                    "sllss5.f90", "sllss6.f90", "sllss7.f90", "sllsbs5.f90", "snlss5.f90", 
+                    "snlss.c", "snlss2.c", "snlss3.c", "snlss4.c", "sllsb5.f90",
+                    "snlst2.F90", "bnlst2.F90", "bnlss.c", "bnlss2.c", "bnlss3.c",
+                    "bnlss4.c"]
 
   for package in readdir(path_packages)
     path_local_package = joinpath(path_packages, package)
@@ -103,6 +108,7 @@ function meson_check_files()
       for file in readdir(path_local_package)
         path_file = joinpath(path_local_package, file)
         isdir(path_file) && continue
+        endswith(file, ".h") && continue
         endswith(file, ".meta") && continue
         endswith(file, ".template") && continue
         endswith(file, ".output") && continue
@@ -138,17 +144,100 @@ function meson_check_files()
 
   if p > 0
     println("If some files should not be compiled by Meson, please update")
-    println("the variable `excluded_files` in GALAHAD/.github/julia/check_meson.jl.")
+    println("the variable `excluded_files` in GALAHAD/.github/julia/check_files.jl.")
     println()
   end
 
   return p
 end
 
+function julia_check_wrappers()
+  println("--- Julia -- wrappers ---")
+  q = 0
+
+  path_packages = joinpath(@__DIR__, "..", "..", "src")
+  path_wrappers_jl = joinpath(@__DIR__, "..", "..", "GALAHAD.jl", "src", "wrappers")
+
+  for package in readdir(path_packages)
+    (package == "dum") && continue
+    (package == "common") && continue
+    path_local_package = joinpath(path_packages, package)
+    !isdir(path_local_package) && continue
+    local_C_folder = joinpath(path_local_package, "C")
+    if isdir(local_C_folder)
+      path_julia_wrapper = joinpath(path_wrappers_jl, "$package.jl")
+      if !isfile(path_julia_wrapper)
+        q = q + 1
+        println("Please add the file `$package.jl` in GALAHAD/GALAHAD.jl/src/wrappers.")
+        println("The script GALAHAD/GALAHAD.jl/gen/wrapper.jl can help generate it.")
+        println("Please read the file GALAHAD/GALAHAD.jl/gen/README.md for more details.")
+        println()
+      end
+    end
+  end
+
+  path_galahad_julia = joinpath(@__DIR__, "..", "..", "GALAHAD.jl", "src", "GALAHAD.jl")
+  local_content = read(path_galahad_julia, String)
+  for file in readdir(path_wrappers_jl)
+    if !occursin("include(\"wrappers/$file\")", local_content)
+      q = q + 1
+      println("Please add `include(\"wrappers/$file\")` in GALAHAD/GALAHAD.jl/src/GALAHAD.jl.")
+      println()
+    end
+  end
+
+  return q
+end
+
+function julia_check_tests()
+  println("--- Julia -- tests ---")
+  r = 0
+
+  folder_headers = joinpath(@__DIR__, "..", "..", "include")
+  path_packages = joinpath(@__DIR__, "..", "..", "src")
+  path_tests_jl = joinpath(@__DIR__, "..", "..", "GALAHAD.jl", "test")
+
+  for package in readdir(path_packages)
+    (package == "dum") && continue
+    (package == "common") && continue
+    path_local_package = joinpath(path_packages, package)
+    !isdir(path_local_package) && continue
+    local_C_folder = joinpath(path_local_package, "C")
+    package_header = joinpath(folder_headers, "galahad_$package.h")
+    if isdir(local_C_folder) && isfile(package_header)
+      path_julia_test = joinpath(path_tests_jl, "test_$package.jl")
+      if !isfile(path_julia_test)
+        r = r + 1
+        println("Please add the file `test_$package.jl` in GALAHAD/GALAHAD.jl/test.")
+        println("The script GALAHAD/GALAHAD.jl/gen/examples.jl can help generate it.")
+        println("Please read the file GALAHAD/GALAHAD.jl/gen/README.md for more details.")
+        println()
+      end
+    end
+  end
+
+  path_runtests_julia = joinpath(@__DIR__, "..", "..", "GALAHAD.jl", "test", "runtests.jl")
+  local_content = read(path_runtests_julia, String)
+  for file in readdir(path_tests_jl)
+    (file == "runtests.jl") && continue
+    if !occursin("include(\"$file\")", local_content)
+      r = r + 1
+      println("Please add `include(\"$file\")` in GALAHAD/GALAHAD.jl/test/runtests.jl.")
+      println()
+    end
+  end
+
+  return r
+end
+
 n = meson_check_headers()
 m = meson_check_packages()
 p = meson_check_files()
+q = julia_check_wrappers()
+r = julia_check_tests()
 
 @test m == 0
 @test n == 0
 @test p == 0
+@test q == 0
+@test r == 0

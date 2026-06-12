@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.2 - 2026-01-27 AT 14:50 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -442,6 +442,7 @@
 !  Store the problem dimensions
 
       prob%n = n ; prob%o = o ; prob%m = m
+      prob%regularization_weight = regularization_weight
 
 !  ------------------- problem set-up complete ----------------------
 
@@ -724,8 +725,7 @@
 
         solv = ' CLLS'
         IF ( printo ) WRITE( out, " ( ' ** CLLS solver used ** ' ) " )
-        CALL CLLS_solve( prob, data, control, inform,               &
-                         regularization_weight = regularization_weight )
+        CALL CLLS_solve( prob, data, control, inform )
 
         IF ( printo ) WRITE( out, " ( /, ' ** CLLS solver used ** ' ) " )
 

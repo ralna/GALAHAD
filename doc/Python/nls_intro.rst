@@ -4,8 +4,8 @@ purpose
 The ``nls`` package uses a regularization method to find a (local) unconstrained
 minimizer of a differentiable weighted sum-of-squares objective function
 $$f(x) :=
-\frac{1}{2} \sum_{i=1}^m w_i c_i^2(x) \equiv \frac{1}{2} \|c(x)\|^2_W$$
-of many variables $x$ involving positive weights $w_i$, $i=1,\ldots,m$.
+\frac{1}{2} \sum_{i=0}^{m-1} w_i c_i^2(x) \equiv \frac{1}{2} \|c(x)\|^2_W$$
+of many variables $x$ involving positive weights $w_i$, $i=0,\ldots,m-1$.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for large problems.
 First derivatives of the residual function $c(x)$ are required, and if
@@ -43,10 +43,10 @@ Various models are provided, and each has different derivative requirements.
 We denote the $m$ by $n$ residual **Jacobian**
 $J(x) \equiv \nabla_x c(x)$ as the matrix  whose $i,j$-th component
 $$J(x)_{i,j} := \partial c_i(x) / \partial x_j \;\;
-\mbox{for $i=1,\ldots,m$ and $j=1,\ldots,n$.}$$
+\mbox{for $i=0,\ldots,m-1$ and $j=0,\ldots,n-1$.}$$
 For a given $m$-vector $y$, the
 **weighted-residual Hessian** is the sum
-$$H(x,y) := \sum_{\ell=1}^m y_{\ell} H_{\ell}(x), \;\; \mbox{where}\;\; H_{\ell}(x)_{i,j} := \partial^2 c_{\ell}(x) / \partial x_i \partial x_j \;\; \mbox{for $i,j=1,\ldots,n$}$$
+$$H(x,y) := \sum_{\ell=0}^{m-1} y_{\ell} H_{\ell}(x), \;\; \mbox{where}\;\; H_{\ell}(x)_{i,j} := \partial^2 c_{\ell}(x) / \partial x_i \partial x_j \;\; \mbox{for $i,j=0,\ldots,n-1$}$$
 is the Hessian of $c_\ell(x)$.
 Finally, for a given vector $v$, we define
 the **residual-Hessians-vector product** matrix
@@ -71,7 +71,7 @@ The models $t_k(s)$ provided are,
    where the $i$-th component of $s^T \cdot P(x_k,s)$ is
    shorthand for the scalar $s^T H_i(x_k) s$,
    where $W$ is the diagonal matrix of weights
-   $w_i$, $i = 1, \ldots m$0.
+   $w_i$, $i = 0, \ldots m-1$.
 
 method
 ------

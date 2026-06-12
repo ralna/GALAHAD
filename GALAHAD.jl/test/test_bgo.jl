@@ -14,6 +14,8 @@ mutable struct userdata_bgo{T}
   mag::T
 end
 
+Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_bgo) = pointer_from_objref(userdata)
+
 function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Objective function
@@ -286,7 +288,6 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
 
   # Set user data
   userdata = userdata_bgo{T}(4, 10, 1000)
-  userdata_ptr = pointer_from_objref(userdata)
 
   # Set problem data
   n = INT(3)  # dimension
@@ -333,7 +334,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         bgo_import(T, INT, control, data, status, n, x_l, x_u,
                    "coordinate", ne, H_row, H_col, C_NULL)
 
-        bgo_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g,
+        bgo_solve_with_mat(T, INT, data, userdata, status, n, x, g,
                            ne, fun_ptr, grad_ptr, hess_ptr, hessprod_ptr, prec_ptr)
       end
 
@@ -343,7 +344,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         bgo_import(T, INT, control, data, status, n, x_l, x_u,
                    "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
 
-        bgo_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g,
+        bgo_solve_with_mat(T, INT, data, userdata, status, n, x, g,
                            ne, fun_ptr, grad_ptr, hess_ptr, hessprod_ptr, prec_ptr)
       end
 
@@ -353,7 +354,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         bgo_import(T, INT, control, data, status, n, x_l, x_u,
                    "dense", ne_dense, C_NULL, C_NULL, C_NULL)
 
-        bgo_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g,
+        bgo_solve_with_mat(T, INT, data, userdata, status, n, x, g,
                            ne_dense, fun_ptr, grad_ptr, hess_dense_ptr,
                            hessprod_ptr, prec_ptr)
       end
@@ -364,7 +365,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         bgo_import(T, INT, control, data, status, n, x_l, x_u,
                    "diagonal", n, C_NULL, C_NULL, C_NULL)
 
-        bgo_solve_with_mat(T, INT, data, userdata_ptr, status, n, x, g,
+        bgo_solve_with_mat(T, INT, data, userdata, status, n, x, g,
                            n, fun_diag_ptr, grad_diag_ptr, hess_diag_ptr,
                            hessprod_diag_ptr, prec_ptr)
       end
@@ -375,7 +376,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         bgo_import(T, INT, control, data, status, n, x_l, x_u,
                    "absent", ne, C_NULL, C_NULL, C_NULL)
 
-        bgo_solve_without_mat(T, INT, data, userdata_ptr, status, n, x, g,
+        bgo_solve_without_mat(T, INT, data, userdata, status, n, x, g,
                               fun_ptr, grad_ptr, hessprod_ptr,
                               shessprod_ptr, prec_ptr)
       end
@@ -512,7 +513,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
             eval_status[] = grad(x, g, userdata)
             eval_status[] = hessprod(x, u, v, false, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -556,7 +557,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
             eval_status[] = grad(x, g, userdata)
             eval_status[] = hessprod(x, u, v, false, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -599,7 +600,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
             eval_status[] = grad_diag(x, g, userdata)
             eval_status[] = hessprod_diag(x, u, v, false, userdata)
           else
-            @printf(" the value %1i of status should not occur\n", status)
+            @printf(" the value %1i of status should not occur\n", status[])
           end
         end
       end
@@ -647,7 +648,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
             eval_status[] = hessprod(x, u, v, false, userdata)
           else
             @printf(" the value %1i of status should not occur\n",
-                    status)
+                    status[])
           end
         end
       end

@@ -195,7 +195,7 @@ runs:
           meson compile -C builddir
           meson install -C builddir
         else
-          VERSION_LIBHSL="4.0.4"
+          VERSION_LIBHSL="4.0.5"
           cd ..
           if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
             wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.zip
@@ -251,11 +251,22 @@ runs:
         # wget https://github.com/JuliaBinaryWrappers/IntelOpenMP_jll.jl/releases/download/IntelOpenMP-v${VERSION_MKL}%2B0/IntelOpenMP.v${VERSION_MKL}.$PLATFORM.tar.gz
         # tar -xzvf IntelOpenMP.v${VERSION_MKL}.$PLATFORM.tar.gz -C deps
 
+    - name: Install ASL
+      if: inputs.os != 'windows-latest'
+      shell: bash
+      run: |
+        cd ..
+        mkdir -p deps
+        VERSION_ASL="0.1.3"
+        wget https://github.com/JuliaBinaryWrappers/ASL_jll.jl/releases/download/ASL-v${VERSION_ASL}%2B0/ASL.v${VERSION_ASL}.$PLATFORM.tar.gz
+        tar -xzvf ASL.v${VERSION_ASL}.$PLATFORM.tar.gz -C deps
+
     - name: Setup GALAHAD
       shell: bash
       run: |
         mkdir -p ../deps/${LIBDIR}
         mkdir -p ../deps/modules
+        mkdir -p ../deps/include
         mkdir -p ../CUTEst/modules
         CSTD="c99"
         CPPSTD="c++11"
@@ -275,6 +286,8 @@ runs:
         MUMPS_DOUBLE="dmumps"
         HSL="hsl_subset"
         HSL_PATH="$DEPS/deps/$LIBDIR"
+        ASL="asl"
+        ASL_PATH="$DEPS/deps/$LIBDIR"
         LD_CLASSIC=""
         if [[ "${{inputs.os}}" == "macos-15-intel" || "${{inputs.os}}" == "macos-latest" ]]; then
           LD_CLASSIC="-Wl,-ld_classic"
@@ -299,6 +312,7 @@ runs:
           MUMPS_SINGLE="smumps64"
           MUMPS_DOUBLE="dmumps64"
           HSL="hsl_subset_64"
+          ASL=""
         fi
         if [[ "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "ubuntu-latest" ]]; then
           BLAS="mkl_rt"
@@ -358,6 +372,9 @@ runs:
                              -Dlibhsl=${HSL} \
                              -Dlibhsl_path=${HSL_PATH} \
                              -Dlibhsl_modules=../deps/modules \
+                             -Dlibasl=${ASL} \
+                             -Dlibasl_path=${ASL_PATH} \
+                             -Dlibasl_include=../deps/include \
                              -Db_sanitize=${SANITIZER}
 
     - name: Build GALAHAD

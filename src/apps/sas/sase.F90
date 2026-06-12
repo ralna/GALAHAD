@@ -21,7 +21,7 @@
    TYPE ( SLLS_data_type ) :: data_l, data_r, data_t, data_p
    TYPE ( SLLS_control_type ) :: control_l, control_r, control_t, control_p
    TYPE ( SLLS_inform_type ) :: inform_l, inform_r, inform_t, inform_p
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER ( KIND = ip_ ) :: i, il, ir, it, ip, ix, iy, j, k, ll, ne
    INTEGER ( KIND = ip_ ) :: n, nl_free, nr_free, nt_free, np_free, iter, pass
    INTEGER ( KIND = ip_ ) :: repeat, status, alloc_status

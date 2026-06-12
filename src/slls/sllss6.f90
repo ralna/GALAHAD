@@ -16,7 +16,7 @@
    TYPE ( SLLS_data_type ) :: data_u, data_v, data_x, data_y
    TYPE ( SLLS_control_type ) :: control_u, control_v, control_x, control_y
    TYPE ( SLLS_inform_type ) :: inform_u, inform_v, inform_x, inform_y
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER :: i, iu, iv, ix, iy, ne, pass
    TYPE ( RAND_seed ) :: seed
    REAL ( KIND = wp ) :: val, f, xi, b, a_11, a_12, a_22, r_1, r_2, f_best

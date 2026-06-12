@@ -40,6 +40,7 @@ int main(void) {
     ipc_ o = n + 1; // number of residuals
     ipc_ Ao_ne = 2 * n; // sparse Jacobian elements
     ipc_ Ao_dense_ne = o * n; // dense Jacobian elements
+    rpc_ regularization_weight = 1.0; // regularization weight
     // row-wise storage
     ipc_ Ao_row[Ao_ne]; // row indices,
     ipc_ Ao_col[Ao_ne]; // column indices
@@ -61,6 +62,7 @@ int main(void) {
     rpc_ r[o]; // residual
     rpc_ g[n]; // gradient
     rpc_ w[o]; // weights
+    rpc_ x_s[n]; // shifts
 
     // Set output storage
     ipc_ x_stat[n]; // variable status
@@ -81,7 +83,9 @@ int main(void) {
 
     // w[0] = 2.0;
     w[0] = 1.0;
+    x_s[0] = 0.5;
     for( ipc_ i = 1; i < o; i++) w[i] = 1.0;
+    for( ipc_ i = 1; i < n; i++) x_s[i] = 0.5;
 
     // A by rows
 
@@ -168,8 +172,9 @@ int main(void) {
                 blls_import( &control, &data, &status, n, o,
                             "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL );
                 blls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_ne, Ao_val, b, x_l, x_u,
-                                    x, z, r, g, x_stat, w, prec );
+                                    Ao_ne, Ao_val, b, 
+                                    regularization_weight, x_l, x_u,
+                                    x, z, r, g, x_stat, w, x_s, prec );
                 break;
             case 2: // sparse by rows
                 strcpy( st, "SR" );
@@ -177,8 +182,9 @@ int main(void) {
                              "sparse_by_rows", Ao_ne, NULL, Ao_col,
                              Ao_ptr_ne, Ao_ptr );
                 blls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_ne, Ao_val, b, x_l, x_u,
-                                    x, z, r, g, x_stat, w, prec );
+                                    Ao_ne, Ao_val, b, 
+                                    regularization_weight, x_l, x_u,
+                                    x, z, r, g, x_stat, w, x_s, prec );
                 break;
             case 3: // dense
                 strcpy( st, "DD" );
@@ -186,8 +192,9 @@ int main(void) {
                              "dense", Ao_dense_ne,
                               NULL, NULL,0,  NULL );
                 blls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_dense_ne, Ao_dense, b, x_l, x_u,
-                                    x, z, r, g, x_stat, w, prec );
+                                    Ao_dense_ne, Ao_dense, b, 
+                                    regularization_weight, x_l, x_u,
+                                    x, z, r, g, x_stat, w, x_s, prec );
                 break;
             case 4: // dense by rows
                 strcpy( st, "DR" );
@@ -195,8 +202,9 @@ int main(void) {
                              "dense_by_rows", Ao_dense_ne,
                              NULL, NULL, 0, NULL );
                 blls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_dense_ne, Ao_dense, b, x_l, x_u,
-                                    x, z, r, g, x_stat, w, prec );
+                                    Ao_dense_ne, Ao_dense, b, 
+                                    regularization_weight, x_l, x_u,
+                                    x, z, r, g, x_stat, w, x_s, prec );
                 break;
             case 5: // sparse by columns
                 strcpy( st, "SC" );
@@ -204,8 +212,9 @@ int main(void) {
                              "sparse_by_columns", Ao_ne, Ao_by_col_row,
                              NULL,  Ao_by_col_ptr_ne, Ao_by_col_ptr );
                 blls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_ne, Ao_by_col_val, b, x_l, x_u,
-                                    x, z, r, g, x_stat, w, prec );
+                                    Ao_ne, Ao_by_col_val, b, 
+                                    regularization_weight, x_l, x_u,
+                                    x, z, r, g, x_stat, w, x_s, prec );
                 break;
             case 6: // dense by columns
                 strcpy( st, "DC" );
@@ -213,16 +222,18 @@ int main(void) {
                              "dense_by_columns", Ao_dense_ne,
                              NULL, NULL, 0, NULL);
                 blls_solve_given_a( &data, &userdata, &status, n, o,
-                                    Ao_dense_ne, Ao_by_col_dense, b, x_l, x_u,
-                                    x, z, r, g, x_stat, w, prec );
+                                    Ao_dense_ne, Ao_by_col_dense, b, 
+                                    regularization_weight, x_l, x_u,
+                                    x, z, r, g, x_stat, w, x_s, prec );
                 break;
             }
         blls_information( &data, &inform, &status );
 
         if(inform.status == 0){
 #ifdef REAL_128
-// interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
-#include "galahad_pquad_sf.h"
+            printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
+                   st, inform.iter, (double)inform.obj, inform.status);
 #else
             printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
                    "value = %.2f status = %1" d_ipc_ "\n",
@@ -248,17 +259,18 @@ int main(void) {
     // reverse-communication input/output
     ipc_ on;
     on = imax( o, n );
-    ipc_ eval_status, nz_v_start, nz_v_end, nz_p_end;
-    ipc_ nz_v[on], nz_p[o], mask[o];
+    ipc_ eval_status, lvl, lvu, lp;
+    ipc_ iv[on], ip[o], mask[o];
     rpc_ v[on], p[on];
 
-    nz_p_end = 0;
+    lp = 0;
 
     // Initialize BLLS
     blls_initialize( &data, &control, &status );
 
     // Set user-defined control options
     control.f_indexing = true; // fortran sparse matrix indexing
+    // control.print_level = 3;
 
     // Start from 0
     for( ipc_ i = 0; i < n; i++) x[i] = 0.0;
@@ -269,9 +281,10 @@ int main(void) {
     blls_import_without_a( &control, &data, &status, n, o ) ;
     while(true){ // reverse-communication loop
         blls_solve_reverse_a_prod( &data, &status, &eval_status, n, o, b,
-                                   x_l, x_u, x, z, r, g, x_stat, v, p,
-                                   nz_v, &nz_v_start, &nz_v_end,
-                                   nz_p, nz_p_end, w );
+                                   regularization_weight, x_l, x_u, 
+                                   x, z, r, g, x_stat, v, p,
+                                   iv, &lvl, &lvu,
+                                   ip, lp, w, x_s );
         if(status == 0){ // successful termination
             break;
         }else if(status < 0){ // error exit
@@ -287,34 +300,34 @@ int main(void) {
         }else if(status == 4){ // evaluate p = Av for sparse v
           p[n]=0.0;
           for( ipc_ i = 0; i < n; i++) p[i] = 0.0;
-          for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
-            i = nz_v[l]-1;
+          for( ipc_ l = lvl - 1; l < lvu; l++){
+            i = iv[l]-1;
             p[i] = v[i];
             p[n] = p[n] + v[i];
           }
         }else if(status == 5){ // evaluate p = sparse Av for sparse v
-          nz_p_end = 0;
-          for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
-            i = nz_v[l]-1;
+          lp = 0;
+          for( ipc_ l = lvl - 1; l < lvu; l++){
+            i = iv[l]-1;
             if (mask[i] == 0){
               mask[i] = 1;
-              nz_p[nz_p_end] = i+1;
-              nz_p_end = nz_p_end + 1;
+              ip[lp] = i+1;
+              lp = lp + 1;
               p[i] = v[i];
             }
             if (mask[n] == 0){
               mask[n] = 1;
-              nz_p[nz_p_end] = o;
-              nz_p_end = nz_p_end + 1;
+              ip[lp] = o;
+              lp = lp + 1;
               p[n] = v[i];
             }else{
               p[n] = p[n] + v[i];
             }
           }
-          for( ipc_ l = 0; l < nz_p_end; l++) mask[nz_p[l]-1] = 0;
+          for( ipc_ l = 0; l < lp; l++) mask[ip[l]-1] = 0;
         }else if(status == 6){ // evaluate p = sparse A^Tv
-          for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
-            i = nz_v[l]-1;
+          for( ipc_ l = lvl - 1; l < lvu; l++){
+            i = iv[l]-1;
             p[i] = v[i] + v[n];
           }
         }else if(status == 7){ // evaluate p = P^{-}v
@@ -333,8 +346,9 @@ int main(void) {
     // Print solution details
     if(inform.status == 0){
 #ifdef REAL_128
-// interim replacement for quad output: $GALAHAD/include/galahad_pquad_sf.h
-#include "galahad_pquad_sf.h"
+            printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
+                   "value = %.2f status = %1" d_ipc_ "\n",
+                   st, inform.iter, (double)inform.obj, inform.status);
 #else
             printf("%s:%6" d_ipc_ " iterations. Optimal objective " 
                    "value = %.2f status = %1" d_ipc_ "\n",

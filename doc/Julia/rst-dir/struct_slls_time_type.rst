@@ -11,13 +11,7 @@ slls_time_type structure
 
         struct slls_time_type{T}
           total::T
-          analyse::T
-          factorize::T
-          solve::T
           clock_total::T
-          clock_analyse::T
-          clock_factorize::T
-          clock_solve::T
 
 .. _details-structslls__time__type:
 
@@ -39,33 +33,12 @@ components
 
 the total CPU time spent in the package
 
-.. index:: pair: variable; analyse
-.. _doxid-structslls__time__type_analyse:
+.. index:: pair: variable; clock_total
+.. _doxid-structslls__time__type_clock_total:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	T analyse
+	T clock_total
 
-the CPU time spent analysing the required matrices prior to factorization
-
-.. index:: pair: variable; factorize
-.. _doxid-structslls__time__type_factorize:
-
-.. ref-code-block:: julia
-	:class: doxyrest-title-code-block
-
-	T factorize
-
-the CPU time spent factorizing the required matrices
-
-.. index:: pair: variable; solve
-.. _doxid-structslls__time__type_solve:
-
-.. ref-code-block:: julia
-	:class: doxyrest-title-code-block
-
-	T solve
-
-the CPU time spent in the linear solution phase
-
+the total clock time spent in the package

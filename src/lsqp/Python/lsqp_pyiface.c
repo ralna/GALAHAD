@@ -596,7 +596,7 @@ PyObject* lsqp_make_inform_dict(const struct lsqp_inform_type *inform){
     PyDict_SetItemString(py_inform, "fdc_inform",
                          fdc_make_inform_dict(&inform->fdc_inform));
     PyDict_SetItemString(py_inform, "sbls_inform",
-                        sbls_make_inform_dict(&inform->sbls_inform));
+                         sbls_make_inform_dict(&inform->sbls_inform));
 
     return py_inform;
 }
@@ -613,7 +613,7 @@ static PyObject* py_lsqp_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = lsqp_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   LSQP_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -787,11 +787,8 @@ static PyObject* py_lsqp_solve_qp(PyObject *self, PyObject *args, PyObject *keyw
         return NULL;
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *solve_qp_return;
-    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
-                                                 py_x_stat, py_c_stat);
-    Py_INCREF(solve_qp_return);
-    return solve_qp_return;
+    return Py_BuildValue("ONOONN", py_x, py_c, py_y, py_z,
+                                               py_x_stat, py_c_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LSQP_INFORMATION   -*-*-*-*-*-*-*-*
@@ -807,7 +804,7 @@ static PyObject* py_lsqp_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = lsqp_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LSQP_TERMINATE   -*-*-*-*-*-*-*-*-*-*

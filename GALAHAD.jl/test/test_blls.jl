@@ -12,6 +12,8 @@ mutable struct userdata_blls{T}
   scale::T
 end
 
+Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_blls) = pointer_from_objref(userdata)
+
 function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # Apply preconditioner
@@ -36,11 +38,11 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
 
   # Set user data
   userdata = userdata_blls{T}(1)
-  userdata_ptr = pointer_from_objref(userdata)
 
   # Set problem data
   n = INT(10)  # dimension
   o = n + INT(1)  # number of residuals
+  sigma = one(T) # regularization weight
   Ao_ne = 2 * n # sparse Jacobian elements
   Ao_dense_ne = o * n # dense Jacobian elements
   # row-wise storage
@@ -64,6 +66,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
   r = zeros(T, o) # residual
   g = zeros(T, n) # gradient
   w = zeros(T, o) # weights
+  x_s = zeros(T, n) # shifts
 
   # Set output storage
   x_stat = zeros(INT, n) # variable status
@@ -84,13 +87,12 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
   #       (e^T)          (n + 1)
 
   for i in 1:n
+    x_s[i] = 0.5
     b[i] = i
   end
   b[n + 1] = n + 1
 
-  w[1] = 2.0
-  w[2] = 1.0
-  for i in 3:o
+  for i in 1:o
     w[i] = 1.0
   end
 
@@ -172,43 +174,68 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
       # sparse co-ordinate storage
       if d == 1
         st = "CO"
-        blls_import(T, INT, control, data, status, n, o, "coordinate", Ao_ne, Ao_row, Ao_col, INT(0), C_NULL)
-        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_ne, Ao_val, b, x_l, x_u, x, z, r, g, x_stat, w, prec_ptr)
+        blls_import(T, INT, control, data, status, n, o, "coordinate", 
+                    Ao_ne, Ao_row, Ao_col, INT(0), C_NULL)
+        blls_solve_given_a(T, INT, data, userdata, status, n, o,
+                           Ao_ne, Ao_val, 
+                           b, sigma, x_l, x_u, x, z, r, g, x_stat, 
+                           w, x_s, prec_ptr)
       end
 
       # sparse by rows
       if d == 2
         st = "SR"
-        blls_import(T, INT, control, data, status, n, o, "sparse_by_rows", Ao_ne, C_NULL, Ao_col, Ao_ptr_ne, Ao_ptr)
-        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_ne, Ao_val, b, x_l, x_u, x, z, r, g, x_stat, w, prec_ptr)
+        blls_import(T, INT, control, data, status, n, o, "sparse_by_rows", 
+                    Ao_ne, C_NULL, Ao_col, Ao_ptr_ne, Ao_ptr)
+        blls_solve_given_a(T, INT, data, userdata, status, n, o,
+                           Ao_ne, Ao_val, 
+                           b, sigma, x_l, x_u, x, z, r, g, x_stat, 
+                           w, x_s, prec_ptr)
       end
 
       # dense
       if d == 3
         st = "DD"
-        blls_import(T, INT, control, data, status, n, o, "dense", Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
-        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_dense_ne, Ao_dense, b, x_l, x_u, x, z, r, g, x_stat, w, prec_ptr)
+        blls_import(T, INT, control, data, status, n, o, "dense", 
+                    Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
+        blls_solve_given_a(T, INT, data, userdata, status, n, o,
+                           Ao_dense_ne, Ao_dense, 
+                           b, sigma, x_l, x_u, x, z, r, g, x_stat, 
+                           w, x_s, prec_ptr)
       end
 
       # dense by rows
       if d == 4
         st = "DR"
-        blls_import(T, INT, control, data, status, n, o, "dense_by_rows", Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
-        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_dense_ne, Ao_dense, b, x_l, x_u, x, z, r, g, x_stat, w, prec_ptr)
+        blls_import(T, INT, control, data, status, n, o, "dense_by_rows",
+                    Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
+        blls_solve_given_a(T, INT, data, userdata, status, n, o,
+                           Ao_dense_ne, Ao_dense, 
+                           b, sigma, x_l, x_u, x, z, r, g, x_stat, 
+                           w, x_s, prec_ptr)
       end
 
       # sparse by columns
       if d == 5
         st = "SC"
-        blls_import(T, INT, control, data, status, n, o, "sparse_by_columns", Ao_ne, Ao_by_col_row, C_NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr)
-        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_ne, Ao_by_col_val, b, x_l, x_u, x, z, r, g, x_stat, w, prec_ptr)
+        blls_import(T, INT, control, data, status, n, o, "sparse_by_columns", 
+                    Ao_ne, Ao_by_col_row, C_NULL, 
+                    Ao_by_col_ptr_ne, Ao_by_col_ptr)
+        blls_solve_given_a(T, INT, data, userdata, status, n, o,
+                           Ao_ne, Ao_by_col_val, 
+                           b, sigma, x_l, x_u, x, z, r, g, x_stat, 
+                           w, x_s, prec_ptr)
       end
 
       # dense by columns
       if d == 6
         st = "DC"
-        blls_import(T, INT, control, data, status, n, o, "dense_by_columns", Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
-        blls_solve_given_a(T, INT, data, userdata_ptr, status, n, o, Ao_dense_ne, Ao_by_col_dense, b, x_l, x_u, x, z, r, g, x_stat, w, prec_ptr)
+        blls_import(T, INT, control, data, status, n, o, "dense_by_columns", 
+                    Ao_dense_ne, C_NULL, C_NULL, INT(0), C_NULL)
+        blls_solve_given_a(T, INT, data, userdata, status, n, o,
+                           Ao_dense_ne, Ao_by_col_dense, 
+                           b, sigma, x_l, x_u, x, z, r, g, x_stat, 
+                           w, x_s, prec_ptr)
       end
 
       blls_information(T, INT, data, inform, status)
@@ -262,9 +289,9 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     terminated = false
     while !terminated # reverse-communication loop
       blls_solve_reverse_a_prod(T, INT, data, status, eval_status, n, o, b,
-                                x_l, x_u, x, z, r, g, x_stat, v, p,
+                                sigma, x_l, x_u, x, z, r, g, x_stat, v, p,
                                 nz_v, nz_v_start, nz_v_end,
-                                nz_p, nz_p_end, w)
+                                nz_p, nz_p_end, w, x_s)
 
       if status[] == 0 # successful termination
         terminated = true
@@ -318,7 +345,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
           p[i] = userdata.scale * v[i]
         end
       else
-        @printf(" the value %1i of status should not occur\n", status)
+        @printf(" the value %1i of status should not occur\n", status[])
       end
       eval_status[] = 0
     end

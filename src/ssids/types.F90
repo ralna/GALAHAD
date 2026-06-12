@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-11-29 AT 13:30 GMT
+! THIS VERSION: GALAHAD 5.5 - 2026-04-12 AT 14:10 GMT
 
 !-*-*-*-*-*-  G A L A H A D _ S S I D S _ t y p e s   M O D U L E  *-*-*-*-*-
 
@@ -250,11 +250,11 @@
 
 !  Maximum permissible load inbalance when dividing tree into subtrees
 
-      REAL :: max_load_inbalance = 1.2
+      REAL( sp_ ) :: max_load_inbalance = 1.2
 
 !  How many times better is GPU than a single NUMA region's worth of processors
 
-      REAL :: gpu_perf_coeff = 1.0
+      REAL( sp_ ) :: gpu_perf_coeff = 1.0
 
 !  options used by ssids_factor() [both indef+posdef]
 
@@ -318,7 +318,7 @@
 
 !  minimum load balance required when finding level set use for multiple streams
 
-      REAL :: min_loadbalance = 0.8
+      REAL( sp_ ) :: min_loadbalance = 0.8
 
 !  filename to dump matrix in prior to factorization. No dump takes place 
 !  if not allocated (the default)

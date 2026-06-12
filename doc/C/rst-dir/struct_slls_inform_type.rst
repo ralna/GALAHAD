@@ -22,11 +22,13 @@ slls_inform_type structure
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter<doxid-structslls__inform__type_iter>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`cg_iter<doxid-structslls__inform__type_cg_iter>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structslls__inform__type_obj>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`ls_obj<doxid-structslls__inform__type_ls_obj>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`norm_pg<doxid-structslls__inform__type_norm_pg>`;
 		char :ref:`bad_alloc<doxid-structslls__inform__type_bad_alloc>`[81];
 		struct :ref:`slls_time_type<doxid-structslls__time__type>` :ref:`time<doxid-structslls__inform__type_time>`;
 		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structslls__inform__type_sbls_inform>`;
 		struct :ref:`convert_inform_type<doxid-structconvert__inform__type>` :ref:`convert_inform<doxid-structslls__inform__type_convert_inform>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`lapack_error<doxid-structsls__inform__type_lapack_error>`;
 	};
 .. _details-structslls__inform__type:
 
@@ -96,7 +98,17 @@ number of CG iterations required
 
 	:ref:`rpc_<doxid-galahad__rpc_8h_>` obj
 
-current value of the objective function, r(x).
+current value of the objective function, q(x).
+
+.. index:: pair: variable; ls_obj
+.. _doxid-structslls__inform__type_ls_obj:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` ls_obj
+
+current value of the least-squares function $\frac{1}{2} \| A_o x - b\|_W^2$. 
 
 .. index:: pair: variable; norm_pg
 .. _doxid-structslls__inform__type_norm_pg:
@@ -148,3 +160,12 @@ inform values from SBLS
 
 inform values for CONVERT
 
+.. index:: pair: variable; lapack_error
+.. _doxid-structsls__inform__type_lapack_error:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` lapack_error
+
+the output flag from LAPACK routines

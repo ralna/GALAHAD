@@ -3,8 +3,8 @@ purpose
 
 The ``trb`` package uses a trust-region method to find a (local)
 minimizer of a differentiable objective function $f(x)$ of
-many variables $x$, where the variables satisfy the simple 
-bounds $x^l <= x <= x^u$.  The method offers the choice of
+many variables $x$, where the variables satisfy the **simple bounds**
+$x^l <= x <= x^u$.  The method offers the choice of
 direct and iterative solution of the key subproblems, and
 is most suitable for large problems. First derivatives are required,
 and if second derivatives can be calculated, they will be exploited.

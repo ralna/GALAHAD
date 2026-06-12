@@ -1,7 +1,7 @@
 //* \file arc_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:30 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_ARC PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -57,8 +57,6 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
-static PyObject *arc_solve_return = NULL;
-//static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
 static int eval_f(int n, const double x[], double *f, const void *userdata){
@@ -168,8 +166,8 @@ static int eval_h(int n, int ne, const double x[], double hval[], const void *us
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool arc_update_control(struct arc_control_type *control,
-                               PyObject *py_options){
+bool arc_update_control(struct arc_control_type *control,
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -502,7 +500,8 @@ static bool arc_update_control(struct arc_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-static PyObject* arc_make_options_dict(const struct arc_control_type *control){
+// NB not static as it is used for nested options within other Python interfaces
+PyObject* arc_make_options_dict(const struct arc_control_type *control){
     PyObject *py_options = PyDict_New();
 
     PyDict_SetItemString(py_options, "error",
@@ -645,7 +644,8 @@ static PyObject* arc_make_time_dict(const struct arc_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* arc_make_inform_dict(const struct arc_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* arc_make_inform_dict(const struct arc_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -718,7 +718,7 @@ static PyObject* py_arc_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = arc_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   ARC_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -863,9 +863,7 @@ static PyObject* py_arc_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x and g
-    arc_solve_return = Py_BuildValue("OO", py_x, py_g);
-    Py_XINCREF(arc_solve_return);
-    return arc_solve_return;
+    return Py_BuildValue("ON", py_x, py_g);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   ARC_INFORMATION   -*-*-*-*-*-*-*-*
@@ -881,7 +879,7 @@ static PyObject* py_arc_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = arc_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   ARC_TERMINATE   -*-*-*-*-*-*-*-*-*-*

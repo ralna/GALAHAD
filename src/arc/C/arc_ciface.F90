@@ -36,7 +36,7 @@
         f_arc_terminate                 => ARC_terminate
 
     USE GALAHAD_USERDATA_precision, ONLY:                                      &
-        f_galahad_userdata_type => GALAHAD_userdata_type
+        f_galahad_userdata_type => USERDATA_type
 
     USE GALAHAD_RQS_precision_ciface, ONLY:                                    &
         rqs_inform_type,                                                       &

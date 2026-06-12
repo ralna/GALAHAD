@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-11-26 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 5.5 - 2026-02-27 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -150,7 +150,8 @@
 
 !   is descent required i.e., should <c, x> < 0 ?
 
-        LOGICAL :: impose_descent = .TRUE.
+!       LOGICAL :: impose_descent = .TRUE.
+        LOGICAL :: impose_descent = .FALSE.
 
 !   if %space_critical true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
@@ -1185,7 +1186,7 @@
 
             f_0 = ( sigma / p ) * ( data%o_mnorm_2_p_eps ** ( p / two ) )
             IF ( control%fraction_opt < one ) THEN
-              f_tol = ( f_0 - data%MIN_f_regularized( data%itm1 ) )           &
+              f_tol = ( f_0 - data%MIN_f_regularized( data%itm1 ) )            &
                           * control%fraction_opt
               IF ( control%impose_descent ) THEN
                 it = data%iter_descent

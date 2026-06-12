@@ -1,7 +1,7 @@
 //* \file nls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.0 - 2024-06-19 AT 10:10 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_NLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -54,9 +54,6 @@ static PyObject *py_eval_c = NULL;
 static PyObject *py_eval_j = NULL;
 static PyObject *py_eval_h = NULL;
 static PyObject *py_eval_hprods = NULL;
-static PyObject *nls_solve_return = NULL;
-//static PyObject *py_c = NULL;
-//static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
 static int eval_c(int n, int m, const double x[], double c[],
@@ -78,7 +75,7 @@ static int eval_c(int n, int m, const double x[], double c[],
     if(!result)
         return -1;
 
-    // Get return value data pointer and copy data intoc
+    // Get return value data pointer and copy data into c
     const double *cval = (double *) PyArray_DATA((PyArrayObject*) result);
     for(int i=0; i<m; i++) {
         c[i] = cval[i];
@@ -203,7 +200,7 @@ static int eval_hprods(int n, int m, int pne, const double x[], const double v[]
         return -1;
     }
 
-    // Get return value data pointer and copy data into hval
+    // Get return value data pointer and copy data into pval
     const double *val = (double *) PyArray_DATA((PyArrayObject*) result);
     for(int i=0; i<pne; i++) {
         pval[i] = val[i];
@@ -543,8 +540,8 @@ static bool nls_update_subproblem_control(
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool nls_update_control(struct nls_control_type *control,
-                               PyObject *py_options){
+bool nls_update_control(struct nls_control_type *control,
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -980,7 +977,8 @@ static PyObject* nls_make_subproblem_options_dict(const struct
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-static PyObject* nls_make_options_dict(const struct nls_control_type *control){
+// NB not static as it is used for nested options within other Python interfaces
+PyObject* nls_make_options_dict(const struct nls_control_type *control){
     PyObject *py_options = PyDict_New();
 
     PyDict_SetItemString(py_options, "error",
@@ -1183,7 +1181,8 @@ static PyObject* nls_make_subproblem_inform_dict(
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* nls_make_inform_dict(const struct nls_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* nls_make_inform_dict(const struct nls_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     PyDict_SetItemString(py_inform, "status",
@@ -1255,7 +1254,7 @@ static PyObject* py_nls_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = nls_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   NLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -1469,7 +1468,7 @@ static PyObject* py_nls_solve(PyObject *self, PyObject *args, PyObject *keywds){
     Py_XDECREF(py_eval_hprods);    /* Dispose of previous callback */
     py_eval_hprods = temp_hprods;  /* Remember new callback */
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp mdim[] = {m}; // size of c
     PyArrayObject *py_c =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
@@ -1493,9 +1492,7 @@ static PyObject* py_nls_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x, c and g
-    nls_solve_return = Py_BuildValue("OOO", py_x, py_c, py_g);
-    Py_XINCREF(nls_solve_return);
-    return nls_solve_return;
+    return Py_BuildValue("ONN", py_x, py_c, py_g);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   NLS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -1511,7 +1508,7 @@ static PyObject* py_nls_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = nls_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   NLS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

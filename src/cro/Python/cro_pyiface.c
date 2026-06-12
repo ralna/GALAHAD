@@ -302,7 +302,7 @@ static PyObject* py_cro_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = cro_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 
@@ -471,13 +471,7 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
     PyObject *py_inform = cro_make_inform_dict(&inform);
 
     // Return x, c, y, z, x_stat and c_stat
-    PyObject *crossover_solution_return;
-    crossover_solution_return = Py_BuildValue("OOOOOOO", py_x, py_c, py_y,
-                                              py_z, py_x_stat, py_c_stat,
-                                              py_inform);
-    Py_INCREF(crossover_solution_return);
-    return crossover_solution_return;
-
+    return Py_BuildValue("OOOOOON", py_x, py_c, py_y, py_z, py_x_stat, py_c_stat, py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   CRO_TERMINATE   -*-*-*-*-*-*-*-*-*-*

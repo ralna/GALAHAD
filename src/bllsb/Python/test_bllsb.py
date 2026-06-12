@@ -25,6 +25,7 @@ x_u = np.array([1.0,infinity,2.0])
 
 sigma = 1.0
 w = np.array([1.0,1.0,1.0,2.0])
+x_s = np.array([0.5,0.5,0.5])
 
 # allocate internal data and set default options
 options = bllsb.initialize()
@@ -43,8 +44,8 @@ z = np.array([0.0,0.0,0.0])
 
 # find optimum of bllsb
 print("\n problem: solve bllsb")
-x, r, z, x_stat \
-  = bllsb.solve_bllsb(n, o, Ao_ne, Ao_val, b, sigma, x_l, x_u, x, z, w)
+x, z, r, x_stat \
+  = bllsb.solve(n, o, Ao_ne, Ao_val, b, sigma, x_l, x_u, x, z, w, x_s)
 print(" x:",x)
 print(" r:",r)
 print(" z:",z)

@@ -1,7 +1,7 @@
 //* \file tru_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:30 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_TRU PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -61,8 +61,6 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
-static PyObject *tru_solve_return = NULL;
-// static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
 static int eval_f(int n, const double x[], double *f, const void *userdata){
@@ -699,7 +697,7 @@ static PyObject* py_tru_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = tru_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   TRU_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -845,9 +843,7 @@ static PyObject* py_tru_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x and g
-    tru_solve_return = Py_BuildValue("OO", py_x, py_g);
-    Py_XINCREF(tru_solve_return);
-    return tru_solve_return;
+    return Py_BuildValue("ON", py_x, py_g);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   TRU_INFORMATION   -*-*-*-*-*-*-*-*
@@ -863,7 +859,7 @@ static PyObject* py_tru_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = tru_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   TRU_TERMINATE   -*-*-*-*-*-*-*-*-*-*

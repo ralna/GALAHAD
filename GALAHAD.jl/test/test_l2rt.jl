@@ -58,7 +58,7 @@ function test_l2rt(::Type{T}, ::Type{INT}) where {T,INT}
         u[i] = one(T)
       end
     else
-      @printf(" the value %1i of status should not occur\n", status)
+      @printf(" the value %1i of status should not occur\n", status[])
     end
   end
 

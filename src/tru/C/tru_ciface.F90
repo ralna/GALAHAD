@@ -36,7 +36,7 @@
         f_tru_terminate                 => TRU_terminate
 
     USE GALAHAD_USERDATA_precision, ONLY:                                      &
-        f_galahad_userdata_type => GALAHAD_userdata_type
+        f_galahad_userdata_type => USERDATA_type
 
     USE GALAHAD_TRS_precision_ciface, ONLY:                                    &
         trs_inform_type,                                                       &

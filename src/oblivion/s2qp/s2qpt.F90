@@ -42,7 +42,7 @@ PROGRAM S2QP_test !! far from comprehensive
   TYPE ( S2QP_control_type ) :: control
   TYPE ( S2QP_inform_type ) :: inform
   TYPE ( S2QP_data_type ) :: data
-  TYPE ( GALAHAD_userdata_type ) :: userdata
+  TYPE ( USERDATA_type ) :: userdata
   EXTERNAL fun_FC, fun_GJ, fun_H
 
   ! Set problem dimensions.
@@ -213,7 +213,7 @@ PROGRAM S2QP_test !! far from comprehensive
    REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ) :: F
    REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE( USERDATA_type ), INTENT( INOUT ) :: userdata
 
    ! local variables
 
@@ -251,7 +251,7 @@ PROGRAM S2QP_test !! far from comprehensive
    REAL ( KIND = rp_ ), intent(out), OPTIONAL, DIMENSION( : ) :: G
    REAL ( KIND = rp_ ), intent(out), OPTIONAL, DIMENSION( : ) :: Jval
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-   TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
+   TYPE( USERDATA_type ), INTENT(INOUT) :: userdata
 
    ! local variables
 
@@ -303,7 +303,7 @@ PROGRAM S2QP_test !! far from comprehensive
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-   TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE( USERDATA_type ), INTENT( INOUT ) :: userdata
 
    ! local variables
 

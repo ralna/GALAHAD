@@ -1,7 +1,7 @@
 //* \file galahad_slls.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-02-08 AT 13:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SLLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -23,10 +23,10 @@
 
   This package uses a preconditioned, projected-gradient method to solve the
    <b>simplex-constrained regularized linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; q(x) = \frac{1}{2} \| A_o x - b\|_2^2 + \frac{1}{2} \sigma \|x\|^2\f]
+  \f[\mbox{minimize}\;\; r(x) = q(x) + \frac{1}{2} \sigma \|x-x_s\|^2  \;\;\mbox{where}\;\; q(x) = \frac{1}{2} \| A_o x - b\|_W^2 \f],
 \manonly
   \n
-  minimize q(x) := 1/2 || A_o x - b ||^2 + sigma ||x||^2
+  minimize r(x) = q(x) + sigma ||x-x_s||^2, where q(x) := 1/2 || A_o x - b ||_W^2,
   \n
 \endmanonly
   where \f$x\f$ is required to lie in the regular simplex
@@ -325,10 +325,6 @@ struct slls_control_type {
     ipc_ sif_file_device;
 
     /// \brief
-    /// the objective function will be regularized by adding 1/2 weight ||x||^2
-    rpc_ weight;
-
-    /// \brief
     /// the required accuracy for the dual infeasibility
     rpc_ stop_d;
 
@@ -422,19 +418,13 @@ struct slls_time_type {
 
     /// \brief
     /// total time
-    real_sp_ total;
+    /// the total CPU time spent in the package
+    rpc_ total;
 
     /// \brief
-    /// time for the analysis phase
-    real_sp_ analyse;
+    /// the total clock time spent in the package
+    rpc_ clock_total;
 
-    /// \brief
-    /// time for the factorization phase
-    real_sp_ factorize;
-
-    /// \brief
-    /// time for the linear solution phase
-    real_sp_ solve;
 };
 
 /**
@@ -463,8 +453,12 @@ struct slls_inform_type {
     ipc_ cg_iter;
 
     /// \brief
-    /// current value of the objective function
+    /// current value of the regularized objective function r(x)
     rpc_ obj;
+
+    /// \brief
+    /// current value of the objective function q(x)
+    rpc_ ls_obj;
 
     /// \brief
     /// current value of the projected gradient
@@ -485,6 +479,11 @@ struct slls_inform_type {
     /// \brief
     /// inform values for CONVERT
     struct convert_inform_type convert_inform;
+
+    /// \brief
+    /// the output flag from LAPACK routines
+    ipc_ lapack_error;
+
 };
 
 // *-*-*-*-*-*-*-*-*-*-    B L L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
@@ -528,17 +527,18 @@ void slls_read_specfile( struct slls_control_type *control,
 // *-*-*-*-*-*-*-*-*-*-*-*-    B L L S  _ I M P O R T   -*-*-*-*-*-*-*-*-*-*
 
 void slls_import( struct slls_control_type *control,
-                 void **data,
-                 ipc_ *status,
-                 ipc_ n,
-                 ipc_ m,
-                 const char Ao_type[],
-                 ipc_ Ao_ne,
-                 const ipc_ Ao_row[],
-                 const ipc_ Ao_col[],
-                 ipc_ Ao_ptr_ne,
-                 const ipc_ Ao_ptr[] );
-
+                  void **data,
+                  ipc_ *status,
+                  ipc_ n,
+                  ipc_ o,
+                  ipc_ m,
+                  const char Ao_type[],
+                  ipc_ Ao_ne,
+                  const ipc_ Ao_row[],
+                  const ipc_ Ao_col[],
+                  ipc_ Ao_ptr_ne,
+                  const ipc_ Ao_ptr[],
+                  const ipc_ cohort[]);
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -566,11 +566,14 @@ void slls_import( struct slls_control_type *control,
        'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns';
        has been violated.
 
-@param[in] n is a scalar variable of type ipc_, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
-@param[in] o is a scalar variable of type ipc_, that holds the number of
+ @param[in] o is a scalar variable of type ipc_, that holds the number of
     residuals.
+
+ @param[in]  m is a scalar variable of type ipc_, that holds the number of
+   cohorts.
 
  @param[in]  Ao_type is a one-dimensional array of type char that specifies the
    \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
@@ -607,6 +610,20 @@ void slls_import( struct slls_control_type *control,
    It need not be set when the other schemes are used,
    and in this case can be NULL.
 
+ @param[in]  m is a scalar variable of type ipc_, that specifies the 
+   number of cohorts used; this will be ignored, and set internally to 1, 
+   if cohort (see next) is NULL.
+
+ @param[in]  cohort is a one-dimensional array of size n and type ipc_,
+    that specifies which cohort each variable is assigned to.
+    If variable $x_j$ is associated with cohort $\cal C_i$, 
+    $0 \leq i \leq m-1$, cohort[j] should be set to i, while 
+    if $x_j$ is unconstrained cohort[j] = 0 should be assigned. 
+    At least one value cohort[j] for $j = 0,\ldots\,n-1$ is expected 
+    to take the value $i$ for every $0 \leq i \leq m-1$, that is 
+    no empty cohorts are allowed. If all the variables lie in a
+    single simplex, cohort can be set to NULL.
+
 */
 
 // *-*-*-*-*-*-*-    B L L S  _ I M P O R T _ W I T H O U T _ A   -*-*-*-*-*-*
@@ -615,7 +632,9 @@ void slls_import_without_a( struct slls_control_type *control,
                             void **data,
                             ipc_ *status,
                             ipc_ n,
-                            ipc_ o );
+                            ipc_ o,
+                            ipc_ m,
+                            const ipc_ cohort[]);
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -640,11 +659,24 @@ void slls_import_without_a( struct slls_control_type *control,
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restriction n > 0 or o > 0 has been violated.
 
-@param[in] n is a scalar variable of type ipc_, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
-@param[in] o is a scalar variable of type ipc_, that holds the number of
+ @param[in] o is a scalar variable of type ipc_, that holds the number of
     residuals.
+
+ @param[in]  m is a scalar variable of type ipc_, that holds the number of
+   cohorts.
+
+ @param[in]  cohort is a one-dimensional array of size n and type ipc_,
+    that specifies which cohort each variable is assigned to.
+    If variable $x_j$ is associated with cohort $\cal C_i$, 
+    $0 \leq i \leq m-1$, cohort[j] should be set to i, while 
+    if $x_j$ is unconstrained cohort[j] = 0 should be assigned. 
+    At least one value cohort[j] for $j = 0,\ldots\,n-1$ is expected 
+    to take the value $i$ for every $0 \leq i \leq m-1$, that is 
+    no empty cohorts are allowed. If all the variables lie in a
+    single simplex, cohort can be set to NULL.
 
 */
 // *-*-*-*-*-*-*-    B L L S  _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*
@@ -673,18 +705,23 @@ void slls_solve_given_a( void **data,
                          ipc_ *status,
                          ipc_ n,
                          ipc_ o,
+                         ipc_ m,
                          ipc_ Ao_ne,
                          const rpc_ Ao_val[],
                          const rpc_ b[],
+                         rpc_ regularization_weight,
                          rpc_ x[],
+                         rpc_ y[],
                          rpc_ z[],
                          rpc_ r[],
                          rpc_ g[],
                          ipc_ x_stat[],
-                         galahad_constant_prec *eval_prec );
+                         const rpc_ w[],
+                         const rpc_ x_s[],
+                         galahad_constant_prec *eval_prec);
 
 /*!<
- Solve the bound-constrained linear least-squares problem when the
+ Solve the simplex-constrained linear least-squares problem when the
  Jacobian \f$A_o\f$ is available.
 
  @param[in,out] data holds private internal data
@@ -725,8 +762,11 @@ void slls_solve_given_a( void **data,
  @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
-@param[in] o is a scalar variable of type ipc_, that holds the number of
+ @param[in] o is a scalar variable of type ipc_, that holds the number of
     residuals.
+
+ @param[in]  m is a scalar variable of type ipc_, that holds the number of 
+   cohorts.
 
  @param[in] Ao_ne is a scalar variable of type ipc_, that holds the number of
     entries in the design matrix \f$A_o\f$.
@@ -739,9 +779,16 @@ void slls_solve_given_a( void **data,
     holds the constant term \f$b\f$ in the residuals.
     The i-th component of b, i = 0, ... ,  m-1, contains  \f$b_i \f$.
 
+ @param[in] regularization_weight is a scalar of type rpc_, that
+    holds the non-negative regularization weight \f$\sigma \geq 0\f$.
+
  @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
+
+ @param[in,out] y is a one-dimensional array of size m and type rpc_, that
+    holds the values \f$y\f$ of the Lagrange multipliers.
+    The i-th component of y, i = 0, ... , m-1, contains \f$y_i\f$.
 
  @param[in,out] z is a one-dimensional array of size n and type rpc_, that
     holds the values \f$z\f$ of the dual variables.
@@ -760,6 +807,19 @@ void slls_solve_given_a( void **data,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
+
+ @param[in] regularization_weight is a scalar of type rpc_, that
+    holds the non-negative regularization weight \f$\sigma \geq 0\f$.
+
+ @param[in] w is a one-dimensional array of size o and type rpc_, that
+    holds the values of the weights \f$w\f$. The j-th component of w, 
+    j = 0, ... , n-1, contains \f$w_j\f$. It need not be set if the weights 
+    are all ones, and in this case can be NULL.
+
+ @param[in] x_s is a one-dimensional array of size n and type rpc_, that
+    holds the values of the shifts \f$x_s\f$. The j-th component of x_s, 
+    j = 0, ... , n-1, contains \f$(x_s)_j\f$. It need not be set if the shifts
+    are all zeros, and in this case can be NULL.
 
  @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
@@ -782,19 +842,25 @@ void slls_solve_reverse_a_prod( void **data,
                                 ipc_ *eval_status,
                                 ipc_ n,
                                 ipc_ o,
+                                ipc_ m,
                                 const rpc_ b[],
+                                rpc_ regularization_weight,
                                 rpc_ x[],
+                                rpc_ y[],
                                 rpc_ z[],
                                 rpc_ r[],
                                 rpc_ g[],
                                 ipc_ x_stat[],
                                 rpc_ v[],
                                 const rpc_ p[],
-                                ipc_ nz_v[],
-                                ipc_ *nz_v_start,
-                                ipc_ *nz_v_end,
-                                const ipc_ nz_p[],
-                                ipc_ nz_p_end );
+                                ipc_ iv[],
+                                ipc_ *lvl,
+                                ipc_ *lvu,
+                                ipc_ *index,
+                                const ipc_ ip[],
+                                ipc_ lp,
+                                const rpc_ w[],
+                                const rpc_ x_s[]);
 
 /*!<
  Solve the bound-constrained linear least-squares problem when the
@@ -836,10 +902,10 @@ void slls_solve_reverse_a_prod( void **data,
          a badly scaled problem.
 
  @param status (continued)
-  \li  2. The product \f$Av\f$ of the residual Jacobian \f$A_o\f$ with a given
+  \li  2. The product \f$Av_o\f$ of the residual Jacobian \f$A_o\f$ with a given
        output vector \f$v\f$ is required from the user. The vector \f$v\f$
        will be  stored in v and the product \f$Av\f$ must be returned in p,
-       status_eval should be set to 0, and slls_solve_reverse_a_prod
+       eval_status should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
        be formed, v need not be set, but slls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
@@ -848,47 +914,40 @@ void slls_solve_reverse_a_prod( void **data,
        \f$A_o\f$ with a given output vector \f$v\f$ is required from the user.
        The vector \f$v\f$ will be  stored in v and the product
        \f$A_o^Tv\f$ must be returned in p,
-       status_eval should be set to 0, and slls_solve_reverse_a_prod
+       eval_status should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
        be formed, v need not be set, but slls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
 
-  \li  4. The product \f$Av\f$ of the residual Jacobian \f$A_o\f$ with a given
+  \li  4. The j-th column of the residual Jacobian \f$A_o\f$ is required 
+       from the user, where index holds the value of j. The resulting 
+       NONZEROS and their  correspinding row indices of the j-th column of
+       \f$Av_o\f$ must be placed in 
+         p[0 : lp-1] and ip[0 : lp-1],
+       respectively, with lp set accordingly. Additionally
+       eval_status should be set to 0, and slls_solve_reverse_a_prod
+       re-entered with all other arguments unchanged. If the column 
+       cannot be formed, p, ip and lp need not be set, 
+       but slls_solve_reverse_a_prod should be re-entered with eval_status 
+       set to a nonzero value.
+
+  \li  5. The product \f$Av\f$ of the residual Jacobian \f$A_o\f$ with a given
        sparse output vector \f$v\f$ is required from the user.
        The nonzero components of the vector \f$v\f$ will be stored as entries
-          nz_in[nz_in_start-1:nz_in_end-1]
+          iv[iv_start-1:iv_end-1]
        of v and the product \f$Av\f$ must be returned in p,
-       status_eval should be set to 0, and slls_solve_reverse_a_prod
+       eval_status should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged; The remaining
        components of v should be ignored. If the product cannot
        be formed, v need not be set, but slls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
 
-  \li  5. The nonzero components of the product \f$Av\f$ of the residual
-       Jacobian \f$A_o\f$ with a given sparse output vector \f$v\f$ is required
-       from the user. The nonzero components of the vector \f$v\f$ will be
-       stored as entries
-          nz_in[nz_in_start-1:nz_in_end-1]
-       of v; the remaining components of v should be ignored.
-       The resulting <b>nonzeros</b> in the product \f$Av\f$
-       must be placed in their appropriate comnponents of p, while a list
-       of indices of the nonzeros placed in
-         nz_out[0 : nz_out_end-1]
-       and the number of nonzeros recorded in nz_out_end. Additionally,
-       status_eval should be set to 0, and slls_solve_reverse_a_prod
-       re-entered with all other arguments unchanged. If the product cannot
-       be formed, v, nz_out_end and nz_out  need not be set, but
-       slls_solve_reverse_a_prod should be re-entered with eval_status set
-       to a nonzero value.
-
   \li  6. A subset of the product \f$A_o^Tv\f$ of the transpose of the residual
-       Jacobian
-       \f$A_o\f$ with a given output vector \f$v\f$ is required from the user.
-       The vector \f$v\f$ will be  stored in v and components
-          nz_in[nz_in_start-1:nz_in_end-1]
-       of the product \f$A_o^Tv\f$ must be returned in the relevant
-       components of p (the remaining components should not be set),
-       status_eval should be set to 0, and slls_solve_reverse_a_prod
+       Jacobian \f$A_o\f$ with a given output vector \f$v\f$ is required from 
+       the user. The vector \f$v\f$ will be  stored in v and components
+       iv[iv_start-1:iv_end-1] of the product \f$A_o^Tv\f$ must be returned in 
+       the relevant components of p (the remaining components should not be 
+       set), eval_status should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
        be formed, v need not be set, but slls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
@@ -897,7 +956,7 @@ void slls_solve_reverse_a_prod( void **data,
        \f$P\f$ with a given output vector \f$v\f$ is required from the user.
        The vector \f$v\f$ will be  stored in v and the product \f$P^{-1} v\f$
        must be returned in p,
-       status_eval should be set to 0, and slls_solve_reverse_a_prod
+       eval_status should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
        be formed, v need not be set, but slls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
@@ -913,13 +972,27 @@ void slls_solve_reverse_a_prod( void **data,
  @param[in] o is a scalar variable of type ipc_, that holds the number of
     residuals.
 
+ @param[in]  m is a scalar variable of type ipc_, that holds the number of 
+   cohorts.
+
  @param[in] b is a one-dimensional array of size o and type rpc_, that
     holds the constant term \f$b\f$ in the residuals.
     The i-th component of b, i = 0, ... ,  m-1, contains  \f$b_i \f$.
 
+ @param[in] regularization_weight is a scalar of type rpc_, that
+    holds the non-negative regularization weight \f$\sigma \geq 0\f$.
+
  @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
+
+ @param[out] y is a one-dimensional array of size m and type rpc_, that
+    holds the values \f$y\f$ of the Lagrange multipliers.
+    The i-th component of y, i = 0, ... , o-1, contains \f$y_i\f$.
+
+ @param[out] z is a one-dimensional array of size n and type rpc_, that
+    holds the values \f$z\f$ of the dual variables.
+    The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
  @param[out] r is a one-dimensional array of size o and type rpc_, that
     holds the values of the residuals \f$r = A x - b\f$.
@@ -929,10 +1002,6 @@ void slls_solve_reverse_a_prod( void **data,
     holds the values of the gradient \f$g = A_o^T r\f$.
     The j-th component of g, j = 0, ... , n-1, contains \f$g_j\f$.
 
- @param[in,out] z is a one-dimensional array of size n and type rpc_, that
-    holds the values \f$z\f$ of the dual variables.
-    The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
-
  @param[in,out] x_stat is a one-dimensional array of size n and type ipc_, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
@@ -940,25 +1009,41 @@ void slls_solve_reverse_a_prod( void **data,
     between its bounds.
 
  @param[out] v is a one-dimensional array of size n and type rpc_, that
-    is used for reverse communication (see status=2-4 above for details)
+    is used for reverse communication (see status=2-7 above for details)
 
  @param[in] p is a one-dimensional array of size n and type rpc_, that
-    is used for reverse communication (see status=2-4 above for details)
+    is used for reverse communication (see status=2-7 above for details)
 
- @param[out] nz_v is a one-dimensional array of size n and type ipc_, that
-    is used for reverse communication (see status=3-4 above for details)
+ @param[out] iv is a one-dimensional array of size n and type ipc_, that
+    is used for reverse communication (see status=5-6 above for details)
 
- @param[out] nz_v_start is a scalar of type ipc_, that
-    is used for reverse communication (see status=3-4 above for details)
+ @param[out] lvl is a scalar of type ipc_, that
+    is used for reverse communication (see status=5-6 above for details)
 
- @param[out] nz_v_end is a scalar of type ipc_, that
-    is used for reverse communication (see status=3-4 above for details)
+ @param[out] lvu is a scalar of type ipc_, that
+    is used for reverse communication (see status=5-6 above for details)
 
- @param[in] nz_p is a one-dimensional array of size n and type ipc_, that
+ @param[out] index is a scalar of type ipc_, that
     is used for reverse communication (see status=4 above for details)
 
- @param[in] nz_p_end is a scalar of type ipc_, that
+ @param[in] ip is a one-dimensional array of size n and type ipc_, that
     is used for reverse communication (see status=4 above for details)
+
+ @param[in] lp is a scalar of type ipc_, that
+    is used for reverse communication (see status=4 above for details)
+
+ @param[in] regularization_weight is a scalar of type rpc_, that
+    holds the non-negative regularization weight \f$\sigma \geq 0\f$.
+
+ @param[in] w is a one-dimensional array of size o and type rpc_, that
+    holds the values of the weights \f$w\f$. The j-th component of w, 
+    j = 0, ... , n-1, contains \f$w_j\f$. It need not be set if the weights 
+    are all ones, and in this case can be NULL.
+
+ @param[in] x_s is a one-dimensional array of size n and type rpc_, that
+    holds the values of the shifts \f$x_s\f$. The j-th component of x_s, 
+    j = 0, ... , n-1, contains \f$(x_s)_j\f$. It need not be set if the shifts
+    are all zeros, and in this case can be NULL.
 
 */
 
@@ -1003,7 +1088,7 @@ void slls_terminate( void **data,
 /** \anchor examples
    \f$\label{examples}\f$
    \example sllst.c
-   This is an example of how to use the package to solve a bound-constrained
+   This is an example of how to use the package to solve a simplex-constrained
    linear least-squares problem.
    A variety of supported Jacobian storage formats are shown. An example
    of preconditioning, in this case with the identity matrix which

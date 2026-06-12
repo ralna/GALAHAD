@@ -6,7 +6,7 @@
    TYPE ( DGO_control_type ) :: control
    TYPE ( DGO_inform_type ) :: inform
    TYPE ( DGO_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER :: s
    INTEGER, PARAMETER :: n = 2, h_ne = 3
    REAL ( KIND = wp ) :: x1, x2

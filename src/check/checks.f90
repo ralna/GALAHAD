@@ -8,7 +8,7 @@ PROGRAM GALAHAD_check_example
   IMPLICIT NONE
   integer, parameter :: wp = KIND( 1.0D+0 ) ! Define the working precision
   type( NLPT_problem_type ) :: nlp
-  type( GALAHAD_userdata_type ) :: userdata
+  type( USERDATA_type ) :: userdata
   type( CHECK_data_type ) :: data
   type( CHECK_control_type ) :: control
   type( CHECK_inform_type ) :: inform
@@ -43,7 +43,7 @@ SUBROUTINE funF( status, X, userdata, F )
   INTEGER, INTENT( OUT ) :: status
   REAL ( kind = wp ), INTENT( IN ), DIMENSION( : ) :: X
   REAL ( kind = wp ), INTENT( OUT ) :: F
-  TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+  TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
   F = X(1) + X(2)**3 / 3.0_wp
   status = 0
   RETURN
@@ -54,7 +54,7 @@ SUBROUTINE funC(status, X, userdata, C)
   INTEGER, INTENT( OUT ) :: status
   REAL ( kind = wp ), INTENT( IN ), DIMENSION( : ) :: X
   REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) :: C
-  TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+  TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
   C(1) = X(1) + X(2)**2 + X(3)**3 + X(3)*X(2)**2
   C(2) = -X(2)**4
   status = 0
@@ -66,7 +66,7 @@ SUBROUTINE funG(status, X, userdata, G)
   INTEGER, INTENT( OUT ) :: status
   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-  TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+  TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
   G(1) = 1.0_wp
   G(2) = X(2)**2
   G(3) = 0.0_wp
@@ -79,7 +79,7 @@ SUBROUTINE funJ(status, X, userdata, Jval)
   INTEGER, INTENT( OUT ) :: status
   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Jval
-  TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+  TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
   Jval(1) = 1.0_wp
   Jval(2) = 2.0_wp * X(2) * ( 1.0_wp + X(3) )
   Jval(3) = 3.0_wp * X(3)**2 + X(2)**2
@@ -94,7 +94,7 @@ SUBROUTINE funH(status, X, Y, userdata, Hval)
   REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: X
   REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: Y
   REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) ::Hval
-  TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+  TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
   Hval(1) =  2.0_wp * ( X(2) - Y(1) - Y(1)*X(3) + 6.0_wp*Y(2)*X(2)**2 )
   Hval(2) = -2.0_wp * Y(1) * X(2)
   Hval(3) = -6.0_wp * Y(1) * X(3)

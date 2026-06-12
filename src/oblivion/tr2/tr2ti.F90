@@ -9,7 +9,7 @@
    TYPE ( TR2_control_type ) :: control
    TYPE ( TR2_inform_type ) :: inform
    TYPE ( TR2_full_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    INTEGER ( KIND = ip_ ) :: n, ne
    INTEGER ( KIND = ip_ ) :: i, s, data_storage_type, status, eval_status
    LOGICAL :: alive
@@ -251,7 +251,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), INTENT( OUT ) :: f
    REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    f = ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) ** 2 +                         &
        ( X( 2 ) + X( 3 ) ) ** 2 + COS( X( 1 ) )
    status = 0
@@ -263,7 +263,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    G( 1 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) - SIN( X( 1 ) )
    G( 2 ) = 2.0_rp_ * ( X( 2 ) + X( 3 ) )
    G( 3 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +               &
@@ -277,7 +277,7 @@ CONTAINS
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    H_val( 1 ) = 2.0_rp_ - COS( X( 1 ) )
    H_val( 2 ) = 2.0_rp_
    H_val( 3 ) = 2.0_rp_

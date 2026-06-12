@@ -183,7 +183,7 @@ static PyObject* py_bsc_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = bsc_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   BSC_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -262,11 +262,7 @@ static PyObject* py_bsc_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return S_ne
-    PyObject *import_bsc_return;
-
-    import_bsc_return = Py_BuildValue("i", S_ne );
-    Py_INCREF(import_bsc_return);
-    return import_bsc_return;
+    return Py_BuildValue("i", S_ne );
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-*-*-   BSC_FORM   -*-*-*-*-*-*-*-*-*-*-*-*
@@ -283,7 +279,7 @@ static PyObject* py_bsc_form(PyObject *self, PyObject *args, PyObject *keywds){
     // Parse positional arguments
     static char *kwlist[] = {"m", "n", "A_ne", "A_val", "S_ne", "D", NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOiO", kwlist, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOiO", kwlist,
                                     &m, &n, &A_ne, &py_A_val, &S_ne, &py_D))
         return NULL;
 
@@ -297,7 +293,7 @@ static PyObject* py_bsc_form(PyObject *self, PyObject *args, PyObject *keywds){
     A_val = (double *) PyArray_DATA(py_A_val);
     D = (double *) PyArray_DATA(py_D);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp sdim[] = {S_ne}; // size of S_row, S_col an S_val
     npy_intp pdim[] = {m+1}; // size of S_ptr
     PyArrayObject *py_s_row =
@@ -315,7 +311,7 @@ static PyObject* py_bsc_form(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Call bsc_solve_direct
     status = 1; // set status to 1 on entry
-    bsc_form_s(&data, &status, m, n, A_ne, A_val, 
+    bsc_form_s(&data, &status, m, n, A_ne, A_val,
                S_ne, S_row, S_col, S_ptr, S_val, D);
     // for( int i = 0; i < S_ne; i++) printf("S_row %i\n", S_row[i]);
     // for( int i = 0; i < S_ne; i++) printf("S_col %i\n", S_col[i]);
@@ -331,12 +327,7 @@ static PyObject* py_bsc_form(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return S_row, S_col,S_ptr and S_val
-    PyObject *form_bsc_return;
-    form_bsc_return = Py_BuildValue("OOOO", 
-                                     py_s_row, py_s_col, py_s_ptr, py_s_val);
-    Py_INCREF(form_bsc_return);
-    return form_bsc_return;
-
+    return Py_BuildValue("NNNN", py_s_row, py_s_col, py_s_ptr, py_s_val);
 }
 
 
@@ -353,7 +344,7 @@ static PyObject* py_bsc_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = bsc_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BSC_TERMINATE   -*-*-*-*-*-*-*-*-*-*

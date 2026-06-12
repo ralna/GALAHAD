@@ -6,7 +6,7 @@ folder_headers = joinpath(@__DIR__, "..", "..", "include")
 path_galahad_h = joinpath(folder_headers, "galahad.h")
 content = read(path_galahad_h, String)
 
-excluded_headers = ["cutest_routines.h", "galahad_blas.h", "galahad_bnls.h", "galahad_c.h",
+excluded_headers = ["cutest_routines.h", "galahad_blas.h", "galahad_c.h",
                     "galahad_callbacks.h", "galahad_cfunctions.h", "galahad_double.h", "galahad_elgrra.h",
                     "galahad_icfs.h", "galahad_kinds.h", "galahad_lapack.h", "galahad_modules.h",
                     "galahad_precision.h", "galahad_python.h", "galahad_quadruple.h", "galahad_single.h"]

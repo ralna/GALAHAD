@@ -161,7 +161,7 @@
     fcontrol%stop_if_singular = ccontrol%stop_if_singular
 
     ! Strings
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
     END DO
@@ -285,6 +285,7 @@
     cinform%rank = finform%rank
     cinform%structural_rank = finform%structural_rank
     cinform%pivot_control = finform%pivot_control
+    cinform%iterative_refinements = finform%iterative_refinements
     cinform%lapack_error = finform%lapack_error
 
     ! Logicals

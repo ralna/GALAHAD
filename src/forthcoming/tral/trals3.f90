@@ -6,7 +6,7 @@
    TYPE ( TRAL_control_type ) :: control
    TYPE ( TRAL_inform_type ) :: inform
    TYPE ( TRAL_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    EXTERNAL :: FUN, GRAD, HESS
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, h_ne = 5

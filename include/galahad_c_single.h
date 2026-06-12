@@ -16,6 +16,10 @@ typedef int32_t galahad_hr_s(int32_t n, int32_t m, int32_t hne, const float x[],
 typedef int32_t galahad_jrprod_s(int32_t n, int32_t m, const float x[], const bool transpose, float u[], const float v[], bool got_j, const void *userdata);
 typedef int32_t galahad_hrprod_s(int32_t n, int32_t m, const float x[], const float y[], float u[], const float v[], bool got_h, const void *userdata);
 typedef int32_t galahad_shrprod_s(int32_t n, int32_t m, int32_t pne, const float x[], const float v[], float pval[], bool got_h, const void *userdata);
+typedef int32_t galahad_jr_prod_s(int32_t n, int32_t m_r, const float x[], const bool transpose, const float v[], float p[], bool got_jr, const void *userdata);
+typedef int32_t galahad_jr_sprod_s(int32_t n, int32_t m_r, const float x[], const bool transpose, const float v[], float p[], const int32_t free[], int32_t n_free, bool got_jr, const void *userdata);
+typedef int32_t galahad_jr_prods_s(int32_t n, int32_t m_r,const float x[], const float v[], float p[], const int32_t iv[], int32_t lvl, int32_t lvu, int32_t ip[], int32_t *lp, bool got_jr, const void *userdata);
+typedef int32_t galahad_jr_scol_s(int32_t n, int32_t m_r, const float x[], int32_t index, float val[], int32_t row[], int32_t *nz, bool got_jr, const void *userdata);
 typedef int32_t galahad_fc_s(int32_t n, int32_t m, const float x[], float *f, float c[], const void *userdata);
 typedef int32_t galahad_gj_s(int32_t n, int32_t m, int32_t jne, const float x[], float g[], float j[], const void *userdata);
 typedef int32_t galahad_hl_s(int32_t n, int32_t m, int32_t hne, const float x[], const float y[], float h[], const void *userdata);
@@ -34,6 +38,10 @@ typedef int64_t galahad_hr_s_64(int64_t n, int64_t m, int64_t hne, const float x
 typedef int64_t galahad_jrprod_s_64(int64_t n, int64_t m, const float x[], const bool transpose, float u[], const float v[], bool got_j, const void *userdata);
 typedef int64_t galahad_hrprod_s_64(int64_t n, int64_t m, const float x[], const float y[], float u[], const float v[], bool got_h, const void *userdata);
 typedef int64_t galahad_shrprod_s_64(int64_t n, int64_t m, int64_t pne, const float x[], const float v[], float pval[], bool got_h, const void *userdata);
+typedef int64_t galahad_jr_prod_s_64(int64_t n, int64_t m_r, const float x[], const bool transpose, const float v[], float p[], bool got_jr, const void *userdata);
+typedef int64_t galahad_jr_sprod_s_64(int64_t n, int64_t m_r, const float x[], const bool transpose, const float v[], float p[], const int64_t free[], int64_t n_free, bool got_jr, const void *userdata);
+typedef int64_t galahad_jr_prods_s_64(int64_t n, int64_t m_r,const float x[], const float v[], float p[], const int64_t iv[], int64_t lvl, int64_t lvu, int64_t ip[], int64_t *lp, bool got_jr, const void *userdata);
+typedef int64_t galahad_jr_scol_s_64(int64_t n, int64_t m_r, const float x[], int64_t index, float val[], int64_t row[], int64_t *nz, bool got_jr, const void *userdata);
 typedef int64_t galahad_fc_s_64(int64_t n, int64_t m, const float x[], float *f, float c[], const void *userdata);
 typedef int64_t galahad_gj_s_64(int64_t n, int64_t m, int64_t jne, const float x[], float g[], float j[], const void *userdata);
 typedef int64_t galahad_hl_s_64(int64_t n, int64_t m, int64_t hne, const float x[], const float y[], float h[], const void *userdata);
@@ -2183,7 +2191,6 @@ struct ugo_time_type_s {
 
 struct ugo_inform_type_s {
     int32_t status;
-    int32_t eval_status;
     int32_t alloc_status;
     char bad_alloc[81];
     int32_t iter;
@@ -2195,7 +2202,6 @@ struct ugo_inform_type_s {
 
 struct ugo_inform_type_s_64 {
     int64_t status;
-    int64_t eval_status;
     int64_t alloc_status;
     char bad_alloc[81];
     int64_t iter;
@@ -4032,7 +4038,6 @@ struct blls_control_type_s {
     int32_t cg_maxit;
     int32_t arcsearch_max_steps;
     int32_t sif_file_device;
-    float weight;
     float infinity;
     float stop_d;
     float identical_bounds_tol;
@@ -4072,7 +4077,6 @@ struct blls_control_type_s_64 {
     int64_t cg_maxit;
     int64_t arcsearch_max_steps;
     int64_t sif_file_device;
-    float weight;
     float infinity;
     float stop_d;
     float identical_bounds_tol;
@@ -4098,13 +4102,7 @@ struct blls_control_type_s_64 {
 
 struct blls_time_type_s {
     float total;
-    float analyse;
-    float factorize;
-    float solve;
     float clock_total;
-    float clock_analyse;
-    float clock_factorize;
-    float clock_solve;
 };
 
 struct blls_inform_type_s {
@@ -4114,6 +4112,7 @@ struct blls_inform_type_s {
     int32_t iter;
     int32_t cg_iter;
     float obj;
+    float ls_obj;
     float norm_pg;
     char bad_alloc[81];
     struct blls_time_type_s time;
@@ -4128,6 +4127,7 @@ struct blls_inform_type_s_64 {
     int64_t iter;
     int64_t cg_iter;
     float obj;
+    float ls_obj;
     float norm_pg;
     char bad_alloc[81];
     struct blls_time_type_s time;
@@ -4145,10 +4145,10 @@ void blls_import_without_a_s(struct blls_control_type_s *control, void **data, i
 void blls_import_without_a_s_64(struct blls_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t o);
 void blls_reset_control_s(struct blls_control_type_s *control, void **data, int32_t *status);
 void blls_reset_control_s_64(struct blls_control_type_s_64 *control, void **data, int64_t *status);
-void blls_solve_given_a_s(void **data, void *userdata, int32_t *status, int32_t n, int32_t o, int32_t Ao_ne, float *Ao_val, float *b, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int32_t *x_stat, float *w, galahad_constant_prec_s *eval_prec);
-void blls_solve_given_a_s_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t o, int64_t Ao_ne, float *Ao_val, float *b, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int64_t *x_stat, float *w, galahad_constant_prec_s_64 *eval_prec);
-void blls_solve_reverse_a_prod_s(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t o, float *b, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int32_t *x_stat, float *v, float *p, int32_t *nz_v, int32_t *nz_v_start, int32_t *nz_v_end, int32_t *nz_p, int32_t nz_p_end, float *w);
-void blls_solve_reverse_a_prod_s_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t o, float *b, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int64_t *x_stat, float *v, float *p, int64_t *nz_v, int64_t *nz_v_start, int64_t *nz_v_end, int64_t *nz_p, int64_t nz_p_end, float *w);
+void blls_solve_given_a_s(void **data, void *userdata, int32_t *status, int32_t n, int32_t o, int32_t Ao_ne, float *Ao_val, float *b, float regularization_weight, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int32_t *x_stat, float *w, float *x_s, galahad_constant_prec_s *eval_prec);
+void blls_solve_given_a_s_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t o, int64_t Ao_ne, float *Ao_val, float *b, float regularization_weight, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int64_t *x_stat, float *w, float *x_s, galahad_constant_prec_s_64 *eval_prec);
+void blls_solve_reverse_a_prod_s(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t o, float *b, float regularization_weight, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int32_t *x_stat, float *v, float *p, int32_t *iv, int32_t *lvl, int32_t *lvu, int32_t *ip, int32_t lp, float *w, float *x_s);
+void blls_solve_reverse_a_prod_s_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t o, float *b, float regularization_weight, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int64_t *x_stat, float *v, float *p, int64_t *iv, int64_t *lvl, int64_t *lvu, int64_t *ip, int64_t lp, float *w, float *x_s);
 void blls_information_s(void **data, struct blls_inform_type_s *inform, int32_t *status);
 void blls_information_s_64(void **data, struct blls_inform_type_s_64 *inform, int64_t *status);
 void blls_terminate_s(void **data, struct blls_control_type_s *control, struct blls_inform_type_s *inform);
@@ -5279,6 +5279,7 @@ struct clls_inform_type_s {
     int32_t nbacts;
     int32_t threads;
     float obj;
+    float ls_obj;
     float primal_infeasibility;
     float dual_infeasibility;
     float complementary_slackness;
@@ -5308,6 +5309,7 @@ struct clls_inform_type_s_64 {
     int64_t nbacts;
     int64_t threads;
     float obj;
+    float ls_obj;
     float primal_infeasibility;
     float dual_infeasibility;
     float complementary_slackness;
@@ -5333,8 +5335,8 @@ void clls_import_s(struct clls_control_type_s *control, void **data, int32_t *st
 void clls_import_s_64(struct clls_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t o, int64_t m, char *Ao_type, int64_t Ao_ne, int64_t *Ao_row, int64_t *Ao_col, int64_t Ao_ptr_ne, int64_t *Ao_ptr, char *A_type, int64_t A_ne, int64_t *A_row, int64_t *A_col, int64_t A_ptr_ne, int64_t *A_ptr);
 void clls_reset_control_s(struct clls_control_type_s *control, void **data, int32_t *status);
 void clls_reset_control_s_64(struct clls_control_type_s_64 *control, void **data, int64_t *status);
-void clls_solve_clls_s(void **data, int32_t *status, int32_t n, int32_t o, int32_t m, int32_t Ao_ne, float *Ao_val, float *b, float regularization_weight, int32_t A_ne, float *A_val, float *c_l, float *c_u, float *x_l, float *x_u, float *x, float *r, float *c, float *y, float *z, int32_t *x_stat, int32_t *c_stat, float *w);
-void clls_solve_clls_s_64(void **data, int64_t *status, int64_t n, int64_t o, int64_t m, int64_t Ao_ne, float *Ao_val, float *b, float regularization_weight, int64_t A_ne, float *A_val, float *c_l, float *c_u, float *x_l, float *x_u, float *x, float *r, float *c, float *y, float *z, int64_t *x_stat, int64_t *c_stat, float *w);
+void clls_solve_given_a_s(void **data, int32_t *status, int32_t n, int32_t o, int32_t m, int32_t Ao_ne, float *Ao_val, float *b, float regularization_weight, int32_t A_ne, float *A_val, float *c_l, float *c_u, float *x_l, float *x_u, float *x, float *y, float *z, float *r, float *c, int32_t *x_stat, int32_t *c_stat, float *w, float *x_s);
+void clls_solve_given_a_s_64(void **data, int64_t *status, int64_t n, int64_t o, int64_t m, int64_t Ao_ne, float *Ao_val, float *b, float regularization_weight, int64_t A_ne, float *A_val, float *c_l, float *c_u, float *x_l, float *x_u, float *x, float *y, float *z, float *r, float *c, int64_t *x_stat, int64_t *c_stat, float *w, float *x_s);
 void clls_information_s(void **data, struct clls_inform_type_s *inform, int32_t *status);
 void clls_information_s_64(void **data, struct clls_inform_type_s_64 *inform, int64_t *status);
 void clls_terminate_s(void **data, struct clls_control_type_s *control, struct clls_inform_type_s *inform);
@@ -7147,7 +7149,6 @@ struct slls_control_type_s {
     int32_t cg_maxit;
     int32_t arcsearch_max_steps;
     int32_t sif_file_device;
-    float weight;
     float stop_d;
     float stop_cg_relative;
     float stop_cg_absolute;
@@ -7185,7 +7186,6 @@ struct slls_control_type_s_64 {
     int64_t cg_maxit;
     int64_t arcsearch_max_steps;
     int64_t sif_file_device;
-    float weight;
     float stop_d;
     float stop_cg_relative;
     float stop_cg_absolute;
@@ -7207,6 +7207,11 @@ struct slls_control_type_s_64 {
     struct convert_control_type_64 convert_control;
 };
 
+struct slls_time_type_s {
+    float total;
+    float clock_total;
+};
+
 struct slls_inform_type_s {
     int32_t status;
     int32_t alloc_status;
@@ -7214,11 +7219,13 @@ struct slls_inform_type_s {
     int32_t iter;
     int32_t cg_iter;
     float obj;
+    float ls_obj;
     float norm_pg;
     char bad_alloc[81];
-    struct slls_time_type time;
+    struct slls_time_type_s time;
     struct sbls_inform_type_s sbls_inform;
     struct convert_inform_type_s convert_inform;
+    int32_t lapack_error;
 };
 
 struct slls_inform_type_s_64 {
@@ -7228,31 +7235,273 @@ struct slls_inform_type_s_64 {
     int64_t iter;
     int64_t cg_iter;
     float obj;
+    float ls_obj;
     float norm_pg;
     char bad_alloc[81];
-    struct slls_time_type time;
+    struct slls_time_type_s time;
     struct sbls_inform_type_s_64 sbls_inform;
     struct convert_inform_type_s_64 convert_inform;
+    int64_t lapack_error;
 };
 
 void slls_initialize_s(void **data, struct slls_control_type_s *control, int32_t *status);
 void slls_initialize_s_64(void **data, struct slls_control_type_s_64 *control, int64_t *status);
 void slls_read_specfile_s(struct slls_control_type_s *control, char *specfile);
 void slls_read_specfile_s_64(struct slls_control_type_s_64 *control, char *specfile);
-void slls_import_s(struct slls_control_type_s *control, void **data, int32_t *status, int32_t n, int32_t m, char *Ao_type, int32_t Ao_ne, int32_t *Ao_row, int32_t *Ao_col, int32_t Ao_ptr_ne, int32_t *Ao_ptr);
-void slls_import_s_64(struct slls_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t m, char *Ao_type, int64_t Ao_ne, int64_t *Ao_row, int64_t *Ao_col, int64_t Ao_ptr_ne, int64_t *Ao_ptr);
-void slls_import_without_a_s(struct slls_control_type_s *control, void **data, int32_t *status, int32_t n, int32_t o);
-void slls_import_without_a_s_64(struct slls_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t o);
+void slls_import_s(struct slls_control_type_s *control, void **data, int32_t *status, int32_t n, int32_t o, int32_t m, char *Ao_type, int32_t Ao_ne, int32_t *Ao_row, int32_t *Ao_col, int32_t Ao_ptr_ne, int32_t *Ao_ptr, int32_t *cohort);
+void slls_import_s_64(struct slls_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t o, int64_t m, char *Ao_type, int64_t Ao_ne, int64_t *Ao_row, int64_t *Ao_col, int64_t Ao_ptr_ne, int64_t *Ao_ptr, int64_t *cohort);
+void slls_import_without_a_s(struct slls_control_type_s *control, void **data, int32_t *status, int32_t n, int32_t o, int32_t m, int32_t *cohort);
+void slls_import_without_a_s_64(struct slls_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t o, int64_t m, int64_t *cohort);
 void slls_reset_control_s(struct slls_control_type_s *control, void **data, int32_t *status);
 void slls_reset_control_s_64(struct slls_control_type_s_64 *control, void **data, int64_t *status);
-void slls_solve_given_a_s(void **data, void *userdata, int32_t *status, int32_t n, int32_t o, int32_t Ao_ne, float *Ao_val, float *b, float *x, float *z, float *r, float *g, int32_t *x_stat, galahad_constant_prec_s *eval_prec);
-void slls_solve_given_a_s_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t o, int64_t Ao_ne, float *Ao_val, float *b, float *x, float *z, float *r, float *g, int64_t *x_stat, galahad_constant_prec_s_64 *eval_prec);
-void slls_solve_reverse_a_prod_s(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t o, float *b, float *x, float *z, float *r, float *g, int32_t *x_stat, float *v, float *p, int32_t *nz_v, int32_t *nz_v_start, int32_t *nz_v_end, int32_t *nz_p, int32_t nz_p_end);
-void slls_solve_reverse_a_prod_s_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t o, float *b, float *x, float *z, float *r, float *g, int64_t *x_stat, float *v, float *p, int64_t *nz_v, int64_t *nz_v_start, int64_t *nz_v_end, int64_t *nz_p, int64_t nz_p_end);
+void slls_solve_given_a_s(void **data, void *userdata, int32_t *status, int32_t n, int32_t o, int32_t m, int32_t Ao_ne, float *Ao_val, float *b, float regularization_weight, float *x, float *y, float *z, float *r, float *g, int32_t *x_stat, float *w, float *x_s, galahad_constant_prec_s *eval_prec);
+void slls_solve_given_a_s_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t o, int64_t m, int64_t Ao_ne, float *Ao_val, float *b, float regularization_weight, float *x, float *y, float *z, float *r, float *g, int64_t *x_stat, float *w, float *x_s, galahad_constant_prec_s_64 *eval_prec);
+void slls_solve_reverse_a_prod_s(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t o, int32_t m, float *b, float regularization_weight, float *x, float *y, float *z, float *r, float *g, int32_t *x_stat, float *v, float *p, int32_t *iv, int32_t *lvl, int32_t *lvu, int32_t *index, int32_t *ip, int32_t lp, float *w, float *x_s);
+void slls_solve_reverse_a_prod_s_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t o, int64_t m, float *b, float regularization_weight, float *x, float *y, float *z, float *r, float *g, int64_t *x_stat, float *v, float *p, int64_t *iv, int64_t *lvl, int64_t *lvu, int64_t *index, int64_t *ip, int64_t lp, float *w, float *x_s);
 void slls_information_s(void **data, struct slls_inform_type_s *inform, int32_t *status);
 void slls_information_s_64(void **data, struct slls_inform_type_s_64 *inform, int64_t *status);
 void slls_terminate_s(void **data, struct slls_control_type_s *control, struct slls_inform_type_s *inform);
 void slls_terminate_s_64(void **data, struct slls_control_type_s_64 *control, struct slls_inform_type_s_64 *inform);
+
+// C interface for NREK
+struct nrek_control_type_s {
+    bool f_indexing;
+    int32_t error;
+    int32_t out;
+    int32_t print_level;
+    int32_t eks_max;
+    int32_t it_max;
+    float f;
+    float increase;
+    float stop_residual;
+    bool reorthogonalize;
+    bool s_version_52;
+    bool perturb_c;
+    bool stop_check_all_orders;
+    bool new_weight;
+    bool new_values;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char linear_solver[31];
+    char linear_solver_for_s[31];
+    char prefix[31];
+    struct sls_control_type_s sls_control;
+    struct sls_control_type_s sls_s_control;
+    struct rqs_control_type_s rqs_control;
+};
+
+struct nrek_control_type_s_64 {
+    bool f_indexing;
+    int64_t error;
+    int64_t out;
+    int64_t print_level;
+    int64_t eks_max;
+    int64_t it_max;
+    float f;
+    float increase;
+    float stop_residual;
+    bool reorthogonalize;
+    bool s_version_52;
+    bool perturb_c;
+    bool stop_check_all_orders;
+    bool new_weight;
+    bool new_values;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char linear_solver[31];
+    char linear_solver_for_s[31];
+    char prefix[31];
+    struct sls_control_type_s_64 sls_control;
+    struct sls_control_type_s_64 sls_s_control;
+    struct rqs_control_type_s_64 rqs_control;
+};
+
+struct nrek_time_type_s {
+    float total;
+    float assemble;
+    float analyse;
+    float factorize;
+    float solve;
+    float clock_total;
+    float clock_assemble;
+    float clock_analyse;
+    float clock_factorize;
+    float clock_solve;
+};
+
+struct nrek_inform_type_s {
+    int32_t status;
+    int32_t alloc_status;
+    int32_t iter;
+    int32_t n_vec;
+    float obj;
+    float obj_regularized;
+    float x_norm;
+    float multiplier;
+    float weight;
+    float next_weight;
+    float error;
+    char bad_alloc[81];
+    struct nrek_time_type_s time;
+    struct sls_inform_type_s sls_inform;
+    struct sls_inform_type_s sls_s_inform;
+    struct rqs_inform_type_s rqs_inform;
+};
+
+struct nrek_inform_type_s_64 {
+    int64_t status;
+    int64_t alloc_status;
+    int64_t iter;
+    int64_t n_vec;
+    float obj;
+    float obj_regularized;
+    float x_norm;
+    float multiplier;
+    float weight;
+    float next_weight;
+    float error;
+    char bad_alloc[81];
+    struct nrek_time_type_s time;
+    struct sls_inform_type_s_64 sls_inform;
+    struct sls_inform_type_s_64 sls_s_inform;
+    struct rqs_inform_type_s_64 rqs_inform;
+};
+
+void nrek_initialize_s(void **data, struct nrek_control_type_s *control, int32_t *status);
+void nrek_initialize_s_64(void **data, struct nrek_control_type_s_64 *control, int64_t *status);
+void nrek_read_specfile_s(struct nrek_control_type_s *control, char *specfile);
+void nrek_read_specfile_s_64(struct nrek_control_type_s_64 *control, char *specfile);
+void nrek_import_s(struct nrek_control_type_s *control, void **data, int32_t *status, int32_t n, char *H_type, int32_t H_ne, int32_t *H_row, int32_t *H_col, int32_t *H_ptr);
+void nrek_import_s_64(struct nrek_control_type_s_64 *control, void **data, int64_t *status, int64_t n, char *H_type, int64_t H_ne, int64_t *H_row, int64_t *H_col, int64_t *H_ptr);
+void nrek_s_import_s(void **data, int32_t *status, int32_t n, char *S_type, int32_t S_ne, int32_t *S_row, int32_t *S_col, int32_t *S_ptr);
+void nrek_s_import_s_64(void **data, int64_t *status, int64_t n, char *S_type, int64_t S_ne, int64_t *S_row, int64_t *S_col, int64_t *S_ptr);
+void nrek_reset_control_s(struct nrek_control_type_s *control, void **data, int32_t *status);
+void nrek_reset_control_s_64(struct nrek_control_type_s_64 *control, void **data, int64_t *status);
+void nrek_solve_problem_s(void **data, int32_t *status, int32_t n, int32_t H_ne, float *H_val, float *c, float power, float weight, float *x, int32_t S_ne, float *S_val);
+void nrek_solve_problem_s_64(void **data, int64_t *status, int64_t n, int64_t H_ne, float *H_val, float *c, float power, float weight, float *x, int64_t S_ne, float *S_val);
+void nrek_information_s(void **data, struct nrek_inform_type_s *inform, int32_t *status);
+void nrek_information_s_64(void **data, struct nrek_inform_type_s_64 *inform, int64_t *status);
+void nrek_terminate_s(void **data, struct nrek_control_type_s *control, struct nrek_inform_type_s *inform);
+void nrek_terminate_s_64(void **data, struct nrek_control_type_s_64 *control, struct nrek_inform_type_s_64 *inform);
+
+// C interface for TREK
+struct trek_control_type_s {
+    bool f_indexing;
+    int32_t error;
+    int32_t out;
+    int32_t print_level;
+    int32_t eks_max;
+    int32_t it_max;
+    float f;
+    float reduction;
+    float stop_residual;
+    bool reorthogonalize;
+    bool s_version_52;
+    bool perturb_c;
+    bool stop_check_all_orders;
+    bool new_radius;
+    bool new_values;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char linear_solver[31];
+    char linear_solver_for_s[31];
+    char prefix[31];
+    struct sls_control_type_s sls_control;
+    struct sls_control_type_s sls_s_control;
+    struct trs_control_type_s trs_control;
+};
+
+struct trek_control_type_s_64 {
+    bool f_indexing;
+    int64_t error;
+    int64_t out;
+    int64_t print_level;
+    int64_t eks_max;
+    int64_t it_max;
+    float f;
+    float reduction;
+    float stop_residual;
+    bool reorthogonalize;
+    bool s_version_52;
+    bool perturb_c;
+    bool stop_check_all_orders;
+    bool new_radius;
+    bool new_values;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char linear_solver[31];
+    char linear_solver_for_s[31];
+    char prefix[31];
+    struct sls_control_type_s_64 sls_control;
+    struct sls_control_type_s_64 sls_s_control;
+    struct trs_control_type_s_64 trs_control;
+};
+
+struct trek_time_type_s {
+    float total;
+    float assemble;
+    float analyse;
+    float factorize;
+    float solve;
+    float clock_total;
+    float clock_assemble;
+    float clock_analyse;
+    float clock_factorize;
+    float clock_solve;
+};
+
+struct trek_inform_type_s {
+    int32_t status;
+    int32_t alloc_status;
+    int32_t iter;
+    int32_t n_vec;
+    float obj;
+    float x_norm;
+    float multiplier;
+    float radius;
+    float next_radius;
+    float error;
+    char bad_alloc[81];
+    struct trek_time_type_s time;
+    struct sls_inform_type_s sls_inform;
+    struct sls_inform_type_s sls_s_inform;
+    struct trs_inform_type_s trs_inform;
+};
+
+struct trek_inform_type_s_64 {
+    int64_t status;
+    int64_t alloc_status;
+    int64_t iter;
+    int64_t n_vec;
+    float obj;
+    float x_norm;
+    float multiplier;
+    float radius;
+    float next_radius;
+    float error;
+    char bad_alloc[81];
+    struct trek_time_type_s time;
+    struct sls_inform_type_s_64 sls_inform;
+    struct sls_inform_type_s_64 sls_s_inform;
+    struct trs_inform_type_s_64 trs_inform;
+};
+
+void trek_initialize_s(void **data, struct trek_control_type_s *control, int32_t *status);
+void trek_initialize_s_64(void **data, struct trek_control_type_s_64 *control, int64_t *status);
+void trek_read_specfile_s(struct trek_control_type_s *control, char *specfile);
+void trek_read_specfile_s_64(struct trek_control_type_s_64 *control, char *specfile);
+void trek_import_s(struct trek_control_type_s *control, void **data, int32_t *status, int32_t n, char *H_type, int32_t H_ne, int32_t *H_row, int32_t *H_col, int32_t *H_ptr);
+void trek_import_s_64(struct trek_control_type_s_64 *control, void **data, int64_t *status, int64_t n, char *H_type, int64_t H_ne, int64_t *H_row, int64_t *H_col, int64_t *H_ptr);
+void trek_s_import_s(void **data, int32_t *status, int32_t n, char *S_type, int32_t S_ne, int32_t *S_row, int32_t *S_col, int32_t *S_ptr);
+void trek_s_import_s_64(void **data, int64_t *status, int64_t n, char *S_type, int64_t S_ne, int64_t *S_row, int64_t *S_col, int64_t *S_ptr);
+void trek_reset_control_s(struct trek_control_type_s *control, void **data, int32_t *status);
+void trek_reset_control_s_64(struct trek_control_type_s_64 *control, void **data, int64_t *status);
+void trek_solve_problem_s(void **data, int32_t *status, int32_t n, int32_t H_ne, float *H_val, float *c, float radius, float *x, int32_t S_ne, float *S_val);
+void trek_solve_problem_s_64(void **data, int64_t *status, int64_t n, int64_t H_ne, float *H_val, float *c, float radius, float *x, int64_t S_ne, float *S_val);
+void trek_information_s(void **data, struct trek_inform_type_s *inform, int32_t *status);
+void trek_information_s_64(void **data, struct trek_inform_type_s_64 *inform, int64_t *status);
+void trek_terminate_s(void **data, struct trek_control_type_s *control, struct trek_inform_type_s *inform);
+void trek_terminate_s_64(void **data, struct trek_control_type_s_64 *control, struct trek_inform_type_s_64 *inform);
 
 // C interface for TRU
 struct tru_control_type_s {
@@ -8022,6 +8271,7 @@ struct bllsb_inform_type_s {
     int32_t nbacts;
     int32_t threads;
     float obj;
+    float ls_obj;
     float primal_infeasibility;
     float dual_infeasibility;
     float complementary_slackness;
@@ -8051,6 +8301,7 @@ struct bllsb_inform_type_s_64 {
     int64_t nbacts;
     int64_t threads;
     float obj;
+    float ls_obj;
     float primal_infeasibility;
     float dual_infeasibility;
     float complementary_slackness;
@@ -8076,8 +8327,8 @@ void bllsb_import_s(struct bllsb_control_type_s *control, void **data, int32_t *
 void bllsb_import_s_64(struct bllsb_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t o, char *Ao_type, int64_t Ao_ne, int64_t *Ao_row, int64_t *Ao_col, int64_t Ao_ptr_ne, int64_t *Ao_ptr);
 void bllsb_reset_control_s(struct bllsb_control_type_s *control, void **data, int32_t *status);
 void bllsb_reset_control_s_64(struct bllsb_control_type_s_64 *control, void **data, int64_t *status);
-void bllsb_solve_blls_s(void **data, int32_t *status, int32_t n, int32_t o, int32_t Ao_ne, float *Ao_val, float *b, float regularization_weight, float *x_l, float *x_u, float *x, float *r, float *z, int32_t *x_stat, float *w);
-void bllsb_solve_blls_s_64(void **data, int64_t *status, int64_t n, int64_t o, int64_t Ao_ne, float *Ao_val, float *b, float regularization_weight, float *x_l, float *x_u, float *x, float *r, float *z, int64_t *x_stat, float *w);
+void bllsb_solve_given_a_s(void **data, int32_t *status, int32_t n, int32_t o, int32_t Ao_ne, float *Ao_val, float *b, float regularization_weight, float *x_l, float *x_u, float *x, float *r, float *z, int32_t *x_stat, float *w, float *x_s);
+void bllsb_solve_given_a_s_64(void **data, int64_t *status, int64_t n, int64_t o, int64_t Ao_ne, float *Ao_val, float *b, float regularization_weight, float *x_l, float *x_u, float *x, float *r, float *z, int64_t *x_stat, float *w, float *x_s);
 void bllsb_information_s(void **data, struct bllsb_inform_type_s *inform, int32_t *status);
 void bllsb_information_s_64(void **data, struct bllsb_inform_type_s_64 *inform, int64_t *status);
 void bllsb_terminate_s(void **data, struct bllsb_control_type_s *control, struct bllsb_inform_type_s *inform);
@@ -8159,6 +8410,541 @@ void ssls_information_s(void **data, struct ssls_inform_type_s *inform, int32_t 
 void ssls_information_s_64(void **data, struct ssls_inform_type_s_64 *inform, int64_t *status);
 void ssls_terminate_s(void **data, struct ssls_control_type_s *control, struct ssls_inform_type_s *inform);
 void ssls_terminate_s_64(void **data, struct ssls_control_type_s_64 *control, struct ssls_inform_type_s_64 *inform);
+
+// C interface for SLLSB
+struct sllsb_control_type_s {
+    bool f_indexing;
+    int32_t error;
+    int32_t out;
+    int32_t print_level;
+    int32_t start_print;
+    int32_t stop_print;
+    int32_t maxit;
+    int32_t infeas_max;
+    int32_t muzero_fixed;
+    int32_t restore_problem;
+    int32_t indicator_type;
+    int32_t arc;
+    int32_t series_order;
+    int32_t sif_file_device;
+    int32_t qplib_file_device;
+    float infinity;
+    float stop_abs_p;
+    float stop_rel_p;
+    float stop_abs_d;
+    float stop_rel_d;
+    float stop_abs_c;
+    float stop_rel_c;
+    float prfeas;
+    float dufeas;
+    float muzero;
+    float tau;
+    float gamma_c;
+    float gamma_f;
+    float reduce_infeas;
+    float identical_bounds_tol;
+    float mu_pounce;
+    float indicator_tol_p;
+    float indicator_tol_pd;
+    float indicator_tol_tapia;
+    float cpu_time_limit;
+    float clock_time_limit;
+    bool remove_dependencies;
+    bool treat_zero_bounds_as_general;
+    bool treat_separable_as_general;
+    bool just_feasible;
+    bool getdua;
+    bool puiseux;
+    bool every_order;
+    bool feasol;
+    bool balance_initial_complentarity;
+    bool crossover;
+    bool reduced_pounce_system;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    bool generate_sif_file;
+    bool generate_qplib_file;
+    char symmetric_linear_solver[31];
+    char sif_file_name[31];
+    char qplib_file_name[31];
+    char prefix[31];
+    struct fdc_control_type_s fdc_control;
+    struct sls_control_type_s sls_control;
+    struct sls_control_type_s sls_pounce_control;
+    struct fit_control_type fit_control;
+    struct roots_control_type_s roots_control;
+    struct cro_control_type_s cro_control;
+};
+
+struct sllsb_control_type_s_64 {
+    bool f_indexing;
+    int64_t error;
+    int64_t out;
+    int64_t print_level;
+    int64_t start_print;
+    int64_t stop_print;
+    int64_t maxit;
+    int64_t infeas_max;
+    int64_t muzero_fixed;
+    int64_t restore_problem;
+    int64_t indicator_type;
+    int64_t arc;
+    int64_t series_order;
+    int64_t sif_file_device;
+    int64_t qplib_file_device;
+    float infinity;
+    float stop_abs_p;
+    float stop_rel_p;
+    float stop_abs_d;
+    float stop_rel_d;
+    float stop_abs_c;
+    float stop_rel_c;
+    float prfeas;
+    float dufeas;
+    float muzero;
+    float tau;
+    float gamma_c;
+    float gamma_f;
+    float reduce_infeas;
+    float identical_bounds_tol;
+    float mu_pounce;
+    float indicator_tol_p;
+    float indicator_tol_pd;
+    float indicator_tol_tapia;
+    float cpu_time_limit;
+    float clock_time_limit;
+    bool remove_dependencies;
+    bool treat_zero_bounds_as_general;
+    bool treat_separable_as_general;
+    bool just_feasible;
+    bool getdua;
+    bool puiseux;
+    bool every_order;
+    bool feasol;
+    bool balance_initial_complentarity;
+    bool crossover;
+    bool reduced_pounce_system;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    bool generate_sif_file;
+    bool generate_qplib_file;
+    char symmetric_linear_solver[31];
+    char sif_file_name[31];
+    char qplib_file_name[31];
+    char prefix[31];
+    struct fdc_control_type_s_64 fdc_control;
+    struct sls_control_type_s_64 sls_control;
+    struct sls_control_type_s_64 sls_pounce_control;
+    struct fit_control_type_64 fit_control;
+    struct roots_control_type_s_64 roots_control;
+    struct cro_control_type_s_64 cro_control;
+};
+
+struct sllsb_time_type_s {
+    float total;
+    float preprocess;
+    float find_dependent;
+    float analyse;
+    float factorize;
+    float solve;
+    float clock_total;
+    float clock_preprocess;
+    float clock_find_dependent;
+    float clock_analyse;
+    float clock_factorize;
+    float clock_solve;
+};
+
+struct sllsb_inform_type_s {
+    int32_t status;
+    int32_t alloc_status;
+    char bad_alloc[81];
+    int32_t iter;
+    int32_t factorization_status;
+    int64_t factorization_integer;
+    int64_t factorization_real;
+    int32_t nfacts;
+    int32_t nbacts;
+    int32_t threads;
+    float obj;
+    float ls_obj;
+    float primal_infeasibility;
+    float dual_infeasibility;
+    float complementary_slackness;
+    float non_negligible_pivot;
+    bool feasible;
+    int32_t checkpointsIter[16];
+    float checkpointsTime[16];
+    struct sllsb_time_type_s time;
+    struct fdc_inform_type_s fdc_inform;
+    struct sls_inform_type_s sls_inform;
+    struct sls_inform_type_s sls_pounce_inform;
+    struct fit_inform_type fit_inform;
+    struct roots_inform_type roots_inform;
+    struct cro_inform_type_s cro_inform;
+    struct rpd_inform_type rpd_inform;
+};
+
+struct sllsb_inform_type_s_64 {
+    int64_t status;
+    int64_t alloc_status;
+    char bad_alloc[81];
+    int64_t iter;
+    int64_t factorization_status;
+    int64_t factorization_integer;
+    int64_t factorization_real;
+    int64_t nfacts;
+    int64_t nbacts;
+    int64_t threads;
+    float obj;
+    float ls_obj;
+    float primal_infeasibility;
+    float dual_infeasibility;
+    float complementary_slackness;
+    float non_negligible_pivot;
+    bool feasible;
+    int64_t checkpointsIter[16];
+    float checkpointsTime[16];
+    struct sllsb_time_type_s time;
+    struct fdc_inform_type_s_64 fdc_inform;
+    struct sls_inform_type_s_64 sls_inform;
+    struct sls_inform_type_s_64 sls_pounce_inform;
+    struct fit_inform_type_64 fit_inform;
+    struct roots_inform_type_64 roots_inform;
+    struct cro_inform_type_s_64 cro_inform;
+    struct rpd_inform_type_64 rpd_inform;
+};
+
+void sllsb_initialize_s(void **data, struct sllsb_control_type_s *control, int32_t *status);
+void sllsb_initialize_s_64(void **data, struct sllsb_control_type_s_64 *control, int64_t *status);
+void sllsb_read_specfile_s(struct sllsb_control_type_s *control, char *specfile);
+void sllsb_read_specfile_s_64(struct sllsb_control_type_s_64 *control, char *specfile);
+void sllsb_import_s(struct sllsb_control_type_s *control, void **data, int32_t *status, int32_t n, int32_t o, int32_t m, char *Ao_type, int32_t Ao_ne, int32_t *Ao_row, int32_t *Ao_col, int32_t Ao_ptr_ne, int32_t *Ao_ptr, int32_t *cohort);
+void sllsb_import_s_64(struct sllsb_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t o, int64_t m, char *Ao_type, int64_t Ao_ne, int64_t *Ao_row, int64_t *Ao_col, int64_t Ao_ptr_ne, int64_t *Ao_ptr, int64_t *cohort);
+void sllsb_reset_control_s(struct sllsb_control_type_s *control, void **data, int32_t *status);
+void sllsb_reset_control_s_64(struct sllsb_control_type_s_64 *control, void **data, int64_t *status);
+void sllsb_solve_given_a_s(void **data, int32_t *status, int32_t n, int32_t o, int32_t m, int32_t Ao_ne, float *Ao_val, float *b, float regularization_weight, float *x, float *y, float *z, float *r, int32_t *x_stat, float *w, float *x_s);
+void sllsb_solve_given_a_s_64(void **data, int64_t *status, int64_t n, int64_t o, int64_t m, int64_t Ao_ne, float *Ao_val, float *b, float regularization_weight, float *x, float *y, float *z, float *r, int64_t *x_stat, float *w, float *x_s);
+void sllsb_information_s(void **data, struct sllsb_inform_type_s *inform, int32_t *status);
+void sllsb_information_s_64(void **data, struct sllsb_inform_type_s_64 *inform, int64_t *status);
+void sllsb_terminate_s(void **data, struct sllsb_control_type_s *control, struct sllsb_inform_type_s *inform);
+void sllsb_terminate_s_64(void **data, struct sllsb_control_type_s_64 *control, struct sllsb_inform_type_s_64 *inform);
+
+// C interface for BNLS
+struct bnls_control_type_s {
+    bool f_indexing;
+    int32_t error;
+    int32_t out;
+    int32_t print_level;
+    int32_t start_print;
+    int32_t stop_print;
+    int32_t print_gap;
+    int32_t maxit;
+    int32_t alive_unit;
+    char alive_file[31];
+    int32_t jacobian_available;
+    int32_t subproblem_solver;
+    int32_t non_monotone;
+    int32_t weight_update_strategy;
+    float infinity;
+    float stop_r_absolute;
+    float stop_r_relative;
+    float stop_pg_absolute;
+    float stop_pg_relative;
+    float stop_s;
+    float stop_pg_switch;
+    float initial_weight;
+    float minimum_weight;
+    float eta_successful;
+    float eta_very_successful;
+    float eta_too_successful;
+    float weight_decrease_min;
+    float weight_decrease;
+    float weight_increase;
+    float weight_increase_max;
+    float switch_to_newton;
+    float cpu_time_limit;
+    float clock_time_limit;
+    bool newton_acceleration;
+    bool magic_step;
+    bool print_obj;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char prefix[31];
+    struct blls_control_type_s blls_control;
+    struct bllsb_control_type_s bllsb_control;
+};
+
+struct bnls_control_type_s_64 {
+    bool f_indexing;
+    int64_t error;
+    int64_t out;
+    int64_t print_level;
+    int64_t start_print;
+    int64_t stop_print;
+    int64_t print_gap;
+    int64_t maxit;
+    int64_t alive_unit;
+    char alive_file[31];
+    int64_t jacobian_available;
+    int64_t subproblem_solver;
+    int64_t non_monotone;
+    int64_t weight_update_strategy;
+    float infinity;
+    float stop_r_absolute;
+    float stop_r_relative;
+    float stop_pg_absolute;
+    float stop_pg_relative;
+    float stop_s;
+    float stop_pg_switch;
+    float initial_weight;
+    float minimum_weight;
+    float eta_successful;
+    float eta_very_successful;
+    float eta_too_successful;
+    float weight_decrease_min;
+    float weight_decrease;
+    float weight_increase;
+    float weight_increase_max;
+    float switch_to_newton;
+    float cpu_time_limit;
+    float clock_time_limit;
+    bool newton_acceleration;
+    bool magic_step;
+    bool print_obj;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char prefix[31];
+    struct blls_control_type_s_64 blls_control;
+    struct bllsb_control_type_s_64 bllsb_control;
+};
+
+struct bnls_time_type_s {
+    float total;
+    float blls;
+    float bllsb;
+    float clock_total;
+    float clock_blls;
+    float clock_bllsb;
+};
+
+struct bnls_inform_type_s {
+    int32_t status;
+    int32_t alloc_status;
+    char bad_alloc[81];
+    char bad_eval[13];
+    int32_t iter;
+    int32_t inner_iter;
+    int32_t r_eval;
+    int32_t jr_eval;
+    float obj;
+    float norm_r;
+    float norm_g;
+    float norm_pg;
+    float weight;
+    struct bnls_time_type_s time;
+    struct blls_inform_type_s blls_inform;
+    struct bllsb_inform_type_s bllsb_inform;
+};
+
+struct bnls_inform_type_s_64 {
+    int64_t status;
+    int64_t alloc_status;
+    char bad_alloc[81];
+    char bad_eval[13];
+    int64_t iter;
+    int64_t inner_iter;
+    int64_t r_eval;
+    int64_t jr_eval;
+    float obj;
+    float norm_r;
+    float norm_g;
+    float norm_pg;
+    float weight;
+    struct bnls_time_type_s time;
+    struct blls_inform_type_s_64 blls_inform;
+    struct bllsb_inform_type_s_64 bllsb_inform;
+};
+
+void bnls_initialize_s(void **data, struct bnls_control_type_s *control, struct bnls_inform_type_s *inform);
+void bnls_initialize_s_64(void **data, struct bnls_control_type_s_64 *control, struct bnls_inform_type_s_64 *inform);
+void bnls_read_specfile_s(struct bnls_control_type_s *control, char *specfile);
+void bnls_read_specfile_s_64(struct bnls_control_type_s_64 *control, char *specfile);
+void bnls_import_s(struct bnls_control_type_s *control, void **data, int32_t *status, int32_t n, int32_t m_r, char *Jr_type, int32_t Jr_ne, int32_t *Jr_row, int32_t *Jr_col, int32_t Jr_ptr_ne, int32_t *Jr_ptr);
+void bnls_import_s_64(struct bnls_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t m_r, char *Jr_type, int64_t Jr_ne, int64_t *Jr_row, int64_t *Jr_col, int64_t Jr_ptr_ne, int64_t *Jr_ptr);
+void bnls_import_without_jac_s(struct bnls_control_type_s *control, void **data, int32_t *status, int32_t n, int32_t m_r);
+void bnls_import_without_jac_s_64(struct bnls_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t m_r);
+void bnls_reset_control_s(struct bnls_control_type_s *control, void **data, int32_t *status);
+void bnls_reset_control_s_64(struct bnls_control_type_s_64 *control, void **data, int64_t *status);
+void bnls_solve_with_jac_s(void **data, void *userdata, int32_t *status, int32_t n, int32_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int32_t *x_stat, galahad_r_s *eval_r, int32_t jr_ne, galahad_jr_s *eval_jr, float *w);
+void bnls_solve_with_jac_s_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int64_t *x_stat, galahad_r_s_64 *eval_r, int64_t jr_ne, galahad_jr_s_64 *eval_jr, float *w);
+void bnls_solve_with_jacprod_s(void **data, void *userdata, int32_t *status, int32_t n, int32_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int32_t *x_stat, galahad_r_s *eval_r, galahad_jr_prod_s *eval_jr_prod, galahad_jr_prods_s *eval_jr_prods, galahad_jr_sprod_s *eval_jr_sprod, float *w);
+void bnls_solve_with_jacprod_s_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int64_t *x_stat, galahad_r_s_64 *eval_r, galahad_jr_prod_s_64 *eval_jr_prod, galahad_jr_prods_s_64 *eval_jr_prods, galahad_jr_sprod_s_64 *eval_jr_sprod, float *w);
+void bnls_solve_reverse_with_jac_s(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int32_t *x_stat, int32_t jr_ne, float *jr_val, float *w);
+void bnls_solve_reverse_with_jac_s_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int64_t *x_stat, int64_t jr_ne, float *jr_val, float *w);
+void bnls_solve_reverse_with_jacprod_s(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int32_t *x_stat, float *v, int32_t *iv, int32_t *lvl, int32_t *lvu, float *p, int32_t *ip, int32_t lp, float *w);
+void bnls_solve_reverse_with_jacprod_s_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t m_r, float *x_l, float *x_u, float *x, float *z, float *r, float *g, int64_t *x_stat, float *v, int64_t *iv, int64_t *lvl, int64_t *lvu, float *p, int64_t *ip, int64_t lp, float *w);
+void bnls_information_s(void **data, struct bnls_inform_type_s *inform, int32_t *status);
+void bnls_information_s_64(void **data, struct bnls_inform_type_s_64 *inform, int64_t *status);
+void bnls_terminate_s(void **data, struct bnls_control_type_s *control, struct bnls_inform_type_s *inform);
+void bnls_terminate_s_64(void **data, struct bnls_control_type_s_64 *control, struct bnls_inform_type_s_64 *inform);
+
+// C interface for SNLS
+struct snls_control_type_s {
+    bool f_indexing;
+    int32_t error;
+    int32_t out;
+    int32_t print_level;
+    int32_t start_print;
+    int32_t stop_print;
+    int32_t print_gap;
+    int32_t maxit;
+    int32_t alive_unit;
+    char alive_file[31];
+    int32_t jacobian_available;
+    int32_t subproblem_solver;
+    int32_t non_monotone;
+    int32_t weight_update_strategy;
+    float stop_r_absolute;
+    float stop_r_relative;
+    float stop_pg_absolute;
+    float stop_pg_relative;
+    float stop_s;
+    float stop_pg_switch;
+    float initial_weight;
+    float minimum_weight;
+    float eta_successful;
+    float eta_very_successful;
+    float eta_too_successful;
+    float weight_decrease_min;
+    float weight_decrease;
+    float weight_increase;
+    float weight_increase_max;
+    float switch_to_newton;
+    float cpu_time_limit;
+    float clock_time_limit;
+    bool newton_acceleration;
+    bool magic_step;
+    bool print_obj;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char prefix[31];
+    struct slls_control_type_s slls_control;
+    struct sllsb_control_type_s sllsb_control;
+};
+
+struct snls_control_type_s_64 {
+    bool f_indexing;
+    int64_t error;
+    int64_t out;
+    int64_t print_level;
+    int64_t start_print;
+    int64_t stop_print;
+    int64_t print_gap;
+    int64_t maxit;
+    int64_t alive_unit;
+    char alive_file[31];
+    int64_t jacobian_available;
+    int64_t subproblem_solver;
+    int64_t non_monotone;
+    int64_t weight_update_strategy;
+    float stop_r_absolute;
+    float stop_r_relative;
+    float stop_pg_absolute;
+    float stop_pg_relative;
+    float stop_s;
+    float stop_pg_switch;
+    float initial_weight;
+    float minimum_weight;
+    float eta_successful;
+    float eta_very_successful;
+    float eta_too_successful;
+    float weight_decrease_min;
+    float weight_decrease;
+    float weight_increase;
+    float weight_increase_max;
+    float switch_to_newton;
+    float cpu_time_limit;
+    float clock_time_limit;
+    bool newton_acceleration;
+    bool magic_step;
+    bool print_obj;
+    bool space_critical;
+    bool deallocate_error_fatal;
+    char prefix[31];
+    struct slls_control_type_s_64 slls_control;
+    struct sllsb_control_type_s_64 sllsb_control;
+};
+
+struct snls_time_type_s {
+    float total;
+    float slls;
+    float sllsb;
+    float clock_total;
+    float clock_slls;
+    float clock_sllsb;
+};
+
+struct snls_inform_type_s {
+    int32_t status;
+    int32_t alloc_status;
+    char bad_alloc[81];
+    char bad_eval[13];
+    int32_t iter;
+    int32_t inner_iter;
+    int32_t r_eval;
+    int32_t jr_eval;
+    float obj;
+    float norm_r;
+    float norm_g;
+    float norm_pg;
+    float weight;
+    struct snls_time_type_s time;
+    struct slls_inform_type_s slls_inform;
+    struct sllsb_inform_type_s sllsb_inform;
+};
+
+struct snls_inform_type_s_64 {
+    int64_t status;
+    int64_t alloc_status;
+    char bad_alloc[81];
+    char bad_eval[13];
+    int64_t iter;
+    int64_t inner_iter;
+    int64_t r_eval;
+    int64_t jr_eval;
+    float obj;
+    float norm_r;
+    float norm_g;
+    float norm_pg;
+    float weight;
+    struct snls_time_type_s time;
+    struct slls_inform_type_s_64 slls_inform;
+    struct sllsb_inform_type_s_64 sllsb_inform;
+};
+
+void snls_initialize_s(void **data, struct snls_control_type_s *control, struct snls_inform_type_s *inform);
+void snls_initialize_s_64(void **data, struct snls_control_type_s_64 *control, struct snls_inform_type_s_64 *inform);
+void snls_read_specfile_s(struct snls_control_type_s *control, char *specfile);
+void snls_read_specfile_s_64(struct snls_control_type_s_64 *control, char *specfile);
+void snls_import_s(struct snls_control_type_s *control, void **data, int32_t *status, int32_t n, int32_t m_r, int32_t m_c, char *Jr_type, int32_t Jr_ne, int32_t *Jr_row, int32_t *Jr_col, int32_t Jr_ptr_ne, int32_t *Jr_ptr, int32_t *cohort);
+void snls_import_s_64(struct snls_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t m_r, int64_t m_c, char *Jr_type, int64_t Jr_ne, int64_t *Jr_row, int64_t *Jr_col, int64_t Jr_ptr_ne, int64_t *Jr_ptr, int64_t *cohort);
+void snls_import_without_jac_s(struct snls_control_type_s *control, void **data, int32_t *status, int32_t n, int32_t m_r, int32_t m_c, int32_t *cohort);
+void snls_import_without_jac_s_64(struct snls_control_type_s_64 *control, void **data, int64_t *status, int64_t n, int64_t m_r, int64_t m_c, int64_t *cohort);
+void snls_reset_control_s(struct snls_control_type_s *control, void **data, int32_t *status);
+void snls_reset_control_s_64(struct snls_control_type_s_64 *control, void **data, int64_t *status);
+void snls_solve_with_jac_s(void **data, void *userdata, int32_t *status, int32_t n, int32_t m_r, int32_t m_c, float *x, float *y, float *z, float *r, float *g, int32_t *x_stat, galahad_r_s *eval_r, int32_t jr_ne, galahad_jr_s *eval_jr, float *w);
+void snls_solve_with_jac_s_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t m_r, int64_t m_c, float *x, float *y, float *z, float *r, float *g, int64_t *x_stat, galahad_r_s_64 *eval_r, int64_t jr_ne, galahad_jr_s_64 *eval_jr, float *w);
+void snls_solve_with_jacprod_s(void **data, void *userdata, int32_t *status, int32_t n, int32_t m_r, int32_t m_c, float *x, float *y, float *z, float *r, float *g, int32_t *x_stat, galahad_r_s *eval_r, galahad_jr_prod_s *eval_jr_prod, galahad_jr_scol_s *eval_jr_scol, galahad_jr_sprod_s *eval_jr_sprod, float *w);
+void snls_solve_with_jacprod_s_64(void **data, void *userdata, int64_t *status, int64_t n, int64_t m_r, int64_t m_c, float *x, float *y, float *z, float *r, float *g, int64_t *x_stat, galahad_r_s_64 *eval_r, galahad_jr_prod_s_64 *eval_jr_prod, galahad_jr_scol_s_64 *eval_jr_scol, galahad_jr_sprod_s_64 *eval_jr_sprod, float *w);
+void snls_solve_reverse_with_jac_s(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t m_r, int32_t m_c, float *x, float *y, float *z, float *r, float *g, int32_t *x_stat, int32_t jr_ne, float *jr_val, float *w);
+void snls_solve_reverse_with_jac_s_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t m_r, int64_t m_c, float *x, float *y, float *z, float *r, float *g, int64_t *x_stat, int64_t jr_ne, float *jr_val, float *w);
+void snls_solve_reverse_with_jacprod_s(void **data, int32_t *status, int32_t *eval_status, int32_t n, int32_t m_r, int32_t m_c, float *x, float *y, float *z, float *r, float *g, int32_t *x_stat, float *v, int32_t *iv, int32_t *lvl, int32_t *lvu, int32_t *index, float *p, int32_t *ip, int32_t lp, float *w);
+void snls_solve_reverse_with_jacprod_s_64(void **data, int64_t *status, int64_t *eval_status, int64_t n, int64_t m_r, int64_t m_c, float *x, float *y, float *z, float *r, float *g, int64_t *x_stat, float *v, int64_t *iv, int64_t *lvl, int64_t *lvu, int64_t *index, float *p, int64_t *ip, int64_t lp, float *w);
+void snls_information_s(void **data, struct snls_inform_type_s *inform, int32_t *status);
+void snls_information_s_64(void **data, struct snls_inform_type_s_64 *inform, int64_t *status);
+void snls_terminate_s(void **data, struct snls_control_type_s *control, struct snls_inform_type_s *inform);
+void snls_terminate_s_64(void **data, struct snls_control_type_s_64 *control, struct snls_inform_type_s_64 *inform);
 
 // C interface for EXPO
 struct expo_control_type_s {
@@ -8308,246 +9094,6 @@ void expo_information_s(void **data, struct expo_inform_type_s *inform, int32_t 
 void expo_information_s_64(void **data, struct expo_inform_type_s_64 *inform, int64_t *status);
 void expo_terminate_s(void **data, struct expo_control_type_s *control, struct expo_inform_type_s *inform);
 void expo_terminate_s_64(void **data, struct expo_control_type_s_64 *control, struct expo_inform_type_s_64 *inform);
-
-// C interface for NREK
-struct nrek_control_type_s {
-    bool f_indexing;
-    int32_t error;
-    int32_t out;
-    int32_t print_level;
-    int32_t eks_max;
-    int32_t it_max;
-    float f;
-    float increase;
-    float stop_residual;
-    bool reorthogonalize;
-    bool s_version_52;
-    bool perturb_c;
-    bool stop_check_all_orders;
-    bool new_weight;
-    bool new_values;
-    bool space_critical;
-    bool deallocate_error_fatal;
-    char linear_solver[31];
-    char linear_solver_for_s[31];
-    char prefix[31];
-    struct sls_control_type_s sls_control;
-    struct sls_control_type_s sls_s_control;
-    struct rqs_control_type_s rqs_control;
-};
-
-struct nrek_control_type_s_64 {
-    bool f_indexing;
-    int64_t error;
-    int64_t out;
-    int64_t print_level;
-    int64_t eks_max;
-    int64_t it_max;
-    float f;
-    float increase;
-    float stop_residual;
-    bool reorthogonalize;
-    bool s_version_52;
-    bool perturb_c;
-    bool stop_check_all_orders;
-    bool new_weight;
-    bool new_values;
-    bool space_critical;
-    bool deallocate_error_fatal;
-    char linear_solver[31];
-    char linear_solver_for_s[31];
-    char prefix[31];
-    struct sls_control_type_s_64 sls_control;
-    struct sls_control_type_s_64 sls_s_control;
-    struct rqs_control_type_s_64 rqs_control;
-};
-
-struct nrek_time_type_s {
-    float total;
-    float assemble;
-    float analyse;
-    float factorize;
-    float solve;
-    float clock_total;
-    float clock_assemble;
-    float clock_analyse;
-    float clock_factorize;
-    float clock_solve;
-};
-
-struct nrek_inform_type_s {
-    int32_t status;
-    int32_t alloc_status;
-    int32_t iter;
-    int32_t n_vec;
-    float obj;
-    float obj_regularized;
-    float x_norm;
-    float multiplier;
-    float weight;
-    float next_weight;
-    float error;
-    char bad_alloc[81];
-    struct nrek_time_type_s time;
-    struct sls_inform_type_s sls_inform;
-    struct sls_inform_type_s sls_s_inform;
-    struct rqs_inform_type_s rqs_inform;
-};
-
-struct nrek_inform_type_s_64 {
-    int64_t status;
-    int64_t alloc_status;
-    int64_t iter;
-    int64_t n_vec;
-    float obj;
-    float obj_regularized;
-    float x_norm;
-    float multiplier;
-    float weight;
-    float next_weight;
-    float error;
-    char bad_alloc[81];
-    struct nrek_time_type_s time;
-    struct sls_inform_type_s_64 sls_inform;
-    struct sls_inform_type_s_64 sls_s_inform;
-    struct rqs_inform_type_s_64 rqs_inform;
-};
-
-void nrek_initialize_s(void **data, struct nrek_control_type_s *control, int32_t *status);
-void nrek_initialize_s_64(void **data, struct nrek_control_type_s_64 *control, int64_t *status);
-void nrek_read_specfile_s(struct nrek_control_type_s *control, char *specfile);
-void nrek_read_specfile_s_64(struct nrek_control_type_s_64 *control, char *specfile);
-void nrek_import_s(struct nrek_control_type_s *control, void **data, int32_t *status, int32_t n, char *H_type, int32_t H_ne, int32_t *H_row, int32_t *H_col, int32_t *H_ptr);
-void nrek_import_s_64(struct nrek_control_type_s_64 *control, void **data, int64_t *status, int64_t n, char *H_type, int64_t H_ne, int64_t *H_row, int64_t *H_col, int64_t *H_ptr);
-void nrek_s_import_s(void **data, int32_t *status, int32_t n, char *S_type, int32_t S_ne, int32_t *S_row, int32_t *S_col, int32_t *S_ptr);
-void nrek_s_import_s_64(void **data, int64_t *status, int64_t n, char *S_type, int64_t S_ne, int64_t *S_row, int64_t *S_col, int64_t *S_ptr);
-void nrek_reset_control_s(struct nrek_control_type_s *control, void **data, int32_t *status);
-void nrek_reset_control_s_64(struct nrek_control_type_s_64 *control, void **data, int64_t *status);
-void nrek_solve_problem_s(void **data, int32_t *status, int32_t n, int32_t H_ne, float *H_val, float *c, float power, float weight, float *x, int32_t S_ne, float *S_val);
-void nrek_solve_problem_s_64(void **data, int64_t *status, int64_t n, int64_t H_ne, float *H_val, float *c, float power, float weight, float *x, int64_t S_ne, float *S_val);
-void nrek_information_s(void **data, struct nrek_inform_type_s *inform, int32_t *status);
-void nrek_information_s_64(void **data, struct nrek_inform_type_s_64 *inform, int64_t *status);
-void nrek_terminate_s(void **data, struct nrek_control_type_s *control, struct nrek_inform_type_s *inform);
-void nrek_terminate_s_64(void **data, struct nrek_control_type_s_64 *control, struct nrek_inform_type_s_64 *inform);
-
-// C interface for TREK
-struct trek_control_type_s {
-    bool f_indexing;
-    int32_t error;
-    int32_t out;
-    int32_t print_level;
-    int32_t eks_max;
-    int32_t it_max;
-    float f;
-    float reduction;
-    float stop_residual;
-    bool reorthogonalize;
-    bool s_version_52;
-    bool perturb_c;
-    bool stop_check_all_orders;
-    bool new_radius;
-    bool new_values;
-    bool space_critical;
-    bool deallocate_error_fatal;
-    char linear_solver[31];
-    char linear_solver_for_s[31];
-    char prefix[31];
-    struct sls_control_type_s sls_control;
-    struct sls_control_type_s sls_s_control;
-    struct trs_control_type_s trs_control;
-};
-
-struct trek_control_type_s_64 {
-    bool f_indexing;
-    int64_t error;
-    int64_t out;
-    int64_t print_level;
-    int64_t eks_max;
-    int64_t it_max;
-    float f;
-    float reduction;
-    float stop_residual;
-    bool reorthogonalize;
-    bool s_version_52;
-    bool perturb_c;
-    bool stop_check_all_orders;
-    bool new_radius;
-    bool new_values;
-    bool space_critical;
-    bool deallocate_error_fatal;
-    char linear_solver[31];
-    char linear_solver_for_s[31];
-    char prefix[31];
-    struct sls_control_type_s_64 sls_control;
-    struct sls_control_type_s_64 sls_s_control;
-    struct trs_control_type_s_64 trs_control;
-};
-
-struct trek_time_type_s {
-    float total;
-    float assemble;
-    float analyse;
-    float factorize;
-    float solve;
-    float clock_total;
-    float clock_assemble;
-    float clock_analyse;
-    float clock_factorize;
-    float clock_solve;
-};
-
-struct trek_inform_type_s {
-    int32_t status;
-    int32_t alloc_status;
-    int32_t iter;
-    int32_t n_vec;
-    float obj;
-    float x_norm;
-    float multiplier;
-    float radius;
-    float next_radius;
-    float error;
-    char bad_alloc[81];
-    struct trek_time_type_s time;
-    struct sls_inform_type_s sls_inform;
-    struct sls_inform_type_s sls_s_inform;
-    struct trs_inform_type_s trs_inform;
-};
-
-struct trek_inform_type_s_64 {
-    int64_t status;
-    int64_t alloc_status;
-    int64_t iter;
-    int64_t n_vec;
-    float obj;
-    float x_norm;
-    float multiplier;
-    float radius;
-    float next_radius;
-    float error;
-    char bad_alloc[81];
-    struct trek_time_type_s time;
-    struct sls_inform_type_s_64 sls_inform;
-    struct sls_inform_type_s_64 sls_s_inform;
-    struct trs_inform_type_s_64 trs_inform;
-};
-
-void trek_initialize_s(void **data, struct trek_control_type_s *control, int32_t *status);
-void trek_initialize_s_64(void **data, struct trek_control_type_s_64 *control, int64_t *status);
-void trek_read_specfile_s(struct trek_control_type_s *control, char *specfile);
-void trek_read_specfile_s_64(struct trek_control_type_s_64 *control, char *specfile);
-void trek_import_s(struct trek_control_type_s *control, void **data, int32_t *status, int32_t n, char *H_type, int32_t H_ne, int32_t *H_row, int32_t *H_col, int32_t *H_ptr);
-void trek_import_s_64(struct trek_control_type_s_64 *control, void **data, int64_t *status, int64_t n, char *H_type, int64_t H_ne, int64_t *H_row, int64_t *H_col, int64_t *H_ptr);
-void trek_s_import_s(void **data, int32_t *status, int32_t n, char *S_type, int32_t S_ne, int32_t *S_row, int32_t *S_col, int32_t *S_ptr);
-void trek_s_import_s_64(void **data, int64_t *status, int64_t n, char *S_type, int64_t S_ne, int64_t *S_row, int64_t *S_col, int64_t *S_ptr);
-void trek_reset_control_s(struct trek_control_type_s *control, void **data, int32_t *status);
-void trek_reset_control_s_64(struct trek_control_type_s_64 *control, void **data, int64_t *status);
-void trek_solve_problem_s(void **data, int32_t *status, int32_t n, int32_t H_ne, float *H_val, float *c, float radius, float *x, int32_t S_ne, float *S_val);
-void trek_solve_problem_s_64(void **data, int64_t *status, int64_t n, int64_t H_ne, float *H_val, float *c, float radius, float *x, int64_t S_ne, float *S_val);
-void trek_information_s(void **data, struct trek_inform_type_s *inform, int32_t *status);
-void trek_information_s_64(void **data, struct trek_inform_type_s_64 *inform, int64_t *status);
-void trek_terminate_s(void **data, struct trek_control_type_s *control, struct trek_inform_type_s *inform);
-void trek_terminate_s_64(void **data, struct trek_control_type_s_64 *control, struct trek_inform_type_s_64 *inform);
 
 // end include guard
 #endif

@@ -103,7 +103,7 @@ which preconditioner to use:
 
 * 0 the preconditioner is chosen automatically (forthcoming, and currently defaults to 1).
 
-* 1 $A$ is replaced by the diagonal, $P$ = diag( max($A$, .min_diagonal ) ).
+* 1 $A$ is replaced by the diagonal, $P$ = diag( max($|$ diag $A|)$, .min_diagonal ) ).
 
 * 2 $A$ is replaced by the band $P$ = band($A$) with semi-bandwidth .semi_bandwidth.
 

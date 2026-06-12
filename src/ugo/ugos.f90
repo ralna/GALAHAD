@@ -6,7 +6,7 @@
    TYPE ( UGO_control_type ) :: control
    TYPE ( UGO_inform_type ) :: inform
    TYPE ( UGO_data_type ) :: data
-   TYPE ( GALAHAD_userdata_type ) :: userdata
+   TYPE ( USERDATA_type ) :: userdata
    EXTERNAL :: FGH
    REAL ( KIND = wp ) :: x_l, x_u, x, f, g, h
    REAL ( KIND = wp ), PARAMETER :: a = 10.0_wp
@@ -34,7 +34,7 @@
    INTEGER, INTENT( OUT ) :: status
    REAL ( KIND = wp ), INTENT( IN ) :: x
    REAL ( KIND = wp ), INTENT( OUT ) :: f, g, h
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp ) :: a, ax, sax, cax
    a = userdata%real( 1 )
    ax = a * x

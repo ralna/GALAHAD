@@ -40,7 +40,7 @@
 
      PRIVATE
      PUBLIC :: AGD_initialize, AGD_read_specfile, AGD_solve,                   &
-               AGD_terminate, NLPT_problem_type, GALAHAD_userdata_type
+               AGD_terminate, NLPT_problem_type, USERDATA_type
 !,        &
 !              AGD_import, AGD_solve_direct, AGD_solve_reverse,                &
 !              AGD_full_initialize, AGD_full_terminate, AGD_reset_control,     &
@@ -347,7 +347,7 @@
        TYPE ( AGD_control_type ) :: agd_control
        TYPE ( AGD_inform_type ) :: agd_inform
        TYPE ( NLPT_problem_type ) :: nlp
-       TYPE ( GALAHAD_userdata_type ) :: userdata
+       TYPE ( USERDATA_type ) :: userdata
      END TYPE AGD_full_data_type
 
    CONTAINS
@@ -764,7 +764,7 @@
      TYPE ( AGD_control_type ), INTENT( IN ) :: control
      TYPE ( AGD_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( AGD_data_type ), INTENT( INOUT ) :: data
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_F, eval_G
 
 !----------------------------------
@@ -777,7 +777,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), INTENT( OUT ) :: f
        REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_F
      END INTERFACE
 
@@ -787,7 +787,7 @@
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( USERDATA_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_G
      END INTERFACE
 

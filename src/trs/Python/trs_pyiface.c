@@ -446,7 +446,7 @@ static PyObject* py_trs_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = trs_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   TRS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -739,7 +739,7 @@ static PyObject* py_trs_solve_problem(PyObject *self, PyObject *args,
     if(py_M_val != NULL) M_val = (double *) PyArray_DATA(py_M_val);
     if(py_A_val != NULL) A_val = (double *) PyArray_DATA(py_A_val);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
     npy_intp mdim[] = {m}; // size of y
     PyArrayObject *py_x =
@@ -764,16 +764,11 @@ static PyObject* py_trs_solve_problem(PyObject *self, PyObject *args,
         return NULL;
 
     // Return x and possibly y
-    PyObject *solve_problem_return;
-
     if(load_a_called) {
-      solve_problem_return = Py_BuildValue("OO", py_x, py_y);
+        return Py_BuildValue("NN", py_x, py_y);
     } else {
-      solve_problem_return = Py_BuildValue("O", py_x);
+        return Py_BuildValue("N", py_x);
     }
-    Py_INCREF(solve_problem_return);
-    return solve_problem_return;
-
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   TRS_INFORMATION   -*-*-*-*-*-*-*-*
@@ -789,7 +784,7 @@ static PyObject* py_trs_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = trs_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   TRS_TERMINATE   -*-*-*-*-*-*-*-*-*-*

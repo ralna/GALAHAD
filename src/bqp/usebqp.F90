@@ -146,7 +146,7 @@
       TYPE ( BQP_data_type ) :: data
       TYPE ( BQP_control_type ) :: BQP_control
       TYPE ( BQP_inform_type ) :: BQP_inform
-      TYPE ( GALAHAD_userdata_type ) :: userdata
+      TYPE ( USERDATA_type ) :: userdata
       TYPE ( QPT_problem_type ) :: prob
       TYPE ( SCALE_trans_type ) :: SCALE_trans
       TYPE ( SCALE_data_type ) :: SCALE_data

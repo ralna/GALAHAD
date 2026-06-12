@@ -23,6 +23,7 @@ clls_inform_type structure
           nbacts::INT
           threads::INT
           obj::T
+          ls_obj::T
           primal_infeasibility::T
           dual_infeasibility::T
           complementary_slackness::T
@@ -157,7 +158,17 @@ the number of threads used
 
 	T obj
 
-the value of the objective function at the best estimate of the solution determined by CLLS_solve
+the value of the regularized objective function $q(x)$ at the best estimate of the solution determined by CLLS_solve
+
+.. index:: pair: variable; ls_obj
+.. _doxid-structclls__inform__type_ls_obj:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	T ls_obj
+
+the value of the least-squares function $\frac{1}{2} \| A_o x - b\|_W^2$ at the best estimate of the solution determined by CLLS_solve
 
 .. index:: pair: variable; primal_infeasibility
 .. _doxid-structclls__inform__type_primal_infeasibility:

@@ -58,8 +58,8 @@
 
    DO data_storage_type = 1, 7
      CALL CQP_initialize( data, control, inform )
-     control%print_level = 3
-     control%fdc_control%print_level = 4
+!    control%print_level = 3
+!    control%fdc_control%print_level = 4
 !    CALL WHICH_sls( control )
      X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
@@ -166,8 +166,8 @@
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
      control%SBLS_control%definite_linear_solver = definite_linear_solver
-control%FDC_control%symmetric_linear_solver = 'ma97 '
-control%SBLS_control%symmetric_linear_solver = 'ma97 '
-control%SBLS_control%definite_linear_solver = 'ma97 '
+!control%FDC_control%symmetric_linear_solver = 'ma97 '
+!control%SBLS_control%symmetric_linear_solver = 'ma97 '
+!control%SBLS_control%definite_linear_solver = 'ma97 '
      END SUBROUTINE WHICH_sls
    END PROGRAM GALAHAD_CQP_interface_test

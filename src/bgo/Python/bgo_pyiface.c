@@ -1,7 +1,7 @@
 //* \file bgo_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:30 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BGO PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -44,8 +44,6 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
-static PyObject *bgo_solve_return = NULL;
-//static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
 static int eval_f(int n, const double x[], double *f, const void *userdata){
@@ -155,8 +153,8 @@ static int eval_h(int n, int ne, const double x[], double hval[], const void *us
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool bgo_update_control(struct bgo_control_type *control,
-                               PyObject *py_options){
+bool bgo_update_control(struct bgo_control_type *control,
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -319,7 +317,8 @@ static bool bgo_update_control(struct bgo_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-static PyObject* bgo_make_options_dict(const struct bgo_control_type *control){
+// NB not static as it is used for nested options within other Python interfaces
+PyObject* bgo_make_options_dict(const struct bgo_control_type *control){
     PyObject *py_options = PyDict_New();
 
     PyDict_SetItemString(py_options, "error",
@@ -393,7 +392,8 @@ static PyObject* bgo_make_time_dict(const struct bgo_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* bgo_make_inform_dict(const struct bgo_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* bgo_make_inform_dict(const struct bgo_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     // Set int inform entries
@@ -447,7 +447,7 @@ static PyObject* py_bgo_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = bgo_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 
 }
 
@@ -598,9 +598,7 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Return x and g
-    bgo_solve_return = Py_BuildValue("OO", py_x, py_g);
-    Py_XINCREF(bgo_solve_return);
-    return bgo_solve_return;
+    return Py_BuildValue("ON", py_x, py_g);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BGO_INFORMATION   -*-*-*-*-*-*-*-*
@@ -616,7 +614,7 @@ static PyObject* py_bgo_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = bgo_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BGO_TERMINATE   -*-*-*-*-*-*-*-*-*-*
@@ -634,7 +632,6 @@ static PyObject* py_bgo_terminate(PyObject *self){
     Py_XDECREF(py_eval_f);
     Py_XDECREF(py_eval_g);
     Py_XDECREF(py_eval_h);
-    Py_XDECREF(bgo_solve_return);
     Py_INCREF(Py_None);
     return Py_None;
 }

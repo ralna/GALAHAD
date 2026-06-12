@@ -1,7 +1,7 @@
 //* \file bqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 5.5 - 2026-03-06 AT 13:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -34,8 +34,8 @@ static int status = 0;                   // exit status
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool bqp_update_control(struct bqp_control_type *control,
-                               PyObject *py_options){
+bool bqp_update_control(struct bqp_control_type *control,
+                        PyObject *py_options){
 
     // Use C defaults if Python options not passed
     if(!py_options) return true;
@@ -323,7 +323,8 @@ static PyObject* bqp_make_time_dict(const struct bqp_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* bqp_make_inform_dict(const struct bqp_inform_type *inform){
+// NB not static as it is used for nested informs within other Python interfaces
+PyObject* bqp_make_inform_dict(const struct bqp_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     // Set dictionaries from subservient packages
@@ -367,7 +368,7 @@ static PyObject* py_bqp_initialize(PyObject *self){
 
     // Return options Python dictionary
     PyObject *py_options = bqp_make_options_dict(&control);
-    return Py_BuildValue("O", py_options);
+    return Py_BuildValue("N", py_options);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   BQP_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
@@ -491,7 +492,7 @@ static PyObject* py_bqp_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
     x = (double *) PyArray_DATA(py_x);
     z = (double *) PyArray_DATA(py_z);
 
-   // Create NumPy output arrays
+    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
@@ -513,11 +514,7 @@ static PyObject* py_bqp_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
         return NULL;
 
     // Return x, z and x_stat
-    PyObject *solve_qp_return;
-    solve_qp_return = Py_BuildValue("OOO", py_x, py_z, py_x_stat);
-    Py_INCREF(solve_qp_return);
-    return solve_qp_return;
-
+    return Py_BuildValue("OON", py_x, py_z, py_x_stat);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BQP_INFORMATION   -*-*-*-*-*-*-*-*
@@ -533,7 +530,7 @@ static PyObject* py_bqp_information(PyObject *self){
 
     // Return status and inform Python dictionary
     PyObject *py_inform = bqp_make_inform_dict(&inform);
-    return Py_BuildValue("O", py_inform);
+    return Py_BuildValue("N", py_inform);
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BQP_TERMINATE   -*-*-*-*-*-*-*-*-*-*

@@ -13,7 +13,7 @@ extern "C" {   /* To prevent C++ compilers from mangling symbols */
  * Type definitions
  */
 
-#ifdef SinglePrecision
+#if defined(SinglePrecision) || defined(REAL_32)
     typedef float  GalahadReal;    /* Single precision real numbers */
 #define     AmplCast    (double)   /* Used to cast single to double */
 #define     RealCast    (float)    /* Used to cast back to single   */
@@ -84,28 +84,28 @@ extern "C" {   /* To prevent C++ compilers from mangling symbols */
 #define WRAP_USE_LANCELOT FUNDERSCORE(wrap_use_lancelot)
 #define WRAP_USE_FILTRANE FUNDERSCORE(wrap_use_filtrane)
 
-#ifdef QPA
+#if defined(QPA) || defined(GALAHAD_AMPL)
     Cextern void WRAP_USE_QPA( void (*fn)() );
 #endif
-#ifdef QPB
+#if defined(QPB) || defined(GALAHAD_AMPL)
     Cextern void WRAP_USE_QPB( void (*fn)() );
 #endif
-#ifdef QPC
+#if defined(QPC) || defined(GALAHAD_AMPL)
     Cextern void WRAP_USE_QPC( void (*fn)() );
 #endif
-#ifdef CQP
+#if defined(CQP) || defined(GALAHAD_AMPL)
     Cextern void WRAP_USE_CQP( void (*fn)() );
 #endif
-#ifdef QP
+#if defined(QP) || defined(GALAHAD_AMPL)
     Cextern void WRAP_USE_QP( void (*fn)() );
 #endif
-#ifdef PRESOLVE
+#if defined(PRESOLVE) || defined(GALAHAD_AMPL)
     Cextern void WRAP_USE_PRESOLVE( void (*fn)() );
 #endif
-#ifdef LANCELOT
+#if defined(LANCELOT) || defined(GALAHAD_AMPL)
     Cextern void WRAP_USE_LANCELOT( void (*fn)() );
 #endif
-#ifdef FILTRANE
+#if defined(FILTRANE) || defined(GALAHAD_AMPL)
     Cextern void WRAP_USE_FILTRANE( void (*fn)() );
 #endif
 
@@ -117,28 +117,28 @@ extern "C" {   /* To prevent C++ compilers from mangling symbols */
  * wrappers above and gateways in galahad.c
  */
 
-#ifdef QPA
+#if defined(QPA) || defined(GALAHAD_AMPL)
     void (*USE_QPA)();       /* Function pointer to USE_QPA( )  */
 #endif
-#ifdef QPB
+#if defined(QPB) || defined(GALAHAD_AMPL)
     void (*USE_QPB)();       /* Function pointer to USE_QPB( )  */
 #endif
-#ifdef QPC
+#if defined(QPC) || defined(GALAHAD_AMPL)
     void (*USE_QPC)();       /* Function pointer to USE_QPC( )  */
 #endif
-#ifdef CQP
+#if defined(CQP) || defined(GALAHAD_AMPL)
     void (*USE_CQP)();       /* Function pointer to USE_CQP( )  */
 #endif
-#ifdef QP
+#if defined(QP) || defined(GALAHAD_AMPL)
     void (*USE_QP)();        /* Function pointer to USE_QP( )  */
 #endif
-#ifdef PRESOLVE
+#if defined(PRESOLVE) || defined(GALAHAD_AMPL)
     void (*USE_PRESOLVE)();  /* Function pointer to USE_PRESOLVE( )  */
 #endif
-#ifdef LANCELOT
+#if defined(LANCELOT) || defined(GALAHAD_AMPL)
     void (*USE_LANCELOT)();  /* Function pointer to USE_LANCELOT( ) */
 #endif
-#ifdef FILTRANE
+#if defined(FILTRANE) || defined(GALAHAD_AMPL)
     void (*USE_FILTRANE)();  /* Function pointer to USE_FILTRANE( ) */
 #endif
 
