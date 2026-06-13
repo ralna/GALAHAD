@@ -28,10 +28,15 @@ jobs:
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
           echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
 
-      - name: Cross-compilation of GALAHAD -- x86_64-linux-gnu-libgfortran5
+      - name: Cross-compilation of GALAHAD -- Int32 -- x86_64-linux-gnu-libgfortran5
         run: |
           julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs.jl x86_64-linux-gnu-libgfortran5 --verbose
+          julia --color=no .github/julia/build_tarballs_int32.jl x86_64-linux-gnu-libgfortran5 --verbose
+
+      - name: Cross-compilation of GALAHAD -- Int64 -- x86_64-linux-gnu-libgfortran5
+        run: |
+          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=no .github/julia/build_tarballs_int64.jl x86_64-linux-gnu-libgfortran5 --verbose
 
       - name: Archive artifact
         run: julia --color=no .github/julia/generate_binaries.jl
@@ -63,10 +68,15 @@ jobs:
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
           echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
 
-      - name: Cross-compilation of GALAHAD -- aarch64-linux-gnu-libgfortran5
+      - name: Cross-compilation of GALAHAD -- Int32 -- aarch64-linux-gnu-libgfortran5
         run: |
           julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs.jl aarch64-linux-gnu-libgfortran5 --verbose
+          julia --color=no .github/julia/build_tarballs_int32.jl aarch64-linux-gnu-libgfortran5 --verbose
+
+      - name: Cross-compilation of GALAHAD -- Int64 -- aarch64-linux-gnu-libgfortran5
+        run: |
+          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=no .github/julia/build_tarballs_int64.jl aarch64-linux-gnu-libgfortran5 --verbose
 
       - name: Archive artifact
         run: julia --color=no .github/julia/generate_binaries.jl
@@ -98,10 +108,16 @@ jobs:
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
           echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
 
-      - name: Cross-compilation of GALAHAD -- x86_64-w64-mingw32-libgfortran5
+      - name: Cross-compilation of GALAHAD -- Int32 -- x86_64-w64-mingw32-libgfortran5
         run: |
           julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs.jl x86_64-w64-mingw32-libgfortran5 --verbose
+          julia --color=no .github/julia/build_tarballs_int32.jl x86_64-w64-mingw32-libgfortran5 --verbose
+
+      - name: Cross-compilation of GALAHAD -- Int64 -- x86_64-w64-mingw32-libgfortran5
+        run: |
+          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=no .github/julia/build_tarballs_int64.jl x86_64-w64-mingw32-libgfortran5 --verbose
+
       - name: Archive artifact
         run: julia --color=no .github/julia/generate_binaries.jl
 
@@ -132,10 +148,15 @@ jobs:
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
           echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
 
-      - name: Cross-compilation of GALAHAD -- x86_64-apple-darwin-libgfortran5
+      - name: Cross-compilation of GALAHAD -- Int32 -- x86_64-apple-darwin-libgfortran5
         run: |
           julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs.jl x86_64-apple-darwin-libgfortran5 --verbose
+          julia --color=no .github/julia/build_tarballs_int32.jl x86_64-apple-darwin-libgfortran5 --verbose
+
+      - name: Cross-compilation of GALAHAD -- Int64 -- x86_64-apple-darwin-libgfortran5
+        run: |
+          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=no .github/julia/build_tarballs_int64.jl x86_64-apple-darwin-libgfortran5 --verbose
 
       - name: Archive artifact
         run: julia --color=no .github/julia/generate_binaries.jl
@@ -167,10 +188,15 @@ jobs:
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
           echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
 
-      - name: Cross-compilation of GALAHAD -- aarch64-apple-darwin-libgfortran5
+      - name: Cross-compilation of GALAHAD -- Int32 -- aarch64-apple-darwin-libgfortran5
         run: |
           julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs.jl aarch64-apple-darwin-libgfortran5 --verbose
+          julia --color=no .github/julia/build_tarballs_int32.jl aarch64-apple-darwin-libgfortran5 --verbose
+
+      - name: Cross-compilation of GALAHAD -- Int64 -- aarch64-apple-darwin-libgfortran5
+        run: |
+          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=no .github/julia/build_tarballs_int64.jl aarch64-apple-darwin-libgfortran5 --verbose
 
       - name: Archive artifact
         run: julia --color=no .github/julia/generate_binaries.jl
