@@ -7,7 +7,28 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
+  check_pypi:
+    runs-on: ubuntu-latest
+    outputs:
+      should_build: ${{ steps.check.outputs.should_build }}
+
+    steps:
+      - id: check
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          if curl -fsSL https://pypi.org/pypi/galahad-optrove/json | \
+             jq -e ".releases[\"$VERSION\"]" > /dev/null; then
+            echo "Version $VERSION already exists on PyPI"
+            echo "should_build=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Version $VERSION not found on PyPI"
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+          fi
+
   build_wheels:
+    needs: check_pypi
+    if: needs.check_pypi.outputs.should_build == 'true'
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -62,6 +83,8 @@ jobs:
           path: ./wheelhouse/*.whl
 
   build_sdist:
+    needs: check_pypi
+    if: needs.check_pypi.outputs.should_build == 'true'
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
@@ -76,7 +99,8 @@ jobs:
           path: dist/*.tar.gz
 
   upload_pypi:
-    needs: [build_wheels, build_sdist]
+    needs: [check_pypi, build_wheels, build_sdist]
+    if: needs.check_pypi.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4

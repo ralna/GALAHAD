@@ -32,6 +32,10 @@ for (platform, libdir, ext) in platforms
       run(`tar -xzf products/$platform/deps.tar.gz -C products/$platform`)
 
       # Copy the license of each dependency
+      if !isdir("products/$platform/share")
+        mkdir("products/$platform/share")
+        mkdir("products/$platform/share/licenses")
+      end
       for folder in readdir("products/$platform/deps/licenses")
         cp("products/$platform/deps/licenses/$folder", "products/$platform/share/licenses/$folder")
       end
@@ -61,6 +65,7 @@ for (platform, libdir, ext) in platforms
       end
 
       # Remove the libraries that are not dependencies of GALAHAD
+      isdir("products/$platform/$libdir/metis") && rm("products/$platform/$libdir/metis", recursive=true)
       isfile("products/$platform/$libdir/libhsl.$ext") && rm("products/$platform/$libdir/libhsl.$ext")
       isfile("products/$platform/$libdir/libcmumps.$ext") && rm("products/$platform/$libdir/libcmumps.$ext")
       isfile("products/$platform/$libdir/libzmumps.$ext") && rm("products/$platform/$libdir/libzmumps.$ext")
@@ -70,6 +75,7 @@ for (platform, libdir, ext) in platforms
       isfile("products/$platform/lib/libcutest_single.a") && rm("products/$platform/lib/libcutest_single.a")
       isfile("products/$platform/lib/libcutest_double.a") && rm("products/$platform/lib/libcutest_double.a")
       isfile("products/$platform/lib/libcutest_quadruple.a") && rm("products/$platform/lib/libcutest_quadruple.a")
+      isfile("products/$platform/lib/libmetis.dll.a") && rm("products/$platform/lib/libmetis.dll.a")
       for file in readdir("products/$platform/$libdir")
         if startswith(file, "libasan") || startswith(file, "libubsan") || startswith(file, "libtsan") || startswith(file, "libhwasan") || startswith(file, "liblsan")
           rm("products/$platform/$libdir/$file")

@@ -77,7 +77,8 @@ make_args+=(OPTF="-O3"
             LIBBLAS="-L${libdir} -lopenblas"
             LAPACK="-L${libdir} -lopenblas")
 
-make -j${nproc} sshared dshared "${make_args[@]}"
+make sshared "${make_args[@]}"
+make dshared "${make_args[@]}"
 
 mkdir ${includedir}/libseq
 cp include/*.h ${includedir}
@@ -94,7 +95,7 @@ else
 fi
 
 QUADRUPLE="true"
-if [[ "${target}" == *arm* ]] || [[ "${target}" == *aarch64-linux* ]] || [[ "${target}" == *aarch64-unknown-freebsd* ]] || [[ "${target}" == *powerpc64le-linux-gnu* ]] || [[ "${target}" == *riscv64* ]]; then
+if [[ "${target}" == *arm* ]] || [[ "${target}" == *aarch64-apple-darwin* ]] || [[ "${target}" == *aarch64-linux* ]] || [[ "${target}" == *aarch64-unknown-freebsd* ]] || [[ "${target}" == *powerpc64le-linux-gnu* ]] || [[ "${target}" == *riscv64* ]]; then
     QUADRUPLE="false"
 fi
 
@@ -107,6 +108,7 @@ meson setup builddir_int32 --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
                            -Ddouble=true \
                            -Dquadruple=$QUADRUPLE \
                            -Dint64=false \
+                           -Dexamples=false \
                            -Dtests=false \
                            -Dbinaries=true \
                            -Dlibhsl=hsl_subset \
@@ -130,6 +132,7 @@ meson setup builddir_int64 --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
                            -Ddouble=true \
                            -Dquadruple=$QUADRUPLE \
                            -Dint64=true \
+                           -Dexamples=false \
                            -Dtests=false \
                            -Dbinaries=false \
                            -Dlibhsl=hsl_subset_64 \
@@ -161,11 +164,12 @@ products = [
 dependencies = [
     HostBuildDependency(PackageSpec(name="Ninja_jll", uuid="76642167-d241-5cee-8c94-7a494e8cb7b7")),
     Dependency(PackageSpec(name="CompilerSupportLibraries_jll", uuid="e66e0078-7015-5450-92f7-15fbd957f2ae")),
+    Dependency(PackageSpec(name="METIS_jll", uuid="d00139f3-1899-568f-a2f0-47f597d42d70")),
     Dependency(PackageSpec(name="OpenBLAS32_jll", uuid="656ef2d0-ae68-5445-9ca0-591084a874a2")),
     Dependency(PackageSpec(name="OpenBLAS_jll", uuid="4536629a-c528-5b80-bd46-f80d51c5b363")),
     Dependency(PackageSpec(name="Hwloc_jll", uuid="e33a78d0-f292-5ffc-b300-72abe9b543c8")),
     Dependency(PackageSpec(name="HSL_jll", uuid="017b0a0e-03f4-516a-9b91-836bbd1904dd"), compat="4.0.5"),
-    Dependency(PackageSpec(name="CUTEst_jll", uuid="bb5f6f25-f23d-57fd-8f90-3ef7bad1d825"), compat="2.6.0"),
+    Dependency(PackageSpec(name="CUTEst_jll", uuid="bb5f6f25-f23d-57fd-8f90-3ef7bad1d825"), compat="2.7.0"),
 ]
 
 # Build the tarballs, and possibly a `build.jl` as well.
