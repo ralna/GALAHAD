@@ -2,14 +2,27 @@ name: Release
 
 on:
   push:
-    # Sequence of patterns matched against refs/tags
     tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v2023.11.15
+      - 'v*'
 
 jobs:
-  build-linux-x64:
-    name: GALAHAD -- Linux (x86_64) -- Release ${{ github.ref_name }}
+  build:
+    name: Release ${{ github.ref_name }} -- GALAHAD -- ${{ matrix.platform }} -- ${{ matrix.variant }}
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - aarch64-apple-darwin-libgfortran5
+          - aarch64-linux-gnu-libgfortran5
+          - x86_64-apple-darwin-libgfortran5
+          - x86_64-linux-gnu-libgfortran5
+          - x86_64-w64-mingw32-libgfortran5
+        variant:
+          - int32
+          - int64
+
     steps:
       - name: Checkout GALAHAD
         uses: actions/checkout@v4
@@ -20,7 +33,13 @@ jobs:
           version: "1.7"
           arch: x64
 
-      - name: Set the environment variables BINARYBUILDER_AUTOMATIC_APPLE, GALAHAD_RELEASE, GALAHAD_COMMIT
+      - name: Cache Julia packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.julia
+          key: julia-${{ runner.os }}-1.7-binarybuilder
+
+      - name: Set environment variables
         shell: bash
         run: |
           echo "BINARYBUILDER_AUTOMATIC_APPLE=true" >> $GITHUB_ENV
@@ -28,28 +47,26 @@ jobs:
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
           echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
 
-      - name: Cross-compilation of GALAHAD -- Int32 -- x86_64-linux-gnu-libgfortran5
+      - name: Install BinaryBuilder
         run: |
           julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs_int32.jl x86_64-linux-gnu-libgfortran5 --verbose
 
-      - name: Cross-compilation of GALAHAD -- Int64 -- x86_64-linux-gnu-libgfortran5
+      - name: Build
         run: |
-          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs_int64.jl x86_64-linux-gnu-libgfortran5 --verbose
+          julia --color=no .github/julia/build_tarballs_${{ matrix.variant }}.jl \
+            ${{ matrix.platform }} --verbose
 
-      - name: Archive artifact
-        run: julia --color=no .github/julia/generate_binaries.jl
-
-      - name: Upload artifact
+      - name: Upload BinaryBuilder tarball
         uses: actions/upload-artifact@v4
         with:
-          name: GALAHAD_binaries.${{ github.ref_name }}.x86_64-linux-gnu-libgfortran5.tar.gz
-          path: ./GALAHAD_binaries.${{ github.ref_name }}.x86_64-linux-gnu-libgfortran5.tar.gz
+          name: ${{ matrix.platform }}-${{ matrix.variant }}
+          path: products/*.tar.gz
 
-  build-linux-aarch64:
-    name: GALAHAD -- Linux (aarch64) -- Release ${{ github.ref_name }}
+  package:
+    name: Package binaries
     runs-on: ubuntu-latest
+    needs: build
+
     steps:
       - name: Checkout GALAHAD
         uses: actions/checkout@v4
@@ -60,206 +77,46 @@ jobs:
           version: "1.7"
           arch: x64
 
-      - name: Set the environment variables BINARYBUILDER_AUTOMATIC_APPLE, GALAHAD_RELEASE, GALAHAD_COMMIT
+      - name: Set environment variables
         shell: bash
         run: |
-          echo "BINARYBUILDER_AUTOMATIC_APPLE=true" >> $GITHUB_ENV
           echo "GALAHAD_RELEASE=${{ github.ref_name }}" >> $GITHUB_ENV
-          echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
-          echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
 
-      - name: Cross-compilation of GALAHAD -- Int32 -- aarch64-linux-gnu-libgfortran5
-        run: |
-          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs_int32.jl aarch64-linux-gnu-libgfortran5 --verbose
-
-      - name: Cross-compilation of GALAHAD -- Int64 -- aarch64-linux-gnu-libgfortran5
-        run: |
-          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs_int64.jl aarch64-linux-gnu-libgfortran5 --verbose
-
-      - name: Archive artifact
-        run: julia --color=no .github/julia/generate_binaries.jl
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: GALAHAD_binaries.${{ github.ref_name }}.aarch64-linux-gnu-libgfortran5.tar.gz
-          path: ./GALAHAD_binaries.${{ github.ref_name }}.aarch64-linux-gnu-libgfortran5.tar.gz
-
-  build-windows-x64:
-    name: GALAHAD -- Windows (x86_64) -- Release ${{ github.ref_name }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout GALAHAD
-        uses: actions/checkout@v4
-
-      - name: Install Julia
-        uses: julia-actions/setup-julia@v2
-        with:
-          version: "1.7"
-          arch: x64
-
-      - name: Set the environment variables BINARYBUILDER_AUTOMATIC_APPLE, GALAHAD_RELEASE, GALAHAD_COMMIT
-        shell: bash
-        run: |
-          echo "BINARYBUILDER_AUTOMATIC_APPLE=true" >> $GITHUB_ENV
-          echo "GALAHAD_RELEASE=${{ github.ref_name }}" >> $GITHUB_ENV
-          echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
-          echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
-
-      - name: Cross-compilation of GALAHAD -- Int32 -- x86_64-w64-mingw32-libgfortran5
-        run: |
-          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs_int32.jl x86_64-w64-mingw32-libgfortran5 --verbose
-
-      - name: Cross-compilation of GALAHAD -- Int64 -- x86_64-w64-mingw32-libgfortran5
-        run: |
-          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs_int64.jl x86_64-w64-mingw32-libgfortran5 --verbose
-
-      - name: Archive artifact
-        run: julia --color=no .github/julia/generate_binaries.jl
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: GALAHAD_binaries.${{ github.ref_name }}.x86_64-w64-mingw32-libgfortran5.zip
-          path: ./GALAHAD_binaries.${{ github.ref_name }}.x86_64-w64-mingw32-libgfortran5.zip
-
-  build-mac-x64:
-    name: GALAHAD -- macOS (x86_64) -- Release ${{ github.ref_name }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout GALAHAD
-        uses: actions/checkout@v4
-
-      - name: Install Julia
-        uses: julia-actions/setup-julia@v2
-        with:
-          version: "1.7"
-          arch: x64
-
-      - name: Set the environment variables BINARYBUILDER_AUTOMATIC_APPLE, GALAHAD_RELEASE, GALAHAD_COMMIT
-        shell: bash
-        run: |
-          echo "BINARYBUILDER_AUTOMATIC_APPLE=true" >> $GITHUB_ENV
-          echo "GALAHAD_RELEASE=${{ github.ref_name }}" >> $GITHUB_ENV
-          echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
-          echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
-
-      - name: Cross-compilation of GALAHAD -- Int32 -- x86_64-apple-darwin-libgfortran5
-        run: |
-          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs_int32.jl x86_64-apple-darwin-libgfortran5 --verbose
-
-      - name: Cross-compilation of GALAHAD -- Int64 -- x86_64-apple-darwin-libgfortran5
-        run: |
-          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs_int64.jl x86_64-apple-darwin-libgfortran5 --verbose
-
-      - name: Archive artifact
-        run: julia --color=no .github/julia/generate_binaries.jl
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: GALAHAD_binaries.${{ github.ref_name }}.x86_64-apple-darwin-libgfortran5.tar.gz
-          path: ./GALAHAD_binaries.${{ github.ref_name }}.x86_64-apple-darwin-libgfortran5.tar.gz
-
-  build-mac-aarch64:
-    name: GALAHAD -- macOS (aarch64) -- Release ${{ github.ref_name }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout GALAHAD
-        uses: actions/checkout@v4
-
-      - name: Install Julia
-        uses: julia-actions/setup-julia@v2
-        with:
-          version: "1.7"
-          arch: x64
-
-      - name: Set the environment variables BINARYBUILDER_AUTOMATIC_APPLE, GALAHAD_RELEASE, GALAHAD_COMMIT
-        shell: bash
-        run: |
-          echo "BINARYBUILDER_AUTOMATIC_APPLE=true" >> $GITHUB_ENV
-          echo "GALAHAD_RELEASE=${{ github.ref_name }}" >> $GITHUB_ENV
-          echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
-          echo "GALAHAD_URL=https://github.com/${{ github.repository }}.git" >> $GITHUB_ENV
-
-      - name: Cross-compilation of GALAHAD -- Int32 -- aarch64-apple-darwin-libgfortran5
-        run: |
-          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs_int32.jl aarch64-apple-darwin-libgfortran5 --verbose
-
-      - name: Cross-compilation of GALAHAD -- Int64 -- aarch64-apple-darwin-libgfortran5
-        run: |
-          julia --color=no -e 'using Pkg; Pkg.add("BinaryBuilder")'
-          julia --color=no .github/julia/build_tarballs_int64.jl aarch64-apple-darwin-libgfortran5 --verbose
-
-      - name: Archive artifact
-        run: julia --color=no .github/julia/generate_binaries.jl
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: GALAHAD_binaries.${{ github.ref_name }}.aarch64-apple-darwin-libgfortran5.tar.gz
-          path: ./GALAHAD_binaries.${{ github.ref_name }}.aarch64-apple-darwin-libgfortran5.tar.gz
-
-  release:
-    name: Create Release and Upload Binaries
-    needs: [build-windows-x64, build-linux-x64, build-linux-aarch64, build-mac-x64, build-mac-aarch64]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout GALAHAD
-        uses: actions/checkout@v4
-
-      - name: Download artifacts
+      - name: Download all tarballs
         uses: actions/download-artifact@v4
         with:
-          path: .
+          path: products
+          merge-multiple: true
 
-      - name: Create GitHub Release
+      - name: Show downloaded tarballs
+        run: |
+          find products -type f | sort
+
+      - name: Generate final binary archives
+        run: |
+          julia --color=no .github/julia/generate_binaries.jl
+
+      - name: Show generated archives
+        run: |
+          ls -lah GALAHAD_binaries.* || true
+
+      - name: Verify generated archives
+        run: |
+          test -f GALAHAD_binaries.${{ github.ref_name }}.x86_64-linux-gnu-libgfortran5.tar.gz
+          test -f GALAHAD_binaries.${{ github.ref_name }}.aarch64-linux-gnu-libgfortran5.tar.gz
+          test -f GALAHAD_binaries.${{ github.ref_name }}.x86_64-apple-darwin-libgfortran5.tar.gz
+          test -f GALAHAD_binaries.${{ github.ref_name }}.aarch64-apple-darwin-libgfortran5.tar.gz
+          test -f GALAHAD_binaries.${{ github.ref_name }}.x86_64-w64-mingw32-libgfortran5.zip
+
+      - name: Create GitHub Release and upload assets
         run: |
           gh release create ${{ github.ref_name }} \
+            GALAHAD_binaries.${{ github.ref_name }}.x86_64-linux-gnu-libgfortran5.tar.gz#GALAHAD.${{ github.ref_name }}.linux.x86_64.tar.gz \
+            GALAHAD_binaries.${{ github.ref_name }}.aarch64-linux-gnu-libgfortran5.tar.gz#GALAHAD.${{ github.ref_name }}.linux.aarch64.tar.gz \
+            GALAHAD_binaries.${{ github.ref_name }}.x86_64-apple-darwin-libgfortran5.tar.gz#GALAHAD.${{ github.ref_name }}.mac.x86_64.tar.gz \
+            GALAHAD_binaries.${{ github.ref_name }}.aarch64-apple-darwin-libgfortran5.tar.gz#GALAHAD.${{ github.ref_name }}.mac.aarch64.tar.gz \
+            GALAHAD_binaries.${{ github.ref_name }}.x86_64-w64-mingw32-libgfortran5.zip#GALAHAD.${{ github.ref_name }}.windows.x86_64.zip \
             --title "${{ github.ref_name }}" \
-            --notes "" \
-            --verify-tag
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Linux (x86_64) artifact
-        run: |
-          gh release upload ${{ github.ref_name }} \
-            GALAHAD_binaries.${{ github.ref_name }}.x86_64-linux-gnu-libgfortran5.tar.gz/GALAHAD_binaries.${{ github.ref_name }}.x86_64-linux-gnu-libgfortran5.tar.gz#GALAHAD.${{ github.ref_name }}.linux.x86_64.tar.gz
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Linux (aarch64) artifact
-        run: |
-          gh release upload ${{ github.ref_name }} \
-            GALAHAD_binaries.${{ github.ref_name }}.aarch64-linux-gnu-libgfortran5.tar.gz/GALAHAD_binaries.${{ github.ref_name }}.aarch64-linux-gnu-libgfortran5.tar.gz#GALAHAD.${{ github.ref_name }}.linux.aarch64.tar.gz
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Mac (x86_64) artifact
-        run: |
-          gh release upload ${{ github.ref_name }} \
-            GALAHAD_binaries.${{ github.ref_name }}.x86_64-apple-darwin-libgfortran5.tar.gz/GALAHAD_binaries.${{ github.ref_name }}.x86_64-apple-darwin-libgfortran5.tar.gz#GALAHAD.${{ github.ref_name }}.mac.x86_64.tar.gz
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Mac (aarch64) artifact
-        run: |
-          gh release upload ${{ github.ref_name }} \
-            GALAHAD_binaries.${{ github.ref_name }}.aarch64-apple-darwin-libgfortran5.tar.gz/GALAHAD_binaries.${{ github.ref_name }}.aarch64-apple-darwin-libgfortran5.tar.gz#GALAHAD.${{ github.ref_name }}.mac.aarch64.tar.gz
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Windows (x86_64) artifact
-        run: |
-          gh release upload ${{ github.ref_name }} \
-            GALAHAD_binaries.${{ github.ref_name }}.x86_64-w64-mingw32-libgfortran5.zip/GALAHAD_binaries.${{ github.ref_name }}.x86_64-w64-mingw32-libgfortran5.zip#GALAHAD.${{ github.ref_name }}.windows.x86_64.zip
+            --notes ""
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

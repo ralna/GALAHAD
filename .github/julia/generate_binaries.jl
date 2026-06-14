@@ -41,13 +41,13 @@ for (platform, libdir, ext) in platforms
           mkdir("products/$platform/share/licenses")
         end
         for folder in readdir("products/$platform/deps/licenses")
-          cp("products/$platform/deps/licenses/$folder", "products/$platform/share/licenses/$folder")
+          cp("products/$platform/deps/licenses/$folder", "products/$platform/share/licenses/$folder", force=true)
         end
         rm("products/$platform/deps/licenses", recursive=true)
 
         # Copy the shared library of each dependency
         for file in readdir("products/$platform/deps")
-          cp("products/$platform/deps/$file", "products/$platform/$libdir/$file")
+          cp("products/$platform/deps/$file", "products/$platform/$libdir/$file", force=true)
         end
 
         # Remove the folder used to unzip the tarball of the dependencies
@@ -59,6 +59,7 @@ for (platform, libdir, ext) in platforms
     end
 
     # Remove the headers that are not related to GALAHAD
+    rm("products/$platform/include/libseq", recursive=true)
     for file in readdir("products/$platform/include")
       if endswith(file, ".h") && !startswith(file, "galahad")
         rm("products/$platform/include/$file")
@@ -104,6 +105,9 @@ for (platform, libdir, ext) in platforms
       end
     end
 
+    # Rename the GALAHAD license directory
+    mv("products/$platform/share/licenses/GALAHAD_int64", "products/$platform/share/licenses/GALAHAD")
+
     # Create the archives *_binaries
     isfile("$(package)_binaries.$version2.$platform.tar.gz") && rm("$(package)_binaries.$version2.$platform.tar.gz")
     isfile("$(package)_binaries.$version2.$platform.zip") && rm("$(package)_binaries.$version2.$platform.zip")
@@ -111,15 +115,15 @@ for (platform, libdir, ext) in platforms
 
     # Create a folder with the version number of the package
     mkdir("$(package)_binaries.$version2")
-    for folder in ("include", "share", "modules", "lib", "bin")
+    for folder in ("include", "share", "modules", "lib", "bin", "deps")
       cp(folder, "$(package)_binaries.$version2/$folder")
     end
 
     cd("$(package)_binaries.$version2")
     if ext == "dll"
-      run(`zip -r --symlinks ../../../$(package)_binaries.$version2.$platform.zip include share modules lib bin`)
+      run(`zip -r --symlinks ../../../$(package)_binaries.$version2.$platform.zip include share modules lib bin deps`)
     else
-      run(`tar -czf ../../../$(package)_binaries.$version2.$platform.tar.gz include share modules lib bin`)
+      run(`tar -czf ../../../$(package)_binaries.$version2.$platform.tar.gz include share modules lib bin deps`)
     end
     cd("../../..")
 
