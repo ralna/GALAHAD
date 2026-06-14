@@ -38,6 +38,7 @@ end
 
 # Utils.
 include("utils.jl")
+include("callbacks.jl")
 
 # packages without dependencies.
 include("wrappers/bsc.jl")

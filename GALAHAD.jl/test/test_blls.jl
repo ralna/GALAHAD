@@ -10,6 +10,7 @@ using Quadmath
 # Custom userdata struct
 mutable struct userdata_blls{T}
   scale::T
+  prec::Function
 end
 
 Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_blls) = pointer_from_objref(userdata)
@@ -22,14 +23,8 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     return INT(0)
   end
 
-  function prec_c(n::INT, v::Ptr{T}, p::Ptr{T}, userdata::Ptr{Cvoid})
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _p = unsafe_wrap(Vector{T}, p, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_blls{T}
-    prec(_v, _p, _userdata)
-  end
-
-  prec_ptr = @eval @cfunction($prec_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+  # Callback
+  callback_prec = galahad_prec(T, INT)
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -37,7 +32,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
   inform = Ref{blls_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_blls{T}(1)
+  userdata = userdata_blls{T}(1, prec)
 
   # Set problem data
   n = INT(10)  # dimension
@@ -179,7 +174,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         blls_solve_given_a(T, INT, data, userdata, status, n, o,
                            Ao_ne, Ao_val, 
                            b, sigma, x_l, x_u, x, z, r, g, x_stat, 
-                           w, x_s, prec_ptr)
+                           w, x_s, callback_prec)
       end
 
       # sparse by rows
@@ -190,7 +185,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         blls_solve_given_a(T, INT, data, userdata, status, n, o,
                            Ao_ne, Ao_val, 
                            b, sigma, x_l, x_u, x, z, r, g, x_stat, 
-                           w, x_s, prec_ptr)
+                           w, x_s, callback_prec)
       end
 
       # dense
@@ -201,7 +196,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         blls_solve_given_a(T, INT, data, userdata, status, n, o,
                            Ao_dense_ne, Ao_dense, 
                            b, sigma, x_l, x_u, x, z, r, g, x_stat, 
-                           w, x_s, prec_ptr)
+                           w, x_s, callback_prec)
       end
 
       # dense by rows
@@ -212,7 +207,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         blls_solve_given_a(T, INT, data, userdata, status, n, o,
                            Ao_dense_ne, Ao_dense, 
                            b, sigma, x_l, x_u, x, z, r, g, x_stat, 
-                           w, x_s, prec_ptr)
+                           w, x_s, callback_prec)
       end
 
       # sparse by columns
@@ -224,7 +219,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         blls_solve_given_a(T, INT, data, userdata, status, n, o,
                            Ao_ne, Ao_by_col_val, 
                            b, sigma, x_l, x_u, x, z, r, g, x_stat, 
-                           w, x_s, prec_ptr)
+                           w, x_s, callback_prec)
       end
 
       # dense by columns
@@ -235,7 +230,7 @@ function test_blls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         blls_solve_given_a(T, INT, data, userdata, status, n, o,
                            Ao_dense_ne, Ao_by_col_dense, 
                            b, sigma, x_l, x_u, x, z, r, g, x_stat, 
-                           w, x_s, prec_ptr)
+                           w, x_s, callback_prec)
       end
 
       blls_information(T, INT, data, inform, status)

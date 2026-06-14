@@ -12,13 +12,18 @@ mutable struct userdata_bnls{T,INT}
   p::T
   flag::INT
   flags::Vector{INT}
+  eval_r::Function
+  eval_jr::Function
+  eval_jr_prod::Function
+  eval_jr_prods::Function
+  eval_jr_sprod::Function
 end
 
 function Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_bnls)
   return pointer_from_objref(userdata)
 end
 
-function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr",dls::String="potr") where {T,INT}
+function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="sytr", dls::String="potr") where {T,INT}
 
   # compute the residuals
   function res(x::Vector{T}, r::Vector{T}, userdata::userdata_bnls{T,INT})
@@ -28,17 +33,6 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     r[4] = x[4] * x[5] - one(T)
     return INT(0)
   end
-
-  function res_c(n::INT, m_r::INT, x::Ptr{T}, r::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _r = unsafe_wrap(Vector{T}, r, m_r)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
-    res(_x, _r, _userdata)
-    return INT(0)
-  end
-
-  res_ptr = @eval @cfunction($res_c, $INT,
-                             ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute the Jacobian
   function jac(x::Vector{T}, jr_val::Vector{T}, userdata::userdata_bnls{T,INT})
@@ -52,18 +46,6 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     jr_val[8] = x[4]
     return INT(0)
   end
-
-  function jac_c(n::INT, m_r::INT, jr_ne::INT, x::Ptr{T}, jr_val::Ptr{T},
-                 userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _jr_val = unsafe_wrap(Vector{T}, jr_val, jr_ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
-    jac(_x, _jr_val, _userdata)
-    return INT(0)
-  end
-
-  jac_ptr = @eval @cfunction($jac_c, $INT,
-                             ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute Jacobian-vector products
   function jacprod(x::Vector{T}, transpose::Bool, v::Vector{T}, p::Vector{T},
@@ -82,20 +64,6 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     end
     return INT(0)
   end
-
-  function jacprod_c(n::INT, m_r::INT, x::Ptr{T}, transpose::Bool,
-                     v::Ptr{T}, p::Ptr{T}, got_jr::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _v = unsafe_wrap(Vector{T}, v, transpose ? m_r : n)
-    _p = unsafe_wrap(Vector{T}, p, transpose ? n : m_r)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
-    jacprod(_x, transpose, _v, _p, got_jr, _userdata)
-    return INT(0)
-  end
-
-  jacprod_ptr = @eval @cfunction($jacprod_c, $INT,
-                                 ($INT, $INT, Ptr{$T}, Bool, Ptr{$T}, Ptr{$T}, 
-                                  Bool, Ptr{Cvoid}))
 
   # compute a sparse product with the Jacobian
   function jacprods(n::INT, m_r::INT, x::Vector{T}, v::Vector{T}, p::Vector{T},
@@ -173,26 +141,6 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     return INT(0)
   end
 
-  function jacprods_c(n::INT, m_r::INT, x::Ptr{T}, v::Ptr{T}, p::Ptr{T},
-                      iv::Ptr{INT}, lvl::INT, lvu::INT, ip::Ptr{INT},
-                      lp::Ptr{INT}, got_jr::Bool, userdata::Ptr{Cvoid})
-    mnm = max(m_r, n)
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _p = unsafe_wrap(Vector{T}, p, m_r)
-    _iv = unsafe_wrap(Vector{INT}, iv, mnm)
-    _ip = unsafe_wrap(Vector{INT}, ip, ip == C_NULL ? 0 : m_r)
-    _lp = unsafe_wrap(Vector{INT}, lp, lp == C_NULL ? 0 : 1)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T,INT}
-    jacprods(n, m_r, _x, _v, _p, _iv, lvl, lvu, _ip, _lp, got_jr, _userdata)
-    return INT(0)
-  end
-
-  jacprods_ptr = @eval @cfunction($jacprods_c, $INT,
-                                  ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, 
-                                   Ptr{$INT}, $INT, $INT, Ptr{$INT}, Ptr{$INT}, 
-                                   Bool, Ptr{Cvoid}))
-
   # compute a sparse product with the Jacobian or its transpose
   function sjacprod(n::INT, m_r::INT, x::Vector{T}, transpose::Bool,
                     v::Vector{T}, p::Vector{T}, free::Vector{INT}, n_free::INT,
@@ -225,21 +173,12 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     return INT(0)
   end
 
-  function sjacprod_c(n::INT, m_r::INT, x::Ptr{T}, transpose::Bool,
-                      v::Ptr{T}, p::Ptr{T}, free::Ptr{INT}, n_free::INT,
-                      got_jr::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _v = unsafe_wrap(Vector{T}, v, transpose ? m_r : n)
-    _p = unsafe_wrap(Vector{T}, p, transpose ? n : m_r)
-    _free = unsafe_wrap(Vector{INT}, free, n_free)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bnls{T}
-    return sjacprod(n, m_r, _x, transpose, _v, _p, _free, n_free, got_jr, 
-                    _userdata)
-  end
-
-  sjacprod_ptr = @eval @cfunction($sjacprod_c, $INT,
-                                  ($INT, $INT, Ptr{$T}, Bool, Ptr{$T}, Ptr{$T},
-                                   Ptr{$INT}, $INT, Bool, Ptr{Cvoid}))
+  # Callbacks
+  callback_r = galahad_r(T, INT)
+  callback_jr = galahad_jr(T, INT)
+  callback_jr_prod = galahad_jr_prod(T, INT)
+  callback_jr_sprod = galahad_jr_sprod(T, INT)
+  callback_jr_prods = galahad_jr_prods(T, INT)
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -275,7 +214,7 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
   p = T(4)
   flag = INT(0)  # current flag value
   flags = zeros(INT, m_r)  # array of flags
-  userdata = userdata_bnls{T,INT}(p, flag, flags)
+  userdata = userdata_bnls{T,INT}(p, flag, flags, res, jac, jacprod, jacprods, sjacprod)
 
   @printf(" fortran sparse matrix indexing\n\n")
 
@@ -318,7 +257,7 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         bnls_import(T, INT, control, data, status, n, m_r, "coordinate", jr_ne,
                     Jr_row, Jr_col, INT(0), C_NULL)
         bnls_solve_with_jac(T, INT, data, userdata, status, n, m_r, x_l, x_u, 
-                            x, z, r, g, x_stat, res_ptr, jr_ne, jac_ptr, w)
+                            x, z, r, g, x_stat, callback_r, jr_ne, callback_jr, w)
       end
 
       # solve when Jacobian products are available via function calls
@@ -328,8 +267,8 @@ function test_bnls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         @reset control[].jacobian_available = INT(1)
         bnls_import_without_jac(T, INT, control, data, status, n, m_r)
         bnls_solve_with_jacprod(T, INT, data, userdata, status, n, m_r, 
-                                x_l, x_u, x, z, r, g, x_stat, res_ptr, 
-                                jacprod_ptr, jacprods_ptr, sjacprod_ptr, w)
+                                x_l, x_u, x, z, r, g, x_stat, callback_r, 
+                                callback_jr_prod, callback_jr_prods, callback_jr_sprod, w)
       end
 
       bnls_information(T, INT, data, inform, status)

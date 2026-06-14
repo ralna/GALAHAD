@@ -12,6 +12,12 @@ mutable struct userdata_bgo{T}
   p::T
   freq::T
   mag::T
+  eval_f::Function
+  eval_g::Function
+  eval_h::Function
+  eval_hprod::Function
+  eval_shprod::Function
+  eval_prec::Function
 end
 
 Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_bgo) = pointer_from_objref(userdata)
@@ -28,15 +34,6 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function fun_c(n::INT, x::Ptr{T}, f::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _f = unsafe_wrap(Vector{T}, f, 1)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bgo{T}
-    fun(_x, _f, _userdata)
-  end
-
-  fun_ptr = @eval @cfunction($fun_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
   # Gradient of the objective
   function grad(x::Vector{T}, g::Vector{T}, userdata::userdata_bgo{T})
     p = userdata.p
@@ -47,15 +44,6 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     g[3] = 2.0 * (x[1] + x[3] + p) + 2.0 * (x[2] + x[3]) + 1.0
     return INT(0)
   end
-
-  function grad_c(n::INT, x::Ptr{T}, g::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _g = unsafe_wrap(Vector{T}, g, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bgo{T}
-    grad(_x, _g, _userdata)
-  end
-
-  grad_ptr = @eval @cfunction($grad_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # Hessian of the objective
   function hess(x::Vector{T}, hval::Vector{T}, userdata::userdata_bgo{T})
@@ -68,15 +56,6 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     hval[4] = 4.0
     return INT(0)
   end
-
-  function hess_c(n::INT, ne::INT, x::Ptr{T}, hval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _hval = unsafe_wrap(Vector{T}, hval, ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bgo{T}
-    hess(_x, _hval, _userdata)
-  end
-
-  hess_ptr = @eval @cfunction($hess_c, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # Dense Hessian
   function hess_dense(x::Vector{T}, hval::Vector{T}, userdata::userdata_bgo{T})
@@ -91,15 +70,6 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function hess_dense_c(n::INT, ne::INT, x::Ptr{T}, hval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _hval = unsafe_wrap(Vector{T}, hval, ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bgo{T}
-    hess_dense(_x, _hval, _userdata)
-  end
-
-  hess_dense_ptr = @eval @cfunction($hess_dense_c, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
   # Hessian-vector product
   function hessprod(x::Vector{T}, u::Vector{T}, v::Vector{T},
                     got_h::Bool, userdata::userdata_bgo{T})
@@ -111,17 +81,6 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     u[3] = u[3] + 2.0 * (v[1] + v[2] + 2.0 * v[3])
     return INT(0)
   end
-
-  function hessprod_c(n::INT, x::Ptr{T}, u::Ptr{T}, v::Ptr{T},
-                      got_h::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _u = unsafe_wrap(Vector{T}, u, n)
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bgo{T}
-    hessprod(_x, _u, _v, got_h, _userdata)
-  end
-
-  hessprod_ptr = @eval @cfunction($hessprod_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Bool, Ptr{Cvoid}))
 
   # Sparse Hessian-vector product
   function shessprod(x::Vector{T}, nnz_v::INT, index_nz_v::Vector{INT},
@@ -165,21 +124,6 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function shessprod_c(n::INT, x::Ptr{T}, nnz_v::INT, index_nz_v::Ptr{INT},
-                       v::Ptr{T}, nnz_u::Ptr{INT}, index_nz_u::Ptr{INT},
-                       u::Ptr{T}, got_h::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _u = unsafe_wrap(Vector{T}, u, n)
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _index_nz_v = unsafe_wrap(Vector{INT}, index_nz_v, nnz_v)
-    _nnz_u = unsafe_wrap(Vector{INT}, nnz_u, 1)
-    _index_nz_u = unsafe_wrap(Vector{INT}, index_nz_u, n)  # Is it right?
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bgo{T}
-    shessprod(_x, nnz_v, _index_nz_v, _v, _nnz_u, _index_nz_u, _u, got_h, _userdata)
-  end
-
-  shessprod_ptr = @eval @cfunction($shessprod_c, $INT, ($INT, Ptr{$T}, $INT, Ptr{$INT}, Ptr{$T}, Ptr{$INT}, Ptr{$INT}, Ptr{$T}, Bool, Ptr{Cvoid}))
-
   # Apply preconditioner
   function prec(x::Vector{T}, u::Vector{T}, v::Vector{T},
                    userdata::userdata_bgo{T})
@@ -188,16 +132,6 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     u[3] = 0.25 * v[3]
     return INT(0)
   end
-
-  function prec_c(n::INT, x::Ptr{T}, u::Ptr{T}, v::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _u = unsafe_wrap(Vector{T}, u, n)
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bgo{T}
-    prec(_x, _u, _v, _userdata)
-  end
-
-  prec_ptr = @eval @cfunction($prec_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # Objective function
   function fun_diag(x::Vector{T}, f::Vector{T}, userdata::userdata_bgo{T})
@@ -208,15 +142,6 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     f[1] = (x[3] + p)^2 + x[2]^2 + mag * cos(freq * x[1]) + x[1] + x[2] + x[3]
     return INT(0)
   end
-
-  function fun_diag_c(n::INT, x::Ptr{T}, f::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _f = unsafe_wrap(Vector{T}, f, 1)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bgo{T}
-    fun_diag(_x, _f, _userdata)
-  end
-
-  fun_diag_ptr = @eval @cfunction($fun_diag_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # Gradient of the objective
   function grad_diag(x::Vector{T}, g::Vector{T}, userdata::userdata_bgo{T})
@@ -230,15 +155,6 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function grad_diag_c(n::INT, x::Ptr{T}, g::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _g = unsafe_wrap(Vector{T}, g, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bgo{T}
-    grad_diag(_x, _g, _userdata)
-  end
-
-  grad_diag_ptr = @eval @cfunction($grad_diag_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
   # Hessian of the objective
   function hess_diag(x::Vector{T}, hval::Vector{T}, userdata::userdata_bgo{T})
     freq = userdata.freq
@@ -249,15 +165,6 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     hval[3] = 2.0
     return INT(0)
   end
-
-  function hess_diag_c(n::INT, ne::INT, x::Ptr{T}, hval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _hval = unsafe_wrap(Vector{T}, hval, ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bgo{T}
-    hess_diag(_x, _hval, _userdata)
-  end
-
-  hess_diag_ptr = @eval @cfunction($hess_diag_c, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # Hessian-vector product
   function hessprod_diag(x::Vector{T}, u::Vector{T}, v::Vector{T},
@@ -271,15 +178,13 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function hessprod_diag_c(n::INT, x::Ptr{T}, u::Ptr{T}, v::Ptr{T}, got_h::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _u = unsafe_wrap(Vector{T}, u, n)
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_bgo{T}
-    hessprod_diag(_x, _u, _v, got_h, _userdata)
-  end
-
-  hessprod_diag_ptr = @eval @cfunction($hessprod_diag_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Bool, Ptr{Cvoid}))
+  # Callbacks
+  callback_f = galahad_f(T, INT)
+  callback_g = galahad_g(T, INT)
+  callback_h = galahad_h(T, INT)
+  callback_hprod = galahad_hprod(T, INT)
+  callback_shprod = galahad_shprod(T, INT)
+  callback_prec = galahad_prec(T, INT)
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -287,7 +192,9 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
   inform = Ref{bgo_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_bgo{T}(4, 10, 1000)
+  userdata = userdata_bgo{T}(4, 10, 1000, fun, grad, hess, hessprod, shessprod, prec)
+  userdata_diag = userdata_bgo{T}(4, 10, 1000, fun_diag, grad_diag, hess_diag, hessprod_diag, shessprod, prec)
+  userdata_dense = userdata_bgo{T}(4, 10, 1000, fun, grad, hess_dense, hessprod, shessprod, prec)
 
   # Set problem data
   n = INT(3)  # dimension
@@ -335,7 +242,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "coordinate", ne, H_row, H_col, C_NULL)
 
         bgo_solve_with_mat(T, INT, data, userdata, status, n, x, g,
-                           ne, fun_ptr, grad_ptr, hess_ptr, hessprod_ptr, prec_ptr)
+                           ne, callback_f, callback_g, callback_h, callback_hprod, callback_prec)
       end
 
       # sparse by rows
@@ -345,7 +252,7 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
 
         bgo_solve_with_mat(T, INT, data, userdata, status, n, x, g,
-                           ne, fun_ptr, grad_ptr, hess_ptr, hessprod_ptr, prec_ptr)
+                           ne, callback_f, callback_g, callback_h, callback_hprod, callback_prec)
       end
 
       # dense
@@ -354,9 +261,9 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         bgo_import(T, INT, control, data, status, n, x_l, x_u,
                    "dense", ne_dense, C_NULL, C_NULL, C_NULL)
 
-        bgo_solve_with_mat(T, INT, data, userdata, status, n, x, g,
-                           ne_dense, fun_ptr, grad_ptr, hess_dense_ptr,
-                           hessprod_ptr, prec_ptr)
+        bgo_solve_with_mat(T, INT, data, userdata_dense, status, n, x, g,
+                           ne_dense, callback_f, callback_g, callback_h,
+                           callback_hprod, callback_prec)
       end
 
       # diagonal
@@ -365,9 +272,9 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
         bgo_import(T, INT, control, data, status, n, x_l, x_u,
                    "diagonal", n, C_NULL, C_NULL, C_NULL)
 
-        bgo_solve_with_mat(T, INT, data, userdata, status, n, x, g,
-                           n, fun_diag_ptr, grad_diag_ptr, hess_diag_ptr,
-                           hessprod_diag_ptr, prec_ptr)
+        bgo_solve_with_mat(T, INT, data, userdata_diag, status, n, x, g,
+                           n, callback_f, callback_g, callback_h,
+                           callback_hprod, callback_prec)
       end
 
       # access by products
@@ -377,8 +284,8 @@ function test_bgo(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "absent", ne, C_NULL, C_NULL, C_NULL)
 
         bgo_solve_without_mat(T, INT, data, userdata, status, n, x, g,
-                              fun_ptr, grad_ptr, hessprod_ptr,
-                              shessprod_ptr, prec_ptr)
+                              callback_f, callback_g, callback_hprod,
+                              callback_shprod, callback_prec)
       end
 
       # Record solution information

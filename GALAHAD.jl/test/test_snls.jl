@@ -10,6 +10,11 @@ using Quadmath
 # Custom userdata struct
 mutable struct userdata_snls{T}
   p::T
+  eval_r::Function
+  eval_jr::Function
+  eval_jr_prod::Function
+  eval_jr_sprod::Function
+  eval_jr_scol::Function
 end
 
 Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_snls) = pointer_from_objref(userdata)
@@ -27,17 +32,6 @@ function test_snls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     return INT(0)
   end
 
-  function res_c(n::INT, m_r::INT, x::Ptr{T}, r::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _r = unsafe_wrap(Vector{T}, r, m_r)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_snls{T}
-    res(_x, _r, _userdata)
-    return INT(0)
-  end
-
-  res_ptr = @eval @cfunction($res_c, $INT, 
-                             ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
   # compute the Jacobian
   function jac(x::Vector{T}, jr_val::Vector{T}, userdata::userdata_snls{T})
     jr_val[1] = x[2]
@@ -50,18 +44,6 @@ function test_snls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     jr_val[8] = x[4]
     return INT(0)
   end
-
-  function jac_c(n::INT, m_r::INT, jr_ne::INT, x::Ptr{T}, jr_val::Ptr{T}, 
-                 userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _jr_val = unsafe_wrap(Vector{T}, jr_val, jr_ne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_snls{T}
-    jac(_x, _jr_val, _userdata)
-    return INT(0)
-  end
-
-  jac_ptr = @eval @cfunction($jac_c, $INT, 
-                             ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute Jacobian-vector products
   function jacprod(x::Vector{T}, transpose::Bool, v::Vector{T}, p::Vector{T},
@@ -80,19 +62,6 @@ function test_snls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     end
     return INT(0)
   end
-
-  function jacprod_c(n::INT, m_r::INT, x::Ptr{T}, transpose::Bool, 
-                   v::Ptr{T}, p::Ptr{T}, got_jr::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _v = unsafe_wrap(Vector{T}, v, transpose ? m_r : n)
-    _p = unsafe_wrap(Vector{T}, p, transpose ? n : m_r)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_snls{T}
-    jacprod(_x, transpose, _v, _p, got_jr, _userdata)
-    return INT(0)
-  end
-
-  jacprod_ptr = @eval @cfunction($jacprod_c, $INT, 
-      ($INT, $INT, Ptr{$T}, Bool, Ptr{$T}, Ptr{$T}, Bool, Ptr{Cvoid}))
 
   # compute the index-th column of the Jacobian
   function jaccol(n::INT, x::Vector{T}, index::INT, 
@@ -115,23 +84,6 @@ function test_snls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     end
     return INT(0)
   end
-
-  function jaccol_c(n::INT, m_r::INT, x::Ptr{T}, index::INT,
-                      val::Ptr{T}, row::Ptr{INT}, nz::Ptr{INT},
-                      got_jr::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _val = unsafe_wrap(Vector{T}, val, n)
-    _row = unsafe_wrap(Vector{INT}, row, n)
-    _nz = unsafe_wrap(Vector{INT}, nz, 1)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_snls{T}
-    jaccol(n, _x, index, _val, _row, _nz, got_jr, _userdata)
-    return INT(0)
-  end
-
-  jaccol_ptr = @eval @cfunction($jaccol_c, $INT, 
-      ($INT, $INT, Ptr{$T}, $INT, Ptr{$T}, Ptr{$INT}, $Ptr{$INT},
-       Bool, Ptr{Cvoid}))
-
 
   # compute a sparse product with the Jacobian
   function sjacprod(n::INT, m_r::INT, x::Vector{T}, transpose::Bool, 
@@ -169,23 +121,14 @@ function test_snls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     return INT(0)
   end
 
-  function sjacprod_c(n::INT, m_r::INT, x::Ptr{T}, transpose::Bool, 
-                      v::Ptr{T}, p::Ptr{T}, free::Ptr{INT}, n_free::INT,
-                      got_jr::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _v = unsafe_wrap(Vector{T}, v, transpose ? m_r : n)
-    _p = unsafe_wrap(Vector{T}, p, transpose ? n : m_r)
-    _free = unsafe_wrap(Vector{INT}, free, n_free)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_snls{T}
-    sjacprod(n, m_r, _x, transpose, _v, _p, _free, n_free, got_jr, _userdata)
-    return INT(0)
-  end
-
-  sjacprod_ptr = @eval @cfunction($sjacprod_c, $INT, 
-      ($INT, $INT, Ptr{$T}, Bool, Ptr{$T}, Ptr{$T}, Ptr{$INT}, $INT,
-       Bool, Ptr{Cvoid}))
-
   # ==================== evaluation functions defined ===================
+
+  # Callbacks
+  callback_r = galahad_r(T, INT)
+  callback_jr = galahad_jr(T, INT)
+  callback_jr_prod = galahad_jr_prod(T, INT)
+  callback_jr_sprod = galahad_jr_sprod(T, INT)
+  callback_jr_scol = galahad_jr_scol(T, INT)
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -193,7 +136,7 @@ function test_snls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
   inform = Ref{snls_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_snls{T}(4)
+  userdata = userdata_snls{T}(4, res, jac, jacprod, sjacprod, jaccol)
 
   # Set problem dimensions
   n = INT(5)  # number of variables
@@ -242,7 +185,7 @@ function test_snls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         snls_import(T, INT, control, data, status, n, m_r, m_c,
                     "coordinate", jr_ne, Jr_row, Jr_col, INT(0), C_NULL, cohort)
         snls_solve_with_jac(T, INT, data, userdata, status, n, m_r, m_c,
-                            x, y, z, r, g, x_stat, res_ptr, jr_ne, jac_ptr, w)
+                            x, y, z, r, g, x_stat, callback_r, jr_ne, callback_jr, w)
       end
 
       # solve when Jacobian products are available via function calls
@@ -251,8 +194,8 @@ function test_snls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         @reset control[].jacobian_available = INT(1)
         snls_import_without_jac(T, INT, control, data, status, n, m_r, m_c, cohort)
         snls_solve_with_jacprod(T, INT, data, userdata, status, n, m_r, m_c,
-                                x, y, z, r, g, x_stat,
-                                res_ptr, jacprod_ptr, jaccol_ptr, sjacprod_ptr, w)
+                                x, y, z, r, g, x_stat, callback_r, callback_jr_prod,
+                                callback_jr_scol, callback_jr_sprod, w)
       end
 
       snls_information(T, INT, data, inform, status)

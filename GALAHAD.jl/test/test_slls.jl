@@ -10,6 +10,7 @@ using Quadmath
 # Custom userdata struct
 mutable struct userdata_slls{T}
   scale::T
+  eval_prec::Function
 end
 
 Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_slls) = pointer_from_objref(userdata)
@@ -22,14 +23,8 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
     return INT(0)
   end
 
-  function prec_c(n::INT, v::Ptr{T}, p::Ptr{T}, userdata::Ptr{Cvoid})
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _p = unsafe_wrap(Vector{T}, p, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_slls{T}
-    prec(_v, _p, _userdata)
-  end
-
-  prec_ptr = @eval @cfunction($prec_c, $INT, ($INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
+  # Callback
+  callback_prec = galahad_prec(T, INT)
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -37,7 +32,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
   inform = Ref{slls_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_slls{T}(1)
+  userdata = userdata_slls{T}(1, prec)
 
   # Set problem data
   n = INT(10)  # dimension
@@ -160,7 +155,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
                     Ao_ne, Ao_row, Ao_col, INT(0), C_NULL, C_NULL)
         slls_solve_given_a(T, INT, data, userdata, status, n, o, m, Ao_ne,
                            Ao_val, b, sigma, x, y, z, r, g, x_stat,
-                           C_NULL, C_NULL, prec_ptr)
+                           C_NULL, C_NULL, callback_prec)
       end
 
       # sparse by rows
@@ -170,7 +165,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
                      Ao_ne, C_NULL, Ao_col, Ao_ptr_ne, Ao_ptr, C_NULL)
         slls_solve_given_a(T, INT, data, userdata, status, n, o, m,
                            Ao_ne, Ao_val, b, sigma, x, y, z, r, g, x_stat,
-                           C_NULL, C_NULL, prec_ptr)
+                           C_NULL, C_NULL, callback_prec)
       end
 
       # dense by rows
@@ -181,7 +176,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         slls_solve_given_a(T, INT, data, userdata, status, n, o, m,
                            Ao_dense_ne, Ao_dense, b, sigma,
                            x, y, z, r, g, x_stat,
-                           C_NULL, C_NULL, prec_ptr)
+                           C_NULL, C_NULL, callback_prec)
       end
 
       # sparse by columns
@@ -192,7 +187,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
                     Ao_by_col_ptr_ne, Ao_by_col_ptr, C_NULL)
         slls_solve_given_a(T, INT, data, userdata, status, n, o, m, Ao_ne,
                            Ao_by_col_val, b, sigma, x, y, z, r, g, x_stat,
-                           C_NULL, C_NULL, prec_ptr)
+                           C_NULL, C_NULL, callback_prec)
       end
 
       # dense by columns
@@ -203,7 +198,7 @@ function test_slls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="
         slls_solve_given_a(T, INT, data, userdata, status, n, o, m,
                            Ao_dense_ne, Ao_by_col_dense,
                            b, sigma, x, y, z, r, g, x_stat,
-                           C_NULL, C_NULL, prec_ptr)
+                           C_NULL, C_NULL, callback_prec)
       end
 
       slls_information(T, INT, data, inform, status)

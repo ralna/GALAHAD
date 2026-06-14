@@ -10,6 +10,12 @@ using Quadmath
 # Custom userdata struct
 mutable struct userdata_nls{T}
   p::T
+  eval_r::Function
+  eval_jr::Function
+  eval_hr::Function
+  eval_jrprod::Function
+  eval_hrprod::Function
+  eval_shrprod::Function
 end
 
 Base.unsafe_convert(::Type{Ptr{Cvoid}}, userdata::userdata_nls) = pointer_from_objref(userdata)
@@ -24,15 +30,6 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function res_c(n::INT, m::INT, x::Ptr{T}, c::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _c = unsafe_wrap(Vector{T}, c, m)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_nls{T}
-    res(_x, _c, _userdata)
-  end
-
-  res_ptr = @eval @cfunction($res_c, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
   # compute the Jacobian
   function jac(x::Vector{T}, jval::Vector{T}, userdata::userdata_nls{T})
     jval[1] = 2.0 * x[1]
@@ -43,15 +40,6 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function jac_c(n::INT, m::INT, jne::INT, x::Ptr{T}, jval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _jval = unsafe_wrap(Vector{T}, jval, jne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_nls{T}
-    jac(_x, _jval, _userdata)
-  end
-
-  jac_ptr = @eval @cfunction($jac_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
   # compute the Hessian
   function hess(x::Vector{T}, y::Vector{T}, hval::Vector{T},
                 userdata::userdata_nls{T})
@@ -59,16 +47,6 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     hval[2] = 2.0 * y[2]
     return INT(0)
   end
-
-  function hess_c(n::INT, m::INT, hne::INT, x::Ptr{T}, y::Ptr{T}, hval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _y = unsafe_wrap(Vector{T}, y, m)
-    _hval = unsafe_wrap(Vector{T}, hval, hne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_nls{T}
-    hess(_x, _y, _hval, _userdata)
-  end
-
-  hess_ptr = @eval @cfunction($hess_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute Jacobian-vector products
   function jacprod(x::Vector{T}, transpose::Bool, u::Vector{T}, v::Vector{T},
@@ -84,16 +62,6 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function jacprod_c(n::INT, m::INT, x::Ptr{T}, transpose::Bool, u::Ptr{T}, v::Ptr{T}, got_j::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _u = unsafe_wrap(Vector{T}, u, transpose ? n : m)
-    _v = unsafe_wrap(Vector{T}, v, transpose ? m : n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_nls{T}
-    jacprod(_x, transpose, _u, _v, got_j, _userdata)
-  end
-
-  jacprod_ptr = @eval @cfunction($jacprod_c, $INT, ($INT, $INT, Ptr{$T}, Bool, Ptr{$T}, Ptr{$T}, Bool, Ptr{Cvoid}))
-
   # compute Hessian-vector products
   function hessprod(x::Vector{T}, y::Vector{T}, u::Vector{T}, v::Vector{T},
                     got_h::Bool, userdata::userdata_nls{T})
@@ -102,17 +70,6 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function hessprod_c(n::INT, m::INT, x::Ptr{T}, y::Ptr{T}, u::Ptr{T}, v::Ptr{T}, got_h::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _y = unsafe_wrap(Vector{T}, y, m)
-    _u = unsafe_wrap(Vector{T}, u, n)
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_nls{T}
-    hessprod(_x, _y, _u, _v, got_h, _userdata)
-  end
-
-  hessprod_ptr = @eval @cfunction($hessprod_c, $INT, ($INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{$T}, Bool, Ptr{Cvoid}))
-
   # compute residual-Hessians-vector products
   function rhessprods(x::Vector{T}, v::Vector{T}, pval::Vector{T},
                       got_h::Bool, userdata::userdata_nls{T})
@@ -120,16 +77,6 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     pval[2] = 2.0 * v[2]
     return INT(0)
   end
-
-  function rhessprods_c(n::INT, m::INT, pne::INT, x::Ptr{T}, v::Ptr{T}, pval::Ptr{T}, got_h::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _pval = unsafe_wrap(Vector{T}, pval, pne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_nls{T}
-    rhessprods(_x, _v, _pval, got_h, _userdata)
-  end
-
-  rhessprods_ptr = @eval @cfunction($rhessprods_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Bool, Ptr{Cvoid}))
 
   # compute the dense Jacobian
   function jac_dense(x::Vector{T}, jval::Vector{T}, userdata::userdata_nls{T})
@@ -142,15 +89,6 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function jac_dense_c(n::INT, m::INT, jne::INT, x::Ptr{T}, jval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _jval = unsafe_wrap(Vector{T}, jval, jne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_nls{T}
-    jac_dense(_x, _jval, _userdata)
-  end
-
-  jac_dense_ptr = @eval @cfunction($jac_dense_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
-
   # compute the dense Hessian
   function hess_dense(x::Vector{T}, y::Vector{T}, hval::Vector{T},
                       userdata::userdata_nls{T})
@@ -159,16 +97,6 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     hval[3] = 2.0 * y[2]
     return INT(0)
   end
-
-  function hess_dense_c(n::INT, m::INT, hne::INT, x::Ptr{T}, y::Ptr{T}, hval::Ptr{T}, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _y = unsafe_wrap(Vector{T}, y, m)
-    _hval = unsafe_wrap(Vector{T}, hval, hne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_nls{T}
-    hess_dense(_x, _y, _hval, _userdata)
-  end
-
-  hess_dense_ptr = @eval @cfunction($hess_dense_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Ptr{Cvoid}))
 
   # compute dense residual-Hessians-vector products
   function rhessprods_dense(x::Vector{T}, v::Vector{T}, pval::Vector{T},
@@ -182,15 +110,13 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
     return INT(0)
   end
 
-  function rhessprods_dense_c(n::INT, m::INT, pne::INT, x::Ptr{T}, v::Ptr{T}, pval::Ptr{T}, got_h::Bool, userdata::Ptr{Cvoid})
-    _x = unsafe_wrap(Vector{T}, x, n)
-    _v = unsafe_wrap(Vector{T}, v, n)
-    _pval = unsafe_wrap(Vector{T}, pval, pne)
-    _userdata = unsafe_pointer_to_objref(userdata)::userdata_nls{T}
-    rhessprods_dense(_x, _v, _pval, got_h, _userdata)
-  end
-
-  rhessprods_dense_ptr = @eval @cfunction($rhessprods_dense_c, $INT, ($INT, $INT, $INT, Ptr{$T}, Ptr{$T}, Ptr{$T}, Bool, Ptr{Cvoid}))
+  # Callbacks
+  callback_r = galahad_r(T, INT)
+  callback_jr = galahad_jr(T, INT)
+  callback_hr = galahad_hr(T, INT)
+  callback_jrprod = galahad_jrprod(T, INT)
+  callback_hrprod = galahad_hrprod(T, INT)
+  callback_shrprod = galahad_shrprod(T, INT)
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -198,7 +124,9 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
   inform = Ref{nls_inform_type{T,INT}}()
 
   # Set user data
-  userdata = userdata_nls{T}(1)
+  userdata = userdata_nls{T}(1, res, jac, hess, jacprod, hessprod, rhessprods)
+  userdata_diag = userdata_nls{T}(1, res, jac, hess, jacprod, hessprod, rhessprods)
+  userdata_dense = userdata_nls{T}(1, res, jac_dense, hess_dense, jacprod, hessprod, rhessprods_dense)
 
   # Set problem data
   n = INT(2)  # variables
@@ -257,8 +185,8 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
         nls_solve_with_mat(T, INT, data, userdata, status,
-                           n, m, x, c, g, res_ptr, j_ne, jac_ptr,
-                           h_ne, hess_ptr, p_ne, rhessprods_ptr)
+                           n, m, x, c, g, callback_r, j_ne, callback_jr,
+                           h_ne, callback_hr, p_ne, callback_shrprod)
       end
 
       # sparse by rows
@@ -270,8 +198,8 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
         nls_solve_with_mat(T, INT, data, userdata, status,
-                           n, m, x, c, g, res_ptr, j_ne, jac_ptr,
-                           h_ne, hess_ptr, p_ne, rhessprods_ptr)
+                           n, m, x, c, g, callback_r, j_ne, callback_jr,
+                           h_ne, callback_hr, p_ne, callback_shrprod)
       end
 
       # dense
@@ -282,9 +210,9 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "dense", h_ne_dense, C_NULL, C_NULL, C_NULL,
                    "dense", p_ne_dense, C_NULL, C_NULL, C_NULL, W)
 
-        nls_solve_with_mat(T, INT, data, userdata, status,
-                           n, m, x, c, g, res_ptr, j_ne_dense, jac_dense_ptr,
-                           h_ne_dense, hess_dense_ptr, p_ne_dense, rhessprods_dense_ptr)
+        nls_solve_with_mat(T, INT, data, userdata_dense, status,
+                           n, m, x, c, g, callback_r, j_ne_dense, callback_jr,
+                           h_ne_dense, callback_hr, p_ne_dense, callback_shrprod)
       end
 
       # diagonal
@@ -295,9 +223,9 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "diagonal", n, C_NULL, C_NULL, C_NULL,
                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
-        nls_solve_with_mat(T, INT, data, userdata, status,
-                           n, m, x, c, g, res_ptr, j_ne, jac_ptr,
-                           n, hess_ptr, p_ne, rhessprods_ptr)
+        nls_solve_with_mat(T, INT, data, userdata_diag, status,
+                           n, m, x, c, g, callback_r, j_ne, callback_jr,
+                           n, callback_hr, p_ne, callback_shrprod)
       end
 
       # access by products
@@ -309,8 +237,8 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                    "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
         nls_solve_without_mat(T, INT, data, userdata, status,
-                              n, m, x, c, g, res_ptr, jacprod_ptr,
-                              hessprod_ptr, p_ne, rhessprods_ptr)
+                              n, m, x, c, g, callback_r, callback_jrprod,
+                              callback_hrprod, p_ne, callback_shrprod)
       end
 
       nls_information(T, INT, data, inform, status)
@@ -558,8 +486,8 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                  "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
       nls_solve_with_mat(T, INT, data, userdata, status,
-                         n, m, x, c, g, res_ptr, j_ne, jac_ptr,
-                         h_ne, hess_ptr, p_ne, rhessprods_ptr)
+                         n, m, x, c, g, callback_r, j_ne, callback_jr,
+                         h_ne, callback_hr, p_ne, callback_shrprod)
 
       nls_information(T, INT, data, inform, status)
 
@@ -599,8 +527,8 @@ function test_nls(::Type{T}, ::Type{INT}; mode::String="reverse", sls::String="s
                  "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
       nls_solve_without_mat(T, INT, data, userdata, status,
-                            n, m, x, c, g, res_ptr, jacprod_ptr,
-                            hessprod_ptr, p_ne, rhessprods_ptr)
+                            n, m, x, c, g, callback_r, callback_jrprod,
+                            callback_hrprod, p_ne, callback_shrprod)
 
       nls_information(T, INT, data, inform, status)
 
