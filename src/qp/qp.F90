@@ -30,7 +30,7 @@
 !     |          c_l <= A x <= c_u                   |
 !     |          x_l <=  x <= x_u                    |
 !     |                                              |
-!     | for some posibly indeinite Hessian H or      |
+!     | for some posibly indefinite Hessian H or     |
 !     | (possibly zero) diagonal matrix W using a    |
 !     | variety of methods. This provides a generic  |
 !     | interface to all GALAHAD QP routines         |
