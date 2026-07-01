@@ -1,0 +1,151 @@
+#  Main body of the installation makefile for any optional HiGHS procedures
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2026-06-30
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  Libraries used
+
+LIBS = -lgalahad $(HIGHS) $(LAPACK) $(BLAS)
+NLIBS = $(LIBS) -lgalahad_problem
+
+#  compilation agenda
+
+BASICZ = blas lapack symbols dummy blas_inter lapack_inter
+
+HIGHSS = $(BASICSZ) $(HILGS)(highs_c_api.o) $(LGS)(highs_interface.o)
+HIGHSD = $(BASICSZ) $(HILGD)(highs_c_api.o) $(LGD)(highs_interface.o)
+HIGHSQ = $(BASICSZ) $(HILGQ)(highs_c_api.o) $(LGQ)(highs_interface.o)
+HIGHSS64 = $(BASICSZ) $(HILGS64)(highs_c_api.o) $(LGS64)(highs_interface.o)
+HIGHSD64 = $(BASICSZ) $(HILGD64)(highs_c_api.o) $(LGD64)(highs_interface.o)
+HIGHSQ64 = $(BASICSZ) $(HILGQ64)(highs_c_api.o) $(LGQ64)(highs_interface.o)
+
+HIGHSST = $(HIGHSS) $(OBJ)/highst.o
+HIGHSDT = $(HIGHSD) $(OBJ)/highst.o
+HIGHSQT = $(HIGHSQ) $(OBJ)/highst.o
+
+RHIGHSST = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
+RHIGHSDT = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
+RHIGHSDQ = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
+
+#  highs
+
+highs_silent: highs_$(PRECIS)
+highs: highs_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(HIGHS) ($(PRECIS) $(SUCC)"
+highs_single: $(HIGHSS)
+	$(RANLIB) $(HILGS)
+highs_double: $(HIGHSD)
+	$(RANLIB) $(HILGD)
+highs_quadruple: $(HIGHSQ)
+	$(RANLIB) $(HILGQ)
+highs_single_64: $(HIGHSS64)
+	$(RANLIB) $(HILGS64)
+highs_double_64: $(HIGHSD64)
+	$(RANLIB) $(HILGD64)
+highs_quadruple_64: $(HIGHSQ64)
+	$(RANLIB) $(HILGQ64)
+
+#  tests
+
+highsdt: $(HIGHSDT)
+	echo " Exhaustive test of subroutine interface to highs"
+	cd ../highs ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_highs \
+                         $(RHIGHSDT)
+#	- ../highs/run_highs > ../highs/highsdt.output 2>&1
+#	cat ../highs/highsdt.output
+	- ../highs/run_highs
+	rm ../highs/run_highs
+
+highsst: $(HIGHSST)
+	echo " Exhaustive test of subroutine interface to highs"
+	cd ../highs ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_highs \
+                         $(RHIGHSST)
+	- ../highs/run_highs > ../highs/highsst.output 2>&1
+	cat ../highs/highsst.output
+	rm ../highs/run_highs
+
+highssq: $(HIGHSQT)
+	echo " Exhaustive test of subroutine interface to highs"
+	cd ../highs ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_highs \
+                         $(RHIGHSQT)
+	- ../highs/run_highs > ../highs/highsqt.output 2>&1
+	cat ../highs/highsqt.output
+	rm ../highs/run_highs
+
+#  blas and lapack generic packages and interfaces
+
+blas:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+symbols:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+dummy:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+blas_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+#  individual compilations
+
+highs_c_api.o: $(HILG)(highs_c_api.o)
+
+$(HILG)(highs_c_api.o): ../../dum/C/highs_c_api.cpp
+	@printf ' %-9s %-15s\t\t' "Compiling" "highs  "
+	$(CP) ../../dum/C/highs_c_api.cpp $(OBJ)/highs_c_api.c
+	$(CP) ../../dum/include/highs_c_api.h $(OBJ)/highs_c_api.h
+	cd $(OBJ); $(CC) -o highs_c_api.o $(CFLAGS) highs_c_api.c
+	cd $(OBJ); $(HIARR) highs_c_api.o ; \
+          $(RM) highs_c_api.c highs_c_api.h highs_c_api.o
+	$(RANLIB) $(HILG)
+	@printf '[ OK ]\n'
+
+highs_interface.o: $(LG)(highs_interface.o)
+
+$(LG)(highs_interface.o): ../highs/highs_interface.F90
+	@printf ' %-9s %-15s\t' "Compiling" "highs_interface  "
+	$(CP) ../highs/highs_interface.F90 \
+           $(OBJ)/highs_interface.F90
+	cd $(OBJ); $(FORTRAN) -o highs_interface.o $(FFLAGS) \
+                      highs_interface.F90
+	cd $(OBJ); $(ARR) highs_interface.o ; \
+          $(RM) highs_interface.F90 highs_interface.o
+	@printf '[ OK ]\n'
+
+#  test programs
+
+highst.o: $(OBJ)/highst.o
+
+$(OBJ)/highst.o: ../highs/highst.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "highst  "
+	$(SED) -f $(SEDS) ../highs/highst.F90 > $(OBJ)/highst.F90
+	cd $(OBJ) ; $(FORTRAN) -o highst.o $(FFLAGSS) highst.F90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(HILG) $(OBJ)/highss.o $(OBJ)/highst.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'

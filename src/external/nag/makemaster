@@ -1,0 +1,137 @@
+#  Main body of the installation makefile for any optional NAG procedures
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2026-06-23
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  Libraries used
+
+LIBS = -lgalahad $(NAG) $(LAPACK) $(BLAS)
+NLIBS = $(LIBS) -lgalahad_problem
+
+#  compilation agenda
+
+BASICZ = blas lapack symbols dummy blas_inter lapack_inter
+
+NAGS = $(BASICSZ) $(NLGS)(nag.o)
+NAGD = $(BASICSZ) $(NLGD)(nag.o)
+NAGQ = $(BASICSZ) $(NLGQ)(nag.o)
+NAGS64 = $(BASICSZ) $(NLGS64)(nag.o)
+NAGD64 = $(BASICSZ) $(NLGD64)(nag.o)
+NAGQ64 = $(BASICSZ) $(NLGQ64)(nag.o)
+
+NAGST = $(NAGS) $(OBJ)/e04nqt.o
+NAGDT = $(NAGD) $(OBJ)/e04nqt.o
+NAGQT = $(NAGQ) $(OBJ)/e04nqt.o
+
+RNAGST = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
+RNAGDT = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
+RNAGDQ = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
+
+#  nag
+
+nag_silent: nag_$(PRECIS)
+nag: nag_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(NAG) ($(PRECIS) $(SUCC)"
+nag_single: $(NAGS)
+	$(RANLIB) $(NLGS)
+nag_double: $(NAGD)
+	$(RANLIB) $(NLGD)
+nag_quadruple: $(NAGQ)
+	$(RANLIB) $(NLGQ)
+nag_single_64: $(NAGS64)
+	$(RANLIB) $(NLGS64)
+nag_double_64: $(NAGD64)
+	$(RANLIB) $(NLGD64)
+nag_quadruple_64: $(NAGQ64)
+	$(RANLIB) $(NLGQ64)
+
+#  tests
+
+nagdt: $(NAGDT)
+	echo " Exhaustive test of subroutine interface to nag"
+	cd ../nag ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nag \
+                         $(RNAGDT)
+#	- ../nag/run_nag > ../nag/nagdt.output 2>&1
+#	cat ../nag/nagdt.output
+	- ../nag/run_nag
+	rm ../nag/run_nag
+
+nagst: $(NAGST)
+	echo " Exhaustive test of subroutine interface to nag"
+	cd ../nag ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nag \
+                         $(RNAGST)
+	- ../nag/run_nag > ../nag/nagst.output 2>&1
+	cat ../nag/nagst.output
+	rm ../nag/run_nag
+
+nagsq: $(NAGQT)
+	echo " Exhaustive test of subroutine interface to nag"
+	cd ../nag ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nag \
+                         $(RNAGQT)
+	- ../nag/run_nag > ../nag/nagqt.output 2>&1
+	cat ../nag/nagqt.output
+	rm ../nag/run_nag
+
+#  blas and lapack generic packages and interfaces
+
+blas:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+symbols:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+dummy:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+blas_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+#  individual compilations
+
+nag.o: $(NLG)(nag.o)
+
+$(NLG)(nag.o): ../../dum/nag.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "nag  "
+	$(CP) ../../dum/nag.F90 $(OBJ)/nag.F90
+	cd $(OBJ); $(FORTRAN) -o nag.o $(FFLAGS) nag.F90
+	cd $(OBJ); $(NARR) nag.o ; $(RM) nag.F90 nag.o
+	$(RANLIB) $(NLG)
+	@printf '[ OK ]\n'
+
+#  test programs
+
+e04nqt.o: $(OBJ)/e04nqt.o
+
+$(OBJ)/e04nqt.o: ../nag/e04nqt.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "e04nqt  "
+	$(SED) -f $(SEDS) ../nag/e04nqt.F90 > $(OBJ)/e04nqt.F90
+	cd $(OBJ) ; $(FORTRAN) -o e04nqt.o $(FFLAGSS) e04nqt.F90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(NLG) $(OBJ)/nags.o $(OBJ)/e04nqt.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'

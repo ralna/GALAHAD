@@ -1,0 +1,137 @@
+#  Main body of the installation makefile for any optional BPMPD procedures
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2026-06-26
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  Libraries used
+
+LIBS = -lgalahad $(BPMPD) $(LAPACK) $(BLAS)
+NLIBS = $(LIBS) -lgalahad_problem
+
+#  compilation agenda
+
+BASICZ = blas lapack symbols dummy blas_inter lapack_inter
+
+BPMPDS = $(BASICSZ) $(BPLGS)(bpmpd.o)
+BPMPDD = $(BASICSZ) $(BPLGD)(bpmpd.o)
+BPMPDQ = $(BASICSZ) $(BPLGQ)(bpmpd.o)
+BPMPDS64 = $(BASICSZ) $(BPLGS64)(bpmpd.o)
+BPMPDD64 = $(BASICSZ) $(BPLGD64)(bpmpd.o)
+BPMPDQ64 = $(BASICSZ) $(BPLGQ64)(bpmpd.o)
+
+BPMPDST = $(BPMPDS) $(OBJ)/bpmpdt.o
+BPMPDDT = $(BPMPDD) $(OBJ)/bpmpdt.o
+BPMPDQT = $(BPMPDQ) $(OBJ)/bpmpdt.o
+
+RBPMPDST = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
+RBPMPDDT = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
+RBPMPDDQ = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
+
+#  bpmpd
+
+bpmpd_silent: bpmpd_$(PRECIS)
+bpmpd: bpmpd_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(BPMPD) ($(PRECIS) $(SUCC)"
+bpmpd_single: $(BPMPDS)
+	$(RANLIB) $(BPLGS)
+bpmpd_double: $(BPMPDD)
+	$(RANLIB) $(BPLGD)
+bpmpd_quadruple: $(BPMPDQ)
+	$(RANLIB) $(BPLGQ)
+bpmpd_single_64: $(BPMPDS64)
+	$(RANLIB) $(BPLGS64)
+bpmpd_double_64: $(BPMPDD64)
+	$(RANLIB) $(BPLGD64)
+bpmpd_quadruple_64: $(BPMPDQ64)
+	$(RANLIB) $(BPLGQ64)
+
+#  tests
+
+bpmpddt: $(BPMPDDT)
+	echo " Exhaustive test of subroutine interface to bpmpd"
+	cd ../bpmpd ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bpmpd \
+                         $(RBPMPDDT)
+#	- ../bpmpd/run_bpmpd > ../bpmpd/bpmpddt.output 2>&1
+#	cat ../bpmpd/bpmpddt.output
+	- ../bpmpd/run_bpmpd
+	rm ../bpmpd/run_bpmpd
+
+bpmpdst: $(BPMPDST)
+	echo " Exhaustive test of subroutine interface to bpmpd"
+	cd ../bpmpd ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bpmpd \
+                         $(RBPMPDST)
+	- ../bpmpd/run_bpmpd > ../bpmpd/bpmpdst.output 2>&1
+	cat ../bpmpd/bpmpdst.output
+	rm ../bpmpd/run_bpmpd
+
+bpmpdsq: $(BPMPDQT)
+	echo " Exhaustive test of subroutine interface to bpmpd"
+	cd ../bpmpd ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bpmpd \
+                         $(RBPMPDQT)
+	- ../bpmpd/run_bpmpd > ../bpmpd/bpmpdqt.output 2>&1
+	cat ../bpmpd/bpmpdqt.output
+	rm ../bpmpd/run_bpmpd
+
+#  blas and lapack generic packages and interfaces
+
+blas:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+symbols:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+dummy:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+blas_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+#  individual compilations
+
+bpmpd.o: $(BPLG)(bpmpd.o)
+
+$(BPLG)(bpmpd.o): ../../dum/bpmpd.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bpmpd  "
+	$(CP) ../../dum/bpmpd.F90 $(OBJ)/bpmpd.F90
+	cd $(OBJ); $(FORTRAN) -o bpmpd.o $(FFLAGS) bpmpd.F90
+	cd $(OBJ); $(BPARR) bpmpd.o ; $(RM) bpmpd.F90 bpmpd.o
+	$(RANLIB) $(BPLG)
+	@printf '[ OK ]\n'
+
+#  test programs
+
+bpmpdt.o: $(OBJ)/bpmpdt.o
+
+$(OBJ)/bpmpdt.o: ../bpmpd/bpmpdt.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bpmpdt  "
+	$(SED) -f $(SEDS) ../bpmpd/bpmpdt.F90 > $(OBJ)/bpmpdt.F90
+	cd $(OBJ) ; $(FORTRAN) -o bpmpdt.o $(FFLAGSS) bpmpdt.F90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(BPLG) $(OBJ)/bpmpdt.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'

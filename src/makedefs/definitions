@@ -1,7 +1,7 @@
 #  Standard GALAHAD makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-11-23
+#  This version: 2026-06-30
 
 #  makefile shell
 
@@ -140,6 +140,14 @@ BLGS64 = $(OBJS64)/libgalahad_blas.a
 BLGD64 = $(OBJD64)/libgalahad_blas.a
 BLGQ64 = $(OBJQ64)/libgalahad_blas.a
 
+BPLG  = $(OBJ)/libgalahad_bpmpd.a
+BPLGS = $(OBJS)/libgalahad_bpmpd.a
+BPLGD = $(OBJD)/libgalahad_bpmpd.a
+BPLGQ = $(OBJQ)/libgalahad_bpmpd.a
+BPLGS64 = $(OBJS64)/libgalahad_bpmpd.a
+BPLGD64 = $(OBJD64)/libgalahad_bpmpd.a
+BPLGQ64 = $(OBJQ64)/libgalahad_bpmpd.a
+
 CLG  = $(OBJ)/libgalahad_c.a
 CLGS = $(OBJS)/libgalahad_c.a
 CLGD = $(OBJD)/libgalahad_c.a
@@ -187,6 +195,14 @@ HCLGQ = $(OBJQ)/libgalahad_hsl_c.a
 HCLGS64 = $(OBJS64)/libgalahad_hsl_c.a
 HCLGD64 = $(OBJD64)/libgalahad_hsl_c.a
 HCLGQ64 = $(OBJQ64)/libgalahad_hsl_c.a
+
+HILG  = $(OBJ)/libgalahad_highs.a
+HILGS = $(OBJS)/libgalahad_highs.a
+HILGD = $(OBJD)/libgalahad_highs.a
+HILGQ = $(OBJQ)/libgalahad_highs.a
+HILGS64 = $(OBJS64)/libgalahad_highs.a
+HILGD64 = $(OBJD64)/libgalahad_highs.a
+HILGQ64 = $(OBJQ64)/libgalahad_highs.a
 
 LLG  = $(OBJ)/libgalahad_lapack.a
 LLGS = $(OBJS)/libgalahad_lapack.a
@@ -296,6 +312,14 @@ MULGS64 = $(OBJS64)/libgalahad_mumps.a
 MULGD64 = $(OBJD64)/libgalahad_mumps.a
 MULGQ64 = $(OBJQ64)/libgalahad_mumps.a
 
+NLG  = $(OBJ)/libgalahad_nag.a
+NLGS = $(OBJS)/libgalahad_nag.a
+NLGD = $(OBJD)/libgalahad_nag.a
+NLGQ = $(OBJQ)/libgalahad_nag.a
+NLGS64 = $(OBJS64)/libgalahad_nag.a
+NLGD64 = $(OBJD64)/libgalahad_nag.a
+NLGQ64 = $(OBJQ64)/libgalahad_nag.a
+
 PLG  = $(OBJ)/libgalahad_pardiso.a
 PLGS = $(OBJS)/libgalahad_pardiso.a
 PLGD = $(OBJD)/libgalahad_pardiso.a
@@ -378,6 +402,9 @@ RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
 BARR = $(AR) $(ARREPFLAGS) $(BLG)
 BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
 
+BPARR = $(AR) $(ARREPFLAGS) $(BPLG)
+BPRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BPLG)
+
 CARR = $(AR) $(ARREPFLAGS) $(CLG)
 CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
 CRMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(CLG) $(PRECIS)
@@ -396,6 +423,9 @@ HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
 
 HCARR = $(AR) $(ARREPFLAGS) $(HCLG)
 HCRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HCLG)
+
+HIARR = $(AR) $(ARREPFLAGS) $(HILG)
+HIRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HILG)
 
 LARR = $(AR) $(ARREPFLAGS) $(LLG)
 LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
@@ -419,6 +449,9 @@ MPIRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MPILG)
 
 MUARR = $(AR) $(ARREPFLAGS) $(MULG)
 MURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MULG)
+
+NARR = $(AR) $(ARREPFLAGS) $(NLG)
+NRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(NLG)
 
 PARR = $(AR) $(ARREPFLAGS) $(PLG)
 PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PLG)

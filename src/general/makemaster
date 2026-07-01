@@ -15,6 +15,7 @@ DUMMYS = kinds_silent clock_silent extend_silent symbols_silent \
          lapack_inter_silent hsl_inter_silent \
          pardiso_silent mkl_pardiso_silent wsmp_silent \
          pastix_silent mpi_silent mumps_silent umfpack_silent \
+         nag_silent highs_silent \
          string_silent version_silent buildspec_silent
 
 CORE = $(DUMMYS) space_silent specfile_silent sort_silent norms_silent
@@ -530,6 +531,40 @@ $(M5LG)(metis5_adapter.o): ../external/metis/metis5_adapter.c
           $(RM) metis5_adapter.c metis5_adapter.o
 	@printf '[ OK ]\n'
 
+#  dummy_nag package
+
+dummy_nag_silent: $(NLG)(dummy_nag_$(PRECIS).o)
+dummy_nag: $(NLG)(dummy_nag_$(PRECIS).o)
+	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
+
+dummy_nag.o: $(NLG)(dummy_nag_$(PRECIS).o)
+
+$(NLG)(dummy_nag_$(PRECIS).o): ../dum/dummy_nag.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_nag"
+	$(CP) ../dum/dummy_nag.F90 $(OBJ)/dummy_nag.F90
+	cd $(OBJ); $(FORTRAN) -o dummy_nag_$(PRECIS).o $(FFLAGSS) dummy_nag.F90
+	cd $(OBJ); $(HARR) dummy_nag_$(PRECIS).o ; \
+           $(RM) dummy_nag.F90 dummy_nag_$(PRECIS).o
+	$(RANLIB) $(NLG)
+	@printf '[ OK ]\n'
+
+#  dummy_highs package
+
+dummy_highs_silent: $(NLG)(dummy_highs_$(PRECIS).o)
+dummy_highs: $(NLG)(dummy_highs_$(PRECIS).o)
+	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
+
+dummy_highs.o: $(NLG)(dummy_highs_$(PRECIS).o)
+
+$(NLG)(dummy_highs_$(PRECIS).o): ../dum/dummy_highs.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_highs"
+	$(CP) ../dum/dummy_highs.F90 $(OBJ)/dummy_highs.F90
+	cd $(OBJ); $(FORTRAN) -o dummy_highs_$(PRECIS).o $(FFLAGSS) dummy_highs.F90
+	cd $(OBJ); $(HARR) dummy_highs_$(PRECIS).o ; \
+           $(RM) dummy_highs.F90 dummy_highs_$(PRECIS).o
+	$(RANLIB) $(NLG)
+	@printf '[ OK ]\n'
+
 #  nodend package
 
 nodend_silent:
@@ -543,6 +578,20 @@ mpi_silent:
 	( cd ../external/mpi ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) mpi_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../external/mpi )
+
+#  nag package
+
+nag_silent:
+	( cd ../external/nag ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) nag_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/nag )
+
+#  highs package
+
+highs_silent:
+	( cd ../external/highs ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) highs_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/highs )
 
 #  pastix package
 

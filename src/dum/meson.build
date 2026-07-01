@@ -48,3 +48,23 @@ if not build_ssids
   libgalahad_src += files('ssids.F90')
   libgalahad_c_src += files('C/ssids_ciface.F90')
 endif
+
+if not libhighs.found()
+  libgalahad_single_src += files('C/highs_c_api.cpp')
+  libgalahad_double_src += files('C/highs_c_api.cpp')
+  galahad_headers += files('include/highs_c_api.h')
+endif
+libgalahad_quadruple_src += files('C/highs_c_api.cpp')
+
+if not libnag.found()
+  libgalahad_single_src += files('nag.F90')
+  libgalahad_double_src += files('nag.F90')
+endif
+libgalahad_quadruple_src += files('nag.F90')
+
+if not libbpmpd.found()
+  libgalahad_single_src += files('bpmpd.F90')
+  libgalahad_double_src += files('bpmpd.F90')
+endif
+libgalahad_quadruple_src += files('bpmpd.F90')
+
