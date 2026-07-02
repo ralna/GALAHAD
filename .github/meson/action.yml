@@ -240,7 +240,7 @@ runs:
     #     tar -xzvf CompilerSupportLibraries.v${VERSION_CSL}.$PLATFORM-libgfortran5.tar.gz -C deps
 
     - name: Install PaStiX
-      if: inputs.int == '32' && inputs.os == 'ubuntu-latest' && inputs.compiler == 'gcc'
+      if: inputs.int == '32' && inputs.compiler == 'gcc' && (inputs.os == 'ubuntu-latest' || inputs.os == 'ubuntu-24.04-arm')
       shell: bash
       run: |
         cd ..
@@ -248,7 +248,7 @@ runs:
         VERSION_SCOTCH="7.0.6"
         wget https://github.com/JuliaBinaryWrappers/SCOTCH_jll.jl/releases/download/SCOTCH-v${VERSION_SCOTCH}%2B0/SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz
         tar -xzvf SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz -C deps
-        sudo apt-get -y install libhwloc-dev
+        sudo apt-get -y install libhwloc-dev libblas-dev liblapack-dev liblapacke-dev
         git clone https://gitlab.inria.fr/solverstack/pastix.git
         cd pastix
         git submodule update --init --recursive
@@ -361,7 +361,7 @@ runs:
         if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel" ]]; then
           QUADRUPLE="false"
         fi
-        SANITIZER="none"
+        SANITIZER="undefined"
         C_INTERFACE="true"
         if [[ "${{inputs.sanitizers}}" == "true" ]]; then
           # SANITIZER="address,undefined"

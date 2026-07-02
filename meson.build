@@ -351,7 +351,7 @@ if not libpardiso.found()
 endif
 extra_args_quadruple += '-DDUMMY_PARDISO'
 
-# PASTIX
+# PaStiX
 if not libpastix.found()
   extra_args_single += '-DDUMMY_PASTIX'
   extra_args_double += '-DDUMMY_PASTIX'
