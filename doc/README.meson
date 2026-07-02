@@ -108,8 +108,7 @@ Currently supported options with their default value:
 * `-Dlibcutest_quadruple=cutest_quadruple`: CUTEst library in quadruple precision against which to link;
 * `-Dlibwsmp=wsmp`: WSMP library against which to link;
 * `-Dlibpardiso=pardiso`: PARDISO library against which to link;
-* `-Dlibspmf=spmf`: SPMF library against which to link;
-* `-Dlibpastix=pastix`: PASTIX library against which to link;
+* `-Dlibpastix=pastixf`: PaStiX library against which to link;
 * `-Dlibsmumps=smumps`: Single-precision MUMPS library against which to link;
 * `-Dlibdmumps=dmumps`: Double-precision MUMPS library against which to link;
 * `-Dlibasl=asl`: AMPL solver library against which to link;
@@ -120,13 +119,13 @@ Currently supported options with their default value:
 * `-Dlibcutest_path=[]`: additional directories to search for the CUTEST libraries;
 * `-Dlibwsmp_path=[]`: additional directories to search for the WSMP library;
 * `-Dlibpardiso_path=[]`: additional directories to search for the PARDISO library;
-* `-Dlibspmf_path=[]`: additional directories to search for the SPMF library;
-* `-Dlibpastix_path=[]`: additional directories to search for the PASTIX library;
+* `-Dlibpastix_path=[]`: additional directories to search for the PaStiX library;
 * `-Dlibmumps_path=[]`: additional directories to search for the MUMPS libraries;
 * `-Dlibasl_path=[]`: additional directories to search for the AMPL solver library;
 * `-Dlibasl_include=[]`: additional directories to search for the AMPL header files;
 * `-Dlibhwloc_path=[]`: additional directories to search for the HWLOC library;
 * `-Dlibhwloc_include=[]`: additional directories to search for the HWLOC header files;
+* `-Dlibpastix_include=[]`: additional directories to search for the PaStiX header files;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
 * `-Dlibcutest_modules[]`: additional directories to search for the CUTEst modules;
 * `-Dint64=false`: compile GALAHAD with 64-bit integer;
