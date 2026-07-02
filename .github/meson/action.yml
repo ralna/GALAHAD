@@ -361,7 +361,7 @@ runs:
         if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel" ]]; then
           QUADRUPLE="false"
         fi
-        SANITIZER="undefined"
+        SANITIZER="none"
         C_INTERFACE="true"
         if [[ "${{inputs.sanitizers}}" == "true" ]]; then
           # SANITIZER="address,undefined"
