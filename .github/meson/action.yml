@@ -239,6 +239,32 @@ runs:
     #     wget https://github.com/JuliaBinaryWrappers/CompilerSupportLibraries_jll.jl/releases/download/CompilerSupportLibraries-v${VERSION_CSL}%2B0/CompilerSupportLibraries.v${VERSION_CSL}.$PLATFORM-libgfortran5.tar.gz
     #     tar -xzvf CompilerSupportLibraries.v${VERSION_CSL}.$PLATFORM-libgfortran5.tar.gz -C deps
 
+    - name: Install PaStiX
+      if: inputs.int == '32' && inputs.compiler == 'gcc' && (inputs.os == 'ubuntu-latest' || inputs.os == 'ubuntu-24.04-arm')
+      shell: bash
+      run: |
+        cd ..
+        mkdir -p deps
+        VERSION_SCOTCH="7.0.6"
+        wget https://github.com/JuliaBinaryWrappers/SCOTCH_jll.jl/releases/download/SCOTCH-v${VERSION_SCOTCH}%2B0/SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz
+        tar -xzvf SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz -C deps
+        sudo apt-get -y install libhwloc-dev libopenblas-dev liblapacke-dev libmetis-dev
+        git clone https://gitlab.inria.fr/solverstack/pastix.git
+        cd pastix
+        git submodule update --init --recursive
+        mkdir build
+        cd build
+        cmake .. \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_DOCUMENTATION=OFF \
+          -DCMAKE_INSTALL_PREFIX=$DEPS/deps \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DPASTIX_INT64=OFF \
+          -DPASTIX_ORDERING_SCOTCH=ON \
+          -DPASTIX_ORDERING_METIS=ON
+        make -j4
+        make install
+
     - name: Install MKL
       if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'intel'
       shell: bash
@@ -268,6 +294,8 @@ runs:
         mkdir -p ../deps/modules
         mkdir -p ../deps/include
         mkdir -p ../CUTEst/modules
+        mkdir -p ../deps/include/spm
+        mkdir -p ../deps/include/pastix
         CSTD="c99"
         CPPSTD="c++11"
         INT64="false"
@@ -361,6 +389,8 @@ runs:
                              -Dliblapack=${LAPACK} \
                              -Dfortran_link_args=${LD_CLASSIC} \
                              -Dc_link_args=${LD_CLASSIC} \
+                             -Dlibpastix_path=$DEPS/deps/${LIBDIR} \
+                             -Dlibpastix_include=../deps/include \
                              -Dlibsmumps=${MUMPS_SINGLE} \
                              -Dlibdmumps=${MUMPS_DOUBLE} \
                              -Dlibmumps_path=$DEPS/deps/${LIBDIR} \

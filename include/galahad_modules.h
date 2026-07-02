@@ -19,9 +19,7 @@
 #define MKL_PARDISO_PRIVATE MKL_PARDISO_PRIVATE_64
 #define MKL_PARDISO MKL_PARDISO_64
 #define galahad_metis galahad_metis_64
-#define spmf_interfaces spmf_interfaces_64
 #define spmf_enums spmf_enums_64
-#define pastixf_interfaces pastixf_interfaces_64
 #define pastixf_enums pastixf_enums_64
 #endif
 
@@ -154,7 +152,7 @@
 #define WSSFREE GALAHAD_WSSFREE
 #endif
 
-#ifdef DUMMY_SPMF
+#ifdef DUMMY_PASTIX
 #define spmInit_f08 GALAHAD_spmInit_f08
 #define spmUpdateComputedFields_f08 GALAHAD_spmUpdateComputedFields_f08
 #define spmAlloc_f08 GALAHAD_spmAlloc_f08
@@ -162,9 +160,6 @@
 #define spmGetArray_f08 GALAHAD_spmGetArray_f08
 #define spmCheckAxb_f08 GALAHAD_spmCheckAxb_f08
 #define spmExit_f08 GALAHAD_spmExit_f08
-#endif
-
-#ifdef DUMMY_PASTIXF
 #define pastixInitParam_f08 GALAHAD_pastixInitParam_f08
 #define pastixInit_f08 GALAHAD_pastixInit_f08
 #define pastix_task_analyze_f08 GALAHAD_pastix_task_analyze_f08
