@@ -13,7 +13,7 @@ if not libpardiso.found()
 endif
 libgalahad_quadruple_src += files('pardiso.F90')
 
-if not libpastixf.found()
+if not libpastix.found()
   libgalahad_single_src += files('spmf.F90', 'spmf_enums.F90', 'pastixf.F90', 'pastixf_enums.F90')
   libgalahad_double_src += files('spmf.F90', 'spmf_enums.F90', 'pastixf.F90', 'pastixf_enums.F90')
 endif

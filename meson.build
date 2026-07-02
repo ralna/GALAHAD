@@ -125,10 +125,16 @@ libhwloc_include = include_directories(get_option('libhwloc_include'))
 libasl_include = include_directories(get_option('libasl_include'))
 libhsl_modules = include_directories(get_option('libhsl_modules'))
 libcutest_modules = include_directories(get_option('libcutest_modules'))
-libpastix_modules = include_directories(get_option('libpastix_include')/pastix)
-libspm_modules = include_directories(get_option('libpastix_include')/spm)
+libpastix_include = get_option('libpastix_include')
+libpastix_modules_paths = []
+libspm_modules_paths = []
+foreach dir : libpastix_include
+  libpastix_modules_paths += join_paths(dir, 'pastix')
+  libspm_modules_paths += join_paths(dir, 'spm')
+endforeach
+libpastix_modules = include_directories(libpastix_modules_paths)
+libspm_modules = include_directories(libspm_modules_paths)
 
-# Dependencies
 libblas = fc.find_library(libblas_name, dirs : libblas_path, required : false)
 liblapack = fc.find_library(liblapack_name, dirs : liblapack_path, required : false)
 libhsl = fc.find_library(libhsl_name, dirs : libhsl_path, required : false)
@@ -347,12 +353,9 @@ extra_args_quadruple += '-DDUMMY_PARDISO'
 # PASTIX
 if not libpastix.found()
   extra_args_single += '-DDUMMY_PASTIX'
-  extra_args_single += '-DDUMMY_SPM'
   extra_args_double += '-DDUMMY_PASTIX'
-  extra_args_double += '-DDUMMY_SPM'
 endif
 extra_args_quadruple += '-DDUMMY_PASTIX'
-extra_args_quadruple += '-DDUMMY_SPM'
 
 # WSMP
 if not libwsmp.found()
