@@ -135,6 +135,7 @@ endforeach
 libpastix_modules = include_directories(libpastix_modules_paths)
 libspm_modules = include_directories(libspm_modules_paths)
 
+# Dependencies
 libblas = fc.find_library(libblas_name, dirs : libblas_path, required : false)
 liblapack = fc.find_library(liblapack_name, dirs : liblapack_path, required : false)
 libhsl = fc.find_library(libhsl_name, dirs : libhsl_path, required : false)
@@ -225,7 +226,7 @@ libgalahad_double_deps = [libdmumps, libcutest_double, libblas, liblapack,
                           libhsl, libwsmp, libpardiso, libpastix,
                           libasl, libhwloc]
 
-libgalahad_quadruple_deps = [libcutest_quadruple, libhsl, libhwloc]
+libgalahad_quadruple_deps = [libcutest_quadruple, libhsl, libhwloc, libquadmath]
 
 # BLAS and LAPACK
 libblas_src = []
