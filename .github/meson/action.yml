@@ -248,7 +248,7 @@ runs:
         VERSION_SCOTCH="7.0.6"
         wget https://github.com/JuliaBinaryWrappers/SCOTCH_jll.jl/releases/download/SCOTCH-v${VERSION_SCOTCH}%2B0/SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz
         tar -xzvf SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz -C deps
-        sudo apt-get -y install libhwloc-dev libopenblas-dev liblapacke-dev
+        sudo apt-get -y install libhwloc-dev libopenblas-dev liblapacke-dev libmetis-dev
         git clone https://gitlab.inria.fr/solverstack/pastix.git
         cd pastix
         git submodule update --init --recursive
