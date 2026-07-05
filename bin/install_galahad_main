@@ -6,7 +6,7 @@
 # syntax: install_galahad_main
 
 # N. Gould, D. Orban & Ph. Toint
-# ( Last modified on 15 November 2024 at 13:40 GMT )
+# ( Last modified on 5th July 2026 at 10:45 GMT )
 
 #  function to create missing symblic links
 
@@ -555,13 +555,32 @@ fi
 if [[ "$UMFPACK" == "" ]]; then
   UMFPACK="-lgalahad_umfpack"
 fi
-
+if [[ "$BPMPD" == "" ]]; then
+  BPMPD="-lgalahad_bpmpd"
+fi
+if [[ "$BQPD" == "" ]]; then
+  BQPD="-lgalahad_bqpd"
+fi
+if [[ "$HIGHS" == "" ]]; then
+  HIGHS="-lgalahad_highs"
+fi
+if [[ "$NAGLIB" == "" ]]; then
+  NAGLIB="-lgalahad_naglib"
+fi
+if [[ "$OSQP" == "" ]]; then
+  OSQP="-lgalahad_osqp"
+fi
+if [[ "$QPALM" == "" ]]; then
+  QPALM="-lgalahad_qpalm"
+fi
+if [[ "$QPOASES" == "" ]]; then
+  QPOASES="-lgalahad_qpoases"
+fi
 if [[ $QUADREAL == "yes" ]] ; then
   QUADFLAG="-DQUAD_REALS_EXIST"
 else
   QUADFLAG=""
 fi
-
 
 #  write out the galahad/bin/sys file for this architecture
 
@@ -607,6 +626,13 @@ echo 'PASTIX="'$PASTIX'"'                                          >> $SYSFILE
 echo 'MPI="'$MPI'"'                                                >> $SYSFILE
 echo 'MUMPS="'$MUMPS'"'                                            >> $SYSFILE
 echo 'UMFPACK="'$UMFPACK'"'                                        >> $SYSFILE
+echo 'BPMPD="'$BPMPD'"'                                            >> $SYSFILE
+echo 'BQPD="'$BQPD'"'                                              >> $SYSFILE
+echo 'HIGHS="'$HIGHS'"'                                            >> $SYSFILE
+echo 'NAGLIB="'$NAGLIB'"'                                          >> $SYSFILE
+echo 'OSQP="'$OSQP'"'                                              >> $SYSFILE
+echo 'QPALM="'$QPALM'"'                                            >> $SYSFILE
+echo 'QPOASES="'$QPOASES'"'                                        >> $SYSFILE
 echo 'PLPLOT="'$PLPLOT'"'                                          >> $SYSFILE
 
 #  write out the galahad/makefile/ file for this architecture
@@ -790,6 +816,35 @@ echo ' '                                                           >> $MAKEFILE
 echo '#  -- UMFPACK --'                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'UMFPACK = '$UMFPACK                                          >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- BPMPD --'                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'BPMPD = '$BPMPD                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- BQPD --'                                               >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'BQPD = '$BQPD                                                >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  --  HIGHS --'                                             >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'HIGHS = '$HIGHS                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- NAGLIB --'                                             >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'NAGLIB = '$NAGLIB                                            >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- OSQP --'                                               >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'OSQP = '$OSQP                                                >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- QPALM --'                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'QPALMINCLUDE = $(GALAHAD)/src/dum/include'                   >> $MAKEFILE
+echo 'QPALM = '$QPALM                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- QPOASES --'                                            >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'QPOASES = '$QPOASES                                          >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  -- PLplot --'                                             >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE

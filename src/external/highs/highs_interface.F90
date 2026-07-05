@@ -206,6 +206,17 @@
     END INTERFACE
 
     INTERFACE
+      FUNCTION Highs_setStringOptionValue_c( h, o, v )                         &
+          RESULT( s ) BIND( C, NAME = 'Highs_setStringOptionValue' )
+        IMPORT :: c_ptr, c_char, ipc_
+        TYPE( c_ptr ), VALUE :: h
+        CHARACTER( c_char ) :: o( * )
+        CHARACTER( c_char ) :: v( * )
+        INTEGER ( ipc_ ) :: s
+      END FUNCTION Highs_setStringOptionValue_c
+    END INTERFACE
+
+    INTERFACE
       FUNCTION Highs_getModelStatus_c( h )                                     &
           RESULT(model_status) BIND( C, NAME = 'Highs_getModelStatus' )
         IMPORT :: c_ptr, ipc_
@@ -445,6 +456,14 @@
     INTEGER ( ipc_ ) :: status
     status = Highs_setDoubleOptionValue_c( h, o, v )
     END SUBROUTINE Highs_setDoubleOptionValue
+
+    SUBROUTINE Highs_setStringOptionValue( h, o, v, status )
+    TYPE( c_ptr ), VALUE :: h
+    CHARACTER( c_char ) :: o( * )
+    CHARACTER( c_char ) :: v( * )
+    INTEGER ( ipc_ ) :: status
+    status = Highs_setStringOptionValue_c( h, o, v )
+    END SUBROUTINE Highs_setStringOptionValue
 
     SUBROUTINE Highs_getModelStatus( h, model_status )
     TYPE( c_ptr ), VALUE :: h

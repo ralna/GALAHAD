@@ -242,5 +242,6 @@ write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
     spm => NULL( )
 
   END DO
+write(6,"('tests completed')")
 
 END PROGRAM test_pastix

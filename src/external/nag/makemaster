@@ -16,12 +16,12 @@ NLIBS = $(LIBS) -lgalahad_problem
 
 BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
-NAGS = $(BASICSZ) $(NLGS)(nag.o)
-NAGD = $(BASICSZ) $(NLGD)(nag.o)
-NAGQ = $(BASICSZ) $(NLGQ)(nag.o)
-NAGS64 = $(BASICSZ) $(NLGS64)(nag.o)
-NAGD64 = $(BASICSZ) $(NLGD64)(nag.o)
-NAGQ64 = $(BASICSZ) $(NLGQ64)(nag.o)
+NAGS = $(BASICSZ) $(NLGS)(naglib.o)
+NAGD = $(BASICSZ) $(NLGD)(naglib.o)
+NAGQ = $(BASICSZ) $(NLGQ)(naglib.o)
+NAGS64 = $(BASICSZ) $(NLGS64)(naglib.o)
+NAGD64 = $(BASICSZ) $(NLGD64)(naglib.o)
+NAGQ64 = $(BASICSZ) $(NLGQ64)(naglib.o)
 
 NAGST = $(NAGS) $(OBJ)/e04nqt.o
 NAGDT = $(NAGD) $(OBJ)/e04nqt.o
@@ -104,13 +104,13 @@ lapack_inter:
 
 #  individual compilations
 
-nag.o: $(NLG)(nag.o)
+naglib.o: $(NLG)(naglib.o)
 
-$(NLG)(nag.o): ../../dum/nag.F90
+$(NLG)(naglib.o): ../../dum/naglib.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "nag  "
-	$(CP) ../../dum/nag.F90 $(OBJ)/nag.F90
-	cd $(OBJ); $(FORTRAN) -o nag.o $(FFLAGS) nag.F90
-	cd $(OBJ); $(NARR) nag.o ; $(RM) nag.F90 nag.o
+	$(CP) ../../dum/naglib.F90 $(OBJ)/naglib.F90
+	cd $(OBJ); $(FORTRAN) -o naglib.o $(FFLAGS) naglib.F90
+	cd $(OBJ); $(NARR) naglib.o ; $(RM) naglib.F90 naglib.o
 	$(RANLIB) $(NLG)
 	@printf '[ OK ]\n'
 

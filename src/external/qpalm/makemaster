@@ -1,0 +1,138 @@
+#  Main body of the installation makefile for any optional QPALM procedures
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2026-06-26
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  Libraries used
+
+LIBS = -lgalahad $(QPALM) $(LAPACK) $(BLAS)
+NLIBS = $(LIBS) -lgalahad_problem
+
+#  compilation agenda
+
+BASICZ = blas lapack symbols dummy blas_inter lapack_inter
+
+QPALMS = $(BASICSZ) $(QALGS)(qpalm.o)
+QPALMD = $(BASICSZ) $(QALGD)(qpalm.o)
+QPALMQ = $(BASICSZ) $(QALGQ)(qpalm.o)
+QPALMS64 = $(BASICSZ) $(QALGS64)(qpalm.o)
+QPALMD64 = $(BASICSZ) $(QALGD64)(qpalm.o)
+QPALMQ64 = $(BASICSZ) $(QALGQ64)(qpalm.o)
+
+QPALMST = $(QPALMS) $(OBJ)/qpalmt.o
+QPALMDT = $(QPALMD) $(OBJ)/qpalmt.o
+QPALMQT = $(QPALMQ) $(OBJ)/qpalmt.o
+
+RQPALMST = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
+RQPALMDT = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
+RQPALMDQ = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
+
+#  qpalm
+
+qpalm_silent: qpalm_$(PRECIS)
+qpalm: qpalm_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(QPALM) ($(PRECIS) $(SUCC)"
+qpalm_single: $(QPALMS)
+	$(RANLIB) $(QALGS)
+qpalm_double: $(QPALMD)
+	$(RANLIB) $(QALGD)
+qpalm_quadruple: $(QPALMQ)
+	$(RANLIB) $(QALGQ)
+qpalm_single_64: $(QPALMS64)
+	$(RANLIB) $(QALGS64)
+qpalm_double_64: $(QPALMD64)
+	$(RANLIB) $(QALGD64)
+qpalm_quadruple_64: $(QPALMQ64)
+	$(RANLIB) $(QALGQ64)
+
+#  tests
+
+qpalmdt: $(QPALMDT)
+	echo " Exhaustive test of subroutine interface to qpalm"
+	cd ../qpalm ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_qpalm \
+                         $(RQPALMDT)
+#	- ../qpalm/run_qpalm > ../qpalm/qpalmdt.output 2>&1
+#	cat ../qpalm/qpalmdt.output
+	- ../qpalm/run_qpalm
+	rm ../qpalm/run_qpalm
+
+qpalmst: $(QPALMST)
+	echo " Exhaustive test of subroutine interface to qpalm"
+	cd ../qpalm ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_qpalm \
+                         $(RQPALMST)
+	- ../qpalm/run_qpalm > ../qpalm/qpalmst.output 2>&1
+	cat ../qpalm/qpalmst.output
+	rm ../qpalm/run_qpalm
+
+qpalmsq: $(QPALMQT)
+	echo " Exhaustive test of subroutine interface to qpalm"
+	cd ../qpalm ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_qpalm \
+                         $(RQPALMQT)
+	- ../qpalm/run_qpalm > ../qpalm/qpalmqt.output 2>&1
+	cat ../qpalm/qpalmqt.output
+	rm ../qpalm/run_qpalm
+
+#  blas and lapack generic packages and interfaces
+
+blas:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+symbols:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+dummy:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+blas_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+#  individual compilations
+
+qpalm.o: $(QALG)(qpalm.o)
+
+$(QALG)(qpalm.o): ../../dum/qpalm.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "qpalm  "
+	$(CP) ../../dum/qpalm.F90 $(OBJ)/qpalm.F90
+	cd $(OBJ); $(FORTRAN) -o qpalm.o $(FFLAGS) qpalm.F90
+	cd $(OBJ); $(QAARR) qpalm.o ; $(RM) qpalm.F90 qpalm.o
+	$(RANLIB) $(QALG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  test programs
+
+qpalmt.o: $(OBJ)/qpalmt.o
+
+$(OBJ)/qpalmt.o: ../qpalm/qpalmt.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "qpalmt  "
+	$(SED) -f $(SEDS) ../qpalm/qpalmt.F90 > $(OBJ)/qpalmt.F90
+	cd $(OBJ) ; $(FORTRAN) -o qpalmt.o -I$(QPALMINCLUDE) $(FFLAGSS) qpalmt.F90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(QALG) $(OBJ)/qpalmt.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'

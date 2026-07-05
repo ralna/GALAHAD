@@ -2,7 +2,7 @@
 
 #include "galahad_modules.h"
 
-  PROGRAM HiGHS_main
+  PROGRAM HiGHS_example
 
 !  test program for HiGHS strictly-convex QP package
 
@@ -27,7 +27,7 @@
 
 !  problem parameters
 
-  INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
+  INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
 
 !  Highs parameters
 
@@ -40,6 +40,7 @@
   INTEGER ( KIND = ipc_ ), PARAMETER :: runstatus_warning = - 1
   REAL ( KIND = rpc_ ) :: offset = 0
   LOGICAL, PARAMETER :: no_highs_logging = .TRUE.
+! LOGICAL, PARAMETER :: no_highs_logging = .FALSE.
   LOGICAL ( KIND = c_bool ), PARAMETER :: logical_false = .false.
   LOGICAL ( KIND = c_bool ), PARAMETER :: logical_true = .true.
   INTEGER ( KIND = ipc_ ) :: iteration_count
@@ -53,7 +54,7 @@
   REAL ( KIND = rp_ ) :: f, obj, res_p, res_d
   REAL ( KIND = rp_ ) :: gcol, max_d
   LOGICAL :: qp, fulsol = .FALSE.
-  CHARACTER ( LEN = 10 ) :: p_name
+  CHARACTER ( LEN = 10 ) :: p_name= 'qptest    '
   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr, A_row
   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_ptr, H_row
   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G, X_0, X_l, X_u
@@ -96,13 +97,13 @@
 ! INTEGER ( KIND = ip_ ) :: output_summary = 47
 ! CHARACTER ( LEN = 10 ) :: summary_filename = 'HIGHS.res'
 
+!  input the problem data per GALAHAD's standard QP format
+
   ALLOCATE( G( n ), X_l( n ), X_u( n ), STAT = status )
   ALLOCATE( C( m ), C_l( m ), C_u( m ), STAT = status )
   ALLOCATE( X_0( n ), Y( m ), Z( n ), STAT = status )
   ALLOCATE( H_val( h_ne ), H_row( h_ne ), H_ptr( n + 1 ), STAT = status )
   ALLOCATE( A_val( a_ne ), A_row( a_ne ), A_ptr( n + 1 ), STAT = status )
-
-!  input the problem data per GALAHAD's standard QP format
 
   f = 1.0_rp_                              ! objective constant
   G = [ 0.0_rp_, 2.0_rp_, 0.0_rp_ ]        ! objective gradient
@@ -248,14 +249,32 @@
   CALL Highs_setDoubleOptionValue( highs, "infinite_bound" // C_NULL_CHAR,     &
                                    infinity, runstatus )
 
-! IF ( no_highs_logging ) THEN
+  IF ( no_highs_logging ) THEN
     CALL Highs_setBoolOptionValue( highs, "output_flag" // C_NULL_CHAR,        &
                                    logical_false, runstatus )
-! endif
+  ELSE
+    CALL Highs_setBoolOptionValue( highs, "output_flag" // C_NULL_CHAR,        &
+                                   logical_true, runstatus )
+    CALL Highs_setBoolOptionValue( highs, "log_to_console" // C_NULL_CHAR,     &
+                                   logical_true, runstatus )
+    CALL Highs_setIntOptionValue( highs, "log_dev_level" // C_NULL_CHAR,     &
+                                   1, runstatus )
+  END IF
+
+!  use the QP active-set method
+
+! CALL Highs_setStringOptionValue( highs, "solver" // C_NULL_CHAR,             &
+!                                  "qpasm" // C_NULL_CHAR, runstatus )
+  CALL Highs_setStringOptionValue( highs, "solver" // C_NULL_CHAR,             &
+                                   "hipo" // C_NULL_CHAR, runstatus )
+
+!  pass in the linear data
 
   CALL Highs_passLp( highs, numcol, numrow, numnz, aformat_colwise,            &
                      sense, offset, colcost, collower, colupper,               &
                      rowlower, rowupper, astart, aindex, avalue, runstatus )
+
+!  pass in the quadratic data
 
   IF ( qp ) THEN
     CALL Highs_passHessian( highs, numcol, hessian_numnz, qformat_triangular,  &
@@ -450,12 +469,12 @@
     SELECT CASE ( runstatus )
     CASE ( runstatus_ok )
       WRITE( output_summary,                                                   &
-        "( A10, 1X, I8, 1X, I8, ES16.8, 2ES9.1, bn, I9, I6 )" )         &
+        "( A10, 1X, I8, 1X, I8, ES16.8, 2ES9.1, bn, I9, I6 )" )                &
        p_name, n, m, objective_function_value, res_p, res_d, iter,             &
        runstatus
     CASE DEFAULT
       WRITE( output_summary,                                                   &
-        "( A10,  1X, I8, 1X, I8, ES16.8, 2ES9.1, bn, I9, I6 )" )        &
+        "( A10,  1X, I8, 1X, I8, ES16.8, 2ES9.1, bn, I9, I6 )" )               &
         p_name, n, m, objective_function_value, res_p, res_d, -iter,           &
         runstatus
     END SELECT
@@ -467,15 +486,10 @@
 ! WRITE( out, "(' Final objective value = ', ES11.3 )" ) obj
 ! WRITE( out, "(' Optimal X = ', 7F9.2 )" ) X( : n )
 
-  WRITE( out, "( /, 24('*'), ' GALAHAD statistics ', 24('*') //                &
- &              ,' Package used            :  HiGHS (', A, ')',  /             &
- &              ,' Problem                 :  ', A10,    /                     &
- &              ,' # variables             =      ', I10 /                     &
- &              ,' # constraints           =      ', I10 /                     &
- &              ,' Exit code               =      ', I10 /                     &
- &              ,' Final f                 = ', ES15.7 /                       &
- &               67('*') / )" ) TRIM( solver_used ), p_name, n, m, runstatus,  &
-     objective_function_value
+  WRITE( out, "( /, ' Package used: HiGHS (', A, ')', /, ' Problem: ', A, /,   &
+ &              ' # variables = ', I0, ', # constraints = ', I0,               &
+ &              ', Exit code = ', I0 )" )                                      &
+   TRIM( solver_used ), p_name, n, m, runstatus
 
   l = 4 ; IF ( fulsol ) l = n
 
@@ -575,7 +589,8 @@
  &                  ' Maximum constraint violation    ', ES22.14, /,           &
  &                  ' Maximum dual infeasibility      ', ES22.14, /,           &
  &                  ' Number of HiGHS iterations = ', I0 )" )                  &
-    objective_function_value, max_d, res_p, res_d, iter
+    objective_function_value, max_d, max_primal_infeasibility,                 &
+    max_dual_infeasibility, iteration_count
 
 !  destroy the HiGHS environment
 
@@ -593,4 +608,4 @@
   WRITE( out, "( ' Allocation error, status = ', i0 )" ) status
   STOP
 
-  END PROGRAM HiGHS_main
+  END PROGRAM HiGHS_example

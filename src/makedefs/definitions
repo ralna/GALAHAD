@@ -148,6 +148,14 @@ BPLGS64 = $(OBJS64)/libgalahad_bpmpd.a
 BPLGD64 = $(OBJD64)/libgalahad_bpmpd.a
 BPLGQ64 = $(OBJQ64)/libgalahad_bpmpd.a
 
+BQLG  = $(OBJ)/libgalahad_bqpd.a
+BQLGS = $(OBJS)/libgalahad_bqpd.a
+BQLGD = $(OBJD)/libgalahad_bqpd.a
+BQLGQ = $(OBJQ)/libgalahad_bqpd.a
+BQLGS64 = $(OBJS64)/libgalahad_bqpd.a
+BQLGD64 = $(OBJD64)/libgalahad_bqpd.a
+BQLGQ64 = $(OBJQ64)/libgalahad_bqpd.a
+
 CLG  = $(OBJ)/libgalahad_c.a
 CLGS = $(OBJS)/libgalahad_c.a
 CLGD = $(OBJD)/libgalahad_c.a
@@ -179,6 +187,22 @@ DLGQ = $(OBJQ)/libgalahad_dummy.a
 DLGS64 = $(OBJS64)/libgalahad_dummy.a
 DLGD64 = $(OBJD64)/libgalahad_dummy.a
 DLGQ64 = $(OBJQ64)/libgalahad_dummy.a
+
+#DRLG  = $(OBJ)/libgalahad_spral.a
+#DRLGS = $(OBJS)/libgalahad_spral.a
+#DRLGD = $(OBJD)/libgalahad_spral.a
+#DRLGQ = $(OBJQ)/libgalahad_spral.a
+#DRLGS64 = $(OBJS64)/libgalahad_spral.a
+#DRLGD64 = $(OBJD64)/libgalahad_spral.a
+#DRLGQ64 = $(OBJQ64)/libgalahad_spral.a
+
+DRLG  = $(LG)
+DRLGS = $(LGS)
+DRLGD = $(LGD)
+DRLGQ = $(LGQ)
+DRLGS64 = $(LGS64)
+DRLGD64 = $(LGD64)
+DRLGQ64 = $(LGQ64)
 
 HLG  = $(OBJ)/libgalahad_hsl.a
 HLGS = $(OBJS)/libgalahad_hsl.a
@@ -312,13 +336,21 @@ MULGS64 = $(OBJS64)/libgalahad_mumps.a
 MULGD64 = $(OBJD64)/libgalahad_mumps.a
 MULGQ64 = $(OBJQ64)/libgalahad_mumps.a
 
-NLG  = $(OBJ)/libgalahad_nag.a
-NLGS = $(OBJS)/libgalahad_nag.a
-NLGD = $(OBJD)/libgalahad_nag.a
-NLGQ = $(OBJQ)/libgalahad_nag.a
-NLGS64 = $(OBJS64)/libgalahad_nag.a
-NLGD64 = $(OBJD64)/libgalahad_nag.a
-NLGQ64 = $(OBJQ64)/libgalahad_nag.a
+NLG  = $(OBJ)/libgalahad_naglib.a
+NLGS = $(OBJS)/libgalahad_naglib.a
+NLGD = $(OBJD)/libgalahad_naglib.a
+NLGQ = $(OBJQ)/libgalahad_naglib.a
+NLGS64 = $(OBJS64)/libgalahad_naglib.a
+NLGD64 = $(OBJD64)/libgalahad_naglib.a
+NLGQ64 = $(OBJQ64)/libgalahad_naglib.a
+
+OSLG  = $(OBJ)/libgalahad_osqp.a
+OSLGS = $(OBJS)/libgalahad_osqp.a
+OSLGD = $(OBJD)/libgalahad_osqp.a
+OSLGQ = $(OBJQ)/libgalahad_osqp.a
+OSLGS64 = $(OBJS64)/libgalahad_osqp.a
+OSLGD64 = $(OBJD64)/libgalahad_osqp.a
+OSLGQ64 = $(OBJQ64)/libgalahad_osqp.a
 
 PLG  = $(OBJ)/libgalahad_pardiso.a
 PLGS = $(OBJS)/libgalahad_pardiso.a
@@ -352,21 +384,21 @@ PYLGS64 = $(OBJS64)/libgalahad_py.a
 PYLGD64 = $(OBJD64)/libgalahad_py.a
 PYLGQ64 = $(OBJQ64)/libgalahad_py.a
 
-#DRLG  = $(OBJ)/libgalahad_spral.a
-#DRLGS = $(OBJS)/libgalahad_spral.a
-#DRLGD = $(OBJD)/libgalahad_spral.a
-#DRLGQ = $(OBJQ)/libgalahad_spral.a
-#DRLGS64 = $(OBJS64)/libgalahad_spral.a
-#DRLGD64 = $(OBJD64)/libgalahad_spral.a
-#DRLGQ64 = $(OBJQ64)/libgalahad_spral.a
+QALG  = $(OBJ)/libgalahad_qpalm.a
+QALGS = $(OBJS)/libgalahad_qpalm.a
+QALGD = $(OBJD)/libgalahad_qpalm.a
+QALGQ = $(OBJQ)/libgalahad_qpalm.a
+QALGS64 = $(OBJS64)/libgalahad_qpalm.a
+QALGD64 = $(OBJD64)/libgalahad_qpalm.a
+QALGQ64 = $(OBJQ64)/libgalahad_qpalm.a
 
-DRLG  = $(LG)
-DRLGS = $(LGS)
-DRLGD = $(LGD)
-DRLGQ = $(LGQ)
-DRLGS64 = $(LGS64)
-DRLGD64 = $(LGD64)
-DRLGQ64 = $(LGQ64)
+QOLG  = $(OBJ)/libgalahad_qpoases.a
+QOLGS = $(OBJS)/libgalahad_qpoases.a
+QOLGD = $(OBJD)/libgalahad_qpoases.a
+QOLGQ = $(OBJQ)/libgalahad_qpoases.a
+QOLGS64 = $(OBJS64)/libgalahad_qpoases.a
+QOLGD64 = $(OBJD64)/libgalahad_qpoases.a
+QOLGQ64 = $(OBJQ64)/libgalahad_qpoases.a
 
 RLG  = $(LG)
 RLGS = $(LGS)
@@ -405,6 +437,9 @@ BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
 BPARR = $(AR) $(ARREPFLAGS) $(BPLG)
 BPRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BPLG)
 
+BQARR = $(AR) $(ARREPFLAGS) $(BQLG)
+BQRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BQLG)
+
 CARR = $(AR) $(ARREPFLAGS) $(CLG)
 CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
 CRMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(CLG) $(PRECIS)
@@ -417,6 +452,9 @@ CDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CDLG)
 
 DARR = $(AR) $(ARREPFLAGS) $(DLG)
 DRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(DLG)
+
+DRARR = $(AR) $(ARREPFLAGS) $(DRLG)
+DRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(DRLG)
 
 HARR = $(AR) $(ARREPFLAGS) $(HLG)
 HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
@@ -453,6 +491,9 @@ MURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MULG)
 NARR = $(AR) $(ARREPFLAGS) $(NLG)
 NRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(NLG)
 
+OSARR = $(AR) $(ARREPFLAGS) $(OSLG)
+OSRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(OSLG)
+
 PARR = $(AR) $(ARREPFLAGS) $(PLG)
 PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PLG)
 
@@ -466,8 +507,11 @@ PYARR = $(AR) $(ARREPFLAGS) $(PYLG)
 PYRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PYLG)
 PYRMARFILES = $(GALAHAD)/bin/rmpyarfiles $(AR) $(GREP) $(PYLG)
 
-DRARR = $(AR) $(ARREPFLAGS) $(DRLG)
-DRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(DRLG)
+QAARR = $(AR) $(ARREPFLAGS) $(QALG)
+QARMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(QALG)
+
+QOARR = $(AR) $(ARREPFLAGS) $(QOLG)
+QORMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(QOLG)
 
 RARR = $(AR) $(ARREPFLAGS) $(LG)
 RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)

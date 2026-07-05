@@ -20,7 +20,7 @@
 
 !  local variables
 
-  INTEGER ( KIND = ip_ ) :: alloc_status, code, msizi, msizr, iter, loglevel
+  INTEGER ( KIND = ip_ ) :: alloc_status, i, code, msizi, msizr, iter, loglevel
   REAL ( KIND = rp_ ) :: f, big, opt
   CHARACTER ( LEN = 10 ) :: p_name = 'qptest    '
   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ACOLCNT, ACOLIDX
@@ -70,16 +70,28 @@
 ! WRITE( out, "(' Final objective value = ', ES11.3 )" ) opt + f
 ! WRITE( out, "(' Optimal X = ', 7F9.2 )" ) PRIMAL( : n )
 
-  WRITE( out, "( /, 24('*'), ' GALAHAD statistics ', 24('*') //                &
- &              ,' Package used            :  BPMPD',   /                      &
- &              ,' Problem                 :  ', A10,    /                     &
- &              ,' # variables             =      ', I10 /                     &
- &              ,' # constraints           =      ', I10 /                     &
- &              ,' Exit code               =      ', I10 )" ) p_name, n, m, code
+  WRITE( out, "( /, ' Package used: BPMPD', /, ' Problem: ', A10, /,           &
+ &              ' # variables = ', I0, ', # constraints = ', I0,               &
+ &              ', Exit code = ', I0 )" ) p_name, n, m, code
   IF ( code == 2 )                                                             &
-    WRITE( out, "( ' Final f                 = ', ES15.7, /                    &
- &              ,' iterations              =      ', I10  )" ) opt, iter
-  WRITE( out, "( /, 67('*') / )" ) 
+    WRITE( out, "( ' Final f =', ES16.8, ', iterations = ', I0  )" ) opt, iter
+
+!  print the solution
+
+  IF ( code == 2 ) THEN 
+     WRITE( out, "( /, '                        variables:' /,                 &
+    &   ' #      x_l          x          x_u          z' )" )
+     DO i = 1, n
+       WRITE( out, "( I2, 4ES12.4 )" )                                         &
+         i, LBOUND( i ), PRIMAL( i ), UBOUND( i ), DUAL( i )
+     END DO
+     WRITE( out, "( /, '                        constraints:' /,               &
+    &   ' #      c_l         A x         c_u          y' )" )
+     DO i = n + 1, n + m
+       WRITE( out, "( I2, 4ES12.4 )" )                                         &
+         i - n, LBOUND( i ), PRIMAL( i ), UBOUND( i ), DUAL( i )
+     END DO
+  END IF
 
 !  deallocate workspace
 
