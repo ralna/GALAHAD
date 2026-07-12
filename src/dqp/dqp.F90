@@ -4950,6 +4950,11 @@
 
         IF (  inform%status == GALAHAD_error_primal_infeasible ) GO TO 700
 
+!  a genuine failure in the arc search (e.g. a linear solver that cannot perform
+!  the required sparse forward solve) is fatal
+
+        IF ( inform%status < 0 ) GO TO 900
+
 !  if required compute the dual objective value. Record sol = J^T v_k - g
 
 !       IF ( .TRUE. ) THEN
@@ -6597,6 +6602,11 @@
           Z_u( dims%x_u_start : n ) = VT( zu_start : zu_end )
 
           IF (  inform%status == GALAHAD_error_primal_infeasible ) GO TO 700
+
+!  a genuine failure in the arc search (e.g. a linear solver that cannot perform
+!  the required sparse forward solve) is fatal
+
+          IF ( inform%status < 0 ) GO TO 900
 
 !  record the status of the general constraints and simple bounds
 
@@ -8469,6 +8479,14 @@
         ELSE
           CALL SLS_sparse_forward_solve( nnz_r, INDEX_r, R, nnz_w, INDEX_w, W, &
                                          SLS_data, SLS_control, SLS_inform )
+
+!  the sparse forward solve is not provided by every linear solver (e.g. PaStiX
+!  and MUMPS do not offer it). Bail out cleanly rather than use the undefined
+!  nnz_w/INDEX_w that such a solver returns
+
+          IF ( SLS_inform%status /= GALAHAD_ok ) THEN
+            status = SLS_inform%status ; RETURN
+          END IF
         END IF
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         solve = solve + REAL( time_now - time_record, rp_ )
