@@ -31,28 +31,28 @@ RNAGST = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
 RNAGDT = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
 RNAGDQ = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
 
-#  nag
+#  naglib
 
-nag_silent: nag_$(PRECIS)
-nag: nag_$(PRECIS)
+naglib_silent: naglib_$(PRECIS)
+nag: naglib_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(NAG) ($(PRECIS) $(SUCC)"
-nag_single: $(NAGS)
+naglib_single: $(NAGS)
 	$(RANLIB) $(NLGS)
-nag_double: $(NAGD)
+naglib_double: $(NAGD)
 	$(RANLIB) $(NLGD)
-nag_quadruple: $(NAGQ)
+naglib_quadruple: $(NAGQ)
 	$(RANLIB) $(NLGQ)
-nag_single_64: $(NAGS64)
+naglib_single_64: $(NAGS64)
 	$(RANLIB) $(NLGS64)
-nag_double_64: $(NAGD64)
+naglib_double_64: $(NAGD64)
 	$(RANLIB) $(NLGD64)
-nag_quadruple_64: $(NAGQ64)
+naglib_quadruple_64: $(NAGQ64)
 	$(RANLIB) $(NLGQ64)
 
 #  tests
 
 nagdt: $(NAGDT)
-	echo " Exhaustive test of subroutine interface to nag"
+	echo " Exhaustive test of subroutine interface to naglib"
 	cd ../nag ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nag \
                          $(RNAGDT)
 #	- ../nag/run_nag > ../nag/nagdt.output 2>&1
@@ -61,7 +61,7 @@ nagdt: $(NAGDT)
 	rm ../nag/run_nag
 
 nagst: $(NAGST)
-	echo " Exhaustive test of subroutine interface to nag"
+	echo " Exhaustive test of subroutine interface to naglib"
 	cd ../nag ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nag \
                          $(RNAGST)
 	- ../nag/run_nag > ../nag/nagst.output 2>&1
@@ -69,7 +69,7 @@ nagst: $(NAGST)
 	rm ../nag/run_nag
 
 nagsq: $(NAGQT)
-	echo " Exhaustive test of subroutine interface to nag"
+	echo " Exhaustive test of subroutine interface to naglib"
 	cd ../nag ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nag \
                          $(RNAGQT)
 	- ../nag/run_nag > ../nag/nagqt.output 2>&1
@@ -107,7 +107,7 @@ lapack_inter:
 naglib.o: $(NLG)(naglib.o)
 
 $(NLG)(naglib.o): ../../dum/naglib.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "nag  "
+	@printf ' %-9s %-15s\t\t' "Compiling" "naglib"
 	$(CP) ../../dum/naglib.F90 $(OBJ)/naglib.F90
 	cd $(OBJ); $(FORTRAN) -o naglib.o $(FFLAGS) naglib.F90
 	cd $(OBJ); $(NARR) naglib.o ; $(RM) naglib.F90 naglib.o
@@ -119,7 +119,7 @@ $(NLG)(naglib.o): ../../dum/naglib.F90
 e04nqt.o: $(OBJ)/e04nqt.o
 
 $(OBJ)/e04nqt.o: ../nag/e04nqt.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "e04nqt  "
+	@printf ' %-9s %-15s\t\t' "Compiling" "e04nqt"
 	$(SED) -f $(SEDS) ../nag/e04nqt.F90 > $(OBJ)/e04nqt.F90
 	cd $(OBJ) ; $(FORTRAN) -o e04nqt.o $(FFLAGSS) e04nqt.F90
 	@printf '[ OK ]\n'
