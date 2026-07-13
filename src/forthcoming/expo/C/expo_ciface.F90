@@ -177,6 +177,20 @@
       END FUNCTION eval_HL
     END INTERFACE
 
+!  saved per-call state for the module-level callback wrappers below, set by
+!  expo_solve_hessian_direct before it enters the Fortran solver. Using module
+!  wrappers together with this module state - rather than wrappers contained in
+!  the solve routine that capture its host variables - means the wrappers have
+!  a fixed address and need no GCC executable-stack trampoline. Modern linkers
+!  and hardened runtimes reject executable stacks (a portability hazard looming
+!  for gcc 15/16), so this keeps the C interface trampoline-free.
+
+    TYPE ( C_FUNPTR ) :: expo_saved_ceval_fc = C_NULL_FUNPTR
+    TYPE ( C_FUNPTR ) :: expo_saved_ceval_gj = C_NULL_FUNPTR
+    TYPE ( C_FUNPTR ) :: expo_saved_ceval_hl = C_NULL_FUNPTR
+    INTEGER ( KIND = ipc_ ) :: expo_saved_n, expo_saved_m, expo_saved_jne, expo_saved_hne
+    TYPE ( C_PTR ) :: expo_saved_cuserdata
+
 !----------------------
 !   P r o c e d u r e s
 !----------------------
@@ -440,6 +454,66 @@
 
     END SUBROUTINE copy_inform_out
 
+!  module-level wrappers that let the Fortran solver call the C evaluation
+!  callbacks. They are module procedures (fixed address, no captured host
+!  variables), so passing them as actual arguments needs no trampoline and no
+!  executable stack. The per-call state they use lives in the expo_saved_* module
+!  variables, set by expo_solve_hessian_direct. NB: this makes the callback
+!  path non-reentrant (one active solve per process), which matches the usage
+!  of the C interface.
+
+!  eval_fc wrapper
+
+    SUBROUTINE wrap_eval_fc( status, x, userdata, f, c )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), INTENT( OUT ) :: f
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: c
+
+!  call the C interoperable eval_fc
+    PROCEDURE( eval_fc ), POINTER :: expo_saved_eval_fc
+    CALL C_F_PROCPOINTER( expo_saved_ceval_fc, expo_saved_eval_fc )
+    status = expo_saved_eval_fc( expo_saved_n, expo_saved_m, x, f, c, expo_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_fc
+
+!  eval_gj wrapper
+
+    SUBROUTINE wrap_eval_gj( status, x, userdata, g, jval )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: g
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: jval
+
+!  call the C interoperable eval_gj
+    PROCEDURE( eval_gj ), POINTER :: expo_saved_eval_gj
+    CALL C_F_PROCPOINTER( expo_saved_ceval_gj, expo_saved_eval_gj )
+    status = expo_saved_eval_gj( expo_saved_n, expo_saved_m, expo_saved_jne, x, g, jval,           &
+                            expo_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_gj
+
+!  eval_hl wrapper
+
+    SUBROUTINE wrap_eval_hl( status, x, y, userdata, hval )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x, y
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: hval
+
+!  call the C interoperable eval_hl
+    PROCEDURE( eval_hl ), POINTER :: expo_saved_eval_hl
+    CALL C_F_PROCPOINTER( expo_saved_ceval_hl, expo_saved_eval_hl )
+    status = expo_saved_eval_hl( expo_saved_n, expo_saved_m, expo_saved_hne, x, y, hval,           &
+                            expo_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_hl
+
   END MODULE GALAHAD_EXPO_precision_ciface
 
 !  -------------------------------------
@@ -670,9 +744,6 @@
 !  local variables
 
   TYPE ( f_expo_full_data_type ), POINTER :: fdata
-  PROCEDURE( eval_fc ), POINTER :: feval_fc
-  PROCEDURE( eval_gj ), POINTER :: feval_gj
-  PROCEDURE( eval_hl ), POINTER :: feval_hl
 
 !  ignore Fortran userdata type (not interoperable)
 
@@ -683,11 +754,14 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  associate procedure pointers
+!  save the C callbacks and the per-call dimensions / userdata pointer for the
+!  module-level wrappers wrap_eval_fc / wrap_eval_gj / wrap_eval_hl
 
-  CALL C_F_PROCPOINTER( ceval_fc, feval_fc )
-  CALL C_F_PROCPOINTER( ceval_gj, feval_gj )
-  CALL C_F_PROCPOINTER( ceval_hl, feval_hl )
+  expo_saved_ceval_fc = ceval_fc
+  expo_saved_ceval_gj = ceval_gj
+  expo_saved_ceval_hl = ceval_hl
+  expo_saved_n = n ; expo_saved_m = m ; expo_saved_jne = jne ; expo_saved_hne = hne
+  expo_saved_cuserdata = cuserdata
 
 !  solve the problem when the Hessian is explicitly available
 
@@ -695,54 +769,6 @@
                                     cl, cu, xl, xu, x, y, z, c, gl,            &
                                     wrap_eval_fc, wrap_eval_gj, wrap_eval_hl )
   RETURN
-
-!  wrappers
-
-  CONTAINS
-
-!  eval_c wrapper
-
-    SUBROUTINE wrap_eval_fc( status, x, userdata, f, c )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), INTENT( OUT ) :: f
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: c
-
-!  Call C interoperable eval_fc
-    status = feval_fc( n, m, x, f, c, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_fc
-
-!  eval_j wrapper
-
-    SUBROUTINE wrap_eval_gj( status, x, userdata, g, jval )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: g
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: jval
-
-!  Call C interoperable eval_gj
-    status = feval_gj( n, m, jne, x, g, jval, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_gj
-
-!  eval_H wrapper
-
-    SUBROUTINE wrap_eval_hl( status, x, y, userdata, hval )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x, y
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: hval
-
-!  Call C interoperable eval_h
-    status = feval_hl( n, m, hne, x, y, hval, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_hl
 
   END SUBROUTINE expo_solve_hessian_direct
 

@@ -154,6 +154,23 @@ functions
 
                ordering chosen depending on matrix characteristics
                (not yet implemented).
+          pastix_ordering : int
+             controls the ordering used by the PaStiX solver
+             (IPARM_ORDERING); ignored by every other solver.
+             Possible values are
+
+             * **<0**
+
+               use PaStiX's own default ordering (the first one
+               compiled in)
+
+             * **0**
+
+               SCOTCH ordering (PastixOrderScotch)
+
+             * **1**
+
+               METIS ordering (PastixOrderMetis).
           full_row_threshold : int
              controls threshold for detecting full rows in analyse,
              registered as percentage of matrix order. If 100, only

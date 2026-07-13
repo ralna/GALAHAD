@@ -23,6 +23,19 @@ on:
         description: 'Sanitizers'
         required: true
         type: string
+<<<<<<< HEAD
+=======
+      symmetric_solver:
+        description: 'Symmetric indefinite linear solver exercised by the tests (sanitizers only); empty falls back to sytr'
+        required: false
+        type: string
+        default: ''
+      definite_solver:
+        description: 'Symmetric definite linear solver exercised by the tests (sanitizers only); empty falls back to potr'
+        required: false
+        type: string
+        default: ''
+>>>>>>> f3eccd13 (Store reverse-communication callbacks as C_FUNPTR (no exec stack))
 
 jobs:
   build:
@@ -118,8 +131,8 @@ jobs:
             echo "OPENBLAS_NUM_THREADS=1" >> $GITHUB_ENV
           fi
 
-      # PaStiX/SPM/SCOTCH leak internal and one-time global allocations that
-      # LeakSanitizer would flag (aborting every test that touches PaStiX);
+      # PaStiX / SPM / SCOTCH leak internal and one-time global allocations
+      # that LeakSanitizer would flag (aborting every test that touches PaStiX);
       # point LSan at a suppression file that ignores those third-party leaks.
       - name: Set LeakSanitizer suppressions for third-party solvers
         if: inputs.sanitizers == 'true'
@@ -127,16 +140,17 @@ jobs:
         run: |
           echo "LSAN_OPTIONS=suppressions=$GITHUB_WORKSPACE/.github/lsan_suppressions.txt" >> $GITHUB_ENV
 
-      # Exercise SSIDS (GALAHAD's own embedded sparse solver) as both the
-      # symmetric and definite linear solver under the sanitizers. The test
-      # drivers read these at run time (see include/galahad_sls_defaults_ls.h),
-      # so no rebuild is needed; unset, they would fall back to sytr / potr.
+      # Exercise the chosen symmetric and definite linear solvers under the sanitizers.
       - name: Select the linear solvers exercised by the tests
         if: inputs.sanitizers == 'true'
         shell: bash
         run: |
-          echo "GALAHAD_SYMMETRIC_LINEAR_SOLVER=ssids" >> $GITHUB_ENV
-          echo "GALAHAD_DEFINITE_LINEAR_SOLVER=ssids" >> $GITHUB_ENV
+          if [[ -n "${{ inputs.symmetric_solver }}" ]]; then
+            echo "GALAHAD_SYMMETRIC_LINEAR_SOLVER=${{ inputs.symmetric_solver }}" >> $GITHUB_ENV
+          fi
+          if [[ -n "${{ inputs.definite_solver }}" ]]; then
+            echo "GALAHAD_DEFINITE_LINEAR_SOLVER=${{ inputs.definite_solver }}" >> $GITHUB_ENV
+          fi
 
       - name: Set environment variables for self-hosted runner
         if: inputs.os == 'self-hosted'
@@ -498,7 +512,10 @@ jobs:
           if [[ "${{inputs.sanitizers}}" == "true" ]]; then
             # SANITIZER="address,undefined"
             SANITIZER="address"
+<<<<<<< HEAD
             C_INTERFACE="false"
+=======
+>>>>>>> f3eccd13 (Store reverse-communication callbacks as C_FUNPTR (no exec stack))
           fi
 
           rm -rf builddir

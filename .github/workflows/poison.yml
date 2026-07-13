@@ -63,7 +63,7 @@ jobs:
                              -Dssids=true \
                              -Dquadruple=true \
                              -Dtests=true \
-                             -Dciface=false \
+                             -Dciface=true \
                              -Dlibblas= \
                              -Dliblapack= \
                              -Db_sanitize=address \

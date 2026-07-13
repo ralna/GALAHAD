@@ -102,6 +102,15 @@
       END FUNCTION eval_fgh
     END INTERFACE
 
+!  saved per-call state for the module-level callback wrapper wrap_eval_fgh,
+!  set by ugo_solve_direct before it enters the Fortran solver. A module wrapper
+!  plus module state (rather than a wrapper contained in the solve routine that
+!  captures its host variables) has a fixed address and so needs no GCC
+!  executable-stack trampoline - rejected by modern linkers / hardened runtimes.
+
+    TYPE ( C_FUNPTR ) :: ugo_saved_ceval_fgh = C_NULL_FUNPTR
+    TYPE ( C_PTR ) :: ugo_saved_cuserdata
+
 !----------------------
 !   P r o c e d u r e s
 !----------------------
@@ -270,6 +279,28 @@
     RETURN
 
     END SUBROUTINE copy_inform_out
+
+!  module-level wrapper that lets the Fortran solver call the C evaluation
+!  callback. Being a module procedure (fixed address, no captured host
+!  variables) it needs no trampoline / executable stack; the per-call state it
+!  uses lives in the ugo_saved_* module variables, set by ugo_solve_direct. NB: this
+!  makes the callback path non-reentrant (one active solve per process).
+
+!  eval_fgh wrapper
+
+    SUBROUTINE wrap_eval_fgh( status, x, userdata, f, g, h )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), INTENT( OUT ) :: f, g, h
+
+!  call the C interoperable eval_fgh
+    PROCEDURE( eval_fgh ), POINTER :: ugo_saved_eval_fgh
+    CALL C_F_PROCPOINTER( ugo_saved_ceval_fgh, ugo_saved_eval_fgh )
+    status = ugo_saved_eval_fgh( x, f, g, h, ugo_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_fgh
 
   END MODULE GALAHAD_UGO_precision_ciface
 
@@ -451,7 +482,6 @@
 !  local variables
 
   TYPE ( f_ugo_full_data_type ), POINTER :: fdata
-  PROCEDURE( eval_fgh ), POINTER :: feval_fgh
 
 !  ignore Fortran userdata type (not interoperable)
 
@@ -462,33 +492,15 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  associate eval_fgh procedure pointer
+!  save the C callback and userdata pointer for the module wrapper wrap_eval_fgh
 
-  CALL C_F_PROCPOINTER( ceval_fgh, feval_fgh )
+  ugo_saved_ceval_fgh = ceval_fgh
+  ugo_saved_cuserdata = cuserdata
 
 !  solve the problem using internal evaluations
 
   CALL f_ugo_solve_direct( fdata, fuserdata, status, x, f, g, h, wrap_eval_fgh )
   RETURN
-
-!  wrappers
-
-  CONTAINS
-
-!  eval_FGH wrapper
-
-    SUBROUTINE wrap_eval_fgh( status, x, userdata, f, g, h )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), INTENT( OUT ) :: f, g, h
-
-!  call C interoperable eval_fgh
-
-    status = feval_fgh( x, f, g, h, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_fgh
 
   END SUBROUTINE ugo_solve_direct
 

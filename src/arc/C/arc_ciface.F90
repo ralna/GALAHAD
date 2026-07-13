@@ -256,6 +256,21 @@
 !   P r o c e d u r e s
 !----------------------
 
+
+!  saved per-call state for the module-level callback wrappers below.
+!  Module wrappers + module state (not wrappers contained in the solve
+!  routines, which capture host variables) are trampoline-free, hence
+!  usable under AddressSanitizer / on no-exec-stack runtimes. NB:
+!  non-reentrant (one active solve per process).
+
+    TYPE ( C_FUNPTR ) :: arc_saved_ceval_f = C_NULL_FUNPTR
+    TYPE ( C_FUNPTR ) :: arc_saved_ceval_g = C_NULL_FUNPTR
+    TYPE ( C_FUNPTR ) :: arc_saved_ceval_h = C_NULL_FUNPTR
+    TYPE ( C_FUNPTR ) :: arc_saved_ceval_prec = C_NULL_FUNPTR
+    TYPE ( C_FUNPTR ) :: arc_saved_ceval_hprod = C_NULL_FUNPTR
+    INTEGER ( KIND = ipc_ ) :: arc_saved_n
+    TYPE ( C_PTR ) :: arc_saved_cuserdata
+    INTEGER ( KIND = ipc_ ) :: arc_saved_ne
   CONTAINS
 
 !  copy C control parameters to fortran
@@ -563,6 +578,84 @@
 
     END SUBROUTINE copy_inform_out
 
+
+    SUBROUTINE wrap_eval_f( status, x, userdata, f )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), INTENT( OUT ) :: f
+
+!  call C interoperable eval_f
+
+    PROCEDURE( eval_f ), POINTER :: arc_saved_eval_f
+    CALL C_F_PROCPOINTER( arc_saved_ceval_f, arc_saved_eval_f )
+    status = arc_saved_eval_f( arc_saved_n, x, f, arc_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_f
+    SUBROUTINE wrap_eval_g( status, x, userdata, g )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: g
+
+!  Call C interoperable eval_g
+    PROCEDURE( eval_g ), POINTER :: arc_saved_eval_g
+    CALL C_F_PROCPOINTER( arc_saved_ceval_g, arc_saved_eval_g )
+    status = arc_saved_eval_g( arc_saved_n, x, g, arc_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_g
+    SUBROUTINE wrap_eval_h( status, x, userdata, hval )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: hval
+
+!  Call C interoperable eval_h
+    PROCEDURE( eval_h ), POINTER :: arc_saved_eval_h
+    CALL C_F_PROCPOINTER( arc_saved_ceval_h, arc_saved_eval_h )
+    status = arc_saved_eval_h( arc_saved_n, arc_saved_ne, x, hval, arc_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_h
+    SUBROUTINE wrap_eval_prec( status, x, userdata, u, v )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: u
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
+
+!  Call C interoperable eval_prec
+    PROCEDURE( eval_prec ), POINTER :: arc_saved_eval_prec
+    CALL C_F_PROCPOINTER( arc_saved_ceval_prec, arc_saved_eval_prec )
+    status = arc_saved_eval_prec( arc_saved_n, x, u, v, arc_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_prec
+    SUBROUTINE wrap_eval_hprod( status, x, userdata, u, v, fgot_h )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( INOUT ) :: u
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
+    LOGICAL ( KIND = C_BOOL ) :: cgot_h
+
+!  call C interoperable eval_hprod
+
+    PROCEDURE( eval_hprod ), POINTER :: arc_saved_eval_hprod
+    CALL C_F_PROCPOINTER( arc_saved_ceval_hprod, arc_saved_eval_hprod )
+    IF ( PRESENT( fgot_h ) ) THEN
+      cgot_h = fgot_h
+    ELSE
+      cgot_h = .false.
+    END IF
+    status = arc_saved_eval_hprod( arc_saved_n, x, u, v, cgot_h, arc_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_hprod
+
   END MODULE GALAHAD_ARC_precision_ciface
 
 !  -------------------------------------
@@ -774,10 +867,6 @@
 !  local variables
 
   TYPE ( f_arc_full_data_type ), POINTER :: fdata
-  PROCEDURE( eval_f ), POINTER :: feval_f
-  PROCEDURE( eval_g ), POINTER :: feval_g
-  PROCEDURE( eval_h ), POINTER :: feval_h
-  PROCEDURE( eval_prec ), POINTER :: feval_prec
 
 !  ignore Fortran userdata type (not interoperable)
 
@@ -790,18 +879,22 @@
 
 !  associate procedure pointers
 
-  CALL C_F_PROCPOINTER( ceval_f, feval_f )
-  CALL C_F_PROCPOINTER( ceval_g, feval_g )
-  CALL C_F_PROCPOINTER( ceval_h, feval_h )
+  arc_saved_ceval_f = ceval_f
+  arc_saved_ceval_g = ceval_g
+  arc_saved_ceval_h = ceval_h
   IF ( C_ASSOCIATED( ceval_prec ) ) THEN
-    CALL C_F_PROCPOINTER( ceval_prec, feval_prec )
+    arc_saved_ceval_prec = ceval_prec
   ELSE
-    NULLIFY( feval_prec )
+    arc_saved_ceval_prec = C_NULL_FUNPTR
   END IF
+
+  arc_saved_n = n
+  arc_saved_cuserdata = cuserdata
+  arc_saved_ne = ne
 
 !  solve the problem when the Hessian is explicitly available
 
-  IF ( ASSOCIATED( feval_prec ) ) THEN
+  IF ( C_ASSOCIATED( arc_saved_ceval_prec ) ) THEN
     CALL f_arc_solve_with_mat( fdata, fuserdata, status, x, g,                 &
                                wrap_eval_f, wrap_eval_g, wrap_eval_h,          &
                                eval_prec = wrap_eval_prec )
@@ -811,69 +904,6 @@
   END IF
 
   RETURN
-
-!  wrappers
-
-  CONTAINS
-
-!  eval_F wrapper
-
-    SUBROUTINE wrap_eval_f( status, x, userdata, f )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), INTENT( OUT ) :: f
-
-!  call C interoperable eval_f
-
-    status = feval_f( n, x, f, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_f
-
-!  eval_G wrapper
-
-    SUBROUTINE wrap_eval_g( status, x, userdata, g )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: g
-
-!  Call C interoperable eval_g
-    status = feval_g( n, x, g, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_g
-
-!  eval_H wrapper
-
-    SUBROUTINE wrap_eval_h( status, x, userdata, hval )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: hval
-
-!  Call C interoperable eval_h
-    status = feval_h( n, ne, x, hval, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_h
-
-!  eval_PREC wrapper
-
-    SUBROUTINE wrap_eval_prec( status, x, userdata, u, v )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: u
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
-
-!  Call C interoperable eval_prec
-    status = feval_prec( n, x, u, v, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_prec
-
   END SUBROUTINE arc_solve_with_mat
 
 !  --------------------------------------------
@@ -899,10 +929,6 @@
 !  local variables
 
   TYPE ( f_arc_full_data_type ), POINTER :: fdata
-  PROCEDURE( eval_f ), POINTER :: feval_f
-  PROCEDURE( eval_g ), POINTER :: feval_g
-  PROCEDURE( eval_hprod ), POINTER :: feval_hprod
-  PROCEDURE( eval_prec ), POINTER :: feval_prec
 
 !  ignore Fortran userdata type (not interoperable)
 
@@ -915,18 +941,18 @@
 
 !  associate procedure pointers
 
-  CALL C_F_PROCPOINTER( ceval_f, feval_f )
-  CALL C_F_PROCPOINTER( ceval_g, feval_g )
-  CALL C_F_PROCPOINTER( ceval_hprod, feval_hprod )
+  arc_saved_ceval_f = ceval_f
+  arc_saved_ceval_g = ceval_g
+  arc_saved_ceval_hprod = ceval_hprod
   IF ( C_ASSOCIATED( ceval_prec ) ) THEN
-    CALL C_F_PROCPOINTER( ceval_prec, feval_prec )
+    arc_saved_ceval_prec = ceval_prec
   ELSE
-    NULLIFY( feval_prec )
+    arc_saved_ceval_prec = C_NULL_FUNPTR
   END IF
 
 !  solve the problem when the Hessian is only available via products
 
-  IF ( ASSOCIATED( feval_prec ) ) THEN
+  IF ( C_ASSOCIATED( arc_saved_ceval_prec ) ) THEN
     CALL f_arc_solve_without_mat( fdata, fuserdata, status, x, g,              &
                                   wrap_eval_f, wrap_eval_g, wrap_eval_hprod,   &
                                   eval_prec = wrap_eval_prec )
@@ -936,79 +962,6 @@
   END IF
 
   RETURN
-
-!  wrappers
-
-  CONTAINS
-
-!  eval_F wrapper
-
-    SUBROUTINE wrap_eval_f( status, x, userdata, f )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), INTENT( OUT ) :: f
-
-!  call C interoperable eval_f
-    status = feval_f( n, x, f, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_f
-
-!  eval_G wrapper
-
-    SUBROUTINE wrap_eval_g( status, x, userdata, g )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: g
-
-!  call C interoperable eval_g
-
-    status = feval_g( n, x, g, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_g
-
-!  eval_HPROD wrapper
-
-    SUBROUTINE wrap_eval_hprod( status, x, userdata, u, v, fgot_h )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( INOUT ) :: u
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
-    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
-    LOGICAL ( KIND = C_BOOL ) :: cgot_h
-
-!  call C interoperable eval_hprod
-
-    IF ( PRESENT( fgot_h ) ) THEN
-      cgot_h = fgot_h
-    ELSE
-      cgot_h = .false.
-    END IF
-    status = feval_hprod( n, x, u, v, cgot_h, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_hprod
-
-!  eval_PREC wrapper
-
-    SUBROUTINE wrap_eval_prec( status, x, userdata, u, v )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: u
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
-
-!  call C interoperable eval_prec
-
-    status = feval_prec( n, x, u, v, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_prec
-
   END SUBROUTINE arc_solve_without_mat
 
 !  -------------------------------------------------

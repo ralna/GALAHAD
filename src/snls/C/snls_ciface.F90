@@ -206,6 +206,23 @@
 !   P r o c e d u r e s
 !----------------------
 
+
+!  saved per-call state for the module-level callback wrappers below.
+!  Module wrappers + module state (not wrappers contained in the solve
+!  routines, which capture host variables) are trampoline-free, hence
+!  usable under AddressSanitizer / on no-exec-stack runtimes. NB:
+!  non-reentrant (one active solve per process).
+
+    TYPE ( C_FUNPTR ) :: snls_saved_ceval_r = C_NULL_FUNPTR
+    TYPE ( C_FUNPTR ) :: snls_saved_ceval_jr = C_NULL_FUNPTR
+    TYPE ( C_FUNPTR ) :: snls_saved_ceval_jr_prod = C_NULL_FUNPTR
+    TYPE ( C_FUNPTR ) :: snls_saved_ceval_Jr_scol = C_NULL_FUNPTR
+    TYPE ( C_FUNPTR ) :: snls_saved_ceval_Jr_sprod = C_NULL_FUNPTR
+    INTEGER ( KIND = ipc_ ) :: snls_saved_n
+    INTEGER ( KIND = ipc_ ) :: snls_saved_m_r
+    TYPE ( C_PTR ) :: snls_saved_cuserdata
+    INTEGER ( KIND = ipc_ ) :: snls_saved_jr_ne
+    LOGICAL ( KIND = C_BOOL ) :: snls_saved_f_indexing
   CONTAINS
 
 !  copy C control parameters to fortran
@@ -464,6 +481,131 @@
     RETURN
 
     END SUBROUTINE copy_inform_out
+
+
+    SUBROUTINE wrap_eval_r( status, x, userdata, r )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: r
+
+!  call C interoperable eval_c
+
+!   write(6, "( ' X in wrap_eval_c = ', 2ES12.4 )" ) x
+    PROCEDURE( eval_r ), POINTER :: snls_saved_eval_r
+    CALL C_F_PROCPOINTER( snls_saved_ceval_r, snls_saved_eval_r )
+    status = snls_saved_eval_r( snls_saved_n, snls_saved_m_r, x, r, snls_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_r
+    SUBROUTINE wrap_eval_jr( status, x, userdata, jr_val )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: jr_val
+
+!  Call C interoperable eval_jr
+    PROCEDURE( eval_jr ), POINTER :: snls_saved_eval_jr
+    CALL C_F_PROCPOINTER( snls_saved_ceval_jr, snls_saved_eval_jr )
+    status = snls_saved_eval_jr( snls_saved_n, snls_saved_m_r, snls_saved_jr_ne, x, jr_val, snls_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_jr
+    SUBROUTINE wrap_eval_jr_prod( status, x, userdata, ftranspose, v, p,       &
+                                  fgot_jr )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: p
+    LOGICAL, INTENT( IN ) :: ftranspose
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_jr
+    LOGICAL ( KIND = C_BOOL ) :: cgot_jr, ctranspose
+
+!  call C interoperable eval_jr_prod
+
+    PROCEDURE( eval_jr_prod ), POINTER :: snls_saved_eval_jr_prod
+    CALL C_F_PROCPOINTER( snls_saved_ceval_jr_prod, snls_saved_eval_jr_prod )
+    ctranspose = ftranspose
+    IF ( PRESENT( fgot_jr ) ) THEN
+      cgot_jr = fgot_jr
+    ELSE
+      cgot_jr = .FALSE.
+    END IF
+    status = snls_saved_eval_jr_prod( snls_saved_n, snls_saved_m_r, x, ctranspose, v, p, cgot_jr, snls_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_jr_prod
+    SUBROUTINE wrap_eval_Jr_scol( status, x, userdata, index, val, row, nz,    &
+                                  fgot_jr )
+    USE GALAHAD_USERDATA_precision
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
+    INTEGER ( KIND = ipc_ ), INTENT( IN ) :: index
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: val
+    INTEGER ( KIND = ipc_ ), DIMENSION( : ), INTENT( INOUT ) :: row
+    INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: nz
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_jr
+    LOGICAL ( KIND = C_BOOL ) :: cgot_jr
+
+!  call C interoperable eval_jr_scol
+
+    PROCEDURE( eval_Jr_scol ), POINTER :: snls_saved_eval_Jr_scol
+    CALL C_F_PROCPOINTER( snls_saved_ceval_Jr_scol, snls_saved_eval_Jr_scol )
+    IF ( PRESENT( fgot_jr ) ) THEN
+      cgot_jr = fgot_jr
+    ELSE
+      cgot_jr = .FALSE.
+    END IF
+
+    IF ( snls_saved_f_indexing ) THEN
+      status = snls_saved_eval_Jr_scol( snls_saved_n, snls_saved_m_r, x, index, val, row, nz, cgot_jr,         &
+                              snls_saved_cuserdata )
+      row( : nz ) = row( : nz ) + 1
+    ELSE
+      status = snls_saved_eval_Jr_scol( snls_saved_n, snls_saved_m_r, x, index - 1, val, row, nz, cgot_jr,     &
+                              snls_saved_cuserdata )
+      row( : nz ) = row( : nz ) + 1
+    END IF
+    RETURN
+
+    END SUBROUTINE wrap_eval_Jr_scol
+    SUBROUTINE wrap_eval_Jr_sprod( status, x, userdata, ftranspose, v, p,      &
+                                   free, n_free, fgot_jr )
+    USE GALAHAD_USERDATA_precision
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
+    LOGICAL, INTENT( IN ) :: ftranspose
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: p
+    INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( : ) :: free
+    INTEGER ( KIND = ipc_ ), INTENT( IN ) :: n_free
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_jr
+    LOGICAL ( KIND = C_BOOL ) :: ctranspose, cgot_jr
+
+!  call C interoperable eval_jr_sprod
+
+    PROCEDURE( eval_Jr_sprod ), POINTER :: snls_saved_eval_Jr_sprod
+    CALL C_F_PROCPOINTER( snls_saved_ceval_Jr_sprod, snls_saved_eval_Jr_sprod )
+    ctranspose = ftranspose
+    IF ( PRESENT( fgot_jr ) ) THEN
+      cgot_jr = fgot_jr
+    ELSE
+      cgot_jr = .FALSE.
+    END IF
+
+    IF ( snls_saved_f_indexing ) THEN
+      status = snls_saved_eval_Jr_sprod( snls_saved_n, snls_saved_m_r, x, ctranspose, v, p, free, n_free,      &
+                               cgot_jr, snls_saved_cuserdata )
+    ELSE
+      status = snls_saved_eval_Jr_sprod( snls_saved_n, snls_saved_m_r, x, ctranspose, v, p, free - 1, n_free,  &
+                               cgot_jr, snls_saved_cuserdata )
+    END IF
+    RETURN
+
+    END SUBROUTINE wrap_eval_Jr_sprod
 
   END MODULE GALAHAD_SNLS_precision_ciface
 
@@ -735,8 +877,6 @@
 !  local variables
 
   TYPE ( f_snls_full_data_type ), POINTER :: fdata
-  PROCEDURE( eval_r ), POINTER :: feval_r
-  PROCEDURE( eval_jr ), POINTER :: feval_jr
 
 !  ignore Fortran userdata type (not interoperable)
 
@@ -748,8 +888,13 @@
 
 !  associate procedure pointers
 
-  CALL C_F_PROCPOINTER( ceval_r, feval_r )
-  CALL C_F_PROCPOINTER( ceval_jr, feval_jr )
+  snls_saved_ceval_r = ceval_r
+  snls_saved_ceval_jr = ceval_jr
+
+  snls_saved_n = n
+  snls_saved_m_r = m_r
+  snls_saved_cuserdata = cuserdata
+  snls_saved_jr_ne = jr_ne
 
 !  solve the problem when the Hessian is explicitly available
 
@@ -757,41 +902,6 @@
                               wrap_eval_r, wrap_eval_jr, W = w )
 
   RETURN
-
-!  wrappers
-
-  CONTAINS
-
-!  eval_r wrapper
-
-    SUBROUTINE wrap_eval_r( status, x, userdata, r )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: r
-
-!  call C interoperable eval_c
-
-!   write(6, "( ' X in wrap_eval_c = ', 2ES12.4 )" ) x
-    status = feval_r( n, m_r, x, r, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_r
-
-!  eval_jr wrapper
-
-    SUBROUTINE wrap_eval_jr( status, x, userdata, jr_val )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: jr_val
-
-!  Call C interoperable eval_jr
-    status = feval_jr( n, m_r, jr_ne, x, jr_val, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_jr
-
   END SUBROUTINE snls_solve_with_jac
 
 !  ----------------------------------------------
@@ -824,10 +934,6 @@
 !  local variables
 
   TYPE ( f_snls_full_data_type ), POINTER :: fdata
-  PROCEDURE( eval_r ), POINTER :: feval_r
-  PROCEDURE( eval_jr_prod ), POINTER :: feval_jr_prod
-  PROCEDURE( eval_jr_scol ), POINTER :: feval_jr_scol
-  PROCEDURE( eval_jr_sprod ), POINTER :: feval_jr_sprod
   LOGICAL :: f_indexing
 
 !  ignore Fortran userdata type (not interoperable)
@@ -843,10 +949,15 @@
 
 !  associate procedure pointers
 
-  CALL C_F_PROCPOINTER( ceval_r, feval_r )
-  CALL C_F_PROCPOINTER( ceval_jr_prod, feval_jr_prod )
-  CALL C_F_PROCPOINTER( ceval_jr_scol, feval_jr_scol )
-  CALL C_F_PROCPOINTER( ceval_jr_sprod, feval_jr_sprod )
+  snls_saved_ceval_r = ceval_r
+  snls_saved_ceval_jr_prod = ceval_jr_prod
+  snls_saved_ceval_Jr_scol = ceval_jr_scol
+  snls_saved_ceval_Jr_sprod = ceval_jr_sprod
+
+  snls_saved_n = n
+  snls_saved_m_r = m_r
+  snls_saved_cuserdata = cuserdata
+  snls_saved_f_indexing = f_indexing
 
 !  solve the problem when the Hessian is only available via products
 
@@ -855,120 +966,6 @@
                                   wrap_eval_jr_scol, wrap_eval_jr_sprod,       &
                                   W = w )
   RETURN
-
-!  wrappers
-
-  CONTAINS
-
-!  eval_c wrapper
-
-    SUBROUTINE wrap_eval_r( status, x, userdata, r )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: r
-
-!  call C interoperable eval_r
-
-    status = feval_r( n, m_r, x, r, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_r
-
-!  eval_jprod wrapper
-
-    SUBROUTINE wrap_eval_jr_prod( status, x, userdata, ftranspose, v, p,       &
-                                  fgot_jr )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: p
-    LOGICAL, INTENT( IN ) :: ftranspose
-    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_jr
-    LOGICAL ( KIND = C_BOOL ) :: cgot_jr, ctranspose
-
-!  call C interoperable eval_jr_prod
-
-    ctranspose = ftranspose
-    IF ( PRESENT( fgot_jr ) ) THEN
-      cgot_jr = fgot_jr
-    ELSE
-      cgot_jr = .FALSE.
-    END IF
-    status = feval_jr_prod( n, m_r, x, ctranspose, v, p, cgot_jr, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_jr_prod
-
-    SUBROUTINE wrap_eval_Jr_scol( status, x, userdata, index, val, row, nz,    &
-                                  fgot_jr )
-    USE GALAHAD_USERDATA_precision
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
-    INTEGER ( KIND = ipc_ ), INTENT( IN ) :: index
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: val
-    INTEGER ( KIND = ipc_ ), DIMENSION( : ), INTENT( INOUT ) :: row
-    INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: nz
-    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_jr
-    LOGICAL ( KIND = C_BOOL ) :: cgot_jr
-
-!  call C interoperable eval_jr_scol
-
-    IF ( PRESENT( fgot_jr ) ) THEN
-      cgot_jr = fgot_jr
-    ELSE
-      cgot_jr = .FALSE.
-    END IF
-
-    IF ( f_indexing ) THEN
-      status = feval_Jr_scol( n, m_r, x, index, val, row, nz, cgot_jr,         &
-                              cuserdata )
-      row( : nz ) = row( : nz ) + 1
-    ELSE
-      status = feval_Jr_scol( n, m_r, x, index - 1, val, row, nz, cgot_jr,     &
-                              cuserdata )
-      row( : nz ) = row( : nz ) + 1
-    END IF
-    RETURN
-
-    END SUBROUTINE wrap_eval_Jr_scol
-
-    SUBROUTINE wrap_eval_Jr_sprod( status, x, userdata, ftranspose, v, p,      &
-                                   free, n_free, fgot_jr )
-    USE GALAHAD_USERDATA_precision
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
-    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
-    LOGICAL, INTENT( IN ) :: ftranspose
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: p
-    INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( : ) :: free
-    INTEGER ( KIND = ipc_ ), INTENT( IN ) :: n_free
-    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_jr
-    LOGICAL ( KIND = C_BOOL ) :: ctranspose, cgot_jr
-
-!  call C interoperable eval_jr_sprod
-
-    ctranspose = ftranspose
-    IF ( PRESENT( fgot_jr ) ) THEN
-      cgot_jr = fgot_jr
-    ELSE
-      cgot_jr = .FALSE.
-    END IF
-
-    IF ( f_indexing ) THEN
-      status = feval_Jr_sprod( n, m_r, x, ctranspose, v, p, free, n_free,      &
-                               cgot_jr, cuserdata )
-    ELSE
-      status = feval_Jr_sprod( n, m_r, x, ctranspose, v, p, free - 1, n_free,  &
-                               cgot_jr, cuserdata )
-    END IF
-    RETURN
-
-    END SUBROUTINE wrap_eval_Jr_sprod
-
   END SUBROUTINE snls_solve_with_jacprod
 
 !  --------------------------------------------------

@@ -130,6 +130,16 @@
       END FUNCTION eval_prec
     END INTERFACE
 
+!  saved per-call state for the module-level wrapper wrap_eval_prec, set by
+!  slls_solve_given_a. A module wrapper + module state (rather than a wrapper
+!  contained in the solve routine, which captures host variables) has a fixed
+!  address and needs no GCC executable-stack trampoline - rejected under
+!  AddressSanitizer and by modern linkers / hardened runtimes.
+
+    TYPE ( C_FUNPTR ) :: slls_saved_ceval_prec = C_NULL_FUNPTR
+    INTEGER ( KIND = ipc_ ) :: slls_saved_n
+    TYPE ( C_PTR ) :: slls_saved_cuserdata
+
 !----------------------
 !   P r o c e d u r e s
 !----------------------
@@ -362,6 +372,24 @@
     RETURN
 
     END SUBROUTINE copy_inform_out
+
+!  module-level wrapper (fixed address, no captured host variables, so no
+!  trampoline / executable stack); per-call state is in the slls_saved_* module
+!  variables set by slls_solve_given_a. NB: non-reentrant (one solve/process).
+
+    SUBROUTINE wrap_eval_prec( status, userdata, v, p )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: p
+
+!  call the C interoperable eval_prec
+    PROCEDURE( eval_prec ), POINTER :: slls_saved_eval_prec
+    CALL C_F_PROCPOINTER( slls_saved_ceval_prec, slls_saved_eval_prec )
+    status = slls_saved_eval_prec( slls_saved_n, v, p, slls_saved_cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_prec
 
   END MODULE GALAHAD_SLLS_precision_ciface
 
@@ -613,7 +641,7 @@
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  TYPE ( C_PTR ), INTENT( INOUT ) :: cuserdata
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o, m, aone
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
   REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: regularization_weight
@@ -631,7 +659,6 @@
 !  local variables
 
   TYPE ( f_slls_full_data_type ), POINTER :: fdata
-  PROCEDURE( eval_prec ), POINTER :: feval_prec
 
 !  ignore Fortran userdata type (not interoperable)
 
@@ -645,10 +672,12 @@
 !  associate procedure pointers
 
   IF ( C_ASSOCIATED( ceval_prec ) ) THEN
-    CALL C_F_PROCPOINTER( ceval_prec, feval_prec )
+    slls_saved_ceval_prec = ceval_prec
   ELSE
-    NULLIFY( feval_prec )
+    slls_saved_ceval_prec = C_NULL_FUNPTR
   END IF
+  slls_saved_n = n
+  slls_saved_cuserdata = cuserdata
 
 !  solve the bound-constrained least-squares problem
 
@@ -657,25 +686,6 @@
                              W = w, X_s = x_s, eval_PREC = wrap_eval_prec )
 
   RETURN
-
-!  wrappers
-
-  CONTAINS
-
-!  eval_PREC wrapper
-
-    SUBROUTINE wrap_eval_prec( status, userdata, v, p )
-    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
-    TYPE ( f_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
-    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: p
-
-!  call C interoperable eval_prec
-
-    status = feval_prec( n, v, p, cuserdata )
-    RETURN
-
-    END SUBROUTINE wrap_eval_prec
 
   END SUBROUTINE slls_solve_given_a
 
