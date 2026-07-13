@@ -1,0 +1,149 @@
+#  Main body of the installation makefile for any optional OSQP procedures
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2026-06-26
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  Libraries used
+
+LIBS = -lgalahad $(OSQP) $(LAPACK) $(BLAS)
+NLIBS = $(LIBS) -lgalahad_problem
+
+#  compilation agenda
+
+BASICZ = blas lapack symbols dummy blas_inter lapack_inter
+
+OSQPS = $(BASICSZ) $(OSLGS)(osqp.o)
+OSQPD = $(BASICSZ) $(OSLGD)(osqp.o)
+OSQPQ = $(BASICSZ) $(OSLGQ)(osqp.o)
+OSQPS64 = $(BASICSZ) $(OSLGS64)(osqp.o)
+OSQPD64 = $(BASICSZ) $(OSLGD64)(osqp.o)
+OSQPQ64 = $(BASICSZ) $(OSLGQ64)(osqp.o)
+
+OSQPST = $(OSQPS) $(OBJ)/osqpt.o
+OSQPDT = $(OSQPD) $(OBJ)/osqpt.o
+OSQPQT = $(OSQPQ) $(OBJ)/osqpt.o
+OSQPD64T = $(OSQPD64) $(OBJ)/osqpt.o
+
+ROSQPST = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
+ROSQPDT = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
+ROSQPQT = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
+ROSQPD64T = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
+
+#  osqp
+
+osqp_silent: osqp_$(PRECIS)
+osqp: osqp_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(OSQP) ($(PRECIS) $(SUCC)"
+osqp_single: $(OSQPS)
+	$(RANLIB) $(OSLGS)
+osqp_double: $(OSQPD)
+	$(RANLIB) $(OSLGD)
+osqp_quadruple: $(OSQPQ)
+	$(RANLIB) $(OSLGQ)
+osqp_single_64: $(OSQPS64)
+	$(RANLIB) $(OSLGS64)
+osqp_double_64: $(OSQPD64)
+	$(RANLIB) $(OSLGD64)
+osqp_quadruple_64: $(OSQPQ64)
+	$(RANLIB) $(OSLGQ64)
+
+#  tests
+
+osqpdt: $(OSQPDT)
+	echo " Exhaustive test of subroutine interface to osqp"
+	cd ../osqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_osqp \
+                         $(ROSQPDT)
+#	- ../osqp/run_osqp > ../osqp/osqpdt.output 2>&1
+#	cat ../osqp/osqpdt.output
+	- ../osqp/run_osqp
+	rm ../osqp/run_osqp
+
+osqpst: $(OSQPST)
+	echo " Exhaustive test of subroutine interface to osqp"
+	cd ../osqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_osqp \
+                         $(ROSQPST)
+	- ../osqp/run_osqp > ../osqp/osqpst.output 2>&1
+	cat ../osqp/osqpst.output
+	rm ../osqp/run_osqp
+
+osqpsq: $(OSQPQT)
+	echo " Exhaustive test of subroutine interface to osqp"
+	cd ../osqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_osqp \
+                         $(ROSQPQT)
+	- ../osqp/run_osqp > ../osqp/osqpqt.output 2>&1
+	cat ../osqp/osqpqt.output
+	rm ../osqp/run_osqp
+
+osqpdt_64: $(OSQPD64T)
+	echo " Exhaustive test of subroutine interface to osqp"
+	cd ../osqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_osqp \
+                         $(ROSQPD64T)
+#	- ../osqp/run_osqp > ../osqp/osqpdt.output 2>&1
+#	cat ../osqp/osqpdt.output
+	- ../osqp/run_osqp
+	rm ../osqp/run_osqp
+
+#  blas and lapack generic packages and interfaces
+
+blas:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+symbols:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+dummy:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+blas_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+#  individual compilations
+
+osqp.o: $(OSLG)(osqp.o)
+
+$(OSLG)(osqp.o): ../../dum/osqp.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "osqp  "
+	$(CP) ../../dum/osqp.F90 $(OBJ)/osqp.F90
+	cd $(OBJ); $(FORTRAN) -o osqp.o $(FFLAGS) osqp.F90
+	cd $(OBJ); $(OSARR) osqp.o ; $(RM) osqp.F90 osqp.o
+	$(RANLIB) $(OSLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  test programs
+
+osqpt.o: $(OBJ)/osqpt.o
+
+$(OBJ)/osqpt.o: ../osqp/osqpt.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "osqpt  "
+	$(CP) ../osqp/osqpt.F90 $(OBJ)/osqpt.F90
+	cd $(OBJ) ; $(FORTRAN) -o osqpt.o $(FFLAGSS) osqpt.F90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(OSLG) $(OBJ)/osqpt.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'

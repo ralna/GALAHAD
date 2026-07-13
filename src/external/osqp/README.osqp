@@ -1,0 +1,68 @@
+The package OSQP
+
+  https://github.com/osqp/osqp
+
+is not included as part of GALAHAD, but may be
+called optionally from GALAHAD's ubersolver QP package.
+
+GALAHAD relies on an environment variable,
+and if OSQP has not been installed, these 
+are set by default as
+
+  OSQP = -lgalahad_osqp
+
+This allows GALAHAD to function, but any attempt
+to use OSQP will result in an error return code.
+
+If you wish to use OSQP ...
+
+1. Download OSQP via git to a suitable location 
+
+  https://github.com/osqp/osqp-fortran
+
+  and thene move into the OSQP directory using
+
+     cd ./OSQP
+
+   we shall refer to this through the shell variable $OSQP
+
+2. Install the package into a suitable subdirectory
+   (here ./build/pc64.lnx.gfo for a gfortran build) using Cmake
+
+    cmake -B build/pc64.lnx.gfo \
+     -DCMAKE_BUILD_TYPE=Release \
+     -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+     -DOSQP_USE_FLOAT=OFF \
+     -DOSQP_USE_LONG=OFF \
+     -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+    cmake --build build/pc64.lnx.gfo --config Release -j
+
+   This is appropriate for default GALAHAD interactions, but
+   OSQP_USE_FLOAT=ON and -DOSQP_USE_LONG=ON change from 
+   double- to single-precision reals and 64- rather than 32-bit
+   integers
+   
+   You can use other compilers by, e.g., resetting them prior to
+   the first call, e.g. (in the bash shell)
+
+      CC=icx CXX=icpx FC=ifx cmake ....
+   
+   or by using the flags
+
+     -DCMAKE_C_COMPILER=icx \
+     -DCMAKE_CXX_COMPILER=icpx \ 
+     -DCMAKE_Fortran_COMPILER=ifx \
+
+   but remember to change the name of the build directory (to, e.g.,
+   build/pc64.lnx.ifx) if you want to have two or more separate builds
+
+3. Now call GALAHAD with the envirnment variables
+
+      OSQP_BUILD = $(OSQP)/build/pc64.lnx.gfo
+      OSQP = -losqpf -losqp \
+        -L$(OSQP_BUILD)/lib -L$(OSQP_BUILD)/osqp_sources/out \
+        -Wl,-R$(OSQP_BUILD)/lib:$(OSQP_BUILD)/osqp_sources/out
+
+Nick Gould
+For GALAHAD productions
+July 13th 2026
