@@ -160,6 +160,7 @@
            END SELECT
            B = drhs
          END SELECT
+         CALL SLS_terminate( data, control, inform )
 ! Initialize the structures
          IF ( solver == sils ) THEN
            WRITE( 6, "( '         sils ' )", advance = 'no' )
@@ -426,6 +427,7 @@
            END SELECT
            B = drhs
          END SELECT
+         CALL SLS_terminate( data, control, inform )
 ! Initialize the structures
          IF ( solver == sils ) THEN
            WRITE( 6, "( '         sils ' )", advance = 'no' )
@@ -582,6 +584,7 @@
          WRITE( 6, "( '' )" )
        END DO
      END DO
+
      SELECT CASE( type )
      CASE ( 1 )
        DEALLOCATE( matrix%val, matrix%row, matrix%col )

@@ -70,10 +70,10 @@
      USE MKL_PARDISO
      USE GALAHAD_SSIDS_precision
      USE GALAHAD_MUMPS_TYPES_precision, MPI_COMM_WORLD_mumps => MPI_COMM_WORLD
-     USE spmf_enums, MPI_COMM_WORLD_pastix => MPI_COMM_WORLD
-     USE spmf_interfaces_precision
-     USE pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
-     USE pastixf_interfaces_precision
+     USE galahad_spmf_enums, MPI_COMM_WORLD_pastix => MPI_COMM_WORLD
+     USE galahad_spmf_interfaces
+     USE galahad_pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
+     USE galahad_pastixf_interfaces
 !    USE omp_lib
 
      IMPLICIT NONE
@@ -870,8 +870,8 @@
        TYPE ( spmatrix_t ), POINTER :: spm, spm_check
        TYPE ( pastix_order_t ), POINTER :: order_pastix => NULL( )
        INTEGER ( KIND = pastix_int_t ), DIMENSION( : ), POINTER :: PERMTAB
-       INTEGER ( KIND = pastix_int_t ) :: iparm_pastix( 75 )
-       REAL ( KIND = rp_ ) :: dparm_pastix( 24 )
+       INTEGER ( KIND = pastix_int_t ) :: iparm_pastix( IPARM_SIZE )
+       REAL ( KIND = dpc_ ) :: dparm_pastix( DPARM_SIZE )
        TYPE ( MUMPS_STRUC ) :: mumps_par
 
      END TYPE SLS_data_type
@@ -3110,7 +3110,7 @@
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: i, j, k, l, l1, l2, ordering, pardiso_solver
-     INTEGER( ipc_ ) :: pastix_info
+     INTEGER( c_int ) :: pastix_info
      REAL :: time, time_start, time_now
      REAL ( KIND = rp_ ) :: clock, clock_start, clock_now
      LOGICAL :: mc6168_ordering
@@ -4428,8 +4428,9 @@
          CALL spmGetArray( data%spm, colptr = data%PTR,                        &
                            rowptr = data%ROW, svalues = data%VAL )
 #elif REAL_128
-         CALL spmGetArray( data%spm, colptr = data%PTR,                        &
-                           rowptr = data%ROW, qvalues = data%VAL )
+!  PaStiX has no quadruple arithmetic (it is the dummy solver here), so only the
+!  structure is fetched; the value pointer is never used in this precision
+         CALL spmGetArray( data%spm, colptr = data%PTR, rowptr = data%ROW )
 #else
          CALL spmGetArray( data%spm, colptr = data%PTR,                        &
                            rowptr = data%ROW, dvalues = data%VAL )
@@ -4736,7 +4737,7 @@
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, k, l, l1, l2, job, matrix_type
-     INTEGER( ipc_ ) :: pastix_info
+     INTEGER( c_int ) :: pastix_info
      REAL :: time, time_start, time_now
      REAL ( KIND = rp_ ) :: clock, clock_start, clock_now
      REAL ( KIND = rp_ ) :: val
@@ -6744,7 +6745,7 @@
 
 !  local variables
 
-     INTEGER( ipc_ ) :: pastix_info
+     INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
      REAL ( KIND = rp_ ) :: clock, clock_now, tiny
 
@@ -7161,7 +7162,7 @@
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: i, lx, nrhs
-     INTEGER( ipc_ ) :: pastix_info
+     INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
      REAL ( KIND = rp_ ) :: clock, clock_now, tiny
 

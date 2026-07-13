@@ -4,7 +4,7 @@
 
 !-*-*-  G A L A H A D  -  D U M M Y   S P M F _ E N U M S   M O D U L E  -*-*-
 
-MODULE spmf_enums
+MODULE galahad_spmf_enums
 
   USE iso_c_binding, ONLY : c_ptr, c_int, c_int32_t, c_int64_t
 
@@ -43,6 +43,7 @@ MODULE spmf_enums
     INTEGER ( KIND = c_int ) :: clustnum
     INTEGER ( KIND = c_int ) :: clustnbr
     TYPE ( MPI_Comm ) :: comm
+    INTEGER ( KIND = c_int ) :: replicated
   END type spmatrix_t
 
   INTEGER, PARAMETER :: SpmCSC = 0
@@ -55,4 +56,4 @@ MODULE spmf_enums
   INTEGER, PARAMETER :: SpmComplex32 = 4
   INTEGER, PARAMETER :: SpmComplex64 = 5
 
-END MODULE spmf_enums
+END MODULE galahad_spmf_enums

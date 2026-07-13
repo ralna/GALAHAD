@@ -25,22 +25,33 @@ typedef float real_sp_;   // single precision
 #ifdef REAL_32
 /** `real_wp_` is real working precision */
 typedef float real_wp_;  // working precision
-typedef float rpc_;  // working precision
 #elif REAL_128
 /** `real_wp_` is real working precision */
 typedef __float128 real_wp_;  // working precision
-typedef __float128 rpc_;  // working precision
 #else
 /** `real_wp_` is the real working precision used */
 typedef double real_wp_;  // working precision
+#endif
+
+/* rpc_ is also defined by hsl_precision.h */
+#ifndef GALAHAD_RPC_DEFINED
+#define GALAHAD_RPC_DEFINED
+#ifdef REAL_32
+typedef float rpc_;  // working precision
+#elif REAL_128
+typedef __float128 rpc_;  // working precision
+#else
 typedef double rpc_;  // working precision
+#endif
 #endif
 
 typedef int64_t longc_;  // long integers
 
+/* ipc_ / d_ipc_ are also defined by hsl_precision.h */
+#ifndef GALAHAD_IPC_DEFINED
+#define GALAHAD_IPC_DEFINED
 #ifdef INTEGER_64
 typedef int64_t ipc_;  // integer type
-typedef uint64_t uipc_;
 #ifdef __cplusplus
 #define d_ipc_ "lld"
 #else
@@ -48,12 +59,18 @@ typedef uint64_t uipc_;
 #endif
 #else
 typedef int32_t ipc_;  // integer type
-typedef uint32_t uipc_;
 #ifdef __cplusplus
 #define d_ipc_ "d"
 #else
 #define d_ipc_ PRId32
 #endif
+#endif
+#endif
+
+#ifdef INTEGER_64
+typedef uint64_t uipc_;
+#else
+typedef uint32_t uipc_;
 #endif
 
 // end include guard

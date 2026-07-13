@@ -6,10 +6,10 @@
 PROGRAM test_pastix
   USE GALAHAD_KINDS_precision
   USE iso_c_binding
-  USE spmf_enums
-  USE spmf_interfaces_precision
-  USE pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
-  USE pastixf_interfaces_precision
+  USE galahad_spmf_enums
+  USE galahad_spmf_interfaces
+  USE galahad_pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
+  USE galahad_pastixf_interfaces
 ! USE spmf
 ! USE pastixf
   IMPLICIT NONE
@@ -22,9 +22,11 @@ PROGRAM test_pastix
   TYPE( pastix_data_t ), POINTER :: pastix_data
   TYPE( spmatrix_t ), POINTER :: spm, spm2
   INTEGER ( kind = pastix_int_t ), target :: iparm( iparm_size )
-  REAL ( kind = c_precision ), target :: dparm( dparm_size )
-  INTEGER ( KIND = ip_ ) :: nrhs, store, status
-  INTEGER ( ipc_ ) :: info
+  REAL ( kind = dpc_ ), target :: dparm( dparm_size )
+  INTEGER ( KIND = ip_ ) :: nrhs, store, status, iorder, iord, n_ord
+  INTEGER ( KIND = ip_ ) :: ord_list( 2 )
+  INTEGER ( c_int ) :: info
+  CHARACTER ( LEN = 32 ) :: pastix_orderings_env
   INTEGER ( kind = pastix_int_t ), DIMENSION( : ), POINTER :: permtab
   TYPE ( pastix_order_t ), POINTER :: order => NULL( )
 #ifdef REAL_32
@@ -34,6 +36,31 @@ PROGRAM test_pastix
 #else
   REAL ( kind = dp_ ) :: eps = 0.000000000001_dp_
 #endif
+
+! build the list of PaStiX orderings to test from GALAHAD_PASTIX_ORDERINGS
+! (e.g. "0 1" tests both Scotch and Metis in a single run). Requesting an
+! ordering that was not compiled into PaStiX makes PaStiX abort the process,
+! so only the compiled ones must be listed. When the variable is empty we make
+! a single pass with the PaStiX default ordering (iparm(9) left untouched),
+! which is always safe whatever orderings were compiled in.
+
+  CALL get_environment_variable( 'GALAHAD_PASTIX_ORDERINGS',                    &
+                                 pastix_orderings_env )
+  n_ord = 0
+  IF ( INDEX( pastix_orderings_env, '0' ) > 0 ) THEN
+    n_ord = n_ord + 1 ; ord_list( n_ord ) = 0     ! PastixOrderScotch
+  END IF
+  IF ( INDEX( pastix_orderings_env, '1' ) > 0 ) THEN
+    n_ord = n_ord + 1 ; ord_list( n_ord ) = 1     ! PastixOrderMetis
+  END IF
+  IF ( n_ord == 0 ) THEN
+    n_ord = 1 ; ord_list( 1 ) = - 1               ! PaStiX default ordering
+  END IF
+
+  DO iord = 1, n_ord
+    iorder = ord_list( iord )
+    WRITE( 6, * ) ' === PaStiX ordering ', iorder,                             &
+                  ' ( -1 = default, 0 = Scotch, 1 = Metis )'
 
   DO store = 1, 3
 
@@ -48,6 +75,7 @@ PROGRAM test_pastix
     ELSE
       iparm( 44 ) = 1
     END IF
+    IF ( iorder >= 0 ) iparm( 9 ) = iorder   ! IPARM_ORDERING (else default)
     CALL pastixInit( pastix_data, MPI_COMM_WORLD, iparm, dparm )
 
 !   Create the spm out of the internal data
@@ -81,7 +109,7 @@ PROGRAM test_pastix
 write(6,"('single')")
       CALL spmGetArray( spm, colptr = COL, rowptr = ROW, svalues = VAL )
 #elif REAL_128
-      CALL spmGetArray( spm, colptr = COL, rowptr = ROW, qvalues = VAL )
+      CALL spmGetArray( spm, colptr = COL, rowptr = ROW )
 #else
 write(6,"('double')")
       CALL spmGetArray( spm, colptr = COL, rowptr = ROW, dvalues = VAL )
@@ -123,7 +151,7 @@ write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
 #ifdef REAL_32
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, svalues = VAL )
 #elif REAL_128
-      CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, qvalues = VAL )
+      CALL spmGetArray( spm, colptr = PTR, rowptr = ROW )
 #else
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, dvalues = VAL )
 #endif
@@ -165,7 +193,7 @@ write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
 #ifdef REAL_32
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, svalues = VAL )
 #elif REAL_128
-      CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, qvalues = VAL )
+      CALL spmGetArray( spm, colptr = PTR, rowptr = ROW )
 #else
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, dvalues = VAL )
 #endif
@@ -209,7 +237,6 @@ write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
 
 !   Factorize the matrix
     CALL pastix_task_numfact( pastix_data, spm, info )
-    write(6,*) ' info ', info
 
 ! If needed, get the generated ordering
     CALL pastixOrderGet( pastix_data, order )
@@ -240,6 +267,8 @@ write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
 
     DEALLOCATE( spm, STAT = status )
     spm => NULL( )
+
+  END DO
 
   END DO
 

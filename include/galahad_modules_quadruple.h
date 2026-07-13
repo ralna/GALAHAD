@@ -441,8 +441,6 @@
 #define RUNQPB_QPLIB_precision RUNQPB_QPLIB_quadruple_64
 #define RUNQPC_QPLIB_precision RUNQPC_QPLIB_quadruple_64
 #define RUNQP_QPLIB_precision RUNQP_QPLIB_quadruple_64
-#define pastixf_interfaces_precision pastixf_interfaces_quadruple_64
-#define spmf_interfaces_precision spmf_interfaces_quadruple_64
 
 #else
 
@@ -888,7 +886,5 @@
 #define RUNQPB_QPLIB_precision RUNQPB_QPLIB_quadruple
 #define RUNQPC_QPLIB_precision RUNQPC_QPLIB_quadruple
 #define RUNQP_QPLIB_precision RUNQP_QPLIB_quadruple
-#define pastixf_interfaces_precision pastixf_interfaces_quadruple
-#define spmf_interfaces_precision spmf_interfaces_quadruple
 #endif
 #define c_precision c_float128

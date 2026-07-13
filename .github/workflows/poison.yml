@@ -1,0 +1,87 @@
+name: Poison
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Build with "poisoned" automatic variables so that use-of-uninitialised-memory
+# bugs (which otherwise only crash intermittently, depending on stack/heap
+# contents, platform and optimisation) fail deterministically. C/C++ automatic
+# variables are filled with a non-zero pattern via -ftrivial-auto-var-init, and
+# Fortran automatics via -finit-*. Combined with AddressSanitizer so that a
+# poisoned index/pointer that walks off an array is reported cleanly rather than
+# as a raw SIGSEGV. This is the build that would have caught the ssids
+# find_maxloc int64+single index corruption up front.
+
+jobs:
+  poison:
+    name: Poison/Int${{ matrix.int }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        int: ['32', '64']
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y ninja-build gcc gfortran libhwloc-dev
+        pip install meson
+
+    - name: Set the environment variables
+      shell: bash
+      run: |
+        echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
+    - name: Set environment variables for OpenMP
+      shell: bash
+      run: |
+        echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
+        echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
+
+    - name: Set the LeakSanitizer suppressions
+      shell: bash
+      run: |
+        echo "LSAN_OPTIONS=suppressions=$GITHUB_WORKSPACE/.github/lsan_suppressions.txt" >> $GITHUB_ENV
+
+    - name: Setup
+      run: |
+        INT64=false
+        if [[ "${{ matrix.int }}" == "64" ]]; then INT64=true; fi
+        meson setup builddir --buildtype=debug \
+                             -Dint64=$INT64 \
+                             -Dssids=true \
+                             -Dquadruple=true \
+                             -Dtests=true \
+                             -Dciface=false \
+                             -Dlibblas= \
+                             -Dliblapack= \
+                             -Db_sanitize=address \
+                             -Dc_args="-ftrivial-auto-var-init=pattern" \
+                             -Dcpp_args="-ftrivial-auto-var-init=pattern" \
+                             -Dfortran_args="-finit-integer=-99999999 -finit-logical=true -finit-character=35 -finit-derived"
+
+    - name: Compilation
+      run: |
+        meson compile -C builddir
+
+    - name: Tests
+      run: meson test -C builddir --timeout-multiplier 10
+
+    - name: Upload test logs on failure
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: poison-testlog-int${{ matrix.int }}
+        path: builddir/meson-logs/testlog.txt
+        if-no-files-found: ignore

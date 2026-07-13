@@ -236,6 +236,10 @@
 
       PROCEDURE, PASS( akeep ) :: free => free_akeep
 
+!  finalizer: release C++ symbolic subtrees on deallocation/reset/scope-exit
+
+      FINAL :: final_akeep
+
     END TYPE SSIDS_akeep_type
 
 !  -------------------------
@@ -276,6 +280,10 @@
        PROCEDURE, PASS( fkeep ) :: enquire_indef => enquire_indef_cpu
        PROCEDURE, PASS( fkeep ) :: alter => alter_cpu ! Alter D values
        PROCEDURE, PASS( fkeep ) :: free => free_fkeep ! Frees memory
+
+!  finalizer: release C++ numeric subtrees on deallocation/reset/scope-exit
+
+       FINAL :: final_fkeep
      END TYPE SSIDS_fkeep_type
 
   CONTAINS
@@ -4722,6 +4730,28 @@
 
     END SUBROUTINE free_akeep
 
+!-*-*-  G A L A H A D - S S I D S _ final _ akeep  S U B R O U T I N E  -*-*-
+
+    SUBROUTINE final_akeep( akeep )
+
+!  finalizer for SSIDS_akeep_type. Ensures the C++ symbolic subtrees (reached
+!  only through the akeep%subtree pointer array) are destroyed whenever an akeep
+!  is deallocated, reset by an INTENT( OUT ) argument, or goes out of scope.
+!  Without this, Fortran deallocates the pointer array but not its targets,
+!  leaking the C++ objects. free_akeep is guarded by ASSOCIATED/ALLOCATED, so
+!  running it again after an explicit SSIDS_free is a safe no-op.
+
+    TYPE( ssids_akeep_type ), INTENT( INOUT ) :: akeep
+
+!  local variables
+
+    INTEGER( ip_ ) :: flag
+
+    CALL free_akeep( akeep, flag )
+    RETURN
+
+    END SUBROUTINE final_akeep
+
 !   ============================================================================
 !   =================== extracted from SSIDS_FKEEP module ======================
 !   ============================================================================
@@ -5195,6 +5225,26 @@
        DEALLOCATE( fkeep%subtree )
      END IF
      END SUBROUTINE free_fkeep
+
+!-*-*-  G A L A H A D - S S I D S _ final _ fkeep  S U B R O U T I N E  -*-*-
+
+     SUBROUTINE final_fkeep( fkeep )
+
+!  finalizer for SSIDS_fkeep_type. Ensures the C++ numeric subtrees (reached
+!  only through the fkeep%subtree pointer array) are destroyed whenever an fkeep
+!  is deallocated, reset by an INTENT( OUT ) argument, or goes out of scope.
+!  See final_akeep for rationale; free_fkeep is a safe no-op if already freed.
+
+     TYPE( ssids_fkeep_type ), INTENT( INOUT ) :: fkeep
+
+!  local variables
+
+     INTEGER( KIND = ip_ ) :: flag
+
+     CALL free_fkeep( fkeep, flag )
+     RETURN
+
+     END SUBROUTINE final_fkeep
 
 !!$!   =========================================================================
 !!$!   ==================== extracted from SPRAL_PGM module ====================

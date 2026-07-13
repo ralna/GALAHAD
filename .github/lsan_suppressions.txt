@@ -1,0 +1,15 @@
+# LeakSanitizer suppressions for the external sparse solvers linked by GALAHAD.
+#
+# PaStiX (libpastix/libspm) and SCOTCH allocate internal per-solve structures
+# and one-time global model tables that are not fully reclaimed even after
+# pastixFinalize/spmExit. These allocations are outside GALAHAD's control, so
+# their leaks are suppressed in the AddressSanitizer/LeakSanitizer CI builds.
+leak:libpastix
+leak:libspm
+leak:libscotch
+leak:libesmumps
+leak:pastix
+leak:spmAlloc
+leak:solverRealloc
+leak:modelsInit
+leak:order_scotch

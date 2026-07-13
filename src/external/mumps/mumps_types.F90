@@ -24,11 +24,11 @@
 !  include the current mumps derived types
 
 #ifdef REAL_32
-     INCLUDE 'smumps_struc.h'
+     INCLUDE 'galahad_smumps_struc.h'
 #elif REAL_128
-     INCLUDE 'qmumps_struc.h'
+     INCLUDE 'galahad_qmumps_struc.h'
 #else
-     INCLUDE 'dmumps_struc.h'
+     INCLUDE 'galahad_dmumps_struc.h'
 #endif
 
 !  End of module GALAHAD_MUMPS_TYPES_double

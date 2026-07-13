@@ -7,7 +7,9 @@
 #pragma once
 
 #include <cstdlib> // FIXME: remove debug?
+#include <cstdint>
 #include <limits>
+#include <type_traits>
 
 #include "ssids_routines.h"
 #include "galahad_precision.h"
@@ -104,10 +106,17 @@ void find_maxloc(const ipc_ from, const T *a, ipc_ lda, T &bestv_out, ipc_ &rloc
       return;
    }
 
-   // Define a union that lets us abuse T to store ints and still use
-   // avx blend.
+   // Define a union that lets us abuse T to store ints and still use avx
+   // blend. The integer field must be no wider than T: the index is
+   // round-tripped through a T-sized SIMD lane below, so a wider field
+   // (e.g. 64-bit int with 32-bit float) would leave the high bytes
+   // uninitialised on readback, giving garbage rloc/cloc and an
+   // out-of-range access. Block-local indices are < BLOCK_SIZE, so a 32-bit
+   // field always suffices when ipc_ is too wide for T.
+   typedef typename std::conditional<
+      ( sizeof( ipc_ ) <= sizeof( T ) ), ipc_, std::int32_t >::type idxint;
    union intT {
-      ipc_ i;
+      idxint i;
       T d;
    };
 
@@ -115,7 +124,7 @@ void find_maxloc(const ipc_ from, const T *a, ipc_ lda, T &bestv_out, ipc_ &rloc
    SimdVecT bestv(-1.0);
    SimdVecT bestv2(-1.0);
    intT imax;
-   imax.i = std::numeric_limits<ipc_>::max();
+   imax.i = std::numeric_limits<idxint>::max();
    SimdVecT bestr(imax.d);
    SimdVecT bestr2(imax.d);
    SimdVecT bestc(imax.d);

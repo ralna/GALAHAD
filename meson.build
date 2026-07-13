@@ -23,7 +23,7 @@ py = import('python').find_installation()
 host_system = host_machine.system()
 
 # Ensure --prefix is not the GALAHAD source root
-if fs.is_samepath(get_option('prefix'), meson.source_root())
+if fs.is_samepath(get_option('prefix'), meson.project_source_root())
   error('The option --prefix must not be the GALAHAD source directory.')
 endif
 
@@ -101,8 +101,8 @@ liblapack_name = get_option('liblapack')
 libhsl_name = get_option('libhsl')
 libwsmp_name = get_option('libwsmp')
 libpardiso_name = get_option('libpardiso')
-libspmf_name = get_option('libspmf')
 libpastixf_name = get_option('libpastixf')
+libspmf_name = get_option('libspmf')
 libsmumps_name = get_option('libsmumps')
 libdmumps_name = get_option('libdmumps')
 libasl_name = get_option('libasl')
@@ -117,9 +117,9 @@ liblapack_path = get_option('liblapack_path')
 libhsl_path = get_option('libhsl_path')
 libwsmp_path = get_option('libwsmp_path')
 libpardiso_path = get_option('libpardiso_path')
-libspmf_path = get_option('libspmf_path')
-libpastixf_path = get_option('libpastixf_path')
 libasl_path = get_option('libasl_path')
+libpastixf_path = get_option('libpastixf_path')
+libspmf_path = get_option('libspmf_path')
 libcutest_path = get_option('libcutest_path')
 libhwloc_path = get_option('libhwloc_path')
 
@@ -137,8 +137,8 @@ libcutest_double = fc.find_library(libcutest_double_name, dirs : libcutest_path,
 libcutest_quadruple = fc.find_library(libcutest_quadruple_name, dirs : libcutest_path, required : false)
 libwsmp = fc.find_library(libwsmp_name, dirs : libwsmp_path, required : false)
 libpardiso = fc.find_library(libpardiso_name, dirs : libpardiso_path, required : false)
-libspmf = fc.find_library(libspmf_name, dirs : libspmf_path, required : false)
 libpastixf = fc.find_library(libpastixf_name, dirs : libpastixf_path, required : false)
+libspmf = fc.find_library(libspmf_name, dirs : libspmf_path, required : false)
 libsmumps = fc.find_library(libsmumps_name, dirs : libmumps_path, required : false)
 libdmumps = fc.find_library(libdmumps_name, dirs : libmumps_path, required : false)
 libasl = fc.find_library(libasl_name, dirs : libasl_path, required : false)
@@ -213,15 +213,14 @@ if build_openmp
 endif
 
 libgalahad_single_deps = [libsmumps, libcutest_single, libblas, liblapack,
-                          libhsl, libwsmp, libpardiso, libspmf, libpastixf,
+                          libhsl, libwsmp, libpardiso, libpastixf, libspmf,
                           libasl, libhwloc]
 
 libgalahad_double_deps = [libdmumps, libcutest_double, libblas, liblapack,
-                          libhsl, libwsmp, libpardiso, libspmf, libpastixf,
+                          libhsl, libwsmp, libpardiso, libpastixf, libspmf,
                           libasl, libhwloc]
 
-libgalahad_quadruple_deps = [libcutest_quadruple, libhsl, libwsmp, libpardiso,
-                             libspmf, libpastixf, libhwloc, libquadmath]
+libgalahad_quadruple_deps = [libcutest_quadruple, libhsl, libhwloc, libquadmath]
 
 # BLAS and LAPACK
 libblas_src = []
@@ -284,7 +283,8 @@ libgalahad_include = [include_directories('include'),
                       include_directories('src/external/metis4/include'),
                       include_directories('src/nodend/metis51/include'),
                       include_directories('src/nodend/metis52/include'),
-                      include_directories('src/ampl')] + libhsl_modules + libcutest_modules + libhwloc_include + libasl_include
+                      include_directories('src/ampl')]
+libgalahad_include = libgalahad_include + libhwloc_include + libasl_include + libhsl_modules + libcutest_modules
 
 if host_machine.system() == 'linux'
   add_global_arguments('-DSPRAL_HAVE_SCHED_GETCPU', language : 'cpp')
@@ -306,47 +306,60 @@ endif
 
 extra_args_single = ['-DREAL_32']
 extra_args_double = []
-extra_args_quadruple = ['-DREAL_128', '-DGALAHAD_BLAS', '-DGALAHAD_LAPACK', '-DDUMMY_QMUMPS']
+extra_args_quadruple = ['-DREAL_128']
 
+# BLAS
 if not libblas.found()
   extra_args_single += '-DGALAHAD_BLAS'
   extra_args_double += '-DGALAHAD_BLAS'
 endif
+extra_args_quadruple += '-DGALAHAD_BLAS'
+
+# LAPACK
 if not liblapack.found()
   extra_args_single += '-DGALAHAD_LAPACK'
   extra_args_double += '-DGALAHAD_LAPACK'
 endif
+extra_args_quadruple += '-DGALAHAD_LAPACK'
+
+# MUMPS
 if not libsmumps.found()
   extra_args_single += '-DDUMMY_SMUMPS'
 endif
 if not libdmumps.found()
   extra_args_double += '-DDUMMY_DMUMPS'
 endif
+extra_args_quadruple += '-DDUMMY_QMUMPS'
+
+# MKL PARDISO
 if not (libblas_name == 'mkl_rt' or liblapack_name == 'mkl_rt')
   extra_args_single += '-DDUMMY_MKL_PARDISO'
   extra_args_double += '-DDUMMY_MKL_PARDISO'
-  extra_args_quadruple += '-DDUMMY_MKL_PARDISO'
 endif
+extra_args_quadruple += '-DDUMMY_MKL_PARDISO'
+
+# PARDISO
 if not libpardiso.found()
   extra_args_single += '-DDUMMY_PARDISO'
   extra_args_double += '-DDUMMY_PARDISO'
-  extra_args_quadruple += '-DDUMMY_PARDISO'
 endif
-if not libpastixf.found()
-  extra_args_single += '-DDUMMY_PASTIXF'
-  extra_args_double += '-DDUMMY_PASTIXF'
-  extra_args_quadruple += '-DDUMMY_PASTIXF'
+extra_args_quadruple += '-DDUMMY_PARDISO'
+
+# PaStiX
+if not (libpastixf.found() and libspmf.found())
+  extra_args_single += '-DDUMMY_PASTIX'
+  extra_args_double += '-DDUMMY_PASTIX'
 endif
-if not libspmf.found()
-  extra_args_single += '-DDUMMY_SPMF'
-  extra_args_double += '-DDUMMY_SPMF'
-  extra_args_quadruple += '-DDUMMY_SPMF'
-endif
+extra_args_quadruple += '-DDUMMY_PASTIX'
+
+# WSMP
 if not libwsmp.found()
   extra_args_single += '-DDUMMY_WSMP'
   extra_args_double += '-DDUMMY_WSMP'
-  extra_args_quadruple += '-DDUMMY_WSMP'
 endif
+extra_args_quadruple += '-DDUMMY_WSMP'
+
+# HSL
 if not libhsl.found()
   extra_args_single += '-DDUMMY_HSL'
   extra_args_double += '-DDUMMY_HSL'

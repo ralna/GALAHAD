@@ -46,7 +46,8 @@ single_double_quadruple_modules = ["hash_MOD", "string_MOD", "string_64_MOD", "c
                                    "spral_metis_wrapper_64_MOD", "tools_64_MOD", "galahad_symbols_64_MOD", "hsl_mc68_integer_64_ciface_MOD", "hsl_kb22_long_integer_64_MOD",
                                    "common_ciface_64_MOD", "clock_64_MOD", "hsl_mc68_integer_64_MOD", "hsl_zb01_integer_64_MOD", "copyright_64_MOD",
                                    "version_64_MOD", "galahad_hw_MOD", "galahad_hw_64_MOD", "spral_metis_wrapper_MOD", "spral_core_analyse_64_MOD",
-                                   "galahad_version_MOD", "galahad_ssids_profile_MOD", "galahad_ssids_profile_64_MOD"]
+                                   "galahad_version_MOD", "galahad_ssids_profile_MOD", "galahad_ssids_profile_64_MOD", "galahad_spmf_interfaces_MOD",
+                                   "galahad_spmf_interfaces_64_MOD",  "galahad_pastixf_interfaces_MOD", "galahad_pastixf_interfaces_64_MOD"]
 
 metis_adapters = ["galahad_nodend4_adapter", "galahad_nodend51_adapter", "galahad_nodend52_adapter"]
 

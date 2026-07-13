@@ -6316,6 +6316,13 @@
 
 !  Deallocate all remaining allocated arrays
 
+      array_name = 'wcp: data%C_sbls%type'
+      CALL SPACE_dealloc_array( data%C_sbls%type,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'wcp: data%C_freed'
       CALL SPACE_dealloc_array( data%C_freed,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &

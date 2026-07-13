@@ -88,15 +88,15 @@ option('libpardiso',
        value : 'pardiso',
        description : 'PARDISO library against which to link')
 
-option('libspmf',
-       type : 'string',
-       value : 'spmf',
-       description : 'SPMF library against which to link')
-
 option('libpastixf',
        type : 'string',
        value : 'pastixf',
-       description : 'PASTIXF library against which to link')
+       description : 'PaStiX Fortran library against which to link')
+
+option('libspmf',
+       type : 'string',
+       value : 'spmf',
+       description : 'SPM Fortran library (shipped with PaStiX) against which to link')
 
 option('libsmumps',
        type : 'string',
@@ -148,15 +148,15 @@ option('libpardiso_path',
        value : [],
        description : 'Additional directories to search for the PARDISO library')
 
-option('libspmf_path',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the SPMF library')
-
 option('libpastixf_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search for the PASTIXF library')
+       description : 'Additional directories to search for the PaStiX Fortran library')
+
+option('libspmf_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the SPM Fortran library')
 
 option('libmumps_path',
        type : 'array',
