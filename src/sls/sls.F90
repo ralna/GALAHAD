@@ -1813,6 +1813,16 @@
          data%iparm_pastix( 44 ) = 1
 !      END IF
 
+!  run PaStiX single-threaded (IPARM_THREAD_NBR = 1, the 0-based enum entry 56,
+!  hence Fortran index 57). GALAHAD calls PaStiX on the (often small) KKT /
+!  augmented systems and refactorizes them repeatedly inside the iterative
+!  solvers; for such small, frequently re-formed matrices a single thread is
+!  faster than the default auto-detected pool (whose per-factorization spin-up
+!  and synchronisation dominate) and it avoids the isched worker-thread stalls
+!  seen when e.g. qpa/arc refactorize thousands of times
+
+       data%iparm_pastix( 57 ) = 1     ! IPARM_THREAD_NBR = 1
+
 !  optionally select the PaStiX ordering (IPARM_ORDERING) via the environment,
 !  so that both the SCOTCH (default) and METIS variants can be exercised. This
 !  init-time default is overridden at analyse time by control%pastix_ordering
