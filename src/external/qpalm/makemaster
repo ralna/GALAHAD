@@ -26,10 +26,16 @@ QPALMQ64 = $(BASICSZ) $(QALGQ64)(qpalm.o)
 QPALMST = $(QPALMS) $(OBJ)/qpalmt.o
 QPALMDT = $(QPALMD) $(OBJ)/qpalmt.o
 QPALMQT = $(QPALMQ) $(OBJ)/qpalmt.o
+QPALMS64T = $(QPALMS64) $(OBJ)/qpalmt.o
+QPALMD64T = $(QPALMD64) $(OBJ)/qpalmt.o
+QPALMQ64T = $(QPALMQ64) $(OBJ)/qpalmt.o
 
 RQPALMST = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
 RQPALMDT = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
-RQPALMDQ = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
+RQPALMQT = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
+RQPALMS64T = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
+RQPALMD64T = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
+RQPALMDQ64 = $(OBJ)/qpalmt.o -L$(OBJ) $(LIBS)
 
 #  qpalm
 

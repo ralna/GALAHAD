@@ -17,11 +17,11 @@ to use QPALM will result in an error return code.
 
 If you wish to use QPALM ...
 
-1. Download QPALM via git to a suitable location 
+1. Download QPALM via git to a suitable location via
 
      git clone https://github.com/kul-optec/QPALM
 
-   and thene move into the QPALM directory using
+   and then move into the QPALM directory using
 
      cd ./QPALM
 

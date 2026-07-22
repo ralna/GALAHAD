@@ -45,10 +45,10 @@
     END INTERFACE
         
     INTERFACE
-      subroutine Highs_destroy_c( h ) BIND( C, NAME = 'Highs_destroy' )
+      SUBROUTINE Highs_destroy_c( h ) BIND( C, NAME = 'Highs_destroy' )
         IMPORT :: c_ptr
         TYPE( c_ptr ), VALUE :: h 
-      END subroutine Highs_destroy_c
+      END SUBROUTINE Highs_destroy_c
     END INTERFACE
 
     INTERFACE

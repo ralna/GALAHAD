@@ -110,6 +110,10 @@ CFLAGS     = $(CCBASIC) $(OPTIMIZATION) $(CCDEBUG) \
               $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
 CFLAGSN    = $(CCBASIC) $(NOOPTIMIZATION) $(CCDEBUG) \
               $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
+CXXFLAGS   = $(CXXBASIC) $(OPTIMIZATION) $(CXXDEBUG) \
+              $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
+CXXFLAGSN  = $(CXXBASIC) $(NOOPTIMIZATION) $(CXXDEBUG) \
+              $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
 PYINCLUDES = -I $(NUMPYINCLUDE) -I $(GALAHAD)/include -I $(OBJ) \
               -I $(PYTHONINCLUDE)
 
@@ -400,6 +404,14 @@ QOLGS64 = $(OBJS64)/libgalahad_qpoases.a
 QOLGD64 = $(OBJD64)/libgalahad_qpoases.a
 QOLGQ64 = $(OBJQ64)/libgalahad_qpoases.a
 
+QOFLG  = $(OBJ)/libqpoases_fortran.a
+QOFLGS = $(OBJS)/libqpoases_fortran.a
+QOFLGD = $(OBJD)/libqpoases_fortran.a
+QOFLGQ = $(OBJQ)/libqpoases_fortran.a
+QOFLGS64 = $(OBJS64)/libqpoases_fortran.a
+QOFLGD64 = $(OBJD64)/libqpoases_fortran.a
+QOFLGQ64 = $(OBJQ64)/libqpoases_fortran.a
+
 RLG  = $(LG)
 RLGS = $(LGS)
 RLGD = $(LGD)
@@ -512,6 +524,9 @@ QARMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(QALG)
 
 QOARR = $(AR) $(ARREPFLAGS) $(QOLG)
 QORMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(QOLG)
+
+QOFARR = $(AR) $(ARREPFLAGS) $(QOFLG)
+QOFRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(QOFLG)
 
 RARR = $(AR) $(ARREPFLAGS) $(LG)
 RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)

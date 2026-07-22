@@ -4,7 +4,7 @@
 
   PROGRAM HiGHS_example
 
-!  test program for HiGHS strictly-convex QP package
+!  test program for the HiGHS strictly-convex quadratic programming package
 
 !  Nick Gould, June 2026
 

@@ -16,13 +16,13 @@ to use OSQP will result in an error return code.
 
 If you wish to use OSQP ...
 
-1. Download OSQP via git to a suitable location 
+1. Download OSQP via git to a suitable location via
 
-  https://github.com/osqp/osqp-fortran
+    git clone https://github.com/osqp/osqp-fortran
 
-  and thene move into the OSQP directory using
+  and then move into the OSQP directory using
 
-     cd ./OSQP
+     cd ./osqp-fortran
 
    we shall refer to this through the shell variable $OSQP
 
@@ -38,7 +38,7 @@ If you wish to use OSQP ...
     cmake --build build/pc64.lnx.gfo --config Release -j
 
    This is appropriate for default GALAHAD interactions, but
-   OSQP_USE_FLOAT=ON and -DOSQP_USE_LONG=ON change from 
+   -DOSQP_USE_FLOAT=ON and -DOSQP_USE_LONG=ON change from 
    double- to single-precision reals and 64- rather than 32-bit
    integers
    

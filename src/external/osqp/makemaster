@@ -26,12 +26,16 @@ OSQPQ64 = $(BASICSZ) $(OSLGQ64)(osqp.o)
 OSQPST = $(OSQPS) $(OBJ)/osqpt.o
 OSQPDT = $(OSQPD) $(OBJ)/osqpt.o
 OSQPQT = $(OSQPQ) $(OBJ)/osqpt.o
+OSQPS64T = $(OSQPD64) $(OBJ)/osqpt.o
 OSQPD64T = $(OSQPD64) $(OBJ)/osqpt.o
+OSQPQ64T = $(OSQPQ64) $(OBJ)/osqpt.o
 
 ROSQPST = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
 ROSQPDT = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
 ROSQPQT = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
+ROSQPS64T = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
 ROSQPD64T = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
+ROSQPQ64T = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
 
 #  osqp
 

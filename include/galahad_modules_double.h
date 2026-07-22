@@ -105,6 +105,7 @@
 #define GALAHAD_QPC_precision GALAHAD_QPC_double_64
 #define GALAHAD_QPD_precision GALAHAD_QPD_double_64
 #define GALAHAD_QP_precision GALAHAD_QP_double_64
+#define GALAHAD_QPOASES_precision GALAHAD_QPOASES_double_64
 #define GALAHAD_QPP_precision GALAHAD_QPP_double_64
 #define GALAHAD_QPS_precision GALAHAD_QPS_double_64
 #define GALAHAD_QPT_precision GALAHAD_QPT_double_64
@@ -343,6 +344,7 @@
 #define GALAHAD_UGO_precision_ciface GALAHAD_UGO_double_ciface_64
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_double_ciface_64
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_double_ciface_64
+#define QPOASES_INTERFACE_precision QPOASES_interface_double_64
 #define RUNARC_SIF_precision RUNARC_SIF_double_64
 #define RUNBGO_SIF_precision RUNBGO_SIF_double_64
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_double_64
@@ -554,6 +556,7 @@
 #define GALAHAD_QPC_precision GALAHAD_QPC_double
 #define GALAHAD_QPD_precision GALAHAD_QPD_double
 #define GALAHAD_QP_precision GALAHAD_QP_double
+#define GALAHAD_QPOASES_precision GALAHAD_QPOASES_double
 #define GALAHAD_QPP_precision GALAHAD_QPP_double
 #define GALAHAD_QPS_precision GALAHAD_QPS_double
 #define GALAHAD_QPT_precision GALAHAD_QPT_double
@@ -792,6 +795,7 @@
 #define GALAHAD_UGO_precision_ciface GALAHAD_UGO_double_ciface
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_double_ciface
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_double_ciface
+#define QPOASES_INTERFACE_precision QPOASES_interface_double
 #define RUNARC_SIF_precision RUNARC_SIF_double
 #define RUNBGO_SIF_precision RUNBGO_SIF_double
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_double

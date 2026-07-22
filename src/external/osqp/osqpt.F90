@@ -124,7 +124,7 @@ PROGRAM OSQP_example
 
   ELSE
     IF ( info%status_val /= 1 ) THEN
-      WRITE(out, "( ' Error. Problem not solved to optimality ' )")
+      WRITE( out, "( ' Error. Problem not solved to optimality ' )")
     END IF
   END IF
 

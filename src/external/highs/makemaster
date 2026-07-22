@@ -26,10 +26,16 @@ HIGHSQ64 = $(BASICSZ) $(HILGQ64)(highs_c_api.o) $(LGQ64)(highs_interface.o)
 HIGHSST = $(HIGHSS) $(OBJ)/highst.o
 HIGHSDT = $(HIGHSD) $(OBJ)/highst.o
 HIGHSQT = $(HIGHSQ) $(OBJ)/highst.o
+HIGHSS64T = $(HIGHSS64) $(OBJ)/highst.o
+HIGHSD64T = $(HIGHSD64) $(OBJ)/highst.o
+HIGHSQ64T = $(HIGHSQ64) $(OBJ)/highst.o
 
 RHIGHSST = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
 RHIGHSDT = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
-RHIGHSDQ = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
+RHIGHSQT = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
+RHIGHSS64T = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
+RHIGHSD64T = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
+RHIGHSQ64T = $(OBJ)/highst.o -L$(OBJ) $(LIBS)
 
 #  highs
 

@@ -1,0 +1,54 @@
+The package qpOASES
+
+  https://github.com/coin-or/qpOASES
+
+is not included as part of GALAHAD, but may be
+called optionally from GALAHAD's ubersolver QP package.
+
+GALAHAD relies on an environment variable,
+and if qpOASES has not been installed, these 
+are set by default as
+
+  QPOASES = -lgalahad_qpoases
+
+This allows GALAHAD to function, but any attempt
+to use qpOASES will result in an error return code.
+
+If you wish to use qpOASES ...
+
+1. Download qpOASES via git to a suitable location via
+
+    git clone https://github.com/coin-or/qpOASES
+
+  and then move into the qpOASES directory using
+
+     cd ./qpOASES
+
+   we shall refer to this through the shell variable $qpOASES
+
+2. Install the package into a suitable subdirectory using make
+
+   This is appropriate for default GALAHAD interactions, but
+   -D__USE_SINGLE_PRECISION__ and -D__USE_LONG_INTEGERS__ change
+   from double- to single-precision reals and 64- rather than 32-bit
+   integers
+   
+   You can use other compilers by, e.g., resetting them prior to
+   the first call, e.g. (in the bash shell)
+
+      CC=icx CXX=icpx FC=ifx make ....
+   
+   On Windows systems, you may need to change the
+     typedef long definitions to typedef int64_t
+   in $qpOASES/interfaces/c/qpOASES_wrapper.h to make sure
+   that 64-bit integers really are 64 bits long!
+
+3. Now call GALAHAD with the envirnment variables
+
+      QPOASES_DIR = $(qpOASES)
+      QPOASES = -lqpoases_fortran -lgalahad \
+          $(QPOASES_DIR)/bin/libqpOASES.a -lstdc++
+
+Nick Gould
+For GALAHAD productions
+July 22ndh 2026

@@ -16,7 +16,7 @@ DUMMYS = kinds_silent clock_silent extend_silent symbols_silent \
          pardiso_silent mkl_pardiso_silent wsmp_silent \
          pastix_silent mpi_silent mumps_silent umfpack_silent \
          naglib_silent highs_silent bpmpd_silent qpalm_silent \
-         osqp_silent \
+         osqp_silent qpoases_silent \
          string_silent version_silent buildspec_silent
 
 CORE = $(DUMMYS) space_silent specfile_silent sort_silent norms_silent
@@ -615,6 +615,13 @@ osqp_silent:
 	( cd ../external/osqp ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) osqp_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../external/osqp )
+
+#  qpoases package
+
+qpoases_silent:
+	( cd ../external/qpoases ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) qpoases_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/qpoases )
 
 #  pastix package
 

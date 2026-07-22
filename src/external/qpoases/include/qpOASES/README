@@ -1,0 +1,15 @@
+These file have been copied - with one exception - from the include/qpOASES
+directory contained within the qpOASES source distribution
+
+  https://github.com/coin-or/qpOASES
+
+The exception is the file QProblem.hpp in which the lines
+
+  /** added next line NIMG: 206-07-18 */
+    using QProblemB::operator=; // Unhides the base class assignment operator
+
+have been inserted at line 92 to stop annoying compiler grumbles.
+
+All files are licensed under GNU Lesser General Public License version 2.1 
+published by the Free Software Foundation. See the LICENSE.txt file in
+the qpOASES source distribution for full details.	
