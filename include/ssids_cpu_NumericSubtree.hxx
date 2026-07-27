@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <memory>
+#include <type_traits>
+
 #include "ssids_routines.h"
 #include "galahad_precision.h"
 #include "ssids_cpu_cpu_iface.hxx"
@@ -64,6 +67,10 @@ public:
      pool_alloc_(symbolic_subtree.get_pool_size<T>()),
      small_leafs_(static_cast<SLNS*>(::operator new[](symb_.small_leafs_.size()*sizeof(SLNS))))
    {
+    // If the body throws (e.g. bad_alloc from a vector), ~NumericSubtree does
+    // not run, so free the raw small_leafs_ storage on the way out. (A ctor
+    // function-try-block can't be used: its handler may not touch members.)
+    try {
       /* Associate symbolic nodes to numeric ones; copy tree structure */
       nodes_.reserve(symbolic_subtree.nnodes_+1);
       for(ipc_ ni=0; ni<symb_.nnodes_+1; ++ni) {
@@ -282,15 +289,29 @@ public:
             }
          }
       }
+    } catch(...) {
+      ::operator delete[](small_leafs_);
+      throw;
+    }
    }
    ~NumericSubtree() {
-      delete[] small_leafs_;
+      // small_leafs_ is raw storage from ::operator new[]; elements are created
+      // with placement new. SLNS is trivially destructible so no per-element
+      // ~SLNS() loop is needed (and some slots may be unconstructed on abort);
+      // release the raw storage with the matching ::operator delete[].
+      static_assert(std::is_trivially_destructible<SLNS>::value,
+         "SmallLeafNumericSubtree is no longer trivially destructible: "
+         "~NumericSubtree must destroy the constructed small_leafs_ elements");
+      ::operator delete[](small_leafs_);
    }
 
    void solve_fwd(ipc_ nrhs, T* x, ipc_ ldx) const {
-      /* Allocate memory */
-      T* xlocal = new T[nrhs*symb_.n];
-      ipc_* map_alloc = (!posdef) ? new ipc_[symb_.n] : nullptr; // only indef
+      /* Allocate memory (RAII: no leak if the second allocation throws) */
+      std::unique_ptr<T[]> xlocal_owner(new T[nrhs*symb_.n]);
+      T* xlocal = xlocal_owner.get();
+      std::unique_ptr<ipc_[]> map_owner(
+         (!posdef) ? new ipc_[symb_.n] : nullptr); // only indef
+      ipc_* map_alloc = map_owner.get();
 
       /* Main loop */
       for(ipc_ ni=0; ni<symb_.nnodes_; ++ni) {
@@ -337,19 +358,20 @@ public:
             x[r*ldx + map[i]-1] = xlocal[r*symb_.n+i];
       }
 
-      /* Cleanup memory */
-      if(!posdef) delete[] map_alloc; // only used in indef case
-      delete[] xlocal;
+      /* Memory released automatically by xlocal_owner / map_owner */
    }
 
    template <bool do_diag, bool do_bwd>
    void solve_diag_bwd_inner(ipc_ nrhs, T* x, ipc_ ldx) const {
       if(posdef && !do_bwd) return; // diagonal solve is a no-op for posdef
 
-      /* Allocate memory - map only needed for indef bwd/diag_bwd solve */
-      T* xlocal = new T[nrhs*symb_.n];
-      ipc_* map_alloc = (!posdef && do_bwd) ? new ipc_[symb_.n]
-                                           : nullptr;
+      /* Allocate memory - map only needed for indef bwd/diag_bwd solve.
+       * RAII: no leak if the second allocation throws. */
+      std::unique_ptr<T[]> xlocal_owner(new T[nrhs*symb_.n]);
+      T* xlocal = xlocal_owner.get();
+      std::unique_ptr<ipc_[]> map_owner(
+         (!posdef && do_bwd) ? new ipc_[symb_.n] : nullptr);
+      ipc_* map_alloc = map_owner.get();
 
       /* Perform solve */
       for(ipc_ ni=symb_.nnodes_-1; ni>=0; --ni) {
@@ -404,9 +426,7 @@ public:
             x[r*ldx + map[i]-1] = xlocal[r*symb_.n+i];
       }
 
-      /* Cleanup memory */
-      if(!posdef && do_bwd) delete[] map_alloc; // only used in indef case
-      delete[] xlocal;
+      /* Memory released automatically by xlocal_owner / map_owner */
    }
 
    void solve_diag(ipc_ nrhs, T* x, ipc_ ldx) const {

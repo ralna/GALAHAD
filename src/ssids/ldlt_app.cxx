@@ -2288,17 +2288,14 @@ public:
                   "run_elim_unpivoted currently only supports beta=0.0"
                   );
          }
-         // Take a copy of perm
-         typedef std::allocator_traits<IntAlloc> IATraits;
-         IntAlloc intAlloc(alloc);
-         ipc_* perm_copy = IATraits::allocate(intAlloc, n);
-         for(ipc_ i=0; i<n; ++i)
-            perm_copy[i] = perm[i];
+         // Take a copy of perm. RAII vectors so they are freed on every path,
+         // including the error early-returns below (previously leaked).
+         std::vector<ipc_, IntAlloc> perm_copy_vec(perm, perm+n, alloc);
+         ipc_* perm_copy = perm_copy_vec.data();
          size_t num_blocks = (upd) ? ((size_t) mblk)*mblk
                                    : ((size_t) mblk)*nblk;
-         ipc_* up_to_date = IATraits::allocate(intAlloc, num_blocks);
-         for(size_t i=0; i<num_blocks; ++i)
-            up_to_date[i] = -1; // not even backed up yet
+         std::vector<ipc_, IntAlloc> up_to_date_vec(num_blocks, -1, alloc);
+         ipc_* up_to_date = up_to_date_vec.data(); // -1: not even backed up yet
          // Run the elimination
          if(use_tasks && mblk>1) {
             num_elim = run_elim_unpivoted(
@@ -2334,8 +2331,6 @@ public:
             }
             if(num_elim < 0) return num_elim; // error
          }
-         IATraits::deallocate(intAlloc, up_to_date, num_blocks);
-         IATraits::deallocate(intAlloc, perm_copy, n);
       } else {
          if(use_tasks && mblk>1) {
             num_elim = run_elim_pivoted(

@@ -31,6 +31,29 @@ public:
    {
       alloc_and_align(sz);
    }
+   // Owns a raw allocation, so is non-copyable (a shallow copy would double-free
+   // mem_ / leak the target's mem_); movable by stealing the allocation.
+   Workspace(Workspace const&) = delete;
+   Workspace& operator=(Workspace const&) = delete;
+   Workspace(Workspace&& other) noexcept
+   : mem_(other.mem_), mem_aligned_(other.mem_aligned_), sz_(other.sz_)
+   {
+      other.mem_ = nullptr;
+      other.mem_aligned_ = nullptr;
+      other.sz_ = 0;
+   }
+   Workspace& operator=(Workspace&& other) noexcept {
+      if(this != &other) {
+         ::operator delete(mem_);
+         mem_ = other.mem_;
+         mem_aligned_ = other.mem_aligned_;
+         sz_ = other.sz_;
+         other.mem_ = nullptr;
+         other.mem_aligned_ = nullptr;
+         other.sz_ = 0;
+      }
+      return *this;
+   }
    ~Workspace() {
       ::operator delete(mem_);
    }
