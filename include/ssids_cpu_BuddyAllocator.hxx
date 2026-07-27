@@ -78,7 +78,13 @@ public:
       std::align(align, size, to_align, space);
       base_ = static_cast<char*>(to_align);
       typename IntAllocTraits::allocator_type intAlloc(alloc_);
-      next_ = IntAllocTraits::allocate(intAlloc, 1<<(nlevel-1));
+      try {
+         next_ = IntAllocTraits::allocate(intAlloc, 1<<(nlevel-1));
+      } catch(...) {
+         // ~Page won't run (ctor didn't finish): free mem_ so it doesn't leak
+         std::allocator_traits<CharAllocator>::deallocate(alloc_, mem_, size_+align);
+         throw;
+      }
       /* Initialize data structures */
       head_[nlevel-1] = 0; next_[0] = -1; // a single free block at top level
       for(ipc_ i=0; i<nlevel-1; ++i)

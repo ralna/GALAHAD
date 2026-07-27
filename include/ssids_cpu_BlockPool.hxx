@@ -43,9 +43,15 @@ public:
       block_size_ = align_*((sz-1)/align_ + 1);
       mem_ = CharAllocTraits::allocate(alloc_, num_blocks*block_size_);
       // Set up stack of free blocks such that we issue them in order
-      pool_.reserve(num_blocks);
-      for(int i=num_blocks-1; i>=0; --i) {
-         pool_.push_back(reinterpret_cast<T*>(mem_ + i*block_size_));
+      try {
+         pool_.reserve(num_blocks); // only this can throw (push_back is reserved)
+         for(int i=num_blocks-1; i>=0; --i) {
+            pool_.push_back(reinterpret_cast<T*>(mem_ + i*block_size_));
+         }
+      } catch(...) {
+         // ~BlockPool won't run (ctor didn't finish): free mem_ so it doesn't leak
+         CharAllocTraits::deallocate(alloc_, mem_, num_blocks*block_size_);
+         throw;
       }
    }
    ~BlockPool() {
