@@ -1,0 +1,152 @@
+#  Main body of the installation makefile for any optional BQPD procedures
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2026-07-26
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  Libraries used
+
+LIBS = -lgalahad $(BQPD) $(LAPACK) $(BLAS)
+NLIBS = $(LIBS) -lgalahad_problem
+
+#  compilation agenda
+
+BASICZ = blas lapack symbols dummy blas_inter lapack_inter
+
+BQPDS = $(BASICSZ) $(BQLGS)(bqpd.o) $(LGS)(bqpd_gdotx.o)
+BQPDD = $(BASICSZ) $(BQLGD)(bqpd.o) $(LGD)(bqpd_gdotx.o)
+BQPDQ = $(BASICSZ) $(BQLGQ)(bqpd.o) $(LGQ)(bqpd_gdotx.o)
+BQPDS64 = $(BASICSZ) $(BQLGS64)(bqpd.o) $(LGS64)(bqpd_gdotx.o)
+BQPDD64 = $(BASICSZ) $(BQLGD64)(bqpd.o) $(LGD64)(bqpd_gdotx.o)
+BQPDQ64 = $(BASICSZ) $(BQLGQ64)(bqpd.o) $(LGQ64)(bqpd_gdotx.o)
+
+BQPDST = $(BQPDS) $(OBJ)/bqpdt.o
+BQPDDT = $(BQPDD) $(OBJ)/bqpdt.o
+BQPDQT = $(BQPDQ) $(OBJ)/bqpdt.o
+BQPDS64T = $(BQPDS64) $(OBJ)/bqpdt.o
+BQPDD64T = $(BQPDD64) $(OBJ)/bqpdt.o
+BQPDQ63T = $(BQPDQ64) $(OBJ)/bqpdt.o
+
+RBQPDST = $(OBJ)/bqpdt.o -L$(OBJ) $(LIBS)
+RBQPDDT = $(OBJ)/bqpdt.o -L$(OBJ) $(LIBS)
+RBQPDQT = $(OBJ)/bqpdt.o -L$(OBJ) $(LIBS)
+RBQPDS64T = $(OBJ)/bqpdt.o -L$(OBJ) $(LIBS)
+RBQPDD64T = $(OBJ)/bqpdt.o -L$(OBJ) $(LIBS)
+RBQPQD64T = $(OBJ)/bqpdt.o -L$(OBJ) $(LIBS)
+
+#  bqpd
+
+bqpd_silent: bqpd_$(PRECIS)
+bqpd: bqpd_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(BQPD) ($(PRECIS) $(SUCC)"
+bqpd_single: $(BQPDS)
+	$(RANLIB) $(BQLGS)
+bqpd_double: $(BQPDD)
+	$(RANLIB) $(BQLGD)
+bqpd_quadruple: $(BQPDQ)
+	$(RANLIB) $(BQLGQ)
+bqpd_single_64: $(BQPDS64)
+	$(RANLIB) $(BQLGS64)
+bqpd_double_64: $(BQPDD64)
+	$(RANLIB) $(BQLGD64)
+bqpd_quadruple_64: $(BQPDQ64)
+	$(RANLIB) $(BQLGQ64)
+
+#  tests
+
+bqpddt: $(BQPDDT)
+	echo " Exhaustive test of subroutine interface to bqpd"
+	cd ../bqpd ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bqpd \
+                         $(RBQPDDT)
+#	- ../bqpd/run_bqpd > ../bqpd/bqpddt.output 2>&1
+#	cat ../bqpd/bqpddt.output
+	- ../bqpd/run_bqpd
+	rm ../bqpd/run_bqpd
+
+bqpdst: $(BQPDST)
+	echo " Exhaustive test of subroutine interface to bqpd"
+	cd ../bqpd ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bqpd \
+                         $(RBQPDST)
+	- ../bqpd/run_bqpd > ../bqpd/bqpdst.output 2>&1
+	cat ../bqpd/bqpdst.output
+	rm ../bqpd/run_bqpd
+
+bqpdsq: $(BQPDQT)
+	echo " Exhaustive test of subroutine interface to bqpd"
+	cd ../bqpd ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bqpd \
+                         $(RBQPDQT)
+	- ../bqpd/run_bqpd > ../bqpd/bqpdqt.output 2>&1
+	cat ../bqpd/bqpdqt.output
+	rm ../bqpd/run_bqpd
+
+#  blas and lapack generic packages and interfaces
+
+blas:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+symbols:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+dummy:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+blas_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+#  individual compilations
+
+bqpd.o: $(BQLG)(bqpd.o)
+
+$(BQLG)(bqpd.o): ../../dum/bqpd.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bqpd  "
+	$(CP) ../../dum/bqpd.F90 $(OBJ)/bqpd.F90
+	cd $(OBJ); $(FORTRAN) -o bqpd.o $(FFLAGS) bqpd.F90
+	cd $(OBJ); $(BQARR) bqpd.o ; $(RM) bqpd.F90 bqpd.o
+	$(RANLIB) $(BQLG)
+	@printf '[ OK ]\n'
+
+bqpd_gdotx.o: $(LG)(bqpd_gdotx.o)
+
+$(LG)(bqpd_gdotx.o): ../bqpd/bqpd_gdotx.F90
+	@printf ' %-9s %-15s\t' "Compiling" "bqpd_gdotx  "
+	$(CP) ../bqpd/bqpd_gdotx.F90 $(OBJ)/bqpd_gdotx.F90
+	cd $(OBJ); $(FORTRAN) -o bqpd_gdotx.o $(FFLAGS) bqpd_gdotx.F90
+	cd $(OBJ); $(ARR) bqpd_gdotx.o ; $(RM) bqpd_gdotx.F90 bqpd_gdotx.o
+	@printf '[ OK ]\n'
+
+#  test programs
+
+bqpdt.o: $(OBJ)/bqpdt.o
+
+$(OBJ)/bqpdt.o: ../bqpd/bqpdt.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bqpdt  "
+	$(SED) -f $(SEDS) ../bqpd/bqpdt.F90 > $(OBJ)/bqpdt.F90
+	cd $(OBJ) ; $(FORTRAN) -o bqpdt.o $(FFLAGSS) bqpdt.F90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(BQLG) $(OBJ)/bqpdt.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'

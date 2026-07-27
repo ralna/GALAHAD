@@ -9,7 +9,7 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  Libraries used
 
-LIBS = -lgalahad $(NAG) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(NAGLIB) $(LAPACK) $(BLAS)
 NLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
@@ -53,28 +53,28 @@ naglib_quadruple_64: $(NAGQ64)
 
 nagdt: $(NAGDT)
 	echo " Exhaustive test of subroutine interface to naglib"
-	cd ../nag ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nag \
+	cd ../naglib ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nag \
                          $(RNAGDT)
-#	- ../nag/run_nag > ../nag/nagdt.output 2>&1
-#	cat ../nag/nagdt.output
-	- ../nag/run_nag
-	rm ../nag/run_nag
+#	- ../naglib/run_nag > ../naglib/nagdt.output 2>&1
+#	cat ../naglib/nagdt.output
+	- ../naglib/run_nag
+	rm ../naglib/run_nag
 
 nagst: $(NAGST)
 	echo " Exhaustive test of subroutine interface to naglib"
-	cd ../nag ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nag \
+	cd ../naglib ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nag \
                          $(RNAGST)
-	- ../nag/run_nag > ../nag/nagst.output 2>&1
-	cat ../nag/nagst.output
-	rm ../nag/run_nag
+	- ../naglib/run_nag > ../naglib/nagst.output 2>&1
+	cat ../naglib/nagst.output
+	rm ../naglib/run_nag
 
 nagsq: $(NAGQT)
 	echo " Exhaustive test of subroutine interface to naglib"
-	cd ../nag ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nag \
+	cd ../naglib ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nag \
                          $(RNAGQT)
-	- ../nag/run_nag > ../nag/nagqt.output 2>&1
-	cat ../nag/nagqt.output
-	rm ../nag/run_nag
+	- ../naglib/run_nag > ../naglib/nagqt.output 2>&1
+	cat ../naglib/nagqt.output
+	rm ../naglib/run_nag
 
 #  blas and lapack generic packages and interfaces
 
@@ -118,9 +118,9 @@ $(NLG)(naglib.o): ../../dum/naglib.F90
 
 e04nqt.o: $(OBJ)/e04nqt.o
 
-$(OBJ)/e04nqt.o: ../nag/e04nqt.F90
+$(OBJ)/e04nqt.o: ../naglib/e04nqt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "e04nqt"
-	$(SED) -f $(SEDS) ../nag/e04nqt.F90 > $(OBJ)/e04nqt.F90
+	$(SED) -f $(SEDS) ../naglib/e04nqt.F90 > $(OBJ)/e04nqt.F90
 	cd $(OBJ) ; $(FORTRAN) -o e04nqt.o $(FFLAGSS) e04nqt.F90
 	@printf '[ OK ]\n'
 

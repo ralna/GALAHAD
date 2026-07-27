@@ -1,0 +1,33 @@
+The package BQPD (Roger Fletcher, U. Dundee) is not included 
+as part of GALAHAD, but may be called optionally from GALAHAD's 
+ubersolver QP package.
+
+GALAHAD relies on a single environment variable,
+and if BQPD is not available, this is set as
+
+  BQPD = -lgalahad_bqpd
+
+This allows GALAHAD to function, but any attempt
+to use BQPD will result in an error return code.
+
+If you wish to use BQPD, and you agree to the
+licencing conditions (see the file LICENCE), you
+may obtain a binary shared library for most common
+systems. See 
+
+  https://github.com/leyffer/BQPD_jll.jl/releases
+
+N.B. The system you require may be hidden behind the
+"Show all 50 assets" link, so please click this!
+For modern Linux systems, the required binary files
+are for x86_64-linux-gnu-libgfortran5, viz
+
+  https://github.com/leyffer/BQPD_jll.jl/releases/download/BQPD-v1.0.0%2B0/BQPD.v1.0.0.x86_64-linux-gnu-libgfortran5.tar.gz
+
+Make sure this is on your library search path, and set
+
+  BQPD = -lbqpd -lbqpd_dense -lgalahad
+
+Nick Gould
+For GALAHAD productions
+July 27th 2026

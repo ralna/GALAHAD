@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-06-23 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-07-25 AT 14:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -63,3 +63,16 @@
   CHARACTER ( LEN = 8 ), INTENT( INOUT ) :: cw( * )
   ifail = - 199  ! error code
   END SUBROUTINE E04NRF
+
+!-*-*-  G A L A H A D  -  D U M M Y   E 0 4 N T F    S U B R O U T I N E  -*-*-
+
+  SUBROUTINE E04NTF( string, ivalue, cw, iw, rw, ifail )
+  USE GALAHAD_KINDS_precision
+  IMPLICIT NONE
+  CHARACTER ( * ), INTENT( IN ) :: string
+  INTEGER ( KIND = ip_ ), INTENT( IN ) :: ivalue
+  INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iw( * ),  ifail
+  REAL ( KIND  = rp_ ), INTENT( INOUT ) :: rw( * )
+  CHARACTER ( LEN = 8 ), INTENT( INOUT ) :: cw( * )
+  ifail = - 199  ! error code
+  END SUBROUTINE E04NTF

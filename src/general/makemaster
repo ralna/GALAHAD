@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for dummy and basic GALAHAD packages
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2025-08-27
+#  This version: 2026-07-26
 
 #  include standard GALAHAD makefile definitions
 
@@ -15,8 +15,8 @@ DUMMYS = kinds_silent clock_silent extend_silent symbols_silent \
          lapack_inter_silent hsl_inter_silent \
          pardiso_silent mkl_pardiso_silent wsmp_silent \
          pastix_silent mpi_silent mumps_silent umfpack_silent \
-         naglib_silent highs_silent bpmpd_silent qpalm_silent \
-         osqp_silent qpoases_silent \
+         bpmpd_silent bqpd_silent highs_silent naglib_silent \
+         osqp_silent qpalm_silent qpoases_silent \
          string_silent version_silent buildspec_silent
 
 CORE = $(DUMMYS) space_silent specfile_silent sort_silent norms_silent
@@ -581,12 +581,19 @@ mpi_silent:
            $(GALAHAD)/makefiles/$(VERSION) mpi_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../external/mpi )
 
-#  naglib package
+#  bpmpd package
 
-naglib_silent:
-	( cd ../external/naglib ; $(MAKE) -f \
-           $(GALAHAD)/makefiles/$(VERSION) naglib_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../external/naglib )
+bpmpd_silent:
+	( cd ../external/bpmpd ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) bpmpd_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/bpmpd )
+
+#  bqpd package
+
+bqpd_silent:
+	( cd ../external/bqpd ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) bqpd_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/bqpd )
 
 #  highs package
 
@@ -595,12 +602,12 @@ highs_silent:
            $(GALAHAD)/makefiles/$(VERSION) highs_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../external/highs )
 
-#  bpmpd package
+#  naglib package
 
-bpmpd_silent:
-	( cd ../external/bpmpd ; $(MAKE) -f \
-           $(GALAHAD)/makefiles/$(VERSION) bpmpd_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../external/bpmpd )
+naglib_silent:
+	( cd ../external/naglib ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) naglib_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/naglib )
 
 #  qpalm package
 

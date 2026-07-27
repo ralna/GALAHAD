@@ -8,7 +8,7 @@
                     qcolcnt, qcolidx, qcolnzs, rhs, obj, lbound,               &
                     ubound, primal, dual, status, big, code, opt,              &
                     msizi, msizr )
-  USE GALAHAD_KINDS_precision
+  USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
   IMPLICIT NONE
   INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, nz, qn, qnz
   INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: code, msizi, msizr

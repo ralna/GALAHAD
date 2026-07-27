@@ -1,4 +1,5 @@
 #ifdef INTEGER_64
+#define BQPD_GDOTX_precision BQPD_GDOTX_single_64
 #define CUTEST_TRAMPOLINE_precision CUTEST_TRAMPOLINE_single_64
 #define CUTEst_interface_precision CUTEST_interface_single_64
 #define CUTEST_interface_precision CUTEST_interface_single_64
@@ -450,6 +451,7 @@
 
 #else
 
+#define BQPD_GDOTX_precision BQPD_GDOTX_single
 #define CUTEST_TRAMPOLINE_precision CUTEST_TRAMPOLINE_single
 #define CUTEst_interface_precision CUTEST_interface_single
 #define CUTEST_interface_precision CUTEST_interface_single

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional BPMPD procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-06-26
+#  This version: 2026-07-26
 
 #  include standard GALAHAD makefile definitions
 
@@ -26,10 +26,16 @@ BPMPDQ64 = $(BASICSZ) $(BPLGQ64)(bpmpd.o)
 BPMPDST = $(BPMPDS) $(OBJ)/bpmpdt.o
 BPMPDDT = $(BPMPDD) $(OBJ)/bpmpdt.o
 BPMPDQT = $(BPMPDQ) $(OBJ)/bpmpdt.o
+BPMPDS64T = $(BPMPDS64) $(OBJ)/bpmpdt.o
+BPMPDD64T = $(BPMPDD64) $(OBJ)/bpmpdt.o
+BPMPDQ64T = $(BPMPDQ64) $(OBJ)/bpmpdt.o
 
 RBPMPDST = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
 RBPMPDDT = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
-RBPMPDDQ = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
+RBPMPDQT = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
+RBPMPDS64T = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
+RBPMPDD64T = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
+RBPMPDQ64T = $(OBJ)/bpmpdt.o -L$(OBJ) $(LIBS)
 
 #  bpmpd
 

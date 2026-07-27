@@ -135,6 +135,11 @@
 ! IF ( ifail /= 0 ) GO TO 910
 ! CLOSE( spec )
 
+!  adjust output
+
+  CALL E04NTF( 'Print Level = 10', out, C_w, I_w, R_w, ifail )
+  CALL E04NTF( 'Print Frequency = 1', out, C_w, I_w, R_w, ifail )
+
 !  solve the problem
 
   ifail = - 1
