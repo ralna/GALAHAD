@@ -113,7 +113,7 @@ lapack_inter:
 highs_c_api.o: $(HILG)(highs_c_api.o)
 
 $(HILG)(highs_c_api.o): ../../dum/C/highs_c_api.cpp
-	@printf ' %-9s %-15s\t\t' "Compiling" "highs  "
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy highs"
 	$(CP) ../../dum/C/highs_c_api.cpp $(OBJ)/highs_c_api.c
 	$(CP) ../../dum/include/highs_c_api.h $(OBJ)/highs_c_api.h
 	cd $(OBJ); $(CC) -o highs_c_api.o $(CFLAGS) highs_c_api.c
@@ -125,7 +125,7 @@ $(HILG)(highs_c_api.o): ../../dum/C/highs_c_api.cpp
 highs_interface.o: $(LG)(highs_interface.o)
 
 $(LG)(highs_interface.o): ../highs/highs_interface.F90
-	@printf ' %-9s %-15s\t' "Compiling" "highs_interface  "
+	@printf ' %-9s %-15s\t\t' "Compiling" "highs_interface  "
 	$(CP) ../highs/highs_interface.F90 \
            $(OBJ)/highs_interface.F90
 	cd $(OBJ); $(FORTRAN) -o highs_interface.o $(FFLAGS) \

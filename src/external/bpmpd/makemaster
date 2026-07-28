@@ -113,7 +113,7 @@ lapack_inter:
 bpmpd.o: $(BPLG)(bpmpd.o)
 
 $(BPLG)(bpmpd.o): ../../dum/bpmpd.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "bpmpd  "
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy bpmpd"
 	$(CP) ../../dum/bpmpd.F90 $(OBJ)/bpmpd.F90
 	cd $(OBJ); $(FORTRAN) -o bpmpd.o $(FFLAGS) bpmpd.F90
 	cd $(OBJ); $(BPARR) bpmpd.o ; $(RM) bpmpd.F90 bpmpd.o

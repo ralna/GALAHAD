@@ -113,7 +113,7 @@ lapack_inter:
 bqpd.o: $(BQLG)(bqpd.o)
 
 $(BQLG)(bqpd.o): ../../dum/bqpd.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "bqpd  "
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy bqpd"
 	$(CP) ../../dum/bqpd.F90 $(OBJ)/bqpd.F90
 	cd $(OBJ); $(FORTRAN) -o bqpd.o $(FFLAGS) bqpd.F90
 	cd $(OBJ); $(BQARR) bqpd.o ; $(RM) bqpd.F90 bqpd.o
@@ -123,7 +123,7 @@ $(BQLG)(bqpd.o): ../../dum/bqpd.F90
 bqpd_gdotx.o: $(LG)(bqpd_gdotx.o)
 
 $(LG)(bqpd_gdotx.o): ../bqpd/bqpd_gdotx.F90
-	@printf ' %-9s %-15s\t' "Compiling" "bqpd_gdotx  "
+	@printf ' %-9s %-15s\t\t' "Compiling" "bqpd_gdotx  "
 	$(CP) ../bqpd/bqpd_gdotx.F90 $(OBJ)/bqpd_gdotx.F90
 	cd $(OBJ); $(FORTRAN) -o bqpd_gdotx.o $(FFLAGS) bqpd_gdotx.F90
 	cd $(OBJ); $(ARR) bqpd_gdotx.o ; $(RM) bqpd_gdotx.F90 bqpd_gdotx.o

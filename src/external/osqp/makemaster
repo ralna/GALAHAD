@@ -122,7 +122,7 @@ lapack_inter:
 osqp.o: $(OSLG)(osqp.o)
 
 $(OSLG)(osqp.o): ../../dum/osqp.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "osqp  "
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy osqp"
 	$(CP) ../../dum/osqp.F90 $(OBJ)/osqp.F90
 	cd $(OBJ); $(FORTRAN) -o osqp.o $(FFLAGS) osqp.F90
 	cd $(OBJ); $(OSARR) osqp.o ; $(RM) osqp.F90 osqp.o

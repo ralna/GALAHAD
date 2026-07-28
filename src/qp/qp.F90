@@ -44,7 +44,7 @@
       USE GALAHAD_SPACE_precision
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_QPT_precision
-      USE GALAHAD_QPD_precision, QP_data_type => QPD_data_type
+      USE GALAHAD_QPD_precision, QPD_data => QPD_data_type
       USE GALAHAD_SORT_precision, ONLY: SORT_reorder_by_rows
       USE GALAHAD_SCALE_precision
       USE GALAHAD_PRESOLVE_precision
@@ -304,6 +304,13 @@
         TYPE ( CDQP_inform_type ) :: CDQP_inform
       END TYPE
 
+!  - - - - - - - - - - - - - - - - - - - - - - -
+!   data derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC, EXTENDS( QPD_data ) :: QP_data_type
+      END TYPE QP_data_type
+
    CONTAINS
 
 !-*-*-*-*-*-   Q P _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
@@ -330,23 +337,29 @@
 
 !  Set control parameters
 
-      CALL SCALE_initialize( data%SCALE_data ,control%SCALE_control,           &
+      CALL SCALE_initialize( data%SCALE_data, control%SCALE_control,           &
                              inform%SCALE_inform )
       control%SCALE_control%prefix    = '" - SCALE:"                   '
       CALL PRESOLVE_initialize( control%PRESOLVE_control,                      &
                                 inform%PRESOLVE_inform, data%PRESOLVE_data )
 !     control%PRESOLVE_control%prefix = '" - PRESOLVE:"                '
-      CALL QPA_initialize( data, control%QPA_control, inform%QPA_inform )
+      CALL QPA_initialize( data%QPD_data, control%QPA_control,                 &
+                           inform%QPA_inform )
       control%QPA_control%prefix = '" - QPA:"                     '
-      CALL QPB_initialize( data, control%QPB_control, inform%QPB_inform )
+      CALL QPB_initialize( data%QPD_data, control%QPB_control,                 &
+                           inform%QPB_inform )
       control%QPB_control%prefix = '" - QPB:"                     '
-      CALL QPC_initialize( data, control%QPC_control, inform%QPC_inform  )
+      CALL QPC_initialize( data%QPD_data, control%QPC_control,                 &
+                           inform%QPC_inform  )
       control%QPC_control%prefix = '" - QPC:"                     '
-      CALL CQP_initialize( data, control%CQP_control, inform%CQP_inform  )
+      CALL CQP_initialize( data%QPD_data, control%CQP_control,                 &
+                           inform%CQP_inform  )
       control%CQP_control%prefix = '" - CQP:"                     '
-      CALL DQP_initialize( data, control%DQP_control, inform%DQP_inform  )
+      CALL DQP_initialize( data%QPD_data, control%DQP_control,                 &
+                           inform%DQP_inform  )
       control%DQP_control%prefix = '" - DQP:"                     '
-      CALL CDQP_initialize( data, control%CDQP_control, inform%CDQP_inform  )
+      CALL CDQP_initialize( data%QPD_data, control%CDQP_control,               &
+                            inform%CDQP_inform  )
       control%CQP_control%prefix = '" - CDQP:"                    '
 
       inform%status = GALAHAD_ok
@@ -728,7 +741,7 @@
 !    been changed to reflect variables which have been fixed.
 !
 !   %A is a structure of type SMT_type used to hold the matrix A.
-!    Three storage formats are permitted:
+!    Four storage formats are permitted:
 !
 !    i) sparse, co-ordinate
 !
@@ -750,7 +763,17 @@
 !       A%ptr( : )   pointers to the start of each row, and past the end of
 !                    the last row
 !
-!    iii) dense, by rows
+!    ii) sparse, by columns
+!
+!       In this case, the following must be set:
+!
+!       A%type( 1 : 14 ) = TRANSFER( 'SPARSE_BY_ROWS', A%type )
+!       A%val( : )   the values of the components of A, stored column by column
+!       A%row( : )   the row indices of the components of A
+!       A%ptr( : )   pointers to the start of each colum, and past the end of
+!                    the last column
+!
+!    iv) dense, by rows
 !
 !       In this case, the following must be set:
 !
@@ -761,9 +784,10 @@
 !
 !    On exit, the components will most likely have been reordered.
 !    The output  matrix will be stored by rows, according to scheme (ii) above.
-!    However, if scheme (i) is used for input, the output A%row will contain
-!    the row numbers corresponding to the values in A%val, and thus in this
-!    case the output matrix will be available in both formats (i) and (ii).
+!    However, if scheme (i) is used for input, the output A%row (resp. A%col)
+!    will contain the row (resp. column) numbers corresponding to the values in 
+!    A%val, and thus in this case the output matrix will be available in both 
+!    formats (i) and (ii) or (i) and (iii)
 !
 !   %C is a REAL array of length %m, which is used to store the values of
 !    A x. It need not be set on entry. On exit, it will have been filled
@@ -1248,10 +1272,10 @@
           IF ( printi ) WRITE( control%out,                                    &
               "( A, ' ** GALAHAD QPA solver used **' )" ) prefix
           IF ( stat_required ) THEN
-            CALL QPA_solve( prob, C_stat, B_stat, data,                        &
+            CALL QPA_solve( prob, C_stat, B_stat, data%QPD_data,               &
                             control%QPA_control, inform%QPA_inform )
           ELSE
-            CALL QPA_solve( prob, data%C_stat, data%B_stat, data,              &
+            CALL QPA_solve( prob, data%C_stat, data%B_stat, data%QPD_data,     &
                             control%QPA_control, inform%QPA_inform )
           END IF
           IF ( inform%QPA_inform%status /= GALAHAD_ok .AND.                    &
@@ -1268,8 +1292,8 @@
         CASE ( 'qpb', 'QPB' )
           IF ( printi ) WRITE( control%out,                                    &
               "( A, ' ** GALAHAD QPB solver used **' )" ) prefix
-          CALL QPB_solve( prob, data, control%QPB_control, inform%QPB_inform,  &
-                          C_stat, B_stat )
+          CALL QPB_solve( prob, data%QPD_data, control%QPB_control,            &
+                          inform%QPB_inform, C_stat, B_stat )
           IF ( inform%QPB_inform%status /= GALAHAD_ok .AND.                    &
                inform%QPB_inform%status /= GALAHAD_error_ill_conditioned .AND. &
                inform%QPB_inform%status /= GALAHAD_error_tiny_step ) THEN
@@ -1285,10 +1309,10 @@
           IF ( printi ) WRITE( control%out,                                    &
               "( A, ' ** GALAHAD QPC solver used **' )" ) prefix
           IF ( stat_required ) THEN
-            CALL QPC_solve( prob, C_stat, B_stat, data,                        &
+            CALL QPC_solve( prob, C_stat, B_stat, data%QPD_data,               &
                             control%QPC_control, inform%QPC_inform )
           ELSE
-            CALL QPC_solve( prob, data%C_stat, data%B_stat, data,              &
+            CALL QPC_solve( prob, data%C_stat, data%B_stat, data%QPD_data,     &
                             control%QPC_control, inform%QPC_inform )
           END IF
           IF ( inform%QPC_inform%status /= GALAHAD_ok .AND.                    &
@@ -1305,8 +1329,8 @@
         CASE ( 'cqp', 'CQP' )
           IF ( printi ) WRITE( control%out,                                    &
               "( A, ' ** GALAHAD CQP solver used **' )" ) prefix
-          CALL CQP_solve( prob, data, control%CQP_control, inform%CQP_inform,  &
-                          C_stat, B_stat )
+          CALL CQP_solve( prob, data%QPD_data, control%CQP_control,            &
+                          inform%CQP_inform, C_stat, B_stat )
           IF ( inform%CQP_inform%status /= GALAHAD_ok .AND.                    &
                inform%CQP_inform%status /= GALAHAD_error_ill_conditioned .AND. &
                inform%CQP_inform%status /= GALAHAD_error_tiny_step ) THEN
@@ -1321,8 +1345,8 @@
         CASE ( 'dqp', 'DQP' )
           IF ( printi ) WRITE( control%out,                                    &
               "( A, ' ** GALAHAD DQP solver used **' )" ) prefix
-          CALL DQP_solve( prob, data, control%DQP_control, inform%DQP_inform,  &
-                          C_stat, B_stat )
+          CALL DQP_solve( prob, data%QPD_data, control%DQP_control,            &
+                          inform%DQP_inform, C_stat, B_stat )
           IF ( inform%DQP_inform%status /= GALAHAD_ok .AND.                    &
                inform%DQP_inform%status /= GALAHAD_error_ill_conditioned .AND. &
                inform%DQP_inform%status /= GALAHAD_error_tiny_step ) THEN
@@ -1337,7 +1361,7 @@
         CASE ( 'cdqp', 'CDQP' )
           IF ( printi ) WRITE( control%out,                                    &
               "( A, ' ** GALAHAD CDQP solver used **' )" ) prefix
-          CALL CDQP_solve( prob, data, control%CDQP_control,                   &
+          CALL CDQP_solve( prob, data%QPD_data, control%CDQP_control,          &
                            inform%CDQP_inform, C_stat, B_stat )
           IF ( inform%CDQP_inform%status /= GALAHAD_ok .AND.                   &
                inform%CDQP_inform%status /= GALAHAD_error_ill_conditioned .AND.&
@@ -1347,6 +1371,42 @@
               inform%CDQP_inform%status
             inform%status = GALAHAD_error_cdqp ; GO TO 800
           END IF
+
+!  == HiGHS ==
+
+        CASE ( 'highs', 'HIGHS', 'HiGHS' )
+
+!  == BPMPD ==
+
+        CASE ( 'bpmpd', 'BPMPD' )
+
+!  == QPALM ==
+
+        CASE ( 'qpalm', 'QPALM' )
+
+!  == E04NQF ==
+
+        CASE ( 'e04nqf', 'E04NQF' )
+
+!  == OSQP ==
+
+        CASE ( 'osqp', 'OSQP' )
+
+!  == BQPD ==
+
+        CASE ( 'bqpd', 'BQPD' )
+
+!  == qpOASES ==
+
+        CASE ( 'qpoases', 'QPOASES', 'qpOASES' )
+
+!  == SCS ==
+
+        CASE ( 'scs', 'SCS' )
+
+!  == Clarabel ==
+
+        CASE ( 'clarabel', 'CLARABEL', 'Clarabel' )
 
 !  = unavailable solver =
 
@@ -1586,42 +1646,48 @@
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-      CALL QPA_terminate( data, control%QPA_control, inform%QPA_inform )
+      CALL QPA_terminate( data%QPD_data, control%QPA_control,                  &
+                          inform%QPA_inform )
       IF ( inform%QPA_inform%status /= GALAHAD_ok ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%alloc_status = inform%QPA_inform%alloc_status
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-      CALL QPB_terminate( data, control%QPB_control, inform%QPB_inform )
+      CALL QPB_terminate( data%QPD_data, control%QPB_control,                  &
+                          inform%QPB_inform )
       IF ( inform%QPB_inform%status /= GALAHAD_ok ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%alloc_status = inform%QPB_inform%alloc_status
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-      CALL QPC_terminate( data, control%QPC_control, inform%QPC_inform )
+      CALL QPC_terminate( data%QPD_data, control%QPC_control,                  &
+                          inform%QPC_inform )
       IF ( inform%QPC_inform%status /= GALAHAD_ok ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%alloc_status = inform%QPC_inform%alloc_status
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-      CALL CQP_terminate( data, control%CQP_control, inform%CQP_inform )
+      CALL CQP_terminate( data%QPD_data, control%CQP_control,                  &
+                          inform%CQP_inform )
       IF ( inform%CQP_inform%status /= GALAHAD_ok ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%alloc_status = inform%CQP_inform%alloc_status
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-      CALL DQP_terminate( data, control%DQP_control, inform%DQP_inform )
+      CALL DQP_terminate( data%QPD_data, control%DQP_control,                  &
+                          inform%DQP_inform )
       IF ( inform%DQP_inform%status /= GALAHAD_ok ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%alloc_status = inform%DQP_inform%alloc_status
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-      CALL CDQP_terminate( data, control%CDQP_control, inform%CDQP_inform )
+      CALL CDQP_terminate( data%QPD_data, control%CDQP_control,                &
+                           inform%CDQP_inform )
       IF ( inform%CDQP_inform%status /= GALAHAD_ok ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%alloc_status = inform%CDQP_inform%alloc_status

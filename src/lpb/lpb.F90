@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-07-28 AT 09:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -31,31 +31,69 @@
 !     |                                              |
 !     ------------------------------------------------
 
-      USE GALAHAD_KINDS_precision
-!$    USE omp_lib
-      USE GALAHAD_CLOCK
-      USE GALAHAD_SYMBOLS
+      USE GALAHAD_KINDS_precision, ONLY: ip_, rp_, long_
+!$    USE omp_lib, ONLY: OMP_GET_MAX_THREADS, OMP_GET_THREAD_NUM
+      USE GALAHAD_CLOCK, ONLY: CLOCK_time
+      USE GALAHAD_SYMBOLS, ONLY: GALAHAD_ok,                                   &
+                                 GALAHAD_error_allocate,                       &
+                                 GALAHAD_error_deallocate,                     &
+                                 GALAHAD_error_restrictions,                   &
+                                 GALAHAD_error_bad_bounds,                     &
+                                 GALAHAD_error_primal_infeasible,              &
+                                 GALAHAD_error_unbounded,                      &
+                                 GALAHAD_error_no_center,                      &
+                                 GALAHAD_error_factorization,                  &
+                                 GALAHAD_error_preconditioner,                 &
+                                 GALAHAD_error_ill_conditioned,                &
+                                 GALAHAD_error_tiny_step,                      &
+                                 GALAHAD_error_max_iterations,                 &
+                                 GALAHAD_error_cpu_limit,                      &
+                                 GALAHAD_error_optional,                       &
+                                 GALAHAD_error_unknown_storage
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural,           &
                                 STRING_ies, STRING_are, STRING_ordinal
-      USE GALAHAD_SPACE_precision
-      USE GALAHAD_SMT_precision
-      USE GALAHAD_QPT_precision
-      USE GALAHAD_SPECFILE_precision
-      USE GALAHAD_QPP_precision, LPB_dims_type => QPT_dimensions_type
-      USE GALAHAD_QPD_precision, LPB_data_type => QPD_data_type,               &
-                                 LPB_AX => QPD_AX, LPB_abs_AX => QPD_abs_AX
-      USE GALAHAD_ROOTS_precision
+      USE GALAHAD_SPACE_precision, ONLY: SPACE_resize_array, SPACE_dealloc_array
+      USE GALAHAD_SMT_precision, ONLY: SMT_TYPE, SMT_GET, SMT_PUT
+      USE GALAHAD_QPT_precision, ONLY: LPB_dims_type => QPT_dimensions_type,   &
+                                       QPT_keyword_A, QPT_problem_type,        &
+                                       QPT_summarize_problem
+      USE GALAHAD_SPECFILE_precision, ONLY: SPECFILE_item_type, SPECFILE_read, &
+                                            SPECFILE_assign_value
+      USE GALAHAD_QPP_precision, ONLY: QPP_initialize, QPP_apply, QPP_restore, &
+                                       QPP_reorder, QPP_terminate
+      USE GALAHAD_QPD_precision, ONLY: LPB_data_type => QPD_data_type,         &
+                                       LPB_AX => QPD_AX,                       &
+                                       LPB_abs_AX => QPD_abs_AX,               &
+                                       QPD_solve_separable_bqp, QPD_sif
+      USE GALAHAD_ROOTS_precision, ONLY: ROOTS_data_type, ROOTS_control_type,  &
+                                         ROOTS_inform_type, ROOTS_initialize,  &
+                                         ROOTS_read_specfile, ROOTS_terminate, &
+                                         ROOTS_solve, ROOTS_quadratic,         &
+                                         ROOTS_smallest_root_in_interval
       USE GALAHAD_SORT_precision, ONLY: SORT_inverse_permute
-      USE GALAHAD_FDC_precision
-      USE GALAHAD_SBLS_precision
-      USE GALAHAD_CRO_precision
-      USE GALAHAD_FIT_precision
+      USE GALAHAD_FDC_precision, ONLY: FDC_data_type, FDC_control_type,        &
+                                       FDC_inform_type, FDC_initialize,        &
+                                       FDC_read_specfile, FDC_terminate,       &
+                                       FDC_find_dependent
+      USE GALAHAD_SBLS_precision, ONLY: SBLS_data_type, SBLS_control_type,     &
+                                        SBLS_inform_type, SBLS_initialize,     &
+                                        SBLS_read_specfile, SBLS_terminate,    &
+                                        SBLS_form_and_factorize, SBLS_solve,   &
+                                        SBLS_solve_iterative
+      USE GALAHAD_CRO_precision, ONLY: CRO_data_type, CRO_control_type,        &
+                                       CRO_inform_type, CRO_initialize,        &
+                                       CRO_read_specfile, CRO_terminate,       &
+                                       CRO_crossover
+      USE GALAHAD_FIT_precision, ONLY: FIT_data_type, FIT_control_type,        &
+                                       FIT_inform_type, FIT_initialize,        &
+                                       FIT_read_specfile, FIT_terminate,       &
+                                       FIT_evaluate_polynomial
       USE GALAHAD_NORMS_precision, ONLY: TWO_norm
-      USE GALAHAD_CHECKPOINT_precision
+      USE GALAHAD_CHECKPOINT_precision, ONLY: CHECKPOINT
       USE GALAHAD_RPD_precision, ONLY: RPD_inform_type,                        &
                                        RPD_write_qp_problem_data
 
-      IMPLICIT NONE
+      IMPLICIT NONE  ( TYPE, EXTERNAL )
 
       PRIVATE
       PUBLIC :: LPB_initialize, LPB_read_specfile, LPB_solve, LPB_solve_main,  &

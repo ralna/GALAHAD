@@ -113,7 +113,7 @@ lapack_inter:
 qpalm.o: $(QALG)(qpalm.o)
 
 $(QALG)(qpalm.o): ../../dum/qpalm.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "qpalm  "
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy qpalm"
 	$(CP) ../../dum/qpalm.F90 $(OBJ)/qpalm.F90
 	cd $(OBJ); $(FORTRAN) -o qpalm.o $(FFLAGS) qpalm.F90
 	cd $(OBJ); $(QAARR) qpalm.o ; $(RM) qpalm.F90 qpalm.o

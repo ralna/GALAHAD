@@ -139,7 +139,7 @@ $(LG)(qpoases_c_interface.o): ../qpoases/qpoases_c_interface.cpp
 qpoases_interface.o: $(LG)(qpoases_interface.o)
 
 $(LG)(qpoases_interface.o): ../qpoases/qpoases_interface.F90
-	@printf ' %-9s %-15s\t' "Compiling" "qpoases_interface  "
+	@printf ' %-9s %-15s\t\t' "Compiling" "qpoases_interface  "
 	$(CP) ../qpoases/qpoases_interface.F90 \
            $(OBJ)/qpoases_interface.F90
 	cd $(OBJ); $(FORTRAN) -o qpoases_interface.o $(FFLAGS) \
@@ -161,7 +161,7 @@ $(QOLG)(qpoases.o): ../../dum/qpoases.F90
 qpoases_fortran.o: $(QOFLG)(qpoases_fortran.o)
 
 $(QOFLG)(qpoases_fortran.o): ../qpoases//qpoases_fortran.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "qpoases  "
+	@printf ' %-9s %-15s\t\t' "Compiling" "fortran qpoases"
 	$(CP) ../qpoases/qpoases_fortran.F90 $(OBJ)/qpoases_fortran.F90
 	cd $(OBJ); $(FORTRAN) -o qpoases_fortran.o \
                      $(FFLAGS) qpoases_fortran.F90

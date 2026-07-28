@@ -107,7 +107,7 @@ lapack_inter:
 naglib.o: $(NLG)(naglib.o)
 
 $(NLG)(naglib.o): ../../dum/naglib.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "naglib"
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy naglib"
 	$(CP) ../../dum/naglib.F90 $(OBJ)/naglib.F90
 	cd $(OBJ); $(FORTRAN) -o naglib.o $(FFLAGS) naglib.F90
 	cd $(OBJ); $(NARR) naglib.o ; $(RM) naglib.F90 naglib.o
