@@ -1,14 +1,15 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-07-28 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*-*-  G A L A H A D _ Q P    M O D U L E  -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-*-  G A L A H A D _ Q P    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
 
 !  History -
 !   originally released in GALAHAD Version 2.4. January 5th 2011
+!   expanded to handle multiple external solvers, Version 5.6, July 28th 2026
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -33,28 +34,53 @@
 !     | for some posibly indefinite Hessian H or     |
 !     | (possibly zero) diagonal matrix W using a    |
 !     | variety of methods. This provides a generic  |
-!     | interface to all GALAHAD QP routines         |
+!     | interface to all GALAHAD and many other      |
+!     | external (if they are available) QP routines |
 !     |                                              |
 !     ------------------------------------------------
 
-      USE GALAHAD_KINDS_precision
-      USE GALAHAD_CLOCK
+      USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
+      USE GALAHAD_CLOCK, ONLY: CLOCK_time
       USE GALAHAD_SYMBOLS, ACTIVE => GALAHAD_ACTIVE, TRACE => GALAHAD_TRACE,   &
                            DEBUG => GALAHAD_DEBUG
-      USE GALAHAD_SPACE_precision
-      USE GALAHAD_SPECFILE_precision
-      USE GALAHAD_QPT_precision
-      USE GALAHAD_QPD_precision, QPD_data => QPD_data_type
+      USE GALAHAD_SPACE_precision, ONLY: SPACE_resize_array, SPACE_dealloc_array
+      USE GALAHAD_SPECFILE_precision, ONLY: SPECFILE_item_type, SPECFILE_read, &
+                                            SPECFILE_assign_value
+      USE GALAHAD_QPT_precision, ONLY: QPT_problem_type, QPT_keyword_A,        &
+                                       QPT_keyword_H, QPT_summarize_problem
+      USE GALAHAD_QPD_precision, ONLY: QPD_data => QPD_data_type
       USE GALAHAD_SORT_precision, ONLY: SORT_reorder_by_rows
-      USE GALAHAD_SCALE_precision
-      USE GALAHAD_PRESOLVE_precision
+      USE GALAHAD_SCALE_precision, ONLY: SCALE_control_type,                   &
+                                         SCALE_inform_type,                    &
+                                         SCALE_initialize,                     &
+                                         SCALE_read_specfile,                  &
+                                         SCALE_get, SCALE_apply,               &
+                                         SCALE_recover, SCALE_terminate
+      USE GALAHAD_PRESOLVE_precision, ONLY: PRESOLVE_control_type,             &
+                                            PRESOLVE_inform_type,              &
+                                            PRESOLVE_initialize,               &
+                                            PRESOLVE_read_specfile,            &
+                                            PRESOLVE_apply, PRESOLVE_restore,  &
+                                            PRESOLVE_terminate
       USE GALAHAD_MOP_precision, ONLY: mop_AX
-      USE GALAHAD_QPA_precision
-      USE GALAHAD_QPB_precision
-      USE GALAHAD_QPC_precision
-      USE GALAHAD_CQP_precision
-      USE GALAHAD_DQP_precision
-      USE GALAHAD_CDQP_precision
+      USE GALAHAD_QPA_precision, ONLY: QPA_control_type, QPA_inform_type,      &
+                                       QPA_initialize, QPA_read_specfile,      &
+                                       QPA_solve, QPA_terminate
+      USE GALAHAD_QPB_precision, ONLY: QPB_control_type, QPB_inform_type,      &
+                                       QPB_initialize, QPB_read_specfile,      &
+                                       QPB_solve, QPB_terminate
+      USE GALAHAD_QPC_precision, ONLY: QPC_control_type, QPC_inform_type,      &
+                                       QPC_initialize, QPC_read_specfile,      &
+                                       QPC_solve, QPC_terminate
+      USE GALAHAD_CQP_precision, ONLY: CQP_control_type, CQP_inform_type,      &
+                                       CQP_initialize, CQP_read_specfile,      &
+                                       CQP_solve, CQP_terminate
+      USE GALAHAD_DQP_precision, ONLY: DQP_control_type, DQP_inform_type,      &
+                                       DQP_initialize, DQP_read_specfile,      &
+                                       DQP_solve, DQP_terminate
+      USE GALAHAD_CDQP_precision, ONLY: CDQP_control_type, CDQP_inform_type,   &
+                                        CDQP_initialize, CDQP_read_specfile,   &
+                                        CDQP_solve, CDQP_terminate
       USE GALAHAD_LMS_precision, ONLY: LMS_apply_lbfgs
 
       IMPLICIT NONE
