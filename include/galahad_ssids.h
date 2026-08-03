@@ -69,7 +69,7 @@ struct ssids_inform_type {
    ipc_ not_first_pass;
    ipc_ not_second_pass;
    ipc_ nparts;
-   int64_t cpu_flops;
+   int64_t flops;
    // char unused[76]; // Allow for future expansion
 };
 

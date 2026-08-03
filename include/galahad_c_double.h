@@ -2295,7 +2295,7 @@ struct ssids_inform_type {
     int32_t not_first_pass;
     int32_t not_second_pass;
     int32_t nparts;
-    int64_t cpu_flops;
+    int64_t flops;
 };
 
 struct ssids_inform_type_64 {
@@ -2318,7 +2318,7 @@ struct ssids_inform_type_64 {
     int64_t not_first_pass;
     int64_t not_second_pass;
     int64_t nparts;
-    int64_t cpu_flops;
+    int64_t flops;
 };
 
 void ssids_default_control(struct ssids_control_type *control);
