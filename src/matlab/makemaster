@@ -43,7 +43,7 @@ MLGD = $(OBJD)/libgalahad_matlab.a
 
 LIBS = -lgalahad_matlab -lgalahad $(HSL) $(MKL_PARDISO) $(PARDISO) \
        $(WSMP) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) \
-       $(METIS4ND) $(METIS5ND) $(LAPACK) $(BLAS) -lhwloc
+       $(METIS4ND) $(METIS5ND) $(LAPACK) $(BLAS)
 
 #  Archive manipulation strings
 

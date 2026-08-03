@@ -1,4 +1,4 @@
-#  Main body of the installation makefile for the GALAHAD HW package
+#  Main body of the installation makefile for the GALAHAD TOPOLOGY package
 #  SPRAL HW_TOPOLOGY was developed as part of SPRAL by Jonathan Hogg 
 #  (now at Apple) and is available under a BSD licence as part of GALAHAD
 
@@ -25,18 +25,6 @@ else ifeq "$(PRECIS)" "quadruple"
 else
   DPREC = $(QUADREAL)
   METIS_64 =
-endif
-
-ifeq "$(HWLOC)" "un"
- DHWLOC = -DSPRAL_NO_HWLOC
-else
- DHWLOC = -DSPRAL_HAVE_HWLOC
-endif
-
-ifeq "$(GETCPU)" "un"
- DGETCPU = -DSPRAL_NO_SCHED_GETCPU
-else
- DGETCPU = -DSPRAL_HAVE_SCHED_GETCPU
 endif
 
 ifeq "$(MULTIVERSIONS)" "yes"
@@ -76,27 +64,9 @@ CFLAGS     = $(CCBASIC) $(OPTIMIZATION) $(CCDEBUG) \
 CFLAGSN    = $(CCBASIC) $(NOOPTIMIZATION) $(CCDEBUG) \
               $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
 
-#  C++ compiler flags
-
-CXXFLAGSOMP   = $(CXXBASIC) $(OPTIMIZATION) $(CXXDEBUG) $(SOMP) \
-                 $(CPPDEFINES) $(DHWLOC) $(DGETCPU) -I $(GALINCLUDE)
-CXXFLAGSNOMP  = $(CXXBASIC) $(NOOPTIMIZATION) $(CXXDEBUG) $(SOMP) \
-                 $(CPPDEFINES) $(DHWLOC) $(DGETCPU) -I $(GALINCLUDE)
-
-#  CUDA compiler flags
-
-#CUDAFLAGS   = -arch=$(CUDAARCH) -code=$(CUDACODE) $(CUDABASIC) \
-#                $(OPTIMIZATION) -I $(GALINCLUDE)
-#CUDAFLAGSN  = -arch=$(CUDAARCH) -code=$(CUDACODE) $(CUDABASIC) \
-#               $(NOOPTIMIZATION)  -I$(GALINCLUDE)
-
-CUDAFLAGS = $(CUDABASIC) $(CUDAOPTIMIZATION) -I$(GALINCLUDE)
-CUDAFLAGSN = $(CUDABASIC) $(CUDANOOPTIMIZATION) -I$(GALINCLUDE)
-
 #  linking and run flags
 
 RUNFFLAGS     = $(OPTIMIZATION) $(DEBUG) $(MODULES)
-RUNFFLAGSCUDA = $(OPTIMIZATION) $(MODULES)
 RUNFFLAGSOMP  = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(SOMP)
 
 #  names of random libraries
@@ -129,10 +99,10 @@ CLGQ64 = $(OBJQ64)/libgalahad.a
 
 ifeq "$(METIS_64)" "_64"
   LIBS = -L$(OBJ) $(METIS464ND) $(METIS564ND) $(LAPACK) $(BLAS) \
-          -lgalahad $(METIS464ND) $(METIS564ND) $(HSL) -lstdc++ -lhwloc
+          -lgalahad $(METIS464ND) $(METIS564ND) $(HSL)
 else
   LIBS = -L$(OBJ) $(METIS4ND) $(METIS5ND) $(LAPACK) $(BLAS) \
-         -lgalahad $(METIS4ND) $(METIS5ND) $(HSL) -lstdc++ -lhwloc
+         -lgalahad $(METIS4ND) $(METIS5ND) $(HSL)
 endif
 
 PLIBS = $(LIBS) -lgalahad_problem
@@ -162,52 +132,52 @@ SUCC = precision version) compiled successfully
 
 #  compilation agenda
 
-HWS = kinds $(CLGS)(compat.o) $(CLGS)(guess_topology.o) $(LGS)(hw.o)
-HWD = kinds $(CLGD)(compat.o) $(CLGD)(guess_topology.o) $(LGD)(hw.o)
-HWQ = kinds $(CLGQ)(compat.o) $(CLGQ)(guess_topology.o) $(LGQ)(hw.o)
-HWS64 = kinds $(CLGS64)(compat.o) $(CLGS64)(guess_topology.o) $(LGS64)(hw.o)
-HWD64 = kinds $(CLGD64)(compat.o) $(CLGD64)(guess_topology.o) $(LGD64)(hw.o)
-HWQ64 = kinds $(CLGQ64)(compat.o) $(CLGQ64)(guess_topology.o) $(LGQ64)(hw.o)
+HWS = kinds $(LGS)(topology.o)
+HWD = kinds $(LGD)(topology.o)
+HWQ = kinds $(LGQ)(topology.o)
+HWS64 = kinds $(LGS64)(topology.o)
+HWD64 = kinds $(LGD64)(topology.o)
+HWQ64 = kinds $(LGQ64)(topology.o)
 
 #  main compilations and runs
 
-all: hw
+all: topology
 
-# hw
+# topology
 
-hw_silent: hw_silent_$(PRECIS)
-hw_silent_single: $(HWS)
+topology_silent: topology_silent_$(PRECIS)
+topology_silent_single: $(HWS)
 	$(RANLIB) $(LGS)
 	$(RANLIB) $(CLGS)
-hw_silent_double: $(HWD)
+topology_silent_double: $(HWD)
 	$(RANLIB) $(LGD)
 	$(RANLIB) $(CLGD)
-hw_silent_quadruple: $(HWQ)
+topology_silent_quadruple: $(HWQ)
 	$(RANLIB) $(LGQ)
 	$(RANLIB) $(CLGQ)
-hw_silent_single_64: $(HWS64)
+topology_silent_single_64: $(HWS64)
 	$(RANLIB) $(LGS64)
 	$(RANLIB) $(CLGS64)
-hw_silent_double_64: $(HWD64)
+topology_silent_double_64: $(HWD64)
 	$(RANLIB) $(LGD64)
 	$(RANLIB) $(CLGD64)
-hw_silent_quadruple_64: $(HWQ64)
+topology_silent_quadruple_64: $(HWQ64)
 	$(RANLIB) $(LGQ64)
 	$(RANLIB) $(CLGQ64)
 
-hw: hw_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: HW ($(PRECIS) $(SUCC)"
-hw_single: $(HWS)
+topology: topology_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: TOPOLOGY ($(PRECIS) $(SUCC)"
+topology_single: $(HWS)
 	$(RANLIB) $(LGS)
-hw_double: $(HWD)
+topology_double: $(HWD)
 	$(RANLIB) $(LGD)
-hw_quadruple: $(HWQ)
+topology_quadruple: $(HWQ)
 	$(RANLIB) $(LGQ)
-hw_single_64: $(HWS64)
+topology_single_64: $(HWS64)
 	$(RANLIB) $(LGS64)
-hw_double_64: $(HWD64)
+topology_double_64: $(HWD64)
 	$(RANLIB) $(LGD64)
-hw_quadruple_64: $(HWQ64)
+topology_quadruple_64: $(HWQ64)
 	$(RANLIB) $(LGQ64)
 
 #  basic packages
@@ -218,42 +188,15 @@ kinds:
 
 #  individual compilations
 
-compat.o: $(CLG)(compat.o) 
+topology.o: $(LG)(topology.o)
 
-$(CLG)(compat.o): ../hw/compat.cxx \
-                  $(GALINCLUDE)/ssids_compat.hxx
-	@printf ' %-9s %-15s\t\t' "Compiling" "compat  "
-	$(CP) ../hw/compat.cxx $(OBJ)/
-	cd $(OBJ) ; $(CXX) -I. -o compat.o $(CXXFLAGSOMP) compat.cxx \
+$(LG)(topology.o): ../topology/topology.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "topology  "
+	$(CP) ../topology/topology.F90 $(OBJ)/topology.F90
+	cd $(OBJ) ; $(FORTRAN) -o topology.o $(FFLAGSOMP) topology.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(CXX) -I. -o compat.o $(CXXFLAGSNCOMP) compat.cxx )
-	cd $(OBJ) ; $(CARR) compat.o ; $(RM) compat.cxx compat.o
-	@printf '[ OK ]\n'
-
-guess_topology.o: $(CLG)(guess_topology.o)
-
-$(CLG)(guess_topology.o): ../hw/guess_topology.cxx \
-                  $(GALINCLUDE)/galahad_guess_topology.hxx
-	@printf ' %-9s %-15s\t\t' "Compiling" "guess_topology  "
-	$(CP) ../hw/guess_topology.cxx $(OBJ)/
-	cd $(OBJ) ; $(CXX) -I. -o guess_topology.o $(CXXFLAGSOMP) \
-          guess_topology.cxx \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(CXX) -I. -o guess_topology.o $(CXXFLAGSNOMP) \
-                      guess_topology.cxx )
-	cd $(OBJ) ; $(CARR) guess_topology.o ; \
-          $(RM) guess_topology.cxx guess_topology.o
-	@printf '[ OK ]\n'
-
-hw.o: $(LG)(hw.o)
-
-$(LG)(hw.o): ../hw/hw.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hw  "
-	$(CP) ../hw/hw.F90 $(OBJ)/hw.F90
-	cd $(OBJ) ; $(FORTRAN) -o hw.o $(FFLAGSOMP) hw.F90 \
-                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o hw.o $(FFLAGSNOMP) hw.F90 )
-	cd $(OBJ) ; $(ARR) hw.o ; $(RM) hw.F90 hw.o
+                    $(FORTRAN) -o topology.o $(FFLAGSNOMP) topology.F90 )
+	cd $(OBJ) ; $(ARR) topology.o ; $(RM) topology.F90 topology.o
 	$(RRMARFILE) ssids_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
@@ -261,8 +204,8 @@ $(LG)(hw.o): ../hw/hw.F90
 #  book keeping
 
 clean:
-	@printf ' %-9s %-15s\t\t' "Cleaning $(PRECIS) precision hw"
-	$(RM) $(LGS) $(LGD) $(OBJ)/hw*.o $(OBJ)/libgalahad.a \
+	@printf ' %-9s %-15s\t\t' "Cleaning $(PRECIS) precision topology"
+	$(RM) $(LGS) $(LGD) $(OBJ)/topology*.o $(OBJ)/libgalahad.a \
                             $(OBJ)/libgalahad_c.a $(MOD)/galahad*
 	@printf '[ OK ]\n'
 
@@ -272,7 +215,7 @@ cleanall:
 	$(RM) -r $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
 
-rmhw:
-	@printf ' %-9s %-15s\t\t' "Removing" "hw from archive "
-	$(RRMARFILE) hw_$(PRECIS).o
+rmtopology:
+	@printf ' %-9s %-15s\t\t' "Removing" "topology from archive "
+	$(RRMARFILE) topology_$(PRECIS).o
 	@printf '[ OK ]\n'

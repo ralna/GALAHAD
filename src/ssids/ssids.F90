@@ -23,7 +23,7 @@
     USE, INTRINSIC :: iso_c_binding
 !$  USE omp_lib
     USE GALAHAD_KINDS_precision
-    USE GALAHAD_HW, ONLY: HW_guess_topology, HW_numa_region
+    USE GALAHAD_TOPOLOGY, ONLY: TOPOLOGY_guess_topology, TOPOLOGY_numa_region
     USE GALAHAD_MU_precision, ONLY: SSIDS_MATRIX_REAL_SYM_INDEF,               &
                                     SSIDS_MATRIX_REAL_SYM_PSDEF,               &
                                     MU_convert_coord_to_cscl,                  &
@@ -44,14 +44,9 @@
     USE GALAHAD_SSIDS_types_precision
     USE GALAHAD_SSIDS_subtree_precision, ONLY: numeric_subtree_base,           &
                                                symbolic_subtree_base
-    USE GALAHAD_SSIDS_cpu_subtree_precision, ONLY: cpu_numeric_subtree,        &
-                                               construct_cpu_symbolic_subtree
-!   USE GALAHAD_SSIDS_gpu_subtree_precision, ONLY:                             &
-!     construct_gpu_symbolic_subtree
-#ifdef PROFILE
-     USE GALAHAD_SSIDS_profile_precision, ONLY : profile_begin, profile_end,   &
-                                                 profile_add_event
-#endif
+    USE GALAHAD_SSIDS_numeric_subtree_precision, ONLY:                     &
+                                       construct_symbolic_subtree, &
+                                       numeric_subtree
 
     IMPLICIT NONE
 
@@ -226,7 +221,7 @@
 
 !  machine topology
 
-     TYPE( HW_numa_region ), DIMENSION( : ), ALLOCATABLE :: topology
+     TYPE( TOPOLOGY_numa_region ), DIMENSION( : ), ALLOCATABLE :: topology
 
 !  inform at end of analyse phase
 
@@ -271,14 +266,14 @@
 
 !  do actual factorization
 
-       PROCEDURE, PASS( fkeep ) :: inner_factor => inner_factor_cpu 
+       PROCEDURE, PASS( fkeep ) :: inner_factor => inner_factor 
 
 !  do actual solve
 
-       PROCEDURE, PASS( fkeep ) :: inner_solve => inner_solve_cpu 
-       PROCEDURE, PASS( fkeep ) :: enquire_posdef => enquire_posdef_cpu
-       PROCEDURE, PASS( fkeep ) :: enquire_indef => enquire_indef_cpu
-       PROCEDURE, PASS( fkeep ) :: alter => alter_cpu ! Alter D values
+       PROCEDURE, PASS( fkeep ) :: inner_solve => inner_solve 
+       PROCEDURE, PASS( fkeep ) :: enquire_posdef => enquire_posdef
+       PROCEDURE, PASS( fkeep ) :: enquire_indef => enquire_indef
+       PROCEDURE, PASS( fkeep ) :: alter => alter ! Alter D values
        PROCEDURE, PASS( fkeep ) :: free => free_fkeep ! Frees memory
 
 !  finalizer: release C++ numeric subtrees on deallocation/reset/scope-exit
@@ -306,7 +301,7 @@
     TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
     INTEGER( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: order( : )
     REAL( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: val( : )
-    TYPE( HW_numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
+    TYPE( TOPOLOGY_numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
 
 !  local variables
 
@@ -387,7 +382,7 @@
 
 !  optionally Specify machine topology to work with
 
-    TYPE( HW_numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
+    TYPE( TOPOLOGY_numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
 
 !  local variables
 
@@ -422,13 +417,6 @@
     context = 'ssids_analyse'
     inform = inform_default
     CALL ssids_free( akeep, free_flag )
-!   IF ( free_flag /= 0 ) THEN
-!      inform%flag = SSIDS_ERROR_CUDA_UNKNOWN
-!      inform%cuda_error = free_flag
-!      akeep%inform = inform
-!      CALL inform%print_flag( control, context )
-!      RETURN
-!   END IF
 
 !  print status on entry
 
@@ -627,7 +615,7 @@
 !  guess it
 
     ELSE
-      CALL HW_guess_topology( akeep%topology, st )
+      CALL TOPOLOGY_guess_topology( akeep%topology, st )
       IF ( st /= 0 ) GO TO 490
     END IF
     CALL squash_topology( akeep%topology, control, st )
@@ -664,7 +652,7 @@
 !  parameters tell us to ignore.
 
     IMPLICIT NONE
-    TYPE( HW_numa_region ), DIMENSION( : ), ALLOCATABLE,                       &
+    TYPE( TOPOLOGY_numa_region ), DIMENSION( : ), ALLOCATABLE,                       &
                                             INTENT( INOUT ) :: topology
     TYPE( ssids_control_type ), INTENT( IN ) :: control
     INTEGER( KIND = ip_ ), INTENT( OUT ) :: st
@@ -672,106 +660,33 @@
 !  local variables
 
     LOGICAL :: no_omp
-    INTEGER( KIND = ip_ ) :: i, j, ngpu
-    TYPE( HW_numa_region ), DIMENSION( : ), ALLOCATABLE :: new_topology
+    INTEGER( KIND = ip_ ) :: i
+    TYPE( TOPOLOGY_numa_region ), DIMENSION( : ), ALLOCATABLE :: new_topology
 
     st = 0
 
     no_omp = .TRUE.
 !$  no_omp = .FALSE.
 
-!  get rid of GPUs if we're not using them
-
-    IF ( .NOT. control%use_gpu ) THEN
-      DO i = 1, SIZE( topology )
-        IF ( SIZE( topology( i )%gpus ) /= 0 ) THEN
-          DEALLOCATE( topology( i )%gpus )
-          ALLOCATE( topology( i )%gpus( 0 ), STAT = st )
-          IF ( st /= 0 ) RETURN
-        END IF
-      END DO
-    END IF
-
-!  FIXME: One can envisage a sensible coexistence of both
-!  no_omp=.true. AND control%ignore_numa=.false. ( e.g., choose the
-!  "best" NUMA node, with the least utilised CPUs and/or GPUs... ).
-
     IF ( no_omp ) THEN
+
+!  no OpenMP: collapse to a single region with one processor
+
       ALLOCATE( new_topology( 1 ), STAT = st )
       IF ( st /= 0 ) RETURN
       new_topology( 1 )%nproc = 1
-
-!  count resources to REALlocate
-
-      ngpu = 0
-      DO i = 1, SIZE( topology )
-        ngpu = ngpu + SIZE( topology( i )%gpus )
-      END DO
-
-!  FIXME: if no_omp=.true. AND control%ignore_numa=.true.,
-!  then take the "first" GPU ( whichever it might be ), only.
-!  A combination not meant for production, only for testing!
-
-      IF ( control%ignore_numa ) ngpu = min( ngpu, 1 )
-
-!  store list of GPUs
-
-      ALLOCATE( new_topology( 1 )%gpus( ngpu ), STAT = st )
-      IF ( st /= 0 ) RETURN
-      IF ( ngpu > 0 ) THEN
-        IF ( control%ignore_numa ) THEN
-          new_topology( 1 )%gpus( 1 ) = huge( new_topology( 1 )%gpus( 1 ) )
-          DO i = 1, SIZE( topology )
-            new_topology( 1 )%gpus( 1 ) =                                      &
-               MIN( new_topology( 1 )%gpus( 1 ), MINVAL( topology( i )%gpus ) )
-          END DO
-        ELSE
-          ngpu = 0
-          DO i = 1, SIZE( topology )
-            DO j = 1, SIZE( topology( i )%gpus )
-              new_topology( 1 )%gpus( ngpu + j ) = topology( i )%gpus( j )
-            END DO
-            ngpu = ngpu + SIZE( topology( i )%gpus )
-          END DO
-        END IF
-      END IF
-
-!  move new_topology into place, deallocating old one
-
       DEALLOCATE( topology )
       CALL move_alloc( new_topology, topology )
 
-!  squash everything to single NUMA region if we're ignoring numa
+!  squash everything to a single NUMA region if we're ignoring numa
 
     ELSE IF ( SIZE( topology ) > 1 .AND. control%ignore_numa ) THEN
       ALLOCATE( new_topology( 1 ), STAT = st )
       IF ( st /= 0 ) RETURN
-
-!  count resources to REALlocate
-
       new_topology( 1 )%nproc = 0
-      ngpu = 0
       DO i = 1, SIZE( topology )
         new_topology( 1 )%nproc = new_topology( 1 )%nproc + topology( i )%nproc
-        ngpu = ngpu + SIZE( topology( i )%gpus )
       END DO
-
-!  store list of GPUs
-
-      ALLOCATE( new_topology( 1 )%gpus( ngpu ), STAT = st )
-      IF ( st /= 0 ) RETURN
-      IF ( ngpu > 0 ) THEN
-        ngpu = 0
-        DO i = 1, SIZE( topology )
-          DO j = 1, SIZE( topology( i )%gpus )
-            new_topology( 1 )%gpus( ngpu + j ) = topology( i )%gpus( j )
-          END DO
-          ngpu = ngpu + SIZE( topology( i )%gpus )
-        END DO
-      END IF
-
-!  move new_topology into place, deallocating old one
-
       DEALLOCATE( topology )
       CALL move_alloc( new_topology, topology )
     END IF
@@ -824,7 +739,7 @@
 
 !  user specified topology
 
-    TYPE( HW_numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
+    TYPE( TOPOLOGY_numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
 
 !  local variables
 
@@ -859,13 +774,6 @@
     context = 'ssids_analyse_coord'
     inform = inform_default
     CALL ssids_free( akeep, free_flag )
-!   IF ( free_flag /= 0 ) THEN
-!      inform%flag = SSIDS_ERROR_CUDA_UNKNOWN
-!      inform%cuda_error = free_flag
-!      akeep%inform = inform
-!      CALL inform%print_flag( control, context )
-!      RETURN
-!   END IF
 
 !  output status on entry
 
@@ -1034,7 +942,7 @@
 !  guess it
 
     ELSE
-      CALL HW_guess_topology( akeep%topology, st )
+      CALL TOPOLOGY_guess_topology( akeep%topology, st )
       IF ( st /= 0 ) GO TO 490
     END IF
 
@@ -1882,29 +1790,29 @@
 
 !-*-*-  G A L A H A D - S S I D S _ f r e e _f k e e p  S U B R O U T I N E  -*-
 
-    SUBROUTINE free_fkeep_precision( fkeep, cuda_error )
+    SUBROUTINE free_fkeep_precision( fkeep, flag )
     IMPLICIT NONE
     TYPE( SSIDS_fkeep_type ), INTENT( INOUT ) :: fkeep
-    INTEGER( KIND = ip_ ), INTENT( OUT ) :: cuda_error
+    INTEGER( KIND = ip_ ), INTENT( OUT ) :: flag
 
-    CALL fkeep%free( cuda_error )
+    CALL fkeep%free( flag )
     RETURN
 
     END SUBROUTINE free_fkeep_precision
 
 !-*-*-  G A L A H A D - S S I D S _ f r e e _ b o t h  S U B R O U T I N E  -*-
 
-    SUBROUTINE free_both_precision( akeep, fkeep, cuda_error )
+    SUBROUTINE free_both_precision( akeep, fkeep, flag )
     IMPLICIT NONE
     TYPE( SSIDS_akeep_type ), INTENT( INOUT ) :: akeep
     TYPE( SSIDS_fkeep_type ), INTENT( INOUT ) :: fkeep
-    INTEGER( KIND = ip_ ), INTENT( OUT ) :: cuda_error
+    INTEGER( KIND = ip_ ), INTENT( OUT ) :: flag
 
 !  must free fkeep first as it may reference akeep
 
-    CALL free_fkeep_precision( fkeep, cuda_error )
-    IF ( cuda_error /= 0 ) RETURN
-    CALL free_akeep_precision( akeep, cuda_error )
+    CALL free_fkeep_precision( fkeep, flag )
+    IF ( flag /= 0 ) RETURN
+    CALL free_akeep_precision( akeep, flag )
     RETURN
 
     END SUBROUTINE free_both_precision
@@ -2022,7 +1930,7 @@
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: contrib_dest, exec_loc, level
 
     INTEGER( ip_ ) :: to_launch
-    INTEGER( ip_ ) :: numa_region, device, thread_num
+    INTEGER( ip_ ) :: numa_region, thread_num
     INTEGER( ip_ ) :: nemin, flag
     INTEGER( ip_ ) :: blkm, blkn
     INTEGER( ip_ ) :: i, j
@@ -2087,9 +1995,6 @@
       DO i = 1, SIZE( akeep%topology )
         WRITE ( control%unit_diagnostics, *  )                                 &
              "Region ", i, " with ", akeep%topology( i )%nproc, " cores"
-        IF ( SIZE( akeep%topology( i )%gpus )>0 )                              &
-          WRITE ( control%unit_diagnostics, *  )                               &
-             "---> gpus ", akeep%topology( i )%gpus
       END DO
     END IF
     CALL find_subtree_partition( akeep%nnodes, akeep%sptr, akeep%sparent,      &
@@ -2127,53 +2032,29 @@
     to_launch = SIZE( akeep%topology )
 
 !$omp parallel proc_bind( spread ) num_threads( to_launch ) default( shared ) &
-!$omp    private( i, numa_region, device, thread_num )
+!$omp    private( i, numa_region, thread_num )
     thread_num = 0
 !$  thread_num = omp_get_thread_num( )
     numa_region = thread_num + 1
     DO i = 1, akeep%nparts
 
 !  only initialize subtree if this is the correct region: note that
-!  an "all region" subtree with location -1 is initialised by region 0
+!  an "all region" subtree with location -1 is initialised by region 1
 
       IF ( exec_loc( i ) == - 1 ) THEN
         IF ( numa_region /= 1 ) CYCLE
-        device = 0
-      ELSE IF ( ( MOD( ( exec_loc( i ) - 1 ),                                  &
-                  SIZE( akeep%topology ) ) + 1 ) /= numa_region ) THEN
+      ELSE IF ( exec_loc( i ) /= numa_region ) THEN
         CYCLE
-      ELSE
-        device = ( exec_loc( i ) - 1 ) / SIZE( akeep%topology )
       END IF
       akeep%subtree( i )%exec_loc = exec_loc( i )
 
-      IF ( device == 0 ) THEN !  CPU
+!  all subtrees run on CPU NUMA regions
 
-!print  * , numa_region, "init cpu subtree ", i, akeep%part( i ), &
-!    akeep%part( i + 1 ) - 1
-
-        akeep%subtree( i )%ptr => construct_cpu_symbolic_subtree( akeep%n,     &
-          akeep%part( i ), akeep%part( i + 1 ), akeep%sptr, akeep%sparent,     &
-          akeep%rptr, akeep%rlist, akeep%nptr, akeep%nlist,                    &
-          contrib_dest( akeep%contrib_ptr( i ) :                               &
-                        akeep%contrib_ptr( i + 1 ) - 1 ), control )
-
-      ELSE !  GPU
-        device = akeep%topology( numa_region )%gpus( device )
-
-!print  * , numa_region, "init gpu subtree ", i, akeep%part( i ), &
-!    akeep%part( i + 1 ) - 1, "device", device
-
-!  return a dummy GPU call in lieu of a proper implementation
-
-        akeep%subtree( i )%ptr => NULL( )
-
-!       akeep%subtree( i )%ptr => construct_gpu_symbolic_subtree( device,      &
-!         akeep%n, akeep%part( i ), akeep%part( i + 1 ), akeep%sptr,           &
-!         akeep%sparent, akeep%rptr, akeep%rlist, akeep%nptr,                  &
-!         akeep%nlist, control )
-!       akeep%subtree( i )%ptr => dummy
-      END IF
+      akeep%subtree( i )%ptr => construct_symbolic_subtree(      &
+        akeep%n, akeep%part( i ), akeep%part( i + 1 ), akeep%sptr,           &
+        akeep%sparent, akeep%rptr, akeep%rlist, akeep%nptr, akeep%nlist,     &
+        contrib_dest( akeep%contrib_ptr( i ) :                              &
+                      akeep%contrib_ptr( i + 1 ) - 1 ), control )
     END DO
 !$omp end parallel
 
@@ -2443,31 +2324,19 @@
                                        contrib_ptr, contrib_idx,               &
                                        contrib_dest, inform, st  )
 
-!   partition an elimination tree for execution on different NUMA regions
-!    and GPUs.
+!   partition an elimination tree for execution on different NUMA regions.
 !
 !   Start with a single tree, and proceed top DOwn splitting the largest subtree
 !   (in terms of total flops) until we have a sufficient number of independent
 !   subtrees. A sufficient number is such that subtrees can be assigned to NUMA
-!   regions and GPUs with a load balance no worse than max_load_inbalance.
-!   Load balance is calculated as the maximum value over all regions/GPUs of:
-!   \f[ \frac{ n x_i / \alpha_i } { \sum_j ( x_j/\alpha_j ) } \f]
-!   Where \f$ \alpha_i \f$ is the performance coefficient of region/GPU i,
-!   \f$ x_i \f$ is the number of flops assigned to region/GPU i and \f$ n \f$ is
-!   the total number of regions. \f$ \alpha_i \f$ should be proportional to the
-!   speed of the region/GPU ( i.e. if GPU is twice as fast as CPU, set alpha for
-!   CPU to 1.0 and alpha for GPU to 2.0 ).
-!
-!   If the original number of flops is greater than min_gpu_work and the
-!   performance coefficient of a GPU is greater than the combined coefficients
-!   of the CPU, then subtrees will not be split to become smaller than
-!   min_gpu_work until all GPUs are filled.
+!   regions with a load balance no worse than max_load_inbalance.
+!   Load balance is calculated as the maximum value over all regions of:
+!   \f[ \frac{ n x_i } { \sum_j x_j } \f]
+!   Where \f$ x_i \f$ is the number of flops assigned to region i and \f$ n \f$
+!   is the total number of regions.
 !
 !   If the balance criterion cannot be satisfied after we have split into
-!   2 * ( total regions/GPUs ), we just use the best obtained value.
-!
-!   GPUs may only handle leaf subtrees, so the top nodes are assigned to the
-!   full set of CPUs.
+!   2 * ( total regions ), we just use the best obtained value.
 !
 !   Parts are returned as contigous ranges of nodes. Part i consists of nodes
 !   part( i ):part( i + 1 )-1
@@ -2478,20 +2347,14 @@
 !    sparent Supernode parent array. Supernode i has parent sparent( i ).
 !    rptr Row pointers. Supernode i has rows rlist( rptr( i ):rptr( i + 1 )-1 ).
 !    topology Machine topology to partition for.
-!    min_gpu_work Minimum flops for a GPU execution to be worthwhile.
 !    max_load_inbalance Number greater than 1.0 representing maximum
 !    permissible load inbalance.
-!    gpu_perf_coeff The value of \f$ \alpha_i \f$ used for all GPUs,
-!    assuming that used for all NUMA region CPUs is 1.0.
 !    nparts Number of parts found.
 !    parts List of part ranges. Part i consists of supernodes
 !    part( i ):part( i + 1 )-1.
-!    exec_loc Execution location. Part i should be run on partition
-!    mod( ( exec_loc( i ) - 1 ), size( topology ) ) + 1.
-!    It should be run on the CPUs if
-!    exec_loc( i ) <= size( topology ),
-!    otherwise it should be run on GPU number
-!    ( exec_loc( i ) - 1 )/size( topology ).
+!    exec_loc Execution location. Part i should be run on NUMA region
+!    exec_loc( i ) ( in 1:size( topology ) ), or on all regions if
+!    exec_loc( i ) is -1.
 !    contrib_ptr Contribution pointer. Part i has contribution from
 !    subtrees contrib_idx( contrib_ptr( i ):contrib_ptr( i + 1 )-1 ).
 !    contrib_idx List of contributing subtrees, see contrib_ptr.
@@ -2506,7 +2369,7 @@
     INTEGER( ip_ ), DIMENSION( nnodes ), INTENT( IN ) :: sparent
     INTEGER( long_ ), DIMENSION( nnodes + 1 ), INTENT( IN ) :: rptr
     TYPE( ssids_control_type ), INTENT( IN ) :: control
-    TYPE( HW_numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
+    TYPE( TOPOLOGY_numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
     INTEGER( ip_ ), INTENT( OUT ) :: nparts
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE, INTENT( INOUT ) :: part
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE, INTENT( OUT ) :: exec_loc
@@ -2522,7 +2385,7 @@
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: size_order
     LOGICAL, DIMENSION( : ), ALLOCATABLE :: is_child
     REAL :: load_balance, best_load_balance
-    INTEGER( ip_ ) :: nregion, ngpu
+    INTEGER( ip_ ) :: nregion
     LOGICAL :: has_parent
 
 !  count flops below each node
@@ -2552,13 +2415,9 @@
     END DO
     CALL create_size_order( nparts, part, flops, size_order )
 
-!  calculate number of regions/gpus
+!  calculate number of regions
 
     nregion = SIZE( topology )
-    ngpu = 0
-    DO i = 1, SIZE( topology )
-      ngpu = ngpu + SIZE( topology( i )%gpus )
-    END DO
 
 !  keep splitting until we meet balance criterion
 
@@ -2566,18 +2425,16 @@
 
 !  check load balance criterion
 
-    DO i = 1, 2 * ( nregion + ngpu )
+    DO i = 1, 2 * nregion
       load_balance = calc_exec_alloc( nparts, part, size_order, is_child,      &
-                                      flops, topology, control%min_gpu_work,   &
-                                      control%gpu_perf_coeff, exec_loc, st )
+                                      flops, topology, exec_loc, st )
       IF ( st /= 0 ) RETURN
       best_load_balance = min( load_balance, best_load_balance )
       IF ( load_balance < control%max_load_inbalance ) EXIT !  allocation is ok
 
 !  split tree further
 
-      CALL split_tree( nparts, part, size_order, is_child, sparent, flops,     &
-                       ngpu, control%min_gpu_work, st )
+      CALL split_tree( nparts, part, size_order, is_child, sparent, flops, st )
       IF ( st /= 0 ) RETURN
     END DO
 
@@ -2608,8 +2465,7 @@
 
     CALL create_size_order( nparts, part, flops, size_order )
     load_balance = calc_exec_alloc( nparts, part, size_order, is_child,        &
-                                    flops, topology, control%min_gpu_work,     &
-                                    control%gpu_perf_coeff, exec_loc, st )
+                                    flops, topology, exec_loc, st )
     IF ( st /= 0 ) RETURN
 !print  * , "exec_loc ", exec_loc( 1 : nparts )
 
@@ -2686,12 +2542,7 @@
 !  fill out inform
 
     inform%nparts = nparts
-    inform%gpu_flops = 0
-    DO i = 1, nparts
-       IF ( exec_loc( i ) > SIZE( topology ) )                                 &
-         inform%gpu_flops = inform%gpu_flops + flops( part( i + 1 ) - 1 )
-    END DO
-    inform%cpu_flops = flops( nnodes + 1 ) - inform%gpu_flops
+    inform%flops = flops( nnodes + 1 )
     RETURN
 
     END SUBROUTINE find_subtree_partition
@@ -2699,22 +2550,16 @@
 !-  G A L A H A D -  S S I D S _ calc_exec_alloc  F U N C T I O N -
 
     REAL FUNCTION calc_exec_alloc( nparts, part, size_order, is_child, flops,  &
-                                   topology, min_gpu_work, gpu_perf_coeff,     &
-                                   exec_loc, st )
+                                   topology, exec_loc, st )
 
 !   allocate execution of subtrees to resources and calculate load balance
 !
 !   Given the partition supplied, uses a greedy algorithm to assign subtrees to
-!   resources specified by topology and then returns the resulting load balance
-!   as
-!   \f[ \frac{\max_i(  n x_i / \alpha_i  )} { \sum_j ( x_j/\alpha_j ) } \f]
-!   Where \f$ \alpha_i \f$ is the performance coefficient of region/GPU i,
-!   \f$ x_i \f$ is the number of flops assigned to region/GPU i and \f$ n \f$ is
-!   the total number of regions. \f$ \alpha_i \f$ should be proportional to the
-!   speed of the region/GPU ( i.e. if GPU is twice as fast as CPU, set alpha for
-!   CPU to 1.0 and alpha for GPU to 2.0 ).
-!
-!   Work is only assigned to GPUs if the subtree has at least min_gpu_work flops
+!   the NUMA regions specified by topology and then returns the resulting load
+!   balance as
+!   \f[ \frac{\max_i(  n x_i  )} { \sum_j x_j } \f]
+!   Where \f$ x_i \f$ is the number of flops assigned to region i and \f$ n \f$
+!   is the total number of regions.
 !
 !   None-child subtrees are ignored ( they will be executed using all available
 !   resources ). They are recorded with exec_loc -1.
@@ -2728,21 +2573,12 @@
 !    from other subtrees ).
 !    flops Number of floating points in subtree rooted at each node.
 !    topology Machine topology to allocate execution for.
-!    min_gpu_work Minimum work before allocation to GPU is useful.
-!    gpu_perf_coeff The value of \f$ \alpha_i \f$ used for all GPUs,
-!    assuming that used for all NUMA region CPUs is 1.0.
-!    exec_loc Execution location. Part i should be run on partition
-!    mod( ( exec_loc( i ) - 1 ), size( topology ) ) + 1.
-!    It should be run on the CPUs if
-!    exec_loc( i ) <= size( topology ),
-!    otherwise it should be run on GPU number
-!    ( exec_loc( i ) - 1 )/size( topology ).
+!    exec_loc Execution location. Part i should be run on NUMA region
+!    exec_loc( i ) ( in 1:size( topology ) ).
 !    st Allocation status parameter. If non-zero an allocation error
 !          occurred.
 !    Load balance value as detailed in subroutine description.
 !    see also find_subtree_partition( )
-!   FIXME: Consider case when gpu_perf_coeff > 2.0 ???
-!         ( Round robin may not be correct thing )
 
     IMPLICIT none
     INTEGER( ip_ ), INTENT( IN ) :: nparts
@@ -2750,69 +2586,23 @@
     INTEGER( ip_ ), DIMENSION( nparts ), INTENT( IN ) :: size_order
     LOGICAL, DIMENSION( nparts ), INTENT( IN ) :: is_child
     INTEGER( long_ ), DIMENSION( * ), INTENT( IN ) :: flops
-    TYPE( HW_numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
-    INTEGER( long_ ), INTENT( IN ) :: min_gpu_work
-    REAL, INTENT( IN ) :: gpu_perf_coeff
+    TYPE( TOPOLOGY_numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
     INTEGER( ip_ ), DIMENSION( nparts ), INTENT( OUT ) :: exec_loc
     INTEGER( ip_ ), INTENT( OUT ) :: st
 
-    INTEGER( ip_ ) :: i, p, nregion, ngpu, max_gpu, next
+    INTEGER( ip_ ) :: i, p, nregion, next
     INTEGER( long_ ) :: pflops
-
-!  list resources in order of decreasing power
-
-    INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: map 
     REAL, DIMENSION( : ), ALLOCATABLE :: load_balance
     REAL :: total_balance
 
 !  initialise in case of an error return
 
     calc_exec_alloc = huge( calc_exec_alloc )
-
-!  create resource map
+    st = 0
 
     nregion = SIZE( topology )
-    ngpu = 0
-    max_gpu = 0
-    DO i = 1, SIZE( topology )
-      ngpu = ngpu + SIZE( topology( i )%gpus )
-      max_gpu = max( max_gpu, size( topology( i )%gpus ) )
-    END DO
-    ALLOCATE( map( nregion + ngpu ), STAT = st )
-    IF ( st /= 0 ) RETURN
- 
-!  GPUs are more powerful than CPUs
 
-    IF ( gpu_perf_coeff > 1.0 ) THEN
-      next = 1
-      DO i = 1, SIZE( topology )
-        DO p = 1, SIZE( topology( i )%gpus )
-           map( next ) = p * nregion + i
-           next = next + 1
-        END DO
-      END DO
-      DO i = 1, SIZE( topology )
-        map( next ) = i
-        next = next + 1
-      END DO
-
-!  CPUs are more powerful than GPUs
-
-    ELSE
-      next = 1
-      DO i = 1, SIZE( topology )
-        map( next ) = i
-        next = next + 1
-      END DO
-      DO i = 1, SIZE( topology )
-        DO p = 1, SIZE( topology( i )%gpus )
-          map( next ) = p * nregion + i
-          next = next + 1
-        END DO
-      END DO
-    END IF
-
-!  simple round robin allocation in decreasing size order.
+!  simple round robin allocation over NUMA regions in decreasing size order.
 
     next = 1
     DO i = 1, nparts
@@ -2825,23 +2615,14 @@
         CYCLE
       END IF
 
-!  avoid GPUs
-
-      pflops = flops( part( p + 1 ) - 1 )
-      IF ( pflops < min_gpu_work ) THEN
-        DO while ( map( next ) > nregion )
-          next = next + 1
-          IF ( next > SIZE( map ) ) next = 1
-        END DO
-      END IF
-      exec_loc( p ) = map( next )
+      exec_loc( p ) = next
       next = next + 1
-      IF ( next > SIZE( map ) ) next = 1
+      IF ( next > nregion ) next = 1
     END DO
 
 !  calculate load inbalance
 
-    ALLOCATE( load_balance( nregion * ( 1 + max_gpu ) ), STAT = st )
+    ALLOCATE( load_balance( nregion ), STAT = st )
     IF ( st /= 0 ) RETURN
     load_balance( : ) = 0.0
     total_balance = 0.0
@@ -2851,27 +2632,15 @@
     DO p = 1, nparts
       IF ( exec_loc( p ) ==  - 1 ) CYCLE !  not a child subtree
       pflops = flops( part( p + 1 ) - 1 )
-
-!  GPU
-
-      IF ( exec_loc( p ) > nregion ) THEN
-        load_balance( exec_loc( p ) )                                          &
-           = load_balance( exec_loc( p ) ) +  REAL( pflops ) / gpu_perf_coeff
-        total_balance = total_balance + REAL( pflops ) / gpu_perf_coeff
-
-  !  CPU
-
-      ELSE
-        load_balance( exec_loc( p ) )                                          &
-           = load_balance( exec_loc( p ) ) + REAL( pflops )
-        total_balance = total_balance + REAL( pflops )
-      END IF
+      load_balance( exec_loc( p ) )                                            &
+         = load_balance( exec_loc( p ) ) + REAL( pflops )
+      total_balance = total_balance + REAL( pflops )
     END DO
 
-!  calculate n * max( x_i / a_i ) / sum( x_j / a_j )
+!  calculate n * max( x_i ) / sum( x_j )
 
     calc_exec_alloc                                                            &
-      = REAL( nregion + ngpu ) * maxval( load_balance( : ) ) / total_balance
+      = REAL( nregion ) * maxval( load_balance( : ) ) / total_balance
     RETURN
 
     END FUNCTION calc_exec_alloc
@@ -2879,12 +2648,11 @@
 !-*-  G A L A H A D -  S S I D S _ s p l i t _ t r e e  S U B R O U T I N E -*-
 
     SUBROUTINE split_tree( nparts, part, size_order, is_child, sparent, flops, &
-                           ngpu, min_gpu_work, st )
+                           st )
 
 !   split tree into an additional part as required by find_subtree_partition( ).
 !
-!   split largest partition into two parts, unless DOing so would reduce the
-!   number of subtrees with at least min_gpu_work below ngpu.
+!   split largest partition into two parts.
 !
 !   Note: We require all input parts to have a single root.
 !
@@ -2896,8 +2664,6 @@
 !    from other subtrees ).
 !    sparent Supernode parent array. Supernode i has parent sparent( i ).
 !    flops Number of floating points in subtree rooted at each node.
-!    ngpu Number of gpus.
-!    min_gpu_work Minimum worthwhile work to give to GPU.
 !    st Allocation status parameter. If non-zero an allocation error
 !          occurred.
 !    see also find_subtree_partition( )
@@ -2909,11 +2675,9 @@
     LOGICAL, DIMENSION( * ), INTENT( INOUT ) :: is_child
     INTEGER( ip_ ), DIMENSION( * ), INTENT( IN ) :: sparent
     INTEGER( long_ ), DIMENSION( * ), INTENT( IN ) :: flops
-    INTEGER( ip_ ), INTENT( IN ) :: ngpu
-    INTEGER( long_ ), INTENT( IN ) :: min_gpu_work
     INTEGER( ip_ ), INTENT( OUT ) :: st
 
-    INTEGER( ip_ ) :: i, p, nchild, nbig, root, to_split, old_nparts
+    INTEGER( ip_ ) :: i, nchild, root, to_split, old_nparts
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: children, temp
 
 !  look for all children of root in biggest child part
@@ -2953,23 +2717,6 @@
 !  check we can split safely
 
     IF ( nchild == 0 ) RETURN !  singleton node, can't split
-    nbig = 0 !  number of new parts > min_gpu_work
-    DO i = to_split + 1, nparts
-      p = size_order( i )
-      IF ( .NOT. is_child( p ) ) CYCLE !  non-children can't go on GPUs
-      root = part( p + 1 ) - 1
-      IF ( flops( root ) < min_gpu_work ) EXIT
-      nbig = nbig + 1
-    END DO
-
-!  original partition met min_gpu_work criterion
-
-    IF ( ( nbig + 1 ) >= ngpu ) THEN
-      DO i = 1, nchild
-        IF ( flops( children( i ) ) >= min_gpu_work ) nbig = nbig + 1
-      END DO
-      IF ( nbig < ngpu ) RETURN !  new partition fails min_gpu_work criterion
-    END IF
 
 !  Can safely split, so DO so. As part to_split was contigous, when
 !  split the new parts fall into the same region. Thus, we first push any
@@ -3129,7 +2876,7 @@
     INTEGER( ip_ ), DIMENSION( nnodes + 1 ), INTENT( IN ) :: sptr
     INTEGER( ip_ ), DIMENSION( nnodes ), INTENT( IN ) :: sparent
     INTEGER( long_ ), DIMENSION( nnodes + 1 ), INTENT( IN ) :: rptr
-    TYPE( HW_numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
+    TYPE( TOPOLOGY_numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
     INTEGER( ip_ ), INTENT( IN ) :: nparts
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE, INTENT( IN ) :: part
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE, INTENT( IN ) :: exec_loc
@@ -3164,17 +2911,13 @@
     WRITE( 2, '( "]" )' )
 
     DO i = 1, nparts
-      region = mod( ( exec_loc( i ) - 1 ), size( topology ) ) + 1
+      region = exec_loc( i )
 !     print  * , "part = ", i, ", exec_loc = ", exec_loc( i ),                 &
 !                ", region = ", region
 
       WRITE( part_str, '( i5 )' )part( i )
       WRITE( 2, * )"subgraph cluster"// adjustl( trim( part_str ) ) // " {"
-      IF (  exec_loc( i ) > size( topology ) ) THEN !  GPU subtree
-        WRITE( 2, * )"color=red"
-      ELSE
-        WRITE( 2, * )"color=black"
-      END IF
+      WRITE( 2, * )"color=black"
       WRITE( 2, '( "label=""" )', ADVANCE = 'no' )
       WRITE( 2, '( "part:", i5,"\n" )', ADVANCE = 'no' ) i
       WRITE( 2, '( "region:", i5,"\n" )', ADVANCE = 'no' ) region
@@ -4758,9 +4501,9 @@
 !   ====== define ssids_fkeep type and associated procedures (CPU version) =====
 !   ============================================================================
 
-!-*-  G A L A H A D -  S S I D S _inner _ factor _ cpu  S U B R O U T I N E  -*-
+!-*-*-  G A L A H A D -  S S I D S _ inner _ factor  S U B R O U T I N E  -*-*-
 
-     SUBROUTINE inner_factor_cpu( fkeep, akeep, val, control, inform )
+     SUBROUTINE inner_factor( fkeep, akeep, val, control, inform )
      IMPLICIT none
      TYPE( SSIDS_akeep_type ), INTENT( IN ) :: akeep
      CLASS( SSIDS_fkeep_type ), TARGET, INTENT( INOUT ) :: fkeep
@@ -4771,18 +4514,13 @@
 !  local variables
 
      INTEGER( KIND = ip_ ) :: i, numa_region, exec_loc, my_loc
-     INTEGER( KIND = ip_ ) :: total_threads, max_gpus, to_launch, thread_num
+     INTEGER( KIND = ip_ ) :: total_threads, to_launch, thread_num
      INTEGER( KIND = ip_ ) :: nth ! Number of threads within a region
-     INTEGER( KIND = ip_ ) :: ngpus ! Number of GPUs in a given NUMA region
      LOGICAL :: abort, all_region
      TYPE( contrib_type ), DIMENSION( : ), ALLOCATABLE :: child_contrib
      TYPE( ssids_inform_type ), DIMENSION( : ), ALLOCATABLE :: thread_inform
 
 !  begin profile trace (noop if not enabled)
-
-#ifdef PROFILE
-     CALL profile_begin( akeep%topology ) 
-#endif
 
 !  allocate space for subtrees
 
@@ -4792,10 +4530,8 @@
 !  determine resources
 
      total_threads = 0
-     max_gpus = 0
      DO i = 1, SIZE( akeep%topology )
        total_threads = total_threads + akeep%topology( i )%nproc
-       max_gpus = MAX( max_gpus, SIZE( akeep%topology( i )%gpus ) )
      END DO
 
      ! CALL subtree factor routines
@@ -4805,7 +4541,7 @@
 !  split into numa regions; parallelism within a region is responsibility
 !  of subtrees
 
-     to_launch = SIZE( akeep%topology ) * ( 1 + max_gpus )
+     to_launch = SIZE( akeep%topology )
      ALLOCATE( thread_inform( to_launch ), STAT = inform%stat )
      IF ( inform%stat /= 0 ) GO TO 200
      all_region = .FALSE.
@@ -4813,7 +4549,7 @@
 !$omp parallel proc_bind( spread ) num_threads( to_launch )                    &
 !$omp    default( none )                                                       &
 !$omp    private( abort, i, exec_loc, numa_region, my_loc, thread_num )        &
-!$omp    private( nth, ngpus )                                                 &
+!$omp    private( nth )                                                        &
 !$omp    shared( akeep, fkeep, val, control, thread_inform, child_contrib,     &
 !$omp           all_region )                                                   &
 !$omp    if ( to_launch.gt.1 )
@@ -4822,20 +4558,14 @@
 !$  thread_num = omp_get_thread_num( )
      numa_region = MOD( thread_num, SIZE( akeep%topology ) ) + 1
      my_loc = thread_num + 1
-     IF ( thread_num < SIZE( akeep%topology ) ) THEN
-       ngpus = SIZE( akeep%topology( numa_region )%gpus, 1 )
 
-!  CPU, control number of inner threads (not needed for gpu)
+!  control number of inner threads for this NUMA region
 
-       nth = akeep%topology( numa_region )%nproc
-!      nth = nth - ngpus
-     ELSE
-       nth = 1
-     END IF
+     nth = akeep%topology( numa_region )%nproc
 
 !$   CALL omp_set_num_threads( int( nth ) )
 
-!  split into threads for this NUMA region (unless we're running a GPU)
+!  split into threads for this NUMA region
 
      exec_loc = - 1 ! avoid compiler warning re uninitialized
      abort = .FALSE.
@@ -4899,10 +4629,6 @@
 !  at least some all region subtrees exist
 
      IF ( all_region ) THEN
-#ifdef PROFILE
-       CALL profile_add_event( "EV_ALL_REGIONS",                               &
-                               "Starting processing root subtree", 0 )
-#endif
 
 !$omp parallel num_threads( total_threads ) default( shared )
 !$omp single
@@ -4936,10 +4662,6 @@
 
  100 CONTINUE
 
-!  end profile trace (noop if not enabled)
-#ifdef PROFILE
-     CALL profile_end( )
-#endif
      RETURN
 
  200 CONTINUE
@@ -4947,11 +4669,11 @@
      GO TO 100 ! cleanup and exit
      RETURN
 
-     END SUBROUTINE inner_factor_cpu
+     END SUBROUTINE inner_factor
 
-!-*-  G A L A H A D -  S S I D S _ inner _ solve _ cpu  S U B R O U T I N E  -*-
+!-*-*-  G A L A H A D -  S S I D S _ inner _ solve  S U B R O U T I N E  -*-*-
 
-     SUBROUTINE inner_solve_cpu( local_job, nrhs, x, ldx, akeep, fkeep, inform )
+     SUBROUTINE inner_solve( local_job, nrhs, x, ldx, akeep, fkeep, inform )
      TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
      CLASS( ssids_fkeep_type ), INTENT( INOUT ) :: fkeep
      INTEGER( KIND = ip_ ), INTENT( INOUT ) :: local_job
@@ -5054,11 +4776,11 @@
      inform%flag = SSIDS_ERROR_ALLOCATION
      RETURN
 
-     END SUBROUTINE inner_solve_cpu
+     END SUBROUTINE inner_solve
 
-!-*-  G A L A H A D -  S S I D S _ enquire_posdef_cpu  S U B R O U T I N E  -*-
+!-*-  G A L A H A D -  S S I D S _ enquire_posdef  S U B R O U T I N E  -*-
 
-     SUBROUTINE enquire_posdef_cpu( akeep, fkeep, d )
+     SUBROUTINE enquire_posdef( akeep, fkeep, d )
      TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
      CLASS( ssids_fkeep_type ), TARGET, INTENT( IN ) :: fkeep
      REAL( KIND = rp_ ), DIMENSION( * ), INTENT( OUT ) :: d
@@ -5078,17 +4800,17 @@
        en = akeep%part( part + 1 ) - 1
        ASSOCIATE( subtree => fkeep%subtree( part )%ptr )
          SELECT TYPE( subtree )
-         TYPE IS ( cpu_numeric_subtree )
+         TYPE IS ( numeric_subtree )
            CALL subtree%enquire_posdef( d( sa : en ) )
          END SELECT
        END ASSOCIATE
      END DO
 
-     END SUBROUTINE enquire_posdef_cpu
+     END SUBROUTINE enquire_posdef
 
-!-*-  G A L A H A D -  S S I D S _  enquire_indef_cpu  S U B R O U T I N E  -*-
+!-*-  G A L A H A D -  S S I D S _  enquire_indef  S U B R O U T I N E  -*-
 
-     SUBROUTINE enquire_indef_cpu( akeep, fkeep, inform, piv_order, d )
+     SUBROUTINE enquire_indef( akeep, fkeep, inform, piv_order, d )
      TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
      CLASS( ssids_fkeep_type ), TARGET, INTENT( IN ) :: fkeep
      TYPE( ssids_inform_type ), INTENT( INOUT ) :: inform
@@ -5135,7 +4857,7 @@
        sa = akeep%part( part )
        ASSOCIATE( subtree => fkeep%subtree( 1 )%ptr )
          SELECT TYPE( subtree )
-         TYPE IS ( cpu_numeric_subtree )
+         TYPE IS ( numeric_subtree )
            IF ( PRESENT( d ) ) THEN
              IF ( PRESENT( piv_order ) ) THEN
                CALL subtree%enquire_indef( piv_order = po( sa : n ),           &
@@ -5146,7 +4868,6 @@
            ELSE
              IF ( PRESENT( piv_order ) ) THEN
                CALL subtree%enquire_indef( piv_order=po( sa:akeep%n ) )
-             ELSE ! No-op: should we report an error here? (or done higher up?)
              END IF
            END IF
          END SELECT
@@ -5163,11 +4884,11 @@
      END IF
      RETURN
 
-     END SUBROUTINE enquire_indef_cpu
+     END SUBROUTINE enquire_indef
 
 !-*-  G A L A H A D -  S S I D S _ a l t e r _ c p u  S U B R O U T I N E  -*-
 
-     SUBROUTINE alter_cpu( d, akeep, fkeep )
+     SUBROUTINE alter( d, akeep, fkeep )
 
 !  alter D values
 
@@ -5183,7 +4904,7 @@
      DO part = 1, akeep%nparts
        ASSOCIATE( subtree => fkeep%subtree( 1 )%ptr )
          SELECT TYPE( subtree )
-         TYPE IS ( cpu_numeric_subtree )
+         TYPE IS ( numeric_subtree )
            CALL subtree%alter( d( 1 : 2, akeep%part( part ) :                  &
                                          akeep%part( part + 1 ) - 1 ) )
          END SELECT
@@ -5191,7 +4912,7 @@
      END DO
      RETURN
 
-     END SUBROUTINE alter_cpu
+     END SUBROUTINE alter
 
 !-*-  G A L A H A D -  S S I D S _ f r e e _ f k e e p  S U B R O U T I N E  -*-
 

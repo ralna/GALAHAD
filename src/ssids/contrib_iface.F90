@@ -1,7 +1,6 @@
 ! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 10:00 GMT
 
 #include "galahad_modules.h"
-#include "ssids_routines.h"
 
 !  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)
 !  author: Jonathan Hogg
@@ -10,37 +9,6 @@
 !  A combination of contrib and contrib_free, with a removal of the
 !  unnecessary module SSIDS_contrib_fsub_precision, and the transfer of
 !  module SSIDS_contrib to GALAHAD_types, GALAHAD 5.3, 2025-08-27
-
-!!$  MODULE GALAHAD_SSIDS_contrib_fsub_precision
-!!$
-!!$!  routines for freeing contrib_type
-!!$!
-!!$!  as the module depends on routines defined by module that use the type, 
-!!$!  it needs to be a seperate module to GALAHAD_SSIDS_contrib_precision
-!!$
-!!$    USE GALAHAD_KINDS_precision
-!!$    IMPLICIT NONE
-!!$
-!!$  CONTAINS
-!!$
-!!$!-  G A L A H A D -  S S I D S _ c o n t r i b _f s u b  S U B R O U T I N E 
-!!$
-!!$    SUBROUTINE contrib_free( fcontrib )
-!!$    IMPLICIT none
-!!$    TYPE( contrib_type ), INTENT( INOUT ) :: fcontrib
-!!$    SELECT CASE( contrib%owner )
-!!$    CASE ( 0 ) ! CPU
-!!$       CALL cpu_free_contrib( contrib%posdef, contrib%owner_ptr )
-!!$    CASE ( 1 ) ! GPU
-!!$       CALL gpu_free_contrib( contrib )
-!!$    CASE DEFAULT ! This should never happen
-!!$       PRINT *, "Unrecognised contrib owner ", contrib%owner
-!!$       STOP - 1
-!!$    END SELECT
-!!$    RETURN
-!!$
-!!$    END SUBROUTINE contrib_free
-!!$  END MODULE GALAHAD_SSIDS_contrib_fsub_precision
 
 ! G A L A H A D - S S I D S _ c o n t r i b _g e t _d a t a  S U B R O U T I N E
 
@@ -101,9 +69,7 @@
 
   USE, INTRINSIC :: iso_c_binding
   USE GALAHAD_SSIDS_types_precision, ONLY: contrib_type
-  USE GALAHAD_SSIDS_cpu_subtree_precision, ONLY: cpu_free_contrib
-! USE GALAHAD_SSIDS_gpu_subtree_precision, ONLY: gpu_free_contrib
-! USE GALAHAD_SSIDS_contrib_fsub_precision
+  USE GALAHAD_SSIDS_numeric_subtree_precision, ONLY: free_contrib
   IMPLICIT NONE
 
   TYPE( C_PTR ), VALUE :: ccontrib
@@ -112,17 +78,10 @@
 
   IF ( C_ASSOCIATED( ccontrib ) ) THEN
     CALL C_F_POINTER( ccontrib, fcontrib )
-    SELECT CASE( fcontrib%owner )
-    CASE ( 0 ) ! CPU
-       CALL cpu_free_contrib( fcontrib%posdef, fcontrib%owner_ptr )
-    CASE ( 1 ) ! GPU
-!      CALL gpu_free_contrib( fcontrib ) 
-       fcontrib%n = 0
-    CASE DEFAULT ! This should never happen
-       PRINT *, "Unrecognised contrib owner ", fcontrib%owner
-       STOP - 1
-    END SELECT
-!   CALL contrib_free( fcontrib )
+
+!  only CPU subtrees exist, so cleanup is always the CPU path
+
+    CALL free_contrib( fcontrib )
   END IF
   RETURN
 

@@ -1,12 +1,12 @@
-This is a fork of the GPU/CPU sparse, symmetric indefinite direct
-linear solver SSIDS that is available as part of the open-source 
+This is a fork of the sparse, symmetric indefinite direct
+linear solver SSIDS that is available as part of the open-source
 sparse parallel robust algorithms library SPRAL:
 
   https://github.com/ralna/spral
   https://ralna.github.io/spral/
 
-Since the SPRAL GPU code no longer works, the GALAHAD fork is only 
-for CPUs. The fork also adds that following functionality
+The GALAHAD fork is a pure-Fortran, CPU-only implementation. It also
+adds the following functionality
 
  *  multiple real precision support
  *  both 32 and 64 bit integer support

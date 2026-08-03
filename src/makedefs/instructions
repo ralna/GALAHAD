@@ -91,11 +91,11 @@ QRB$(PACKAGE)64 = $(RB_TESTS) $(TESTDEPS) $(OBJQ64)/run$(package)_rb_quadruple.o
 ifeq "$(HSL_64)" "_64"
   LIBS = -lgalahad $(HSL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
              $(METIS4ND64) $(METIS5ND64) $(PASTIX) $(MUMPS) $(MPI) \
-             $(UMFPACK) $(LAPACK) $(BLAS) -lstdc++ -lhwloc
+             $(UMFPACK) $(LAPACK) $(BLAS)
 else
   LIBS = -lgalahad $(HSL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
              $(METIS4ND)  $(METIS5ND) $(PASTIX) $(MUMPS) $(MPI) \
-             $(UMFPACK) $(LAPACK) $(BLAS) -lstdc++ -lhwloc
+             $(UMFPACK) $(LAPACK) $(BLAS)
 endif
 PLIBS = $(LIBS) -lgalahad_problem
 CLIBS = -lgalahad_c -lhsl_c $(LIBS)
@@ -2655,8 +2655,7 @@ $(package)ctm: $($(PACKAGE)CDTM) $($(PACKAGE)OBJECTSCS64)
           $(OBJS64)/libgalahad_mpi.a \
           $(OBJS64)/libgalahad_umfpack.a \
           $(OBJS64)/libgalahad_lapack.a \
-          $(OBJS64)/libgalahad_blas.a \
-          -lstdc++ -lhwloc 
+          $(OBJS64)/libgalahad_blas.a
 	$(RMOOC)
 	- ./run_$(package) > $(package)dtm.output 2>&1
 	cat $(package)dtm.output

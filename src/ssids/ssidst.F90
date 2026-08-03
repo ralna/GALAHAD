@@ -10,7 +10,7 @@
    TYPE( SSIDS_akeep_type ) :: akeep
    TYPE( SSIDS_fkeep_type ) :: fkeep
    TYPE( SSIDS_control_type ) :: control
-   INTEGER ( KIND = ip_ ) :: i, ordering, cuda_error
+   INTEGER ( KIND = ip_ ) :: i, ordering, flag
 !  LOGICAL :: mpi_flag
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, ne  = 7
    INTEGER ( KIND = ip_ ) :: ORDER( n )
@@ -139,7 +139,7 @@
 !  free data
 
 !    WRITE(6,*) ' terminate '
-     CALL SSIDS_free(akeep, fkeep, cuda_error )
+     CALL SSIDS_free(akeep, fkeep, flag )
      WRITE( 6, "( '' )" )
    END DO
 !  CALL MPI_INITIALIZED( mpi_flag, i )

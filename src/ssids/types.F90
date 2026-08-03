@@ -51,8 +51,6 @@
     INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_NOT_LDLT          = -14
     INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_NO_SAVED_SCALING  = -15
     INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_ALLOCATION        = -50
-!   INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_CUDA_UNKNOWN      = -51
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_CUBLAS_UNKNOWN    = -52
 !$  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_OMP_CANCELLATION  = -53
     INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_NO_METIS          = -97
     INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_UNIMPLEMENTED     = -98
@@ -78,13 +76,13 @@
     INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_SOLVE_JOB_BWD   = 3 !(PL)^TX=B
     INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_SOLVE_JOB_DIAG_BWD= 4 !D(PL)^TX=B
                                                                    ! (indef)
-! NB: the below must match enum PivotMethod in cpu/cpu_iface.hxx
+! pivot-method codes selected by control%pivot_method
 
     INTEGER( ip_ ), PARAMETER, PUBLIC :: PIVOT_METHOD_APP_AGGRESIVE = 1
     INTEGER( ip_ ), PARAMETER, PUBLIC :: PIVOT_METHOD_APP_BLOCK     = 2
     INTEGER( ip_ ), PARAMETER, PUBLIC :: PIVOT_METHOD_TPP           = 3
 
-! NB: the below must match enum FailedPivotMethod in cpu/cpu_iface.hxx
+! failed-pivot-method codes selected by control%failed_pivot_method
 
     INTEGER( ip_ ), PARAMETER, PUBLIC :: FAILED_PIVOT_METHOD_TPP    = 1
     INTEGER( ip_ ), PARAMETER, PUBLIC :: FAILED_PIVOT_METHOD_PASS   = 2
@@ -137,9 +135,8 @@
       INTEGER( ip_ ) :: ndelay
       INTEGER( long_ ) :: rdptr ! entry into ( rebuilt ) rlist_direct
       INTEGER( ip_ ) :: ncpdb ! #contrib. to parent's diag. block
-      TYPE( C_PTR ) :: gpu_lcol
 
-!  values in factors will also include unneeded data for any columns delayed 
+!  values in factors will also include unneeded data for any columns delayed
 !  from this node
 
       REAL( rp_ ), DIMENSION( : ), POINTER :: lcol
@@ -173,8 +170,6 @@
     TYPE, PUBLIC :: thread_stats
       INTEGER( ip_ ) :: flag = SSIDS_SUCCESS
       INTEGER( ip_ ) :: st = 0
-      INTEGER( ip_ ) :: cuda_error = 0
-      INTEGER( ip_ ) :: cublas_error = 0
       INTEGER( ip_ ) :: maxfront = 0 ! Maximum front size
       INTEGER( ip_ ) :: maxsupernode = 0 ! Maximum supernode size
       INTEGER( long_ ) :: num_factor = 0_long_ ! # entries in factors
@@ -241,20 +236,9 @@
 
       LOGICAL :: ignore_numa = .TRUE.
 
-      LOGICAL :: use_gpu = .TRUE. ! Use GPUs if present
-      LOGICAL :: gpu_only = .FALSE. ! FIXME: not yet implemented.
-
-!  only assign subtree to GPU if it contains at least this many flops
-
-      INTEGER( long_ ) :: min_gpu_work = 5*10**9_long_
-
 !  Maximum permissible load inbalance when dividing tree into subtrees
 
       REAL( sp_ ) :: max_load_inbalance = 1.2
-
-!  How many times better is GPU than a single NUMA region's worth of processors
-
-      REAL( sp_ ) :: gpu_perf_coeff = 1.0
 
 !  options used by ssids_factor() [both indef+posdef]
 
@@ -275,7 +259,7 @@
 
 !  block size to use for task generation on larger nodes
 
-      INTEGER( ip_ ) :: cpu_block_size = 256
+      INTEGER( ip_ ) :: block_size = 256
 
 !  options used by ssids_factor() with posdef=.false.
 
@@ -306,11 +290,7 @@
 !  undocumented
 !  ------------
 
-!  number of streams to use
-
-      INTEGER( ip_ ) :: nstream = 1
-
-! size to multiply expected memory size by when doing initial memory 
+! size to multiply expected memory size by when doing initial memory
 !  allocation to allow for delays
 
       REAL( rp_ ) :: multiplier = 1.1
@@ -361,8 +341,6 @@
       INTEGER( ip_ ) :: num_two = 0 ! # 2x2 pivots used by factorization
       INTEGER( ip_ ) :: stat = 0 ! stat parameter
       TYPE( MS_auction_inform_type ) :: auction
-      INTEGER( ip_ ) :: cuda_error = 0
-      INTEGER( ip_ ) :: cublas_error = 0
       TYPE( NODEND_inform_type ) :: nodend_inform
 
 !  undocumented FIXME: should we document them?
@@ -370,8 +348,7 @@
       INTEGER( ip_ ) :: not_first_pass = 0
       INTEGER( ip_ ) :: not_second_pass = 0
       INTEGER( ip_ ) :: nparts = 0
-      INTEGER( long_ ) :: cpu_flops = 0
-      INTEGER( long_ ) :: gpu_flops = 0
+      INTEGER( long_ ) :: flops = 0
 !     CHARACTER( C_CHAR ) :: unused( 76 )
     CONTAINS
       PROCEDURE :: flag_to_character
@@ -382,11 +359,8 @@
 !  data type to hold a contribution block, extracted from ssids_contrib
 
 !  this type represents a contribution block being passed between two
-!  subtrees. It exists in CPU memory, but provides a cleanup routine as
-!  memory management may differ between two subtrees being passed.
-!  (It would be nice and clean to have a procedure pointer for the cleanup,
-!  but alas Fortran/C interop causes severe problems, so we just have the
-!  owner value instead and if statements to call the right thing).
+!  subtrees. It exists in CPU memory and provides a cleanup routine (the
+!  CPU path, as only CPU subtrees exist).
 
     TYPE, PUBLIC :: contrib_type
       LOGICAL :: ready = .FALSE.
@@ -398,12 +372,10 @@
       INTEGER( C_IP_ ), DIMENSION( : ), POINTER :: delay_perm
       REAL( C_RP_ ), DIMENSION( : ), POINTER :: delay_val
       INTEGER( ip_ ) :: lddelay
-      INTEGER( ip_ ) :: owner ! cleanup routine to call: 0=cpu, 1=gpu
 
-!  the following are used by CPU to call correct cleanup routine
+!  the following is used by the CPU cleanup routine
 
       LOGICAL( C_BOOL ) :: posdef
-      TYPE( C_PTR ) :: owner_ptr
     END TYPE contrib_type
 
   CONTAINS
@@ -554,11 +526,6 @@
             &ordering but matching-based ordering not used'
     CASE( SSIDS_ERROR_UNIMPLEMENTED )
        msg = 'Functionality not yet implemented'
-!   CASE( SSIDS_ERROR_CUDA_UNKNOWN )
-!      WRITE( msg,'( 2A )' ) ' Unhandled CUDA error: ', &
-!           trim( cudaGetErrorString( this%cuda_error ) )
-    CASE( SSIDS_ERROR_CUBLAS_UNKNOWN )
-       msg = 'Unhandled CUBLAS error:'
 !$  CASE( SSIDS_ERROR_OMP_CANCELLATION )
 !$     msg = 'SSIDS CPU code requires OMP cancellation to be enabled'
     CASE( SSIDS_ERROR_NO_METIS )
@@ -673,13 +640,10 @@
     this%num_two = this%num_two + other%num_two
     IF ( other%stat /= 0 ) this%stat = other%stat
 ! FIXME: %auction ???
-    IF ( other%cuda_error /= 0 ) this%cuda_error = other%cuda_error
-    IF ( other%cublas_error /= 0 ) this%cublas_error = other%cublas_error
     this%not_first_pass = this%not_first_pass + other%not_first_pass
     this%not_second_pass = this%not_second_pass + other%not_second_pass
     this%nparts = this%nparts + other%nparts
-    this%cpu_flops = this%cpu_flops + other%cpu_flops
-    this%gpu_flops = this%gpu_flops + other%gpu_flops
+    this%flops = this%flops + other%flops
     RETURN
 
     END SUBROUTINE reduce

@@ -99,7 +99,6 @@ Currently supported options with their default value:
 * `-Dsingle=true`: generate the single precision library, tests and examples;
 * `-Ddouble=true`: generate the double precision library, tests and examples;
 * `-Dquadruple=false`: generate the quadruple precision library, tests and examples;
-* `-Dssids=true`: build ssids;
 * `-Dlibblas=openblas`: BLAS library against which to link;
 * `-Dliblapack=openblas`: LAPACK library against which to link;
 * `-Dlibhsl=hsl_subset`: HSL library against which to link;
@@ -113,7 +112,6 @@ Currently supported options with their default value:
 * `-Dlibsmumps=smumps`: Single-precision MUMPS library against which to link;
 * `-Dlibdmumps=dmumps`: Double-precision MUMPS library against which to link;
 * `-Dlibasl=asl`: AMPL solver library against which to link;
-* `-Dlibhwloc=hwloc`: HWLOC library against which to link;
 * `-Dlibblas_path=[]`: additional directories to search for the BLAS library;
 * `-Dliblapack_path=[]`: additional directories to search for the LAPACK library;
 * `-Dlibhsl_path=[]`: additional directories to search for the HSL library;
@@ -125,8 +123,6 @@ Currently supported options with their default value:
 * `-Dlibmumps_path=[]`: additional directories to search for the MUMPS libraries;
 * `-Dlibasl_path=[]`: additional directories to search for the AMPL solver library;
 * `-Dlibasl_include=[]`: additional directories to search for the AMPL header files;
-* `-Dlibhwloc_path=[]`: additional directories to search for the HWLOC library;
-* `-Dlibhwloc_include=[]`: additional directories to search for the HWLOC header files;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
 * `-Dlibcutest_modules[]`: additional directories to search for the CUTEst modules;
 * `-Dint64=false`: compile GALAHAD with 64-bit integer;
@@ -135,7 +131,7 @@ Currently supported options with their default value:
 Non-default compilers can be selected by setting the `CC`, `CXX` and
 `FC` shell variables.  For instance,
 ```shell
-CC=icc CXX=icpc FC=ifort meson setup builddir/pc64.lnx.ifr -Dssids=false [options...]
+CC=icc CXX=icpc FC=ifort meson setup builddir/pc64.lnx.ifr [options...]
 CC=icx CXX=icpx FC=ifx meson setup builddir/pc64.lnx.ifx [options...]
 CC=nvc CXX=nvc++ FC=nvfortran meson setup builddir/pc64.lnx.nvf -Dc_std=none -Dcpp_std=none [options...]
 ```

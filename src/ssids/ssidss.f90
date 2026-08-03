@@ -6,7 +6,7 @@
    TYPE( ssids_akeep_type ) :: akeep
    TYPE( ssids_fkeep_type ) :: fkeep
    TYPE( ssids_control_type ) :: control
-   INTEGER :: i, n, ne, cuda_error
+   INTEGER :: i, n, ne, flag
 !  INTEGER :: j, l
    INTEGER, ALLOCATABLE :: ROW( : ), PTR( : ), ORDER( : )
    REAL ( KIND = wp ), ALLOCATABLE :: B( : ), X( : ), VAL( : )
@@ -68,7 +68,7 @@
 !   END DO
 !write(6,*) 'b ', B
 ! Clean up
-   CALL ssids_free(akeep, fkeep, cuda_error )
+   CALL ssids_free(akeep, fkeep, flag )
    DEALLOCATE( VAL, ROW, PTR, X, B )
    STOP
    END PROGRAM SSIDS_EXAMPLE

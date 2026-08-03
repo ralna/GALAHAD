@@ -72,8 +72,8 @@ int main(void) {
    for(int i=0; i<n; i++) printf(" %3d", (int) piv_order[i]);
    printf("\n");
 
-   ipc_ cuda_error = ssids_free(&akeep, &fkeep);
-   if(cuda_error!=0) exit(1);
+   ipc_ flag = ssids_free(&akeep, &fkeep);
+   if(flag!=0) exit(1);
 
    return 0;
 }

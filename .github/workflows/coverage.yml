@@ -21,7 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y ninja-build gcc gfortran lcov libhwloc-dev
+        sudo apt install -y ninja-build gcc gfortran lcov
         pip install meson gcovr
 
     - name: Set the environment variables

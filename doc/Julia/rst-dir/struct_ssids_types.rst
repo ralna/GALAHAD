@@ -29,7 +29,7 @@ spral_ssids_options structure
           gpu_perf_coeff::Cfloat
           scaling::INT
           small_subtree_threshold::Int64
-          cpu_block_size::INT
+          block_size::INT
           action::Bool
           pivot_method::INT
           small::T
