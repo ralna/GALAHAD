@@ -1,22 +1,16 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-07-27
+! THIS VERSION: GALAHAD 5.5 - 2026-07-27 AT 11:25 GMT.
 
 #include "galahad_modules.h"
 
 !-*-*-*-*-  G A L A H A D _ T O P O L O G Y   M O D U L E  -*-*-*-*-*-*-*-
 
-!    --------------------------------------------------------------------
-!   | Hardware toplology package originally spral_hw_topology from SPRAL |
-!    --------------------------------------------------------------------
+!  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+!  Principal author: Alexis Montoison
 
-!  COPYRIGHT (c) 2016 The Science and Technology Facilities Council (STFC)
-!  licence: BSD licence, see LICENCE file for details
-!  author: Jonathan Hogg
-!  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
-
-!  Pure-Fortran hardware-topology detection (replaces the former C++/hwloc
-!  backend, compat.cxx + guess_topology.cxx). On Linux the NUMA layout is read
-!  straight from sysfs (/sys/devices/system/node/nodeN/cpulist): one region per
-!  NUMA node, with nproc = number of physical cores in that node -- counted from
+!  Pure-Fortran hardware-topology detection.
+!  On Linux the NUMA layout is read straight from sysfs
+! (/sys/devices/system/node/nodeN/cpulist): one region per NUMA node,
+! with nproc = number of physical cores in that node -- counted from
 !  each CPU's topology/thread_siblings_list, so hyperthreads collapse onto their
 !  core, matching hwloc's former core count. If the per-CPU topology cannot be
 !  read it falls back to the logical-CPU count, and if sysfs is unavailable

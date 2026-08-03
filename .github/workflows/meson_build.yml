@@ -261,7 +261,7 @@ jobs:
             echo "PASTIX_INT64=OFF" >> $GITHUB_ENV
           fi
           if [[ "${{ inputs.os }}" == "ubuntu-latest" || "${{ inputs.os }}" == "ubuntu-24.04-arm" ]]; then
-            sudo apt-get -y install libopenblas-dev liblapacke-dev bison flex
+            sudo apt-get -y install libopenblas-dev liblapacke-dev libhwloc-dev bison flex
           elif [[ "${{ inputs.os }}" == "macos-15-intel" || "${{ inputs.os }}" == "macos-latest" ]]; then
             brew install openblas bison flex
             # brew's bison/flex are keg-only (SCOTCH needs a recent bison/flex) and
