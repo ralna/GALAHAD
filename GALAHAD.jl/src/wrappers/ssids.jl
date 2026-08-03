@@ -45,7 +45,7 @@ struct ssids_inform_type{T,INT}
   not_first_pass::INT
   not_second_pass::INT
   nparts::INT
-  cpu_flops::Int64
+  flops::Int64
 end
 
 export ssids_default_control
