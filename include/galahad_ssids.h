@@ -34,20 +34,15 @@ struct ssids_control_type {
    ipc_ ordering;
    ipc_ nemin;
    bool ignore_numa;
-   bool use_gpu;
-   bool gpu_only;
-   int64_t min_gpu_work;
    real_sp_ max_load_inbalance;
-   real_sp_ gpu_perf_coeff;
    ipc_ scaling;
    int64_t small_subtree_threshold;
-   ipc_ cpu_block_size;
+   ipc_ block_size;
    bool action;
    ipc_ pivot_method;
    rpc_ small;
    rpc_ u;
    struct nodend_control_type nodend_control;
-   ipc_ nstream;
    rpc_ multiplier;
    real_sp_ min_loadbalance;
    ipc_ failed_pivot_method;
@@ -70,14 +65,11 @@ struct ssids_inform_type {
    ipc_ num_sup;
    ipc_ num_two;
    ipc_ stat;
-   ipc_ cuda_error;
-   ipc_ cublas_error;
    struct nodend_inform_type nodend_inform;
    ipc_ not_first_pass;
    ipc_ not_second_pass;
    ipc_ nparts;
    int64_t cpu_flops;
-   int64_t gpu_flops;
    // char unused[76]; // Allow for future expansion
 };
 

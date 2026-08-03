@@ -2238,20 +2238,15 @@ struct ssids_control_type_s {
     int32_t ordering;
     int32_t nemin;
     bool ignore_numa;
-    bool use_gpu;
-    bool gpu_only;
-    int64_t min_gpu_work;
     float max_load_inbalance;
-    float gpu_perf_coeff;
     int32_t scaling;
     int64_t small_subtree_threshold;
-    int32_t cpu_block_size;
+    int32_t block_size;
     bool action;
     int32_t pivot_method;
     float small;
     float u;
     struct nodend_control_type nodend_control;
-    int32_t nstream;
     float multiplier;
     float min_loadbalance;
     int32_t failed_pivot_method;
@@ -2266,20 +2261,15 @@ struct ssids_control_type_s_64 {
     int64_t ordering;
     int64_t nemin;
     bool ignore_numa;
-    bool use_gpu;
-    bool gpu_only;
-    int64_t min_gpu_work;
     float max_load_inbalance;
-    float gpu_perf_coeff;
     int64_t scaling;
     int64_t small_subtree_threshold;
-    int64_t cpu_block_size;
+    int64_t block_size;
     bool action;
     int64_t pivot_method;
     float small;
     float u;
     struct nodend_control_type_64 nodend_control;
-    int64_t nstream;
     float multiplier;
     float min_loadbalance;
     int64_t failed_pivot_method;
@@ -2301,14 +2291,11 @@ struct ssids_inform_type_s {
     int32_t num_sup;
     int32_t num_two;
     int32_t stat;
-    int32_t cuda_error;
-    int32_t cublas_error;
     struct nodend_inform_type_s nodend_inform;
     int32_t not_first_pass;
     int32_t not_second_pass;
     int32_t nparts;
     int64_t cpu_flops;
-    int64_t gpu_flops;
 };
 
 struct ssids_inform_type_s_64 {
@@ -2327,14 +2314,11 @@ struct ssids_inform_type_s_64 {
     int64_t num_sup;
     int64_t num_two;
     int64_t stat;
-    int64_t cuda_error;
-    int64_t cublas_error;
     struct nodend_inform_type_s_64 nodend_inform;
     int64_t not_first_pass;
     int64_t not_second_pass;
     int64_t nparts;
     int64_t cpu_flops;
-    int64_t gpu_flops;
 };
 
 void ssids_default_control_s(struct ssids_control_type_s *control);

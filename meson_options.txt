@@ -43,11 +43,6 @@ option('quadruple',
        value : false,
        description : 'whether to generate the quadruple precision library, tests and examples')
 
-option('ssids',
-       type : 'boolean',
-       value : true,
-       description : 'whether to build ssids')
-
 option('libblas',
        type : 'string',
        value : 'openblas',
@@ -113,11 +108,6 @@ option('libasl',
        value : 'asl',
        description : 'AMPL solver library against which to link')
 
-option('libhwloc',
-       type : 'string',
-       value : 'hwloc',
-       description : 'HWLOC library against which to link')
-
 option('libblas_path',
        type : 'array',
        value : [],
@@ -167,16 +157,6 @@ option('libasl_path',
        type : 'array',
        value : [],
        description : 'Additional directories to search for the AMPL solver library')
-
-option('libhwloc_path',
-       type : 'array',
-       value : [],
-       description : 'Additional directory to search for the HWLOC library')
-
-option('libhwloc_include',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the HWLOC header files')
 
 option('libasl_include',
        type : 'array',

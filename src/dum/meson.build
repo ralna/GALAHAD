@@ -34,8 +34,3 @@ if not (libblas_name == 'mkl_rt' or liblapack_name == 'mkl_rt')
   libgalahad_double_src += files('mkl_pardiso.F90')
 endif
 libgalahad_quadruple_src += files('mkl_pardiso.F90')
-
-if not build_ssids
-  libgalahad_src += files('ssids.F90')
-  libgalahad_c_src += files('C/ssids_ciface.F90')
-endif

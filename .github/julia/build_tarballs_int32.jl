@@ -88,12 +88,6 @@ cp lib/*.${dlext} ${libdir}
 # Compile GALAHAD
 cd ${WORKSPACE}/srcdir/GALAHAD
 
-if [[ "${target}" == *mingw* ]]; then
-  HWLOC="hwloc-15"
-else
-  HWLOC="hwloc"
-fi
-
 QUADRUPLE="true"
 if [[ "${target}" == *arm* ]] || [[ "${target}" == *aarch64-linux* ]] || [[ "${target}" == *aarch64-unknown-freebsd* ]] || [[ "${target}" == *powerpc64le-linux-gnu* ]] || [[ "${target}" == *riscv64* ]]; then
     QUADRUPLE="false"
@@ -101,7 +95,6 @@ fi
 
 meson setup builddir_int32 --cross-file=${MESON_TARGET_TOOLCHAIN%.*}_gcc.meson \
                            --prefix=$prefix \
-                           -Dlibhwloc=$HWLOC \
                            -Dlibblas=openblas \
                            -Dliblapack=openblas \
                            -Dsingle=true \
@@ -139,7 +132,6 @@ dependencies = [
     Dependency(PackageSpec(name="CompilerSupportLibraries_jll", uuid="e66e0078-7015-5450-92f7-15fbd957f2ae")),
     Dependency(PackageSpec(name="METIS_jll", uuid="d00139f3-1899-568f-a2f0-47f597d42d70")),
     Dependency(PackageSpec(name="OpenBLAS32_jll", uuid="656ef2d0-ae68-5445-9ca0-591084a874a2")),
-    Dependency(PackageSpec(name="Hwloc_jll", uuid="e33a78d0-f292-5ffc-b300-72abe9b543c8")),
     Dependency(PackageSpec(name="HSL_jll", uuid="017b0a0e-03f4-516a-9b91-836bbd1904dd"), compat="4.0.5"),
     Dependency(PackageSpec(name="CUTEst_jll", uuid="bb5f6f25-f23d-57fd-8f90-3ef7bad1d825"), compat="2.7.0"),
 ]

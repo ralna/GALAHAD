@@ -14,15 +14,6 @@
 /* Define if you have a GTG library. */
 /* #undef HAVE_GTG */
 
-/* Define if you have hwloc library */
-/* #undef HAVE_HWLOC */
-/* #define HAVE_HWLOC 1 */
-#ifdef SPRAL_NO_HWLOC
-#undef HAVE_HWLOC
-#else
-#define HAVE_HWLOC 1
-#endif
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
@@ -52,9 +43,6 @@
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #define HAVE_STDLIB_H 1
-
-/* Define to 1 if you have std::align(). */
-/* #undef HAVE_STD_ALIGN */
 
 /* Define to 1 if you have the <strings.h> header file. */
 #define HAVE_STRINGS_H 1

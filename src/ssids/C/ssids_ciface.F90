@@ -95,20 +95,15 @@
        INTEGER ( KIND = ipc_ ) :: ordering
        INTEGER ( KIND = ipc_ ) :: nemin
        LOGICAL ( KIND = C_BOOL ) :: ignore_numa
-       LOGICAL ( KIND = C_BOOL ) :: use_gpu
-       LOGICAL ( KIND = C_BOOL ) :: gpu_only
-       INTEGER ( KIND = longc_ ) :: min_gpu_work
        REAL ( KIND = spc_ ) :: max_load_inbalance
-       REAL ( KIND = spc_ ) :: gpu_perf_coeff
        INTEGER ( KIND = ipc_ ) :: scaling
        INTEGER ( KIND = longc_ ) :: small_subtree_threshold
-       INTEGER ( KIND = ipc_ ) :: cpu_block_size
+       INTEGER ( KIND = ipc_ ) :: block_size
        LOGICAL ( KIND = C_BOOL ) :: action
        INTEGER ( KIND = ipc_ ) :: pivot_method
        REAL ( KIND = rpc_ ) :: small
        REAL ( KIND = rpc_ ) :: u
        TYPE ( nodend_control_type ) :: nodend_control
-       INTEGER ( KIND = ipc_ ) :: nstream
        REAL ( KIND = rpc_ ) :: multiplier
 !     type(auction_control) :: auction
        REAL ( KIND = spc_ ) :: min_loadbalance
@@ -133,14 +128,11 @@
        INTEGER ( KIND = ipc_ ) :: num_two
        INTEGER ( KIND = ipc_ ) :: stat
 !    type(auction_inform) :: auction
-       INTEGER ( KIND = ipc_ ) :: cuda_error
-       INTEGER ( KIND = ipc_ ) :: cublas_error
        TYPE ( nodend_inform_type ) :: nodend_inform
        INTEGER ( KIND = ipc_ ) :: not_first_pass
        INTEGER ( KIND = ipc_ ) :: not_second_pass
        INTEGER ( KIND = ipc_ ) :: nparts
-       INTEGER ( KIND = longc_ ) :: cpu_flops
-       INTEGER ( KIND = longc_ ) :: gpu_flops
+       INTEGER ( KIND = longc_ ) :: flops
 !      CHARACTER(C_CHAR) :: unused(76)
     END TYPE ssids_inform_type
 
@@ -165,21 +157,16 @@
     fcontrol%ordering = ccontrol%ordering
     fcontrol%nemin = ccontrol%nemin
     fcontrol%ignore_numa = ccontrol%ignore_numa
-    fcontrol%use_gpu = ccontrol%use_gpu
-    fcontrol%gpu_only = ccontrol%gpu_only
-    fcontrol%min_gpu_work = ccontrol%min_gpu_work
     fcontrol%max_load_inbalance = ccontrol%max_load_inbalance
-    fcontrol%gpu_perf_coeff = ccontrol%gpu_perf_coeff
     fcontrol%scaling = ccontrol%scaling
     fcontrol%small_subtree_threshold = ccontrol%small_subtree_threshold
-    fcontrol%cpu_block_size = ccontrol%cpu_block_size
+    fcontrol%block_size = ccontrol%block_size
     fcontrol%action = ccontrol%action
     fcontrol%pivot_method = ccontrol%pivot_method
     fcontrol%small = ccontrol%small
     fcontrol%u = ccontrol%u
     CALL copy_nodend_control_in( ccontrol%nodend_control,                      &
                                  fcontrol%nodend_control )
-    fcontrol%nstream = ccontrol%nstream
     fcontrol%multiplier = ccontrol%multiplier
     fcontrol%min_loadbalance = REAL( ccontrol%min_loadbalance )
     fcontrol%failed_pivot_method = ccontrol%failed_pivot_method
@@ -208,14 +195,11 @@
     cinform%num_sup = finform%num_sup
     cinform%num_two = finform%num_two
     cinform%stat = finform%stat
-    cinform%cuda_error = finform%cuda_error
-    cinform%cublas_error = finform%cublas_error
     CALL copy_nodend_inform_out( finform%nodend_inform, cinform%nodend_inform )
     cinform%not_first_pass = finform%not_first_pass
     cinform%not_second_pass = finform%not_second_pass
     cinform%nparts = finform%nparts
-    cinform%cpu_flops = finform%cpu_flops
-    cinform%gpu_flops = finform%gpu_flops
+    cinform%flops = finform%flops
     RETURN
 
     END SUBROUTINE copy_inform_out
@@ -246,20 +230,16 @@
   ccontrol%ordering                = default_control%ordering
   ccontrol%nemin                   = default_control%nemin
   ccontrol%ignore_numa             = default_control%ignore_numa
-  ccontrol%use_gpu                 = default_control%use_gpu
-  ccontrol%min_gpu_work            = default_control%min_gpu_work
   ccontrol%max_load_inbalance      = default_control%max_load_inbalance
-  ccontrol%gpu_perf_coeff          = default_control%gpu_perf_coeff
   ccontrol%scaling                 = default_control%scaling
   ccontrol%small_subtree_threshold = default_control%small_subtree_threshold
-  ccontrol%cpu_block_size          = default_control%cpu_block_size
+  ccontrol%block_size          = default_control%block_size
   ccontrol%action                  = default_control%action
   ccontrol%pivot_method            = default_control%pivot_method
   ccontrol%small                   = default_control%small
   ccontrol%u                       = default_control%u
   CALL copy_nodend_control_out( default_control%nodend_control,                &
                                 ccontrol%nodend_control )
-  ccontrol%nstream                 = default_control%nstream
   ccontrol%multiplier              = default_control%multiplier
   ccontrol%min_loadbalance         = default_control%min_loadbalance
   ccontrol%failed_pivot_method     = default_control%failed_pivot_method

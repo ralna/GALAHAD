@@ -250,10 +250,10 @@ make_hash:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hash.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/hash )
 
-make_hw:
-	( cd $(GALAHAD)/src/hw ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hw.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/hw )
+make_topology:
+	( cd $(GALAHAD)/src/topology ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) topology.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/topology )
 
 make_ir:
 	( cd $(GALAHAD)/src/ir ; \
@@ -1043,10 +1043,10 @@ make_all_hash:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hash_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/hash )
 
-make_all_hw:
-	( cd $(GALAHAD)/src/hw ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hw_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/hw )
+make_all_topology:
+	( cd $(GALAHAD)/src/topology ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) topology_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/topology )
 
 make_all_ir:
 	( cd $(GALAHAD)/src/ir ; \

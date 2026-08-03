@@ -68,8 +68,8 @@ single_double_quadruple_modules = ["galahad_blas_interface",
                                    "galahad_pastixf_enums",
                                    "galahad_pastixf_interfaces",
                                    "galahad_spmf_interfaces",
-                                   "galahad_hw",
-                                   "galahad_hw_64",
+                                   "galahad_topology",
+                                   "galahad_topology_64",
                                    ]
 
 for (modules1, modules2, int1, int2, name) in modules_combinations

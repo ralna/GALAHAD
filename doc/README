@@ -216,83 +216,26 @@ In order to get GALAHAD working **using make**, here is what you need to do.
    and that $GALAHAD/src/matlab is on your Matlab path. See README.matlab
    for more details.
 
-11 If you are running on a Linux/OSX system, you may need to install the
-   Open-MPI Portable Hardware Locality (HWLOC) development package
+11 GALAHAD's parallel sparse solver SSIDS detects the machine's NUMA
+   topology automatically (on Linux, by reading /sys); no external
+   hardware-locality library needs to be installed.
 
-      https://www.open-mpi.org/projects/hwloc/
+   For best parallel performance, set the environment variables OMP_NESTED
+   and OMP_PROC_BIND to TRUE, and OMP_MAX_ACTIVE_LEVELS to the maximum
+   number of nested parallel levels you wish to use. Under the sh/bash
+   shell, put
 
-   This is readily available in many Linux distributions, e.g., via
-
-      sudo apt-get install libhwloc-dev
-
-   on Debian/Ubuntu systems,
-
-      sudo rpm --install libhwloc-dev
-
-   for Redhat ones, or
-
-      brew install hwloc
-
-   for Macs under OSX.
-
-   You will also need to set environment variables  OMP_CANCELLATION,
-   OMP_NESTED and OMP_PROC_BIND to TRUE, and OMP_MAX_ACTIVE_LEVEL to
-   the maximum number of parallel threads you wish to use.
-   Under the sh/bash shell, put
-
-     export OMP_CANCELLATION=true
      export OMP_NESTED=true
      export OMP_PROC_BIND=true
      export OMP_MAX_ACTIVE_LEVELS=8
 
    in your startup script, to use a maximum of 8 threads, and for csh/tcsh
 
-     setenv OMP_CANCELLATION true
      setenv OMP_NESTED true
      setenv OMP_PROC_BIND true
      setenv OMP_MAX_ACTIVE_LEVELS 8
 
    Check with your system administrator if you need help!
-
-   If it *really* is impossible to install libhwloc-dev, you should edit
-   the file $GALAHAD/include/ssids_config.h and replace the line
-
-   #define HAVE_HWLOC 1
-
-   with
-
-   #undef HAVE_HWLOC
-
-   Alternatively, during the GALAHAD install (13 below), when you get to
-   the prompt
-
-     Would you like to review and modify the C compiler settings (y/N)?
-
-   answer y, and change the variable HWLOC to read
-
-     HWLOC='un'
-
-   Currently this is done automatically for ifort/icc and
-   gfortran/gcc to avoid compiler bugs
-
-   Finally, if you do have HWLOC, you can improve the performannce of
-   codes that rely on it, by setting an appropriate xml file that gives
-   your specific hardware locality. To do so, use hwloc's lstopo to
-   generate the xml file, and then set an appropriate environment variable
-   to point at this file. For example, under Linux or OSX, if you have a
-   local ~/.config directory, then
-
-     lstopo --of xml ~/.config/hwloc-topology.xml
-
-   generates the file, and
-
-     export HWLOC_XMLFILE=$HOME/.config/hwloc-topology.xml
-
-   (for sh/bash) or
-
-     setenv HWLOC_XMLFILE $HOME/.config/hwloc-topology.xml
-
-    (for csh/tcsh) is appropriate
 
 12. For Windows systems that use MSYS/MINGW, you will also need to set the
    environment variable MSYS2 to point to the folder that contains the
