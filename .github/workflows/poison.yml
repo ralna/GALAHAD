@@ -35,7 +35,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y ninja-build gcc gfortran
+        sudo apt install -y ninja-build gcc gfortran libhwloc-dev
         pip install meson
 
     - name: Set the environment variables
@@ -57,7 +57,9 @@ jobs:
     - name: Setup
       run: |
         INT64=false
-        if [[ "${{ matrix.int }}" == "64" ]]; then INT64=true; fi
+        if [[ "${{ matrix.int }}" == "64" ]]; then
+          INT64=true;
+        fi
         meson setup builddir --buildtype=debug \
                              -Dint64=$INT64 \
                              -Dquadruple=true \
@@ -67,7 +69,6 @@ jobs:
                              -Dliblapack= \
                              -Db_sanitize=address \
                              -Dc_args="-ftrivial-auto-var-init=pattern" \
-                             -Dcpp_args="-ftrivial-auto-var-init=pattern" \
                              -Dfortran_args="-finit-integer=-99999999 -finit-logical=true -finit-character=35 -finit-derived"
 
     - name: Compilation

@@ -128,12 +128,12 @@ Currently supported options with their default value:
 * `-Dint64=false`: compile GALAHAD with 64-bit integer;
 * `-Dopenmp:true`: compile GALAHAD with OpenMP.
 
-Non-default compilers can be selected by setting the `CC`, `CXX` and
-`FC` shell variables.  For instance,
+Non-default compilers can be selected by setting the `CC` and `FC` shell variables.
+For instance,
 ```shell
-CC=icc CXX=icpc FC=ifort meson setup builddir/pc64.lnx.ifr [options...]
-CC=icx CXX=icpx FC=ifx meson setup builddir/pc64.lnx.ifx [options...]
-CC=nvc CXX=nvc++ FC=nvfortran meson setup builddir/pc64.lnx.nvf -Dc_std=none -Dcpp_std=none [options...]
+CC=icc FC=ifort meson setup builddir/pc64.lnx.ifr [options...]
+CC=icx FC=ifx meson setup builddir/pc64.lnx.ifx [options...]
+CC=nvc FC=nvfortran meson setup builddir/pc64.lnx.nvf -Dc_std=none [options...]
 ```
 See https://mesonbuild.com/Reference-tables.html for supported compilers
 and linkers.
@@ -310,7 +310,6 @@ When we do a new release of GALAHAD, we should update the `version`
 - `libgalahad_python_src`: C files for the Python interfaces;
 - `libgalahad_cutest_src`: Fortran files related to the CUTEst interfaces;
 - `galahad_cutest_binaries`: Fortran files that contain CUTEst programs;
-- `libgalahad_cpp_src`: C++ files required by GALAHAD;
 - `libgalahad_cc_src`: C files required by GALAHAD;
 - `galahad_examples`: Fortran examples;
 - `galahad_tests`: Fortran tests;
