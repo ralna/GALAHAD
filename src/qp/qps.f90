@@ -11,6 +11,8 @@
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
+!  CHARACTER ( LEN = 20 ) :: solver = "cqp" // REPEAT( ' ', 17 )
+   CHARACTER ( LEN = 20 ) :: solver = "osqp" // REPEAT( ' ', 16 )
 ! start problem data
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
@@ -29,24 +31,28 @@
    CALL SMT_put( p%A%type, 'COORDINATE', s )     ! storage for H and A
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
+   ALLOCATE( p%A%ptr( n + 1 ), p%H%ptr( n + 1 ) )
    p%H%val = (/ 1.0_wp, 2.0_wp, 1.0_wp, 3.0_wp /) ! Hessian H
-   p%H%row = (/ 1, 2, 2, 3 /)                     ! NB lower triangle
-   p%H%col = (/ 1, 2, 1, 3 /) ; p%H%ne = h_ne
+   p%H%row = (/ 1, 2, 3, 3 /)                     ! NB lower triangle
+   p%H%col = (/ 1, 2, 2, 3 /) ; p%H%ne = h_ne
+   p%H%ptr = (/ 1, 2, 3, 5 /)
    p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
    p%A%row = (/ 1, 1, 2, 2 /)
    p%A%col = (/ 1, 2, 2, 3 /) ; p%A%ne = a_ne
+   p%A%ptr = (/ 1, 2, 4, 5 /)
 ! problem data complete
-   CALL QP_initialize( data, control, inform )  ! Initialize control parameters
+   CALL QP_initialize( solver, data, control, inform )  ! Initialize controls
    control%infinity = infinity                  ! Set infinity
-   control%quadratic_programming_solver = 'qpa' ! use QPA
-   control%scale = 7                            ! Sinkhorn-Knopp scaling
-   control%presolve = .TRUE.                    ! Pre-solve the problem
+!  control%scale = 7                            ! Sinkhorn-Knopp scaling
+!  control%presolve = .TRUE.                    ! Pre-solve the problem
+!  control%CQP_control%print_level = 1
    CALL QP_solve( p, data, control, inform, C_stat, B_stat ) ! Solve
    IF ( inform%status == 0 ) THEN               !  Successful return
-     WRITE( 6, "( ' QP: ', I0, ' QPA iterations  ', /,                         &
+     WRITE( 6, "( ' QP: ', I0, 1X, A, ' iterations  ', /,                      &
     &     ' Optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
-     inform%QPA_inform%iter, inform%obj, p%X
+     inform%OSQP_inform%iter, TRIM( solver ), inform%obj, p%X
+!    inform%CQP_inform%iter, TRIM( solver ), inform%obj, p%X
    ELSE                                         !  Error returns
      WRITE( 6, "( ' QP_solve exit status = ', I6 ) " ) inform%status
    END IF

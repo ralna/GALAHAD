@@ -133,6 +133,7 @@
       CHARACTER ( LEN = 16 ) :: specname = 'RUNQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNQP.SPC'
+      CHARACTER ( LEN = 20 ) :: solver ='cqp' // REPEAT( ' ', 17 )
 
 !  The default values for QP could have been set as:
 
@@ -148,6 +149,7 @@
 !  write-result-summary                      NO
 !  result-summary-file-name                  QPRES.d
 !  result-summary-file-device                47
+!  quadratic-programming-solver              cqp
 !  perturb-bounds-by                         0.0
 ! END RUNQP SPECIFICATIONS
 
@@ -169,7 +171,7 @@
 
       INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
       INTEGER ( KIND = ip_ ) :: errout = 6
-      CHARACTER ( LEN =  5 ) :: state, solv
+      CHARACTER ( LEN =  5 ) :: state
       CHARACTER ( LEN = 10 ) :: pname
 
 !  Arrays
@@ -334,7 +336,8 @@
       spec( 8 )%keyword = 'write-result-summary'
       spec( 9 )%keyword = 'result-summary-file-name'
       spec( 10 )%keyword = 'result-summary-file-device'
-      spec( 11 )%keyword = 'perturb-bounds-by'
+      spec( 11 )%keyword = 'quadratic-programming-solver'
+      spec( 12 )%keyword = 'perturb-bounds-by'
 
 !   Read the specfile
 
@@ -352,7 +355,8 @@
       CALL SPECFILE_assign_logical( spec( 8 ), write_result_summary, errout )
       CALL SPECFILE_assign_string ( spec( 9 ), rfilename, errout )
       CALL SPECFILE_assign_integer( spec( 10 ), rfiledevice, errout )
-      CALL SPECFILE_assign_real( spec( 11 ), pert_bnd, errout )
+      CALL SPECFILE_assign_value( spec( 11 ), solver, errout )
+      CALL SPECFILE_assign_real( spec( 12 ), pert_bnd, errout )
 
 !  Perturb bounds if required
 
@@ -429,7 +433,7 @@
         WRITE( rfiledevice, "( A10 )" ) pname
       END IF
 
-      CALL QP_initialize( data, QP_control, QP_inform )
+      CALL QP_initialize( solver, data, QP_control, QP_inform )
       CALL QP_read_specfile( QP_control, input_specfile )
 
       printo = out > 0 .AND. QP_control%print_level > 0
@@ -449,8 +453,7 @@
 !  solve the problem
 !  =================
 
-        solv = QP_control%quadratic_programming_solver( 1 : 5 )
-        CALL STRING_upper_word( solv )
+        CALL STRING_upper_word( solver )
         IF ( printo ) WRITE( out, " ( ' ** QP solver used ** ' ) " )
         CALL QP_solve( prob, data, QP_control, QP_inform, C_stat, B_stat )
 
@@ -464,12 +467,12 @@
         status = QP_inform%status
         CALL QP_terminate( data, QP_control, QP_inform )
       ELSE
-        solv = ' NONE'
+        solver = ' NONE'
         objf = prob%f
         status = 0
       END IF
 
-      SELECT CASE( TRIM( QP_control%quadratic_programming_solver ) )
+      SELECT CASE( TRIM( solver ) )
       CASE ( 'qpa', 'QPA' )
         stopr = QP_control%QPB_control%stop_d
         iter = QP_inform%QPA_inform%iter
@@ -666,7 +669,7 @@
           END IF
 
           WRITE( sfiledevice, "( /, ' Problem:    ', A10, /, ' Solver :   ',   &
-         &        A5, /, ' Objective:', ES24.16 )" ) pname, solv, objf
+         &        A, /, ' Objective:', ES24.16 )" ) pname, solver, objf
           WRITE( sfiledevice, 2000 )
 
           DO i = 1, n
@@ -714,7 +717,7 @@
 !  Compare the variants used so far
 
       WRITE( out, "( 1X, A5, I7, 5X, ES12.4, I6, 0P, 3F8.2 )" )                &
-        solv, iter, objf, status, times, timet, times + timet
+        solver, iter, objf, status, times, timet, times + timet
 
       IF ( write_result_summary ) THEN
         BACKSPACE( rfiledevice )

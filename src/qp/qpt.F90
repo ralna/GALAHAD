@@ -14,6 +14,7 @@
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, sts, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
+   CHARACTER ( LEN = 20 ) :: solver = "cqp" // REPEAT( ' ', 17 )
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
@@ -61,10 +62,6 @@
 !    IF ( status == - GALAHAD_error_upper_entry ) CYCLE
      IF ( status == - GALAHAD_error_sort ) CYCLE
 
-     CALL QP_initialize( data, control, info )
-     CALL WHICH_sls( control )
-     control%infinity = infty
-
      p%new_problem_structure = .TRUE.
      p%n = n ; p%m = m ; p%f = 1.0_rp_
      p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
@@ -87,6 +84,7 @@
      p%A%ptr = (/ 1, 3, 5 /)
      p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
 
+     solver = "cqp" // REPEAT( ' ', 17 )
      IF ( status == - GALAHAD_error_restrictions ) THEN
        p%n = 0 ; p%m = - 1
      ELSE IF ( status == - GALAHAD_error_bad_bounds ) THEN
@@ -97,7 +95,7 @@
        p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
      ELSE IF ( status == - GALAHAD_error_tiny_step ) THEN
 !      control%print_level = 1
-       control%quadratic_programming_solver = "qpb" // REPEAT( ' ', 27 )
+       solver = "qpb" // REPEAT( ' ', 17 )
        control%QPB_control%stop_c = 0.0_rp_
        control%QPB_control%stop_c = 0.0_rp_
 !      p%X_l = (/ - 1.0_rp_, 8.0_rp_, - infty /)
@@ -114,6 +112,10 @@
        p%H%col( 1 ) = 2
      ELSE
      END IF
+
+     CALL QP_initialize( solver, data, control, info )
+     CALL WHICH_sls( control )
+     control%infinity = infty
 
 !    control%out = 6 ; control%print_level = 1
      CALL QP_solve( p, data, control, info, C_stat, B_stat )
@@ -181,7 +183,9 @@
    p%H%val = (/ 0.0_rp_ /)
    p%H%row = (/ 1 /)
    p%H%col = (/ 1 /)
-   CALL QP_initialize( data, control, info )
+
+   solver = "cqp" // REPEAT( ' ', 17 )
+   CALL QP_initialize( solver, data, control, info )
    CALL WHICH_sls( control )
    control%infinity = infty
 !  control%print_level = 1
@@ -254,7 +258,8 @@
    p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
 
    DO data_storage_type = -3, 0
-     CALL QP_initialize( data, control, info )
+     solver = "cqp" // REPEAT( ' ', 17 )
+     CALL QP_initialize( solver, data, control, info )
      CALL WHICH_sls( control )
      control%infinity = infty
 !    control%out = 6 ; control%print_level = 11
@@ -372,10 +377,6 @@
    CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
-   CALL QP_initialize( data, control, info )
-   CALL WHICH_sls( control )
-   control%infinity = infty
-!  control%out = 6 ; control%print_level = 1
 
 !  test with new and existing data
 
@@ -394,13 +395,13 @@
      p%A%ptr = (/ 1, 3 /)
 
      IF ( i == 0 ) THEN
-       control%quadratic_programming_solver = "qpa" // REPEAT( ' ', 27 )
+       solver = "qpa" // REPEAT( ' ', 17 )
      ELSE IF ( i == 1 ) THEN
-       control%quadratic_programming_solver = "qpb" // REPEAT( ' ', 27 )
+       solver = "qpb" // REPEAT( ' ', 17 )
      ELSE IF ( i == 2 ) THEN
-       control%quadratic_programming_solver = "qpc" // REPEAT( ' ', 27 )
+       solver = "qpc" // REPEAT( ' ', 17 )
      ELSE IF ( i == 3 ) THEN
-       control%quadratic_programming_solver = "cqp" // REPEAT( ' ', 27 )
+       solver = "cqp" // REPEAT( ' ', 17 )
      ELSE IF ( i == 4 ) THEN
        control%presolve = .TRUE.
        control%scale = 1
@@ -437,6 +438,11 @@
      ELSE IF ( i == 18 ) THEN
        control%scale = 0
      END IF
+
+     CALL QP_initialize( solver, data, control, info )
+     CALL WHICH_sls( control )
+     control%infinity = infty
+!  control%out = 6 ; control%print_level = 1
 
      p%H%val = (/ 1.0_rp_, 1.0_rp_ /)
      p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
@@ -486,7 +492,7 @@
    CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
-   CALL QP_initialize( data, control, info )
+   CALL QP_initialize( solver, data, control, info )
    CALL WHICH_sls( control )
    control%infinity = infty
 !  control%out = 6 ; control%print_level = 11
@@ -520,7 +526,7 @@
    CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
-   CALL QP_initialize( data, control, info )
+   CALL QP_initialize( solver, data, control, info )
    CALL WHICH_sls( control )
 !   control%print_level = 101
 !   control%QPC_control%print_level = 1
@@ -610,7 +616,7 @@
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
-   CALL QP_initialize( data, control, info )
+   CALL QP_initialize( solver, data, control, info )
    CALL WHICH_sls( control )
    control%infinity = infty
    control%print_level = 101
@@ -691,7 +697,7 @@
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
-   CALL QP_initialize( data, control, info )
+   CALL QP_initialize( solver, data, control, info )
    CALL WHICH_sls( control )
    control%infinity = infty
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
@@ -761,7 +767,7 @@
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
-   CALL QP_initialize( data, control, info )
+   CALL QP_initialize( solver, data, control, info )
    CALL WHICH_sls( control )
    control%infinity = infty
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
@@ -830,7 +836,7 @@
    END DO
    p%C_u = p%C_l
 
-   CALL QP_initialize( data, control, info )
+   CALL QP_initialize( solver, data, control, info )
    CALL WHICH_sls( control )
    control%infinity = infty
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
@@ -866,7 +872,7 @@
    DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
-   DEALLOCATE( p%Y_l, p%Y_u, p%Z_l, p%Z_u, p%X_status, p%C_status )
+!  DEALLOCATE( p%Y_l, p%Y_u, p%Z_l, p%Z_u, p%X_status, p%C_status )
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS

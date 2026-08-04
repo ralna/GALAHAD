@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-10-05 AT 15:10 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-07-31 AT 15:10 GMT
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -8219,13 +8219,17 @@
            IF ( k > data%n ) EXIT
            IF ( data%PIVOTS( k ) > 0 ) THEN   ! a 1 x 1 pivot
              IF ( data%matrix_dense( k, k ) < 0.0_rp_ ) THEN
-               inform%negative_eigenvalues =                                 &
+               inform%negative_eigenvalues =                                   &
                  inform%negative_eigenvalues + 1
              ELSE IF ( data%matrix_dense( k, k ) == 0.0_rp_ ) THEN
                inform%rank = inform%rank - 1
              END IF
 !            D( 1, k ) = data%matrix_dense( k, k )
-             D( 1, k ) = 1.0_rp_ / data%matrix_dense( k, k )
+             IF ( data%matrix_dense( k, k ) /= 0.0_rp_ ) THEN
+               D( 1, k ) = 1.0_rp_ / data%matrix_dense( k, k )
+             ELSE
+               D( 1, k ) = 0.0_rp_
+             END IF
              D( 2, k ) = 0.0_rp_
              k = k + 1
            ELSE                               ! a 2 x 2 pivot
@@ -8411,7 +8415,11 @@
              inform%rank = inform%rank - 1
            END IF
 !          data%matrix_dense( k, k ) = D( 1, k )
-           data%matrix_dense( k, k ) = 1.0_rp_ / D( 1, k )
+           IF ( D( 1, k ) /= 0.0_rp_ ) THEN
+             data%matrix_dense( k, k ) = 1.0_rp_ / D( 1, k )
+           ELSE
+             data%matrix_dense( k, k ) = 0.0_rp_
+           END IF
            k = k + 1
          ELSE                               ! a 2 x 2 pivot
 !          data%matrix_dense( k, k ) = D( 1, k )

@@ -10,6 +10,7 @@ MAIN
 ! write-result-summary                              no
 ! result-summary-file-name                          QPRES.d
 ! result-summary-file-device                        47
+! quadratic-programming-solver                      cqp
 ! perturb-bounds-by                                 0.0
 
 INCLUDE QP

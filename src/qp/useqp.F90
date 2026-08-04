@@ -93,10 +93,11 @@
 !  Specfile characteristics
 
       INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
-      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 11
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 12
       CHARACTER ( LEN = 16 ) :: specname = 'RUNQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNQP.SPC'
+      CHARACTER ( LEN = 20 ) :: solver ='cqp' // REPEAT( ' ', 17 )
 
 !  The default values for QP could have been set as:
 
@@ -112,6 +113,7 @@
 !  write-result-summary                              NO
 !  result-summary-file-name                          QPRES.d
 !  result-summary-file-device                        47
+!  quadratic-programming-solver                      cqp
 !  perturb-bounds-by                                 0.0
 ! END RUNQP SPECIFICATIONS
 
@@ -136,7 +138,7 @@
       INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN =  5 ) :: state, solv
       CHARACTER ( LEN = 10 ) :: pname
-      CHARACTER ( LEN = 30 ) :: sls_solv
+      CHARACTER ( LEN = 30 ) :: sls_solver
 
 !  Arrays
 
@@ -395,7 +397,8 @@
         spec( 8 )%keyword = 'write-result-summary'
         spec( 9 )%keyword = 'result-summary-file-name'
         spec( 10 )%keyword = 'result-summary-file-device'
-        spec( 11 )%keyword = 'perturb-bounds-by'
+        spec( 11 )%keyword = 'quadratic-programming-solver'
+        spec( 12 )%keyword = 'perturb-bounds-by'
 
 !   Read the specfile
 
@@ -413,7 +416,8 @@
         CALL SPECFILE_assign_logical( spec( 8 ), write_result_summary, errout )
         CALL SPECFILE_assign_string ( spec( 9 ), rfilename, errout )
         CALL SPECFILE_assign_integer( spec( 10 ), rfiledevice, errout )
-        CALL SPECFILE_assign_real( spec( 11 ), pert_bnd, errout )
+        CALL SPECFILE_assign_value( spec( 11 ), solver, errout )
+        CALL SPECFILE_assign_real( spec( 12 ), pert_bnd, errout )
       END IF
 
 !  Perturb bounds if required
@@ -491,7 +495,7 @@
         WRITE( rfiledevice, "( A10 )" ) pname
       END IF
 
-      CALL QP_initialize( data, QP_control, QP_inform )
+      CALL QP_initialize( solver, data, QP_control, QP_inform )
       IF ( is_specfile )                                                       &
         CALL QP_read_specfile( QP_control, input_specfile )
 
@@ -512,8 +516,7 @@
 !  solve the problem
 !  =================
 
-        solv = QP_control%quadratic_programming_solver( 1 : 5 )
-        CALL STRING_upper_word( solv )
+        CALL STRING_upper_word( solver )
         IF ( printo ) WRITE( out, " ( ' ** GALAHAD QP solver used ** ', / ) " )
         CALL QP_solve( prob, data, QP_control, QP_inform, C_stat, B_stat )
 
@@ -527,35 +530,34 @@
       ELSE
         objf = prob%f
         status = 0
-        solv = ' NONE'
+        solver = ' NONE'
       END IF
       CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
-
-      SELECT CASE( TRIM( QP_control%quadratic_programming_solver ) )
+      SELECT CASE( TRIM( solver ) )
       CASE ( 'qpa', 'QPA' )
         stopr = QP_control%QPB_control%stop_d
         iter = QP_inform%QPA_inform%iter
-        sls_solv = QP_control%QPA_control%symmetric_linear_solver
+        sls_solver = QP_control%QPA_control%symmetric_linear_solver
       CASE ( 'qpb', 'QPB' )
         stopr = QP_control%QPB_control%stop_d
         iter = QP_inform%QPB_inform%iter
-        sls_solv = QP_control%QPB_control%SBLS_control%symmetric_linear_solver
+        sls_solver = QP_control%QPB_control%SBLS_control%symmetric_linear_solver
       CASE ( 'qpc', 'QPC' )
         stopr = QP_control%QPB_control%stop_d
         iter = MAX( QP_inform%QPA_inform%iter, QP_inform%QPB_inform%iter,      &
                     QP_inform%CQP_inform%iter )
-        sls_solv = QP_control%QPC_control%QPA_control%symmetric_linear_solver
+        sls_solver = QP_control%QPC_control%QPA_control%symmetric_linear_solver
       CASE ( 'cqp', 'CQP' )
         stopr = QP_control%CQP_control%stop_abs_d
         iter = QP_inform%CQP_inform%iter
-        sls_solv = QP_control%CQP_control%SBLS_control%symmetric_linear_solver
+        sls_solver = QP_control%CQP_control%SBLS_control%symmetric_linear_solver
       CASE DEFAULT
         stopr = QP_control%CQP_control%stop_abs_d
         iter = 0
-        sls_solv = QP_control%CQP_control%SBLS_control%symmetric_linear_solver
+        sls_solver = QP_control%CQP_control%SBLS_control%symmetric_linear_solver
       END SELECT
-      CALL STRING_upper_word( sls_solv )
+      CALL STRING_upper_word( sls_solver )
 
 !  Compute maximum contraint residual and complementary slackness
 
@@ -630,7 +632,7 @@
 
 !  Print details of the primal and dual variables
 
-        WRITE( out, 2000 ) TRIM( solv )
+        WRITE( out, 2000 ) TRIM( solver )
         DO j = 1, 2
           IF ( j == 1 ) THEN
             ir = 1 ; ic = MIN( l, n )
@@ -719,9 +721,9 @@
         WRITE( out, 2030 ) objf, res_c, res_k, max_cs, iter
 
         WRITE( out, "( /, ' ** ', A, ' quadratic programming solver used **')")&
-          TRIM( solv )
+          TRIM( solver )
         WRITE( out, "( ' ** ', A, ' symmetric equation solver used **' )" )    &
-          TRIM( sls_solv )
+          TRIM( sls_solver )
 
 !  If required, write the solution to a file
 
@@ -740,8 +742,8 @@
           END IF
 
           WRITE( sfiledevice, "( /, ' Problem:    ', A10, /, ' Solver :   ',   &
-         &        A5, /, ' Objective:', ES24.16 )" ) pname, solv, objf
-          WRITE( sfiledevice, 2000 ) TRIM( solv )
+         &        A, /, ' Objective:', ES24.16 )" ) pname, TRIM( solver ), objf
+          WRITE( sfiledevice, 2000 ) TRIM( solver )
 
           DO i = 1, n
             state = ' FREE'

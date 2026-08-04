@@ -41,14 +41,34 @@
 
       USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
       USE GALAHAD_CLOCK, ONLY: CLOCK_time
-      USE GALAHAD_SYMBOLS, ACTIVE => GALAHAD_ACTIVE, TRACE => GALAHAD_TRACE,   &
-                           DEBUG => GALAHAD_DEBUG
+      USE GALAHAD_SYMBOLS, ONLY: ACTIVE => GALAHAD_ACTIVE,                     &
+                                 GALAHAD_ok,                                   &
+                                 GALAHAD_error_allocate,                       &
+                                 GALAHAD_error_deallocate,                     &
+                                 GALAHAD_error_primal_infeasible,              &
+                                 GALAHAD_error_ill_conditioned,                &
+                                 GALAHAD_no_progress,                          &
+                                 GALAHAD_error_tiny_step,                      &
+                                 GALAHAD_error_max_iterations,                 &
+                                 GALAHAD_error_inertia,                        &
+                                 GALAHAD_error_scale,                          &
+                                 GALAHAD_error_presolve,                       &
+                                 GALAHAD_error_qpa,                            &
+                                 GALAHAD_error_qpb,                            &
+                                 GALAHAD_error_qpc,                            &
+                                 GALAHAD_error_cqp,                            &
+                                 GALAHAD_error_dqp,                            &
+                                 GALAHAD_error_cdqp,                           &
+                                 GALAHAD_error_unknown_solver,                 &
+                                 GALAHAD_error_restrictions,                   &
+                                 GALAHAD_error_osqp
       USE GALAHAD_SPACE_precision, ONLY: SPACE_resize_array, SPACE_dealloc_array
       USE GALAHAD_SPECFILE_precision, ONLY: SPECFILE_item_type, SPECFILE_read, &
                                             SPECFILE_assign_value
+      USE GALAHAD_SMT_precision, ONLY: SMT_TYPE, SMT_GET, SMT_PUT
       USE GALAHAD_QPT_precision, ONLY: QPT_problem_type, QPT_keyword_A,        &
                                        QPT_keyword_H, QPT_summarize_problem
-      USE GALAHAD_QPD_precision, ONLY: QPD_data => QPD_data_type
+      USE GALAHAD_QPD_precision, ONLY: QPD_data_type, QPD_SIF
       USE GALAHAD_SORT_precision, ONLY: SORT_reorder_by_rows
       USE GALAHAD_SCALE_precision, ONLY: SCALE_control_type,                   &
                                          SCALE_inform_type,                    &
@@ -83,17 +103,20 @@
                                         CDQP_solve, CDQP_terminate
       USE GALAHAD_LMS_precision, ONLY: LMS_apply_lbfgs
 
-      IMPLICIT NONE
+      USE OSQP, ONLY: OSQP_settings_type, OSQP_info_type, OSQP_data_type,      &
+                      OSQP_settings, OSQP_solve, OSQP_cleanup
 
-      PRIVATE
+      IMPLICIT NONE ( TYPE, EXTERNAL )
+
+      PRIVATE 
       PUBLIC :: QP_initialize, QP_read_specfile, QP_solve,                     &
-                QP_terminate, QPT_problem_type, SMT_type, SMT_put, SMT_get,    &
-                QP_data_type
+                QP_terminate, QPT_problem_type, SMT_type, SMT_put, SMT_get
 
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
+      INTEGER ( KIND = ip_ ), PARAMETER :: len_solver = 20
       REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
       REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
       REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
@@ -167,12 +190,6 @@
 
         LOGICAL :: generate_sif_file = .FALSE.
 
-!  quadratic programming solver. Possible values are
-!   qpa, qpb, qpc, cqp, dqp, cdqp
-
-        CHARACTER ( LEN = 30 ) :: quadratic_programming_solver =               &
-           "qpc" // REPEAT( ' ', 27 )
-
 !  name of generated SIF file containing input problem
 
         CHARACTER ( LEN = 30 ) :: sif_file_name =                              &
@@ -215,6 +232,10 @@
 !  control parameters for CDQP
 
         TYPE ( CDQP_control_type ) :: CDQP_control
+
+!  control parameters for OSQP
+
+        TYPE ( OSQP_settings_type ) :: OSQP_control
 
       END TYPE
 
@@ -328,20 +349,48 @@
 !  inform parameters for CDQP
 
         TYPE ( CDQP_inform_type ) :: CDQP_inform
+
+!  inform parameters for OSQP
+
+        TYPE ( OSQP_info_type ) :: OSQP_inform
+
       END TYPE
 
-!  - - - - - - - - - - - - - - - - - - - - - - -
-!   data derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - -
+!  - - - - - - - - - - - - - - - - - - -
+!   extended data derived type for OSQP
+!  - - - - - - - - - - - - - - - - - - -
 
-      TYPE, PUBLIC, EXTENDS( QPD_data ) :: QP_data_type
+      TYPE, PUBLIC :: QP_OSQP_data_type
+        INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row, H_ptr
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_ptr
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val, A_val
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_l, B_u, Y
+        TYPE ( OSQP_data_type ) :: OSQP_data
+      END TYPE QP_OSQP_data_type
+
+!  - - - - - - - - - - - - - - - - - - - - - - 
+!   data derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: QP_data_type
+        CHARACTER ( LEN = 20 ) :: qp_solver = "qpc" // REPEAT( ' ', 17 )
+!       CHARACTER ( LEN = 30 ) :: a_format = "COORDINATE" // REPEAT( ' ', 20 )
+!       CHARACTER ( LEN = 30 ) :: h_format = "COORDINATE" // REPEAT( ' ', 20 )
+
+!  name of linear solver used
+
+        INTEGER ( KIND = ip_ ) :: len_solver = len_solver
+        CHARACTER ( LEN = len_solver ) :: solver = REPEAT( ' ', len_solver )
+        TYPE ( QPD_data_type ) :: QPD_data
+        TYPE ( QP_OSQP_data_type ) :: QP_OSQP_data
       END TYPE QP_data_type
 
    CONTAINS
 
 !-*-*-*-*-*-   Q P _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
 
-      SUBROUTINE QP_initialize( data, control, inform )
+      SUBROUTINE QP_initialize( solver, data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -357,36 +406,75 @@
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+      CHARACTER ( LEN = * ), INTENT( IN ) :: solver
       TYPE ( QP_data_type ), INTENT( INOUT ) :: data
       TYPE ( QP_control_type ), INTENT( OUT ) :: control
       TYPE ( QP_inform_type ), INTENT( OUT ) :: inform
 
 !  Set control parameters
 
-      CALL SCALE_initialize( data%SCALE_data, control%SCALE_control,           &
+      CALL SCALE_initialize( data%QPD_data%SCALE_data, control%SCALE_control,  &
                              inform%SCALE_inform )
       control%SCALE_control%prefix    = '" - SCALE:"                   '
       CALL PRESOLVE_initialize( control%PRESOLVE_control,                      &
-                                inform%PRESOLVE_inform, data%PRESOLVE_data )
+                                inform%PRESOLVE_inform,                        &
+                                data%QPD_data%PRESOLVE_data )
 !     control%PRESOLVE_control%prefix = '" - PRESOLVE:"                '
-      CALL QPA_initialize( data%QPD_data, control%QPA_control,                 &
-                           inform%QPA_inform )
-      control%QPA_control%prefix = '" - QPA:"                     '
-      CALL QPB_initialize( data%QPD_data, control%QPB_control,                 &
-                           inform%QPB_inform )
-      control%QPB_control%prefix = '" - QPB:"                     '
-      CALL QPC_initialize( data%QPD_data, control%QPC_control,                 &
-                           inform%QPC_inform  )
-      control%QPC_control%prefix = '" - QPC:"                     '
-      CALL CQP_initialize( data%QPD_data, control%CQP_control,                 &
-                           inform%CQP_inform  )
-      control%CQP_control%prefix = '" - CQP:"                     '
-      CALL DQP_initialize( data%QPD_data, control%DQP_control,                 &
-                           inform%DQP_inform  )
-      control%DQP_control%prefix = '" - DQP:"                     '
-      CALL CDQP_initialize( data%QPD_data, control%CDQP_control,               &
-                            inform%CDQP_inform  )
-      control%CQP_control%prefix = '" - CDQP:"                    '
+
+!  initialize solver-specific controls
+
+      data%len_solver = LEN( solver )
+      data%solver( 1 : data%len_solver ) = solver( 1 : data%len_solver )
+      SELECT CASE( solver( 1 : data%len_solver ) )
+
+!  = QPA =
+
+      CASE ( 'qpa', 'QPA' )
+        CALL QPA_initialize( data%QPD_data, control%QPA_control,               &
+                             inform%QPA_inform )
+        control%QPA_control%prefix = '" - QPA:"                     '
+      
+!  = QPB =
+
+      CASE ( 'qpb', 'QPB' )
+        CALL QPB_initialize( data%QPD_data, control%QPB_control,               &
+                             inform%QPB_inform )
+        control%QPB_control%prefix = '" - QPB:"                     '
+
+!  = QPC =
+
+      CASE ( 'qpc', 'QPC' )
+        CALL QPC_initialize( data%QPD_data, control%QPC_control,               &
+                             inform%QPC_inform  )
+        control%QPC_control%prefix = '" - QPC:"                     '
+
+!  = CQP =
+
+      CASE ( 'cqp', 'CQP' )
+        CALL CQP_initialize( data%QPD_data, control%CQP_control,               &
+                             inform%CQP_inform  )
+        control%CQP_control%prefix = '" - CQP:"                     '
+
+!  = DQP =
+
+      CASE ( 'dqp', 'DQP' )
+        CALL DQP_initialize( data%QPD_data, control%DQP_control,               &
+                             inform%DQP_inform  )
+        control%DQP_control%prefix = '" - DQP:"                     '
+
+!  = CDQP =
+
+      CASE ( 'cdqp', 'CDQP' )
+        CALL CDQP_initialize( data%QPD_data, control%CDQP_control,             &
+                              inform%CDQP_inform  )
+        control%CQP_control%prefix = '" - CDQP:"                    '
+
+!  == OSQP ==
+
+      CASE ( 'osqp', 'OSQP' )
+        control%OSQP_control%verbose = 0
+        control%OSQP_control%linsys_solver = 1
+      END SELECT
 
       inform%status = GALAHAD_ok
 
@@ -417,7 +505,6 @@
 !  space-critical                                    F
 !  deallocate-error-fatal                            F
 !  generate-sif-file                                 F
-!  quadratic-programming-solver                      qpc
 !  sif-file-name                                     QPPROB.SIF
 !  output-line-prefix                                ""
 ! END QP SPECIFICATIONS (DEFAULT)
@@ -445,10 +532,7 @@
                                              = space_critical + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: generate_sif_file                   &
                                              = deallocate_error_fatal + 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: quadratic_programming_solver        &
-                                             = generate_sif_file + 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_name                       &
-                                             = quadratic_programming_solver + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_name = generate_sif_file + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: prefix = sif_file_name + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'QP'
@@ -478,8 +562,6 @@
 
 !  Character key-words
 
-      spec( quadratic_programming_solver )%keyword                             &
-        = 'quadratic-programming-solver'
       spec( sif_file_name )%keyword = 'sif-file-name'
       spec( prefix )%keyword = 'output-line-prefix'
 
@@ -533,9 +615,6 @@
 
 !  Set character values
 
-     CALL SPECFILE_assign_value( spec( quadratic_programming_solver ),         &
-                                 control%quadratic_programming_solver,         &
-                                 control%error )
      CALL SPECFILE_assign_value( spec( sif_file_name ),                        &
                                  control%sif_file_name,                        &
                                  control%error )
@@ -947,6 +1026,7 @@
       REAL ( KIND = rp_ ) :: val
       LOGICAL :: printi, stat_required, presolve, lbfgs
       CHARACTER ( LEN = 80 ) :: array_name
+!     CHARACTER ( LEN = 30 ) :: a_format, h_format
 
 !  prefix for all output
 
@@ -1031,8 +1111,8 @@
 
 !  allocate workspace
 
-      array_name = 'qp: data%SH'
-      CALL SPACE_resize_array( prob%n, data%SH, inform%status,                 &
+      array_name = 'qp: data%QPD_data%SH'
+      CALL SPACE_resize_array( prob%n, data%QPD_data%SH, inform%status,        &
              inform%alloc_status, array_name = array_name,                     &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -1050,9 +1130,10 @@
         scale = control%scale
       END IF
       IF ( scale < 0 ) THEN
+write(6,*) ' scale '
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         CALL SCALE_get( prob, - control%scale,                                 &
-                        data%SCALE_trans, data%SCALE_data,                     &
+                        data%QPD_data%SCALE_trans, data%QPD_data%SCALE_data,   &
                         control%SCALE_control, inform%SCALE_inform )
         IF ( inform%SCALE_inform%status < 0 ) THEN
           IF ( printi ) WRITE( control%out,                                    &
@@ -1064,7 +1145,8 @@
             inform%time%clock_scale + clock_end - clock_now
           inform%status = GALAHAD_error_scale ; GO TO 800
         END IF
-        CALL SCALE_apply( prob, data%SCALE_trans, data%SCALE_data,             &
+        CALL SCALE_apply( prob, data%QPD_data%SCALE_trans,                     &
+                          data%QPD_data%SCALE_data,                            &
                           control%SCALE_control, inform%SCALE_inform )
         CALL CPU_TIME( time_end ) ; CALL CLOCK_time( clock_end )
         inform%time%scale = inform%time%scale + time_end - time_now
@@ -1083,6 +1165,7 @@
 ! to do: remove LBFGS restriction
       presolve = control%presolve .AND. .NOT. lbfgs
       IF ( presolve ) THEN
+write(6,*) ' presolve '
         array_name = 'qp: prob%X_status'
         CALL SPACE_resize_array( prob%n, prob%X_status, inform%status,         &
                inform%alloc_status, array_name = array_name,                   &
@@ -1156,45 +1239,51 @@
 
 !  ensure that data will be restored after the presolve
 
-        data%PRESOLVE_control = control%PRESOLVE_control
-        data%PRESOLVE_control%get_q = .TRUE.
-        data%PRESOLVE_control%get_f = .TRUE.
-        data%PRESOLVE_control%get_g = .TRUE.
-        data%PRESOLVE_control%get_H = .TRUE.
-        data%PRESOLVE_control%get_A = .TRUE.
-        data%PRESOLVE_control%get_x = .TRUE.
-        data%PRESOLVE_control%get_x_bounds = .TRUE.
-        data%PRESOLVE_control%get_z = .TRUE.
-        data%PRESOLVE_control%get_z_bounds = .TRUE.
-        data%PRESOLVE_control%get_c = .TRUE.
-        data%PRESOLVE_control%get_c_bounds = .TRUE.
-        data%PRESOLVE_control%get_y = .TRUE.
-        data%PRESOLVE_control%get_y_bounds = .TRUE.
+        data%QPD_data%PRESOLVE_control = control%PRESOLVE_control
+        data%QPD_data%PRESOLVE_control%get_q = .TRUE.
+        data%QPD_data%PRESOLVE_control%get_f = .TRUE.
+        data%QPD_data%PRESOLVE_control%get_g = .TRUE.
+        data%QPD_data%PRESOLVE_control%get_H = .TRUE.
+        data%QPD_data%PRESOLVE_control%get_A = .TRUE.
+        data%QPD_data%PRESOLVE_control%get_x = .TRUE.
+        data%QPD_data%PRESOLVE_control%get_x_bounds = .TRUE.
+        data%QPD_data%PRESOLVE_control%get_z = .TRUE.
+        data%QPD_data%PRESOLVE_control%get_z_bounds = .TRUE.
+        data%QPD_data%PRESOLVE_control%get_c = .TRUE.
+        data%QPD_data%PRESOLVE_control%get_c_bounds = .TRUE.
+        data%QPD_data%PRESOLVE_control%get_y = .TRUE.
+        data%QPD_data%PRESOLVE_control%get_y_bounds = .TRUE.
 
 !  call the presolver
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        CALL PRESOLVE_initialize( data%PRESOLVE_control,                       &
-                                inform%PRESOLVE_inform, data%PRESOLVE_data )
+write(6,*) ' PRESOLVE_initialize'
+        CALL PRESOLVE_initialize( data%QPD_data%PRESOLVE_control,              &
+                                  inform%PRESOLVE_inform,                      &
+                                  data%QPD_data%PRESOLVE_data )
         IF ( inform%PRESOLVE_inform%status < 0 ) THEN
           IF ( printi ) WRITE( control%out,                                    &
             "( A, '  ERROR return from PRESOLVE (status =', I0, ')' )" )       &
                prefix, inform%PRESOLVE_inform%status
           inform%status = GALAHAD_error_presolve ; GO TO 800
         END IF
-        CALL PRESOLVE_apply( prob, data%PRESOLVE_control,                      &
+write(6,*) ' PRESOLVE_apply'
+data%QPD_data%PRESOLVE_control%print_level = 10
+        CALL PRESOLVE_apply( prob, data%QPD_data%PRESOLVE_control,             &
                              inform%PRESOLVE_inform,                           &
-                             data%PRESOLVE_data )
+                             data%QPD_data%PRESOLVE_data )
         CALL CPU_TIME( time_end ) ; CALL CLOCK_time( clock_end )
         inform%time%presolve = inform%time%presolve + time_end - time_now
         inform%time%clock_presolve =                                           &
             inform%time%clock_presolve + clock_end - clock_now
+write(6,*) ' presolve status ', inform%PRESOLVE_inform%status
         IF ( inform%PRESOLVE_inform%status < 0 ) THEN
           IF ( printi ) WRITE( control%out,                                    &
             "( A, '  ERROR return from PRESOLVE (status =', I0, ')' )" )       &
                prefix, inform%PRESOLVE_inform%status
           inform%status = GALAHAD_error_presolve ; GO TO 800
         END IF
+write(6,*) ' PRESOLVE done'
 
         IF ( SMT_get( prob%H%type ) == 'NONE' .OR.                             &
              SMT_get( prob%H%type ) == 'ZERO' .OR.                             &
@@ -1232,9 +1321,10 @@
 !  -----------------------------
 
         IF ( scale > 0 ) THEN
+write(6,*) ' scale presolve'
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           CALL SCALE_get( prob, control%scale,                                 &
-                          data%SCALE_trans, data%SCALE_data,                   &
+                          data%QPD_data%SCALE_trans, data%QPD_data%SCALE_data, &
                           control%SCALE_control, inform%SCALE_inform )
           IF ( inform%SCALE_inform%status < 0 ) THEN
             IF ( printi ) WRITE( control%out,                                  &
@@ -1246,7 +1336,8 @@
               inform%time%clock_scale + clock_end - clock_now
             inform%status = GALAHAD_error_scale ; GO TO 800
           END IF
-          CALL SCALE_apply( prob, data%SCALE_trans, data%SCALE_data,           &
+          CALL SCALE_apply( prob, data%QPD_data%SCALE_trans,                   &
+                            data%QPD_data%SCALE_data,                          &
                             control%SCALE_control, inform%SCALE_inform )
           CALL CPU_TIME( time_end ) ; CALL CLOCK_time( clock_end )
           inform%time%scale = inform%time%scale + time_end - time_now
@@ -1267,19 +1358,19 @@
 !  allocate additional workspace
 
         IF ( .NOT. stat_required ) THEN
-          SELECT CASE( TRIM( control%quadratic_programming_solver ) )
+          SELECT CASE( TRIM( data%solver ) )
           CASE ( 'qpa', 'QPA', 'qpc', 'QPC' )
-            array_name = 'qp: data%C_stat'
-            CALL SPACE_resize_array( prob%m, data%C_stat, inform%status,       &
-               inform%alloc_status, array_name = array_name,                   &
+            array_name = 'qp: data%QPD_data%C_stat'
+            CALL SPACE_resize_array( prob%m, data%QPD_data%C_stat,             &
+               inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
                bad_alloc = inform%bad_alloc, out = control%error )
             IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-            array_name = 'qp: data%B_stat'
-            CALL SPACE_resize_array( prob%n, data%B_stat, inform%status,       &
-               inform%alloc_status, array_name = array_name,                   &
+            array_name = 'qp: data%QPD_data%B_stat'
+            CALL SPACE_resize_array( prob%n, data%QPD_data%B_stat,             &
+               inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
                bad_alloc = inform%bad_alloc, out = control%error )
@@ -1290,7 +1381,7 @@
 !  apply the slected solver
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        SELECT CASE( TRIM( control%quadratic_programming_solver ) )
+        SELECT CASE( TRIM( data%solver ) )
 
 !  == QPA ==
 
@@ -1301,8 +1392,9 @@
             CALL QPA_solve( prob, C_stat, B_stat, data%QPD_data,               &
                             control%QPA_control, inform%QPA_inform )
           ELSE
-            CALL QPA_solve( prob, data%C_stat, data%B_stat, data%QPD_data,     &
-                            control%QPA_control, inform%QPA_inform )
+            CALL QPA_solve( prob, data%QPD_data%C_stat, data%QPD_data%B_stat,  &
+                            data%QPD_data, control%QPA_control,                &
+                            inform%QPA_inform )
           END IF
           IF ( inform%QPA_inform%status /= GALAHAD_ok .AND.                    &
                inform%QPA_inform%status /= GALAHAD_error_ill_conditioned .AND. &
@@ -1338,8 +1430,9 @@
             CALL QPC_solve( prob, C_stat, B_stat, data%QPD_data,               &
                             control%QPC_control, inform%QPC_inform )
           ELSE
-            CALL QPC_solve( prob, data%C_stat, data%B_stat, data%QPD_data,     &
-                            control%QPC_control, inform%QPC_inform )
+            CALL QPC_solve( prob, data%QPD_data%C_stat, data%QPD_data%B_stat,  &
+                            data%QPD_data, control%QPC_control,                &
+                            inform%QPC_inform )
           END IF
           IF ( inform%QPC_inform%status /= GALAHAD_ok .AND.                    &
                inform%QPC_inform%status /= GALAHAD_error_ill_conditioned .AND. &
@@ -1398,29 +1491,61 @@
             inform%status = GALAHAD_error_cdqp ; GO TO 800
           END IF
 
-!  == HiGHS ==
-
-        CASE ( 'highs', 'HIGHS', 'HiGHS' )
-
 !  == BPMPD ==
 
         CASE ( 'bpmpd', 'BPMPD' )
 
-!  == QPALM ==
+!  == BQPD ==
 
-        CASE ( 'qpalm', 'QPALM' )
+        CASE ( 'bqpd', 'BQPD' )
+
+!  == Clarabel ==
+
+        CASE ( 'clarabel', 'CLARABEL', 'Clarabel' )
 
 !  == E04NQF ==
 
         CASE ( 'e04nqf', 'E04NQF' )
 
+!  == HiGHS ==
+
+        CASE ( 'highs', 'HIGHS', 'HiGHS' )
+
 !  == OSQP ==
 
         CASE ( 'osqp', 'OSQP' )
+          IF ( printi ) WRITE( control%out,                                    &
+              "( A, ' ** OSQP solver used **' )" ) prefix
+          CALL QP_OSQP_solve( prob, data%QP_OSQP_data, control%OSQP_control,   &
+                              inform%OSQP_inform, control%out )
+          SELECT CASE ( inform%OSQP_inform%status_val )
+          CASE ( 1 )
+            inform%status = GALAHAD_ok
+          CASE ( 2 )
+            inform%status = GALAHAD_no_progress
+          CASE ( 3 )
+            inform%status = GALAHAD_error_primal_infeasible
+          CASE ( 7 )
+            inform%status = GALAHAD_error_max_iterations
+          CASE ( 9 )
+            inform%status = GALAHAD_error_inertia
+          CASE DEFAULT
+            inform%status = GALAHAD_error_osqp
+          END SELECT
+          inform%obj = inform%OSQP_inform%obj_val + prob%f
+write(6,*) ' qp: inform%obj ', inform%obj
+          inform%primal_infeasibility = inform%OSQP_inform%prim_res
+          inform%dual_infeasibility = inform%OSQP_inform%dual_res
+          inform%complementary_slackness = inform%OSQP_inform%duality_gap
+          IF ( inform%status /= GALAHAD_ok ) THEN
+            IF ( printi ) WRITE( control%out, "( A,                            &
+           &  ' OSQP solve error status = ', I0 )" ) prefix, inform%status
+            GO TO 800
+          END IF
 
-!  == BQPD ==
+!  == QPALM ==
 
-        CASE ( 'bqpd', 'BQPD' )
+        CASE ( 'qpalm', 'QPALM' )
 
 !  == qpOASES ==
 
@@ -1429,10 +1554,6 @@
 !  == SCS ==
 
         CASE ( 'scs', 'SCS' )
-
-!  == Clarabel ==
-
-        CASE ( 'clarabel', 'CLARABEL', 'Clarabel' )
 
 !  = unavailable solver =
 
@@ -1454,8 +1575,9 @@
 
         IF ( scale > 0 ) THEN
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-          CALL SCALE_recover( prob, data%SCALE_trans, data%SCALE_data,         &
-                           control%SCALE_control, inform%SCALE_inform )
+          CALL SCALE_recover( prob, data%QPD_data%SCALE_trans,                 &
+                              data%QPD_data%SCALE_data,                        &
+                              control%SCALE_control, inform%SCALE_inform )
           CALL CPU_TIME( time_end ) ; CALL CLOCK_time( clock_end )
           inform%time%scale = inform%time%scale + time_end - time_now
           inform%time%clock_scale =                                            &
@@ -1476,16 +1598,16 @@
 
       IF ( presolve ) THEN
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        CALL PRESOLVE_restore( prob, data%PRESOLVE_control,                    &
+        CALL PRESOLVE_restore( prob, data%QPD_data%PRESOLVE_control,           &
                                inform%PRESOLVE_inform,                         &
-                               data%PRESOLVE_data )
+                               data%QPD_data%PRESOLVE_data )
         IF ( inform%PRESOLVE_inform%status /= 0 .AND. printi )                 &
           WRITE( control%out, " ( /, A, ' Warning: status following',          &
        &  ' PRESOLVE_restore is ', I0, / )" )                                  &
            prefix, inform%PRESOLVE_inform%status
-        CALL PRESOLVE_terminate( data%PRESOLVE_control,                        &
+        CALL PRESOLVE_terminate( data%QPD_data%PRESOLVE_control,               &
                                  inform%PRESOLVE_inform,                       &
-                                 data%PRESOLVE_data )
+                                 data%QPD_data%PRESOLVE_data )
         IF ( inform%PRESOLVE_inform%status /= 0 .AND. printi )                 &
           WRITE( control%out, " ( /, A, ' Warning: status following',          &
        &    ' PRESOLVE_terminate is ', I5, / ) " )                             &
@@ -1502,8 +1624,9 @@
 
       IF ( scale < 0 ) THEN
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        CALL SCALE_recover( prob, data%SCALE_trans, data%SCALE_data,           &
-                         control%SCALE_control, inform%SCALE_inform )
+        CALL SCALE_recover( prob, data%QPD_data%SCALE_trans,                   &
+                            data%QPD_data%SCALE_data,                          &
+                            control%SCALE_control, inform%SCALE_inform )
         CALL CPU_TIME( time_end ) ; CALL CLOCK_time( clock_end )
         inform%time%scale = inform%time%scale + time_end - time_now
         inform%time%clock_scale =                                              &
@@ -1570,26 +1693,29 @@
 
       IF ( lbfgs ) THEN
         CALL LMS_apply_lbfgs( prob%X( : prob%n ), prob%H_lm, i,                &
-                              RESULT = data%SH( : prob%n ) )
+                              RESULT = data%QPD_data%SH( : prob%n ) )
       ELSE
         CALL mop_AX( one, prob%H, prob%X( : prob%n ), zero,                    &
-                     data%SH( : prob%n ), symmetric = .TRUE.,                  &
+                     data%QPD_data%SH( : prob%n ), symmetric = .TRUE.,         &
                      transpose = .FALSE. )
+!                    transpose = .FALSE. , print_level = 3 )
       END IF
 
 !  compute the objective function
 
       inform%obj = DOT_PRODUCT( prob%X( : prob%n ), prob%G( : prob%n ) )       &
-         + half * DOT_PRODUCT( prob%X( : prob%n ), data%SH( : prob%n ) )       &
-         + prob%f
+        + half * DOT_PRODUCT( prob%X( : prob%n ),                              &
+                              data%QPD_data%SH( : prob%n ) ) + prob%f
 
 !  compute the dual residual
 
-      data%SH( : prob%n ) = data%SH( : prob%n ) - prob%Z( : prob%n )
-      CALL mop_AX( - one, prob%A, prob%Y( : prob%m ), one, data%SH( : prob%n ),&
-                   symmetric = .FALSE., transpose = .TRUE. )
+      data%QPD_data%SH( : prob%n )                                             &
+        = data%QPD_data%SH( : prob%n ) - prob%Z( : prob%n )
+      CALL mop_AX( - one, prob%A, prob%Y( : prob%m ), one,                     &
+                   data%QPD_data%SH( : prob%n ), symmetric = .FALSE.,          &
+                   transpose = .TRUE. )
 
-      inform%dual_infeasibility = MAXVAL( ABS( data%SH( : prob%n ) ) )
+      inform%dual_infeasibility = MAXVAL( ABS( data%QPD_data%SH( : prob%n ) ) )
 
 !  return
 
@@ -1620,6 +1746,121 @@
 !  End of QP_solve
 
       END SUBROUTINE QP_solve
+
+!-*-*-*-*-*-*-   Q P _ O S Q P _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
+
+      SUBROUTINE QP_OSQP_solve( prob, data, settings, info, out )
+
+!  solve the quadratic program using the OSQP package
+
+!  dummy arguments
+
+      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+      TYPE ( QP_OSQP_data_type ), INTENT( INOUT ) :: data
+      TYPE ( OSQP_settings_type ), INTENT( IN ) :: settings
+      TYPE ( OSQP_info_type ), INTENT( OUT ) :: info
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+
+!  local variables
+
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, m, n, n_bnds, status
+!     INTEGER ( KIND = ip_ ) :: a_ne, h_ne
+      CHARACTER ( LEN = SIZE( info%status ) ) :: info_status
+
+!  transfer the data into OSQP's QP format
+
+      n = prob%n ; m = prob%m
+      n_bnds = COUNT( prob%X_l > -infinity .OR. prob%X_u < infinity )
+      data%m = m + n_bnds
+      data%a_ne = prob%a%ne + n_bnds
+      ALLOCATE( data%A_val( data%a_ne ), STAT = status )
+      ALLOCATE( data%A_row( data%a_ne ), STAT = status )
+      ALLOCATE( data%A_ptr( n + 1 ), STAT = status )
+      ALLOCATE( data%B_l( data%m ), data%B_u( data%m ), STAT = status )
+      ALLOCATE( data%Y( data%m ), STAT = status )
+
+!  reset problem constraint data (NB 1-based integer index arrays)
+
+      data%B_l( : m ) = prob%C_l( : m ) ; data%B_u( : m ) = prob%C_u( : m )
+      l = 1 ; k = m
+      DO j = 1, n
+        data%A_ptr( j ) = l
+        DO i = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1
+          data%A_row( l ) = prob%A%row( i )
+          data%A_val( l ) = prob%A%val( i )
+          l = l + 1
+        END DO
+        IF ( prob%X_l( j ) > - infinity .OR. prob%X_u( j ) < infinity ) THEN
+          k = k + 1
+          data%A_row( l ) = k
+          data%A_val( l ) = 1.0_rp_
+          l = l + 1
+          data%B_l( k ) = prob%X_l( j ) ; data%B_u( k ) = prob%X_u( j )
+        END IF
+      END DO
+      data%A_ptr( n + 1 ) = l
+
+!  establish the control settings
+
+      CALL OSQP_settings( settings, data%OSQP_data, status )
+      IF ( status /= 0 ) THEN
+        WRITE( out, "( ' OSQP_settings status = ', I0, ' stopping' )" ) status
+        STOP
+      END IF
+
+!  solve the problem
+
+      IF ( .true. ) THEN
+        CALL OSQP_solve( n, data%m, prob%H%ptr, prob%H%col, prob%H%val,        &
+                         prob%g, data%A_ptr, data%A_row, data%A_val,           &
+                         data%B_l, data%B_u, prob%X, data%Y,                   &
+                         info, data%OSQP_data, status )
+      END IF
+
+!  recover the solution
+
+      IF ( status == 0 ) THEN
+        prob%Y( : m ) = data%Y( : m )
+        k = m
+        DO j = 1, n
+          IF ( prob%X_l( j ) > - infinity .OR. prob%X_u( j ) < infinity ) THEN
+            k = k + 1
+            prob%Z( j ) = data%Y( k )
+          ELSE
+            prob%Z( j ) = zero
+          END IF
+        END DO
+        prob%q = info%obj_val + prob%f
+
+!  print details, if required
+
+        IF ( out > 0 ) THEN
+          WRITE( out, "( /, ' OSQP - Fortran interface' )" )
+          WRITE( out, "( ' objective function:', ES16.8 )" ) prob%q
+          WRITE( out, "( ' primal & dual residuals:', 2ES16.8 )" )             &
+            info%prim_res, info%dual_res
+          WRITE( out, "( ' x:', ( 5ES16.8 ) )" ) prob%X
+          WRITE( out, "( ' y:', ( 5ES16.8 ) )" ) prob%Y
+          WRITE( out, "( ' z:', ( 5ES16.8 ) )" ) prob%Z
+          WRITE( out, "( 1X, I0, ' iterations' ) ") info%iter
+          WRITE( out, "( ' status ', A , ' (status value = ', I0, ')' )" )     &
+              TRIM( TRANSFER( info%status, info_status ) ), info%status_val
+        END IF
+      ELSE
+        IF ( info%status_val /= 1 .AND. out > 0 ) THEN
+          WRITE( out, "( ' Error. Problem not solved to optimality' )" )
+        END IF
+      END IF
+
+!  clean up after the solve
+
+      CALL OSQP_cleanup( data%OSQP_data, status )
+
+      RETURN
+
+!  End of QP_OSQP_solve
+
+      END SUBROUTINE QP_OSQP_solve
 
 !-*-*-*-*-*-*-   Q P _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-*
 
@@ -1655,17 +1896,18 @@
 !  Deallocate all arrays allocated by SCALE, PRESOLVE, QPA, QPB, QPC,
 !  CQP, DQP and CDQP
 
-      CALL SCALE_terminate( data%SCALE_data, control%SCALE_control,            &
-                            inform%SCALE_inform, trans = data%SCALE_trans )
+      CALL SCALE_terminate( data%QPD_data%SCALE_data, control%SCALE_control,   &
+                            inform%SCALE_inform,                               &
+                            trans = data%QPD_data%SCALE_trans )
       IF ( inform%SCALE_inform%status /= GALAHAD_ok ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%alloc_status = inform%SCALE_inform%alloc_status
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-      CALL PRESOLVE_terminate( data%PRESOLVE_control,                          &
+      CALL PRESOLVE_terminate( data%QPD_data%PRESOLVE_control,                 &
                                inform%PRESOLVE_inform,                         &
-                               data%PRESOLVE_data )
+                               data%QPD_data%PRESOLVE_data )
       IF ( inform%PRESOLVE_inform%status /= GALAHAD_ok ) THEN
         inform%status = GALAHAD_error_deallocate
 !       inform%alloc_status = inform%PRESOLVE_inform%alloc_status
@@ -1723,35 +1965,35 @@
 !  Deallocate all remaing allocated arrays
 
       array_name = 'qp: data%SH'
-      CALL SPACE_dealloc_array( data%SH,                                       &
+      CALL SPACE_dealloc_array( data%QPD_data%SH,                              &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'qp: data%C_stat'
-      CALL SPACE_dealloc_array( data%C_stat,                                   &
+      array_name = 'qp: data%QPD_data%C_stat'
+      CALL SPACE_dealloc_array( data%QPD_data%C_stat,                          &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'qp: data%B_stat'
-      CALL SPACE_dealloc_array( data%B_stat,                                   &
+      array_name = 'qp: data%QPD_data%B_stat'
+      CALL SPACE_dealloc_array( data%QPD_data%B_stat,                          &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'qp: data%X_status'
-      CALL SPACE_dealloc_array( data%X_status,                                 &
+      array_name = 'qp: data%QPD_data%X_status'
+      CALL SPACE_dealloc_array( data%QPD_data%X_status,                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'qp: data%C_status'
-      CALL SPACE_dealloc_array( data%C_status,                                 &
+      array_name = 'qp: data%QPD_data%C_status'
+      CALL SPACE_dealloc_array( data%QPD_data%C_status,                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &

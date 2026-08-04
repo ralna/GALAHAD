@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-01-31 AT 08:40 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-08-03 AT 08:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -49,7 +49,7 @@
 !                            General
 !-------------------------------------------------------------------------------
 
-!  New exit conditions (1 to -99; others will be package specific)
+!  New exit conditions (1 to -199; others will be package specific)
 
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_ok = 0
@@ -249,6 +249,26 @@
                               GALAHAD_error_mpi = - 97
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_budget_exhausted = - 99
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_bpmpd = - 111
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_bqpd = - 112
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_clarabel = - 113
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_highs = - 114
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_naglib = -115
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_osqp = - 116
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_qpalm = - 117
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_qpoases = - 118
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_scs = - 119
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_unavailable_solver = - 199
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_warning_data = 1
 

@@ -8,6 +8,6 @@
 ! space-critical                                    no
 ! deallocate-error-fatal                            no
 ! generate-sif-file                                 no
-! quadratic-programming-solver                      qpc
+! qp-solver                                         qpc
 ! sif-file-name                                     QPPROB.SIF
 ! output-line-prefix                                ""
