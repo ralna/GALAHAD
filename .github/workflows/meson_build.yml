@@ -263,12 +263,15 @@ jobs:
           if [[ "${{ inputs.os }}" == "ubuntu-latest" || "${{ inputs.os }}" == "ubuntu-24.04-arm" ]]; then
             sudo apt-get -y install libopenblas-dev liblapacke-dev libhwloc-dev bison flex
           elif [[ "${{ inputs.os }}" == "macos-15-intel" || "${{ inputs.os }}" == "macos-latest" ]]; then
-            brew install openblas bison flex
+            brew install hwloc openblas bison flex
             # brew's bison/flex are keg-only (SCOTCH needs a recent bison/flex) and
-            # OpenBLAS is keg-only too; expose them to the later build steps
+            # OpenBLAS/hwloc are keg-only too; expose them to the later build steps.
+            # hwloc is a dependency of PaStiX/SCOTCH (GALAHAD itself no longer uses
+            # it): without it PaStiX falls back to isched_nohwloc.c, which fails to
+            # compile on macOS (CTL_HW / HW_NCPU undeclared).
             echo "$(brew --prefix bison)/bin" >> $GITHUB_PATH
             echo "$(brew --prefix flex)/bin" >> $GITHUB_PATH
-            echo "CMAKE_PREFIX_PATH=$(brew --prefix openblas):${CMAKE_PREFIX_PATH}" >> $GITHUB_ENV
+            echo "CMAKE_PREFIX_PATH=$(brew --prefix openblas):$(brew --prefix hwloc):${CMAKE_PREFIX_PATH}" >> $GITHUB_ENV
           fi
 
       - name: Install METIS

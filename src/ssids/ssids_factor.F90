@@ -955,9 +955,8 @@
           tnc = MIN(bs, n - blk*bs)
           CALL bkp_rperm(blk, jblk, a, lda, bcopy, m, bs, n, lperm(1,blk), tnc)
           tbp = apply_T(blk, jblk, a, lda, d, cdoff, cnelim, m, n, bs, small, u)
-          !$omp critical (ssids_app_npass)
+          !$omp atomic update
           cnpass(blk) = MIN(cnpass(blk), tbp)
-          !$omp end critical (ssids_app_npass)
         END IF
         !$omp end task
       END DO
@@ -969,9 +968,8 @@
         IF (.NOT. aborted) THEN
           CALL bkp_cperm(iblk, blk, a, lda, bcopy, m, bs, n, lperm(1,blk))
           tbp = apply_N(iblk, blk, a, lda, d, cdoff, cnelim, m, n, bs, small, u)
-          !$omp critical (ssids_app_npass)
+          !$omp atomic update
           cnpass(blk) = MIN(cnpass(blk), tbp)
-          !$omp end critical (ssids_app_npass)
         END IF
         !$omp end task
       END DO
@@ -1548,9 +1546,8 @@
             !$omp atomic write
             aborted = .TRUE.
           ELSE
-            !$omp critical (ssids_unpiv_npass)
+            !$omp atomic update
             cnpass(blk) = cnpass(blk) + 1
-            !$omp end critical (ssids_unpiv_npass)
           END IF
         END IF
         !$omp end task
@@ -2182,6 +2179,10 @@
          END IF
       END DO
       !$omp end single
+      ! the implicit barrier at end single guarantees every task has completed,
+      ! so each team thread can now free its own threadprivate scratch (tls_pmap
+      ! persists past the region otherwise and leaks one copy per worker thread)
+      IF (ALLOCATED(tls_pmap)) DEALLOCATE(tls_pmap)
       !$omp end parallel
 
       IF (PRESENT(alloc_ok)) alloc_ok = aok
