@@ -1747,6 +1747,126 @@ write(6,*) ' qp: inform%obj ', inform%obj
 
       END SUBROUTINE QP_solve
 
+!-*-*-*-*-*-*-   Q P _ B P M P D _ S O L V E   S U B R O U T I N E   -*-*-*-*-
+
+      SUBROUTINE QP_BPMPD_solve( prob, data, settings, info, out )
+
+!  solve the quadratic program using the BPMPD package
+
+!  A - by rows
+!  H - lower triangle by rows
+
+!  dummy arguments
+
+      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+      TYPE ( QP_BPMPD_data_type ), INTENT( INOUT ) :: data
+      TYPE ( BPMPD_control_type ), INTENT( IN ) :: control
+      TYPE ( BPMPD_inform_type ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+
+!  local variables
+
+      RETURN
+
+!  End of QP_BPMPD_solve
+
+      END SUBROUTINE QP_BPMPD_solve
+
+!-*-*-*-*-*-*-   Q P _ B Q P D _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-
+
+      SUBROUTINE QP_BQPD_solve( prob, data, settings, info, out )
+
+!  solve the quadratic program using the BQPD package
+
+!  A - by rows (actually A -> A' in the BQPD notation)
+!  H - upper triangle by co-ordinates
+
+!  dummy arguments
+
+      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+      TYPE ( QP_BQPD_data_type ), INTENT( INOUT ) :: data
+      TYPE ( BQPD_control_type ), INTENT( IN ) :: control
+      TYPE ( BQPD_inform_type ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+
+!  local variables
+
+      RETURN
+
+!  End of QP_BQPD_solve
+
+      END SUBROUTINE QP_BQPD_solve
+
+!-*-*-*-*-   Q P _ c l a r a b e l _ S O L V E   S U B R O U T I N E   -*-*-*-*-
+
+      SUBROUTINE QP_clarabel_solve( prob, data, settings, info, out )
+
+!  solve the quadratic program using the Clarabel package
+
+!  dummy arguments
+
+      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+      TYPE ( QP_Clarabel_data_type ), INTENT( INOUT ) :: data
+      TYPE ( clarabel_control_type ), INTENT( IN ) :: control
+      TYPE ( clarabel_inform_type ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+
+!  local variables
+
+      RETURN
+
+!  End of QP_clarabel_solve
+
+!-*-*-*-*-*-   Q P _ E 0 4 N Q F _ S O L V E   S U B R O U T I N E   -*-*-*-*-
+
+      SUBROUTINE QP_E04NQF_solve( prob, data, settings, info, out )
+
+!  solve the quadratic program using the E04NQF NAG package
+
+!  A - by columns
+!  H - lower triangle by columns
+
+!  dummy arguments
+
+      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+      TYPE ( QP_E04NQF_data_type ), INTENT( INOUT ) :: data
+      TYPE ( E04NQF_control_type ), INTENT( IN ) :: control
+      TYPE ( E04NQF_inform_type ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+
+!  local variables
+
+      RETURN
+
+!  End of QP_E04NQF_solve
+
+      END SUBROUTINE QP_E04NQF_solve
+
+!-*-*-*-*-*-*-   Q P _ H i G H S _ S O L V E   S U B R O U T I N E   -*-*-*-*-
+
+      SUBROUTINE QP_HiGHS_solve( prob, data, settings, info, out )
+
+!  solve the quadratic program using the HiGHS ASM and HiPo packages
+
+!  A - by columns, zero based
+!  H - lower triangle by columns, zero based
+
+!  dummy arguments
+
+      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+      TYPE ( QP_HiGHS_data_type ), INTENT( INOUT ) :: data
+      TYPE ( HiGHS_control_type ), INTENT( IN ) :: control
+      TYPE ( HiGHS_inform_type ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+
+!  local variables
+
+      RETURN
+
+!  End of QP_HiGHS_solve
+
+      END SUBROUTINE QP_HiGHS_solve
+
 !-*-*-*-*-*-*-   Q P _ O S Q P _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
 
       SUBROUTINE QP_OSQP_solve( prob, data, settings, info, out )
@@ -1861,6 +1981,80 @@ write(6,*) ' qp: inform%obj ', inform%obj
 !  End of QP_OSQP_solve
 
       END SUBROUTINE QP_OSQP_solve
+
+!-*-*-*-*-*-*-   Q P _ Q P A L M _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-
+
+      SUBROUTINE QP_QPALM_solve( prob, data, settings, info, out )
+
+!  solve the quadratic program using the QPALM package
+
+!  A - by columns
+!  H - upper triangle by columns
+
+!  dummy arguments
+
+      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+      TYPE ( QP_OSQP_data_type ), INTENT( INOUT ) :: data
+      TYPE ( OSQP_control_type ), INTENT( IN ) :: control
+      TYPE ( OSQP_inform_type ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+
+!  local variables
+
+      RETURN
+
+!  End of QP_qpALM_solve
+
+      END SUBROUTINE QP_qpALM_solve
+
+!-*-*-*-*-*-*-   Q P _ qpOASES _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
+
+      SUBROUTINE QP_qpOASES_solve( prob, data, settings, info, out )
+
+!  solve the quadratic program using the qpOASES package
+
+!  A - by columns
+!  H - both triangles by columns
+
+!  dummy arguments
+
+      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+      TYPE ( QP_qpOASES_data_type ), INTENT( INOUT ) :: data
+      TYPE ( qpOASES_control_type ), INTENT( IN ) :: control
+      TYPE ( qpOASES_inform_type ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+
+!  local variables
+
+      RETURN
+
+!  End of QP_qpOASES_solve
+
+      END SUBROUTINE QP_qpOASES_solve
+
+!-*-*-*-*-*-*-   Q P _ S C S _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
+
+      SUBROUTINE QP_SCS_solve( prob, data, settings, info, out )
+
+!  solve the quadratic program using the SCS package
+
+!  dummy arguments
+
+      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+      TYPE ( QP_SCS_data_type ), INTENT( INOUT ) :: data
+      TYPE ( SCS_control_type ), INTENT( IN ) :: control
+      TYPE ( SCS_inform_type ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+
+!  local variables
+
+      RETURN
+
+!  End of QP_SCS_solve
+
+      END SUBROUTINE QP_SCS_solve
+
+      END SUBROUTINE QP_clarabel_solve
 
 !-*-*-*-*-*-*-   Q P _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-*
 
