@@ -33,7 +33,8 @@
   TYPE( C_PTR ), INTENT( OUT ) :: delay_val
   INTEGER( C_IP_ ), INTENT( OUT ) :: lddelay
 
-  TYPE( contrib_type ), POINTER, VOLATILE :: fcontrib
+! TYPE( contrib_type ), POINTER, VOLATILE :: fcontrib
+  TYPE( contrib_type ), POINTER :: fcontrib
 
   IF ( C_ASSOCIATED( ccontrib ) ) THEN
     CALL C_F_POINTER( ccontrib, fcontrib )
