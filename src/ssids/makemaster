@@ -111,7 +111,7 @@ ifeq "$(METIS_64)" "_64"
           $(METIS464ND) $(METIS564ND) $(HSL)
 else
   LIBS = -L$(OBJ) -lgalahad $(LAPACK) $(BLAS) \
-         $(METIS4ND) $(METIS5ND) $(HSL)
+         $(METIS4ND) $(METIS5ND) $(HSL) 
 endif
 
 PLIBS = $(LIBS) -lgalahad_problem
@@ -440,7 +440,7 @@ ssidsdt: $(SSIDSDT)
 #	- ../ssids/run_ssids
 	- ../ssids/run_ssids  > ../ssids/ssidsdt.output 2>&1
 	cat ../ssids/ssidsdt.output
-	rm ../ssids/run_ssids
+#	rm ../ssids/run_ssids
 
 ssidsdt2: $(SSIDSDT2)
 	echo " Exhaustive test of subroutine interface to ssids"

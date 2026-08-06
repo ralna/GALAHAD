@@ -407,7 +407,7 @@
 
 !  non-executable statement
 
-200 FORMAT( '( A, I15 )' )
+200 FORMAT( A, I0 )
 
     END SUBROUTINE print_summary_analyse
 
@@ -468,8 +468,8 @@
 
 !  non-executable statements
 
-200 FORMAT( '( //, 3A, I2, A )' )
-210 FORMAT( '( // A, 5( / A ,I12  ), 5( / A, ES12.4 ) )' )
+200 FORMAT( //, 3A, I0, A )
+210 FORMAT( // A, 5( / A, I0  ), 5( / A, ES12.4 ) )
     END SUBROUTINE print_summary_factor
 
 !-*-  G A L A H A D -  S S I D S _ flag _ to _ character  F U N C T I O N  -*-
