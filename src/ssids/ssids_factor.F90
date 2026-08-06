@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-07-27
+! THIS VERSION: GALAHAD 5.6 - 2026-08-06
 !
 ! Pure-Fortran SSIDS factor/solve kernels + a serial multifrontal driver,
 ! ported to GALAHAD templated precision from the C++ SPRAL reference (the former
@@ -9,15 +9,17 @@
 ! Contents:
 !   * calc_ld, ldlt_tpp_factor (+ helpers)           -- dense block LDL^T (TPP)
 !   * block_ldlt (+ helpers)                         -- Bunch-Kaufman full block
-!   * ldlt_app_factor (+ helpers)                    -- a-posteriori pivoted (APP)
-!                                                       blocked LDL^T (verbatim
-!                                                       port of C++ ldlt_app)
+!   * ldlt_app_factor (+ helpers)                    -- a-posteriori pivoted 
+!                                                       (APP) blocked LDL^T 
+!                                                       (verbatim port of C++ 
+!                                                       ldlt_app)
 !   * factor_node_indef                              -- node factor + contrib
 !                                                       (APP if nb<n, else TPP)
 !   * assemble_expected / assemble_expected_contrib  -- child -> parent assembly
 !   * ldlt_app_solve_fwd/diag/bwd                    -- per-node solves
 !   * dmf_node, subtree_contrib_t                    -- multifrontal state
-!   * factor_subtree_delay                           -- factor incl. delayed pivots
+!   * factor_subtree_delay                           -- factor including 
+!                                                       delayed pivots
 !                                                       + foreign child_contrib
 !   * subtree_solve_fwd/diag/bwd_delay               -- tree solves (multi-RHS)
 !   * extract_contrib                                -- produce a child_contrib
@@ -33,21 +35,21 @@
 
  MODULE GALAHAD_SSIDS_factor_precision
    USE GALAHAD_KINDS_precision, ONLY : ip_, rp_, long_
-   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY : IEEE_VALUE, IEEE_POSITIVE_INF,   &
+   USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY : IEEE_VALUE, IEEE_POSITIVE_INF,    &
                                              IEEE_IS_FINITE
    IMPLICIT NONE
    PRIVATE
    PUBLIC :: dmf_node, subtree_contrib_t, factor_subtree_delay, extract_contrib
-   PUBLIC :: subtree_solve_fwd_delay, subtree_solve_diag_delay,               &
+   PUBLIC :: subtree_solve_fwd_delay, subtree_solve_diag_delay,                &
              subtree_solve_bwd_delay
    ! low-level kernels exposed for per-routine unit testing (ssids_factort)
    PUBLIC :: calc_ld, ldlt_tpp_factor, ldlt_blocked_factor, factor_node_indef, &
-             block_ldlt, ldlt_app_factor,                                     &
-             assemble_expected, assemble_expected_contrib,                    &
+             block_ldlt, ldlt_app_factor,                                      &
+             assemble_expected, assemble_expected_contrib,                     &
              ldlt_app_solve_fwd, ldlt_app_solve_diag, ldlt_app_solve_bwd
 
    ! factor-routine return codes (the `flag` argument); 0 = success
-   INTEGER(ip_), PARAMETER :: FLAG_SINGULAR = -1  ! singular pivot / not definite
+   INTEGER(ip_), PARAMETER :: FLAG_SINGULAR = -1  ! singular pivot/not definite
    INTEGER(ip_), PARAMETER :: FLAG_OOM      = -2  ! allocation failure
 
    TYPE subtree_contrib_t
@@ -78,7 +80,9 @@
  CONTAINS
 
 ! ============================ calc_ld ==================================
+
    SUBROUTINE calc_ld(op_t, m, n, l, ldl, d, ld, ldld)
+
       LOGICAL,     INTENT(IN)  :: op_t
       INTEGER(ip_), INTENT(IN)  :: m, n, ldl, ldld
       REAL(rp_),    INTENT(IN)  :: l(ldl, *), d(*)
@@ -117,9 +121,13 @@
             col = col + 2
          END IF
       END DO
+
    END SUBROUTINE calc_ld
 
 ! ============================ ldlt_tpp ================================
+
+!  -- returns true if all entries in a column are less than small in abs value
+
    LOGICAL FUNCTION check_col_small(idx, from, to, a, lda, small)
       INTEGER(ip_), INTENT(IN) :: idx, from, to, lda
       REAL(rp_),    INTENT(IN) :: a(lda, *), small
@@ -133,7 +141,10 @@
       END DO
    END FUNCTION check_col_small
 
-   INTEGER(ip_) FUNCTION find_row_abs_max(from, to, prow, a, lda) RESULT(best_idx)
+!  -- returns the column index of largest entry in row starting at a
+
+   INTEGER(ip_) FUNCTION find_row_abs_max(from, to, prow, a, lda) &
+        RESULT(best_idx)
       INTEGER(ip_), INTENT(IN) :: from, to, prow, lda
       REAL(rp_),    INTENT(IN) :: a(lda, *)
       INTEGER(ip_) :: idx
@@ -148,7 +159,10 @@
             best_idx = idx; best_val = ABS(a(prow+1, idx+1))
          END IF
       END DO
+
    END FUNCTION find_row_abs_max
+
+!  -- perform a symmetric swap of col1 and col2 in the lower triangle
 
    SUBROUTINE swap_cols(col1i, col2i, m, perm, a, lda, nleft, aleft, ldleft)
       INTEGER(ip_), INTENT(IN)    :: col1i, col2i, m, lda, nleft, ldleft
@@ -156,28 +170,57 @@
       REAL(rp_),    INTENT(INOUT) :: a(lda, *), aleft(ldleft, *)
       INTEGER(ip_) :: col1, col2, c, i, r, itmp
       REAL(rp_)    :: rtmp
+
+!  return if no swap is needed
+
       IF (col1i == col2i) RETURN
       col1 = MIN(col1i, col2i); col2 = MAX(col1i, col2i)
+
+!  swap permutation entries
+
       itmp = perm(col1+1); perm(col1+1) = perm(col2+1); perm(col2+1) = itmp
+
+!  swap aleft(col1, :) and aleft(col2, :)
+
       DO c = 0, nleft-1
          rtmp = aleft(col1+1, c+1)
          aleft(col1+1, c+1) = aleft(col2+1, c+1); aleft(col2+1, c+1) = rtmp
       END DO
+
+!   swap a(col1, 0:col1-1) and a(col2, 0:col1-1)
+
       DO c = 0, col1-1
-         rtmp = a(col1+1, c+1); a(col1+1, c+1) = a(col2+1, c+1); a(col2+1, c+1) = rtmp
+         rtmp = a(col1+1, c+1); a(col1+1, c+1) &
+           = a(col2+1, c+1); a(col2+1, c+1) = rtmp
       END DO
+
+!  swap a(col1+1:col2-1, col1) and a(col2, col1+1:col2-1)
+
       DO i = col1+1, col2-1
-         rtmp = a(i+1, col1+1); a(i+1, col1+1) = a(col2+1, i+1); a(col2+1, i+1) = rtmp
+         rtmp = a(i+1, col1+1); a(i+1, col1+1) &
+           = a(col2+1, i+1); a(col2+1, i+1) = rtmp
       END DO
+
+!  swap a(col2+1:m, col1) and a(col2+1:m, col2)
+
       DO r = col2+1, m-1
-         rtmp = a(r+1, col1+1); a(r+1, col1+1) = a(r+1, col2+1); a(r+1, col2+1) = rtmp
+         rtmp = a(r+1, col1+1)
+         a(r+1, col1+1) = a(r+1, col2+1); a(r+1, col2+1) = rtmp
       END DO
+
+!  swap a(col1, col1) and a(col2, col2)
+
       rtmp = a(col1+1, col1+1); a(col1+1, col1+1) = a(col2+1, col2+1)
       a(col2+1, col2+1) = rtmp
+
    END SUBROUTINE swap_cols
+
+!  -- returns the absolute value of the largest unelimited entry in 
+!  row/column not in position exclude or on the diagonal 
 
    REAL(rp_) FUNCTION find_rc_abs_max_exclude(col, nelim, m, a, lda, exclude) &
          RESULT(best)
+
       INTEGER(ip_), INTENT(IN) :: col, nelim, m, lda, exclude
       REAL(rp_),    INTENT(IN) :: a(lda, *)
       INTEGER(ip_) :: c, r
@@ -190,23 +233,36 @@
          IF (r == exclude) CYCLE
          best = MAX(best, ABS(a(r+1, col+1)))
       END DO
+
    END FUNCTION find_rc_abs_max_exclude
 
+!  return true if (t,p) is a good 2x2 pivot, false otherwise
+
    LOGICAL FUNCTION test_2x2(t, p, maxt, maxp, a, lda, u, small, d, nelim) &
-         RESULT(ok)
+        RESULT(ok)
       INTEGER(ip_), INTENT(IN)    :: t, p, lda, nelim
       REAL(rp_),    INTENT(IN)    :: maxt, maxp, a(lda, *), u, small
       REAL(rp_),    INTENT(INOUT) :: d(*)
-      REAL(rp_) :: a11, a21, a22, detpiv, detpiv0, detpiv1, detscale, maxpiv, x1, x2
+      REAL(rp_) :: a11, a21, a22, detpiv, detpiv0, detpiv1, detscale
+      REAL(rp_) :: maxpiv, x1, x2
+
+!  check there is a non-zero in the pivot block (NB: We know t < p)
+
       a11 = a(t+1, t+1); a21 = a(p+1, t+1); a22 = a(p+1, p+1)
       maxpiv = MAX(ABS(a11), ABS(a21), ABS(a22))
       ok = .FALSE.
       IF (maxpiv < small) RETURN
+
+!  ensure non-singular and not afflicted by cancellation
+
       detscale = 1.0_rp_ / maxpiv
       detpiv0 = (a11*detscale)*a22
       detpiv1 = (a21*detscale)*a21
       detpiv = detpiv0 - detpiv1
       IF (ABS(detpiv) < MAX(small, MAX(ABS(detpiv0/2), ABS(detpiv1/2)))) RETURN
+
+!  finally apply the threshold pivot check
+
       d(2*nelim+1) = (a22*detscale)/detpiv
       d(2*nelim+2) = (-a21*detscale)/detpiv
       d(2*nelim+3) = IEEE_VALUE(1.0_rp_, IEEE_POSITIVE_INF)
@@ -219,16 +275,27 @@
       IF (u*MAX(x1, x2) < 1.0_rp_) ok = .TRUE.  ! match C++ form u*x < 1
    END FUNCTION test_2x2
 
+!  -- apply the 2x2 pivot to rest of block colum
+
    SUBROUTINE apply_2x2(nelim, m, a, lda, ld, ldld, d)
       INTEGER(ip_), INTENT(IN)    :: nelim, m, lda, ldld
       REAL(rp_),    INTENT(INOUT) :: a(lda, *), ld(ldld, *)
       REAL(rp_),    INTENT(IN)    :: d(*)
       INTEGER(ip_) :: r
       REAL(rp_)    :: d11, d21, d22
+
+!  set the diagonal block to the identity
+
       a(nelim+1, nelim+1) = 1.0_rp_
       a(nelim+2, nelim+1) = 0.0_rp_
       a(nelim+2, nelim+2) = 1.0_rp_
+
+!  extract the values of D^-1
+
       d11 = d(2*nelim+1); d21 = d(2*nelim+2); d22 = d(2*nelim+4)
+
+!  divide through, preserving a copy in ld
+
       !$omp simd
       DO r = nelim+2, m-1
          ld(r+1, 1) = a(r+1, nelim+1)
@@ -238,20 +305,33 @@
       END DO
    END SUBROUTINE apply_2x2
 
+!  -- apply the 1x1 pivot to the rest of the block column
+
    SUBROUTINE apply_1x1(nelim, m, a, lda, ld, ldld, d)
       INTEGER(ip_), INTENT(IN)    :: nelim, m, lda, ldld
       REAL(rp_),    INTENT(INOUT) :: a(lda, *), ld(ldld, *)
       REAL(rp_),    INTENT(IN)    :: d(*)
       INTEGER(ip_) :: r
       REAL(rp_)    :: d11
+
+!  set the diagonal block to the identity
+
       a(nelim+1, nelim+1) = 1.0_rp_
+
+!  extract the values of D^-1
+
       d11 = d(2*nelim+1)
+
+!  divide through, preserving a copy in ld
+
       !$omp simd
       DO r = nelim+1, m-1
          ld(r+1, 1) = a(r+1, nelim+1)
          a(r+1, nelim+1) = d11*a(r+1, nelim+1)
       END DO
    END SUBROUTINE apply_1x1
+
+!  -- sets a column to zero
 
    SUBROUTINE zero_col(col, m, a, lda)
       INTEGER(ip_), INTENT(IN)    :: col, m, lda
@@ -262,42 +342,71 @@
       END DO
    END SUBROUTINE zero_col
 
+!  -- a simple LDL^T factorization with threshold partial pivoting.
+!  This is intended for finishing off small matrices, not for performance
+
    FUNCTION ldlt_tpp_factor(m, n, perm, a, lda, d, ld, ldld, action, u, small, &
          nleft, aleft, ldleft, flag) RESULT(nelim)
       INTEGER(ip_), INTENT(IN)    :: m, n, lda, ldld, nleft, ldleft
       INTEGER(ip_), INTENT(INOUT) :: perm(*)
-      REAL(rp_),    INTENT(INOUT) :: a(lda, *), d(*), ld(ldld, *), aleft(ldleft, *)
-      LOGICAL,     INTENT(IN)    :: action
+      REAL(rp_),    INTENT(INOUT) :: a(lda, *), d(*), ld(ldld, *)
+      REAL(rp_),    INTENT(INOUT) :: aleft(ldleft, *)
+      LOGICAL,      INTENT(IN)    :: action
       REAL(rp_),    INTENT(IN)    :: u, small
       INTEGER(ip_), INTENT(OUT)   :: flag
       INTEGER(ip_)                :: nelim
       INTEGER(ip_) :: p, t
       REAL(rp_)    :: maxt, maxp
+write(6,*) ' m, n ', m, n
+!  nelim is the number of eliminated variables
+
       nelim = 0; flag = 0
       DO WHILE (nelim < n)
+
+!   need to check if col nelim is zero now or it gets missed
+
          IF (check_col_small(nelim, nelim, m, a, lda, small)) THEN
+
+!  record a zero pivot
+
             IF (.NOT. action) THEN
-               flag = FLAG_SINGULAR; RETURN         ! singular, action=.FALSE. -> abort
+               flag = FLAG_SINGULAR; RETURN  ! singular, action=.FALSE., abort
             END IF
             CALL swap_cols(nelim, nelim, m, perm, a, lda, nleft, aleft, ldleft)
             CALL zero_col(nelim, m, a, lda)
             d(2*nelim+1) = 0.0_rp_; d(2*nelim+2) = 0.0_rp_
             nelim = nelim + 1; CYCLE
          END IF
+
+!  p is the index of current candidate pivot [starts at col 2]
+
          DO p = nelim+1, n-1
+
+!  check if column p is effectively zero
+
             IF (check_col_small(p, nelim, m, a, lda, small)) THEN
+
+!  record a zero pivot
+
                IF (.NOT. action) THEN
-                  flag = FLAG_SINGULAR; RETURN      ! singular, action=.FALSE. -> abort
+                  flag = FLAG_SINGULAR; RETURN ! singular, action=.FALSE., abort
                END IF
                CALL swap_cols(p, nelim, m, perm, a, lda, nleft, aleft, ldleft)
                CALL zero_col(nelim, m, a, lda)
                d(2*nelim+1) = 0.0_rp_; d(2*nelim+2) = 0.0_rp_
                nelim = nelim + 1; EXIT
             END IF
+
+!  find a column index t of largest entry in |a(p, nelim+1:p-1)|
+
             t = find_row_abs_max(nelim, p, p, a, lda)
+
+!  try (t,p) as a 2x2 pivot
+
             maxt = find_rc_abs_max_exclude(t, nelim, m, a, lda, p)
             maxp = find_rc_abs_max_exclude(p, nelim, m, a, lda, t)
             IF (test_2x2(t, p, maxt, maxp, a, lda, u, small, d, nelim)) THEN
+!write(6,*) "2x2 pivot"
                CALL swap_cols(t, nelim,   m, perm, a, lda, nleft, aleft, ldleft)
                CALL swap_cols(p, nelim+1, m, perm, a, lda, nleft, aleft, ldleft)
                CALL apply_2x2(nelim, m, a, lda, ld, ldld, d)
@@ -306,8 +415,12 @@
                     a(nelim+3, nelim+3), lda)
                nelim = nelim + 2; EXIT
             END IF
+
+!   try p as a 1x1 pivot
+
             maxp = MAX(maxp, ABS(a(p+1, t+1)))
             IF (ABS(a(p+1, p+1)) >= u*maxp) THEN
+!write(6,*) "1x1 pivot"
                CALL swap_cols(p, nelim, m, perm, a, lda, nleft, aleft, ldleft)
                d(2*nelim+1) = 1.0_rp_ / a(nelim+1, nelim+1)
                d(2*nelim+2) = 0.0_rp_
@@ -318,19 +431,30 @@
                nelim = nelim + 1; EXIT
             END IF
          END DO
+
+!  the pivot search failed. Try a 1x1 pivot on p=nelim as the last resort 
+!  (recall, we started at p=nelim+1)
+
          IF (p >= n) THEN
             p = nelim
             maxp = find_rc_abs_max_exclude(p, nelim, m, a, lda, -1_ip_)
             IF (ABS(a(p+1, p+1)) >= u*maxp) THEN
+!write(6,*) "1x1 emergency pivot"
                CALL swap_cols(p, nelim, m, perm, a, lda, nleft, aleft, ldleft)
                d(2*nelim+1) = 1.0_rp_ / a(nelim+1, nelim+1)
                d(2*nelim+2) = 0.0_rp_
                CALL apply_1x1(nelim, m, a, lda, ld, ldld, d)
+!write(6,*) nelim+1, a(nelim+1, nelim+1)
                CALL DGEMM('N', 'T', m-nelim-1, n-nelim-1, 1_ip_, -1.0_rp_, &
-                    a(nelim+2, nelim+1), lda, ld(nelim+2, 1), ldld, 1.0_rp_, &
-                    a(nelim+2, nelim+2), lda)
+                    a(nelim+1, nelim+1), lda, ld(nelim+2, 1), ldld, 1.0_rp_, &
+                    a(nelim+1, nelim+2), lda)
+!                   a(nelim+2, nelim+1), lda, ld(nelim+2, 1), ldld, 1.0_rp_, &
+!                   a(nelim+2, nelim+2), lda)
                nelim = nelim + 1
             ELSE
+
+!  that didn't work either. No more pivots to be found
+
                EXIT
             END IF
          END IF
@@ -338,15 +462,16 @@
    END FUNCTION ldlt_tpp_factor
 
 ! ========================= ldlt_blocked ==============================
-   !> Blocked RIGHT-looking LDL^T-TPP with intra-front OpenMP parallelism -- the
-   !! practical core of the C++ ldlt_app. Each block column (width nb) is factored
-   !! by ldlt_tpp (identical threshold pivoting), then the INDEPENDENT trailing
-   !! block-column updates are run as !$omp tasks, so a single large front is
-   !! factored in parallel. The tasks bind to the enclosing team (the tree DAG in
-   !! factor_subtree_delay) so they compose without oversubscription; with no
-   !! enclosing parallel region they run serially. A delayed pivot finishes the
-   !! tail with a full ldlt_tpp (delays match the unblocked kernel). nb >= n
-   !! reduces to a single unblocked call.
+   !> Blocked RIGHT-looking LDL^T-TPP with intra-front OpenMP parallelism --
+   !! the practical core of the C++ ldlt_app. Each block column (width nb) is 
+   !! factored by ldlt_tpp (identical threshold pivoting), then the INDEPENDENT
+   !! trailing block-column updates are run as !$omp tasks, so a single large 
+   !! front is factored in parallel. The tasks bind to the enclosing team 
+   !! (the tree DAG in factor_subtree_delay) so they compose without 
+   !! oversubscription; with no enclosing parallel region they run serially. 
+   !! A delayed pivot finishes the tail with a full ldlt_tpp (delays match the 
+   !! unblocked kernel). nb >= n reduces to a single unblocked call.
+
    FUNCTION ldlt_blocked_factor(m, n, perm, a, lda, d, u, small, action, nb, &
                                 flag) RESULT(nelim)
       INTEGER(ip_), INTENT(IN)    :: m, n, lda, nb
@@ -370,14 +495,14 @@
          nelim = nelim + kf
          IF (flag /= 0) RETURN
          IF (kf < pe - ps) THEN
-            ! delayed pivot: bring the untouched trailing up to date, finish tail
+           ! delayed pivot: bring the untouched trailing up to date, finish tail
             IF (pe < n) THEN
                nrem = n - pe
                CALL update_trailing_block(m, ps, pe, n, a, lda, d, nelim)
                ALLOCATE(ldw(m-nelim, 2))
                kf = ldlt_tpp_factor(m-nelim, n-nelim, perm(nelim+1), &
-                                    a(nelim+1, nelim+1), lda, d(2*nelim+1), ldw, &
-                                    m-nelim, action, u, small, nelim, &
+                                    a(nelim+1, nelim+1), lda, d(2*nelim+1), &
+                                    ldw, m-nelim, action, u, small, nelim, &
                                     a(nelim+1, 1), lda, flag)
                DEALLOCATE(ldw)
                nelim = nelim + kf
@@ -524,7 +649,7 @@
       CALL bk_find_maxloc(p, a, lda, bs, bestv, t, m)
       IF (ABS(bestv) < small) THEN
         IF (.NOT. action) THEN
-          flag = FLAG_SINGULAR; RETURN            ! singular pivot, action=.FALSE. -> abort
+          flag = FLAG_SINGULAR; RETURN ! singular pivot, action=.FALSE., abort
         END IF
         DO WHILE (p < bs)
           d(2*p+1) = 0.0_rp_; d(2*p+2) = 0.0_rp_
@@ -593,23 +718,40 @@
   END SUBROUTINE block_ldlt
 
 !====================== apply_pivot / check_threshold ===================
+
   ! Faithful port of apply_pivot<OP_N/OP_T> (ldlt_app.cxx). diag is the
   ! (permuted, factored) diagonal block base; d its packed inverse pivots.
+  ! Performs solve with diagonal block L_{21} = A_{21} L_{11}^{-T} D_1^{-1}. 
+  ! Designed for below diagonal. NB: d stores (inverted) pivots as follows:
+  ! 2x2 ( a b ) stored as d = [ a b Inf c ]
+  !     ( b c )
+  ! 1x1  ( a ) stored as d = [ a 0.0 ]
+  ! 1x1  ( 0 ) stored as d = [ 0.0 0.0 ]
+
   SUBROUTINE app_apply_pivot(op_t, m, n, ifrom, diag, ldd, d, small, a, lda)
-    LOGICAL,     INTENT(IN)    :: op_t
+    LOGICAL,     INTENT(IN)     :: op_t ! (apply the transpose)
     INTEGER(ip_), INTENT(IN)    :: m, n, ifrom, ldd, lda
     REAL(rp_),    INTENT(IN)    :: diag(ldd,*), d(*), small
     REAL(rp_),    INTENT(INOUT) :: a(lda,*)
     INTEGER(ip_) :: i, j
     REAL(rp_)    :: d11, d21, d22, a1, a2, v
+
+!  perform solve L_11^-T
+
     IF (.NOT. op_t) THEN
       IF (ifrom > m .OR. m <= 0 .OR. n <= 0) RETURN
       CALL DTRSM('R', 'L', 'T', 'U', m, n, 1.0_rp_, diag, ldd, a, lda)
+
+!  perform solve L_21 D^-1
+
       i = 0
       DO WHILE (i < n)
         IF (i+1 == n .OR. IEEE_IS_FINITE(d(2*i+3))) THEN
           d11 = d(2*i+1)
-          IF (d11 == 0.0_rp_) THEN
+
+!  1x1 pivot
+
+          IF (d11 == 0.0_rp_) THEN ! handle zero pivots carefully
             DO j = 1, m
               v = a(j, i+1)
               IF (ABS(v) < small) THEN
@@ -618,12 +760,15 @@
                 a(j, i+1) = IEEE_VALUE(1.0_rp_, IEEE_POSITIVE_INF)*v
               END IF
             END DO
-          ELSE
+          ELSE ! non-zero pivot, apply in normal fashion
             DO j = 1, m
               a(j, i+1) = a(j, i+1)*d11
             END DO
           END IF
           i = i + 1
+
+!  2x2 pivot
+
         ELSE
           d11 = d(2*i+1); d21 = d(2*i+2); d22 = d(2*i+4)
           DO j = 1, m
@@ -634,15 +779,24 @@
           i = i + 2
         END IF
       END DO
+
+!  Perform solve L_11^-1
+
     ELSE
       IF (ifrom > n .OR. m <= 0 .OR. n-ifrom <= 0) RETURN
       CALL DTRSM('L', 'L', 'N', 'U', m, n-ifrom, 1.0_rp_, diag, ldd, &
                  a(1, ifrom+1), lda)
+
+!  perform solve D^-T L_21^T
+
       i = 0
       DO WHILE (i < m)
         IF (i+1 == m .OR. IEEE_IS_FINITE(d(2*i+3))) THEN
           d11 = d(2*i+1)
-          IF (d11 == 0.0_rp_) THEN
+
+!  1x1 pivot
+
+          IF (d11 == 0.0_rp_) THEN ! handle zero pivots carefully
             DO j = ifrom, n-1
               v = a(i+1, j+1)
               IF (ABS(v) < small) THEN
@@ -651,12 +805,15 @@
                 a(i+1, j+1) = IEEE_VALUE(1.0_rp_, IEEE_POSITIVE_INF)*v
               END IF
             END DO
-          ELSE
+          ELSE ! non-zero pivot, apply in normal fashion
             DO j = ifrom, n-1
               a(i+1, j+1) = a(i+1, j+1)*d11
             END DO
           END IF
           i = i + 1
+
+!  2x2 pivot
+
         ELSE
           d11 = d(2*i+1); d21 = d(2*i+2); d22 = d(2*i+4)
           DO j = ifrom, n-1
@@ -714,29 +871,25 @@
     INTEGER(ip_), INTENT(OUT)   :: flag
     LOGICAL,     INTENT(IN), OPTIONAL :: use_tasks, aggressive
     INTEGER(ip_)                :: num_elim
-    INTEGER(ip_), PARAMETER :: INNER = 32   ! inner block size (block_ldlt granularity)
+    INTEGER(ip_), PARAMETER :: INNER = 32 ! inner block size 
+                                          ! (block_ldlt granularity)
     LOGICAL :: lut, aggr
-    INTEGER(ip_) :: nblk, mblk, blk, iblk, jblk, next_elim, nc, nr, i, j, k
-    INTEGER(ip_) :: nfail, ldc, adr, adc, from_blk, nu, uflag, ast
-    INTEGER(ip_), ALLOCATABLE :: cnelim(:), cdoff(:), cnpass(:), lperm(:,:), fperm(:)
-    INTEGER(ip_), ALLOCATABLE :: perm_copy(:), up2d(:,:)
-    LOGICAL,     ALLOCATABLE :: cfirst(:)
+    INTEGER(ip_) :: nblk, mblk, iblk, jblk, next_elim, i, j, nc
+    INTEGER(ip_) :: nfail, ldc, from_blk, nu, uflag, ast
+    INTEGER(ip_), ALLOCATABLE :: cnelim(:), cdoff(:), cnpass(:), lperm(:,:)
+    INTEGER(ip_), ALLOCATABLE :: fperm(:), perm_copy(:), up2d(:,:)
+    LOGICAL,      ALLOCATABLE :: cfirst(:)
     REAL(rp_),    ALLOCATABLE :: bcopy(:,:), fdiag(:,:), frect(:,:)
-    REAL(rp_)    :: adum(1,1)
-    INTEGER(ip_) :: insert, finsert, ii, jj, jf, jins, iins, ifl, tmpi
+    INTEGER(ip_) :: insert, finsert, jf, jins, iins, ifl
     LOGICAL     :: aborted
-    ! task-private temporaries (each OpenMP task gets its own copy)
-    INTEGER(ip_) :: tnc, tnr, tdoff, tnelim, tlflag, tk, tbp, tnp
-    REAL(rp_)    :: td11, td21
-    LOGICAL     :: tfin
-    REAL(rp_), ALLOCATABLE :: tldw(:,:)
 
     flag = 0
     lut = .TRUE.; IF (PRESENT(use_tasks)) lut = use_tasks
     aggr = .FALSE.; IF (PRESENT(aggressive)) aggr = aggressive
     nblk = (n-1)/bs + 1
     mblk = (m-1)/bs + 1
-    ALLOCATE(cnelim(0:nblk-1), cdoff(0:nblk-1), cnpass(0:nblk-1), cfirst(0:nblk-1))
+    ALLOCATE(cnelim(0:nblk-1), cdoff(0:nblk-1), cnpass(0:nblk-1) )
+    ALLOCATE(cfirst(0:nblk-1))
     ALLOCATE(lperm(bs, 0:nblk-1))
     ALLOCATE(bcopy(m, n), stat=ast)          ! O(m*n) -- guard against OOM
     IF (ast /= 0) THEN
@@ -758,9 +911,10 @@
       bcopy(1:m, 1:n) = a(1:m, 1:n)          ! full backup for restore
       ALLOCATE(perm_copy(n)); perm_copy(1:n) = perm(1:n)
       ALLOCATE(up2d(0:mblk-1, 0:nblk-1)); up2d = -1
-      CALL run_unpivoted(m, n, perm, a, lda, d, u, small, action, bs, INNER,    &
-             aggr, mblk, nblk, cnelim, cnpass, cfirst, cdoff, lperm, up2d, lut, &
-             nu, uflag)
+      ! run the optimistic elimination
+      CALL run_unpivoted(m, n, perm, a, lda, d, u, small, action, bs, INNER,   &
+             aggr, mblk, nblk, cnelim, cnpass, cfirst, cdoff, lperm, up2d,     &
+             lut, nu, uflag)
       IF (uflag /= 0 .OR. nu < 0) THEN
         flag = MERGE(FLAG_OOM, FLAG_SINGULAR, uflag == FLAG_OOM); num_elim = -1
         DEALLOCATE(cnelim, cdoff, cnpass, cfirst, lperm, bcopy, perm_copy, up2d)
@@ -774,7 +928,7 @@
       END IF
       ! partial failure: roll back and resume pivoted from block nelim_blk
       from_blk = nu / bs
-      CALL restore_unpiv(from_blk, m, n, perm, a, lda, d, bs, mblk, nblk,       &
+      CALL restore_unpiv(from_blk, m, n, perm, a, lda, d, bs, mblk, nblk,      &
              cnelim, cdoff, lperm, bcopy, up2d, perm_copy)
       next_elim = from_blk * bs
       DEALLOCATE(perm_copy, up2d)
@@ -817,10 +971,12 @@
          IF (ALLOCATED(fperm)) DEALLOCATE(fperm)
          RETURN
       END IF
+      !  extract failed entriues of a
       fdiag = 0.0_rp_; frect = 0.0_rp_
       jf = 0; jins = 0
       DO jblk = 0, nblk-1
         ifl = jf; iins = jins
+        ! diagonal part
         DO iblk = jblk, nblk-1
           CALL copy_failed_diag(iblk, jblk, blk_ncol(iblk,n,bs), &
                  blk_ncol(jblk,n,bs), cnelim(iblk), cnelim(jblk), &
@@ -868,12 +1024,12 @@
 
   !> Parallel a-posteriori pivoted elimination (port of run_elim_pivoted): each
   !! step is an OpenMP task; block-element depend() clauses form the DAG, so the
-  !! result is BIT-IDENTICAL to serial (with no OpenMP the directives collapse to
-  !! serial). APP_AGGRESSIVE resumes at from_blk after a rolled-back optimistic
-  !! unpivoted pass; otherwise from_blk = 0. flag returns 0 / FLAG_SINGULAR /
-  !! FLAG_OOM; next_elim accumulates the eliminated-pivot count.
-  RECURSIVE SUBROUTINE run_pivoted(m, n, perm, a, lda, d, u, small, action, bs, &
-        inner, from_blk, mblk, nblk, cnelim, cnpass, cfirst, cdoff, lperm,      &
+  !! result is BIT-IDENTICAL to serial (with no OpenMP the directives collapse
+  !! to serial). APP_AGGRESSIVE resumes at from_blk after a rolled-back 
+  !! optimistic unpivoted pass; otherwise from_blk = 0. flag returns 0 / 
+  !! FLAG_SINGULAR / FLAG_OOM; next_elim accumulates the eliminated-pivot count
+  RECURSIVE SUBROUTINE run_pivoted(m, n, perm, a, lda, d, u, small, action,    &
+        bs, inner, from_blk, mblk, nblk, cnelim, cnpass, cfirst, cdoff, lperm, &
         bcopy, next_elim, lut, flag)
     INTEGER(ip_), INTENT(IN)    :: m, n, lda, bs, inner, from_blk, mblk, nblk
     INTEGER(ip_), INTENT(INOUT) :: perm(*), next_elim
@@ -893,7 +1049,7 @@
     !$omp taskgroup
     DO blk = from_blk, nblk-1
       ! ---- factor diagonal ----
-      !$omp task if(lut) default(shared) firstprivate(blk)                             &
+      !$omp task if(lut) default(shared) firstprivate(blk)                     &
       !$omp   private(tnc, tnr, tdoff, tnelim, tldw, tlflag, tk)               &
       !$omp   depend(inout: a(blk*bs+1, blk*bs+1)) depend(inout: perm(blk*bs+1))
       IF (.NOT. aborted) THEN
@@ -907,20 +1063,23 @@
           ! recurse: factor the diagonal block with the inner APP (block_ldlt on
           ! INNER-blocks + BLAS-3), inner runs serially. Outer keeps wide blocks
           ! so the apply/update GEMMs are bs-wide (matches C++ block_size).
-          tnelim = ldlt_app_factor(tnr, tnc, lperm(1,blk), a(blk*bs+1,blk*bs+1), &
-                     lda, d(tdoff+1), u, small, action, INNER, tlflag, .FALSE.)
+          tnelim = ldlt_app_factor(tnr, tnc, lperm(1,blk),                     &
+                                  a(blk*bs+1,blk*bs+1), lda, d(tdoff+1),       &
+                                   u, small, action, INNER, tlflag, .FALSE.)
           IF (tlflag /= 0) THEN
             !$omp atomic write
             aborted = .TRUE.
-            flag = MERGE(FLAG_OOM, FLAG_SINGULAR, tlflag == FLAG_OOM)   ! keep OOM(2) vs abort(1)
+            ! keep OOM(2) vs abort(1)
+            flag = MERGE(FLAG_OOM, FLAG_SINGULAR, tlflag == FLAG_OOM)
           ELSE
             CALL permute_blkperm(perm, blk, bs, tnc, lperm(1,blk))
           END IF
         ELSE IF (tnc < bs) THEN
           ALLOCATE(tldw(tnr+2, 2))       ! +2 rows: benign tail-DGEMM base addr
-          tnelim = ldlt_tpp_factor(tnr, tnc, lperm(1,blk), a(blk*bs+1,blk*bs+1),&
-                     lda, d(tdoff+1), tldw, tnr+2, action, u, small, 0_ip_, adum,&
-                     1_ip_, tlflag)
+          tnelim = ldlt_tpp_factor(tnr, tnc, lperm(1,blk),                     &
+                                   a(blk*bs+1,blk*bs+1), lda, d(tdoff+1),      &
+                                   tldw, tnr+2, action, u, small, 0_ip_, adum, &
+                                   1_ip_, tlflag)
           DEALLOCATE(tldw)
           IF (tlflag /= 0) THEN        ! singular (flag<0) with action=.FALSE.
             !$omp atomic write
@@ -931,9 +1090,9 @@
           END IF
         ELSE
           ALLOCATE(tldw(bs, bs))
-          CALL block_ldlt(0_ip_, perm(blk*bs+1), a(blk*bs+1,blk*bs+1), lda,      &
-                          d(tdoff+1), tldw, action, u, small, lperm(1,blk), bs, &
-                          tlflag)
+          CALL block_ldlt(0_ip_, perm(blk*bs+1), a(blk*bs+1,blk*bs+1), lda,    &
+                          d(tdoff+1), tldw, action, u, small, lperm(1,blk),    &
+                          bs, tlflag)
           DEALLOCATE(tldw); tnelim = bs
           IF (tlflag /= 0) THEN        ! singular (flag<0) with action=.FALSE.
             !$omp atomic write
@@ -948,8 +1107,8 @@
 
       ! ---- apply pivot to eliminated ROW (left blocks jblk<blk) ----
       DO jblk = 0, blk-1
-        !$omp task if(lut) default(shared) firstprivate(blk, jblk) private(tbp, tnc)    &
-        !$omp   depend(in: a(blk*bs+1, blk*bs+1))                               &
+        !$omp task if(lut) default(shared) firstprivate(blk, jblk)             &
+        !$omp private(tbp, tnc) depend(in: a(blk*bs+1, blk*bs+1))              &
         !$omp   depend(inout: a(blk*bs+1, jblk*bs+1)) depend(in: perm(blk*bs+1))
         IF (.NOT. aborted) THEN
           tnc = MIN(bs, n - blk*bs)
@@ -962,8 +1121,8 @@
       END DO
       ! ---- apply pivot to eliminated COL (below blocks iblk>blk) ----
       DO iblk = blk+1, mblk-1
-        !$omp task if(lut) default(shared) firstprivate(blk, iblk) private(tbp)         &
-        !$omp   depend(in: a(blk*bs+1, blk*bs+1))                               &
+        !$omp task if(lut) default(shared) firstprivate(blk, iblk)             &
+        !$omp   private(tbp) depend(in: a(blk*bs+1, blk*bs+1))                 &
         !$omp   depend(inout: a(iblk*bs+1, blk*bs+1)) depend(in: perm(blk*bs+1))
         IF (.NOT. aborted) THEN
           CALL bkp_cperm(iblk, blk, a, lda, bcopy, m, bs, n, lperm(1,blk))
@@ -975,8 +1134,8 @@
       END DO
 
       ! ---- adjust: avoid split 2x2, finalise nelim/next_elim ----
-      !$omp task if(lut) default(shared) firstprivate(blk) private(tnp, td11, td21, tfin) &
-      !$omp   depend(inout: perm(blk*bs+1))
+      !$omp task if(lut) default(shared) firstprivate(blk)                     &
+      !$omp   private(tnp, td11, td21, tfin) depend(inout: perm(blk*bs+1))
       IF (.NOT. aborted) THEN
         tnp = cnpass(blk)
         IF (tnp > 0) THEN
@@ -999,13 +1158,15 @@
           ELSE
             adr = blk*bs+1; adc = iblk*bs+1
           END IF
-          !$omp task if(lut) default(shared) firstprivate(blk, jblk, iblk)             &
-          !$omp   depend(inout: a(iblk*bs+1, jblk*bs+1)) depend(in: perm(blk*bs+1)) &
+          !$omp task if(lut) default(shared) firstprivate(blk, jblk, iblk)     &
+          !$omp   depend(inout: a(iblk*bs+1, jblk*bs+1))                       &
+          !$omp   depend(in: perm(blk*bs+1)) &
           !$omp   depend(in: a(blk*bs+1, jblk*bs+1)) depend(in: a(adr, adc))
           IF (.NOT. aborted) THEN
             CALL restore_if_req(iblk, jblk, blk, a, lda, bcopy, m, bs, n,      &
                                 cnelim, lperm)
-            CALL update_left(iblk, jblk, blk, a, lda, d, cdoff, cnelim, m, n, bs)
+            CALL update_left(iblk, jblk, blk, a, lda, d, cdoff, cnelim, m,     &
+                             n, bs)
           END IF
           !$omp end task
         END DO
@@ -1013,13 +1174,15 @@
       ! ---- update trailing (right of / at elim col) ----
       DO jblk = blk, nblk-1
         DO iblk = jblk, mblk-1
-          !$omp task if(lut) default(shared) firstprivate(blk, jblk, iblk)             &
-          !$omp   depend(inout: a(iblk*bs+1, jblk*bs+1)) depend(in: perm(blk*bs+1)) &
-          !$omp   depend(in: a(iblk*bs+1, blk*bs+1)) depend(in: a(jblk*bs+1, blk*bs+1))
+          !$omp task if(lut) default(shared) firstprivate(blk, jblk, iblk)     &
+          !$omp   depend(inout: a(iblk*bs+1, jblk*bs+1))                       &
+          !$omp   depend(in: perm(blk*bs+1)) depend(in: a(iblk*bs+1, blk*bs+1))&
+          !$omp   depend(in: a(jblk*bs+1, blk*bs+1))
           IF (.NOT. aborted) THEN
             CALL restore_if_req(iblk, jblk, blk, a, lda, bcopy, m, bs, n,      &
                                 cnelim, lperm)
-            CALL update_right(iblk, jblk, blk, a, lda, d, cdoff, cnelim, m, n, bs)
+            CALL update_right(iblk, jblk, blk, a, lda, d, cdoff, cnelim, m,    &
+                              n, bs)
           END IF
           !$omp end task
         END DO
@@ -1107,7 +1270,8 @@
     END DO
   END SUBROUTINE bkp_cperm
 
-  SUBROUTINE bkp_restore_part(iblk, jblk, rfrom, cfrom, a, lda, bcopy, ldb, bs, n)
+  SUBROUTINE bkp_restore_part(iblk, jblk, rfrom, cfrom, a, lda, bcopy, ldb,    &
+                              bs, n)
     INTEGER(ip_), INTENT(IN)    :: iblk, jblk, rfrom, cfrom, lda, ldb, bs, n
     REAL(rp_),    INTENT(INOUT) :: a(lda,*)
     REAL(rp_),    INTENT(IN)    :: bcopy(ldb,*)
@@ -1221,8 +1385,8 @@
     CALL calc_ld(.FALSE., nr-rfrom, ke, a(iblk*bs+rfrom+1, blk*bs+1), lda, &
                  d(cdoff(blk)+1), ld(rfrom+1,1), ldld)
     ! jsrc = (jblk,blk) rows [cfrom,nco)
-    CALL DGEMM('N', 'T', nr-rfrom, nco-cfrom, ke, -1.0_rp_, ld(rfrom+1,1), ldld, &
-               a(jblk*bs+cfrom+1, blk*bs+1), lda, 1.0_rp_, &
+    CALL DGEMM('N', 'T', nr-rfrom, nco-cfrom, ke, -1.0_rp_, ld(rfrom+1,1), &
+               ldld, a(jblk*bs+cfrom+1, blk*bs+1), lda, 1.0_rp_, &
                a(iblk*bs+rfrom+1, jblk*bs+cfrom+1), lda)
     DEALLOCATE(ld)
   END SUBROUTINE update_right
@@ -1277,13 +1441,14 @@
 
   SUBROUTINE copy_failed_diag(iblk, jblk, mib, njb, inelim, jnelim, a, lda, &
         fdiag, ldc, num_elim, nfail, jins, ifl, iins, jf, bs)
-    INTEGER(ip_), INTENT(IN)    :: iblk, jblk, mib, njb, inelim, jnelim, lda, ldc
-    INTEGER(ip_), INTENT(IN)    :: num_elim, nfail, jins, ifl, iins, jf, bs
+    INTEGER(ip_), INTENT(IN)    :: iblk, jblk, mib, njb, inelim, jnelim, lda
+    INTEGER(ip_), INTENT(IN)    :: ldc, num_elim, nfail, jins, ifl, iins, jf, bs
     REAL(rp_),    INTENT(IN)    :: a(lda,*)
     REAL(rp_),    INTENT(INOUT) :: fdiag(ldc,*)
     INTEGER(ip_) :: i, j, iout, jout, r0, c0
     r0 = iblk*bs; c0 = jblk*bs
-    ! rows: failed rows (i>=inelim), elim cols (j<jnelim) -> rout @ (jins col, ifl row)
+    ! rows: failed rows (i>=inelim), elim cols (j<jnelim) -> 
+    !    rout @ (jins col, ifl row)
     DO j = 0, jnelim-1
       iout = 0
       DO i = inelim, mib-1
@@ -1291,7 +1456,8 @@
         iout = iout + 1
       END DO
     END DO
-    ! cols^T (only if off-diagonal block): elim rows (i<inelim), failed cols (j>=jnelim)
+    ! cols^T (only if off-diagonal block): elim rows (i<inelim), 
+    !    failed cols (j>=jnelim)
     IF (iblk /= jblk) THEN
       jout = 0
       DO j = jnelim, njb-1
@@ -1313,7 +1479,8 @@
     END DO
   END SUBROUTINE copy_failed_diag
 
-  SUBROUTINE copy_failed_rect(jblk, jnelim, njb, a, lda, frect, ldr, jf, n, m, bs)
+  SUBROUTINE copy_failed_rect(jblk, jnelim, njb, a, lda, frect, ldr, jf,       &
+                              n, m, bs)
     INTEGER(ip_), INTENT(IN)    :: jblk, jnelim, njb, lda, ldr, jf, n, m, bs
     REAL(rp_),    INTENT(IN)    :: a(lda,*)
     REAL(rp_),    INTENT(INOUT) :: frect(ldr,*)
@@ -1329,7 +1496,7 @@
   END SUBROUTINE copy_failed_rect
 
   SUBROUTINE move_up_diag(iblk, jblk, inelim, jnelim, a, lda, iins, jins, bs)
-    INTEGER(ip_), INTENT(IN)    :: iblk, jblk, inelim, jnelim, lda, iins, jins, bs
+    INTEGER(ip_), INTENT(IN)  :: iblk, jblk, inelim, jnelim, lda, iins, jins, bs
     REAL(rp_),    INTENT(INOUT) :: a(lda,*)
     INTEGER(ip_) :: i, j, r0, c0
     r0 = iblk*bs; c0 = jblk*bs
@@ -1356,7 +1523,7 @@
 
 !====================== unpivoted (aggressive) path ====================
   ! Apply the diagonal block's row permutation lperm to the first ncol(iblk)
-  ! rows of block (iblk,jblk), no backup (used in the optimistic unpivoted pass).
+  ! rows of block (iblk,jblk), no backup (used in the optimistic unpivoted pass)
   SUBROUTINE apply_rperm(iblk, jblk, a, lda, bs, m, n, lperm)
     INTEGER(ip_), INTENT(IN)    :: iblk, jblk, lda, bs, m, n, lperm(*)
     REAL(rp_),    INTENT(INOUT) :: a(lda,*)
@@ -1423,7 +1590,8 @@
   END SUBROUTINE apply_inv_rperm
 
   ! Number of columns in the accepted leading prefix of fully-passed block cols.
-  INTEGER(ip_) FUNCTION calc_nelim_up(m, bs, mblk, nblk, cnpass, cnelim) RESULT(res)
+  INTEGER(ip_) FUNCTION calc_nelim_up(m, bs, mblk, nblk, cnpass, cnelim) &
+      RESULT(res)
     INTEGER(ip_), INTENT(IN) :: m, bs, mblk, nblk, cnpass(0:*), cnelim(0:*)
     INTEGER(ip_) :: j
     res = 0
@@ -1442,8 +1610,8 @@
   ! per-block progress in up2d for restore(). Serial. A full backup of a into
   ! bcopy must be taken by the caller beforehand.
   RECURSIVE SUBROUTINE run_unpivoted(m, n, perm, a, lda, d, u, small, action,  &
-        bs, inner, aggr, mblk, nblk, cnelim, cnpass, cfirst, cdoff, lperm, up2d,&
-        lut, num_elim, flag)
+        bs, inner, aggr, mblk, nblk, cnelim, cnpass, cfirst, cdoff, lperm,     &
+        up2d, lut, num_elim, flag)
     INTEGER(ip_), INTENT(IN)    :: m, n, lda, bs, inner, mblk, nblk
     INTEGER(ip_), INTENT(INOUT) :: perm(*)
     REAL(rp_),    INTENT(INOUT) :: a(lda,*), d(*)
@@ -1461,15 +1629,16 @@
     ! Task-parallel optimistic unpivoted pass (port of run_elim_unpivoted). The
     ! full backup lives in bcopy (taken by the caller), so tasks never back up.
     ! Dependencies are purely on the a-blocks (no adjust / no perm token); each
-    ! task records its progress in up2d and bails out if another task has already
-    ! signalled abort. With lut=.false. (or no OpenMP) every task is undeferred
-    ! and this runs in the exact serial order of run_elim_unpivoted_notasks.
+    ! task records its progress in up2d and bails out if another task has 
+    ! already signalled abort. With lut=.false. (or no OpenMP) every task is 
+    ! undeferred and this runs in the exact serial order of 
+    ! run_elim_unpivoted_notasks.
     flag = 0; next_elim = 0; aborted = .FALSE.
     !$omp taskgroup
     DO blk = 0, nblk-1
       ! --- factor diagonal block ---
-      !$omp task if(lut) default(shared) firstprivate(blk)                      &
-      !$omp   private(tnc, tnr, tdoff, tnelim, tldw, tlflag, i, la)             &
+      !$omp task if(lut) default(shared) firstprivate(blk)                     &
+      !$omp   private(tnc, tnr, tdoff, tnelim, tldw, tlflag, i, la)            &
       !$omp   depend(inout: a(blk*bs+1, blk*bs+1))
       !$omp atomic read
       la = aborted
@@ -1482,26 +1651,27 @@
         up2d(blk, blk) = blk
         tlflag = 0
         IF (bs > inner) THEN
-          tnelim = ldlt_app_factor(tnr, tnc, lperm(1,blk), a(blk*bs+1,blk*bs+1),&
-                     lda, d(tdoff+1), u, small, action, inner, tlflag, .FALSE., &
-                     aggr)
-          IF (tlflag == 0) CALL permute_blkperm(perm, blk, bs, tnc, lperm(1,blk))
+          tnelim = ldlt_app_factor(tnr, tnc, lperm(1,blk), &
+                     a(blk*bs+1,blk*bs+1), lda, d(tdoff+1), u, small, &
+                     action, inner, tlflag, .FALSE., aggr)
+          IF (tlflag == 0) CALL permute_blkperm(perm, blk, bs, tnc,lperm(1,blk))
         ELSE IF (tnc < bs) THEN
           ALLOCATE(tldw(tnr+2, 2))
-          tnelim = ldlt_tpp_factor(tnr, tnc, lperm(1,blk), a(blk*bs+1,blk*bs+1),&
-                     lda, d(tdoff+1), tldw, tnr+2, action, u, small, 0_ip_, adum,&
-                     1_ip_, tlflag)
+          tnelim = ldlt_tpp_factor(tnr, tnc,lperm(1,blk), a(blk*bs+1,blk*bs+1),&
+                     lda, d(tdoff+1), tldw, tnr+2, action, u, small, 0_ip_,    &
+                     adum, 1_ip_, tlflag)
           DEALLOCATE(tldw)
-          IF (tlflag == 0) CALL permute_blkperm(perm, blk, bs, tnc, lperm(1,blk))
+          IF (tlflag == 0) CALL permute_blkperm(perm, blk, bs,tnc, lperm(1,blk))
         ELSE
           ALLOCATE(tldw(bs, bs))
-          CALL block_ldlt(0_ip_, perm(blk*bs+1), a(blk*bs+1,blk*bs+1), lda,      &
-                          d(tdoff+1), tldw, action, u, small, lperm(1,blk), bs, &
-                          tlflag)
+          CALL block_ldlt(0_ip_, perm(blk*bs+1), a(blk*bs+1,blk*bs+1), lda,    &
+                          d(tdoff+1), tldw, action, u, small, lperm(1,blk),    &
+                          bs, tlflag)
           DEALLOCATE(tldw); tnelim = bs
         END IF
         IF (tlflag /= 0) THEN
-          flag = MERGE(FLAG_OOM, FLAG_SINGULAR, tlflag == FLAG_OOM)   ! keep OOM(2) vs abort(1)
+          ! keep OOM(2) vs abort(1)
+          flag = MERGE(FLAG_OOM, FLAG_SINGULAR, tlflag == FLAG_OOM)
           !$omp atomic write
           aborted = .TRUE.
         ELSE
@@ -1520,8 +1690,8 @@
       !$omp end task
       ! --- apply row perm to eliminated ROW blocks (jblk<blk) ---
       DO jblk = 0, blk-1
-        !$omp task if(lut) default(shared) firstprivate(blk, jblk) private(la)  &
-        !$omp   depend(in: a(blk*bs+1, blk*bs+1))                               &
+        !$omp task if(lut) default(shared) firstprivate(blk, jblk) private(la) &
+        !$omp   depend(in: a(blk*bs+1, blk*bs+1))                              &
         !$omp   depend(inout: a(blk*bs+1, jblk*bs+1))
         !$omp atomic read
         la = aborted
@@ -1531,10 +1701,10 @@
         END IF
         !$omp end task
       END DO
-      ! --- apply col perm + pivot to below blocks (iblk>blk), test threshold ---
+      ! --- apply col perm + pivot to below blocks (iblk>blk), test threshold --
       DO iblk = blk+1, mblk-1
-        !$omp task if(lut) default(shared) firstprivate(blk, iblk) private(tbp, la) &
-        !$omp   depend(in: a(blk*bs+1, blk*bs+1))                               &
+        !$omp task if(lut) default(shared) firstprivate(blk, iblk)             &
+        !$omp   private(tbp, la) depend(in: a(blk*bs+1, blk*bs+1))             &
         !$omp   depend(inout: a(iblk*bs+1, blk*bs+1))
         !$omp atomic read
         la = aborted
@@ -1542,7 +1712,7 @@
           up2d(iblk, blk) = blk
           CALL apply_cperm(iblk, blk, a, lda, bs, m, n, lperm(1,blk))
           tbp = apply_N(iblk, blk, a, lda, d, cdoff, cnelim, m, n, bs, small, u)
-          IF (tbp < cnelim(blk)) THEN       ! test_fail -> column not fully passed
+          IF (tbp < cnelim(blk)) THEN   ! test_fail -> column not fully passed
             !$omp atomic write
             aborted = .TRUE.
           ELSE
@@ -1555,14 +1725,16 @@
       ! --- update trailing columns [blk+1, nblk) (optimistic, no restore) ---
       DO jblk = blk+1, nblk-1
         DO iblk = jblk, mblk-1
-          !$omp task if(lut) default(shared) firstprivate(blk, jblk, iblk) private(la) &
-          !$omp   depend(inout: a(iblk*bs+1, jblk*bs+1))                        &
-          !$omp   depend(in: a(iblk*bs+1, blk*bs+1)) depend(in: a(jblk*bs+1, blk*bs+1))
+          !$omp task if(lut) default(shared) firstprivate(blk, jblk, iblk)     &
+          !$omp   private(la) depend(inout: a(iblk*bs+1, jblk*bs+1))           &
+          !$omp   depend(in: a(iblk*bs+1, blk*bs+1))                           &
+          !$omp   depend(in: a(jblk*bs+1, blk*bs+1))
           !$omp atomic read
           la = aborted
           IF (.NOT. la) THEN
             up2d(iblk, jblk) = blk
-            CALL update_right(iblk, jblk, blk, a, lda, d, cdoff, cnelim, m, n, bs)
+            CALL update_right(iblk, jblk, blk, a, lda, d, cdoff, cnelim,       &
+                               m, n, bs)
           END IF
           !$omp end task
         END DO
@@ -1579,7 +1751,7 @@
   ! Roll back the matrix after a failed optimistic pass to a state consistent
   ! with nelim_blk accepted block columns, ready for the careful pivoted pass to
   ! resume from block nelim_blk (port of restore(), serial).
-  SUBROUTINE restore_unpiv(nelim_blk, m, n, perm, a, lda, d, bs, mblk, nblk,    &
+  SUBROUTINE restore_unpiv(nelim_blk, m, n, perm, a, lda, d, bs, mblk, nblk,   &
         cnelim, cdoff, lperm, bcopy, up2d, old_perm)
     INTEGER(ip_), INTENT(IN)    :: nelim_blk, m, n, lda, bs, mblk, nblk
     INTEGER(ip_), INTENT(INOUT) :: perm(*)
@@ -1599,22 +1771,23 @@
           CALL apply_inv_rperm(iblk, jblk, a, lda, bs, m, n, lperm(1,iblk))
       END DO
     END DO
-    ! 3. failed columns: full reset of over-updated blocks + apply missing updates
+    ! 3. failed columns: full reset of over-updated blocks + apply missing 
+    ! updates
     DO jblk = nelim_blk, nblk-1
       DO iblk = jblk, mblk-1
         progress = up2d(iblk, jblk)
         IF (progress >= nelim_blk) THEN
-          CALL bkp_restore_part(iblk, jblk, 0_ip_, 0_ip_, a, lda, bcopy, m, bs, n)
+          CALL bkp_restore_part(iblk, jblk, 0_ip_, 0_ip_, a, lda, bcopy, m,    &
+                                bs, n)
           progress = -1
         END IF
         DO kblk = progress+1, nelim_blk-1
-          CALL update_right(iblk, jblk, kblk, a, lda, d, cdoff, cnelim, m, n, bs)
+          CALL update_right(iblk, jblk, kblk, a, lda, d, cdoff, cnelim, m,     &
+                            n, bs)
         END DO
       END DO
     END DO
   END SUBROUTINE restore_unpiv
-
-
 
 
 ! ========================= factor_node_indef ==========================
@@ -1629,7 +1802,7 @@
       REAL(rp_),    INTENT(IN)    :: u, small
       INTEGER(ip_), INTENT(OUT)   :: nelim, ndelay_out
       LOGICAL,       INTENT(IN), OPTIONAL :: failed_tpp
-      ! columns not eliminated by the 1st (APP) / 2nd (TPP finish) pass, for stats
+      ! columns not eliminated by the 1st (APP)/2nd (TPP finish) pass, for stats
       INTEGER(ip_), INTENT(OUT), OPTIONAL :: nfirst, nsecond
       LOGICAL,       INTENT(OUT), OPTIONAL :: alloc_err   ! .true. on OOM
       INTEGER(ip_) :: m, n, flag, nbe, nelim2, ldld, nelim_app, st
@@ -1669,20 +1842,22 @@
       ELSE
          ! APP_AGGRESSIVE (nb<0): optimistic unpivoted-first at |nb|, falling
          ! back to the pivoted pass on any a-posteriori failure.
-         nelim = ldlt_app_factor(m, n, perm, a, lda, d, u, small, action, -nbe, &
-                                 flag, aggressive = .TRUE.)
+         nelim = ldlt_app_factor(m, n, perm, a, lda, d, u, small, action,      &
+                                 -nbe, flag, aggressive = .TRUE.)
       END IF
-      IF (flag == FLAG_OOM) THEN            ! out of memory inside ldlt_app_factor
+      IF (flag == FLAG_OOM) THEN  ! out of memory inside ldlt_app_factor
          IF (PRESENT(alloc_err)) alloc_err = .TRUE.
          nelim = -1; ndelay_out = 0; RETURN
       END IF
-      IF (nelim < 0 .OR. flag < 0) THEN  ! singular pivot, action=.FALSE. -> abort
-         nelim = -1; ndelay_out = 0; RETURN   ! caller maps nelim<0 to ERROR_SINGULAR
+      IF (nelim < 0 .OR. flag < 0) THEN  ! singular pivot, action=.FALSE., abort
+         ! caller maps nelim<0 to ERROR_SINGULAR
+         nelim = -1; ndelay_out = 0; RETURN   
       END IF
-      ! Finish off any APP-failed columns with TPP (port of the failed_pivot_method
-      ! branch in cpu/factor.hxx): always at a root (m==n, no parent to delay to),
-      ! and at every node when failed_pivot_method = TPP (the default). This
-      ! reduces the number of delayed pivots and avoids spurious singularity.
+      ! Finish off any APP-failed columns with TPP (port of the 
+      ! failed_pivot_method branch in cpu/factor.hxx): always at a root 
+      ! (m==n, no parent to delay to), and at every node when 
+      ! failed_pivot_method = TPP (the default). This reduces the number 
+      ! of delayed pivots and avoids spurious singularity.
       nelim_app = nelim                       ! nelim after the first (APP) pass
       lfin = .FALSE.
       IF (nbe /= 0 .AND. nelim < n .AND. (m == n .OR. ftpp)) THEN
@@ -1693,18 +1868,18 @@
             nelim = -1; ndelay_out = 0; RETURN
          END IF
          nelim2 = ldlt_tpp_factor(m-nelim, n-nelim, perm(nelim+1), &
-                     a(nelim+1, nelim+1), lda, d(2*nelim+1), ldw, ldld, action, &
-                     u, small, nelim, a(nelim+1, 1), lda, flag)
+                     a(nelim+1, nelim+1), lda, d(2*nelim+1), ldw, ldld, &
+                     action, u, small, nelim, a(nelim+1, 1), lda, flag)
          DEALLOCATE(ldw)
-         IF (flag < 0) THEN            ! singular during TPP finish, action=.FALSE.
+         IF (flag < 0) THEN        ! singular during TPP finish, action=.FALSE.
             nelim = -1; ndelay_out = 0; RETURN
          END IF
          nelim = nelim + nelim2
          lfin = .TRUE.
       END IF
       ! not_first_pass / not_second_pass (as in cpu/factor.hxx): for TPP the tpp
-      ! IS the first pass; for APP the first pass is the a-posteriori one and the
-      ! (optional) TPP finish is the second.
+      ! IS the first pass; for APP the first pass is the a-posteriori one and 
+      ! the (optional) TPP finish is the second.
       IF (PRESENT(nfirst)) THEN
          IF (nbe == 0) THEN
             nfirst = n - nelim
@@ -1730,9 +1905,9 @@
    END SUBROUTINE factor_node_indef
 
    !> Cholesky (LL^T) node factor for positive-definite fronts, stored in the
-   !! same unit-L + D^-1 layout as the indef path (L_chol column j divided by its
-   !! diagonal, D_j = diag_j^2) so the assembly, solves and enquire are reused
-   !! unchanged. No pivoting / no delays. flag<0 if the block is not SPD.
+   !! same unit-L + D^-1 layout as the indef path (L_chol column j divided by 
+   !! its diagonal, D_j = diag_j^2) so the assembly, solves and enquire are 
+   !! reused unchanged. No pivoting / no delays. flag<0 if the block is not SPD
    SUBROUTINE chol_factor_node(m, n, a, lda, d, contrib, ldcontrib, flag)
       INTEGER(ip_), INTENT(IN)    :: m, n, lda, ldcontrib
       REAL(rp_),    INTENT(INOUT) :: a(lda, *), d(*)
@@ -1812,7 +1987,8 @@
             CALL DGEMV('N', m-n, n, -1.0_rp_, l(n+1,1), ldl, x(1,1), 1_ip_, &
                        1.0_rp_, x(n+1,1), 1_ip_)
       ELSE
-         CALL DTRSM('L', 'L', 'N', 'U', n, nrhs, 1.0_rp_, l(1,1), ldl, x(1,1), ldx)
+         CALL DTRSM('L', 'L', 'N', 'U', n, nrhs, 1.0_rp_, l(1,1), ldl, x(1,1), &
+                     ldx)
          IF (m > n) &
             CALL DGEMM('N', 'N', m-n, nrhs, n, -1.0_rp_, l(n+1,1), ldl, &
                        x(1,1), ldx, 1.0_rp_, x(n+1,1), ldx)
@@ -1859,7 +2035,8 @@
          IF (m > n) &
             CALL DGEMM('T', 'N', n, nrhs, m-n, -1.0_rp_, l(n+1,1), ldl, &
                        x(n+1,1), ldx, 1.0_rp_, x(1,1), ldx)
-         CALL DTRSM('L', 'L', 'T', 'U', n, nrhs, 1.0_rp_, l(1,1), ldl, x(1,1), ldx)
+         CALL DTRSM('L', 'L', 'T', 'U', n, nrhs, 1.0_rp_, l(1,1), ldl, x(1,1), &
+                    ldx)
       END IF
    END SUBROUTINE ldlt_app_solve_bwd
 
@@ -1868,7 +2045,7 @@
    !! Schur contribution. Uses a per-thread scratch pmap so it is
    !! safe to call concurrently on independent nodes. node_ok is .false. only if
    !! a root fails to eliminate all its columns.
-   SUBROUTINE factor_one_node(node, p, nnodes, n, action, u, small, nb, posdef, &
+   SUBROUTINE factor_one_node(node, p, nnodes, n, action, u, small, nb, posdef,&
                               node_ok, contribs, failed_tpp, node_aok)
       TYPE(dmf_node), INTENT(INOUT) :: node(:)
       INTEGER(ip_),  INTENT(IN)    :: p, nnodes, n, nb
@@ -1879,7 +2056,8 @@
       LOGICAL,        INTENT(IN), OPTIONAL :: failed_tpp
       LOGICAL,        INTENT(OUT), OPTIONAL :: node_aok  ! .false. on OOM
       LOGICAL :: ftpp, aerr
-      INTEGER(ip_) :: c, i, j, s, k, cm, ncc, pcol, ccol, crow, pr, g, dcol, ndout, ci, st
+      INTEGER(ip_) :: c, i, j, s, k, cm, ncc, pcol, ccol, crow, pr, g
+      INTEGER(ip_) :: dcol, ndout, ci, st
       INTEGER(ip_), ALLOCATABLE :: cache(:)
       REAL(rp_) :: contrib_dummy(1,1), val
       node_ok = .TRUE.
@@ -1893,7 +2071,8 @@
       ASSOCIATE (nd => node(p))
          nd%ndelay_in = 0
          DO c = 1, nnodes
-            IF (node(c)%parent == p) nd%ndelay_in = nd%ndelay_in + node(c)%ndelay_out
+            IF (node(c)%parent == p) &
+              nd%ndelay_in = nd%ndelay_in + node(c)%ndelay_out
          END DO
          IF (PRESENT(contribs) .AND. ALLOCATED(nd%contribs)) THEN
             DO k = 1, SIZE(nd%contribs)
@@ -1977,7 +2156,8 @@
                      nd%lcol(pcol + (j-i), pcol) = ct%delay_val(j, i)
                   END DO
                   DO k = 1, ct%cn
-                     pr = tls_pmap(ct%rlist(k)); val = ct%delay_val(ct%ndelay + k, i)
+                     pr = tls_pmap(ct%rlist(k))
+                     val = ct%delay_val(ct%ndelay + k, i)
                      IF (pr <= nd%ncol) THEN
                         nd%lcol(pcol, pr) = nd%lcol(pcol, pr) + val
                      ELSE
@@ -2016,9 +2196,9 @@
             IF (PRESENT(node_aok)) node_aok = .FALSE.
             RETURN
          END IF
-         IF (nd%nelim < 0) THEN      ! non-SPD (posdef) or singular (indef, action=F)
-            node_ok = .FALSE.        ! -> ERROR_NOT_POS_DEF (posdef) / ERROR_SINGULAR
-            nd%nelim = nd%ncol       ! keep downstream indexing sane
+         IF (nd%nelim < 0) THEN ! non-SPD (posdef) or singular (indef, action=F)
+            node_ok = .FALSE.   ! -> ERROR_NOT_POS_DEF (posdef) / ERROR_SINGULAR
+            nd%nelim = nd%ncol  ! keep downstream indexing sane
          END IF
          nd%ndelay_out = nd%ncol - nd%nelim
          IF (nd%parent == 0 .AND. nd%ndelay_out /= 0) node_ok = .FALSE.
@@ -2031,7 +2211,8 @@
                   DO k = 1, ch%symb_nrow-ch%symb_ncol
                      cache(k) = cache(k) - nd%ncol
                   END DO
-                  CALL assemble_expected_contrib(1_ip_, ch%symb_nrow-ch%symb_ncol, &
+                  CALL assemble_expected_contrib(1_ip_, &
+                       ch%symb_nrow-ch%symb_ncol, &
                        ch%symb_nrow-ch%symb_ncol, cache, ch%contrib, &
                        ch%symb_nrow-ch%symb_ncol, nd%contrib, ncc)
                END IF
@@ -2046,8 +2227,8 @@
                      DO k = 1, ct%cn
                         cache(k) = tls_pmap(ct%rlist(k)) - nd%ncol
                      END DO
-                     CALL assemble_expected_contrib(1_ip_, ct%cn, ct%cn, cache, &
-                          ct%val, ct%cn, nd%contrib, ncc)
+                     CALL assemble_expected_contrib(1_ip_, ct%cn, ct%cn, &
+                          cache, ct%val, ct%cn, nd%contrib, ncc)
                   END IF
                   END ASSOCIATE
                END DO
@@ -2059,11 +2240,12 @@
    !> Factor the whole subtree with an OpenMP task DAG: one task per node, with
    !! dependencies encoding the elimination tree. A node's task writes its own
    !! sync slot and reads its parent's; since children are created before the
-   !! parent (postorder) and read the parent's slot, the parent's write waits for
-   !! all children (WAR) -- so a node runs as soon as its children are done, with
-   !! no level barriers. Falls back to serial without OpenMP.
+   !! parent (postorder) and read the parent's slot, the parent's write waits
+   !! for all children (WAR) -- so a node runs as soon as its children are 
+   !! done, with no level barriers. Falls back to serial without OpenMP.
    SUBROUTINE factor_subtree_delay(node, nnodes, n, action, u, small, nb, &
-                                   posdef, ok, contribs, small_subtree_threshold, &
+                                   posdef, ok, contribs, &  
+                                   small_subtree_threshold, &
                                    failed_tpp, alloc_ok)
       TYPE(dmf_node), INTENT(INOUT) :: node(:)
       INTEGER(ip_),  INTENT(IN)    :: nnodes, n, nb
@@ -2091,8 +2273,9 @@
       ! ---- small leaf subtrees: group a complete leaf subtree whose flop count
       ! is below small_subtree_threshold and factor it in a single (serial) task
       ! for cache locality (port of SmallLeaf{Symbolic,Numeric}Subtree). The
-      ! group task keeps the exact dependencies of its root node, and its members
-      ! form a complete subtree, so children are always factored before parents.
+      ! group task keeps the exact dependencies of its root node, and its 
+      ! members form a complete subtree, so children are always factored 
+      ! before parents.
       ALLOCATE(is_root(nnodes), skip_node(nnodes))
       is_root = .FALSE.; skip_node = .FALSE.
       thresh = 0_long_
@@ -2141,15 +2324,16 @@
       !$omp parallel default(shared) private(p, pp, q, lop, nok, naok)
       !$omp single
       DO p = 1, nnodes
-         IF (skip_node(p)) CYCLE              ! folded into its group's root task
+         IF (skip_node(p)) CYCLE             ! folded into its group's root task
          pp = node(p)%parent
          IF (is_root(p)) THEN
             lop = lo(p)
-            !$omp task firstprivate(p, pp, lop) private(q, nok, naok) default(shared) &
+            !$omp task firstprivate(p, pp, lop) private(q, nok, naok) &
+            !$omp      default(shared) &
             !$omp      depend(inout: sync(p)) depend(in: sync(pp))
             DO q = lop, p                      ! factor the whole leaf subtree
-               CALL factor_one_node(node, q, nnodes, n, action, u, small, nb,   &
-                                    posdef, nok, contribs, failed_tpp = ftpp,   &
+               CALL factor_one_node(node, q, nnodes, n, action, u, small, nb,  &
+                                    posdef, nok, contribs, failed_tpp = ftpp,  &
                                     node_aok = naok)
                IF (.NOT. nok) THEN
                   !$omp atomic write
@@ -2164,8 +2348,8 @@
          ELSE
             !$omp task firstprivate(p, pp) private(nok, naok) default(shared) &
             !$omp      depend(inout: sync(p)) depend(in: sync(pp))
-            CALL factor_one_node(node, p, nnodes, n, action, u, small, nb,      &
-                                 posdef, nok, contribs, failed_tpp = ftpp,      &
+            CALL factor_one_node(node, p, nnodes, n, action, u, small, nb,     &
+                                 posdef, nok, contribs, failed_tpp = ftpp,     &
                                  node_aok = naok)
             IF (.NOT. nok) THEN
                !$omp atomic write
@@ -2197,7 +2381,8 @@
       cm = nd%symb_nrow - nd%symb_ncol
       ct%cn = cm; ct%ndelay = nd%ndelay_out
       IF (cm > 0) THEN
-         ALLOCATE(ct%rlist(cm)); ct%rlist = nd%rlist(nd%symb_ncol+1 : nd%symb_nrow)
+         ALLOCATE(ct%rlist(cm))
+         ct%rlist = nd%rlist(nd%symb_ncol+1 : nd%symb_nrow)
          ALLOCATE(ct%val(cm,cm)); ct%val = nd%contrib
       END IF
       IF (ct%ndelay > 0) THEN
@@ -2261,7 +2446,8 @@
          ALLOCATE(gl(node(p)%nelim)); gl = node(p)%perm(1:node(p)%nelim)
          ALLOCATE(xe(node(p)%nelim, nrhs))
          CALL gather(x, ldx, gl, node(p)%nelim, nrhs, xe)
-         CALL ldlt_app_solve_diag(node(p)%nelim, node(p)%d, nrhs, xe, node(p)%nelim)
+         CALL ldlt_app_solve_diag(node(p)%nelim, node(p)%d, nrhs, xe, &
+                                  node(p)%nelim)
          CALL scatter(x, ldx, gl, node(p)%nelim, nrhs, xe)
          DEALLOCATE(xe, gl)
       END DO

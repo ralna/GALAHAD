@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 10:00 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-08-06 AT 10:40 GMT
 
 #include "galahad_modules.h"
 
@@ -33,7 +33,7 @@
   TYPE( C_PTR ), INTENT( OUT ) :: delay_val
   INTEGER( C_IP_ ), INTENT( OUT ) :: lddelay
 
-! TYPE( contrib_type ), POINTER, VOLATILE :: fcontrib
+! TYPE( contrib_type ), POINTER, VOLATILE :: fcontrib ! most likely not volatile
   TYPE( contrib_type ), POINTER :: fcontrib
 
   IF ( C_ASSOCIATED( ccontrib ) ) THEN
