@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-08-06
+! THIS VERSION: GALAHAD 5.6 - 2026-08-06 AT 16:40 GMT
 !
 ! Pure-Fortran SSIDS factor/solve kernels + a serial multifrontal driver,
 ! ported to GALAHAD templated precision from the C++ SPRAL reference (the former
@@ -357,7 +357,7 @@
       INTEGER(ip_)                :: nelim
       INTEGER(ip_) :: p, t
       REAL(rp_)    :: maxt, maxp
-write(6,*) ' m, n ', m, n
+!write(6,*) ' m, n ', m, n, lda
 !  nelim is the number of eliminated variables
 
       nelim = 0; flag = 0
@@ -444,7 +444,8 @@ write(6,*) ' m, n ', m, n
                d(2*nelim+1) = 1.0_rp_ / a(nelim+1, nelim+1)
                d(2*nelim+2) = 0.0_rp_
                CALL apply_1x1(nelim, m, a, lda, ld, ldld, d)
-!write(6,*) nelim+1, a(nelim+1, nelim+1)
+!write(6,*) m-nelim-1, nelim+1, a(nelim+1, nelim+1)
+               IF ( nelim < n - 1 ) &
                CALL DGEMM('N', 'T', m-nelim-1, n-nelim-1, 1_ip_, -1.0_rp_, &
                     a(nelim+1, nelim+1), lda, ld(nelim+2, 1), ldld, 1.0_rp_, &
                     a(nelim+1, nelim+2), lda)
@@ -2001,9 +2002,13 @@ write(6,*) ' m, n ', m, n
       REAL(rp_),    INTENT(INOUT) :: x(ldx, *)
       INTEGER(ip_) :: i, r
       REAL(rp_)    :: d11, d21, d22, x1, x2
+      LOGICAL :: is_1x1
       i = 0
       DO WHILE (i < n)
-         IF (i+1 == n .OR. IEEE_IS_FINITE(d(2*i+3))) THEN
+!        IF (i+1 == n .OR. IEEE_IS_FINITE(d(2*i+3))) THEN ! replace this by ...
+         is_1x1 = i + 1 == n
+         IF ( .NOT. is_1x1 ) is_1x1 = IEEE_IS_FINITE(d(2*i+3))
+         IF ( is_1x1 ) THEN
             d11 = d(2*i+1)
             DO r = 1, nrhs
                x(i+1, r) = x(i+1, r)*d11

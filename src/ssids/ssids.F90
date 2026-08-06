@@ -4901,10 +4901,12 @@
 
      INTEGER( KIND = ip_ ) :: part
 
+!write(6,*) ' nparts ', akeep%nparts
      DO part = 1, akeep%nparts
        ASSOCIATE( subtree => fkeep%subtree( 1 )%ptr )
          SELECT TYPE( subtree )
          TYPE IS ( numeric_subtree )
+!write(6,*) ' ssids 4908 ', akeep%part( part ),  akeep%part( part + 1 ) - 1 
            CALL subtree%alter( d( 1 : 2, akeep%part( part ) :                  &
                                          akeep%part( part + 1 ) - 1 ) )
          END SELECT
