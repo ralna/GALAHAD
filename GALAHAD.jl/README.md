@@ -33,7 +33,8 @@ Note that this requires at least version `5.3.0` of `GALAHAD` and version `2025.
 
 ## BLAS and LAPACK demuxer
 
-`GALAHAD_jll.jl` is compiled with [libblastrampoline](https://github.com/JuliaLinearAlgebra/libblastrampoline) (LBT), a library that can change between BLAS and LAPACK backends at runtime such as OpenBLAS, Intel MKL, BLIS, and Apple Accelerate.
+`GALAHAD_jll.jl` is compiled with [libblastrampoline](https://github.com/JuliaLinearAlgebra/libblastrampoline) (LBT), a library that can change between BLAS and LAPACK backends at runtime such as Intel MKL (Intel CPUs), AOCL (AMD CPUs), and Apple Accelerate (Apple Silicon).
+Because GALAHAD and the linear solvers heavily rely on BLAS and LAPACK routines, using an optimized backend for a particular platform can improve the performance.
 The default BLAS and LAPACK backend used in the Julia interface `GALAHAD.jl` is [OpenBLAS](https://github.com/OpenMathLib/OpenBLAS).
 
 ### Display backends
@@ -64,6 +65,16 @@ switch to MKL by adding `using MKL` to your code:
 ```julia
 using MKL
 using GALAHAD
+```
+
+### AOCL
+
+If you have [AOCL.jl](https://github.com/JuliaLinearAlgebra/AOCL.jl) installed,
+switch to AOCL by adding `using AOCL` to your code:
+
+```julia
+using AOCL
+using Ipopt
 ```
 
 ### AppleAccelerate
