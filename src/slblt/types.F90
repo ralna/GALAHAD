@@ -1,6 +1,6 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-12 AT 14:10 GMT
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 14:10 GMT
 
-!-*-*-*-*-*-  G A L A H A D _ S S I D S _ t y p e s   M O D U L E  *-*-*-*-*-
+!-*-*-*-*-*-  G A L A H A D _ S L B L T _ t y p e s   M O D U L E  *-*-*-*-*-
 
 #include "galahad_modules.h"
 
@@ -8,9 +8,9 @@
 !  licence: BSD licence, see LICENCE file for details
 !  author: Jonathan Hogg
 !  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
-!  Absorbed SSIDS_inform and parts of SSIDS_contrib, version 5.3, 2025
+!  Absorbed SLBLT_inform and parts of SLBLT_contrib, version 5.3, 2025
 
-  MODULE GALAHAD_SSIDS_types_precision
+  MODULE GALAHAD_SLBLT_types_precision
     USE GALAHAD_KINDS_precision
 !$  USE omp_lib
     USE, INTRINSIC :: iso_c_binding
@@ -32,49 +32,49 @@
 
 !  success flag
 
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_SUCCESS                 = 0
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_SUCCESS                 = 0
 
 !  error flags
 
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_CALL_SEQUENCE     = -1
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_A_N_OOR           = -2
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_A_PTR             = -3
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_A_ALL_OOR         = -4
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_SINGULAR          = -5
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_NOT_POS_DEF       = -6
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_PTR_ROW           = -7
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_ORDER             = -8
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_VAL               = -9
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_X_SIZE            = -10
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_JOB_OOR           = -11
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_NOT_LLT           = -13
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_NOT_LDLT          = -14
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_NO_SAVED_SCALING  = -15
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_ALLOCATION        = -50
-!$  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_OMP_CANCELLATION  = -53
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_NO_METIS          = -97
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_UNIMPLEMENTED     = -98
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_ERROR_UNKNOWN           = -99
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_CALL_SEQUENCE     = -1
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_A_N_OOR           = -2
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_A_PTR             = -3
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_A_ALL_OOR         = -4
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_SINGULAR          = -5
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_NOT_POS_DEF       = -6
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_PTR_ROW           = -7
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_ORDER             = -8
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_VAL               = -9
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_X_SIZE            = -10
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_JOB_OOR           = -11
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_NOT_LLT           = -13
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_NOT_LDLT          = -14
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_NO_SAVED_SCALING  = -15
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_ALLOCATION        = -50
+!$  INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_OMP_CANCELLATION  = -53
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_NO_METIS          = -97
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_UNIMPLEMENTED     = -98
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_ERROR_UNKNOWN           = -99
 
 !  warning flags
 
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_IDX_OOR            = 1
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_DUP_IDX            = 2
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_DUP_AND_OOR        = 3
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_MISSING_DIAGONAL   = 4
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_MISS_DIAG_OORDUP   = 5
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_ANALYSIS_SINGULAR  = 6
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_FACT_SINGULAR      = 7
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_MATCH_ORD_NO_SCALE = 8
-!$  INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_WARNING_OMP_PROC_BIND      = 50
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_WARNING_IDX_OOR            = 1
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_WARNING_DUP_IDX            = 2
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_WARNING_DUP_AND_OOR        = 3
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_WARNING_MISSING_DIAGONAL   = 4
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_WARNING_MISS_DIAG_OORDUP   = 5
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_WARNING_ANALYSIS_SINGULAR  = 6
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_WARNING_FACT_SINGULAR      = 7
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_WARNING_MATCH_ORD_NO_SCALE = 8
+!$  INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_WARNING_OMP_PROC_BIND      = 50
 
    ! solve job values
 
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_SOLVE_JOB_ALL   = 0 !PLD(PL)^TX=B
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_SOLVE_JOB_FWD   = 1 !PLX=B
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_SOLVE_JOB_DIAG  = 2 !DX=B (indef)
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_SOLVE_JOB_BWD   = 3 !(PL)^TX=B
-    INTEGER( ip_ ), PARAMETER, PUBLIC :: SSIDS_SOLVE_JOB_DIAG_BWD= 4 !D(PL)^TX=B
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_SOLVE_JOB_ALL   = 0 !PLD(PL)^TX=B
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_SOLVE_JOB_FWD   = 1 !PLX=B
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_SOLVE_JOB_DIAG  = 2 !DX=B (indef)
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_SOLVE_JOB_BWD   = 3 !(PL)^TX=B
+    INTEGER( ip_ ), PARAMETER, PUBLIC :: SLBLT_SOLVE_JOB_DIAG_BWD= 4 !D(PL)^TX=B
                                                                    ! (indef)
 ! pivot-method codes selected by control%pivot_method
 
@@ -91,7 +91,7 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-!  note: below smalloc etc. types can't be in galahad_ssids_alloc module as
+!  note: below smalloc etc. types can't be in galahad_slblt_alloc module as
 !  they are used as components of later datatypes
 
 !  type for custom allocator. Used to aggregate many small allocations by 
@@ -168,7 +168,7 @@
 !  section to get info parameters of same name.
 
     TYPE, PUBLIC :: thread_stats
-      INTEGER( ip_ ) :: flag = SSIDS_SUCCESS
+      INTEGER( ip_ ) :: flag = SLBLT_SUCCESS
       INTEGER( ip_ ) :: st = 0
       INTEGER( ip_ ) :: maxfront = 0 ! Maximum front size
       INTEGER( ip_ ) :: maxsupernode = 0 ! Maximum supernode size
@@ -190,7 +190,7 @@
 
 !  data type for control parameters
 
-    TYPE, PUBLIC :: SSIDS_control_type
+    TYPE, PUBLIC :: SLBLT_control_type
 
 !  printing options
 
@@ -215,7 +215,7 @@
 
       INTEGER( ip_ ) :: unit_warning = 6 
 
-!  options used ssids_analyse() and ssids_analyse_coord()
+!  options used slblt_analyse() and slblt_analyse_coord()
 
 !  controls choice of ordering
 !   0 Order must be supplied by user
@@ -240,7 +240,7 @@
 
       REAL( sp_ ) :: max_load_inbalance = 1.2
 
-!  options used by ssids_factor() [both indef+posdef]
+!  options used by slblt_factor() [both indef+posdef]
 
 !  controls use of scaling.
 !   <=0: user supplied ( or no ) scaling
@@ -261,11 +261,11 @@
 
       INTEGER( ip_ ) :: block_size = 256
 
-!  options used by ssids_factor() with posdef=.false.
+!  options used by slblt_factor() with posdef=.false.
 
 !  used in indefinite case only. If true and the matrix is found to be
 !  singular, computation continues with a warning. Otherwise, terminates 
-!  with error SSIDS_ERROR_SINGULAR
+!  with error SLBLT_ERROR_SINGULAR
 
       LOGICAL :: action = .TRUE.
 
@@ -314,18 +314,18 @@
     CONTAINS
       PROCEDURE :: print_summary_analyse
       PROCEDURE :: print_summary_factor
-    END TYPE SSIDS_control_type
+    END TYPE SLBLT_control_type
 
-!  data type for information returned by code, extracted from ssids_inform
+!  data type for information returned by code, extracted from slblt_inform
 
-    TYPE, PUBLIC :: SSIDS_inform_type
+    TYPE, PUBLIC :: SLBLT_inform_type
 
 !  takes one of the enumerated flag values:
-!    SSIDS_SUCCESS
-!    SSIDS_ERROR_XXX
-!    SSIDS_WARNING_XXX
+!    SLBLT_SUCCESS
+!    SLBLT_ERROR_XXX
+!    SLBLT_WARNING_XXX
 
-      INTEGER( ip_ ) :: flag = SSIDS_SUCCESS
+      INTEGER( ip_ ) :: flag = SLBLT_SUCCESS
       INTEGER( ip_ ) :: matrix_dup = 0 ! # duplicated entries.
       INTEGER( ip_ ) :: matrix_missing_diag = 0 ! # missing diagonal entries
       INTEGER( ip_ ) :: matrix_outrange = 0 ! # out-of-range entries.
@@ -354,9 +354,9 @@
       PROCEDURE :: flag_to_character
       PROCEDURE :: print_flag
       PROCEDURE :: reduce
-    END TYPE SSIDS_inform_type
+    END TYPE SLBLT_inform_type
 
-!  data type to hold a contribution block, extracted from ssids_contrib
+!  data type to hold a contribution block, extracted from slblt_contrib
 
 !  this type represents a contribution block being passed between two
 !  subtrees. It exists in CPU memory and provides a cleanup routine (the
@@ -380,7 +380,7 @@
 
   CONTAINS
 
-!-  G A L A H A D -  S S I D S _ print _ summary _ analyse  S U B R O U T I N E 
+!-  G A L A H A D -  S L B L T _ print _ summary _ analyse  S U B R O U T I N E
 
     SUBROUTINE print_summary_analyse( this, context )
 
@@ -389,7 +389,7 @@
 !   context Name of subroutine to use in printing
 
     IMPLICIT none
-    CLASS( SSIDS_control_type ), INTENT( IN ) :: this
+    CLASS( SLBLT_control_type ), INTENT( IN ) :: this
     CHARACTER( len=* ), INTENT( IN ) :: context
 
     INTEGER( ip_ ) :: mp
@@ -411,7 +411,7 @@
 
     END SUBROUTINE print_summary_analyse
 
-!-  G A L A H A D -  S S I D S _ print _ summary _ factor  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _ print _ summary _ factor  S U B R O U T I N E -
 
     SUBROUTINE print_summary_factor( this, posdef, context )
 
@@ -422,7 +422,7 @@
 !   context Name of subroutine to use in printing
 
     IMPLICIT NONE
-    CLASS( SSIDS_control_type ), INTENT( IN ) :: this
+    CLASS( SLBLT_control_type ), INTENT( IN ) :: this
     LOGICAL, INTENT( IN ) :: posdef
     CHARACTER( LEN = * ), INTENT( IN ) :: context
 
@@ -472,7 +472,7 @@
 210 FORMAT( // A, 5( / A, I0  ), 5( / A, ES12.4 ) )
     END SUBROUTINE print_summary_factor
 
-!-*-  G A L A H A D -  S S I D S _ flag _ to _ character  F U N C T I O N  -*-
+!-*-  G A L A H A D -  S L B L T _ flag _ to _ character  F U N C T I O N  -*-
 
     FUNCTION flag_to_character(this) result( msg )
 
@@ -480,86 +480,86 @@
 !  member function inform%flagToCharacter
 
     IMPLICIT NONE
-    CLASS( SSIDS_inform_type ), INTENT( IN ) :: this
+    CLASS( SLBLT_inform_type ), INTENT( IN ) :: this
     CHARACTER( LEN = 200 ) :: msg ! return value
 
     SELECT CASE( this%flag )
 
 !  success
 
-    CASE( SSIDS_SUCCESS )
+    CASE( SLBLT_SUCCESS )
        msg = 'Success'
 
 !  errors
-    CASE( SSIDS_ERROR_CALL_SEQUENCE )
+    CASE( SLBLT_ERROR_CALL_SEQUENCE )
        msg = 'Error in sequence of calls.'
-    CASE( SSIDS_ERROR_A_N_OOR )
+    CASE( SLBLT_ERROR_A_N_OOR )
        msg = 'n or ne is out of range (or has changed)'
-    CASE( SSIDS_ERROR_A_PTR )
+    CASE( SLBLT_ERROR_A_PTR )
        msg = 'Error in ptr'
-    CASE( SSIDS_ERROR_A_ALL_OOR )
-       msg = 'All entries in a column out-of-range (ssids_analyse) &
-            &or all entries out-of-range (ssids_analyse_coord)'
-    CASE( SSIDS_ERROR_SINGULAR )
+    CASE( SLBLT_ERROR_A_ALL_OOR )
+       msg = 'All entries in a column out-of-range (slblt_analyse) &
+            &or all entries out-of-range (slblt_analyse_coord)'
+    CASE( SLBLT_ERROR_SINGULAR )
        msg = 'Matrix found to be singular'
-    CASE( SSIDS_ERROR_NOT_POS_DEF )
+    CASE( SLBLT_ERROR_NOT_POS_DEF )
        msg = 'Matrix is not positive-definite'
-    CASE( SSIDS_ERROR_PTR_ROW )
+    CASE( SLBLT_ERROR_PTR_ROW )
        msg = 'ptr and row should be present'
-    CASE( SSIDS_ERROR_ORDER )
+    CASE( SLBLT_ERROR_ORDER )
        msg = 'Either control%ordering out of range or error in user-supplied  &
             &elimination order'
-    CASE( SSIDS_ERROR_X_SIZE )
+    CASE( SLBLT_ERROR_X_SIZE )
        msg = 'Error in size of x or nrhs'
-    CASE( SSIDS_ERROR_JOB_OOR )
+    CASE( SLBLT_ERROR_JOB_OOR )
        msg = 'job out of range'
-    CASE( SSIDS_ERROR_NOT_LLT )
+    CASE( SLBLT_ERROR_NOT_LLT )
        msg = 'Not a LL^T factorization of a positive-definite matrix'
-    CASE( SSIDS_ERROR_NOT_LDLT )
+    CASE( SLBLT_ERROR_NOT_LDLT )
        msg = 'Not a LDL^T factorization of an indefinite matrix'
-    CASE( SSIDS_ERROR_ALLOCATION )
+    CASE( SLBLT_ERROR_ALLOCATION )
        write ( msg,'( A,I6 )' ) 'Allocation error. stat parameter = ', this%stat
-    CASE( SSIDS_ERROR_VAL )
+    CASE( SLBLT_ERROR_VAL )
        msg = 'Optional argument val not present when expected'
-    CASE( SSIDS_ERROR_NO_SAVED_SCALING )
+    CASE( SLBLT_ERROR_NO_SAVED_SCALING )
        msg = 'Requested use of scaling from matching-based &
             &ordering but matching-based ordering not used'
-    CASE( SSIDS_ERROR_UNIMPLEMENTED )
+    CASE( SLBLT_ERROR_UNIMPLEMENTED )
        msg = 'Functionality not yet implemented'
-!$  CASE( SSIDS_ERROR_OMP_CANCELLATION )
-!$     msg = 'SSIDS CPU code requires OMP cancellation to be enabled'
-    CASE( SSIDS_ERROR_NO_METIS )
+!$  CASE( SLBLT_ERROR_OMP_CANCELLATION )
+!$     msg = 'SLBLT CPU code requires OMP cancellation to be enabled'
+    CASE( SLBLT_ERROR_NO_METIS )
        msg = 'MeTiS is not available'
 
 !  warnings
 
-    CASE( SSIDS_WARNING_IDX_OOR )
+    CASE( SLBLT_WARNING_IDX_OOR )
        msg = 'out-of-range indices detected'
-    CASE( SSIDS_WARNING_DUP_IDX )
+    CASE( SLBLT_WARNING_DUP_IDX )
        msg = 'duplicate entries detected'
-    CASE( SSIDS_WARNING_DUP_AND_OOR )
+    CASE( SLBLT_WARNING_DUP_AND_OOR )
        msg = 'out-of-range indices detected and duplicate entries detected'
-    CASE( SSIDS_WARNING_MISSING_DIAGONAL )
+    CASE( SLBLT_WARNING_MISSING_DIAGONAL )
        msg = 'one or more diagonal entries is missing'
-    CASE( SSIDS_WARNING_MISS_DIAG_OORDUP )
+    CASE( SLBLT_WARNING_MISS_DIAG_OORDUP )
        msg = 'one or more diagonal entries is missing and out-of-range and/or &
             &duplicate entries detected'
-    CASE( SSIDS_WARNING_ANALYSIS_SINGULAR )
+    CASE( SLBLT_WARNING_ANALYSIS_SINGULAR )
        msg = 'Matrix found to be structually singular'
-    CASE( SSIDS_WARNING_FACT_SINGULAR )
+    CASE( SLBLT_WARNING_FACT_SINGULAR )
        msg = 'Matrix found to be singular'
-    CASE( SSIDS_WARNING_MATCH_ORD_NO_SCALE )
+    CASE( SLBLT_WARNING_MATCH_ORD_NO_SCALE )
        msg = 'Matching-based ordering used but associated scaling ignored'
-!$  CASE( SSIDS_WARNING_OMP_PROC_BIND )
+!$  CASE( SLBLT_WARNING_OMP_PROC_BIND )
 !$     msg = 'OMP_PROC_BIND=false, this may reduce performance'
     CASE DEFAULT
-       msg = 'SSIDS Internal Error'
+       msg = 'SLBLT Internal Error'
     END SELECT
     RETURN
 
     END FUNCTION flag_to_character
 
-!-*-  G A L A H A D -  S S I D S _ p r i n t _ f l a g  S U B R O U T I N E  -*-
+!-*-  G A L A H A D -  S L B L T _ p r i n t _ f l a g  S U B R O U T I N E  -*-
 
     SUBROUTINE print_flag( this, control, context )
 
@@ -569,20 +569,20 @@
 !   context  name of routine to report error from
 
     IMPLICIT none
-    CLASS(  SSIDS_inform_type ), INTENT( IN ) :: this
-    TYPE(  SSIDS_control_type ), INTENT( IN ) :: control
+    CLASS(  SLBLT_inform_type ), INTENT( IN ) :: this
+    TYPE(  SLBLT_control_type ), INTENT( IN ) :: control
     CHARACTER( LEN = * ), INTENT( IN ) :: context
 
 !  local variables
 
     CHARACTER( LEN = 200 ) :: msg
 
-    IF ( this%flag == SSIDS_SUCCESS ) RETURN ! Nothing to print
+    IF ( this%flag == SLBLT_SUCCESS ) RETURN ! Nothing to print
     IF ( control%print_level < 0 ) RETURN ! No printing
 
 !  warning
 
-    IF ( this%flag > SSIDS_SUCCESS ) THEN
+    IF ( this%flag > SLBLT_SUCCESS ) THEN
       IF ( control%unit_warning < 0 ) RETURN ! printing supressed
       WRITE( control%unit_warning,'( / 3A, I0 )' ) ' Warning from ',           &
            TRIM( context ), '. Warning flag = ', this%flag
@@ -599,7 +599,7 @@
 
     END SUBROUTINE print_flag
 
-!-*-*-*-  G A L A H A D -  S S I D S _ r e d u c e  S U B R O U T I N E  -*-*-*-
+!-*-*-*-  G A L A H A D -  S L B L T _ r e d u c e  S U B R O U T I N E  -*-*-*-
 
     SUBROUTINE reduce( this, other )
 
@@ -610,8 +610,8 @@
 !   other object to reduce values from
 
     IMPLICIT NONE
-    CLASS( SSIDS_inform_type ), INTENT( INOUT ) :: this
-    CLASS( SSIDS_inform_type ), INTENT( IN ) :: other
+    CLASS( SLBLT_inform_type ), INTENT( INOUT ) :: this
+    CLASS( SLBLT_inform_type ), INTENT( IN ) :: other
 
     IF ( this%flag < 0 .OR. other%flag < 0 ) THEN
 
@@ -648,4 +648,4 @@
 
     END SUBROUTINE reduce
 
-  END MODULE GALAHAD_SSIDS_types_precision
+  END MODULE GALAHAD_SLBLT_types_precision

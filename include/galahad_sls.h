@@ -1,7 +1,7 @@
 //* \file galahad_sls.h */
 
 /*
- * THIS VERSION: GALAHAD 5.2 - 2025-03-23 AT 13:50 GMT
+ * THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 13:50 GMT
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -32,7 +32,7 @@
   solvers from HSL and elsewhere. Currently supported solvers include
   \c MA27/SILS, \c HSL\_MA57, \c HSL\_MA77, \c HSL\_MA86,
   \c HSL\_MA87 and \c HSL\_MA97 from HSL,
-  \c SSIDS from SPRAL,
+  \c SLBLT from GALAHAD,
   \c MUMPS from Mumps Technologies,
   \c PARDISO both from the Pardiso Project and Intel's MKL,
   \c PaStix from Inria
@@ -87,7 +87,7 @@
 <tr><td> \c HSL_MA86 <td> left-looking <td> yes <td> no <td> OpenMP fully
 <tr><td> \c HSL_MA87 <td> left-looking <td> no <td> no <td> OpenMP fully
 <tr><td> \c HSL_MA97 <td> multifrontal <td> yes <td> no <td> OpenMP core
-<tr><td> \c SSIDS <td> multifrontal <td> yes <td> no <td> CUDA core
+<tr><td> \c SLBLT <td> multifrontal <td> yes <td> no <td> OpenMP core
 <tr><td> \c MUMPS <td> multifrontal <td> yes <td> optionally <td> MPI
 <tr><td> \c PARDISO <td> left-right-looking <td> yes <td> no <td> OpenMP fully
 <tr><td> \c MKL_PARDISO <td> left-right-looking <td> yes <td> optionally
@@ -109,7 +109,7 @@ External solver characteristics (ooc = out-of-core factorization)
  HSL_MA86    left-looking          yes   no    OpenMP fully
  HSL_MA87    left-looking           no   no    OpenMP fully
  HSL_MA97    multifrontal          yes   no    OpenMP core
- SSIDS       multifrontal          yes   no    CUDA core
+ SLBLT       multifrontal          yes   no    OpenMP core
  MUMPS       multifrontal          yes  optionally  MPI
  PARDISO     left-right-looking    yes   no    OpenMP fully
  MKL_PARDISO left-right-looking    yes  optionally  OpenMP fully
@@ -142,9 +142,6 @@ are all part of HSL 2011.
 To obtain HSL 2011 packages, see
 
 http://hsl.rl.ac.uk
-
-The solver \c SSIDS is from the SPRAL sparse-matrix collection,
-and is available as part of GALAHAD.
 
 The solver \c MUMPS is available from Mumps Technologies in France, and
 version 5.5.1 or above is sufficient.
@@ -351,7 +348,7 @@ extern "C" {
 #include "hsl_ma87.h"
 #include "hsl_ma97.h"
 #include "galahad_nodend.h"
-#include "galahad_ssids.h"
+#include "galahad_slblt.h"
 #include "hsl_mc64.h"
 #include "hsl_mc68.h"
 
@@ -910,8 +907,8 @@ struct sls_inform_type {
     struct ma97_info ma97_info;
 
     /// \brief
-    /// the output structure from ssids
-    struct ssids_inform_type ssids_inform;
+    /// the output structure from slblt
+    struct slblt_inform_type slblt_inform;
 
     /// \brief
     /// the output structure from nodend
@@ -996,7 +993,7 @@ void sls_initialize( const char solver[],
  @param[in] solver is a one-dimensional array of type char that specifies
     the \link external solver package \endlink
     that should be used to factorize the matrix \f$A\f$. It should be one of
-   'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'mumps',
+   'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'slblt', 'mumps',
    'pardiso', 'mkl pardiso', 'pastix', 'wsmp', 'potr', 'sytr' or 'pbtr';
    lower or upper case variants are allowed.
 

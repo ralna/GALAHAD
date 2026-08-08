@@ -1,4 +1,4 @@
-//* \file galahad_ssids.h */
+//* \file galahad_slblt.h */
 /**
  * \version   GALAHAD 5.3 - 2025-08-25 AT 14:10 GMT
  */
@@ -11,8 +11,8 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_SSIDS_H
-#define GALAHAD_SSIDS_H
+#ifndef GALAHAD_SLBLT_H
+#define GALAHAD_SLBLT_H
 
 // precision
 #include "galahad_precision.h"
@@ -25,7 +25,7 @@ extern "C" {
  * Derived types
  ************************************/
 
-struct ssids_control_type {
+struct slblt_control_type {
    ipc_ array_base; // Not in Fortran type
    ipc_ print_level;
    ipc_ unit_diagnostics;
@@ -49,7 +49,7 @@ struct ssids_control_type {
    // char unused[80]; // Allow for future expansion
 };
 
-struct ssids_inform_type {
+struct slblt_inform_type {
    ipc_ flag;
    ipc_ matrix_dup;
    ipc_ matrix_missing_diag;
@@ -78,62 +78,62 @@ struct ssids_inform_type {
  ************************************/
 
 /* Initialize control to defaults */
-void ssids_default_control(struct ssids_control_type *control);
+void slblt_default_control(struct slblt_control_type *control);
 /* Perform analysis phase for CSC data */
-void ssids_analyse(bool check, ipc_ n, ipc_ *order, const int64_t *ptr,
+void slblt_analyse(bool check, ipc_ n, ipc_ *order, const int64_t *ptr,
       const ipc_ *row, const rpc_ *val, void **akeep,
-      const struct ssids_control_type *control,
-      struct ssids_inform_type *inform);
-void ssids_analyse_ptr32(bool check, ipc_ n, ipc_ *order, const ipc_ *ptr,
+      const struct slblt_control_type *control,
+      struct slblt_inform_type *inform);
+void slblt_analyse_ptr32(bool check, ipc_ n, ipc_ *order, const ipc_ *ptr,
       const ipc_ *row, const rpc_ *val, void **akeep,
-      const struct ssids_control_type *control,
-      struct ssids_inform_type *inform);
+      const struct slblt_control_type *control,
+      struct slblt_inform_type *inform);
 /* Perform analysis phase for coordinate data */
-void ssids_analyse_coord(ipc_ n, ipc_ *order, int64_t ne, const ipc_ *row,
+void slblt_analyse_coord(ipc_ n, ipc_ *order, int64_t ne, const ipc_ *row,
       const ipc_ *col, const rpc_ *val, void **akeep,
-      const struct ssids_control_type *control,
-      struct ssids_inform_type *inform);
+      const struct slblt_control_type *control,
+      struct slblt_inform_type *inform);
 /* Perform numerical factorization */
-void ssids_factor(bool posdef, const int64_t *ptr, const ipc_ *row,
+void slblt_factor(bool posdef, const int64_t *ptr, const ipc_ *row,
       const rpc_ *val, rpc_ *scale, void *akeep, void **fkeep,
-      const struct ssids_control_type *control,
-      struct ssids_inform_type *inform);
-void ssids_factor_ptr32(bool posdef, const ipc_ *ptr, const ipc_ *row,
+      const struct slblt_control_type *control,
+      struct slblt_inform_type *inform);
+void slblt_factor_ptr32(bool posdef, const ipc_ *ptr, const ipc_ *row,
       const rpc_ *val, rpc_ *scale, void *akeep, void **fkeep,
-      const struct ssids_control_type *control,
-      struct ssids_inform_type *inform);
+      const struct slblt_control_type *control,
+      struct slblt_inform_type *inform);
 /* Perform triangular solve(s) for single rhs */
-void ssids_solve1(ipc_ job, rpc_ *x1, void *akeep, void *fkeep,
-      const struct ssids_control_type *control,
-      struct ssids_inform_type *inform);
+void slblt_solve1(ipc_ job, rpc_ *x1, void *akeep, void *fkeep,
+      const struct slblt_control_type *control,
+      struct slblt_inform_type *inform);
 /* Perform triangular solve(s) for one or more rhs */
-void ssids_solve(ipc_ job, ipc_ nrhs, rpc_ *x, ipc_ ldx, void *akeep,
-      void *fkeep, const struct ssids_control_type *control,
-      struct ssids_inform_type *inform);
+void slblt_solve(ipc_ job, ipc_ nrhs, rpc_ *x, ipc_ ldx, void *akeep,
+      void *fkeep, const struct slblt_control_type *control,
+      struct slblt_inform_type *inform);
 /* Free memory */
-ipc_ ssids_free_akeep(void **akeep);
-ipc_ ssids_free_fkeep(void **fkeep);
-ipc_ ssids_free(void **akeep, void **fkeep);
+ipc_ slblt_free_akeep(void **akeep);
+ipc_ slblt_free_fkeep(void **fkeep);
+ipc_ slblt_free(void **akeep, void **fkeep);
 
 /************************************
  * Advanced subroutines
  ************************************/
 
 /* Retrieve information on pivots (positive-definite case) */
-void ssids_enquire_posdef(const void *akeep, const void *fkeep,
-      const struct ssids_control_type *control,
-      struct ssids_inform_type *inform, rpc_ *d);
+void slblt_enquire_posdef(const void *akeep, const void *fkeep,
+      const struct slblt_control_type *control,
+      struct slblt_inform_type *inform, rpc_ *d);
 /* Retrieve information on pivots (indefinite case) */
-void ssids_enquire_indef(const void *akeep, const void *fkeep,
-      const struct ssids_control_type *control,
-      struct ssids_inform_type *inform, ipc_ *piv_order, rpc_ *d);
+void slblt_enquire_indef(const void *akeep, const void *fkeep,
+      const struct slblt_control_type *control,
+      struct slblt_inform_type *inform, ipc_ *piv_order, rpc_ *d);
 /* Alter pivots (indefinite case only) */
-void ssids_alter(const rpc_ *d, const void *akeep, void *fkeep,
-      const struct ssids_control_type *control,
-      struct ssids_inform_type *inform);
+void slblt_alter(const rpc_ *d, const void *akeep, void *fkeep,
+      const struct slblt_control_type *control,
+      struct slblt_inform_type *inform);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif // GALAHAD_SSIDS_H
+#endif // GALAHAD_SLBLT_H

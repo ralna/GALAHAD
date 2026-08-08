@@ -19,7 +19,7 @@ Documentation is available online from [https://ralna.github.io/galahad_docs/htm
 
 ## Environment variables
 
-Note that the following environment variables must be set before starting Julia for the default sparse linear solver `SSIDS`:
+Note that the following environment variables must be set before starting Julia for the default sparse linear solver `SLBLT`:
 ```raw
 export OMP_CANCELLATION=TRUE
 export OMP_PROC_BIND=TRUE

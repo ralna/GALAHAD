@@ -42,7 +42,7 @@ int main(void) {
     printf(" basic tests of storage formats\n\n");
     //char solver[] = "sytr";
     //char solver[] = "ma57";
-    char solver[] = "ssids";
+    char solver[] = "slblt";
     printf(" solver %s\n", solver);
 
     printf(" storage          RHS   refine  partial\n");

@@ -45,7 +45,7 @@
 %        'ma86'
 %        'ma87'
 %        'ma97'
-%        'ssids'
+%        'slblt'
 %        'pardiso'
 %        'wsmp'
 %        'potr'

@@ -328,13 +328,6 @@ PYLGS64 = $(OBJS64)/libgalahad_py.a
 PYLGD64 = $(OBJD64)/libgalahad_py.a
 PYLGQ64 = $(OBJQ64)/libgalahad_py.a
 
-#DRLG  = $(OBJ)/libgalahad_spral.a
-#DRLGS = $(OBJS)/libgalahad_spral.a
-#DRLGD = $(OBJD)/libgalahad_spral.a
-#DRLGQ = $(OBJQ)/libgalahad_spral.a
-#DRLGS64 = $(OBJS64)/libgalahad_spral.a
-#DRLGD64 = $(OBJD64)/libgalahad_spral.a
-#DRLGQ64 = $(OBJQ64)/libgalahad_spral.a
 
 DRLG  = $(LG)
 DRLGS = $(LGS)

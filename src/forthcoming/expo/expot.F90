@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2024-06-15 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 11:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_EXPO_test_program
    USE GALAHAD_KINDS_precision
@@ -192,8 +192,8 @@ control%ssls_control%sls_control%generate_matrix_file = .TRUE.
    USE GALAHAD_EXPO_precision, ONLY: EXPO_control_type
    TYPE ( EXPO_control_type ) :: control
 #include "galahad_sls_defaults_ls.h"
-!symmetric_linear_solver = 'ssids'
-!definite_linear_solver = 'ssids'
+!symmetric_linear_solver = 'slblt'
+!definite_linear_solver = 'slblt'
    control%SSLS_control%symmetric_linear_solver = symmetric_linear_solver
    control%TRU_control%TRS_control%definite_linear_solver                      &
      = definite_linear_solver

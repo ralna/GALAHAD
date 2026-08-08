@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-08-06 AT 10:40 GMT
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 10:40 GMT
 
 #include "galahad_modules.h"
 
@@ -7,12 +7,12 @@
 !  licence: BSD licence, see LICENCE file for details
 !  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 !  A combination of contrib and contrib_free, with a removal of the
-!  unnecessary module SSIDS_contrib_fsub_precision, and the transfer of
-!  module SSIDS_contrib to GALAHAD_types, GALAHAD 5.3, 2025-08-27
+!  unnecessary module SLBLT_contrib_fsub_precision, and the transfer of
+!  module SLBLT_contrib to GALAHAD_types, GALAHAD 5.3, 2025-08-27
 
-! G A L A H A D - S S I D S _ c o n t r i b _g e t _d a t a  S U B R O U T I N E
+! G A L A H A D - S L B L T _ c o n t r i b _g e t _d a t a  S U B R O U T I N E
 
-  SUBROUTINE GALAHAD_SSIDS_contrib_get_data_precision( ccontrib, n, val,       &
+  SUBROUTINE GALAHAD_SLBLT_contrib_get_data_precision( ccontrib, n, val,       &
                                                        ldval,  rlist, ndelay,  &
                                                        delay_perm, delay_val,  &
                                                        lddelay ) BIND( C )
@@ -20,7 +20,7 @@
 !  C function to get interesting components of the contrib type
 
   USE GALAHAD_KINDS_precision
-  USE GALAHAD_SSIDS_types_precision, ONLY: contrib_type
+  USE GALAHAD_SLBLT_types_precision, ONLY: contrib_type
   IMPLICIT NONE
 
   TYPE( C_PTR ), VALUE :: ccontrib
@@ -60,17 +60,17 @@
   END IF
   RETURN
 
-  END SUBROUTINE GALAHAD_SSIDS_contrib_get_data_precision
+  END SUBROUTINE GALAHAD_SLBLT_contrib_get_data_precision
 
-!-  G A L A H A D -  S S I D S _ c o n t r i b _f r e e  S U B R O U T I N E  -
+!-  G A L A H A D -  S L B L T _ c o n t r i b _f r e e  S U B R O U T I N E  -
 
-  SUBROUTINE GALAHAD_SSIDS_contrib_free_precision( ccontrib ) BIND( C )
+  SUBROUTINE GALAHAD_SLBLT_contrib_free_precision( ccontrib ) BIND( C )
 
 !  the C prototype for the following routine is in contrib.h
 
   USE, INTRINSIC :: iso_c_binding
-  USE GALAHAD_SSIDS_types_precision, ONLY: contrib_type
-  USE GALAHAD_SSIDS_numeric_subtree_precision, ONLY: free_contrib
+  USE GALAHAD_SLBLT_types_precision, ONLY: contrib_type
+  USE GALAHAD_SLBLT_numeric_subtree_precision, ONLY: free_contrib
   IMPLICIT NONE
 
   TYPE( C_PTR ), VALUE :: ccontrib
@@ -86,4 +86,4 @@
   END IF
   RETURN
 
-  END SUBROUTINE GALAHAD_SSIDS_contrib_free_precision
+  END SUBROUTINE GALAHAD_SLBLT_contrib_free_precision

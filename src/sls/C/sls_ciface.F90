@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-13 AT 11:10 GMT
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 11:10 GMT
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -77,11 +77,11 @@
         copy_ma97_info_out => copy_info_out,                                   &
         copy_ma97_control_in => copy_control_in
 
-    USE GALAHAD_SSIDS_precision_ciface, ONLY:                                  &
-        ssids_inform_type,                                                     &
-        ssids_control_type,                                                    &
-        copy_ssids_inform_out => copy_inform_out,                              &
-        copy_ssids_control_in => copy_control_in
+    USE GALAHAD_SLBLT_precision_ciface, ONLY:                                  &
+        slblt_inform_type,                                                     &
+        slblt_control_type,                                                    &
+        copy_slblt_inform_out => copy_inform_out,                              &
+        copy_slblt_control_in => copy_control_in
 
     USE GALAHAD_NODEND_precision_ciface, ONLY:                                 &
         nodend_inform_type,                                                    &
@@ -244,7 +244,7 @@
       TYPE ( ma86_info ) :: ma86_info
       TYPE ( ma87_info ) :: ma87_info
       TYPE ( ma97_info ) :: ma97_info
-      TYPE ( ssids_inform_type ) :: ssids_inform
+      TYPE ( slblt_inform_type ) :: slblt_inform
       TYPE ( nodend_inform_type ) :: nodend_inform
       INTEGER ( KIND = ipc_ ), DIMENSION( 10 ) :: mc61_info
       REAL ( KIND = rpc_ ), DIMENSION( 15 ) :: mc61_rinfo
@@ -631,7 +631,7 @@
     CALL copy_sils_ainfo_in( cinform%sils_ainfo, finform%sils_ainfo )
     CALL copy_sils_finfo_in( cinform%sils_finfo, finform%sils_finfo )
     CALL copy_sils_sinfo_in( cinform%sils_sinfo, finform%sils_sinfo )
-!   CALL copy_ssids_inform_in( cinform%ssids_inform, finform%ssids_inform )
+!   CALL copy_slblt_inform_in( cinform%slblt_inform, finform%slblt_inform )
     CALL copy_nodend_inform_in( cinform%nodend_inform,                         &
                                 finform%nodend_inform )
 
@@ -735,7 +735,7 @@
     CALL copy_ma87_info_out( finform%ma87_info, cinform%ma87_info )
     CALL copy_ma97_info_out( finform%ma97_info, cinform%ma97_info )
     CALL copy_nodend_inform_out( finform%nodend_inform, cinform%nodend_inform )
-    CALL copy_ssids_inform_out( finform%ssids_inform, cinform%ssids_inform )
+    CALL copy_slblt_inform_out( finform%slblt_inform, cinform%slblt_inform )
     CALL copy_mc64_info_out( finform%mc64_info, cinform%mc64_info )
     CALL copy_mc68_info_out( finform%mc68_info, cinform%mc68_info )
     ! Strings

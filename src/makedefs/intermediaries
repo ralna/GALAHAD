@@ -596,14 +596,13 @@ make_sls_deps: make_sls_deps_$(PRECIS)
 
 make_sls_deps_single: make_dummy make_specfile make_sort make_zd11 \
                make_smt make_svt make_space make_sils make_nodend make_hsl \
-               make_copyright make_spralrb make_amd make_$(SSIDS)
-#              make_spralrb make_amd make_ssids_dum
+               make_copyright make_spralrb make_amd make_slblt
 make_sls_deps_double: make_dummy make_specfile make_sort make_zd11 \
                make_smt make_svt make_space make_sils  make_nodend make_hsl \
-               make_copyright make_spralrb make_amd make_$(SSIDS)
+               make_copyright make_spralrb make_amd make_slblt
 make_sls_deps_quadruple: make_dummy make_specfile make_sort make_zd11 \
                make_smt make_svt make_space make_sils  make_nodend make_hsl \
-               make_copyright make_spralrb make_amd make_$(SSIDS)
+               make_copyright make_spralrb make_amd make_slblt
 make_sls_deps_single_64: make_sls_deps_single
 make_sls_deps_double_64: make_sls_deps_double
 make_sls_deps_quadruple_64: make_sls_deps_quadruple
@@ -708,19 +707,14 @@ make_wcp:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/wcp )
 
 make_spralrb:
-	( cd $(GALAHAD)/src/ssids ; \
+	( cd $(GALAHAD)/src/slblt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) spralrb_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssids )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slblt )
 
-make_ssids:
-	( cd $(GALAHAD)/src/ssids ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssids )
-
-make_ssids_dum:
-	( cd $(GALAHAD)/src/dum ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_dum_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dum )
+make_slblt:
+	( cd $(GALAHAD)/src/slblt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slblt_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slblt )
 
 make_zd11:
 	( cd $(GALAHAD)/src/external/hsl ; \
@@ -1423,19 +1417,14 @@ make_all_wcp:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/wcp )
 
 make_all_spralrb:
-	( cd $(GALAHAD)/src/ssids ; \
+	( cd $(GALAHAD)/src/slblt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) spralrb_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssids )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slblt )
 
-make_all_ssids:
-	( cd $(GALAHAD)/src/ssids ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssids )
-
-make_all_ssids_dum:
-	( cd $(GALAHAD)/src/dum ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_dum_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dum )
+make_all_slblt:
+	( cd $(GALAHAD)/src/slblt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slblt_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slblt )
 
 make_all_zd11:
 	( cd $(GALAHAD)/src/external/hsl ; \
@@ -1988,11 +1977,11 @@ make_ciface_sils:
 
 make_ciface_sls_deps: make_ciface_sls_deps_$(PRECIS)
 make_ciface_sls_deps_single: make_ciface_sils make_ciface_nodend \
-                      make_ciface_$(SSIDS) make_ciface_hsl
+                      make_ciface_slblt make_ciface_hsl
 make_ciface_sls_deps_double: make_ciface_sils make_ciface_nodend \
-                      make_ciface_$(SSIDS) make_ciface_hsl
+                      make_ciface_slblt make_ciface_hsl
 make_ciface_sls_deps_quadruple: make_ciface_sils make_ciface_nodend \
-                      make_ciface_$(SSIDS) make_ciface_hsl
+                      make_ciface_slblt make_ciface_hsl
 make_ciface_sls_deps_single_64: make_ciface_sls_deps_single
 make_ciface_sls_deps_double_64: make_ciface_sls_deps_double
 make_ciface_sls_deps_quadruple_64: make_ciface_sls_deps_quadruple
@@ -2110,15 +2099,10 @@ make_ciface_wcp:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) wcp_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/wcp )
 
-make_ciface_ssids:
-	( cd $(GALAHAD)/src/ssids ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_ciface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssids )
-
-make_ciface_ssids_dum:
-	( cd $(GALAHAD)/src/dum ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dum )
+make_ciface_slblt:
+	( cd $(GALAHAD)/src/slblt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slblt_ciface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slblt )
 
 #  external packages
 
@@ -2823,15 +2807,10 @@ make_pyiface_wcp:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) wcp_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/wcp )
 
-make_pyiface_ssids:
-	( cd $(GALAHAD)/src/ssids ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_pyiface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssids )
-
-make_pyiface_ssids_dum:
-	( cd $(GALAHAD)/src/dum ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dum )
+make_pyiface_slblt:
+	( cd $(GALAHAD)/src/slblt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slblt_pyiface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slblt )
 
 #  external packages
 

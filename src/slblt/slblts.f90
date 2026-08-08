@@ -1,11 +1,11 @@
-  PROGRAM SSIDS_EXAMPLE   !  GALAHAD 5.3 - 2025-08-14 AT 10:30 GMT.
-   USE GALAHAD_SSIDS_double
+  PROGRAM SLBLT_EXAMPLE   !  GALAHAD 5.3 - 2025-08-14 AT 10:30 GMT.
+   USE GALAHAD_SLBLT_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   TYPE( ssids_inform_type ) :: inform
-   TYPE( ssids_akeep_type ) :: akeep
-   TYPE( ssids_fkeep_type ) :: fkeep
-   TYPE( ssids_control_type ) :: control
+   TYPE( slblt_inform_type ) :: inform
+   TYPE( slblt_akeep_type ) :: akeep
+   TYPE( slblt_fkeep_type ) :: fkeep
+   TYPE( slblt_control_type ) :: control
    INTEGER :: i, n, ne, flag
 !  INTEGER :: j, l
    INTEGER, ALLOCATABLE :: ROW( : ), PTR( : ), ORDER( : )
@@ -30,29 +30,29 @@
      control%ordering = 0
      ALLOCATE( ORDER( n ) )
      DO i = 1, n ; ORDER( i ) = i ; END DO
-     CALL ssids_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,         &
+     CALL slblt_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,         &
                          val = VAL, order = ORDER )
      DEALLOCATE( ORDER )
    ELSE
-     CALL ssids_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,         &
+     CALL slblt_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,         &
                          val = VAL )
    END IF
    IF ( inform%flag < 0 ) THEN
      WRITE( 6, '( A, I0 )' )                                                   &
-          ' Failure of SSIDS_analyse with flag = ', inform%flag
+          ' Failure of SLBLT_analyse with flag = ', inform%flag
      STOP
    END IF
 ! Factorize
-   CALL ssids_factor( .FALSE., VAL, akeep, fkeep, control, inform,             &
+   CALL slblt_factor( .FALSE., VAL, akeep, fkeep, control, inform,             &
                       ptr = PTR, row = ROW )
    IF ( inform%flag < 0 ) THEN
      WRITE( 6, '( A, I0 )' )                                                   &
-          ' Failure of SSIDS_factor with flag = ', inform%flag
+          ' Failure of SLBLT_factor with flag = ', inform%flag
      STOP
    END IF
 ! Solve using iterative refinement and ask for high relative accuracy
    X = B
-   CALL ssids_solve( X, akeep, fkeep, control, inform )
+   CALL slblt_solve( X, akeep, fkeep, control, inform )
    IF ( inform%flag == 0 ) WRITE( 6, '( A, /, ( 3F20.16 ) )' )                 &
      ' Solution is', X
 !   DO j = 1, n
@@ -68,7 +68,7 @@
 !   END DO
 !write(6,*) 'b ', B
 ! Clean up
-   CALL ssids_free(akeep, fkeep, flag )
+   CALL slblt_free(akeep, fkeep, flag )
    DEALLOCATE( VAL, ROW, PTR, X, B )
    STOP
-   END PROGRAM SSIDS_EXAMPLE
+   END PROGRAM SLBLT_EXAMPLE

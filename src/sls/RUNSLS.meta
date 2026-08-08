@@ -9,7 +9,7 @@ MAIN
 ! write-result-summary                              no
 ! result-summary-file-name                          SLSRES.d
 ! result-summary-file-device                        47
-! symmetric-linear-equation-solver                  ssids
+! symmetric-linear-equation-solver                  slblt
 ! kkt-system                                        yes
 ! barrier-perturbation                              1.0
 ! solution-passes                                   1

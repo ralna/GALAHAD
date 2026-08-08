@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 09:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_FDC_test    !! to be expanded
    USE GALAHAD_KINDS_precision
@@ -22,7 +22,7 @@
    control%use_sls = .TRUE.
    control%symmetric_linear_solver = 'sytr'
 !  control%symmetric_linear_solver = 'ma57'
-   control%symmetric_linear_solver = 'ssids'
+   control%symmetric_linear_solver = 'slblt'
    CALL FDC_find_dependent( n, m, A_val, A_col, A_ptr, B, n_depen, DEPEN,      &
                             data, control, inform ) ! Check for dependencies
    WRITE( 6, "( ' linear solver used: ', A )" ) inform%SLS_inform%solver

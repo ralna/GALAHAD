@@ -91,13 +91,12 @@ scu                       M C- P-
 sec                       M C- P-
 sha                       M C- P-
 sils                      M C- P-
+slblt
 sls                       M C+ P+
 smt                       M
 sort                      M
 space                     M
 specfile                  M
-spral
-ssids
 string                    M
 symbols                   M
 tools                     M

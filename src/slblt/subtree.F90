@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 09:50 GMT
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 09:50 GMT
 
 #include "galahad_modules.h"
 
@@ -7,10 +7,10 @@
 !  author: Jonathan Hogg
 !  Forked and extended for GALAHAD, Nick Gould, version 3.1, 2016
 
- MODULE GALAHAD_SSIDS_subtree_precision
+ MODULE GALAHAD_SLBLT_subtree_precision
    USE GALAHAD_KINDS_precision
-   USE GALAHAD_SSIDS_types_precision, ONLY: SSIDS_control_type,                &
-                                            SSIDS_inform_type,                 &
+   USE GALAHAD_SLBLT_types_precision, ONLY: SLBLT_control_type,                &
+                                            SLBLT_inform_type,                 &
                                             contrib_type
    IMPLICIT NONE
 
@@ -104,7 +104,7 @@
 !   scaling Scaling to be applied (if present).
 
      IMPORT symbolic_subtree_base, numeric_subtree_base, rp_
-     IMPORT SSIDS_inform_type, SSIDS_control_type
+     IMPORT SLBLT_inform_type, SLBLT_control_type
      IMPORT contrib_type
      IMPLICIT NONE
      CLASS(numeric_subtree_base ), POINTER :: factor_iface
@@ -113,8 +113,8 @@
      REAL( rp_ ), dimension(*), target, intent(in) :: aval
      TYPE(contrib_type ), DIMENSION( : ), TARGET,                              &
         INTENT( INOUT ) :: child_contrib
-     TYPE( SSIDS_control_type ), INTENT( IN ) :: control
-     TYPE( SSIDS_inform_type) , INTENT( INOUT ) :: inform
+     TYPE( SLBLT_control_type ), INTENT( IN ) :: control
+     TYPE( SLBLT_inform_type) , INTENT( INOUT ) :: inform
      REAL( rp_), DIMENSION( * ), TARGET, OPTIONAL, INTENT( IN ) :: scaling
      END FUNCTION factor_iface
 
@@ -151,13 +151,13 @@
 !   ldx Leading dimension of x.
 !   inform Information/statistics to be returned to user.
 
-     IMPORT numeric_subtree_base, ssids_inform_type, ip_, rp_
+     IMPORT numeric_subtree_base, slblt_inform_type, ip_, rp_
      IMPLICIT NONE
      CLASS( numeric_subtree_base ), INTENT( INOUT ) :: this
      INTEGER( ip_ ), INTENT( IN ) :: nrhs
      REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
      INTEGER( ip_), intent(in) :: ldx
-     TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
+     TYPE( SLBLT_inform_type ), INTENT( INOUT ) :: inform
      END SUBROUTINE solve_proc_iface
 
      SUBROUTINE numeric_cleanup_iface( this )
@@ -170,4 +170,4 @@
      CLASS( numeric_subtree_base ), INTENT( INOUT ) :: this
      END SUBROUTINE numeric_cleanup_iface
    END INTERFACE
- END MODULE GALAHAD_SSIDS_subtree_precision
+ END MODULE GALAHAD_SLBLT_subtree_precision

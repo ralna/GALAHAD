@@ -3,5 +3,5 @@
 ! print-level                                       0
 ! space-critical                                    no
 ! deallocate-error-fatal                            no
-! symmetric-linear-equation-solver                  ssids
+! symmetric-linear-equation-solver                  slblt
 ! output-line-prefix                                ""

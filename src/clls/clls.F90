@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-04-01 AT 10:20 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 10:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -375,7 +375,7 @@
 
 !  symmetric (indefinite) linear equation solver
 
-        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "ssids" //         &
+        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "slblt" //         &
                                                              REPEAT( ' ', 25 )
 
 !  name of generated SIF file containing input problem
@@ -785,7 +785,7 @@
 !  deallocate-error-fatal                            F
 !  generate-sif-file                                 F
 !  generate-qplib-file                               F
-!  symmetric-linear-equation-solver                  ssids
+!  symmetric-linear-equation-solver                  slblt
 !  sif-file-name                                     CLLSPROB.SIF
 !  qplib-file-name                                   CLLSPROB.qplib
 !  output-line-prefix                                ""

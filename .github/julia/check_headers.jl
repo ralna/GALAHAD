@@ -19,7 +19,6 @@ for file in readdir(folder_headers)
   startswith(file, "galahad_sls_") && continue
   startswith(file, "cutest_routines_") && continue
   startswith(file, "hsl_") && continue
-  startswith(file, "ssids_") && continue
   (file in excluded_headers) && continue
 
   if !occursin(file, content)

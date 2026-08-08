@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.5 - 2025-04-01 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 10:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CLLS_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -14,7 +14,7 @@
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
    CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = REPEAT( ' ', 30 )
-!  symmetric_linear_solver = 'ssids'
+!  symmetric_linear_solver = 'slblt'
 !  symmetric_linear_solver = 'ma97 '
    symmetric_linear_solver = 'sytr '
 

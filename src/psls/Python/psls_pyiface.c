@@ -1,7 +1,7 @@
 //* \file psls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_PSLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -638,11 +638,11 @@ PyDoc_STRVAR(psls_module_doc,
 "\n"
 "The method relies on a variety of well-known solvers \n"
 "from HSL and elsewhere. Currently supported solvers include MA27/SILS, \n"
-"HSL_MA57, HSL_MA77 , HSL_MA86, HSL_MA87 and HSL_MA97 from HSL, SSIDS \n"
-"from SPRAL, MUMPS from Mumps Technologies, PARDISO both from the \n"
+"HSL_MA57, HSL_MA77 , HSL_MA86, HSL_MA87 and HSL_MA97 from HSL, SLBLT, \n"
+"MUMPS from Mumps Technologies, PARDISO both from the \n"
 "Pardiso Project and Intel’s MKL, PaStiX from Inria, and WSMP from the \n"
 "IBM alpha Works, as well as POTR, SYTR and SBTR from LAPACK. Note\n"
-"that, with the exception of SSIDS and the Netlib reference LAPACK codes, \n"
+"that, with the exception of SLBLT and the Netlib reference LAPACK codes, \n"
 "the solvers themselves do not form part of this package and must be \n"
 "obtained/linked to separately. Dummy instances are provided for solvers \n"
 "that are unavailable.\n"

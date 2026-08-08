@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -21,12 +21,12 @@
         PRIVATE
         PUBLIC :: MU_half_to_full, MU_convert_coord_to_cscl, MU_print_matrix,  &
                   MU_clean_cscl_oop, MU_apply_conversion_map, MU_cscl_verify,  &
-                  SSIDS_MATRIX_UNSPECIFIED, SSIDS_MATRIX_REAL_RECT,            &
-                  SSIDS_MATRIX_CPLX_RECT, SSIDS_MATRIX_REAL_UNSYM,             &
-                  SSIDS_MATRIX_CPLX_UNSYM, SSIDS_MATRIX_REAL_SYM_PSDEF,        &
-                  SSIDS_MATRIX_CPLX_HERM_PSDEF, SSIDS_MATRIX_REAL_SYM_INDEF,  &
-                  SSIDS_MATRIX_CPLX_HERM_INDEF, SSIDS_MATRIX_CPLX_SYM,        &
-                  SSIDS_MATRIX_REAL_SKEW, SSIDS_MATRIX_CPLX_SKEW
+                  SLBLT_MATRIX_UNSPECIFIED, SLBLT_MATRIX_REAL_RECT,            &
+                  SLBLT_MATRIX_CPLX_RECT, SLBLT_MATRIX_REAL_UNSYM,             &
+                  SLBLT_MATRIX_CPLX_UNSYM, SLBLT_MATRIX_REAL_SYM_PSDEF,        &
+                  SLBLT_MATRIX_CPLX_HERM_PSDEF, SLBLT_MATRIX_REAL_SYM_INDEF,  &
+                  SLBLT_MATRIX_CPLX_HERM_INDEF, SLBLT_MATRIX_CPLX_SYM,        &
+                  SLBLT_MATRIX_REAL_SKEW, SLBLT_MATRIX_CPLX_SKEW
 
 !----------------------
 !   P a r a m e t e r s
@@ -40,53 +40,53 @@
 
 !  undefined/known
 
-        INTEGER ( KIND = ip_ ), PARAMETER :: SSIDS_MATRIX_UNSPECIFIED = 0
+        INTEGER ( KIND = ip_ ), PARAMETER :: SLBLT_MATRIX_UNSPECIFIED = 0
 
 !  real rectangular
 
-        INTEGER ( KIND = ip_ ), PARAMETER :: SSIDS_MATRIX_REAL_RECT = 1
+        INTEGER ( KIND = ip_ ), PARAMETER :: SLBLT_MATRIX_REAL_RECT = 1
 
 !  real unsymmetric
 
-        INTEGER ( KIND = ip_ ), PARAMETER :: SSIDS_MATRIX_REAL_UNSYM = 2
+        INTEGER ( KIND = ip_ ), PARAMETER :: SLBLT_MATRIX_REAL_UNSYM = 2
 
 !  real sym positive definite
 
-        INTEGER ( KIND = ip_ ), PARAMETER :: SSIDS_MATRIX_REAL_SYM_PSDEF = 3
+        INTEGER ( KIND = ip_ ), PARAMETER :: SLBLT_MATRIX_REAL_SYM_PSDEF = 3
 
 !  real sym indefinite
 
-        INTEGER ( KIND = ip_ ), PARAMETER :: SSIDS_MATRIX_REAL_SYM_INDEF = 4
+        INTEGER ( KIND = ip_ ), PARAMETER :: SLBLT_MATRIX_REAL_SYM_INDEF = 4
 
 !  real skew symmetric
 
-        INTEGER ( KIND = ip_ ), PARAMETER :: SSIDS_MATRIX_REAL_SKEW = 6
+        INTEGER ( KIND = ip_ ), PARAMETER :: SLBLT_MATRIX_REAL_SKEW = 6
 
 !  matrix types : complex
 
 !  complex rectangular
 
-        INTEGER ( KIND = ip_ ), PARAMETER :: SSIDS_MATRIX_CPLX_RECT = - 1
+        INTEGER ( KIND = ip_ ), PARAMETER :: SLBLT_MATRIX_CPLX_RECT = - 1
 
 !  complex unsymmetric
 
-        INTEGER ( KIND = ip_ ), PARAMETER :: SSIDS_MATRIX_CPLX_UNSYM = - 2
+        INTEGER ( KIND = ip_ ), PARAMETER :: SLBLT_MATRIX_CPLX_UNSYM = - 2
 
 !  Hermitian positive definite
 
-        INTEGER ( KIND = ip_ ), PARAMETER :: SSIDS_MATRIX_CPLX_HERM_PSDEF = - 3
+        INTEGER ( KIND = ip_ ), PARAMETER :: SLBLT_MATRIX_CPLX_HERM_PSDEF = - 3
 
 ! Hermitian indefinite
 
-        INTEGER ( KIND = ip_ ), PARAMETER :: SSIDS_MATRIX_CPLX_HERM_INDEF = - 4
+        INTEGER ( KIND = ip_ ), PARAMETER :: SLBLT_MATRIX_CPLX_HERM_INDEF = - 4
 
 !  complex symmetric
 
-        INTEGER ( KIND = ip_ ), PARAMETER :: SSIDS_MATRIX_CPLX_SYM = - 5
+        INTEGER ( KIND = ip_ ), PARAMETER :: SLBLT_MATRIX_CPLX_SYM = - 5
 
 !  complex skew symmetric
 
-        INTEGER ( KIND = ip_ ), PARAMETER :: SSIDS_MATRIX_CPLX_SKEW = - 6
+        INTEGER ( KIND = ip_ ), PARAMETER :: SLBLT_MATRIX_CPLX_SKEW = - 6
 
 !  error flags
 
@@ -284,7 +284,7 @@
           CALL print_matrix_flag( context, lp, flag )
           RETURN
         END IF
-        IF ( ABS( matrix_type ) /= SSIDS_MATRIX_REAL_RECT .AND. m /= n ) THEN
+        IF ( ABS( matrix_type ) /= SLBLT_MATRIX_REAL_RECT .AND. m /= n ) THEN
           flag = ERROR_M_NE_N
           CALL print_matrix_flag( context, lp, flag )
           RETURN
@@ -325,9 +325,9 @@
         IF ( st /= 0 ) GO TO 100
         ptr2( : ) = 0
 
-        lwronly = ABS( matrix_type ) /= SSIDS_MATRIX_UNSPECIFIED .AND.         &
-                  ABS( matrix_type ) /= SSIDS_MATRIX_REAL_RECT .AND.           &
-                  ABS( matrix_type ) /= SSIDS_MATRIX_REAL_UNSYM
+        lwronly = ABS( matrix_type ) /= SLBLT_MATRIX_UNSPECIFIED .AND.         &
+                  ABS( matrix_type ) /= SLBLT_MATRIX_REAL_RECT .AND.           &
+                  ABS( matrix_type ) /= SLBLT_MATRIX_REAL_UNSYM
         DO col = 1, n
           last = - 1
           diag = .FALSE.
@@ -345,7 +345,7 @@
               CALL print_matrix_flag( context, lp, flag )
               RETURN
             END IF
-            IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SKEW .AND.            &
+            IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SKEW .AND.            &
                  k == col ) THEN
               flag = ERROR_UPR_ENTRY
               more = j
@@ -382,7 +382,7 @@
 
 !  If marked as positive definite, check if diagonal was present
 
-          IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF .AND.         &
+          IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF .AND.         &
                .NOT. diag ) THEN
             flag = ERROR_MISSING_DIAGONAL
             more = col
@@ -393,7 +393,7 @@
 
         IF ( PRESENT( val ) ) THEN
           SELECT CASE ( matrix_type )
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF )
 
 !  check for positive diagonal entries
 
@@ -525,22 +525,22 @@
         nefrmt = digit_format( ptr( n + 1 ) - 1_ip_ )
 
         SELECT CASE ( matrix_type )
-        CASE ( SSIDS_MATRIX_UNSPECIFIED )
+        CASE ( SLBLT_MATRIX_UNSPECIFIED )
           WRITE ( lp, '( A )', ADVANCE = 'no' )                                &
             'Matrix of undefined type, dimension '
-        CASE ( SSIDS_MATRIX_REAL_RECT )
+        CASE ( SLBLT_MATRIX_REAL_RECT )
           WRITE ( lp, '( A )', ADVANCE = 'no' )                                &
             'Real rectangular matrix, dimension '
-        CASE ( SSIDS_MATRIX_REAL_UNSYM )
+        CASE ( SLBLT_MATRIX_REAL_UNSYM )
           WRITE ( lp, '( A )', ADVANCE = 'no' )                                &
             'Real unsymmetric matrix, dimension '
-        CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF )
+        CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF )
           WRITE ( lp, '( A )', ADVANCE = 'no' )                                &
             'Real symmetric positive definite matrix, dimension '
-        CASE ( SSIDS_MATRIX_REAL_SYM_INDEF )
+        CASE ( SLBLT_MATRIX_REAL_SYM_INDEF )
           WRITE ( lp, '( A )', ADVANCE = 'no' )                                &
             'Real symmetric indefinite matrix, dimension '
-        CASE ( SSIDS_MATRIX_REAL_SKEW )
+        CASE ( SLBLT_MATRIX_REAL_SKEW )
           WRITE ( lp, '( A )', ADVANCE = 'no' )                                &
             'Real skew symmetric matrix, dimension '
         CASE DEFAULT
@@ -569,7 +569,7 @@
           DO col = 1, n
             DO j = ptr( col ) + rebase, ptr( col + 1 ) + rebase - 1
               k = row( j ) + rebase
-              IF ( ABS( matrix_type ) >= SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+              IF ( ABS( matrix_type ) >= SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
                 dmat( col, k ) = -j
               END IF
               dmat( k, col ) = j
@@ -607,8 +607,8 @@
                   END IF
                 ELSE !  in upper triangle
                   SELECT CASE ( matrix_type )
-                  CASE ( SSIDS_MATRIX_REAL_SYM_INDEF,                          &
-                         SSIDS_MATRIX_REAL_SYM_PSDEF )
+                  CASE ( SLBLT_MATRIX_REAL_SYM_INDEF,                          &
+                         SLBLT_MATRIX_REAL_SYM_PSDEF )
                     IF ( val( - dmat( k,j ) ) > zero ) THEN
                       WRITE ( lp, valfrmt, ADVANCE = 'no' )                    &
                         val( - dmat( k, j ) )
@@ -616,7 +616,7 @@
                       WRITE ( lp, negfrmt, ADVANCE = 'no' )                    &
                         val( - dmat( k, j ) )
                     END IF
-                  CASE ( SSIDS_MATRIX_REAL_SKEW )
+                  CASE ( SLBLT_MATRIX_REAL_SKEW )
                     IF ( - val( - dmat( k,j ) ) > zero ) THEN
                       WRITE ( lp, valfrmt, ADVANCE = 'no' )                    &
                         - val( - dmat( k, j ) )
@@ -1011,9 +1011,9 @@
               RETURN
             END IF
             minidx = 1
-            IF ( ABS( matrix_type ) >= SSIDS_MATRIX_REAL_SYM_PSDEF )           &
+            IF ( ABS( matrix_type ) >= SLBLT_MATRIX_REAL_SYM_PSDEF )           &
               minidx = col
-            IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SKEW )                &
+            IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SKEW )                &
               minidx = col + 1
 
 !  loop over column, copy across while dropping any out of range entries
@@ -1051,7 +1051,7 @@
 
               IF ( row_out( ptr_out( col ) ) == col ) THEN
                 idiag = idiag + 1
-              ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+              ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
                 flag = ERROR_MISSING_DIAGONAL
                 CALL print_matrix_flag( context, nout, flag )
                 CALL cleanup_dup( duphead )
@@ -1073,7 +1073,7 @@
                 map( k ) = map( i )
                 k = k + 1
               END DO
-            ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+            ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
               flag = ERROR_MISSING_DIAGONAL
               CALL print_matrix_flag( context, nout, flag )
               CALL cleanup_dup( duphead )
@@ -1094,15 +1094,15 @@
               RETURN
             END IF
             minidx = 1
-            IF ( ABS( matrix_type ) >= SSIDS_MATRIX_REAL_SYM_PSDEF )           &
+            IF ( ABS( matrix_type ) >= SLBLT_MATRIX_REAL_SYM_PSDEF )           &
               minidx = col
-            IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SKEW )                &
+            IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SKEW )                &
               minidx = col + 1
 
 !  Loop over column, copy across while dropping any out of range entries
 
             SELECT CASE ( matrix_type )
-            CASE ( SSIDS_MATRIX_REAL_SKEW )
+            CASE ( SLBLT_MATRIX_REAL_SKEW )
               DO i = ptr_in( col ), ptr_in( col + 1 ) - 1
                 j = row_in( i )
                 IF ( j < minidx .OR. j > m ) THEN !  out of range, ignore
@@ -1147,7 +1147,7 @@
 
               IF ( row_out( ptr_out( col ) ) == col ) THEN
                 idiag = idiag + 1
-              ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+              ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
                 flag = ERROR_MISSING_DIAGONAL
                 CALL print_matrix_flag( context, nout, flag )
                 RETURN
@@ -1164,7 +1164,7 @@
                 val_out( k ) = val_out( i )
                 k = k + 1
               END DO
-            ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+            ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
               flag = ERROR_MISSING_DIAGONAL
               CALL print_matrix_flag( context, nout, flag )
               RETURN
@@ -1181,9 +1181,9 @@
               RETURN
             END IF
             minidx = 1
-            IF ( ABS( matrix_type ) >= SSIDS_MATRIX_REAL_SYM_PSDEF )           &
+            IF ( ABS( matrix_type ) >= SLBLT_MATRIX_REAL_SYM_PSDEF )           &
               minidx = col
-            IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SKEW )                &
+            IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SKEW )                &
               minidx = col + 1
 
 !  loop over column, copy across while dropping any out of range entries
@@ -1218,7 +1218,7 @@
 
               IF ( row_out( ptr_out( col ) ) == col ) THEN
                 idiag = idiag + 1
-              ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+              ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
                 flag = ERROR_MISSING_DIAGONAL
                 CALL print_matrix_flag( context, nout, flag )
                 RETURN
@@ -1232,7 +1232,7 @@
                 row_out( k ) = row_out( i )
                 k = k + 1
               END DO
-            ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+            ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
               flag = ERROR_MISSING_DIAGONAL
               CALL print_matrix_flag( context, nout, flag )
               RETURN
@@ -1263,7 +1263,7 @@
 
         IF ( PRESENT( val_out ) ) THEN
           SELECT CASE ( matrix_type )
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF )
 
 !  check for positive diagonal entries
 
@@ -1287,7 +1287,7 @@
           IF ( ioor > 0 ) flag = WARNING_IDX_OOR
           IF ( idup > 0 ) flag = WARNING_DUP_IDX
           IF ( idup > 0 .AND. ioor > 0 ) flag = WARNING_DUP_AND_OOR
-          IF ( ABS( matrix_type ) /= SSIDS_MATRIX_REAL_SKEW ) THEN
+          IF ( ABS( matrix_type ) /= SLBLT_MATRIX_REAL_SKEW ) THEN
             IF ( idiag < n .AND. ioor > 0 ) THEN
               flag = WARNING_MISS_DIAG_OORDUP
             ELSE IF ( idiag < n .AND. idup > 0 ) THEN
@@ -1457,9 +1457,9 @@
               RETURN
             END IF
             minidx = 1
-            IF ( ABS( matrix_type ) >= SSIDS_MATRIX_REAL_SYM_PSDEF )           &
+            IF ( ABS( matrix_type ) >= SLBLT_MATRIX_REAL_SYM_PSDEF )           &
               minidx = col
-            IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SKEW )                &
+            IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SKEW )                &
               minidx = col + 1
 
 !  loop over column, copy across while dropping any out of range entries
@@ -1497,7 +1497,7 @@
 
               IF ( row_out( ptr_out( col ) ) == col ) THEN
                 idiag = idiag + 1
-              ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+              ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
                 flag = ERROR_MISSING_DIAGONAL
                 CALL print_matrix_flag( context, nout, flag )
                 CALL cleanup_dup( duphead )
@@ -1519,7 +1519,7 @@
                 map( kk ) = map( ii )
                 kk = kk + 1
               END DO
-            ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+            ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
               flag = ERROR_MISSING_DIAGONAL
               CALL print_matrix_flag( context, nout, flag )
               CALL cleanup_dup( duphead )
@@ -1540,15 +1540,15 @@
               RETURN
             END IF
             minidx = 1
-            IF ( ABS( matrix_type ) >= SSIDS_MATRIX_REAL_SYM_PSDEF )           &
+            IF ( ABS( matrix_type ) >= SLBLT_MATRIX_REAL_SYM_PSDEF )           &
               minidx = col
-            IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SKEW )                &
+            IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SKEW )                &
               minidx = col + 1
 
 !  loop over column, copy across while dropping any out of range entries
 
             SELECT CASE ( matrix_type )
-            CASE ( SSIDS_MATRIX_REAL_SKEW )
+            CASE ( SLBLT_MATRIX_REAL_SKEW )
               DO ii = ptr_in( col ), ptr_in( col + 1 ) - 1
                 j = row_in( ii )
                 IF ( j < minidx .OR. j > m ) THEN !  out of range, ignore
@@ -1592,7 +1592,7 @@
 
               IF ( row_out( ptr_out( col ) ) == col ) THEN
                 idiag = idiag + 1
-              ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+              ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
                 flag = ERROR_MISSING_DIAGONAL
                 CALL print_matrix_flag( context, nout, flag )
                 RETURN
@@ -1611,7 +1611,7 @@
                 val_out( kk ) = val_out( ii )
                 kk = kk + 1
               END DO
-            ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+            ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
               flag = ERROR_MISSING_DIAGONAL
               CALL print_matrix_flag( context, nout, flag )
               RETURN
@@ -1628,9 +1628,9 @@
               RETURN
             END IF
             minidx = 1
-            IF ( ABS( matrix_type ) >= SSIDS_MATRIX_REAL_SYM_PSDEF )           &
+            IF ( ABS( matrix_type ) >= SLBLT_MATRIX_REAL_SYM_PSDEF )           &
               minidx = col
-            IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SKEW )                &
+            IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SKEW )                &
               minidx = col + 1
 
 !  loop over column, copy across while dropping any out of range entries
@@ -1665,7 +1665,7 @@
 
               IF ( row_out( ptr_out( col ) ) == col ) THEN
                 idiag = idiag + 1
-              ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+              ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
                 flag = ERROR_MISSING_DIAGONAL
                 CALL print_matrix_flag( context, nout, flag )
                 RETURN
@@ -1679,7 +1679,7 @@
                 row_out( kk ) = row_out( ii )
                 kk = kk + 1
               END DO
-            ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+            ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
               flag = ERROR_MISSING_DIAGONAL
               CALL print_matrix_flag( context, nout, flag )
               RETURN
@@ -1710,7 +1710,7 @@
 
         IF ( PRESENT( val_out ) ) THEN
           SELECT CASE ( matrix_type )
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF )
 
 !  check for positive diagonal entries
 
@@ -1734,7 +1734,7 @@
           IF ( ioor > 0 ) flag = WARNING_IDX_OOR
           IF ( idup > 0 ) flag = WARNING_DUP_IDX
           IF ( idup > 0 .AND. ioor > 0 ) flag = WARNING_DUP_AND_OOR
-          IF ( ABS( matrix_type ) /= SSIDS_MATRIX_REAL_SKEW ) THEN
+          IF ( ABS( matrix_type ) /= SLBLT_MATRIX_REAL_SKEW ) THEN
             IF ( idiag < n .AND. ioor > 0 ) THEN
               flag = WARNING_MISS_DIAG_OORDUP
             ELSE IF ( idiag < n .AND. idup > 0 ) THEN
@@ -1865,7 +1865,7 @@
           RETURN
         END IF
 
-        IF ( ABS( matrix_type ) >= SSIDS_MATRIX_REAL_UNSYM .AND. m /= n ) THEN
+        IF ( ABS( matrix_type ) >= SLBLT_MATRIX_REAL_UNSYM .AND. m /= n ) THEN
           flag = ERROR_M_NE_N
           CALL print_matrix_flag( context, nout, flag )
           RETURN
@@ -1910,13 +1910,13 @@
             CYCLE
           END IF
 
-          IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SKEW .AND. i == j ) THEN
+          IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SKEW .AND. i == j ) THEN
             ioor = ioor + 1
             CYCLE
           END IF
 
           SELECT CASE ( ABS( matrix_type ) )
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF: )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF: )
             IF ( i >= j ) THEN
               ptr_out( j + 1 ) = ptr_out( j + 1 ) + 1
             ELSE
@@ -1956,7 +1956,7 @@
           IF ( st /= 0 ) GO TO 100
           map( : ) = 0
           SELECT CASE ( matrix_type )
-          CASE ( SSIDS_MATRIX_REAL_SKEW )
+          CASE ( SLBLT_MATRIX_REAL_SKEW )
             DO l = 1, ne
               i = row( l )
               j = col( l )
@@ -1974,7 +1974,7 @@
               END IF
             END DO
 
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF, SSIDS_MATRIX_REAL_SYM_INDEF )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF, SLBLT_MATRIX_REAL_SYM_INDEF )
             DO l = 1, ne
               i = row( l )
               j = col( l )
@@ -2006,7 +2006,7 @@
           ALLOCATE ( val_out( ne_new ), STAT = st )
           IF ( st /= 0 ) GO TO 100
           SELECT CASE ( matrix_type )
-          CASE ( SSIDS_MATRIX_REAL_SKEW )
+          CASE ( SLBLT_MATRIX_REAL_SKEW )
             DO l = 1, ne
               i = row( l )
               j = col( l )
@@ -2024,7 +2024,7 @@
               END IF
             END DO
 
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF, SSIDS_MATRIX_REAL_SYM_INDEF )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF, SLBLT_MATRIX_REAL_SYM_INDEF )
             DO l = 1, ne
               i = row( l )
               j = col( l )
@@ -2057,7 +2057,7 @@
 
         ELSE
           SELECT CASE ( matrix_type )
-          CASE ( SSIDS_MATRIX_REAL_SKEW )
+          CASE ( SLBLT_MATRIX_REAL_SKEW )
             DO l = 1, ne
               i = row( l )
               j = col( l )
@@ -2073,7 +2073,7 @@
               END IF
             END DO
 
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF, SSIDS_MATRIX_REAL_SYM_INDEF )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF, SLBLT_MATRIX_REAL_SYM_INDEF )
             DO l = 1, ne
               i = row( l )
               j = col( l )
@@ -2262,7 +2262,7 @@
 !  check for missing diagonals in pos def and indef cases
 !  Note: change this test for complex case
 
-        IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+        IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
           DO j = 1, n
             IF ( ptr_out( j ) < ptr_out( n + 1 ) ) THEN
               IF ( row_out( ptr_out( j ) ) /= j ) THEN
@@ -2295,7 +2295,7 @@
 
         IF ( PRESENT( val_out ) ) THEN
           SELECT CASE ( matrix_type )
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF )
 
 !  check for positive diagonal entries
 
@@ -2319,7 +2319,7 @@
           IF ( ioor > 0 ) flag = WARNING_IDX_OOR
           IF ( idup > 0 ) flag = WARNING_DUP_IDX
           IF ( idup > 0 .AND. ioor > 0 ) flag = WARNING_DUP_AND_OOR
-          IF ( ABS( matrix_type ) /= SSIDS_MATRIX_REAL_SKEW ) THEN
+          IF ( ABS( matrix_type ) /= SLBLT_MATRIX_REAL_SKEW ) THEN
             IF ( idiag < n .AND. ioor > 0 ) THEN
               flag = WARNING_MISS_DIAG_OORDUP
             ELSE IF ( idiag < n .AND. idup > 0 ) THEN
@@ -2337,13 +2337,13 @@
           IF ( ioor > 0 ) flag = WARNING_IDX_OOR
           IF ( idup > 0 ) flag = WARNING_DUP_IDX
           IF ( idup > 0 .AND. ioor > 0 ) flag = WARNING_DUP_AND_OOR
-          IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_INDEF .AND.         &
+          IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_INDEF .AND.         &
                idiag < n .AND. ioor > 0 ) THEN
             flag = WARNING_MISS_DIAG_OORDUP
-          ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_INDEF .AND.    &
+          ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_INDEF .AND.    &
                     idiag < n .AND. idup > 0 ) THEN
             flag = WARNING_MISS_DIAG_OORDUP
-          ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_INDEF .AND.    &
+          ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_INDEF .AND.    &
                     idiag < n ) THEN
             flag = WARNING_MISSING_DIAGONAL
           END IF
@@ -2476,7 +2476,7 @@
           RETURN
         END IF
 
-        IF ( ABS( matrix_type ) >= SSIDS_MATRIX_REAL_UNSYM .AND. m /= n ) THEN
+        IF ( ABS( matrix_type ) >= SLBLT_MATRIX_REAL_UNSYM .AND. m /= n ) THEN
           flag = ERROR_M_NE_N
           CALL print_matrix_flag( context, nout, flag )
           RETURN
@@ -2521,13 +2521,13 @@
             CYCLE
           END IF
 
-          IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SKEW .AND. i == j ) THEN
+          IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SKEW .AND. i == j ) THEN
             ioor = ioor + 1
             CYCLE
           END IF
 
           SELECT CASE ( ABS( matrix_type ) )
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF: )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF: )
             IF ( i >= j ) THEN
               ptr_out( j + 1 ) = ptr_out( j + 1 ) + 1
             ELSE
@@ -2567,7 +2567,7 @@
           IF ( st /= 0 ) GO TO 100
           map( : ) = 0
           SELECT CASE ( matrix_type )
-          CASE ( SSIDS_MATRIX_REAL_SKEW )
+          CASE ( SLBLT_MATRIX_REAL_SKEW )
             DO ll = 1, ne
               i = row( ll )
               j = col( ll )
@@ -2585,7 +2585,7 @@
               END IF
             END DO
 
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF, SSIDS_MATRIX_REAL_SYM_INDEF )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF, SLBLT_MATRIX_REAL_SYM_INDEF )
             DO ll = 1, ne
               i = row( ll )
               j = col( ll )
@@ -2617,7 +2617,7 @@
           ALLOCATE ( val_out( ne_new ), STAT = st )
           IF ( st /= 0 ) GO TO 100
           SELECT CASE ( matrix_type )
-          CASE ( SSIDS_MATRIX_REAL_SKEW )
+          CASE ( SLBLT_MATRIX_REAL_SKEW )
             DO ll = 1, ne
               i = row( ll )
               j = col( ll )
@@ -2635,7 +2635,7 @@
               END IF
             END DO
 
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF, SSIDS_MATRIX_REAL_SYM_INDEF )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF, SLBLT_MATRIX_REAL_SYM_INDEF )
             DO ll = 1, ne
               i = row( ll )
               j = col( ll )
@@ -2668,7 +2668,7 @@
 
         ELSE
           SELECT CASE ( matrix_type )
-          CASE ( SSIDS_MATRIX_REAL_SKEW )
+          CASE ( SLBLT_MATRIX_REAL_SKEW )
             DO ll = 1, ne
               i = row( ll )
               j = col( ll )
@@ -2684,7 +2684,7 @@
               END IF
             END DO
 
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF, SSIDS_MATRIX_REAL_SYM_INDEF )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF, SLBLT_MATRIX_REAL_SYM_INDEF )
             DO ll = 1, ne
               i = row( ll )
               j = col( ll )
@@ -2871,7 +2871,7 @@
 !  check for missing diagonals in pos def and indef cases
 !  Note: change this test for complex case
 
-        IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_PSDEF ) THEN
+        IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_PSDEF ) THEN
           DO j = 1, n
             IF ( ptr_out( j ) < ptr_out( n + 1 ) ) THEN
               IF ( row_out( ptr_out( j ) ) /= j ) THEN
@@ -2904,7 +2904,7 @@
 
         IF ( PRESENT( val_out ) ) THEN
           SELECT CASE ( matrix_type )
-          CASE ( SSIDS_MATRIX_REAL_SYM_PSDEF )
+          CASE ( SLBLT_MATRIX_REAL_SYM_PSDEF )
 
 !  check for positive diagonal entries
 
@@ -2928,7 +2928,7 @@
           IF ( ioor > 0 ) flag = WARNING_IDX_OOR
           IF ( idup > 0 ) flag = WARNING_DUP_IDX
           IF ( idup > 0 .AND. ioor > 0 ) flag = WARNING_DUP_AND_OOR
-          IF ( ABS( matrix_type ) /= SSIDS_MATRIX_REAL_SKEW ) THEN
+          IF ( ABS( matrix_type ) /= SLBLT_MATRIX_REAL_SKEW ) THEN
             IF ( idiag < n .AND. ioor > 0 ) THEN
               flag = WARNING_MISS_DIAG_OORDUP
             ELSE IF ( idiag < n .AND. idup > 0 ) THEN
@@ -2946,13 +2946,13 @@
           IF ( ioor > 0 ) flag = WARNING_IDX_OOR
           IF ( idup > 0 ) flag = WARNING_DUP_IDX
           IF ( idup > 0 .AND. ioor > 0 ) flag = WARNING_DUP_AND_OOR
-          IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_INDEF .AND.         &
+          IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_INDEF .AND.         &
                idiag < n .AND. ioor > 0 ) THEN
             flag = WARNING_MISS_DIAG_OORDUP
-          ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_INDEF .AND.    &
+          ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_INDEF .AND.    &
                     idiag < n .AND. idup > 0 ) THEN
             flag = WARNING_MISS_DIAG_OORDUP
-          ELSE IF ( ABS( matrix_type ) == SSIDS_MATRIX_REAL_SYM_INDEF .AND.    &
+          ELSE IF ( ABS( matrix_type ) == SLBLT_MATRIX_REAL_SYM_INDEF .AND.    &
                     idiag < n ) THEN
             flag = WARNING_MISSING_DIAGONAL
           END IF
@@ -3011,7 +3011,7 @@
 
 !  skew symmetric matrix
 
-        CASE ( SSIDS_MATRIX_REAL_SKEW )
+        CASE ( SLBLT_MATRIX_REAL_SKEW )
 
 !  first set val_out using first part of map
 
@@ -3072,7 +3072,7 @@
 
 !  skew symmetric matrix
 
-        CASE ( SSIDS_MATRIX_REAL_SKEW )
+        CASE ( SLBLT_MATRIX_REAL_SKEW )
 
 !  first set val_out using first part of map
 

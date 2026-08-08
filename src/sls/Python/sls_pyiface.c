@@ -1,7 +1,7 @@
 //* \file sls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.2 - 2025-03-26 AT 13:50 GMT.
+ * THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 13:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -33,7 +33,7 @@ PyObject* nodend_make_inform_dict(const struct nodend_inform_type *inform);
 //PyObject* ma86_make_inform_dict(const struct ma86_inform_type *inform);
 //PyObject* ma87_make_inform_dict(const struct ma87_inform_type *inform);
 //PyObject* ma97_make_inform_dict(const struct ma97_inform_type *inform);
-//PyObject* ssids_make_inform_dict(const struct ssids_inform_type *inform);
+//PyObject* slblt_make_inform_dict(const struct slblt_inform_type *inform);
 //PyObject* mc64_make_inform_dict(const struct mc64_inform_type *inform);
 //PyObject* mc68_make_inform_dict(const struct mc68_inform_type *inform);
 
@@ -658,8 +658,8 @@ PyObject* sls_make_inform_dict(const struct sls_inform_type *inform){
     //                     ma87_make_inform_dict(&inform->ma87_inform));
     //PyDict_SetItemString(py_inform, "ma97_inform",
     //                     ma97_make_inform_dict(&inform->ma97_inform));
-    //PyDict_SetItemString(py_inform, "ssids_inform",
-    //                     ssids_make_inform_dict(&inform->ssids_inform));
+    //PyDict_SetItemString(py_inform, "slblt_inform",
+    //                     slblt_make_inform_dict(&inform->slblt_inform));
     //PyDict_SetItemString(py_inform, "mc61_info",
     //                     PyLong_FromLong(inform->mc61_info));
     //PyDict_SetItemString(py_inform, "mc61_rinfo",
@@ -991,11 +991,11 @@ PyDoc_STRVAR(sls_module_doc,
 "\n"
 "The method provides a common interface to a variety of well-known solvers \n"
 "from HSL and elsewhere. Currently supported solvers include MA27/SILS, \n"
-"HSL_MA57, HSL_MA77 , HSL_MA86, HSL_MA87 and HSL_MA97 from HSL, SSIDS \n"
-"from SPRAL, MUMPS from Mumps Technologies, PARDISO both from the \n"
+"HSL_MA57, HSL_MA77 , HSL_MA86, HSL_MA87 and HSL_MA97 from HSL, SLBLT, \n"
+"MUMPS from Mumps Technologies, PARDISO both from the \n"
 "Pardiso Project and Intel’s MKL, PaStiX from Inria, and WSMP from the \n"
 "IBM alpha Works, as well as POTR, SYTR and SBTR from LAPACK. Note\n"
-"that, with the exception of SSIDS and the Netlib reference LAPACK codes, \n"
+"that, with the exception of SLBLT and the Netlib reference LAPACK codes, \n"
 "the solvers themselves do not form part of this package and must be \n"
 "obtained/linked to separately. Dummy instances are provided for solvers \n"
 "that are unavailable. Also note that additional flexibility may be \n"

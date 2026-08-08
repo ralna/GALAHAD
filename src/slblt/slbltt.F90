@@ -1,15 +1,15 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-31 AT 10:00 GMT
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 10:00 GMT
 
 #include "galahad_modules.h"
 
-   PROGRAM GALAHAD_SSIDS_test_program
+   PROGRAM GALAHAD_SLBLT_test_program
    USE GALAHAD_KINDS_precision
-   USE GALAHAD_SSIDS_precision
+   USE GALAHAD_SLBLT_precision
    IMPLICIT NONE
-   TYPE( SSIDS_inform_type ) :: inform
-   TYPE( SSIDS_akeep_type ) :: akeep
-   TYPE( SSIDS_fkeep_type ) :: fkeep
-   TYPE( SSIDS_control_type ) :: control
+   TYPE( SLBLT_inform_type ) :: inform
+   TYPE( SLBLT_akeep_type ) :: akeep
+   TYPE( SLBLT_fkeep_type ) :: fkeep
+   TYPE( SLBLT_control_type ) :: control
    INTEGER ( KIND = ip_ ) :: i, ordering, flag
 !  LOGICAL :: mpi_flag
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, ne  = 7
@@ -25,11 +25,11 @@
      SOL = (/ 1.0_rp_,  2.0_rp_,  3.0_rp_,  4.0_rp_,  5.0_rp_ /)
 
 #ifdef REAL_32
-   WRITE( 6, "( '  ssids single precision tests', / )" )
+   WRITE( 6, "( '  slblt single precision tests', / )" )
 #elif REAL_128
-   WRITE( 6, "( '  ssids quadruple precision tests', / )" )
+   WRITE( 6, "( '  slblt quadruple precision tests', / )" )
 #else
-   WRITE( 6, "( '  ssids double precision tests', / )" )
+   WRITE( 6, "( '  slblt double precision tests', / )" )
 #endif
 
 !  test external ordering strategies
@@ -50,10 +50,10 @@
      IF ( ordering == 1 ) THEN
        DO i = 1, n ; ORDER( i ) = n - i + 1 ; END DO
        control%ordering = 0
-       CALL SSIDS_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,       &
+       CALL SLBLT_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,       &
                            val = VAL, order = ORDER )
      ELSE
-       CALL SSIDS_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,       &
+       CALL SLBLT_analyse( .FALSE., n, PTR, ROW, akeep, control, inform,       &
                            val = VAL )
      END IF
      IF ( inform%flag < 0 ) THEN
@@ -66,7 +66,7 @@
 ! factorize the matrix
 
 !    WRITE(6,*) ' factorize '
-     CALL SSIDS_factor( .FALSE., VAL, akeep, fkeep, control, inform,           &
+     CALL SLBLT_factor( .FALSE., VAL, akeep, fkeep, control, inform,           &
                         ptr = PTR, row = ROW )
      IF ( inform%flag < 0 ) THEN
        WRITE( 6, "( '  fail in factorize, status = ', I0 )",                   &
@@ -79,7 +79,7 @@
 
 !    WRITE(6,*) ' solve 1 RHS'
      X = RHS
-     CALL SSIDS_solve( X, akeep, fkeep, control, inform )
+     CALL SLBLT_solve( X, akeep, fkeep, control, inform )
 !    WRITE(6,"( ' X = ', 5ES10.2 )" ) X( 1 : n )
 !    WRITE(6,*) ' status - ', inform%flag
 
@@ -94,7 +94,7 @@
 ! Solve multiple RHS without refinement
 
      X2( : , 1 ) = RHS ; X2( : , 2 ) = RHS
-     CALL SSIDS_solve( 2_ip_, X2, n, akeep, fkeep, control, inform )
+     CALL SLBLT_solve( 2_ip_, X2, n, akeep, fkeep, control, inform )
 
 !    WRITE(6,*) ' status - ', inform%flag
      IF ( MAXVAL( ABS( X2( 1 : n, 1 ) - SOL( 1 : n ) ) )                       &
@@ -110,16 +110,16 @@
 
      X = RHS
 !    WRITE(6,*) ' L '
-     CALL SSIDS_solve( X, akeep, fkeep, control, inform, job = 1_ip_ )
+     CALL SLBLT_solve( X, akeep, fkeep, control, inform, job = 1_ip_ )
      IF (inform%flag /= 0 ) THEN
        WRITE( 6, "( '    fail ' )", advance = 'no' )
        WRITE( 6, "( '' )" )
        CYCLE
      END IF
 !    WRITE(6,*) ' D '
-     CALL SSIDS_solve( X, akeep, fkeep, control, inform, job = 2_ip_ )
+     CALL SLBLT_solve( X, akeep, fkeep, control, inform, job = 2_ip_ )
 !    WRITE(6,*) ' U '
-     CALL SSIDS_solve( X, akeep, fkeep, control, inform, job = 3_ip_ )
+     CALL SLBLT_solve( X, akeep, fkeep, control, inform, job = 3_ip_ )
 !    WRITE(6,*) ' E '
      IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                            &
              <= EPSILON( 1.0_rp_ ) ** 0.333 ) THEN
@@ -131,19 +131,19 @@
 !  enquire about factors and modify diagonals
 
 !    WRITE(6,*) ' enquire '
-     CALL SSIDS_enquire_indef( akeep, fkeep, control, inform,                  &
+     CALL SLBLT_enquire_indef( akeep, fkeep, control, inform,                  &
                                piv_order = ORDER, d = D )
 !    WRITE(6,*) ' alter d '
-     CALL SSIDS_alter( D, akeep, fkeep, control, inform)
+     CALL SLBLT_alter( D, akeep, fkeep, control, inform)
 
 !  free data
 
 !    WRITE(6,*) ' terminate '
-     CALL SSIDS_free(akeep, fkeep, flag )
+     CALL SLBLT_free(akeep, fkeep, flag )
      WRITE( 6, "( '' )" )
    END DO
 !  CALL MPI_INITIALIZED( mpi_flag, i )
 !  IF ( mpi_flag ) CALL MPI_FINALIZE( i )
-   WRITE( 6, "( /, '  ssids tests completed' )" )
+   WRITE( 6, "( /, '  slblt tests completed' )" )
    STOP
-   END PROGRAM GALAHAD_SSIDS_test_program
+   END PROGRAM GALAHAD_SLBLT_test_program

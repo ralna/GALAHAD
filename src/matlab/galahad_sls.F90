@@ -1,7 +1,7 @@
 
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 3.3 - 09/11/2020 AT 14:20 GMT.
+!  THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 14:20 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
@@ -54,7 +54,7 @@
 !        'ma86'
 !        'ma87'
 !        'ma97'
-!        'ssids'
+!        'slblt'
 !        'pardiso'
 !        'wsmp'
 !        'potr'

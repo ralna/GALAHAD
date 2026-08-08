@@ -1,46 +1,9 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-11-29 AT 13:30 GMT
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 13:30 GMT
 
-#ifdef REAL_32
-#ifdef INTEGER_64
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_single_64
-#define GALAHAD_SSIDS_precision GALAHAD_SSIDS_single_64
-#define GALAHAD_SSIDS_precision_ciface GALAHAD_SSIDS_single_ciface_64
-#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_single_ciface_64
-#else
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_single
-#define GALAHAD_SSIDS_precision GALAHAD_SSIDS_single
-#define GALAHAD_SSIDS_precision_ciface GALAHAD_SSIDS_single_ciface
-#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_single_ciface
-#endif
-#elif REAL_128
-#ifdef INTEGER_64
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_quadruple_64
-#define GALAHAD_SSIDS_precision GALAHAD_SSIDS_quadruple_64
-#define GALAHAD_SSIDS_precision_ciface GALAHAD_SSIDS_quadruple_ciface_64
-#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_quadruple_ciface_64
-#else
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_quadruple
-#define GALAHAD_SSIDS_precision GALAHAD_SSIDS_quadruple
-#define GALAHAD_SSIDS_precision_ciface GALAHAD_SSIDS_quadruple_ciface
-#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_quadruple_ciface
-#endif
-#else
-#ifdef INTEGER_64
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_double_64
-#define GALAHAD_SSIDS_precision GALAHAD_SSIDS_double_64
-#define GALAHAD_SSIDS_precision_ciface GALAHAD_SSIDS_double_ciface_64
-#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_double_ciface_64
-#else
-#define GALAHAD_KINDS_precision GALAHAD_KINDS_double
-#define GALAHAD_SSIDS_precision GALAHAD_SSIDS_double
-#define GALAHAD_SSIDS_precision_ciface GALAHAD_SSIDS_double_ciface
-#define GALAHAD_NODEND_precision_ciface GALAHAD_NODEND_double_ciface
-#endif
-#endif
-
+#include "galahad_modules.h"
 #include "galahad_cfunctions.h"
 
-!-*-*-*-*-*-*-*-  G A L A H A D _ S S I D S   C   I N T E R F A C E  -*-*-*-*-*-
+!-*-*-*-*-*-*-*-  G A L A H A D _ S L B L T   C   I N T E R F A C E  -*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal authors: Jaroslav Fowkes & Nick Gould
@@ -51,29 +14,29 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-!  C interface module to GALAHAD_SSIDS types and interfaces
+!  C interface module to GALAHAD_SLBLT types and interfaces
 
-  MODULE GALAHAD_SSIDS_precision_ciface
+  MODULE GALAHAD_SLBLT_precision_ciface
     USE GALAHAD_KINDS_precision
-    USE GALAHAD_SSIDS_precision, ONLY : f_ssids_analyse => SSIDS_analyse,      &
-                                        f_ssids_analyse_coord                  &
-                                          => SSIDS_analyse_coord,              &
-                                        f_ssids_factor => SSIDS_factor,        &
-                                        f_ssids_solve => SSIDS_solve,          &
-                                        f_ssids_free => SSIDS_free,            &
-                                        f_ssids_enquire_posdef                 &
-                                          => SSIDS_enquire_posdef,             &
-                                        f_ssids_enquire_indef                  &
-                                          => SSIDS_enquire_indef,              &
-                                        f_ssids_alter => SSIDS_alter,          &
-                                        f_ssids_control_type                   &
-                                          => SSIDS_control_type,               &
-                                        f_ssids_inform_type                    &
-                                          => SSIDS_inform_type,                &
-                                        f_ssids_akeep_type                     &
-                                          => SSIDS_akeep_type,                 &
-                                        f_ssids_fkeep_type                     &
-                                          => SSIDS_fkeep_type
+    USE GALAHAD_SLBLT_precision, ONLY : f_slblt_analyse => SLBLT_analyse,      &
+                                        f_slblt_analyse_coord                  &
+                                          => SLBLT_analyse_coord,              &
+                                        f_slblt_factor => SLBLT_factor,        &
+                                        f_slblt_solve => SLBLT_solve,          &
+                                        f_slblt_free => SLBLT_free,            &
+                                        f_slblt_enquire_posdef                 &
+                                          => SLBLT_enquire_posdef,             &
+                                        f_slblt_enquire_indef                  &
+                                          => SLBLT_enquire_indef,              &
+                                        f_slblt_alter => SLBLT_alter,          &
+                                        f_slblt_control_type                   &
+                                          => SLBLT_control_type,               &
+                                        f_slblt_inform_type                    &
+                                          => SLBLT_inform_type,                &
+                                        f_slblt_akeep_type                     &
+                                          => SLBLT_akeep_type,                 &
+                                        f_slblt_fkeep_type                     &
+                                          => SLBLT_fkeep_type
     USE GALAHAD_NODEND_precision_ciface, ONLY:                                 &
         nodend_inform_type, nodend_control_type,                               &
         copy_nodend_control_in => copy_control_in,                             &
@@ -86,7 +49,7 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-    TYPE, BIND( C ) :: ssids_control_type
+    TYPE, BIND( C ) :: slblt_control_type
        INTEGER ( KIND = ipc_ ) :: array_base
        INTEGER ( KIND = ipc_ ) :: print_level
        INTEGER ( KIND = ipc_ ) :: unit_diagnostics
@@ -109,9 +72,9 @@
        REAL ( KIND = spc_ ) :: min_loadbalance
 !    character(len=:), allocatable :: rb_dump
        INTEGER ( KIND = ipc_ ) :: failed_pivot_method
-    END TYPE ssids_control_type
+    END TYPE slblt_control_type
 
-    TYPE, BIND( C ) :: ssids_inform_type
+    TYPE, BIND( C ) :: slblt_inform_type
        INTEGER ( KIND = ipc_ ) :: flag
        INTEGER ( KIND = ipc_ ) :: matrix_dup
        INTEGER ( KIND = ipc_ ) :: matrix_missing_diag
@@ -134,7 +97,7 @@
        INTEGER ( KIND = ipc_ ) :: nparts
        INTEGER ( KIND = longc_ ) :: flops
 !      CHARACTER(C_CHAR) :: unused(76)
-    END TYPE ssids_inform_type
+    END TYPE slblt_inform_type
 
 !----------------------
 !   P r o c e d u r e s
@@ -145,8 +108,8 @@
 !  copy C options parameters to fortran
 
     SUBROUTINE copy_control_in( ccontrol, fcontrol, cindexed )
-    TYPE ( ssids_control_type ), INTENT( IN ) :: ccontrol
-    TYPE ( f_ssids_control_type ), INTENT( OUT ) :: fcontrol
+    TYPE ( slblt_control_type ), INTENT( IN ) :: ccontrol
+    TYPE ( f_slblt_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, INTENT( OUT ) :: cindexed
 
     cindexed = ccontrol%array_base == 0
@@ -177,8 +140,8 @@
 !  copy fortran information parameters to C
 
     SUBROUTINE copy_inform_out( finform, cinform )
-    TYPE ( f_ssids_inform_type ), INTENT( IN ) :: finform
-    TYPE ( ssids_inform_type ), INTENT( OUT ) :: cinform
+    TYPE ( f_slblt_inform_type ), INTENT( IN ) :: finform
+    TYPE ( slblt_inform_type ), INTENT( OUT ) :: cinform
 
     cinform%flag = finform%flag
     cinform%matrix_dup = finform%matrix_dup
@@ -204,23 +167,23 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_SSIDS_precision_ciface
+  END MODULE GALAHAD_SLBLT_precision_ciface
 
 !  ------------------
 !  Revitalize options
 !  ------------------
 
-  SUBROUTINE ssids_default_control( ccontrol ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  SUBROUTINE slblt_default_control( ccontrol ) BIND( C )
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  TYPE ( ssids_control_type ), INTENT( OUT ) :: ccontrol
+  TYPE ( slblt_control_type ), INTENT( OUT ) :: ccontrol
 
 !  local variables
 
-  TYPE ( f_ssids_control_type ) :: default_control
+  TYPE ( f_slblt_control_type ) :: default_control
 
   ccontrol%array_base              = 0 ! C
   ccontrol%print_level             = default_control%print_level
@@ -243,15 +206,15 @@
   ccontrol%multiplier              = default_control%multiplier
   ccontrol%min_loadbalance         = default_control%min_loadbalance
   ccontrol%failed_pivot_method     = default_control%failed_pivot_method
-  END SUBROUTINE ssids_default_control
+  END SUBROUTINE slblt_default_control
 
 !  ------------------------------------
-!  C interface to fortran ssids_analyse
+!  C interface to fortran slblt_analyse
 !  ------------------------------------
 
-  SUBROUTINE ssids_analyse( ccheck, n, corder, cptr, crow, cval,               &
+  SUBROUTINE slblt_analyse( ccheck, n, corder, cptr, crow, cval,               &
                             cakeep, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -262,8 +225,8 @@
   INTEGER ( KIND = longc_ ), TARGET, DIMENSION( n + 1 ) :: cptr
   TYPE ( C_PTR ), value :: cval
   TYPE ( C_PTR ), INTENT( INOUT ) :: cakeep
-  TYPE ( ssids_control_type ), INTENT( IN ) :: ccontrol
-  TYPE ( ssids_inform_type ), INTENT( OUT ) :: cinform
+  TYPE ( slblt_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( slblt_inform_type ), INTENT( OUT ) :: cinform
   INTEGER ( KIND = ipc_ ), TARGET,                                             &
     DIMENSION( cptr( n + 1 ) - ccontrol%array_base ) :: crow
 
@@ -277,9 +240,9 @@
   INTEGER ( KIND = ipc_ ), DIMENSION( : ), POINTER :: forder
   INTEGER ( KIND = ipc_ ), DIMENSION( : ), ALLOCATABLE, TARGET :: forder_alloc
   REAL ( KIND = rpc_ ), DIMENSION( : ), POINTER :: fval
-  TYPE ( f_ssids_akeep_type ), POINTER :: fakeep
-  TYPE ( f_ssids_control_type ) :: fcontrol
-  TYPE ( f_ssids_inform_type ) :: finform
+  TYPE ( f_slblt_akeep_type ), POINTER :: fakeep
+  TYPE ( f_slblt_control_type ) :: fcontrol
+  TYPE ( f_slblt_inform_type ) :: finform
   LOGICAL :: cindexed
 
 !  copy control in first to find out whether we use fortran or C indexing
@@ -337,18 +300,18 @@ write(99,*) ' frow ', frow( : fptr( n + 1 ) - 1 )
 close(99)
   IF ( ASSOCIATED( forder ) ) THEN
     IF ( ASSOCIATED( fval ) ) THEN
-      CALL f_ssids_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform,  &
+      CALL f_slblt_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform,  &
                             order = forder, val = fval )
     ELSE
-      CALL f_ssids_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform,  &
+      CALL f_slblt_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform,  &
                             order = forder )
     END IF
   ELSE
     IF (ASSOCIATED(fval)) THEN
-      CALL f_ssids_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform,  &
+      CALL f_slblt_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform,  &
                             val = fval )
     ELSE
-      CALL f_ssids_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform )
+      CALL f_slblt_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform )
     END IF
   END IF
 
@@ -360,15 +323,15 @@ close(99)
   END IF
   CALL copy_inform_out( finform, cinform )
 
-  END SUBROUTINE ssids_analyse
+  END SUBROUTINE slblt_analyse
 
 !  ---------------------------------------------------------
 !  C interface to fortrans sids_analyse with 32-bit pointers
 !  ---------------------------------------------------------
 
-  SUBROUTINE ssids_analyse_ptr32( ccheck, n, corder, cptr, crow, cval, &
+  SUBROUTINE slblt_analyse_ptr32( ccheck, n, corder, cptr, crow, cval, &
                                         cakeep, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -379,8 +342,8 @@ close(99)
   INTEGER ( KIND = ipc_ ), TARGET, DIMENSION( n + 1 ) :: cptr
   TYPE ( C_PTR ), VALUE :: cval
   TYPE ( C_PTR ), INTENT( INOUT ) :: cakeep
-  TYPE ( ssids_control_type ), INTENT( IN ) :: ccontrol
-  TYPE ( ssids_inform_type ), INTENT( OUT ) :: cinform
+  TYPE ( slblt_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( slblt_inform_type ), INTENT( OUT ) :: cinform
   INTEGER ( KIND = ipc_ ), TARGET,                                             &
     DIMENSION( cptr( n + 1 ) - ccontrol%array_base ) :: crow
 
@@ -394,9 +357,9 @@ close(99)
   INTEGER ( KIND = ipc_ ), DIMENSION( : ), POINTER :: forder
   INTEGER ( KIND = ipc_ ), DIMENSION( : ), ALLOCATABLE, TARGET :: forder_alloc
   REAL ( KIND = rpc_ ), DIMENSION( : ), POINTER :: fval
-  TYPE ( f_ssids_akeep_type ), POINTER :: fakeep
-  TYPE ( f_ssids_control_type ) :: fcontrol
-  TYPE ( f_ssids_inform_type ) :: finform
+  TYPE ( f_slblt_akeep_type ), POINTER :: fakeep
+  TYPE ( f_slblt_control_type ) :: fcontrol
+  TYPE ( f_slblt_inform_type ) :: finform
 
   LOGICAL :: cindexed
 
@@ -451,18 +414,18 @@ close(99)
 
   IF ( ASSOCIATED( forder ) ) THEN
     IF ( ASSOCIATED( fval ) ) THEN
-      CALL f_ssids_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform,  &
+      CALL f_slblt_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform,  &
                             order = forder, val = fval )
     ELSE
-      CALL f_ssids_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform,  &
+      CALL f_slblt_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform,  &
                             order = forder )
     END IF
   ELSE
     IF ( ASSOCIATED( fval ) ) THEN
-      CALL f_ssids_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform,  &
+      CALL f_slblt_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform,  &
                             val = fval )
     ELSE
-      CALL f_ssids_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform )
+      CALL f_slblt_analyse( fcheck, n, fptr, frow, fakeep, fcontrol, finform )
     END IF
   END IF
 
@@ -474,15 +437,15 @@ close(99)
   END IF
   CALL copy_inform_out( finform, cinform )
 
-  END SUBROUTINE ssids_analyse_ptr32
+  END SUBROUTINE slblt_analyse_ptr32
 
 !  ------------------------------------------
 !  C interface to fortrans sids_analyse_coord
 !  ------------------------------------------
 
-  SUBROUTINE ssids_analyse_coord( n, corder, ne, crow, ccol, cval,     &
+  SUBROUTINE slblt_analyse_coord( n, corder, ne, crow, ccol, cval,     &
                                           cakeep, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -494,8 +457,8 @@ close(99)
   INTEGER ( KIND = ipc_ ), TARGET, DIMENSION( ne ) :: ccol
   TYPE ( C_PTR ), VALUE :: cval
   TYPE ( C_PTR ), INTENT( INOUT ) :: cakeep
-  TYPE ( ssids_control_type ), INTENT( IN ) :: ccontrol
-  TYPE ( ssids_inform_type ), INTENT( OUT ) :: cinform
+  TYPE ( slblt_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( slblt_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
@@ -506,9 +469,9 @@ close(99)
   INTEGER ( KIND = ipc_ ), DIMENSION( : ), POINTER :: forder
   INTEGER ( KIND = ipc_ ), DIMENSION( : ), ALLOCATABLE, TARGET :: forder_alloc
   REAL ( KIND = rpc_ ), DIMENSION( : ), POINTER :: fval
-  TYPE ( f_ssids_akeep_type ), POINTER :: fakeep
-  TYPE ( f_ssids_control_type ) :: fcontrol
-  TYPE ( f_ssids_inform_type ) :: finform
+  TYPE ( f_slblt_akeep_type ), POINTER :: fakeep
+  TYPE ( f_slblt_control_type ) :: fcontrol
+  TYPE ( f_slblt_inform_type ) :: finform
 
   LOGICAL :: cindexed
 
@@ -562,18 +525,18 @@ close(99)
 
   IF ( ASSOCIATED( forder ) ) THEN
     IF ( ASSOCIATED( fval ) ) THEN
-      CALL f_ssids_analyse_coord( n, ne, frow, fcol, fakeep, fcontrol,         &
+      CALL f_slblt_analyse_coord( n, ne, frow, fcol, fakeep, fcontrol,         &
                                   finform,  order = forder, val = fval )
     ELSE
-      CALL f_ssids_analyse_coord( n, ne, frow, fcol, fakeep, fcontrol,         &
+      CALL f_slblt_analyse_coord( n, ne, frow, fcol, fakeep, fcontrol,         &
                                   finform, order = forder )
     END IF
   ELSE
     IF ( ASSOCIATED( fval ) ) THEN
-      CALL f_ssids_analyse_coord( n, ne, frow, fcol, fakeep, fcontrol,         &
+      CALL f_slblt_analyse_coord( n, ne, frow, fcol, fakeep, fcontrol,         &
                                   finform, val = fval )
     ELSE
-      CALL f_ssids_analyse_coord( n, ne, frow, fcol, fakeep, fcontrol, finform )
+      CALL f_slblt_analyse_coord( n, ne, frow, fcol, fakeep, fcontrol, finform )
     END IF
   END IF
 
@@ -585,15 +548,15 @@ close(99)
   END IF
   CALL copy_inform_out( finform, cinform )
 
-  END SUBROUTINE ssids_analyse_coord
+  END SUBROUTINE slblt_analyse_coord
 
 !  -----------------------------------
-!  C interface to fortran ssids_factor
+!  C interface to fortran slblt_factor
 !  -----------------------------------
 
-  SUBROUTINE ssids_factor( cposdef, cptr, crow, val, cscale, cakeep,          &
+  SUBROUTINE slblt_factor( cposdef, cptr, crow, val, cscale, cakeep,          &
                            cfkeep, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -605,8 +568,8 @@ close(99)
   TYPE ( C_PTR ), VALUE :: cscale
   TYPE ( C_PTR ), VALUE :: cakeep
   TYPE ( C_PTR ), INTENT( INOUT ) :: cfkeep
-  TYPE ( ssids_control_type ), INTENT( IN ) :: ccontrol
-  TYPE ( ssids_inform_type ), INTENT( OUT ) :: cinform
+  TYPE ( slblt_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( slblt_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
@@ -616,10 +579,10 @@ close(99)
   INTEGER ( KIND = ipc_ ), DIMENSION( : ), POINTER :: frow
   INTEGER ( KIND = ipc_ ), DIMENSION( : ), ALLOCATABLE, TARGET :: frow_alloc
   REAL ( KIND = rpc_ ), DIMENSION( : ), POINTER :: fscale
-  TYPE ( f_ssids_akeep_type ), POINTER :: fakeep
-  TYPE ( f_ssids_fkeep_type ), POINTER :: ffkeep
-  TYPE ( f_ssids_control_type ) :: fcontrol
-  TYPE ( f_ssids_inform_type ) :: finform
+  TYPE ( f_slblt_akeep_type ), POINTER :: fakeep
+  TYPE ( f_slblt_fkeep_type ), POINTER :: ffkeep
+  TYPE ( f_slblt_control_type ) :: fcontrol
+  TYPE ( f_slblt_inform_type ) :: finform
 
   LOGICAL :: cindexed
 
@@ -671,18 +634,18 @@ write(99, "( ' before factor ' )" )
 
   IF ( ASSOCIATED( fptr ) .AND. ASSOCIATED( frow ) ) THEN
     IF ( ASSOCIATED( fscale ) ) THEN
-      CALL f_ssids_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform,    &
+      CALL f_slblt_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform,    &
                            ptr = fptr, row = frow, scale = fscale )
     ELSE
-      CALL f_ssids_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform,    &
+      CALL f_slblt_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform,    &
                            ptr = fptr, row = frow )
     END IF
   ELSE
     IF ( ASSOCIATED( fscale ) ) THEN
-      CALL f_ssids_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform,    &
+      CALL f_slblt_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform,    &
                            scale = fscale )
     ELSE
-      CALL f_ssids_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform )
+      CALL f_slblt_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform )
     END IF
   END IF
 write(99, "( ' after factor ' )" )
@@ -692,15 +655,15 @@ close(99)
 
   CALL copy_inform_out(finform, cinform)
 
-  END SUBROUTINE ssids_factor
+  END SUBROUTINE slblt_factor
 
 !  --------------------------------------------------------
-!  C interface to fortran ssids_factor with 32-bit pointers
+!  C interface to fortran slblt_factor with 32-bit pointers
 !  --------------------------------------------------------
 
-  SUBROUTINE ssids_factor_ptr32( cposdef, cptr, crow, val, cscale, cakeep,     &
+  SUBROUTINE slblt_factor_ptr32( cposdef, cptr, crow, val, cscale, cakeep,     &
                                  cfkeep, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -712,8 +675,8 @@ close(99)
   TYPE ( C_PTR ), VALUE :: cscale
   TYPE ( C_PTR ), VALUE :: cakeep
   TYPE ( C_PTR ), INTENT( INOUT ) :: cfkeep
-  TYPE ( ssids_control_type ), INTENT( IN ) :: ccontrol
-  TYPE ( ssids_inform_type ), INTENT( OUT ) :: cinform
+  TYPE ( slblt_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( slblt_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
@@ -723,10 +686,10 @@ close(99)
   INTEGER ( KIND = ipc_ ), DIMENSION( : ), POINTER :: frow
   INTEGER ( KIND = ipc_ ), DIMENSION( : ), ALLOCATABLE, TARGET :: frow_alloc
   REAL ( KIND = rpc_ ), DIMENSION( : ), POINTER :: fscale
-  TYPE ( f_ssids_akeep_type ), POINTER :: fakeep
-  TYPE ( f_ssids_fkeep_type ), POINTER :: ffkeep
-  TYPE ( f_ssids_control_type ) :: fcontrol
-  TYPE ( f_ssids_inform_type ) :: finform
+  TYPE ( f_slblt_akeep_type ), POINTER :: fakeep
+  TYPE ( f_slblt_fkeep_type ), POINTER :: ffkeep
+  TYPE ( f_slblt_control_type ) :: fcontrol
+  TYPE ( f_slblt_inform_type ) :: finform
 
   LOGICAL :: cindexed
 
@@ -776,18 +739,18 @@ close(99)
 
   IF ( ASSOCIATED( fptr ) .AND. ASSOCIATED( frow ) ) THEN
     IF ( ASSOCIATED( fscale ) ) THEN
-      CALL f_ssids_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform,    &
+      CALL f_slblt_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform,    &
                            ptr = fptr, row = frow, scale = fscale )
     ELSE
-      CALL f_ssids_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform,    &
+      CALL f_slblt_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform,    &
                            ptr = fptr, row = frow )
     END IF
   ELSE
     IF ( ASSOCIATED( fscale ) ) THEN
-      CALL f_ssids_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform,    &
+      CALL f_slblt_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform,    &
                            scale = fscale )
     ELSE
-      CALL f_ssids_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform )
+      CALL f_slblt_factor( fposdef, val, fakeep, ffkeep, fcontrol, finform )
     END IF
   END IF
 
@@ -795,15 +758,15 @@ close(99)
 
   CALL copy_inform_out( finform, cinform )
 
-  END SUBROUTINE ssids_factor_ptr32
+  END SUBROUTINE slblt_factor_ptr32
 
 !  ---------------------------------------------------------------
-!  C interface to fortran galahad_ssids_solve with 1 right-hand side
+!  C interface to fortran galahad_slblt_solve with 1 right-hand side
 !  ---------------------------------------------------------------
 
-  SUBROUTINE ssids_solve1( job, cx1, cakeep, cfkeep, ccontrol,                 &
+  SUBROUTINE slblt_solve1( job, cx1, cakeep, cfkeep, ccontrol,                 &
                            cinform ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -812,16 +775,16 @@ close(99)
   REAL ( KIND = rpc_ ), TARGET, DIMENSION( * ) :: cx1
   TYPE ( C_PTR ), VALUE :: cakeep
   TYPE ( C_PTR ), VALUE :: cfkeep
-  TYPE ( ssids_control_type ), INTENT( IN ) :: ccontrol
-  TYPE ( ssids_inform_type ), INTENT( OUT ) :: cinform
+  TYPE ( slblt_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( slblt_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
   REAL ( KIND = rpc_ ), DIMENSION( : ), POINTER :: fx1
-  TYPE ( f_ssids_akeep_type ), POINTER :: fakeep
-  TYPE ( f_ssids_fkeep_type ), POINTER :: ffkeep
-  TYPE ( f_ssids_control_type ) :: fcontrol
-  TYPE ( f_ssids_inform_type ) :: finform
+  TYPE ( f_slblt_akeep_type ), POINTER :: fakeep
+  TYPE ( f_slblt_fkeep_type ), POINTER :: ffkeep
+  TYPE ( f_slblt_control_type ) :: fcontrol
+  TYPE ( f_slblt_inform_type ) :: finform
 
   LOGICAL :: cindexed
 
@@ -849,24 +812,24 @@ close(99)
 
 !  note: job=0 is an out of range value (but is valid internally!)
 
-     CALL f_ssids_solve( fx1, fakeep, ffkeep, fcontrol, finform )
+     CALL f_slblt_solve( fx1, fakeep, ffkeep, fcontrol, finform )
   ELSE
-     CALL f_ssids_solve( fx1, fakeep, ffkeep, fcontrol, finform, job = job )
+     CALL f_slblt_solve( fx1, fakeep, ffkeep, fcontrol, finform, job = job )
   END IF
 
 !  copy arguments out
 
   CALL copy_inform_out(finform, cinform)
 
-  END SUBROUTINE ssids_solve1
+  END SUBROUTINE slblt_solve1
 
 !  -----------------------------------------------------------------------
-!  C interface to fortran galahad_ssids_solve with multiple right-hand sides
+!  C interface to fortran galahad_slblt_solve with multiple right-hand sides
 !  -----------------------------------------------------------------------
 
-  SUBROUTINE ssids_solve( job, nrhs, x, ldx, cakeep, cfkeep, ccontrol,         &
+  SUBROUTINE slblt_solve( job, nrhs, x, ldx, cakeep, cfkeep, ccontrol,         &
                           cinform ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -877,15 +840,15 @@ close(99)
   INTEGER ( KIND = ipc_ ), VALUE :: ldx
   TYPE ( C_PTR ), VALUE :: cakeep
   TYPE ( C_PTR ), VALUE :: cfkeep
-  TYPE ( ssids_control_type ), INTENT( IN ) :: ccontrol
-  TYPE ( ssids_inform_type ), INTENT( OUT ) :: cinform
+  TYPE ( slblt_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( slblt_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
-  TYPE ( f_ssids_akeep_type ), POINTER :: fakeep
-  TYPE ( f_ssids_fkeep_type ), POINTER :: ffkeep
-  TYPE ( f_ssids_control_type ) :: fcontrol
-  TYPE ( f_ssids_inform_type ) :: finform
+  TYPE ( f_slblt_akeep_type ), POINTER :: fakeep
+  TYPE ( f_slblt_fkeep_type ), POINTER :: ffkeep
+  TYPE ( f_slblt_control_type ) :: fcontrol
+  TYPE ( f_slblt_inform_type ) :: finform
 
   LOGICAL :: cindexed
 
@@ -909,9 +872,9 @@ close(99)
 !  call fortran routine
 
   IF ( job == 0 ) THEN
-    CALL f_ssids_solve( nrhs, x, ldx, fakeep, ffkeep, fcontrol, finform )
+    CALL f_slblt_solve( nrhs, x, ldx, fakeep, ffkeep, fcontrol, finform )
   ELSE
-    CALL f_ssids_solve( nrhs, x, ldx, fakeep, ffkeep, fcontrol, finform,       &
+    CALL f_slblt_solve( nrhs, x, ldx, fakeep, ffkeep, fcontrol, finform,       &
                       job = job )
   END IF
 
@@ -919,14 +882,14 @@ close(99)
 
   CALL copy_inform_out( finform, cinform )
 
-  END SUBROUTINE ssids_solve
+  END SUBROUTINE slblt_solve
 
 !  ------------------------------------------------
-!  C interface to fortran ssids_free to free cakeep
+!  C interface to fortran slblt_free to free cakeep
 !  ------------------------------------------------
 
-  INTEGER ( KIND = ipc_ ) function ssids_free_akeep( cakeep ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  INTEGER ( KIND = ipc_ ) function slblt_free_akeep( cakeep ) BIND( C )
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -935,28 +898,28 @@ close(99)
 
 !  local variables
 
-  TYPE ( f_ssids_akeep_type ), POINTER :: fakeep
+  TYPE ( f_slblt_akeep_type ), POINTER :: fakeep
 
 !  nothing to free
 
   IF ( .NOT. C_ASSOCIATED( cakeep ) ) THEN
-    ssids_free_akeep = 0
+    slblt_free_akeep = 0
     RETURN
   END IF
 
   CALL C_F_POINTER( cakeep, fakeep )
-  CALL f_ssids_free( fakeep, ssids_free_akeep )
+  CALL f_slblt_free( fakeep, slblt_free_akeep )
   DEALLOCATE( fakeep )
   cakeep = C_NULL_PTR
 
-  END FUNCTION ssids_free_akeep
+  END FUNCTION slblt_free_akeep
 
 !  ------------------------------------------------
-!  C interface to fortran ssids_free to free cfkeep
+!  C interface to fortran slblt_free to free cfkeep
 !  ------------------------------------------------
 
-  INTEGER ( KIND = ipc_ ) function ssids_free_fkeep( cfkeep ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  INTEGER ( KIND = ipc_ ) function slblt_free_fkeep( cfkeep ) BIND( C )
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -965,28 +928,28 @@ close(99)
 
 !  local variables
 
-  TYPE ( f_ssids_fkeep_type ), POINTER :: ffkeep
+  TYPE ( f_slblt_fkeep_type ), POINTER :: ffkeep
 
 !  nothing to free
 
   IF ( .NOT. C_ASSOCIATED( cfkeep ) ) THEN
-    ssids_free_fkeep = 0
+    slblt_free_fkeep = 0
     RETURN
   END IF
 
   CALL C_F_POINTER( cfkeep, ffkeep )
-  CALL f_ssids_free( ffkeep, ssids_free_fkeep )
+  CALL f_slblt_free( ffkeep, slblt_free_fkeep )
   DEALLOCATE( ffkeep )
   cfkeep = C_NULL_PTR
 
-  END FUNCTION ssids_free_fkeep
+  END FUNCTION slblt_free_fkeep
 
 !  ---------------------------------
-!  C interface to fortran ssids_free
+!  C interface to fortran slblt_free
 !  ---------------------------------
 
-  INTEGER ( KIND = ipc_ ) FUNCTION ssids_free( cakeep, cfkeep ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  INTEGER ( KIND = ipc_ ) FUNCTION slblt_free( cakeep, cfkeep ) BIND( C )
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -996,50 +959,50 @@ close(99)
 
   INTERFACE
     INTEGER ( KIND = ipc_ )                                                    &
-        FUNCTION ssids_free_akeep( cakeep ) BIND( C )
+        FUNCTION slblt_free_akeep( cakeep ) BIND( C )
       USE iso_c_binding
       USE GALAHAD_KINDS_precision
       IMPLICIT NONE
       TYPE ( C_PTR ), INTENT( INOUT ) :: cakeep
-    END FUNCTION ssids_free_akeep
+    END FUNCTION slblt_free_akeep
     INTEGER ( KIND = ipc_ )                                                    &
-        FUNCTION ssids_free_fkeep( cfkeep ) BIND( C )
+        FUNCTION slblt_free_fkeep( cfkeep ) BIND( C )
       USE iso_c_binding
       USE GALAHAD_KINDS_precision
       IMPLICIT NONE
       TYPE ( C_PTR ), INTENT( INOUT ) :: cfkeep
-    END FUNCTION ssids_free_fkeep
+    END FUNCTION slblt_free_fkeep
   END INTERFACE
 
-  ssids_free = ssids_free_akeep( cakeep )
-  IF ( ssids_free /= 0_ipc_ ) RETURN
-  ssids_free = ssids_free_fkeep( cfkeep )
+  slblt_free = slblt_free_akeep( cakeep )
+  IF ( slblt_free /= 0_ipc_ ) RETURN
+  slblt_free = slblt_free_fkeep( cfkeep )
 
-  END FUNCTION ssids_free
+  END FUNCTION slblt_free
 
 !  -------------------------------------------
-!  C interface to fortran ssids_enquire_posdef
+!  C interface to fortran slblt_enquire_posdef
 !  -------------------------------------------
 
-  SUBROUTINE ssids_enquire_posdef( cakeep, cfkeep, ccontrol,                   &
+  SUBROUTINE slblt_enquire_posdef( cakeep, cfkeep, ccontrol,                   &
                                    cinform, d ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), VALUE :: cakeep
   TYPE ( C_PTR ), VALUE :: cfkeep
-  TYPE ( ssids_control_type ), INTENT( IN ) :: ccontrol
-  TYPE ( ssids_inform_type ), INTENT( OUT ) :: cinform
+  TYPE ( slblt_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( slblt_inform_type ), INTENT( OUT ) :: cinform
   REAL ( KIND = rpc_ ), DIMENSION( * ), INTENT( OUT ) :: d
 
 !  local variables
 
-  TYPE ( f_ssids_akeep_type ), POINTER :: fakeep
-  TYPE ( f_ssids_fkeep_type ), POINTER :: ffkeep
-  TYPE ( f_ssids_control_type ) :: fcontrol
-  TYPE ( f_ssids_inform_type ) :: finform
+  TYPE ( f_slblt_akeep_type ), POINTER :: fakeep
+  TYPE ( f_slblt_fkeep_type ), POINTER :: ffkeep
+  TYPE ( f_slblt_control_type ) :: fcontrol
+  TYPE ( f_slblt_inform_type ) :: finform
 
   LOGICAL :: cindexed
 
@@ -1062,38 +1025,38 @@ close(99)
 
 !  call fortran routine
 
-  CALL f_ssids_enquire_posdef( fakeep, ffkeep, fcontrol, finform, d )
+  CALL f_slblt_enquire_posdef( fakeep, ffkeep, fcontrol, finform, d )
 
 !  copy arguments out
 
   CALL copy_inform_out( finform, cinform )
 
-  END SUBROUTINE ssids_enquire_posdef
+  END SUBROUTINE slblt_enquire_posdef
 
 !  ------------------------------------------
-!  C interface to fortran ssids_enquire_indef
+!  C interface to fortran slblt_enquire_indef
 !  ------------------------------------------
 
-  SUBROUTINE ssids_enquire_indef( cakeep, cfkeep, ccontrol, cinform,           &
+  SUBROUTINE slblt_enquire_indef( cakeep, cfkeep, ccontrol, cinform,           &
                                   cpiv_order, cd ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), VALUE :: cakeep
   TYPE ( C_PTR ), VALUE :: cfkeep
-  TYPE ( ssids_control_type ), INTENT( IN ) :: ccontrol
-  TYPE ( ssids_inform_type ), INTENT( OUT ) :: cinform
+  TYPE ( slblt_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( slblt_inform_type ), INTENT( OUT ) :: cinform
   TYPE ( C_PTR ), VALUE :: cpiv_order
   TYPE ( C_PTR ), VALUE :: cd
 
 !  local variables
 
-  TYPE ( f_ssids_akeep_type ), POINTER :: fakeep
-  TYPE ( f_ssids_fkeep_type ), POINTER :: ffkeep
-  TYPE ( f_ssids_control_type ) :: fcontrol
-  TYPE ( f_ssids_inform_type ) :: finform
+  TYPE ( f_slblt_akeep_type ), POINTER :: fakeep
+  TYPE ( f_slblt_fkeep_type ), POINTER :: ffkeep
+  TYPE ( f_slblt_control_type ) :: fcontrol
+  TYPE ( f_slblt_inform_type ) :: finform
   INTEGER ( KIND = ipc_ ), DIMENSION( : ), POINTER :: fpiv_order
   REAL ( KIND = rpc_ ), DIMENSION( :,: ), POINTER :: fd
 
@@ -1130,17 +1093,17 @@ close(99)
 
   IF ( ASSOCIATED( fpiv_order ) ) THEN
     IF ( ASSOCIATED( fd ) ) THEN
-      CALL f_ssids_enquire_indef( fakeep, ffkeep, fcontrol, finform,           &
+      CALL f_slblt_enquire_indef( fakeep, ffkeep, fcontrol, finform,           &
                                 piv_order = fpiv_order, d = fd )
     ELSE
-      CALL f_ssids_enquire_indef( fakeep, ffkeep, fcontrol, finform,           &
+      CALL f_slblt_enquire_indef( fakeep, ffkeep, fcontrol, finform,           &
                                 piv_order=fpiv_order )
     END IF
   ELSE
     IF ( ASSOCIATED( fd ) ) THEN
-      CALL f_ssids_enquire_indef( fakeep, ffkeep, fcontrol, finform, d = fd )
+      CALL f_slblt_enquire_indef( fakeep, ffkeep, fcontrol, finform, d = fd )
     ELSE
-      CALL f_ssids_enquire_indef( fakeep, ffkeep, fcontrol, finform )
+      CALL f_slblt_enquire_indef( fakeep, ffkeep, fcontrol, finform )
     END IF
   END IF
 
@@ -1152,14 +1115,14 @@ close(99)
     fpiv_order( : ) = ABS( fpiv_order( : ) ) - 1
   CALL copy_inform_out( finform, cinform )
 
-  END SUBROUTINE ssids_enquire_indef
+  END SUBROUTINE slblt_enquire_indef
 
 !  ----------------------------------
-!  C interface to fortran ssids_alter
+!  C interface to fortran slblt_alter
 !  ----------------------------------
 
-  SUBROUTINE ssids_alter( d, cakeep, cfkeep, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_SSIDS_precision_ciface
+  SUBROUTINE slblt_alter( d, cakeep, cfkeep, ccontrol, cinform ) BIND( C )
+  USE GALAHAD_SLBLT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -1167,15 +1130,15 @@ close(99)
   REAL ( KIND = rpc_ ), DIMENSION( 2, * ), INTENT( IN ) :: d
   TYPE ( C_PTR ), VALUE :: cakeep
   TYPE ( C_PTR ), VALUE :: cfkeep
-  TYPE ( ssids_control_type ), INTENT( IN ) :: ccontrol
-  TYPE ( ssids_inform_type ), INTENT( OUT ) :: cinform
+  TYPE ( slblt_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( slblt_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
-  TYPE ( f_ssids_akeep_type ), POINTER :: fakeep
-  TYPE ( f_ssids_fkeep_type ), POINTER :: ffkeep
-  TYPE ( f_ssids_control_type ) :: fcontrol
-  TYPE ( f_ssids_inform_type ) :: finform
+  TYPE ( f_slblt_akeep_type ), POINTER :: fakeep
+  TYPE ( f_slblt_fkeep_type ), POINTER :: ffkeep
+  TYPE ( f_slblt_control_type ) :: fcontrol
+  TYPE ( f_slblt_inform_type ) :: finform
 
   LOGICAL :: cindexed
 
@@ -1198,10 +1161,10 @@ close(99)
 
 !  call fortran routine
 
-  CALL f_ssids_alter( d, fakeep, ffkeep, fcontrol, finform )
+  CALL f_slblt_alter( d, fakeep, ffkeep, fcontrol, finform )
 
 !  copy arguments out
 
   CALL copy_inform_out( finform, cinform )
 
-  END SUBROUTINE ssids_alter
+  END SUBROUTINE slblt_alter

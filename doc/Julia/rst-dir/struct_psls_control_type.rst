@@ -257,7 +257,7 @@ exit if any deallocation fails
 
 	NTuple{31,Cchar} symmetric_linear_solver
 
-the symmetric linear equation :ref:`solver package<details-sls__solvers>` used when .preconditioner = 5. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma97, ssids, mumps, pardiso, mkl_pardiso,pastix, wsmp, sytr, potr and pbtr, although only sils, sytr and, for OMP 4.0-compliant compilers, ssids are installed by default.
+the symmetric linear equation :ref:`solver package<details-sls__solvers>` used when .preconditioner = 5. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma97, slblt, mumps, pardiso, mkl_pardiso,pastix, wsmp, sytr, potr and pbtr, although only sils, sytr and slblt are installed by default.
 
 .. index:: pair: variable; definite_linear_solver
 .. _doxid-structpsls__control__type_definite_linear_solver:
@@ -267,7 +267,7 @@ the symmetric linear equation :ref:`solver package<details-sls__solvers>` used w
 
 	NTuple{31,Cchar} definite_linear_solver
 
-the definite linear equation :ref:`solver package<details-sls__solvers>` used when .preconditioner = 4. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso, mkl_pardiso,pastix, wsmp, sytr, potr and pbtr, although only sils, sytr, potr, pbtr and, for OMP 4.0-compliant compilers, ssids are installed by default.
+the definite linear equation :ref:`solver package<details-sls__solvers>` used when .preconditioner = 4. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma87, ma97, slblt, mumps, pardiso, mkl_pardiso,pastix, wsmp, sytr, potr and pbtr, although only sils, sytr, potr, pbtr and slblt are installed by default.
 
 .. index:: pair: variable; prefix
 .. _doxid-structpsls__control__type_prefix:

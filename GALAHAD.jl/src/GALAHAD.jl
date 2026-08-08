@@ -82,8 +82,8 @@ include("wrappers/qp.jl")
 include("wrappers/qpc.jl")
 include("wrappers/warm.jl")
 
-# ssids requires nodend.
-include("wrappers/ssids.jl")
+# slblt requires nodend.
+include("wrappers/slblt.jl")
 
 # sls requires sils, nodend.
 include("wrappers/sls.jl")

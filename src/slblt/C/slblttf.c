@@ -1,4 +1,4 @@
-/* ssidstf.c - Example code for GALAHAD_SSIDS package, GALified by */
+/* slblttf.c - Example code for GALAHAD_SLBLT package, GALified by */
 /* Jari Fowkes, Nick Gould, STFC-Rutherford Appleton Laboratory, */
 /* and Alexis Montoison, Argone National Laboratory, 2025-08-19 */
 #include <stdlib.h>
@@ -7,7 +7,7 @@
 #include <math.h>
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
-#include "galahad_ssids.h"
+#include "galahad_slblt.h"
 #ifdef REAL_128
 #include <quadmath.h>
 #endif
@@ -15,12 +15,12 @@
 int main(void) {
    /* Derived types */
    void *akeep, *fkeep;
-   struct ssids_control_type control;
-   struct ssids_inform_type inform;
+   struct slblt_control_type control;
+   struct slblt_inform_type inform;
 
    // Initialize derived types
    akeep = NULL; fkeep = NULL; // Important that these are NULL to start with
-   ssids_default_control(&control);
+   slblt_default_control(&control);
    control.array_base = 1; // Fortran sparse matrix indexing
    control.nodend_control.print_level = 0;
 
@@ -43,22 +43,22 @@ int main(void) {
 
    // perform analysis and factorization with data checking
    bool check = true;
-   ssids_analyse(check, n, NULL, ptr, row, NULL, &akeep, &control, &inform);
+   slblt_analyse(check, n, NULL, ptr, row, NULL, &akeep, &control, &inform);
    if(inform.flag<0) {
-      ssids_free(&akeep, &fkeep);
+      slblt_free(&akeep, &fkeep);
       exit(1);
    }
-   ssids_factor(posdef, NULL, NULL, val, NULL, akeep, &fkeep, &control,
+   slblt_factor(posdef, NULL, NULL, val, NULL, akeep, &fkeep, &control,
                 &inform);
    if(inform.flag<0) {
-      ssids_free( &akeep, &fkeep );
+      slblt_free( &akeep, &fkeep );
       exit(1);
    }
 
    // solve
-   ssids_solve1(0, x, akeep, fkeep, &control, &inform);
+   slblt_solve1(0, x, akeep, fkeep, &control, &inform);
    if(inform.flag<0) {
-      ssids_free(&akeep, &fkeep);
+      slblt_free(&akeep, &fkeep);
       exit(1);
    }
    printf("The computed solution is:");
@@ -67,12 +67,12 @@ int main(void) {
 
    /* Determine and print the pivot order */
    ipc_ piv_order[5];
-   ssids_enquire_indef(akeep, fkeep, &control, &inform, piv_order, NULL);
+   slblt_enquire_indef(akeep, fkeep, &control, &inform, piv_order, NULL);
    printf("Pivot order:");
    for(int i=0; i<n; i++) printf(" %3d", (int) piv_order[i]);
    printf("\n");
 
-   ipc_ flag = ssids_free(&akeep, &fkeep);
+   ipc_ flag = slblt_free(&akeep, &fkeep);
    if(flag!=0) exit(1);
 
    return 0;

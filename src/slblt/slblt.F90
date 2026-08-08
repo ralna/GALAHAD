@@ -1,22 +1,23 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-08-08 AT 14:10 GMT
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 14:10 GMT
 ! (consistent with SPRAL up to issue #250)
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D _ S S I D S   M O D U L E  *-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D _ S L B L T   M O D U L E  *-*-*-*-*-*-*-*-*-
 
 !  COPYRIGHT (c) 2011 The Science and Technology Facilities Council (STFC)
+!  additions Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  licence: BSD licence, see LICENCE file for details
 !  authors: Jonathan Hogg and Jennifer Scott
 !  Forked from SPRAL and extended for GALAHAD, Nick Gould, version 3.1, 2016
-!  Absorbed SSIDS_analyse, SSIDS_fkeep, SPRAL_CORE_ANALYSE
+!  Absorbed SLBLT_analyse, SLBLT_fkeep, SPRAL_CORE_ANALYSE
 !  & SPRAL_pgm modules, version 5.3, 2025
 
-  MODULE GALAHAD_SSIDS_precision
+  MODULE GALAHAD_SLBLT_precision
 
 !     ------------------------------------------------------------
 !    |                                                            |
-!    | SSIDS, a sparse, symmetric, idefinite direct linear solver |
+!    | SLBLT, a sparse, symmetric, idefinite direct linear solver |
 !    |                                                            |
 !     ------------------------------------------------------------
 
@@ -24,8 +25,8 @@
 !$  USE omp_lib
     USE GALAHAD_KINDS_precision
     USE GALAHAD_TOPOLOGY, ONLY: TOPOLOGY_guess_topology, TOPOLOGY_numa_region
-    USE GALAHAD_MU_precision, ONLY: SSIDS_MATRIX_REAL_SYM_INDEF,               &
-                                    SSIDS_MATRIX_REAL_SYM_PSDEF,               &
+    USE GALAHAD_MU_precision, ONLY: SLBLT_MATRIX_REAL_SYM_INDEF,               &
+                                    SLBLT_MATRIX_REAL_SYM_PSDEF,               &
                                     MU_convert_coord_to_cscl,                  &
                                     MU_clean_cscl_oop,                         &
                                     MU_apply_conversion_map
@@ -41,24 +42,23 @@
     USE GALAHAD_NODEND_precision, ONLY: NODEND_half_order,                     &
                                         NODEND_control_type,                   &
                                         NODEND_inform_type
-    USE GALAHAD_SSIDS_types_precision
-    USE GALAHAD_SSIDS_subtree_precision, ONLY: numeric_subtree_base,           &
+    USE GALAHAD_SLBLT_types_precision
+    USE GALAHAD_SLBLT_subtree_precision, ONLY: numeric_subtree_base,           &
                                                symbolic_subtree_base
-    USE GALAHAD_SSIDS_numeric_subtree_precision, ONLY:                     &
+    USE GALAHAD_SLBLT_numeric_subtree_precision, ONLY:                     &
                                        construct_symbolic_subtree, &
                                        numeric_subtree
 
     IMPLICIT NONE
 
     PRIVATE
-    PUBLIC :: SSIDS_analyse, SSIDS_analyse_coord, SSIDS_factor, SSIDS_solve,   &
-              SSIDS_free, SSIDS_enquire_posdef, SSIDS_enquire_indef,           &
-              SSIDS_alter, SSIDS_control_type, SSIDS_inform_type
+    PUBLIC :: SLBLT_analyse, SLBLT_analyse_coord, SLBLT_factor, SLBLT_solve,   &
+              SLBLT_free, SLBLT_enquire_posdef, SLBLT_enquire_indef,           &
+              SLBLT_alter, SLBLT_control_type, SLBLT_inform_type
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-    LOGICAL, PUBLIC, PROTECTED :: ssids_available = .TRUE.
     INTEGER( ip_ ), PARAMETER, PUBLIC :: DEBUG_PRINT_LEVEL = 9999
 
 !  extracted from SPRAL_CORE_ANALYSE
@@ -71,57 +71,57 @@
 
 !  analyse phase, CSC-lower input
 
-    INTERFACE SSIDS_analyse
+    INTERFACE SLBLT_analyse
       MODULE PROCEDURE analyse_precision, analyse_precision_ptr32
-    END INTERFACE SSIDS_analyse
+    END INTERFACE SLBLT_analyse
 
 !  analyse phase, coordinate input
 
-    INTERFACE SSIDS_analyse_coord
-      MODULE PROCEDURE ssids_analyse_coord_precision
-    END INTERFACE SSIDS_analyse_coord
+    INTERFACE SLBLT_analyse_coord
+      MODULE PROCEDURE slblt_analyse_coord_precision
+    END INTERFACE SLBLT_analyse_coord
 
 !  factorize phase
 
-    INTERFACE SSIDS_factor
-      MODULE PROCEDURE ssids_factor_ptr32_precision
-      MODULE PROCEDURE ssids_factor_ptr64_precision
-    END INTERFACE SSIDS_factor
+    INTERFACE SLBLT_factor
+      MODULE PROCEDURE slblt_factor_ptr32_precision
+      MODULE PROCEDURE slblt_factor_ptr64_precision
+    END INTERFACE SLBLT_factor
 
 !  solve phase
 
-    INTERFACE SSIDS_solve
-      MODULE PROCEDURE ssids_solve_one_precision
-      MODULE PROCEDURE ssids_solve_mult_precision
-    END INTERFACE SSIDS_solve
+    INTERFACE SLBLT_solve
+      MODULE PROCEDURE slblt_solve_one_precision
+      MODULE PROCEDURE slblt_solve_mult_precision
+    END INTERFACE SLBLT_solve
 
 !   free akeep and/or fkeep
 
-    INTERFACE SSIDS_free
+    INTERFACE SLBLT_free
       MODULE PROCEDURE free_akeep_precision
       MODULE PROCEDURE free_fkeep_precision
       MODULE PROCEDURE free_both_precision
-    END INTERFACE SSIDS_free
+    END INTERFACE SLBLT_free
 
 !  pivot information in positive definite case
 
-    INTERFACE SSIDS_enquire_posdef
-      MODULE PROCEDURE ssids_enquire_posdef_precision
-    END INTERFACE SSIDS_enquire_posdef
+    INTERFACE SLBLT_enquire_posdef
+      MODULE PROCEDURE slblt_enquire_posdef_precision
+    END INTERFACE SLBLT_enquire_posdef
 
 !  pivot information in indefinite case
 
-    INTERFACE SSIDS_enquire_indef
-      MODULE PROCEDURE ssids_enquire_indef_precision
-    END INTERFACE SSIDS_enquire_indef
+    INTERFACE SLBLT_enquire_indef
+      MODULE PROCEDURE slblt_enquire_indef_precision
+    END INTERFACE SLBLT_enquire_indef
 
 !  alter diagonal
 
-    INTERFACE SSIDS_alter
-      MODULE PROCEDURE ssids_alter_precision
-    END INTERFACE SSIDS_alter
+    INTERFACE SLBLT_alter
+      MODULE PROCEDURE slblt_alter_precision
+    END INTERFACE SLBLT_alter
 
-!  extracted from ssids_analyse
+!  extracted from slblt_analyse
 
     INTERFACE print_atree
       MODULE PROCEDURE print_atree, print_atree_part
@@ -137,7 +137,7 @@
     END TYPE omp_settings
 
 !  -------------------------
-!  extracts from SSIDS_akeep
+!  extracts from SLBLT_akeep
 !  -------------------------
 
     TYPE symbolic_subtree_ptr
@@ -147,7 +147,7 @@
 
 !  type for information generated in analyse phase
 
-    TYPE, PUBLIC :: SSIDS_akeep_type
+    TYPE, PUBLIC :: SLBLT_akeep_type
 
 !  copy of check as input to analyse phase
 
@@ -185,30 +185,30 @@
 
 !  rlist(rptr(i):rptr(i+1)-1) contains the row indices for node i of the 
 !  assembly tree. At each node, the list is in elimination order.
-!  Allocated within basic_analyse in ssids
+!  Allocated within basic_analyse in slblt
 
       INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: rlist 
 
 !  pointers into rlist for nodes of assembly tree. Has length nnodes+1.
-!  Allocated within basic_analyse in ssids
+!  Allocated within basic_analyse in slblt
 
       INTEGER( long_ ), DIMENSION( : ), ALLOCATABLE :: rptr
 
 !  sparent(i) is the parent of node i in assembly tree. sparent(i)=nnodes+1 if 
 !  i is a  root. The parent is always numbered higher than each of its children.
-!  Allocated within basic_analyse in ssids
+!  Allocated within basic_analyse in slblt
 
       INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: sparent 
 
 !  (super)node pointers. Supernode i consists of sptr(i) through sptr(i+1)-1.
-!  Allocated within basic_analyse in ssids
+!  Allocated within basic_analyse in slblt
 
       INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: sptr
 
 !  the following components are for cleaned up matrix data. LOWER triangle 
 !  only. We have to retain these for factorize phase as used if the user wants
 !  to do scaling. These components are NOT used if check is set to .false.
-!  on call to ssids_analyse
+!  on call to slblt_analyse
 
       INTEGER( long_ ), ALLOCATABLE :: ptr( : ) ! column pointers
       INTEGER( ip_ ), ALLOCATABLE :: row( : ) ! row indices
@@ -225,20 +225,20 @@
 
 !  inform at end of analyse phase
 
-      TYPE( ssids_inform_type ) :: inform
+      TYPE( slblt_inform_type ) :: inform
 
     CONTAINS
 
       PROCEDURE, PASS( akeep ) :: free => free_akeep
 
-!  finalizer: release C++ symbolic subtrees on deallocation/reset/scope-exit
+!  finalizer: release symbolic subtrees on deallocation/reset/scope-exit
 
       FINAL :: final_akeep
 
-    END TYPE SSIDS_akeep_type
+    END TYPE SLBLT_akeep_type
 
 !  -------------------------
-!  extracts from SSIDS_fkeep
+!  extracts from SLBLT_fkeep
 !  -------------------------
 
      TYPE numeric_subtree_ptr
@@ -247,7 +247,7 @@
 
 !  type for data generated in factorise phase
 
-     TYPE, PUBLIC :: SSIDS_fkeep_type
+     TYPE, PUBLIC :: SLBLT_fkeep_type
 
 !  stores scaling for each entry ( in original matrix order )
 
@@ -260,7 +260,7 @@
 
 !  copy of inform on exit from factorize
 
-       TYPE( ssids_inform_type ) :: inform
+       TYPE( slblt_inform_type ) :: inform
 
      CONTAINS
 
@@ -276,14 +276,14 @@
        PROCEDURE, PASS( fkeep ) :: alter => alter ! Alter D values
        PROCEDURE, PASS( fkeep ) :: free => free_fkeep ! Frees memory
 
-!  finalizer: release C++ numeric subtrees on deallocation/reset/scope-exit
+!  finalizer: release numeric subtrees on deallocation/reset/scope-exit
 
        FINAL :: final_fkeep
-     END TYPE SSIDS_fkeep_type
+     END TYPE SLBLT_fkeep_type
 
   CONTAINS
 
-!-*-*-  G A L A H A D - S S I D S _ analyse_ptr32  S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D - S L B L T _ analyse_ptr32  S U B R O U T I N E  -*-*-
 
     SUBROUTINE analyse_precision_ptr32( check, n, ptr, row, akeep, control,    &
                                         inform, order, val, topology )
@@ -296,9 +296,9 @@
     INTEGER( KIND = ip_ ), INTENT( IN ) :: n
     INTEGER( KIND = i4_ ), INTENT( IN ) :: ptr( : )
     INTEGER( KIND = ip_ ), INTENT( IN ) :: row( : )
-    TYPE( SSIDS_akeep_type ), INTENT( INOUT ) :: akeep
-    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
-    TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
+    TYPE( SLBLT_akeep_type ), INTENT( INOUT ) :: akeep
+    TYPE( SLBLT_control_type ), INTENT( IN ) :: control
+    TYPE( SLBLT_inform_type ), INTENT( OUT ) :: inform
     INTEGER( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: order( : )
     REAL( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: val( : )
     TYPE( TOPOLOGY_numa_region ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: topology
@@ -311,9 +311,9 @@
 
     ALLOCATE( ptr64( n + 1 ), stat=inform%stat )
     IF ( inform%stat /= 0 ) THEN
-      inform%flag = SSIDS_ERROR_ALLOCATION
+      inform%flag = SLBLT_ERROR_ALLOCATION
       akeep%inform = inform
-      CALL inform%print_flag( control, 'ssids_analyse' )
+      CALL inform%print_flag( control, 'slblt_analyse' )
       RETURN
     END IF
     ptr64( 1 : n + 1 ) = ptr( 1 : n + 1 )
@@ -326,7 +326,7 @@
 
     END SUBROUTINE analyse_precision_ptr32
 
-!-*-*-  G A L A H A D - S S I D S _ a n a l y s e   S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D - S L B L T _ a n a l y s e   S U B R O U T I N E  -*-*-
 
     SUBROUTINE analyse_precision( check, n, ptr, row, akeep, control, inform,  &
                                   order, val, topology )
@@ -362,15 +362,15 @@
 
 !  symbolic factorization output
 
-    TYPE( SSIDS_akeep_type ), INTENT( INOUT ) :: akeep
+    TYPE( SLBLT_akeep_type ), INTENT( INOUT ) :: akeep
 
 !  user-supplied options
 
-    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
+    TYPE( SLBLT_control_type ), INTENT( IN ) :: control
 
 !  stats/information returned to the user
 
-    TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
+    TYPE( SLBLT_inform_type ), INTENT( OUT ) :: inform
 
 !  return ordering to user/allow user to supply order
 
@@ -410,13 +410,13 @@
 
     INTEGER( KIND = ip_ ) :: mo_flag
     INTEGER( KIND = ip_ ) :: free_flag
-    TYPE( ssids_inform_type ) :: inform_default
+    TYPE( slblt_inform_type ) :: inform_default
 
 !  initialise
 
-    context = 'ssids_analyse'
+    context = 'slblt_analyse'
     inform = inform_default
-    CALL ssids_free( akeep, free_flag )
+    CALL slblt_free( akeep, free_flag )
 
 !  print status on entry
 
@@ -433,7 +433,7 @@
 !  checking of matrix data
 
     IF ( n < 0 ) THEN
-      inform%flag = SSIDS_ERROR_A_N_OOR
+      inform%flag = SLBLT_ERROR_A_N_OOR
       akeep%inform = inform
       CALL inform%print_flag( control, context )
       RETURN
@@ -452,7 +452,7 @@
 !  check control%ordering has a valid value
 
     IF ( control%ordering < 0 .OR. control%ordering > 2 ) THEN
-      inform%flag = SSIDS_ERROR_ORDER
+      inform%flag = SLBLT_ERROR_ORDER
       akeep%inform = inform
       CALL inform%print_flag( control, context )
       RETURN
@@ -462,7 +462,7 @@
 
     IF ( control%ordering == 2 ) THEN
       IF ( .NOT. PRESENT( val ) ) THEN
-        inform%flag = SSIDS_ERROR_VAL
+        inform%flag = SLBLT_ERROR_VAL
         akeep%inform = inform
         CALL inform%print_flag( control, context )
         RETURN
@@ -475,13 +475,13 @@
       IF ( st /= 0 ) GO TO 490
 
       IF ( PRESENT( val ) ) THEN
-        CALL MU_clean_cscl_oop( SSIDS_MATRIX_REAL_SYM_INDEF, n, n, ptr, row,   &
+        CALL MU_clean_cscl_oop( SLBLT_MATRIX_REAL_SYM_INDEF, n, n, ptr, row,   &
                              akeep%ptr, akeep%row, mu_flag, val_in = val,      &
                              val_out = val_clean, lmap = akeep%lmap,           &
                              map = akeep%map, noor = inform%matrix_outrange,   &
                              ndup = inform%matrix_dup )
       ELSE
-        CALL MU_clean_cscl_oop( SSIDS_MATRIX_REAL_SYM_INDEF, n, n, ptr, row,   &
+        CALL MU_clean_cscl_oop( SLBLT_MATRIX_REAL_SYM_INDEF, n, n, ptr, row,   &
                              akeep%ptr, akeep%row, mu_flag, lmap = akeep%lmap, &
                              map = akeep%map, noor = inform%matrix_outrange,   &
                              ndup = inform%matrix_dup )
@@ -490,10 +490,10 @@
 !  check for errors
 
       IF ( mu_flag < 0 ) THEN
-        IF ( mu_flag == - 1 ) inform%flag = SSIDS_ERROR_ALLOCATION
-        IF ( mu_flag == - 5 ) inform%flag = SSIDS_ERROR_A_PTR
-        IF ( mu_flag == - 6 ) inform%flag = SSIDS_ERROR_A_PTR
-        IF ( mu_flag == - 10 ) inform%flag = SSIDS_ERROR_A_ALL_OOR
+        IF ( mu_flag == - 1 ) inform%flag = SLBLT_ERROR_ALLOCATION
+        IF ( mu_flag == - 5 ) inform%flag = SLBLT_ERROR_A_PTR
+        IF ( mu_flag == - 6 ) inform%flag = SLBLT_ERROR_A_PTR
+        IF ( mu_flag == - 10 ) inform%flag = SLBLT_ERROR_A_ALL_OOR
         akeep%inform = inform
         CALL inform%print_flag( control, context )
         RETURN
@@ -531,7 +531,7 @@
 !  raise an error if the user claims but fails to supply the order
 
       IF ( .NOT. PRESENT( order ) ) THEN
-        inform%flag = SSIDS_ERROR_ORDER
+        inform%flag = SLBLT_ERROR_ORDER
         akeep%inform = inform
         CALL inform%print_flag( control, context )
         RETURN
@@ -588,14 +588,14 @@
 !  singularity warning required
 
       CASE( 1 )
-        inform%flag = SSIDS_WARNING_ANALYSIS_SINGULAR
+        inform%flag = SLBLT_WARNING_ANALYSIS_SINGULAR
       CASE( - 1 )
-        inform%flag = SSIDS_ERROR_ALLOCATION
+        inform%flag = SLBLT_ERROR_ALLOCATION
         akeep%inform = inform
         CALL inform%print_flag( control, context )
          RETURN
       CASE default
-        inform%flag = SSIDS_ERROR_UNKNOWN
+        inform%flag = SLBLT_ERROR_UNKNOWN
         akeep%inform = inform
         CALL inform%print_flag( control, context )
         RETURN
@@ -637,14 +637,14 @@
 
 490 CONTINUE
     inform%stat = st
-    IF ( inform%stat /= 0 ) inform%flag = SSIDS_ERROR_ALLOCATION
+    IF ( inform%stat /= 0 ) inform%flag = SLBLT_ERROR_ALLOCATION
     akeep%inform = inform
     CALL inform%print_flag( control, context )
     RETURN
 
     END SUBROUTINE analyse_precision
 
-!-*-*-  G A L A H A D - S S I D S _  squash_topology  S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D - S L B L T _  squash_topology  S U B R O U T I N E  -*-*-
 
     SUBROUTINE squash_topology( topology, control, st )
 
@@ -654,7 +654,7 @@
     IMPLICIT NONE
     TYPE( TOPOLOGY_numa_region ), DIMENSION( : ), ALLOCATABLE,                       &
                                             INTENT( INOUT ) :: topology
-    TYPE( ssids_control_type ), INTENT( IN ) :: control
+    TYPE( slblt_control_type ), INTENT( IN ) :: control
     INTEGER( KIND = ip_ ), INTENT( OUT ) :: st
 
 !  local variables
@@ -694,9 +694,9 @@
 
     END SUBROUTINE squash_topology
 
-!-*-*-  G A L A H A D - S S I D S _  analyse_coord  S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D - S L B L T _  analyse_coord  S U B R O U T I N E  -*-*-
 
-    SUBROUTINE ssids_analyse_coord_precision( n, ne, row, col, akeep, control, &
+    SUBROUTINE slblt_analyse_coord_precision( n, ne, row, col, akeep, control, &
                                               inform, order, val, topology )
 
 !  analyse phase: matrix entered in coordinate format.
@@ -714,15 +714,15 @@
 
 !  see derived-type declaration
 
-    TYPE( SSIDS_akeep_type ), INTENT( INOUT ) :: akeep
+    TYPE( SLBLT_akeep_type ), INTENT( INOUT ) :: akeep
 
 !  see derived-type declaration
 
-    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
+    TYPE( SLBLT_control_type ), INTENT( IN ) :: control
 
 !  see derived-type declaration
 
-    TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
+    TYPE( SLBLT_inform_type ), INTENT( OUT ) :: inform
 
 !  Must be present and set on entry if control%ordering = 0. If  i is used to 
 !  index a variable, order(i) must hold its position in the pivot sequence.
@@ -767,13 +767,13 @@
 !   INTEGER( KIND = ip_ ) :: flag  !  error flag for metis
     INTEGER( KIND = ip_ ) :: st    !  stat parameter
     INTEGER( KIND = ip_ ) :: free_flag
-    TYPE( ssids_inform_type ) :: inform_default
+    TYPE( slblt_inform_type ) :: inform_default
 
 !  initialise
 
-    context = 'ssids_analyse_coord'
+    context = 'slblt_analyse_coord'
     inform = inform_default
-    CALL ssids_free( akeep, free_flag )
+    CALL slblt_free( akeep, free_flag )
 
 !  output status on entry
 
@@ -791,7 +791,7 @@
 !  checking of matrix data
 
     IF ( n < 0 .OR. ne < 0 ) THEN
-      inform%flag = SSIDS_ERROR_A_N_OOR
+      inform%flag = SLBLT_ERROR_A_N_OOR
       akeep%inform = inform
       CALL inform%print_flag( control, context )
       RETURN
@@ -811,7 +811,7 @@
 !  check control%ordering has a valid value
 
     IF ( control%ordering < 0 .OR. control%ordering > 2 ) THEN
-      inform%flag = SSIDS_ERROR_ORDER
+      inform%flag = SLBLT_ERROR_ORDER
       akeep%inform = inform
       CALL inform%print_flag( control, context )
       RETURN
@@ -821,7 +821,7 @@
 
     IF ( control%ordering == 2 ) THEN
       IF ( .NOT. PRESENT( val ) ) THEN
-        inform%flag = SSIDS_ERROR_VAL
+        inform%flag = SLBLT_ERROR_VAL
         akeep%inform = inform
         CALL inform%print_flag( control, context )
         RETURN
@@ -833,14 +833,14 @@
     IF ( st /= 0 ) GO TO 490
 
     IF ( PRESENT( val ) ) THEN
-      CALL MU_convert_coord_to_cscl( SSIDS_MATRIX_REAL_SYM_INDEF, n, n, ne,    &
+      CALL MU_convert_coord_to_cscl( SLBLT_MATRIX_REAL_SYM_INDEF, n, n, ne,    &
                                      row, col, akeep%ptr, akeep%row, mu_flag,  &
                                      val_in = val, val_out = val_clean,        &
                                      lmap = akeep%lmap, map = akeep%map,       &
                                      noor = inform%matrix_outrange,            &
                                      ndup = inform%matrix_dup )
     ELSE
-      CALL MU_convert_coord_to_cscl( SSIDS_MATRIX_REAL_SYM_INDEF, n, n, ne,    &
+      CALL MU_convert_coord_to_cscl( SLBLT_MATRIX_REAL_SYM_INDEF, n, n, ne,    &
                                      row, col, akeep%ptr, akeep%row, mu_flag,  &
                                      lmap = akeep%lmap, map = akeep%map,       &
                                      noor = inform%matrix_outrange,            &
@@ -850,8 +850,8 @@
 !  check for errors
 
     IF ( mu_flag < 0 ) THEN
-      IF ( mu_flag == - 1 )  inform%flag = SSIDS_ERROR_ALLOCATION
-      IF ( mu_flag == - 10 ) inform%flag = SSIDS_ERROR_A_ALL_OOR
+      IF ( mu_flag == - 1 )  inform%flag = SLBLT_ERROR_ALLOCATION
+      IF ( mu_flag == - 10 ) inform%flag = SLBLT_ERROR_A_ALL_OOR
       akeep%inform = inform
       CALL inform%print_flag( control, context )
       RETURN
@@ -882,7 +882,7 @@
 !  raise an error if the user claims but fails to supply the order
 
       IF ( .NOT. PRESENT( order ) ) THEN
-        inform%flag = SSIDS_ERROR_ORDER
+        inform%flag = SLBLT_ERROR_ORDER
         akeep%inform = inform
         CALL inform%print_flag( control, context )
         RETURN
@@ -916,14 +916,14 @@
       SELECT CASE( mo_flag )
       CASE( 0 ) ! success; do nothing
       CASE( 1 ) ! singularity warning required
-        inform%flag = SSIDS_WARNING_ANALYSIS_SINGULAR
+        inform%flag = SLBLT_WARNING_ANALYSIS_SINGULAR
       CASE( - 1 )
-        inform%flag = SSIDS_ERROR_ALLOCATION
+        inform%flag = SLBLT_ERROR_ALLOCATION
         akeep%inform = inform
         CALL inform%print_flag( control, context )
         RETURN
       CASE DEFAULT
-        inform%flag = SSIDS_ERROR_UNKNOWN
+        inform%flag = SLBLT_ERROR_UNKNOWN
         akeep%inform = inform
         CALL inform%print_flag( control, context )
         RETURN
@@ -959,16 +959,16 @@
 
 490 CONTINUE
     inform%stat = st
-    IF ( inform%stat /= 0 ) inform%flag = SSIDS_ERROR_ALLOCATION
+    IF ( inform%stat /= 0 ) inform%flag = SLBLT_ERROR_ALLOCATION
     akeep%inform = inform
     CALL inform%print_flag( control, context )
     RETURN
 
-    END SUBROUTINE ssids_analyse_coord_precision
+    END SUBROUTINE slblt_analyse_coord_precision
 
-!-*-*-  G A L A H A D - S S I D S _ factor_ptr32   S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D - S L B L T _ factor_ptr32   S U B R O U T I N E  -*-*-
 
-    SUBROUTINE ssids_factor_ptr32_precision( posdef, val, akeep, fkeep,        &
+    SUBROUTINE slblt_factor_ptr32_precision( posdef, val, akeep, fkeep,        &
                                              control, inform, scale, ptr, row )
 
 !  factorize phase: 32-bit wrapper around 64-bit version, NB ptr is non-OPTIONAL
@@ -976,10 +976,10 @@
     IMPLICIT NONE
     LOGICAL, INTENT( IN ) :: posdef
     REAL( KIND = rp_ ), DIMENSION( * ), target, INTENT( IN ) :: val
-    TYPE( SSIDS_akeep_type ), INTENT( IN ) :: akeep
-    TYPE( SSIDS_fkeep_type ), INTENT( INOUT ) :: fkeep
-    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
-    TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
+    TYPE( SLBLT_akeep_type ), INTENT( IN ) :: akeep
+    TYPE( SLBLT_fkeep_type ), INTENT( INOUT ) :: fkeep
+    TYPE( SLBLT_control_type ), INTENT( IN ) :: control
+    TYPE( SLBLT_inform_type ), INTENT( OUT ) :: inform
     REAL( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: scale
     INTEGER( KIND = i4_ ), DIMENSION( akeep%n + 1 ), INTENT( IN ) :: ptr
     INTEGER( KIND = ip_ ), DIMENSION( * ), OPTIONAL, INTENT( IN ) :: row
@@ -992,8 +992,8 @@
 
     ALLOCATE( ptr64( akeep%n + 1 ), stat=inform%stat )
     IF ( inform%stat /= 0 ) THEN
-      inform%flag = SSIDS_ERROR_ALLOCATION
-      CALL inform%print_flag( control, 'ssids_factor' )
+      inform%flag = SLBLT_ERROR_ALLOCATION
+      CALL inform%print_flag( control, 'slblt_factor' )
       fkeep%inform = inform
       RETURN
     END IF
@@ -1001,16 +1001,16 @@
 
 !  call 64-bit routine
 
-    CALL ssids_factor_ptr64_precision( posdef, val, akeep, fkeep, control,     &
+    CALL slblt_factor_ptr64_precision( posdef, val, akeep, fkeep, control,     &
                                        inform, scale = scale, ptr = ptr64,     &
                                        row = row )
     RETURN
 
-    END SUBROUTINE ssids_factor_ptr32_precision
+    END SUBROUTINE slblt_factor_ptr32_precision
 
-!-*-*-  G A L A H A D - S S I D S _ factor_ptr64  S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D - S L B L T _ factor_ptr64  S U B R O U T I N E  -*-*-
 
-    SUBROUTINE ssids_factor_ptr64_precision( posdef, val, akeep, fkeep,        &
+    SUBROUTINE slblt_factor_ptr64_precision( posdef, val, akeep, fkeep,        &
                                              control, inform, scale, ptr, row )
 
 !  factorize phase (64-bit pointers)
@@ -1021,10 +1021,10 @@
  !  A values (lower triangle)
 
     REAL( KIND = rp_ ), DIMENSION( * ), target, INTENT( IN ) :: val
-    TYPE( SSIDS_akeep_type ), INTENT( IN ) :: akeep
-    TYPE( SSIDS_fkeep_type ), INTENT( INOUT ) :: fkeep
-    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
-    TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
+    TYPE( SLBLT_akeep_type ), INTENT( IN ) :: akeep
+    TYPE( SLBLT_fkeep_type ), INTENT( INOUT ) :: fkeep
+    TYPE( SLBLT_control_type ), INTENT( IN ) :: control
+    TYPE( SLBLT_inform_type ), INTENT( OUT ) :: inform
 
 !  used to hold row and column scaling factors. Must be set on entry if
 !  control%scaling <= 0.  Note: has to be assumed shape, not assumed size 
@@ -1070,7 +1070,7 @@
 
 !  setup for any printing we may require
 
-    context = 'ssids_factor'
+    context = 'slblt_factor'
 
 !  print summary of input control (depending on print level etc)
 
@@ -1079,7 +1079,7 @@
 !  check for error in call sequence, specfically if analyse cannot has been run
 
     IF ( .NOT. ALLOCATED( akeep%sptr ) .OR. akeep%inform%flag < 0 ) THEN
-      inform%flag = SSIDS_ERROR_CALL_SEQUENCE
+      inform%flag = SLBLT_ERROR_CALL_SEQUENCE
       CALL inform%print_flag( control, context )
       fkeep%inform = inform
       RETURN
@@ -1105,23 +1105,23 @@
 !  immediate return if analyse detected singularity and control%action=false
 
     IF ( .NOT. control%action .AND. akeep%n /= akeep%inform%matrix_rank ) THEN
-      inform%flag = SSIDS_ERROR_SINGULAR
+      inform%flag = SLBLT_ERROR_SINGULAR
       GO TO 100
     END IF
 
 !  immediate return for trivial matrix
 
     IF ( akeep%nnodes == 0 ) THEN
-      inform%flag = SSIDS_SUCCESS
+      inform%flag = SLBLT_SUCCESS
       inform%matrix_rank = 0
       GO TO 100
     END IF
 
     fkeep%pos_def = posdef
     IF ( posdef ) THEN
-      matrix_type = SSIDS_MATRIX_REAL_SYM_PSDEF
+      matrix_type = SLBLT_MATRIX_REAL_SYM_PSDEF
     ELSE
-      matrix_type = SSIDS_MATRIX_REAL_SYM_INDEF
+      matrix_type = SLBLT_MATRIX_REAL_SYM_INDEF
     END IF
 
 !  if matrix has been checked, produce a clean version of val in val2
@@ -1136,8 +1136,8 @@
 
 !  analyse run with no checking so must have ptr and row present
 
-      IF ( .NOT. PRESENT( ptr ) ) inform%flag = SSIDS_ERROR_PTR_ROW
-      IF ( .NOT. PRESENT( row ) ) inform%flag = SSIDS_ERROR_PTR_ROW
+      IF ( .NOT. PRESENT( ptr ) ) inform%flag = SLBLT_ERROR_PTR_ROW
+      IF ( .NOT. PRESENT( row ) ) inform%flag = SLBLT_ERROR_PTR_ROW
       IF ( inform%flag < 0 ) THEN
         fkeep%inform = inform
         GO TO 100
@@ -1151,14 +1151,14 @@
       WRITE( control%unit_warning, * )                                         &
         "Dumping matrix to '", control%rb_dump, "'"
       IF ( akeep%check ) THEN
-        CALL RB_write( control%rb_dump, SSIDS_MATRIX_REAL_SYM_INDEF, n, n,     &
+        CALL RB_write( control%rb_dump, SLBLT_MATRIX_REAL_SYM_INDEF, n, n,     &
                        akeep%ptr, akeep%row, rb_control, flag, val = val2 )
       ELSE
-        CALL RB_write( control%rb_dump, SSIDS_MATRIX_REAL_SYM_INDEF, n, n,     &
+        CALL RB_write( control%rb_dump, SLBLT_MATRIX_REAL_SYM_INDEF, n, n,     &
                        ptr, row, rb_control, flag, val = val )
       END IF
       IF ( flag /= 0 ) THEN
-        inform%flag = SSIDS_ERROR_UNKNOWN
+        inform%flag = SLBLT_ERROR_UNKNOWN
         GO TO 100
       END IF
     END IF
@@ -1180,7 +1180,7 @@
     END IF
 
     IF ( ALLOCATED( akeep%scaling ) .AND. control%scaling /= 3 ) THEN
-      inform%flag = SSIDS_WARNING_MATCH_ORD_NO_SCALE
+      inform%flag = SLBLT_WARNING_MATCH_ORD_NO_SCALE
       CALL inform%print_flag( control, context )
     END IF
 
@@ -1216,7 +1216,7 @@
         st = hsinform%stat
         GO TO 10
       CASE( - 2 ) !  Structually singular matrix and control%action=.false.
-        inform%flag = SSIDS_ERROR_SINGULAR
+        inform%flag = SLBLT_ERROR_SINGULAR
         GO TO 100
       END SELECT
 
@@ -1278,7 +1278,7 @@
 !  no scaling saved from analyse phase
 
       IF ( .NOT. ALLOCATED( akeep%scaling ) ) THEN
-        inform%flag = SSIDS_ERROR_NO_SAVED_SCALING
+        inform%flag = SLBLT_ERROR_NO_SAVED_SCALING
         GO TO 100
       END IF
       DO i = 1, n
@@ -1363,9 +1363,9 @@
 !  rank deficient, if we reach this point then must be control%action=.true.
 
       IF ( control%action ) THEN
-        inform%flag = SSIDS_WARNING_FACT_SINGULAR
+        inform%flag = SLBLT_WARNING_FACT_SINGULAR
       ELSE
-        inform%flag = SSIDS_ERROR_SINGULAR
+        inform%flag = SLBLT_ERROR_SINGULAR
       END IF
       CALL inform%print_flag( control, context )
     END IF
@@ -1412,15 +1412,15 @@
 !  error handling
 
  10 CONTINUE
-    inform%flag = SSIDS_ERROR_ALLOCATION
+    inform%flag = SLBLT_ERROR_ALLOCATION
     inform%stat = st
     GO TO 100
 
-    END SUBROUTINE ssids_factor_ptr64_precision
+    END SUBROUTINE slblt_factor_ptr64_precision
 
-!-*-*-  G A L A H A D - S S I D S _ s o l v e _ o n e   S U B R O U T I N E  -*-
+!-*-*-  G A L A H A D - S L B L T _ s o l v e _ o n e   S U B R O U T I N E  -*-
 
-    SUBROUTINE ssids_solve_one_precision( x1, akeep, fkeep, control, inform,   &
+    SUBROUTINE slblt_solve_one_precision( x1, akeep, fkeep, control, inform,   &
                                           job )
 
 !  solve phase single x
@@ -1432,10 +1432,10 @@
 !  has been used to index a variable, x(i) holds solution for variable i
 
     REAL( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: x1
-    TYPE( SSIDS_akeep_type ), INTENT( IN ) :: akeep
-    TYPE( SSIDS_fkeep_type ), INTENT( INOUT ) :: fkeep
-    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
-    TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
+    TYPE( SLBLT_akeep_type ), INTENT( IN ) :: akeep
+    TYPE( SLBLT_fkeep_type ), INTENT( INOUT ) :: fkeep
+    TYPE( SLBLT_control_type ), INTENT( IN ) :: control
+    TYPE( SLBLT_inform_type ), INTENT( OUT ) :: inform
     INTEGER( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: job
 
 !  local variables
@@ -1444,19 +1444,19 @@
 
     ldx = SIZE( x1 )
     IF ( PRESENT( job ) ) THEN
-      CALL ssids_solve_mult_precision( 1_ip_, x1, ldx, akeep, fkeep, control,  &
+      CALL slblt_solve_mult_precision( 1_ip_, x1, ldx, akeep, fkeep, control,  &
                                        inform, job )
     ELSE
-      CALL ssids_solve_mult_precision( 1_ip_, x1, ldx, akeep, fkeep, control,  &
+      CALL slblt_solve_mult_precision( 1_ip_, x1, ldx, akeep, fkeep, control,  &
                                        inform )
     END IF
     RETURN
 
-    END SUBROUTINE ssids_solve_one_precision
+    END SUBROUTINE slblt_solve_one_precision
 
-!-*-  G A L A H A D - S S I D S _ s o l v e _ m u l t  S U B R O U T I N E  -*-
+!-*-  G A L A H A D - S L B L T _ s o l v e _ m u l t  S U B R O U T I N E  -*-
 
-    SUBROUTINE ssids_solve_mult_precision( nrhs, x, ldx, akeep, fkeep,         &
+    SUBROUTINE slblt_solve_mult_precision( nrhs, x, ldx, akeep, fkeep,         &
                                            control, inform, job )
 
 !  solve phase multiple x
@@ -1471,13 +1471,13 @@
 !  x( i,j ) holds solution for variable i to system j
 
     REAL( KIND = rp_ ), DIMENSION( ldx,nrhs ), INTENT( INOUT ), target :: x
-    TYPE( SSIDS_akeep_type ), INTENT( IN ) :: akeep
+    TYPE( SLBLT_akeep_type ), INTENT( IN ) :: akeep
 
 !  for details of keep, control, inform : see derived type description
 
-    TYPE( SSIDS_fkeep_type ), INTENT( INOUT ) :: fkeep !inout for moving data
-    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
-    TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
+    TYPE( SLBLT_fkeep_type ), INTENT( INOUT ) :: fkeep !inout for moving data
+    TYPE( SLBLT_control_type ), INTENT( IN ) :: control
+    TYPE( SLBLT_inform_type ), INTENT( OUT ) :: inform
 
 !  job is used to indicate whether a  partial solution required
 !  job = 1 : forward eliminations only (PLX = B)
@@ -1494,14 +1494,14 @@
     INTEGER( KIND = ip_ ) :: local_job !  local job parameter
     INTEGER( KIND = ip_ ) :: n
 
-    context = 'ssids_solve'
-    inform%flag = SSIDS_SUCCESS
+    context = 'slblt_solve'
+    inform%flag = SLBLT_SUCCESS
 
 !  perform appropriate printing
 
     IF ( control%print_level >= 1 .AND. control%unit_diagnostics >= 0 ) THEN
       WRITE( control%unit_diagnostics,'( //a )' ) &
-           ' Entering ssids_solve with:'
+           ' Entering slblt_solve with:'
       WRITE( control%unit_diagnostics, '( A, 4( / A, I12 ),( / A, I12 ) )' )   &
            ' control parameters ( control% ) :',                               &
            ' print_level         Level of diagnostic printing        = ',      &
@@ -1522,24 +1522,24 @@
 !  factorize phase has not been performed
 
     IF ( .NOT. ALLOCATED( fkeep%subtree ) ) THEN
-      inform%flag = SSIDS_ERROR_CALL_SEQUENCE
+      inform%flag = SLBLT_ERROR_CALL_SEQUENCE
       CALL inform%print_flag( control, context )
       RETURN
     END IF
 
-    inform%flag = MAX( SSIDS_SUCCESS, fkeep%inform%flag ) !  Preserve warnings
+    inform%flag = MAX( SLBLT_SUCCESS, fkeep%inform%flag ) !  Preserve warnings
 
 !  immediate return if already had an error
 
     IF ( akeep%inform%flag < 0 .OR. fkeep%inform%flag < 0 ) THEN
-       inform%flag = SSIDS_ERROR_CALL_SEQUENCE
+       inform%flag = SLBLT_ERROR_CALL_SEQUENCE
        CALL inform%print_flag( control, context )
        RETURN
     END IF
 
     n = akeep%n
     IF ( ldx < n ) THEN
-      inform%flag = SSIDS_ERROR_X_SIZE
+      inform%flag = SLBLT_ERROR_X_SIZE
       CALL inform%print_flag( control, context )
       IF ( control%print_level >= 0 .AND. control%unit_error > 0 )             &
         WRITE( control%unit_error,'( A, I8, A, I8 )' )                         &
@@ -1548,7 +1548,7 @@
     END IF
 
     IF ( nrhs < 1 ) THEN
-      inform%flag = SSIDS_ERROR_X_SIZE
+      inform%flag = SLBLT_ERROR_X_SIZE
       CALL inform%print_flag( control, context )
       IF ( control%print_level >= 0 .AND. control%unit_error > 0 )             &
         WRITE ( control%unit_error, '( A, I8, A, I8 )' )                       &
@@ -1564,13 +1564,13 @@
 
     local_job = 0
     IF ( PRESENT( job ) ) THEN
-      IF ( job < SSIDS_SOLVE_JOB_FWD .OR. job > SSIDS_SOLVE_JOB_DIAG_BWD )     &
-           inform%flag = SSIDS_ERROR_JOB_OOR
-      IF ( fkeep%pos_def .AND. job == SSIDS_SOLVE_JOB_DIAG )                   &
-           inform%flag = SSIDS_ERROR_JOB_OOR
-      IF ( fkeep%pos_def .AND. job == SSIDS_SOLVE_JOB_DIAG_BWD )               &
-           inform%flag = SSIDS_ERROR_JOB_OOR
-      IF ( inform%flag == SSIDS_ERROR_JOB_OOR ) THEN
+      IF ( job < SLBLT_SOLVE_JOB_FWD .OR. job > SLBLT_SOLVE_JOB_DIAG_BWD )     &
+           inform%flag = SLBLT_ERROR_JOB_OOR
+      IF ( fkeep%pos_def .AND. job == SLBLT_SOLVE_JOB_DIAG )                   &
+           inform%flag = SLBLT_ERROR_JOB_OOR
+      IF ( fkeep%pos_def .AND. job == SLBLT_SOLVE_JOB_DIAG_BWD )               &
+           inform%flag = SLBLT_ERROR_JOB_OOR
+      IF ( inform%flag == SLBLT_ERROR_JOB_OOR ) THEN
         CALL inform%print_flag( control, context )
         RETURN
       END IF
@@ -1581,33 +1581,33 @@
     CALL inform%print_flag( control, context )
     RETURN
 
-    END SUBROUTINE ssids_solve_mult_precision
+    END SUBROUTINE slblt_solve_mult_precision
 
-!-*-*-  G A L A H A D - S S I D S _  enquire_posdef  S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D - S L B L T _  enquire_posdef  S U B R O U T I N E  -*-*-
 
-    SUBROUTINE ssids_enquire_posdef_precision( akeep, fkeep, control,          &
+    SUBROUTINE slblt_enquire_posdef_precision( akeep, fkeep, control,          &
                                                inform, d )
 
 !  return diagonal entries to user
 
     IMPLICIT NONE
-    TYPE( SSIDS_akeep_type ), INTENT( IN ) :: akeep
-    TYPE( SSIDS_fkeep_type ), target, INTENT( IN ) :: fkeep
-    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
-    TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
+    TYPE( SLBLT_akeep_type ), INTENT( IN ) :: akeep
+    TYPE( SLBLT_fkeep_type ), target, INTENT( IN ) :: fkeep
+    TYPE( SLBLT_control_type ), INTENT( IN ) :: control
+    TYPE( SLBLT_inform_type ), INTENT( OUT ) :: inform
     REAL( KIND = rp_ ), DIMENSION( * ), INTENT( OUT ) :: d
 
 !  local variables
 
     CHARACTER( LEN = 50 ) :: context  ! procedure name ( used when printing )
 
-    context = 'ssids_enquire_posdef'
-    inform%flag = SSIDS_SUCCESS
+    context = 'slblt_enquire_posdef'
+    inform%flag = SLBLT_SUCCESS
 
 !  factorize phase has not been performed
 
     IF ( .NOT. ALLOCATED( fkeep%subtree ) ) THEN
-      inform%flag = SSIDS_ERROR_CALL_SEQUENCE
+      inform%flag = SLBLT_ERROR_CALL_SEQUENCE
       CALL inform%print_flag( control, context )
       RETURN
     END IF
@@ -1615,13 +1615,13 @@
 !  immediate return if there had already been an error
 
     IF ( akeep%inform%flag < 0 .OR. fkeep%inform%flag < 0 ) THEN
-      inform%flag = SSIDS_ERROR_CALL_SEQUENCE
+      inform%flag = SLBLT_ERROR_CALL_SEQUENCE
       CALL inform%print_flag( control, context )
       RETURN
     END IF
 
     IF ( .NOT. fkeep%pos_def ) THEN
-      inform%flag = SSIDS_ERROR_NOT_LLT
+      inform%flag = SLBLT_ERROR_NOT_LLT
       CALL inform%print_flag( control, context )
       RETURN
     END IF
@@ -1630,23 +1630,23 @@
     CALL inform%print_flag( control, context )
     RETURN
 
-    END SUBROUTINE ssids_enquire_posdef_precision
+    END SUBROUTINE slblt_enquire_posdef_precision
 
-!-*-*-  G A L A H A D - S S I D S _ enquire_indef S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D - S L B L T _ enquire_indef S U B R O U T I N E  -*-*-
 
-    SUBROUTINE ssids_enquire_indef_precision( akeep, fkeep, control, inform,   &
+    SUBROUTINE slblt_enquire_indef_precision( akeep, fkeep, control, inform,   &
                                               piv_order, d )
 
 !  In the indefinite case, the pivot sequence used will not necessarily be
-!  the same as that passed to ssids_factor ( because of delayed pivots ). 
+!  the same as that passed to slblt_factor ( because of delayed pivots ).
 !  This SUBROUTINE allows the user to obtain the pivot sequence that was
 !  actually used. also the entries of D^{-1} are RETURNed using array d.
 
     IMPLICIT NONE
-    TYPE( SSIDS_akeep_type ), INTENT( IN ) :: akeep
-    TYPE( SSIDS_fkeep_type ), target, INTENT( IN ) :: fkeep
-    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
-    TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
+    TYPE( SLBLT_akeep_type ), INTENT( IN ) :: akeep
+    TYPE( SLBLT_fkeep_type ), target, INTENT( IN ) :: fkeep
+    TYPE( SLBLT_control_type ), INTENT( IN ) :: control
+    TYPE( SLBLT_inform_type ), INTENT( OUT ) :: inform
 
 !  if i is used to index a variable, its position in the pivot sequence
 !  will be placed in piv_order(i), with its sign negative if it is
@@ -1664,13 +1664,13 @@
     CHARACTER( LEN = 50 )  :: context  !  Procedure name ( used when printing ).
     INTEGER( KIND = ip_ ) :: i, po
 
-    context = 'ssids_enquire_indef'
-    inform%flag = SSIDS_SUCCESS
+    context = 'slblt_enquire_indef'
+    inform%flag = SLBLT_SUCCESS
 
 !  check if factorize phase has been performed
 
     IF ( .NOT. ALLOCATED( fkeep%subtree ) ) THEN
-      inform%flag = SSIDS_ERROR_CALL_SEQUENCE
+      inform%flag = SLBLT_ERROR_CALL_SEQUENCE
       CALL inform%print_flag( control, context )
       RETURN
     END IF
@@ -1678,13 +1678,13 @@
 !  immediate return if there has been an error
 
     IF ( akeep%inform%flag < 0 .OR. fkeep%inform%flag < 0 ) THEN
-      inform%flag = SSIDS_ERROR_CALL_SEQUENCE
+      inform%flag = SLBLT_ERROR_CALL_SEQUENCE
       CALL inform%print_flag( control, context )
       RETURN
     END IF
 
     IF ( fkeep%pos_def ) THEN
-      inform%flag = SSIDS_ERROR_NOT_LDLT
+      inform%flag = SLBLT_ERROR_NOT_LDLT
       CALL inform%print_flag( control, context )
       RETURN
     END IF
@@ -1694,7 +1694,7 @@
 !  bug fix to give 1-based indices
 
     IF ( PRESENT( piv_order ) ) THEN
-!     WRITE( 6,"( ' ssids: piv_order ', 7I6 )" ) piv_order( : akeep%n )
+!     WRITE( 6,"( ' slblt: piv_order ', 7I6 )" ) piv_order( : akeep%n )
 
 !  bug fix to determine what a C 0 index means
 
@@ -1717,16 +1717,16 @@
           END IF
         END DO
       END IF
-!     WRITE( 6,"( ' ssids: revised piv_order ', 7I6 )" ) piv_order( : akeep%n )
+!     WRITE( 6,"( ' slblt: revised piv_order ', 7I6 )" ) piv_order( : akeep%n )
     END IF
     CALL inform%print_flag( control, context )
     RETURN
 
-    END SUBROUTINE ssids_enquire_indef_precision
+    END SUBROUTINE slblt_enquire_indef_precision
 
-!-*-*-*-  G A L A H A D - S S I D S _  a l t e r  S U B R O U T I N E  -*-*-*-
+!-*-*-*-  G A L A H A D - S L B L T _  a l t e r  S U B R O U T I N E  -*-*-*-
 
-    SUBROUTINE ssids_alter_precision( d, akeep, fkeep, control, inform )
+    SUBROUTINE slblt_alter_precision( d, akeep, fkeep, control, inform )
 
 !  in the indefinite case, change the entries of D^{-1}
 
@@ -1736,22 +1736,22 @@
 !  and the off-diagonal entries must be placed in d(2,i) (i = 1,...n-1)
 
     REAL( KIND = rp_ ), DIMENSION( 2, * ), INTENT( IN ) :: d
-    TYPE( SSIDS_akeep_type ), INTENT( IN ) :: akeep
-    TYPE( SSIDS_fkeep_type ), target, INTENT( INOUT ) :: fkeep
-    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
-    TYPE( SSIDS_inform_type ), INTENT( OUT ) :: inform
+    TYPE( SLBLT_akeep_type ), INTENT( IN ) :: akeep
+    TYPE( SLBLT_fkeep_type ), target, INTENT( INOUT ) :: fkeep
+    TYPE( SLBLT_control_type ), INTENT( IN ) :: control
+    TYPE( SLBLT_inform_type ), INTENT( OUT ) :: inform
 
 !  local variables
 
     CHARACTER( LEN = 50 )  :: context  ! procedure name (used when printing)
 
-    context = 'ssids_alter'
-    inform%flag = SSIDS_SUCCESS
+    context = 'slblt_alter'
+    inform%flag = SLBLT_SUCCESS
 
 !  factorize phase has not been performed
 
     IF ( .NOT. ALLOCATED( fkeep%subtree ) ) THEN
-      inform%flag = SSIDS_ERROR_CALL_SEQUENCE
+      inform%flag = SLBLT_ERROR_CALL_SEQUENCE
       CALL inform%print_flag( control, context )
       RETURN
     END IF
@@ -1759,13 +1759,13 @@
 !  immediate return if there had been already an error
 
     IF ( akeep%inform%flag < 0 .OR. fkeep%inform%flag < 0 ) THEN
-       inform%flag = SSIDS_ERROR_CALL_SEQUENCE
+       inform%flag = SLBLT_ERROR_CALL_SEQUENCE
        CALL inform%print_flag( control, context )
        RETURN
     END IF
 
     IF ( fkeep%pos_def ) THEN
-      inform%flag = SSIDS_ERROR_NOT_LDLT
+      inform%flag = SLBLT_ERROR_NOT_LDLT
       CALL inform%print_flag( control, context )
       RETURN
     END IF
@@ -1774,13 +1774,13 @@
     CALL inform%print_flag( control, context )
     RETURN
 
-    END SUBROUTINE ssids_alter_precision
+    END SUBROUTINE slblt_alter_precision
 
-!-*-*-  G A L A H A D - S S I D S _ f r e e _a k e e p  S U B R O U T I N E  -*-
+!-*-*-  G A L A H A D - S L B L T _ f r e e _a k e e p  S U B R O U T I N E  -*-
 
     SUBROUTINE free_akeep_precision( akeep, flag )
     IMPLICIT NONE
-    TYPE( SSIDS_akeep_type ), INTENT( INOUT ) :: akeep
+    TYPE( SLBLT_akeep_type ), INTENT( INOUT ) :: akeep
     INTEGER( KIND = ip_ ), INTENT( OUT ) :: flag
 
     CALL akeep%free( flag )
@@ -1788,11 +1788,11 @@
 
     END SUBROUTINE free_akeep_precision
 
-!-*-*-  G A L A H A D - S S I D S _ f r e e _f k e e p  S U B R O U T I N E  -*-
+!-*-*-  G A L A H A D - S L B L T _ f r e e _f k e e p  S U B R O U T I N E  -*-
 
     SUBROUTINE free_fkeep_precision( fkeep, flag )
     IMPLICIT NONE
-    TYPE( SSIDS_fkeep_type ), INTENT( INOUT ) :: fkeep
+    TYPE( SLBLT_fkeep_type ), INTENT( INOUT ) :: fkeep
     INTEGER( KIND = ip_ ), INTENT( OUT ) :: flag
 
     CALL fkeep%free( flag )
@@ -1800,12 +1800,12 @@
 
     END SUBROUTINE free_fkeep_precision
 
-!-*-*-  G A L A H A D - S S I D S _ f r e e _ b o t h  S U B R O U T I N E  -*-
+!-*-*-  G A L A H A D - S L B L T _ f r e e _ b o t h  S U B R O U T I N E  -*-
 
     SUBROUTINE free_both_precision( akeep, fkeep, flag )
     IMPLICIT NONE
-    TYPE( SSIDS_akeep_type ), INTENT( INOUT ) :: akeep
-    TYPE( SSIDS_fkeep_type ), INTENT( INOUT ) :: fkeep
+    TYPE( SLBLT_akeep_type ), INTENT( INOUT ) :: akeep
+    TYPE( SLBLT_fkeep_type ), INTENT( INOUT ) :: fkeep
     INTEGER( KIND = ip_ ), INTENT( OUT ) :: flag
 
 !  must free fkeep first as it may reference akeep
@@ -1817,7 +1817,7 @@
 
     END SUBROUTINE free_both_precision
 
-!-*-*-  G A L A H A D - S S I D S _ push_omp_settings S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D - S L B L T _ push_omp_settings S U B R O U T I N E  -*-*-
 
     SUBROUTINE push_omp_settings( user_settings, flag )
 
@@ -1838,13 +1838,13 @@
 
 !$  !  issue an error if we don't have cancellation ( could lead to segfaults )
 !$  IF ( .NOT. omp_get_cancellation( ) ) THEN
-!$     flag = SSIDS_ERROR_OMP_CANCELLATION
+!$     flag = SLBLT_ERROR_OMP_CANCELLATION
 !$     RETURN
 !$  END IF
 
 !$  !  issue a warning if proc_bind is not enabled
 !$  IF ( omp_get_proc_bind( ) == OMP_PROC_BIND_FALSE ) &
-!$       flag = SSIDS_WARNING_OMP_PROC_BIND
+!$       flag = SLBLT_WARNING_OMP_PROC_BIND
 
 !!$  !  must have nested enabled
 !!$  user_settings%nested = omp_get_nested( )
@@ -1861,7 +1861,7 @@
 
     END SUBROUTINE push_omp_settings
 
-!-*-*-  G A L A H A D - S S I D S _  pop_omp_settings S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D - S L B L T _  pop_omp_settings S U B R O U T I N E  -*-*-
 
     SUBROUTINE pop_omp_settings( user_settings )
 
@@ -1879,10 +1879,10 @@
     END SUBROUTINE pop_omp_settings
 
 !   ============================================================================
-!   =================== extracted from SSIDS_ANALYSE module ====================
+!   =================== extracted from SLBLT_ANALYSE module ====================
 !   ============================================================================
 
-!- G A L A H A D -  S S I D S _ a n a l y s e _ p h a s e  S U B R O U T I N E -
+!- G A L A H A D -  S L B L T _ a n a l y s e _ p h a s e  S U B R O U T I N E -
 
     SUBROUTINE analyse_phase( n, ptr, row, ptr2, row2, order, invp,            &
                               akeep, control, inform  )
@@ -1922,9 +1922,9 @@
 !  is NOT set to inverse for the final order that is returned.
 
     INTEGER( ip_ ), DIMENSION( n ), INTENT( OUT ) :: invp
-    TYPE( SSIDS_akeep_type ), INTENT( INOUT ) :: akeep
-    TYPE( SSIDS_control_type ), INTENT( IN ) :: control
-    TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
+    TYPE( SLBLT_akeep_type ), INTENT( INOUT ) :: akeep
+    TYPE( SLBLT_control_type ), INTENT( IN ) :: control
+    TYPE( SLBLT_inform_type ), INTENT( INOUT ) :: inform
 
     CHARACTER( 50 )  :: context !  Procedure name ( used when printing ).
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE :: contrib_dest, exec_loc, level
@@ -1938,7 +1938,7 @@
     INTEGER( long_ ) :: nz !  ptr( n + 1 ) - 1
     INTEGER( ip_ ) :: st
 
-    context = 'ssids_analyse'
+    context = 'slblt_analyse'
     nout = control%unit_error
     IF ( control%print_level < 0 ) nout = - 1
     nout1 = control%unit_warning
@@ -1957,13 +1957,13 @@
                         inform%stat, inform%num_factor, inform%num_flops )
     SELECT CASE( flag )
     CASE( 0 ) !  do nothing
-    CASE( SSIDS_ERROR_ALLOCATION ) !  allocation error
-      inform%flag = SSIDS_ERROR_ALLOCATION
+    CASE( SLBLT_ERROR_ALLOCATION ) !  allocation error
+      inform%flag = SLBLT_ERROR_ALLOCATION
       RETURN
-    CASE( SSIDS_WARNING_ANALYSIS_SINGULAR ) !  zero row/column
-      inform%flag = SSIDS_WARNING_ANALYSIS_SINGULAR
+    CASE( SLBLT_WARNING_ANALYSIS_SINGULAR ) !  zero row/column
+      inform%flag = SLBLT_WARNING_ANALYSIS_SINGULAR
     CASE default !  should never reach here
-      inform%flag = SSIDS_ERROR_UNKNOWN
+      inform%flag = SLBLT_ERROR_UNKNOWN
     END SELECT
 
 !  set invp to hold inverse of order
@@ -2085,13 +2085,13 @@
 100 CONTINUE
     inform%stat = st
     IF ( inform%stat /= 0 ) THEN
-      inform%flag = SSIDS_ERROR_ALLOCATION
+      inform%flag = SLBLT_ERROR_ALLOCATION
     END IF
     RETURN
 
     END SUBROUTINE analyse_phase
 
-!-*-  G A L A H A D -  S S I D S _ c h e c k _ o r d e r  S U B R O U T I N E -*
+!-*-  G A L A H A D -  S L B L T _ c h e c k _ o r d e r  S U B R O U T I N E -*
 
     SUBROUTINE check_order( n, order, invp, control, inform )
 
@@ -2117,22 +2117,22 @@
 
 !  Used to check order and then holds inverse of perm.
 
-    TYPE( ssids_control_type ), INTENT( IN ) :: control
-    TYPE( ssids_inform_type ), INTENT( INOUT ) :: inform
+    TYPE( slblt_control_type ), INTENT( IN ) :: control
+    TYPE( slblt_inform_type ), INTENT( INOUT ) :: inform
 
     character( 50 )  :: context !  Procedure name ( used when printing ).
 
     INTEGER( ip_ ) :: i, j
     INTEGER( ip_ ) :: nout  !  stream for error messages
 
-    context = 'ssids_analyse'
+    context = 'slblt_analyse'
     nout = control%unit_error
     IF ( control%print_level < 0 ) nout = - 1
 
 !  order is too short
 
     IF ( SIZE( order ) < n ) THEN
-      inform%flag = SSIDS_ERROR_ORDER
+      inform%flag = SLBLT_ERROR_ORDER
       RETURN
     END IF
 
@@ -2153,14 +2153,14 @@
       invp( j ) = i
     END DO
     IF ( i - 1 /= n ) THEN
-      inform%flag = SSIDS_ERROR_ORDER
+      inform%flag = SLBLT_ERROR_ORDER
       RETURN
     END IF
     RETURN
 
     END SUBROUTINE check_order
 
-!  G A L A H A D -  S S I D S _ e x p a n d _ p a t t e r n  S U B R O U T I N E
+!  G A L A H A D -  S L B L T _ e x p a n d _ p a t t e r n  S U B R O U T I N E
 
     SUBROUTINE expand_pattern( n, nz, ptr, row, aptr, arow )
 
@@ -2222,7 +2222,7 @@
 
     END SUBROUTINE expand_pattern
 
-!-  G A L A H A D -  S S I D S _ e x p a n d _ m a t r i x  S U B R O U T I N E 
+!-  G A L A H A D -  S L B L T _ e x p a n d _ m a t r i x  S U B R O U T I N E
 
     SUBROUTINE expand_matrix( n, nz, ptr, row, val, aptr, arow, aval )
 
@@ -2288,12 +2288,12 @@
 
     END SUBROUTINE expand_matrix
 
-!-*-  G A L A H A D -  S S I D S _ c o m p u t e _ f l o p s  F U N C T I O N -*
+!-*-  G A L A H A D -  S L B L T _ c o m p u t e _ f l o p s  F U N C T I O N -*
 
     FUNCTION compute_flops( nnodes, sptr, rptr, node )
 
 !   compute flops for processing a node
-!    akeep Information generated in analysis phase by SSIDS
+!    akeep Information generated in analysis phase by SLBLT
 !    node Node
 
     IMPLICIT none
@@ -2317,7 +2317,7 @@
 
     END FUNCTION compute_flops
 
-!-  G A L A H A D -  S S I D S _ find_subtree_partition  F U N C T I O N -
+!-  G A L A H A D -  S L B L T _ find_subtree_partition  F U N C T I O N -
 
     SUBROUTINE find_subtree_partition( nnodes, sptr, sparent, rptr, control,   &
                                        topology, nparts, part, exec_loc,       &
@@ -2368,7 +2368,7 @@
     INTEGER( ip_ ), DIMENSION( nnodes + 1 ), INTENT( IN ) :: sptr
     INTEGER( ip_ ), DIMENSION( nnodes ), INTENT( IN ) :: sparent
     INTEGER( long_ ), DIMENSION( nnodes + 1 ), INTENT( IN ) :: rptr
-    TYPE( ssids_control_type ), INTENT( IN ) :: control
+    TYPE( slblt_control_type ), INTENT( IN ) :: control
     TYPE( TOPOLOGY_numa_region ), DIMENSION( : ), INTENT( IN ) :: topology
     INTEGER( ip_ ), INTENT( OUT ) :: nparts
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE, INTENT( INOUT ) :: part
@@ -2376,7 +2376,7 @@
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE, INTENT( INOUT ) :: contrib_ptr
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE, INTENT( INOUT ) :: contrib_idx
     INTEGER( ip_ ), DIMENSION( : ), ALLOCATABLE, INTENT( OUT ) :: contrib_dest
-    TYPE( ssids_inform_type ), INTENT( INOUT ) :: inform
+    TYPE( slblt_inform_type ), INTENT( INOUT ) :: inform
     INTEGER( ip_ ), INTENT( OUT ) :: st
 
     INTEGER( ip_ ) :: i, j, k
@@ -2547,7 +2547,7 @@
 
     END SUBROUTINE find_subtree_partition
 
-!-  G A L A H A D -  S S I D S _ calc_exec_alloc  F U N C T I O N -
+!-  G A L A H A D -  S L B L T _ calc_exec_alloc  F U N C T I O N -
 
     REAL FUNCTION calc_exec_alloc( nparts, part, size_order, is_child, flops,  &
                                    topology, exec_loc, st )
@@ -2645,7 +2645,7 @@
 
     END FUNCTION calc_exec_alloc
 
-!-*-  G A L A H A D -  S S I D S _ s p l i t _ t r e e  S U B R O U T I N E -*-
+!-*-  G A L A H A D -  S L B L T _ s p l i t _ t r e e  S U B R O U T I N E -*-
 
     SUBROUTINE split_tree( nparts, part, size_order, is_child, sparent, flops, &
                            st )
@@ -2744,7 +2744,7 @@
 
     END SUBROUTINE split_tree
 
-!-  G A L A H A D -  S S I D S _ create_size_order  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _ create_size_order  S U B R O U T I N E -
 
     SUBROUTINE create_size_order( nparts, part, flops, size_order )
 
@@ -2785,7 +2785,7 @@
 
     END SUBROUTINE create_size_order
 
-!-  G A L A H A D -  S S I D S _ p r i n t _ a t r e e  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _ p r i n t _ a t r e e  S U B R O U T I N E -
 
     SUBROUTINE print_atree( nnodes, sptr, sparent, rptr )
 
@@ -2864,7 +2864,7 @@
 
     END SUBROUTINE print_atree
 
-!-  G A L A H A D -  S S I D S _ print_atree_part  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _ print_atree_part  S U B R O U T I N E -
 
     SUBROUTINE print_atree_part( nnodes, sptr, sparent, rptr, topology,        &
                                  nparts, part, exec_loc )
@@ -2971,7 +2971,7 @@
 
     END SUBROUTINE print_atree_part
 
-!-  G A L A H A D -  S S I D S _ b u i l d _ m a p   S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _ b u i l d _ m a p   S U B R O U T I N E -
 
     SUBROUTINE build_map( n, ptr, row, perm, invp, nnodes, sptr, rptr, rlist,  &
                           nptr, nlist, st )
@@ -3103,7 +3103,7 @@
 !   ================ extracted from SPRAL_CORE_ANALYSE module ==================
 !   ============================================================================
 
-!-  G A L A H A D -  S S I D S _ b a s i c _ a n a l y s e  S U B R O U T I N E 
+!-  G A L A H A D -  S L B L T _ b a s i c _ a n a l y s e  S U B R O U T I N E
 
     SUBROUTINE basic_analyse( n, ptr, row, perm, nnodes, sptr, sparent, rptr,  &
                               rlist, nemin, info, stat, nfact, nflops )
@@ -3231,7 +3231,7 @@
     CALL find_postorder( n, realn, ptr, perm, invp, parent, st )
     IF ( st /= 0 ) GO TO 490
 
-    IF ( n /= realn ) info = SSIDS_WARNING_ANALYSIS_SINGULAR
+    IF ( n /= realn ) info = SLBLT_WARNING_ANALYSIS_SINGULAR
                              
 !  determine column counts
 
@@ -3273,7 +3273,7 @@
 !  error handlers
 
 490 CONTINUE
-    info = SSIDS_ERROR_ALLOCATION
+    info = SLBLT_ERROR_ALLOCATION
     stat = st
     RETURN
 
@@ -3283,7 +3283,7 @@
 !  Elimination tree routines
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!-*-  G A L A H A D -  S S I D S _ f i n d _ e t r e e  S U B R O U T I N E -*-
+!-*-  G A L A H A D -  S L B L T _ f i n d _ e t r e e  S U B R O U T I N E -*-
 
     SUBROUTINE find_etree( n, ptr, row, perm, invp, parent, st )
 
@@ -3372,7 +3372,7 @@
 
     END SUBROUTINE find_etree
 
-!-  G A L A H A D -  S S I D S _ find_postorder  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _ find_postorder  S U B R O U T I N E -
 
     SUBROUTINE find_postorder( n, realn, ptr, perm, invp, parent, st )
 
@@ -3533,7 +3533,7 @@
 !  Column count routines
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!-  G A L A H A D -  S S I D S _  find_col_counts  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _  find_col_counts  S U B R O U T I N E -
 
     SUBROUTINE find_col_counts( n, ptr, row, perm, invp, parent, cc, st )
 
@@ -3732,7 +3732,7 @@
 !  Supernode amalgamation routines
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!-  G A L A H A D -  S S I D S _ find_supernodes  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _ find_supernodes  S U B R O U T I N E -
 
     SUBROUTINE find_supernodes( n, realn, parent, cc, sperm, nnodes, sptr,     &
                                 sparent, scc, nemin, info, st )
@@ -3973,12 +3973,12 @@
     RETURN
 
 490 CONTINUE
-    info = SSIDS_ERROR_ALLOCATION
+    info = SLBLT_ERROR_ALLOCATION
     RETURN
 
     END SUBROUTINE find_supernodes
 
-!-  G A L A H A D -  S S I D S _ sort_by_val S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _ sort_by_val S U B R O U T I N E -
 
     RECURSIVE SUBROUTINE sort_by_val( n, idx, val, st )
 
@@ -4020,7 +4020,7 @@
 
     END SUBROUTINE sort_by_val
 
-!-  G A L A H A D -  S S I D S _ sort_by_val_ms  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _ sort_by_val_ms  S U B R O U T I N E -
 
     RECURSIVE SUBROUTINE sort_by_val_ms( n, idx, val, st )
 
@@ -4085,7 +4085,7 @@
 
     END SUBROUTINE sort_by_val_ms
 
-!-*-  G A L A H A D -  S S I D S _ d o _ m e r g e  F U C T T I O N -*-
+!-*-  G A L A H A D -  S L B L T _ d o _ m e r g e  F U C T T I O N -*-
 
     LOGICAL FUNCTION do_merge( node, par, nelim, cc, ezero, nemin )
 
@@ -4110,7 +4110,7 @@
 
     END FUNCTION do_merge
 
-!-  G A L A H A D -  S S I D S _ merge_nodes  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _ merge_nodes  S U B R O U T I N E -
 
     SUBROUTINE merge_nodes( node, par, nelim, nvert, vhead, vnext, height,     &
                             ezero, cc )
@@ -4154,7 +4154,7 @@
 !  Statistics routines
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!-  G A L A H A D -  S S I D S _  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _  S U B R O U T I N E -
 
     SUBROUTINE calc_stats( nnodes, sptr, scc, nfact, nflops )
 
@@ -4210,7 +4210,7 @@
 !  Row list routines
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!-  G A L A H A D -  S S I D S _ find_row_lists  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _ find_row_lists  S U B R O U T I N E -
 
     SUBROUTINE find_row_lists( n, ptr, row, perm, invp, nnodes,                &
                                sptr, sparent, scc, rptr, rlist, info, st )
@@ -4250,7 +4250,7 @@
 
     ALLOCATE( seen( n ), chead( nnodes + 1 ), cnext( nnodes + 1 ), STAT = st )
     IF ( st /= 0 ) THEN
-      info = SSIDS_ERROR_ALLOCATION
+      info = SLBLT_ERROR_ALLOCATION
       RETURN
     END IF
     seen( : ) = 0
@@ -4322,7 +4322,7 @@
 !  Assorted auxilary routines
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!-  G A L A H A D -  S S I D S _  dbl_tr_sort  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _  dbl_tr_sort  S U B R O U T I N E -
 
     SUBROUTINE dbl_tr_sort( n, nnodes, rptr, rlist, st )
 
@@ -4393,7 +4393,7 @@
 
     END SUBROUTINE dbl_tr_sort
 
-!-  G A L A H A D -  S S I D S _  apply_perm  S U B R O U T I N E -
+!-  G A L A H A D -  S L B L T _  apply_perm  S U B R O U T I N E -
 
     SUBROUTINE apply_perm( n, perm, order, invp, cc )
 
@@ -4434,18 +4434,18 @@
     END SUBROUTINE apply_perm
 
 !   ============================================================================
-!   =================== extracted from SSIDS_AKEEP module ======================
+!   =================== extracted from SLBLT_AKEEP module ======================
 !   ============================================================================
-!   ============= define ssids_akeep type and associated procedures ============
+!   ============= define slblt_akeep type and associated procedures ============
 !   ============================================================================
 
-!-*-  G A L A H A D -  S S I D S _ F R E E _ A K E E P  S U B R O U T I N E  -*-
+!-*-  G A L A H A D -  S L B L T _ F R E E _ A K E E P  S U B R O U T I N E  -*-
 
     SUBROUTINE free_akeep( akeep, flag )
 
 !  free all allocated components of the type akeep
 
-    CLASS( ssids_akeep_type ), INTENT( INOUT ) :: akeep
+    CLASS( slblt_akeep_type ), INTENT( INOUT ) :: akeep
     INTEGER( ip_ ), INTENT( OUT ) :: flag
 
 !  local variables
@@ -4473,18 +4473,18 @@
 
     END SUBROUTINE free_akeep
 
-!-*-*-  G A L A H A D - S S I D S _ final _ akeep  S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D - S L B L T _ final _ akeep  S U B R O U T I N E  -*-*-
 
     SUBROUTINE final_akeep( akeep )
 
-!  finalizer for SSIDS_akeep_type. Ensures the C++ symbolic subtrees (reached
+!  finalizer for SLBLT_akeep_type. Ensures the symbolic subtrees (reached
 !  only through the akeep%subtree pointer array) are destroyed whenever an akeep
 !  is deallocated, reset by an INTENT( OUT ) argument, or goes out of scope.
 !  Without this, Fortran deallocates the pointer array but not its targets,
-!  leaking the C++ objects. free_akeep is guarded by ASSOCIATED/ALLOCATED, so
-!  running it again after an explicit SSIDS_free is a safe no-op.
+!  leaking the objects. free_akeep is guarded by ASSOCIATED/ALLOCATED, so
+!  running it again after an explicit SLBLT_free is a safe no-op.
 
-    TYPE( ssids_akeep_type ), INTENT( INOUT ) :: akeep
+    TYPE( slblt_akeep_type ), INTENT( INOUT ) :: akeep
 
 !  local variables
 
@@ -4496,20 +4496,20 @@
     END SUBROUTINE final_akeep
 
 !   ============================================================================
-!   =================== extracted from SSIDS_FKEEP module ======================
+!   =================== extracted from SLBLT_FKEEP module ======================
 !   ============================================================================
-!   ====== define ssids_fkeep type and associated procedures (CPU version) =====
+!   ====== define slblt_fkeep type and associated procedures (CPU version) =====
 !   ============================================================================
 
-!-*-*-  G A L A H A D -  S S I D S _ inner _ factor  S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D -  S L B L T _ inner _ factor  S U B R O U T I N E  -*-*-
 
      SUBROUTINE inner_factor( fkeep, akeep, val, control, inform )
      IMPLICIT none
-     TYPE( SSIDS_akeep_type ), INTENT( IN ) :: akeep
-     CLASS( SSIDS_fkeep_type ), TARGET, INTENT( INOUT ) :: fkeep
+     TYPE( SLBLT_akeep_type ), INTENT( IN ) :: akeep
+     CLASS( SLBLT_fkeep_type ), TARGET, INTENT( INOUT ) :: fkeep
      REAL( KIND = rp_ ), DIMENSION( * ), TARGET, INTENT( IN ) :: val
-     TYPE( SSIDS_control_type ), INTENT( IN ) :: control
-     TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
+     TYPE( SLBLT_control_type ), INTENT( IN ) :: control
+     TYPE( SLBLT_inform_type ), INTENT( INOUT ) :: inform
 
 !  local variables
 
@@ -4518,7 +4518,7 @@
      INTEGER( KIND = ip_ ) :: nth ! Number of threads within a region
      LOGICAL :: abort, all_region
      TYPE( contrib_type ), DIMENSION( : ), ALLOCATABLE :: child_contrib
-     TYPE( ssids_inform_type ), DIMENSION( : ), ALLOCATABLE :: thread_inform
+     TYPE( slblt_inform_type ), DIMENSION( : ), ALLOCATABLE :: thread_inform
 
 !  begin profile trace (noop if not enabled)
 
@@ -4665,22 +4665,22 @@
      RETURN
 
  200 CONTINUE
-     inform%flag = SSIDS_ERROR_ALLOCATION
+     inform%flag = SLBLT_ERROR_ALLOCATION
      GO TO 100 ! cleanup and exit
      RETURN
 
      END SUBROUTINE inner_factor
 
-!-*-*-  G A L A H A D -  S S I D S _ inner _ solve  S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D -  S L B L T _ inner _ solve  S U B R O U T I N E  -*-*-
 
      SUBROUTINE inner_solve( local_job, nrhs, x, ldx, akeep, fkeep, inform )
-     TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
-     CLASS( ssids_fkeep_type ), INTENT( INOUT ) :: fkeep
+     TYPE( slblt_akeep_type ), INTENT( IN ) :: akeep
+     CLASS( slblt_fkeep_type ), INTENT( INOUT ) :: fkeep
      INTEGER( KIND = ip_ ), INTENT( INOUT ) :: local_job
      INTEGER( KIND = ip_ ), INTENT( IN ) :: nrhs
      INTEGER( KIND = ip_ ), INTENT( IN ) :: ldx
      REAL( KIND = rp_ ), DIMENSION( ldx, nrhs ), TARGET, INTENT( INOUT ) :: x
-     TYPE( ssids_inform_type ), INTENT( INOUT ) :: inform
+     TYPE( slblt_inform_type ), INTENT( INOUT ) :: inform
 
 !  local variables
 
@@ -4696,8 +4696,8 @@
 !  permute/scale
 
      IF ( ALLOCATED( fkeep%scaling ) .AND.                                     &
-           ( local_job == SSIDS_SOLVE_JOB_ALL .OR.                             &
-             local_job == SSIDS_SOLVE_JOB_FWD ) ) THEN
+           ( local_job == SLBLT_SOLVE_JOB_ALL .OR.                             &
+             local_job == SLBLT_SOLVE_JOB_FWD ) ) THEN
 
 !  copy and scale
 
@@ -4717,30 +4717,30 @@
 
 !  perform relevant solves
 
-     IF ( local_job == SSIDS_SOLVE_JOB_FWD .OR.                                &
-          local_job == SSIDS_SOLVE_JOB_ALL ) THEN
+     IF ( local_job == SLBLT_SOLVE_JOB_FWD .OR.                                &
+          local_job == SLBLT_SOLVE_JOB_ALL ) THEN
        DO part = 1, akeep%nparts
          CALL fkeep%subtree( part )%ptr%solve_fwd( nrhs, x2, n, inform )
          IF ( inform%stat /= 0 ) GO TO 100
        END DO
      END IF
 
-     IF ( local_job == SSIDS_SOLVE_JOB_DIAG ) THEN
+     IF ( local_job == SLBLT_SOLVE_JOB_DIAG ) THEN
        DO part = 1, akeep%nparts
          CALL fkeep%subtree( part )%ptr%solve_diag( nrhs, x2, n, inform )
          IF ( inform%stat /= 0 ) GO TO 100
        END DO
      END IF
 
-     IF ( local_job == SSIDS_SOLVE_JOB_BWD ) THEN
+     IF ( local_job == SLBLT_SOLVE_JOB_BWD ) THEN
        DO part = akeep%nparts, 1, -1
          CALL fkeep%subtree( part )%ptr%solve_bwd( nrhs, x2, n, inform )
          IF ( inform%stat /= 0 ) GO TO 100
        END DO
      END IF
 
-     IF ( local_job == SSIDS_SOLVE_JOB_DIAG_BWD .OR.                           &
-          local_job == SSIDS_SOLVE_JOB_ALL ) THEN
+     IF ( local_job == SLBLT_SOLVE_JOB_DIAG_BWD .OR.                           &
+          local_job == SLBLT_SOLVE_JOB_ALL ) THEN
        DO part = akeep%nparts, 1, - 1
          CALL fkeep%subtree( part )%ptr%solve_diag_bwd( nrhs, x2, n, inform )
          IF ( inform%stat /= 0 ) GO TO 100
@@ -4750,9 +4750,9 @@
 !  unscale/unpermute
 
      IF ( ALLOCATED( fkeep%scaling ) .AND.                                     &
-           ( local_job == SSIDS_SOLVE_JOB_ALL .OR.                             &
-             local_job == SSIDS_SOLVE_JOB_BWD .OR.                             &
-             local_job == SSIDS_SOLVE_JOB_DIAG_BWD ) ) THEN
+           ( local_job == SLBLT_SOLVE_JOB_ALL .OR.                             &
+             local_job == SLBLT_SOLVE_JOB_BWD .OR.                             &
+             local_job == SLBLT_SOLVE_JOB_DIAG_BWD ) ) THEN
 
 !  copy and scale
 
@@ -4773,16 +4773,16 @@
      RETURN
 
  100 CONTINUE
-     inform%flag = SSIDS_ERROR_ALLOCATION
+     inform%flag = SLBLT_ERROR_ALLOCATION
      RETURN
 
      END SUBROUTINE inner_solve
 
-!-*-  G A L A H A D -  S S I D S _ enquire_posdef  S U B R O U T I N E  -*-
+!-*-  G A L A H A D -  S L B L T _ enquire_posdef  S U B R O U T I N E  -*-
 
      SUBROUTINE enquire_posdef( akeep, fkeep, d )
-     TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
-     CLASS( ssids_fkeep_type ), TARGET, INTENT( IN ) :: fkeep
+     TYPE( slblt_akeep_type ), INTENT( IN ) :: akeep
+     CLASS( slblt_fkeep_type ), TARGET, INTENT( IN ) :: fkeep
      REAL( KIND = rp_ ), DIMENSION( * ), INTENT( OUT ) :: d
 
 !  local variables
@@ -4808,12 +4808,12 @@
 
      END SUBROUTINE enquire_posdef
 
-!-*-  G A L A H A D -  S S I D S _  enquire_indef  S U B R O U T I N E  -*-
+!-*-  G A L A H A D -  S L B L T _  enquire_indef  S U B R O U T I N E  -*-
 
      SUBROUTINE enquire_indef( akeep, fkeep, inform, piv_order, d )
-     TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
-     CLASS( ssids_fkeep_type ), TARGET, INTENT( IN ) :: fkeep
-     TYPE( ssids_inform_type ), INTENT( INOUT ) :: inform
+     TYPE( slblt_akeep_type ), INTENT( IN ) :: akeep
+     CLASS( slblt_fkeep_type ), TARGET, INTENT( IN ) :: fkeep
+     TYPE( slblt_inform_type ), INTENT( INOUT ) :: inform
 
 !  if i is used to index a variable, its position in the pivot sequence
 !  will be placed in piv_order(i), with its sign negative if it is
@@ -4845,7 +4845,7 @@
      IF ( PRESENT( piv_order ) ) THEN
        ALLOCATE( po( akeep%n ), STAT = inform%stat )
        IF ( inform%stat /= 0 ) THEN
-         inform%flag = SSIDS_ERROR_ALLOCATION
+         inform%flag = SLBLT_ERROR_ALLOCATION
          RETURN
        END IF
      END IF
@@ -4886,7 +4886,7 @@
 
      END SUBROUTINE enquire_indef
 
-!-*-  G A L A H A D -  S S I D S _ a l t e r _ c p u  S U B R O U T I N E  -*-
+!-*-  G A L A H A D -  S L B L T _ a l t e r _ c p u  S U B R O U T I N E  -*-
 
      SUBROUTINE alter( d, akeep, fkeep )
 
@@ -4896,8 +4896,8 @@
 !  and the off-diagonal entries must be placed in d(2,i) (i = 1,...n-1)
 
      REAL( KIND = rp_ ), DIMENSION( 2, * ), INTENT( IN ) :: d
-     TYPE( ssids_akeep_type ), INTENT( IN ) :: akeep
-     CLASS( ssids_fkeep_type ), TARGET, INTENT( INOUT ) :: fkeep
+     TYPE( slblt_akeep_type ), INTENT( IN ) :: akeep
+     CLASS( slblt_fkeep_type ), TARGET, INTENT( INOUT ) :: fkeep
 
      INTEGER( KIND = ip_ ) :: part
 
@@ -4917,13 +4917,13 @@
 
      END SUBROUTINE alter
 
-!-*-  G A L A H A D -  S S I D S _ f r e e _ f k e e p  S U B R O U T I N E  -*-
+!-*-  G A L A H A D -  S L B L T _ f r e e _ f k e e p  S U B R O U T I N E  -*-
 
      SUBROUTINE free_fkeep( fkeep, flag )
 
 !  free all allocated components of the type fkeep
 
-     CLASS( ssids_fkeep_type ), INTENT( INOUT ) :: fkeep
+     CLASS( slblt_fkeep_type ), INTENT( INOUT ) :: fkeep
 
 !  not used for cpu version, set to 0
 
@@ -4933,7 +4933,7 @@
 
      INTEGER( KIND = ip_ ) :: i, st
 
-!  not used for basic SSIDS, just set to zero
+!  not used for basic SLBLT, just set to zero
 
      flag = 0
 
@@ -4950,16 +4950,16 @@
      END IF
      END SUBROUTINE free_fkeep
 
-!-*-*-  G A L A H A D - S S I D S _ final _ fkeep  S U B R O U T I N E  -*-*-
+!-*-*-  G A L A H A D - S L B L T _ final _ fkeep  S U B R O U T I N E  -*-*-
 
      SUBROUTINE final_fkeep( fkeep )
 
-!  finalizer for SSIDS_fkeep_type. Ensures the C++ numeric subtrees (reached
+!  finalizer for SLBLT_fkeep_type. Ensures the numeric subtrees (reached
 !  only through the fkeep%subtree pointer array) are destroyed whenever an fkeep
 !  is deallocated, reset by an INTENT( OUT ) argument, or goes out of scope.
 !  See final_akeep for rationale; free_fkeep is a safe no-op if already freed.
 
-     TYPE( ssids_fkeep_type ), INTENT( INOUT ) :: fkeep
+     TYPE( slblt_fkeep_type ), INTENT( INOUT ) :: fkeep
 
 !  local variables
 
@@ -5016,4 +5016,4 @@
 !!$
 !!$    END SUBROUTINE writePPM
 
-  END MODULE GALAHAD_SSIDS_precision
+  END MODULE GALAHAD_SLBLT_precision

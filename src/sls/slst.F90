@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -28,8 +28,8 @@
    INTEGER ( KIND = ip_ ), PARAMETER :: potr = 12
    INTEGER ( KIND = ip_ ), PARAMETER :: sytr = 13
    INTEGER ( KIND = ip_ ), PARAMETER :: pbtr = 14
-   INTEGER ( KIND = ip_ ), PARAMETER :: ssids = 15
-   INTEGER ( KIND = ip_ ), PARAMETER :: all = ssids
+   INTEGER ( KIND = ip_ ), PARAMETER :: slblt = 15
+   INTEGER ( KIND = ip_ ), PARAMETER :: all = slblt
    INTEGER ( KIND = ip_ ) :: ORDER( n )
    REAL ( KIND = rp_ ) :: B( n ), X( n ), B2( n, 2 ), X2( n, 2 ), D( 2, n )
    REAL ( KIND = rp_ ) :: B_diag( n )
@@ -119,12 +119,12 @@
 !      DO solver = 12, 12  ! potr
 !      DO solver = 13, 13  ! sytr
 !      DO solver = 14, 14  ! pbtr
-!      DO solver = 15, 15  ! ssids
+!      DO solver = 15, 15  ! slblt
 
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
-                wsmp, pastix, mumps, sytr, ssids ) ! indefinite
+                wsmp, pastix, mumps, sytr, slblt ) ! indefinite
 ! assign the matrix and right-hand side
            SELECT CASE( type )
            CASE ( 1 )
@@ -204,9 +204,9 @@
          ELSE IF ( solver == pbtr ) THEN
            WRITE( 6, "( '         pbtr ' )", advance = 'no' )
            CALL SLS_initialize( 'pbtr', data, control, inform )
-         ELSE IF ( solver == ssids ) THEN
-           WRITE( 6, "( '        ssids ' )", advance = 'no' )
-           CALL SLS_initialize( 'ssids', data, control, inform )
+         ELSE IF ( solver == slblt ) THEN
+           WRITE( 6, "( '        slblt ' )", advance = 'no' )
+           CALL SLS_initialize( 'slblt', data, control, inform )
          END IF
          control%scaling = 0
 ! Analyse
@@ -387,11 +387,11 @@
 !      DO solver = 12, 12  ! potr
 !      DO solver = 13, 13  ! sytr
 !      DO solver = 14, 14  ! pbtr
-!      DO solver = 15, 15  ! ssids
+!      DO solver = 15, 15  ! slblt
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
-                wsmp, pastix, mumps, sytr, ssids ) ! indefinite
+                wsmp, pastix, mumps, sytr, slblt ) ! indefinite
 ! assign the matrix and right-hand side
            SELECT CASE( type )
            CASE ( 1 )
@@ -471,9 +471,9 @@
          ELSE IF ( solver == pbtr ) THEN
            WRITE( 6, "( '         pbtr ' )", advance = 'no' )
            CALL SLS_initialize( 'pbtr', data, control, inform )
-         ELSE IF ( solver == ssids ) THEN
-           WRITE( 6, "( '        ssids ' )", advance = 'no' )
-           CALL SLS_initialize( 'ssids', data, control, inform )
+         ELSE IF ( solver == slblt ) THEN
+           WRITE( 6, "( '        slblt ' )", advance = 'no' )
+           CALL SLS_initialize( 'slblt', data, control, inform )
          END IF
          control%ordering = 0
 ! Analyse
@@ -688,7 +688,7 @@
 !      DO solver = 12, 12  ! potr
 !      DO solver = 13, 13  ! sytr
 !      DO solver = 14, 14  ! pbtr
-!      DO solver = 15, 15  ! ssids
+!      DO solver = 15, 15  ! slblt
 
 ! Initialize the structures
 
@@ -736,9 +736,9 @@
      ELSE IF ( solver == pbtr ) THEN
        WRITE( 6, "( '         pbtr ' )", advance = 'no' )
        CALL SLS_initialize( 'pbtr', data, control, inform )
-     ELSE IF ( solver == ssids ) THEN
-       WRITE( 6, "( '        ssids ' )", advance = 'no' )
-       CALL SLS_initialize( 'ssids', data, control, inform )
+     ELSE IF ( solver == slblt ) THEN
+       WRITE( 6, "( '        slblt ' )", advance = 'no' )
+       CALL SLS_initialize( 'slblt', data, control, inform )
      END IF
      control%error = - 1 ; control%warning = - 1
      control%out = - 1 ; control%statistics = - 1 ; control%print_level = - 1
@@ -783,8 +783,8 @@
        CALL SLS_initialize( 'sytr', data, control, inform )
      ELSE IF ( solver == pbtr ) THEN
        CALL SLS_initialize( 'pbtr', data, control, inform )
-     ELSE IF ( solver == ssids ) THEN
-       CALL SLS_initialize( 'ssids', data, control, inform )
+     ELSE IF ( solver == slblt ) THEN
+       CALL SLS_initialize( 'slblt', data, control, inform )
      END IF
      control%error = - 1 ; control%warning = - 1
      control%out = - 1 ; control%statistics = - 1 ; control%print_level = - 1
