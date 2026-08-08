@@ -8,7 +8,7 @@ sls_inform_type structure
 	:hidden:
 
 	struct_hsl_types.rst
-	struct_ssids_types.rst
+	struct_slblt_types.rst
 
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
@@ -70,7 +70,7 @@ sls_inform_type structure
           ma86_info::ma86_info{T,INT}
           ma87_info::ma87_info{T,INT}
           ma97_info::ma97_info{T,INT}
-          ssids_inform::ssids_inform_type{INT}
+          slblt_inform::slblt_inform_type{INT}
           nodend_inform::nodend_inform_type{INT}
           mc61_info::NTuple{10,INT}
           mc61_rinfo::NTuple{15,T}
@@ -724,15 +724,15 @@ the output structure from hsl_ma87
 
 the output structure from hsl_ma97
 
-.. index:: pair: variable; ssids_inform
-.. _doxid-structsls__inform__type_ssids_inform:
+.. index:: pair: variable; slblt_inform
+.. _doxid-structsls__inform__type_slblt_inform:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	struct :ref:`ssids_inform_type<details-structssids__inform__type>` ssids_inform
+	struct :ref:`slblt_inform_type<details-structslblt__inform__type>` slblt_inform
 
-the output structure from ssids
+the output structure from slblt
 
 .. index:: pair: variable; nodend_inform
 .. _doxid-structsls__inform__type_nodend_inform:

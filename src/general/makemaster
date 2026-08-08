@@ -11,7 +11,7 @@ include $(GALAHAD)/src/makedefs/definitions
 
 DUMMYS = kinds_silent clock_silent extend_silent symbols_silent \
          dummy_silent cutest_dummy_silent dummy_hsl_silent dummy_hsl_c_silent \
-         dummy_spral_silent blas_silent lapack_silent blas_inter_silent \
+         blas_silent lapack_silent blas_inter_silent \
          lapack_inter_silent hsl_inter_silent \
          pardiso_silent mkl_pardiso_silent wsmp_silent \
          pastix_silent mpi_silent mumps_silent umfpack_silent \
@@ -293,24 +293,6 @@ $(HCLG)(dummy_hsl_c_$(PRECIS).o): ../dum/dummy_hsl_c.F90
 	cd $(OBJ); $(HCARR) dummy_hsl_c_$(PRECIS).o ; \
           $(RM) dummy_hsl_c.F90 dummy_hsl_c_$(PRECIS).o
 	$(RANLIB) $(HCLG)
-	@printf '[ OK ]\n'
-
-#  dummy_spral package
-
-dummy_spral_silent: $(DRLG)(dummy_spral_$(PRECIS).o)
-dummy_spral: $(DRLG)(dummy_spral_$(PRECIS).o)
-	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
-
-dummy_spral.o: $(DRLG)(dummy_spral_$(PRECIS).o)
-
-$(DRLG)(dummy_spral_$(PRECIS).o): ../dum/dummy_spral.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_spral"
-	$(CP) ../dum/dummy_spral.F90 $(OBJ)/dummy_spral.F90
-	cd $(OBJ); $(FORTRAN) -o dummy_spral_$(PRECIS).o \
-                     $(FFLAGSS) dummy_spral.F90
-	cd $(OBJ); $(DRARR) dummy_spral_$(PRECIS).o ; \
-          $(RM) dummy_spral.F90 dummy_spral_$(PRECIS).o
-	$(RANLIB) $(DRLG)
 	@printf '[ OK ]\n'
 
 #  blas_inter package
@@ -637,13 +619,6 @@ ulinearsolver_double_64: $($(ULINEARSOLVERD))
 ulinearsolver_quadruple_64: $($(ULINEARSOLVERQ))
 	$(RANLIB) $(LGQ64)
 
-SSIDSS = symbols_silent $(RLGS)(ssids_single.o)
-SSIDSD = symbols_silent nodend_silent $(RLGD)(ssids_double.o)
-SSIDSQ = symbols_silent $(RLGQ)(ssids_quadruple.o)
-SSIDSS64 = symbols_silent $(RLGS64)(ssids_single_64.o)
-SSIDSD64 = symbols_silent $(RLGD64)(ssids_double_64.o)
-SSIDSQ64 = symbols_silent $(RLGQ64)(ssids_quadruple_64.o)
-
 PARDISOS = symbols_silent $(PLGS)(pardiso.o)
 PARDISOD = symbols_silent $(PLGD)(pardiso.o)
 PARDISOQ = symbols_silent $(PLGQ)(pardiso.o)
@@ -693,68 +668,14 @@ PASTIXS64 = symbols_silent $(PXLGS64)(spmf.o) $(PXLGS64)(pastixf.o)
 PASTIXD64 = symbols_silent $(PXLGD64)(spmf.o) $(PXLGD64)(pastixf.o)
 PASTIXQ64 = symbols_silent $(PXLGQ64)(spmf.o) $(PXLGQ64)(pastixf.o)
 
-#  ssids
+#  slblt
 
-ssids_dum_silent: ssids_dum_silent_$(PRECIS)
-ssids_dum_silent_single: $(SSIDSS)
-	$(RANLIB) $(RLGS)
-ssids_dum_silent_double: $(SSIDSD)
-	$(RANLIB) $(RLGD)
-ssids_dum_silent_quadruple: $(SSIDSQ)
-	$(RANLIB) $(RLGQ)
-ssids_dum_silent_single_64: $(SSIDSS64)
-	$(RANLIB) $(RLGS64)
-ssids_dum_silent_double_64: $(SSIDSD64)
-	$(RANLIB) $(RLGD64)
-ssids_dum_silent_quadruple_64: $(SSIDSQ64)
-	$(RANLIB) $(RLGQ64)
-
-ssids_dum: ssids_dum_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(SSIDS) ($(PRECIS) $(SUCC)"
-ssids_dum_single: $(SSIDSS)
-	$(RANLIB) $(RLGS)
-ssids_dum_double: $(SSIDSD)
-	$(RANLIB) $(RLGD)
-ssids_dum_quadruple: $(SSIDSQ)
-	$(RANLIB) $(RLGQ)
-ssids_dum_single_64: $(SSIDSS64)
-	$(RANLIB) $(RLGS64)
-ssids_dum_double_64: $(SSIDSD64)
-	$(RANLIB) $(RLGD64)
-ssids_dum_quadruple_64: $(SSIDSQ64)
-	$(RANLIB) $(RLGQ64)
-
-ssids_silent:
-	( cd ../ssids ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ssids_silent PRECIS=$(PRECIS) PWD=$(PWD)/../ssids )
-ssids:
-	( cd ../ssids ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ssids PRECIS=$(PRECIS) PWD=$(PWD)/../ssids )
-
-ssids.o: $(RLG)(ssids_$(PRECIS).o)
-
-$(RLG)(ssids_$(PRECIS).o): ../dum/ssids.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "ssidss_dum"
-	$(CP) ../dum/ssids.F90 $(OBJ)/ssids.F90
-	cd $(OBJ); $(FORTRAN) -o ssids_$(PRECIS).o $(FFLAGS) ssids.F90
-	cd $(OBJ); $(RARR) ssids_$(PRECIS).o ; $(RM) ssids.F90 ssids_$(PRECIS).o
-	$(MVMODS)
-	$(RMARFILE) sls_$(PRECIS).o
-	$(RANLIB) $(RLG)
-	@printf '[ OK ]\n'
-
-ssids_ciface.o: $(CLG)(ssids_ciface.o)
-
-$(CLG)(ssids_ciface.o): ../dum/C/ssids_ciface.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "ssids_ciface"
-	$(CP) ../dum/C/ssids_ciface.F90 $(OBJ)/ssids_ciface.F90
-	cd $(OBJ) ; $(FORTRAN) -o ssids_ciface_$(PRECIS).o $(FFLAGS) \
-                      ssids_ciface.F90
-	cd $(OBJ) ; $(CARR) ssids_ciface_$(PRECIS).o ; \
-                    $(RM) ssids_ciface.F90 ssids_ciface_$(PRECIS).o
-	$(CRMARFILE) sls_ciface_$(PRECIS).o
-	$(MVMODS)
-	@printf '[ OK ]\n'
+slblt_silent:
+	( cd ../slblt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            slblt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../slblt )
+slblt:
+	( cd ../slblt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            slblt PRECIS=$(PRECIS) PWD=$(PWD)/../slblt )
 
 #  utility
 

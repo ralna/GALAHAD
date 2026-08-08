@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-11-17 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 13:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -164,11 +164,11 @@
 
 !  symmetric linear equation solver for systems involving H
 
-       CHARACTER ( LEN = 30 ) :: linear_solver = "ssids" // REPEAT( ' ', 25 )
+       CHARACTER ( LEN = 30 ) :: linear_solver = "slblt" // REPEAT( ' ', 25 )
 
 !  symmetric linear equation solver for systems involving S (if needed)
 
-       CHARACTER ( LEN = 30 ) :: linear_solver_for_S = "ssids" //              &
+       CHARACTER ( LEN = 30 ) :: linear_solver_for_S = "slblt" //              &
                                                           REPEAT( ' ', 25 )
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
@@ -480,8 +480,8 @@
 !  new-values                                        F
 !  space-critical                                    F
 !  deallocate-error-fatal                            F
-!  linear-equation-solver                            ssids
-!  linear-equation-solver-for-S                      ssids
+!  linear-equation-solver                            slblt
+!  linear-equation-solver-for-S                      slblt
 !  output-line-prefix                                ""
 ! END TREK SPECIFICATIONS (DEFAULT)
 

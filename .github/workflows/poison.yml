@@ -12,8 +12,7 @@ on:
 # variables are filled with a non-zero pattern via -ftrivial-auto-var-init, and
 # Fortran automatics via -finit-*. Combined with AddressSanitizer so that a
 # poisoned index/pointer that walks off an array is reported cleanly rather than
-# as a raw SIGSEGV. This is the build that would have caught the ssids
-# find_maxloc int64+single index corruption up front.
+# as a raw SIGSEGV.
 
 jobs:
   poison:

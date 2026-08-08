@@ -109,7 +109,7 @@ The possible values for `library` are:
 - `"sllsb"`;
 - `"sls"`;
 - `"snls"`;
-- `"ssids`;
+- `"slblt`;
 - `"ssls`;
 - `"trb"`;
 - `"trek"`;
@@ -119,7 +119,7 @@ The possible values for `library` are:
 - `"uls"`;
 - `"warm"`;
 - `"wcp"`;
-- `"ssids"`;
+- `"slblt"`;
 - `"hsl"`.
 
 The Julia wrappers are generated in the directory `GALAHAD.jl/src/wrappers`.

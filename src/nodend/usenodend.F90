@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-08-31 AT 13:35 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 13:35 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -110,7 +110,7 @@
 !  result-summary-file-name                          NODENDRES.d
 !  result-summary-file-device                        47
 !  analyse                                           NO
-!  symmetric-linear-equation-solver                  ssids
+!  symmetric-linear-equation-solver                  slblt
 !  exhaustive-tests                                  NO
 !  all-versions                                      NO
 ! END RUNNODEND SPECIFICATIONS
@@ -127,7 +127,7 @@
       LOGICAL :: all_versions = .FALSE.
       CHARACTER ( LEN = 30 ) :: pfilename = 'NODENDPERM.d'
       CHARACTER ( LEN = 30 ) :: rfilename = 'NODENDRES.d'
-      CHARACTER ( LEN = 30 ) :: solver = "ssids" // REPEAT( ' ', 25 )
+      CHARACTER ( LEN = 30 ) :: solver = "slblt" // REPEAT( ' ', 25 )
 
 !  Output file characteristics
 

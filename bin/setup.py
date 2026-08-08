@@ -33,7 +33,7 @@ define_macros=[('LINUX', None)]
 include_dirs=[np.get_include(),f'{GALAHAD}''/include/', \
               f'{GALAHAD_OBJ}']
 libraries=['galahad_py', 'galahad_c', 'galahad_hsl_c', 'galahad', \
-           'galahad_hsl', 'galahad_spral', 'stdc++', 'hwloc', \
+           'galahad_hsl', 'stdc++', 'hwloc', \
            'galahad_mkl_pardiso', 'galahad_pardiso', 'galahad_wsmp', \
            'galahad_pastix', 'galahad_mpi', 'galahad_mumps', \
            'galahad_umfpack', \

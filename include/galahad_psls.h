@@ -1,7 +1,7 @@
 //* \file galahad_psls.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_PSLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -81,7 +81,7 @@
 <tr><td> \c HSL_MA86 <td> left-looking <td> yes <td> no <td> OpenMP fully
 <tr><td> \c HSL_MA87 <td> left-looking <td> no <td> no <td> OpenMP fully
 <tr><td> \c HSL_MA97 <td> multifrontal <td> yes <td> no <td> OpenMP core
-<tr><td> \c SSIDS <td> multifrontal <td> yes <td> no <td> CUDA core
+<tr><td> \c SLBLT <td> multifrontal <td> yes <td> no <td> OpenMP core
 <tr><td> \c MUMPS <td> multifrontal <td> yes <td> optionally <td> MPI
 <tr><td> \c PARDISO <td> left-right-looking <td> yes <td> no <td> OpenMP fully
 <tr><td> \c MKL_PARDISO <td> left-right-looking <td> yes <td> optionally
@@ -103,7 +103,7 @@ External solver characteristics (ooc = out-of-core factorization)
  HSL_MA86    left-looking          yes   no    OpenMP fully
  HSL_MA87    left-looking           no   no    OpenMP fully
  HSL_MA97    multifrontal          yes   no    OpenMP core
- SSIDS       multifrontal          yes   no    CUDA core
+ SLBLT       multifrontal          yes   no    OpenMP core
  MUMPS       multifrontal          yes  optionally  MPI
  PARDISO     left-right-looking    yes   no    OpenMP fully
  MKL_PARDISO left-right-looking    yes  optionally  OpenMP fully
@@ -363,18 +363,17 @@ struct psls_control_type {
     /// \brief
     /// the symmetric linear equation solver used when .preconditioner = 5.
     /// Possible choices are currently:
-    /// sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso,
-    /// mkl_pardiso,pastix, wsmp, sytr, potr and pbtr, although only sils, sytr,
-    /// and for OMP 4.0-compliant compilers, ssids are installed by default.
+    /// sils, ma27, ma57, ma77, ma86, ma87, ma97, slblt, mumps, pardiso,
+    /// mkl_pardiso,pastix, wsmp, sytr, potr and pbtr, although only sils, sytr
+    /// and slblt are installed by default.
     char symmetric_linear_solver[31];
 
     /// \brief
     /// the definite linear equation solver used when .preconditioner = 4.
     /// Possible choices are currently:
-    /// sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso,
+    /// sils, ma27, ma57, ma77, ma86, ma87, ma97, slblt, mumps, pardiso,
     /// mkl_pardiso,pastix, wsmp, potr and pbtr, although only sils, potr,
-    /// pbtr and,
-    /// for OMP 4.0-compliant compilers, ssids are installed by default.
+    /// pbtr and slblt are installed by default.
     char definite_linear_solver[31];
 
     /// \brief

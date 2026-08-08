@@ -20,7 +20,6 @@ function meson_check_headers()
     startswith(file, "galahad_sls_") && continue
     startswith(file, "cutest_routines_") && continue
     startswith(file, "hsl_subset_") && continue
-    startswith(file, "ssids_") && continue
     (file in excluded_headers) && continue
 
     if !occursin(file, content)
@@ -86,7 +85,7 @@ function meson_check_files()
                     "trs_paper.F90", "trs_paper_large.F90", "rqs_paper_large.F90",
                     # I should check the following files with Nick!
                     "cdqp_ciface.F90", "check.f90.ver1", "dummy.f", "dummy_hsl.F90",
-                    "dummy_hsl_c.F90", "dummy_spral.F90", "empty", "umfpack.F90",
+                    "dummy_hsl_c.F90", "empty", "umfpack.F90",
                     "filter_orig.F90", "filtrane_ciface.F90", "glrt.f90.1", "glrtti.F90",
                     "glssbig.F90", "glssbig1.F90", "glssbig2.F90", "runl1qp_qplib.F90",
                     "lancelot.pointers.F90", "details", "details2", "runlsrb", "lsqr.F90",

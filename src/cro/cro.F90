@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-18 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -142,7 +142,7 @@
 
 !  indefinite linear equation solver
 
-        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "ssids" //         &
+        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "slblt" //         &
                                                              REPEAT( ' ', 25 )
 
 !  unsymmetric linear equation solver

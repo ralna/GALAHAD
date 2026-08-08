@@ -60,7 +60,7 @@ By default GALAHAD will build with [OpenBLAS](https://github.com/OpenMathLib/Ope
 Please see [README.meson](https://github.com/ralna/GALAHAD/blob/master/README.meson) for instructions on how to tell Meson where to find these optional dependencies.
 
 #### Linear Solvers
-By default GALAHAD will build the [SSIDS linear solver](https://github.com/ralna/spral), other alternative linear solvers are:
+By default GALAHAD will use its `SLBLT` package, other alternative sparse linear solvers are:
 
 * [HSL](https://licences.stfc.ac.uk/products/Software/HSL/LibHSL)
 * [UMFPACK](https://people.engr.tamu.edu/davis/suitesparse.html)

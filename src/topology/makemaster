@@ -197,7 +197,7 @@ $(LG)(topology.o): ../topology/topology.F90
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o topology.o $(FFLAGSNOMP) topology.F90 )
 	cd $(OBJ) ; $(ARR) topology.o ; $(RM) topology.F90 topology.o
-	$(RRMARFILE) ssids_$(PRECIS).o
+	$(RRMARFILE) slblt_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

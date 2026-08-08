@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-11-23 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 15:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SBLS_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -447,7 +447,7 @@
        control%symmetric_linear_solver = 'ma86'
        control%definite_linear_solver = 'ma86'
      CASE ( 5 )
-       control%symmetric_linear_solver = 'ssids'
+       control%symmetric_linear_solver = 'slblt'
        control%definite_linear_solver = 'ma87'
      CASE ( 6 )
        control%symmetric_linear_solver = 'ma97'
@@ -473,8 +473,8 @@
      CASE ( 13 )
        CYCLE
      CASE ( 14 )
-       control%symmetric_linear_solver = 'ssids'
-       control%definite_linear_solver = 'ssids'
+       control%symmetric_linear_solver = 'slblt'
+       control%definite_linear_solver = 'slblt'
      END SELECT
      IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
      CALL SMT_put( H%type, 'COORDINATE', smt_stat )  ; H%ne = h_ne

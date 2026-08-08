@@ -305,14 +305,13 @@ choices are
 {\tt 'ma77'},
 {\tt 'ma86'},
 {\tt 'ma97'},
-{\tt 'ssids'},
+{\tt 'slblt'},
 {\tt 'pardiso'},
 {\tt 'wsmp'},
 {\tt 'sytr'},
-although only {\tt 'sils'}, {\tt 'sytr'}  and, for OMP 4.0-compliant compilers,
-{\tt 'ssids'} are installed by default.
+although only {\tt 'sils'}, {\tt 'sytr'}  and {\tt 'slblt'} are installed by default.
 See the documentation for the \galahad\ package {\tt SLS} for further details.
-The default is {\tt symmetric\_linear\_solver = 'ssids'}.
+The default is {\tt symmetric\_linear\_solver = 'slblt'}.
 
 \itt{prefix} is a scalar variable of type default \character\
 and length 30, that may be used to provide a user-selected
@@ -626,7 +625,7 @@ set to $a_i$, and
 set to $b_j$. On successful exit, {\tt SOL}
 will contain the solution $( x^T \;\; y^T)^T$ to \req{ls}, that is
 {\tt SOL(}$i${\tt )}, $i = 1, \ldots,$ {\tt n} will give
-$x_i$, and  {\tt SOL(n}$+j${\tt )}, $j = 1,\ldots,$ {\tt m} will contain
+$x_i$, and {\tt SOL(n}$+j${\tt )}, $j = 1,\ldots,$ {\tt m} will contain
 $y_j$.
 
 \itt{inform} is a scalar \intentout\ argument of type

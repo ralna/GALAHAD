@@ -90,16 +90,15 @@ scu         | ok     | Schur-compleemnt updating for evolving linear systems
 sec         | ok     | dense secant Hessian approximation
 sha         | beta   | sparse Hessian approximation via secant equations
 sils        | ok     | modern fortran interface to ma27
+slblt       | ok     | sparse symmetric indefinite/definite solver
 slls        | ok     | simplex-constrained linear least-squares, projection
 sllsb       | ok     | simplex-constrained linear least-squares, interior point
-snls        | ok     | bound-constrained nonlinear least-squares
 sls         | ok     | symmetric linear solver, multiple interfaces
+snls        | ok     | bound-constrained nonlinear least-squares
 smt         | ok     | alias for zd11
 sort        | ok     | various sorting algorithms
 space       | ok     | allocate and deallocate space (no doc)
 spec        | ok     | read package option data (no doc)
-spral       | ok     | SPRAL generic tools
-ssids       | ok     | SPRAL symmetric indefinite system solver
 string      | ok     | manipulate strings (no doc)
 sym         | ok     | associate symbols with numerical values
 tools       | ok     | simple tools (like in auxiliary, no doc)

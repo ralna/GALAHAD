@@ -289,13 +289,13 @@ basic_single:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ssids_dum PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+            slblt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 basic_double:
 	$(MKDIR) -p $(MEXOUTDIR)
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            $(SSIDS)_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+            slblt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 
 #  arc
 

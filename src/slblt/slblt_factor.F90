@@ -1,18 +1,13 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-08-06 AT 16:40 GMT
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 16:40 GMT
 !
-! Pure-Fortran SSIDS factor/solve kernels + a serial multifrontal driver,
-! ported to GALAHAD templated precision from the C++ SPRAL reference (the former
-! src/ssids/cpu C++ backend). The bodies are transcribed close to the C++ so the
-! numerics match; only the kind imports differ (GALAHAD ip_/rp_/long_ mapped to
-! the port's local kind names).
+! Pure-Fortran SLBLT factor/solve kernels + a serial multifrontal driver,
+! in GALAHAD templated precision (GALAHAD ip_/rp_/long_ kinds).
 !
 ! Contents:
 !   * calc_ld, ldlt_tpp_factor (+ helpers)           -- dense block LDL^T (TPP)
 !   * block_ldlt (+ helpers)                         -- Bunch-Kaufman full block
 !   * ldlt_app_factor (+ helpers)                    -- a-posteriori pivoted 
-!                                                       (APP) blocked LDL^T 
-!                                                       (verbatim port of C++ 
-!                                                       ldlt_app)
+!                                                       (APP) blocked LDL^T
 !   * factor_node_indef                              -- node factor + contrib
 !                                                       (APP if nb<n, else TPP)
 !   * assemble_expected / assemble_expected_contrib  -- child -> parent assembly
@@ -24,16 +19,16 @@
 !   * subtree_solve_fwd/diag/bwd_delay               -- tree solves (multi-RHS)
 !   * extract_contrib                                -- produce a child_contrib
 !
-! These kernels are driven by GALAHAD_SSIDS_numeric_subtree_precision, which
-! wires them into the SSIDS factorization/solve path.
+! These kernels are driven by GALAHAD_SLBLT_numeric_subtree_precision, which
+! wires them into the SLBLT factorization/solve path.
 
 #include "galahad_modules.h"
 #include "galahad_blas.h"
 #include "galahad_lapack.h"
 
-!-*-*-  G A L A H A D _ S S I D S _ F A C T O R   M O D U L E  -*-*-*-*-
+!-*-*-  G A L A H A D _ S L B L T _ F A C T O R   M O D U L E  -*-*-*-*-
 
- MODULE GALAHAD_SSIDS_factor_precision
+ MODULE GALAHAD_SLBLT_factor_precision
    USE GALAHAD_KINDS_precision, ONLY : ip_, rp_, long_
    USE, INTRINSIC :: IEEE_ARITHMETIC, ONLY : IEEE_VALUE, IEEE_POSITIVE_INF,    &
                                              IEEE_IS_FINITE
@@ -42,7 +37,7 @@
    PUBLIC :: dmf_node, subtree_contrib_t, factor_subtree_delay, extract_contrib
    PUBLIC :: subtree_solve_fwd_delay, subtree_solve_diag_delay,                &
              subtree_solve_bwd_delay
-   ! low-level kernels exposed for per-routine unit testing (ssids_factort)
+   ! low-level kernels exposed for per-routine unit testing (slblt_factort)
    PUBLIC :: calc_ld, ldlt_tpp_factor, ldlt_blocked_factor, factor_node_indef, &
              block_ldlt, ldlt_app_factor,                                      &
              assemble_expected, assemble_expected_contrib,                     &
@@ -267,12 +262,12 @@
       d(2*nelim+2) = (-a21*detscale)/detpiv
       d(2*nelim+3) = IEEE_VALUE(1.0_rp_, IEEE_POSITIVE_INF)
       d(2*nelim+4) = (a11*detscale)/detpiv
-      IF (MAX(maxt, maxp) < small) THEN       ! match C++ strict-< boundary
+      IF (MAX(maxt, maxp) < small) THEN
          ok = .TRUE.; RETURN
       END IF
       x1 = ABS(d(2*nelim+1))*maxt + ABS(d(2*nelim+2))*maxp
       x2 = ABS(d(2*nelim+2))*maxt + ABS(d(2*nelim+4))*maxp
-      IF (u*MAX(x1, x2) < 1.0_rp_) ok = .TRUE.  ! match C++ form u*x < 1
+      IF (u*MAX(x1, x2) < 1.0_rp_) ok = .TRUE.
    END FUNCTION test_2x2
 
 !  -- apply the 2x2 pivot to rest of block colum
@@ -464,7 +459,7 @@
 
 ! ========================= ldlt_blocked ==============================
    !> Blocked RIGHT-looking LDL^T-TPP with intra-front OpenMP parallelism --
-   !! the practical core of the C++ ldlt_app. Each block column (width nb) is 
+   !! the practical core of the block LDL^T. Each block column (width nb) is
    !! factored by ldlt_tpp (identical threshold pivoting), then the INDEPENDENT
    !! trailing block-column updates are run as !$omp tasks, so a single large 
    !! front is factored in parallel. The tasks bind to the enclosing team 
@@ -905,7 +900,7 @@
     aborted = .FALSE.
 
     ! ---- aggressive (APP_AGGRESSIVE): optimistic unpivoted attempt first ----
-    ! Port of the C++ driver's app_aggressive branch: try an unpivoted pass; on
+    ! The app_aggressive branch: try an unpivoted pass; on
     ! success we are done; on a pivoting failure, roll back and resume the
     ! careful pivoted pass from the first not-fully-accepted block column.
     IF (aggr) THEN
@@ -1063,7 +1058,7 @@
         IF (bs > INNER) THEN
           ! recurse: factor the diagonal block with the inner APP (block_ldlt on
           ! INNER-blocks + BLAS-3), inner runs serially. Outer keeps wide blocks
-          ! so the apply/update GEMMs are bs-wide (matches C++ block_size).
+          ! so the apply/update GEMMs are bs-wide.
           tnelim = ldlt_app_factor(tnr, tnc, lperm(1,blk),                     &
                                   a(blk*bs+1,blk*bs+1), lda, d(tdoff+1),       &
                                    u, small, action, INNER, tlflag, .FALSE.)
@@ -2298,7 +2293,7 @@
             END DO
             flops(p) = flops(p) + own
             ! penalise nodes that receive a foreign subtree contribution (a
-            ! parttree boundary), exactly as the C++ (SymbolicNode::contrib),
+            ! parttree boundary),
             ! so a small-leaf group never crosses such a boundary
             IF (ALLOCATED(node(p)%contribs)) THEN
                IF (SIZE(node(p)%contribs) > 0) flops(p) = flops(p) + thresh
@@ -2514,4 +2509,4 @@
       END DO
    END SUBROUTINE scatter
 
- END MODULE GALAHAD_SSIDS_factor_precision
+ END MODULE GALAHAD_SLBLT_factor_precision

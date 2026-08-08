@@ -41,10 +41,10 @@ single_double_quadruple_modules = ["hash_MOD", "string_MOD", "string_64_MOD", "c
                                    "common_ciface_MOD", "hash_ciface_MOD", "hash_64_MOD", "hash_ciface_64_MOD", "hsl_kb22_long_integer_MOD",
                                    "hsl_mc68_integer_ciface_MOD", "hsl_mc68_integer_MOD", "hsl_mc78_integer_MOD", "hsl_mc78_integer_64_MOD", "hsl_zb01_integer_MOD",
                                    "hsl_of01_integer_MOD", "hsl_of01_integer_64_MOD", "mkl_pardiso_private_MOD", "pastixf_enums_MOD", "pastixf_interfaces_MOD", "spmf_enums_MOD",
-                                   "spral_pgm_64_MOD", "pastixf_enums_64_MOD", "mkl_pardiso_private_64_MOD", "spmf_enums_64_MOD", "spral_hw_topology_64_MOD",
-                                   "spral_metis_wrapper_64_MOD", "tools_64_MOD", "galahad_symbols_64_MOD", "hsl_mc68_integer_64_ciface_MOD", "hsl_kb22_long_integer_64_MOD",
+                                   "pastixf_enums_64_MOD", "mkl_pardiso_private_64_MOD", "spmf_enums_64_MOD",
+                                   "tools_64_MOD", "galahad_symbols_64_MOD", "hsl_mc68_integer_64_ciface_MOD", "hsl_kb22_long_integer_64_MOD",
                                    "common_ciface_64_MOD", "clock_64_MOD", "hsl_mc68_integer_64_MOD", "hsl_zb01_integer_64_MOD", "copyright_64_MOD",
-                                   "version_64_MOD", "galahad_topology_MOD", "galahad_topology_64_MOD", "spral_metis_wrapper_MOD", "spral_core_analyse_64_MOD",
+                                   "version_64_MOD", "galahad_topology_MOD", "galahad_topology_64_MOD",
                                    "galahad_version_MOD", "galahad_spmf_interfaces_MOD",
                                    "galahad_spmf_interfaces_64_MOD",  "galahad_pastixf_interfaces_MOD", "galahad_pastixf_interfaces_64_MOD"]
 

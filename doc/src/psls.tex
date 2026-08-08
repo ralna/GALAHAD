@@ -121,7 +121,7 @@ separately.}
 {\tt HSL\_MA86} & left-looking & yes & no & OpenMP fully \\
 {\tt HSL\_MA87} & left-looking & no & no & OpenMP fully \\
 {\tt HSL\_MA97} & multifrontal & yes & no & OpenMP core \\
-{\tt SSIDS} & multifrontal & yes & no & CUDA core \\
+{\tt SLBLT} & multifrontal & yes & no & OpenMP core \\
 {\tt PARDISO} & left-right-looking & yes & no & OpenMP fully \\
 {\tt MKL\_PARDISO} & left-right-looking & yes & optionally & OpenMP fully \\
 {\tt WSMP} & left-right-looking & yes & no & OpenMP fully \\
@@ -443,16 +443,15 @@ when {\tt \%precondit\-ioner = 5}. Possible choices are
 {\tt 'ma77'},
 {\tt 'ma86'},
 {\tt 'ma97'},
-{\tt 'ssids'},
+{\tt 'slblt'},
 {\tt 'pardiso'}
 {\tt 'mkl\_pardiso'},
 {\tt 'wsmp'} and
 {\tt 'sytr'},
-although only {\tt 'sils'}, {\tt 'sytr} and, for OMP 4.0-compliant compilers,
-{\tt 'ssids'} are installed by default.
+although only {\tt 'sils'}, {\tt 'sytr} and {\tt 'slblt'} are installed by default.
 See Table~\ref{solvers} and
 the documentation for the \galahad\ package {\tt SLS} for further details.
-The default is {\tt symmetric\_linear\_solver = 'ssids'}.
+The default is {\tt symmetric\_linear\_solver = 'slblt'}.
 
 \itt{definite\_linear\_solver} is a scalar variable of type default \character\
 and length 30, that specifies the external package to be used to
@@ -465,7 +464,7 @@ when {\tt \%precondit\-ioner = 4}. Possible choices are
 {\tt 'ma86'},
 {\tt 'ma87'},
 {\tt 'ma97'},
-{\tt 'ssids'},
+{\tt 'slblt'},
 {\tt 'pardiso'}
 {\tt 'mkl\_pardiso'},
 {\tt 'wsmp'},
@@ -473,11 +472,10 @@ when {\tt \%precondit\-ioner = 4}. Possible choices are
 {\tt 'potr'} and
 {\tt 'pbtr'},
 although only {\tt 'sils'}, {\tt 'sytr'}, {\tt 'potr'}, {\tt 'pbtr'}
-and, for OMP 4.0-compliant compilers,
-{\tt 'ssids'} are installed by default.
+and {\tt 'slblt'} are installed by default.
 See Table~\ref{solvers} and
 the documentation for the \galahad\ package {\tt SLS} for further details.
-The default is {\tt definite\_linear\_solver = 'ssids'}.
+The default is {\tt definite\_linear\_solver = 'slblt'}.
 
 \itt{prefix} is a scalar variable of type default \character\
 and length 30, that may be used to provide a user-selected

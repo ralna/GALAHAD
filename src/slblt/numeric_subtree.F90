@@ -1,14 +1,13 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-07-27 AT 17:20 GMT
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 17:20 GMT
 !
-! Pure-Fortran CPU subtree for SSIDS: an implementation of the abstract
+! Pure-Fortran CPU subtree for SLBLT: an implementation of the abstract
 ! symbolic_subtree_base / numeric_subtree_base (see subtree.F90) that factors and
 ! solves entirely in Fortran, using the verified multifrontal driver in
-! GALAHAD_SSIDS_factor_precision -- NO C++ / no bind(C).
+! GALAHAD_SLBLT_factor_precision.
 !
-! It is a drop-in alternative to GALAHAD_SSIDS_numeric_subtree_precision (the C++
-! wrapper). ssids.F90 selects it at analyse time when the environment variable
-! GALAHAD_SSIDS_FORTRAN is set to 1 (additive toggle; the C++ path remains the
-! default until this is validated against ssidst).
+! It is a drop-in alternative to GALAHAD_SLBLT_numeric_subtree_precision.
+! slblt.F90 selects it at analyse time when the environment variable
+! GALAHAD_SLBLT_FORTRAN is set to 1.
 !
 ! Scope: serial LDL^T with threshold partial pivoting, delayed pivots and
 ! foreign child_contrib (all unit-tested standalone). No OpenMP tasking and no
@@ -17,21 +16,21 @@
 
 #include "galahad_modules.h"
 
- MODULE GALAHAD_SSIDS_numeric_subtree_precision
+ MODULE GALAHAD_SLBLT_numeric_subtree_precision
    USE GALAHAD_KINDS_precision
-   USE GALAHAD_SSIDS_types_precision, ONLY: SSIDS_control_type,                &
-                                            SSIDS_inform_type,                 &
-                                            SSIDS_SUCCESS,                     &
-                                            SSIDS_ERROR_ALLOCATION,            &
-                                            SSIDS_ERROR_SINGULAR,             &
-                                            SSIDS_ERROR_NOT_POS_DEF,          &
+   USE GALAHAD_SLBLT_types_precision, ONLY: SLBLT_control_type,                &
+                                            SLBLT_inform_type,                 &
+                                            SLBLT_SUCCESS,                     &
+                                            SLBLT_ERROR_ALLOCATION,            &
+                                            SLBLT_ERROR_SINGULAR,             &
+                                            SLBLT_ERROR_NOT_POS_DEF,          &
                                             PIVOT_METHOD_TPP,                  &
                                             PIVOT_METHOD_APP_AGGRESIVE,        &
                                             FAILED_PIVOT_METHOD_TPP,           &
                                             contrib_type
-   USE GALAHAD_SSIDS_subtree_precision, ONLY : symbolic_subtree_base,          &
+   USE GALAHAD_SLBLT_subtree_precision, ONLY : symbolic_subtree_base,          &
                                                numeric_subtree_base
-   USE GALAHAD_SSIDS_factor_precision, ONLY : dmf_node,                &
+   USE GALAHAD_SLBLT_factor_precision, ONLY : dmf_node,                &
         subtree_contrib_t, factor_subtree_delay, extract_contrib,             &
         subtree_solve_fwd_delay, subtree_solve_diag_delay,                    &
         subtree_solve_bwd_delay
@@ -85,7 +84,7 @@
       INTEGER( long_ ), DIMENSION( * ), INTENT( IN ) :: rptr, nptr
       INTEGER( long_ ), DIMENSION( 2, * ), INTENT( IN ) :: nlist
       INTEGER( ip_ ), DIMENSION( : ), INTENT( IN ) :: contrib_idx
-      CLASS( SSIDS_control_type ), INTENT( IN ) :: control
+      CLASS( SLBLT_control_type ), INTENT( IN ) :: control
       INTEGER( ip_ ) :: li, gi, ps, na, k, nrow, ci, tgt
       INTEGER( long_ ) :: p0
       NULLIFY( this )
@@ -150,7 +149,7 @@
    END SUBROUTINE symbolic_cleanup
 
    !> Free a contribution block produced by get_contrib (Fortran allocations).
-   !! Replaces the C++ free_contrib; called from contrib_iface.
+   !! Frees the contribution block; called from contrib_iface.
    SUBROUTINE free_contrib( fcontrib )
       TYPE( contrib_type ), INTENT( INOUT ) :: fcontrib
       IF ( ASSOCIATED( fcontrib%val ) )        DEALLOCATE( fcontrib%val )
@@ -167,8 +166,8 @@
       LOGICAL, INTENT( IN ) :: posdef
       REAL( rp_ ), DIMENSION( * ), TARGET, INTENT( IN ) :: aval
       TYPE( contrib_type ), DIMENSION( : ), TARGET, INTENT( INOUT ) :: child_contrib
-      TYPE( SSIDS_control_type ), INTENT( IN ) :: control
-      TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
+      TYPE( SLBLT_control_type ), INTENT( IN ) :: control
+      TYPE( SLBLT_inform_type ), INTENT( INOUT ) :: inform
       REAL( rp_ ), DIMENSION( * ), TARGET, OPTIONAL, INTENT( IN ) :: scaling
       TYPE( numeric_subtree ), POINTER :: fac
       TYPE( subtree_contrib_t ), ALLOCATABLE :: contribs(:)
@@ -231,28 +230,28 @@
                                                 == FAILED_PIVOT_METHOD_TPP ),   &
                                  alloc_ok = aok )
       IF ( .NOT. aok ) THEN
-         inform%flag = SSIDS_ERROR_ALLOCATION      ! out of memory during factor
+         inform%flag = SLBLT_ERROR_ALLOCATION      ! out of memory during factor
       ELSE IF ( .NOT. ok ) THEN
          IF ( posdef ) THEN
-            inform%flag = SSIDS_ERROR_NOT_POS_DEF
+            inform%flag = SLBLT_ERROR_NOT_POS_DEF
          ELSE
-            inform%flag = SSIDS_ERROR_SINGULAR
+            inform%flag = SLBLT_ERROR_SINGULAR
          END IF
       END IF
       CALL accumulate_stats( fac, inform )
       factor => fac
       RETURN
 10    CONTINUE
-      inform%flag = SSIDS_ERROR_ALLOCATION
+      inform%flag = SLBLT_ERROR_ALLOCATION
       inform%stat = st
       IF ( ASSOCIATED( fac ) ) DEALLOCATE( fac )
    END FUNCTION factor
 
    !> Populate inform statistics (pivot counts, rank, factor size) from the
-   !! factored nodes -- for parity with the C++ backend's ThreadStats.
+   !! factored nodes.
    SUBROUTINE accumulate_stats( fac, inform )
       TYPE( numeric_subtree ), INTENT( IN ) :: fac
-      TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
+      TYPE( SLBLT_inform_type ), INTENT( INOUT ) :: inform
       INTEGER( ip_ ) :: li, i, k, nneg, ntwo, ndel, nzero, nfst, nsnd
       REAL( rp_ ) :: d11, d21, d22, det
       LOGICAL :: is1x1
@@ -263,7 +262,7 @@
          nfst = nfst + fn%nfirst
          nsnd = nsnd + fn%nsecond
 !  L factor entries and flops: column j (0-based) of the nelim eliminated
-!  columns has nrow-j sub/diagonal entries -> triangular count, as in the C++
+!  columns has nrow-j sub/diagonal entries -> triangular count
          inform%num_factor = inform%num_factor                                 &
            + INT( fn%nelim, long_ ) * INT( fn%nrow, long_ )                     &
            - ( INT( fn%nelim, long_ ) * INT( fn%nelim - 1, long_ ) ) / 2_long_
@@ -289,7 +288,7 @@
                IF ( det < 0.0_rp_ ) THEN
                   nneg = nneg + 1               ! indefinite 2x2: one negative
                ELSE IF ( d11 + d22 < 0.0_rp_ ) THEN
-                  nneg = nneg + 2               ! both negative (trace<0, as C++)
+                  nneg = nneg + 2               ! both negative (trace<0)
                END IF
                i = i + 2
             END IF
@@ -386,7 +385,7 @@
       INTEGER( ip_ ), INTENT( IN ) :: nrhs
       REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
       INTEGER( ip_ ), INTENT( IN ) :: ldx
-      TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
+      TYPE( SLBLT_inform_type ), INTENT( INOUT ) :: inform
       CALL subtree_solve_fwd_delay( this%fnode, this%nnodes, nrhs, x, ldx )
    END SUBROUTINE solve_fwd
 
@@ -395,7 +394,7 @@
       INTEGER( ip_ ), INTENT( IN ) :: nrhs
       REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
       INTEGER( ip_ ), INTENT( IN ) :: ldx
-      TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
+      TYPE( SLBLT_inform_type ), INTENT( INOUT ) :: inform
       CALL subtree_solve_diag_delay( this%fnode, this%nnodes, nrhs, x, ldx )
    END SUBROUTINE solve_diag
 
@@ -404,7 +403,7 @@
       INTEGER( ip_ ), INTENT( IN ) :: nrhs
       REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
       INTEGER( ip_ ), INTENT( IN ) :: ldx
-      TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
+      TYPE( SLBLT_inform_type ), INTENT( INOUT ) :: inform
       CALL subtree_solve_diag_delay( this%fnode, this%nnodes, nrhs, x, ldx )
       CALL subtree_solve_bwd_delay( this%fnode, this%nnodes, nrhs, x, ldx )
    END SUBROUTINE solve_diag_bwd
@@ -414,7 +413,7 @@
       INTEGER( ip_ ), INTENT( IN ) :: nrhs
       REAL( rp_ ), DIMENSION( * ), INTENT( INOUT ) :: x
       INTEGER( ip_ ), INTENT( IN ) :: ldx
-      TYPE( SSIDS_inform_type ), INTENT( INOUT ) :: inform
+      TYPE( SLBLT_inform_type ), INTENT( INOUT ) :: inform
       CALL subtree_solve_bwd_delay( this%fnode, this%nnodes, nrhs, x, ldx )
    END SUBROUTINE solve_bwd
 
@@ -422,7 +421,7 @@
       CLASS( numeric_subtree ), INTENT( IN ) :: this
       REAL( rp_ ), DIMENSION( * ), INTENT( OUT ) :: d
       INTEGER( ip_ ) :: li, i, kk
-!  return the Cholesky diagonal L_ii (as the C++ does), not the pivot L_ii^2.
+!  return the Cholesky diagonal L_ii, not the pivot L_ii^2.
 !  chol_factor_node stores d(2i-1) = 1/L_ii^2, so L_ii = sqrt( 1/d(2i-1) ).
       kk = 0
       DO li = 1, this%nnodes
@@ -507,4 +506,4 @@
       f = ieee_is_finite( v )
    END FUNCTION ieee_is_finite_local
 
- END MODULE GALAHAD_SSIDS_numeric_subtree_precision
+ END MODULE GALAHAD_SLBLT_numeric_subtree_precision

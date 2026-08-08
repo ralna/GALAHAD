@@ -194,7 +194,7 @@
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_error_metis = - 71
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
-                              GALAHAD_error_spral = - 72
+                              GALAHAD_error_slblt = - 72
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_warning_repeated_entry = - 73
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
@@ -818,9 +818,9 @@
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   METIS failure: check its return status' )" )                 &
          prefix, routine, prefix
-     CASE( GALAHAD_error_spral )
+     CASE( GALAHAD_error_slblt )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
-      &       '   SPRAL failure: check its return status' )" )                 &
+      &       '   SLBLT failure: check its return status' )" )                 &
          prefix, routine, prefix
      CASE( GALAHAD_error_ls28 )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &

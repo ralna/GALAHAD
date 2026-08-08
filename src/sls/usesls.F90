@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.2 - 2025-05-04 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 14:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -99,7 +99,7 @@
       CHARACTER ( LEN = 16 ) :: specname = 'RUNSLS'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNSLS.SPC'
-      CHARACTER ( LEN = 30 ) :: solver = "ssids" // REPEAT( ' ', 25 )
+      CHARACTER ( LEN = 30 ) :: solver = "slblt" // REPEAT( ' ', 25 )
 
 !  The default values for SLS could have been set as:
 
@@ -114,7 +114,7 @@
 !  write-result-summary                              NO
 !  result-summary-file-name                          SLSRES.d
 !  result-summary-file-device                        47
-!  symmetric-linear-equation-solver                  ssids
+!  symmetric-linear-equation-solver                  slblt
 !  kkt-system                                        YES
 !  barrier-perturbation                              1.0
 !  solution-passes                                   1

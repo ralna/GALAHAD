@@ -1,10 +1,10 @@
-.. index:: pair: struct; ssids_control
-.. index:: pair: struct; ssids_inform
-.. _doxid-structssids__controlinform:
+.. index:: pair: struct; slblt_control
+.. index:: pair: struct; slblt_inform
+.. _doxid-structslblt__controlinform:
 
-.. _details-structspral__ssids__options:
+.. _details-structslblt__options:
 
-spral_ssids_options structure
+slblt_options structure
 -----------------------------
 
 .. toctree::
@@ -13,7 +13,7 @@ spral_ssids_options structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-       struct spral_ssids_options{T,INT}
+       struct slblt_options{T,INT}
           array_base::INT
           print_level::INT
           unit_diagnostics::INT
@@ -39,9 +39,9 @@ spral_ssids_options structure
           min_loadbalance::Cfloat
           failed_pivot_method::INT
 
-.. _details-structspral__ssids__inform:
+.. _details-structslblt__inform:
 
-spral_ssids_inform structure
+slblt_inform structure
 -----------------------------
 
 .. toctree::
@@ -50,7 +50,7 @@ spral_ssids_inform structure
 .. ref-code-block:: julia
 	:class: doxyrest-overview-code-block
 
-        struct spral_ssids_inform{INT}
+        struct slblt_inform{INT}
           flag::INT
           matrix_dup::INT
           matrix_missing_diag::INT
@@ -77,6 +77,4 @@ spral_ssids_inform structure
 detailed documentation
 ----------------------
 
-SSIDS package option and info derived types as Julia structures.
-See `SPRAL-SSIDS <https://github.com/ralna/spral>`_ 
-documentation for further details.
+SLBLT package option and info derived types as Julia structures.

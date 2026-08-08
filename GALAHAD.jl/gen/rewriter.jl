@@ -5,7 +5,7 @@ packages = ("arc", "bgo", "blls", "bllsb", "bnls", "bqp", "bqpb", "bsc",
             "ir", "l2rt", "lhs", "llsr", "llst", "lms", "lpa", "lpb",
             "lsqp", "lsrt", "lstr", "nls", "nodend", "nrek", "presolve",
             "psls", "qpa", "qpb", "roots", "rpd", "rqs", "sbls", "scu",
-            "sec", "sha", "sils", "slls", "sllsb", "sls", "snls", "ssids",
+            "sec", "sha", "sils", "slls", "sllsb", "sls", "snls", "slblt",
             "ssls", "trb", "trek", "trs", "tru", "ugo", "uls", "version", "wcp")
 
 callbacks = ("galahad_f", "galahad_g", "galahad_h", "galahad_prec", "galahad_hprod",
@@ -47,7 +47,7 @@ nonparametric_structures_float = ("bqp_time_type", "bsc_control_type", "convert_
 # Structures that don't have a field with rpc_ but have an inner structure with rpc_ as a field.
 special_structures_float = ("convert_inform_type", "cro_inform_type", "lms_inform_type",
                             "ugo_inform_type", "uls_inform_type", "nodend_inform_type",
-                            "ssids_inform_type", "ssls_inform_type", "ssls_control_type")
+                            "slblt_inform_type", "ssls_inform_type", "ssls_control_type")
 
 hsl_structures = ("ma48_control", "ma48_ainfo", "ma48_finfo", "ma48_sinfo", "ma57_control",
                   "ma57_ainfo", "ma57_finfo", "ma57_sinfo", "ma77_control", "ma77_info",

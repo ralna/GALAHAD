@@ -795,10 +795,6 @@ echo '#  -- PLplot --'                                             >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'PLPLOT = '$PLPLOT                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
-echo '#  proper or dummy SSIDS package?'                           >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'SSIDS = '$SSIDS                                              >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
 echo '#  Shell used'                                               >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'BINSHELL = '$BINSHELL                                        >> $MAKEFILE

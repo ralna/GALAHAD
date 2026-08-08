@@ -19,7 +19,7 @@ functions
       solver : str
         the name of the solver required to solve $Ax=b$. 
         It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 
-        'ma87', 'ma97', 'ssids', 'mumps', 'pardiso', 'mkl pardiso', 
+        'ma87', 'ma97', 'slblt', 'mumps', 'pardiso', 'mkl pardiso',
         'pastix', 'wsmp', 'potr', 'sytr' or 'pbtr';
         lower or upper case variants are allowed.
 
@@ -571,8 +571,8 @@ functions
              the output structure from ma87.
           ma97_info : dict
              the output structure from ma97.
-          ssids_inform : dict
-             the output structure from ssids.
+          slblt_inform : dict
+             the output structure from slblt.
           nodend_inform : dict
              the output structure from nodend.
           mc61_info : int

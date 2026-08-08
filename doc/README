@@ -115,7 +115,7 @@ In order to get GALAHAD working **using make**, here is what you need to do.
    see 8 below.)
 
    Without these codes, your choice of key linear equation solvers is
-   severly restricted. In particular, if the default solver, ssids, is
+   severly restricted. In particular, if the default solver, slblt, is
    not supported by yur compiler, you will be forced to use LAPACk
    routines, and these may limit the size of problems that can be
    solved.
@@ -216,7 +216,7 @@ In order to get GALAHAD working **using make**, here is what you need to do.
    and that $GALAHAD/src/matlab is on your Matlab path. See README.matlab
    for more details.
 
-11 GALAHAD's parallel sparse solver SSIDS detects the machine's NUMA
+11 GALAHAD's parallel sparse solver SLBLT detects the machine's NUMA
    topology automatically (on Linux, by reading /sys); no external
    hardware-locality library needs to be installed.
 

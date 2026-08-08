@@ -128,7 +128,7 @@ src/ssls/sslst.F90
 src/ssls/sslsti.F90
 src/smt/smtt.F90
 src/sort/sortt.F90
-src/ssids/ssidst.F90
+src/slblt/slbltt.F90
 src/svt/svtt.F90
 src/trb/trbt.F90
 src/trb/trbti.F90

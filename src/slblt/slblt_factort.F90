@@ -1,6 +1,6 @@
-! THIS VERSION: GALAHAD 5.5 - 2026-07-27
+! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08
 !
-! Unit tests for the pure-Fortran SSIDS kernels (GALAHAD_SSIDS_factor_precision),
+! Unit tests for the pure-Fortran SLBLT kernels (GALAHAD_SLBLT_factor_precision),
 ! templated over precision/integer via the usual _precision mechanism. Two levels:
 !   * per-routine kernel tests: calc_ld, ldlt_tpp_factor, ldlt_blocked_factor,
 !     factor_node_indef, assemble_expected(_contrib), ldlt_app_solve_{fwd,diag,bwd};
@@ -9,9 +9,9 @@
 
 #include "galahad_modules.h"
 
-   PROGRAM GALAHAD_SSIDS_factor_test_program
+   PROGRAM GALAHAD_SLBLT_factor_test_program
    USE GALAHAD_KINDS_precision, ONLY : ip_, rp_
-   USE GALAHAD_SSIDS_factor_precision, ONLY : dmf_node,               &
+   USE GALAHAD_SLBLT_factor_precision, ONLY : dmf_node,               &
         subtree_contrib_t, factor_subtree_delay, extract_contrib,            &
         subtree_solve_fwd_delay, subtree_solve_diag_delay,                   &
         subtree_solve_bwd_delay,                                             &
@@ -45,9 +45,9 @@
    CALL case_child_contrib( nfail )
 
    IF ( nfail == 0 ) THEN
-      WRITE( 6, "( ' ssids fortran kernels: all tests passed' )" )
+      WRITE( 6, "( ' slblt fortran kernels: all tests passed' )" )
    ELSE
-      WRITE( 6, "( ' ssids fortran kernels: ', I0, ' FAILED' )" ) nfail
+      WRITE( 6, "( ' slblt fortran kernels: ', I0, ' FAILED' )" ) nfail
       STOP 1
    END IF
 
@@ -569,4 +569,4 @@
       END IF
    END SUBROUTINE case_child_contrib
 
-   END PROGRAM GALAHAD_SSIDS_factor_test_program
+   END PROGRAM GALAHAD_SLBLT_factor_test_program
