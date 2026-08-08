@@ -260,32 +260,36 @@ module hsl_ma86_real
       integer(ip_) :: num_delay = 0          ! Number of delayed pivots
       integer(long_) :: num_factor = 0_long_ ! Number of entries in the factor.
       integer(long_) :: num_flops = 0_long_  ! Number of flops for factor.
+      integer(ip_) :: num_neg = 0            ! Number of negative pivots
       integer(ip_) :: num_nodes = 0          ! Number of nodes
 !     integer(ip_) :: num_sup = 0            ! Number of supervariables
-      integer(ip_) :: num_two = 0            ! Number of 2x2 pivots
-      integer(ip_) :: num_neg = 0            ! Number of negative pivots
       integer(ip_) :: num_nothresh = 0       ! Number of pivots not satisfying u
       integer(ip_) :: num_perturbed = 0      ! Number of perturbed pivots
+      integer(ip_) :: num_two = 0            ! Number of 2x2 pivots
       integer(ip_) :: pool_size = pool_default  ! Maximum size of task pool used
       integer(ip_) :: stat = 0               ! STAT value on error return -1.
       real(rp_) :: usmall = zero         ! smallest threshold parameter used
    end type MA86_info
 
+   type lmap_type
+      integer(long_) :: len_map
+      integer(long_), allocatable :: map(:,:)
+   end type lmap_type
+
    type ma86_keep
-      type(zd11_type) :: a ! Holds lower and upper triangular parts of A
-      type(block_type), dimension(:), allocatable :: blocks ! block info
-      integer(ip_),  dimension(:), allocatable :: flag_array ! allocated to
-        ! have size equal to the number of threads. For each thread, holds
-        ! error flag
-      integer(long_) :: final_blk = 0 ! Number of blocks. Used for destroying
-        ! locks in finalise
-      type(ma86_info) :: info ! Holds copy of info
-      integer(ip_) :: maxmn ! holds largest block dimension
-      integer(ip_) :: n  ! Order of the system.
-      type(node_type), dimension(:), allocatable :: nodes ! nodal info
-      integer(ip_) :: nbcol = 0 ! number of block columns in L
+      private
+      type(block_type), dimension(:), allocatable :: blocks
+      integer(ip_), dimension(:), allocatable :: flag_array
+      integer(long_) :: final_blk = 0
+      type(ma86_info) :: info
+      integer(ip_) :: maxm
+      integer(ip_) :: maxn
+      integer(ip_) :: n
+      type(node_type), dimension(:), allocatable :: nodes
+      integer(ip_) :: nbcol = 0
       type(lfactor), dimension(:), allocatable :: lfact
-         ! holds block cols of L
+      type(lmap_type), dimension(:), allocatable :: lmap
+      real(rp_), dimension(:), allocatable :: scaling
    end type ma86_keep
 
    type dagtask
