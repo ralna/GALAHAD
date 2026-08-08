@@ -127,7 +127,7 @@ jobs:
         run: |
           echo "LSAN_OPTIONS=suppressions=$GITHUB_WORKSPACE/.github/lsan_suppressions.txt" >> $GITHUB_ENV
 
-      # Exercise SSIDS (GALAHAD's own embedded sparse solver) as both the
+      # Exercise SLBLT (GALAHAD's own embedded sparse solver) as both the
       # symmetric and definite linear solver under the sanitizers. The test
       # drivers read these at run time (see include/galahad_sls_defaults_ls.h),
       # so no rebuild is needed; unset, they would fall back to sytr / potr.
@@ -135,8 +135,8 @@ jobs:
         if: inputs.sanitizers == 'true'
         shell: bash
         run: |
-          echo "GALAHAD_SYMMETRIC_LINEAR_SOLVER=ssids" >> $GITHUB_ENV
-          echo "GALAHAD_DEFINITE_LINEAR_SOLVER=ssids" >> $GITHUB_ENV
+          echo "GALAHAD_SYMMETRIC_LINEAR_SOLVER=slblt" >> $GITHUB_ENV
+          echo "GALAHAD_DEFINITE_LINEAR_SOLVER=slblt" >> $GITHUB_ENV
 
       - name: Set environment variables for self-hosted runner
         if: inputs.os == 'self-hosted'
@@ -157,7 +157,7 @@ jobs:
         if: inputs.os != 'windows-latest' && inputs.compiler != 'nvidia-hpc'
         shell: bash
         run: |
-          VERSION_CUTEST="2.6.0"
+          VERSION_CUTEST="2.7.1"
           INT64="false"
           if [[ "${{ inputs.int }}" == "64" ]]; then
             INT64="true"
@@ -226,7 +226,7 @@ jobs:
             meson compile -C builddir
             meson install -C builddir
           else
-            VERSION_LIBHSL="4.0.6"
+            VERSION_LIBHSL="4.0.7"
             cd ..
             if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
               wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.zip
@@ -299,7 +299,7 @@ jobs:
         if: inputs.compiler == 'gcc' && inputs.os != 'windows-latest'
         shell: bash
         run: |
-          VERSION_SCOTCH="7.0.12"
+          VERSION_SCOTCH="7.0.13"
           cd "$DEPS"
           git clone --depth 1 --branch v${VERSION_SCOTCH} https://gitlab.inria.fr/scotch/scotch.git scotch
           cd scotch
@@ -349,7 +349,7 @@ jobs:
         if: inputs.compiler == 'gcc' && inputs.os != 'windows-latest' && inputs.int == '32'
         shell: bash
         run: |
-          VERSION_MUMPS="5.9.0"
+          VERSION_MUMPS="5.9.1"
           cd "$DEPS"
           wget -q https://mumps-solver.org/MUMPS_${VERSION_MUMPS}.tar.gz
           tar -xzf MUMPS_${VERSION_MUMPS}.tar.gz
