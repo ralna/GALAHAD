@@ -486,7 +486,6 @@
          ASSOCIATE( fn => this%fnode( li ) )
          i = 0
          DO WHILE ( i < fn%nelim )
-!write(6,*) ' i, nelim ', i, fn%nelim 
             is1x1 = ( i+1 == fn%nelim )
             IF ( .NOT. is1x1 ) is1x1 = ieee_is_finite_local( fn%d( 2*i+3 ) )
             IF ( is1x1 ) THEN
