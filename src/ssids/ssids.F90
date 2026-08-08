@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-11-29 AT 13:30 GMT
+! THIS VERSION: GALAHAD 5.6 - 2026-08-08 AT 14:10 GMT
 ! (consistent with SPRAL up to issue #250)
 
 #include "galahad_modules.h"
@@ -4901,14 +4901,15 @@
 
      INTEGER( KIND = ip_ ) :: part
 
-!write(6,*) ' nparts ', akeep%nparts
      DO part = 1, akeep%nparts
        ASSOCIATE( subtree => fkeep%subtree( 1 )%ptr )
          SELECT TYPE( subtree )
          TYPE IS ( numeric_subtree )
-!write(6,*) ' ssids 4908 ', akeep%part( part ),  akeep%part( part + 1 ) - 1 
-           CALL subtree%alter( d( 1 : 2, akeep%part( part ) :                  &
-                                         akeep%part( part + 1 ) - 1 ) )
+!  I believe that the new line is wrong as we should be pointing to
+!  an entry in memor, not to a submatrix
+!          CALL subtree%alter( d( 1 : 2, akeep%part( part ) :                  &
+!                                        akeep%part( part + 1 ) - 1 ) )
+           CALL subtree%alter( d( 1, akeep%part( part ) ) )
          END SELECT
        END ASSOCIATE
      END DO
