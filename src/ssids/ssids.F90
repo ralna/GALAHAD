@@ -4905,7 +4905,7 @@
        ASSOCIATE( subtree => fkeep%subtree( 1 )%ptr )
          SELECT TYPE( subtree )
          TYPE IS ( numeric_subtree )
-!  I believe that the new line is wrong as we should be pointing to
+!  I believe that the next line is wrong as we should be pointing to
 !  an entry in memor, not to a submatrix
 !          CALL subtree%alter( d( 1 : 2, akeep%part( part ) :                  &
 !                                        akeep%part( part + 1 ) - 1 ) )
