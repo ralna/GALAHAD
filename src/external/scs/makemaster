@@ -1,0 +1,174 @@
+#  Main body of the installation makefile for any optional scs procedures
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2026-08-10
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  Libraries used
+
+LIBS = -lgalahad $(SCS) $(LAPACK) $(BLAS)
+NLIBS = $(LIBS) -lgalahad_problem
+
+#  compilation agenda
+
+BASICZ = blas lapack symbols dummy blas_inter lapack_inter
+
+SCSS = $(BASICSZ) $(LGS)(scs_types.o) $(QOLGS)(scs.o) \
+           $(QOFLGS)(scs_fortran.o)
+SCSD = $(BASICSZ) $(LGD)(scs_types.o) $(QOLGD)(scs.o) \
+           $(QOFLGD)(scs_fortran.o)
+SCSQ = $(BASICSZ) $(LGSQ)(scs_types.o) $(QOLGQ)(scs.o) \
+           $(QOFLGQ)(scs_fortran.o)
+SCSS64 = $(BASICSZ) $(LGS64)(scs_types.o) $(QOLGS64)(scs.o) \
+           $(QOFLGS64)(scs_fortran.o)
+SCSD64 = $(BASICSZ) $(LGD64)(scs_types.o) $(QOLGD64)(scs.o) \
+           $(QOFLGD64)(scs_fortran.o)
+SCSQ64 = $(BASICSZ) $(LGSQ64)(scs_types.o) $(QOLGQ64)(scs.o) \
+           $(QOFLGQ64)(scs_fortran.o)
+
+SCSST = $(SCSS) $(OBJ)/scst.o
+SCSDT = $(SCSD) $(OBJ)/scst.o
+SCSQT = $(SCSQ) $(OBJ)/scst.o
+SCSS64T = $(SCSS64) $(OBJ)/scst.o
+SCSD64T = $(SCSD64) $(OBJ)/scst.o
+SCSQ64T = $(SCSQ64) $(OBJ)/scst.o
+
+RSCSST = $(OBJ)/scst.o -L$(OBJ) $(LIBS)
+RSCSDT = $(OBJ)/scst.o -L$(OBJ) $(LIBS)
+RSCSQT = $(OBJ)/scst.o -L$(OBJ) $(LIBS)
+RSCSS64T = $(OBJ)/scst.o -L$(OBJ) $(LIBS)
+RSCSD64T = $(OBJ)/scst.o -L$(OBJ) $(LIBS)
+RSCSQ64T = $(OBJ)/scst.o -L$(OBJ) $(LIBS)
+
+#  scs
+
+scs_silent: scs_$(PRECIS)
+scs: scs_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(SCS) ($(PRECIS) $(SUCC)"
+scs_single: $(SCSS)
+	$(RANLIB) $(QOLGS)
+scs_double: $(SCSD)
+	$(RANLIB) $(QOLGD)
+scs_quadruple: $(SCSQ)
+	$(RANLIB) $(QOLGQ)
+scs_single_64: $(SCSS64)
+	$(RANLIB) $(QOLGS64)
+scs_double_64: $(SCSD64)
+	$(RANLIB) $(QOLGD64)
+scs_quadruple_64: $(SCSQ64)
+	$(RANLIB) $(QOLGQ64)
+
+#  tests
+
+scsdt: $(SCSDT)
+	echo " Exhaustive test of subroutine interface to scs"
+	cd ../scs ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_scs \
+                         $(RSCSDT)
+#	- ../scs/run_scs > ../scs/scsdt.output 2>&1
+#	cat ../scs/scsdt.output
+	- ../scs/run_scs
+	rm ../scs/run_scs
+
+scsst: $(SCSST)
+	echo " Exhaustive test of subroutine interface to scs"
+	cd ../scs ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_scs \
+                         $(RSCSST)
+	- ../scs/run_scs > ../scs/scsst.output 2>&1
+	cat ../scs/scsst.output
+	rm ../scs/run_scs
+
+scssq: $(SCSQT)
+	echo " Exhaustive test of subroutine interface to scs"
+	cd ../scs ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_scs \
+                         $(RSCSQT)
+	- ../scs/run_scs > ../scs/scsqt.output 2>&1
+	cat ../scs/scsqt.output
+	rm ../scs/run_scs
+
+#  blas and lapack generic packages and interfaces
+
+blas:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+symbols:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+dummy:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+blas_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack_inter:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_inter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+#  individual compilations
+
+scs_types.o: $(LG)(scs_types.o)
+
+$(LG)(scs_types.o): ../scs/scs_types.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "scs_types  "
+	$(CP) ../scs/scs_types.F90 \
+           $(OBJ)/scs_types.F90
+	cd $(OBJ); $(FORTRAN) -o scs_types.o $(FFLAGS) \
+                      scs_types.F90
+	cd $(OBJ); $(ARR) scs_types.o ; \
+          $(RM) scs_types.F90 scs_types.o
+	@printf '[ OK ]\n'
+
+scs.o: $(QOLG)(scs.o)
+
+$(QOLG)(scs.o): ../../dum/scs.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy scs"
+	$(CP) ../../dum/scs.F90 $(OBJ)/scs.F90
+	cd $(OBJ); $(FORTRAN) -o scs.o $(FFLAGS) scs.F90
+	cd $(OBJ); $(QOARR) scs.o ; $(RM) scs.F90 scs.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+scs_fortran.o: $(QOFLG)(scs_fortran.o)
+
+$(QOFLG)(scs_fortran.o): ../scs//scs_fortran.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "fortran scs"
+	$(CP) ../scs/scs_fortran.F90 $(OBJ)/scs_fortran.F90
+	cd $(OBJ); $(FORTRAN) -o scs_fortran.o \
+                     $(FFLAGS) scs_fortran.F90
+	cd $(OBJ); $(QOFARR) scs_fortran.o ; \
+           $(RM) scs_fortran.F90 scs_fortran.o
+	$(RANLIB) $(QOFLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  test programs
+
+scst.o: $(OBJ)/scst.o
+
+$(OBJ)/scst.o: ../scs/scst.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "scst  "
+	$(SED) -f $(SEDS) ../scs/scst.F90 > $(OBJ)/scst.F90
+	cd $(OBJ) ; $(FORTRAN) -o scst.o $(FFLAGSS) scst.F90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(QOLG) $(OBJ)/scss.o $(OBJ)/scst.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'

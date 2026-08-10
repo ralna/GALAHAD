@@ -1,0 +1,66 @@
+The package SCS
+
+  https://github.com/cvxgrp/scs
+
+is not included as part of GALAHAD, but may be
+called optionally from GALAHAD's ubersolver QP package.
+
+GALAHAD relies on an environment variable,
+and if SCS has not been installed, these 
+are set by default as
+
+  SCS = -lgalahad_scs
+
+This allows GALAHAD to function, but any attempt
+to use SCS will result in an error return code.
+
+If you wish to use SCS ...
+
+1. Download SCS via git to a suitable location via
+
+    git clone https://github.com/cvxgrp/scs
+
+  and then move into the SCS directory using
+
+     cd ./scs
+
+   we shall refer to this through the shell variable $SCS
+
+2. Install the package into a suitable subdirectory
+   (here ./build/pc64.lnx.gfo for a gfortran build) using Cmake
+
+    cmake -B build/pc64.lnx.gfo \
+     -DCMAKE_BUILD_TYPE=Release \
+     -DSFLOAT=0 \
+     -DDLONG=0 \
+     -DUSE_OPENMP=1 \
+     -DNO_PRINTING=0
+    cmake --build build/pc64.lnx.gfo --config Release -j
+
+   This is appropriate for default GALAHAD interactions, but
+   -DSFLOAT=1 and -DDLONG=1 change from double- to single-precision 
+   reals and 64- rather than 32-bit integers. -DUSE_OPENMP=0 turns
+   off OpenMP parallelization
+   
+   You can use other compilers by, e.g., resetting them prior to
+   the first call, e.g. (in the bash shell)
+
+      CC=icx CXX=icpx FC=ifx cmake ....
+   
+   or by using the flags
+
+     -DCMAKE_C_COMPILER=icx \
+     -DCMAKE_CXX_COMPILER=icpx \ 
+     -DCMAKE_Fortran_COMPILER=ifx \
+
+   but remember to change the name of the build directory (to, e.g.,
+   build/pc64.lnx.ifx) if you want to have two or more separate builds
+
+3. Now call GALAHAD with the envirnment variables
+
+      SCS_BUILD = $(SCS)/build/pc64.lnx.gfo
+      SCS = -L$(SCS_BUILD)/lib -lscsdir 
+
+Nick Gould
+For GALAHAD productions
+August 9th 2026

@@ -1,5 +1,6 @@
 #ifdef INTEGER_64
 #define BQPD_GDOTX_precision BQPD_GDOTX_quadruple_64
+#define CLARABEL_TYPES_precision CLARABEL_TYPES_quadruple_64
 #define CUTEST_TRAMPOLINE_precision CUTEST_TRAMPOLINE_quadruple_64
 #define CUTEst_interface_precision CUTEST_interface_quadruple_64
 #define CUTEST_interface_precision CUTEST_interface_quadruple_64
@@ -25,6 +26,7 @@
 #define GALAHAD_CDQP_precision GALAHAD_CDQP_quadruple_64
 #define GALAHAD_CHECK_precision GALAHAD_CHECK_quadruple_64
 #define GALAHAD_CHECKPOINT_precision GALAHAD_CHECKPOINT_quadruple_64
+#define GALAHAD_CLARABEL_precision GALAHAD_CLARABEL_quadruple_64
 #define GALAHAD_CLLS_precision GALAHAD_CLLS_quadruple_64
 #define GALAHAD_CONVERT_precision GALAHAD_CONVERT_quadruple_64
 #define GALAHAD_CQP_precision GALAHAD_CQP_quadruple_64
@@ -106,6 +108,7 @@
 #define GALAHAD_QPD_precision GALAHAD_QPD_quadruple_64
 #define GALAHAD_QP_precision GALAHAD_QP_quadruple_64
 #define GALAHAD_QPOASES_precision GALAHAD_QPOASES_quadruple_64
+#define GALAHAD_SCS_precision GALAHAD_SCS_quadruple_64
 #define GALAHAD_QPP_precision GALAHAD_QPP_quadruple_64
 #define GALAHAD_QPS_precision GALAHAD_QPS_quadruple_64
 #define GALAHAD_QPT_precision GALAHAD_QPT_quadruple_64
@@ -344,7 +347,8 @@
 #define GALAHAD_UGO_precision_ciface GALAHAD_UGO_quadruple_ciface_64
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_quadruple_ciface_64
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_quadruple_ciface_64
-#define QPOASES_INTERFACE_precision QPOASES_interface_quadruple_64
+#define QPOASES_TYPES_precision QPOASES_TYPES_quadruple_64
+#define SCS_TYPES_precision SCS_TYPES_quadruple_64
 #define RUNARC_SIF_precision RUNARC_SIF_quadruple_64
 #define RUNBGO_SIF_precision RUNBGO_SIF_quadruple_64
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_quadruple_64
@@ -452,6 +456,7 @@
 #else
 
 #define BQPD_GDOTX_precision BQPD_GDOTX_quadruple
+#define CLARABEL_TYPES_precision CLARABEL_TYPES_quadruple
 #define CUTEST_TRAMPOLINE_precision CUTEST_TRAMPOLINE_quadruple
 #define CUTEst_interface_precision CUTEST_interface_quadruple
 #define CUTEST_interface_precision CUTEST_interface_quadruple
@@ -477,6 +482,7 @@
 #define GALAHAD_CDQP_precision GALAHAD_CDQP_quadruple
 #define GALAHAD_CHECK_precision GALAHAD_CHECK_quadruple
 #define GALAHAD_CHECKPOINT_precision GALAHAD_CHECKPOINT_quadruple
+#define GALAHAD_CLARABEL_precision GALAHAD_CLARABEL_quadruple
 #define GALAHAD_CLLS_precision GALAHAD_CLLS_quadruple
 #define GALAHAD_CONVERT_precision GALAHAD_CONVERT_quadruple
 #define GALAHAD_CQP_precision GALAHAD_CQP_quadruple
@@ -558,6 +564,7 @@
 #define GALAHAD_QPD_precision GALAHAD_QPD_quadruple
 #define GALAHAD_QP_precision GALAHAD_QP_quadruple
 #define GALAHAD_QPOASES_precision GALAHAD_QPOASES_quadruple
+#define GALAHAD_SCS_precision GALAHAD_SCS_quadruple
 #define GALAHAD_QPP_precision GALAHAD_QPP_quadruple
 #define GALAHAD_QPS_precision GALAHAD_QPS_quadruple
 #define GALAHAD_QPT_precision GALAHAD_QPT_quadruple
@@ -796,7 +803,8 @@
 #define GALAHAD_UGO_precision_ciface GALAHAD_UGO_quadruple_ciface
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_quadruple_ciface
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_quadruple_ciface
-#define QPOASES_INTERFACE_precision QPOASES_interface_quadruple
+#define QPOASES_TYPES_precision QPOASES_TYPES_quadruple
+#define SCS_TYPES_precision SCS_TYPES_quadruple
 #define RUNARC_SIF_precision RUNARC_SIF_quadruple
 #define RUNBGO_SIF_precision RUNBGO_SIF_quadruple
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_quadruple

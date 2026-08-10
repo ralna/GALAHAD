@@ -184,6 +184,14 @@ CDLGS64 = $(OBJS64)/libgalahad_cutest_dummy.a
 CDLGD64 = $(OBJD64)/libgalahad_cutest_dummy.a
 CDLGQ64 = $(OBJQ64)/libgalahad_cutest_dummy.a
 
+CLLG  = $(OBJ)/libgalahad_clarabel.a
+CLLGS = $(OBJS)/libgalahad_clarabel.a
+CLLGD = $(OBJD)/libgalahad_clarabel.a
+CLLGQ = $(OBJQ)/libgalahad_clarabel.a
+CLLGS64 = $(OBJS64)/libgalahad_clarabel.a
+CLLGD64 = $(OBJD64)/libgalahad_clarabel.a
+CLLGQ64 = $(OBJQ64)/libgalahad_clarabel.a
+
 DLG  = $(OBJ)/libgalahad_dummy.a
 DLGS = $(OBJS)/libgalahad_dummy.a
 DLGD = $(OBJD)/libgalahad_dummy.a
@@ -420,6 +428,14 @@ RLGS64 = $(LGS64)
 RLGD64 = $(LGD64)
 RLGQ64 = $(LGQ64)
 
+SLG  = $(OBJ)/libgalahad_scs.a
+SLGS = $(OBJS)/libgalahad_scs.a
+SLGD = $(OBJD)/libgalahad_scs.a
+SLGQ = $(OBJQ)/libgalahad_scs.a
+SLGS64 = $(OBJS64)/libgalahad_scs.a
+SLGD64 = $(OBJD64)/libgalahad_scs.a
+SLGQ64 = $(OBJQ64)/libgalahad_scs.a
+
 ULG  = $(OBJ)/libgalahad_umfpack.a
 ULGS = $(OBJS)/libgalahad_umfpack.a
 ULGD = $(OBJD)/libgalahad_umfpack.a
@@ -461,6 +477,9 @@ CURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CULG)
 
 CDARR = $(AR) $(ARREPFLAGS) $(CDLG)
 CDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CDLG)
+
+CLARR = $(AR) $(ARREPFLAGS) $(CLLG)
+CLRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLLG)
 
 DARR = $(AR) $(ARREPFLAGS) $(DLG)
 DRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(DLG)
@@ -530,6 +549,9 @@ QOFRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(QOFLG)
 
 RARR = $(AR) $(ARREPFLAGS) $(LG)
 RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+
+SARR = $(AR) $(ARREPFLAGS) $(SLG)
+SRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(SLG)
 
 UARR = $(AR) $(ARREPFLAGS) $(ULG)
 URMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(ULG)

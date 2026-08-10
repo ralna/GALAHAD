@@ -1,5 +1,6 @@
 #ifdef INTEGER_64
 #define BQPD_GDOTX_precision BQPD_GDOTX_single_64
+#define CLARABEL_TYPES_precision CLARABEL_TYPES_single_64
 #define CUTEST_TRAMPOLINE_precision CUTEST_TRAMPOLINE_single_64
 #define CUTEst_interface_precision CUTEST_interface_single_64
 #define CUTEST_interface_precision CUTEST_interface_single_64
@@ -25,6 +26,7 @@
 #define GALAHAD_CDQP_precision GALAHAD_CDQP_single_64
 #define GALAHAD_CHECK_precision GALAHAD_CHECK_single_64
 #define GALAHAD_CHECKPOINT_precision GALAHAD_CHECKPOINT_single_64
+#define GALAHAD_CLARABEL_precision GALAHAD_CLARABEL_single_64
 #define GALAHAD_CLLS_precision GALAHAD_CLLS_single_64
 #define GALAHAD_CONVERT_precision GALAHAD_CONVERT_single_64
 #define GALAHAD_CQP_precision GALAHAD_CQP_single_64
@@ -121,6 +123,7 @@
 #define GALAHAD_SSLS_precision GALAHAD_SSLS_single_64
 #define GALAHAD_SCALE_precision GALAHAD_SCALE_single_64
 #define GALAHAD_SCALING_precision GALAHAD_SCALING_single_64
+#define GALAHAD_SCS_precision GALAHAD_SCS_single_64
 #define GALAHAD_SCU_precision GALAHAD_SCU_single_64
 #define GALAHAD_SOLVER_precision GALAHAD_SOLVER_single_64
 #define GALAHAD_TR1_precision GALAHAD_TR1_single_64
@@ -344,7 +347,7 @@
 #define GALAHAD_UGO_precision_ciface GALAHAD_UGO_single_ciface_64
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_single_ciface_64
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_single_ciface_64
-#define QPOASES_INTERFACE_precision QPOASES_interface_single_64
+#define QPOASES_TYPES_precision QPOASES_TYPES_single_64
 #define RUNARC_SIF_precision RUNARC_SIF_single_64
 #define RUNBGO_SIF_precision RUNBGO_SIF_single_64
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_single_64
@@ -446,12 +449,14 @@
 #define RUNQPB_QPLIB_precision RUNQPB_QPLIB_single_64
 #define RUNQPC_QPLIB_precision RUNQPC_QPLIB_single_64
 #define RUNQP_QPLIB_precision RUNQP_QPLIB_single_64
+#define SCS_TYPES_precision SCS_TYPES_single_64
 #define pastixf_interfaces_precision pastixf_interfaces_single_64
 #define spmf_interfaces_precision spmf_interfaces_single_64
 
 #else
 
 #define BQPD_GDOTX_precision BQPD_GDOTX_single
+#define CLARABEL_TYPES_precision CLARABEL_TYPES_single
 #define CUTEST_TRAMPOLINE_precision CUTEST_TRAMPOLINE_single
 #define CUTEst_interface_precision CUTEST_interface_single
 #define CUTEST_interface_precision CUTEST_interface_single
@@ -477,6 +482,7 @@
 #define GALAHAD_CDQP_precision GALAHAD_CDQP_single
 #define GALAHAD_CHECK_precision GALAHAD_CHECK_single
 #define GALAHAD_CHECKPOINT_precision GALAHAD_CHECKPOINT_single
+#define GALAHAD_CLARABEL_precision GALAHAD_CLARABEL_single
 #define GALAHAD_CLLS_precision GALAHAD_CLLS_single
 #define GALAHAD_CONVERT_precision GALAHAD_CONVERT_single
 #define GALAHAD_CQP_precision GALAHAD_CQP_single
@@ -573,6 +579,7 @@
 #define GALAHAD_SSLS_precision GALAHAD_SSLS_single
 #define GALAHAD_SCALE_precision GALAHAD_SCALE_single
 #define GALAHAD_SCALING_precision GALAHAD_SCALING_single
+#define GALAHAD_SCS_precision GALAHAD_SCS_single
 #define GALAHAD_SCU_precision GALAHAD_SCU_single
 #define GALAHAD_SOLVER_precision GALAHAD_SOLVER_single
 #define GALAHAD_TR1_precision GALAHAD_TR1_single
@@ -796,7 +803,7 @@
 #define GALAHAD_UGO_precision_ciface GALAHAD_UGO_single_ciface
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_single_ciface
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_single_ciface
-#define QPOASES_INTERFACE_precision QPOASES_interface_single
+#define QPOASES_TYPES_precision QPOASES_TYPES_single
 #define RUNARC_SIF_precision RUNARC_SIF_single
 #define RUNBGO_SIF_precision RUNBGO_SIF_single
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_single
@@ -898,6 +905,7 @@
 #define RUNQPB_QPLIB_precision RUNQPB_QPLIB_single
 #define RUNQPC_QPLIB_precision RUNQPC_QPLIB_single
 #define RUNQP_QPLIB_precision RUNQP_QPLIB_single
+#define SCS_TYPES_precision SCS_TYPES_single
 #define pastixf_interfaces_precision pastixf_interfaces_single
 #define spmf_interfaces_precision spmf_interfaces_single
 #endif

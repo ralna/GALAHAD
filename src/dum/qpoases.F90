@@ -7,7 +7,7 @@
   MODULE GALAHAD_QPOASES_precision
 
     USE GALAHAD_KINDS_precision, ONLY: ipc_, rpc_, c_ptr, c_loc
-    USE QPOASES_INTERFACE_precision, ONLY: qpOASES_options_type
+    USE QPOASES_TYPES_precision, ONLY: qpOASES_options_type
 
     IMPLICIT NONE
 

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional qpOASES procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-07-21
+#  This version: 2026-08-10
 
 #  include standard GALAHAD makefile definitions
 
@@ -17,22 +17,22 @@ NLIBS = $(LIBS) -lgalahad_problem
 BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
 QPOASESS = $(BASICSZ) $(LGS)(qpoases_c_interface.o) \
-           $(LGS)(qpoases_interface.o) $(QOLGS)(qpoases.o) \
+           $(LGS)(qpoases_types.o) $(QOLGS)(qpoases.o) \
            $(QOFLGS)(qpoases_fortran.o)
 QPOASESD = $(BASICSZ) $(LGD)(qpoases_c_interface.o) \
-           $(LGD)(qpoases_interface.o) $(QOLGD)(qpoases.o) \
+           $(LGD)(qpoases_types.o) $(QOLGD)(qpoases.o) \
            $(QOFLGD)(qpoases_fortran.o)
 QPOASESQ = $(BASICSZ) $(LGQ)(qpoases_c_interface.o) \
-           $(LGSQ)(qpoases_interface.o) $(QOLGQ)(qpoases.o) \
+           $(LGSQ)(qpoases_types.o) $(QOLGQ)(qpoases.o) \
            $(QOFLGQ)(qpoases_fortran.o)
 QPOASESS64 = $(BASICSZ) $(LGS64)(qpoases_c_interface.o) \
-           $(LGS64)(qpoases_interface.o) $(QOLGS64)(qpoases.o) \
+           $(LGS64)(qpoases_types.o) $(QOLGS64)(qpoases.o) \
            $(QOFLGS64)(qpoases_fortran.o)
 QPOASESD64 = $(BASICSZ) $(LGD64)(qpoases_c_interface.o) \
-           $(LGD64)(qpoases_interface.o) $(QOLGD64)(qpoases.o) \
+           $(LGD64)(qpoases_types.o) $(QOLGD64)(qpoases.o) \
            $(QOFLGD64)(qpoases_fortran.o)
 QPOASESQ64 = $(BASICSZ) $(LGQ64)(qpoases_c_interface.o) \
-           $(LGSQ64)(qpoases_interface.o) $(QOLGQ64)(qpoases.o) \
+           $(LGSQ64)(qpoases_types.o) $(QOLGQ64)(qpoases.o) \
            $(QOFLGQ64)(qpoases_fortran.o)
 
 QPOASESST = $(QPOASESS) $(OBJ)/qpoasest.o
@@ -136,16 +136,16 @@ $(LG)(qpoases_c_interface.o): ../qpoases/qpoases_c_interface.cpp
             qpoases_c_interface.o include
 	@printf '[ OK ]\n'
 
-qpoases_interface.o: $(LG)(qpoases_interface.o)
+qpoases_types.o: $(LG)(qpoases_types.o)
 
-$(LG)(qpoases_interface.o): ../qpoases/qpoases_interface.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "qpoases_interface  "
-	$(CP) ../qpoases/qpoases_interface.F90 \
-           $(OBJ)/qpoases_interface.F90
-	cd $(OBJ); $(FORTRAN) -o qpoases_interface.o $(FFLAGS) \
-                      qpoases_interface.F90
-	cd $(OBJ); $(ARR) qpoases_interface.o ; \
-          $(RM) qpoases_interface.F90 qpoases_interface.o
+$(LG)(qpoases_types.o): ../qpoases/qpoases_types.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "qpoases_types  "
+	$(CP) ../qpoases/qpoases_types.F90 \
+           $(OBJ)/qpoases_types.F90
+	cd $(OBJ); $(FORTRAN) -o qpoases_types.o $(FFLAGS) \
+                      qpoases_types.F90
+	cd $(OBJ); $(ARR) qpoases_types.o ; \
+          $(RM) qpoases_types.F90 qpoases_types.o
 	@printf '[ OK ]\n'
 
 qpoases.o: $(QOLG)(qpoases.o)

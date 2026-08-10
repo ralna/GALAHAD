@@ -1,17 +1,17 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-07-22 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-08-10 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*- G A L A H A D  -  Q P O A S E S  _ I N T E R F A C E   M O D U L E -*-*-
+!-*-*-*-*- G A L A H A D  -  Q P O A S E S  _ T Y P E S   M O D U L E -*-*-*-*-
 
-  MODULE QPOASES_INTERFACE_precision
+  MODULE QPOASES_TYPES_precision
     USE GALAHAD_KINDS_precision, ONLY: ipc_, rpc_
 
     IMPLICIT NONE
 
     PRIVATE
 
-!  module to provide fortran interfaces to qpOASES C++ structures and functions
+!  module to provide fortran types for qpOASES C++ structures
 
 !  Copyright reserved, GALAHAD productions
 !  Principal authors: Nick Gould and the Google Gemini AI
@@ -210,4 +210,4 @@
 
     END TYPE qpOASES_options_type
 
-  END MODULE QPOASES_INTERFACE_precision
+  END MODULE QPOASES_TYPES_precision
