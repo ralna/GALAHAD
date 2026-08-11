@@ -90,7 +90,7 @@
  contains
 
   subroutine mi28_factorize_real(n, ptr, row, val, lsize, rsize, keep,       &
-      control, info, scale, invp)
+      control, info, scale, perm)
     integer(ip_),  intent(in) :: n
     integer(ip_),  intent(inout) ::  ptr(n+1)
     integer(ip_),  intent(inout) ::  row(:)
@@ -101,7 +101,7 @@
     type(mi28_control), intent(in) :: control
     type(mi28_info), intent(out) :: info
     real(rp_), intent(in), optional :: scale(n)
-    integer(ip_),  intent(in), optional :: invp(n)
+    integer(ip_),  intent(in), optional :: perm(n)
     IF ( control%unit_error >= 0 ) WRITE( control%unit_error,                  &
            "( ' We regret that the solution options that you have ', /,        &
    &     ' chosen are not all freely available with GALAHAD.', /,              &
