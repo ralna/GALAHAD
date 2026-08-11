@@ -58,6 +58,18 @@
    REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
      drhs = (/ 11.0_rp_,  20.0_rp_,  13.0_rp_,  16.0_rp_,  26.0_rp_ /)
 
+! Remove any stale HSL out-of-core scratch files (fixed names, used by MA77)
+! left by an earlier run so that successive precisions do not clash on their
+! direct-access record length
+   OPEN( 77, FILE = 'factor_integer_ooc', STATUS = 'OLD', IOSTAT = s )
+   IF ( s == 0 ) CLOSE( 77, STATUS = 'DELETE' )
+   OPEN( 77, FILE = 'factor_real_ooc', STATUS = 'OLD', IOSTAT = s )
+   IF ( s == 0 ) CLOSE( 77, STATUS = 'DELETE' )
+   OPEN( 77, FILE = 'work_real_ooc', STATUS = 'OLD', IOSTAT = s )
+   IF ( s == 0 ) CLOSE( 77, STATUS = 'DELETE' )
+   OPEN( 77, FILE = 'work_indefinite_ooc', STATUS = 'OLD', IOSTAT = s )
+   IF ( s == 0 ) CLOSE( 77, STATUS = 'DELETE' )
+
 ! Choose optional ordering
    DO i = 1, n
      ORDER( i ) = n - i + 1
