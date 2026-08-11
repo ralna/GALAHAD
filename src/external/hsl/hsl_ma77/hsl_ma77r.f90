@@ -305,7 +305,7 @@ contains
     call MA77_unavailable( info, control, 'ma77_factor_solve' )
   end subroutine MA77_factor_solve_real
 
-   subroutine MA77_resid_real(nrhs,lx,x,lresid,resid,keep,control,info,anorm)
+   subroutine MA77_resid_real(nrhs,lx,x,lresid,resid,keep,control,info,anorm_bnd)
     integer(ip_) :: nrhs
     integer(ip_) :: lx
     integer(ip_) :: lresid
@@ -314,7 +314,7 @@ contains
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(rp_),optional :: anorm
+    real(rp_),optional :: anorm_bnd
     call MA77_unavailable( info, control, 'ma77_resid' )
   end subroutine MA77_resid_real
 

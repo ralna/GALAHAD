@@ -152,14 +152,14 @@ contains
     end subroutine ma48_initialize_real
 
    subroutine ma48_analyse_real(matrix,factors,control,ainfo,finfo,          &
-                                  perm,lastcol)
+                                  perm,endcol)
       type(zd11_type), Intent(in) :: matrix
       type(ma48_factors), intent(inout) :: factors
       type(ma48_control), intent(in) :: control
       type(ma48_ainfo) :: ainfo
       type(ma48_finfo), optional :: finfo
       integer(ip_),  intent(in), optional :: perm(matrix%m+matrix%n) ! Init perm
-      integer(ip_),  intent(in), optional :: lastcol(matrix%n) ! last cols
+      integer(ip_),  intent(in), optional :: endcol(matrix%n) ! last cols
 
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
            "( ' We regret that the solution options that you have ', /,        &
@@ -236,7 +236,7 @@ contains
   end subroutine ma48_special_rows_and_cols_real
 
   subroutine ma48_get_perm_real(factors,perm)
-      type(ma48_factors), intent(in), optional :: factors
+      type(ma48_factors), intent(in) :: factors
       integer(ip_),  intent(out) :: perm(:)
   end subroutine ma48_get_perm_real
 
