@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6.0 - 2026-08-08 AT 14:10 GMT
+! THIS VERSION: GALAHAD 5.6.1 - 2026-08-13 AT 14:10 GMT
 ! (consistent with SPRAL up to issue #250)
 
 #include "galahad_modules.h"
@@ -4515,7 +4515,7 @@
 
      INTEGER( KIND = ip_ ) :: i, numa_region, exec_loc, my_loc
      INTEGER( KIND = ip_ ) :: total_threads, to_launch, thread_num
-     INTEGER( KIND = ip_ ) :: nth ! Number of threads within a region
+     INTEGER( KIND = i4_ ) :: nth ! Number of threads within a region
      LOGICAL :: abort, all_region
      TYPE( contrib_type ), DIMENSION( : ), ALLOCATABLE :: child_contrib
      TYPE( slblt_inform_type ), DIMENSION( : ), ALLOCATABLE :: thread_inform
@@ -4561,7 +4561,7 @@
 
 !  control number of inner threads for this NUMA region
 
-     nth = akeep%topology( numa_region )%nproc
+     nth = INT( akeep%topology( numa_region )%nproc, i4_ )
 
 !$   CALL omp_set_num_threads( int( nth ) )
 
