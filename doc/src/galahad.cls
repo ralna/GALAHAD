@@ -851,8 +851,8 @@ See {\tt https://www.galahad.rl.ac.uk/download/} for full details.}}
 \newcommand{\galio}{\item[Input/output:]}
 \newcommand{\galrestrictions}{\item[Restrictions:]}
 \newcommand{\galportability}{\item[Portability:]}
-\newcommand{\galreference}{\vspace*{5mm} \noindent {\large {\bf Reference:} }}
-\newcommand{\galreferences}{\vspace*{5mm} \noindent {\large {\bf References:} }}
+\newcommand{\galreference}{\vspace*{5mm} \noindent {\large {\bf Reference:} }\label{galreference}}
+\newcommand{\galreferences}{\vspace*{5mm} \noindent {\large {\bf References:} }\label{galreferences}}
 
 % data types
 

@@ -12,7 +12,8 @@
    INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
 !  CHARACTER ( LEN = 20 ) :: solver = "cqp" // REPEAT( ' ', 17 )
-   CHARACTER ( LEN = 20 ) :: solver = "osqp" // REPEAT( ' ', 16 )
+!  CHARACTER ( LEN = 20 ) :: solver = "osqp" // REPEAT( ' ', 16 )
+   CHARACTER ( LEN = 20 ) :: solver = "e04nqf" // REPEAT( ' ', 14 )
 ! start problem data
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )

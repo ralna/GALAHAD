@@ -360,6 +360,18 @@
 !   extended data derived type for OSQP
 !  - - - - - - - - - - - - - - - - - - -
 
+      TYPE, PUBLIC :: QP_E04NQF_data_type
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: HELAST, HS
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: I_w, I_user
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_l, B_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, R_w, R_user
+        CHARACTER ( LEN = 8 ), ALLOCATABLE, DIMENSION( : )  :: C_w, C_user
+      END TYPE QP_E04NQF_data_type
+
+!  - - - - - - - - - - - - - - - - - - -
+!   extended data derived type for OSQP
+!  - - - - - - - - - - - - - - - - - - -
+
       TYPE, PUBLIC :: QP_OSQP_data_type
         INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row, H_ptr
@@ -384,6 +396,7 @@
         CHARACTER ( LEN = len_solver ) :: solver = REPEAT( ' ', len_solver )
         TYPE ( QPD_data_type ) :: QPD_data
         TYPE ( QP_OSQP_data_type ) :: QP_OSQP_data
+        TYPE ( QP_E04NQF_data_type ) :: QP_E04NQF_data
       END TYPE QP_data_type
 
    CONTAINS
@@ -1506,6 +1519,7 @@ write(6,*) ' scale presolve'
 !  == E04NQF ==
 
         CASE ( 'e04nqf', 'E04NQF' )
+          CALL QP_E04NQF_solve( prob, data%QP_E04NQF_data, control%out )
 
 !  == HiGHS ==
 
@@ -1747,79 +1761,82 @@ write(6,*) ' qp: inform%obj ', inform%obj
 
       END SUBROUTINE QP_solve
 
-!-*-*-*-*-*-*-   Q P _ B P M P D _ S O L V E   S U B R O U T I N E   -*-*-*-*-
-
-      SUBROUTINE QP_BPMPD_solve( prob, data, settings, info, out )
-
-!  solve the quadratic program using the BPMPD package
-
-!  A - by rows
-!  H - lower triangle by rows
-
-!  dummy arguments
-
-      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      TYPE ( QP_BPMPD_data_type ), INTENT( INOUT ) :: data
-      TYPE ( BPMPD_control_type ), INTENT( IN ) :: control
-      TYPE ( BPMPD_inform_type ), INTENT( OUT ) :: inform
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-
-!  local variables
-
-      RETURN
-
-!  End of QP_BPMPD_solve
-
-      END SUBROUTINE QP_BPMPD_solve
-
-!-*-*-*-*-*-*-   Q P _ B Q P D _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-
-
-      SUBROUTINE QP_BQPD_solve( prob, data, settings, info, out )
-
-!  solve the quadratic program using the BQPD package
-
-!  A - by rows (actually A -> A' in the BQPD notation)
-!  H - upper triangle by co-ordinates
-
-!  dummy arguments
-
-      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      TYPE ( QP_BQPD_data_type ), INTENT( INOUT ) :: data
-      TYPE ( BQPD_control_type ), INTENT( IN ) :: control
-      TYPE ( BQPD_inform_type ), INTENT( OUT ) :: inform
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-
-!  local variables
-
-      RETURN
-
-!  End of QP_BQPD_solve
-
-      END SUBROUTINE QP_BQPD_solve
-
-!-*-*-*-*-   Q P _ c l a r a b e l _ S O L V E   S U B R O U T I N E   -*-*-*-*-
-
-      SUBROUTINE QP_clarabel_solve( prob, data, settings, info, out )
-
-!  solve the quadratic program using the Clarabel package
-
-!  dummy arguments
-
-      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      TYPE ( QP_Clarabel_data_type ), INTENT( INOUT ) :: data
-      TYPE ( clarabel_control_type ), INTENT( IN ) :: control
-      TYPE ( clarabel_inform_type ), INTENT( OUT ) :: inform
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-
-!  local variables
-
-      RETURN
-
-!  End of QP_clarabel_solve
+!!$!-*-*-*-*-*-*-   Q P _ B P M P D _ S O L V E   S U B R O U T I N E   -*-*-*-*-
+!!$
+!!$      SUBROUTINE QP_BPMPD_solve( prob, data, settings, info, out )
+!!$
+!!$!  solve the quadratic program using the BPMPD package
+!!$
+!!$!  A - by rows
+!!$!  H - lower triangle by rows
+!!$
+!!$!  dummy arguments
+!!$
+!!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+!!$      TYPE ( QP_BPMPD_data_type ), INTENT( INOUT ) :: data
+!!$      TYPE ( BPMPD_control_type ), INTENT( IN ) :: control
+!!$      TYPE ( BPMPD_inform_type ), INTENT( OUT ) :: inform
+!!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+!!$
+!!$!  local variables
+!!$
+!!$      RETURN
+!!$
+!!$!  End of QP_BPMPD_solve
+!!$
+!!$      END SUBROUTINE QP_BPMPD_solve
+!!$
+!!$!-*-*-*-*-*-*-   Q P _ B Q P D _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-
+!!$
+!!$      SUBROUTINE QP_BQPD_solve( prob, data, settings, info, out )
+!!$
+!!$!  solve the quadratic program using the BQPD package
+!!$
+!!$!  A - by rows (actually A -> A' in the BQPD notation)
+!!$!  H - upper triangle by co-ordinates
+!!$
+!!$!  dummy arguments
+!!$
+!!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+!!$      TYPE ( QP_BQPD_data_type ), INTENT( INOUT ) :: data
+!!$      TYPE ( BQPD_control_type ), INTENT( IN ) :: control
+!!$      TYPE ( BQPD_inform_type ), INTENT( OUT ) :: inform
+!!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+!!$
+!!$!  local variables
+!!$
+!!$      RETURN
+!!$
+!!$!  End of QP_BQPD_solve
+!!$
+!!$      END SUBROUTINE QP_BQPD_solve
+!!$
+!!$!-*-*-*-*-   Q P _ c l a r a b e l _ S O L V E   S U B R O U T I N E   -*-*-*-*-
+!!$
+!!$      SUBROUTINE QP_clarabel_solve( prob, data, settings, info, out )
+!!$
+!!$!  solve the quadratic program using the Clarabel package
+!!$
+!!$!  dummy arguments
+!!$
+!!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+!!$      TYPE ( QP_Clarabel_data_type ), INTENT( INOUT ) :: data
+!!$      TYPE ( clarabel_control_type ), INTENT( IN ) :: control
+!!$      TYPE ( clarabel_inform_type ), INTENT( OUT ) :: inform
+!!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+!!$
+!!$!  local variables
+!!$
+!!$      RETURN
+!!$
+!!$!  End of QP_clarabel_solve
+!!$
+!!$      END SUBROUTINE QP_clarabel_solve
 
 !-*-*-*-*-*-   Q P _ E 0 4 N Q F _ S O L V E   S U B R O U T I N E   -*-*-*-*-
 
-      SUBROUTINE QP_E04NQF_solve( prob, data, settings, info, out )
+!     SUBROUTINE QP_E04NQF_solve( prob, data, control, inform, out, spec )
+      SUBROUTINE QP_E04NQF_solve( prob, data, out, spec )
 
 !  solve the quadratic program using the E04NQF NAG package
 
@@ -1830,13 +1847,247 @@ write(6,*) ' qp: inform%obj ', inform%obj
 
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
       TYPE ( QP_E04NQF_data_type ), INTENT( INOUT ) :: data
-      TYPE ( E04NQF_control_type ), INTENT( IN ) :: control
-      TYPE ( E04NQF_inform_type ), INTENT( OUT ) :: inform
+!     TYPE ( E04NQF_control_type ), INTENT( IN ) :: control
+!     TYPE ( E04NQF_inform_type ), INTENT( OUT ) :: inform
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: spec
 
 !  local variables
 
+      INTEGER ( KIND = ip_ ) :: n, m,  np1, npm, nea, neh, status, ifail
+      INTEGER ( KIND = ip_ ), PARAMETER :: len_c_w = 600
+      INTEGER ( KIND = ip_ ), PARAMETER :: len_r_w = 600
+      INTEGER ( KIND = ip_ ), PARAMETER :: len_i_w = 600
+      INTEGER ( KIND = ip_ ) :: ns, ninf
+      REAL ( KIND = rp_ ) :: sinf
+      CHARACTER ( LEN = 8 ) :: c_dummy( 1 )
+
+!  interfaces
+
+      INTERFACE
+        SUBROUTINE E04NQF( start, qphx, m, n, ne, nname, lenc, ncolh, iobj,    &
+                           objadd, prob, acol, inda, loca, bl, bu, c, names,   &
+                           helast, hs, x, pi, rc, ns, ninf, sinf, obj, cw,     &
+                           lencw, iw, leniw, rw, lenrw, cuser, iuser, ruser,   &
+                           ifail )
+        IMPORT :: ip_, rp_
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, ne, nname, lenc, ncolh
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: iobj, lencw, leniw, lenrw
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: inda( ne ), loca( n + 1 )
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: helast( n + m )
+        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: hs( n + m ), ns, iw( leniw )
+        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iuser( * ), ifail
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ninf
+        REAL ( KIND = rp_ ), INTENT( IN ) :: objadd
+        REAL ( KIND = rp_ ), INTENT( INOUT ) :: acol( ne )
+        REAL ( KIND = rp_ ), INTENT( INOUT ) :: bl( n + m ), bu( n + m )
+        REAL ( KIND = rp_ ), INTENT( INOUT ) :: c( MAX( 1, lenc ) ), x( n + m )
+        REAL ( KIND = rp_ ), INTENT( INOUT ) :: rw( lenrw ), ruser( * )
+        REAL ( KIND = rp_ ), INTENT( OUT ) :: pi( m ), rc( n + m ), sinf, obj
+        CHARACTER ( LEN = 1 ), INTENT ( IN ) :: start
+        CHARACTER ( LEN = 8 ), INTENT ( IN ) :: prob, names( nname )
+        CHARACTER ( LEN = 8 ), INTENT ( INOUT ) :: cw( lencw ), cuser( * )
+        INTERFACE
+          SUBROUTINE qphx( ncolh, x, hx, nstate, cuser, iuser, ruser )
+          IMPORT :: ip_, rp_
+          INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncolh, nstate
+          INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iuser( * )
+          REAL ( KIND = rp_ ), INTENT( IN ) :: x(ncolh)
+          REAL ( KIND = rp_ ), INTENT( INOUT ) :: ruser( * )
+          REAL ( KIND = rp_ ), INTENT( OUT ) :: hx(ncolh)
+          CHARACTER ( LEN = 8 ), INTENT( INOUT) :: cuser(*)
+          END SUBROUTINE qphx
+        END INTERFACE
+        END SUBROUTINE E04NQF
+
+        SUBROUTINE E04NPF( cw, lencw, iw, leniw, rw, lenrw, ifail )
+        IMPORT :: ip_, rp_
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lencw, leniw, lenrw
+        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: ifail
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: iw( leniw )
+        REAL ( KIND = rp_ ), INTENT( OUT ) :: rw( lenrw )
+        CHARACTER ( LEN = 8 ), INTENT( OUT ) :: cw( lencw )
+        END SUBROUTINE E04NPF
+
+        SUBROUTINE E04NRF( ispecs, cw, iw, rw, ifail )
+        IMPORT :: ip_, rp_
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ispecs
+        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iw( * ),  ifail
+        REAL ( KIND  = rp_ ), INTENT( INOUT ) :: rw( * )
+        CHARACTER ( LEN = 8 ), INTENT( INOUT ) :: cw( * )
+        END SUBROUTINE E04NRF
+
+        SUBROUTINE E04NTF( string, ivalue, cw, iw, rw, ifail )
+        IMPORT :: ip_, rp_
+        CHARACTER ( * ), INTENT( IN ) :: string
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ivalue
+        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iw( * ),  ifail
+        REAL ( KIND  = rp_ ), INTENT( INOUT ) :: rw( * )
+        CHARACTER ( LEN = 8 ), INTENT( INOUT ) :: cw( * )
+        END SUBROUTINE E04NTF
+      END INTERFACE
+
+!  transfer bound data into the format required by E04NQ
+
+      n = prob%n ; m = prob%m ; np1 = n + 1 ; npm = n + m
+      ALLOCATE( data%B_l( npm ), data%B_u( npm ), STAT = status )
+      IF ( status /= 0 ) GO TO 990
+      data%B_l( : n ) = prob%X_l( : n )
+      data%B_l( np1 : npm ) = prob%C_l( : m )
+      data%B_u( : n ) = prob%X_u( : n )
+      data%B_u( np1 : npm ) = prob%C_u( : m )
+
+!  manipulate vectors so that they conform to E04NQ's structures
+
+      ALLOCATE( data%HELAST( npm ), data%HS( npm ), STAT = status )
+      IF ( status /= 0 ) GO TO 990
+      data%HELAST( : npm ) = 3 ; data%HS( : npm ) = 0
+      ALLOCATE( data%X( npm ), data%Z( npm ), STAT = status )
+      IF ( status /= 0 ) GO TO 990
+      data%X( : n ) = prob%X( : n )
+
+!  record the sparse matrix H in E04NQF's user data structure
+
+      nea = prob%A%ptr( np1 ) - 1 ; neh = prob%H%ptr( np1 ) - 1
+      ALLOCATE( data%C_user( 1 ), data%R_user( neh ), STAT = status )
+      IF ( status /= 0 ) GO TO 990
+      data%R_user( : neh ) = prob%H%val( : neh )
+      ALLOCATE( data%I_user( neh + np1 ), STAT = status )
+      IF ( status /= 0 ) GO TO 990
+      data%I_user( : np1 ) = prob%H%ptr( : np1 )
+      data%I_user( n + 2 : neh + np1 ) = prob%H%row( : neh )
+
+!  provide space for E04NPF's communication arrays
+
+      ALLOCATE( data%C_w( len_c_w ), STAT = status )
+      IF ( status /= 0 ) GO TO 990
+      ALLOCATE( data%I_w( len_i_w ), data%R_w( len_r_w ), STAT = status )
+      IF ( status /= 0 ) GO TO 990
+
+!  define additional E04NQF data
+
+!  set up the internal structures
+
+      ifail = - 1
+      CALL E04NPF( data%C_w, len_c_w, data%I_w, len_i_w, data%R_w, len_r_w,    &
+                   ifail )
+      SELECT CASE( ifail )
+      CASE ( - 199 )
+        WRITE( out,                                                            &
+          "( ' call to E04NQ failed, substitute dummy package called' )" )
+        STOP
+      CASE ( - 399 )
+        WRITE( out, "( ' call to E04NQ failed, licence key expired' )" )
+        STOP
+      CASE ( - 999 )
+        status = ifail ; GO TO 990
+      END SELECT
+
+!  read options file
+
+      IF ( PRESENT( spec ) ) THEN 
+! OPEN( spec, file = 'E04NQF.SPC', form = 'FORMATTED', status = 'OLD' )
+! REWIND( spec )
+! ifail = - 1
+! CALL E04NRF( spec, C_w, I_w, R_w, ifail )
+! IF ( ifail /= 0 ) GO TO 910
+! CLOSE( spec )
+      END IF
+
+!  adjust output
+
+      CALL E04NTF( 'Print Level = 10', out, data%C_w, data%I_w, data%R_w,      &
+                   ifail )
+      CALL E04NTF( 'Print Frequency = 1', out, data%C_w, data%I_w, data%R_w,   &
+                   ifail )
+
+!  solve the problem
+
+      ns = 0
+      ifail = - 1
+      CALL E04NQF( 'C', E04NQ_qphx, m, n, nea, 1, n, n, 0, prob%f,             &
+                   prob%p_name( 1 : 8 ), prob%A%val, prob%A%row, prob%A%ptr,   &
+                   data%B_l, data%B_u, prob%G, c_dummy,                        &
+                   data%HELAST, data%HS, data%X, prob%Y, data%Z, ns, ninf,     &
+                   sinf, prob%q, data%C_w, len_c_w, data%I_w, len_i_w,         &
+                   data%R_w, len_r_w, data%C_user, data%I_user, data%R_user,   &
+                   ifail )
+
+!  record the solution
+
+      IF ( ifail == 0 ) THEN
+        prob%X( : n ) = data%X( : n )
+        prob%C( : m ) = data%X( np1 : npm )
+        prob%Z( : n ) = data%Z( : n )
+      END IF
+
+!  write details
+
+      IF ( out > 0 ) THEN
+        WRITE( out, "( /, 24('*'), ' GALAHAD statistics ', 24('*') //          &
+     &                 ' Package used            :  E04NQF',   /,              &
+     &                 ' Problem                 :  ', A, /,                   &
+     &                 ' # variables             =  ', I0, /,                  &
+     &                 ' # constraints           =  ', I0, /,                  &
+     &                 ' Exit code               =  ', I0, /,                  &
+     &                 ' Final f                 = ', ES15.7 //                &
+     &                 67('*') / )" ) prob%p_name, n, m, ifail, prob%q
+!       WRITE( out, "(' Optimal X = ', 7F9.2 )" ) data%X( : n )
+      END IF
+
+!  deallocate workspace
+
+      DEALLOCATE( data%HELAST, data%HS, data%I_w, data%I_user, STAT = status )
+      DEALLOCATE( data%B_l, data%B_u, data%X, data%Z, STAT = status )
+      DEALLOCATE( data%R_w, data%R_user, data%C_w, data%C_user, STAT = status )
       RETURN
+
+  990 CONTINUE
+      ifail = - 101
+      RETURN
+
+!  internal subroutine
+
+      CONTAINS
+
+         SUBROUTINE E04NQ_qphx( ncolh, X, HX, nstate, C_user, I_user, R_user )
+         USE GALAHAD_KINDS_precision
+
+!  given x, compute hx = H*x
+
+!  dummy arguments
+
+         INTEGER ( KIND = ip_ ), INTENT ( IN ) :: ncolh, nstate
+         INTEGER ( KIND = ip_ ), INTENT ( INOUT ) :: I_user( * )
+         REAL ( KIND = rp_ ), INTENT( IN ) :: X( ncolh )
+         REAL ( KIND = rp_ ), INTENT( INOUT ) :: R_user( * )
+         REAL ( KIND = rp_ ), INTENT( OUT ) :: HX( ncolh )
+         CHARACTER ( len = 8 ), INTENT( INOUT ) :: C_user( * )
+
+!  local variables
+
+         INTEGER ( KIND = ip_ ) :: i, j, l, n_row
+
+!  initialize 
+
+         n_row = ncolh + 1
+         HX = 0.0_rp_
+
+!  loop over the columns of H, remembering that only one triangle of H is stored
+
+         DO j = 1, ncolh
+           DO l = I_user( j ), I_user( j + 1 ) - 1 
+             i = I_user( n_row + l )
+             HX( i ) = HX( i ) + R_user( l ) * X( j )
+             IF ( i /= j ) HX( j ) = HX( j ) + R_user( l ) * X( i )
+           END DO
+         END DO
+
+         RETURN
+
+!  end of subroutine E04NQ_qphx
+
+        END SUBROUTINE E04NQ_qphx
 
 !  End of QP_E04NQF_solve
 
@@ -1844,28 +2095,28 @@ write(6,*) ' qp: inform%obj ', inform%obj
 
 !-*-*-*-*-*-*-   Q P _ H i G H S _ S O L V E   S U B R O U T I N E   -*-*-*-*-
 
-      SUBROUTINE QP_HiGHS_solve( prob, data, settings, info, out )
-
-!  solve the quadratic program using the HiGHS ASM and HiPo packages
-
-!  A - by columns, zero based
-!  H - lower triangle by columns, zero based
-
-!  dummy arguments
-
-      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      TYPE ( QP_HiGHS_data_type ), INTENT( INOUT ) :: data
-      TYPE ( HiGHS_control_type ), INTENT( IN ) :: control
-      TYPE ( HiGHS_inform_type ), INTENT( OUT ) :: inform
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-
-!  local variables
-
-      RETURN
-
-!  End of QP_HiGHS_solve
-
-      END SUBROUTINE QP_HiGHS_solve
+!!$      SUBROUTINE QP_HiGHS_solve( prob, data, settings, info, out )
+!!$
+!!$!  solve the quadratic program using the HiGHS ASM and HiPo packages
+!!$
+!!$!  A - by columns, zero based
+!!$!  H - lower triangle by columns, zero based
+!!$
+!!$!  dummy arguments
+!!$
+!!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+!!$      TYPE ( QP_HiGHS_data_type ), INTENT( INOUT ) :: data
+!!$      TYPE ( HiGHS_control_type ), INTENT( IN ) :: control
+!!$      TYPE ( HiGHS_inform_type ), INTENT( OUT ) :: inform
+!!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+!!$
+!!$!  local variables
+!!$
+!!$      RETURN
+!!$
+!!$!  End of QP_HiGHS_solve
+!!$
+!!$      END SUBROUTINE QP_HiGHS_solve
 
 !-*-*-*-*-*-*-   Q P _ O S Q P _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
 
@@ -1932,7 +2183,7 @@ write(6,*) ' qp: inform%obj ', inform%obj
 
       IF ( .true. ) THEN
         CALL OSQP_solve( n, data%m, prob%H%ptr, prob%H%col, prob%H%val,        &
-                         prob%g, data%A_ptr, data%A_row, data%A_val,           &
+                         prob%G, data%A_ptr, data%A_row, data%A_val,           &
                          data%B_l, data%B_u, prob%X, data%Y,                   &
                          info, data%OSQP_data, status )
       END IF
@@ -1984,77 +2235,75 @@ write(6,*) ' qp: inform%obj ', inform%obj
 
 !-*-*-*-*-*-*-   Q P _ Q P A L M _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-
 
-      SUBROUTINE QP_QPALM_solve( prob, data, settings, info, out )
-
-!  solve the quadratic program using the QPALM package
-
-!  A - by columns
-!  H - upper triangle by columns
-
-!  dummy arguments
-
-      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      TYPE ( QP_OSQP_data_type ), INTENT( INOUT ) :: data
-      TYPE ( OSQP_control_type ), INTENT( IN ) :: control
-      TYPE ( OSQP_inform_type ), INTENT( OUT ) :: inform
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-
-!  local variables
-
-      RETURN
-
-!  End of QP_qpALM_solve
-
-      END SUBROUTINE QP_qpALM_solve
-
-!-*-*-*-*-*-*-   Q P _ qpOASES _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
-
-      SUBROUTINE QP_qpOASES_solve( prob, data, settings, info, out )
-
-!  solve the quadratic program using the qpOASES package
-
-!  A - by columns
-!  H - both triangles by columns
-
-!  dummy arguments
-
-      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      TYPE ( QP_qpOASES_data_type ), INTENT( INOUT ) :: data
-      TYPE ( qpOASES_control_type ), INTENT( IN ) :: control
-      TYPE ( qpOASES_inform_type ), INTENT( OUT ) :: inform
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-
-!  local variables
-
-      RETURN
-
-!  End of QP_qpOASES_solve
-
-      END SUBROUTINE QP_qpOASES_solve
-
-!-*-*-*-*-*-*-   Q P _ S C S _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
-
-      SUBROUTINE QP_SCS_solve( prob, data, settings, info, out )
-
-!  solve the quadratic program using the SCS package
-
-!  dummy arguments
-
-      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      TYPE ( QP_SCS_data_type ), INTENT( INOUT ) :: data
-      TYPE ( SCS_control_type ), INTENT( IN ) :: control
-      TYPE ( SCS_inform_type ), INTENT( OUT ) :: inform
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-
-!  local variables
-
-      RETURN
-
-!  End of QP_SCS_solve
-
-      END SUBROUTINE QP_SCS_solve
-
-      END SUBROUTINE QP_clarabel_solve
+!!$      SUBROUTINE QP_QPALM_solve( prob, data, settings, info, out )
+!!$
+!!$!  solve the quadratic program using the QPALM package
+!!$
+!!$!  A - by columns
+!!$!  H - upper triangle by columns
+!!$
+!!$!  dummy arguments
+!!$
+!!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+!!$      TYPE ( QP_OSQP_data_type ), INTENT( INOUT ) :: data
+!!$      TYPE ( OSQP_control_type ), INTENT( IN ) :: control
+!!$      TYPE ( OSQP_inform_type ), INTENT( OUT ) :: inform
+!!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+!!$
+!!$!  local variables
+!!$
+!!$      RETURN
+!!$
+!!$!  End of QP_qpALM_solve
+!!$
+!!$      END SUBROUTINE QP_qpALM_solve
+!!$
+!!$!-*-*-*-*-*-*-   Q P _ qpOASES _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
+!!$
+!!$      SUBROUTINE QP_qpOASES_solve( prob, data, settings, info, out )
+!!$
+!!$!  solve the quadratic program using the qpOASES package
+!!$
+!!$!  A - by columns
+!!$!  H - both triangles by columns
+!!$
+!!$!  dummy arguments
+!!$
+!!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+!!$      TYPE ( QP_qpOASES_data_type ), INTENT( INOUT ) :: data
+!!$      TYPE ( qpOASES_control_type ), INTENT( IN ) :: control
+!!$      TYPE ( qpOASES_inform_type ), INTENT( OUT ) :: inform
+!!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+!!$
+!!$!  local variables
+!!$
+!!$      RETURN
+!!$
+!!$!  End of QP_qpOASES_solve
+!!$
+!!$      END SUBROUTINE QP_qpOASES_solve
+!!$
+!!$!-*-*-*-*-*-*-   Q P _ S C S _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
+!!$
+!!$      SUBROUTINE QP_SCS_solve( prob, data, settings, info, out )
+!!$
+!!$!  solve the quadratic program using the SCS package
+!!$
+!!$!  dummy arguments
+!!$
+!!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+!!$      TYPE ( QP_SCS_data_type ), INTENT( INOUT ) :: data
+!!$      TYPE ( SCS_control_type ), INTENT( IN ) :: control
+!!$      TYPE ( SCS_inform_type ), INTENT( OUT ) :: inform
+!!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
+!!$
+!!$!  local variables
+!!$
+!!$      RETURN
+!!$
+!!$!  End of QP_SCS_solve
+!!$
+!!$      END SUBROUTINE QP_SCS_solve
 
 !-*-*-*-*-*-*-   Q P _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-*
 

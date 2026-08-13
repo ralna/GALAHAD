@@ -103,9 +103,9 @@
 !     Exit codes
 
       USE GALAHAD_SYMBOLS,                                                    &
-          OK                  => GALAHAD_SUCCESS,                             &
-          MEMORY_FULL         => GALAHAD_MEMORY_FULL,                         &
-          NOT_DIAGONAL        => GALAHAD_NOT_DIAGONAL
+          OK           => GALAHAD_SUCCESS,                                    &
+          MEMORY_FULL  => GALAHAD_MEMORY_FULL,                                &
+          NOT_DIAGONAL => GALAHAD_NOT_DIAGONAL
 
       IMPLICIT NONE
 
@@ -249,6 +249,7 @@
 !  problem name
 
         CHARACTER, ALLOCATABLE, DIMENSION( : ) :: name
+        CHARACTER ( len = 10 ) :: p_name = REPEAT( ' ', 10 )
 
 !  variable names
 

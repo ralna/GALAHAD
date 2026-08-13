@@ -14,7 +14,9 @@
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, sts, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
-   CHARACTER ( LEN = 20 ) :: solver = "cqp" // REPEAT( ' ', 17 )
+!  CHARACTER ( LEN = 20 ) :: solver_default = "cqp" // REPEAT( ' ', 17 )
+   CHARACTER ( LEN = 20 ) :: solver_default = "e04nqf" // REPEAT( ' ', 14 )
+   CHARACTER ( LEN = 20 ) :: solver
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
@@ -84,7 +86,7 @@
      p%A%ptr = (/ 1, 3, 5 /)
      p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
 
-     solver = "cqp" // REPEAT( ' ', 17 )
+     solver = solver_default
      IF ( status == - GALAHAD_error_restrictions ) THEN
        p%n = 0 ; p%m = - 1
      ELSE IF ( status == - GALAHAD_error_bad_bounds ) THEN
@@ -138,12 +140,14 @@
 
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ': optimal objective value = ',                        &
-     &      F6.1, ' status = ', I6 )" ) status, info%obj, info%status
+     &      F6.1, ' status = ', I0, ' solver is ', A  )" )                     &
+        status, info%obj, info%status, TRIM( solver )
      ELSE IF ( sts == 0 ) THEN
-       WRITE( 6, "(I2, ': QP_solve exit status = ', I6 )") status, info%status
+       WRITE( 6, "(I2, ': QP_solve exit status = ', I0, ' solver is ', A  )")  &
+         status, info%status, TRIM( solver )
      ELSE
-       WRITE( 6, "(I2, ': QP_solve+solver exit status = ', 2I6 )")             &
-         status, info%status, sts
+       WRITE( 6, "(I2, ': QP_solve+solver exit status = ', I0, 1X, I0,         &
+      & ' solver is ', A )" ) status, info%status, sts, TRIM( solver )
      END IF
      DEALLOCATE( p%H%val, p%H%row, p%H%col )
      DEALLOCATE( p%A%val, p%A%row, p%A%col )
@@ -184,7 +188,7 @@
    p%H%row = (/ 1 /)
    p%H%col = (/ 1 /)
 
-   solver = "cqp" // REPEAT( ' ', 17 )
+   solver = solver_default
    CALL QP_initialize( solver, data, control, info )
    CALL WHICH_sls( control )
    control%infinity = infty
@@ -220,12 +224,14 @@
 
    IF ( info%status == 0 ) THEN
      WRITE( 6, "( I2, ': optimal objective value = ',                          &
-   &      F6.1, ' status = ', I6 )" ) status, info%obj, info%status
+   &      F6.1, ' status = ', I0, ' solver is ', A  )" )                       &
+     status, info%obj, info%status, TRIM( solver )
    ELSE IF ( sts == 0 ) THEN
-     WRITE( 6, "(I2, ': QP_solve exit status = ', I6 )") status, info%status
+     WRITE( 6, "(I2, ': QP_solve exit status = ', I0, ' solver is ', A )" )    &
+       status, info%status, TRIM( solver )
    ELSE
-     WRITE( 6, "(I2, ': QP_solve+solver exit status = ', 2I6 )")               &
-       status, info%status, sts
+     WRITE( 6, "(I2, ': QP_solve+solver exit status = ', I0, 1X, I0,           &
+    &  ' solver is ', A  )" ) status, info%status, sts, TRIM( solver )
    END IF
 
    CALL QP_terminate( data, control, info )
@@ -258,7 +264,7 @@
    p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
 
    DO data_storage_type = -3, 0
-     solver = "cqp" // REPEAT( ' ', 17 )
+     solver = solver_default
      CALL QP_initialize( solver, data, control, info )
      CALL WHICH_sls( control )
      control%infinity = infty
@@ -331,10 +337,11 @@
 
       IF ( info%status == 0 ) THEN
          WRITE( 6, "( A1,I1,': optimal objective value = ',                    &
-     &            F6.1, ' status = ', I6 )" ) st, i, info%obj, info%status
+     &            F6.1, ' status = ', I0, ' solver is ', A  )" ) &
+           st, i, info%obj, info%status, TRIM( solver )
        ELSE
-         WRITE( 6, "( A1, I1,': QP_solve exit status = ', I6 ) " )           &
-           st, i, info%status
+         WRITE( 6, "( A1, I1,': QP_solve exit status = ', I0,                  &
+        &  ' solver is ', A  ) " ) st, i, info%status, TRIM( solver )
        END IF
      END DO
      CALL QP_terminate( data, control, info )
@@ -403,6 +410,7 @@
      ELSE IF ( i == 3 ) THEN
        solver = "cqp" // REPEAT( ' ', 17 )
      ELSE IF ( i == 4 ) THEN
+       solver = solver_default
        control%presolve = .TRUE.
        control%scale = 1
      ELSE IF ( i == 5 ) THEN
@@ -469,12 +477,14 @@
 
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ': optimal objective value = ',                        &
-     &      F6.1, ' status = ', I6 )" ) i, info%obj, info%status
+     &      F6.1, ' status = ', I0, ' solver is ', A  )" )                     &
+        i, info%obj, info%status, TRIM( solver )
      ELSE IF ( sts == 0 ) THEN
-       WRITE( 6, "(I2, ': QP_solve exit status = ', I6 )") i, info%status
+       WRITE( 6, "(I2, ': QP_solve exit status = ', I0, ' solver is ', A  )")  &
+         i, info%status, TRIM( solver )
      ELSE
-       WRITE( 6, "(I2, ': QP_solve+solver exit status = ', 2I6 )")             &
-         i, info%status, sts
+       WRITE( 6, "(I2, ': QP_solve+solver exit status = ', I0, 1X, I0,         &
+      &  ' solver is ', A )" ) i, info%status, sts, TRIM( solver )
      END IF
    END DO
    CALL QP_terminate( data, control, info )
@@ -506,9 +516,11 @@
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ': optimal objective value = ',                        &
-     &                F6.1, ' status = ', I6 )" ) i, info%obj, info%status
+     &                F6.1, ' status = ', I0, ' solver is ', A  )" )           &
+         i, info%obj, info%status, TRIM( solver )
      ELSE
-       WRITE( 6, "( I2, ': QP_solve exit status = ', I6 ) " ) i, info%status
+       WRITE( 6, "( I2, ': QP_solve exit status = ', I0, ' solver is ', A )" ) &
+         i, info%status, TRIM( solver )
      END IF
    END DO
    CALL QP_terminate( data, control, info )
@@ -542,11 +554,13 @@
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ': optimal objective value = ',                        &
-     &                F6.1, ' status = ', I6 )" ) i, info%obj, info%status
+     &                F6.1, ' status = ', I0, ' solver is ', A  )" )           &
+         i, info%obj, info%status, TRIM( solver )
 !      write(6,*) info%obj
 
      ELSE
-       WRITE( 6, "( I2, ': QP_solve exit status = ', I6 ) " ) i, info%status
+       WRITE( 6, "( I2, ': QP_solve exit status = ', I0, ' solver is ', A ) ") &
+         i, info%status, TRIM( solver )
        write(6,*) ' qpc_status ', info%QPC_inform%status
      END IF
    END DO
@@ -634,9 +648,11 @@
    CLOSE( UNIT = scratch_out )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ': optimal objective value = ',                        &
-     &                F6.1, ' status = ', I6 )" ) 1, info%obj, info%status
+     &                F6.1, ' status = ', I0, ' solver is ', A  )" )           &
+        1, info%obj, info%status, TRIM( solver )
    ELSE
-     WRITE( 6, "( I2, ': QP_solve exit status = ', I6 ) " ) 1, info%status
+     WRITE( 6, "( I2, ': QP_solve exit status = ', I0, ' solver is ', A  ) " ) &
+        1, info%status, TRIM( solver )
    END IF
    CALL QP_terminate( data, control, info )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
@@ -704,9 +720,11 @@
    CALL QP_solve( p, data, control, info, C_stat, B_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ': optimal objective value = ',                        &
-     &                F6.1, ' status = ', I6 )" ) 2, info%obj, info%status
+     &                F6.1, ' status = ', I0, ' solver is ', A  )" )           &
+         2, info%obj, info%status, TRIM( solver )
    ELSE
-     WRITE( 6, "( I2, ': QP_solve exit status = ', I6 ) " ) 2, info%status
+     WRITE( 6, "( I2, ': QP_solve exit status = ', I0, ' solver is ', A )" )   &
+         2, info%status, TRIM( solver )
    END IF
    CALL QP_terminate( data, control, info )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
@@ -781,9 +799,11 @@
    CALL QP_solve( p, data, control, info, C_stat, B_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ': optimal objective value = ',                        &
-     &                F6.1, ' status = ', I6 )" ) 3, info%obj, info%status
+     &                F6.1, ' status = ', I0, ' solver is ', A  )" )           &
+         3, info%obj, info%status, TRIM( solver )
    ELSE
-     WRITE( 6, "( I2, ': QP_solve exit status = ', I6 ) " ) 3, info%status
+     WRITE( 6, "( I2, ': QP_solve exit status = ', I0, ' solver is ', A )" )   &
+         3, info%status, TRIM( solver )
    END IF
    CALL QP_terminate( data, control, info )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
@@ -846,9 +866,11 @@
    CALL QP_solve( p, data, control, info, C_stat, B_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ': optimal objective value = ',                        &
-     &                F6.1, ' status = ', I6 )" ) 4, info%obj, info%status
+     &              F6.1, ' status = ', I0, ' solver is ', A )" )              &
+         4, info%obj, info%status, TRIM( solver )
    ELSE
-     WRITE( 6, "( I2, ': QP_solve exit status = ', I6 ) " ) 4, info%status
+     WRITE( 6, "( I2, ': QP_solve exit status = ', I0, ' solver is ', A )" )   &
+       4, info%status, TRIM( solver )
    END IF
 
 !  control%out = 6 ; control%print_level = 1
@@ -862,9 +884,11 @@
    CALL QP_solve( p, data, control, info, C_stat, B_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ': optimal objective value = ',                        &
-     &                F6.1, ' status = ', I6 )" ) 5, info%obj, info%status
+     &              F6.1, ' status = ', I0, ' solver is ', A )" )              &
+         5, info%obj, info%status, TRIM( solver )
    ELSE
-     WRITE( 6, "( I2, ': QP_solve exit status = ', I6 ) " ) 5, info%status
+     WRITE( 6, "( I2, ': QP_solve exit status = ', I0, ' solver is ', A  ) " ) &
+         5, info%status, TRIM( solver )
    END IF
 
    CALL QP_terminate( data, control, info )
