@@ -36,9 +36,6 @@ PROGRAM test_pastix
   REAL ( kind = dp_ ) :: eps = 0.000000000001_dp_
 #endif
 
-! run a single pass with PaStiX's own default ordering (iparm(9) left
-! untouched), which is always safe whatever orderings were compiled in
-
   n_ord = 1 ; ord_list( 1 ) = - 1                 ! PaStiX default ordering
 
   DO iord = 1, n_ord
