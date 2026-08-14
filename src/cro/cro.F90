@@ -2420,9 +2420,19 @@
  !      write(6,*) ' BASIS ',  data%BASIS( : all_basic )
 
 !  if there is not enough space to expand the Schur complement, prepare
-!  for a refactorization by re-defining the basis
+!  for a refactorization by re-defining the basis.
 
-        IF ( data%SCU_matrix%m + 2 > data%control%max_schur_complement ) THEN
+!  Also refactorize when the outgoing basic is itself one that was introduced
+!  by an earlier Schur-complement update (so that it sits in the appended block
+!  and row_out > SCU_matrix%n). The specialised CRO_append can only represent an
+!  appended column whose entries lie in the original K_0 (rows 1:SCU_matrix%n);
+!  unlike the general SCU_append (which guards each BD_row access with
+!  j <= matrix%n and routes the spike into R/Q), CRO_append would index its
+!  length-SCU_matrix%n VECTOR workspace out of bounds. Folding the current basis
+!  back into K by refactorizing turns that constraint into an original row.
+
+        IF ( data%SCU_matrix%m + 2 > data%control%max_schur_complement .OR.     &
+             ( outgoing < 0 .AND. row_out > data%SCU_matrix%n ) ) THEN
 
 ! write(6,*) ' length of old basis list ', all_basic
 ! write(6,*) ' BASIS ',  data%BASIS( : all_basic )
