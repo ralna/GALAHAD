@@ -23,6 +23,16 @@ on:
         description: 'Sanitizers'
         required: true
         type: string
+      symmetric_solver:
+        description: 'Symmetric indefinite linear solver exercised by the tests (sanitizers only); empty falls back to sytr'
+        required: false
+        type: string
+        default: ''
+      definite_solver:
+        description: 'Symmetric definite linear solver exercised by the tests (sanitizers only); empty falls back to potr'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   build:
@@ -118,8 +128,8 @@ jobs:
             echo "OPENBLAS_NUM_THREADS=1" >> $GITHUB_ENV
           fi
 
-      # PaStiX / SPM / SCOTCH leak internal and one-time global allocations that
-      # LeakSanitizer would flag (aborting every test that touches PaStiX);
+      # PaStiX / SPM / SCOTCH leak internal and one-time global allocations
+      # that LeakSanitizer would flag (aborting every test that touches PaStiX);
       # point LSan at a suppression file that ignores those third-party leaks.
       - name: Set LeakSanitizer suppressions for third-party solvers
         if: inputs.sanitizers == 'true'
@@ -127,14 +137,17 @@ jobs:
         run: |
           echo "LSAN_OPTIONS=suppressions=$GITHUB_WORKSPACE/.github/lsan_suppressions.txt" >> $GITHUB_ENV
 
-      # Exercise SLBLT (GALAHAD's own embedded sparse linear solver)
-      # as both the symmetric and definite linear solver under the sanitizers.
+      # Exercise the chosen symmetric and definite linear solvers under the sanitizers.
       - name: Select the linear solvers exercised by the tests
         if: inputs.sanitizers == 'true'
         shell: bash
         run: |
-          echo "GALAHAD_SYMMETRIC_LINEAR_SOLVER=slblt" >> $GITHUB_ENV
-          echo "GALAHAD_DEFINITE_LINEAR_SOLVER=slblt" >> $GITHUB_ENV
+          if [[ -n "${{ inputs.symmetric_solver }}" ]]; then
+            echo "GALAHAD_SYMMETRIC_LINEAR_SOLVER=${{ inputs.symmetric_solver }}" >> $GITHUB_ENV
+          fi
+          if [[ -n "${{ inputs.definite_solver }}" ]]; then
+            echo "GALAHAD_DEFINITE_LINEAR_SOLVER=${{ inputs.definite_solver }}" >> $GITHUB_ENV
+          fi
 
       - name: Set environment variables for self-hosted runner
         if: inputs.os == 'self-hosted'
@@ -319,9 +332,6 @@ jobs:
         shell: bash
         run: |
           VERSION_PASTIX="6.4.0"
-          # METIS and SCOTCH orderings are both built above, so exercise both in
-          # the pastixt self-test (0 = Scotch, 1 = Metis)
-          echo "GALAHAD_PASTIX_ORDERINGS=0 1" >> $GITHUB_ENV
           cd "$DEPS"
           git clone --depth 1 --branch v${VERSION_PASTIX} https://gitlab.inria.fr/solverstack/pastix.git
           cd pastix

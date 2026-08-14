@@ -8,7 +8,7 @@ on:
 
 jobs:
   sanitizers-linux-build:
-    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
+    name: Int${{ matrix.int }} - SLS=${{ matrix.solver.sls }} / DLS=${{ matrix.solver.dls }}
     strategy:
       fail-fast: false
       matrix:
@@ -18,6 +18,20 @@ jobs:
         version: ['14']
         int: ['32', '64']
         sanitizers: ['true']
+        # Each entry selects the symmetric (indefinite) solver `sls` and the
+        # definite solver `dls` exercised by the test drivers at run time.
+        solver:
+          - { sls: 'sytr',   dls: 'potr'   }   # LAPACK dense (default fallback)
+          - { sls: 'sytr',   dls: 'pbtr'   }   # LAPACK banded (definite)
+          - { sls: 'slblt',  dls: 'slblt'  }   # embedded GALAHAD SLBLT
+          - { sls: 'mumps',  dls: 'mumps'  }   # MUMPS
+          - { sls: 'pastix', dls: 'pastix' }   # PaStiX
+          # - { sls: 'sils',   dls: 'sils'   }   # HSL MA27
+          # - { sls: 'ma57',   dls: 'ma57'   }   # HSL MA57
+          # - { sls: 'ma77',   dls: 'ma77'   }   # HSL MA77 (out-of-core)
+          # - { sls: 'ma86',   dls: 'ma86'   }   # HSL MA86
+          # - { sls: 'ma97',   dls: 'ma97'   }   # HSL MA97
+          # - { sls: 'sytr',   dls: 'ma87'   }   # HSL MA87 (definite only)
     uses: ./.github/workflows/meson_build.yml
     with:
       os: ${{ matrix.os }}
@@ -25,3 +39,5 @@ jobs:
       version: ${{ matrix.version }}
       int: ${{ matrix.int }}
       sanitizers: ${{ matrix.sanitizers }}
+      symmetric_solver: ${{ matrix.solver.sls }}
+      definite_solver: ${{ matrix.solver.dls }}

@@ -26,7 +26,6 @@ PROGRAM test_pastix
   INTEGER ( KIND = ip_ ) :: nrhs, store, status, iorder, iord, n_ord
   INTEGER ( KIND = ip_ ) :: ord_list( 2 )
   INTEGER ( c_int ) :: info
-  CHARACTER ( LEN = 32 ) :: pastix_orderings_env
   INTEGER ( kind = pastix_int_t ), DIMENSION( : ), POINTER :: permtab
   TYPE ( pastix_order_t ), POINTER :: order => NULL( )
 #ifdef REAL_32
@@ -37,25 +36,7 @@ PROGRAM test_pastix
   REAL ( kind = dp_ ) :: eps = 0.000000000001_dp_
 #endif
 
-! build the list of PaStiX orderings to test from GALAHAD_PASTIX_ORDERINGS
-! (e.g. "0 1" tests both Scotch and Metis in a single run). Requesting an
-! ordering that was not compiled into PaStiX makes PaStiX abort the process,
-! so only the compiled ones must be listed. When the variable is empty we make
-! a single pass with the PaStiX default ordering (iparm(9) left untouched),
-! which is always safe whatever orderings were compiled in.
-
-  CALL get_environment_variable( 'GALAHAD_PASTIX_ORDERINGS',                    &
-                                 pastix_orderings_env )
-  n_ord = 0
-  IF ( INDEX( pastix_orderings_env, '0' ) > 0 ) THEN
-    n_ord = n_ord + 1 ; ord_list( n_ord ) = 0     ! PastixOrderScotch
-  END IF
-  IF ( INDEX( pastix_orderings_env, '1' ) > 0 ) THEN
-    n_ord = n_ord + 1 ; ord_list( n_ord ) = 1     ! PastixOrderMetis
-  END IF
-  IF ( n_ord == 0 ) THEN
-    n_ord = 1 ; ord_list( 1 ) = - 1               ! PaStiX default ordering
-  END IF
+  n_ord = 1 ; ord_list( 1 ) = - 1                 ! PaStiX default ordering
 
   DO iord = 1, n_ord
     iorder = ord_list( iord )

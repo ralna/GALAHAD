@@ -190,21 +190,25 @@
      END IF
      CALL SSLS_analyse( n, m, H, A, C, data, control, inform )
      CALL SSLS_factorize( n, m, H, A, C, data, control, inform )
+!  a failed factorization (e.g. a definite-only solver on this indefinite system)
+!  must not CYCLE: that would skip both SSLS_terminate (leak) and the end-of-loop
+!  DEALLOCATE of H/A/C%val, so the next storage type would re-ALLOCATE an already
+!  allocated array and abort. Skip only the solve, and always fall through.
      IF ( inform%status < 0 ) THEN
        WRITE( 6, "( A15, I9 )" ) SMT_get( H%type ), inform%status
-       CYCLE
-     END IF
-     SOL( : n ) = (/ 3.0_rp_, 2.0_rp_, 4.0_rp_ /)
-     SOL( n + 1 : ) = (/ 2.0_rp_, 0.0_rp_ /)
-     R = SOL
-     CALL SSLS_solve( n, m, SOL, data, control, inform )
-     IF ( inform%status == 0 ) THEN
-       CALL RESIDUAL( n, m, H, A, C, SOL, R )
-       norm_residual = MAXVAL( ABS( R ) )
-       WRITE( 6, "( A15, I9, A9 )" ) SMT_get( H%type ),                        &
-         inform%status, type_residual( norm_residual )
      ELSE
-       WRITE( 6, "( A15, I9 )" ) SMT_get( H%type ), inform%status
+       SOL( : n ) = (/ 3.0_rp_, 2.0_rp_, 4.0_rp_ /)
+       SOL( n + 1 : ) = (/ 2.0_rp_, 0.0_rp_ /)
+       R = SOL
+       CALL SSLS_solve( n, m, SOL, data, control, inform )
+       IF ( inform%status == 0 ) THEN
+         CALL RESIDUAL( n, m, H, A, C, SOL, R )
+         norm_residual = MAXVAL( ABS( R ) )
+         WRITE( 6, "( A15, I9, A9 )" ) SMT_get( H%type ),                      &
+           inform%status, type_residual( norm_residual )
+       ELSE
+         WRITE( 6, "( A15, I9 )" ) SMT_get( H%type ), inform%status
+       END IF
      END IF
      CALL SSLS_terminate( data, control, inform )
      IF ( data_storage_type == 0 ) THEN
@@ -679,7 +683,7 @@
 
      SUBROUTINE WHICH_sls( control )
      TYPE ( SSLS_control_type ) :: control
-#include "galahad_sls_defaults_sls.h"
+#include "galahad_sls_defaults_ls.h"
      control%symmetric_linear_solver = symmetric_linear_solver
      END SUBROUTINE WHICH_sls
 

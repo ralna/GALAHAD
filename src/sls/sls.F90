@@ -773,6 +773,7 @@
        LOGICAL :: no_mpi = .FALSE.
        LOGICAL :: no_mumps = .FALSE.
        LOGICAL :: no_pastix = .FALSE.
+       LOGICAL :: pastix_allocated = .FALSE.
        LOGICAL :: no_sils = .FALSE.
        LOGICAL :: no_ma57 = .FALSE.
        LOGICAL :: trivial_matrix_type = .FALSE.
@@ -872,6 +873,19 @@
        INTEGER ( KIND = pastix_int_t ) :: iparm_pastix( IPARM_SIZE )
        REAL ( KIND = dpc_ ) :: dparm_pastix( DPARM_SIZE )
        TYPE ( MUMPS_STRUC ) :: mumps_par
+
+     CONTAINS
+
+!  finalizer: release the C-side PaStiX instance (pastix_data) and sparse-matrix
+!  structure (spm) whenever an SLS_data is deallocated, reset by an INTENT( OUT )
+!  argument, or goes out of scope. These are POINTER/C-managed and so are not
+!  reclaimed by Fortran when the containing data is wiped; in particular
+!  SLS_initialize takes data as INTENT( OUT ), which clears pastix_allocated
+!  before the body runs, so a leftover PaStiX instance from a previous
+!  initialization on the same data (e.g. repeated NREK/TREK solves) would
+!  otherwise leak. See also the FINAL procedures on the SLBLT akeep/fkeep types.
+
+       FINAL :: SLS_final_data
 
      END TYPE SLS_data_type
 
@@ -1751,6 +1765,19 @@
 !  = PaStiX =
 
      CASE ( 'pastix' )
+
+!  finalize any PaStiX instance left over from a previous initialization on this
+!  data (e.g. repeated SBLS factorizations re-enter here without an intervening
+!  SLS_terminate); otherwise the previous pastix_data and spm structures leak
+
+       IF ( data%pastix_allocated ) THEN
+         CALL pastixFinalize( data%pastix_data )
+         IF ( ASSOCIATED( data%spm ) ) THEN
+           CALL spmExit( data%spm )
+           DEALLOCATE( data%spm )
+         END IF
+         data%pastix_allocated = .FALSE.
+       END IF
        ALLOCATE( data%spm )
        CALL spmInit( data%spm )
        data%no_pastix = data%spm%mtxtype == - 1
@@ -1776,16 +1803,40 @@
 !      ELSE
          data%iparm_pastix( 44 ) = 1
 !      END IF
+
+!  run PaStiX single-threaded (IPARM_THREAD_NBR = 1, the 0-based enum entry 56,
+!  hence Fortran index 57). GALAHAD calls PaStiX on the (often small) KKT /
+!  augmented systems and refactorizes them repeatedly inside the iterative
+!  solvers; for such small, frequently re-formed matrices a single thread is
+!  faster than the default auto-detected pool (whose per-factorization spin-up
+!  and synchronisation dominate) and it avoids the isched worker-thread stalls
+!  seen when e.g. qpa/arc refactorize thousands of times
+
+       data%iparm_pastix( 57 ) = 1     ! IPARM_THREAD_NBR = 1
+
+!  the ordering (IPARM_ORDERING) is left at PaStiX's own default
+
 !      OPEN( 2, FILE = "/dev/null", STATUS = "OLD" ) ! try to get rid of msgs
        CALL pastixInit( data%pastix_data, MPI_COMM_WORLD_pastix,               &
                         data%iparm_pastix, data%dparm_pastix )
 !      CLOSE( 2 )
 !      OPEN( 2, FILE = "/dev/stdout", STATUS = "OLD" )
+       data%pastix_allocated = .TRUE.
        data%must_be_definite = .FALSE.
 
 !  = MUMPS =
 
      CASE ( 'mumps' )
+
+!  give the GALAHAD-managed MUMPS_STRUC input pointers a defined (null)
+!  association status. MUMPS_STRUC does not default-initialise them to NULL, so
+!  if the JOB = -1 initialization does not complete (e.g. an MPI or thread-
+!  binding failure on some platforms) they would be left undefined, and the
+!  ASSOCIATED / SPACE_dealloc_pointer calls in SLS_terminate would then be
+!  undefined behaviour (seen as a SIGABRT under the stricter macOS malloc)
+
+       NULLIFY( data%mumps_par%IRN, data%mumps_par%JCN, data%mumps_par%A,       &
+                data%mumps_par%PERM_IN, data%mumps_par%RHS )
        CALL MPI_INITIALIZED( mpi_initialzed_flag, inform%mpi_ierr )
        IF ( mpi_initialzed_flag ) THEN
          data%no_mpi = .FALSE.
@@ -2755,7 +2806,8 @@
                                             = max_integer_factor_size + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: pivot_control = max_in_core_store + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: ordering = pivot_control + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: full_row_threshold = ordering + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: full_row_threshold                    &
+                                            = ordering + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: row_search_indefinite                &
                                             = full_row_threshold + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: scaling = row_search_indefinite + 1
@@ -3101,6 +3153,7 @@
      LOGICAL :: mc6168_ordering
      CHARACTER ( LEN = 400 ), DIMENSION( 1 ) :: path
      CHARACTER ( LEN = 400 ), DIMENSION( 4 ) :: filename
+     TYPE ( MA77_keep ) :: fresh_ma77_keep
 !$   INTEGER ( KIND = ip_ ) :: OMP_GET_NUM_THREADS
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
@@ -3825,7 +3878,17 @@
                            data%ma77_control, data%ma77_info, path = path )
          END IF
          IF (  data%ma77_info%flag /= - 3 ) EXIT
-         CALL MA77_finalise( data%ma77_keep, data%ma77_control, data%ma77_info )
+
+!  flag = -3 means MA77_open was called with keep%status /= 0, i.e. a keep left
+!  over from an earlier factorization on this data. Do NOT MA77_finalise it here:
+!  the earlier out-of-core restart round trip can leave keep%idata/%rdata with
+!  half-torn of01 buffers, and MA77_finalise would then double-close them and
+!  segfault. Instead reset the keep to a pristine (status = 0) state by intrinsic
+!  assignment from a default-initialized keep; every MA77_keep / of01_data
+!  component is allocatable, so this safely deallocates the stale buffers with no
+!  leak, and the next MA77_open then starts cleanly.
+
+         data%ma77_keep = fresh_ma77_keep
        END DO
 
        CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
@@ -5508,6 +5571,17 @@
        CASE ( 'slblt' )
          CALL SLS_copy_control_to_slblt( control, data%slblt_control )
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
+
+!  the slblt symbolic factorization (akeep) must have been set up by a matching
+!  SLS_analyse before factorizing: a valid analyse leaves akeep%n = matrix%n.
+!  If that is not so (analyse failed, was skipped, or the data were reset),
+!  akeep%n is stale/uninitialised, and since SLBLT_factor indexes the supplied
+!  ptr array as ptr( 1 : akeep%n + 1 ) while SLS passes data%matrix%PTR (of
+!  length data%matrix%n + 1) this would read out of bounds. Guard against it.
+
+         IF ( data%slblt_akeep%n /= data%matrix%n ) THEN
+           inform%status = GALAHAD_error_call_order ; GO TO 800
+         END IF
 !    WRITE( 77, * ) data%matrix%n
 !    WRITE( 77, * ) data%matrix%PTR( : data%matrix%n + 1 )
 !    WRITE( 77, * ) data%matrix%COL( : data%matrix%PTR( data%matrix%n + 1 ) )
@@ -5671,6 +5745,10 @@
          inform%pastix_info = INT( pastix_info )
          IF ( pastix_info == PASTIX_SUCCESS ) THEN
            inform%status = GALAHAD_ok
+!  PaStiX performs a full-rank factorization and does not detect rank
+!  deficiency, so record the rank as the matrix order (leaving it at its
+!  default of -1 corrupts callers that slice arrays with inform%rank, e.g. PSLS)
+           inform%rank = data%matrix%n
          ELSE IF ( pastix_info == PASTIX_ERR_BADPARAMETER ) THEN
            inform%status = GALAHAD_error_restrictions
          ELSE IF ( pastix_info == PASTIX_ERR_OUTOFMEMORY ) THEN
@@ -7762,10 +7840,13 @@
 !  = PaStiX =
 
      CASE ( 'pastix' )
-       CALL pastixFinalize( data%pastix_data )
-       IF ( ASSOCIATED( data%spm ) ) THEN
-         CALL spmExit( data%spm )
-         DEALLOCATE( data%spm )
+       IF ( data%pastix_allocated ) THEN
+         CALL pastixFinalize( data%pastix_data )
+         IF ( ASSOCIATED( data%spm ) ) THEN
+           CALL spmExit( data%spm )
+           DEALLOCATE( data%spm )
+         END IF
+         data%pastix_allocated = .FALSE.
        END IF
        data%no_pastix = .FALSE.
 
@@ -7871,6 +7952,33 @@
 !  End of SLS_terminate
 
      END SUBROUTINE SLS_terminate
+
+!-*-*-*-  G A L A H A D -  S L S _ f i n a l _ d a t a  S U B R O U T I N E -*-*-
+
+     SUBROUTINE SLS_final_data( data )
+
+!  finalizer for SLS_data_type. Ensures the C-side PaStiX instance and sparse-
+!  matrix structure are released when an SLS_data is deallocated, reset by an
+!  INTENT( OUT ) argument, or goes out of scope. Guarded by pastix_allocated,
+!  so it is a safe no-op after an explicit SLS_terminate. The SLBLT akeep/fkeep
+!  subtrees held elsewhere in data are reclaimed by their own FINAL
+!  procedures when this type is finalized.
+
+     TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
+
+     IF ( data%pastix_allocated ) THEN
+       CALL pastixFinalize( data%pastix_data )
+       IF ( ASSOCIATED( data%spm ) ) THEN
+         CALL spmExit( data%spm )
+         DEALLOCATE( data%spm )
+       END IF
+       data%pastix_allocated = .FALSE.
+     END IF
+     RETURN
+
+!  End of SLS_final_data
+
+     END SUBROUTINE SLS_final_data
 
 ! -  G A L A H A D -  S L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
 
