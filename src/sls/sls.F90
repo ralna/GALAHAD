@@ -891,7 +891,7 @@
 !  SLS_initialize takes data as INTENT( OUT ), which clears pastix_allocated
 !  before the body runs, so a leftover PaStiX instance from a previous
 !  initialization on the same data (e.g. repeated NREK/TREK solves) would
-!  otherwise leak. See also the FINAL procedures on the SSIDS akeep/fkeep types.
+!  otherwise leak. See also the FINAL procedures on the SLBLT akeep/fkeep types.
 
        FINAL :: SLS_final_data
 
@@ -5603,14 +5603,14 @@
          CALL SLS_copy_control_to_slblt( control, data%slblt_control )
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
 
-!  the ssids symbolic factorization (akeep) must have been set up by a matching
+!  the slblt symbolic factorization (akeep) must have been set up by a matching
 !  SLS_analyse before factorizing: a valid analyse leaves akeep%n = matrix%n.
 !  If that is not so (analyse failed, was skipped, or the data were reset),
-!  akeep%n is stale/uninitialised, and since SSIDS_factor indexes the supplied
+!  akeep%n is stale/uninitialised, and since SLBLT_factor indexes the supplied
 !  ptr array as ptr( 1 : akeep%n + 1 ) while SLS passes data%matrix%PTR (of
 !  length data%matrix%n + 1) this would read out of bounds. Guard against it.
 
-         IF ( data%ssids_akeep%n /= data%matrix%n ) THEN
+         IF ( data%slblt_akeep%n /= data%matrix%n ) THEN
            inform%status = GALAHAD_error_call_order ; GO TO 800
          END IF
 !    WRITE( 77, * ) data%matrix%n
@@ -7991,8 +7991,8 @@
 !  finalizer for SLS_data_type. Ensures the C-side PaStiX instance and sparse-
 !  matrix structure are released when an SLS_data is deallocated, reset by an
 !  INTENT( OUT ) argument, or goes out of scope. Guarded by pastix_allocated,
-!  so it is a safe no-op after an explicit SLS_terminate. The SSIDS akeep/fkeep
-!  C++ subtrees held elsewhere in data are reclaimed by their own FINAL
+!  so it is a safe no-op after an explicit SLS_terminate. The SLBLT akeep/fkeep
+!  subtrees held elsewhere in data are reclaimed by their own FINAL
 !  procedures when this type is finalized.
 
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
