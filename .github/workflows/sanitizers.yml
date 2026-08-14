@@ -23,7 +23,7 @@ jobs:
         solver:
           - { sls: 'sytr',   dls: 'potr'   }   # LAPACK dense (default fallback)
           - { sls: 'sytr',   dls: 'pbtr'   }   # LAPACK banded (definite)
-          - { sls: 'ssids',  dls: 'ssids'  }   # embedded SPRAL SSIDS
+          - { sls: 'slblt',  dls: 'slblt'  }   # embedded GALAHAD SLBLT
           - { sls: 'mumps',  dls: 'mumps'  }   # MUMPS
           - { sls: 'pastix', dls: 'pastix' }   # PaStiX
           # - { sls: 'sils',   dls: 'sils'   }   # HSL MA27
