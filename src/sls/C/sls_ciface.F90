@@ -133,7 +133,6 @@
       REAL ( KIND = rpc_ ) :: array_decrease_factor
       INTEGER ( KIND = ipc_ ) :: pivot_control
       INTEGER ( KIND = ipc_ ) :: ordering
-      INTEGER ( KIND = ipc_ ) :: pastix_ordering
       INTEGER ( KIND = ipc_ ) :: full_row_threshold
       INTEGER ( KIND = ipc_ ) :: row_search_indefinite
       INTEGER ( KIND = ipc_ ) :: scaling
@@ -307,7 +306,6 @@
     fcontrol%max_in_core_store = ccontrol%max_in_core_store
     fcontrol%pivot_control = ccontrol%pivot_control
     fcontrol%ordering = ccontrol%ordering
-    fcontrol%pastix_ordering = ccontrol%pastix_ordering
     fcontrol%full_row_threshold = ccontrol%full_row_threshold
     fcontrol%row_search_indefinite = ccontrol%row_search_indefinite
     fcontrol%scaling = ccontrol%scaling
@@ -416,7 +414,6 @@
     ccontrol%max_in_core_store = fcontrol%max_in_core_store
     ccontrol%pivot_control = fcontrol%pivot_control
     ccontrol%ordering = fcontrol%ordering
-    ccontrol%pastix_ordering = fcontrol%pastix_ordering
     ccontrol%full_row_threshold = fcontrol%full_row_threshold
     ccontrol%row_search_indefinite = fcontrol%row_search_indefinite
     ccontrol%scaling = fcontrol%scaling

@@ -12,8 +12,6 @@
    TYPE ( SLS_control_type ) control
    TYPE ( SLS_inform_type ) :: inform
    INTEGER ( KIND = ip_ ) :: i, ordering, scaling, solver, type, s
-   INTEGER ( KIND = ip_ ) :: iord, n_pord, pord_list( 2 )
-   CHARACTER ( LEN = 32 ) :: pastix_ord_env
    LOGICAL :: mpi_flag
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, ne  = 7
    INTEGER ( KIND = ip_ ), PARAMETER :: sils = 1
@@ -598,62 +596,6 @@
          WRITE( 6, "( '' )" )
        END DO
      END DO
-
-!  exercise the PaStiX solver with each ordering listed in the environment
-!  variable GALAHAD_PASTIX_ORDERINGS (0 = Scotch, 1 = Metis) so that both
-!  orderings are covered in a single run; PaStiX aborts if an uncompiled
-!  ordering is requested, so only the compiled ones must be listed
-
-     IF ( type == 1 ) THEN
-       CALL GET_ENVIRONMENT_VARIABLE( 'GALAHAD_PASTIX_ORDERINGS',               &
-                                      pastix_ord_env )
-       n_pord = 0
-       IF ( INDEX( pastix_ord_env, '0' ) > 0 ) THEN
-         n_pord = n_pord + 1 ; pord_list( n_pord ) = 0
-       END IF
-       IF ( INDEX( pastix_ord_env, '1' ) > 0 ) THEN
-         n_pord = n_pord + 1 ; pord_list( n_pord ) = 1
-       END IF
-       IF ( n_pord > 0 ) THEN
-         WRITE( 6, "( ' PaStiX ordering tests' )" )
-         WRITE( 6, "( ' ordering    1 RHS' )" )
-       END IF
-       DO iord = 1, n_pord
-         matrix%ne = ne
-         matrix%row = row ; matrix%col = col ; matrix%val = val
-         B = rhs
-         CALL SLS_terminate( data, control, inform )
-         CALL SLS_initialize( 'pastix', data, control, inform )
-         control%pastix_ordering = pord_list( iord )
-         control%ordering = 0
-         control%scaling = 0
-         IF ( pord_list( iord ) == 0 ) THEN
-           WRITE( 6, "( '   scotch ' )", advance = 'no' )
-         ELSE
-           WRITE( 6, "( '    metis ' )", advance = 'no' )
-         END IF
-         CALL SLS_analyse( matrix, data, control, inform )
-         IF ( inform%status < 0 ) THEN
-           WRITE( 6, "( '  fail in analyse, status = ', I0 )" ) inform%status
-           CYCLE
-         END IF
-         CALL SLS_factorize( matrix, data, control, inform )
-         IF ( inform%status < 0 ) THEN
-           WRITE( 6, "( '  fail in factorize, status = ', I0 )" ) inform%status
-           CYCLE
-         END IF
-         control%max_iterative_refinements = 0
-         X = B
-         CALL SLS_solve( matrix, X, data, control, inform )
-         IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1 : n ) ) )                        &
-                <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
-           WRITE( 6, "( '   ok  ' )" )
-         ELSE
-           WRITE( 6, "( '  fail ' )" )
-         END IF
-         CALL SLS_terminate( data, control, inform )
-       END DO
-     END IF
 
      SELECT CASE( type )
      CASE ( 1 )

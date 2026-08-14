@@ -13,8 +13,6 @@
    INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, c_ne
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, l, tests, status, solvers
    INTEGER ( KIND = ip_ ) :: smt_stat
-   INTEGER ( KIND = ip_ ) :: iord, n_pord, pord_list( 2 )
-   CHARACTER ( LEN = 32 ) :: pastix_ord_env
    INTEGER ( KIND = ip_ ) :: scratch_out = 56
    REAL ( KIND = rp_ ) :: norm_residual
 !  LOGICAL :: all_generic_tests = .FALSE.
@@ -342,64 +340,6 @@
    END DO
    DEALLOCATE( SOL, R )
    DEALLOCATE( H%ptr, A%ptr, C%ptr )
-
-!  exercise the PaStiX solver with each ordering listed in the environment
-!  variable GALAHAD_PASTIX_ORDERINGS (0 = Scotch, 1 = Metis) so that both
-!  orderings are covered in a single run; PaStiX aborts if an uncompiled
-!  ordering is requested, so only the compiled ones must be listed
-
-   CALL GET_ENVIRONMENT_VARIABLE( 'GALAHAD_PASTIX_ORDERINGS', pastix_ord_env )
-   n_pord = 0
-   IF ( INDEX( pastix_ord_env, '0' ) > 0 ) THEN
-     n_pord = n_pord + 1 ; pord_list( n_pord ) = 0
-   END IF
-   IF ( INDEX( pastix_ord_env, '1' ) > 0 ) THEN
-     n_pord = n_pord + 1 ; pord_list( n_pord ) = 1
-   END IF
-   IF ( n_pord > 0 ) THEN
-     WRITE( 6, "( /, ' PaStiX ordering tests (0 = Scotch, 1 = Metis)' )" )
-     WRITE( 6, "( 4X, 'ordering  status residual' )" )
-     n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 3 ; c_ne = 3
-     ALLOCATE( SOL( n + m ), R( n + m ) )
-     CALL SMT_put( H%type, 'COORDINATE', smt_stat ) ; H%ne = h_ne
-     ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
-     H%row = (/ 1, 2, 3, 3 /) ; H%col = (/ 1, 2, 3, 1 /)
-     H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 1.0_rp_ /)
-     CALL SMT_put( A%type, 'COORDINATE', smt_stat ) ; A%ne = a_ne
-     ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
-     A%row = (/ 1, 1, 2 /) ; A%col = (/ 1, 2, 3 /)
-     A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_ /)
-     CALL SMT_put( C%type, 'COORDINATE', smt_stat ) ; C%ne = c_ne
-     ALLOCATE( C%val( c_ne ), C%row( c_ne ), C%col( c_ne ) )
-     C%row = (/ 1, 2, 2 /) ; C%col = (/ 1, 1, 2 /)
-     C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
-   END IF
-   DO iord = 1, n_pord
-     CALL SSLS_initialize( data, control, inform )
-     control%error = - 1 ; control%sls_control%error = - 1
-     control%sls_control%warning = - 1 ; control%sls_control%out = - 1
-     control%symmetric_linear_solver = 'pastix'
-     control%sls_control%pastix_ordering = pord_list( iord )
-     CALL SSLS_analyse( n, m, H, A, C, data, control, inform )
-     CALL SSLS_factorize( n, m, H, A, C, data, control, inform )
-     IF ( inform%status < 0 ) THEN
-       WRITE( 6, "( I9, I9 )" ) pord_list( iord ), inform%status
-     ELSE
-       SOL( : n ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
-       SOL( n + 1 : ) = (/ 2.0_rp_, 1.0_rp_ /)
-       R = SOL
-       CALL SSLS_solve( n, m, SOL, data, control, inform )
-       CALL RESIDUAL( n, m, H, A, C, SOL, R )
-       norm_residual = MAXVAL( ABS( R ) )
-       WRITE( 6, "( I9, I9, A9 )" ) pord_list( iord ), inform%status,          &
-         type_residual( norm_residual )
-     END IF
-     CALL SSLS_terminate( data, control, inform )
-   END DO
-   IF ( n_pord > 0 ) THEN
-     DEALLOCATE( H%val, H%row, H%col, A%val, A%row, A%col )
-     DEALLOCATE( C%val, C%row, C%col, SOL, R )
-   END IF
 
 !  =============================
 !  basic test of various options

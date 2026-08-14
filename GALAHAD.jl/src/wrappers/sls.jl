@@ -24,7 +24,6 @@ struct sls_control_type{T,INT}
   array_decrease_factor::T
   pivot_control::INT
   ordering::INT
-  pastix_ordering::INT
   full_row_threshold::INT
   row_search_indefinite::INT
   scaling::INT

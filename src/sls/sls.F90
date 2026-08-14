@@ -254,14 +254,6 @@
 
        INTEGER ( KIND = ip_ ) :: ordering = 0
 
-!  controls the ordering used by the PaStiX solver (IPARM_ORDERING); ignored by
-!  every other solver
-!  <0  use PaStiX's own default ordering (the first one compiled in)
-!   0  SCOTCH ordering (PastixOrderScotch)
-!   1  METIS ordering (PastixOrderMetis)
-
-       INTEGER ( KIND = ip_ ) :: pastix_ordering = - 1
-
 !  controls threshold for detecting full rows in analyse, registered as
 !  percentage of matrix order. If 100, only fully dense rows detected (default)
 
@@ -1635,7 +1627,6 @@
 !  local variables
 
      LOGICAL :: check_available, mpi_initialzed_flag
-     CHARACTER ( LEN = 8 ) :: pastix_ordering_env
      INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL_ma27
      REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL_ma27
      TYPE ( MA57_control ) :: control_ma57
@@ -1823,19 +1814,8 @@
 
        data%iparm_pastix( 57 ) = 1     ! IPARM_THREAD_NBR = 1
 
-!  optionally select the PaStiX ordering (IPARM_ORDERING) via the environment,
-!  so that both the SCOTCH (default) and METIS variants can be exercised. This
-!  init-time default is overridden at analyse time by control%pastix_ordering
-!  when the latter is non-negative (see SLS_analyse)
+!  the ordering (IPARM_ORDERING) is left at PaStiX's own default
 
-       CALL get_environment_variable( 'GALAHAD_PASTIX_ORDERING',              &
-                                      pastix_ordering_env )
-       CALL STRING_lower_word( pastix_ordering_env )
-       IF ( pastix_ordering_env( 1 : 5 ) == 'metis' ) THEN
-         data%iparm_pastix( 9 ) = 1     ! IPARM_ORDERING = PastixOrderMetis
-       ELSE IF ( pastix_ordering_env( 1 : 6 ) == 'scotch' ) THEN
-         data%iparm_pastix( 9 ) = 0     ! IPARM_ORDERING = PastixOrderScotch
-       END IF
 !      OPEN( 2, FILE = "/dev/null", STATUS = "OLD" ) ! try to get rid of msgs
        CALL pastixInit( data%pastix_data, MPI_COMM_WORLD_pastix,               &
                         data%iparm_pastix, data%dparm_pastix )
@@ -2826,9 +2806,8 @@
                                             = max_integer_factor_size + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: pivot_control = max_in_core_store + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: ordering = pivot_control + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: pastix_ordering = ordering + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: full_row_threshold                    &
-                                            = pastix_ordering + 1
+                                            = ordering + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: row_search_indefinite                &
                                             = full_row_threshold + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: scaling = row_search_indefinite + 1
@@ -2912,7 +2891,6 @@
      spec( max_in_core_store )%keyword = 'maximum-in-core-store'
      spec( pivot_control )%keyword = 'pivot-control'
      spec( ordering )%keyword = 'ordering'
-     spec( pastix_ordering )%keyword = 'pastix-ordering'
      spec( full_row_threshold )%keyword = 'full-row-threshold'
      spec( row_search_indefinite )%keyword = 'pivot-row-search-when-indefinite'
      spec( scaling )%keyword = 'scaling'
@@ -3032,9 +3010,6 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( ordering ),                             &
                                  control%ordering,                             &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( pastix_ordering ),                       &
-                                 control%pastix_ordering,                       &
                                  control%error )
      CALL SPECFILE_assign_value( spec( full_row_threshold ),                   &
                                  control%full_row_threshold,                   &
@@ -4506,12 +4481,6 @@
          data%PTR( 1 : data%matrix%n + 1 )                                     &
            = data%matrix%PTR( 1 : data%matrix%n + 1 )
          data%ROW( 1 : data%ne ) = data%matrix%COL( 1 : data%ne )
-
-!  a non-negative control%pastix_ordering overrides the init-time IPARM_ORDERING
-!  default; pastix_data shares the iparm array, so the change takes effect here
-
-         IF ( control%pastix_ordering >= 0 )                                    &
-           data%iparm_pastix( 9 ) = control%pastix_ordering
 
          CALL pastix_task_analyze( data%pastix_data, data%spm, pastix_info )
          inform%pastix_info = INT( pastix_info )

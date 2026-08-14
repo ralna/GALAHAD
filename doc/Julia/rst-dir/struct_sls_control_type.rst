@@ -34,7 +34,6 @@ sls_control_type structure
           array_decrease_factor::T
           pivot_control::INT
           ordering::INT
-          pastix_ordering::INT
           full_row_threshold::INT
           row_search_indefinite::INT
           scaling::INT
@@ -330,22 +329,6 @@ controls ordering (ignored if explicit PERM argument present)
 * 6 Bandwidth reduction
 
 * >6 ordering chosen depending on matrix characteristics (not yet implemented)
-
-.. index:: pair: variable; pastix_ordering
-.. _doxid-structsls__control__type_pastix_ordering:
-
-.. ref-code-block:: julia
-	:class: doxyrest-title-code-block
-
-	INT pastix_ordering
-
-controls the ordering used by the PaStiX solver (IPARM_ORDERING); ignored by every other solver
-
-* <0 use PaStiX's own default ordering (the first one compiled in)
-
-* 0 SCOTCH ordering (PastixOrderScotch)
-
-* 1 METIS ordering (PastixOrderMetis)
 
 .. index:: pair: variable; full_row_threshold
 .. _doxid-structsls__control__type_full_row_threshold:

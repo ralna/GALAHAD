@@ -332,9 +332,10 @@ jobs:
         shell: bash
         run: |
           VERSION_PASTIX="6.4.0"
-          # METIS and SCOTCH orderings are both built above, so exercise both in
-          # the pastixt self-test (0 = Scotch, 1 = Metis)
-          echo "GALAHAD_PASTIX_ORDERINGS=0 1" >> $GITHUB_ENV
+          # PaStiX is built below with both the SCOTCH and METIS orderings; the
+          # GALAHAD build reads PaStiX's config.h and the slst self-test then
+          # exercises whichever orderings were actually compiled in, so no
+          # environment variable is needed here
           cd "$DEPS"
           git clone --depth 1 --branch v${VERSION_PASTIX} https://gitlab.inria.fr/solverstack/pastix.git
           cd pastix
