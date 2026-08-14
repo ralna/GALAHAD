@@ -73,7 +73,7 @@ Please see [README.meson](https://github.com/ralna/GALAHAD/blob/master/README.me
 If you use the precompiled GALAHAD libraries, the MUMPS libraries are also provided.
 For libHSL, you can replace the dummy shared libraries `libhsl_subset` and `libhsl_subset_64`
 shipped with GALAHAD with the official ones provided by the precompiled libHSL libraries.
-This requires at least GALAHAD v5.4.0 and libHSL v2025.7.21.
+This requires at least GALAHAD v5.6.0 and libHSL v2026.8.4.
 
 #### CUTEst Test Collection
 GALAHAD can use optimization test problems from the [CUTEst test collection](https://github.com/ralna/CUTEst/blob/master/doc/README). For example, to link GALAHAD with double precision CUTEst:
