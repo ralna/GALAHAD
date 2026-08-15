@@ -34,7 +34,12 @@ def _append_to_sharedlib_load_path():
     basedir = os.path.dirname(__file__)
     subdir = os.path.join(basedir, '..', '.galahad_optrove.mesonpy.libs')
     if os.name == 'nt':
-        os.add_dll_directory(subdir)
+        if os.path.isdir(subdir):
+            os.add_dll_directory(subdir)
+        else:
+            for entry in os.environ.get('PATH', '').split(os.pathsep):
+                if entry and os.path.isdir(entry):
+                    os.add_dll_directory(entry)
     elif sys.platform == 'cygwin':
         os.environ['PATH'] = os.pathsep.join((os.environ['PATH'], basedir, subdir))
 
