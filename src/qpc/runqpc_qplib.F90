@@ -132,7 +132,7 @@
 
 !  Functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 
@@ -1045,7 +1045,7 @@
       clocks = clocks - clock ; clockt = clockt - clocko
       WRITE( out, "( /, ' Total CPU, clock times = ', F8.3, ', ', F8.3 )" )    &
         times + timet, clocks + clockt
-!$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
+!$    WRITE( out, "( ' number of threads = ', I0 )" ) INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
 
 !  Compare the variants used so far
 

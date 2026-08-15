@@ -1566,7 +1566,7 @@
 
 !  functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -1613,7 +1613,7 @@
       inform%obj = - one ; inform%potential = infinity
       inform%non_negligible_pivot = zero
       inform%feasible = .FALSE.
-!$    inform%threads = OMP_GET_MAX_THREADS( )
+!$    inform%threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
       cro_clock_matrix = 0.0_rp_
 
 !  basic single line of output per iteration

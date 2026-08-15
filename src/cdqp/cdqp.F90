@@ -1039,7 +1039,7 @@ MODULE GALAHAD_CDQP_precision
 
 !  functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -1086,7 +1086,7 @@ MODULE GALAHAD_CDQP_precision
       inform%obj = - one
       inform%non_negligible_pivot = zero
       inform%feasible = .FALSE.
-!$    inform%threads = OMP_GET_MAX_THREADS( )
+!$    inform%threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
       stat_required = PRESENT( C_stat ) .AND. PRESENT( B_stat )
       cro_clock_matrix = 0.0_rp_
 

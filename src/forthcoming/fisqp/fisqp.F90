@@ -1620,7 +1620,7 @@
 
 !  functions
 
-!$   INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$   INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
@@ -1668,7 +1668,7 @@
 ! ------------------------------------------------------------------------
 
      CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
-!$   inform%threads = OMP_GET_MAX_THREADS( )
+!$   inform%threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
      inform%status = GALAHAD_ok
      inform%alloc_status = 0 ; inform%bad_alloc = ''
      inform%iter = 0

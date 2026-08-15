@@ -75,7 +75,7 @@
 
 !  Functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 
@@ -569,7 +569,7 @@
      &  2( 1X, F8.3 ) )" ) EQP_inform%time%factorize, EQP_inform%time%solve,   &
         EQP_inform%time%clock_factorize, EQP_inform%time%clock_solve
 
-!$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
+!$    WRITE( out, "( ' number of threads = ', I0 )" ) INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
 
       WRITE( out, 2000 ) pname,                                                &
         EQP_inform%SBLS_inform%preconditioner,                                 &
