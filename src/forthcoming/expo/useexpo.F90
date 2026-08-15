@@ -63,7 +63,7 @@
 
 !  Functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 
@@ -238,7 +238,7 @@
                       eval_HLPROD = CUTEST_eval_HLPROD )
 !    CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
-!$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
+!$    WRITE( out, "( ' number of threads = ', I0 )" ) INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
 
       WRITE( out, "( ' linear solvers: ', A, ' (ssls), ', A, ' (tru)' )" )     &
         TRIM( inform%SSLS_inform%SLS_inform%solver ),                          &

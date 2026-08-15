@@ -1157,7 +1157,7 @@
 
 !  functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -1213,7 +1213,7 @@
       inform%status = GALAHAD_ok
       inform%alloc_status = 0 ; inform%bad_alloc = ''
       inform%obj = - one
-!$    inform%threads = OMP_GET_MAX_THREADS( )
+!$    inform%threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
       stat_required = PRESENT( C_stat ) .AND. PRESENT( X_stat )
       cro_clock_matrix = 0.0_rp_
 

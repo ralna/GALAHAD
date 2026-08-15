@@ -1617,8 +1617,8 @@
      REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL_ma27
      TYPE ( MA57_control ) :: control_ma57
 !$   LOGICAL :: OMP_GET_CANCELLATION
-!$   INTEGER ( KIND = ip_ ) :: OMP_GET_PROC_BIND
-!$   INTEGER :: omp_status
+!$   INTEGER ( KIND = i4_ ) :: OMP_GET_PROC_BIND
+!$   INTEGER ( KIND = i4_ ) :: omp_status
 
 !  record the solver
 
@@ -3101,7 +3101,7 @@
      LOGICAL :: mc6168_ordering
      CHARACTER ( LEN = 400 ), DIMENSION( 1 ) :: path
      CHARACTER ( LEN = 400 ), DIMENSION( 4 ) :: filename
-!$   INTEGER ( KIND = ip_ ) :: OMP_GET_NUM_THREADS
+!$   INTEGER ( KIND = i4_ ) :: OMP_GET_NUM_THREADS
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
@@ -4200,7 +4200,7 @@
            GO TO 800
          END IF
          data%pardiso_IPARM( 3 ) = 1
-!$       data%pardiso_IPARM( 3 ) = OMP_GET_NUM_THREADS( )
+!$       data%pardiso_IPARM( 3 ) = INT( OMP_GET_NUM_THREADS( ), KIND = ip_ )
          IF ( control%ordering > 0 .OR. PRESENT( PERM ) )                      &
            data%pardiso_IPARM( 5 ) = 1
 
@@ -4346,7 +4346,7 @@
 
          CALL SLS_copy_control_to_wsmp( control, data%wsmp_IPARM,              &
                                         data%wsmp_DPARM )
-!$       CALL WSETMAXTHRDS( OMP_GET_NUM_THREADS( ) )
+!$       CALL WSETMAXTHRDS( INT( OMP_GET_NUM_THREADS( ), KIND = ip_ ) )
 
          data%wsmp_iparm( 2 ) = 1
          data%wsmp_iparm( 3 ) = 2

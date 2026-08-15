@@ -1535,7 +1535,7 @@
 
 !  functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -1582,7 +1582,7 @@
       inform%obj = - one ; inform%potential = infinity
       inform%non_negligible_pivot = zero
       inform%feasible = .FALSE.
-!$    inform%threads = OMP_GET_MAX_THREADS( )
+!$    inform%threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
       stat_required = PRESENT( C_stat ) .AND. PRESENT( B_stat )
       cro_clock_matrix = 0.0_rp_
 
@@ -9451,7 +9451,7 @@
 
 !  Functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_THREAD_NUM
+!$    INTEGER ( KIND = i4_ ) :: OMP_GET_THREAD_NUM
 
       IF ( threads == 1 ) parallel = .FALSE.
       status = GALAHAD_ok
@@ -9667,7 +9667,7 @@
                 COEF( opj ) = c - scale * CS_coef( opj )
               END DO
               COEF( 0 ) = MAX( COEF( 0 ), zero )
-!$            thread = OMP_get_thread_num( )
+!$            thread = INT( OMP_get_thread_num( ), KIND = ip_ )
               ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                  &
                           COEF( 0 : 2 * order ), lower, upper,                 &
                           local_ROOTS_data( thread ), local_ROOTS_control,     &
@@ -9699,7 +9699,7 @@
                 COEF( opj ) = c - scale * CS_coef( opj )
               END DO
               COEF( 0 ) = MAX( COEF( 0 ), zero )
-!$            thread = OMP_get_thread_num( )
+!$            thread = INT( OMP_get_thread_num( ), KIND = ip_ )
               ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                  &
                           COEF( 0 : 2 * order ), lower, upper,                 &
                           local_ROOTS_data( thread ), local_ROOTS_control,     &
@@ -9731,7 +9731,7 @@
                 COEF( opj ) = c - scale * CS_coef( opj )
               END DO
               COEF( 0 ) = MAX( COEF( 0 ), zero )
-!$            thread = OMP_get_thread_num( )
+!$            thread = INT( OMP_get_thread_num( ), KIND = ip_ )
               ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                  &
                           COEF( 0 : 2 * order ), lower, upper,                 &
                           local_ROOTS_data( thread ), local_ROOTS_control,     &
@@ -9763,7 +9763,7 @@
                 COEF( opj ) = c - scale * CS_coef( opj )
               END DO
               COEF( 0 ) = MAX( COEF( 0 ), zero )
-!$            thread = OMP_get_thread_num( )
+!$            thread = INT( OMP_get_thread_num( ), KIND = ip_ )
               ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                  &
                           COEF( 0 : 2 * order ), lower, upper,                 &
                           local_ROOTS_data( thread ), local_ROOTS_control,     &

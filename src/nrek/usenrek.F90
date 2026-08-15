@@ -79,7 +79,7 @@
 
 !  functions
 
-!$   INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$   INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  problem characteristics
 
@@ -334,7 +334,7 @@
         &    ', linear solver: ', A )" ) nnzh,                                 &
            inform%SLS_inform%entries_in_factors,                               &
            TRIM( control%linear_solver )
-!$      n_threads = OMP_GET_MAX_THREADS( )
+!$      n_threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
        IF ( k == 1 .OR. ( control%print_level > 0 .AND. control%out > 0 ) )    &
          WRITE( out, "( ' number of threads = ', I0 )" ) n_threads
        CALL CLOCK_time( clock_total )

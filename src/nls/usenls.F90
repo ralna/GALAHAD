@@ -69,7 +69,7 @@
 
 !  Functions
 
-!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 
@@ -332,7 +332,7 @@
                      eval_HPRODS = CUTEST_eval_HCPRODS )
 !    CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
-!$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
+!$    WRITE( out, "( ' number of threads = ', I0 )" ) INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
 
       CALL CUTEst_timing( status, userdata, 'CUTEST_eval_C', cutest_time )
       WRITE( 6, "( ' CUTEST_eval_C time =   ', F8.2 )" ) cutest_time
