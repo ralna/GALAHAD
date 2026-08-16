@@ -779,7 +779,7 @@
       clocks = clocks - clock ; clockt = clockt - clocko
       WRITE( out, "( /, ' Total time, clock = ', F0.2, ', ', F0.2)" )          &
         times + timet, clocks + clockt
-!$    WRITE( out, "( ' number of threads = ', I0 )" ) INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
+!$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
       WRITE( out, "( /, ' Problem: ', A10, //,                                 &
      &                  '                     objective',                      &
      &                  '          < ---------- time --------- > ', /,         &

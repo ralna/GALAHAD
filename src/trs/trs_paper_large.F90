@@ -16,7 +16,7 @@
 !  REAL ( KIND = rp_ ) :: radius = 100000.0_rp_ ! trust-region radius (large)
 !$ INTEGER ( KIND = i4_ ) :: OMP_GET_MAX_THREADS
    CALL SMT_put( H%type, 'COORDINATE', s )    ! Specify co-ordinate for H
-!$ WRITE(6, "( ' max threads = ', I0 )" ) INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
+!$ WRITE(6, "( ' max threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
 
 !  DO logn = 6, 14
 !  DO logn = 14, 14

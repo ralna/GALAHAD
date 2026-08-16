@@ -237,7 +237,7 @@
 
 !    CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
-!$    WRITE( out, "( ' number of threads = ', I0 )" ) INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
+!$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
 
 !  ================
 !  Solution details

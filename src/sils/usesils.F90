@@ -723,7 +723,7 @@
       WRITE( out, "( /, ' Solver: ', A, ' with ordering = ', I0 )" )           &
         TRIM( solver ), control%ordering
       WRITE( out, "(  ' Stopping with status = ', I0 )" ) status
-!$    WRITE( out, "( ' number of threads = ', I0 )" ) INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
+!$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
       WRITE( out, "( /, ' Problem: ', A10, //,                                 &
      &                  '          < ------ time ----- > ',                    &
      &                  '  < ----- clock ---- > ', /,                          &
