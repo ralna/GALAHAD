@@ -294,7 +294,6 @@ function documentation_check_packages()
   path_documentation = joinpath(@__DIR__, "..", "..")
   path_packages = joinpath(@__DIR__, "..", "..", "src")
   path_readme_packages = joinpath(path_packages, "README.packages")
-  path_readme_status = joinpath(path_packages, "README.status")
 
   content_readme_packages = read(path_readme_packages, String)
   content_readme_status = read(path_readme_status, String)
@@ -311,11 +310,6 @@ function documentation_check_packages()
     if !occursin(package, content_readme_packages)
       t = t + 1
       println("Please add the package `$package` in GALAHAD/src/README.packages.")
-      println()
-    end
-    if !occursin(package, content_readme_status)
-      t = t + 1
-      println("Please add the package `$package` in GALAHAD/src/README.status.")
       println()
     end
     # path_doc_fortran_tex = joinpath(path_documentation, "src", "$package.tex")
