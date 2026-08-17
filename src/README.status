@@ -8,19 +8,26 @@ M = makemaster done, C = C interface planned, C+ = C interface done
                      P+ = Python interface done
                      P- = Python dictionaries done
 
+amd
 ampl
 arc                       M C+ P+
+band
 basic                     M
 bgo                       M C+ P+
 blls                      M C+ P+
+bllsb
+bnls
 bqp                       M C+ P+
 bqpb                      M (replace with specialised cqp?) C+
 bsc                       M C- P-
+buildspec
 ccqp                      M C+ P+
 cdqp                      M C
 check                     M (build cutest interface?)
 checkpoint                M
+clls
 clock                     M
+common
 convert                   M C- P-
 copyright                 M
 cqp                       M C+ P+
@@ -34,6 +41,7 @@ dps                       M C+ P+
 dqp                       M C+ P+
 dum
 eqp                       M C+ P+
+extend
 fdc                       M C+ P+
 fdh                       M C- (need to adapt fdhs2, error in test)
 filter                    M
@@ -43,8 +51,11 @@ general
 glrt                      M C+ P+
 gls                       M C+ P+
 gltr                      M C+ P+
+hash
 hsl
+icfs
 ir                        M C- P-
+kinds
 l1qp                      M
 l2rt                      M C+ P+
 lancelot                  M
@@ -60,13 +71,20 @@ lpa                       M C+ P+
 lpb                       M C+ P+
 lpqp                      M
 lsqp                      M C+ P+
+lqr
+lqt
+lsp
+lsrb
 lsrt                      M C+ P+
 lstr                      M C+ P+
 miqr                      M
 mop                       M
+mu
 nlpt                      M
 nls                       M C+ P+
+nodend
 norms                     M
+nrek
 opt                       M
 pdqp                      M C
 presolve                  M C- P-
@@ -81,6 +99,7 @@ qpd                       M
 qpp                       M
 qpt                       M
 rand                      M
+reverse
 roots                     M C- P-
 rpd                       M C+ P+
 rqs                       M C+ P+
@@ -92,21 +111,30 @@ sec                       M C- P-
 sha                       M C- P-
 sils                      M C- P-
 slblt
+slls
+sllsb
 sls                       M C+ P+
+snls
 smt                       M
 sort                      M
 space                     M
 specfile                  M
+ss
+ssls
 string                    M
+svt
 symbols                   M
 tools                     M
+topology
 trans                     M
 trb                       M C+ P+
+trek
 trs                       M C+ P+
 tru                       M C+ P+
 ugo                       M C+ P+
 uls                       M C+ P+
 userdata                  M
+version
 warm                      M
 wcp                       M C+ P+
 zd11                      M
@@ -114,6 +142,7 @@ zd11                      M
 forthcoming:
 
 barc                      M C
+expo
 fisqp                     M C (buggy)
 trace                     M (but buggy)
 tral                      M (broken)

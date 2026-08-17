@@ -105,22 +105,21 @@ The possible values for `library` are:
 - `"sec"`;
 - `"sha"`;
 - `"sils"`;
+- `"slblt"`;
 - `"slls"`;
 - `"sllsb"`;
 - `"sls"`;
 - `"snls"`;
-- `"slblt`;
-- `"ssls`;
+- `"ssls"`;
 - `"trb"`;
 - `"trek"`;
 - `"trs"`;
 - `"tru"`;
 - `"ugo"`;
 - `"uls"`;
+- `"version"`;
 - `"warm"`;
-- `"wcp"`;
-- `"slblt"`;
-- `"hsl"`.
+- `"wcp"`.
 
 The Julia wrappers are generated in the directory `GALAHAD.jl/src/wrappers`.
 If the value of `library` is not `hsl`, we additionally create
