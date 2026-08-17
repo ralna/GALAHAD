@@ -294,9 +294,7 @@ function documentation_check_packages()
   path_documentation = joinpath(@__DIR__, "..", "..")
   path_packages = joinpath(@__DIR__, "..", "..", "src")
   path_readme_packages = joinpath(path_packages, "README.packages")
-
   content_readme_packages = read(path_readme_packages, String)
-  content_readme_status = read(path_readme_status, String)
 
   for package in readdir(path_packages)
     (package in excluded_packages) && continue
