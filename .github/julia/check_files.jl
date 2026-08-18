@@ -229,14 +229,134 @@ function julia_check_tests()
   return r
 end
 
+function julia_check_generator()
+  println("--- Julia -- generator ---")
+  s = 0
+
+  folder_headers = joinpath(@__DIR__, "..", "..", "include")
+  path_packages = joinpath(@__DIR__, "..", "..", "src")
+  path_gen_jl = joinpath(@__DIR__, "..", "..", "GALAHAD.jl", "gen")
+
+  for package in readdir(path_packages)
+    (package == "dum") && continue
+    (package == "common") && continue
+    path_local_package = joinpath(path_packages, package)
+    !isdir(path_local_package) && continue
+    local_C_folder = joinpath(path_local_package, "C")
+    package_header = joinpath(folder_headers, "galahad_$package.h")
+    if isdir(local_C_folder) && isfile(package_header)
+      path_examples_gen = joinpath(path_gen_jl, "examples.jl")
+      local_content = read(path_examples_gen, String)
+      if !occursin("\"$package\"", local_content)
+        s = s + 1
+        println("Please add the package `\"$package\"` in GALAHAD/GALAHAD.jl/gen/examples.jl.")
+        println()
+      end
+      path_galahad_c_gen = joinpath(path_gen_jl, "galahad_c.jl")
+      local_content = read(path_galahad_c_gen, String)
+      if !occursin("\"$package\"", local_content)
+        s = s + 1
+        println("Please add the package `\"$package\"` in GALAHAD/GALAHAD.jl/gen/galahac_c.jl.")
+        println()
+      end
+      path_readme_gen = joinpath(path_gen_jl, "README.md")
+      local_content = read(path_readme_gen, String)
+      if !occursin("\"$package\"", local_content)
+        s = s + 1
+        println("Please add the package `\"$package\"` in GALAHAD/GALAHAD.jl/gen/README.md.")
+        println()
+      end
+      path_rewriter_gen = joinpath(path_gen_jl, "rewriter.jl")
+      local_content = read(path_rewriter_gen, String)
+      if !occursin("\"$package\"", local_content)
+        s = s + 1
+        println("Please add the package `\"$package\"` in GALAHAD/GALAHAD.jl/gen/rewriter.jl.")
+        println()
+      end
+      path_wrapper_gen = joinpath(path_gen_jl, "wrapper.jl")
+      local_content = read(path_wrapper_gen, String)
+      if !occursin("\"$package\"", local_content)
+        s = s + 1
+        println("Please add the package `\"$package\"` in GALAHAD/GALAHAD.jl/gen/wrapper.jl.")
+        println()
+      end
+    end
+  end
+
+  return s
+end
+
+function documentation_check_packages()
+  println("--- documentation ---")
+  t = 0
+
+  excluded_packages = ["all_go", "all_qp", "all_rq", "apps", "general", "makedefs", "matlab", "external"]
+  path_documentation = joinpath(@__DIR__, "..", "..")
+  path_packages = joinpath(@__DIR__, "..", "..", "src")
+  path_readme_packages = joinpath(path_packages, "README.packages")
+  content_readme_packages = read(path_readme_packages, String)
+
+  for package in readdir(path_packages)
+    (package in excluded_packages) && continue
+    path_local_package = joinpath(path_packages, package)
+    !isdir(path_local_package) && continue
+    local_Fortran_file = joinpath(path_local_package, "$package.F90")
+    local_C_folder = joinpath(path_local_package, "C")
+    local_Julia_folder = joinpath(path_local_package, "Julia")
+    local_Python_folder = joinpath(path_local_package, "Python")
+
+    if !occursin(package, content_readme_packages)
+      t = t + 1
+      println("Please add the package `$package` in GALAHAD/src/README.packages.")
+      println()
+    end
+    # path_doc_fortran_tex = joinpath(path_documentation, "src", "$package.tex")
+    # if !isfile(path_doc_fortran_tex) && isfile(local_Fortran_file)
+    #   t = t + 1
+    #   println("Please add the file `$package.tex` in GALAHAD/doc/src.")
+    #   println()
+    # end
+    # path_doc_fortran_pdf = joinpath(path_documentation, "$package.pdf")
+    # if !isfile(path_doc_fortran_pdf) && isfile(local_Fortran_file)
+    #   t = t + 1
+    #   println("Please add the file `$package.pdf` in GALAHAD/doc.")
+    #   println()
+    # end
+    # path_doc_c_rst = joinpath(path_documentation, "C", "rst-dir", "$package.rst")
+    # if !isfile(path_doc_c_rst) && isdir(local_C_folder)
+    #   t = t + 1
+    #   println("Please add the file `$package.rst` in GALAHAD/doc/C/rst-dir.")
+    #   println()
+    # end
+    # path_doc_julia_rst = joinpath(path_documentation, "Julia", "rst-dir", "$package.rst")
+    # if !isfile(path_doc_julia_rst) && isdir(local_Julia_folder)
+    #   t = t + 1
+    #   println("Please add the file `$package.rst` in GALAHAD/doc/Julia/rst-dir.")
+    #   println()
+    # end
+    # path_doc_python_rst = joinpath(path_documentation, "Python", "$package.rst")
+    # if !isfile(path_doc_python_rst) && isdir(local_Python_folder)
+    #   t = t + 1
+    #   println("Please add the file `$package.rst` in GALAHAD/doc/Python.")
+    #   println()
+    # end
+  end
+
+  return t
+end
+
 n = meson_check_headers()
 m = meson_check_packages()
 p = meson_check_files()
 q = julia_check_wrappers()
 r = julia_check_tests()
+s = julia_check_generator()
+t = documentation_check_packages()
 
 @test m == 0
 @test n == 0
 @test p == 0
 @test q == 0
 @test r == 0
+@test s == 0
+@test t == 0
