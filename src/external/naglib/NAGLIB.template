@@ -1,0 +1,43 @@
+! check-frequency                 60
+! crash-option                    3
+! crash-tolerance                 0.1
+! elastic-mode                    1
+! elastic-objective               1
+! elastic-weight                  1.0
+! expand-frequency                10000
+! factorization-frequency         50
+! feasibility-tolerance           1.0E-6
+! infinite-bound-size             1.0E+19
+! iterations-limit                -1
+! lu-density-tolerance            0.6
+! lu-singularity-tolerance        0.0
+! lu-factor-tolerance             100.0
+! lu-update-tolerance             10.0
+! lu-pivoting                     1  ! 1=partial 2=complete 3=rook
+! minimize                        yes
+! feasible-point                  no
+! new-basis-file                  0
+! backup-basis-file               0
+! save-frequency                  100
+! list                            no
+! old-basis-file                  0
+! optimality-tolerance            1.0E-6
+! partial-price                   1
+! pivot-tolerance                 1.0E-10
+! print-file                      0
+! print-level                     1
+! print-frequency                 100
+! qpsolver                        1  ! 1=cholesky 2=cg 3=qn
+! reduced-hessian-dimension       ​2000
+! scale-option                    2
+! scale-tolerance                 0.9
+! scale-print                     no
+! solution                        yes
+! solution-file                   0
+! summary-file                    0
+! summary-frequency               100
+! superbasics-limit               ​-1  ! reset to min( nh + 1, n )
+! suppress_parameters             yes
+! system-information              no
+! timing-level                    0
+! unbounded-step-size             0.0

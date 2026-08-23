@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-08-23 AT 14:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -755,7 +755,8 @@
 
           CALL CONVERT_to_sparse_column_format( prob%A, A_by_cols,             &
                                                 CONVERT_control,               &
-                                                CONVERT_inform, IW, W )
+                                                CONVERT_inform, IWORK = IW,    &
+                                                WORK = W )
 
 !  if required, record the transpose
 
@@ -847,7 +848,8 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
 
           CALL CONVERT_to_sparse_column_format( prob%A, A_by_cols,             &
                                                 CONVERT_control,               &
-                                                CONVERT_inform, IW, W )
+                                                CONVERT_inform, IWORK = IW,    &
+                                                WORK = W )
 
 !  if required, record the transpose
 

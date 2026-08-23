@@ -731,8 +731,8 @@
       CALL CONVERT_to_sparse_column_format( A, data%A_by_cols,                 &
                                             data%control%CONVERT_control,      &
                                             inform%CONVERT_inform,             &
-                                            data%workspace%ind_m,              &
-                                            data%workspace%val_m )
+                                            IWORK = data%workspace%ind_m,      &
+                                            WORK = data%workspace%val_m )
       IF ( inform%CONVERT_inform%status /= GALAHAD_ok ) THEN
         inform%status = inform%CONVERT_inform%status
         GO TO 900

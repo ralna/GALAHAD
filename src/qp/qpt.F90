@@ -14,8 +14,8 @@
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, sts, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
-!  CHARACTER ( LEN = 20 ) :: solver_default = "cqp" // REPEAT( ' ', 17 )
-   CHARACTER ( LEN = 20 ) :: solver_default = "e04nqf" // REPEAT( ' ', 14 )
+   CHARACTER ( LEN = 20 ) :: solver_default = "cqp" // REPEAT( ' ', 17 )
+!  CHARACTER ( LEN = 20 ) :: solver_default = "e04nqf" // REPEAT( ' ', 14 )
    CHARACTER ( LEN = 20 ) :: solver
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4

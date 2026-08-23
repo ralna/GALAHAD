@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-08-23 AT 14:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -755,7 +755,8 @@
 
           CALL CONVERT_to_sparse_column_format( prob%A, A_by_cols,             &
                                                 CONVERT_control,               &
-                                                CONVERT_inform, IW, W )
+                                                CONVERT_inform, IWORK = IW,    &
+                                                WORK = W )
 
 !  if required, record the transpose
 
@@ -776,7 +777,7 @@
             A_ls%row( : prob%A%ne ) = A_by_cols%row( : prob%A%ne )
             A_ls%val( : prob%A%ne ) = A_by_cols%val( : prob%A%ne )
           END IF
-write(6,*) ' m, n, = ', A_ls%m, A_ls%n
+!write(6,*) ' m, n, = ', A_ls%m, A_ls%n
 
 !  check the matrix A, remove null rows/cols and adjust B accordingly
 
@@ -790,7 +791,7 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n
           CALL mi35_check_matrix( A_ls%m, A_ls%n, A_ls%ptr,                    &
                                   A_ls%row, A_ls%val,                          &
                                   control_mi35, info_mi35, b = B )
-write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
+!write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
 
           IF ( info_mi35%flag < 0 ) THEN
             status = GALAHAD_error_mi35
@@ -847,7 +848,8 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
 
           CALL CONVERT_to_sparse_column_format( prob%A, A_by_cols,             &
                                                 CONVERT_control,               &
-                                                CONVERT_inform, IW, W )
+                                                CONVERT_inform, IWORK = IW,    &
+                                                WORK = W )
 
 !  if required, record the transpose
 

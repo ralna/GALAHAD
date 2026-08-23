@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-07-28 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-08-19 AT 14:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -39,7 +39,7 @@
 !     |                                              |
 !     ------------------------------------------------
 
-      USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
+      USE GALAHAD_KINDS_precision, ONLY: i4_, ip_, rp_
       USE GALAHAD_CLOCK, ONLY: CLOCK_time
       USE GALAHAD_SYMBOLS, ONLY: ACTIVE => GALAHAD_ACTIVE,                     &
                                  GALAHAD_ok,                                   &
@@ -61,6 +61,9 @@
                                  GALAHAD_error_cdqp,                           &
                                  GALAHAD_error_unknown_solver,                 &
                                  GALAHAD_error_restrictions,                   &
+                                 GALAHAD_error_file,                           &
+                                 GALAHAD_error_io,                             &
+                                 GALAHAD_error_naglib,                         &
                                  GALAHAD_error_osqp
       USE GALAHAD_SPACE_precision, ONLY: SPACE_resize_array, SPACE_dealloc_array
       USE GALAHAD_SPECFILE_precision, ONLY: SPECFILE_item_type, SPECFILE_read, &
@@ -83,6 +86,7 @@
                                             PRESOLVE_apply, PRESOLVE_restore,  &
                                             PRESOLVE_terminate
       USE GALAHAD_MOP_precision, ONLY: mop_AX
+      USE GALAHAD_CONVERT_precision
       USE GALAHAD_QPA_precision, ONLY: QPA_control_type, QPA_inform_type,      &
                                        QPA_initialize, QPA_read_specfile,      &
                                        QPA_solve, QPA_terminate
@@ -105,6 +109,11 @@
 
       USE OSQP, ONLY: OSQP_settings_type, OSQP_info_type, OSQP_data_type,      &
                       OSQP_settings, OSQP_solve, OSQP_cleanup
+      USE GALAHAD_NAGLIB_precision, ONLY: E04NQF_control_type,                 &
+                                          E04NQF_inform_type,                  &
+                                          E04NPF, E04NQF, E04NRF, E04NTF,      &
+                                          X04AAF, X04ACF, X04ADF,              &
+                                          E04NQF_transfer_control
 
       IMPLICIT NONE ( TYPE, EXTERNAL )
 
@@ -237,7 +246,11 @@
 
         TYPE ( OSQP_settings_type ) :: OSQP_control
 
-      END TYPE
+!  control parameters for E04NQF
+
+        TYPE ( E04NQF_control_type ) :: E04NQF_control
+
+      END TYPE QP_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
 !   time derived type with component defaults
@@ -277,7 +290,7 @@
 
         REAL ( KIND = rp_ ) :: clock_solve = 0.0
 
-      END TYPE
+      END TYPE QP_time_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
@@ -313,6 +326,10 @@
 !  the value of the complementary slackness
 
         REAL ( KIND = rp_ ) :: complementary_slackness = HUGE( one )
+
+!  the number of "iterations" required
+
+        INTEGER ( KIND = ip_ ) :: iter = - 1
 
 !  timings (see above)
 
@@ -354,11 +371,15 @@
 
         TYPE ( OSQP_info_type ) :: OSQP_inform
 
-      END TYPE
+!  inform parameters for E04NQF
 
-!  - - - - - - - - - - - - - - - - - - -
-!   extended data derived type for OSQP
-!  - - - - - - - - - - - - - - - - - - -
+        TYPE ( E04NQF_inform_type ) :: E04NQF_inform
+
+      END TYPE QP_inform_type
+
+!  - - - - - - - - - - - - - - - - - - - -
+!   extended data derived type for E04NQF
+!  - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: QP_E04NQF_data_type
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: HELAST, HS
@@ -366,6 +387,8 @@
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_l, B_u
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, R_w, R_user
         CHARACTER ( LEN = 8 ), ALLOCATABLE, DIMENSION( : )  :: C_w, C_user
+        LOGICAL :: original_a, original_h
+        TYPE ( SMT_type ) :: A, H
       END TYPE QP_E04NQF_data_type
 
 !  - - - - - - - - - - - - - - - - - - -
@@ -374,10 +397,11 @@
 
       TYPE, PUBLIC :: QP_OSQP_data_type
         INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne
-        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row, H_ptr
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_ptr
-        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val, A_val
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_l, B_u, Y
+        LOGICAL :: original_a, original_h
+        TYPE ( SMT_type ) :: A, H
         TYPE ( OSQP_data_type ) :: OSQP_data
       END TYPE QP_OSQP_data_type
 
@@ -1143,7 +1167,6 @@
         scale = control%scale
       END IF
       IF ( scale < 0 ) THEN
-write(6,*) ' scale '
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         CALL SCALE_get( prob, - control%scale,                                 &
                         data%QPD_data%SCALE_trans, data%QPD_data%SCALE_data,   &
@@ -1178,7 +1201,6 @@ write(6,*) ' scale '
 ! to do: remove LBFGS restriction
       presolve = control%presolve .AND. .NOT. lbfgs
       IF ( presolve ) THEN
-write(6,*) ' presolve '
         array_name = 'qp: prob%X_status'
         CALL SPACE_resize_array( prob%n, prob%X_status, inform%status,         &
                inform%alloc_status, array_name = array_name,                   &
@@ -1270,7 +1292,6 @@ write(6,*) ' presolve '
 !  call the presolver
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-write(6,*) ' PRESOLVE_initialize'
         CALL PRESOLVE_initialize( data%QPD_data%PRESOLVE_control,              &
                                   inform%PRESOLVE_inform,                      &
                                   data%QPD_data%PRESOLVE_data )
@@ -1280,8 +1301,6 @@ write(6,*) ' PRESOLVE_initialize'
                prefix, inform%PRESOLVE_inform%status
           inform%status = GALAHAD_error_presolve ; GO TO 800
         END IF
-write(6,*) ' PRESOLVE_apply'
-data%QPD_data%PRESOLVE_control%print_level = 10
         CALL PRESOLVE_apply( prob, data%QPD_data%PRESOLVE_control,             &
                              inform%PRESOLVE_inform,                           &
                              data%QPD_data%PRESOLVE_data )
@@ -1289,14 +1308,12 @@ data%QPD_data%PRESOLVE_control%print_level = 10
         inform%time%presolve = inform%time%presolve + time_end - time_now
         inform%time%clock_presolve =                                           &
             inform%time%clock_presolve + clock_end - clock_now
-write(6,*) ' presolve status ', inform%PRESOLVE_inform%status
         IF ( inform%PRESOLVE_inform%status < 0 ) THEN
           IF ( printi ) WRITE( control%out,                                    &
             "( A, '  ERROR return from PRESOLVE (status =', I0, ')' )" )       &
                prefix, inform%PRESOLVE_inform%status
           inform%status = GALAHAD_error_presolve ; GO TO 800
         END IF
-write(6,*) ' PRESOLVE done'
 
         IF ( SMT_get( prob%H%type ) == 'NONE' .OR.                             &
              SMT_get( prob%H%type ) == 'ZERO' .OR.                             &
@@ -1334,7 +1351,6 @@ write(6,*) ' PRESOLVE done'
 !  -----------------------------
 
         IF ( scale > 0 ) THEN
-write(6,*) ' scale presolve'
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           CALL SCALE_get( prob, control%scale,                                 &
                           data%QPD_data%SCALE_trans, data%QPD_data%SCALE_data, &
@@ -1519,7 +1535,14 @@ write(6,*) ' scale presolve'
 !  == E04NQF ==
 
         CASE ( 'e04nqf', 'E04NQF' )
-          CALL QP_E04NQF_solve( prob, data%QP_E04NQF_data, control%out )
+          i = control%out
+          CALL QP_E04NQF_solve( prob, data%QP_E04NQF_data,                     &
+                                control%E04NQF_control,                        &
+                                inform%E04NQF_inform,                          &
+                                control%out, control%print_level )
+          inform%obj = prob%q + prob%f
+          inform%iter = inform%E04NQF_inform%iter
+          inform%status = inform%E04NQF_inform%status
 
 !  == HiGHS ==
 
@@ -1551,6 +1574,7 @@ write(6,*) ' qp: inform%obj ', inform%obj
           inform%primal_infeasibility = inform%OSQP_inform%prim_res
           inform%dual_infeasibility = inform%OSQP_inform%dual_res
           inform%complementary_slackness = inform%OSQP_inform%duality_gap
+          inform%iter = inform%OSQP_inform%iter
           IF ( inform%status /= GALAHAD_ok ) THEN
             IF ( printi ) WRITE( control%out, "( A,                            &
            &  ' OSQP solve error status = ', I0 )" ) prefix, inform%status
@@ -1835,99 +1859,38 @@ write(6,*) ' qp: inform%obj ', inform%obj
 
 !-*-*-*-*-*-   Q P _ E 0 4 N Q F _ S O L V E   S U B R O U T I N E   -*-*-*-*-
 
-!     SUBROUTINE QP_E04NQF_solve( prob, data, control, inform, out, spec )
-      SUBROUTINE QP_E04NQF_solve( prob, data, out, spec )
+      SUBROUTINE QP_E04NQF_solve( prob, data, control, inform,                 &
+                                  out, print_level, spec )
 
 !  solve the quadratic program using the E04NQF NAG package
 
 !  A - by columns
-!  H - lower triangle by columns
+!  H - lower triangle by rows
 
 !  dummy arguments
 
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
       TYPE ( QP_E04NQF_data_type ), INTENT( INOUT ) :: data
-!     TYPE ( E04NQF_control_type ), INTENT( IN ) :: control
-!     TYPE ( E04NQF_inform_type ), INTENT( OUT ) :: inform
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: spec
+      TYPE ( E04NQF_control_type ), INTENT( IN ) :: control
+      TYPE ( E04NQF_inform_type ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out, print_level
+      CHARACTER ( LEN = * ), OPTIONAL, INTENT( IN ) :: spec
 
 !  local variables
 
-      INTEGER ( KIND = ip_ ) :: n, m,  np1, npm, nea, neh, status, ifail
+      INTEGER ( KIND = ip_ ) :: n, m,  np1, npm, nea, neh, summary_unit, status
+      INTEGER ( KIND = i4_ ) :: spec_unit, i
       INTEGER ( KIND = ip_ ), PARAMETER :: len_c_w = 600
       INTEGER ( KIND = ip_ ), PARAMETER :: len_r_w = 600
       INTEGER ( KIND = ip_ ), PARAMETER :: len_i_w = 600
-      INTEGER ( KIND = ip_ ) :: ns, ninf
-      REAL ( KIND = rp_ ) :: sinf
+      LOGICAL :: is_specfile
+      LOGICAL, PARAMETER :: summary = .FALSE.
+      LOGICAL, PARAMETER :: debug = .FALSE.
       CHARACTER ( LEN = 8 ) :: c_dummy( 1 )
+      TYPE ( CONVERT_control_type ) :: control_convert
+      TYPE ( CONVERT_inform_type ) :: inform_convert
 
-!  interfaces
-
-      INTERFACE
-        SUBROUTINE E04NQF( start, qphx, m, n, ne, nname, lenc, ncolh, iobj,    &
-                           objadd, prob, acol, inda, loca, bl, bu, c, names,   &
-                           helast, hs, x, pi, rc, ns, ninf, sinf, obj, cw,     &
-                           lencw, iw, leniw, rw, lenrw, cuser, iuser, ruser,   &
-                           ifail )
-        IMPORT :: ip_, rp_
-        INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, ne, nname, lenc, ncolh
-        INTEGER ( KIND = ip_ ), INTENT( IN ) :: iobj, lencw, leniw, lenrw
-        INTEGER ( KIND = ip_ ), INTENT( IN ) :: inda( ne ), loca( n + 1 )
-        INTEGER ( KIND = ip_ ), INTENT( IN ) :: helast( n + m )
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: hs( n + m ), ns, iw( leniw )
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iuser( * ), ifail
-        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ninf
-        REAL ( KIND = rp_ ), INTENT( IN ) :: objadd
-        REAL ( KIND = rp_ ), INTENT( INOUT ) :: acol( ne )
-        REAL ( KIND = rp_ ), INTENT( INOUT ) :: bl( n + m ), bu( n + m )
-        REAL ( KIND = rp_ ), INTENT( INOUT ) :: c( MAX( 1, lenc ) ), x( n + m )
-        REAL ( KIND = rp_ ), INTENT( INOUT ) :: rw( lenrw ), ruser( * )
-        REAL ( KIND = rp_ ), INTENT( OUT ) :: pi( m ), rc( n + m ), sinf, obj
-        CHARACTER ( LEN = 1 ), INTENT ( IN ) :: start
-        CHARACTER ( LEN = 8 ), INTENT ( IN ) :: prob, names( nname )
-        CHARACTER ( LEN = 8 ), INTENT ( INOUT ) :: cw( lencw ), cuser( * )
-        INTERFACE
-          SUBROUTINE qphx( ncolh, x, hx, nstate, cuser, iuser, ruser )
-          IMPORT :: ip_, rp_
-          INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncolh, nstate
-          INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iuser( * )
-          REAL ( KIND = rp_ ), INTENT( IN ) :: x(ncolh)
-          REAL ( KIND = rp_ ), INTENT( INOUT ) :: ruser( * )
-          REAL ( KIND = rp_ ), INTENT( OUT ) :: hx(ncolh)
-          CHARACTER ( LEN = 8 ), INTENT( INOUT) :: cuser(*)
-          END SUBROUTINE qphx
-        END INTERFACE
-        END SUBROUTINE E04NQF
-
-        SUBROUTINE E04NPF( cw, lencw, iw, leniw, rw, lenrw, ifail )
-        IMPORT :: ip_, rp_
-        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lencw, leniw, lenrw
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: ifail
-        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: iw( leniw )
-        REAL ( KIND = rp_ ), INTENT( OUT ) :: rw( lenrw )
-        CHARACTER ( LEN = 8 ), INTENT( OUT ) :: cw( lencw )
-        END SUBROUTINE E04NPF
-
-        SUBROUTINE E04NRF( ispecs, cw, iw, rw, ifail )
-        IMPORT :: ip_, rp_
-        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ispecs
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iw( * ),  ifail
-        REAL ( KIND  = rp_ ), INTENT( INOUT ) :: rw( * )
-        CHARACTER ( LEN = 8 ), INTENT( INOUT ) :: cw( * )
-        END SUBROUTINE E04NRF
-
-        SUBROUTINE E04NTF( string, ivalue, cw, iw, rw, ifail )
-        IMPORT :: ip_, rp_
-        CHARACTER ( * ), INTENT( IN ) :: string
-        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ivalue
-        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iw( * ),  ifail
-        REAL ( KIND  = rp_ ), INTENT( INOUT ) :: rw( * )
-        CHARACTER ( LEN = 8 ), INTENT( INOUT ) :: cw( * )
-        END SUBROUTINE E04NTF
-      END INTERFACE
-
-!  transfer bound data into the format required by E04NQ
+!  transfer bound data into the format required by E04NQF
 
       n = prob%n ; m = prob%m ; np1 = n + 1 ; npm = n + m
       ALLOCATE( data%B_l( npm ), data%B_u( npm ), STAT = status )
@@ -1937,7 +1900,7 @@ write(6,*) ' qp: inform%obj ', inform%obj
       data%B_u( : n ) = prob%X_u( : n )
       data%B_u( np1 : npm ) = prob%C_u( : m )
 
-!  manipulate vectors so that they conform to E04NQ's structures
+!  manipulate vectors so that they conform to E04NQF's structures
 
       ALLOCATE( data%HELAST( npm ), data%HS( npm ), STAT = status )
       IF ( status /= 0 ) GO TO 990
@@ -1946,16 +1909,46 @@ write(6,*) ' qp: inform%obj ', inform%obj
       IF ( status /= 0 ) GO TO 990
       data%X( : n ) = prob%X( : n )
 
-!  record the sparse matrix H in E04NQF's user data structure
+!  if necessary, convert the input A into by sparse-column format
 
-      nea = prob%A%ptr( np1 ) - 1 ; neh = prob%H%ptr( np1 ) - 1
-      ALLOCATE( data%C_user( 1 ), data%R_user( neh ), STAT = status )
-      IF ( status /= 0 ) GO TO 990
-      data%R_user( : neh ) = prob%H%val( : neh )
-      ALLOCATE( data%I_user( neh + np1 ), STAT = status )
-      IF ( status /= 0 ) GO TO 990
-      data%I_user( : np1 ) = prob%H%ptr( : np1 )
-      data%I_user( n + 2 : neh + np1 ) = prob%H%row( : neh )
+      data%original_a = SMT_get( prob%A%type ) == 'SPARSE_BY_COLUMNS'
+      IF ( data%original_a ) THEN
+        nea = prob%A%ptr( np1 ) - 1
+      ELSE
+        CALL CONVERT_to_sparse_column_format( prob%A, data%A, control_convert, &
+                                              inform_convert )
+        nea = data%A%ptr( np1 ) - 1
+      END IF
+
+!  record the sparse matrix H in E04NQF's user data structure, if necessary, 
+!  convert the input H into by sparse-row format
+
+      data%original_h = SMT_get( prob%H%type ) == 'SPARSE_BY_ROWS'
+      IF ( data%original_h ) THEN
+        neh = prob%H%ptr( np1 ) - 1
+        ALLOCATE( data%C_user( 1 ), data%R_user( neh ), STAT = status )
+        IF ( status /= 0 ) GO TO 990
+        data%R_user( : neh ) = prob%H%val( : neh )
+        ALLOCATE( data%I_user( neh + np1 ), STAT = status )
+        IF ( status /= 0 ) GO TO 990
+        data%I_user( : np1 ) = prob%H%ptr( : np1 )
+        data%I_user( n + 2 : neh + np1 ) = prob%H%col( : neh )
+      ELSE
+        CALL CONVERT_to_sparse_symmetric_row_format( prob%H, data%H,           &
+                                                     control_convert,          &
+                                                     inform_convert )
+!write(6,*) ' h_ptr ', data%H%ptr
+!write(6,*) ' h_col ', data%H%col
+!write(6,*) ' h_val ', data%H%val
+        neh = data%H%ptr( np1 ) - 1
+        ALLOCATE( data%C_user( 1 ), data%R_user( neh ), STAT = status )
+        IF ( status /= 0 ) GO TO 990
+        data%R_user( : neh ) = data%H%val( : neh )
+        ALLOCATE( data%I_user( neh + np1 ), STAT = status )
+        IF ( status /= 0 ) GO TO 990
+        data%I_user( : np1 ) = data%H%ptr( : np1 )
+        data%I_user( n + 2 : neh + np1 ) = data%H%col( : neh )
+      END IF
 
 !  provide space for E04NPF's communication arrays
 
@@ -1964,14 +1957,12 @@ write(6,*) ' qp: inform%obj ', inform%obj
       ALLOCATE( data%I_w( len_i_w ), data%R_w( len_r_w ), STAT = status )
       IF ( status /= 0 ) GO TO 990
 
-!  define additional E04NQF data
-
 !  set up the internal structures
 
-      ifail = - 1
+      inform%ifail = - 1
       CALL E04NPF( data%C_w, len_c_w, data%I_w, len_i_w, data%R_w, len_r_w,    &
-                   ifail )
-      SELECT CASE( ifail )
+                   inform%ifail )
+      SELECT CASE( inform%ifail )
       CASE ( - 199 )
         WRITE( out,                                                            &
           "( ' call to E04NQ failed, substitute dummy package called' )" )
@@ -1980,70 +1971,188 @@ write(6,*) ' qp: inform%obj ', inform%obj
         WRITE( out, "( ' call to E04NQ failed, licence key expired' )" )
         STOP
       CASE ( - 999 )
-        status = ifail ; GO TO 990
+        status = inform%ifail ; GO TO 990
       END SELECT
 
-!  read options file
-
-      IF ( PRESENT( spec ) ) THEN 
-! OPEN( spec, file = 'E04NQF.SPC', form = 'FORMATTED', status = 'OLD' )
-! REWIND( spec )
-! ifail = - 1
-! CALL E04NRF( spec, C_w, I_w, R_w, ifail )
-! IF ( ifail /= 0 ) GO TO 910
-! CLOSE( spec )
+      IF ( debug ) THEN
+        DO i = 1, len_i_w
+         WRITE( 29, * ) i, data%I_w( i )
+        END DO
+        DO i = 1, len_r_w
+          WRITE( 29, * ) i, data%R_w( i )
+        END DO
+        DO i = 1, len_c_w
+          WRITE( 29, * ) i, data%C_w( i )
+        END DO
       END IF
 
-!  adjust output
+!  optionally, write a summary file
 
-      CALL E04NTF( 'Print Level = 10', out, data%C_w, data%I_w, data%R_w,      &
-                   ifail )
-      CALL E04NTF( 'Print Frequency = 1', out, data%C_w, data%I_w, data%R_w,   &
-                   ifail )
+      IF ( summary ) THEN
+        inform%ifail = - 1
+        summary_unit = 25
+        CALL X04ACF( summary_unit, 'e04nqf_summary.txt', 1, inform%ifail )
+        IF ( inform%ifail /= 0 ) THEN
+          WRITE( out, "( ' NAG X04ACF failed to open the summary file.',       &
+         & ' Error code: ', I0 )" ) inform%ifail
+          status = GALAHAD_error_file ; RETURN
+        END IF
+      END IF
+
+!  record the unit for errr messages
+
+     i = control%error_file
+     CALL X04AAF( 1, i )
+
+!  read options file, if required and present
+
+      IF ( PRESENT( spec ) ) THEN 
+        INQUIRE( FILE = spec, EXIST = is_specfile )
+        IF ( is_specfile ) THEN
+          OPEN( NEWUNIT = spec_unit, FILE = spec, FORM = 'FORMATTED',          &
+                STATUS = 'OLD' )
+          REWIND( spec_unit )
+          inform%ifail = - 1
+          CALL E04NRF( spec_unit, data%C_w, data%I_w, data%R_w, inform%ifail )
+          IF ( inform%ifail /= 0 ) THEN
+            status = GALAHAD_error_file ; RETURN
+          END IF
+          CLOSE( spec_unit )
+        END IF
+      END IF
+
+!  adjust the required output
+
+      IF ( debug ) THEN
+        DO i = 1, len_i_w
+         WRITE( 30, * ) i, data%I_w( i )
+        END DO
+        DO i = 1, len_r_w
+          WRITE( 30, * ) i, data%R_w( i )
+        END DO
+        DO i = 1, len_c_w
+          WRITE( 30, * ) i, data%C_w( i )
+        END DO
+      END IF
+
+      CALL E04NQF_transfer_control( control, data%C_w, len_c_w, data%I_w,      &
+                                    len_i_w, data%R_w, len_r_w, inform%ifail )
+
+      IF ( debug ) THEN
+        DO i = 1, len_i_w
+         WRITE( 31, * ) i, data%I_w( i )
+        END DO
+        DO i = 1, len_r_w
+          WRITE( 31, * ) i, data%R_w( i )
+        END DO
+        DO i = 1, len_c_w
+          WRITE( 31, * ) i, data%C_w( i )
+        END DO
+      END IF
 
 !  solve the problem
 
-      ns = 0
-      ifail = - 1
-      CALL E04NQF( 'C', E04NQ_qphx, m, n, nea, 1, n, n, 0, prob%f,             &
-                   prob%p_name( 1 : 8 ), prob%A%val, prob%A%row, prob%A%ptr,   &
-                   data%B_l, data%B_u, prob%G, c_dummy,                        &
-                   data%HELAST, data%HS, data%X, prob%Y, data%Z, ns, ninf,     &
-                   sinf, prob%q, data%C_w, len_c_w, data%I_w, len_i_w,         &
-                   data%R_w, len_r_w, data%C_user, data%I_user, data%R_user,   &
-                   ifail )
+      inform%ns = 0
+      inform%ifail = - 1
+      IF ( data%original_a ) THEN
+        CALL E04NQF( 'C', E04NQ_qphx, m, n, nea, 1, n, n, 0, prob%f,           &
+                     prob%p_name( 1 : 8 ), prob%A%val, prob%A%row, prob%A%ptr, &
+                     data%B_l, data%B_u, prob%G, c_dummy,                      &
+                     data%HELAST, data%HS, data%X, prob%Y, data%Z, inform%ns,  &
+                     inform%ninf, inform%sinf, prob%q,                         &
+                     data%C_w, len_c_w, data%I_w, len_i_w, data%R_w, len_r_w,  &
+                     data%C_user, data%I_user, data%R_user, inform%ifail )
+      ELSE
+        CALL E04NQF( 'C', E04NQ_qphx, m, n, nea, 1, n, n, 0, prob%f,           &
+                     prob%p_name( 1 : 8 ), data%A%val, data%A%row, data%A%ptr, &
+                     data%B_l, data%B_u, prob%G, c_dummy,                      &
+                     data%HELAST, data%HS, data%X, prob%Y, data%Z, inform%ns,  &
+                     inform%ninf, inform%sinf, prob%q,                         &
+                     data%C_w, len_c_w, data%I_w, len_i_w, data%R_w, len_r_w,  &
+                     data%C_user, data%I_user, data%R_user, inform%ifail )
+      END IF
 
 !  record the solution
 
-      IF ( ifail == 0 ) THEN
+      IF ( inform%ifail == 0 ) THEN
         prob%X( : n ) = data%X( : n )
         prob%C( : m ) = data%X( np1 : npm )
         prob%Z( : n ) = data%Z( : n )
+        inform%obj =  prob%q
+        inform%status = GALAHAD_ok
+      ELSE
+        inform%status = GALAHAD_error_naglib
       END IF
+
+!     WRITE( 6, * ) ' x  ', prob%X( : n )
+!     CALL E04NQ_QPHX( n, prob%X, prob%X_l, 0, data%C_user, data%I_user, 
+!                      data%R_user )
+!     WRITE( 6, * ) ' Hx ', prob%X_l( : n )
+
+      IF ( debug ) THEN
+        DO i = 1, len_i_w
+         WRITE( 32, * ) i, data%I_w( i )
+        END DO
+        DO i = 1, len_r_w
+          WRITE( 32, * ) i, data%R_w( i )
+        END DO
+        DO i = 1, len_c_w
+          WRITE( 32, * ) i, data%C_w( i )
+        END DO
+      END IF
+
+!  core optimization status metrics
+
+!   i_w(421): total number of minor (active-set) Iterations
+!   i_w(422): total number of major iterations
+!   i_w(423): total number of fresh￼LU decompositions performed
+
+     inform%iter = data%I_w( 421 )
+     inform%major_iter = data%I_w( 422 )
+     inform%nfacts = data%I_w( 423 )
+
+!  memory requirements after an insufficient memory failure (alegedly)
+
+!   i_w(121): Minimum length required for cw (mincw)
+!   i_w(122): Minimum length required for iw (miniw)
+!   i_w(123): Minimum length required for rw (minrw)
 
 !  write details
 
-      IF ( out > 0 ) THEN
-        WRITE( out, "( /, 24('*'), ' GALAHAD statistics ', 24('*') //          &
+      IF ( print_level > 0 ) THEN
+        WRITE( out, "( /, 24('*'), ' GALAHAD QP statistics ', 24('*') //       &
      &                 ' Package used            :  E04NQF',   /,              &
-     &                 ' Problem                 :  ', A, /,                   &
-     &                 ' # variables             =  ', I0, /,                  &
-     &                 ' # constraints           =  ', I0, /,                  &
-     &                 ' Exit code               =  ', I0, /,                  &
-     &                 ' Final f                 = ', ES15.7 //                &
-     &                 67('*') / )" ) prob%p_name, n, m, ifail, prob%q
-!       WRITE( out, "(' Optimal X = ', 7F9.2 )" ) data%X( : n )
+     &                 ' Problem                 : ', A, /,                    &
+     &                 ' # variables             = ', I0, /,                   &
+     &                 ' # constraints           = ', I0, /,                   &
+     &                 ' Exit code               = ', I0, /,                   &
+     &                 ' Final f                 = ', G0 /,                    &
+     &                 ' Minor its               = ', I0, /,                   &
+     &                 ' Major its               = ', I0, /,                   &
+     &                 ' Factorizations          = ', I0, /,                   &
+     &                 67('*') / )" ) prob%p_name, n, m, inform%ifail, prob%q, &
+                           inform%iter, inform%major_iter, inform%nfacts
+!       IF ( inform%ifail == 0 ) &
+!         WRITE( out, "(' Optimal X = ', 7F9.2 )" ) prob%X( : n )
       END IF
 
-!  deallocate workspace
+!  write summary data if required
 
-      DEALLOCATE( data%HELAST, data%HS, data%I_w, data%I_user, STAT = status )
-      DEALLOCATE( data%B_l, data%B_u, data%X, data%Z, STAT = status )
-      DEALLOCATE( data%R_w, data%R_user, data%C_w, data%C_user, STAT = status )
+      IF ( summary ) THEN
+        inform%ifail = - 1
+        CALL X04ADF( summary_unit, inform%ifail ) 
+        IF ( inform%ifail /= 0 ) THEN
+          WRITE( out, "( ' NAG X04ACF failed to close the summary file.',      &
+         & ' Error code: ', I0 )" ) inform%ifail
+          IF ( status /= GALAHAD_error_naglib ) status = GALAHAD_error_io
+          RETURN
+        END IF
+      END IF
+
       RETURN
 
   990 CONTINUE
-      ifail = - 101
+      status = GALAHAD_error_allocate
       RETURN
 
 !  internal subroutine
@@ -2076,8 +2185,10 @@ write(6,*) ' qp: inform%obj ', inform%obj
 !  loop over the columns of H, remembering that only one triangle of H is stored
 
          DO j = 1, ncolh
+!          write(6,*) ' col, start, end ', j,  I_user( j ), I_user( j + 1 ) - 1 
            DO l = I_user( j ), I_user( j + 1 ) - 1 
              i = I_user( n_row + l )
+!            write(6,*) ' row ', i
              HX( i ) = HX( i ) + R_user( l ) * X( j )
              IF ( i /= j ) HX( j ) = HX( j ) + R_user( l ) * X( i )
            END DO
@@ -2092,6 +2203,33 @@ write(6,*) ' qp: inform%obj ', inform%obj
 !  End of QP_E04NQF_solve
 
       END SUBROUTINE QP_E04NQF_solve
+
+!-*-*-*-   Q P _ E 0 4 N Q F _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-
+
+      SUBROUTINE QP_E04NQF_terminate( data, status )
+
+!  clean up after the E04NQF solve
+
+!  dummy arguments
+
+      TYPE ( QP_E04NQF_data_type ), INTENT( INOUT ) :: data
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  deallocate workspace
+
+      DEALLOCATE( data%HELAST, data%HS, data%I_w, data%I_user, STAT = status )
+      DEALLOCATE( data%B_l, data%B_u, data%X, data%Z, STAT = status )
+      DEALLOCATE( data%R_w, data%R_user, data%C_w, data%C_user, STAT = status )
+      IF ( .NOT. data%original_a ) DEALLOCATE( data%A%ptr, data%A%row,         &
+                                               data%A%val, data%A%type,        &
+                                               STAT = status )
+      IF ( .NOT. data%original_h ) DEALLOCATE( data%H%ptr, data%H%col,         &
+                                               data%H%val, data%H%type,        &
+                                               STAT = status )
+
+!  End of QP_E04NQF_terminate
+
+      END SUBROUTINE QP_E04NQF_terminate
 
 !-*-*-*-*-*-*-   Q P _ H i G H S _ S O L V E   S U B R O U T I N E   -*-*-*-*-
 
@@ -2124,6 +2262,9 @@ write(6,*) ' qp: inform%obj ', inform%obj
 
 !  solve the quadratic program using the OSQP package
 
+!  A - by columns
+!  H - upper triangle by columns (=> lower triangle by rows)
+
 !  dummy arguments
 
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
@@ -2136,6 +2277,8 @@ write(6,*) ' qp: inform%obj ', inform%obj
 
       INTEGER ( KIND = ip_ ) :: i, j, k, l, m, n, n_bnds, status
 !     INTEGER ( KIND = ip_ ) :: a_ne, h_ne
+      TYPE ( CONVERT_control_type ) :: control_convert
+      TYPE ( CONVERT_inform_type ) :: inform_convert
       CHARACTER ( LEN = SIZE( info%status ) ) :: info_status
 
 !  transfer the data into OSQP's QP format
@@ -2150,17 +2293,32 @@ write(6,*) ' qp: inform%obj ', inform%obj
       ALLOCATE( data%B_l( data%m ), data%B_u( data%m ), STAT = status )
       ALLOCATE( data%Y( data%m ), STAT = status )
 
+!  if necessary, convert the input A into by sparse-column format
+
+      data%original_a = SMT_get( prob%A%type ) == 'SPARSE_BY_COLUMNS'
+      IF ( .NOT. data%original_a )                                             &
+        CALL CONVERT_to_sparse_column_format( prob%A, data%A, control_convert, &
+                                              inform_convert )
+
 !  reset problem constraint data (NB 1-based integer index arrays)
 
       data%B_l( : m ) = prob%C_l( : m ) ; data%B_u( : m ) = prob%C_u( : m )
       l = 1 ; k = m
       DO j = 1, n
         data%A_ptr( j ) = l
-        DO i = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1
-          data%A_row( l ) = prob%A%row( i )
-          data%A_val( l ) = prob%A%val( i )
-          l = l + 1
-        END DO
+        IF ( data%original_a ) THEN
+          DO i = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1
+            data%A_row( l ) = prob%A%row( i )
+            data%A_val( l ) = prob%A%val( i )
+            l = l + 1
+          END DO
+        ELSE
+          DO i = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
+            data%A_row( l ) = data%A%row( i )
+            data%A_val( l ) = data%A%val( i )
+            l = l + 1
+          END DO
+        END IF 
         IF ( prob%X_l( j ) > - infinity .OR. prob%X_u( j ) < infinity ) THEN
           k = k + 1
           data%A_row( l ) = k
@@ -2170,6 +2328,17 @@ write(6,*) ' qp: inform%obj ', inform%obj
         END IF
       END DO
       data%A_ptr( n + 1 ) = l
+
+!  if necessary, convert the input H into by sparse-row format
+
+      data%original_h = SMT_get( prob%H%type ) == 'SPARSE_BY_ROWS'
+      IF ( .NOT. data%original_h )                                             &
+        CALL CONVERT_to_sparse_symmetric_row_format( prob%H, data%H,           &
+                                                     control_convert,          &
+                                                     inform_convert )
+!write(6,*) ' h_ptr ', data%H%ptr
+!write(6,*) ' h_col ', data%H%col
+!write(6,*) ' h_val ', data%H%val
 
 !  establish the control settings
 
@@ -2181,12 +2350,17 @@ write(6,*) ' qp: inform%obj ', inform%obj
 
 !  solve the problem
 
-      IF ( .true. ) THEN
+      IF ( data%original_h ) THEN
         CALL OSQP_solve( n, data%m, prob%H%ptr, prob%H%col, prob%H%val,        &
                          prob%G, data%A_ptr, data%A_row, data%A_val,           &
                          data%B_l, data%B_u, prob%X, data%Y,                   &
                          info, data%OSQP_data, status )
-      END IF
+      ELSE
+        CALL OSQP_solve( n, data%m, data%H%ptr, data%H%col, data%H%val,        &
+                         prob%G, data%A_ptr, data%A_row, data%A_val,           &
+                         data%B_l, data%B_u, prob%X, data%Y,                   &
+                         info, data%OSQP_data, status )
+      END IF 
 
 !  recover the solution
 
@@ -2223,15 +2397,38 @@ write(6,*) ' qp: inform%obj ', inform%obj
         END IF
       END IF
 
-!  clean up after the solve
-
-      CALL OSQP_cleanup( data%OSQP_data, status )
-
       RETURN
 
 !  End of QP_OSQP_solve
 
       END SUBROUTINE QP_OSQP_solve
+
+!-*-*-*-*-   Q P _ O S Q P _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-
+
+      SUBROUTINE QP_OSQP_terminate( data, status )
+
+!  clean up after the OSQP solve
+
+!  dummy arguments
+
+      TYPE ( QP_OSQP_data_type ), INTENT( INOUT ) :: data
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  deallocate arrays
+
+      CALL OSQP_cleanup( data%OSQP_data, status )
+      DEALLOCATE( data%A_val, data%A_row, data%A_ptr, STAT = status )
+      DEALLOCATE( data%B_l, data%B_u, data%Y, STAT = status )
+      IF ( .NOT. data%original_a ) DEALLOCATE( data%A%ptr, data%A%row,         &
+                                               data%A%val, data%A%type,        &
+                                               STAT = status )
+      IF ( .NOT. data%original_h ) DEALLOCATE( data%H%ptr, data%H%col,         &
+                                               data%H%val, data%H%type,        &
+                                               STAT = status )
+
+!  End of QP_OSQP_terminate
+
+      END SUBROUTINE QP_OSQP_terminate
 
 !-*-*-*-*-*-*-   Q P _ Q P A L M _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-
 
@@ -2336,8 +2533,7 @@ write(6,*) ' qp: inform%obj ', inform%obj
 
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  Deallocate all arrays allocated by SCALE, PRESOLVE, QPA, QPB, QPC,
-!  CQP, DQP and CDQP
+!  Deallocate all arrays allocated by SCALE and PRESOLVE
 
       CALL SCALE_terminate( data%QPD_data%SCALE_data, control%SCALE_control,   &
                             inform%SCALE_inform,                               &
@@ -2357,53 +2553,119 @@ write(6,*) ' qp: inform%obj ', inform%obj
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-      CALL QPA_terminate( data%QPD_data, control%QPA_control,                  &
-                          inform%QPA_inform )
-      IF ( inform%QPA_inform%status /= GALAHAD_ok ) THEN
-        inform%status = GALAHAD_error_deallocate
-        inform%alloc_status = inform%QPA_inform%alloc_status
-        IF ( control%deallocate_error_fatal ) RETURN
-      END IF
+!  Deallocate all arrays allocated by the supported QP solvers
 
-      CALL QPB_terminate( data%QPD_data, control%QPB_control,                  &
-                          inform%QPB_inform )
-      IF ( inform%QPB_inform%status /= GALAHAD_ok ) THEN
-        inform%status = GALAHAD_error_deallocate
-        inform%alloc_status = inform%QPB_inform%alloc_status
-        IF ( control%deallocate_error_fatal ) RETURN
-      END IF
+      SELECT CASE( TRIM( data%solver ) )
 
-      CALL QPC_terminate( data%QPD_data, control%QPC_control,                  &
-                          inform%QPC_inform )
-      IF ( inform%QPC_inform%status /= GALAHAD_ok ) THEN
-        inform%status = GALAHAD_error_deallocate
-        inform%alloc_status = inform%QPC_inform%alloc_status
-        IF ( control%deallocate_error_fatal ) RETURN
-      END IF
+!  == QPA ==
 
-      CALL CQP_terminate( data%QPD_data, control%CQP_control,                  &
-                          inform%CQP_inform )
-      IF ( inform%CQP_inform%status /= GALAHAD_ok ) THEN
-        inform%status = GALAHAD_error_deallocate
-        inform%alloc_status = inform%CQP_inform%alloc_status
-        IF ( control%deallocate_error_fatal ) RETURN
-      END IF
+      CASE ( 'qpa', 'QPA' )
+        CALL QPA_terminate( data%QPD_data, control%QPA_control,                &
+                            inform%QPA_inform )
+        IF ( inform%QPA_inform%status /= GALAHAD_ok ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%QPA_inform%alloc_status
+          IF ( control%deallocate_error_fatal ) RETURN
+        END IF
 
-      CALL DQP_terminate( data%QPD_data, control%DQP_control,                  &
-                          inform%DQP_inform )
-      IF ( inform%DQP_inform%status /= GALAHAD_ok ) THEN
-        inform%status = GALAHAD_error_deallocate
-        inform%alloc_status = inform%DQP_inform%alloc_status
-        IF ( control%deallocate_error_fatal ) RETURN
-      END IF
+!  == QPB ==
 
-      CALL CDQP_terminate( data%QPD_data, control%CDQP_control,                &
-                           inform%CDQP_inform )
-      IF ( inform%CDQP_inform%status /= GALAHAD_ok ) THEN
-        inform%status = GALAHAD_error_deallocate
-        inform%alloc_status = inform%CDQP_inform%alloc_status
-        IF ( control%deallocate_error_fatal ) RETURN
-      END IF
+      CASE ( 'qpb', 'QPB' )
+        CALL QPB_terminate( data%QPD_data, control%QPB_control,                &
+                            inform%QPB_inform )
+        IF ( inform%QPB_inform%status /= GALAHAD_ok ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%QPB_inform%alloc_status
+          IF ( control%deallocate_error_fatal ) RETURN
+        END IF
+
+!  == QPC ==
+
+      CASE ( 'qpc', 'QPC' )
+        CALL QPC_terminate( data%QPD_data, control%QPC_control,                &
+                            inform%QPC_inform )
+        IF ( inform%QPC_inform%status /= GALAHAD_ok ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%QPC_inform%alloc_status
+          IF ( control%deallocate_error_fatal ) RETURN
+        END IF
+
+!  == CQP ==
+
+      CASE ( 'cqp', 'CQP' )
+        CALL CQP_terminate( data%QPD_data, control%CQP_control,                &
+                            inform%CQP_inform )
+        IF ( inform%CQP_inform%status /= GALAHAD_ok ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%CQP_inform%alloc_status
+          IF ( control%deallocate_error_fatal ) RETURN
+        END IF
+
+!  == DQP ==
+
+      CASE ( 'dqp', 'DQP' )
+        CALL DQP_terminate( data%QPD_data, control%DQP_control,                &
+                            inform%DQP_inform )
+        IF ( inform%DQP_inform%status /= GALAHAD_ok ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%DQP_inform%alloc_status
+          IF ( control%deallocate_error_fatal ) RETURN
+        END IF
+
+!  == CDQP ==
+
+      CASE ( 'cdqp', 'CDQP' )
+        CALL CDQP_terminate( data%QPD_data, control%CDQP_control,              &
+                             inform%CDQP_inform )
+        IF ( inform%CDQP_inform%status /= GALAHAD_ok ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%CDQP_inform%alloc_status
+          IF ( control%deallocate_error_fatal ) RETURN
+        END IF
+
+!  == BPMPD ==
+
+      CASE ( 'bpmpd', 'BPMPD' )
+
+!  == BQPD ==
+
+      CASE ( 'bqpd', 'BQPD' )
+
+!  == Clarabel ==
+
+      CASE ( 'clarabel', 'CLARABEL', 'Clarabel' )
+
+!  == E04NQF ==
+
+      CASE ( 'e04nqf', 'E04NQF' )
+        CALL QP_E04NQF_terminate( data%QP_E04NQF_data, inform%status )
+
+!  == HiGHS ==
+
+      CASE ( 'highs', 'HIGHS', 'HiGHS' )
+
+!  == OSQP ==
+
+      CASE ( 'osqp', 'OSQP' )
+        CALL QP_OSQP_terminate( data%QP_OSQP_data, inform%status )
+
+!  == QPALM ==
+
+      CASE ( 'qpalm', 'QPALM' )
+
+!  == qpOASES ==
+
+      CASE ( 'qpoases', 'QPOASES', 'qpOASES' )
+
+!  == SCS ==
+
+      CASE ( 'scs', 'SCS' )
+
+!  = unavailable solver =
+
+      CASE DEFAULT
+        inform%status = GALAHAD_error_unknown_solver ; RETURN
+      END SELECT
 
 !  Deallocate all remaing allocated arrays
 

@@ -2,7 +2,7 @@
 
 #include "galahad_modules.h"
 
-  PROGRAM E04NQ_test
+  PROGRAM E04NQF_test
 
 !  main program to test the NAG convex QP package E04NQF
 
@@ -68,7 +68,7 @@
   A_row = [ 1, 1, 2, 2 ]
   A_ptr = [ 1, 2, 4, 5 ]
 
-!  transfer data into the format required by E04NQ
+!  transfer data into the format required by E04NQF
 
   start = 'C'
   nname = 1
@@ -78,7 +78,7 @@
   ns = 0
   prob = p_name( 1 : 8 )
 
-!  manipulate vectors so that they conform to E04NQ's structures
+!  manipulate vectors so that they conform to E04NQF's structures
 
   DEALLOCATE( Z, STAT = status )
   IF ( status /= 0 ) GO TO 990
@@ -128,7 +128,7 @@
 
 !  read options file
 
-! OPEN( spec, file = 'E04NQ.SPC', form = 'FORMATTED', status = 'OLD' )
+! OPEN( spec, file = 'E04NQF.SPC', form = 'FORMATTED', status = 'OLD' )
 ! REWIND( spec )
 ! ifail = - 1
 ! CALL E04NRF( spec, C_w, I_w, R_w, ifail )
@@ -143,7 +143,7 @@
 !  solve the problem
 
   ifail = - 1
-  CALL E04NQF( start, E04NQ_qphx, m, n, nea, nname, lenc, ncolh, iobj, f,     &
+  CALL E04NQF( start, E04NQF_qphx, m, n, nea, nname, lenc, ncolh, iobj, f,     &
                prob, A_val, A_row, A_ptr, B_l, B_u, G, c_dummy, HELAST, HS,    &
                X, Y, Z, ns, ninf, sinf, obj, C_w, len_c_w, I_w, len_i_w,       &
                R_w, len_r_w, C_user, I_user, R_user, ifail )
@@ -166,7 +166,7 @@
 
   IF ( output_summary > 10 ) THEN
     ALLOCATE( C( m ), G_l( n ), STAT = status )
-    CALL E04NQ_QPHX( n, X, G_l, 0, C_user, I_user, R_user )
+    CALL E04NQF_QPHX( n, X, G_l, 0, C_user, I_user, R_user )
     G_l( : n ) = G_l( : n ) + G( : n ) - Z( : n )
     C( : m ) = 0.0_rp_
     DO j = 1, n
@@ -216,7 +216,7 @@
 
   CONTAINS
 
-    SUBROUTINE E04NQ_QPHX( ncolh, X, HX, nstate, C_user, I_user, R_user )
+    SUBROUTINE E04NQF_QPHX( ncolh, X, HX, nstate, C_user, I_user, R_user )
     USE GALAHAD_KINDS_precision
 
 !  given x, compute hx = H*x
@@ -251,9 +251,9 @@
 
     RETURN
 
-!  end of subroutine E04NQ_QPHX
+!  end of subroutine E04NQF_QPHX
 
-    END SUBROUTINE E04NQ_QPHX
+    END SUBROUTINE E04NQF_QPHX
 
-  END PROGRAM E04NQ_test
+  END PROGRAM E04NQF_test
 

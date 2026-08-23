@@ -20,7 +20,7 @@ PACKAGE = QP
 
 DEPENDENCIES = make_qpd_deps make_qpd make_checkpoint make_qpa \
                make_lsqp make_qpb make_eqp make_rpd make_cqp \
-               make_qpc make_dqp make_cdqp
+               make_qpc make_dqp make_cdqp make_convert
 
 #  other packages that depend on package
 

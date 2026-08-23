@@ -16,20 +16,26 @@ NLIBS = $(LIBS) -lgalahad_problem
 
 BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
-NAGS = $(BASICSZ) $(NLGS)(naglib.o)
-NAGD = $(BASICSZ) $(NLGD)(naglib.o)
-NAGQ = $(BASICSZ) $(NLGQ)(naglib.o)
-NAGS64 = $(BASICSZ) $(NLGS64)(naglib.o)
-NAGD64 = $(BASICSZ) $(NLGD64)(naglib.o)
-NAGQ64 = $(BASICSZ) $(NLGQ64)(naglib.o)
+NAGS = $(BASICSZ) $(NLGS)(naglib.o) $(LGS)(naglib_interface.o)
+NAGD = $(BASICSZ) $(NLGD)(naglib.o) $(LGD)(naglib_interface.o)
+NAGQ = $(BASICSZ) $(NLGQ)(naglib.o) $(LGQ)(naglib_interface.o)
+NAGS64 = $(BASICSZ) $(NLGS64)(naglib.o) $(LGS64)(naglib_interface.o)
+NAGD64 = $(BASICSZ) $(NLGD64)(naglib.o) $(LGD64)(naglib_interface.o)
+NAGQ64 = $(BASICSZ) $(NLGQ64)(naglib.o) $(LGQ64)(naglib_interface.o)
 
 NAGST = $(NAGS) $(OBJ)/e04nqt.o
 NAGDT = $(NAGD) $(OBJ)/e04nqt.o
 NAGQT = $(NAGQ) $(OBJ)/e04nqt.o
+NAGS64T = $(NAGS64) $(OBJ)/e04nqt.o
+NAGD64T = $(NAGD64) $(OBJ)/e04nqt.o
+NAGQ64T = $(NAGQ64) $(OBJ)/e04nqt.o
 
 RNAGST = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
 RNAGDT = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
-RNAGDQ = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
+RNAGQT = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
+RNAGS64T = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
+RNAGD64T = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
+RNAGQ64T = $(OBJ)/e04nqt.o -L$(OBJ) $(LIBS)
 
 #  naglib
 
@@ -112,6 +118,27 @@ $(NLG)(naglib.o): ../../dum/naglib.F90
 	cd $(OBJ); $(FORTRAN) -o naglib.o $(FFLAGS) naglib.F90
 	cd $(OBJ); $(NARR) naglib.o ; $(RM) naglib.F90 naglib.o
 	$(RANLIB) $(NLG)
+	@printf '[ OK ]\n'
+
+naglib_interface.o: $(LG)(naglib_interface.o)
+
+$(LG)(naglib_interface.o): ../naglib/naglib_interface.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "naglib_interface  "
+	$(CP) ../naglib/naglib_interface.F90 \
+           $(OBJ)/naglib_interface.F90
+	cd $(OBJ); $(FORTRAN) -o naglib_interface.o $(FFLAGS) \
+                      naglib_interface.F90
+	cd $(OBJ); $(ARR) naglib_interface.o ; \
+          $(RM) naglib_interface.F90 naglib_interface.o
+	@printf '[ OK ]\n'
+
+e04npf.o: $(OBJ)/e04npf.o
+
+$(OBJ)/e04npf.o: ../naglib/e04npf.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "e04npf  "
+	$(CP) ../naglib/e04npf.F90 $(OBJ)/e04npf.F90
+	cd $(OBJ); $(FORTRAN) -o e04npf.o $(FFLAGS) e04npf.F90
+	$(RM) $(OBJ)/e04npf.F90
 	@printf '[ OK ]\n'
 
 #  test programs

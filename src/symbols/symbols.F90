@@ -258,7 +258,7 @@
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_error_highs = - 114
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
-                              GALAHAD_error_naglib = -115
+                              GALAHAD_error_naglib = - 115
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_error_osqp = - 116
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &

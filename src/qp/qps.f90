@@ -52,8 +52,7 @@
      WRITE( 6, "( ' QP: ', I0, 1X, A, ' iterations  ', /,                      &
     &     ' Optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
-     inform%OSQP_inform%iter, TRIM( solver ), inform%obj, p%X
-!    inform%CQP_inform%iter, TRIM( solver ), inform%obj, p%X
+     inform%iter, TRIM( solver ), inform%obj, p%X
    ELSE                                         !  Error returns
      WRITE( 6, "( ' QP_solve exit status = ', I6 ) " ) inform%status
    END IF

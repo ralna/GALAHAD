@@ -434,7 +434,7 @@
           IWORK = 0
 
           CALL CONVERT_to_sparse_row_format( A, A_out, control, inform,        &
-                                             IWORK, WORK )
+                                             IWORK = IWORK, WORK = WORK )
 
 !  discard workspace
 
@@ -460,7 +460,7 @@
           IWORK = 0
 
           CALL CONVERT_to_sparse_column_format( A, A_out, control, inform,     &
-                                                IWORK, WORK )
+                                                IWORK = IWORK, WORK = WORK )
 !  discard workspace
 
           CALL SPACE_dealloc_array( IWORK, inform%status, inform%alloc_status )
@@ -537,7 +537,7 @@
 
       INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, m, n, ne, order_status
       REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
-      LOGICAL :: order_cols
+      LOGICAL :: order_cols, sum_duplicates
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -552,7 +552,7 @@
 
 !  ensure that input parameters are within allowed ranges
 
-      IF ( A%n < 1 .OR. A%m < 1 ) THEN
+      IF ( A%n < 1 .OR. A%m < 0 ) THEN
         inform%status = GALAHAD_error_restrictions
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
           WRITE( control%error, "( ' ', /, A, ' ** A%n and A%m must be +ve' )")&
@@ -560,10 +560,22 @@
         RETURN
       END IF
 
+!  set the output type
+
+      CALL SMT_put( A_out%type, 'SPARSE_BY_COLUMNS', inform%alloc_status )
+      IF ( inform%alloc_status /= 0 ) THEN
+        inform%status = GALAHAD_error_allocate
+        GO TO 900
+      END IF
+
 !  discover the array size
 
       order_cols = .FALSE.
-
+      IF ( A%m > 0 ) THEN
+        sum_duplicates = control%sum_duplicates 
+      ELSE
+        sum_duplicates = .FALSE.
+      END IF
       SELECT CASE( SMT_get( A%type ) )
       CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
         ne = A%m * A%n
@@ -575,7 +587,7 @@
         IF ( .NOT. control%transpose ) order_cols = .TRUE.
       CASE ( 'COORDINATE' )
         ne = A%ne
-        order_cols = .TRUE.
+        IF ( A%m > 0 ) order_cols = .TRUE.
 
 !  type of A unknown
 
@@ -596,7 +608,7 @@
 
 !  check that optional arrays are present and large enough if needed
 
-      IF ( control%sum_duplicates .OR. ( control%order .AND. order_cols ) ) THEN
+      IF ( sum_duplicates .OR. ( control%order .AND. order_cols ) ) THEN
         IF ( .NOT. PRESENT( IWORK ) ) THEN
           inform%status = GALAHAD_error_optional
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
@@ -636,11 +648,6 @@
 !  each column in increasing order
 
       A_out%m = m ; A_out%n = n ; A_out%ne = ne
-      CALL SMT_put( A_out%type, 'SPARSE_BY_COLUMNS', inform%alloc_status )
-      IF ( inform%alloc_status /= 0 ) THEN
-        inform%status = GALAHAD_error_allocate
-        GO TO 900
-      END IF
 
       array_name = 'CONVERT: A_out%ptr'
       CALL SPACE_resize_array( A_out%n + 1, A_out%ptr,                         &
@@ -665,6 +672,13 @@
         exact_size = control%space_critical,                                   &
         bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  special case - m = 0
+
+      IF ( A%m == 0 ) THEN
+        A_out%ptr( : A_out%n + 1 ) = 1
+        inform%status = GALAHAD_ok ; GO TO 890
+      END IF
 
 !  copy the data to A
 
@@ -897,6 +911,7 @@
 
 !  record the total time taken
 
+  890 CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%total = inform%time%total + time_now - time_start
       inform%time%clock_total                                                  &
@@ -967,7 +982,7 @@
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, m, n, ne, order_status
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, m, n, ne, order_status, iws
       REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
       LOGICAL :: order_cols
       CHARACTER ( LEN = 80 ) :: array_name
@@ -1037,7 +1052,9 @@
           RETURN
         END IF
 
-        IF ( SIZE( IWORK ) < m ) THEN
+        iws = SIZE( IWORK )
+        IF ( ( control%transpose .AND. iws < n ) .OR.                          &
+             ( .NOT. control%transpose .AND. iws < m ) ) THEN
           inform%status = GALAHAD_error_integer_ws
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
             WRITE( control%error, "( ' ', /, A, ' ** length of iwork must at', &
@@ -1054,7 +1071,9 @@
             RETURN
           END IF
 
-          IF ( SIZE( WORK ) < m ) THEN
+          iws = SIZE( WORK )
+          IF ( ( control%transpose .AND. iws < n ) .OR.                        &
+               ( .NOT. control%transpose .AND. iws < m ) ) THEN
             inform%status = GALAHAD_error_real_ws
             IF ( control%error > 0 .AND. control%print_level > 0 )             &
               WRITE( control%error, "( ' ', /, A, ' ** length of work must',   &
@@ -2345,48 +2364,6 @@
 
       END SUBROUTINE CONVERT_order
 
-! -----------------------------------------------------------------------------
-! =============================================================================
-! -----------------------------------------------------------------------------
-!              specific interfaces to make calls from C easier
-! -----------------------------------------------------------------------------
-! =============================================================================
-! -----------------------------------------------------------------------------
-
-!-  G A L A H A D - C O N V E R T _ i n f o r m a t i o n  S U B R O U T I N E -
-
-     SUBROUTINE CONVERT_information( data, inform, status )
-
-!  return conversion information during or after application of CONVERT
-!  See CONVERT_solve for a description of the required arguments
-!
-!  Arguments:
-!
-!  data     private internal data
-!  inform   a structure containing output information. See preamble
-!  status   return status
-
-!-----------------------------------------------
-!   D u m m y   A r g u m e n t s
-!-----------------------------------------------
-
-     TYPE ( CONVERT_full_data_type ), INTENT( INOUT ) :: data
-     TYPE ( CONVERT_inform_type ), INTENT( OUT ) :: inform
-     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-
-!  recover inform from internal data
-
-     inform = data%convert_inform
-
-!  flag a successful call
-
-     status = GALAHAD_ok
-     RETURN
-
-!  end of subroutine CONVERT_information
-
-     END SUBROUTINE CONVERT_information
-
 !-*-  C O N V E R T _ B E T W E E N _ S _ F O R M A T S  S U B R O U T I N E -*-
 
       SUBROUTINE CONVERT_between_symmetric_formats( A, output_format, A_out,   &
@@ -2533,7 +2510,8 @@
           IWORK = 0
 
           CALL CONVERT_to_sparse_symmetric_row_format( A, A_out, control,      &
-                                                       inform, IWORK, WORK )
+                                                       inform, IWORK = IWORK,  &
+                                                       WORK = WORK )
 
 !  discard workspace
 
@@ -2559,8 +2537,10 @@
           IF ( inform%status /= GALAHAD_ok ) RETURN
           IWORK = 0
 
-          CALL CONVERT_to_sparse_symmetric_column_format( A, A_out, control,   &
-                                                          inform, IWORK, WORK )
+          CALL CONVERT_to_sparse_symmetric_column_format( A, A_out,            &
+                                                          control, inform,     &
+                                                          IWORK = IWORK,       &
+                                                          WORK = WORK )
 !  discard workspace
 
           CALL SPACE_dealloc_array( IWORK, inform%status, inform%alloc_status )
@@ -2637,7 +2617,7 @@
 
       INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, n, ne, order_status
       REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
-      LOGICAL :: order_cols
+      LOGICAL :: order_cols, sum_duplicates
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -2663,7 +2643,7 @@
 !  discover the array size
 
       order_cols = .FALSE.
-
+      sum_duplicates = control%sum_duplicates
       SELECT CASE( SMT_get( A%type ) )
       CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
         ne = ( A%n * ( A%n + 1 ) ) / 2
@@ -2675,6 +2655,9 @@
       CASE ( 'COORDINATE' )
         ne = A%ne
         order_cols = .TRUE.
+      CASE ( 'DIAGONAL' )
+        ne = A%n
+        sum_duplicates = .FALSE.
 
 !  type of A unknown
 
@@ -2691,7 +2674,7 @@
 
 !  check that optional arrays are present and large enough if needed
 
-      IF ( control%sum_duplicates .OR. ( control%order .AND. order_cols ) ) THEN
+      IF ( sum_duplicates .OR. ( control%order .AND. order_cols ) ) THEN
         IF ( .NOT. PRESENT( IWORK ) ) THEN
           inform%status = GALAHAD_error_optional
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
@@ -2839,11 +2822,18 @@
           A_out%ptr( j + 1 ) = A_out%ptr( j )
         END DO
         A_out%ptr( 1 ) = 1
+
+!  A is a diagonal matrix
+
+      CASE ( 'DIAGONAL' )
+        A_out%ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
+        A_out%col( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out%val( 1 : n ) = A%val( 1 : n )
       END SELECT
 
 !  sum duplicate entries and squeeze the storage space
 
-      IF ( control%sum_duplicates ) THEN
+      IF ( sum_duplicates ) THEN
 
 !  consider each column one at a time
 
@@ -2978,7 +2968,7 @@
 
       INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, n, ne, order_status
       REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
-      LOGICAL :: order_cols
+      LOGICAL :: order_cols, sum_duplicates
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -3004,18 +2994,22 @@
 !  discover the array size
 
       order_cols = .FALSE.
-
+      sum_duplicates = control%sum_duplicates
       SELECT CASE( SMT_get( A%type ) )
       CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS' )
         ne = ( A%n * ( A%n + 1 ) ) / 2
       CASE ( 'SPARSE_BY_ROWS' )
         ne = A%ptr( A%n + 1 ) - 1
+        order_cols = .TRUE.
       CASE ( 'SPARSE_BY_COLUMNS' )
         ne = A%ptr( A%n + 1 ) - 1
         order_cols = .TRUE.
       CASE ( 'COORDINATE' )
         ne = A%ne
         order_cols = .TRUE.
+      CASE ( 'DIAGONAL' )
+        ne = A%n
+        sum_duplicates = .FALSE.
 
 !  type of A unknown
 
@@ -3032,7 +3026,7 @@
 
 !  check that optional arrays are present and large enough if needed
 
-      IF ( control%sum_duplicates .OR. ( control%order .AND. order_cols ) ) THEN
+      IF ( sum_duplicates .OR. ( control%order .AND. order_cols ) ) THEN
         IF ( .NOT. PRESENT( IWORK ) ) THEN
           inform%status = GALAHAD_error_optional
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
@@ -3180,11 +3174,18 @@
           A_out%ptr( i + 1 ) = A_out%ptr( i )
         END DO
         A_out%ptr( 1 ) = 1
+
+!  A is a diagonal matrix
+
+      CASE ( 'DIAGONAL' )
+        A_out%ptr( 1 : n + 1 ) = [ ( i, i = 1, n + 1 ) ]
+        A_out%col( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out%val( 1 : n ) = A%val( 1 : n )
       END SELECT
 
 !  sum duplicate entries and squeeze the storage space
 
-      IF ( control%sum_duplicates ) THEN
+      IF ( sum_duplicates ) THEN
 
 !  consider each row one at a time
 
@@ -3343,6 +3344,8 @@
         ne = A%ptr( A%n + 1 ) - 1
       CASE ( 'COORDINATE' )
         ne = A%ne
+      CASE ( 'DIAGONAL' )
+        ne = A%n
 
 !  type of A unknown
 
@@ -3474,6 +3477,13 @@
           END IF
         END DO
         A_out%ne = k
+
+!  A is a diagonal matrix
+
+      CASE ( 'DIAGONAL' )
+        A_out%row( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out%col( 1 : n ) = [ ( i, i = 1, n ) ]
+        A_out%val( 1 : n ) = A%val( 1 : n )
       END SELECT
 
 !  order the row entries within each row in increasing column order
@@ -3818,7 +3828,7 @@
           DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
             j = A%col( l )
             k = n * ( j - 1 ) - ( j * ( j - 1 ) ) / 2 + i
-            k = n * ( j - 1 ) + i
+!           k = n * ( j - 1 ) + i
             A_out%val( k ) = A_out%val( k ) + A%val( l )
           END DO
         END DO
@@ -3831,7 +3841,7 @@
           DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
             i = A%row( l )
             k = n * ( j - 1 ) - ( j * ( j - 1 ) ) / 2 + i
-            k = n * ( j - 1 ) + i
+!           k = n * ( j - 1 ) + i
             A_out%val( k ) = A_out%val( k ) + A%val( l )
           END DO
         END DO
@@ -3879,6 +3889,48 @@
       END SUBROUTINE CONVERT_to_dense_symmetric_column_format
 
 !  end of module GALAHAD_CONVERT_precision
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D - C O N V E R T _ i n f o r m a t i o n  S U B R O U T I N E -
+
+     SUBROUTINE CONVERT_information( data, inform, status )
+
+!  return conversion information during or after application of CONVERT
+!  See CONVERT_solve for a description of the required arguments
+!
+!  Arguments:
+!
+!  data     private internal data
+!  inform   a structure containing output information. See preamble
+!  status   return status
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( CONVERT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( CONVERT_inform_type ), INTENT( OUT ) :: inform
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%convert_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine CONVERT_information
+
+     END SUBROUTINE CONVERT_information
 
     END MODULE GALAHAD_CONVERT_precision
 
