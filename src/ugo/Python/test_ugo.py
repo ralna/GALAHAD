@@ -15,6 +15,16 @@ x_l = -1
 x_u = 2
 ugo.load(x_l,x_u,options=options)
 
+# load data (and optionally non-default specfile)
+x_l = -1
+x_u = 2
+ugo.load(x_l,x_u,specfile='UGO.SPC')
+
+# load data (and optionally non-default options and specfile)
+x_l = -1
+x_u = 2
+ugo.load(x_l,x_u,options=options,specfile='UGO.SPC')
+
 # define objective function
 # NB python functions have access to external variables
 # So no need for userdata like in C or Fortran
