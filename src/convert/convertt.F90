@@ -10,30 +10,29 @@
    INTEGER ( KIND = ip_ ) :: i, j, l, mode, s, status, type
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MAP
    LOGICAL :: testdc, testdr, testsc, testsr, testco
 
    WRITE( 6, "( /, ' tests for unsymmetric matices')" )
 
-   A%m = 4 ; A%n = 5 ; A%ne = 9
-
 !  first try specific interfaces
 
-!  GO TO 40
+!  GO TO 9
    DO mode = 1, 2
      control%order = .TRUE.
+!    control%order = .FALSE.
      IF ( mode == 2 ) THEN
        WRITE( 6, "( /, ' construct the transpose' )" )
        control%transpose = .TRUE.
-       ALLOCATE( IW( A%n ), W( A%n ) )
      ELSE
-       ALLOCATE( IW( A%m ), W( A%m ) )
+       control%transpose = .FALSE.
      END IF
-     IW = 0
      DO type = 1, 5
        CALL SET_A( type, A )
+       ALLOCATE( MAP( SIZE( A%val ) ) )
        CALL CONVERT_to_sparse_column_format( A, A_out, control, inform,        &
-                                             IW, W ) ! convert
-       WRITE( 6, "( /, ' convert from ', A, ' to column format ')" )           &
+                                             MAP = MAP )  ! convert
+       WRITE( 6, "( /, ' convert from ', A, ' to sparse-column format ')" )    &
          SMT_get( A%type )
        IF ( inform%status == 0 ) THEN
          DO i = 1, A_out%n
@@ -44,28 +43,36 @@
        ELSE
          WRITE( 6, "( ' error return, status = ', I0 )" ) inform%status
        END IF
+       WRITE( 6, "( ' map:', 20( 1X, I0 ) )" ) MAP
+       A%val = 2.0_rp_ * A%val
+       CALL CONVERT_map_values( A%ne, A%val, A_out%ne, A_out%val, MAP )
+       A_out%val( : A_out%ne ) = 0.5_rp_ * A_out%val( : A_out%ne )
+       WRITE( 6, "( /, ' new A' )" )
+       DO i = 1, A_out%n
+         WRITE( 6, "( ' column ', I0, ', ( row value ): ',                     &
+        & ( 5( '(', I2, F5.1, ' )', : ) ) )" ) i, ( A_out%row( j ),            &
+            A_out%val( j ), j = A_out%ptr( i ), A_out%ptr( i + 1 ) - 1 )
+       END DO
        CALL DEALLOCATE_A( type, A )
-       DEALLOCATE( A_out%ptr, A_out%row, A_out%val, stat = i )
+       DEALLOCATE( A_out%ptr, A_out%row, A_out%val, MAP, stat = i )
      END DO
-     DEALLOCATE( IW, W, stat = i )
    END DO
 
-!9 CONTINUE
+!4 CONTINUE
    DO mode = 1, 2
      control%order = .TRUE.
      IF ( mode == 2 ) THEN
        WRITE( 6, "( /, ' construct the transpose' )" )
        control%transpose = .TRUE.
-       ALLOCATE( IW( A%n ), W( A%n ) )
      ELSE
-       ALLOCATE( IW( A%m ), W( A%m ) )
+       control%transpose = .FALSE.
      END IF
-     IW = 0
      DO type = 1, 5
        CALL SET_A( type, A )
+       ALLOCATE( MAP( SIZE( A%val ) ) )
        CALL CONVERT_to_sparse_row_format( A, A_out, control, inform,           &
-                                          IW, W ) ! convert
-       WRITE( 6, "( /, ' convert from ', A, ' to row format ')" )              &
+                                          MAP = MAP )  ! convert
+       WRITE( 6, "( /, ' convert from ', A, ' to sparse-row format ')" )       &
          SMT_get( A%type )
        IF ( inform%status == 0 ) THEN
          DO i = 1, A_out%m
@@ -76,10 +83,19 @@
        ELSE
          WRITE( 6, "( ' error return, status = ', I0 )" ) inform%status
        END IF
+       WRITE( 6, "( ' map:', 20( 1X, I0 ) )" ) MAP
+       A%val = 2.0_rp_ * A%val
+       CALL CONVERT_map_values( A%ne, A%val, A_out%ne, A_out%val, MAP )
+       A_out%val( : A_out%ne ) = 0.5_rp_ * A_out%val( : A_out%ne )
+       WRITE( 6, "( /, ' new A' )" )
+       DO i = 1, A_out%m
+         WRITE( 6, "( ' row ', I0, ', ( column value ): ',                     &
+        & ( 5( '(', I2, F5.1, ' )', : ) ) )" ) i, ( A_out%col( j ),            &
+            A_out%val( j ), j = A_out%ptr( i ), A_out%ptr( i + 1 ) - 1 )
+       END DO
        CALL DEALLOCATE_A( type, A )
-       DEALLOCATE( A_out%ptr, A_out%col, A_out%val, stat = i )
+       DEALLOCATE( A_out%ptr, A_out%col, A_out%val, MAP, stat = i )
      END DO
-     DEALLOCATE( IW, W, stat = i )
    END DO
 
    DO mode = 1, 2
@@ -87,10 +103,14 @@
      IF ( mode == 2 ) THEN
        WRITE( 6, "( /, ' construct the transpose' )" )
        control%transpose = .TRUE.
+     ELSE
+       control%transpose = .FALSE.
      END IF
      DO type = 1, 5
        CALL SET_A( type, A )
-       CALL CONVERT_to_coordinate_format( A, A_out, control, inform )
+       ALLOCATE( MAP( SIZE( A%val ) ) )
+       CALL CONVERT_to_coordinate_format( A, A_out, control, inform,           &
+                                          MAP = MAP )
        WRITE( 6, "( /, ' convert from ', A, ' to coordinate format ')" )       &
          SMT_get( A%type )
        IF ( inform%status == 0 ) THEN
@@ -100,8 +120,16 @@
        ELSE
          WRITE( 6, "( ' error return, status = ', I0 )" ) inform%status
        END IF
+       WRITE( 6, "( ' map:', 20( 1X, I0 ) )" ) MAP
+       A%val = 2.0_rp_ * A%val
+       CALL CONVERT_map_values( A%ne, A%val, A_out%ne, A_out%val, MAP )
+       A_out%val( : A_out%ne ) = 0.5_rp_ * A_out%val( : A_out%ne )
+       WRITE( 6, "( /, ' new A' )" )
+       WRITE( 6, "( '( row column value )' )" )
+       WRITE( 6, "( ( 5( ' (', 2I2, F5.1, ')', : ) ) )" )                      &
+           ( A_out%row( j ), A_out%col( j ), A_out%val( j ), j = 1, A_out%ne )
        CALL DEALLOCATE_A( type, A )
-       DEALLOCATE( A_out%row, A_out%col, A_out%val, stat = i )
+       DEALLOCATE( A_out%row, A_out%col, A_out%val, MAP, stat = i )
      END DO
    END DO
 
@@ -110,10 +138,14 @@
      IF ( mode == 2 ) THEN
        WRITE( 6, "( /, ' construct the transpose' )" )
        control%transpose = .TRUE.
+     ELSE
+       control%transpose = .FALSE.
      END IF
      DO type = 1, 5
        CALL SET_A( type, A )
-       CALL CONVERT_to_dense_row_format( A, A_out, control, inform )
+       ALLOCATE( MAP( SIZE( A%val ) ) )
+!      CALL CONVERT_to_dense_row_format( A, A_out, control, inform )
+       CALL CONVERT_to_dense_row_format( A, A_out, control, inform, MAP = MAP )
        WRITE( 6, "( /, ' convert from ', A, ' to dense-row format ')" )        &
          SMT_get( A%type )
        IF ( inform%status == 0 ) THEN
@@ -127,7 +159,7 @@
          WRITE( 6, "( ' error return, status = ', I0 )" ) inform%status
        END IF
        CALL DEALLOCATE_A( type, A )
-       DEALLOCATE( A_out%val, stat = i )
+       DEALLOCATE( A_out%val, MAP, stat = i )
      END DO
    END DO
 
@@ -137,10 +169,15 @@
      IF ( mode == 2 ) THEN
        WRITE( 6, "( /, ' construct the transpose' )" )
        control%transpose = .TRUE.
+     ELSE
+       control%transpose = .FALSE.
      END IF
      DO type = 1, 5
        CALL SET_A( type, A )
+       ALLOCATE( MAP( SIZE( A%val ) ) )
        CALL CONVERT_to_dense_column_format( A, A_out, control, inform )
+!      CALL CONVERT_to_dense_column_format( A, A_out, control, inform,         &
+!                                           MAP = MAP )
        WRITE( 6, "( /, ' convert from ', A, ' to dense-column format ')" )     &
          SMT_get( A%type )
        IF ( inform%status == 0 ) THEN
@@ -154,7 +191,7 @@
          WRITE( 6, "( ' error return, status = ', I0 )" ) inform%status
        END IF
        CALL DEALLOCATE_A( type, A )
-       DEALLOCATE( A_out%val, stat = i )
+       DEALLOCATE( A_out%val, MAP, stat = i )
      END DO
    END DO
 
@@ -290,20 +327,19 @@
      END DO
    END DO
 
+!  ==================================================
    WRITE( 6, "( /, ' tests for symmetric matices')" )
-
-   H%n = 4 ; H%ne = 6
+!  ==================================================
 
 !  first try specific interfaces
 
 !  GO TO 40
    control%order = .TRUE.
-   ALLOCATE( IW( H%n ), W( H%n ) )
-   IW = 0
    DO type = 1, 5
      CALL SET_H( type, H )
+     ALLOCATE( MAP( SIZE( H%val ) ) )
      CALL CONVERT_to_sparse_symmetric_column_format( H, H_out, control,        &
-                                                     inform, IW, W ) ! convert
+                                                     inform, MAP = MAP )
      WRITE( 6, "( /, ' convert from ', A, ' to column format ')" )             &
        SMT_get( H%type )
      IF ( inform%status == 0 ) THEN
@@ -315,20 +351,29 @@
      ELSE
        WRITE( 6, "( ' error return, status = ', I0 )" ) inform%status
      END IF
+     WRITE( 6, "( ' map:', 20( 1X, I0 ) )" ) MAP
+     H%val = 2.0_rp_ * H%val
+     CALL CONVERT_map_values( H%ne, H%val, H_out%ne, H_out%val, MAP )
+     H_out%val( : H_out%ne ) = 0.5_rp_ * H_out%val( : H_out%ne )
+     WRITE( 6, "( /, ' new H' )" )
+     DO i = 1, H_out%n
+       WRITE( 6, "( ' column ', I0, ', ( row value ): ',                       &
+        & ( 5( '(', I2, F5.1, ' )', : ) ) )" ) i, ( H_out%row( j ),            &
+          H_out%val( j ), j = H_out%ptr( i ), H_out%ptr( i + 1 ) - 1 )
+     END DO
      CALL DEALLOCATE_H( type, H ) 
-     DEALLOCATE( H_out%ptr, H_out%row, H_out%val, stat = i )
+     DEALLOCATE( H_out%ptr, H_out%row, H_out%val, MAP, stat = i )
    END DO
-   DEALLOCATE( IW, W, stat = i )
 
 !9 CONTINUE
    control%order = .TRUE.
-   ALLOCATE( IW( H%n ), W( H%n ) )
-   IW = 0
+!  control%order = .FALSE.
 
    DO type = 1, 5
      CALL SET_H( type, H )
+     ALLOCATE( MAP( SIZE( H%val ) ) )
      CALL CONVERT_to_sparse_symmetric_row_format( H, H_out, control, inform,   &
-                                                  IW, W ) ! convert
+                                                  MAP = MAP )
      WRITE( 6, "( /, ' convert from ', A, ' to row format ')" )                &
        SMT_get( H%type )
      IF ( inform%status == 0 ) THEN
@@ -340,15 +385,27 @@
      ELSE
        WRITE( 6, "( ' error return, status = ', I0 )" ) inform%status
      END IF
+     WRITE( 6, "( ' map:', 20( 1X, I0 ) )" ) MAP
+     H%val = 2.0_rp_ * H%val
+     CALL CONVERT_map_values( H%ne, H%val, H_out%ne, H_out%val, MAP )
+     H_out%val( : H_out%ne ) = 0.5_rp_ * H_out%val( : H_out%ne )
+     WRITE( 6, "( /, ' new H' )" )
+     DO i = 1, H_out%n
+       WRITE( 6, "( ' row ', I0, ', ( column value ): ',                       &
+      & ( 5( '(', I2, F5.1, ' )', : ) ) )" ) i, ( H_out%col( j ),              &
+          H_out%val( j ), j = H_out%ptr( i ), H_out%ptr( i + 1 ) - 1 )
+     END DO
      CALL DEALLOCATE_H( type, H ) 
-     DEALLOCATE( H_out%ptr, H_out%col, H_out%val, stat = i )
+     DEALLOCATE( H_out%ptr, H_out%col, H_out%val, MAP, stat = i )
    END DO
-   DEALLOCATE( IW, W, stat = i )
 
+!9 CONTINUE
    control%order = .TRUE.
    DO type = 1, 5
      CALL SET_H( type, H )
-     CALL CONVERT_to_symmetric_coordinate_format( H, H_out, control, inform )
+     ALLOCATE( MAP( SIZE( H%val ) ) )
+     CALL CONVERT_to_symmetric_coordinate_format( H, H_out, control, inform,   &
+                                                  MAP = MAP )
      WRITE( 6, "( /, ' convert from ', A, ' to coordinate format ')" )         &
        SMT_get( H%type )
      IF ( inform%status == 0 ) THEN
@@ -358,8 +415,16 @@
      ELSE
        WRITE( 6, "( ' error return, status = ', I0 )" ) inform%status
      END IF
+     WRITE( 6, "( ' map:', 20( 1X, I0 ) )" ) MAP
+     H%val = 2.0_rp_ * H%val
+     CALL CONVERT_map_values( H%ne, H%val, H_out%ne, H_out%val, MAP )
+     H_out%val( : H_out%ne ) = 0.5_rp_ * H_out%val( : H_out%ne )
+     WRITE( 6, "( /, ' new H' )" )
+     WRITE( 6, "( '( row column value )' )" )
+     WRITE( 6, "( ( 5( ' (', 2I2, F5.1, ')', : ) ) )" )                        &
+         ( H_out%row( j ), H_out%col( j ), H_out%val( j ), j = 1, H_out%ne )
      CALL DEALLOCATE_H( type, H ) 
-     DEALLOCATE( H_out%row, H_out%col, H_out%val, stat = i )
+     DEALLOCATE( H_out%row, H_out%col, H_out%val, MAP, stat = i )
    END DO
 
    control%order = .TRUE.
@@ -514,25 +579,14 @@
 
    testdc = .TRUE. ; testdr = .TRUE.
    testsc = .TRUE. ; testsr = .TRUE. ; testco = .TRUE.
-   DO status = 1, 6
+   DO status = 1, 2
      IF ( status == 1 ) THEN
-       A%m = 0
+       A%m = - 1
      ELSE IF ( status == 2 ) THEN
        A%m = 4 ; A%n = 0
      ELSE IF ( status == 3 ) THEN
        testdc = .FALSE. ; testdr = .FALSE. ; testco = .FALSE.
        A%n = 5
-     ELSE IF ( status == 4 ) THEN
-       ALLOCATE( IW( 0 ) )
-     ELSE IF ( status == 5 ) THEN
-       DEALLOCATE( IW )
-       ALLOCATE( IW( 5 ) )
-       IW = 0
-     ELSE IF ( status == 6 ) THEN
-       ALLOCATE( W( 0 ) )
-     ELSE IF ( status == 7 ) THEN
-       DEALLOCATE( W )
-       ALLOCATE( W( 5 ) )
      END IF
 
      IF ( testdr ) THEN
@@ -544,27 +598,11 @@
        WRITE( 6, "( ' dc status = ', I0 )" ) inform%status
      END IF
      IF ( testsc ) THEN
-       IF ( status <= 3 ) THEN
-         CALL CONVERT_to_sparse_column_format( A, A_out, control, inform )
-       ELSE IF ( status == 4 .OR. status == 5 ) THEN
-         CALL CONVERT_to_sparse_column_format( A, A_out, control, inform,      &
-                                               IWORK = IW )
-       ELSE
-         CALL CONVERT_to_sparse_column_format( A, A_out, control, inform,      &
-                                               IWORK = IW, WORK = W )
-       END IF
+       CALL CONVERT_to_sparse_column_format( A, A_out, control, inform )
        WRITE( 6, "( ' sc status = ', I0 )" ) inform%status
      END IF
      IF ( testsr ) THEN
-       IF ( status <= 3 ) THEN
-         CALL CONVERT_to_sparse_row_format( A, A_out, control, inform )
-       ELSE IF ( status == 4 .OR. status == 5 ) THEN
-         CALL CONVERT_to_sparse_row_format( A, A_out, control, inform,         &
-                                               IWORK = IW )
-       ELSE
-         CALL CONVERT_to_sparse_row_format( A, A_out, control, inform,         &
-                                               IWORK = IW, WORK = W )
-       END IF
+       CALL CONVERT_to_sparse_row_format( A, A_out, control, inform )
        WRITE( 6, "( ' sr status = ', I0 )" ) inform%status
      END IF
      IF ( testco ) THEN
@@ -573,7 +611,7 @@
      END IF
    END DO
 
-   DEALLOCATE( A%ptr, A%col, A%val, IW, W, STAT = i )
+   DEALLOCATE( A%ptr, A%col, A%val, STAT = i )
 
    WRITE( 6, "( /, ' error tests for symmetric matices', /)" )
 
@@ -581,7 +619,7 @@
 
    testdc = .TRUE. ; testdr = .TRUE.
    testsc = .TRUE. ; testsr = .TRUE. ; testco = .TRUE.
-   DO status = 1, 6
+   DO status = 2, 2
      IF ( status == 1 ) THEN
        CYCLE
      ELSE IF ( status == 2 ) THEN
@@ -589,17 +627,6 @@
      ELSE IF ( status == 3 ) THEN
        testdc = .FALSE. ; testdr = .FALSE. ; testco = .FALSE.
        H%n = 4
-     ELSE IF ( status == 4 ) THEN
-       ALLOCATE( IW( 0 ) )
-     ELSE IF ( status == 5 ) THEN
-       DEALLOCATE( IW )
-       ALLOCATE( IW( 5 ) )
-       IW = 0
-     ELSE IF ( status == 6 ) THEN
-       ALLOCATE( W( 0 ) )
-     ELSE IF ( status == 7 ) THEN
-       DEALLOCATE( W )
-       ALLOCATE( W( 5 ) )
      END IF
 
      IF ( testdr ) THEN
@@ -612,29 +639,13 @@
        WRITE( 6, "( ' dc status = ', I0 )" ) inform%status
      END IF
      IF ( testsc ) THEN
-       IF ( status <= 3 ) THEN
-         CALL CONVERT_to_sparse_symmetric_column_format( H, H_out, control,    &
-                                                         inform )
-       ELSE IF ( status == 4 .OR. status == 5 ) THEN
-         CALL CONVERT_to_sparse_symmetric_column_format( H, H_out, control,    &
-                                                         inform, IWORK = IW )
-       ELSE
-         CALL CONVERT_to_sparse_symmetric_column_format( H, H_out, control,    &
-                                               inform, IWORK = IW, WORK = W )
-       END IF
+       CALL CONVERT_to_sparse_symmetric_column_format( H, H_out, control,      &
+                                                       inform )
        WRITE( 6, "( ' sc status = ', I0 )" ) inform%status
      END IF
      IF ( testsr ) THEN
-       IF ( status <= 3 ) THEN
-         CALL CONVERT_to_sparse_symmetric_row_format( H, H_out, control,       &
-                                                      inform )
-       ELSE IF ( status == 4 .OR. status == 5 ) THEN
-         CALL CONVERT_to_sparse_symmetric_row_format( H, H_out, control,       &
-                                                      inform, IWORK = IW )
-       ELSE
-         CALL CONVERT_to_sparse_symmetric_row_format( H, H_out, control,       &
-                                               inform, IWORK = IW, WORK = W )
-       END IF
+       CALL CONVERT_to_sparse_symmetric_row_format( H, H_out, control,         &
+                                                    inform )
        WRITE( 6, "( ' sr status = ', I0 )" ) inform%status
      END IF
      IF ( testco ) THEN
@@ -643,7 +654,7 @@
      END IF
    END DO
 
-   DEALLOCATE( H%ptr, H%col, H%val, IW, W, STAT = i )
+   DEALLOCATE( H%ptr, H%col, H%val, STAT = i )
 
    WRITE( 6, "( /, ' tests completed' )" )
 
@@ -652,17 +663,20 @@
      SUBROUTINE SET_A( type, A )
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: type
      TYPE ( SMT_type ), INTENT( INOUT ) :: A
+     A%m = 4 ; A%n = 5
      SELECT CASE ( type ) ! set up matrix A
      CASE ( 1 ) ! dense
        CALL SMT_put( A%type, 'DENSE', s )
-       ALLOCATE( A%val( A%m * A%n ) )
+       A%ne =  A%m * A%n
+       ALLOCATE( A%val( A%ne ) )
        A%val = [ 11.0_rp_, 0.0_rp_, 13.0_rp_, 0.0_rp_, 15.0_rp_,               &
                   0.0_rp_, 22.0_rp_, 0.0_rp_, 24.0_rp_, 0.0_rp_,               &
                   0.0_rp_, 32.0_rp_, 33.0_rp_, 0.0_rp_, 0.0_rp_,               &
                   0.0_rp_, 0.0_rp_, 0.0_rp_, 44.0_rp_, 45.0_rp_ ]
      CASE ( 2 ) ! dense by columns
        CALL SMT_put( A%type, 'DENSE_BY_COLUMNS', s )
-       ALLOCATE( A%val( A%m * A%n ) )
+       A%ne =  A%m * A%n
+       ALLOCATE( A%val( A%ne ) )
        A%val = [ 11.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                          &
                  0.0_rp_, 22.0_rp_, 32.0_rp_, 0.0_rp_,                         &
                  13.0_rp_, 0.0_rp_, 33.0_rp_, 0.0_rp_,                         &
@@ -670,6 +684,7 @@
                  15.0_rp_, 0.0_rp_, 0.0_rp_, 45.0_rp_ ]
      CASE ( 3 ) ! sparse by rows
        CALL SMT_put( A%type, 'SPARSE_BY_ROWS', s )
+       A%ne = 9
        ALLOCATE( A%ptr( A%m + 1 ), A%col( A%ne ), A%val( A%ne ) )
        A%ptr = [ 1, 4, 6, 8, 10 ]
        A%col = [ 1, 5, 3, 2, 4, 3, 2, 4, 5 ]
@@ -677,6 +692,7 @@
                  33.0_rp_, 32.0_rp_, 44.0_rp_, 45.0_rp_ ]
      CASE ( 4 ) ! sparse by columns
        CALL SMT_put( A%type, 'SPARSE_BY_COLUMNS', s )
+       A%ne = 9
        ALLOCATE( A%ptr( A%n + 1 ), A%row( A%ne ), A%val( A%ne ) )
        A%ptr = [ 1, 2, 4, 6, 8, 10 ]
        A%row = [ 1, 3, 2, 1, 3, 2, 4, 4, 1 ]
@@ -684,6 +700,7 @@
                  24.0_rp_, 44.0_rp_, 45.0_rp_, 15.0_rp_ ]
      CASE ( 5 ) ! sparse co-ordinate
        CALL SMT_put( A%type, 'COORDINATE', s )
+       A%ne = 9
        ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
        A%row = [ 4, 1, 3, 2, 1, 3, 4, 2, 1 ]
        A%col = [ 5, 1, 2, 2, 3, 3, 4, 4, 5 ]
@@ -710,35 +727,41 @@
      SUBROUTINE SET_H( type, H )
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: type
      TYPE ( SMT_type ), INTENT( INOUT ) :: H
+     H%n = 4
      SELECT CASE ( type )
      CASE ( 1 ) ! dense
        CALL SMT_put( H%type, 'DENSE', s )
-       ALLOCATE( H%val( ( H%n * ( H%n + 1 ) ) / 2 ) ) 
+       H%ne = ( H%n * ( H%n + 1 ) ) / 2
+       ALLOCATE( H%val( H%ne ) ) 
        H%val = [ 11.0_rp_, 0.0_rp_, 22.0_rp_, 0.0_rp_, 32.0_rp_,               &
                  33.0_rp_, 0.0_rp_, 42.0_rp_, 0.0_rp_, 44.0_rp_ ]
      CASE ( 2 ) ! dense by columns
        CALL SMT_put( H%type, 'DENSE_BY_COLUMNS', s )
-       ALLOCATE( H%val( ( H%n * ( H%n + 1 ) ) / 2 ) ) 
+       H%ne = ( H%n * ( H%n + 1 ) ) / 2
+       ALLOCATE( H%val( H%ne ) )
        H%val = [ 11.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 22.0_rp_,                &
                  32.0_rp_, 42.0_rp_, 33.0_rp_, 0.0_rp_, 44.0_rp_ ]
      CASE ( 3 ) ! sparse by rows
        CALL SMT_put( H%type, 'SPARSE_BY_ROWS', s )
+       H%ne = 6
        ALLOCATE( H%ptr( H%n + 1 ), H%col( H%ne ), H%val( H%ne ) )
        H%ptr = [ 1, 2, 3, 5, 7 ]
        H%col = [ 1, 2, 2, 3, 2, 4 ]
        H%val = [ 11.0_rp_, 22.0_rp_, 32.0_rp_, 33.0_rp_, 42.0_rp_, 44.0_rp_ ]
      CASE ( 4 ) ! sparse by columns
        CALL SMT_put( H%type, 'SPARSE_BY_COLUMNS', s )
+       H%ne = 6
        ALLOCATE( H%ptr( H%n + 1 ), H%row( H%ne ), H%val( H%ne ) )
        H%ptr = [ 1, 2, 5, 6, 7 ]
        H%row = [ 1, 2, 3, 4, 3, 4 ]
        H%val = [ 11.0_rp_, 22.0_rp_, 32.0_rp_, 42.0_rp_, 33.0_rp_, 44.0_rp_ ]
      CASE ( 5 ) ! sparse co-ordinate
        CALL SMT_put( H%type, 'COORDINATE', s )
+       H%ne = 6
        ALLOCATE( H%row( H%ne ), H%col( H%ne ), H%val( H%ne ) )
-       H%row = [ 1, 2, 3, 4, 3, 4 ]
-       H%col = [ 1, 2, 2, 2, 3, 4 ]
-       H%val = [ 11.0_rp_, 22.0_rp_, 32.0_rp_, 42.0_rp_, 33.0_rp_, 44.0_rp_ ]
+       H%row = [ 1, 2, 3, 3, 4, 4 ]
+       H%col = [ 1, 2, 2, 3, 2, 4 ]
+       H%val = [ 11.0_rp_, 22.0_rp_, 32.0_rp_, 33.0_rp_, 42.0_rp_, 44.0_rp_ ]
      END SELECT
      END SUBROUTINE SET_H
 

@@ -14,8 +14,8 @@
    INTEGER ( KIND = ip_ ) :: data_storage_type, i, sts, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
-   CHARACTER ( LEN = 20 ) :: solver_default = "cqp" // REPEAT( ' ', 17 )
-!  CHARACTER ( LEN = 20 ) :: solver_default = "e04nqf" // REPEAT( ' ', 14 )
+!  CHARACTER ( LEN = 20 ) :: solver_default = "cqp" // REPEAT( ' ', 17 )
+   CHARACTER ( LEN = 20 ) :: solver_default = "e04nqf" // REPEAT( ' ', 14 )
    CHARACTER ( LEN = 20 ) :: solver
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
@@ -88,14 +88,18 @@
 
      solver = solver_default
      IF ( status == - GALAHAD_error_restrictions ) THEN
+!      write(6,*) ' GALAHAD_error_restrictions'
        p%n = 0 ; p%m = - 1
      ELSE IF ( status == - GALAHAD_error_bad_bounds ) THEN
+!      write(6,*) ' GALAHAD_error_bad_bounds'
        p%X_u( 1 ) = - 2.0_rp_
      ELSE IF ( status == - GALAHAD_error_primal_infeasible ) THEN
+!      write(6,*) ' GALAHAD_error_primal_infeasible'
 !      control%print_level = 1
        p%X_l = (/ - 1.0_rp_, 8.0_rp_, - infty /)
        p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
      ELSE IF ( status == - GALAHAD_error_tiny_step ) THEN
+!      write(6,*) ' GALAHAD_error_tiny_step'
 !      control%print_level = 1
        solver = "qpb" // REPEAT( ' ', 17 )
        control%QPB_control%stop_c = 0.0_rp_
@@ -103,14 +107,17 @@
 !      p%X_l = (/ - 1.0_rp_, 8.0_rp_, - infty /)
 !      p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
      ELSE IF ( status == - GALAHAD_error_max_iterations ) THEN
+!      write(6,*) ' GALAHAD_error_max_iterations'
        control%QPC_control%QPB_control%maxit = 0
 !      control%print_level = 1
      ELSE IF ( status == - GALAHAD_error_cpu_limit ) THEN
+!      write(6,*) ' GALAHAD_error_cpu_limit'
        control%QPC_control%cpu_time_limit = 0.00001
        p%X( 2 ) = 100000000.0_rp_
 !      control%print_level = 1
 !      control%maxit = 1
      ELSE IF ( status == - GALAHAD_error_upper_entry ) THEN
+!      write(6,*) ' GALAHAD_error_upper_entry'
        p%H%col( 1 ) = 2
      ELSE
      END IF
@@ -165,6 +172,7 @@
 !  special test for status = - 7
 
    status = - GALAHAD_error_unbounded
+!  write(6,*) ' GALAHAD_error_unbounded'
    n = 1 ; m = 0 ; h_ne = 1 ; a_ne = 0
    IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
@@ -337,7 +345,7 @@
 
       IF ( info%status == 0 ) THEN
          WRITE( 6, "( A1,I1,': optimal objective value = ',                    &
-     &            F6.1, ' status = ', I0, ' solver is ', A  )" ) &
+     &            F6.1, ' status = ', I0, ' solver is ', A  )" )               &
            st, i, info%obj, info%status, TRIM( solver )
        ELSE
          WRITE( 6, "( A1, I1,': QP_solve exit status = ', I0,                  &

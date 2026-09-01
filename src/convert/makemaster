@@ -18,11 +18,11 @@ PACKAGE = CONVERT
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_dummy make_zd11 make_space make_specfile
+DEPENDENCIES = make_dummy make_zd11 make_space make_specfile make_sort
 
 #  other packages that depend on package
 
-DEPENDS = miqr
+DEPENDS = miqr qp
 
 #  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)

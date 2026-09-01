@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-08-23 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-08-26 AT 15:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -755,8 +755,7 @@
 
           CALL CONVERT_to_sparse_column_format( prob%A, A_by_cols,             &
                                                 CONVERT_control,               &
-                                                CONVERT_inform, IWORK = IW,    &
-                                                WORK = W )
+                                                CONVERT_inform )
 
 !  if required, record the transpose
 
@@ -826,7 +825,6 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
 !write(6,*) 'control ', control_mi35
 !write(6,*) 'info ', info_mi35
 
-
           CALL CPU_TIME( timep ) ; CALL CLOCK_time( clockp )
           n_fact = keep_mi35%fact_ptr( A_ls%n + 1 ) - 1
           IF ( printe ) WRITE( out, "( ' on exit from mi35_factorize, ',       &
@@ -848,8 +846,7 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
 
           CALL CONVERT_to_sparse_column_format( prob%A, A_by_cols,             &
                                                 CONVERT_control,               &
-                                                CONVERT_inform, IWORK = IW,    &
-                                                WORK = W )
+                                                CONVERT_inform )
 
 !  if required, record the transpose
 

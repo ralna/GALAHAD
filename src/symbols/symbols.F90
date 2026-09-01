@@ -270,6 +270,8 @@
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_unavailable_solver = - 199
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_no_licence = - 399
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_warning_data = 1
 
 !     General integers

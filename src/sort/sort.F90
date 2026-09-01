@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-08-27 AT 16:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -1245,7 +1245,7 @@
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE SORT_heapsort_build_real( n, x, inform, ix, largest )
+      SUBROUTINE SORT_heapsort_build_real( n, x, inform, ix, rx, largest )
 
 !  Given an array x, elements x(1), ...., x(n), subroutine SORT_heapsort_build
 !  rearranges the elements to form a heap in which each parent has a smaller
@@ -1275,6 +1275,11 @@
 !         order of the values) about x. On output, ix will have been
 !         permuted so that ix(k) still refers to x(k).
 !
+!  rx     is an OPTIONAL real array of length n. On input, rx may
+!         be used to hold real information (such as that which could mirror
+!         the integer arrays) about x. On output, rx will have been
+!         permuted so that rx(k) still refers to x(k).
+!
 !  largest is an OPTIONAL logical argument that if present and .TRUE. specifies
 !         that the heap will instead be arranged so that each parent has a
 !         larger (rather than smaller) value than either of its children
@@ -1285,6 +1290,7 @@
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: ix
+      REAL ( KIND = rp_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: rx
       LOGICAL, INTENT( IN ), OPTIONAL :: largest
 
 !-----------------------------------------------
@@ -1292,12 +1298,12 @@
 !-----------------------------------------------
 
       INTEGER ( KIND = ip_ ) :: i, j, k, ix_in
-      REAL ( KIND = rp_ )  :: x_in
-      LOGICAL :: index, find_largest
+      REAL ( KIND = rp_ )  :: x_in, rx_in
+      LOGICAL :: is_ix, is_rx, find_largest
 
 !  check for and use optional arguments
 
-      index = PRESENT( ix )
+      is_ix = PRESENT( ix ) ; is_rx = PRESENT( rx ) 
       IF ( n <= 0 ) THEN
         inform = WRONG_N
         RETURN
@@ -1312,9 +1318,32 @@
 
       IF ( find_largest ) THEN
 
-!  the index array is present
+!  both the integer and real index arrays are present
 
-        IF ( index ) THEN
+        IF ( is_ix .AND. is_rx ) THEN
+          DO k = 2, n
+            x_in = x( k )
+            ix_in = ix( k ) ; rx_in = rx( k )
+
+!  The cycle may be repeated log2(k) times, but on average is repeated
+!  merely twice
+
+            i = k
+            DO
+              IF ( i <= 1 ) EXIT
+              j = i / 2
+              IF ( x( j ) >= x_in ) EXIT
+              x( i ) = x( j )
+              ix( i ) = ix( j ) ; rx( i ) = rx( j )
+              i = j
+            END DO
+            x( i ) = x_in
+            ix( i ) = ix_in ; rx( i ) = rx_in 
+          END DO
+
+!  the integer index array is present
+
+        ELSE IF ( is_ix ) THEN
           DO k = 2, n
             x_in = x( k )
             ix_in = ix( k )
@@ -1335,7 +1364,30 @@
             ix( i ) = ix_in
           END DO
 
-!  the index array is absent
+!  the real index array is present
+
+        ELSE IF ( is_rx ) THEN
+          DO k = 2, n
+            x_in = x( k )
+            rx_in = rx( k )
+
+!  The cycle may be repeated log2(k) times, but on average is repeated
+!  merely twice
+
+            i = k
+            DO
+              IF ( i <= 1 ) EXIT
+              j = i / 2
+              IF ( x( j ) >= x_in ) EXIT
+              x( i ) = x( j )
+              rx( i ) = rx( j )
+              i = j
+            END DO
+            x( i ) = x_in
+            rx( i ) = rx_in
+          END DO
+
+!  the index arrays are absent
 
         ELSE
           DO k = 2, n
@@ -1360,9 +1412,32 @@
 
       ELSE
 
-!  the index array is present
+!  both the integer and real index arrays are present
 
-        IF ( index ) THEN
+        IF ( is_ix .AND. is_rx ) THEN
+          DO k = 2, n
+            x_in = x( k )
+            ix_in = ix( k ) ; rx_in = rx( k )
+
+!  The cycle may be repeated log2(k) times, but on average is repeated
+!  merely twice
+
+            i = k
+            DO
+              IF ( i <= 1 ) EXIT
+              j = i / 2
+              IF ( x( j ) <= x_in ) EXIT
+              x( i ) = x( j )
+              ix( i ) = ix( j ) ; rx( i ) = rx( j )
+              i = j
+            END DO
+            x( i ) = x_in
+            ix( i ) = ix_in ; rx( i ) = rx_in
+          END DO
+
+!  the integer index array is present
+
+        ELSE IF ( is_ix ) THEN
           DO k = 2, n
             x_in = x( k )
             ix_in = ix( k )
@@ -1383,7 +1458,30 @@
             ix( i ) = ix_in
           END DO
 
-!  the index array is absent
+!  the real index array is present
+
+        ELSE IF ( is_rx ) THEN
+          DO k = 2, n
+            x_in = x( k )
+            rx_in = rx( k )
+
+!  The cycle may be repeated log2(k) times, but on average is repeated
+!  merely twice
+
+            i = k
+            DO
+              IF ( i <= 1 ) EXIT
+              j = i / 2
+              IF ( x( j ) <= x_in ) EXIT
+              x( i ) = x( j )
+              rx( i ) = rx( j )
+              i = j
+            END DO
+            x( i ) = x_in
+            rx( i ) = rx_in
+          END DO
+
+!  the index arrays are absent
 
         ELSE
           DO k = 2, n
@@ -1416,7 +1514,7 @@
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE SORT_heapsort_build_integer( n, x, inform, ix, largest )
+      SUBROUTINE SORT_heapsort_build_integer( n, x, inform, ix, rx, largest )
 
 !  Given an array x, elements x(1), ...., x(n), subroutine SORT_heapsort_build
 !  re-arranges the elements to form a heap in which each parent has a smaller
@@ -1446,6 +1544,11 @@
 !         order of the values) about x. On output, ix will have been
 !         permuted so that ix(k) still refers to x(k).
 !
+!  rx     is an OPTIONAL real array of length n. On input, rx may
+!         be used to hold real information (such as that which could mirror
+!         the integer arrays) about x. On output, rx will have been
+!         permuted so that rx(k) still refers to x(k).
+!
 !  largest is an OPTIONAL logical argument that if present and .TRUE. specifies
 !         that the heap will instead be arranged so that each parent has a
 !         larger (rather than smaller) value than either of its children
@@ -1456,6 +1559,7 @@
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: x
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: ix
+      REAL ( KIND = rp_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: rx
       LOGICAL, INTENT( IN ), OPTIONAL :: largest
 
 !===============================================================================
@@ -1466,11 +1570,12 @@
 
       INTEGER ( KIND = ip_ ) :: i, j, k, ix_in
       INTEGER ( KIND = ip_ ) :: x_in
-      LOGICAL :: index, find_largest
+      REAL ( KIND = rp_ ) :: rx_in
+      LOGICAL :: is_ix, is_rx, find_largest
 
 !  check for and use optional arguments
 
-      index = PRESENT( ix )
+      is_ix = PRESENT( ix ) ; is_rx = PRESENT( rx ) 
       IF ( n <= 0 ) THEN
         inform = WRONG_N
         RETURN
@@ -1485,9 +1590,32 @@
 
       IF ( find_largest ) THEN
 
-!  the index array is present
+!  both the integer and real index arrays are present
 
-        IF ( index ) THEN
+        IF ( is_ix .AND. is_rx ) THEN
+          DO k = 2, n
+            x_in = x( k )
+            ix_in = ix( k ) ; rx_in = rx( k )
+
+!  The cycle may be repeated log2(k) times, but on average is repeated
+!  merely twice
+
+            i = k
+            DO
+              IF ( i <= 1 ) EXIT
+              j = i / 2
+              IF ( x( j ) >= x_in ) EXIT
+              x( i ) = x( j )
+              ix( i ) = ix( j ) ; rx( i ) = rx( j )
+              i = j
+            END DO
+            x( i ) = x_in
+            ix( i ) = ix_in ; rx( i ) = rx_in
+          END DO
+
+!  the integer index array is present
+
+        ELSE IF ( is_ix ) THEN
           DO k = 2, n
             x_in = x( k )
             ix_in = ix( k )
@@ -1508,7 +1636,30 @@
             ix( i ) = ix_in
           END DO
 
-!  the index array is absent
+!  the real index array is present
+
+        ELSE IF ( is_rx ) THEN
+          DO k = 2, n
+            x_in = x( k )
+            rx_in = rx( k )
+
+!  The cycle may be repeated log2(k) times, but on average is repeated
+!  merely twice
+
+            i = k
+            DO
+              IF ( i <= 1 ) EXIT
+              j = i / 2
+              IF ( x( j ) >= x_in ) EXIT
+              x( i ) = x( j )
+              rx( i ) = rx( j )
+              i = j
+            END DO
+            x( i ) = x_in
+            rx( i ) = rx_in
+          END DO
+
+!  the index arrays are absent
 
         ELSE
           DO k = 2, n
@@ -1533,9 +1684,32 @@
 
       ELSE
 
-!  the index array is present
+!  the integer index array is present
 
-        IF ( index ) THEN
+        IF ( is_ix .AND. is_rx ) THEN
+          DO k = 2, n
+            x_in = x( k )
+            ix_in = ix( k ) ; rx_in = rx( k )
+
+!  The cycle may be repeated log2(k) times, but on average is repeated
+!  merely twice
+
+            i = k
+            DO
+              IF ( i <= 1 ) EXIT
+              j = i / 2
+              IF ( x( j ) <= x_in ) EXIT
+              x( i ) = x( j )
+              ix( i ) = ix( j ) ; rx( i ) = rx( j )
+              i = j
+            END DO
+            x( i ) = x_in
+            ix( i ) = ix_in ; rx( i ) = rx_in
+          END DO
+
+!  the integer index array is present
+
+        ELSE IF ( is_ix ) THEN
           DO k = 2, n
             x_in = x( k )
             ix_in = ix( k )
@@ -1556,7 +1730,30 @@
             ix( i ) = ix_in
           END DO
 
-!  the index array is absent
+!  the real index array is present
+
+        ELSE IF ( is_rx ) THEN
+          DO k = 2, n
+            x_in = x( k )
+            rx_in = rx( k )
+
+!  The cycle may be repeated log2(k) times, but on average is repeated
+!  merely twice
+
+            i = k
+            DO
+              IF ( i <= 1 ) EXIT
+              j = i / 2
+              IF ( x( j ) <= x_in ) EXIT
+              x( i ) = x( j )
+              rx( i ) = rx( j )
+              i = j
+            END DO
+            x( i ) = x_in
+            rx( i ) = rx_in
+          END DO
+
+!  the index arrays are absent
 
         ELSE
           DO k = 2, n
@@ -1589,7 +1786,7 @@
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE SORT_heapsort_smallest_real( m, x, inform, ix, largest )
+      SUBROUTINE SORT_heapsort_smallest_real( m, x, inform, ix, rx, largest )
 
 !  Given an array x, elements x(1), ...., x(m) forming a heap,
 !  SORT_heapsort_smallest assigns to x_out the value of x(1), the smallest
@@ -1623,6 +1820,11 @@
 !         refers to x(k). This argument is only permitted if it was present
 !         when calling SORT_heapsort_build
 !
+!  rx     is an OPTIONAL real array of length n. On input, rx may
+!         be used to hold real information (such as that which could mirror
+!         the integer arrays) about x. On output, rx will have been
+!         permuted so that rx(k) still refers to x(k).
+!
 !  largest optional logical argument that if present and .TRUE. specifies
 !         that the heap will instead be arranged so that each parent has a
 !         larger (rather than smaller) value than either of its children
@@ -1635,6 +1837,7 @@
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: x
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( m ) :: ix
+      REAL ( KIND = rp_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( m ) :: rx
       LOGICAL, INTENT( IN ), OPTIONAL :: largest
 
 !===============================================================================
@@ -1644,12 +1847,12 @@
 !-----------------------------------------------
 
       INTEGER ( KIND = ip_ ) :: i, j, ix_in, ix_out
-      REAL ( KIND = rp_ ) :: x_in, x_out
-      LOGICAL :: index, find_largest
+      REAL ( KIND = rp_ ) :: x_in, x_out, rx_in, rx_out
+      LOGICAL :: is_ix, is_rx, find_largest
 
 !  check for and use optional arguments
 
-      index = PRESENT( ix )
+      is_ix = PRESENT( ix ) ; is_rx = PRESENT( rx ) 
       IF ( m <= 0 ) THEN
         inform = WRONG_N
         RETURN
@@ -1669,7 +1872,40 @@
 
         IF ( m > 1 ) THEN
           i = 1
-          IF ( index ) THEN
+          IF ( is_ix .AND. is_rx ) THEN
+            x_out = x( 1 ) ; ix_out = ix( 1 ) ; rx_out = rx( 1 )
+            x_in = x( m ) ; ix_in = ix( m ) ; rx_in = rx( m )
+
+!  Move from the top of the heap comparing the value of node i
+!  with its two daughters. If node i is largest, the heap has been
+!  restored. If one of the children is largest, promote this child
+!  in the heap and move to the now vacated node.
+!  This cycle may be repeated log2(m) times
+
+            DO
+              j = i + i
+              IF ( j > m - 1 ) EXIT
+
+!  Determine which of the two daughters is largest
+
+              IF ( x( j + 1 ) > x( j ) ) j = j + 1
+
+!  Determine if the larger daughter is greater than the value from node i
+
+              IF ( x( j ) <= x_in ) EXIT
+              x( i ) = x( j ) ; ix( i ) = ix( j ) ; rx( i ) = rx( j )
+              i = j
+            END DO
+
+!  The heap has been restored
+
+            x( i ) = x_in ; ix( i ) = ix_in ; rx( i ) = rx_in
+
+!  Store the largest value in the now vacated m-th position of the list
+
+            x( m ) = x_out ; ix( m ) = ix_out ; rx( m ) = rx_out
+
+          ELSE IF ( is_ix ) THEN
             x_out = x( 1 ) ; ix_out = ix( 1 )
             x_in = x( m ) ; ix_in = ix( m )
 
@@ -1701,6 +1937,38 @@
 !  Store the largest value in the now vacated m-th position of the list
 
             x( m ) = x_out ; ix( m ) = ix_out
+          ELSE IF ( is_rx ) THEN
+            x_out = x( 1 ) ; rx_out = rx( 1 )
+            x_in = x( m ) ; rx_in = rx( m )
+
+!  Move from the top of the heap comparing the value of node i
+!  with its two daughters. If node i is largest, the heap has been
+!  restored. If one of the children is largest, promote this child
+!  in the heap and move to the now vacated node.
+!  This cycle may be repeated log2(m) times
+
+            DO
+              j = i + i
+              IF ( j > m - 1 ) EXIT
+
+!  Determine which of the two daughters is largest
+
+              IF ( x( j + 1 ) > x( j ) ) j = j + 1
+
+!  Determine if the larger daughter is greater than the value from node i
+
+              IF ( x( j ) <= x_in ) EXIT
+              x( i ) = x( j ) ; rx( i ) = rx( j )
+              i = j
+            END DO
+
+!  The heap has been restored
+
+            x( i ) = x_in ; rx( i ) = rx_in
+
+!  Store the largest value in the now vacated m-th position of the list
+
+            x( m ) = x_out ; rx( m ) = rx_out
           ELSE
             x_out = x( 1 )
             x_in = x( m )
@@ -1747,7 +2015,40 @@
 
         IF ( m > 1 ) THEN
           i = 1
-          IF ( index ) THEN
+          IF ( is_ix .AND. is_rx ) THEN
+            x_out = x( 1 ) ; ix_out = ix( 1 ) ; rx_out = rx( 1 )
+            x_in = x( m ) ; ix_in = ix( m ) ; rx_in = rx( m )
+
+!  Move from the top of the heap comparing the value of node i
+!  with its two daughters. If node i is smallest, the heap has been
+!  restored. If one of the children is smallest, promote this child
+!  in the heap and move to the now vacated node.
+!  This cycle may be repeated log2(m) times
+
+            DO
+              j = i + i
+              IF ( j > m - 1 ) EXIT
+
+!  Determine which of the two daughters is smallest
+
+              IF ( x( j + 1 ) < x( j ) ) j = j + 1
+
+!  Determine if the smaller daughter is less than the value from node i
+
+              IF ( x( j ) >= x_in ) EXIT
+              x( i ) = x( j ) ; ix( i ) = ix( j ) ; rx( i ) = rx( j )
+              i = j
+            END DO
+
+!  The heap has been restored
+
+            x( i ) = x_in ; ix( i ) = ix_in ; rx( i ) = rx_in
+
+!  Store the smallest value in the now vacated m-th position of the list
+
+            x( m ) = x_out ; ix( m ) = ix_out ; rx( m ) = rx_out
+
+          ELSE IF ( is_ix ) THEN
             x_out = x( 1 ) ; ix_out = ix( 1 )
             x_in = x( m ) ; ix_in = ix( m )
 
@@ -1779,6 +2080,39 @@
 !  Store the smallest value in the now vacated m-th position of the list
 
             x( m ) = x_out ; ix( m ) = ix_out
+
+          ELSE IF ( is_rx ) THEN
+            x_out = x( 1 ) ; rx_out = rx( 1 )
+            x_in = x( m ) ; rx_in = rx( m )
+
+!  Move from the top of the heap comparing the value of node i
+!  with its two daughters. If node i is smallest, the heap has been
+!  restored. If one of the children is smallest, promote this child
+!  in the heap and move to the now vacated node.
+!  This cycle may be repeated log2(m) times
+
+            DO
+              j = i + i
+              IF ( j > m - 1 ) EXIT
+
+!  Determine which of the two daughters is smallest
+
+              IF ( x( j + 1 ) < x( j ) ) j = j + 1
+
+!  Determine if the smaller daughter is less than the value from node i
+
+              IF ( x( j ) >= x_in ) EXIT
+              x( i ) = x( j ) ; rx( i ) = rx( j )
+              i = j
+            END DO
+
+!  The heap has been restored
+
+            x( i ) = x_in ; rx( i ) = rx_in
+
+!  Store the smallest value in the now vacated m-th position of the list
+
+            x( m ) = x_out ; rx( m ) = rx_out
           ELSE
             x_out = x( 1 )
             x_in = x( m )
@@ -1827,7 +2161,7 @@
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE SORT_heapsort_smallest_integer( m, x, inform, ix, largest )
+      SUBROUTINE SORT_heapsort_smallest_integer( m, x, inform, ix, rx, largest )
 
 !  Given an array x, elements x(1), ...., x(m) forming a heap,
 !  SORT_heapsort_smallest assigns to x_out the value of x(1), the smallest
@@ -1861,6 +2195,11 @@
 !         refers to x(k). This argument is only permitted if it was present
 !         when calling SORT_heapsort_build
 !
+!  rx     is an OPTIONAL real array of length n. On input, rx may
+!         be used to hold real information (such as that which could mirror
+!         the integer arrays) about x. On output, rx will have been
+!         permuted so that rx(k) still refers to x(k).
+!
 !  largest optional logical argument that if present and .TRUE. specifies
 !         that the heap will instead be arranged so that each parent has a
 !         larger (rather than smaller) value than either of its children
@@ -1873,6 +2212,7 @@
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: x
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( m ) :: ix
+      REAL ( KIND = rp_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( m ) :: rx
       LOGICAL, INTENT( IN ), OPTIONAL :: largest
 
 !===============================================================================
@@ -1883,11 +2223,12 @@
 
       INTEGER ( KIND = ip_ ) :: i, j, ix_in, ix_out
       INTEGER ( KIND = ip_ ) :: x_in, x_out
-      LOGICAL :: index, find_largest
+      REAL ( KIND = rp_ ) :: rx_in, rx_out
+      LOGICAL :: is_ix, is_rx, find_largest
 
 !  check for and use optional arguments
 
-      index = PRESENT( ix )
+      is_ix = PRESENT( ix ) ; is_rx = PRESENT( rx ) 
       IF ( m <= 0 ) THEN
         inform = WRONG_N
         RETURN
@@ -1907,7 +2248,40 @@
 
         IF ( m > 1 ) THEN
           i = 1
-          IF ( index ) THEN
+          IF ( is_ix .AND. is_rx ) THEN
+            x_out = x( 1 ) ; ix_out = ix( 1 ) ; rx_out = rx( 1 )
+            x_in = x( m ) ; ix_in = ix( m ) ; rx_in = rx( m )
+
+!  Move from the top of the heap comparing the value of node i
+!  with its two daughters. If node i is largest, the heap has been
+!  restored. If one of the children is largest, promote this child
+!  in the heap and move to the now vacated node.
+!  This cycle may be repeated log2(m) times
+
+            DO
+              j = i + i
+              IF ( j > m - 1 ) EXIT
+
+!  Determine which of the two daughters is largest
+
+              IF ( x( j + 1 ) > x( j ) ) j = j + 1
+
+!  Determine if the larger daughter is greater than the value from node i
+
+              IF ( x( j ) <= x_in ) EXIT
+              x( i ) = x( j ) ; ix( i ) = ix( j ) ; rx( i ) = rx( j )
+              i = j
+            END DO
+
+!  The heap has been restored
+
+            x( i ) = x_in ; ix( i ) = ix_in ; rx( i ) = rx_in
+
+!  Store the largest value in the now vacated m-th position of the list
+
+            x( m ) = x_out ; ix( m ) = ix_out ; rx( m ) = rx_out
+
+          ELSE IF ( is_ix ) THEN
             x_out = x( 1 ) ; ix_out = ix( 1 )
             x_in = x( m ) ; ix_in = ix( m )
 
@@ -1939,6 +2313,39 @@
 !  Store the largest value in the now vacated m-th position of the list
 
             x( m ) = x_out ; ix( m ) = ix_out
+
+          ELSE IF ( is_rx ) THEN
+            x_out = x( 1 ) ; rx_out = rx( 1 )
+            x_in = x( m ) ; rx_in = rx( m )
+
+!  Move from the top of the heap comparing the value of node i
+!  with its two daughters. If node i is largest, the heap has been
+!  restored. If one of the children is largest, promote this child
+!  in the heap and move to the now vacated node.
+!  This cycle may be repeated log2(m) times
+
+            DO
+              j = i + i
+              IF ( j > m - 1 ) EXIT
+
+!  Determine which of the two daughters is largest
+
+              IF ( x( j + 1 ) > x( j ) ) j = j + 1
+
+!  Determine if the larger daughter is greater than the value from node i
+
+              IF ( x( j ) <= x_in ) EXIT
+              x( i ) = x( j ) ; rx( i ) = rx( j )
+              i = j
+            END DO
+
+!  The heap has been restored
+
+            x( i ) = x_in ; rx( i ) = rx_in
+
+!  Store the largest value in the now vacated m-th position of the list
+
+            x( m ) = x_out ; rx( m ) = rx_out
           ELSE
             x_out = x( 1 )
             x_in = x( m )
@@ -1985,7 +2392,40 @@
 
         IF ( m > 1 ) THEN
           i = 1
-          IF ( index ) THEN
+          IF ( is_ix .AND. is_rx ) THEN
+            x_out = x( 1 ) ; ix_out = ix( 1 ) ; rx_out = rx( 1 )
+            x_in = x( m ) ; ix_in = ix( m ) ; rx_in = rx( m )
+
+!  Move from the top of the heap comparing the value of node i
+!  with its two daughters. If node i is smallest, the heap has been
+!  restored. If one of the children is smallest, promote this child
+!  in the heap and move to the now vacated node.
+!  This cycle may be repeated log2(m) times
+
+            DO
+              j = i + i
+              IF ( j > m - 1 ) EXIT
+
+!  Determine which of the two daughters is smallest
+
+              IF ( x( j + 1 ) < x( j ) ) j = j + 1
+
+!  Determine if the smaller daughter is less than the value from node i
+
+              IF ( x( j ) >= x_in ) EXIT
+              x( i ) = x( j ) ; ix( i ) = ix( j ) ; rx( i ) = rx( j )
+              i = j
+            END DO
+
+!  The heap has been restored
+
+            x( i ) = x_in ; ix( i ) = ix_in ; rx( i ) = rx_in
+
+!  Store the smallest value in the now vacated m-th position of the list
+
+            x( m ) = x_out ; ix( m ) = ix_out ; rx( m ) = rx_out
+
+          ELSE IF ( is_ix ) THEN
             x_out = x( 1 ) ; ix_out = ix( 1 )
             x_in = x( m ) ; ix_in = ix( m )
 
@@ -2017,6 +2457,39 @@
 !  Store the smallest value in the now vacated m-th position of the list
 
             x( m ) = x_out ; ix( m ) = ix_out
+
+          ELSE IF ( is_ix ) THEN
+            x_out = x( 1 ) ; rx_out = rx( 1 )
+            x_in = x( m ) ; rx_in = rx( m )
+
+!  Move from the top of the heap comparing the value of node i
+!  with its two daughters. If node i is smallest, the heap has been
+!  restored. If one of the children is smallest, promote this child
+!  in the heap and move to the now vacated node.
+!  This cycle may be repeated log2(m) times
+
+            DO
+              j = i + i
+              IF ( j > m - 1 ) EXIT
+
+!  Determine which of the two daughters is smallest
+
+              IF ( x( j + 1 ) < x( j ) ) j = j + 1
+
+!  Determine if the smaller daughter is less than the value from node i
+
+              IF ( x( j ) >= x_in ) EXIT
+              x( i ) = x( j ) ; rx( i ) = rx( j )
+              i = j
+            END DO
+
+!  The heap has been restored
+
+            x( i ) = x_in ; rx( i ) = rx_in
+
+!  Store the smallest value in the now vacated m-th position of the list
+
+            x( m ) = x_out ; rx( m ) = rx_out
           ELSE
             x_out = x( 1 )
             x_in = x( m )

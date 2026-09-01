@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-08-23 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-08-26 AT 15:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -755,8 +755,7 @@
 
           CALL CONVERT_to_sparse_column_format( prob%A, A_by_cols,             &
                                                 CONVERT_control,               &
-                                                CONVERT_inform, IWORK = IW,    &
-                                                WORK = W )
+                                                CONVERT_inform )
 
 !  if required, record the transpose
 
@@ -848,8 +847,7 @@
 
           CALL CONVERT_to_sparse_column_format( prob%A, A_by_cols,             &
                                                 CONVERT_control,               &
-                                                CONVERT_inform, IWORK = IW,    &
-                                                WORK = W )
+                                                CONVERT_inform )
 
 !  if required, record the transpose
 
