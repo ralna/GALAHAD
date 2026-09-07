@@ -43,10 +43,10 @@ jobs:
           msystem: UCRT64
           update: true
           cache: true
-          inherit_path: true
+          path-type: inherit
           install: >-
             mingw-w64-ucrt-x86_64-gcc
-            mingw-w64-ucrt-x86_64-gfortran
+            mingw-w64-ucrt-x86_64-gcc-fortran
             mingw-w64-ucrt-x86_64-ninja
             mingw-w64-ucrt-x86_64-meson
             mingw-w64-ucrt-x86_64-python
