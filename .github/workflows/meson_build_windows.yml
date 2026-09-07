@@ -125,13 +125,6 @@ jobs:
             echo "OPENBLAS_NUM_THREADS=1" >> $GITHUB_ENV
           fi
 
-      - name: Install compilers
-        if: inputs.os != 'self-hosted'
-        uses: fortran-lang/setup-fortran@main
-        with:
-          compiler: ${{ inputs.compiler }}
-          version: ${{ inputs.version }}
-
       - name: Setup GALAHAD
         run: |
           mkdir -p ../deps/${LIBDIR}
