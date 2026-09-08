@@ -643,7 +643,7 @@ if build_quadruple
 endif
 
 # Python interface
-if build_pythoniface and build_ciface and build_double and (not int64)
+if build_pythoniface and build_ciface and build_double
   incdir_numpy = run_command(py,
     ['-c', 'import numpy; print(numpy.get_include())'],
     check : true
