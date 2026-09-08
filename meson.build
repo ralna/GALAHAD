@@ -824,7 +824,7 @@ if build_tests and build_ciface
 endif
 
 # Python tests
-if build_tests and build_pythoniface and build_ciface and build_double and (not int64)
+if build_tests and build_pythoniface and build_ciface and build_double
 
   foreach test: galahad_python_tests
     package = test[0]
