@@ -17,6 +17,7 @@
 
 #include "galahad_python.h"
 #include "galahad_snls.h"
+#include "galahad_cfunctions.h"
 
 /* Nested SLLS and SLLSB control and inform prototypes */
 bool slls_update_control(struct slls_control_type *control,

@@ -17,6 +17,7 @@
 
 #include "galahad_python.h"
 #include "galahad_dgo.h"
+#include "galahad_cfunctions.h"
 
 /* Nested UGO control and inform prototypes */
 bool ugo_update_control(struct ugo_control_type *control,

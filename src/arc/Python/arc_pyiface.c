@@ -17,6 +17,7 @@
 
 #include "galahad_python.h"
 #include "galahad_arc.h"
+#include "galahad_cfunctions.h"
 
 /* Nested RQS, GLRT, PSLS, LMS and SHA control and inform prototypes */
 bool rqs_update_control(struct rqs_control_type *control,

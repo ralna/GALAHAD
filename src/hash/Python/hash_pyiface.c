@@ -17,6 +17,7 @@
 
 #include "galahad_python.h"
 #include "galahad_hash.h"
+#include "galahad_cfunctions.h"
 
 /* Module global variables */
 static void *data;                       // private internal data

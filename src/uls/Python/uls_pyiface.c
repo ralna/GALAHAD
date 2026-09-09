@@ -17,6 +17,7 @@
 
 #include "galahad_python.h"
 #include "galahad_uls.h"
+#include "galahad_cfunctions.h"
 
 /* Nested HSL info/inform prototypes */
 PyObject* gls_make_ainfo_dict(const struct gls_ainfo_type *ainfo);

@@ -17,6 +17,7 @@
 
 #include "galahad_python.h"
 #include "galahad_sls.h"
+#include "galahad_cfunctions.h"
 
 /* Nested HSL info/inform prototypes */
 PyObject* sils_make_ainfo_dict(const struct sils_ainfo_type *inform);
