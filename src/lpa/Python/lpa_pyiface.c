@@ -17,6 +17,7 @@
 
 #include "galahad_python.h"
 #include "galahad_lpa.h"
+#include "galahad_cfunctions.h"
 
 /* Nested RPD control and inform prototypes */
 PyObject* rpd_make_inform_dict(const struct rpd_inform_type *inform);
