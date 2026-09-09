@@ -664,6 +664,7 @@ if build_pythoniface and build_ciface and build_double
                         link_with : libgalahad_double,
                         link_language : 'c',
                         include_directories : libgalahad_include + incdir_numpy,
+                        c_args : extra_args_double,
                         subdir : 'galahad',
                         install : true)
   endforeach

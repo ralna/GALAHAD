@@ -17,6 +17,7 @@
 
 #include "galahad_python.h"
 #include "galahad_bqpb.h"
+#include "galahad_cfunctions.h"
 
 /* Nested FDC, SBLS, FIT, ROOTS and CRO control and inform prototypes */
 bool fdc_update_control(struct fdc_control_type *control,
