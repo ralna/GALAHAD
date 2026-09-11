@@ -36,6 +36,11 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Set up MSVC Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: Install Meson and Ninja
         shell: bash
         run: |
