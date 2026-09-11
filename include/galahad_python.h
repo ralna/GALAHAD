@@ -265,7 +265,7 @@ static inline bool check_array_int(char *name, PyArrayObject *arr, int n){
     if((PyObject *) arr == Py_None) // allowed to be None
         return true;
     if(!(PyArray_Check(arr) && PyArray_ISINTEGER(arr) &&
-         PyArray_TYPE(arr)==NPY_LONG &&
+         (PyArray_TYPE(arr)==NPY_LONG || PyArray_TYPE(arr)==NPY_INTP) &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
         PyErr_Format(PyExc_TypeError,
                      "%s must be a 1D int array of length %i not given %i", 
@@ -385,7 +385,7 @@ static inline bool parse_int_array_option(PyArrayObject *value,
                                           char *option_name, int *out,
                                           int outsize){
     if(!(PyArray_Check(value) && PyArray_ISINTEGER(value) &&
-         PyArray_TYPE(value)==NPY_LONG &&
+         (PyArray_TYPE(value)==NPY_LONG || PyArray_TYPE(value)==NPY_INTP) &&
          PyArray_NDIM(value)==1 && PyArray_DIM(value,0)==outsize)){
            PyErr_Format(PyExc_TypeError,
               "%s must be a 1D int array of length %i", option_name, outsize);
