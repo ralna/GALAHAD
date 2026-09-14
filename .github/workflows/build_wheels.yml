@@ -54,7 +54,7 @@ jobs:
           fi
 
       - name: Build wheels
-        run: pipx run cibuildwheel==2.23.3
+        run: pipx run cibuildwheel==4.2.1
         # to supply options, put them in 'env', like:
         # env:
         #   CIBW_SOME_OPTION: value
