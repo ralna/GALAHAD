@@ -17,6 +17,7 @@
 
 #include "galahad_python.h"
 #include "galahad_dps.h"
+#include "galahad_cfunctions.h"
 
 /* Nested SLS control and inform prototypes */
 bool sls_update_control(struct sls_control_type *control,

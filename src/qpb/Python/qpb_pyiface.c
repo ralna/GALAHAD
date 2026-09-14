@@ -17,6 +17,7 @@
 
 #include "galahad_python.h"
 #include "galahad_qpb.h"
+#include "galahad_cfunctions.h"
 
 /* Nested LSQP, FDC, SBLS, GLTR and FDC control and inform prototypes */
 bool lsqp_update_control(struct lsqp_control_type *control,
