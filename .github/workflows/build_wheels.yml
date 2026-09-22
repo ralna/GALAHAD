@@ -102,6 +102,11 @@ jobs:
     needs: [check_pypi, build_wheels, build_sdist]
     if: needs.check_pypi.outputs.should_build == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      # IMPORTANT: this permission is mandatory for Trusted Publishing
+      id-token: write
+    # To publish when a GitHub Release is created, use the following rule:
+    if: github.event_name == 'release' && github.event.action == 'published'
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -110,8 +115,5 @@ jobs:
           path: dist
           merge-multiple: true
 
-      - uses: pypa/gh-action-pypi-publish@v1.13.0
-        with:
-          user: __token__
-          password: ${{ secrets.pypi_password }}
-          # To test: repository_url: https://test.pypi.org/legacy/
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
