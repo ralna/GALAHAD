@@ -17,6 +17,7 @@
 
 #include "galahad_python.h"
 #include "galahad_bnls.h"
+#include "galahad_cfunctions.h"
 
 /* Nested BLLS and BLLSB control and inform prototypes */
 bool blls_update_control(struct blls_control_type *control,

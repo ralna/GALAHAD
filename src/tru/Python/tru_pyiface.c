@@ -17,6 +17,7 @@
 
 #include "galahad_python.h"
 #include "galahad_tru.h"
+#include "galahad_cfunctions.h"
 
 /* Nested TRS, GLTR, DPS, PSLS, LMS, SEC & SHA control and inform prototypes */
 bool trs_update_control(struct trs_control_type *control,

@@ -643,7 +643,7 @@ if build_quadruple
 endif
 
 # Python interface
-if build_pythoniface and build_ciface and build_double and (not int64)
+if build_pythoniface and build_ciface and build_double
   incdir_numpy = run_command(py,
     ['-c', 'import numpy; print(numpy.get_include())'],
     check : true
@@ -664,6 +664,7 @@ if build_pythoniface and build_ciface and build_double and (not int64)
                         link_with : libgalahad_double,
                         link_language : 'c',
                         include_directories : libgalahad_include + incdir_numpy,
+                        c_args : extra_args_double,
                         subdir : 'galahad',
                         install : true)
   endforeach
@@ -824,7 +825,7 @@ if build_tests and build_ciface
 endif
 
 # Python tests
-if build_tests and build_pythoniface and build_ciface and build_double and (not int64) and (host_system != 'windows')
+if build_tests and build_pythoniface and build_ciface and build_double
 
   foreach test: galahad_python_tests
     package = test[0]
