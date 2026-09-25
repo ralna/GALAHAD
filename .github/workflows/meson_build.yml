@@ -427,7 +427,7 @@ jobs:
           tar -xzvf ASL.v${VERSION_ASL}.$PLATFORM.tar.gz -C deps
 
       - name: Setup GALAHAD
-        shell: bash
+        shell: cmd
         run: |
           mkdir -p ../deps/${LIBDIR}
           mkdir -p ../deps/modules
