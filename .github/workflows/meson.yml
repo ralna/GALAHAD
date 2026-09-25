@@ -7,15 +7,15 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  windows-gcc-build:
+  windows-intel-build:
     name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
     strategy:
       fail-fast: false
       matrix:
         os: ['windows-latest']
         arch: ['x64']
-        compiler: ['gcc']
-        version: ['11']
+        compiler: ['intel']
+        version: ['2026.1']
         int: ['32', '64']
         sanitizers: ['false']
     uses: ./.github/workflows/meson_build.yml
