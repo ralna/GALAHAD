@@ -151,6 +151,13 @@ jobs:
             echo "OMP_NUM_THREADS=1" >> $GITHUB_ENV
             echo "OPENBLAS_NUM_THREADS=1" >> $GITHUB_ENV
           fi
+          # The Intel runtime spawns one thread per core and MKL does the same;
+          # on a 4-core/16 GB hosted runner that is enough to push the test
+          # phase over the memory limit. Keep the Intel jobs single-threaded.
+          if [[ "${{ inputs.compiler }}" == "intel" ]]; then
+            echo "OMP_NUM_THREADS=1" >> $GITHUB_ENV
+            echo "MKL_NUM_THREADS=1" >> $GITHUB_ENV
+          fi
 
       # PaStiX / SPM / SCOTCH leak internal and one-time global allocations that
       # LeakSanitizer would flag (aborting every test that touches PaStiX);
@@ -180,6 +187,18 @@ jobs:
         with:
           compiler: ${{ inputs.compiler }}
           version: ${{ inputs.version }}
+
+      # setup-fortran exports CC=icx unconditionally, but on Windows it installs
+      # the Fortran-only oneAPI package (intel-fortran-compiler-*_offline.exe):
+      # ifx is present, icx is not, and `meson setup` dies with
+      #   ERROR: Unknown compiler(s): [['icx']]
+      # ifx is MSVC-ABI, so pair it with MSVC's own cl, put on PATH by the
+      # msvc-dev-cmd step. This must run after setup-fortran so that it wins:
+      # the last write to GITHUB_ENV is the one that takes effect.
+      - name: Use MSVC as the C compiler alongside ifx
+        if: inputs.runtime == 'msvc'
+        run: |
+          echo "CC=cl" >> $GITHUB_ENV
 
       - name: Install CUTEst
         if: inputs.os != 'windows-latest' && inputs.compiler != 'nvidia-hpc'
@@ -561,10 +580,21 @@ jobs:
                                -Dlibasl_include=../deps/include \
                                -Db_sanitize=${SANITIZER}
 
+      # ifx needs far more memory per translation unit than gfortran. At -j4 on
+      # a 4-core/16 GB hosted runner the VM was terminated mid-build (ninja
+      # "interrupted by user", exit 143, "the runner has received a shutdown
+      # signal") with no compiler diagnostic -- the signature of the host
+      # running out of resources rather than of a compilation error.
+      - name: Report available resources before building
+        if: inputs.compiler == 'intel' && inputs.os != 'windows-latest'
+        run: |
+          free -h
+          df -h .
+
       - name: Build GALAHAD
         run: |
           if [[ "${{ inputs.compiler }}" == "intel" ]]; then
-            meson compile -C builddir -j4
+            meson compile -C builddir -j2
           else
             meson compile -C builddir
           fi
@@ -590,9 +620,15 @@ jobs:
       #   if: inputs.os == 'windows-latest'
       #   uses: mxschmitt/action-tmate@v3
 
+      # meson test defaults to one process per core; halve it for the Intel
+      # jobs for the same reason the build is capped at -j2.
       - name: Test GALAHAD
         run: |
-          meson test -C builddir --timeout-multiplier 8
+          if [[ "${{ inputs.compiler }}" == "intel" ]]; then
+            meson test -C builddir --timeout-multiplier 8 --num-processes 2
+          else
+            meson test -C builddir --timeout-multiplier 8
+          fi
 
       - uses: actions/upload-artifact@v4
         if: failure()
