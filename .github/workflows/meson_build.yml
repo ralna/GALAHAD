@@ -23,32 +23,63 @@ on:
         description: 'Sanitizers'
         required: true
         type: string
+      runtime:
+        description: 'Windows C runtime: msvc (Intel compilers) or mingw (GNU compilers). Ignored on Linux and macOS.'
+        required: false
+        default: 'none'
+        type: string
 
 jobs:
   build:
     runs-on: ${{ inputs.os }}
+
+    # The MinGW builds run entirely inside the MSYS2/UCRT64 environment, so
+    # every `run:` step needs the msys2 shell; everywhere else bash is used.
+    defaults:
+      run:
+        shell: ${{ inputs.runtime == 'mingw' && 'msys2 {0}' || 'bash' }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Must come first: all later `run:` steps of a MinGW build use this shell.
+      - name: Set up MSYS2 with UCRT64
+        if: inputs.runtime == 'mingw'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          cache: true
+          path-type: inherit
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-gcc-fortran
+            mingw-w64-ucrt-x86_64-ninja
+            mingw-w64-ucrt-x86_64-meson
+            mingw-w64-ucrt-x86_64-python
+            mingw-w64-ucrt-x86_64-python-numpy
+
+      # MSYS2 supplies its own (MinGW-ABI) Python, meson and ninja.
       - name: Setup Python
+        if: inputs.runtime != 'mingw'
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
       - name: Set up MSVC Developer Command Prompt
+        if: inputs.runtime == 'msvc'
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
 
       - name: Install Meson and Ninja
-        shell: bash
+        if: inputs.runtime != 'mingw'
         run: |
           pip install meson
           pip install ninja numpy
 
       - name: Set the environment variables
-        shell: bash
         run: |
           echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
           echo "DEPS=$GITHUB_WORKSPACE/.." >> $GITHUB_ENV
@@ -91,7 +122,6 @@ jobs:
           fi
 
       - name: Set the environment variables LIBRARY_PATH, LD_LIBRARY_PATH and DYLD_LIBRARY_PATH
-        shell: bash
         run: |
           if [[ "${{ inputs.os }}" == "self-hosted" ]]; then
             echo "LIBRARY_PATH=$LIBRARY_PATH:$DEPS/deps/$LIBDIR:/scratch/github-actions/actions_runner_galahad/lib:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
@@ -114,7 +144,6 @@ jobs:
           fi
 
       - name: Set environment variables for OpenMP
-        shell: bash
         run: |
           echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
           echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
@@ -128,7 +157,6 @@ jobs:
       # point LSan at a suppression file that ignores those third-party leaks.
       - name: Set LeakSanitizer suppressions for third-party solvers
         if: inputs.sanitizers == 'true'
-        shell: bash
         run: |
           echo "LSAN_OPTIONS=suppressions=$GITHUB_WORKSPACE/.github/lsan_suppressions.txt" >> $GITHUB_ENV
 
@@ -136,20 +164,18 @@ jobs:
       # as both the symmetric and definite linear solver under the sanitizers.
       - name: Select the linear solvers exercised by the tests
         if: inputs.sanitizers == 'true'
-        shell: bash
         run: |
           echo "GALAHAD_SYMMETRIC_LINEAR_SOLVER=slblt" >> $GITHUB_ENV
           echo "GALAHAD_DEFINITE_LINEAR_SOLVER=slblt" >> $GITHUB_ENV
 
       - name: Set environment variables for self-hosted runner
         if: inputs.os == 'self-hosted'
-        shell: bash
         run: |
           echo "JULIA_DEPOT_PATH=/scratch/github-actions/julia_depot_galahad" >> $GITHUB_ENV
           echo "JULIA_GALAHAD_LIBRARY_PATH=/scratch/github-actions/actions_runner_galahad/_work/GALAHAD/GALAHAD/galahad/lib" >> $GITHUB_ENV
 
       - name: Install compilers
-        if: inputs.os != 'self-hosted'
+        if: inputs.os != 'self-hosted' && inputs.runtime != 'mingw'
         uses: fortran-lang/setup-fortran@main
         with:
           compiler: ${{ inputs.compiler }}
@@ -157,7 +183,6 @@ jobs:
 
       - name: Install CUTEst
         if: inputs.os != 'windows-latest' && inputs.compiler != 'nvidia-hpc'
-        shell: bash
         run: |
           VERSION_CUTEST="2.7.1"
           INT64="false"
@@ -189,7 +214,6 @@ jobs:
 
       - name: Install libHSL
         if: inputs.os != 'windows-latest'
-        shell: bash
         run: |
           # self-hosted runner
           if [[ "$HOSTNAME" == "moonshot" ]]; then
@@ -252,7 +276,6 @@ jobs:
 
       - name: Install METIS / SCOTCH / PaStiX / MUMPS build dependencies
         if: inputs.compiler == 'gcc' && inputs.os != 'windows-latest'
-        shell: bash
         run: |
           mkdir -p "$DEPS/deps"
           if [[ "${{ inputs.int }}" == "64" ]]; then
@@ -278,7 +301,6 @@ jobs:
 
       - name: Install METIS
         if: inputs.compiler == 'gcc' && inputs.os != 'windows-latest'
-        shell: bash
         run: |
           VERSION_METIS="5.1.0"
           cd "$DEPS"
@@ -299,7 +321,6 @@ jobs:
 
       - name: Install SCOTCH
         if: inputs.compiler == 'gcc' && inputs.os != 'windows-latest'
-        shell: bash
         run: |
           VERSION_SCOTCH="7.0.13"
           cd "$DEPS"
@@ -321,7 +342,6 @@ jobs:
 
       - name: Install PaStiX
         if: inputs.compiler == 'gcc' && inputs.os != 'windows-latest'
-        shell: bash
         run: |
           VERSION_PASTIX="6.4.0"
           # METIS and SCOTCH orderings are both built above, so exercise both in
@@ -349,7 +369,6 @@ jobs:
 
       - name: Install MUMPS
         if: inputs.compiler == 'gcc' && inputs.os != 'windows-latest' && inputs.int == '32'
-        shell: bash
         run: |
           VERSION_MUMPS="5.9.1"
           cd "$DEPS"
@@ -406,7 +425,6 @@ jobs:
 
       - name: Install MKL
         if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'intel'
-        shell: bash
         run: |
           cd ..
           mkdir -p deps
@@ -418,7 +436,6 @@ jobs:
 
       - name: Install ASL
         if: inputs.os != 'windows-latest'
-        shell: bash
         run: |
           cd ..
           mkdir -p deps
@@ -427,7 +444,6 @@ jobs:
           tar -xzvf ASL.v${VERSION_ASL}.$PLATFORM.tar.gz -C deps
 
       - name: Setup GALAHAD
-        shell: cmd
         run: |
           mkdir -p ../deps/${LIBDIR}
           mkdir -p ../deps/modules
@@ -488,7 +504,13 @@ jobs:
           if [[ ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "ubuntu-latest" ) ]]; then
             SHARED_STATIC="static"
           fi
-          if [[ "${{inputs.sanitizers}}" == "true" || ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
+          if [[ "${{inputs.sanitizers}}" == "true" ]]; then
+            PYTHON_INTERFACE="false"
+          fi
+          # CPython on Windows is MSVC-ABI, so only the MSVC-runtime (Intel)
+          # build can host the extension modules. The MinGW build is validated
+          # through Julia instead, which is itself MinGW-ABI.
+          if [[ "${{ inputs.runtime }}" == "mingw" ]]; then
             PYTHON_INTERFACE="false"
           fi
           if [[ "${{ inputs.os }}" == "ubuntu-24.04-arm" || "${{ inputs.compiler }}" == "nvidia-hpc" || "${{ inputs.compiler }}" == "intel" ]]; then
@@ -540,7 +562,6 @@ jobs:
                                -Db_sanitize=${SANITIZER}
 
       - name: Build GALAHAD
-        shell: bash
         run: |
           if [[ "${{ inputs.compiler }}" == "intel" ]]; then
             meson compile -C builddir -j4
@@ -555,7 +576,6 @@ jobs:
           path: builddir/meson-logs/meson-log.txt
 
       - name: Install GALAHAD
-        shell: bash
         run: |
           meson install -C builddir
 
@@ -571,7 +591,6 @@ jobs:
       #   uses: mxschmitt/action-tmate@v3
 
       - name: Test GALAHAD
-        shell: bash
         run: |
           meson test -C builddir --timeout-multiplier 8
 
@@ -581,11 +600,13 @@ jobs:
           name: ${{ inputs.os }}_${{ inputs.compiler }}-v${{ inputs.version }}_Int${{ inputs.int }}_testlog.txt
           path: builddir/meson-logs/testlog.txt
 
+      # Julia is built against the MinGW-w64 runtime (libgfortran, libwinpthread),
+      # so it can only consume a GNU-compiled GALAHAD. Intel builds -- and the
+      # MSVC runtime they use on Windows -- are exercised through Python instead.
       - name: Install Julia
-        if: (inputs.compiler != 'intel')
+        if: (inputs.compiler != 'intel') && (inputs.runtime != 'msvc')
         uses: julia-actions/setup-julia@v2
 
       - name: Test GALAHAD.jl
-        if: (inputs.compiler != 'intel') && (inputs.sanitizers == 'false')
-        shell: bash
+        if: (inputs.compiler != 'intel') && (inputs.runtime != 'msvc') && (inputs.sanitizers == 'false')
         run: julia --color=no -e 'using Pkg; Pkg.update(); Pkg.develop(path="GALAHAD.jl"); Base.compilecache(Base.identify_package("GALAHAD")); Pkg.test("GALAHAD")'

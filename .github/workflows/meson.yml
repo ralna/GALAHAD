@@ -7,8 +7,10 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
+  # Windows / MSVC runtime: Intel compilers are MSVC-ABI, so this is the build
+  # that can host the MSVC-ABI CPython extension modules. Python tests only.
   windows-intel-build:
-    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/${{ matrix.runtime }}/Int${{ matrix.int }}
     strategy:
       fail-fast: false
       matrix:
@@ -16,6 +18,7 @@ jobs:
         arch: ['x64']
         compiler: ['intel']
         version: ['2026.1']
+        runtime: ['msvc']
         int: ['32', '64']
         sanitizers: ['false']
     uses: ./.github/workflows/meson_build.yml
@@ -23,6 +26,31 @@ jobs:
       os: ${{ matrix.os }}
       compiler: ${{ matrix.compiler }}
       version: ${{ matrix.version }}
+      runtime: ${{ matrix.runtime }}
+      int: ${{ matrix.int }}
+      sanitizers: ${{ matrix.sanitizers }}
+
+  # Windows / MinGW runtime: built inside MSYS2/UCRT64 with gfortran. This is
+  # the ABI Julia uses on Windows, so this is the build GALAHAD.jl is tested
+  # against. Julia tests only.
+  windows-gcc-build:
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/${{ matrix.runtime }}/Int${{ matrix.int }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['windows-latest']
+        arch: ['x64']
+        compiler: ['gcc']
+        version: ['11']
+        runtime: ['mingw']
+        int: ['32', '64']
+        sanitizers: ['false']
+    uses: ./.github/workflows/meson_build.yml
+    with:
+      os: ${{ matrix.os }}
+      compiler: ${{ matrix.compiler }}
+      version: ${{ matrix.version }}
+      runtime: ${{ matrix.runtime }}
       int: ${{ matrix.int }}
       sanitizers: ${{ matrix.sanitizers }}
 
@@ -83,24 +111,24 @@ jobs:
   #     int: ${{ matrix.int }}
   #     sanitizers: ${{ matrix.sanitizers }}
 
-  # intel-build:
-  #   name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       os: [ubuntu-latest]
-  #       compiler: ['intel']
-  #       arch: ['x64']
-  #       version: ['2025.2']
-  #       int: ['32', '64']
-  #       sanitizers: ['false']
-  #   uses: ./.github/workflows/meson_build.yml
-  #   with:
-  #     os: ${{ matrix.os }}
-  #     compiler: ${{ matrix.compiler }}
-  #     version: ${{ matrix.version }}
-  #     int: ${{ matrix.int }}
-  #     sanitizers: ${{ matrix.sanitizers }}
+  linux-intel-build:
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest']
+        compiler: ['intel']
+        arch: ['x64']
+        version: ['2026.1']
+        int: ['32', '64']
+        sanitizers: ['false']
+    uses: ./.github/workflows/meson_build.yml
+    with:
+      os: ${{ matrix.os }}
+      compiler: ${{ matrix.compiler }}
+      version: ${{ matrix.version }}
+      int: ${{ matrix.int }}
+      sanitizers: ${{ matrix.sanitizers }}
 
   # nvidia-build:
   #   name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
