@@ -77,7 +77,69 @@ jobs:
 
           # test built wheels
           CIBW_TEST_REQUIRES: numpy
-          CIBW_TEST_COMMAND: python -c "from galahad import ugo; options = ugo.initialize(); ugo.terminate()"
+          CIBW_TEST_COMMAND: |
+            python {project}/src/arc/Python/test_arc.py
+            python {project}/src/bgo/Python/test_bgo_quadratic.py
+            python {project}/src/bgo/Python/test_bgo.py
+            python {project}/src/blls/Python/test_blls.py
+            python {project}/src/bllsb/Python/test_bllsb.py
+            python {project}/src/bnls/Python/test_bnls.py
+            python {project}/src/bqp/Python/test_bqp.py
+            python {project}/src/bqpb/Python/test_bqpb.py
+            python {project}/src/bsc/Python/test_bsc.py
+            python {project}/src/clls/Python/test_clls.py
+            python {project}/src/convert/Python/test_convert.py
+            python {project}/src/cqp/Python/test_cqp.py
+            python {project}/src/cro/Python/test_cro.py
+            python {project}/src/dgo/Python/test_dgo_quadratic.py
+            python {project}/src/dgo/Python/test_dgo.py
+            python {project}/src/dps/Python/test_dps.py
+            python {project}/src/dqp/Python/test_dqp.py
+            python {project}/src/eqp/Python/test_eqp.py
+            python {project}/src/fdc/Python/test_fdc.py
+            python {project}/src/fit/Python/test_fit.py
+            python {project}/src/glrt/Python/test_glrt.py
+            python {project}/src/gls/Python/test_gls.py
+            python {project}/src/gltr/Python/test_gltr.py
+            python {project}/src/hash/Python/test_hash.py
+            python {project}/src/ir/Python/test_ir.py
+            python {project}/src/l2rt/Python/test_l2rt.py
+            python {project}/src/lhs/Python/test_lhs.py
+            python {project}/src/llsr/Python/test_llsr.py
+            python {project}/src/llst/Python/test_llst.py
+            python {project}/src/lms/Python/test_lms.py
+            python {project}/src/lpa/Python/test_lpa.py
+            python {project}/src/lpb/Python/test_lpb.py
+            python {project}/src/lsqp/Python/test_lsqp.py
+            python {project}/src/lsrt/Python/test_lsrt.py
+            python {project}/src/lstr/Python/test_lstr.py
+            python {project}/src/nls/Python/test_nls.py
+            python {project}/src/nodend/Python/test_nodend.py
+            python {project}/src/nrek/Python/test_nrek.py
+            python {project}/src/presolve/Python/test_presolve.py
+            python {project}/src/psls/Python/test_psls.py
+            python {project}/src/qpa/Python/test_qpa.py
+            python {project}/src/qpb/Python/test_qpb.py
+            python {project}/src/roots/Python/test_roots.py
+            python {project}/src/rpd/Python/test_rpd.py
+            python {project}/src/rqs/Python/test_rqs.py
+            python {project}/src/sbls/Python/test_sbls.py
+            python {project}/src/scu/Python/test_scu.py
+            python {project}/src/sec/Python/test_sec.py
+            python {project}/src/sha/Python/test_sha.py
+            python {project}/src/sils/Python/test_sils.py
+            python {project}/src/slls/Python/test_slls.py
+            python {project}/src/sllsb/Python/test_sllsb.py
+            python {project}/src/sls/Python/test_sls.py
+            python {project}/src/snls/Python/test_snls.py
+            python {project}/src/ssls/Python/test_ssls.py
+            python {project}/src/trb/Python/test_trb.py
+            python {project}/src/trek/Python/test_trek.py
+            python {project}/src/trs/Python/test_trs.py
+            python {project}/src/tru/Python/test_tru.py
+            python {project}/src/ugo/Python/test_ugo.py
+            python {project}/src/uls/Python/test_uls.py
+            python {project}/src/wcp/Python/test_wcp.py
 
       - uses: actions/upload-artifact@v4
         with:
