@@ -5,6 +5,8 @@ on:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   check_pypi:
@@ -28,7 +30,7 @@ jobs:
 
   build_wheels:
     needs: check_pypi
-    if: needs.check_pypi.outputs.should_build == 'true'
+    if: needs.check_pypi.outputs.should_build == 'true' || github.event_name == 'pull_request'
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -100,7 +102,7 @@ jobs:
 
   upload_pypi:
     needs: [check_pypi, build_wheels, build_sdist]
-    if: needs.check_pypi.outputs.should_build == 'true'
+    if: needs.check_pypi.outputs.should_build == 'true' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       # IMPORTANT: this permission is mandatory for Trusted Publishing
