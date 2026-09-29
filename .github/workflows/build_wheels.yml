@@ -64,6 +64,14 @@ jobs:
             echo PKG_CONFIG_PATH="/usr/local/opt/openblas/lib/pkgconfig" >> $GITHUB_ENV
           fi
 
+      - name: Prepare test scripts
+        shell: python
+        run: |
+          import shutil, glob, os
+          os.makedirs("tests", exist_ok=True)
+          for f in glob.glob("src/**/test_*.py", recursive=True):
+              shutil.copy(f, "tests")
+
       - name: Build wheels
         run: pipx run cibuildwheel==4.2.1
         # to supply options, put them in 'env', like:
@@ -91,7 +99,8 @@ jobs:
 
           # test built wheels
           CIBW_TEST_REQUIRES: numpy pytest
-          CIBW_TEST_COMMAND: pytest -s {project}/src
+          CIBW_TEST_SOURCES: conftest.py tests
+          CIBW_TEST_COMMAND: pytest -v --capture=no --tb=short -rN -p no:faulthandler
 
       - uses: actions/upload-artifact@v4
         with:
