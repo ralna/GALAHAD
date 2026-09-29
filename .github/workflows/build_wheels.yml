@@ -17,6 +17,14 @@ jobs:
     steps:
       - id: check
         run: |
+          # If this is a pull request, skip the PyPI check and force a build
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Pull request detected: skipping PyPI check and forcing build."
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Otherwise check if version tag already exists on PyPI
           VERSION="${GITHUB_REF_NAME#v}"
 
           if curl -fsSL https://pypi.org/pypi/galahad-optrove/json | \
@@ -30,7 +38,7 @@ jobs:
 
   build_wheels:
     needs: check_pypi
-    if: needs.check_pypi.outputs.should_build == 'true' || github.event_name == 'pull_request'
+    if: needs.check_pypi.outputs.should_build == 'true'
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -89,7 +97,7 @@ jobs:
 
   build_sdist:
     needs: check_pypi
-    if: needs.check_pypi.outputs.should_build == 'true'
+    if: github.event_name != 'pull_request' && needs.check_pypi.outputs.should_build == 'true'
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
@@ -105,7 +113,7 @@ jobs:
 
   upload_pypi:
     needs: [check_pypi, build_wheels, build_sdist]
-    if: needs.check_pypi.outputs.should_build == 'true' && github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && needs.check_pypi.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     permissions:
       # IMPORTANT: this permission is mandatory for Trusted Publishing
