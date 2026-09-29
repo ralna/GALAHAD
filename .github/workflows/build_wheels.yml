@@ -64,8 +64,11 @@ jobs:
           # list of python versions and platforms to build on
           CIBW_BUILD: cp3{10,11,12,13,14}-manylinux_x86_64 cp3{10,11,12,13,14}-macosx_x86_64 cp3{10,11,12,13,14}-macosx_arm64 cp3{10,11,12,13,14}-win_amd64
 
-          # build with gcc/gfortran on macOS
-          CIBW_ENVIRONMENT_MACOS: CC="gcc-14" CXX="g++-14" FC="gfortran-14"
+          # set OpenMP variables on Linux and Windows
+          CIBW_ENVIRONMENT: OMP_CANCELLATION=true OMP_PROC_BIND=true
+
+          # build with gcc/gfortran on macOS and set OpenMP variables on macOS
+          CIBW_ENVIRONMENT_MACOS: CC="gcc-14" CXX="g++-14" FC="gfortran-14" OMP_CANCELLATION=true OMP_PROC_BIND=true
 
           # build with OpenBLAS
           CIBW_BEFORE_ALL_LINUX: yum install -y openblas-devel
