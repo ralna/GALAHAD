@@ -1,17 +1,25 @@
-// This version 2023-03-29 at 09:15 GMT
+// This version 2026-09-29 at 10:15 GMT
 
 #define NPY_NO_DEPRECATED_API NPY_1_20_API_VERSION
-
-#include <stdbool.h>
-#include <stdint.h>
 
 // include guard
 #ifndef GALAHAD_PYTHON_H
 #define GALAHAD_PYTHON_H
 
+// Fix POSIX macro collision
+#ifdef _POSIX_C_SOURCE
+#undef _POSIX_C_SOURCE
+#endif
+#ifdef _XOPEN_SOURCE
+#undef _XOPEN_SOURCE
+#endif
+
 // Python and NumPy C APIs
 #include <Python.h>
 #include <numpy/arrayobject.h>
+
+#include <stdbool.h>
+#include <stdint.h>
 
 /*
  * Check and handle general status error codes
