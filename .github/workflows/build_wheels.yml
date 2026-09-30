@@ -100,7 +100,7 @@ jobs:
           # test built wheels
           CIBW_TEST_REQUIRES: numpy pytest
           CIBW_TEST_SOURCES: conftest.py tests
-          CIBW_TEST_COMMAND: pytest -v --capture=no --tb=short -rN -p no:faulthandler
+          CIBW_TEST_COMMAND: pytest -v --capture=no --tb=short -rN -p no:faulthandler -o python_files=no
 
       - uses: actions/upload-artifact@v4
         with:
