@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    types: [opened, synchronize, reopened]
 
 # Build with "poisoned" automatic variables so that use-of-uninitialised-memory
 # bugs (which otherwise only crash intermittently, depending on stack/heap
