@@ -5,6 +5,8 @@ on:
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   check_pypi:
@@ -15,6 +17,14 @@ jobs:
     steps:
       - id: check
         run: |
+          # If this is a pull request, skip the PyPI check and force a build
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Pull request detected: skipping PyPI check and forcing build."
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Otherwise check if version tag already exists on PyPI
           VERSION="${GITHUB_REF_NAME#v}"
 
           if curl -fsSL https://pypi.org/pypi/galahad-optrove/json | \
@@ -32,6 +42,7 @@ jobs:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: ${{ github.event_name != 'pull_request' }}
       matrix:
         # Note: builds on these are backward compatible
         os: [ubuntu-latest, macos-15-intel, macos-15, windows-latest]
@@ -53,6 +64,14 @@ jobs:
             echo PKG_CONFIG_PATH="/usr/local/opt/openblas/lib/pkgconfig" >> $GITHUB_ENV
           fi
 
+      - name: Prepare test scripts
+        shell: python
+        run: |
+          import shutil, glob, os
+          os.makedirs("tests", exist_ok=True)
+          for f in glob.glob("src/**/test_*.py", recursive=True):
+              shutil.copy(f, "tests")
+
       - name: Build wheels
         run: pipx run cibuildwheel==4.2.1
         # to supply options, put them in 'env', like:
@@ -60,10 +79,15 @@ jobs:
         #   CIBW_SOME_OPTION: value
         env:
           # list of python versions and platforms to build on
-          CIBW_BUILD: cp3{10,11,12,13,14}-manylinux_x86_64 cp3{10,11,12,13,14}-macosx_x86_64 cp3{10,11,12,13,14}-macosx_arm64 cp3{10,11,12,13,14}-win_amd64
+          CIBW_BUILD: ${{ github.event_name == 'pull_request' && 'cp314-*' || 'cp3{10,11,12,13,14}-*' }}
+          # skip builds on unsupported platforms (free-threaded, 32-bit, and musllinux)
+          CIBW_SKIP: "*t-win* *-win32 *-manylinux_i686 *musllinux*"
 
-          # build with gcc/gfortran on macOS
-          CIBW_ENVIRONMENT_MACOS: CC="gcc-14" CXX="g++-14" FC="gfortran-14"
+          # set OpenMP variables on Linux and Windows
+          CIBW_ENVIRONMENT: OMP_CANCELLATION=true OMP_PROC_BIND=true
+
+          # build with gcc/gfortran on macOS and set OpenMP variables on macOS
+          CIBW_ENVIRONMENT_MACOS: CC="gcc-14" CXX="g++-14" FC="gfortran-14" OMP_CANCELLATION=true OMP_PROC_BIND=true
 
           # build with OpenBLAS
           CIBW_BEFORE_ALL_LINUX: yum install -y openblas-devel
@@ -74,8 +98,9 @@ jobs:
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --ignore-existing -w {dest_dir} {wheel}"
 
           # test built wheels
-          CIBW_TEST_REQUIRES: numpy
-          CIBW_TEST_COMMAND: python -c "from galahad import ugo; options = ugo.initialize(); ugo.terminate()"
+          CIBW_TEST_REQUIRES: numpy pytest
+          CIBW_TEST_SOURCES: conftest.py tests
+          CIBW_TEST_COMMAND: pytest -v --capture=no --tb=short -rN -p no:faulthandler -o python_files=no
 
       - uses: actions/upload-artifact@v4
         with:
@@ -84,7 +109,7 @@ jobs:
 
   build_sdist:
     needs: check_pypi
-    if: needs.check_pypi.outputs.should_build == 'true'
+    if: github.event_name != 'pull_request' && needs.check_pypi.outputs.should_build == 'true'
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
@@ -100,7 +125,7 @@ jobs:
 
   upload_pypi:
     needs: [check_pypi, build_wheels, build_sdist]
-    if: needs.check_pypi.outputs.should_build == 'true'
+    if: github.event_name != 'pull_request' && needs.check_pypi.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     permissions:
       # IMPORTANT: this permission is mandatory for Trusted Publishing
