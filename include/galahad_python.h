@@ -18,8 +18,17 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 
+// GALAHAD C types
+#include "galahad_precision.h"
+
 #include <stdbool.h>
-#include <stdint.h>
+
+
+/*
+ * Set integer type for conversion from NumPy
+ */
+static const int NPY_IPC = (sizeof(ipc_) == 8) ? NPY_INT64 : NPY_INT32;
+
 
 /*
  * Check and handle general status error codes
