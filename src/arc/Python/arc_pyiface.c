@@ -725,7 +725,7 @@ static PyObject* py_arc_initialize(PyObject *self){
 
 static PyObject* py_arc_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_H_row, *py_H_col, *py_H_ptr;
-    PyArrayObject *tmp_H_row, *tmp_H_col, *tmp_H_ptr;
+    PyArrayObject *tmp_H_row = NULL, *tmp_H_col = NULL, *tmp_H_ptr = NULL;
     PyObject *py_options = NULL;
     const ipc_ *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
     const char *H_type;
@@ -750,8 +750,6 @@ static PyObject* py_arc_load(PyObject *self, PyObject *args, PyObject *keywds){
         check_array_int("H_ptr", py_H_ptr, n+1)
         ))
         return NULL;
-
-    // Get array data pointers
 
     // Convert NumPy integer H_row array to ipc_
     if((PyObject *) py_H_row != Py_None){
@@ -900,6 +898,11 @@ static PyObject* py_arc_terminate(PyObject *self){
 
     // Call arc_terminate
     arc_terminate(&data, &control, &inform);
+
+    // Cleanup refcounts
+    Py_XDECREF(py_eval_f);
+    Py_XDECREF(py_eval_g);
+    Py_XDECREF(py_eval_h);
 
     // Return None boilerplate
     Py_INCREF(Py_None);
