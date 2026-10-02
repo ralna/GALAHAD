@@ -469,7 +469,7 @@ static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
        Ao_row = (const ipc_ *) PyArray_DATA(tmp_Ao_row);
     }
 
-    // Convert NumPy integer H_col array to ipc_
+    // Convert NumPy integer Ao_col array to ipc_
     if((PyObject *) py_Ao_col != Py_None){
        tmp_Ao_col = (PyArrayObject *) PyArray_FROMANY((PyObject *) py_Ao_col, NPY_IPC, 1, 1, NPY_ARRAY_CARRAY_RO | NPY_ARRAY_FORCECAST);
        if(tmp_Ao_col == NULL) goto conversion_error;
@@ -477,7 +477,7 @@ static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     }
 
-    // Convert NumPy integer H_ptr array to ipc_
+    // Convert NumPy integer Ao_ptr array to ipc_
     if((PyObject *) py_Ao_ptr != Py_None){
        tmp_Ao_ptr = (PyArrayObject *) PyArray_FROMANY((PyObject *) py_Ao_ptr, NPY_IPC, 1, 1, NPY_ARRAY_CARRAY_RO | NPY_ARRAY_FORCECAST);
        if(tmp_Ao_ptr == NULL) goto conversion_error;
