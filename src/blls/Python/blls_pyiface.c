@@ -432,8 +432,9 @@ static PyObject* py_blls_initialize(PyObject *self){
 
 static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_Ao_row, *py_Ao_col, *py_Ao_ptr;
+    PyArrayObject *tmp_Ao_row = NULL, *tmp_Ao_col = NULL, *tmp_Ao_ptr = NULL;
     PyObject *py_options = NULL;
-    int *Ao_row = NULL, *Ao_col = NULL, *Ao_ptr = NULL;
+    const ipc_ *Ao_row = NULL, *Ao_col = NULL, *Ao_ptr = NULL;
     const char *Ao_type;
     int n, o, Ao_ne, Ao_ptr_ne;
 
@@ -454,7 +455,6 @@ static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("Ao_row", py_Ao_row, Ao_ne) &&
         check_array_int("Ao_col", py_Ao_col, Ao_ne) &&
@@ -462,25 +462,26 @@ static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
         ))
         return NULL;
 
-    // Convert 64bit integer Ao_row array to 32bit
+    // Convert NumPy integer Ao_row array to ipc_
     if((PyObject *) py_Ao_row != Py_None){
-        Ao_row = malloc(Ao_ne * sizeof(int));
-        long int *Ao_row_long = (long int *) PyArray_DATA(py_Ao_row);
-        for(int i = 0; i < Ao_ne; i++) Ao_row[i] = (int) Ao_row_long[i];
+       tmp_Ao_row = (PyArrayObject *) PyArray_FROMANY((PyObject *) py_Ao_row, NPY_IPC, 1, 1, NPY_ARRAY_CARRAY_RO | NPY_ARRAY_FORCECAST);
+       if(tmp_Ao_row == NULL) goto conversion_error;
+       Ao_row = (const ipc_ *) PyArray_DATA(tmp_Ao_row);
     }
 
-    // Convert 64bit integer Ao_col array to 32bit
+    // Convert NumPy integer H_col array to ipc_
     if((PyObject *) py_Ao_col != Py_None){
-        Ao_col = malloc(Ao_ne * sizeof(int));
-        long int *Ao_col_long = (long int *) PyArray_DATA(py_Ao_col);
-        for(int i = 0; i < Ao_ne; i++) Ao_col[i] = (int) Ao_col_long[i];
+       tmp_Ao_col = (PyArrayObject *) PyArray_FROMANY((PyObject *) py_Ao_col, NPY_IPC, 1, 1, NPY_ARRAY_CARRAY_RO | NPY_ARRAY_FORCECAST);
+       if(tmp_Ao_col == NULL) goto conversion_error;
+       Ao_col = (const ipc_ *) PyArray_DATA(tmp_Ao_col);
+
     }
 
-    // Convert 64bit integer Ao_ptr array to 32bit
+    // Convert NumPy integer H_ptr array to ipc_
     if((PyObject *) py_Ao_ptr != Py_None){
-        Ao_ptr = malloc(Ao_ptr_ne * sizeof(int));
-        long int *Ao_ptr_long = (long int *) PyArray_DATA(py_Ao_ptr);
-        for(int i = 0; i < Ao_ptr_ne; i++) Ao_ptr[i] = (int) Ao_ptr_long[i];
+       tmp_Ao_ptr = (PyArrayObject *) PyArray_FROMANY((PyObject *) py_Ao_ptr, NPY_IPC, 1, 1, NPY_ARRAY_CARRAY_RO | NPY_ARRAY_FORCECAST);
+       if(tmp_Ao_ptr == NULL) goto conversion_error;
+       Ao_ptr = (const ipc_ *) PyArray_DATA(tmp_Ao_ptr);
     }
 
     // Reset control options
@@ -494,10 +495,10 @@ static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
     blls_import(&control, &data, &status, n, o,
                 Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr);
 
-    // Free allocated memory
-    if(Ao_row != NULL) free(Ao_row);
-    if(Ao_col != NULL) free(Ao_col);
-    if(Ao_ptr != NULL) free(Ao_ptr);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_Ao_row);
+    Py_XDECREF(tmp_Ao_col);
+    Py_XDECREF(tmp_Ao_ptr);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -506,6 +507,13 @@ static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
+
+    // Handle errors on array conversion
+    conversion_error:
+        Py_XDECREF(tmp_Ao_row);
+        Py_XDECREF(tmp_Ao_col);
+        Py_XDECREF(tmp_Ao_ptr);
+        return NULL;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   BLLS_SOLVE   -*-*-*-*-*-*-*-*

@@ -521,7 +521,7 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
     bgo_import(&control, &data, &status, n, x_l, x_u, H_type, H_ne,
                H_row, H_col, H_ptr);
 
-     // Cleanup refcounts
+    // Cleanup refcounts
     Py_XDECREF(tmp_H_row);
     Py_XDECREF(tmp_H_col);
     Py_XDECREF(tmp_H_ptr);
