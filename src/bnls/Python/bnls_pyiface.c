@@ -592,14 +592,14 @@ static PyObject* py_bnls_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Convert NumPy integer Jr_row array to ipc_
     if((PyObject *) py_Jr_row != Py_None){
-       tmp_Jr_row = (PyArrayObject *) PyArray_FROMANY((PyObject *) py_Jr_row, NPY_IPC, 1, 1, NPY_ARRAY_CARRAY_RO | NPY_ARRAY_FORCECAST);
+       tmp_Jr_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Jr_row, NPY_IPC, NPY_ARRAY_IN_ARRAY);
        if(tmp_Jr_row == NULL) goto conversion_error;
        Jr_row = (const ipc_ *) PyArray_DATA(tmp_Jr_row);
     }
 
     // Convert NumPy integer Jr_col array to ipc_
     if((PyObject *) py_Jr_col != Py_None){
-       tmp_Jr_col = (PyArrayObject *) PyArray_FROMANY((PyObject *) py_Jr_col, NPY_IPC, 1, 1, NPY_ARRAY_CARRAY_RO | NPY_ARRAY_FORCECAST);
+       tmp_Jr_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Jr_col, NPY_IPC, NPY_ARRAY_IN_ARRAY);
        if(tmp_Jr_col == NULL) goto conversion_error;
        Jr_col = (const ipc_ *) PyArray_DATA(tmp_Jr_col);
 
@@ -607,7 +607,7 @@ static PyObject* py_bnls_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Convert NumPy integer Jr_ptr array to ipc_
     if((PyObject *) py_Jr_ptr != Py_None){
-       tmp_Jr_ptr = (PyArrayObject *) PyArray_FROMANY((PyObject *) py_Jr_ptr, NPY_IPC, 1, 1, NPY_ARRAY_CARRAY_RO | NPY_ARRAY_FORCECAST);
+       tmp_Jr_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Jr_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY);
        if(tmp_Jr_ptr == NULL) goto conversion_error;
        Jr_ptr = (const ipc_ *) PyArray_DATA(tmp_Jr_ptr);
     }

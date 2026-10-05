@@ -740,14 +740,14 @@ static PyObject* py_bllsb_load(PyObject *self, PyObject *args, PyObject *keywds)
 
     // Convert NumPy integer Ao_row array to ipc_
     if((PyObject *) py_Ao_row != Py_None){
-       tmp_Ao_row = (PyArrayObject *) PyArray_FROMANY((PyObject *) py_Ao_row, NPY_IPC, 1, 1, NPY_ARRAY_CARRAY_RO | NPY_ARRAY_FORCECAST);
+       tmp_Ao_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Ao_row, NPY_IPC, NPY_ARRAY_IN_ARRAY);
        if(tmp_Ao_row == NULL) goto conversion_error;
        Ao_row = (const ipc_ *) PyArray_DATA(tmp_Ao_row);
     }
 
     // Convert NumPy integer H_col array to ipc_
     if((PyObject *) py_Ao_col != Py_None){
-       tmp_Ao_col = (PyArrayObject *) PyArray_FROMANY((PyObject *) py_Ao_col, NPY_IPC, 1, 1, NPY_ARRAY_CARRAY_RO | NPY_ARRAY_FORCECAST);
+       tmp_Ao_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Ao_col, NPY_IPC, NPY_ARRAY_IN_ARRAY);
        if(tmp_Ao_col == NULL) goto conversion_error;
        Ao_col = (const ipc_ *) PyArray_DATA(tmp_Ao_col);
 
@@ -755,7 +755,7 @@ static PyObject* py_bllsb_load(PyObject *self, PyObject *args, PyObject *keywds)
 
     // Convert NumPy integer H_ptr array to ipc_
     if((PyObject *) py_Ao_ptr != Py_None){
-       tmp_Ao_ptr = (PyArrayObject *) PyArray_FROMANY((PyObject *) py_Ao_ptr, NPY_IPC, 1, 1, NPY_ARRAY_CARRAY_RO | NPY_ARRAY_FORCECAST);
+       tmp_Ao_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Ao_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY);
        if(tmp_Ao_ptr == NULL) goto conversion_error;
        Ao_ptr = (const ipc_ *) PyArray_DATA(tmp_Ao_ptr);
     }
