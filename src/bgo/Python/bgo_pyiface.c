@@ -490,14 +490,14 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Convert NumPy integer H_row array to ipc_
     if((PyObject *) py_H_row != Py_None){
-       tmp_H_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_row, NPY_IPC, NPY_ARRAY_IN_ARRAY);
+       tmp_H_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
        if(tmp_H_row == NULL) goto conversion_error;
        H_row = (const ipc_ *) PyArray_DATA(tmp_H_row);
     }
 
     // Convert NumPy integer H_col array to ipc_
     if((PyObject *) py_H_col != Py_None){
-       tmp_H_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_col, NPY_IPC, NPY_ARRAY_IN_ARRAY);
+       tmp_H_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
        if(tmp_H_col == NULL) goto conversion_error;
        H_col = (const ipc_ *) PyArray_DATA(tmp_H_col);
 
@@ -505,7 +505,7 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Convert NumPy integer H_ptr array to ipc_
     if((PyObject *) py_H_ptr != Py_None){
-       tmp_H_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY);
+       tmp_H_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
        if(tmp_H_ptr == NULL) goto conversion_error;
        H_ptr = (const ipc_ *) PyArray_DATA(tmp_H_ptr);
     }
