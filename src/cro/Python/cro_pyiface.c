@@ -311,15 +311,18 @@ static PyObject* py_cro_initialize(PyObject *self){
 static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
                                            PyObject *keywds){
     PyArrayObject *py_H_val, *py_H_col, *py_H_ptr;
+    PyArrayObject *tmp_H_col = NULL, *tmp_H_ptr = NULL;
     PyArrayObject *py_A_val, *py_A_col, *py_A_ptr;
+    PyArrayObject *tmp_A_col = NULL, *tmp_A_ptr = NULL;
     PyArrayObject *py_g, *py_c_l, *py_c_u, *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_c, *py_y, *py_z;
     PyArrayObject *py_x_stat, *py_c_stat;
+    PyArrayObject *tmp_x_stat = NULL, *tmp_c_stat = NULL;
     PyObject *py_options = NULL;
     double *g, *H_val, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *c, *y, *z;
-    int *H_col = NULL, *H_ptr = NULL;
-    int *A_col = NULL, *A_ptr = NULL;
-    int *x_stat, *c_stat;
+    const ipc_ *H_col = NULL, *H_ptr = NULL;
+    const ipc_ *A_col = NULL, *A_ptr = NULL;
+    ipc_ *x_stat, *c_stat;
     int n, m, m_equal, H_ne, A_ne;
 
     // Check that package has been initialised
@@ -356,32 +359,32 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
         ))
         return NULL;
 
-    // Convert 64bit integer H_col array to 32bit
+    // Convert NumPy integer H_col array to ipc_
     if((PyObject *) py_H_col != Py_None){
-        H_col = malloc(H_ne * sizeof(int));
-        long int *H_col_long = (long int *) PyArray_DATA(py_H_col);
-        for(int i = 0; i < H_ne; i++) H_col[i] = (int) H_col_long[i];
+       tmp_H_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_H_col == NULL) goto conversion_error;
+       H_col = (const ipc_ *) PyArray_DATA(tmp_H_col);
     }
 
-    // Convert 64bit integer H_ptr array to 32bit
+    // Convert NumPy integer H_ptr array to ipc_
     if((PyObject *) py_H_ptr != Py_None){
-        H_ptr = malloc((n+1) * sizeof(int));
-        long int *H_ptr_long = (long int *) PyArray_DATA(py_H_ptr);
-        for(int i = 0; i < n+1; i++) H_ptr[i] = (int) H_ptr_long[i];
+       tmp_H_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_H_ptr == NULL) goto conversion_error;
+       H_ptr = (const ipc_ *) PyArray_DATA(tmp_H_ptr);
     }
 
-    // Convert 64bit integer A_col array to 32bit
+    // Convert NumPy integer A_col array to ipc_
     if((PyObject *) py_A_col != Py_None){
-        A_col = malloc(A_ne * sizeof(int));
-        long int *A_col_long = (long int *) PyArray_DATA(py_A_col);
-        for(int i = 0; i < A_ne; i++) A_col[i] = (int) A_col_long[i];
+       tmp_A_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_A_col == NULL) goto conversion_error;
+       A_col = (const ipc_ *) PyArray_DATA(tmp_A_col);
     }
 
-    // Convert 64bit integer A_ptr array to 32bit
+    // Convert NumPy integer A_ptr array to ipc_
     if((PyObject *) py_A_ptr != Py_None){
-        A_ptr = malloc((m+1) * sizeof(int));
-        long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
-        for(int i = 0; i < m+1; i++) A_ptr[i] = (int) A_ptr_long[i];
+       tmp_A_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_A_ptr == NULL) goto conversion_error;
+       A_ptr = (const ipc_ *) PyArray_DATA(tmp_A_ptr);
     }
 
     // Check that array inputs are of correct type, size, and shape
@@ -425,12 +428,13 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
     y = (double *) PyArray_DATA(py_y);
     z = (double *) PyArray_DATA(py_z);
 
-    x_stat = malloc(n * sizeof(int));
-    long int *x_stat_long = (long int *) PyArray_DATA(py_x_stat);
-    for(int i = 0; i < n; i++) x_stat[i] = (int) x_stat_long[i];
-    c_stat = malloc(m * sizeof(int));
-    long int *c_stat_long = (long int *) PyArray_DATA(py_c_stat);
-    for(int i = 0; i < m; i++) c_stat[i] = (int) c_stat_long[i];
+    // Convert from NumPy integer array
+    tmp_x_stat = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_x_stat, NPY_IPC, NPY_ARRAY_INOUT_ARRAY2 | NPY_ARRAY_FORCECAST);
+    if(tmp_x_stat == NULL) goto conversion_error;
+    x_stat = (ipc_ *) PyArray_DATA(tmp_x_stat);
+    tmp_c_stat = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_c_stat, NPY_IPC, NPY_ARRAY_INOUT_ARRAY2 | NPY_ARRAY_FORCECAST);
+    if(tmp_c_stat == NULL) goto conversion_error;
+    c_stat = (ipc_ *) PyArray_DATA(tmp_c_stat);
 
     // Update CRO control options
     if(!cro_update_control(&control, py_options))
@@ -443,21 +447,17 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
                            g, c_l, c_u, x_l, x_u,
                            x, c, y, z, x_stat, c_stat);
 
-    // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
-    // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
-    // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
+    // Write data back to original arrays
+    PyArray_ResolveWritebackIfCopy(tmp_x_stat);
+    PyArray_ResolveWritebackIfCopy(tmp_c_stat);
 
-    for(int i = 0; i < n; i++) x_stat_long[i] = x_stat[i];
-    for(int i = 0; i < m; i++) c_stat_long[i] = c_stat[i];
-
-    // Free allocated memory
-    free(H_col);
-    free(H_ptr);
-    free(A_col);
-    free(A_ptr);
-    free(x_stat);
-    free(c_stat);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_H_col);
+    Py_XDECREF(tmp_H_ptr);
+    Py_XDECREF(tmp_A_col);
+    Py_XDECREF(tmp_A_ptr);
+    Py_XDECREF(tmp_x_stat);
+    Py_XDECREF(tmp_c_stat);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
@@ -472,6 +472,18 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
 
     // Return x, c, y, z, x_stat and c_stat
     return Py_BuildValue("OOOOOON", py_x, py_c, py_y, py_z, py_x_stat, py_c_stat, py_inform);
+
+    // Handle errors on array conversion
+    conversion_error:
+        Py_XDECREF(tmp_H_col);
+        Py_XDECREF(tmp_H_ptr);
+        Py_XDECREF(tmp_A_col);
+        Py_XDECREF(tmp_A_ptr);
+        PyArray_DiscardWritebackIfCopy(tmp_x_stat);
+        Py_XDECREF(tmp_x_stat);
+        PyArray_DiscardWritebackIfCopy(tmp_c_stat);
+        Py_XDECREF(tmp_c_stat);
+        return NULL;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   CRO_TERMINATE   -*-*-*-*-*-*-*-*-*-*
