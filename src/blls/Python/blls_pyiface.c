@@ -474,7 +474,6 @@ static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
        tmp_Ao_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Ao_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
        if(tmp_Ao_col == NULL) goto conversion_error;
        Ao_col = (const ipc_ *) PyArray_DATA(tmp_Ao_col);
-
     }
 
     // Convert NumPy integer Ao_ptr array to ipc_

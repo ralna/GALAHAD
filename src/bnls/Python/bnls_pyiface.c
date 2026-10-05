@@ -602,7 +602,6 @@ static PyObject* py_bnls_load(PyObject *self, PyObject *args, PyObject *keywds){
        tmp_Jr_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Jr_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
        if(tmp_Jr_col == NULL) goto conversion_error;
        Jr_col = (const ipc_ *) PyArray_DATA(tmp_Jr_col);
-
     }
 
     // Convert NumPy integer Jr_ptr array to ipc_

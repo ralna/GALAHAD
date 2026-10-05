@@ -415,7 +415,6 @@ static PyObject* py_bqp_load(PyObject *self, PyObject *args, PyObject *keywds){
        tmp_H_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
        if(tmp_H_col == NULL) goto conversion_error;
        H_col = (const ipc_ *) PyArray_DATA(tmp_H_col);
-
     }
 
     // Convert NumPy integer H_ptr array to ipc_
