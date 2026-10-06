@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.4 - 2025-11-22 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-09-04 AT 09:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -334,7 +334,7 @@
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U, W, Z, Qp, Qm ! n
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C, D, X, S1, C_pert
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK_syev
-        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: V, P, P_shift
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: V, P
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: Q, S, S2
         TYPE ( SMT_type ) :: H_shift
 
@@ -925,14 +925,6 @@
 
          array_name = 'nrek: data%P'
          CALL SPACE_resize_array( ldp, data%is_max, data%P,                    &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-         IF ( inform%status /= 0 ) GO TO 910
-
-         array_name = 'nrek: data%P_shift'
-         CALL SPACE_resize_array( ldp, data%is_max, data%P_shift,              &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -2869,13 +2861,6 @@
 
       array_name = 'nrek: data%P'
       CALL SPACE_dealloc_array( data%P,                                        &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'nrek: data%P_shift'
-      CALL SPACE_dealloc_array( data%P_shift,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &

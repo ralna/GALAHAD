@@ -81,9 +81,11 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
 	cd $(OBJ) ; $(CC) $(SHARED) $(OPTIMIZATION) -pthread \
           -Wl,-O1  -Wl,-Bsymbolic-functions $(OBJ)/$(package)_pyiface.o \
           -L$(OBJ)/shared \
-          -lgalahad_py -lgalahad_c -lhsl_c \
+          -lgalahad_py -lgalahad_c $(HSL_C) \
           -lgalahad -lgalahad_cutest_dummy $(HSL) $(MKL_PARDISO) \
           $(PARDISO) $(WSMP) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) \
+          $(BPMPD) $(BQPD) $(HIGHS) $(NAGLIB) $(OSQP) \
+          $(QPALM) $(QPOASES) \
           $(METIS4ND) $(METIS5ND) $(LAPACK) $(BLAS) \
           -lgfortran -lstdc++ -lhwloc \
           -o $(PYSITEPACKDIR)/galahad/$(package).$(SOABI).$(DLEXT) \

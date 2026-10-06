@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for any optional BQPD procedures
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2026-07-26
+#  This version: 2026-10-04
 
 #  include standard GALAHAD makefile definitions
 
@@ -9,19 +9,19 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  Libraries used
 
-LIBS = -lgalahad $(BQPD) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(HSL) $(BQPD) $(LAPACK) $(BLAS)
 NLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
 
 BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
-BQPDS = $(BASICSZ) $(BQLGS)(bqpd.o) $(LGS)(bqpd_gdotx.o)
-BQPDD = $(BASICSZ) $(BQLGD)(bqpd.o) $(LGD)(bqpd_gdotx.o)
-BQPDQ = $(BASICSZ) $(BQLGQ)(bqpd.o) $(LGQ)(bqpd_gdotx.o)
-BQPDS64 = $(BASICSZ) $(BQLGS64)(bqpd.o) $(LGS64)(bqpd_gdotx.o)
-BQPDD64 = $(BASICSZ) $(BQLGD64)(bqpd.o) $(LGD64)(bqpd_gdotx.o)
-BQPDQ64 = $(BASICSZ) $(BQLGQ64)(bqpd.o) $(LGQ64)(bqpd_gdotx.o)
+BQPDS = $(BASICSZ) $(BQLGS)(bqpd.o) $(LGS)(bqpd.o) $(LGS)(bqpd_gdotx.o)
+BQPDD = $(BASICSZ) $(BQLGD)(bqpd.o) $(LGD)(bqpd.o) $(LGD)(bqpd_gdotx.o)
+BQPDQ = $(BASICSZ) $(BQLGQ)(bqpd.o) $(LGQ)(bqpd.o) $(LGQ)(bqpd_gdotx.o)
+BQPDS64 = $(BASICSZ) $(BQLGS64)(bqpd.o) $(LGS64)(bqpd.o) $(LGS64)(bqpd_gdotx.o)
+BQPDD64 = $(BASICSZ) $(BQLGD64)(bqpd.o) $(LGD64)(bqpd.o) $(LGD64)(bqpd_gdotx.o)
+BQPDQ64 = $(BASICSZ) $(BQLGQ64)(bqpd.o) $(LGQ64)(bqpd.o) $(LGQ64)(bqpd_gdotx.o)
 
 BQPDST = $(BQPDS) $(OBJ)/bqpdt.o
 BQPDDT = $(BQPDD) $(OBJ)/bqpdt.o
@@ -110,7 +110,7 @@ lapack_inter:
 
 #  individual compilations
 
-bqpd.o: $(BQLG)(bqpd.o)
+bqpd_f77.o: $(BQLG)(bqpd.o)
 
 $(BQLG)(bqpd.o): ../../dum/bqpd.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy bqpd"
@@ -120,6 +120,17 @@ $(BQLG)(bqpd.o): ../../dum/bqpd.F90
 	$(RANLIB) $(BQLG)
 	@printf '[ OK ]\n'
 
+bqpd.o: $(LG)(bqpd.o)
+
+$(LG)(bqpd.o): ../bqpd/bqpd.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bqpd  "
+	$(CP) ../bqpd/bqpd.F90 $(OBJ)/bqpd.F90
+	cd $(OBJ); $(FORTRAN) -o bqpd.o $(FFLAGS) bqpd.F90
+	cd $(OBJ); $(ARR) bqpd.o ; $(RM) bqpd.F90 bqpd.o
+	$(RMOBFILE) qp_$(PRECIS).o
+	$(RMOBFILE) qpt_$(PRECIS).o
+	@printf '[ OK ]\n'
+
 bqpd_gdotx.o: $(LG)(bqpd_gdotx.o)
 
 $(LG)(bqpd_gdotx.o): ../bqpd/bqpd_gdotx.F90
@@ -127,6 +138,8 @@ $(LG)(bqpd_gdotx.o): ../bqpd/bqpd_gdotx.F90
 	$(CP) ../bqpd/bqpd_gdotx.F90 $(OBJ)/bqpd_gdotx.F90
 	cd $(OBJ); $(FORTRAN) -o bqpd_gdotx.o $(FFLAGS) bqpd_gdotx.F90
 	cd $(OBJ); $(ARR) bqpd_gdotx.o ; $(RM) bqpd_gdotx.F90 bqpd_gdotx.o
+	$(RMOBFILE) qp_$(PRECIS).o
+	$(RMOBFILE) qpt_$(PRECIS).o
 	@printf '[ OK ]\n'
 
 #  test programs

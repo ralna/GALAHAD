@@ -19,7 +19,7 @@ PACKAGE = NREK
 #  auxiliary packages that current package depends on (prepend with make_)
 
 DEPENDENCIES = make_sls_deps make_sls make_mop make_ir make_norms \
-               make_rqs
+               make_roots make_rqs
 
 #  other packages that depend on package
 

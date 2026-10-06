@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.3 - 2025-08-07 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-10-02 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -438,7 +438,6 @@
                 upper_template_name( : len_template_name ) // '.template'
             INQUIRE( FILE = template_file, EXIST = is_file )
 
-
 !  otherwise look in galahad/src/oblivion/package/RUNPACKAGE.template
 
             IF ( .NOT. is_file ) THEN
@@ -455,12 +454,21 @@
                   upper_template_name( : len_template_name ) // '.template'
                 INQUIRE( FILE = template_file, EXIST = is_file )
 
-! there is no appropriate template file
+!  or else  in galahad/src/external/package/RUNPACKAGE.template
 
                 IF ( .NOT. is_file ) THEN
-                  WRITE( error, "( ' error: no template file for package ',    &
-                 &    A )" ) lower_template_name( : len_template_name )
-                  RETURN
+                  template_file = galahad // "/src/external/" //               &
+                    lower_template_name( : len_template_name ) // "/" //       &
+                    upper_template_name( : len_template_name ) // '.template'
+                  INQUIRE( FILE = template_file, EXIST = is_file )
+
+! there is no appropriate template file
+
+                  IF ( .NOT. is_file ) THEN
+                    WRITE( error, "( ' error: no template file for package ',  &
+                   &    A )" ) lower_template_name( : len_template_name )
+                    RETURN
+                  END IF
                 END IF
               END IF
             END IF

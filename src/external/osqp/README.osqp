@@ -5,9 +5,8 @@ The package OSQP
 is not included as part of GALAHAD, but may be
 called optionally from GALAHAD's ubersolver QP package.
 
-GALAHAD relies on an environment variable,
-and if OSQP has not been installed, these 
-are set by default as
+GALAHAD relies on an environment variable, and if OSQP
+has not been installed, these is set by default as
 
   OSQP = -lgalahad_osqp
 
@@ -18,9 +17,10 @@ If you wish to use OSQP ...
 
 1. Download OSQP via git to a suitable location via
 
+    git clone https://github.com/osqp/osqp
     git clone https://github.com/osqp/osqp-fortran
 
-  and then move into the OSQP directory using
+  and then move into the OSQP fortran directory using
 
      cd ./osqp-fortran
 
@@ -65,4 +65,4 @@ If you wish to use OSQP ...
 
 Nick Gould
 For GALAHAD productions
-July 13th 2026
+September 30th 2026

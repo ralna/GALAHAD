@@ -522,6 +522,9 @@ fi
 if [[ "$HSL" == "" ]]; then
   HSL="-lhsl"
 fi
+if [[ "$HSL_C" == "" ]]; then
+  HSL_C="-lgalahad_hsl_c"
+fi
 if [[ "$METISVERSION" == "" ]]; then
   METISVERSION="52"
 fi
@@ -612,6 +615,7 @@ echo '#  External libraries, see $GALAHAD/doc/README.external'     >> $SYSFILE
 echo 'BLAS="'$BLAS'"'                                              >> $SYSFILE
 echo 'LAPACK="'$LAPACK'"'                                          >> $SYSFILE
 echo 'HSL="'$HSL'"'                                                >> $SYSFILE
+echo 'HSL_C="'$HSL_C'"'                                            >> $SYSFILE
 echo 'METIS4ND="'$METIS4ND'"'                                      >> $SYSFILE
 echo 'METIS5ND="'$METIS5ND'"'                                      >> $SYSFILE
 echo 'METIS464ND="'$METIS464ND'"'                                  >> $SYSFILE
@@ -773,6 +777,10 @@ echo ' '                                                           >> $MAKEFILE
 echo '#  -- HSL --'                                                >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'HSL = '$HSL                                                  >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- HSL_C --'                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'HSL_C = '$HSL_C                                              >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  -- Metis -- (METISVERSION = 4, 51 or 52, with default 52 files included)' >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE

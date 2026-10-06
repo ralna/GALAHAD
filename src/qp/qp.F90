@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-08-19 AT 14:50 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-10-06 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -111,7 +111,9 @@
                                         CDQP_initialize, CDQP_read_specfile,   &
                                         CDQP_solve, CDQP_terminate
       USE GALAHAD_LMS_precision, ONLY: LMS_apply_lbfgs
-
+      USE GALAHAD_BQPD_precision, ONLY: BQPD_data_type, BQPD_control_type,     &
+                                        BQPD_inform_type, BQPD_initialize,     &
+                                        BQPD_solve, BQPD_terminate
       USE OSQP, ONLY: OSQP_settings_type, OSQP_info_type, OSQP_data_type,      &
                       OSQP_settings, OSQP_solve, OSQP_cleanup
       USE GALAHAD_NAGLIB_precision, ONLY: E04NQF_control_type,                 &
@@ -138,6 +140,7 @@
       REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
       REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
       REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: f_min = - ten ** 20
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -246,6 +249,10 @@
 !  control parameters for CDQP
 
         TYPE ( CDQP_control_type ) :: CDQP_control
+
+!  control parameters for BQPD
+
+        TYPE ( BQPD_control_type ) :: BQPD_control
 
 !  control parameters for OSQP
 
@@ -396,15 +403,39 @@
 
         TYPE ( CDQP_inform_type ) :: CDQP_inform
 
-!  inform parameters for OSQP
+!  inform parameters for BQPD
 
-        TYPE ( QP_OSQP_inform_type ) :: OSQP_inform
+        TYPE ( BQPD_inform_type ) :: BQPD_inform
 
 !  inform parameters for E04NQF
 
         TYPE ( E04NQF_inform_type ) :: E04NQF_inform
 
+!  inform parameters for OSQP
+
+        TYPE ( QP_OSQP_inform_type ) :: OSQP_inform
+
       END TYPE QP_inform_type
+
+!  - - - - - - - - - - - - - - - - - - -
+!   extended data derived type for BPMPD
+!  - - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: QP_BPMPD_data_type
+        LOGICAL :: original_a, original_h
+        LOGICAL :: new_structure = .TRUE.
+        TYPE ( SMT_type ) :: A, H
+      END TYPE QP_BPMPD_data_type
+
+!  - - - - - - - - - - - - - - - - - - - - --
+!   extended data derived type for CLARABEL
+!  - - - - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: QP_CLARABEL_data_type
+        LOGICAL :: original_a, original_h
+        LOGICAL :: new_structure = .TRUE.
+        TYPE ( SMT_type ) :: A, H
+      END TYPE QP_CLARABEL_data_type
 
 !  - - - - - - - - - - - - - - - - - - - -
 !   extended data derived type for E04NQF
@@ -422,6 +453,16 @@
       END TYPE QP_E04NQF_data_type
 
 !  - - - - - - - - - - - - - - - - - - -
+!   extended data derived type for HIGHS
+!  - - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: QP_HIGHS_data_type
+        LOGICAL :: original_a, original_h
+        LOGICAL :: new_structure = .TRUE.
+        TYPE ( SMT_type ) :: A, H
+      END TYPE QP_HIGHS_data_type
+
+!  - - - - - - - - - - - - - - - - - - -
 !   extended data derived type for OSQP
 !  - - - - - - - - - - - - - - - - - - -
 
@@ -431,9 +472,40 @@
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_l, B_u, Y
         LOGICAL :: original_a, original_h
+        LOGICAL :: new_structure = .TRUE.
         TYPE ( SMT_type ) :: A, H
         TYPE ( OSQP_data_type ) :: OSQP_data
       END TYPE QP_OSQP_data_type
+
+!  - - - - - - - - - - - - - - - - - - -
+!   extended data derived type for QPALM
+!  - - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: QP_QPALM_data_type
+        LOGICAL :: original_a, original_h
+        LOGICAL :: new_structure = .TRUE.
+        TYPE ( SMT_type ) :: A, H
+      END TYPE QP_QPALM_data_type
+
+!  - - - - - - - - - - - - - - - - - - - -
+!   extended data derived type for QPOASES
+!  - - - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: QP_QPOASES_data_type
+        LOGICAL :: original_a, original_h
+        LOGICAL :: new_structure = .TRUE.
+        TYPE ( SMT_type ) :: A, H
+      END TYPE QP_QPOASES_data_type
+      
+!  - - - - - - - - - - - - - - - - - -
+!   extended data derived type for SCS
+!  - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: QP_SCS_data_type
+        LOGICAL :: original_a, original_h
+        LOGICAL :: new_structure = .TRUE.
+        TYPE ( SMT_type ) :: A, H
+      END TYPE QP_SCS_data_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - 
 !   data derived type with component defaults
@@ -449,6 +521,7 @@
         INTEGER ( KIND = ip_ ) :: len_solver = len_solver
         CHARACTER ( LEN = len_solver ) :: solver = REPEAT( ' ', len_solver )
         TYPE ( QPD_data_type ) :: QPD_data
+        TYPE ( BQPD_data_type ) :: BQPD_data
         TYPE ( QP_OSQP_data_type ) :: QP_OSQP_data
         TYPE ( QP_E04NQF_data_type ) :: QP_E04NQF_data
       END TYPE QP_data_type
@@ -1557,6 +1630,22 @@
 !  == BQPD ==
 
         CASE ( 'bqpd', 'BQPD' )
+          IF ( printi ) WRITE( control%out,                                    &
+              "( A, ' ** BQPD solver used **' )" ) prefix
+          CALL BQPD_solve( prob, data%BQPD_data, control%BQPD_control,         &
+                           inform%BQPD_inform )
+          inform%status = inform%BQPD_inform%status
+!          inform%obj = inform%BQPD_inform%info%obj_val + prob%f
+!write(6,*) ' qp: inform%obj ', inform%obj
+!          inform%primal_infeasibility = inform%BQPD_inform%info%prim_res
+!          inform%dual_infeasibility = inform%BQPD_inform%info%dual_res
+!          inform%complementary_slackness = inform%BQPD_inform%info%duality_gap
+          inform%iter = inform%BQPD_inform%iter
+          IF ( inform%status /= GALAHAD_ok ) THEN
+            IF ( printi ) WRITE( control%out, "( A,                            &
+           &  ' BQPD solve error status = ', I0 )" ) prefix, inform%status
+            GO TO 800
+          END IF
 
 !  == Clarabel ==
 
@@ -1832,31 +1921,7 @@
 !!$
 !!$      END SUBROUTINE QP_BPMPD_solve
 !!$
-!!$!-*-*-*-*-*-*-   Q P _ B Q P D _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-
-!!$
-!!$      SUBROUTINE QP_BQPD_solve( prob, data, settings, info, out )
-!!$
-!!$!  solve the quadratic program using the BQPD package
-!!$
-!!$!  A - by rows (actually A -> A' in the BQPD notation)
-!!$!  H - upper triangle by co-ordinates
-!!$
-!!$!  dummy arguments
-!!$
-!!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-!!$      TYPE ( QP_BQPD_data_type ), INTENT( INOUT ) :: data
-!!$      TYPE ( BQPD_control_type ), INTENT( IN ) :: control
-!!$      TYPE ( BQPD_inform_type ), INTENT( OUT ) :: inform
-!!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-!!$
-!!$!  local variables
-!!$
-!!$      RETURN
-!!$
-!!$!  End of QP_BQPD_solve
-!!$
-!!$      END SUBROUTINE QP_BQPD_solve
-!!$
+
 !!$!-*-*-*-*-   Q P _ c l a r a b e l _ S O L V E   S U B R O U T I N E   -*-*-*-*-
 !!$
 !!$      SUBROUTINE QP_clarabel_solve( prob, data, settings, info, out )
@@ -1900,7 +1965,7 @@
 
 !  local variables
 
-      INTEGER ( KIND = ip_ ) :: n, m,  np1, npm, nea, neh, summary_unit, status
+      INTEGER ( KIND = ip_ ) :: n, m, np1, npm, nea, neh, summary_unit, status
       INTEGER ( KIND = i4_ ) :: spec_unit, i
       INTEGER ( KIND = ip_ ), PARAMETER :: len_c_w = 600
       INTEGER ( KIND = ip_ ), PARAMETER :: len_r_w = 600
@@ -2989,6 +3054,8 @@
 !  == BQPD ==
 
       CASE ( 'bqpd', 'BQPD' )
+        CALL BQPD_terminate( data%BQPD_data, control%BQPD_control,             &
+                             inform%BQPD_inform )
 
 !  == Clarabel ==
 

@@ -418,7 +418,11 @@ all_ciface_quadruple_64:
 
 all_pyiface: all_pyiface_$(PRECIS)
 
-all_pyiface_single: all_ciface_single
+all_pyiface_alone: all_pyiface_alone_$(PRECIS)
+
+all_pyiface_single: all_ciface_single all_pyiface_alone_single
+
+all_pyiface_alone_single: 
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_qp_pyiface $(S32) PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -442,7 +446,9 @@ all_pyiface_single: all_ciface_single
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_pyiface $(S32) PWD=$(PWD)/all_go )
 
-all_pyiface_double: all_ciface_double
+all_pyiface_double: all_ciface_double all_pyiface_alone_double
+
+all_pyiface_alone_double: 
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_qp_pyiface $(D32) PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -466,7 +472,9 @@ all_pyiface_double: all_ciface_double
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           all_pyiface $(D32) PWD=$(PWD)/all_go )
 
-all_pyiface_quadruple: all_ciface_quadruple
+all_pyiface_quadruple: all_ciface_quadruple all_pyiface_alone_quadruple
+
+all_pyiface_alone_quadruple: 
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_qp_pyiface $(D64) PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -490,7 +498,9 @@ all_pyiface_quadruple: all_ciface_quadruple
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           all_pyiface $(D64) PWD=$(PWD)/all_go )
 
-all_pyiface_single_64: all_ciface_single_64
+all_pyiface_single_64: all_ciface_single_64 all_pyiface_alone_single_64
+
+all_pyiface_alone_single_64: 
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_qp_pyiface $(S64) PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -514,7 +524,9 @@ all_pyiface_single_64: all_ciface_single_64
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_pyiface $(S64) PWD=$(PWD)/all_go )
 
-all_pyiface_double_64: all_ciface_double_64
+all_pyiface_double_64: all_ciface_double_64 all_pyiface_alone_double_64
+
+all_pyiface_alone_double_64: 
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_qp_pyiface $(D64)_64 PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -538,7 +550,9 @@ all_pyiface_double_64: all_ciface_double_64
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           all_pyiface $(D64) PWD=$(PWD)/all_go )
 
-all_pyiface_quadruple_64: all_ciface_quadruple_64
+all_pyiface_quadruple_64: all_ciface_quadruple_64 all_pyiface_alone_quadruple_64
+
+all_pyiface_alone_quadruple_64: 
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_qp_pyiface $(Q64)_64 PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \

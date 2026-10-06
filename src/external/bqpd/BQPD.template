@@ -1,0 +1,15 @@
+!  error-printout-device                             6
+!  printout-device                                   6
+!  print-level                                       0
+!  max-levels                                        100
+!  spike-space                                       100000
+!  max-refinements                                   2
+!  min-iterations-before-refinement                  3
+!  max-restarts                                      2
+!  max-refactorization-interval                      500
+!  minimum-objective-before-unbounded                -1.0D+32
+!  accuracy-requied                                  1.0D-12
+!  max-allowable-error                               1.0D-4
+!  space-critical                                    F
+!  deallocate-error-fatal                            F
+!  output-line-prefix                                ""

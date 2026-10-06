@@ -40,6 +40,8 @@ done
 for name in galahad hsl galahad_mpi \
             galahad_mkl_pardiso galahad_pardiso galahad_wsmp \
             galahad_pastix galahad_mumps galahad_umfpack \
+            galahad_bpmpd galahad_bqpd galahad_highs galahad_naglib \
+            galahad_osqp galahad_qpalm galahad_qpoases qpoases_fortran \
             metis4_nodend metis5_nodend galahad_lapack galahad_blas \
             galahad_cutest_dummy hsl_c galahad_c
 do

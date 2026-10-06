@@ -100,7 +100,7 @@ else
              $(QPALM) $(QPOASES) $(LAPACK) $(BLAS) -lstdc++ -lhwloc
 endif
 PLIBS = $(LIBS) -lgalahad_problem
-CLIBS = -lgalahad_c -lhsl_c $(LIBS)
+CLIBS = -lgalahad_c $(HSL_C) $(LIBS)
 
 #  compilation and run agenda
 
