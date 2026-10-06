@@ -569,7 +569,6 @@ static PyObject* py_llsr_solve_problem(PyObject *self, PyObject *args,
     // Call llsr_solve_problem
     llsr_solve_problem(&data, &status, m, n, power, weight, A_ne, A_val, b, x,
                        S_ne, S_val);
-    // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
