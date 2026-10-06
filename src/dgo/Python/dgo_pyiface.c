@@ -547,7 +547,6 @@ static PyObject* py_dgo_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-//    if((
     if(!(
         check_array_double("x_l", py_x_l, n) &&
         check_array_double("x_u", py_x_u, n) &&
