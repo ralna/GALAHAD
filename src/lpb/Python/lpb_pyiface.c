@@ -679,8 +679,9 @@ static PyObject* py_lpb_initialize(PyObject *self){
 
 static PyObject* py_lpb_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_A_row, *py_A_col, *py_A_ptr;
+    PyArrayObject *tmp_A_row = NULL, *tmp_A_col = NULL, *tmp_A_ptr = NULL;
     PyObject *py_options = NULL;
-    int *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
+    const ipc_ *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
     const char *A_type;
     int n, m, A_ne;
 
@@ -708,27 +709,26 @@ static PyObject* py_lpb_load(PyObject *self, PyObject *args, PyObject *keywds){
         ))
         return NULL;
 
-    // Convert 64bit integer A_row array to 32bit
+    // Convert NumPy integer A_row array to ipc_
     if((PyObject *) py_A_row != Py_None){
-        A_row = malloc(A_ne * sizeof(int));
-        long int *A_row_long = (long int *) PyArray_DATA(py_A_row);
-        for(int i = 0; i < A_ne; i++) A_row[i] = (int) A_row_long[i];
+       tmp_A_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_A_row == NULL) goto conversion_error;
+       A_row = (const ipc_ *) PyArray_DATA(tmp_A_row);
     }
 
-    // Convert 64bit integer A_col array to 32bit
+    // Convert NumPy integer A_col array to ipc_
     if((PyObject *) py_A_col != Py_None){
-        A_col = malloc(A_ne * sizeof(int));
-        long int *A_col_long = (long int *) PyArray_DATA(py_A_col);
-        for(int i = 0; i < A_ne; i++) A_col[i] = (int) A_col_long[i];
+       tmp_A_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_A_col == NULL) goto conversion_error;
+       A_col = (const ipc_ *) PyArray_DATA(tmp_A_col);
     }
 
-    // Convert 64bit integer A_ptr array to 32bit
+    // Convert NumPy integer A_ptr array to ipc_
     if((PyObject *) py_A_ptr != Py_None){
-        A_ptr = malloc((m+1) * sizeof(int));
-        long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
-        for(int i = 0; i < m+1; i++) A_ptr[i] = (int) A_ptr_long[i];
+       tmp_A_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_A_ptr == NULL) goto conversion_error;
+       A_ptr = (const ipc_ *) PyArray_DATA(tmp_A_ptr);
     }
-
     // Reset control options
     lpb_reset_control(&control, &data, &status);
 
@@ -740,10 +740,10 @@ static PyObject* py_lpb_load(PyObject *self, PyObject *args, PyObject *keywds){
     lpb_import(&control, &data, &status, n, m,
                A_type, A_ne, A_row, A_col, A_ptr);
 
-    // Free allocated memory
-    if(A_row != NULL) free(A_row);
-    if(A_col != NULL) free(A_col);
-    if(A_ptr != NULL) free(A_ptr);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_A_row);
+    Py_XDECREF(tmp_A_col);
+    Py_XDECREF(tmp_A_ptr);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -752,6 +752,13 @@ static PyObject* py_lpb_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
+
+    // Handle errors on array conversion
+    conversion_error:
+        Py_XDECREF(tmp_A_row);
+        Py_XDECREF(tmp_A_col);
+        Py_XDECREF(tmp_A_ptr);
+        return NULL;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   LPB_SOLVE_LP   -*-*-*-*-*-*-*-*
@@ -824,10 +831,6 @@ static PyObject* py_lpb_solve_lp(PyObject *self, PyObject *args, PyObject *keywd
     status = 1; // set status to 1 on entry
     lpb_solve_lp(&data, &status, n, m, g, f, A_ne, A_val,
                  c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
-    // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
-    // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
-    // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
