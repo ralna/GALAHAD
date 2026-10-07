@@ -442,8 +442,9 @@ static PyObject* py_nrek_load(PyObject *self, PyObject *args, PyObject *keywds){
 static PyObject* py_nrek_load_s(PyObject *self, PyObject *args,
                                PyObject *keywds){
     PyArrayObject *py_S_row, *py_S_col, *py_S_ptr;
+    PyArrayObject *tmp_S_row = NULL, *tmp_S_col = NULL, *tmp_S_ptr = NULL;
     PyObject *py_options = NULL;
-    int *S_row = NULL, *S_col = NULL, *S_ptr = NULL;
+    const ipc_ *S_row = NULL, *S_col = NULL, *S_ptr = NULL;
     const char *S_type;
     int n, S_ne;
 
@@ -462,7 +463,6 @@ static PyObject* py_nrek_load_s(PyObject *self, PyObject *args,
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("S_row", py_S_row, S_ne) &&
         check_array_int("S_col", py_S_col, S_ne) &&
@@ -470,25 +470,25 @@ static PyObject* py_nrek_load_s(PyObject *self, PyObject *args,
         ))
         return NULL;
 
-    // Convert 64bit integer S_row array to 32bit
+    // Convert NumPy integer S_row array to ipc_
     if((PyObject *) py_S_row != Py_None){
-        S_row = malloc(S_ne * sizeof(int));
-        long int *S_row_long = (long int *) PyArray_DATA(py_S_row);
-        for(int i = 0; i < S_ne; i++) S_row[i] = (int) S_row_long[i];
+       tmp_S_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_S_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_S_row == NULL) goto conversion_error;
+       S_row = (const ipc_ *) PyArray_DATA(tmp_S_row);
     }
 
-    // Convert 64bit integer S_col array to 32bit
+    // Convert NumPy integer S_col array to ipc_
     if((PyObject *) py_S_col != Py_None){
-        S_col = malloc(S_ne * sizeof(int));
-        long int *S_col_long = (long int *) PyArray_DATA(py_S_col);
-        for(int i = 0; i < S_ne; i++) S_col[i] = (int) S_col_long[i];
+       tmp_S_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_S_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_S_col == NULL) goto conversion_error;
+       S_col = (const ipc_ *) PyArray_DATA(tmp_S_col);
     }
 
-    // Convert 64bit integer S_ptr array to 32bit
+    // Convert NumPy integer S_ptr array to ipc_
     if((PyObject *) py_S_ptr != Py_None){
-        S_ptr = malloc((n+1) * sizeof(int));
-        long int *S_ptr_long = (long int *) PyArray_DATA(py_S_ptr);
-        for(int i = 0; i < n+1; i++) S_ptr[i] = (int) S_ptr_long[i];
+       tmp_S_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_S_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_S_ptr == NULL) goto conversion_error;
+       S_ptr = (const ipc_ *) PyArray_DATA(tmp_S_ptr);
     }
 
     // Reset control options
@@ -501,10 +501,10 @@ static PyObject* py_nrek_load_s(PyObject *self, PyObject *args,
     // Call nrek_import
     nrek_s_import(&data, &status, n, S_type, S_ne, S_row, S_col, S_ptr);
 
-    // Free allocated memory
-    if(S_row != NULL) free(S_row);
-    if(S_col != NULL) free(S_col);
-    if(S_ptr != NULL) free(S_ptr);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_S_row);
+    Py_XDECREF(tmp_S_col);
+    Py_XDECREF(tmp_S_ptr);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -516,6 +516,13 @@ static PyObject* py_nrek_load_s(PyObject *self, PyObject *args,
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
+
+    // Handle errors on array conversion
+    conversion_error:
+        Py_XDECREF(tmp_S_row);
+        Py_XDECREF(tmp_S_col);
+        Py_XDECREF(tmp_S_ptr);
+        return NULL;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   NREK_RESET_OPTIONS    -*-*-*-*-*-*-*-*-*-*-*-*
