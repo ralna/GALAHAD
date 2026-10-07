@@ -701,7 +701,6 @@ static PyObject* py_lpb_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("A_row", py_A_row, A_ne) &&
         check_array_int("A_col", py_A_col, A_ne) &&

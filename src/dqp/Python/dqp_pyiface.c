@@ -692,7 +692,6 @@ static PyObject* py_dqp_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("H_row", py_H_row, H_ne) &&
         check_array_int("H_col", py_H_col, H_ne) &&

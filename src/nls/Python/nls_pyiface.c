@@ -1298,7 +1298,6 @@ static PyObject* py_nls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("J_row", py_J_row, J_ne) &&
         check_array_int("J_col", py_J_col, J_ne) &&
