@@ -494,12 +494,15 @@ static PyObject* py_sbls_initialize(PyObject *self){
 
 static PyObject* py_sbls_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_H_row, *py_H_col, *py_H_ptr;
+    PyArrayObject *tmp_H_row = NULL, *tmp_H_col = NULL, *tmp_H_ptr = NULL;
     PyArrayObject *py_A_row, *py_A_col, *py_A_ptr;
+    PyArrayObject *tmp_A_row = NULL, *tmp_A_col = NULL, *tmp_A_ptr = NULL;
     PyArrayObject *py_C_row, *py_C_col, *py_C_ptr;
+    PyArrayObject *tmp_C_row = NULL, *tmp_C_col = NULL, *tmp_C_ptr = NULL;
     PyObject *py_options = NULL;
-    int *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
-    int *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
-    int *C_row = NULL, *C_col = NULL, *C_ptr = NULL;
+    const ipc_ *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
+    const ipc_ *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
+    const ipc_ *C_row = NULL, *C_col = NULL, *C_ptr = NULL;
     const char *H_type, *A_type, *C_type;
     int n, m, H_ne, A_ne, C_ne;
 
@@ -526,7 +529,6 @@ static PyObject* py_sbls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("H_row", py_H_row, H_ne) &&
         check_array_int("H_col", py_H_col, H_ne) &&
@@ -540,67 +542,67 @@ static PyObject* py_sbls_load(PyObject *self, PyObject *args, PyObject *keywds){
         ))
         return NULL;
 
-    // Convert 64bit integer H_row array to 32bit
+    // Convert NumPy integer H_row array to ipc_
     if((PyObject *) py_H_row != Py_None){
-        H_row = malloc(H_ne * sizeof(int));
-        long int *H_row_long = (long int *) PyArray_DATA(py_H_row);
-        for(int i = 0; i < H_ne; i++) H_row[i] = (int) H_row_long[i];
+       tmp_H_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_H_row == NULL) goto conversion_error;
+       H_row = (const ipc_ *) PyArray_DATA(tmp_H_row);
     }
 
-    // Convert 64bit integer H_col array to 32bit
+    // Convert NumPy integer H_col array to ipc_
     if((PyObject *) py_H_col != Py_None){
-        H_col = malloc(H_ne * sizeof(int));
-        long int *H_col_long = (long int *) PyArray_DATA(py_H_col);
-        for(int i = 0; i < H_ne; i++) H_col[i] = (int) H_col_long[i];
+       tmp_H_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_H_col == NULL) goto conversion_error;
+       H_col = (const ipc_ *) PyArray_DATA(tmp_H_col);
     }
 
-    // Convert 64bit integer H_ptr array to 32bit
+    // Convert NumPy integer H_ptr array to ipc_
     if((PyObject *) py_H_ptr != Py_None){
-        H_ptr = malloc((n+1) * sizeof(int));
-        long int *H_ptr_long = (long int *) PyArray_DATA(py_H_ptr);
-        for(int i = 0; i < n+1; i++) H_ptr[i] = (int) H_ptr_long[i];
+       tmp_H_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_H_ptr == NULL) goto conversion_error;
+       H_ptr = (const ipc_ *) PyArray_DATA(tmp_H_ptr);
     }
 
-    // Convert 64bit integer A_row array to 32bit
+    // Convert NumPy integer A_row array to ipc_
     if((PyObject *) py_A_row != Py_None){
-        A_row = malloc(A_ne * sizeof(int));
-        long int *A_row_long = (long int *) PyArray_DATA(py_A_row);
-        for(int i = 0; i < A_ne; i++) A_row[i] = (int) A_row_long[i];
+       tmp_A_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_A_row == NULL) goto conversion_error;
+       A_row = (const ipc_ *) PyArray_DATA(tmp_A_row);
     }
 
-    // Convert 64bit integer A_col array to 32bit
+    // Convert NumPy integer A_col array to ipc_
     if((PyObject *) py_A_col != Py_None){
-        A_col = malloc(A_ne * sizeof(int));
-        long int *A_col_long = (long int *) PyArray_DATA(py_A_col);
-        for(int i = 0; i < A_ne; i++) A_col[i] = (int) A_col_long[i];
+       tmp_A_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_A_col == NULL) goto conversion_error;
+       A_col = (const ipc_ *) PyArray_DATA(tmp_A_col);
     }
 
-    // Convert 64bit integer A_ptr array to 32bit
+    // Convert NumPy integer A_ptr array to ipc_
     if((PyObject *) py_A_ptr != Py_None){
-        A_ptr = malloc((n+1) * sizeof(int));
-        long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
-        for(int i = 0; i < m+1; i++) A_ptr[i] = (int) A_ptr_long[i];
+       tmp_A_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_A_ptr == NULL) goto conversion_error;
+       A_ptr = (const ipc_ *) PyArray_DATA(tmp_A_ptr);
     }
 
-    // Convert 64bit integer C_row array to 32bit
+    // Convert NumPy integer C_row array to ipc_
     if((PyObject *) py_C_row != Py_None){
-        C_row = malloc(C_ne * sizeof(int));
-        long int *C_row_long = (long int *) PyArray_DATA(py_C_row);
-        for(int i = 0; i < C_ne; i++) C_row[i] = (int) C_row_long[i];
+       tmp_C_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_C_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_C_row == NULL) goto conversion_error;
+       C_row = (const ipc_ *) PyArray_DATA(tmp_C_row);
     }
 
-    // Convert 64bit integer C_col array to 32bit
+    // Convert NumPy integer C_col array to ipc_
     if((PyObject *) py_C_col != Py_None){
-        C_col = malloc(C_ne * sizeof(int));
-        long int *C_col_long = (long int *) PyArray_DATA(py_C_col);
-        for(int i = 0; i < C_ne; i++) C_col[i] = (int) C_col_long[i];
+       tmp_C_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_C_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_C_col == NULL) goto conversion_error;
+       C_col = (const ipc_ *) PyArray_DATA(tmp_C_col);
     }
 
-    // Convert 64bit integer C_ptr array to 32bit
+    // Convert NumPy integer C_ptr array to ipc_
     if((PyObject *) py_C_ptr != Py_None){
-        C_ptr = malloc((n+1) * sizeof(int));
-        long int *C_ptr_long = (long int *) PyArray_DATA(py_C_ptr);
-        for(int i = 0; i < m+1; i++) C_ptr[i] = (int) C_ptr_long[i];
+       tmp_C_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_C_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_C_ptr == NULL) goto conversion_error;
+       C_ptr = (const ipc_ *) PyArray_DATA(tmp_C_ptr);
     }
 
     // Reset control options
@@ -616,16 +618,16 @@ static PyObject* py_sbls_load(PyObject *self, PyObject *args, PyObject *keywds){
                 A_type, A_ne, A_row, A_col, A_ptr,
                 C_type, C_ne, C_row, C_col, C_ptr);
 
-    // Free allocated memory
-    if(H_row != NULL) free(H_row);
-    if(H_col != NULL) free(H_col);
-    if(H_ptr != NULL) free(H_ptr);
-    if(A_row != NULL) free(A_row);
-    if(A_col != NULL) free(A_col);
-    if(A_ptr != NULL) free(A_ptr);
-    if(C_row != NULL) free(C_row);
-    if(C_col != NULL) free(C_col);
-    if(C_ptr != NULL) free(C_ptr);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_H_row);
+    Py_XDECREF(tmp_H_col);
+    Py_XDECREF(tmp_H_ptr);
+    Py_XDECREF(tmp_A_row);
+    Py_XDECREF(tmp_A_col);
+    Py_XDECREF(tmp_A_ptr);
+    Py_XDECREF(tmp_C_row);
+    Py_XDECREF(tmp_C_col);
+    Py_XDECREF(tmp_C_ptr);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -634,7 +636,21 @@ static PyObject* py_sbls_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
+
+    // Handle errors on array conversion
+    conversion_error:
+        Py_XDECREF(tmp_H_row);
+        Py_XDECREF(tmp_H_col);
+        Py_XDECREF(tmp_H_ptr);
+        Py_XDECREF(tmp_A_row);
+        Py_XDECREF(tmp_A_col);
+        Py_XDECREF(tmp_A_ptr);
+        Py_XDECREF(tmp_C_row);
+        Py_XDECREF(tmp_C_col);
+        Py_XDECREF(tmp_C_ptr);
+        return NULL;
 }
+
 //  *-*-*-*-*-*-*-*-*-*-*-*-   SBLS_FACTORIZE_MATRIX    -*-*-*-*-*-*-*-*-*-*-*-*
 
 static PyObject* py_sbls_factorize_matrix(PyObject *self, PyObject *args, PyObject *keywds){
@@ -657,7 +673,6 @@ static PyObject* py_sbls_factorize_matrix(PyObject *self, PyObject *args, PyObje
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(check_array_double("H_val", py_H_val, H_ne) &&
          check_array_double("A_val", py_A_val, A_ne) &&
          check_array_double("C_val", py_C_val, C_ne)))
