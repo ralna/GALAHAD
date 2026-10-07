@@ -674,7 +674,6 @@ static PyObject* py_rqs_load_a(PyObject *self, PyObject *args,
     Py_XDECREF(tmp_A_col);
     Py_XDECREF(tmp_A_ptr);
 
-
     // Raise any status errors
     if(!check_error_codes(status))
         return NULL;
