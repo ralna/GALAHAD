@@ -552,10 +552,12 @@ static PyObject* py_snls_initialize(PyObject *self){
 
 static PyObject* py_snls_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_Jr_row, *py_Jr_col, *py_Jr_ptr, *py_cohort;
+    PyArrayObject *tmp_Jr_row = NULL, *tmp_Jr_col = NULL, *tmp_Jr_ptr = NULL, *tmp_cohort = NULL;
     PyObject *py_options = NULL;
-    int *Jr_row = NULL, *Jr_col = NULL, *Jr_ptr = NULL, *cohort = NULL;
+    const ipc_ *Jr_row = NULL, *Jr_col = NULL, *Jr_ptr = NULL, *cohort = NULL;
     const char *Jr_type;
     int n, m_r, m_c, Jr_ne, Jr_ptr_ne;
+
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
@@ -573,7 +575,6 @@ static PyObject* py_snls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("Jr_row", py_Jr_row, Jr_ne) &&
         check_array_int("Jr_col", py_Jr_col, Jr_ne) &&
@@ -582,32 +583,32 @@ static PyObject* py_snls_load(PyObject *self, PyObject *args, PyObject *keywds){
         ))
         return NULL;
 
-    // Convert 64bit integer Jr_row array to 32bit
+    // Convert NumPy integer Jr_row array to ipc_
     if((PyObject *) py_Jr_row != Py_None){
-        Jr_row = malloc(Jr_ne * sizeof(int));
-        long int *Jr_row_long = (long int *) PyArray_DATA(py_Jr_row);
-        for(int i = 0; i < Jr_ne; i++) Jr_row[i] = (int) Jr_row_long[i];
+       tmp_Jr_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Jr_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_Jr_row == NULL) goto conversion_error;
+       Jr_row = (const ipc_ *) PyArray_DATA(tmp_Jr_row);
     }
 
-    // Convert 64bit integer Jr_col array to 32bit
+    // Convert NumPy integer Jr_col array to ipc_
     if((PyObject *) py_Jr_col != Py_None){
-        Jr_col = malloc(Jr_ne * sizeof(int));
-        long int *Jr_col_long = (long int *) PyArray_DATA(py_Jr_col);
-        for(int i = 0; i < Jr_ne; i++) Jr_col[i] = (int) Jr_col_long[i];
+       tmp_Jr_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Jr_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_Jr_col == NULL) goto conversion_error;
+       Jr_col = (const ipc_ *) PyArray_DATA(tmp_Jr_col);
     }
 
-    // Convert 64bit integer Jr_ptr array to 32bit
+    // Convert NumPy integer Jr_ptr array to ipc_
     if((PyObject *) py_Jr_ptr != Py_None){
-        Jr_ptr = malloc((n+1) * sizeof(int));
-        long int *Jr_ptr_long = (long int *) PyArray_DATA(py_Jr_ptr);
-        for(int i = 0; i < n+1; i++) Jr_ptr[i] = (int) Jr_ptr_long[i];
+       tmp_Jr_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Jr_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_Jr_ptr == NULL) goto conversion_error;
+       Jr_ptr = (const ipc_ *) PyArray_DATA(tmp_Jr_ptr);
     }
 
-    // Convert 64bit integer cohort array to 32bit
+    // Convert NumPy integer cohort array to ipc_
     if((PyObject *) py_cohort != Py_None){
-        cohort = malloc(n * sizeof(int));
-        long int *cohort_long = (long int *) PyArray_DATA(py_cohort);
-        for(int i = 0; i < n; i++) cohort[i] = (int) cohort_long[i];
+       tmp_cohort = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_cohort, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_cohort == NULL) goto conversion_error;
+       cohort = (const ipc_ *) PyArray_DATA(tmp_cohort);
     }
 
     // Reset control options
@@ -621,11 +622,11 @@ static PyObject* py_snls_load(PyObject *self, PyObject *args, PyObject *keywds){
     snls_import(&control, &data, &status, n, m_r, m_c,
                 Jr_type, Jr_ne, Jr_row, Jr_col, Jr_ptr_ne, Jr_ptr, cohort);
 
-    // Free allocated memory
-    if(Jr_row != NULL) free(Jr_row);
-    if(Jr_col != NULL) free(Jr_col);
-    if(Jr_ptr != NULL) free(Jr_ptr);
-    if(cohort != NULL) free(cohort);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_Jr_row);
+    Py_XDECREF(tmp_Jr_col);
+    Py_XDECREF(tmp_Jr_ptr);
+    Py_XDECREF(tmp_cohort);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -634,6 +635,14 @@ static PyObject* py_snls_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
+
+    // Handle errors on array conversion
+    conversion_error:
+        Py_XDECREF(tmp_Jr_row);
+        Py_XDECREF(tmp_Jr_col);
+        Py_XDECREF(tmp_Jr_ptr);
+        Py_XDECREF(tmp_cohort);
+        return NULL;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SNLS_SOLVE   -*-*-*-*-*-*-*-*
@@ -750,6 +759,10 @@ static PyObject* py_snls_terminate(PyObject *self){
 
     // Call snls_terminate
     snls_terminate(&data, &control, &inform);
+
+    // Cleanup refcounts
+    Py_XDECREF(py_eval_r);
+    Py_XDECREF(py_eval_jr);
 
     // Return None boilerplate
     Py_INCREF(Py_None);
