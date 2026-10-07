@@ -730,7 +730,6 @@ static PyObject* py_bllsb_load(PyObject *self, PyObject *args, PyObject *keywds)
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("Ao_row", py_Ao_row, Ao_ne) &&
         check_array_int("Ao_col", py_Ao_col, Ao_ne) &&

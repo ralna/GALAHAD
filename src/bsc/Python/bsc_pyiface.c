@@ -320,10 +320,6 @@ static PyObject* py_bsc_form(PyObject *self, PyObject *args, PyObject *keywds){
     status = 1; // set status to 1 on entry
     bsc_form_s(&data, &status, m, n, A_ne, A_val,
                S_ne, S_row, S_col, S_ptr, S_val, D);
-    // for( int i = 0; i < S_ne; i++) printf("S_row %i\n", S_row[i]);
-    // for( int i = 0; i < S_ne; i++) printf("S_col %i\n", S_col[i]);
-    // for( int i = 0; i < m+1; i++) printf("S_ptr %i\n", S_ptr[i]);
-    // for( int i = 0; i < S_ne; i++) printf("S_val %f\n", S_val[i]);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())

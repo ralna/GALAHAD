@@ -347,7 +347,6 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("H_col", py_H_col, H_ne) &&
         check_array_int("H_ptr", py_H_ptr, n+1)
