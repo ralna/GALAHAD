@@ -728,6 +728,7 @@ static PyObject* py_lpb_load(PyObject *self, PyObject *args, PyObject *keywds){
        if(tmp_A_ptr == NULL) goto conversion_error;
        A_ptr = (const ipc_ *) PyArray_DATA(tmp_A_ptr);
     }
+
     // Reset control options
     lpb_reset_control(&control, &data, &status);
 
