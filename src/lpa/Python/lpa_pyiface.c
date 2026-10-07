@@ -480,7 +480,7 @@ static PyObject* py_lpa_load(PyObject *self, PyObject *args, PyObject *keywds){
     lpa_import(&control, &data, &status, n, m,
                A_type, A_ne, A_row, A_col, A_ptr);
 
-   // Cleanup refcounts
+    // Cleanup refcounts
     Py_XDECREF(tmp_A_row);
     Py_XDECREF(tmp_A_col);
     Py_XDECREF(tmp_A_ptr);
