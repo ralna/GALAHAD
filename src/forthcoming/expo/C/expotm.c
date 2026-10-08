@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "galahad_c.h"
 #ifdef REAL_128
 #include <quadmath.h>
@@ -76,6 +77,7 @@ int main(void) {
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing
     //control.print_level = 1;
+    strcpy(control.ssls_control.symmetric_linear_solver, "sytr ");
     control.max_it = 20;
     control.max_eval = 100;
     control.stop_abs_p = 0.00001;
