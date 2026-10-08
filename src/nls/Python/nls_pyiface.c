@@ -1537,12 +1537,6 @@ static PyObject* py_nls_terminate(PyObject *self){
     // Call nls_terminate
     nls_terminate(&data, &control, &inform);
 
-    // Cleanup refcounts
-    Py_XDECREF(py_eval_c);
-    Py_XDECREF(py_eval_j);
-    Py_XDECREF(py_eval_h);
-    Py_XDECREF(py_eval_hprods);
-
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

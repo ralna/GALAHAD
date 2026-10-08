@@ -850,11 +850,6 @@ static PyObject* py_expo_terminate(PyObject *self){
     // Call expo_terminate
     expo_terminate(&data, &control, &inform);
 
-    // Cleanup refcounts
-    Py_XDECREF(py_eval_fc);
-    Py_XDECREF(py_eval_gj);
-    Py_XDECREF(py_eval_hl);
-
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

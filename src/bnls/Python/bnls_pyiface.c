@@ -760,10 +760,6 @@ static PyObject* py_bnls_terminate(PyObject *self){
     // Call bnls_terminate
     bnls_terminate(&data, &control, &inform);
 
-    // Cleanup refcounts
-    Py_XDECREF(py_eval_r);
-    Py_XDECREF(py_eval_jr);
-
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

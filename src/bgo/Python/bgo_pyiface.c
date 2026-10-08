@@ -635,11 +635,6 @@ static PyObject* py_bgo_terminate(PyObject *self){
     // Call bgo_terminate
     bgo_terminate(&data, &control, &inform);
 
-    // Cleanup refcounts
-    Py_XDECREF(py_eval_f);
-    Py_XDECREF(py_eval_g);
-    Py_XDECREF(py_eval_h);
-
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;

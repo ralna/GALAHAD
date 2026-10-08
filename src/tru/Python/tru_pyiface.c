@@ -878,11 +878,6 @@ static PyObject* py_tru_terminate(PyObject *self){
     // Call tru_terminate
     tru_terminate(&data, &control, &inform);
 
-    // Cleanup refcounts
-    Py_XDECREF(py_eval_f);
-    Py_XDECREF(py_eval_g);
-    Py_XDECREF(py_eval_h);
-
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
