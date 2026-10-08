@@ -309,8 +309,9 @@ static PyObject* py_dps_initialize(PyObject *self){
 
 static PyObject* py_dps_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_H_row, *py_H_col, *py_H_ptr;
+    PyArrayObject *tmp_H_row = NULL, *tmp_H_col = NULL, *tmp_H_ptr = NULL;
     PyObject *py_options = NULL;
-    int *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
+    const ipc_ *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
     const char *H_type;
     int n, H_ne;
 
@@ -329,7 +330,6 @@ static PyObject* py_dps_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("H_row", py_H_row, H_ne) &&
         check_array_int("H_col", py_H_col, H_ne) &&
@@ -337,25 +337,25 @@ static PyObject* py_dps_load(PyObject *self, PyObject *args, PyObject *keywds){
         ))
         return NULL;
 
-    // Convert 64bit integer H_row array to 32bit
+    // Convert NumPy integer H_row array to ipc_
     if((PyObject *) py_H_row != Py_None){
-        H_row = malloc(H_ne * sizeof(int));
-        long int *H_row_long = (long int *) PyArray_DATA(py_H_row);
-        for(int i = 0; i < H_ne; i++) H_row[i] = (int) H_row_long[i];
+       tmp_H_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_H_row == NULL) goto conversion_error;
+       H_row = (const ipc_ *) PyArray_DATA(tmp_H_row);
     }
 
-    // Convert 64bit integer H_col array to 32bit
+    // Convert NumPy integer H_col array to ipc_
     if((PyObject *) py_H_col != Py_None){
-        H_col = malloc(H_ne * sizeof(int));
-        long int *H_col_long = (long int *) PyArray_DATA(py_H_col);
-        for(int i = 0; i < H_ne; i++) H_col[i] = (int) H_col_long[i];
+       tmp_H_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_H_col == NULL) goto conversion_error;
+       H_col = (const ipc_ *) PyArray_DATA(tmp_H_col);
     }
 
-    // Convert 64bit integer H_ptr array to 32bit
+    // Convert NumPy integer H_ptr array to ipc_
     if((PyObject *) py_H_ptr != Py_None){
-        H_ptr = malloc((n+1) * sizeof(int));
-        long int *H_ptr_long = (long int *) PyArray_DATA(py_H_ptr);
-        for(int i = 0; i < n+1; i++) H_ptr[i] = (int) H_ptr_long[i];
+       tmp_H_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_H_ptr == NULL) goto conversion_error;
+       H_ptr = (const ipc_ *) PyArray_DATA(tmp_H_ptr);
     }
 
     // Reset control options
@@ -369,10 +369,10 @@ static PyObject* py_dps_load(PyObject *self, PyObject *args, PyObject *keywds){
     dps_import(&control, &data, &status, n,
                H_type, H_ne, H_row, H_col, H_ptr);
 
-    // Free allocated memory
-    if(H_row != NULL) free(H_row);
-    if(H_col != NULL) free(H_col);
-    if(H_ptr != NULL) free(H_ptr);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_H_row);
+    Py_XDECREF(tmp_H_col);
+    Py_XDECREF(tmp_H_ptr);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -384,6 +384,13 @@ static PyObject* py_dps_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
+
+    // Handle errors on array conversion
+    conversion_error:
+        Py_XDECREF(tmp_H_row);
+        Py_XDECREF(tmp_H_col);
+        Py_XDECREF(tmp_H_ptr);
+        return NULL;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   DPS_SOLVE_TR_PROBLEM   -*-*-*-*-*-*-*-*

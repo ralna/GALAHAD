@@ -1261,13 +1261,16 @@ static PyObject* py_nls_initialize(PyObject *self){
 
 static PyObject* py_nls_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_J_row, *py_J_col, *py_J_ptr;
+    PyArrayObject *tmp_J_row = NULL, *tmp_J_col = NULL, *tmp_J_ptr = NULL;
     PyArrayObject *py_H_row, *py_H_col, *py_H_ptr;
+    PyArrayObject *tmp_H_row = NULL, *tmp_H_col = NULL, *tmp_H_ptr = NULL;
     PyArrayObject *py_P_row, *py_P_col, *py_P_ptr;
+    PyArrayObject *tmp_P_row = NULL, *tmp_P_col = NULL, *tmp_P_ptr = NULL;
     PyArrayObject *py_w;
     PyObject *py_options = NULL;
-    int *J_row = NULL, *J_col = NULL, *J_ptr = NULL;
-    int *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
-    int *P_row = NULL, *P_col = NULL, *P_ptr = NULL;
+    const ipc_ *J_row = NULL, *J_col = NULL, *J_ptr = NULL;
+    const ipc_ *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
+    const ipc_ *P_row = NULL, *P_col = NULL, *P_ptr = NULL;
     const char *J_type, *H_type, *P_type;
     double *w;
     int n, m, J_ne, H_ne, P_ne;
@@ -1295,7 +1298,6 @@ static PyObject* py_nls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("J_row", py_J_row, J_ne) &&
         check_array_int("J_col", py_J_col, J_ne) &&
@@ -1322,67 +1324,67 @@ static PyObject* py_nls_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Get array data pointer
     w = (double *) PyArray_DATA(py_w);
 
-    // Convert 64bit integer J_row array to 32bit
+    // Convert NumPy integer J_row array to ipc_
     if((PyObject *) py_J_row != Py_None){
-        J_row = malloc(J_ne * sizeof(int));
-        long int *J_row_long = (long int *) PyArray_DATA(py_J_row);
-        for(int i = 0; i < J_ne; i++) J_row[i] = (int) J_row_long[i];
+       tmp_J_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_J_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_J_row == NULL) goto conversion_error;
+       J_row = (const ipc_ *) PyArray_DATA(tmp_J_row);
     }
 
-    // Convert 64bit integer J_col array to 32bit
+    // Convert NumPy integer J_col array to ipc_
     if((PyObject *) py_J_col != Py_None){
-        J_col = malloc(J_ne * sizeof(int));
-        long int *J_col_long = (long int *) PyArray_DATA(py_J_col);
-        for(int i = 0; i < J_ne; i++) J_col[i] = (int) J_col_long[i];
+       tmp_J_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_J_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_J_col == NULL) goto conversion_error;
+       J_col = (const ipc_ *) PyArray_DATA(tmp_J_col);
     }
 
-    // Convert 64bit integer J_ptr array to 32bit
+    // Convert NumPy integer J_ptr array to ipc_
     if((PyObject *) py_J_ptr != Py_None){
-        J_ptr = malloc((n+1) * sizeof(int));
-        long int *J_ptr_long = (long int *) PyArray_DATA(py_J_ptr);
-        for(int i = 0; i < n+1; i++) J_ptr[i] = (int) J_ptr_long[i];
+       tmp_J_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_J_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_J_ptr == NULL) goto conversion_error;
+       J_ptr = (const ipc_ *) PyArray_DATA(tmp_J_ptr);
     }
 
-    // Convert 64bit integer H_row array to 32bit
+    // Convert NumPy integer H_row array to ipc_
     if((PyObject *) py_H_row != Py_None){
-        H_row = malloc(H_ne * sizeof(int));
-        long int *H_row_long = (long int *) PyArray_DATA(py_H_row);
-        for(int i = 0; i < H_ne; i++) H_row[i] = (int) H_row_long[i];
+       tmp_H_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_H_row == NULL) goto conversion_error;
+       H_row = (const ipc_ *) PyArray_DATA(tmp_H_row);
     }
 
-    // Convert 64bit integer H_col array to 32bit
+    // Convert NumPy integer H_col array to ipc_
     if((PyObject *) py_H_col != Py_None){
-        H_col = malloc(H_ne * sizeof(int));
-        long int *H_col_long = (long int *) PyArray_DATA(py_H_col);
-        for(int i = 0; i < H_ne; i++) H_col[i] = (int) H_col_long[i];
+       tmp_H_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_H_col == NULL) goto conversion_error;
+       H_col = (const ipc_ *) PyArray_DATA(tmp_H_col);
     }
 
-    // Convert 64bit integer H_ptr array to 32bit
+    // Convert NumPy integer H_ptr array to ipc_
     if((PyObject *) py_H_ptr != Py_None){
-        H_ptr = malloc((n+1) * sizeof(int));
-        long int *H_ptr_long = (long int *) PyArray_DATA(py_H_ptr);
-        for(int i = 0; i < n+1; i++) H_ptr[i] = (int) H_ptr_long[i];
+       tmp_H_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_H_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_H_ptr == NULL) goto conversion_error;
+       H_ptr = (const ipc_ *) PyArray_DATA(tmp_H_ptr);
     }
 
-    // Convert 64bit integer P_row array to 32bit
+    // Convert NumPy integer P_row array to ipc_
     if((PyObject *) py_P_row != Py_None){
-        P_row = malloc(P_ne * sizeof(int));
-        long int *P_row_long = (long int *) PyArray_DATA(py_P_row);
-        for(int i = 0; i < P_ne; i++) P_row[i] = (int) P_row_long[i];
+       tmp_P_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_P_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_P_row == NULL) goto conversion_error;
+       P_row = (const ipc_ *) PyArray_DATA(tmp_P_row);
     }
 
-    // Convert 64bit integer P_col array to 32bit
+    // Convert NumPy integer P_col array to ipc_
     if((PyObject *) py_P_col != Py_None){
-        P_col = malloc(P_ne * sizeof(int));
-        long int *P_col_long = (long int *) PyArray_DATA(py_P_col);
-        for(int i = 0; i < P_ne; i++) P_col[i] = (int) P_col_long[i];
+       tmp_P_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_P_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_P_col == NULL) goto conversion_error;
+       P_col = (const ipc_ *) PyArray_DATA(tmp_P_col);
     }
 
-    // Convert 64bit integer P_ptr array to 32bit
+    // Convert NumPy integer P_ptr array to ipc_
     if((PyObject *) py_P_ptr != Py_None){
-        P_ptr = malloc((n+1) * sizeof(int));
-        long int *P_ptr_long = (long int *) PyArray_DATA(py_P_ptr);
-        for(int i = 0; i < m+1; i++) P_ptr[i] = (int) P_ptr_long[i];
+       tmp_P_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_P_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_P_ptr == NULL) goto conversion_error;
+       P_ptr = (const ipc_ *) PyArray_DATA(tmp_P_ptr);
     }
 
     // Reset control options
@@ -1398,16 +1400,16 @@ static PyObject* py_nls_load(PyObject *self, PyObject *args, PyObject *keywds){
                 H_type, H_ne, H_row, H_col, H_ptr,
                 P_type, P_ne, P_row, P_col, P_ptr, w);
 
-    // Free allocated memory
-    if(J_row != NULL) free(J_row);
-    if(J_col != NULL) free(J_col);
-    if(J_ptr != NULL) free(J_ptr);
-    if(H_row != NULL) free(H_row);
-    if(H_col != NULL) free(H_col);
-    if(H_ptr != NULL) free(H_ptr);
-    if(P_row != NULL) free(P_row);
-    if(P_col != NULL) free(P_col);
-    if(P_ptr != NULL) free(P_ptr);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_J_row);
+    Py_XDECREF(tmp_J_col);
+    Py_XDECREF(tmp_J_ptr);
+    Py_XDECREF(tmp_H_row);
+    Py_XDECREF(tmp_H_col);
+    Py_XDECREF(tmp_H_ptr);
+    Py_XDECREF(tmp_P_row);
+    Py_XDECREF(tmp_P_col);
+    Py_XDECREF(tmp_P_ptr);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -1416,6 +1418,19 @@ static PyObject* py_nls_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
+
+    // Handle errors on array conversion
+    conversion_error:
+        Py_XDECREF(tmp_J_row);
+        Py_XDECREF(tmp_J_col);
+        Py_XDECREF(tmp_J_ptr);
+        Py_XDECREF(tmp_H_row);
+        Py_XDECREF(tmp_H_col);
+        Py_XDECREF(tmp_H_ptr);
+        Py_XDECREF(tmp_P_row);
+        Py_XDECREF(tmp_P_col);
+        Py_XDECREF(tmp_P_ptr);
+        return NULL;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   NLS_SOLVE   -*-*-*-*-*-*-*-*

@@ -289,8 +289,9 @@ static PyObject* py_fdc_initialize(PyObject *self){
 static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
                                             PyObject *keywds){
     PyArrayObject *py_A_val, *py_A_col, *py_A_ptr, *py_b;
+    PyArrayObject *tmp_A_col = NULL, *tmp_A_ptr = NULL;
     PyObject *py_options = NULL;
-    int *A_col = NULL, *A_ptr = NULL;
+    const ipc_ *A_col = NULL, *A_ptr = NULL;
     double *A_val, *b;
     int m, n, A_ne, n_depen;
 
@@ -308,18 +309,16 @@ static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
         return NULL;
 
     // Check that rpw pointer array is of correct type, size, and shape
-
     if(!(check_array_int("A_ptr", py_A_ptr, m+1)))
         return NULL;
 
-    // Convert 64bit integer A_ptr array to 32bit
-    A_ptr = malloc((n+1) * sizeof(int));
-    long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
-    for(int i = 0; i < m+1; i++) A_ptr[i] = (int) A_ptr_long[i];
+    // Convert NumPy integer A_ptr array to ipc_
+    tmp_A_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+    if(tmp_A_ptr == NULL) goto conversion_error;
+    A_ptr = (const ipc_ *) PyArray_DATA(tmp_A_ptr);
     A_ne = A_ptr[m];
 
     // Check that remaining array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("A_col", py_A_col, A_ne) &&
         check_array_double("A_val", py_A_val, A_ne) &&
@@ -328,10 +327,11 @@ static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
         return NULL;
 
     // Convert 64bit integer A_col array to 32bit
-    A_col = malloc(A_ne * sizeof(int));
-    long int *A_col_long = (long int *) PyArray_DATA(py_A_col);
-    for(int i = 0; i < A_ne; i++) A_col[i] = (int) A_col_long[i];
+    tmp_A_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_A_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+    if(tmp_A_col == NULL) goto conversion_error;
+    A_col = (const ipc_ *) PyArray_DATA(tmp_A_col);
 
+    // Get remaining data arrays
     A_val = (double *) PyArray_DATA(py_A_val);
     b = (double *) PyArray_DATA(py_b);
 
@@ -351,8 +351,6 @@ static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
     // Call fdc_find_dependent_rows
     fdc_find_dependent_rows(&control, &data, &inform, &status, m, n,
                             A_ne, A_col, A_ptr, A_val, b, &n_depen, depen);
-    //printf("A_ne %i\n", A_ne);
-    //printf("n_depen %i\n", n_depen);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
@@ -362,13 +360,19 @@ static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
     if(!check_error_codes(status))
         return NULL;
 
-    // Free allocated memory
-    free(A_col);
-    free(A_ptr);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_A_col);
+    Py_XDECREF(tmp_A_ptr);
 
     // Return n_depen, depen and inform
     PyObject *py_inform = fdc_make_inform_dict(&inform);
     return Py_BuildValue("iNN", n_depen, py_depen, py_inform);
+
+    // Handle errors on array conversion
+    conversion_error:
+        Py_XDECREF(tmp_A_col);
+        Py_XDECREF(tmp_A_ptr);
+        return NULL;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   FDC_TERMINATE   -*-*-*-*-*-*-*-*-*-*

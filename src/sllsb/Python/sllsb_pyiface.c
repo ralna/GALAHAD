@@ -651,16 +651,16 @@ PyObject* sllsb_make_inform_dict(const struct sllsb_inform_type *inform){
     import_array();
 
     // include checkpoint arrays (commented out as these cause a segfault!)
-    npy_intp idim[] = {16}; 
-    PyArrayObject *py_iter = 
+    npy_intp idim[] = {16};
+    PyArrayObject *py_iter =
       (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_INT);
-    int *iter = (int *) PyArray_DATA(py_iter); 
-    for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];  
+    int *iter = (int *) PyArray_DATA(py_iter);
+    for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];
     PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
-    PyArrayObject *py_time = 
+    PyArrayObject *py_time =
      (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_DOUBLE);
-    double *time = (double *) PyArray_DATA(py_time); 
-    for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];  
+    double *time = (double *) PyArray_DATA(py_time);
+    for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];
     PyDict_SetItemString(py_inform, "checkpointsTime", (PyObject *) py_time);
 
     // Set time nested dictionary
@@ -705,8 +705,9 @@ static PyObject* py_sllsb_initialize(PyObject *self){
 
 static PyObject* py_sllsb_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_Ao_row, *py_Ao_col, *py_Ao_ptr, *py_cohort;
+    PyArrayObject *tmp_Ao_row = NULL, *tmp_Ao_col = NULL, *tmp_Ao_ptr = NULL, *tmp_cohort = NULL;
     PyObject *py_options = NULL;
-    int *Ao_row = NULL, *Ao_col = NULL, *Ao_ptr = NULL, *cohort = NULL;
+    const ipc_ *Ao_row = NULL, *Ao_col = NULL, *Ao_ptr = NULL, *cohort = NULL;
     const char *Ao_type;
     int n, o, m, Ao_ne, Ao_ptr_ne;
 
@@ -728,7 +729,6 @@ static PyObject* py_sllsb_load(PyObject *self, PyObject *args, PyObject *keywds)
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("Ao_row", py_Ao_row, Ao_ne) &&
         check_array_int("Ao_col", py_Ao_col, Ao_ne) &&
@@ -737,32 +737,32 @@ static PyObject* py_sllsb_load(PyObject *self, PyObject *args, PyObject *keywds)
         ))
         return NULL;
 
-    // Convert 64bit integer Ao_row array to 32bit
+    // Convert NumPy integer Ao_row array to ipc_
     if((PyObject *) py_Ao_row != Py_None){
-        Ao_row = malloc(Ao_ne * sizeof(int));
-        long int *Ao_row_long = (long int *) PyArray_DATA(py_Ao_row);
-        for(int i = 0; i < Ao_ne; i++) Ao_row[i] = (int) Ao_row_long[i];
+       tmp_Ao_row = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Ao_row, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_Ao_row == NULL) goto conversion_error;
+       Ao_row = (const ipc_ *) PyArray_DATA(tmp_Ao_row);
     }
 
-    // Convert 64bit integer Ao_col array to 32bit
+    // Convert NumPy integer H_col array to ipc_
     if((PyObject *) py_Ao_col != Py_None){
-        Ao_col = malloc(Ao_ne * sizeof(int));
-        long int *Ao_col_long = (long int *) PyArray_DATA(py_Ao_col);
-        for(int i = 0; i < Ao_ne; i++) Ao_col[i] = (int) Ao_col_long[i];
+       tmp_Ao_col = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Ao_col, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_Ao_col == NULL) goto conversion_error;
+       Ao_col = (const ipc_ *) PyArray_DATA(tmp_Ao_col);
     }
 
-    // Convert 64bit integer Ao_ptr array to 32bit
+    // Convert NumPy integer H_ptr array to ipc_
     if((PyObject *) py_Ao_ptr != Py_None){
-        Ao_ptr = malloc((Ao_ptr_ne) * sizeof(int));
-        long int *Ao_ptr_long = (long int *) PyArray_DATA(py_Ao_ptr);
-        for(int i = 0; i < Ao_ptr_ne; i++) Ao_ptr[i] = (int) Ao_ptr_long[i];
+       tmp_Ao_ptr = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_Ao_ptr, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_Ao_ptr == NULL) goto conversion_error;
+       Ao_ptr = (const ipc_ *) PyArray_DATA(tmp_Ao_ptr);
     }
 
-    // Convert 64bit integer cohort array to 32bit
+    // Convert NumPy integer cohort array to ipc_
     if((PyObject *) py_cohort != Py_None){
-        cohort = malloc(n * sizeof(int));
-        long int *cohort_long = (long int *) PyArray_DATA(py_cohort);
-        for(int i = 0; i < n; i++) cohort[i] = (int) cohort_long[i];
+       tmp_cohort = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_cohort, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_cohort == NULL) goto conversion_error;
+       cohort = (const ipc_ *) PyArray_DATA(tmp_cohort);
     }
 
     // Reset control options
@@ -776,11 +776,11 @@ static PyObject* py_sllsb_load(PyObject *self, PyObject *args, PyObject *keywds)
     sllsb_import(&control, &data, &status, n, o, m,
                  Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr, cohort );
 
-    // Free allocated memory
-    if(Ao_row != NULL) free(Ao_row);
-    if(Ao_col != NULL) free(Ao_col);
-    if(Ao_ptr != NULL) free(Ao_ptr);
-    if(cohort != NULL) free(cohort);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_Ao_row);
+    Py_XDECREF(tmp_Ao_col);
+    Py_XDECREF(tmp_Ao_ptr);
+    Py_XDECREF(tmp_cohort);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -789,6 +789,14 @@ static PyObject* py_sllsb_load(PyObject *self, PyObject *args, PyObject *keywds)
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
+
+    // Handle errors on array conversion
+    conversion_error:
+        Py_XDECREF(tmp_Ao_row);
+        Py_XDECREF(tmp_Ao_col);
+        Py_XDECREF(tmp_Ao_ptr);
+        Py_XDECREF(tmp_cohort);
+        return NULL;
 }
 
 //  *-*-*-*-*-*-*-*-*-*-   SLLSB_SOLVE   -*-*-*-*-*-*-*-*
@@ -863,10 +871,6 @@ static PyObject* py_sllsb_solve(PyObject *self, PyObject *args,
     status = 1; // set status to 1 on entry
     sllsb_solve_given_a(&data, &status, n, o, m, Ao_ne, Ao_val, b, sigma,
                         x, y, z, r, x_stat, w, x_s);
-    // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
-    // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
-    // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
