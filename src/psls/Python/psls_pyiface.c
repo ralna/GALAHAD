@@ -393,7 +393,6 @@ static PyObject* py_psls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(
         check_array_int("A_row", py_A_row, A_ne) &&
         check_array_int("A_col", py_A_col, A_ne) &&
@@ -472,7 +471,6 @@ static PyObject* py_psls_form_preconditioner(PyObject *self, PyObject *args, PyO
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(check_array_double("A_val", py_A_val, A_ne)))
         return NULL;
 
@@ -495,7 +493,8 @@ static PyObject* py_psls_form_preconditioner(PyObject *self, PyObject *args, PyO
 
 static PyObject* py_psls_form_subset_preconditioner(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_A_val, *py_sub;
-    int *sub = NULL;
+    PyArrayObject *tmp_sub = NULL;
+    const ipc_ *sub = NULL;
     double *A_val;
     int A_ne, n_sub;
 
@@ -511,24 +510,25 @@ static PyObject* py_psls_form_subset_preconditioner(PyObject *self, PyObject *ar
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-
     if(!(check_array_double("A_val", py_A_val, A_ne) &&
          check_array_int("sub", py_sub, n_sub)))
         return NULL;
 
     // Get array data pointers
     A_val = (double *) PyArray_DATA(py_A_val);
+
+    // Convert NumPy integer sub array to ipc_
     if((PyObject *) py_sub != Py_None){
-        sub = malloc(n_sub * sizeof(int));
-        long int *sub_long = (long int *) PyArray_DATA(py_sub);
-        for(int i = 0; i < n_sub; i++) sub[i] = (int) sub_long[i];
+       tmp_sub = (PyArrayObject *) PyArray_FROM_OTF((PyObject *) py_sub, NPY_IPC, NPY_ARRAY_IN_ARRAY | NPY_ARRAY_FORCECAST);
+       if(tmp_sub == NULL) return NULL;
+       sub = (const ipc_ *) PyArray_DATA(tmp_sub);
     }
 
     // Call psls_factorize_matrix
     psls_form_subset_preconditioner(&data, &status, A_ne, A_val, n_sub, sub);
 
-    // Free allocated memory
-    if(sub != NULL) free(sub);
+    // Cleanup refcounts
+    Py_XDECREF(tmp_sub);
 
     // Raise any status errors
     if(!check_error_codes(status))
