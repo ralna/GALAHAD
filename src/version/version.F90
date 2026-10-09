@@ -23,7 +23,7 @@
 
       INTEGER ( KIND = ip_ ), PARAMETER :: major = 5
       INTEGER ( KIND = ip_ ), PARAMETER :: minor = 5
-      INTEGER ( KIND = ip_ ), PARAMETER :: patch = 2
+      INTEGER ( KIND = ip_ ), PARAMETER :: patch = 3
 
     CONTAINS
 
