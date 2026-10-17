@@ -1,3 +1,5 @@
+! error-printout-device           6
+! printout-device                 6
 ! check-frequency                 60
 ! crash-option                    3
 ! crash-tolerance                 0.1
@@ -41,3 +43,6 @@
 ! system-information              no
 ! timing-level                    0
 ! unbounded-step-size             0.0
+! space-critical                  no
+! deallocate-error-fatal          no
+! output-line-prefix              ""

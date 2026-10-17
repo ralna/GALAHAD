@@ -24,10 +24,16 @@ are for x86_64-linux-gnu-libgfortran5, viz
 
   https://github.com/leyffer/BQPD_jll.jl/releases/download/BQPD-v1.0.0%2B0/BQPD.v1.0.0.x86_64-linux-gnu-libgfortran5.tar.gz
 
-Make sure this is on your library search path, and set
+Make sure the resulting static library, libbqpd.a, is on your library 
+search path, **EDIT THE BINARY FILE TO AVOID AN UNFORTUNATE NAME CLASH** 
+with the BPMPD package using the command
+
+  objcopy --redefine-sym factor_=bqpd_factor_ libbqpd.a
+
+from the directory containing libbqpd, , and set
 
   BQPD = -lbqpd -lbqpd_dense -lgalahad
 
 Nick Gould
 For GALAHAD productions
-July 27th 2026
+October 17th 2026

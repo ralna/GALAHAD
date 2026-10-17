@@ -26,7 +26,7 @@
 !     |          c_l <= A x <= c_u                   |
 !     |          x_l <=  x <= x_u                    |
 !     |                                              |
-!     | for some positive definite Hessian using     !
+!     | for some positive definite Hessian using     |
 !     | Roger Fletcher's BQPD package (which must be |
 !     | provided externally). See README.bqpd for    |
 !     | details of how this is possible              |
@@ -39,7 +39,7 @@
       USE GALAHAD_SPACE_precision, ONLY: SPACE_resize_array, SPACE_dealloc_array
       USE GALAHAD_SPECFILE_precision, ONLY: SPECFILE_item_type, SPECFILE_read, &
                                             SPECFILE_assign_value
-      USE GALAHAD_SMT_precision, ONLY: SMT_TYPE, SMT_GET, SMT_PUT
+      USE GALAHAD_SMT_precision, ONLY: SMT_type, SMT_get, SMT_put
       USE GALAHAD_QPT_precision, ONLY: QPT_problem_type, QPT_keyword_A,        &
                                        QPT_keyword_H, QPT_summarize_problem
       USE GALAHAD_QPD_precision, ONLY: QPD_data_type, QPD_SIF
@@ -52,7 +52,7 @@
 
       PRIVATE 
       PUBLIC :: BQPD_initialize, BQPD_read_specfile, BQPD_solve,               &
-                BQPD_terminate, QPT_problem_type, SMT_type, SMT_put, SMT_get
+                BQPD_terminate, QPT_problem_type, SMT_type, SMT_get, SMT_put
 
 !----------------------
 !   I n t e r f a c e s
@@ -185,6 +185,8 @@
 !     7 = not enough space for sparse factors (sparse code only)
 !     8 = maximum number of unsuccessful restarts taken
 !    >8 = possible use by later sparse matrix codes
+!    -1 = allocation error
+!    -2 = deallocation error
 
         INTEGER ( KIND = ip_ ) :: status = 0
 
@@ -290,7 +292,7 @@
      TYPE ( BQPD_control_type ), INTENT( OUT ) :: control
      TYPE ( BQPD_inform_type ), INTENT( OUT ) :: inform
 
-     CALL BQPD_initialize( data%bqpd_data, control, inform )
+     CALL BQPD_initialize( data%BQPD_data, control, inform )
 
      RETURN
 
@@ -498,9 +500,22 @@
       COMMON / wsc / len_ws_gdotx, len_lws_gdotx, len_ws_bqpd, len_lws_bqpd,   &
                      len_ws, len_lws
 
-!  external
+!  interface block for BQPD subroutine
 
-      EXTERNAL :: BQPD
+      INTERFACE
+        SUBROUTINE BQPD( n, m, k, k_max, GA, IGA, X, B_l, B_u, f_opt, f_min,   &
+                         G, R, W, E, LS, ALP, LP, max_levels, peq, WS, LWS,    &
+                         mode, status, INFO, print_level, out )
+        IMPORT :: ip_, rp_
+        INTEGER ( KIND = ip_ ) :: n, m, k, k_max, max_levels, peq
+        INTEGER ( KIND = ip_ ) :: mode, status, print_level, out
+        REAL ( KIND = rp_ ) :: f_opt, f_min
+        INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: INFO
+        INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IGA, LP, LS, LWS
+        REAL ( KIND = rp_ ), DIMENSION( * ) :: GA, X, B_l, B_u
+        REAL ( KIND = rp_ ), DIMENSION( * ) :: ALP, G, R, E, W, WS
+        END SUBROUTINE BQPD
+      END INTERFACE
 
 !  transfer the data into BQPD's QP format. Start with bound data
 
@@ -558,6 +573,7 @@
 !  if necessary, convert the input A into by sparse-row format
 
       ELSE
+        prob%A%m = m ; prob%A%n = n
         CALL CONVERT_to_sparse_row_format( prob%A, data%A, control_convert,    &
                                            inform_convert )
         data%GA( n + 1 : n + a_ne ) = data%A%val( : a_ne )
@@ -569,10 +585,12 @@
 !  if necessary, convert the input H into by sparse-co-ordinate format
 
       data%original_h = SMT_get( prob%H%type ) == 'COORDINATE'
-      IF ( .NOT. data%original_h )                                             &
+      IF ( .NOT. data%original_h ) THEN
+        prob%H%m = n ; prob%H%n = n
         CALL CONVERT_to_symmetric_coordinate_format( prob%H, data%H,           &
                                                      control_convert,          &
                                                      inform_convert )
+      END IF
 
 !  assign default and non-default settings prior to solution
 
@@ -673,7 +691,7 @@
 
 !  if successful, record the solution
 
-      IF ( inform%status == 0 ) THEN
+      IF ( inform%status == 0 ) THEN 
         DO i = 1, n - k ! active constraints
           j = data%LS( i )
           IF ( j < 0 ) THEN ! active at upper bound

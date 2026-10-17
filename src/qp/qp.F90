@@ -55,6 +55,7 @@
                                  GALAHAD_error_max_iterations,                 &
                                  GALAHAD_error_inertia,                        &
                                  GALAHAD_error_scale,                          &
+                                 GALAHAD_error_real_ws,                        &
                                  GALAHAD_error_presolve,                       &
                                  GALAHAD_error_qpa,                            &
                                  GALAHAD_error_qpb,                            &
@@ -63,17 +64,23 @@
                                  GALAHAD_error_dqp,                            &
                                  GALAHAD_error_cdqp,                           &
                                  GALAHAD_error_unknown_solver,                 &
-                                 GALAHAD_error_restrictions,                   &
                                  GALAHAD_error_file,                           &
                                  GALAHAD_error_io,                             &
+                                 GALAHAD_error_bpmpd,                          &
+                                 GALAHAD_error_bqpd,                           &
+                                 GALAHAD_error_clarabel,                       &
+                                 GALAHAD_error_highs,                          &
                                  GALAHAD_error_naglib,                         &
                                  GALAHAD_error_osqp,                           &
+                                 GALAHAD_error_qpalm,                          &
+                                 GALAHAD_error_qpoases,                        &
+                                 GALAHAD_error_scs,                            &
                                  GALAHAD_unavailable_solver,                   &
                                  GALAHAD_no_licence 
       USE GALAHAD_SPACE_precision, ONLY: SPACE_resize_array, SPACE_dealloc_array
       USE GALAHAD_SPECFILE_precision, ONLY: SPECFILE_item_type, SPECFILE_read, &
                                             SPECFILE_assign_value
-      USE GALAHAD_SMT_precision, ONLY: SMT_TYPE, SMT_GET, SMT_PUT
+      USE GALAHAD_SMT_precision, ONLY: SMT_type, SMT_get, SMT_put
       USE GALAHAD_QPT_precision, ONLY: QPT_problem_type, QPT_keyword_A,        &
                                        QPT_keyword_H, QPT_summarize_problem
       USE GALAHAD_QPD_precision, ONLY: QPD_data_type, QPD_SIF
@@ -111,22 +118,28 @@
                                         CDQP_initialize, CDQP_read_specfile,   &
                                         CDQP_solve, CDQP_terminate
       USE GALAHAD_LMS_precision, ONLY: LMS_apply_lbfgs
+      USE GALAHAD_BPMPD_precision, ONLY: BPMPD_data_type, BPMPD_control_type,  &
+                                        BPMPD_inform_type, BPMPD_initialize,   &
+                                        BPMPD_solve, BPMPD_terminate
       USE GALAHAD_BQPD_precision, ONLY: BQPD_data_type, BQPD_control_type,     &
                                         BQPD_inform_type, BQPD_initialize,     &
                                         BQPD_solve, BQPD_terminate
-      USE OSQP, ONLY: OSQP_settings_type, OSQP_info_type, OSQP_data_type,      &
-                      OSQP_settings, OSQP_solve, OSQP_cleanup
+      USE GALAHAD_OSQP_precision, ONLY: OSQP_data_type, OSQP_control_type,     &
+                                        OSQP_inform_type, OSQP_initialize,     &
+                                        OSQP_solve, OSQP_terminate
       USE GALAHAD_NAGLIB_precision, ONLY: E04NQF_control_type,                 &
                                           E04NQF_inform_type,                  &
-                                          E04NPF, E04NQF, E04NRF, E04NTF,      &
-                                          X04AAF, X04ACF, X04ADF,              &
-                                          E04NQF_transfer_control
+                                          E04NQF_data_type, E04NQF_initialize, &
+                                          E04NQF_solve, E04NQF_terminate
+!                                          E04NPF, E04NQF, E04NRF, E04NTF,     &
+!                                          X04AAF, X04ACF, X04ADF,             &
+!                                          E04NQF_transfer_control
 
       IMPLICIT NONE ( TYPE, EXTERNAL )
 
       PRIVATE 
       PUBLIC :: QP_initialize, QP_read_specfile, QP_solve,                     &
-                QP_terminate, QPT_problem_type, SMT_type, SMT_put, SMT_get
+                QP_terminate, QPT_problem_type, SMT_type, SMT_get, SMT_put
 
 !----------------------
 !   P a r a m e t e r s
@@ -250,13 +263,17 @@
 
         TYPE ( CDQP_control_type ) :: CDQP_control
 
+!  control parameters for BPMPD
+
+        TYPE ( BPMPD_control_type ) :: BPMPD_control
+
 !  control parameters for BQPD
 
         TYPE ( BQPD_control_type ) :: BQPD_control
 
 !  control parameters for OSQP
 
-        TYPE ( OSQP_settings_type ) :: OSQP_control
+        TYPE ( OSQP_control_type ) :: OSQP_control
 
 !  control parameters for E04NQF
 
@@ -303,30 +320,6 @@
         REAL ( KIND = rp_ ) :: clock_solve = 0.0
 
       END TYPE QP_time_type
-
-!  - - - - - - - - - - - - - - - -
-!   extended inform type for OSQP
-!  - - - - - - - - - - - - - - - -
-
-      TYPE, PUBLIC :: QP_OSQP_inform_type
-
-!  OSQP_info derived type
-
-         TYPE ( OSQP_info_type ) :: info
-
-!  return status
-
-        INTEGER ( KIND = ip_ ) :: status = 0
-
-!  the status of the last attempted allocation/deallocation
-
-        INTEGER ( KIND = ip_ ) :: alloc_status = 0
-
-!  the name of the array for which an allocation/deallocation error ocurred
-
-        CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
-
-      END TYPE QP_OSQP_inform_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
@@ -403,6 +396,10 @@
 
         TYPE ( CDQP_inform_type ) :: CDQP_inform
 
+!  inform parameters for BPMPD
+
+        TYPE ( BPMPD_inform_type ) :: BPMPD_inform
+
 !  inform parameters for BQPD
 
         TYPE ( BQPD_inform_type ) :: BQPD_inform
@@ -413,19 +410,9 @@
 
 !  inform parameters for OSQP
 
-        TYPE ( QP_OSQP_inform_type ) :: OSQP_inform
+        TYPE ( OSQP_inform_type ) :: OSQP_inform
 
       END TYPE QP_inform_type
-
-!  - - - - - - - - - - - - - - - - - - -
-!   extended data derived type for BPMPD
-!  - - - - - - - - - - - - - - - - - - -
-
-      TYPE, PUBLIC :: QP_BPMPD_data_type
-        LOGICAL :: original_a, original_h
-        LOGICAL :: new_structure = .TRUE.
-        TYPE ( SMT_type ) :: A, H
-      END TYPE QP_BPMPD_data_type
 
 !  - - - - - - - - - - - - - - - - - - - - --
 !   extended data derived type for CLARABEL
@@ -461,21 +448,6 @@
         LOGICAL :: new_structure = .TRUE.
         TYPE ( SMT_type ) :: A, H
       END TYPE QP_HIGHS_data_type
-
-!  - - - - - - - - - - - - - - - - - - -
-!   extended data derived type for OSQP
-!  - - - - - - - - - - - - - - - - - - -
-
-      TYPE, PUBLIC :: QP_OSQP_data_type
-        INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne
-        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_ptr
-        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val
-        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_l, B_u, Y
-        LOGICAL :: original_a, original_h
-        LOGICAL :: new_structure = .TRUE.
-        TYPE ( SMT_type ) :: A, H
-        TYPE ( OSQP_data_type ) :: OSQP_data
-      END TYPE QP_OSQP_data_type
 
 !  - - - - - - - - - - - - - - - - - - -
 !   extended data derived type for QPALM
@@ -521,9 +493,10 @@
         INTEGER ( KIND = ip_ ) :: len_solver = len_solver
         CHARACTER ( LEN = len_solver ) :: solver = REPEAT( ' ', len_solver )
         TYPE ( QPD_data_type ) :: QPD_data
+        TYPE ( BPMPD_data_type ) :: BPMPD_data
         TYPE ( BQPD_data_type ) :: BQPD_data
-        TYPE ( QP_OSQP_data_type ) :: QP_OSQP_data
-        TYPE ( QP_E04NQF_data_type ) :: QP_E04NQF_data
+        TYPE ( OSQP_data_type ) :: OSQP_data
+        TYPE ( E04NQF_data_type ) :: E04NQF_data
       END TYPE QP_data_type
 
    CONTAINS
@@ -609,11 +582,25 @@
                               inform%CDQP_inform  )
         control%CQP_control%prefix = '" - CDQP:"                    '
 
+!  == BQPD ==
+
+      CASE ( 'bqpd', 'BQPD' )
+        CALL BQPD_initialize( data%BQPD_data, control%BQPD_control,            &
+                              inform%BQPD_inform )
+
+!  == E04NQF ==
+
+      CASE ( 'e04nqf', 'E04NQF' )
+        CALL E04NQF_initialize( data%E04NQF_data, control%E04NQF_control,      &
+                                inform%E04NQF_inform )
+
 !  == OSQP ==
 
       CASE ( 'osqp', 'OSQP' )
-        control%OSQP_control%verbose = 0
-        control%OSQP_control%linsys_solver = 1
+        CALL OSQP_initialize( data%OSQP_data, control%OSQP_control,            &
+                              inform%OSQP_inform )
+        control%OSQP_control%settings%verbose = 0
+        control%OSQP_control%settings%linsys_solver = 1
       END SELECT
 
       inform%status = GALAHAD_ok
@@ -1012,7 +999,7 @@
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 14 ) = TRANSFER( 'SPARSE_BY_ROWS', A%type )
+!       A%type( 1 : 14 ) = TRANSFER( 'SPARSE_BY_COLUMS', A%type )
 !       A%val( : )   the values of the components of A, stored column by column
 !       A%row( : )   the row indices of the components of A
 !       A%ptr( : )   pointers to the start of each colum, and past the end of
@@ -1220,10 +1207,8 @@
 
 !  record matrix dimensions
 
-      prob%A%m = prob%m
-      prob%A%n = prob%n
-      prob%H%m = prob%n
-      prob%H%n = prob%n
+      prob%A%m = prob%m ; prob%A%n = prob%n
+      prob%H%m = prob%n ; prob%H%n = prob%n
 
       IF ( SMT_get( prob%H%type ) == 'NONE' .OR.                               &
            SMT_get( prob%H%type ) == 'ZERO' .OR.                               &
@@ -1626,6 +1611,40 @@
 !  == BPMPD ==
 
         CASE ( 'bpmpd', 'BPMPD' )
+          IF ( printi ) WRITE( control%out,                                    &
+              "( A, ' ** BPMPD solver used **' )" ) prefix
+          CALL BPMPD_solve( prob, data%BPMPD_data, control%BPMPD_control,      &
+                            inform%BPMPD_inform )
+
+!  record the exit status
+
+          SELECT CASE ( inform%BPMPD_inform%status )
+          CASE ( 0 )
+            inform%status = GALAHAD_ok
+          CASE ( - 1 )
+            inform%status = GALAHAD_error_allocate
+            inform%alloc_status = inform%BPMPD_inform%alloc_status
+            inform%bad_alloc = inform%BPMPD_inform%bad_alloc
+          CASE ( 1 )
+            inform%status = GALAHAD_error_unbounded
+          CASE ( 2, 4, 6 )
+            inform%status = GALAHAD_error_restrictions
+          CASE ( 3 )
+            inform%status = GALAHAD_error_primal_infeasible
+          CASE ( 5, 7 )
+            inform%status = GALAHAD_error_real_ws
+          CASE ( 8 )
+            inform%status = GALAHAD_error_max_iterations
+          CASE DEFAULT
+            inform%status = GALAHAD_error_bpmpd
+          END SELECT
+          inform%iter = inform%BPMPD_inform%iter
+          inform%obj = inform%BPMPD_inform%obj
+          IF ( inform%status /= GALAHAD_ok ) THEN
+            IF ( printi ) WRITE( control%out, "( A,                            &
+           &  ' BPMPD solve error status = ', I0 )" ) prefix, inform%status
+            GO TO 800
+          END IF
 
 !  == BQPD ==
 
@@ -1634,13 +1653,9 @@
               "( A, ' ** BQPD solver used **' )" ) prefix
           CALL BQPD_solve( prob, data%BQPD_data, control%BQPD_control,         &
                            inform%BQPD_inform )
-          inform%status = inform%BQPD_inform%status
-!          inform%obj = inform%BQPD_inform%info%obj_val + prob%f
-!write(6,*) ' qp: inform%obj ', inform%obj
-!          inform%primal_infeasibility = inform%BQPD_inform%info%prim_res
-!          inform%dual_infeasibility = inform%BQPD_inform%info%dual_res
-!          inform%complementary_slackness = inform%BQPD_inform%info%duality_gap
-          inform%iter = inform%BQPD_inform%iter
+          inform%status = inform%BPMPD_inform%status
+          inform%iter = inform%BPMPD_inform%iter
+          inform%obj = inform%BPMPD_inform%obj
           IF ( inform%status /= GALAHAD_ok ) THEN
             IF ( printi ) WRITE( control%out, "( A,                            &
            &  ' BQPD solve error status = ', I0 )" ) prefix, inform%status
@@ -1655,11 +1670,9 @@
 
         CASE ( 'e04nqf', 'E04NQF' )
           i = control%out
-          CALL QP_E04NQF_solve( prob, data%QP_E04NQF_data,                     &
-                                control%E04NQF_control,                        &
-                                inform%E04NQF_inform,                          &
-                                control%out, control%print_level )
-          inform%obj = prob%q + prob%f
+          CALL E04NQF_solve( prob, data%E04NQF_data, control%E04NQF_control,   &
+                             inform%E04NQF_inform )
+          inform%obj = inform%E04NQF_inform%obj
           inform%iter = inform%E04NQF_inform%iter
           inform%status = inform%E04NQF_inform%status
           IF ( inform%status /= GALAHAD_ok ) THEN
@@ -1677,15 +1690,14 @@
         CASE ( 'osqp', 'OSQP' )
           IF ( printi ) WRITE( control%out,                                    &
               "( A, ' ** OSQP solver used **' )" ) prefix
-          CALL QP_OSQP_solve( prob, data%QP_OSQP_data, control%OSQP_control,   &
-                              inform%OSQP_inform, control%out )
+          CALL OSQP_solve( prob, data%OSQP_data, control%OSQP_control,         &
+                           inform%OSQP_inform )
           inform%status = inform%OSQP_inform%status
-          inform%obj = inform%OSQP_inform%info%obj_val + prob%f
-!write(6,*) ' qp: inform%obj ', inform%obj
+          inform%iter = inform%OSQP_inform%iter
+          inform%obj = inform%OSQP_inform%obj
           inform%primal_infeasibility = inform%OSQP_inform%info%prim_res
           inform%dual_infeasibility = inform%OSQP_inform%info%dual_res
           inform%complementary_slackness = inform%OSQP_inform%info%duality_gap
-          inform%iter = inform%OSQP_inform%info%iter
           IF ( inform%status /= GALAHAD_ok ) THEN
             IF ( printi ) WRITE( control%out, "( A,                            &
            &  ' OSQP solve error status = ', I0 )" ) prefix, inform%status
@@ -1896,32 +1908,6 @@
 
       END SUBROUTINE QP_solve
 
-!!$!-*-*-*-*-*-*-   Q P _ B P M P D _ S O L V E   S U B R O U T I N E   -*-*-*-*-
-!!$
-!!$      SUBROUTINE QP_BPMPD_solve( prob, data, settings, info, out )
-!!$
-!!$!  solve the quadratic program using the BPMPD package
-!!$
-!!$!  A - by rows
-!!$!  H - lower triangle by rows
-!!$
-!!$!  dummy arguments
-!!$
-!!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-!!$      TYPE ( QP_BPMPD_data_type ), INTENT( INOUT ) :: data
-!!$      TYPE ( BPMPD_control_type ), INTENT( IN ) :: control
-!!$      TYPE ( BPMPD_inform_type ), INTENT( OUT ) :: inform
-!!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-!!$
-!!$!  local variables
-!!$
-!!$      RETURN
-!!$
-!!$!  End of QP_BPMPD_solve
-!!$
-!!$      END SUBROUTINE QP_BPMPD_solve
-!!$
-
 !!$!-*-*-*-*-   Q P _ c l a r a b e l _ S O L V E   S U B R O U T I N E   -*-*-*-*-
 !!$
 !!$      SUBROUTINE QP_clarabel_solve( prob, data, settings, info, out )
@@ -1943,594 +1929,6 @@
 !!$!  End of QP_clarabel_solve
 !!$
 !!$      END SUBROUTINE QP_clarabel_solve
-
-!-*-*-*-*-*-   Q P _ E 0 4 N Q F _ S O L V E   S U B R O U T I N E   -*-*-*-*-
-
-      SUBROUTINE QP_E04NQF_solve( prob, data, control, inform,                 &
-                                  out, print_level, spec )
-
-!  solve the quadratic program using the E04NQF NAG package
-
-!  A - by columns
-!  H - lower triangle by rows
-
-!  dummy arguments
-
-      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      TYPE ( QP_E04NQF_data_type ), INTENT( INOUT ) :: data
-      TYPE ( E04NQF_control_type ), INTENT( IN ) :: control
-      TYPE ( E04NQF_inform_type ), INTENT( OUT ) :: inform
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out, print_level
-      CHARACTER ( LEN = * ), OPTIONAL, INTENT( IN ) :: spec
-
-!  local variables
-
-      INTEGER ( KIND = ip_ ) :: n, m, np1, npm, nea, neh, summary_unit, status
-      INTEGER ( KIND = i4_ ) :: spec_unit, i
-      INTEGER ( KIND = ip_ ), PARAMETER :: len_c_w = 600
-      INTEGER ( KIND = ip_ ), PARAMETER :: len_r_w = 600
-      INTEGER ( KIND = ip_ ), PARAMETER :: len_i_w = 600
-      LOGICAL :: is_specfile
-      LOGICAL, PARAMETER :: summary = .FALSE.
-      LOGICAL, PARAMETER :: debug = .FALSE.
-      CHARACTER ( LEN = 8 ) :: c_dummy( 1 )
-      CHARACTER ( LEN = 80 ) :: array_name
-      TYPE ( CONVERT_control_type ) :: control_convert
-      TYPE ( CONVERT_inform_type ) :: inform_convert
-
-!  transfer bound data into the format required by E04NQF
-
-      n = prob%n ; m = prob%m ; np1 = n + 1 ; npm = n + m
-      IF ( data%new_structure ) THEN
-        array_name = 'e04nqf: data%B_l'
-        CALL SPACE_resize_array( npm, data%B_l, inform%status,                 &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-
-        array_name = 'e04nqf: data%B_u'
-        CALL SPACE_resize_array( npm, data%B_u, inform%status,                 &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-      END IF
-      data%B_l( : n ) = prob%X_l( : n )
-      data%B_l( np1 : npm ) = prob%C_l( : m )
-      data%B_u( : n ) = prob%X_u( : n )
-      data%B_u( np1 : npm ) = prob%C_u( : m )
-
-!  manipulate vectors so that they conform to E04NQF's structures
-
-      IF ( data%new_structure ) THEN
-        array_name = 'e04nqf: data%HELAST'
-        CALL SPACE_resize_array( npm, data%HELAST, inform%status,              &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-
-        array_name = 'e04nqf: data%HS'
-        CALL SPACE_resize_array( npm, data%HS, inform%status,                  &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-      END IF
-      data%HELAST( : npm ) = 3 ; data%HS( : npm ) = 0
-
-      IF ( data%new_structure ) THEN
-        array_name = 'e04nqf: data%X'
-        CALL SPACE_resize_array( npm, data%X, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-
-        array_name = 'e04nqf: data%Z'
-        CALL SPACE_resize_array( npm, data%Z, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-      END IF
-      data%X( : n ) = prob%X( : n )
-
-!  if necessary, convert the input A into by sparse-column format
-
-      data%original_a = SMT_get( prob%A%type ) == 'SPARSE_BY_COLUMNS'
-      IF ( data%original_a ) THEN
-        nea = prob%A%ptr( np1 ) - 1
-      ELSE
-        CALL CONVERT_to_sparse_column_format( prob%A, data%A, control_convert, &
-                                              inform_convert )
-        nea = data%A%ptr( np1 ) - 1
-      END IF
-
-!  record the sparse matrix H in E04NQF's user data structure, if necessary, 
-!  convert the input H into by sparse-row format
-
-      data%original_h = SMT_get( prob%H%type ) == 'SPARSE_BY_ROWS'
-      IF ( data%original_h ) THEN
-        neh = prob%H%ptr( np1 ) - 1
-        IF ( data%new_structure ) THEN
-          array_name = 'e04nqf: data%C_user'
-          CALL SPACE_resize_array( 1, data%C_user, inform%status,              &
-                 inform%alloc_status, array_name = array_name,                 &
-                 bad_alloc = inform%bad_alloc )
-          IF ( inform%status /= GALAHAD_ok ) RETURN
-
-          array_name = 'e04nqf: data%R_user'
-          CALL SPACE_resize_array( neh, data%R_user, inform%status,            &
-                 inform%alloc_status, array_name = array_name,                 &
-                 bad_alloc = inform%bad_alloc )
-          IF ( inform%status /= GALAHAD_ok ) RETURN
-
-          array_name = 'e04nqf: data%I_user'
-          CALL SPACE_resize_array( neh + np1, data%I_user, inform%status,      &
-                 inform%alloc_status, array_name = array_name,                 &
-                 bad_alloc = inform%bad_alloc )
-          IF ( inform%status /= GALAHAD_ok ) RETURN
-
-          data%R_user( : neh ) = prob%H%val( : neh )
-          data%I_user( : np1 ) = prob%H%ptr( : np1 )
-          data%I_user( n + 2 : neh + np1 ) = prob%H%col( : neh )
-        END IF
-      ELSE
-        CALL CONVERT_to_sparse_symmetric_row_format( prob%H, data%H,           &
-                                                     control_convert,          &
-                                                     inform_convert )
-!write(6,*) ' h_ptr ', data%H%ptr
-!write(6,*) ' h_col ', data%H%col
-!write(6,*) ' h_val ', data%H%val
-        neh = data%H%ptr( np1 ) - 1
-        IF ( data%new_structure ) THEN
-          array_name = 'e04nqf: data%C_user'
-          CALL SPACE_resize_array( 1, data%C_user, inform%status,              &
-                 inform%alloc_status, array_name = array_name,                 &
-                 bad_alloc = inform%bad_alloc )
-          IF ( inform%status /= GALAHAD_ok ) RETURN
-
-          array_name = 'e04nqf: data%R_user'
-          CALL SPACE_resize_array( neh, data%R_user, inform%status,            &
-                 inform%alloc_status, array_name = array_name,                 &
-                 bad_alloc = inform%bad_alloc )
-          IF ( inform%status /= GALAHAD_ok ) RETURN
-
-          array_name = 'e04nqf: data%I_user'
-          CALL SPACE_resize_array( neh + np1, data%I_user, inform%status,      &
-                 inform%alloc_status, array_name = array_name,                 &
-                 bad_alloc = inform%bad_alloc )
-          IF ( inform%status /= GALAHAD_ok ) RETURN
-
-          data%R_user( : neh ) = data%H%val( : neh )
-          data%I_user( : np1 ) = data%H%ptr( : np1 )
-          data%I_user( n + 2 : neh + np1 ) = data%H%col( : neh )
-        END IF
-      END IF
-
-!  provide space for E04NPF's communication arrays
-
-      IF ( data%new_structure ) THEN
-        array_name = 'e04nqf: data%C_w'
-        CALL SPACE_resize_array( len_c_w, data%C_w, inform%status,             &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-
-        array_name = 'e04nqf: data%I_w'
-        CALL SPACE_resize_array( len_i_w, data%I_w, inform%status,             &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-
-        array_name = 'e04nqf: data%R_w'
-        CALL SPACE_resize_array( len_r_w, data%R_w, inform%status,             &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-      END IF
-
-!  set up the internal structures
-
-      inform%ifail = - 1
-      CALL E04NPF( data%C_w, len_c_w, data%I_w, len_i_w, data%R_w, len_r_w,    &
-                   inform%ifail )
-      SELECT CASE( inform%ifail )
-      CASE ( - 199 )
-        WRITE( out,                                                            &
-          "( ' call to E04NQ failed, substitute dummy package called' )" )
-        inform%status = GALAHAD_unavailable_solver ; RETURN
-      CASE ( - 399 )
-        WRITE( out, "( ' call to E04NQ failed, licence key expired' )" )
-        inform%status = GALAHAD_no_licence ; RETURN
-      CASE ( - 999 )
-        GO TO 990
-      END SELECT
-
-      IF ( debug ) THEN
-        DO i = 1, len_i_w
-         WRITE( 29, * ) i, data%I_w( i )
-        END DO
-        DO i = 1, len_r_w
-          WRITE( 29, * ) i, data%R_w( i )
-        END DO
-        DO i = 1, len_c_w
-          WRITE( 29, * ) i, data%C_w( i )
-        END DO
-      END IF
-
-!  optionally, write a summary file
-
-      IF ( summary ) THEN
-        inform%ifail = - 1
-        summary_unit = 25
-        CALL X04ACF( summary_unit, 'e04nqf_summary.txt', 1, inform%ifail )
-        IF ( inform%ifail /= 0 ) THEN
-          WRITE( out, "( ' NAG X04ACF failed to open the summary file.',       &
-         & ' Error code: ', I0 )" ) inform%ifail
-          inform%status = GALAHAD_error_file ; RETURN
-        END IF
-      END IF
-
-!  record the unit for errr messages
-
-     i = control%error_file
-     CALL X04AAF( 1, i )
-
-!  read options file, if required and present
-
-      IF ( PRESENT( spec ) ) THEN 
-        INQUIRE( FILE = spec, EXIST = is_specfile )
-        IF ( is_specfile ) THEN
-          OPEN( NEWUNIT = spec_unit, FILE = spec, FORM = 'FORMATTED',          &
-                STATUS = 'OLD' )
-          REWIND( spec_unit )
-          inform%ifail = - 1
-          CALL E04NRF( spec_unit, data%C_w, data%I_w, data%R_w, inform%ifail )
-          IF ( inform%ifail /= 0 ) THEN
-            inform%status = GALAHAD_error_file ; RETURN
-          END IF
-          CLOSE( spec_unit )
-        END IF
-      END IF
-
-!  adjust the required output
-
-      IF ( debug ) THEN
-        DO i = 1, len_i_w
-         WRITE( 30, * ) i, data%I_w( i )
-        END DO
-        DO i = 1, len_r_w
-          WRITE( 30, * ) i, data%R_w( i )
-        END DO
-        DO i = 1, len_c_w
-          WRITE( 30, * ) i, data%C_w( i )
-        END DO
-      END IF
-
-      CALL E04NQF_transfer_control( control, data%C_w, len_c_w, data%I_w,      &
-                                    len_i_w, data%R_w, len_r_w, inform%ifail )
-
-      IF ( debug ) THEN
-        DO i = 1, len_i_w
-         WRITE( 31, * ) i, data%I_w( i )
-        END DO
-        DO i = 1, len_r_w
-          WRITE( 31, * ) i, data%R_w( i )
-        END DO
-        DO i = 1, len_c_w
-          WRITE( 31, * ) i, data%C_w( i )
-        END DO
-      END IF
-
-!  CALL E04NTF( 'Print File', 6, data%C_w, data%I_w, data%R_w, inform%ifail )
-!  CALL E04NTF( 'Print Level', 10, data%C_w, data%I_w, data%R_w, inform%ifail )
-!  CALL E04NTF( 'Print Frequency', 1, data%C_w, data%I_w, data%R_w,inform%ifail)
-
-!  solve the problem
-
-      inform%ns = 0
-      inform%ifail = - 1
-      IF ( data%original_a ) THEN
-        CALL E04NQF( 'C', E04NQ_qphx, m, n, nea, 1, n, n, 0, prob%f,           &
-                     prob%p_name( 1 : 8 ), prob%A%val, prob%A%row, prob%A%ptr, &
-                     data%B_l, data%B_u, prob%G, c_dummy,                      &
-                     data%HELAST, data%HS, data%X, prob%Y, data%Z, inform%ns,  &
-                     inform%ninf, inform%sinf, prob%q,                         &
-                     data%C_w, len_c_w, data%I_w, len_i_w, data%R_w, len_r_w,  &
-                     data%C_user, data%I_user, data%R_user, inform%ifail )
-      ELSE
-        CALL E04NQF( 'C', E04NQ_qphx, m, n, nea, 1, n, n, 0, prob%f,           &
-                     prob%p_name( 1 : 8 ), data%A%val, data%A%row, data%A%ptr, &
-                     data%B_l, data%B_u, prob%G, c_dummy,                      &
-                     data%HELAST, data%HS, data%X, prob%Y, data%Z, inform%ns,  &
-                     inform%ninf, inform%sinf, prob%q,                         &
-                     data%C_w, len_c_w, data%I_w, len_i_w, data%R_w, len_r_w,  &
-                     data%C_user, data%I_user, data%R_user, inform%ifail )
-      END IF
-
-!  record the solution
-
-      SELECT CASE ( inform%ifail )
-      CASE ( 0 )
-        prob%X( : n ) = data%X( : n )
-        prob%C( : m ) = data%X( np1 : npm )
-        prob%Z( : n ) = data%Z( : n )
-        inform%obj =  prob%q
-        inform%status = GALAHAD_ok
-      CASE ( 2, 8, 14 )
-        inform%status = GALAHAD_error_restrictions
-      CASE ( 3, 4 )
-        inform%status = GALAHAD_error_ill_conditioned
-      CASE ( 5 )
-        inform%status = GALAHAD_error_primal_infeasible
-      CASE ( 6 )
-        inform%status = GALAHAD_error_unbounded
-      CASE ( 7 )
-        inform%status = GALAHAD_error_max_iterations
-      CASE ( 9 )
-        inform%status = GALAHAD_error_factorization
-      CASE ( 10 )
-        inform%status = GALAHAD_no_progress
-      CASE ( 11 )
-        inform%status = GALAHAD_error_inertia
-      CASE ( 12, 13 )
-        inform%status = GALAHAD_error_allocate
-      CASE DEFAULT
-        inform%status = GALAHAD_error_naglib
-      END SELECT
-
-!     WRITE( 6, * ) ' x  ', prob%X( : n )
-!     CALL E04NQ_QPHX( n, prob%X, prob%X_l, 0, data%C_user, data%I_user, 
-!                      data%R_user )
-!     WRITE( 6, * ) ' Hx ', prob%X_l( : n )
-
-      IF ( debug ) THEN
-        DO i = 1, len_i_w
-         WRITE( 32, * ) i, data%I_w( i )
-        END DO
-        DO i = 1, len_r_w
-          WRITE( 32, * ) i, data%R_w( i )
-        END DO
-        DO i = 1, len_c_w
-          WRITE( 32, * ) i, data%C_w( i )
-        END DO
-      END IF
-
-!  core optimization status metrics
-
-!   i_w(421): total number of minor (active-set) Iterations
-!   i_w(422): total number of major iterations
-!   i_w(423): total number of fresh￼LU decompositions performed
-
-     inform%iter = data%I_w( 421 )
-     inform%major_iter = data%I_w( 422 )
-     inform%nfacts = data%I_w( 423 )
-
-!  memory requirements after an insufficient memory failure (alegedly)
-
-!   i_w(121): Minimum length required for cw (mincw)
-!   i_w(122): Minimum length required for iw (miniw)
-!   i_w(123): Minimum length required for rw (minrw)
-
-!  write details
-
-      IF ( print_level > 0 ) THEN
-        WRITE( out, "( /, 24('*'), ' GALAHAD QP statistics ', 24('*') //       &
-     &                 ' Package used            :  E04NQF',   /,              &
-     &                 ' Problem                 : ', A, /,                    &
-     &                 ' # variables             = ', I0, /,                   &
-     &                 ' # constraints           = ', I0, /,                   &
-     &                 ' Exit code               = ', I0, /,                   &
-     &                 ' Final f                 = ', G0 /,                    &
-     &                 ' Minor its               = ', I0, /,                   &
-     &                 ' Major its               = ', I0, /,                   &
-     &                 ' Factorizations          = ', I0, /,                   &
-     &                 67('*') / )" ) prob%p_name, n, m, inform%ifail, prob%q, &
-                           inform%iter, inform%major_iter, inform%nfacts
-!       IF ( inform%ifail == 0 ) &
-!         WRITE( out, "(' Optimal X = ', 7F9.2 )" ) prob%X( : n )
-      END IF
-
-!  write summary data if required
-
-      IF ( summary ) THEN
-        inform%ifail = - 1
-        CALL X04ADF( summary_unit, inform%ifail ) 
-        IF ( inform%ifail /= 0 ) THEN
-          WRITE( out, "( ' NAG X04ACF failed to close the summary file.',      &
-         & ' Error code: ', I0 )" ) inform%ifail
-          IF ( status /= GALAHAD_error_naglib ) inform%status = GALAHAD_error_io
-          RETURN
-        END IF
-      END IF
-
-!  ensure that the existing structure remains for subsequent calls until
-!  QP_E04NQF_terminate removes it
-
-      data%new_structure = .FALSE.
-
-      RETURN
-
-  990 CONTINUE
-      inform%status = GALAHAD_error_allocate
-      RETURN
-
-!  internal subroutine
-
-      CONTAINS
-
-         SUBROUTINE E04NQ_qphx( ncolh, X, HX, nstate, C_user, I_user, R_user )
-         USE GALAHAD_KINDS_precision
-
-!  given x, compute hx = H*x
-
-!  dummy arguments
-
-         INTEGER ( KIND = ip_ ), INTENT ( IN ) :: ncolh, nstate
-         INTEGER ( KIND = ip_ ), INTENT ( INOUT ) :: I_user( * )
-         REAL ( KIND = rp_ ), INTENT( IN ) :: X( ncolh )
-         REAL ( KIND = rp_ ), INTENT( INOUT ) :: R_user( * )
-         REAL ( KIND = rp_ ), INTENT( OUT ) :: HX( ncolh )
-         CHARACTER ( len = 8 ), INTENT( INOUT ) :: C_user( * )
-
-!  local variables
-
-         INTEGER ( KIND = ip_ ) :: i, j, l, n_row
-
-!  initialize 
-
-         n_row = ncolh + 1
-         HX = 0.0_rp_
-
-!  loop over the columns of H, remembering that only one triangle of H is stored
-
-         DO j = 1, ncolh
-!          write(6,*) ' col, start, end ', j,  I_user( j ), I_user( j + 1 ) - 1 
-           DO l = I_user( j ), I_user( j + 1 ) - 1 
-             i = I_user( n_row + l )
-!            write(6,*) ' row ', i
-             HX( i ) = HX( i ) + R_user( l ) * X( j )
-             IF ( i /= j ) HX( j ) = HX( j ) + R_user( l ) * X( i )
-           END DO
-         END DO
-
-         RETURN
-
-!  end of subroutine E04NQ_qphx
-
-        END SUBROUTINE E04NQ_qphx
-
-!  End of QP_E04NQF_solve
-
-      END SUBROUTINE QP_E04NQF_solve
-
-!-*-*-*-   Q P _ E 0 4 N Q F _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-
-
-      SUBROUTINE QP_E04NQF_terminate( data, inform )
-
-!  clean up after the E04NQF solve
-
-!  dummy arguments
-
-      TYPE ( QP_E04NQF_data_type ), INTENT( INOUT ) :: data
-      TYPE ( E04NQF_inform_type ), INTENT( INOUT ) :: inform
-
-!  local variable
-
-      CHARACTER ( LEN = 80 ) :: array_name
-
-!  deallocate workspace
-
-      array_name = 'e04nqf: data%B_l'
-      CALL SPACE_dealloc_array( data%B_l, inform%status,                       &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'e04nqf: data%B_u'
-      CALL SPACE_dealloc_array( data%B_u, inform%status,                       &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'e04nqf: data%HELAST'
-      CALL SPACE_dealloc_array( data%HELAST, inform%status,                    &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'e04nqf: data%HS'
-      CALL SPACE_dealloc_array( data%HS, inform%status,                        &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'e04nqf: data%X'
-      CALL SPACE_dealloc_array( data%X, inform%status,                         &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'e04nqf: data%Z'
-      CALL SPACE_dealloc_array( data%Z, inform%status,                         &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'e04nqf: data%C_w'
-      CALL SPACE_dealloc_array( data%C_w, inform%status,                       &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'e04nqf: data%I_w'
-      CALL SPACE_dealloc_array( data%I_w, inform%status,                       &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'e04nqf: data%R_w'
-      CALL SPACE_dealloc_array( data%R_w, inform%status,                       &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'e04nqf: data%C_user'
-      CALL SPACE_dealloc_array( data%C_user, inform%status,                    &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'e04nqf: data%I_user'
-      CALL SPACE_dealloc_array( data%I_user, inform%status,                    &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'e04nqf: data%R_user'
-      CALL SPACE_dealloc_array( data%R_user, inform%status,                    &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      IF ( .NOT. data%original_a ) THEN
-        array_name = 'e04nqf: data%A%ptr'
-        CALL SPACE_dealloc_array( data%A%ptr, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-
-        array_name = 'e04nqf: data%A%row'
-        CALL SPACE_dealloc_array( data%A%row, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-
-        array_name = 'e04nqf: data%A%val'
-        CALL SPACE_dealloc_array( data%A%val, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-
-        array_name = 'e04nqf: data%A%type'
-        CALL SPACE_dealloc_array( data%A%type, inform%status,                  &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-      END IF
-
-      IF ( .NOT. data%original_h ) THEN
-        array_name = 'e04nqf: data%H%ptr'
-        CALL SPACE_dealloc_array( data%H%ptr, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-
-        array_name = 'e04nqf: data%H%row'
-        CALL SPACE_dealloc_array( data%H%row, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-
-        array_name = 'e04nqf: data%H%val'
-        CALL SPACE_dealloc_array( data%H%val, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-
-        array_name = 'e04nqf: data%H%type'
-        CALL SPACE_dealloc_array( data%H%type, inform%status,                  &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-      END IF
-
-!  ensure that the structure will be re-initialised on any subsequent call
-
-      data%new_structure = .TRUE.
-
-      RETURN
-
-!  End of QP_E04NQF_terminate
-
-      END SUBROUTINE QP_E04NQF_terminate
 
 !-*-*-*-*-*-*-   Q P _ H i G H S _ S O L V E   S U B R O U T I N E   -*-*-*-*-
 
@@ -2557,302 +1955,6 @@
 !!$
 !!$      END SUBROUTINE QP_HiGHS_solve
 
-!-*-*-*-*-*-*-   Q P _ O S Q P _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-
-
-      SUBROUTINE QP_OSQP_solve( prob, data, settings, inform, out )
-
-!  solve the quadratic program using the OSQP package
-
-!  A - by columns
-!  H - upper triangle by columns (=> lower triangle by rows)
-
-!  dummy arguments
-
-      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      TYPE ( QP_OSQP_data_type ), INTENT( INOUT ) :: data
-      TYPE ( OSQP_settings_type ), INTENT( IN ) :: settings
-      TYPE ( QP_OSQP_inform_type ), INTENT( OUT ) :: inform
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
-
-!  local variables
-
-      INTEGER ( KIND = ip_ ) :: i, j, k, l, m, n, n_bnds, status
-!     INTEGER ( KIND = ip_ ) :: a_ne, h_ne
-      TYPE ( CONVERT_control_type ) :: control_convert
-      TYPE ( CONVERT_inform_type ) :: inform_convert
-      CHARACTER ( LEN = SIZE( inform%info%status ) ) :: info_status
-      CHARACTER ( LEN = 80 ) :: array_name
-
-!  transfer the data into OSQP's QP format
-
-      n = prob%n ; m = prob%m
-      n_bnds = COUNT( prob%X_l > -infinity .OR. prob%X_u < infinity )
-      data%m = m + n_bnds
-      data%a_ne = prob%a%ne + n_bnds
-
-      array_name = 'osqp: data%A_val'
-      CALL SPACE_resize_array( data%a_ne, data%A_val, inform%status,           &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'osqp: data%A_row'
-      CALL SPACE_resize_array( data%a_ne, data%A_row, inform%status,           &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'osqp: data%A_ptr'
-      CALL SPACE_resize_array( n + 1, data%A_ptr, inform%status,               &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'osqp: data%B_l'
-      CALL SPACE_resize_array( data%m, data%B_l, inform%status,                &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'osqp: data%B_u'
-      CALL SPACE_resize_array( data%m, data%B_u, inform%status,                &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'osqp: data%Y'
-      CALL SPACE_resize_array( data%m, data%Y, inform%status,                  &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-!  if necessary, convert the input A into by sparse-column format
-
-      data%original_a = SMT_get( prob%A%type ) == 'SPARSE_BY_COLUMNS'
-      IF ( .NOT. data%original_a )                                             &
-        CALL CONVERT_to_sparse_column_format( prob%A, data%A, control_convert, &
-                                              inform_convert )
-
-!  reset problem constraint data (NB 1-based integer index arrays)
-
-      data%B_l( : m ) = prob%C_l( : m ) ; data%B_u( : m ) = prob%C_u( : m )
-      l = 1 ; k = m
-      DO j = 1, n
-        data%A_ptr( j ) = l
-        IF ( data%original_a ) THEN
-          DO i = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1
-            data%A_row( l ) = prob%A%row( i )
-            data%A_val( l ) = prob%A%val( i )
-            l = l + 1
-          END DO
-        ELSE
-          DO i = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
-            data%A_row( l ) = data%A%row( i )
-            data%A_val( l ) = data%A%val( i )
-            l = l + 1
-          END DO
-        END IF 
-        IF ( prob%X_l( j ) > - infinity .OR. prob%X_u( j ) < infinity ) THEN
-          k = k + 1
-          data%A_row( l ) = k
-          data%A_val( l ) = 1.0_rp_
-          l = l + 1
-          data%B_l( k ) = prob%X_l( j ) ; data%B_u( k ) = prob%X_u( j )
-        END IF
-      END DO
-      data%A_ptr( n + 1 ) = l
-
-!  if necessary, convert the input H into by sparse-row format
-
-      data%original_h = SMT_get( prob%H%type ) == 'SPARSE_BY_ROWS'
-      IF ( .NOT. data%original_h )                                             &
-        CALL CONVERT_to_sparse_symmetric_row_format( prob%H, data%H,           &
-                                                     control_convert,          &
-                                                     inform_convert )
-!write(6,*) ' h_ptr ', data%H%ptr
-!write(6,*) ' h_col ', data%H%col
-!write(6,*) ' h_val ', data%H%val
-
-!  establish the control settings
-
-      CALL OSQP_settings( settings, data%OSQP_data, status )
-      IF ( status /= 0 ) THEN
-        WRITE( out, "( ' OSQP_settings status = ', I0, ' stopping' )" ) status
-        STOP
-      END IF
-
-!  solve the problem
-
-      IF ( data%original_h ) THEN
-        CALL OSQP_solve( n, data%m, prob%H%ptr, prob%H%col, prob%H%val,        &
-                         prob%G, data%A_ptr, data%A_row, data%A_val,           &
-                         data%B_l, data%B_u, prob%X, data%Y,                   &
-                         inform%info, data%OSQP_data, status )
-      ELSE
-        CALL OSQP_solve( n, data%m, data%H%ptr, data%H%col, data%H%val,        &
-                         prob%G, data%A_ptr, data%A_row, data%A_val,           &
-                         data%B_l, data%B_u, prob%X, data%Y,                   &
-                         inform%info, data%OSQP_data, status )
-      END IF 
-
-!  record the exit status
-
-      SELECT CASE ( inform%info%status_val )
-      CASE ( 1 )
-        inform%status = GALAHAD_ok
-      CASE ( 2 )
-        inform%status = GALAHAD_no_progress
-      CASE ( 3 )
-        inform%status = GALAHAD_error_primal_infeasible
-      CASE ( 7 )
-        inform%status = GALAHAD_error_max_iterations
-      CASE ( 9 )
-        inform%status = GALAHAD_error_inertia
-      CASE DEFAULT
-        inform%status = GALAHAD_error_osqp
-      END SELECT
-
-!  recover the solution
-
-      IF ( status == 0 ) THEN
-        prob%Y( : m ) = data%Y( : m )
-        k = m
-        DO j = 1, n
-          IF ( prob%X_l( j ) > - infinity .OR. prob%X_u( j ) < infinity ) THEN
-            k = k + 1
-            prob%Z( j ) = data%Y( k )
-          ELSE
-            prob%Z( j ) = zero
-          END IF
-        END DO
-        prob%q = inform%info%obj_val + prob%f
-
-!  print details, if required
-
-        IF ( out > 0 ) THEN
-          WRITE( out, "( /, ' OSQP - Fortran interface' )" )
-          WRITE( out, "( ' objective function:', ES16.8 )" ) prob%q
-          WRITE( out, "( ' primal & dual residuals:', 2ES16.8 )" )             &
-            inform%info%prim_res, inform%info%dual_res
-          WRITE( out, "( ' x:', ( 5ES16.8 ) )" ) prob%X
-          WRITE( out, "( ' y:', ( 5ES16.8 ) )" ) prob%Y
-          WRITE( out, "( ' z:', ( 5ES16.8 ) )" ) prob%Z
-          WRITE( out, "( 1X, I0, ' iterations' ) ") inform%info%iter
-          WRITE( out, "( ' status ', A , ' (status value = ', I0, ')' )" )     &
-              TRIM( TRANSFER( inform%info%status, info_status ) ),             &
-              inform%info%status_val
-        END IF
-      ELSE
-        IF ( inform%info%status_val /= 1 .AND. out > 0 ) THEN
-          WRITE( out, "( ' Error. Problem not solved to optimality' )" )
-        END IF
-      END IF
-
-      RETURN
-
-!  End of QP_OSQP_solve
-
-      END SUBROUTINE QP_OSQP_solve
-
-!-*-*-*-*-   Q P _ O S Q P _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-
-
-      SUBROUTINE QP_OSQP_terminate( data, inform )
-
-!  clean up after the OSQP solve
-
-!  dummy arguments
-
-      TYPE ( QP_OSQP_data_type ), INTENT( INOUT ) :: data
-      TYPE ( QP_OSQP_inform_type ), INTENT( INOUT ) :: inform
-
-!  local variable
-
-      CHARACTER ( LEN = 80 ) :: array_name
-
-!  clean up internal osqp data
-
-      CALL OSQP_cleanup( data%OSQP_data, inform%status )
-
-!  deallocate arrays
-
-      array_name = 'osqp: data%A_val'
-      CALL SPACE_dealloc_array( data%A_val, inform%status,                     &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'osqp: data%A_row'
-      CALL SPACE_dealloc_array( data%A_row, inform%status,                     &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'osqp: data%A_ptr'
-      CALL SPACE_dealloc_array( data%A_ptr, inform%status,                     &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'osqp: data%B_l'
-      CALL SPACE_dealloc_array( data%B_l, inform%status,                       &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'osqp: data%B_u'
-      CALL SPACE_dealloc_array( data%B_u, inform%status,                       &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      array_name = 'osqp: data%Y'
-      CALL SPACE_dealloc_array( data%Y, inform%status,                         &
-             inform%alloc_status, array_name = array_name,                     &
-             bad_alloc = inform%bad_alloc )
-
-      IF ( .NOT. data%original_a ) THEN
-        array_name = 'osqp: data%A%ptr'
-        CALL SPACE_dealloc_array( data%A%ptr, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-
-        array_name = 'osqp: data%A%row'
-        CALL SPACE_dealloc_array( data%A%row, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-
-        array_name = 'osqp: data%A%val'
-        CALL SPACE_dealloc_array( data%A%val, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-
-        array_name = 'osqp: data%A%type'
-        CALL SPACE_dealloc_array( data%A%type, inform%status,                  &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-      END IF
-
-      IF ( .NOT. data%original_h ) THEN
-        array_name = 'osqp: data%H%ptr'
-        CALL SPACE_dealloc_array( data%H%ptr, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-
-        array_name = 'osqp: data%H%row'
-        CALL SPACE_dealloc_array( data%H%row, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-
-        array_name = 'osqp: data%H%val'
-        CALL SPACE_dealloc_array( data%H%val, inform%status,                   &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-
-        array_name = 'osqp: data%H%type'
-        CALL SPACE_dealloc_array( data%H%type, inform%status,                  &
-               inform%alloc_status, array_name = array_name,                   &
-               bad_alloc = inform%bad_alloc )
-      END IF
-      RETURN
-
-!  End of QP_OSQP_terminate
-
-      END SUBROUTINE QP_OSQP_terminate
 
 !-*-*-*-*-*-*-   Q P _ Q P A L M _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-
 
@@ -2866,9 +1968,9 @@
 !!$!  dummy arguments
 !!$
 !!$      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-!!$      TYPE ( QP_OSQP_data_type ), INTENT( INOUT ) :: data
-!!$      TYPE ( OSQP_control_type ), INTENT( IN ) :: control
-!!$      TYPE ( OSQP_inform_type ), INTENT( OUT ) :: inform
+!!$      TYPE ( QP_QPALM_data_type ), INTENT( INOUT ) :: data
+!!$      TYPE ( QPALM_control_type ), INTENT( IN ) :: control
+!!$      TYPE ( QPALM_inform_type ), INTENT( OUT ) :: inform
 !!$      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 !!$
 !!$!  local variables
@@ -3050,12 +2152,24 @@
 !  == BPMPD ==
 
       CASE ( 'bpmpd', 'BPMPD' )
+        CALL BPMPD_terminate( data%BPMPD_data, control%BPMPD_control,          &
+                             inform%BPMPD_inform )
+        IF ( inform%BPMPD_inform%status == GALAHAD_error_deallocate ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%BPMPD_inform%alloc_status
+          inform%bad_alloc = inform%BPMPD_inform%bad_alloc
+        END IF
 
 !  == BQPD ==
 
       CASE ( 'bqpd', 'BQPD' )
         CALL BQPD_terminate( data%BQPD_data, control%BQPD_control,             &
                              inform%BQPD_inform )
+        IF ( inform%BQPD_inform%status == GALAHAD_error_deallocate ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%BQPD_inform%alloc_status
+          inform%bad_alloc = inform%BQPD_inform%bad_alloc
+        END IF
 
 !  == Clarabel ==
 
@@ -3064,7 +2178,13 @@
 !  == E04NQF ==
 
       CASE ( 'e04nqf', 'E04NQF' )
-        CALL QP_E04NQF_terminate( data%QP_E04NQF_data, inform%E04NQF_inform )
+        CALL E04NQF_terminate( data%E04NQF_data, control%E04NQF_control,       &
+                               inform%E04NQF_inform )
+        IF ( inform%E04NQF_inform%status == GALAHAD_error_deallocate ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%E04NQF_inform%alloc_status
+          inform%bad_alloc = inform%E04NQF_inform%bad_alloc
+        END IF
 
 !  == HiGHS ==
 
@@ -3073,7 +2193,13 @@
 !  == OSQP ==
 
       CASE ( 'osqp', 'OSQP' )
-        CALL QP_OSQP_terminate( data%QP_OSQP_data, inform%OSQP_inform )
+        CALL OSQP_terminate( data%OSQP_data, control%OSQP_control,             &
+                             inform%OSQP_inform )
+        IF ( inform%OSQP_inform%status == GALAHAD_error_deallocate ) THEN
+          inform%status = GALAHAD_error_deallocate
+          inform%alloc_status = inform%OSQP_inform%alloc_status
+          inform%bad_alloc = inform%OSQP_inform%bad_alloc
+        END IF
 
 !  == QPALM ==
 

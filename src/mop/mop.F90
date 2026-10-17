@@ -88,8 +88,8 @@
 !            is a scalar variable of type logical.
 !            Possible values are:
 !
-!               transpose = .TRUE.      r <- alpha * A^T * x  + beta * x
-!               transpose = .FALSE.     r <- alpha * A * x + beta * x
+!               transpose = .TRUE.      r := alpha * A^T * x  + beta * r
+!               transpose = .FALSE.     r := alpha * A * x + beta * r
 !
 !            If transpose is not present, then "not-transposed" is assumed.
 !

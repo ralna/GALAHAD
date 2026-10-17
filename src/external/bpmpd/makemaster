@@ -9,19 +9,19 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  Libraries used
 
-LIBS = -lgalahad $(BPMPD) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(HSL) $(BPMPD) $(LAPACK) $(BLAS)
 NLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
 
 BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
-BPMPDS = $(BASICSZ) $(BPLGS)(bpmpd.o)
-BPMPDD = $(BASICSZ) $(BPLGD)(bpmpd.o)
-BPMPDQ = $(BASICSZ) $(BPLGQ)(bpmpd.o)
-BPMPDS64 = $(BASICSZ) $(BPLGS64)(bpmpd.o)
-BPMPDD64 = $(BASICSZ) $(BPLGD64)(bpmpd.o)
-BPMPDQ64 = $(BASICSZ) $(BPLGQ64)(bpmpd.o)
+BPMPDS = $(BASICSZ) $(BPLGS)(bpmpd.o) $(LGS)(bpmpd.o)
+BPMPDD = $(BASICSZ) $(BPLGD)(bpmpd.o) $(LGD)(bpmpd.o)
+BPMPDQ = $(BASICSZ) $(BPLGQ)(bpmpd.o) $(LGQ)(bpmpd.o)
+BPMPDS64 = $(BASICSZ) $(BPLGS64)(bpmpd.o) $(LGS64)(bpmpd.o)
+BPMPDD64 = $(BASICSZ) $(BPLGD64)(bpmpd.o) $(LGD64)(bpmpd.o)
+BPMPDQ64 = $(BASICSZ) $(BPLGQ64)(bpmpd.o) $(LGQ64)(bpmpd.o)
 
 BPMPDST = $(BPMPDS) $(OBJ)/bpmpdt.o
 BPMPDDT = $(BPMPDD) $(OBJ)/bpmpdt.o
@@ -110,7 +110,7 @@ lapack_inter:
 
 #  individual compilations
 
-bpmpd.o: $(BPLG)(bpmpd.o)
+bpmpd_dummy.o: $(BPLG)(bpmpd.o)
 
 $(BPLG)(bpmpd.o): ../../dum/bpmpd.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy bpmpd"
@@ -118,6 +118,19 @@ $(BPLG)(bpmpd.o): ../../dum/bpmpd.F90
 	cd $(OBJ); $(FORTRAN) -o bpmpd.o $(FFLAGS) bpmpd.F90
 	cd $(OBJ); $(BPARR) bpmpd.o ; $(RM) bpmpd.F90 bpmpd.o
 	$(RANLIB) $(BPLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+bpmpd.o: $(LG)(bpmpd.o)
+
+$(LG)(bpmpd.o): ../bpmpd/bpmpd.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bpmpd  "
+	$(CP) ../bpmpd/bpmpd.F90 $(OBJ)/bpmpd.F90
+	cd $(OBJ); $(FORTRAN) -o bpmpd.o $(FFLAGS) bpmpd.F90
+	cd $(OBJ); $(ARR) bpmpd.o ; $(RM) bpmpd.F90 bpmpd.o
+	$(RMARFILE) qp_$(PRECIS).o
+	$(RMOBFILE) bpmpdt.o
+	$(MVMODS)
 	@printf '[ OK ]\n'
 
 #  test programs

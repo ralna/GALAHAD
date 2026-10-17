@@ -9,19 +9,19 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  Libraries used
 
-LIBS = -lgalahad $(OSQP) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(HSL) $(OSQP) $(LAPACK) $(BLAS)
 NLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
 
 BASICZ = blas lapack symbols dummy blas_inter lapack_inter
 
-OSQPS = $(BASICSZ) $(OSLGS)(osqp.o)
-OSQPD = $(BASICSZ) $(OSLGD)(osqp.o)
-OSQPQ = $(BASICSZ) $(OSLGQ)(osqp.o)
-OSQPS64 = $(BASICSZ) $(OSLGS64)(osqp.o)
-OSQPD64 = $(BASICSZ) $(OSLGD64)(osqp.o)
-OSQPQ64 = $(BASICSZ) $(OSLGQ64)(osqp.o)
+OSQPS = $(BASICSZ) $(OSLGS)(osqp.o) $(LGS)(osqp.o)
+OSQPD = $(BASICSZ) $(OSLGD)(osqp.o) $(LGD)(osqp.o)
+OSQPQ = $(BASICSZ) $(OSLGQ)(osqp.o) $(LGQ)(osqp.o)
+OSQPS64 = $(BASICSZ) $(OSLGS64)(osqp.o) $(LGS64)(osqp.o)
+OSQPD64 = $(BASICSZ) $(OSLGD64)(osqp.o) $(LGD64)(osqp.o)
+OSQPQ64 = $(BASICSZ) $(OSLGQ64)(osqp.o) $(LGQ64)(osqp.o)
 
 OSQPST = $(OSQPS) $(OBJ)/osqpt.o
 OSQPDT = $(OSQPD) $(OBJ)/osqpt.o
@@ -30,12 +30,26 @@ OSQPS64T = $(OSQPD64) $(OBJ)/osqpt.o
 OSQPD64T = $(OSQPD64) $(OBJ)/osqpt.o
 OSQPQ64T = $(OSQPQ64) $(OBJ)/osqpt.o
 
+OLDOSQPST = $(OSQPS) $(OBJ)/old_osqpt.o
+OLDOSQPDT = $(OSQPD) $(OBJ)/old_osqpt.o
+OLDOSQPQT = $(OSQPQ) $(OBJ)/old_osqpt.o
+OLDOSQPS64T = $(OSQPD64) $(OBJ)/old_osqpt.o
+OLDOSQPD64T = $(OSQPD64) $(OBJ)/old_osqpt.o
+OLDOSQPQ64T = $(OSQPQ64) $(OBJ)/old_osqpt.o
+
 ROSQPST = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
 ROSQPDT = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
 ROSQPQT = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
 ROSQPS64T = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
 ROSQPD64T = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
 ROSQPQ64T = $(OBJ)/osqpt.o -L$(OBJ) $(LIBS)
+
+ROLDOSQPST = $(OBJ)/old_osqpt.o -L$(OBJ) $(LIBS)
+ROLDOSQPDT = $(OBJ)/old_osqpt.o -L$(OBJ) $(LIBS)
+ROLDOSQPQT = $(OBJ)/old_osqpt.o -L$(OBJ) $(LIBS)
+ROLDOSQPS64T = $(OBJ)/old_osqpt.o -L$(OBJ) $(LIBS)
+ROLDOSQPD64T = $(OBJ)/old_osqpt.o -L$(OBJ) $(LIBS)
+ROLDOSQPQ64T = $(OBJ)/old_osqpt.o -L$(OBJ) $(LIBS)
 
 #  osqp
 
@@ -62,6 +76,15 @@ osqpdt: $(OSQPDT)
 	cd ../osqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_osqp \
                          $(ROSQPDT)
 #	- ../osqp/run_osqp > ../osqp/osqpdt.output 2>&1
+#	cat ../osqp/osqpdt.output
+	- ../osqp/run_osqp
+	rm ../osqp/run_osqp
+
+old_osqpdt: $(OLDOSQPDT)
+	echo " Exhaustive test of subroutine interface to osqp"
+	cd ../osqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_osqp \
+                         $(ROLDOSQPDT)
+#	- ../osqp/run_osqp > ../osqp/old_osqpdt.output 2>&1
 #	cat ../osqp/osqpdt.output
 	- ../osqp/run_osqp
 	rm ../osqp/run_osqp
@@ -119,7 +142,7 @@ lapack_inter:
 
 #  individual compilations
 
-osqp.o: $(OSLG)(osqp.o)
+osqp_dummy.o: $(OSLG)(osqp.o)
 
 $(OSLG)(osqp.o): ../../dum/osqp.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy osqp"
@@ -127,6 +150,17 @@ $(OSLG)(osqp.o): ../../dum/osqp.F90
 	cd $(OBJ); $(FORTRAN) -o osqp.o $(FFLAGS) osqp.F90
 	cd $(OBJ); $(OSARR) osqp.o ; $(RM) osqp.F90 osqp.o
 	$(RANLIB) $(OSLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+osqp.o: $(LG)(osqp.o)
+
+$(LG)(osqp.o): ../osqp/osqp.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "osqp"
+	$(CP) ../osqp/osqp.F90 $(OBJ)/osqp.F90
+	cd $(OBJ); $(FORTRAN) -o osqp.o $(FFLAGS) osqp.F90
+	cd $(OBJ); $(ARR) osqp.o ; $(RM) osqp.F90 osqp.o
+	$(RANLIB) $(LG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -138,6 +172,14 @@ $(OBJ)/osqpt.o: ../osqp/osqpt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "osqpt  "
 	$(CP) ../osqp/osqpt.F90 $(OBJ)/osqpt.F90
 	cd $(OBJ) ; $(FORTRAN) -o osqpt.o $(FFLAGSS) osqpt.F90
+	@printf '[ OK ]\n'
+
+old_osqpt.o: $(OBJ)/old_osqpt.o
+
+$(OBJ)/old_osqpt.o: ../osqp/old_osqpt.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "old_osqpt  "
+	$(CP) ../osqp/old_osqpt.F90 $(OBJ)/old_osqpt.F90
+	cd $(OBJ) ; $(FORTRAN) -o old_osqpt.o $(FFLAGSS) old_osqpt.F90
 	@printf '[ OK ]\n'
 
 #  book keeping

@@ -1,15 +1,19 @@
 ! THIS VERSION: GALAHAD 5.6 - 2026-10-06 AT 07:45 GMT
-! Nick Gould (nick.gould@stfc.ac.uk)
 
 #include "galahad_modules.h"
 
-PROGRAM GALAHAD_BQPD_example
+PROGRAM GALAHAD_BQPD_test
+
+!  main program to test the GALAHAD interface to Roger Fletcher's convex
+!  QP package BQPD
+
+!  Nick Gould, October 2026
 
   USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
   USE GALAHAD_BQPD_precision, ONLY: BQPD_data_type, BQPD_control_type,         &
                                     BQPD_inform_type, BQPD_initialize,         &
                                     BQPD_solve, BQPD_terminate,                &
-                                    QPT_problem_type, SMT_PUT
+                                    QPT_problem_type, SMT_put
   IMPLICIT NONE
 
 !  local variables
@@ -66,7 +70,7 @@ PROGRAM GALAHAD_BQPD_example
     WRITE( 6, "( ' x:', ( 5ES16.8 ) )" ) prob%X
     WRITE( 6, "( ' y:', ( 5ES16.8 ) )" ) prob%Y( : m )
     WRITE( 6, "( ' z:', ( 5ES16.8 ) )" ) prob%Z( : n )
-    WRITE( 6, "( 1X, I0, ' iterations, status = ' I0 ) ")                      &
+    WRITE( 6, "( 1X, I0, ' iterations, status = ', I0 ) ")                     &
       inform%iter, inform%status
 
 !  unsucessful solve
@@ -79,10 +83,10 @@ PROGRAM GALAHAD_BQPD_example
 
   CALL BQPD_terminate( data, control, inform )
   DEALLOCATE( prob%X_l, prob%X_u, prob%C_l, prob%C_u, prob%X, prob%Y, prob%Z,  &
-              STAT = status )
+              prob%G, STAT = status )
   DEALLOCATE( prob%A%type, prob%A%ptr, prob%A%col, prob%A%val, STAT = status )
   DEALLOCATE( prob%H%type, prob%H%val, prob%H%row, prob%H%col, STAT = status )
   STOP
 
-END PROGRAM GALAHAD_BQPD_example
+END PROGRAM GALAHAD_BQPD_test
 

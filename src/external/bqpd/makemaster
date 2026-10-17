@@ -110,7 +110,7 @@ lapack_inter:
 
 #  individual compilations
 
-bqpd_f77.o: $(BQLG)(bqpd.o)
+bqpd_dummy.o: $(BQLG)(bqpd.o)
 
 $(BQLG)(bqpd.o): ../../dum/bqpd.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy bqpd"
@@ -118,6 +118,7 @@ $(BQLG)(bqpd.o): ../../dum/bqpd.F90
 	cd $(OBJ); $(FORTRAN) -o bqpd.o $(FFLAGS) bqpd.F90
 	cd $(OBJ); $(BQARR) bqpd.o ; $(RM) bqpd.F90 bqpd.o
 	$(RANLIB) $(BQLG)
+	$(MVMODS)
 	@printf '[ OK ]\n'
 
 bqpd.o: $(LG)(bqpd.o)
@@ -129,6 +130,7 @@ $(LG)(bqpd.o): ../bqpd/bqpd.F90
 	cd $(OBJ); $(ARR) bqpd.o ; $(RM) bqpd.F90 bqpd.o
 	$(RMOBFILE) qp_$(PRECIS).o
 	$(RMOBFILE) qpt_$(PRECIS).o
+	$(MVMODS)
 	@printf '[ OK ]\n'
 
 bqpd_gdotx.o: $(LG)(bqpd_gdotx.o)
@@ -140,6 +142,7 @@ $(LG)(bqpd_gdotx.o): ../bqpd/bqpd_gdotx.F90
 	cd $(OBJ); $(ARR) bqpd_gdotx.o ; $(RM) bqpd_gdotx.F90 bqpd_gdotx.o
 	$(RMOBFILE) qp_$(PRECIS).o
 	$(RMOBFILE) qpt_$(PRECIS).o
+	$(MVMODS)
 	@printf '[ OK ]\n'
 
 #  test programs

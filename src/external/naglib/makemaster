@@ -9,7 +9,7 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  Libraries used
 
-LIBS = -lgalahad $(NAGLIB) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(HSL) $(NAGLIB) $(LAPACK) $(BLAS)
 NLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation agenda
@@ -110,7 +110,7 @@ lapack_inter:
 
 #  individual compilations
 
-naglib.o: $(NLG)(naglib.o)
+naglib_dummy.o: $(NLG)(naglib.o)
 
 $(NLG)(naglib.o): ../../dum/naglib.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy naglib"
@@ -118,6 +118,7 @@ $(NLG)(naglib.o): ../../dum/naglib.F90
 	cd $(OBJ); $(FORTRAN) -o naglib.o $(FFLAGS) naglib.F90
 	cd $(OBJ); $(NARR) naglib.o ; $(RM) naglib.F90 naglib.o
 	$(RANLIB) $(NLG)
+	$(MVMODS)
 	@printf '[ OK ]\n'
 
 naglib_interface.o: $(LG)(naglib_interface.o)
@@ -130,6 +131,7 @@ $(LG)(naglib_interface.o): ../naglib/naglib_interface.F90
                       naglib_interface.F90
 	cd $(OBJ); $(ARR) naglib_interface.o ; \
           $(RM) naglib_interface.F90 naglib_interface.o
+	$(MVMODS)
 	@printf '[ OK ]\n'
 
 e04npf.o: $(OBJ)/e04npf.o

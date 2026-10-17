@@ -1,108 +1,90 @@
-! THIS VERSION: GALAHAD 5.6 - 2026-06-27 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 5.6 - 2026-13-06 AT 13:20 GMT
 
 #include "galahad_modules.h"
 
-  PROGRAM BPMPD_test
+PROGRAM GALAHAD_BPMPD_test
 
-!  main program to test the convex QP package BPMPD
+!  main program to test the GALAHAD interface to Csaba Meszaros's convex 
+!  QP package BPMPD
 
-!  Nick Gould, June 2026
+!  Nick Gould, October 2026
 
-  USE GALAHAD_KINDS_precision
-
+  USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
+  USE GALAHAD_BPMPD_precision, ONLY: BPMPD_data_type, BPMPD_control_type,      &
+                                     BPMPD_inform_type, BPMPD_initialize,      &
+                                     BPMPD_solve, BPMPD_terminate,             &
+                                     QPT_problem_type, SMT_put
   IMPLICIT NONE
-
-!  Parameters
-
-  INTEGER ( KIND = ip_ ), PARAMETER :: out = 6
-  INTEGER, PARAMETER :: n = 3, m = 2, nz = 4, qn = n, qnz = 4
-  REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
 
 !  local variables
 
-  INTEGER ( KIND = ip_ ) :: alloc_status, i, code, msizi, msizr, iter, loglevel
-  REAL ( KIND = rp_ ) :: f, big, opt
-  CHARACTER ( LEN = 10 ) :: p_name = 'qptest    '
-  INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ACOLCNT, ACOLIDX
-  INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: QCOLCNT, QCOLIDX
-  INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: STATUS
-  REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ACOLNZS, QCOLNZS
-  REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS, OBJ
-  REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: LBOUND, UBOUND
-  REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PRIMAL, DUAL
+   INTEGER ( KIND = ip_ ) :: status
+   TYPE ( QPT_problem_type ) :: prob
+   TYPE ( BPMPD_data_type ) :: data
+   TYPE ( BPMPD_control_type ) :: control
+   TYPE ( BPMPD_inform_type ) :: inform
 
-  ALLOCATE( ACOLCNT( n ), ACOLIDX( nz ), QCOLCNT( n ), QCOLIDX( qnz ),         &
-            STATUS( n + m ), ACOLNZS( nz ), QCOLNZS( qnz ),                    &
-            RHS( m ), OBJ( n ), LBOUND( n + m ), UBOUND( n + m ),              &
-            PRIMAL( n + m ), DUAL( n + m ), STAT = alloc_status )
-  IF ( alloc_status /= 0 ) GO TO 990
+!  problem parameters
 
-!  input the problem data
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
 
-  f = 1.0_rp_                              ! objective constant
-  OBJ = [ 0.0_rp_, 2.0_rp_, 0.0_rp_ ]      ! objective gradient
-  RHS = 0.0_rp_                            ! constraint rhs
-  LBOUND = [ - 1.0_rp_, - infinity, - infinity,                                &
-             1.0_rp_, 2.0_rp_]             ! variable and slack lower bound
-  UBOUND = [ 1.0_rp_, infinity, 2.0_rp_,                                       &
-             2.0_rp_, 2.0_rp_]             ! variable and slack upper bound
-  ACOLCNT = [ 1, 2, 1 ]               ! Jacobian A, row storage
-  ACOLIDX = [ 1, 1, 2, 2 ]
-  ACOLNZS = [ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ ]
-  QCOLCNT = [ 1, 2, 1 ]              ! Hessian H, row storage,
-  QCOLIDX = [ 1, 2, 3, 3 ]         ! lower triangle only
-  QCOLNZS = [ 1.0_rp_, 2.0_rp_, 1.0_rp_, 3.0_rp_ ] 
-  PRIMAL = 0.0_rp_ ; DUAL = 0.0_rp_       ! start from zero
+!  input the problem data per GALAHAD's standard QP format
 
-  msizi = 0 ; msizr = 0 ! make bpmpd choose appropriate sizes for workspace
-  big = infinity ! set infinity values for bound constraints
+   ALLOCATE( prob%G( n ), prob%X_l( n ), prob%X_u( n ), STAT = status )
+   ALLOCATE( prob%C_l( m ), prob%C_u( m ), prob%X( n ), STAT = status )
+   ALLOCATE( prob%H%val( h_ne ), prob%H%row( h_ne ), prob%H%col( h_ne ),       &
+             STAT = status )
+   ALLOCATE( prob%A%val( a_ne ), prob%A%col( a_ne ), prob%A%ptr( n + 1 ),      &
+             STAT = status )
+
+   prob%n = n ; prob%m = m ; prob%A%ne = a_ne ; prob%H%ne = h_ne
+   prob%f = 1.0_rp_                              ! objective constant
+   prob%G = [ 0.0_rp_, 2.0_rp_, 0.0_rp_ ]        ! objective gradient
+   CALL SMT_put( prob%H%type, 'SPARSE_BY_COLUMNS', status ) ! Specify Hessian
+   prob%H%val = [ 1.0_rp_, 2.0_rp_, 1.0_rp_, 3.0_rp_ ] ! H, sparse columns
+   prob%H%row = [ 1, 2, 3, 3 ]                         ! store NB lower triangle
+   prob%H%ptr = [ 1, 2, 4, 5 ] 
+   CALL SMT_put( prob%A%type, 'SPARSE_BY_COLUMNS', status ) ! specify Jacobian
+   prob%A%val = [ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ ] ! A, sparse columns
+   prob%A%row = [ 1, 1, 2, 2 ]
+   prob%A%ptr = [ 1, 2, 4, 5 ]
+   prob%C_l = [ 1.0_rp_, 2.0_rp_ ]                  ! constraint lower bound
+   prob%C_u = [ 2.0_rp_, 2.0_rp_ ]                  ! constraint upper bound
+   prob%X_l = [ - 1.0_rp_, - infinity, - infinity ] ! variable lower bound
+   prob%X_u = [ 1.0_rp_, infinity, 2.0_rp_ ]        ! variable upper bound
 
 !  solve the problem
 
-  loglevel = 0 ! turn off the log file and output generation
-  CALL bpmpdx( m, n, nz, qn, qnz, ACOLCNT, ACOLIDX, ACOLNZS,                   &
-               QCOLCNT, QCOLIDX, QCOLNZS, RHS, OBJ, LBOUND, UBOUND,            &
-               PRIMAL, DUAL, STATUS, big, code, opt, msizi, msizr,             &
-               f, loglevel, iter )
+  CALL BPMPD_initialize( data, control, inform )
+  control%infinity = infinity
+  CALL BPMPD_solve( prob, data, control, inform )
 
-!  write details
+!  succesful solve - recover the dual variable as Lagrange multipliers
 
-! WRITE( out, "(' Final objective value = ', ES11.3 )" ) opt + f
-! WRITE( out, "(' Optimal X = ', 7F9.2 )" ) PRIMAL( : n )
+  WRITE( 6, "( /, ' BPMPD solver' )" )
+  IF ( inform%status == 0 ) THEN
+    WRITE( 6, "( ' f:', ES16.8 )" ) inform%obj
+    WRITE( 6, "( ' x:', ( 5ES16.8 ) )" ) prob%X
+    WRITE( 6, "( ' y:', ( 5ES16.8 ) )" ) prob%Y( : m )
+    WRITE( 6, "( ' z:', ( 5ES16.8 ) )" ) prob%Z( : n )
+    WRITE( 6, "( 1X, I0, ' iterations, status = ', I0 ) ")                     &
+      inform%iter, inform%status
 
-  WRITE( out, "( /, ' Package used: BPMPD', /, ' Problem: ', A10, /,           &
- &              ' # variables = ', I0, ', # constraints = ', I0,               &
- &              ', Exit code = ', I0 )" ) p_name, n, m, code
-  IF ( code == 2 )                                                             &
-    WRITE( out, "( ' Final f =', ES16.8, ', iterations = ', I0  )" ) opt, iter
+!  unsucessful solve
 
-!  print the solution
-
-  IF ( code == 2 ) THEN 
-     WRITE( out, "( /, '                        variables:' /,                 &
-    &   ' #      x_l          x          x_u          z' )" )
-     DO i = 1, n
-       WRITE( out, "( I2, 4ES12.4 )" )                                         &
-         i, LBOUND( i ), PRIMAL( i ), UBOUND( i ), DUAL( i )
-     END DO
-     WRITE( out, "( /, '                        constraints:' /,               &
-    &   ' #      c_l         A x         c_u          y' )" )
-     DO i = n + 1, n + m
-       WRITE( out, "( I2, 4ES12.4 )" )                                         &
-         i - n, LBOUND( i ), PRIMAL( i ), UBOUND( i ), DUAL( i )
-     END DO
+  ELSE
+    WRITE( 6, "( ' Error return: status = ', I0 )" ) inform%status
   END IF
 
-!  deallocate workspace
+!  clean up after the solve
 
-  DEALLOCATE( ACOLCNT, ACOLIDX, QCOLCNT, QCOLIDX, STATUS, ACOLNZS, QCOLNZS,    &
-              RHS, OBJ, LBOUND, UBOUND, PRIMAL, DUAL, STAT = alloc_status )
-
+  CALL BPMPD_terminate( data, control, inform )
+  DEALLOCATE( prob%X_l, prob%X_u, prob%C_l, prob%C_u, prob%X, prob%Y, prob%Z,  &
+              prob%G, STAT = status )
+  DEALLOCATE( prob%A%type, prob%A%ptr, prob%A%col, prob%A%val, STAT = status )
+  DEALLOCATE( prob%H%type, prob%H%val, prob%H%row, prob%H%col, STAT = status )
   STOP
 
-  990 CONTINUE
-  WRITE( out, "( ' Allocation error, status = ', I0 )" ) alloc_status
-  STOP
-
-  END PROGRAM BPMPD_test
+END PROGRAM GALAHAD_BPMPD_test
 

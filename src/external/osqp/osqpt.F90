@@ -1,137 +1,99 @@
-! THIS VERSION: 25/04/2022 AT 13:45 GMT
-! Nick Gould (nick.gould@stfc.ac.uk)
+! THIS VERSION: GALAHAD 5.6 - 2026-10-07 AT 15:00 GMT
 
 #include "galahad_modules.h"
 
-PROGRAM OSQP_example
+PROGRAM GALAHAD_OSQP_test
+
+!  main program to test the GALAHAD interface to the OSQP convex QP package
+
+!  Nick Gould, October 2026
 
   USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
-  USE OSQP
+  USE GALAHAD_OSQP_precision, ONLY: OSQP_data_type, OSQP_control_type,         &
+                                    OSQP_inform_type, OSQP_initialize,         &
+                                    OSQP_solve, OSQP_terminate,                &
+                                    QPT_problem_type, SMT_PUT
   IMPLICIT NONE
 
 !  local variables
 
-   INTEGER ( KIND = ip_ ) :: i, j, k, l, n_bnds, m_qp, a_ne_qp
-   INTEGER ( KIND = ip_ ), PARAMETER :: out = 6
-   REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
-   REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 20
+   INTEGER ( KIND = ip_ ) :: status
+   TYPE ( QPT_problem_type ) :: prob
+   TYPE ( OSQP_data_type ) :: data
+   TYPE ( OSQP_control_type ) :: control
+   TYPE ( OSQP_inform_type ) :: inform
 
 !  problem parameters
 
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
-!  INTEGER ( KIND = ip_ ), PARAMETER :: n = 2, m = 1, h_ne = 2, a_ne = 2
-   INTEGER ( KIND = ip_ ), PARAMETER :: ane = 4
-   INTEGER ( KIND = ip_ ), PARAMETER :: m_bnds = 3
-
-!  set problem and solution arrays
-
-   REAL ( KIND = rp_ ) :: f
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr, A_ptr_qp
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_row_qp
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_ptr, H_row
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G, X, X_l, X_u
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C_l, C_u, C
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_l, B_u
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_val_qp, H_val
-   TYPE ( OSQP_settings_type ) :: settings
-   TYPE ( OSQP_info_type ) :: info
-   TYPE ( OSQP_data_type ) :: data
-   INTEGER ( KIND = ip_ ) :: status
-   CHARACTER ( LEN = SIZE( info%status ) ) :: info_status
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
 
 !  input the problem data per GALAHAD's standard QP format
 
-   ALLOCATE( G( n ), X_l( n ), X_u( n ), STAT = status )
-   ALLOCATE( C( m ), C_l( m ), C_u( m ), STAT = status )
-   ALLOCATE( H_val( h_ne ), H_row( h_ne ), H_ptr( n + 1 ), STAT = status )
-   ALLOCATE( A_val( a_ne ), A_row( a_ne ), A_ptr( n + 1 ), STAT = status )
+   ALLOCATE( prob%G( n ), prob%X_l( n ), prob%X_u( n ), STAT = status )
+   ALLOCATE( prob%C_l( m ), prob%C_u( m ), prob%X( n ), STAT = status )
+   ALLOCATE( prob%H%val( h_ne ), prob%H%row( h_ne ), prob%H%col( h_ne ),       &
+             STAT = status )
+   ALLOCATE( prob%A%val( a_ne ), prob%A%col( a_ne ), prob%A%ptr( n + 1 ),      &
+             STAT = status )
 
-   f = 1.0_rp_                              ! objective constant
-   G = [ 0.0_rp_, 2.0_rp_, 0.0_rp_ ]        ! objective gradient
-   H_val = [ 1.0_rp_, 2.0_rp_, 1.0_rp_, 3.0_rp_ ] ! Hessian H, column storage
-   H_row = [ 1, 2, 2, 3 ]                         ! NB upper triangle
-   H_ptr = [ 1, 2, 3, 5 ] 
-   C_l = [ 1.0_rp_, 2.0_rp_ ]                  ! constraint lower bound
-   C_u = [ 2.0_rp_, 2.0_rp_ ]                  ! constraint upper bound
-   X_l = [ - 1.0_rp_, - infinity, - infinity ] ! variable lower bound
-   X_u = [ 1.0_rp_, infinity, 2.0_rp_ ]        ! variable upper bound
-   A_val = [ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ ] ! Jacobian A, column storage
-   A_row = [ 1, 1, 2, 2 ]
-   A_ptr = [ 1, 2, 4, 5 ]
+   prob%n = n ; prob%m = m ; prob%A%ne = a_ne ; prob%H%ne = h_ne
+   prob%f = 1.0_rp_                              ! objective constant
+   prob%G = [ 0.0_rp_, 2.0_rp_, 0.0_rp_ ]        ! objective gradient
+   CALL SMT_put( prob%H%type, 'SPARSE_BY_ROWS', status ) ! Specify Hessian
+   prob%H%val = [ 1.0_rp_, 2.0_rp_, 1.0_rp_, 3.0_rp_ ]   ! H, column storage
+   prob%H%row = [ 1, 2, 2, 3 ]                           ! NB upper triangle =
+   prob%H%ptr = [ 1, 2, 3, 5 ]                           ! lower triangle byrows
+   CALL SMT_put( prob%A%type, 'SPARSE_BY_COLUMNS', status ) ! Specify Jacobian A
+   prob%A%val = [ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ ]      ! column storage
+   prob%A%row = [ 1, 1, 2, 2 ]
+   prob%A%ptr =  [ 1, 2, 4, 5 ]                            ! NB row pointers
+   prob%C_l = [ 1.0_rp_, 2.0_rp_ ]                  ! constraint lower bound
+   prob%C_u = [ 2.0_rp_, 2.0_rp_ ]                  ! constraint upper bound
+   prob%X_l = [ - 1.0_rp_, - infinity, - infinity ] ! variable lower bound
+   prob%X_u = [ 1.0_rp_, infinity, 2.0_rp_ ]        ! variable upper bound
 
-!  transfer the data into OSQP's QP format
+!  initialize the control parameters
 
-   n_bnds = COUNT( X_l > -infinity .OR. X_u < infinity )
-   m_qp = m + n_bnds
-   a_ne_qp = a_ne + n_bnds
-   ALLOCATE( A_val_qp( a_ne_qp ), A_row_qp( a_ne_qp ), STAT = status )
-   ALLOCATE( A_ptr_qp( n + 1 ), STAT = status )
-   ALLOCATE( B_l( m_qp ), B_u( m_qp ), X( n ), Y( m_qp ), STAT = status )
-
-!  reset problem constraint data (NB 1-based integer index arrays)
-
-   B_l( : m ) = C_l( : m ) ; B_u( : m ) = C_u( : m )
-   l = 1 ; k = m
-   DO j = 1, n
-     A_ptr_qp( j ) = l
-     DO i = A_ptr( j ),  A_ptr( j + 1 ) - 1
-       A_row_qp( l ) = A_row( i )
-       A_val_qp( l ) = A_val( i )
-       l = l + 1
-     END DO
-     IF ( X_l( j ) > -infinity .OR. X_u( j ) < infinity ) THEN
-       k = k + 1
-       A_row_qp( l ) = k
-       A_val_qp( l ) = 1.0_rp_
-       l = l + 1
-       B_l( k ) = X_l( j ) ; B_u( k ) = X_u( j )
-     END IF
-   END DO
-   A_ptr_qp( n + 1 ) = l
-
-   DEALLOCATE( X_l, X_u, C_l, C_u, A_ptr, A_row, A_val, STAT = status )
+   CALL OSQP_initialize( data, control, inform )
 
 !  assign non-default settings prior to solution
 
-   settings%verbose = 0
+   control%settings%verbose = 0
 
 !  Change linear system solver to a direct one
-  settings%linsys_solver = 1
 
-!  establish the control settings
-
-  CALL OSQP_settings( settings, data, status )
-  IF ( status /= 0 ) THEN
-    WRITE( out, "( ' OSQP_settings status = ', I0, ' stopping' )" ) status
-    STOP
-  END IF
+   control%settings%linsys_solver = 1
 
 !  solve the problem
 
-  CALL OSQP_solve( n, m_qp, H_ptr, H_row, H_val, g, A_ptr_qp, A_row_qp,        &
-                   A_val_qp, B_l, B_u, X, Y, info, data, status )
+   CALL OSQP_solve( prob, data, control, inform )
 
-  IF ( status == 0 ) THEN
-    WRITE( out, "( /, ' OSQP - Fortran interface' )" )
-    WRITE( out, "( ' objective function:', ES16.8 )" ) info%obj_val + f
-    WRITE( out, "( ' primal & dual residuals:', 2ES16.8 )" )                   &
-      info%prim_res, info%dual_res
-    WRITE( out, "( ' x:', ( 5ES16.8 ) )" ) X
-    WRITE( out, "( ' y:', ( 5ES16.8 ) )" ) Y
-    WRITE( out, "( 1X, I0, ' iterations' ) ") info%iter
-    WRITE( out, "( ' status ', A , ' (status value = ', I0, ')' )" )           &
-       TRIM( TRANSFER( info%status, info_status ) ),  info%status_val
+!  succesful solve - recover the dual variable as Lagrange multipliers
 
-  ELSE
-    IF ( info%status_val /= 1 ) THEN
-      WRITE( out, "( ' Error. Problem not solved to optimality ' )")
-    END IF
-  END IF
+   WRITE( 6, "( /, ' OSQP solver' )" )
+   IF ( inform%status == 0 ) THEN
+     WRITE( 6, "( ' f:', ES16.8 )" ) inform%obj
+     WRITE( 6, "( ' x:', ( 5ES16.8 ) )" ) prob%X
+     WRITE( 6, "( ' y:', ( 5ES16.8 ) )" ) prob%Y( : m )
+     WRITE( 6, "( ' z:', ( 5ES16.8 ) )" ) prob%Z( : n )
+     WRITE( 6, "( 1X, I0, ' iterations, status = ', I0 ) ")                    &
+       inform%iter, inform%status
+
+!  unsucessful solve
+
+   ELSE
+     WRITE( 6, "( ' Error return: status = ', I0 )" ) inform%status
+   END IF
 
 !  clean up after the solve
 
-  CALL OSQP_cleanup( data, status )
+   CALL OSQP_terminate( data, control, inform )
+   DEALLOCATE( prob%X_l, prob%X_u, prob%C_l, prob%C_u, prob%X, prob%Y, prob%Z, &
+               prob%G, STAT = status )
+   DEALLOCATE( prob%A%type, prob%A%ptr, prob%A%col, prob%A%val, STAT = status )
+   DEALLOCATE( prob%H%type, prob%H%val, prob%H%row, prob%H%col, STAT = status )
+   STOP
 
-  STOP
-
-END PROGRAM OSQP_example
+END PROGRAM GALAHAD_OSQP_test
+ 
